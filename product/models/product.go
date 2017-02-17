@@ -1,17 +1,47 @@
 package models
 
 type (
-	ProductAttribute struct {
-		ID    string
-		Name  string
-		Value string
+	ProductImage struct {
+		Type  string
+		Alt   string
+		Title string
+		Urls  struct {
+			Xs string
+			Md string
+			Lg string
+		}
 	}
 
 	Product struct {
-		ID          string
-		Name        string
+		Id    string
+		Name  string
+		Brand struct {
+			Id   string
+			Name string
+		}
+		Retailer struct {
+			Id   string
+			Name string
+		}
 		Description string
-		Price       float64
-		Images      []string
+		Images      []ProductImage
+		Attributes  []struct {
+			ID    string
+			Name  string
+			Value string
+		}
+		Prices struct {
+			Base float64
+		}
+		Shipping []struct {
+			Id        string
+			Available bool
+			Title     string
+			Duration  string
+		}
+		Categories []struct {
+			ID   string
+			Name string
+		}
 	}
 )

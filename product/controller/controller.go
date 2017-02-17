@@ -4,25 +4,23 @@ import (
 	"flamingo/core/flamingo/web"
 	"flamingo/core/flamingo/web/responder"
 	"flamingo/core/product/interfaces"
-	"encoding/json"
-	"io/ioutil"
+	"flamingo/core/product/models"
 )
 
-type ViewController struct {
-	*responder.RenderAware `inject:""`
+type (
+	ViewController struct {
+		*responder.RenderAware `inject:""`
 
-	interfaces.ProductService `inject:""`
-}
+		interfaces.ProductService `inject:""`
+	}
+
+	ViewData struct {
+		Product models.Product
+	}
+)
 
 func (vc *ViewController) Get(c web.Context) web.Response {
-	//product := vc.ProductService.Get(c.Param1("sku"))
+	product := vc.ProductService.Get(c.Param1("sku"))
 
-	//return vc.Render(c, "pages/product/view", product)
-
-	product := make(map[string]interface{})
-
-	p, _ := ioutil.ReadFile("frontend/src/mocks/product.json")
-	json.Unmarshal(p, &product)
-
-	return vc.Render(c, "pages/product/view", map[string]interface{}{"Product": product})
+	return vc.Render(c, "pages/product/view", ViewData{Product: product})
 }
