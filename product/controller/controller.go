@@ -1,10 +1,10 @@
 package controller
 
 import (
-	"encoding/json"
-	"flamingo/core/app/web"
-	"flamingo/core/app/web/responder"
+	"flamingo/core/flamingo/web"
+	"flamingo/core/flamingo/web/responder"
 	"flamingo/core/product/interfaces"
+	"encoding/json"
 	"io/ioutil"
 )
 
