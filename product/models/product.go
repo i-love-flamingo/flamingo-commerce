@@ -6,9 +6,13 @@ type (
 		Alt   string
 		Title string
 		Urls  struct {
-			Xs string
-			Md string
-			Lg string
+			Base string
+			Xss  string
+			Xs   string
+			Sm   string
+			Md   string
+			Lg   string
+			Xl   string
 		}
 	}
 
