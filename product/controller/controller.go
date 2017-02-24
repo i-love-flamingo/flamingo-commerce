@@ -19,6 +19,7 @@ type (
 	}
 )
 
+// Get Response for Product matching sku param
 func (vc *ViewController) Get(c web.Context) web.Response {
 	product := vc.ProductService.Get(c.Param1("sku"))
 
