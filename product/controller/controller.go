@@ -22,7 +22,11 @@ type (
 
 // Get Response for Product matching sku param
 func (vc *ViewController) Get(c web.Context) web.Response {
-	product := vc.ProductService.Get(c, c.Param1("sku"))
+	product, errorData := vc.ProductService.Get(c, c.ParamAll()["Uid"])
+
+	if errorData != nil {
+		return vc.Render(c, "pages/product/view", ViewData{})
+	}
 
 	return vc.Render(c, "pages/product/view", ViewData{Product: product})
 }

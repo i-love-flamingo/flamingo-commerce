@@ -7,6 +7,6 @@ import (
 
 // ProductService interface
 type ProductService interface {
-	Get(web.Context, string) models.Product
+	Get(web.Context, string) (models.Product, error)
 	GetByIDList(web.Context, []string) []models.Product
 }
