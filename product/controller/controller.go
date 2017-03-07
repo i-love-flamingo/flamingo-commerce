@@ -10,6 +10,7 @@ import (
 type (
 	// ViewController demonstrates a product view controller
 	ViewController struct {
+		*responder.ErrorAware     `inject:""`
 		*responder.RenderAware    `inject:""`
 		interfaces.ProductService `inject:""`
 	}
@@ -24,8 +25,10 @@ type (
 func (vc *ViewController) Get(c web.Context) web.Response {
 	product, errorData := vc.ProductService.Get(c, c.ParamAll()["Uid"])
 
-	if errorData != nil {
-		return vc.Render(c, "pages/product/view", ViewData{})
+	if errorData.HasError() {
+		response := vc.RenderError(c, errorData)
+
+		return response
 	}
 
 	return vc.Render(c, "pages/product/view", ViewData{Product: product})
