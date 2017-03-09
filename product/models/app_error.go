@@ -22,7 +22,7 @@ func (e *AppError) SetMessage(message string) {
 }
 
 func (e *AppError) HasError() bool {
-	if &e.Code == nil || e.Code == 0 {
+	if e.Code == 0 {
 		return false
 	}
 
