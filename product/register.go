@@ -10,6 +10,6 @@ import (
 func Register(c *di.Container) {
 	c.Register(func(r *router.Router) {
 		r.Handle("product.view", new(controller.ViewController))
-		r.Route("/product/{Uid}", "product.view")
+		r.Route("/product/{uid}", "product.view")
 	}, router.RouterRegister)
 }
