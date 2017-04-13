@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"flamingo/core/flamingo/web"
-	"flamingo/core/flamingo/web/responder"
+	"flamingo/framework/web"
+	"flamingo/framework/web/responder"
 	"flamingo/core/product/interfaces"
 	"flamingo/core/product/models"
 )

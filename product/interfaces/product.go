@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-	"flamingo/core/flamingo/web"
+	"flamingo/framework/web"
 	"flamingo/core/product/models"
 )
 

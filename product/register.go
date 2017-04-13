@@ -1,8 +1,8 @@
 package product
 
 import (
-	di "flamingo/core/flamingo/dependencyinjection"
-	"flamingo/core/flamingo/router"
+	di "flamingo/framework/dependencyinjection"
+	"flamingo/framework/router"
 	"flamingo/core/product/controller"
 )
 
