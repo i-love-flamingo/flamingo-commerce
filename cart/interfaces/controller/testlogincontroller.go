@@ -1,35 +1,33 @@
 package controller
 
 import (
-	"flamingo/framework/web"
-	"fmt"
-	"net/http"
-	"flamingo/framework/web/responder"
-	"flamingo/core/event2"
 	"bytes"
 	"flamingo/core/cart/domain"
+	"flamingo/framework/event"
+	"flamingo/framework/web"
+	"flamingo/framework/web/responder"
+	"fmt"
+	"net/http"
 )
 
 type (
 	TestLoginController struct {
 		*responder.RenderAware `inject:""`
 
-		EventDispatcher event2.EventDispatcher `inject:""`
+		EventRouter event.Router `inject:""`
 
 		//pageservice interfaces.PageService
 	}
-
-
 )
-
-
 
 // Testlogin - throws an event
 func (lc *TestLoginController) Get(c web.Context) web.Response {
 	fmt.Println("Test login yeah :-)")
 
-	lc.EventDispatcher.Dispatch(
-		domain.NewLoginSucessEvent("U123213"),
+	lc.EventRouter.Dispatch(
+		domain.LoginSucessEvent{
+			"U213213",
+		},
 	)
 
 	return &web.ContentResponse{
@@ -39,5 +37,3 @@ func (lc *TestLoginController) Get(c web.Context) web.Response {
 	}
 
 }
-
-

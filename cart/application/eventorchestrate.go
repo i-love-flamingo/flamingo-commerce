@@ -1,37 +1,23 @@
 package application
 
 import (
-	"flamingo/core/event2"
-	"fmt"
 	"flamingo/core/cart/domain"
+	"flamingo/framework/event"
+	"fmt"
 )
-
-
 
 type (
 	EventOrchestration struct {
-		*event2.Subscriber `inject:""`
 		Cartservice *Cartservice `inject:""`
 	}
 )
 
+//Implement Subscriber Interface
+func (s *EventOrchestration) Notify(ev event.Event) {
+	fmt.Printf("Event disoatched to Cartservice %s", ev)
 
-//Implement Subscribtions Interface
-func (s *EventOrchestration) AddSubscriptions() {
-	s.EventDispatcher.Subscribe("login.sucess", s)
-}
-
-
-
-//Implement Listerner Interface
-func (s *EventOrchestration) OnEvent(event event2.Event) {
-	fmt.Printf("Event disoatched to Cartservice %s",event)
-	switch key := event.GetEventKey(); key {
-	case "login.sucess":
-		s.Cartservice.OnLogin(event.(domain.LoginSucessEvent))
-	default:
-		// Todo log waring?
-		fmt.Printf("Unkonwn event for this package %s", key)
+	switch ev := ev.(type) {
+	case domain.LoginSucessEvent:
+		s.Cartservice.OnLogin(ev)
 	}
 }
-
