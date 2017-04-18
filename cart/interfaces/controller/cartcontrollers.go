@@ -86,7 +86,7 @@ func (cc *CartApiController) Post(c web.Context) web.Response {
 
 
 // Add Item to cart
-func (cc *CartItemAddApiController) Get(c web.Context) web.Response {
+func (cc *CartItemAddApiController) AddToBasketAction(c web.Context) web.Response {
 	productCode := c.QueryFirst("code")
 	qty,_ := strconv.Atoi(c.QueryFirst("qty"))
 

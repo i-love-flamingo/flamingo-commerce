@@ -22,8 +22,8 @@ func Register(c *di.Container) {
 		r.Handle("cart.api", new(controller.CartApiController))
 		r.Route("/api/cart", "cart.api")  				// Implements - Get JSON (Get JSON)  And Put+Post= (Update Cart)
 
-		r.Handle("cart.item.add.api", new(controller.CartItemAddApiController))
-		r.Route("/api/cart/item/add", "cart.item.add.api")			// Post (Add)
+		r.Handle("cart.item.add.api", (new(controller.CartItemAddApiController)).AddToBasketAction)
+		r.Route("/api/cart/item/add", "cart.item.add.api")			// Get (Add)
 
 
 		//For test
@@ -36,7 +36,7 @@ func Register(c *di.Container) {
 	 //c.RegisterFactory(infrastructure.FakecartrepositoryFactory)
 	c.Register(new(infrastructure.Fakecartrepository))
 
-	//Basti - also application.Cartservice is injected even without registration?
+	//Basti - also application.Cartservice is injected even without registration? => TODO in doco
 	c.Register(new(application.Cartservice))
 
 
