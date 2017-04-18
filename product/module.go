@@ -1,7 +1,7 @@
 package product
 
 import (
-	"flamingo/core/dingo"
+	"flamingo/framework/dingo"
 	"flamingo/core/product/controller"
 	"flamingo/framework/router"
 )
