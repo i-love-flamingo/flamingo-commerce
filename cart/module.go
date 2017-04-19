@@ -25,8 +25,13 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	m.RouterRegistry.Handle("/api/cart/item/add", new(controller.CartItemAddApiController))
 	m.RouterRegistry.Route("/api/cart", "cart.item.add.api")
 
+	//	m.RouterRegistry.Handle("foo", controller.CartItemAddApiController.AddToBasketAction)
+
 	m.RouterRegistry.Handle("logintest", new(controller.TestLoginController))
 	m.RouterRegistry.Route("/logintest", "logintest")
 
 	m.EventRouter.AddSubscriber(new(application.EventOrchestration))
+
+	//	a := controller.CartItemAddApiController.AddToBasketAction
+	//	a
 }
