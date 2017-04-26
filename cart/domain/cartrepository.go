@@ -1,7 +1,7 @@
 package domain
 
 
-type Cartrepository interface {
+type CartService interface {
 	Add(Cart) (int, error)
 	Update(Cart) error
 	Delete(Cart) error
