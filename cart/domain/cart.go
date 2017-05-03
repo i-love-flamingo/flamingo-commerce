@@ -43,5 +43,4 @@ func (Cart *Cart) AddOrUpdateByCode(code string, qty int, price float32) {
 		price,
 	}
 	Cart.Cartitems = append(Cart.Cartitems, newCartItem)
-
 }
