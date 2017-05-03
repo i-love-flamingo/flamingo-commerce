@@ -1,10 +1,10 @@
 package controller
 
 import (
-	"flamingo/framework/web"
-	"flamingo/framework/web/responder"
 	"flamingo/core/product/interfaces"
 	"flamingo/core/product/models"
+	"flamingo/framework/web"
+	"flamingo/framework/web/responder"
 )
 
 type (
@@ -31,5 +31,5 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 		return response
 	}
 
-	return vc.Render(c, "pages/product/view", ViewData{Product: product})
+	return vc.Render(c, "pages/product/configurable", ViewData{Product: product})
 }
