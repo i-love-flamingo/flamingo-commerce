@@ -23,13 +23,13 @@ type (
 
 // Get Response for Product matching sku param
 func (vc *ViewController) Get(c web.Context) web.Response {
-	product, errorData := vc.ProductService.Get(c, c.ParamAll()["Uid"])
+	product, _ := vc.ProductService.Get(c, c.ParamAll()["Uid"])
 
-	if errorData.HasError() {
-		response := vc.RenderError(c, errorData)
-
-		return response
-	}
+	//if errorData.HasError() {
+	//	response := vc.Error(c, errorData)
+	//
+	//	return response
+	//}
 
 	return vc.Render(c, "pages/product/configurable", ViewData{Product: product})
 }
