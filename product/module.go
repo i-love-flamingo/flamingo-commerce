@@ -1,8 +1,8 @@
 package product
 
 import (
+	"flamingo/core/product/interfaces"
 	"flamingo/framework/dingo"
-	"flamingo/core/product/controller"
 	"flamingo/framework/router"
 )
 
@@ -13,7 +13,8 @@ type (
 	}
 )
 
+// Configure the product URL
 func (m *Module) Configure(injector *dingo.Injector) {
-	m.RouterRegistry.Handle("product.view", new(controller.ViewController))
-	m.RouterRegistry.Route("/product/{uid}", "product.view")
+	m.RouterRegistry.Handle("product.view", new(interfaces.ViewController))
+	m.RouterRegistry.Route("/product/{uid}/{name}.html", "product.view")
 }

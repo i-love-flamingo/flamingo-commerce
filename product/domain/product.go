@@ -1,8 +1,9 @@
-package models
+package domain
 
 import "time"
 
 type (
+	// Product is the basic product model, as read from searchperience
 	Product struct {
 		Locale                     string              `json:"locale"`
 		Channel                    string              `json:"channel"`
@@ -31,6 +32,7 @@ type (
 		Variants                   []Variant           `json:"variants"`
 	}
 
+	// TeaserData is the teaser-information for product previews
 	TeaserData struct {
 		Title            string  `json:"title"`
 		ShortTitle       string  `json:"shortTitle"`
@@ -39,6 +41,7 @@ type (
 		Media            []Media `json:"media"`
 	}
 
+	// Media holds product media information
 	Media struct {
 		Type      string `json:"type"`
 		MimeType  string `json:"mimeType"`
@@ -47,6 +50,7 @@ type (
 		Reference string `json:"reference"`
 	}
 
+	// ConfigurableProduct defines the variant setup
 	ConfigurableProduct struct {
 		InternalName string     `json:"internalName"`
 		Title        string     `json:"title"`
@@ -56,6 +60,7 @@ type (
 		Media        []Media    `json:"media"`
 	}
 
+	// Variant is a concrete variant of a product
 	Variant struct {
 		InternalName          string     `json:"internalName"`
 		Title                 string     `json:"title"`
@@ -85,5 +90,6 @@ type (
 		TaxClass              string     `json:"taxClass,omitempty"`
 	}
 
+	// Attributes is a generic map[string]interface{}
 	Attributes map[string]interface{}
 )
