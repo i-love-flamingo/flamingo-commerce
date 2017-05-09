@@ -24,7 +24,7 @@ type (
 
 // Get Response for Product matching sku param
 func (vc *ViewController) Get(c web.Context) web.Response {
-	product, err := vc.ProductService.Get(c, c.Param1("uid"))
+	product, err := vc.ProductService.Get(c, c.MustParam1("uid"))
 
 	// catch error
 	if err != nil {
@@ -32,8 +32,8 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 	}
 
 	// normalize URL
-	if url.QueryEscape(product.InternalName) != c.Param1("name") {
-		return vc.Redirect("product.view", "uid", c.Param1("uid"), "name", url.QueryEscape(product.InternalName))
+	if url.QueryEscape(product.InternalName) != c.MustParam1("name") {
+		return vc.Redirect("product.view", "uid", c.MustParam1("uid"), "name", url.QueryEscape(product.InternalName))
 	}
 
 	// render page
