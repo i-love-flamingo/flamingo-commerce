@@ -1,14 +1,14 @@
 package controller
 
 import (
-	"flamingo/framework/web/responder"
-	"flamingo/core/cart/application"
-	"flamingo/framework/web"
-	"flamingo/core/cart/domain"
-	"net/http"
 	"bytes"
-	"fmt"
 	"encoding/json"
+	"flamingo/core/cart/application"
+	"flamingo/core/cart/domain"
+	"flamingo/framework/web"
+	"flamingo/framework/web/responder"
+	"fmt"
+	"net/http"
 	"strconv"
 )
 
@@ -38,8 +38,6 @@ type (
 	}
 )
 
-
-
 // Get the Cart View ( / cart)
 func (cc *CartViewController) Get(c web.Context) web.Response {
 	Cart := cc.Cartservice.GetSessionCart()
@@ -47,19 +45,16 @@ func (cc *CartViewController) Get(c web.Context) web.Response {
 
 	return &web.ContentResponse{
 		Status:      http.StatusOK,
-		Body:        bytes.NewReader([]byte(fmt.Sprintf("Here is the Cart: %s",Cart))),
+		Body:        bytes.NewReader([]byte(fmt.Sprintf("Here is the Cart: %s", Cart))),
 		ContentType: "text/html; charset=utf-8",
 	}
 
 }
 
-
-
-
 // Get JSON Format of API
 func (cc *CartApiController) Get(c web.Context) web.Response {
 	Cart := cc.Cartservice.GetSessionCart()
-	JsonCart,_ := json.Marshal(Cart)
+	JsonCart, _ := json.Marshal(Cart)
 	fmt.Println("Cart API: Get Cart")
 	return &web.ContentResponse{
 		Status:      http.StatusOK,
@@ -68,34 +63,31 @@ func (cc *CartApiController) Get(c web.Context) web.Response {
 	}
 }
 
-
 // Update Cart via JSON
 func (cc *CartApiController) Post(c web.Context) web.Response {
 	Cart := cc.Cartservice.GetSessionCart()
-	cartJsonData := c.Form1("cart")
-	json.Unmarshal([]byte(cartJsonData),Cart)
+	cartJsonData := c.MustForm1("cart")
+	json.Unmarshal([]byte(cartJsonData), Cart)
 
 	fmt.Println("Cart API: Update Cart")
 	return &web.ContentResponse{
 		Status:      http.StatusOK,
-		Body:        bytes.NewReader([]byte("Update:"+cartJsonData)),
+		Body:        bytes.NewReader([]byte("Update:" + cartJsonData)),
 		ContentType: "text/html; charset=utf-8",
 	}
 }
 
-
-
 // Add Item to cart
 func (cc *CartItemAddApiController) AddToBasketAction(c web.Context) web.Response {
-	productCode := c.QueryFirst("code")
-	qty,_ := strconv.Atoi(c.QueryFirst("qty"))
+	productCode := c.MustQuery1("code")
+	qty, _ := strconv.Atoi(c.MustQuery1("qty"))
 
 	cc.Cartservice.AddItem(productCode, qty)
 
 	fmt.Println("Cart Item API: Add Item in Cart")
 	return &web.ContentResponse{
 		Status:      http.StatusOK,
-		Body:        bytes.NewReader([]byte(fmt.Sprintf("Added Item?: %s qty",productCode,qty))),
+		Body:        bytes.NewReader([]byte(fmt.Sprintf("Added Item?: %s qty", productCode, qty))),
 		ContentType: "text/html; charset=utf-8",
 	}
 }
