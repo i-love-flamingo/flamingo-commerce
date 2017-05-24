@@ -3,7 +3,6 @@ package controller
 import (
 	"bytes"
 	"encoding/json"
-	"flamingo/core/cart/application"
 	"flamingo/core/cart/domain"
 	"flamingo/framework/web"
 	"flamingo/framework/web/responder"
@@ -13,33 +12,22 @@ import (
 )
 
 type (
-	BaseCartController struct {
-		*responder.RenderAware `inject:""`
-
-		Cartservice *application.Cartservice `inject:""`
-
-		//pageservice interfaces.PageService
-	}
 	// ViewData is used for product rendering
 	ViewData struct {
 		Cart *domain.Cart
 	}
 
-	CartViewController struct {
-		*BaseCartController `inject:""`
+	CartController struct {
+		*responder.RenderAware `inject:""`
 	}
 
 	CartApiController struct {
-		*BaseCartController `inject:""`
-	}
-
-	CartItemAddApiController struct {
-		*BaseCartController `inject:""`
+		*responder.JSONAware `inject:""`
 	}
 )
 
 // Get the Cart View ( / cart)
-func (cc *CartViewController) Get(c web.Context) web.Response {
+func (cc *CartController) Get(c web.Context) web.Response {
 	Cart := cc.Cartservice.GetSessionCart()
 	//return cc.Render(c, "pages/home", ViewData{ Cart: Cart})
 
