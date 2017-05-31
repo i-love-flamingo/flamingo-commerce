@@ -5,6 +5,7 @@ import (
 	"flamingo/framework/router"
 	"flamingo/framework/web"
 	"flamingo/framework/web/responder"
+	"log"
 	"net/url"
 )
 
@@ -34,6 +35,7 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 
 	// normalize URL
 	if url.QueryEscape(product.InternalName) != c.MustParam1("name") {
+		log.Println(url.QueryEscape(product.InternalName), c.MustParam1("name"))
 		return vc.Redirect("product.view", router.P{"uid": c.MustParam1("uid"), "name": url.QueryEscape(product.InternalName)})
 	}
 
