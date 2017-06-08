@@ -1,15 +1,11 @@
 package cart
 
-import (
-	"flamingo/core/cart/interfaces/controller"
-	"flamingo/framework/dingo"
-	"flamingo/framework/router"
-)
+import "flamingo/framework/dingo"
 
 type (
 	// Module registers our profiler
 	Module struct {
-		RouterRegistry *router.RouterRegistry `inject:""`
+		//RouterRegistry *router.RouterRegistry `inject:""`
 		//EventRouter    event.Router           `inject:""`
 	}
 )
@@ -33,6 +29,6 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	////	a := controller.CartItemAddApiController.AddToBasketAction
 	////	a
 
-	m.RouterRegistry.Mount("/api/cart", new(controller.CartApiController))
-	m.RouterRegistry.Mount("/cart", new(controller.CartController))
+	//m.RouterRegistry.Mount("/api/cart", new(controller.CartApiController))
+	//m.RouterRegistry.Mount("/cart", new(controller.CartController))
 }
