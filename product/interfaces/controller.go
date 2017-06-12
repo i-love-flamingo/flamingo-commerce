@@ -12,10 +12,10 @@ import (
 type (
 	// ViewController demonstrates a product view controller
 	ViewController struct {
-		*responder.ErrorAware    `inject:""`
-		*responder.RenderAware   `inject:""`
-		*responder.RedirectAware `inject:""`
-		domain.ProductService    `inject:""`
+		responder.ErrorAware    `inject:""`
+		responder.RenderAware   `inject:""`
+		responder.RedirectAware `inject:""`
+		domain.ProductService   `inject:""`
 	}
 
 	// ViewData is used for product rendering
