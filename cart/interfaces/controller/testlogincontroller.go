@@ -12,7 +12,7 @@ import (
 
 type (
 	TestLoginController struct {
-		*responder.RenderAware `inject:""`
+		responder.RenderAware `inject:""`
 
 		EventRouter event.Router `inject:""`
 

@@ -16,11 +16,11 @@ type (
 	}
 
 	CartController struct {
-		*responder.RenderAware `inject:""`
+		responder.RenderAware `inject:""`
 	}
 
 	CartApiController struct {
-		*responder.JSONAware `inject:""`
+		responder.JSONAware `inject:""`
 	}
 )
 
