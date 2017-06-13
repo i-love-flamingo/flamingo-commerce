@@ -7,5 +7,5 @@ import (
 // ProductService interface
 type ProductService interface {
 	// Get a product
-	Get(ctx web.Context, foreignId string) (*Product, error)
+	Get(ctx web.Context, foreignID string) (*Product, error)
 }

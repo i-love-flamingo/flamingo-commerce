@@ -13,14 +13,14 @@ type (
 	MockProductService struct{}
 )
 
-func (mps *MockProductService) Get(ctx web.Context, foreignId string) (*domain.Product, error) {
-	if foreignId == "fail" {
+func (mps *MockProductService) Get(ctx web.Context, foreignID string) (*domain.Product, error) {
+	if foreignID == "fail" {
 		return nil, errors.New("fail")
 	}
 
 	return &domain.Product{
-		ForeignID:    foreignId,
-		InternalName: foreignId,
+		ForeignID:    foreignID,
+		InternalName: foreignID,
 	}, nil
 }
 
