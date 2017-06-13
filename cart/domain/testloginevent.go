@@ -1,7 +1,8 @@
 package domain
 
 type (
+	// LoginSucessEvent test
 	LoginSucessEvent struct {
-		UserId string
+		UserID string
 	}
 )

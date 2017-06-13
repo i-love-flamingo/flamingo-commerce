@@ -7,35 +7,36 @@ import (
 	"github.com/gorilla/sessions"
 )
 
+// Cartservice application
 type Cartservice struct {
 	DomainCartService domain.CartService `inject:""`
 	Session           *sessions.Session  `inject:""`
 }
 
-// Gets the main basket for the current session
-func (This *Cartservice) GetSessionCart() *domain.Cart {
+// GetSessionCart gets the main basket for the current session
+func (cs *Cartservice) GetSessionCart() *domain.Cart {
 	fmt.Println("Load cart for Session")
 
 	// get cartID from session - if there is no cart return empty new cart
-	cartId := 1
+	cartID := 1
 
 	// TODO impl session
-	Cart, e := This.DomainCartService.Get(cartId)
+	Cart, e := cs.DomainCartService.Get(cartID)
 	if e != nil {
 		//TODO evaluate errorcode and decide resilience and behavoiur
 		// for now we create new cart
 		newCart := domain.Cart{
-			cartId,
+			cartID,
 			nil,
 		}
-		cartId, _ = This.DomainCartService.Add(newCart)
+		cartID, _ = cs.DomainCartService.Add(newCart)
 		return &newCart
 	}
 	return Cart
 }
 
-// Adds a item by Code and qty to the sessions Cart
-func (This *Cartservice) AddItem(code string, qty int) {
+// AddItem adds a item by Code and qty to the sessions Cart
+func (cs *Cartservice) AddItem(code string, qty int) {
 	fmt.Println("Application Cartservice. Add " + code)
 
 	//TODO - inject productService/Repo
@@ -45,12 +46,12 @@ func (This *Cartservice) AddItem(code string, qty int) {
 		qty,
 		12.99,
 	}
-	Cart := This.GetSessionCart()
+	Cart := cs.GetSessionCart()
 	Cart.Add(cartItem)
-	This.DomainCartService.Update(*Cart)
+	cs.DomainCartService.Update(*Cart)
 }
 
-//todo - this is test - would be a domain event not ccontroller
+// OnLogin todo - this is test - would be a domain event not ccontroller
 func (cs *Cartservice) OnLogin(event domain.LoginSucessEvent) {
 	fmt.Printf("LoginSucess going to merge carts now %s", event)
 

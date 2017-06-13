@@ -15,11 +15,13 @@ type (
 		Cart *domain.Cart
 	}
 
+	// CartController for carts
 	CartController struct {
 		responder.RenderAware `inject:""`
 	}
 
-	CartApiController struct {
+	// CartAPIController for cart api
+	CartAPIController struct {
 		responder.JSONAware `inject:""`
 	}
 )
@@ -38,7 +40,7 @@ func (cc *CartController) Get(c web.Context) web.Response {
 }
 
 // Get JSON Format of API
-func (cc *CartApiController) Get(c web.Context) web.Response {
+func (cc *CartAPIController) Get(c web.Context) web.Response {
 	//Cart := cc.Cartservice.GetSessionCart()
 	//JsonCart, _ := json.Marshal(Cart)
 	fmt.Println("Cart API: Get Cart")
@@ -49,16 +51,16 @@ func (cc *CartApiController) Get(c web.Context) web.Response {
 	}
 }
 
-// Update Cart via JSON
-func (cc *CartApiController) Post(c web.Context) web.Response {
+// Post Update Cart via JSON
+func (cc *CartAPIController) Post(c web.Context) web.Response {
 	//Cart := cc.Cartservice.GetSessionCart()
-	cartJsonData := c.MustForm1("cart")
-	//json.Unmarshal([]byte(cartJsonData), Cart)
+	cartJSONData := c.MustForm1("cart")
+	//json.Unmarshal([]byte(cartJSONData), Cart)
 
 	fmt.Println("Cart API: Update Cart")
 	return &web.ContentResponse{
 		Status:      http.StatusOK,
-		Body:        bytes.NewReader([]byte("Update:" + cartJsonData)),
+		Body:        bytes.NewReader([]byte("Update:" + cartJSONData)),
 		ContentType: "text/html; charset=utf-8",
 	}
 }

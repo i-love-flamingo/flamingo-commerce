@@ -7,12 +7,13 @@ import (
 )
 
 type (
+	// EventOrchestration type
 	EventOrchestration struct {
 		Cartservice *Cartservice `inject:""`
 	}
 )
 
-//Implement Subscriber Interface
+// Notify Implement Subscriber Interface
 func (s *EventOrchestration) Notify(ev event.Event) {
 	fmt.Printf("Event disoatched to Cartservice %s", ev)
 

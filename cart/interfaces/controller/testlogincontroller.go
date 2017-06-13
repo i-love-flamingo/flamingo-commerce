@@ -11,6 +11,7 @@ import (
 )
 
 type (
+	// TestLoginController for testing
 	TestLoginController struct {
 		responder.RenderAware `inject:""`
 
@@ -20,7 +21,7 @@ type (
 	}
 )
 
-// Testlogin - throws an event
+// Get Testlogin - throws an event
 func (lc *TestLoginController) Get(c web.Context) web.Response {
 	fmt.Println("Test login yeah :-)")
 

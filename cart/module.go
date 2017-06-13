@@ -10,6 +10,7 @@ type (
 	}
 )
 
+// Configure module
 func (m *Module) Configure(injector *dingo.Injector) {
 	//m.RouterRegistry.Handle("cart.view", new(controller.CartViewController))
 	//m.RouterRegistry.Route("/cart", "cart.view")
