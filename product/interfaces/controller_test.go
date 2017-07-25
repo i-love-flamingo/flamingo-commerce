@@ -71,7 +71,7 @@ func TestViewController_Get(t *testing.T) {
 	ctx.LoadParams(router.P{"uid": "test", "name": "test"})
 	response = vc.Get(ctx)
 
-	if tplname != "pages/product/configurable" {
+	if tplname != "product/configurable" {
 		t.Errorf("expected to render %q", tplname)
 	}
 
