@@ -40,5 +40,5 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 	}
 
 	// render page
-	return vc.Render(c, "pages/product/configurable", ViewData{Product: product})
+	return vc.Render(c, "product/configurable", ViewData{Product: product})
 }
