@@ -1,11 +1,9 @@
 package domain
 
-import (
-	"flamingo/framework/web"
-)
+import "context"
 
 // ProductService interface
 type ProductService interface {
 	// Get a product
-	Get(ctx web.Context, foreignID string) (*Product, error)
+	Get(ctx context.Context, foreignID string) (*Product, error)
 }
