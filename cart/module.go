@@ -1,19 +1,39 @@
 package cart
 
-import "flamingo/framework/dingo"
+import (
+	"encoding/gob"
+	"flamingo/core/cart/domain"
+	"flamingo/core/cart/infrastructure"
+	controller "flamingo/core/cart/interfaces/controller"
+	"flamingo/framework/dingo"
+	"flamingo/framework/router"
+)
 
 type (
 	// Module registers our profiler
 	Module struct {
-		//RouterRegistry *router.RouterRegistry `inject:""`
-		//EventRouter    event.Router           `inject:""`
+		RouterRegistry *router.Registry `inject:""`
+		//EventRouter    event.Router     `inject:""`
 	}
 )
 
 // Configure module
 func (m *Module) Configure(injector *dingo.Injector) {
-	//m.RouterRegistry.Handle("cart.view", new(controller.CartViewController))
-	//m.RouterRegistry.Route("/cart", "cart.view")
+	injector.Bind((*domain.CartService)(nil)).In(dingo.Singleton).To(infrastructure.InMemoryCartService{})
+
+	m.RouterRegistry.Handle("cart.view", new(controller.CartViewController))
+	m.RouterRegistry.Route("/cart", "cart.view")
+
+	gob.Register(domain.Cart{})
+
+	//Cart API:
+
+	m.RouterRegistry.Handle("cart.api.get", new(controller.CartApiGetController))
+	m.RouterRegistry.Handle("cart.api.add", new(controller.CartApiAddController))
+
+	m.RouterRegistry.Route("/api/cart", "cart.api.get")
+	m.RouterRegistry.Route("/api/cart/add", "cart.api.add(productcode)")
+
 	//
 	//m.RouterRegistry.Handle("cart.api", new(controller.CartApiController))
 	//m.RouterRegistry.Route("/api/cart", "cart.view")

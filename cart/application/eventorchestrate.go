@@ -1,24 +1,20 @@
 package application
 
-import (
-	"flamingo/core/cart/domain"
-	"flamingo/framework/event"
-	"fmt"
-)
-
 type (
 	// EventOrchestration type
 	EventOrchestration struct {
-		Cartservice *Cartservice `inject:""`
+		Cartservice *CartService `inject:""`
 	}
 )
 
+/*
 // Notify Implement Subscriber Interface
 func (s *EventOrchestration) Notify(ev event.Event) {
-	fmt.Printf("Event disoatched to Cartservice %s", ev)
+	fmt.Printf("Event disoatched to CartService %s", ev)
 
 	switch ev := ev.(type) {
 	case domain.LoginSucessEvent:
 		s.Cartservice.OnLogin(ev)
 	}
 }
+*/

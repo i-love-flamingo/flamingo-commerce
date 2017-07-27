@@ -19,19 +19,9 @@ var _ = Describe("Domain Test", func() {
 			fmt.Println(cart)
 		})
 		It("Can add Items", func() {
-			cartItem := Cartitem{"code1", 5, 2.5}
-			cart.Add(cartItem)
-
+			cartItem := Cartitem{ProductCode: "code1", Qty: 5, Currentprice: 2.5}
+			cart.Cartitems = append(cart.Cartitems, cartItem)
 			Expect(cart.GetLine(1)).To(Equal(cartItem))
-		})
-
-		It("Can add and update Items by code", func() {
-			cart.AddOrUpdateByCode("code2", 2, 23)
-			fmt.Println(cart)
-			Expect(cart.GetLine(2).Qty).To(Equal(2))
-
-			cart.AddOrUpdateByCode("code2", 2, 23)
-			Expect(cart.GetLine(2).Qty).To(Equal(4))
 		})
 	})
 })
