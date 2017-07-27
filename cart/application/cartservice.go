@@ -29,6 +29,16 @@ func (cs *CartService) GetCart(ctx web.Context) (domain.Cart, error) {
 	}
 }
 
+// Get the correct Cart
+func (cs *CartService) GetDecoratedCart(ctx web.Context) (*domain.DecoratedCart, error) {
+	var empty *domain.DecoratedCart
+	cart, e := cs.GetCart(ctx)
+	if e != nil {
+		return empty, e
+	}
+	return cs.CartDecoratorFactory.Create(ctx, cart), nil
+}
+
 // Add a product
 func (cs *CartService) AddProduct(ctx web.Context, productCode string, amount int) error {
 	if cs.isLoggedIn(ctx) {

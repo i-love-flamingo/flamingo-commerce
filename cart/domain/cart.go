@@ -1,5 +1,7 @@
 package domain
 
+import "github.com/pkg/errors"
+
 type (
 	// Cart Value Object (immutable - because the cartservice is responsible to return a cart).
 	Cart struct {
@@ -23,6 +25,11 @@ type (
 )
 
 // GetLine gets an item - starting with 1
-func (Cart *Cart) GetLine(lineNr int) Cartitem {
-	return Cart.Cartitems[lineNr-1]
+func (Cart *Cart) GetLine(lineNr int) (Cartitem, error) {
+	var item Cartitem
+	if len(Cart.Cartitems) > lineNr {
+		return Cart.Cartitems[lineNr-1], nil
+	} else {
+		return item, errors.New("Line in cart not existend")
+	}
 }
