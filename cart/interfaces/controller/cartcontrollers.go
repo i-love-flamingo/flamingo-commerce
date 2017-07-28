@@ -28,9 +28,9 @@ func (cc *CartViewController) Get(ctx web.Context) web.Response {
 	cart, e := cc.ApplicationCartService.GetCart(ctx)
 	if e != nil {
 		fmt.Println(e)
-		return cc.Render(ctx, "pages/checkout/carterror", nil)
+		return cc.Render(ctx, "checkout/carterror", nil)
 	}
-	return cc.Render(ctx, "pages/checkout/cart", CartViewData{
+	return cc.Render(ctx, "checkout/cart", CartViewData{
 		Cart: cart,
 		Test: "ddddd",
 	})
