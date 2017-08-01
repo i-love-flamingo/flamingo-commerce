@@ -13,7 +13,7 @@ type (
 		ProductService domain.ProductService `inject:""`
 	}
 
-	// Decorates Access To a Cart
+	// DecoratedCart Decorates Access To a Cart
 	DecoratedCart struct {
 		Cart
 		Cartitems      []DecoratedCartItem
@@ -21,14 +21,14 @@ type (
 		ProductService domain.ProductService `json:"-"`
 	}
 
-	// Decorates Access To a Cart
+	// DecoratedCartItem Decorates a CartItem with its Product
 	DecoratedCartItem struct {
 		Cartitem
 		Product *domain.Product
 	}
 )
 
-// Native Factory
+// CreateDecoratedCart Native Factory
 func CreateDecoratedCart(ctx context.Context, Cart Cart, productService domain.ProductService) *DecoratedCart {
 
 	DecoratedCart := DecoratedCart{Cart: Cart}
@@ -41,11 +41,12 @@ func CreateDecoratedCart(ctx context.Context, Cart Cart, productService domain.P
 	return &DecoratedCart
 }
 
-// Factory - with injected ProductService
+// Create Factory - with injected ProductService
 func (df *DecoratorFactory) Create(ctx context.Context, Cart Cart) *DecoratedCart {
 	return CreateDecoratedCart(ctx, Cart, df.ProductService)
 }
 
+//decorateCartItem factory method
 func decorateCartItem(ctx context.Context, cartitem Cartitem, productService domain.ProductService) DecoratedCartItem {
 	decorateditem := DecoratedCartItem{Cartitem: cartitem}
 	product, e := productService.Get(ctx, cartitem.ProductCode)

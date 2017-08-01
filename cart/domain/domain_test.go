@@ -1,10 +1,5 @@
 package domain
 
-import (
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-)
-
 /*
 var _ = Describe("Domain Test", func() {
 	var cart Cart
