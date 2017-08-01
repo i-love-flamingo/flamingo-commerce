@@ -5,6 +5,7 @@ import (
 	"flamingo/framework/router"
 	"flamingo/framework/web"
 	"flamingo/framework/web/responder"
+	"fmt"
 	"net/url"
 )
 
@@ -19,7 +20,7 @@ type (
 
 	// ViewData is used for product rendering
 	ViewData struct {
-		Product *domain.Product
+		Product domain.Product
 	}
 )
 
@@ -31,6 +32,7 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 	if err != nil {
 		return vc.Error(c, err)
 	}
+	fmt.Println(product)
 
 	// normalize URL
 	if url.QueryEscape(product.InternalName) != c.MustParam1("name") {
@@ -38,5 +40,10 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 	}
 
 	// render page
-	return vc.Render(c, "product/configurable", ViewData{Product: product})
+	if product.ProductType == "configurable" {
+		return vc.Render(c, "product/configurable", ViewData{Product: *product})
+	} else {
+		return vc.Render(c, "product/simple", ViewData{Product: *product})
+	}
+
 }
