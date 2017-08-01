@@ -1,6 +1,7 @@
 package interfaces
 
 import (
+	"context"
 	"errors"
 	"flamingo/core/product/domain"
 	"flamingo/framework/router"
@@ -13,7 +14,7 @@ type (
 	MockProductService struct{}
 )
 
-func (mps *MockProductService) Get(ctx web.Context, foreignID string) (*domain.Product, error) {
+func (mps *MockProductService) Get(ctx context.Context, foreignID string) (*domain.Product, error) {
 	if foreignID == "fail" {
 		return nil, errors.New("fail")
 	}
