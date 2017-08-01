@@ -47,7 +47,7 @@ func (cs *InMemoryCartService) GetGuestCart(guestcartid int) (domain.Cart, error
 		return guestCart, nil
 	}
 
-	return cart, errors.New(fmt.Sprintf("cart.infrastructure.inmemorycartservice: Guest Cart with ID %s not exitend", guestcartid))
+	return cart, errors.New(fmt.Sprintf("cart.infrastructure.inmemorycartservice: Guest Cart with ID %v not exitend", guestcartid))
 }
 
 //Creates a new guest cart and returns it
@@ -64,7 +64,7 @@ func (cs *InMemoryCartService) GetNewGuestCart() (domain.Cart, error) {
 //TODO Get price from product package
 func (cs *InMemoryCartService) AddToGuestCart(guestcartid int, productCode string, qty int) error {
 	if _, ok := cs.GuestCarts[guestcartid]; !ok {
-		return errors.New(fmt.Sprintf("cart.infrastructure.inmemorycartservice: Cannot add - Guestcart with id %s not existend", guestcartid))
+		return errors.New(fmt.Sprintf("cart.infrastructure.inmemorycartservice: Cannot add - Guestcart with id %v not existend", guestcartid))
 	}
 	guestcart := cs.GuestCarts[guestcartid]
 	cartItem := domain.Cartitem{
