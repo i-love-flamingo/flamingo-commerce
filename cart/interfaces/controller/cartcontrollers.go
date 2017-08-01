@@ -11,8 +11,7 @@ import (
 type (
 	// ViewData is used for cart views/templates
 	CartViewData struct {
-		Cart domain.Cart
-		Test string
+		DecoratedCart domain.DecoratedCart
 	}
 
 	// CartController for carts
@@ -22,17 +21,16 @@ type (
 	}
 )
 
-// Get the Cart View ( / cart)
+// Get the DecoratedCart View ( / cart)
 func (cc *CartViewController) Get(ctx web.Context) web.Response {
 
-	cart, e := cc.ApplicationCartService.GetCart(ctx)
+	cart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
 	if e != nil {
 		fmt.Println(e)
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
 	return cc.Render(ctx, "checkout/cart", CartViewData{
-		Cart: cart,
-		Test: "ddddd",
+		DecoratedCart: *cart,
 	})
 
 }

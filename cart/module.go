@@ -26,7 +26,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 
 	gob.Register(domain.Cart{})
 
-	//Cart API:
+	//DecoratedCart API:
 
 	m.RouterRegistry.Handle("cart.api.get", new(controller.CartApiGetController))
 	m.RouterRegistry.Handle("cart.api.add", new(controller.CartApiAddController))

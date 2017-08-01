@@ -25,29 +25,30 @@ type (
 
 // Get JSON Format of API
 func (cc *CartApiGetController) Get(ctx web.Context) web.Response {
-	cart, e := cc.ApplicationCartService.GetCart(ctx)
+	cart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
 	if e != nil {
 		fmt.Println(e.Error())
 		return cc.JSON(struct{ Message string }{e.Error()})
 	}
-	return cc.JSON(CartViewData{
-		Cart: cart,
-	})
+	return cc.JSON(*cart)
 }
 
 // Add Item to cart
 func (cc *CartApiAddController) Get(ctx web.Context) web.Response {
 	productCode := ctx.MustQuery1("productcode")
-	qty, _ := ctx.Query1("qty")
+	qty, e := ctx.Query1("qty")
+	if e != nil {
+		qty = "1"
+	}
 	qtyInt, _ := strconv.Atoi(qty)
 
-	e := cc.ApplicationCartService.AddProduct(ctx, productCode, qtyInt)
+	e = cc.ApplicationCartService.AddProduct(ctx, productCode, qtyInt)
 	if e != nil {
 		return cc.JSON(struct{ Message string }{
 			e.Error(),
 		})
 	}
 	return cc.JSON(struct{ Message string }{
-		"added " + productCode,
+		"added " + productCode + "qty " + qty,
 	})
 }

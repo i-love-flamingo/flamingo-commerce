@@ -3,6 +3,8 @@ package domain
 import (
 	"context"
 	"flamingo/core/product/domain"
+
+	"log"
 )
 
 type (
@@ -13,43 +15,44 @@ type (
 
 	// Decorates Access To a Cart
 	DecoratedCart struct {
-		ProductService domain.ProductService
-		Cart           Cart
-		Ctx            context.Context
+		Cart
+		Cartitems      []DecoratedCartItem
+		Ctx            context.Context       `json:"-"`
+		ProductService domain.ProductService `json:"-"`
 	}
 
 	// Decorates Access To a Cart
 	DecoratedCartItem struct {
-		Product  *domain.Product
-		Cartitem Cartitem
+		Cartitem
+		Product *domain.Product
 	}
 )
 
 // Native Factory
-func CreateCartDecorator(ctx context.Context, Cart Cart, ProductService domain.ProductService) *DecoratedCart {
-	var Decorator DecoratedCart
-	Decorator.Cart = Cart
-	Decorator.ProductService = ProductService
-	Decorator.Ctx = ctx
-	return &Decorator
+func CreateDecoratedCart(ctx context.Context, Cart Cart, productService domain.ProductService) *DecoratedCart {
+
+	DecoratedCart := DecoratedCart{Cart: Cart}
+	for _, cartitem := range Cart.Cartitems {
+		decoratedItem := decorateCartItem(ctx, cartitem, productService)
+		DecoratedCart.Cartitems = append(DecoratedCart.Cartitems, decoratedItem)
+	}
+	DecoratedCart.ProductService = productService
+	DecoratedCart.Ctx = ctx
+	return &DecoratedCart
 }
 
 // Factory - with injected ProductService
 func (df *DecoratorFactory) Create(ctx context.Context, Cart Cart) *DecoratedCart {
-	return CreateCartDecorator(ctx, Cart, df.ProductService)
+	return CreateDecoratedCart(ctx, Cart, df.ProductService)
 }
 
-// GetLine gets an item - starting with 1
-func (Decorator *DecoratedCart) GetLine(lineNr int) (DecoratedCartItem, error) {
-	var decorateditem DecoratedCartItem
-	item, e := Decorator.Cart.GetLine(lineNr)
-
+func decorateCartItem(ctx context.Context, cartitem Cartitem, productService domain.ProductService) DecoratedCartItem {
+	decorateditem := DecoratedCartItem{Cartitem: cartitem}
+	product, e := productService.Get(ctx, cartitem.ProductCode)
 	if e != nil {
-		return decorateditem, e
+		log.Println("cart.decorator:", e)
+		return decorateditem
 	}
-	product, e := Decorator.ProductService.Get(Decorator.Ctx, item.ProductCode)
-	if e != nil {
-		return decorateditem, e
-	}
-	return DecoratedCartItem{Cartitem: Decorator.Cart.Cartitems[lineNr-1], Product: product}, nil
+	decorateditem.Product = product
+	return decorateditem
 }

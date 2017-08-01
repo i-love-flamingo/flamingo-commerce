@@ -34,6 +34,16 @@ func (cs *InMemoryCartService) GetGuestCart(guestcartid int) (domain.Cart, error
 	var cart domain.Cart
 	cs.init()
 	if guestCart, ok := cs.GuestCarts[guestcartid]; ok {
+		guestCart.CurrencyCode = "EUR"
+		var total float32
+		total = 0
+		for _, item := range guestCart.Cartitems {
+			total = total + item.RowTotal
+		}
+		guestCart.ShippingItem.Title = "Shipping"
+		guestCart.ShippingItem.Price = 9.99
+		guestCart.SubTotal = total
+		guestCart.GrandTotal = total + guestCart.ShippingItem.Price
 		return guestCart, nil
 	}
 
@@ -44,8 +54,7 @@ func (cs *InMemoryCartService) GetGuestCart(guestcartid int) (domain.Cart, error
 func (cs *InMemoryCartService) GetNewGuestCart() (domain.Cart, error) {
 	cs.init()
 	guestCart := domain.Cart{
-		rand.Int(),
-		nil,
+		ID: rand.Int(),
 	}
 	cs.GuestCarts[guestCart.ID] = guestCart
 	log.Println("New created:", cs.GuestCarts)
@@ -59,9 +68,10 @@ func (cs *InMemoryCartService) AddToGuestCart(guestcartid int, productCode strin
 	}
 	guestcart := cs.GuestCarts[guestcartid]
 	cartItem := domain.Cartitem{
-		ProductCode:  productCode,
-		Qty:          qty,
-		Currentprice: 12.99,
+		ProductCode: productCode,
+		Qty:         qty,
+		Price:       12.99,
+		RowTotal:    (12.99 * float32(qty)),
 	}
 	guestcart.Cartitems = append(guestcart.Cartitems, cartItem)
 	cs.GuestCarts[guestcartid] = guestcart
