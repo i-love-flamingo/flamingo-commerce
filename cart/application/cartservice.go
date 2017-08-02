@@ -30,13 +30,13 @@ func (cs *CartService) GetCart(ctx web.Context) (domain.Cart, error) {
 }
 
 // GetDecoratedCart Get the correct Cart
-func (cs *CartService) GetDecoratedCart(ctx web.Context) (*domain.DecoratedCart, error) {
-	var empty *domain.DecoratedCart
+func (cs *CartService) GetDecoratedCart(ctx web.Context) (domain.DecoratedCart, error) {
+	var empty domain.DecoratedCart
 	cart, e := cs.GetCart(ctx)
 	if e != nil {
 		return empty, e
 	}
-	return cs.CartDecoratorFactory.Create(ctx, cart), nil
+	return *cs.CartDecoratorFactory.Create(ctx, cart), nil
 }
 
 // AddProduct Add a product

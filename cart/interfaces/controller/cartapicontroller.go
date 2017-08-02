@@ -30,7 +30,7 @@ func (cc *CartApiGetController) Get(ctx web.Context) web.Response {
 		fmt.Println(e.Error())
 		return cc.JSON(struct{ Message string }{e.Error()})
 	}
-	return cc.JSON(*cart)
+	return cc.JSON(cart)
 }
 
 // Add Item to cart

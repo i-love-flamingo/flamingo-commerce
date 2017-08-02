@@ -15,10 +15,9 @@ type (
 
 	// DecoratedCart Decorates Access To a Cart
 	DecoratedCart struct {
-		Cart
-		Cartitems      []DecoratedCartItem
-		Ctx            context.Context       `json:"-"`
-		ProductService domain.ProductService `json:"-"`
+		*Cart
+		Cartitems []DecoratedCartItem
+		Ctx       context.Context `json:"-"`
 	}
 
 	// DecoratedCartItem Decorates a CartItem with its Product
@@ -31,12 +30,11 @@ type (
 // CreateDecoratedCart Native Factory
 func CreateDecoratedCart(ctx context.Context, Cart Cart, productService domain.ProductService) *DecoratedCart {
 
-	DecoratedCart := DecoratedCart{Cart: Cart}
+	DecoratedCart := DecoratedCart{Cart: &Cart}
 	for _, cartitem := range Cart.Cartitems {
 		decoratedItem := decorateCartItem(ctx, cartitem, productService)
 		DecoratedCart.Cartitems = append(DecoratedCart.Cartitems, decoratedItem)
 	}
-	DecoratedCart.ProductService = productService
 	DecoratedCart.Ctx = ctx
 	return &DecoratedCart
 }
@@ -51,7 +49,7 @@ func decorateCartItem(ctx context.Context, cartitem Cartitem, productService dom
 	decorateditem := DecoratedCartItem{Cartitem: cartitem}
 	product, e := productService.Get(ctx, cartitem.ProductCode)
 	if e != nil {
-		log.Println("cart.decorator:", e)
+		log.Println("cart.decorator - no product for item:", e)
 		return decorateditem
 	}
 	decorateditem.Product = product

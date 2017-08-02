@@ -12,6 +12,7 @@ type (
 	// ViewData is used for cart views/templates
 	CartViewData struct {
 		DecoratedCart domain.DecoratedCart
+		Items         []domain.DecoratedCartItem
 	}
 
 	// CartController for carts
@@ -29,8 +30,10 @@ func (cc *CartViewController) Get(ctx web.Context) web.Response {
 		fmt.Println(e)
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
+	fmt.Printf("%+v", cart.Cartitems)
 	return cc.Render(ctx, "checkout/cart", CartViewData{
-		DecoratedCart: *cart,
+		DecoratedCart: cart,
+		Items:         cart.Cartitems,
 	})
 
 }
