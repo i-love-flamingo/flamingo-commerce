@@ -7,6 +7,8 @@ import (
 	"flamingo/framework/web/responder"
 	"fmt"
 	"net/url"
+
+	"github.com/pkg/errors"
 )
 
 type (
@@ -30,7 +32,13 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 
 	// catch error
 	if err != nil {
-		return vc.Error(c, err)
+		switch errors.Cause(err).(type) {
+		case domain.ProductNotFound:
+			return vc.ErrorNotFound(c, err)
+
+		default:
+			return vc.Error(c, err)
+		}
 	}
 	fmt.Println(product)
 

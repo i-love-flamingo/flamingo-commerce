@@ -79,7 +79,7 @@ type (
 		RetailerCode          string     `json:"retailerCode"`
 		RetailerName          string     `json:"retailerName"`
 		RetailerImage         string     `json:"retailerImage"`
-		OriginPrice           int        `json:"originPrice"`
+		OriginPrice           float64    `json:"originPrice"`
 		OriginBasePrice       float64    `json:"originBasePrice"`
 		OriginBasePriceUnit   string     `json:"originBasePriceUnit"`
 		OriginBasePriceAmount float64    `json:"originBasePriceAmount"`
