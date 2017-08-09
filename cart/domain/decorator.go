@@ -23,7 +23,7 @@ type (
 	// DecoratedCartItem Decorates a CartItem with its Product
 	DecoratedCartItem struct {
 		Cartitem
-		Product *domain.Product
+		Product domain.BasicProduct
 	}
 )
 
