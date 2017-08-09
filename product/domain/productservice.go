@@ -6,7 +6,7 @@ type (
 	// ProductService interface
 	ProductService interface {
 		// Get a product
-		Get(ctx context.Context, foreignID string) (*Product, error)
+		Get(ctx context.Context, MarketplaceCode string) (BasicProduct, error)
 	}
 
 	// ProductNotFound is an error

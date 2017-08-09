@@ -14,14 +14,14 @@ type (
 	MockProductService struct{}
 )
 
-func (mps *MockProductService) Get(ctx context.Context, foreignID string) (*domain.Product, error) {
-	if foreignID == "fail" {
+func (mps *MockProductService) Get(ctx context.Context, marketplacecode string) (domain.BasicProduct, error) {
+	if marketplacecode == "fail" {
 		return nil, errors.New("fail")
 	}
 
-	return &domain.Product{
-		ForeignID:    foreignID,
-		InternalName: foreignID,
+	return domain.SimpleProduct{
+		BasicProductData: domain.BasicProductData{Title: "My Product Title"},
+		SaleableData:     domain.SaleableData{MarketPlaceCode: marketplacecode},
 	}, nil
 }
 
@@ -54,33 +54,37 @@ func TestViewController_Get(t *testing.T) {
 	}
 	ctx := web.NewContext()
 
-	ctx.LoadParams(router.P{"uid": "test", "name": "testname"})
+	ctx.LoadParams(router.P{"marketplacecode": "test", "name": "testname"})
 	response := vc.Get(ctx)
 
 	if redirectedTo != "product.view" {
 		t.Errorf("Expected redirect to product.view, not %q", redirectedTo)
 	}
 
-	if redirectedName != "test" {
-		t.Errorf("Expected redirect to name test, not %q", redirectedTo)
+	if redirectedName != "my_product_title" {
+		t.Errorf("Expected redirect to name my_product_title, not %q", redirectedName)
 	}
 
 	if response != nil {
 		t.Errorf("Expected mocked response to be nil, not %T", response)
 	}
 
-	ctx.LoadParams(router.P{"uid": "test", "name": "test"})
+	ctx.LoadParams(router.P{"marketplacecode": "test", "name": "my_product_title"})
 	response = vc.Get(ctx)
 
+	if errorHappened {
+		t.Error("expected to not error for 'test' product")
+	}
+
 	if tplname != "product/simple" {
-		t.Errorf("expected to render %q", tplname)
+		t.Errorf("expected to render product/simple not %q", tplname)
 	}
 
 	if response != nil {
 		t.Errorf("Expected mocked response to be nil, not %T", response)
 	}
 
-	ctx.LoadParams(router.P{"uid": "fail", "name": "fail"})
+	ctx.LoadParams(router.P{"marketplacecode": "fail", "name": "fail"})
 	response = vc.Get(ctx)
 
 	if !errorHappened {
@@ -90,4 +94,5 @@ func TestViewController_Get(t *testing.T) {
 	if response != nil {
 		t.Errorf("Expected mocked response to be nil, not %T", response)
 	}
+
 }
