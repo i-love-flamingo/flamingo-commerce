@@ -39,16 +39,17 @@ type (
 
 	// basicProductData is the basic product model
 	BasicProductData struct {
+		MarketPlaceCode  string
 		Title            string
 		Attributes       Attributes
 		ShortDescription string
 		Description      string
 		Media            []Media
-
-		CreatedAt   time.Time
-		UpdatedAt   time.Time
-		VisibleFrom time.Time
-		VisibleTo   time.Time
+		RetailerCode     string
+		CreatedAt        time.Time
+		UpdatedAt        time.Time
+		VisibleFrom      time.Time
+		VisibleTo        time.Time
 
 		CategoryPath  []string
 		CategoryCodes []string
@@ -63,9 +64,7 @@ type (
 		SaleableTo      time.Time
 		ActivePrice     PriceInfo
 		AvailablePrices []PriceInfo
-		MarketPlaceCode string
 		RetailerSku     string
-		RetailerCode    string
 	}
 
 	PriceInfo struct {
@@ -145,13 +144,12 @@ func (p ConfigurableProduct) GetTeaserData() TeaserData {
 }
 
 // GetBaseData interface implementation for SimpleProduct
-func (p ConfigurableProduct) GetVariant(marketplaceCode string) (Variant, error) {
+func (p ConfigurableProduct) GetVariant(marketplaceCode string) (*Variant, error) {
 
 	for _, variant := range p.Variants {
 		if variant.MarketPlaceCode == marketplaceCode {
-			return variant, nil
+			return &variant, nil
 		}
 	}
-	var emptyVariant Variant
-	return emptyVariant, errors.New("No Variant with code " + marketplaceCode + " found ")
+	return nil, errors.New("No Variant with code " + marketplaceCode + " found ")
 }

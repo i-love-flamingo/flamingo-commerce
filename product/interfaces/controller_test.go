@@ -20,8 +20,7 @@ func (mps *MockProductService) Get(ctx context.Context, marketplacecode string) 
 	}
 
 	return domain.SimpleProduct{
-		BasicProductData: domain.BasicProductData{Title: "My Product Title"},
-		SaleableData:     domain.SaleableData{MarketPlaceCode: marketplacecode},
+		BasicProductData: domain.BasicProductData{Title: "My Product Title", MarketPlaceCode: marketplacecode},
 	}, nil
 }
 
@@ -57,19 +56,21 @@ func TestViewController_Get(t *testing.T) {
 	ctx.LoadParams(router.P{"marketplacecode": "test", "name": "testname"})
 	response := vc.Get(ctx)
 
+	expectedUrlTitle := "my-product-title"
+
 	if redirectedTo != "product.view" {
 		t.Errorf("Expected redirect to product.view, not %q", redirectedTo)
 	}
 
-	if redirectedName != "my_product_title" {
-		t.Errorf("Expected redirect to name my_product_title, not %q", redirectedName)
+	if redirectedName != expectedUrlTitle {
+		t.Errorf("Expected redirect to name %s, not %q", expectedUrlTitle, redirectedName)
 	}
 
 	if response != nil {
 		t.Errorf("Expected mocked response to be nil, not %T", response)
 	}
 
-	ctx.LoadParams(router.P{"marketplacecode": "test", "name": "my_product_title"})
+	ctx.LoadParams(router.P{"marketplacecode": "test", "name": expectedUrlTitle})
 	response = vc.Get(ctx)
 
 	if errorHappened {

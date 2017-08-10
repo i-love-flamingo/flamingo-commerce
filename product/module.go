@@ -17,5 +17,8 @@ type (
 func (m *Module) Configure(injector *dingo.Injector) {
 	m.RouterRegistry.Handle("product.view", new(interfaces.ViewController))
 	m.RouterRegistry.Route("/product/:marketplacecode/:name.html", "product.view")
-	m.RouterRegistry.Route("/product/:marketplacecode/:variantcode/:name.html", "product.view")
+
+	//Basti - backward generation (e.g. for redirect) does not work with alternative route - only with new handler
+	m.RouterRegistry.Handle("product.view.variant", new(interfaces.ViewController))
+	m.RouterRegistry.Route("/product/:marketplacecode/:variantcode/:name.html", "product.view.variant")
 }

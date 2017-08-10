@@ -9,6 +9,7 @@ import (
 
 	"github.com/pkg/errors"
 
+	"log"
 	"strings"
 )
 
@@ -30,6 +31,7 @@ type (
 	ConfigurableProductViewData struct {
 		ConfigurableProduct domain.ConfigurableProduct
 		ActiveVariant       domain.Variant
+		VariantSelected     bool
 	}
 )
 
@@ -53,27 +55,32 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 	// 1. Handle Configurables
 	if product.GetType() == "configurable" {
 		configurableProduct := product.(domain.ConfigurableProduct)
+		var activeVariant *domain.Variant
+
 		variantCode, err := c.Param1("variantcode")
-		var activeVariant domain.Variant
+
 		if err == nil {
+			log.Println("get variant by " + variantCode)
 			activeVariant, _ = configurableProduct.GetVariant(variantCode)
 		}
-		if &activeVariant == nil {
+		log.Println(activeVariant)
+		if activeVariant == nil {
+			log.Println("no v")
 			// 1.A. No variant selected
 			// normalize URL
 			urlName := makeUrlTitle(product.GetBaseData().Title)
 			if urlName != c.MustParam1("name") {
 				return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "name": urlName})
 			}
-			return vc.Render(c, "product/configurable", ConfigurableProductViewData{ConfigurableProduct: configurableProduct})
+			return vc.Render(c, "product/configurable", ConfigurableProductViewData{ConfigurableProduct: configurableProduct, VariantSelected: false})
 		} else {
 			// 1.B. Variant selected
 			// normalize URL
 			urlName := makeUrlTitle(activeVariant.BasicProductData.Title)
 			if urlName != c.MustParam1("name") {
-				return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "variantcode": c.MustParam1("variantcode"), "name": urlName})
+				return vc.Redirect("product.view.variant", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "variantcode": variantCode, "name": urlName})
 			}
-			return vc.Render(c, "product/configurable", ConfigurableProductViewData{ConfigurableProduct: configurableProduct, ActiveVariant: activeVariant})
+			return vc.Render(c, "product/configurable", ConfigurableProductViewData{ConfigurableProduct: configurableProduct, ActiveVariant: *activeVariant, VariantSelected: true})
 		}
 
 	} else {
@@ -91,7 +98,7 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 }
 
 func makeUrlTitle(title string) string {
-	newTitle := strings.ToLower(strings.Replace(title, " ", "_", -1))
+	newTitle := strings.ToLower(strings.Replace(title, " ", "-", -1))
 	newTitle = url.QueryEscape(newTitle)
 
 	return newTitle
