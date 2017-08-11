@@ -72,7 +72,7 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 			if urlName != c.MustParam1("name") {
 				return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "name": urlName})
 			}
-			return vc.Render(c, "product/configurable", ConfigurableProductViewData{ConfigurableProduct: configurableProduct, VariantSelected: false})
+			return vc.Render(c, "product/product", ConfigurableProductViewData{ConfigurableProduct: configurableProduct, VariantSelected: false})
 		} else {
 			// 1.B. Variant selected
 			// normalize URL
@@ -80,7 +80,7 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 			if urlName != c.MustParam1("name") {
 				return vc.Redirect("product.view.variant", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "variantcode": variantCode, "name": urlName})
 			}
-			return vc.Render(c, "product/configurable", ConfigurableProductViewData{ConfigurableProduct: configurableProduct, ActiveVariant: *activeVariant, VariantSelected: true})
+			return vc.Render(c, "product/product", ConfigurableProductViewData{ConfigurableProduct: configurableProduct, ActiveVariant: *activeVariant, VariantSelected: true})
 		}
 
 	} else {
@@ -92,7 +92,7 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 		}
 
 		simpleProduct := product.(domain.SimpleProduct)
-		return vc.Render(c, "product/simple", SimpleProductViewData{SimpleProduct: simpleProduct})
+		return vc.Render(c, "product/product", SimpleProductViewData{SimpleProduct: simpleProduct})
 	}
 
 }
