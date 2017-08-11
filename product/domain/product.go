@@ -68,14 +68,17 @@ type (
 	}
 
 	PriceInfo struct {
-		Default          float64
-		Discounted       float64
-		DiscountText     string
-		Currency         string
-		ActiveBase       int
-		ActiveBaseAmount float64
-		ActiveBaseUnit   string
-		Context          struct {
+		Default           float64
+		Discounted        float64
+		DiscountText      string
+		Currency          string
+		ActiveBase        float64
+		ActiveBaseAmount  float64
+		ActiveBaseUnit    string
+		IsDiscounted      bool
+		CampaignRules     []string
+		DenyMoreDiscounts bool
+		Context           struct {
 			CustomerGroup interface{} `json:"customerGroup"`
 			ChannelCode   string      `json:"channelCode"`
 			Locale        string      `json:"locale"`
