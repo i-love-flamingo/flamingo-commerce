@@ -15,7 +15,7 @@ type (
 
 	// DecoratedCart Decorates Access To a Cart
 	DecoratedCart struct {
-		*Cart
+		Cart
 		Cartitems []DecoratedCartItem
 		Ctx       context.Context `json:"-"`
 	}
@@ -30,7 +30,7 @@ type (
 // CreateDecoratedCart Native Factory
 func CreateDecoratedCart(ctx context.Context, Cart Cart, productService domain.ProductService) *DecoratedCart {
 
-	DecoratedCart := DecoratedCart{Cart: &Cart}
+	DecoratedCart := DecoratedCart{Cart: Cart}
 	for _, cartitem := range Cart.Cartitems {
 		decoratedItem := decorateCartItem(ctx, cartitem, productService)
 		DecoratedCart.Cartitems = append(DecoratedCart.Cartitems, decoratedItem)

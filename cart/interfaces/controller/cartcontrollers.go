@@ -25,15 +25,15 @@ type (
 // Get the DecoratedCart View ( / cart)
 func (cc *CartViewController) Get(ctx web.Context) web.Response {
 
-	cart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
+	decoratedCart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
 	if e != nil {
 		fmt.Println(e)
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
-	fmt.Printf("%+v", cart.Cartitems)
+	fmt.Printf("%+v", decoratedCart.Cartitems)
 	return cc.Render(ctx, "checkout/cart", CartViewData{
-		DecoratedCart: cart,
-		Items:         cart.Cartitems,
+		DecoratedCart: decoratedCart,
+		Items:         decoratedCart.Cartitems,
 	})
 
 }
