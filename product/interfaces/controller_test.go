@@ -77,8 +77,8 @@ func TestViewController_Get(t *testing.T) {
 		t.Error("expected to not error for 'test' product")
 	}
 
-	if tplname != "product/simple" {
-		t.Errorf("expected to render product/simple not %q", tplname)
+	if tplname != "product/product" {
+		t.Errorf("expected to render product/product not %q", tplname)
 	}
 
 	if response != nil {

@@ -22,13 +22,11 @@ type (
 		domain.ProductService   `inject:""`
 	}
 
-	// SimpleProductViewData is used for product rendering
-	SimpleProductViewData struct {
-		SimpleProduct domain.SimpleProduct
-	}
-
-	// ConfigurableProductViewData is used for product rendering
-	ConfigurableProductViewData struct {
+	// ProductViewData is used for product rendering
+	ProductViewData struct {
+		// simple / configurable / configurable_with_variant
+		RenderContext       string
+		SimpleProduct       domain.SimpleProduct
 		ConfigurableProduct domain.ConfigurableProduct
 		ActiveVariant       domain.Variant
 		VariantSelected     bool
@@ -63,16 +61,14 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 			log.Println("get variant by " + variantCode)
 			activeVariant, _ = configurableProduct.GetVariant(variantCode)
 		}
-		log.Println(activeVariant)
 		if activeVariant == nil {
-			log.Println("no v")
 			// 1.A. No variant selected
 			// normalize URL
 			urlName := makeUrlTitle(product.GetBaseData().Title)
 			if urlName != c.MustParam1("name") {
 				return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "name": urlName})
 			}
-			return vc.Render(c, "product/product", ConfigurableProductViewData{ConfigurableProduct: configurableProduct, VariantSelected: false})
+			return vc.Render(c, "product/product", ProductViewData{ConfigurableProduct: configurableProduct, VariantSelected: false, RenderContext: "configurable"})
 		} else {
 			// 1.B. Variant selected
 			// normalize URL
@@ -80,7 +76,7 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 			if urlName != c.MustParam1("name") {
 				return vc.Redirect("product.view.variant", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "variantcode": variantCode, "name": urlName})
 			}
-			return vc.Render(c, "product/product", ConfigurableProductViewData{ConfigurableProduct: configurableProduct, ActiveVariant: *activeVariant, VariantSelected: true})
+			return vc.Render(c, "product/product", ProductViewData{ConfigurableProduct: configurableProduct, ActiveVariant: *activeVariant, VariantSelected: true, RenderContext: "configurable_with_activevariant"})
 		}
 
 	} else {
@@ -92,7 +88,7 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 		}
 
 		simpleProduct := product.(domain.SimpleProduct)
-		return vc.Render(c, "product/product", SimpleProductViewData{SimpleProduct: simpleProduct})
+		return vc.Render(c, "product/product", ProductViewData{SimpleProduct: simpleProduct, RenderContext: "simple"})
 	}
 
 }
