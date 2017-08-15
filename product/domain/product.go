@@ -6,8 +6,14 @@ import (
 	"github.com/pkg/errors"
 )
 
-type (
+const (
+	Simple                 = "simple"
+	Configurable           = "configurable"
+	mediaTypeExternalImage = "image-external"
+	mediaTypeImageService  = "image-service"
+)
 
+type (
 	// BasicProduct interface - shared by Simple and Configurable
 	BasicProduct interface {
 		GetBaseData() BasicProductData
@@ -107,16 +113,13 @@ type (
 	Attributes map[string]interface{}
 )
 
-const mediaTypeExternalImage string = "image-external"
-const mediaTypeImageService string = "image-service"
-
 // Verify Interfaces
 var _ BasicProduct = SimpleProduct{}
 var _ BasicProduct = ConfigurableProduct{}
 
 // GetType interface implementation for SimpleProduct
 func (ps SimpleProduct) GetType() string {
-	return "simple"
+	return Simple
 }
 
 // GetBaseData interface implementation for SimpleProduct
@@ -132,7 +135,7 @@ func (ps SimpleProduct) GetTeaserData() TeaserData {
 
 // GetType interface implementation for SimpleProduct
 func (p ConfigurableProduct) GetType() string {
-	return "configurable"
+	return Configurable
 }
 
 // GetBaseData interface implementation for SimpleProduct
@@ -148,7 +151,6 @@ func (p ConfigurableProduct) GetTeaserData() TeaserData {
 
 // GetBaseData interface implementation for SimpleProduct
 func (p ConfigurableProduct) GetVariant(marketplaceCode string) (*Variant, error) {
-
 	for _, variant := range p.Variants {
 		if variant.MarketPlaceCode == marketplaceCode {
 			return &variant, nil
