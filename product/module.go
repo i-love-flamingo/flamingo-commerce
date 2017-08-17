@@ -22,3 +22,10 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	m.RouterRegistry.Handle("product.view.variant", new(interfaces.ViewController))
 	m.RouterRegistry.Route("/product/:marketplacecode/:variantcode/:name.html", "product.view.variant")
 }
+
+// DefaultConfig for this module
+func (m *Module) DefaultConfig() map[string]interface{} {
+	return map[string]interface{}{
+		"core.product.view.template": "product/product",
+	}
+}

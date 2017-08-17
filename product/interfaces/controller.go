@@ -20,6 +20,8 @@ type (
 		responder.RenderAware   `inject:""`
 		responder.RedirectAware `inject:""`
 		domain.ProductService   `inject:""`
+
+		Template string `inject:"config:core.product.view.template"`
 	}
 
 	// ProductViewData is used for product rendering
@@ -68,7 +70,7 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 			if urlName != c.MustParam1("name") {
 				return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "name": urlName})
 			}
-			return vc.Render(c, "product/product", ProductViewData{ConfigurableProduct: configurableProduct, VariantSelected: false, RenderContext: "configurable"})
+			return vc.Render(c, vc.Template, ProductViewData{ConfigurableProduct: configurableProduct, VariantSelected: false, RenderContext: "configurable"})
 		} else {
 			// 1.B. Variant selected
 			// normalize URL
@@ -76,7 +78,8 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 			if urlName != c.MustParam1("name") {
 				return vc.Redirect("product.view.variant", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "variantcode": variantCode, "name": urlName})
 			}
-			return vc.Render(c, "product/product", ProductViewData{ConfigurableProduct: configurableProduct, ActiveVariant: *activeVariant, VariantSelected: true, RenderContext: "configurable_with_activevariant"})
+			log.Printf("Variant Price %v / %v", activeVariant.ActivePrice.Default, activeVariant.ActivePrice)
+			return vc.Render(c, vc.Template, ProductViewData{ConfigurableProduct: configurableProduct, ActiveVariant: *activeVariant, VariantSelected: true, RenderContext: "configurable_with_activevariant"})
 		}
 
 	} else {
@@ -88,7 +91,7 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 		}
 
 		simpleProduct := product.(domain.SimpleProduct)
-		return vc.Render(c, "product/product", ProductViewData{SimpleProduct: simpleProduct, RenderContext: "simple"})
+		return vc.Render(c, vc.Template, ProductViewData{SimpleProduct: simpleProduct, RenderContext: "simple"})
 	}
 
 }
