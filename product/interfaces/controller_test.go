@@ -50,6 +50,7 @@ func TestViewController_Get(t *testing.T) {
 				return nil
 			},
 		},
+		Template: "product/product",
 	}
 	ctx := web.NewContext()
 
