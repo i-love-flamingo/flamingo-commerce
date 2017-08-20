@@ -1,21 +1,20 @@
-package interfaces
+package controller
 
 import (
 	"flamingo/core/product/domain"
 	"flamingo/framework/router"
 	"flamingo/framework/web"
 	"flamingo/framework/web/responder"
+	"log"
 	"net/url"
+	"strings"
 
 	"github.com/pkg/errors"
-
-	"log"
-	"strings"
 )
 
 type (
-	// ViewController demonstrates a product view controller
-	ViewController struct {
+	// View demonstrates a product view controller
+	View struct {
 		responder.ErrorAware    `inject:""`
 		responder.RenderAware   `inject:""`
 		responder.RedirectAware `inject:""`
@@ -36,24 +35,22 @@ type (
 )
 
 // Get Response for Product matching sku param
-func (vc *ViewController) Get(c web.Context) web.Response {
+func (vc *View) Get(c web.Context) web.Response {
 	product, err := vc.ProductService.Get(c, c.MustParam1("marketplacecode"))
 
 	// catch error
 	if err != nil {
 		switch errors.Cause(err).(type) {
 		case domain.ProductNotFound:
-
 			return vc.ErrorNotFound(c, err)
 
 		default:
-
 			return vc.Error(c, err)
 		}
 	}
 
 	// 1. Handle Configurables
-	if product.GetType() == "configurable" {
+	if product.Type() == "configurable" {
 		configurableProduct := product.(domain.ConfigurableProduct)
 		var activeVariant *domain.Variant
 
@@ -61,12 +58,12 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 
 		if err == nil {
 			log.Println("get variant by " + variantCode)
-			activeVariant, _ = configurableProduct.GetVariant(variantCode)
+			activeVariant, _ = configurableProduct.Variant(variantCode)
 		}
 		if activeVariant == nil {
 			// 1.A. No variant selected
 			// normalize URL
-			urlName := makeUrlTitle(product.GetBaseData().Title)
+			urlName := makeUrlTitle(product.BaseData().Title)
 			if urlName != c.MustParam1("name") {
 				return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "name": urlName})
 			}
@@ -76,7 +73,7 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 			// normalize URL
 			urlName := makeUrlTitle(activeVariant.BasicProductData.Title)
 			if urlName != c.MustParam1("name") {
-				return vc.Redirect("product.view.variant", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "variantcode": variantCode, "name": urlName})
+				return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "variantcode": variantCode, "name": urlName})
 			}
 			log.Printf("Variant Price %v / %v", activeVariant.ActivePrice.Default, activeVariant.ActivePrice)
 			return vc.Render(c, vc.Template, ProductViewData{ConfigurableProduct: configurableProduct, ActiveVariant: *activeVariant, VariantSelected: true, RenderContext: "configurable_with_activevariant"})
@@ -85,7 +82,7 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 	} else {
 		// 2. Handle Simples
 		// normalize URL
-		urlName := makeUrlTitle(product.GetBaseData().Title)
+		urlName := makeUrlTitle(product.BaseData().Title)
 		if urlName != c.MustParam1("name") {
 			return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "name": urlName})
 		}

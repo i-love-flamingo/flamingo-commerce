@@ -1,21 +1,24 @@
 package domain
 
-import "context"
+import (
+	"context"
+	"fmt"
+)
 
 type (
 	// ProductService interface
 	ProductService interface {
 		// Get a product
-		Get(ctx context.Context, MarketplaceCode string) (BasicProduct, error)
+		Get(ctx context.Context, marketplaceCode string) (BasicProduct, error)
 	}
 
 	// ProductNotFound is an error
 	ProductNotFound struct {
-		ID string
+		MarketplaceCode string
 	}
 )
 
 // Error implements the error interface
-func (b ProductNotFound) Error() string {
-	return "Product with ID " + b.ID + " Not Found"
+func (err ProductNotFound) Error() string {
+	return fmt.Sprintf("Product with Marketplace Code %q Not Found", err.MarketplaceCode)
 }

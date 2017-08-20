@@ -7,18 +7,18 @@ import (
 )
 
 const (
-	Simple                 = "simple"
-	Configurable           = "configurable"
+	TypeSimple             = "simple"
+	TypeConfigurable       = "configurable"
 	mediaTypeExternalImage = "image-external"
 	mediaTypeImageService  = "image-service"
 )
 
 type (
-	// BasicProduct interface - shared by Simple and Configurable
+	// BasicProduct interface - shared by TypeSimple and TypeConfigurable
 	BasicProduct interface {
-		GetBaseData() BasicProductData
-		GetTeaserData() TeaserData
-		GetType() string
+		BaseData() BasicProductData
+		TeaserData() TeaserData
+		Type() string
 	}
 
 	// SimpleProduct - A product without Variants that can be teasered and selled
@@ -117,40 +117,40 @@ type (
 var _ BasicProduct = SimpleProduct{}
 var _ BasicProduct = ConfigurableProduct{}
 
-// GetType interface implementation for SimpleProduct
-func (ps SimpleProduct) GetType() string {
-	return Simple
+// Type interface implementation for SimpleProduct
+func (ps SimpleProduct) Type() string {
+	return TypeSimple
 }
 
-// GetBaseData interface implementation for SimpleProduct
-func (ps SimpleProduct) GetBaseData() BasicProductData {
+// BaseData interface implementation for SimpleProduct
+func (ps SimpleProduct) BaseData() BasicProductData {
 	bp := ps.BasicProductData
 	return bp
 }
 
-// GetTeaserData interface implementation for SimpleProduct
-func (ps SimpleProduct) GetTeaserData() TeaserData {
+// TeaserData interface implementation for SimpleProduct
+func (ps SimpleProduct) TeaserData() TeaserData {
 	return ps.Teaser
 }
 
-// GetType interface implementation for SimpleProduct
-func (p ConfigurableProduct) GetType() string {
-	return Configurable
+// Type interface implementation for SimpleProduct
+func (p ConfigurableProduct) Type() string {
+	return TypeConfigurable
 }
 
-// GetBaseData interface implementation for SimpleProduct
-func (p ConfigurableProduct) GetBaseData() BasicProductData {
+// BaseData interface implementation for SimpleProduct
+func (p ConfigurableProduct) BaseData() BasicProductData {
 	bp := p.BasicProductData
 	return bp
 }
 
-// GetTeaserData interface implementation for SimpleProduct
-func (p ConfigurableProduct) GetTeaserData() TeaserData {
+// TeaserData interface implementation for SimpleProduct
+func (p ConfigurableProduct) TeaserData() TeaserData {
 	return p.Teaser
 }
 
-// GetBaseData interface implementation for SimpleProduct
-func (p ConfigurableProduct) GetVariant(marketplaceCode string) (*Variant, error) {
+// BaseData interface implementation for SimpleProduct
+func (p ConfigurableProduct) Variant(marketplaceCode string) (*Variant, error) {
 	for _, variant := range p.Variants {
 		if variant.MarketPlaceCode == marketplaceCode {
 			return &variant, nil

@@ -1,4 +1,4 @@
-package interfaces
+package controller
 
 import (
 	"context"
@@ -29,7 +29,7 @@ func TestViewController_Get(t *testing.T) {
 	var tplname string
 	var errorHappened bool
 
-	vc := &ViewController{
+	vc := &View{
 		ProductService: new(MockProductService),
 		RedirectAware: &testutil.MockRedirectAware{
 			CbRedirect: func(name string, args map[string]string) web.Response {

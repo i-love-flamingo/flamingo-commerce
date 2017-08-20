@@ -1,7 +1,7 @@
 package product
 
 import (
-	"flamingo/core/product/interfaces"
+	"flamingo/core/product/interfaces/controller"
 	"flamingo/framework/dingo"
 	"flamingo/framework/router"
 )
@@ -15,12 +15,9 @@ type (
 
 // Configure the product URL
 func (m *Module) Configure(injector *dingo.Injector) {
-	m.RouterRegistry.Handle("product.view", new(interfaces.ViewController))
+	m.RouterRegistry.Handle("product.view", new(controller.View))
 	m.RouterRegistry.Route("/product/:marketplacecode/:name.html", "product.view")
-
-	//Basti - backward generation (e.g. for redirect) does not work with alternative route - only with new handler
-	m.RouterRegistry.Handle("product.view.variant", new(interfaces.ViewController))
-	m.RouterRegistry.Route("/product/:marketplacecode/:variantcode/:name.html", "product.view.variant")
+	m.RouterRegistry.Route("/product/:marketplacecode/:variantcode/:name.html", "product.view")
 }
 
 // DefaultConfig for this module
