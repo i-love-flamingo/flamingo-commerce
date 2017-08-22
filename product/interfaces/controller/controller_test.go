@@ -7,6 +7,7 @@ import (
 	"flamingo/framework/router"
 	"flamingo/framework/testutil"
 	"flamingo/framework/web"
+	"net/url"
 	"testing"
 )
 
@@ -51,7 +52,13 @@ func TestViewController_Get(t *testing.T) {
 			},
 		},
 		Template: "product/product",
+		Router: &router.Router{
+			RouterRegistry: router.NewRegistry(),
+		},
 	}
+	u, _ := url.Parse(`http://test/`)
+	vc.Router.SetBase(u)
+	vc.Router.RouterRegistry.Route("/", `product.view(marketplacecode?="test", name?="test", variant?="test")`)
 	ctx := web.NewContext()
 
 	ctx.LoadParams(router.P{"marketplacecode": "test", "name": "testname"})
