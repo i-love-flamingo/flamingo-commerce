@@ -1,6 +1,7 @@
 package product
 
 import (
+	"flamingo/core/breadcrumbs"
 	"flamingo/core/product/interfaces/controller"
 	"flamingo/framework/dingo"
 	"flamingo/framework/router"
@@ -24,5 +25,11 @@ func (m *Module) Configure(injector *dingo.Injector) {
 func (m *Module) DefaultConfig() map[string]interface{} {
 	return map[string]interface{}{
 		"core.product.view.template": "product/product",
+	}
+}
+
+func (m *Module) Dependencies() []dingo.Module {
+	return []dingo.Module{
+		new(breadcrumbs.Module),
 	}
 }

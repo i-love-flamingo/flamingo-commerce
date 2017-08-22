@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"flamingo/core/breadcrumbs"
 	"flamingo/core/product/domain"
 	"flamingo/framework/router"
 	"flamingo/framework/web"
@@ -20,7 +21,8 @@ type (
 		responder.RedirectAware `inject:""`
 		domain.ProductService   `inject:""`
 
-		Template string `inject:"config:core.product.view.template"`
+		Template string         `inject:"config:core.product.view.template"`
+		Router   *router.Router `inject:""`
 	}
 
 	// ProductViewData is used for product rendering
@@ -49,6 +51,8 @@ func (vc *View) Get(c web.Context) web.Response {
 		}
 	}
 
+	var viewData ProductViewData
+
 	// 1. Handle Configurables
 	if product.Type() == "configurable" {
 		configurableProduct := product.(domain.ConfigurableProduct)
@@ -67,7 +71,7 @@ func (vc *View) Get(c web.Context) web.Response {
 			if urlName != c.MustParam1("name") {
 				return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "name": urlName})
 			}
-			return vc.Render(c, vc.Template, ProductViewData{ConfigurableProduct: configurableProduct, VariantSelected: false, RenderContext: "configurable"})
+			viewData = ProductViewData{ConfigurableProduct: configurableProduct, VariantSelected: false, RenderContext: "configurable"}
 		} else {
 			// 1.B. Variant selected
 			// normalize URL
@@ -76,7 +80,7 @@ func (vc *View) Get(c web.Context) web.Response {
 				return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "variantcode": variantCode, "name": urlName})
 			}
 			log.Printf("Variant Price %v / %v", activeVariant.ActivePrice.Default, activeVariant.ActivePrice)
-			return vc.Render(c, vc.Template, ProductViewData{ConfigurableProduct: configurableProduct, ActiveVariant: *activeVariant, VariantSelected: true, RenderContext: "configurable_with_activevariant"})
+			viewData = ProductViewData{ConfigurableProduct: configurableProduct, ActiveVariant: *activeVariant, VariantSelected: true, RenderContext: "configurable_with_activevariant"}
 		}
 
 	} else {
@@ -88,9 +92,19 @@ func (vc *View) Get(c web.Context) web.Response {
 		}
 
 		simpleProduct := product.(domain.SimpleProduct)
-		return vc.Render(c, vc.Template, ProductViewData{SimpleProduct: simpleProduct, RenderContext: "simple"})
+		viewData = ProductViewData{SimpleProduct: simpleProduct, RenderContext: "simple"}
 	}
 
+	for _, category := range product.BaseData().CategoryPath {
+		breadcrumbs.Add(c, breadcrumbs.Crumb{Title: category})
+	}
+
+	breadcrumbs.Add(c, breadcrumbs.Crumb{
+		Title: product.BaseData().Title,
+		URL:   vc.Router.URL("product.view", router.P{"marketplacecode": product.BaseData().MarketPlaceCode, "name": product.BaseData().Title}).String(),
+	})
+
+	return vc.Render(c, vc.Template, viewData)
 }
 
 func makeUrlTitle(title string) string {
