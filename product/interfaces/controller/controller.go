@@ -25,6 +25,8 @@ type (
 		Router   *router.Router `inject:""`
 	}
 
+	DebugData View
+
 	// ProductViewData is used for product rendering
 	ProductViewData struct {
 		// simple / configurable / configurable_with_variant
@@ -39,6 +41,7 @@ type (
 // Get Response for Product matching sku param
 func (vc *View) Get(c web.Context) web.Response {
 	product, err := vc.ProductService.Get(c, c.MustParam1("marketplacecode"))
+	skipnamecheck, _ := c.Param1("skipnamecheck")
 
 	// catch error
 	if err != nil {
@@ -68,7 +71,7 @@ func (vc *View) Get(c web.Context) web.Response {
 			// 1.A. No variant selected
 			// normalize URL
 			urlName := makeUrlTitle(product.BaseData().Title)
-			if urlName != c.MustParam1("name") {
+			if urlName != c.MustParam1("name") && skipnamecheck == "" {
 				return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "name": urlName})
 			}
 			viewData = ProductViewData{ConfigurableProduct: configurableProduct, VariantSelected: false, RenderContext: "configurable"}
@@ -76,7 +79,7 @@ func (vc *View) Get(c web.Context) web.Response {
 			// 1.B. Variant selected
 			// normalize URL
 			urlName := makeUrlTitle(activeVariant.BasicProductData.Title)
-			if urlName != c.MustParam1("name") {
+			if urlName != c.MustParam1("name") && skipnamecheck == "" {
 				return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "variantcode": variantCode, "name": urlName})
 			}
 			log.Printf("Variant Price %v / %v", activeVariant.ActivePrice.Default, activeVariant.ActivePrice)
@@ -87,7 +90,7 @@ func (vc *View) Get(c web.Context) web.Response {
 		// 2. Handle Simples
 		// normalize URL
 		urlName := makeUrlTitle(product.BaseData().Title)
-		if urlName != c.MustParam1("name") {
+		if urlName != c.MustParam1("name") && skipnamecheck == "" {
 			return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "name": urlName})
 		}
 
@@ -112,4 +115,31 @@ func makeUrlTitle(title string) string {
 	newTitle = url.QueryEscape(newTitle)
 
 	return newTitle
+}
+
+type dbgrender struct {
+	data interface{}
+}
+
+func (d *dbgrender) Render(context web.Context, tpl string, data interface{}) web.Response {
+	d.data = data
+	return nil
+}
+
+func (d *DebugData) Get(c web.Context) web.Response {
+	vc := (*View)(d)
+	r := &dbgrender{}
+	vc.RenderAware = r
+
+	params := c.ParamAll()
+	params["skipnamecheck"] = "1"
+	params["name"] = ""
+	c.LoadParams(params)
+	rr := vc.Get(c)
+
+	log.Println(rr)
+
+	return &web.JSONResponse{
+		Data: r.data,
+	}
 }
