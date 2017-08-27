@@ -45,17 +45,20 @@ type (
 
 	// basicProductData is the basic product model
 	BasicProductData struct {
-		MarketPlaceCode  string
 		Title            string
 		Attributes       Attributes
 		ShortDescription string
 		Description      string
 		Media            []Media
-		RetailerCode     string
-		CreatedAt        time.Time
-		UpdatedAt        time.Time
-		VisibleFrom      time.Time
-		VisibleTo        time.Time
+
+		MarketPlaceCode string
+		RetailerCode    string
+		RetailerSku     string
+
+		CreatedAt   time.Time
+		UpdatedAt   time.Time
+		VisibleFrom time.Time
+		VisibleTo   time.Time
 
 		CategoryPath  []string
 		CategoryCodes []string
@@ -70,9 +73,6 @@ type (
 		SaleableTo      time.Time
 		ActivePrice     PriceInfo
 		AvailablePrices []PriceInfo
-		RetailerSku     string
-		RetailerCode    string
-		MarketPlaceCode string
 	}
 
 	PriceInfo struct {
