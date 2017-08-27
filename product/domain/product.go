@@ -154,7 +154,7 @@ func (p ConfigurableProduct) TeaserData() TeaserData {
 // BaseData interface implementation for SimpleProduct
 func (p ConfigurableProduct) Variant(marketplaceCode string) (*Variant, error) {
 	for _, variant := range p.Variants {
-		if variant.MarketPlaceCode == marketplaceCode {
+		if variant.BasicProductData.MarketPlaceCode == marketplaceCode {
 			return &variant, nil
 		}
 	}
