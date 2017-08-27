@@ -5,10 +5,12 @@ import (
 	"errors"
 	"flamingo/core/product/domain"
 	"flamingo/framework/router"
-	"flamingo/framework/testutil"
 	"flamingo/framework/web"
+	"flamingo/framework/web/responder/mocks"
 	"net/url"
 	"testing"
+
+	"github.com/stretchr/testify/mock"
 )
 
 type (
@@ -26,32 +28,19 @@ func (mps *MockProductService) Get(ctx context.Context, marketplacecode string) 
 }
 
 func TestViewController_Get(t *testing.T) {
-	var redirectedTo, redirectedName string
-	var tplname string
-	var errorHappened bool
+	expectedUrlTitle := "my-product-title"
+	ctx := web.NewContext()
+
+	redirectAware := new(mocks.RedirectAware)
+	renderAware := new(mocks.RenderAware)
+	errorAware := new(mocks.ErrorAware)
 
 	vc := &View{
 		ProductService: new(MockProductService),
-		RedirectAware: &testutil.MockRedirectAware{
-			CbRedirect: func(name string, args map[string]string) web.Response {
-				redirectedTo = "product.view"
-				redirectedName = args["name"]
-				return nil
-			},
-		},
-		RenderAware: &testutil.MockRenderAware{
-			CbRender: func(context web.Context, tpl string, data interface{}) web.Response {
-				tplname = tpl
-				return nil
-			},
-		},
-		ErrorAware: &testutil.MockErrorAware{
-			CbError: func(context web.Context, err error) web.Response {
-				errorHappened = true
-				return nil
-			},
-		},
-		Template: "product/product",
+		RedirectAware:  redirectAware,
+		RenderAware:    renderAware,
+		ErrorAware:     errorAware,
+		Template:       "product/product",
 		Router: &router.Router{
 			RouterRegistry: router.NewRegistry(),
 		},
@@ -59,49 +48,19 @@ func TestViewController_Get(t *testing.T) {
 	u, _ := url.Parse(`http://test/`)
 	vc.Router.SetBase(u)
 	vc.Router.RouterRegistry.Route("/", `product.view(marketplacecode?="test", name?="test", variant?="test")`)
-	ctx := web.NewContext()
 
+	redirectAware.On("Redirect", mock.AnythingOfType("string"), mock.AnythingOfType("map[string]string")).Return(nil)
 	ctx.LoadParams(router.P{"marketplacecode": "test", "name": "testname"})
-	response := vc.Get(ctx)
+	vc.Get(ctx)
+	redirectAware.AssertCalled(t, "Redirect", "product.view", map[string]string{"name": expectedUrlTitle, "marketplacecode": "test"})
 
-	expectedUrlTitle := "my-product-title"
-
-	if redirectedTo != "product.view" {
-		t.Errorf("Expected redirect to product.view, not %q", redirectedTo)
-	}
-
-	if redirectedName != expectedUrlTitle {
-		t.Errorf("Expected redirect to name %s, not %q", expectedUrlTitle, redirectedName)
-	}
-
-	if response != nil {
-		t.Errorf("Expected mocked response to be nil, not %T", response)
-	}
-
+	renderAware.On("Render", ctx, mock.AnythingOfType("string"), mock.AnythingOfType("controller.ProductViewData")).Return(nil)
 	ctx.LoadParams(router.P{"marketplacecode": "test", "name": expectedUrlTitle})
-	response = vc.Get(ctx)
+	vc.Get(ctx)
+	renderAware.AssertCalled(t, "Render", ctx, vc.Template, mock.AnythingOfType("controller.ProductViewData"))
 
-	if errorHappened {
-		t.Error("expected to not error for 'test' product")
-	}
-
-	if tplname != "product/product" {
-		t.Errorf("expected to render product/product not %q", tplname)
-	}
-
-	if response != nil {
-		t.Errorf("Expected mocked response to be nil, not %T", response)
-	}
-
+	errorAware.On("Error", ctx, mock.Anything).Return(nil)
 	ctx.LoadParams(router.P{"marketplacecode": "fail", "name": "fail"})
-	response = vc.Get(ctx)
-
-	if !errorHappened {
-		t.Error("expected to error for 'fail' product")
-	}
-
-	if response != nil {
-		t.Errorf("Expected mocked response to be nil, not %T", response)
-	}
-
+	vc.Get(ctx)
+	errorAware.AssertCalled(t, "Error", ctx, mock.Anything)
 }
