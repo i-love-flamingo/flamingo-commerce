@@ -71,6 +71,8 @@ type (
 		ActivePrice     PriceInfo
 		AvailablePrices []PriceInfo
 		RetailerSku     string
+		RetailerCode    string
+		MarketPlaceCode string
 	}
 
 	PriceInfo struct {
