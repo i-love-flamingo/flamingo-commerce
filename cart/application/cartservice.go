@@ -12,8 +12,8 @@ import (
 
 // CartService application struct
 type CartService struct {
-	DomainCartService    domain.CartService      `inject:""`
-	CartDecoratorFactory domain.DecoratorFactory `inject:""`
+	DomainCartService    domain.CartService          `inject:""`
+	CartDecoratorFactory domain.DecoratedCartFactory `inject:""`
 }
 
 // Get the correct Cart

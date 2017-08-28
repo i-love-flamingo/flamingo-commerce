@@ -8,8 +8,8 @@ import (
 )
 
 type (
-	// Factory to be injected: If you need to create a new Decorator then get the factory injected and use the factory
-	DecoratorFactory struct {
+	// DecoratedCartFactory - Factory to be injected: If you need to create a new Decorator then get the factory injected and use the factory
+	DecoratedCartFactory struct {
 		ProductService domain.ProductService `inject:""`
 	}
 
@@ -40,7 +40,7 @@ func CreateDecoratedCart(ctx context.Context, Cart Cart, productService domain.P
 }
 
 // Create Factory - with injected ProductService
-func (df *DecoratorFactory) Create(ctx context.Context, Cart Cart) *DecoratedCart {
+func (df *DecoratedCartFactory) Create(ctx context.Context, Cart Cart) *DecoratedCart {
 	return CreateDecoratedCart(ctx, Cart, df.ProductService)
 }
 
