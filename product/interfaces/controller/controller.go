@@ -35,6 +35,32 @@ type (
 		ConfigurableProduct domain.ConfigurableProduct
 		ActiveVariant       domain.Variant
 		VariantSelected     bool
+		VariantSelection    VariantSelection
+	}
+
+	// VariantSelection for templating
+	VariantSelection struct {
+		Attributes []ViewVariantAttribute
+		Variants   []ViewVariant
+	}
+
+	ViewVariantAttribute struct {
+		Key     string
+		Title   string
+		Options []ViewVariantOption
+	}
+
+	ViewVariantOption struct {
+		Key          string
+		Title        string
+		Combinations map[string][]string
+	}
+
+	ViewVariant struct {
+		Attributes      map[string]string
+		Marketplacecode string
+		Title           string
+		Url             string
 	}
 )
 
@@ -106,6 +132,80 @@ func (vc *View) Get(c web.Context) web.Response {
 		Title: product.BaseData().Title,
 		URL:   vc.Router.URL("product.view", router.P{"marketplacecode": product.BaseData().MarketPlaceCode, "name": product.BaseData().Title}).String(),
 	})
+
+	viewData.VariantSelection = VariantSelection{
+		Attributes: []ViewVariantAttribute{
+			{
+				Key:   "baseColor",
+				Title: "Color",
+				Options: []ViewVariantOption{
+					{
+						Title: "Red",
+						Key:   "red",
+						Combinations: map[string][]string{
+							"clothingSize": {"l", "xl"},
+						},
+					},
+					{
+						Title: "Green",
+						Key:   "green",
+						Combinations: map[string][]string{
+							"clothingSize": {"xl"},
+						},
+					},
+				},
+			},
+			{
+				Key:   "clothingSize",
+				Title: "Size",
+				Options: []ViewVariantOption{
+					{
+						Title: "Size L",
+						Key:   "l",
+						Combinations: map[string][]string{
+							"baseColor": {"red"},
+						},
+					},
+					{
+						Title: "Size XL",
+						Key:   "l",
+						Combinations: map[string][]string{
+							"baseColor": {"red", "green"},
+						},
+					},
+				},
+			},
+		},
+		Variants: []ViewVariant{
+			{
+				Title:           "Red Shirt L",
+				Url:             "/",
+				Marketplacecode: "red-shirt-l",
+				Attributes: map[string]string{
+					"baseColor":    "red",
+					"clothingSize": "l",
+				},
+			},
+			{
+				Title:           "Red Shirt XL",
+				Url:             "/",
+				Marketplacecode: "red-shirt-xl",
+				Attributes: map[string]string{
+					"baseColor":    "red",
+					"clothingSize": "xl",
+				},
+			},
+			{
+				Title:           "Red Green XL",
+				Url:             "/",
+				Marketplacecode: "red-green-xl",
+				Attributes: map[string]string{
+					"baseColor":    "green",
+					"clothingSize": "xl",
+				},
+			},
+		},
+	}
 
 	return vc.Render(c, vc.Template, viewData)
 }
