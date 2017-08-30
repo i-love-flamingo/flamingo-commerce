@@ -150,7 +150,7 @@ func (vc *View) Get(c web.Context) web.Response {
 						Title: "Green",
 						Key:   "green",
 						Combinations: map[string][]string{
-							"clothingSize": {"xl"},
+							"clothingSize": {"xl", "m"},
 						},
 					},
 				},
@@ -160,6 +160,13 @@ func (vc *View) Get(c web.Context) web.Response {
 				Title: "Size",
 				Options: []ViewVariantOption{
 					{
+						Title: "Size M",
+						Key:   "m",
+						Combinations: map[string][]string{
+							"baseColor": {"green"},
+						},
+					},
+					{
 						Title: "Size L",
 						Key:   "l",
 						Combinations: map[string][]string{
@@ -168,7 +175,7 @@ func (vc *View) Get(c web.Context) web.Response {
 					},
 					{
 						Title: "Size XL",
-						Key:   "l",
+						Key:   "xl",
 						Combinations: map[string][]string{
 							"baseColor": {"red", "green"},
 						},
@@ -196,12 +203,21 @@ func (vc *View) Get(c web.Context) web.Response {
 				},
 			},
 			{
-				Title:           "Red Green XL",
+				Title:           "Green Shirt XL",
 				Url:             "/",
-				Marketplacecode: "red-green-xl",
+				Marketplacecode: "green-shirt-xl",
 				Attributes: map[string]string{
 					"baseColor":    "green",
 					"clothingSize": "xl",
+				},
+			},
+			{
+				Title:           "Green Shirt M",
+				Url:             "/",
+				Marketplacecode: "green-shirt-m",
+				Attributes: map[string]string{
+					"baseColor":    "green",
+					"clothingSize": "m",
 				},
 			},
 		},
