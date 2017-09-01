@@ -54,6 +54,7 @@ type (
 		Key          string
 		Title        string
 		Combinations map[string][]string
+		Selected     bool
 	}
 
 	ViewVariant struct {
@@ -145,6 +146,7 @@ func (vc *View) Get(c web.Context) web.Response {
 						Combinations: map[string][]string{
 							"clothingSize": {"l", "xl"},
 						},
+                        Selected: true,
 					},
 					{
 						Title: "Green",
@@ -172,6 +174,7 @@ func (vc *View) Get(c web.Context) web.Response {
 						Combinations: map[string][]string{
 							"baseColor": {"red"},
 						},
+                        Selected: true,
 					},
 					{
 						Title: "Size XL",
