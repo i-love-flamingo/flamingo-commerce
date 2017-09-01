@@ -1,8 +1,9 @@
 package product
 
 import (
-	"flamingo/core/breadcrumbs"
+	"flamingo/core/product/domain"
 	"flamingo/core/product/interfaces/controller"
+	"flamingo/framework/config"
 	"flamingo/framework/dingo"
 	"flamingo/framework/router"
 )
@@ -12,6 +13,9 @@ type (
 	Module struct {
 		RouterRegistry *router.Registry `inject:""`
 	}
+
+	Simple       = domain.SimpleProduct
+	Configurable = domain.ConfigurableProduct
 )
 
 // Configure the product URL
@@ -26,14 +30,8 @@ func (m *Module) Configure(injector *dingo.Injector) {
 }
 
 // DefaultConfig for this module
-func (m *Module) DefaultConfig() map[string]interface{} {
-	return map[string]interface{}{
+func (m *Module) DefaultConfig() config.Map {
+	return config.Map{
 		"core.product.view.template": "product/product",
-	}
-}
-
-func (m *Module) Dependencies() []dingo.Module {
-	return []dingo.Module{
-		new(breadcrumbs.Module),
 	}
 }
