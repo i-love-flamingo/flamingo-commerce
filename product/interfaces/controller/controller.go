@@ -12,6 +12,8 @@ import (
 
 	"sort"
 
+	"flamingo/core/pug_template/pugjs"
+
 	"github.com/pkg/errors"
 )
 
@@ -67,25 +69,85 @@ type (
 	}
 )
 
-func variantSelection(configurable domain.ConfigurableProduct) VariantSelection {
+func (vc *View) variantSelection(configurable domain.ConfigurableProduct, activeVariant *domain.Variant) VariantSelection {
 	var variants VariantSelection
-	combinations := make(map[string]map[string][]string)
+	combinations := make(map[string]map[string]map[string]map[string]bool)
 
 	for _, attribute := range configurable.VariantVariationAttributes {
-		combinations[attribute] = make(map[string][]string)
+		// attribute -> value -> combinableAttribute -> combinaleValue -> true
+		combinations[attribute] = make(map[string]map[string]map[string]bool)
 
 		for _, variant := range configurable.Variants {
 			for _, subattribute := range configurable.VariantVariationAttributes {
 				if subattribute != attribute {
+					if variant.Attributes[attribute] == nil {
+						continue
+					}
+
+					if combinations[attribute][variant.Attributes[attribute].(string)] == nil {
+						combinations[attribute][variant.Attributes[attribute].(string)] = make(map[string]map[string]bool)
+					}
+
 					if variant.Attributes[subattribute] != nil {
-						combinations[attribute][subattribute] = append(combinations[attribute][subattribute], variant.Attributes[subattribute].(string))
+						if combinations[attribute][variant.Attributes[attribute].(string)][subattribute] == nil {
+							combinations[attribute][variant.Attributes[attribute].(string)][subattribute] = make(map[string]bool)
+						}
+						combinations[attribute][variant.Attributes[attribute].(string)][subattribute][variant.Attributes[subattribute].(string)] = true
 					}
 				}
 			}
 		}
 	}
 
-	log.Println(combinations)
+	for code, attribute := range combinations {
+		viewVariantAttribute := ViewVariantAttribute{
+			Key:   code,
+			Title: strings.Title(code),
+		}
+
+		for optionCode, option := range attribute {
+			combinations := make(map[string][]string)
+			for cattr, cvalues := range option {
+				for cvalue := range cvalues {
+					combinations[cattr] = append(combinations[cattr], cvalue)
+				}
+			}
+
+			var selected bool
+			if activeVariant != nil && activeVariant.Attributes[code] == optionCode {
+				selected = true
+			}
+			viewVariantAttribute.Options = append(viewVariantAttribute.Options, ViewVariantOption{
+				Key:          optionCode,
+				Title:        strings.Title(optionCode),
+				Selected:     selected,
+				Combinations: combinations,
+			})
+		}
+
+		variants.Attributes = append(variants.Attributes, viewVariantAttribute)
+	}
+
+	for _, variant := range configurable.Variants {
+		urlName := makeUrlTitle(variant.BasicProductData.Title)
+		variantUrl := vc.Router.URL("product.view", router.P{"marketplacecode": configurable.MarketPlaceCode, "variantcode": variant.MarketPlaceCode, "name": urlName}).String()
+
+		attributes := make(map[string]string)
+
+		for _, attr := range variants.Attributes {
+			if variant.Attributes[attr.Key] == nil {
+				continue
+			}
+			attributes[attr.Key] = variant.Attributes[attr.Key].(string)
+		}
+
+		variants.Variants = append(variants.Variants, ViewVariant{
+			Title:           variant.Title,
+			Marketplacecode: variant.MarketPlaceCode,
+			Url:             variantUrl,
+			Attributes:      attributes,
+		})
+	}
 
 	return variants
 }
@@ -145,7 +207,7 @@ func (vc *View) Get(c web.Context) web.Response {
 			}
 		}
 
-		variantSelection(configurableProduct)
+		viewData.VariantSelection = vc.variantSelection(configurableProduct, activeVariant)
 
 	} else {
 		// 2. Handle Simples
@@ -173,98 +235,6 @@ func (vc *View) Get(c web.Context) web.Response {
 		Title: product.BaseData().Title,
 		URL:   vc.Router.URL("product.view", router.P{"marketplacecode": product.BaseData().MarketPlaceCode, "name": product.BaseData().Title}).String(),
 	})
-
-	viewData.VariantSelection = VariantSelection{
-		Attributes: []ViewVariantAttribute{
-			{
-				Key:   "baseColor",
-				Title: "Color",
-				Options: []ViewVariantOption{
-					{
-						Title: "Red",
-						Key:   "red",
-						Combinations: map[string][]string{
-							"clothingSize": {"l", "xl"},
-						},
-						Selected: true,
-					},
-					{
-						Title: "Green",
-						Key:   "green",
-						Combinations: map[string][]string{
-							"clothingSize": {"xl", "m"},
-						},
-					},
-				},
-			},
-			{
-				Key:   "clothingSize",
-				Title: "Size",
-				Options: []ViewVariantOption{
-					{
-						Title: "Size M",
-						Key:   "m",
-						Combinations: map[string][]string{
-							"baseColor": {"green"},
-						},
-					},
-					{
-						Title: "Size L",
-						Key:   "l",
-						Combinations: map[string][]string{
-							"baseColor": {"red"},
-						},
-						Selected: true,
-					},
-					{
-						Title: "Size XL",
-						Key:   "xl",
-						Combinations: map[string][]string{
-							"baseColor": {"red", "green"},
-						},
-					},
-				},
-			},
-		},
-		Variants: []ViewVariant{
-			{
-				Title:           "Red Shirt L",
-				Url:             "/",
-				Marketplacecode: "red-shirt-l",
-				Attributes: map[string]string{
-					"baseColor":    "red",
-					"clothingSize": "l",
-				},
-			},
-			{
-				Title:           "Red Shirt XL",
-				Url:             "/",
-				Marketplacecode: "red-shirt-xl",
-				Attributes: map[string]string{
-					"baseColor":    "red",
-					"clothingSize": "xl",
-				},
-			},
-			{
-				Title:           "Green Shirt XL",
-				Url:             "/",
-				Marketplacecode: "green-shirt-xl",
-				Attributes: map[string]string{
-					"baseColor":    "green",
-					"clothingSize": "xl",
-				},
-			},
-			{
-				Title:           "Green Shirt M",
-				Url:             "/",
-				Marketplacecode: "green-shirt-m",
-				Attributes: map[string]string{
-					"baseColor":    "green",
-					"clothingSize": "m",
-				},
-			},
-		},
-	}
 
 	return vc.Render(c, vc.Template, viewData)
 }
@@ -294,11 +264,9 @@ func (d *DebugData) Get(c web.Context) web.Response {
 	params["skipnamecheck"] = "1"
 	params["name"] = ""
 	c.LoadParams(params)
-	rr := vc.Get(c)
-
-	log.Println(rr)
+	vc.Get(c)
 
 	return &web.JSONResponse{
-		Data: r.data,
+		Data: pugjs.Convert(r.data),
 	}
 }
