@@ -10,6 +10,8 @@ import (
 	"net/url"
 	"strings"
 
+	"sort"
+
 	"github.com/pkg/errors"
 )
 
@@ -125,8 +127,14 @@ func (vc *View) Get(c web.Context) web.Response {
 		viewData = ProductViewData{SimpleProduct: simpleProduct, RenderContext: "simple"}
 	}
 
-	for _, category := range product.BaseData().CategoryPath {
-		breadcrumbs.Add(c, breadcrumbs.Crumb{Title: category})
+	paths := product.BaseData().CategoryPath
+	sort.Strings(paths)
+	var stringHead string
+	for _, p := range paths {
+		if strings.HasPrefix(p, stringHead) {
+			breadcrumbs.Add(c, breadcrumbs.Crumb{Title: p[len(stringHead):]})
+			stringHead = p + "/"
+		}
 	}
 
 	breadcrumbs.Add(c, breadcrumbs.Crumb{
@@ -146,7 +154,7 @@ func (vc *View) Get(c web.Context) web.Response {
 						Combinations: map[string][]string{
 							"clothingSize": {"l", "xl"},
 						},
-                        Selected: true,
+						Selected: true,
 					},
 					{
 						Title: "Green",
@@ -174,7 +182,7 @@ func (vc *View) Get(c web.Context) web.Response {
 						Combinations: map[string][]string{
 							"baseColor": {"red"},
 						},
-                        Selected: true,
+						Selected: true,
 					},
 					{
 						Title: "Size XL",
