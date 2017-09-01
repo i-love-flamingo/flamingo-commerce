@@ -67,6 +67,29 @@ type (
 	}
 )
 
+func variantSelection(configurable domain.ConfigurableProduct) VariantSelection {
+	var variants VariantSelection
+	combinations := make(map[string]map[string][]string)
+
+	for _, attribute := range configurable.VariantVariationAttributes {
+		combinations[attribute] = make(map[string][]string)
+
+		for _, variant := range configurable.Variants {
+			for _, subattribute := range configurable.VariantVariationAttributes {
+				if subattribute != attribute {
+					if variant.Attributes[subattribute] != nil {
+						combinations[attribute][subattribute] = append(combinations[attribute][subattribute], variant.Attributes[subattribute].(string))
+					}
+				}
+			}
+		}
+	}
+
+	log.Println(combinations)
+
+	return variants
+}
+
 // Get Response for Product matching sku param
 func (vc *View) Get(c web.Context) web.Response {
 	product, err := vc.ProductService.Get(c, c.MustParam1("marketplacecode"))
@@ -92,19 +115,21 @@ func (vc *View) Get(c web.Context) web.Response {
 
 		variantCode, err := c.Param1("variantcode")
 
-		if err == nil {
-			log.Println("get variant by " + variantCode)
-			activeVariant, _ = configurableProduct.Variant(variantCode)
-		}
-		if activeVariant == nil {
+		if err != nil {
 			// 1.A. No variant selected
 			// normalize URL
 			urlName := makeUrlTitle(product.BaseData().Title)
 			if urlName != c.MustParam1("name") && skipnamecheck == "" {
 				return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "name": urlName})
 			}
-			viewData = ProductViewData{ConfigurableProduct: configurableProduct, VariantSelected: false, RenderContext: "configurable"}
+			viewData = ProductViewData{
+				ConfigurableProduct: configurableProduct,
+				VariantSelected:     false,
+				RenderContext:       "configurable",
+			}
 		} else {
+			log.Println("get variant by " + variantCode)
+			activeVariant, _ = configurableProduct.Variant(variantCode)
 			// 1.B. Variant selected
 			// normalize URL
 			urlName := makeUrlTitle(activeVariant.BasicProductData.Title)
@@ -112,8 +137,15 @@ func (vc *View) Get(c web.Context) web.Response {
 				return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "variantcode": variantCode, "name": urlName})
 			}
 			log.Printf("Variant Price %v / %v", activeVariant.ActivePrice.Default, activeVariant.ActivePrice)
-			viewData = ProductViewData{ConfigurableProduct: configurableProduct, ActiveVariant: *activeVariant, VariantSelected: true, RenderContext: "configurable_with_activevariant"}
+			viewData = ProductViewData{
+				ConfigurableProduct: configurableProduct,
+				ActiveVariant:       *activeVariant,
+				VariantSelected:     true,
+				RenderContext:       "configurable_with_activevariant",
+			}
 		}
+
+		variantSelection(configurableProduct)
 
 	} else {
 		// 2. Handle Simples
