@@ -231,11 +231,6 @@ func (vc *View) Get(c web.Context) web.Response {
 		}
 	}
 
-	breadcrumbs.Add(c, breadcrumbs.Crumb{
-		Title: product.BaseData().Title,
-		URL:   vc.Router.URL("product.view", router.P{"marketplacecode": product.BaseData().MarketPlaceCode, "name": product.BaseData().Title}).String(),
-	})
-
 	return vc.Render(c, vc.Template, viewData)
 }
 
