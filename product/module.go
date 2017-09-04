@@ -1,7 +1,6 @@
 package product
 
 import (
-	"flamingo/core/product/domain"
 	"flamingo/core/product/interfaces/controller"
 	"flamingo/framework/config"
 	"flamingo/framework/dingo"
@@ -14,8 +13,8 @@ type (
 		RouterRegistry *router.Registry `inject:""`
 	}
 
-	Simple       = domain.SimpleProduct
-	Configurable = domain.ConfigurableProduct
+	//Simple       = domain.SimpleProduct
+	//Configurable = domain.ConfigurableProduct
 )
 
 // Configure the product URL
