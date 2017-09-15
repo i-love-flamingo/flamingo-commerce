@@ -20,6 +20,7 @@ type (
 		Router   *router.Router `inject:""`
 	}
 
+	// ViewData for rendering context
 	ViewData struct {
 		Category domain.Category
 		Products []productdomain.BasicProduct
@@ -31,8 +32,18 @@ func (vc *View) Get(c web.Context) web.Response {
 	category, err := vc.CategoryService.Get(c, c.MustParam1("categorycode"))
 
 	// catch error
-	if err != nil {
+	if err == domain.NotFound {
+		return vc.ErrorNotFound(c, err)
+	} else if err != nil {
 		return vc.Error(c, err)
+	}
+
+	expectedName := web.UrlTitle(category.Name)
+	if expectedName != c.MustParam1("name") {
+		return vc.Redirect("category.view", router.P{
+			"categorycode": category.Code,
+			"name":         expectedName,
+		})
 	}
 
 	products, err := vc.CategoryService.GetProducts(c, c.MustParam1("categorycode"))

@@ -18,6 +18,7 @@ type (
 func (m *Module) Configure(injector *dingo.Injector) {
 	m.RouterRegistry.Handle("category.view", new(controller.View))
 	m.RouterRegistry.Route("/category/:categorycode/:name.html", "category.view")
+	m.RouterRegistry.Route("/category/:categorycode", "category.view")
 }
 
 // DefaultConfig for this module
