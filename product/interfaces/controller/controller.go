@@ -7,7 +7,6 @@ import (
 	"flamingo/framework/web"
 	"flamingo/framework/web/responder"
 	"log"
-	"net/url"
 	"strings"
 
 	"sort"
@@ -129,7 +128,7 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 	}
 
 	for _, variant := range configurable.Variants {
-		urlName := makeUrlTitle(variant.BasicProductData.Title)
+		urlName := web.UrlTitle(variant.BasicProductData.Title)
 		variantUrl := vc.Router.URL("product.view", router.P{"marketplacecode": configurable.MarketPlaceCode, "variantcode": variant.MarketPlaceCode, "name": urlName}).String()
 
 		attributes := make(map[string]string)
@@ -180,7 +179,7 @@ func (vc *View) Get(c web.Context) web.Response {
 		if err != nil {
 			// 1.A. No variant selected
 			// normalize URL
-			urlName := makeUrlTitle(product.BaseData().Title)
+			urlName := web.UrlTitle(product.BaseData().Title)
 			if urlName != c.MustParam1("name") && skipnamecheck == "" {
 				return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "name": urlName})
 			}
@@ -194,7 +193,7 @@ func (vc *View) Get(c web.Context) web.Response {
 			activeVariant, _ = configurableProduct.Variant(variantCode)
 			// 1.B. Variant selected
 			// normalize URL
-			urlName := makeUrlTitle(activeVariant.BasicProductData.Title)
+			urlName := web.UrlTitle(activeVariant.BasicProductData.Title)
 			if urlName != c.MustParam1("name") && skipnamecheck == "" {
 				return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "variantcode": variantCode, "name": urlName})
 			}
@@ -212,7 +211,7 @@ func (vc *View) Get(c web.Context) web.Response {
 	} else {
 		// 2. Handle Simples
 		// normalize URL
-		urlName := makeUrlTitle(product.BaseData().Title)
+		urlName := web.UrlTitle(product.BaseData().Title)
 		if urlName != c.MustParam1("name") && skipnamecheck == "" {
 			return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "name": urlName})
 		}
@@ -232,13 +231,6 @@ func (vc *View) Get(c web.Context) web.Response {
 	}
 
 	return vc.Render(c, vc.Template, viewData)
-}
-
-func makeUrlTitle(title string) string {
-	newTitle := strings.ToLower(strings.Replace(title, " ", "-", -1))
-	newTitle = url.QueryEscape(newTitle)
-
-	return newTitle
 }
 
 type dbgrender struct {
