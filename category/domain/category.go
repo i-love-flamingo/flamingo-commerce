@@ -1,9 +1,10 @@
 package domain
 
 type (
-	Category struct {
-		Code       string
-		Name       string
-		Categories []*Category
+	// Category domain model
+	Category interface {
+		Code() string
+		Name() string
+		Categories() []Category
 	}
 )

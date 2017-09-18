@@ -16,8 +16,8 @@ type (
 		responder.RedirectAware `inject:""`
 		domain.CategoryService  `inject:""`
 
-		Template string         `inject:"config:core.category.view.template"`
 		Router   *router.Router `inject:""`
+		Template string         `inject:"config:core.category.view.template"`
 	}
 
 	// ViewData for rendering context
@@ -29,9 +29,7 @@ type (
 
 // Get Response for Product matching sku param
 func (vc *View) Get(c web.Context) web.Response {
-	category, err := vc.CategoryService.Get(c, c.MustParam1("categorycode"))
-
-	// catch error
+	category, err := vc.CategoryService.Get(c, c.MustParam1("code"))
 	if err == domain.NotFound {
 		return vc.ErrorNotFound(c, err)
 	} else if err != nil {
@@ -41,14 +39,12 @@ func (vc *View) Get(c web.Context) web.Response {
 	expectedName := web.UrlTitle(category.Name)
 	if expectedName != c.MustParam1("name") {
 		return vc.Redirect("category.view", router.P{
-			"categorycode": category.Code,
-			"name":         expectedName,
+			"code": category.Code,
+			"name": expectedName,
 		})
 	}
 
-	products, err := vc.CategoryService.GetProducts(c, c.MustParam1("categorycode"))
-
-	// catch error
+	products, err := vc.CategoryService.GetProducts(c, c.MustParam1("code"))
 	if err != nil {
 		return vc.Error(c, err)
 	}

@@ -8,7 +8,7 @@ import (
 
 var (
 	// NotFound error
-	NotFound = errors.New("Category not found")
+	NotFound = errors.New("category not found")
 )
 
 type (
