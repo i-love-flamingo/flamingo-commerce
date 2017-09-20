@@ -3,15 +3,13 @@ package controller
 import (
 	"flamingo/core/breadcrumbs"
 	"flamingo/core/product/domain"
+	"flamingo/core/pugtemplate/pugjs"
 	"flamingo/framework/router"
 	"flamingo/framework/web"
 	"flamingo/framework/web/responder"
 	"log"
-	"strings"
-
 	"sort"
-
-	"flamingo/core/pug_template/pugjs"
+	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -128,7 +126,7 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 	}
 
 	for _, variant := range configurable.Variants {
-		urlName := web.UrlTitle(variant.BasicProductData.Title)
+		urlName := web.URLTitle(variant.BasicProductData.Title)
 		variantUrl := vc.Router.URL("product.view", router.P{"marketplacecode": configurable.MarketPlaceCode, "variantcode": variant.MarketPlaceCode, "name": urlName}).String()
 
 		attributes := make(map[string]string)
@@ -179,7 +177,7 @@ func (vc *View) Get(c web.Context) web.Response {
 		if err != nil {
 			// 1.A. No variant selected
 			// normalize URL
-			urlName := web.UrlTitle(product.BaseData().Title)
+			urlName := web.URLTitle(product.BaseData().Title)
 			if urlName != c.MustParam1("name") && skipnamecheck == "" {
 				return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "name": urlName})
 			}
@@ -193,7 +191,7 @@ func (vc *View) Get(c web.Context) web.Response {
 			activeVariant, _ = configurableProduct.Variant(variantCode)
 			// 1.B. Variant selected
 			// normalize URL
-			urlName := web.UrlTitle(activeVariant.BasicProductData.Title)
+			urlName := web.URLTitle(activeVariant.BasicProductData.Title)
 			if urlName != c.MustParam1("name") && skipnamecheck == "" {
 				return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "variantcode": variantCode, "name": urlName})
 			}
@@ -211,7 +209,7 @@ func (vc *View) Get(c web.Context) web.Response {
 	} else {
 		// 2. Handle Simples
 		// normalize URL
-		urlName := web.UrlTitle(product.BaseData().Title)
+		urlName := web.URLTitle(product.BaseData().Title)
 		if urlName != c.MustParam1("name") && skipnamecheck == "" {
 			return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "name": urlName})
 		}
