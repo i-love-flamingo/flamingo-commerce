@@ -27,7 +27,7 @@ func (lc *TestLoginController) Get(c web.Context) web.Response {
 
 	lc.EventRouter.Dispatch(
 		domain.LoginSucessEvent{
-			"U213213",
+			UserID: "U213213",
 		},
 	)
 

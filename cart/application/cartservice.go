@@ -98,7 +98,7 @@ func (cs *CartService) createNewSessionGuestCart(ctx web.Context) (domain.Cart, 
 		delete(ctx.Session().Values, "cart.guestid")
 		return newGuestCart, e
 	}
-	log.Printf("cart.application.cartservice: Requested new Guestcart %s", newGuestCart)
+	log.Printf("cart.application.cartservice: Requested new Guestcart %v", newGuestCart)
 	ctx.Session().Values["cart.guestid"] = newGuestCart.ID
 	return newGuestCart, nil
 }
