@@ -3,6 +3,7 @@ package controller
 import (
 	"flamingo/core/category/domain"
 	productdomain "flamingo/core/product/domain"
+	searchdomain "flamingo/core/search/domain"
 	"flamingo/framework/router"
 	"flamingo/framework/web"
 	"flamingo/framework/web/responder"
@@ -11,10 +12,11 @@ import (
 type (
 	// View demonstrates a product view controller
 	View struct {
-		responder.ErrorAware    `inject:""`
-		responder.RenderAware   `inject:""`
-		responder.RedirectAware `inject:""`
-		domain.CategoryService  `inject:""`
+		responder.ErrorAware       `inject:""`
+		responder.RenderAware      `inject:""`
+		responder.RedirectAware    `inject:""`
+		domain.CategoryService     `inject:""`
+		searchdomain.SearchService `inject:""`
 
 		Router   *router.Router `inject:""`
 		Template string         `inject:"config:core.category.view.template"`
@@ -44,7 +46,7 @@ func (vc *View) Get(c web.Context) web.Response {
 		})
 	}
 
-	products, err := vc.CategoryService.GetProducts(c, c.MustParam1("code"))
+	_, products, _, err := vc.SearchService.GetProducts(c, searchdomain.SearchMeta{}, domain.NewCategoryFacet(c.MustParam1("code")))
 	if err != nil {
 		return vc.Error(c, err)
 	}
