@@ -7,10 +7,10 @@ import (
 )
 
 const (
-	TypeSimple             = "simple"
-	TypeConfigurable       = "configurable"
-	mediaTypeExternalImage = "image-external"
-	mediaTypeImageService  = "image-service"
+	// TypeSimple denotes simple products
+	TypeSimple = "simple"
+	// TypeConfigurable denotes configurable products
+	TypeConfigurable = "configurable"
 )
 
 type (

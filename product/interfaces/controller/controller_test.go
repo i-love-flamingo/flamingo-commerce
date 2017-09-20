@@ -54,10 +54,10 @@ func TestViewController_Get(t *testing.T) {
 	vc.Get(ctx)
 	redirectAware.AssertCalled(t, "Redirect", "product.view", map[string]string{"name": expectedUrlTitle, "marketplacecode": "test"})
 
-	renderAware.On("Render", ctx, mock.AnythingOfType("string"), mock.AnythingOfType("controller.ProductViewData")).Return(nil)
+	renderAware.On("Render", ctx, mock.AnythingOfType("string"), mock.AnythingOfType("controller.productViewData")).Return(nil)
 	ctx.LoadParams(router.P{"marketplacecode": "test", "name": expectedUrlTitle})
 	vc.Get(ctx)
-	renderAware.AssertCalled(t, "Render", ctx, vc.Template, mock.AnythingOfType("controller.ProductViewData"))
+	renderAware.AssertCalled(t, "Render", ctx, vc.Template, mock.AnythingOfType("controller.productViewData"))
 
 	errorAware.On("Error", ctx, mock.Anything).Return(nil)
 	ctx.LoadParams(router.P{"marketplacecode": "fail", "name": "fail"})

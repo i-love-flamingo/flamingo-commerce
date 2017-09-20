@@ -3,7 +3,6 @@ package controller
 import (
 	"flamingo/core/breadcrumbs"
 	"flamingo/core/product/domain"
-	"flamingo/core/pugtemplate/pugjs"
 	"flamingo/framework/router"
 	"flamingo/framework/web"
 	"flamingo/framework/web/responder"
@@ -26,39 +25,37 @@ type (
 		Router   *router.Router `inject:""`
 	}
 
-	DebugData View
-
-	// ProductViewData is used for product rendering
-	ProductViewData struct {
+	// productViewData is used for product rendering
+	productViewData struct {
 		// simple / configurable / configurable_with_variant
 		RenderContext       string
 		SimpleProduct       domain.SimpleProduct
 		ConfigurableProduct domain.ConfigurableProduct
 		ActiveVariant       domain.Variant
 		VariantSelected     bool
-		VariantSelection    VariantSelection
+		VariantSelection    variantSelection
 	}
 
-	// VariantSelection for templating
-	VariantSelection struct {
-		Attributes []ViewVariantAttribute
-		Variants   []ViewVariant
+	// variantSelection for templating
+	variantSelection struct {
+		Attributes []viewVariantAttribute
+		Variants   []viewVariant
 	}
 
-	ViewVariantAttribute struct {
+	viewVariantAttribute struct {
 		Key     string
 		Title   string
-		Options []ViewVariantOption
+		Options []viewVariantOption
 	}
 
-	ViewVariantOption struct {
+	viewVariantOption struct {
 		Key          string
 		Title        string
 		Combinations map[string][]string
 		Selected     bool
 	}
 
-	ViewVariant struct {
+	viewVariant struct {
 		Attributes      map[string]string
 		Marketplacecode string
 		Title           string
@@ -66,8 +63,8 @@ type (
 	}
 )
 
-func (vc *View) variantSelection(configurable domain.ConfigurableProduct, activeVariant *domain.Variant) VariantSelection {
-	var variants VariantSelection
+func (vc *View) variantSelection(configurable domain.ConfigurableProduct, activeVariant *domain.Variant) variantSelection {
+	var variants variantSelection
 	combinations := make(map[string]map[string]map[string]map[string]bool)
 
 	for _, attribute := range configurable.VariantVariationAttributes {
@@ -97,7 +94,7 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 	}
 
 	for code, attribute := range combinations {
-		viewVariantAttribute := ViewVariantAttribute{
+		viewVariantAttribute := viewVariantAttribute{
 			Key:   code,
 			Title: strings.Title(code),
 		}
@@ -114,7 +111,7 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 			if activeVariant != nil && activeVariant.Attributes[code] == optionCode {
 				selected = true
 			}
-			viewVariantAttribute.Options = append(viewVariantAttribute.Options, ViewVariantOption{
+			viewVariantAttribute.Options = append(viewVariantAttribute.Options, viewVariantOption{
 				Key:          optionCode,
 				Title:        strings.Title(optionCode),
 				Selected:     selected,
@@ -138,7 +135,7 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 			attributes[attr.Key] = variant.Attributes[attr.Key].(string)
 		}
 
-		variants.Variants = append(variants.Variants, ViewVariant{
+		variants.Variants = append(variants.Variants, viewVariant{
 			Title:           variant.Title,
 			Marketplacecode: variant.MarketPlaceCode,
 			Url:             variantUrl,
@@ -165,7 +162,7 @@ func (vc *View) Get(c web.Context) web.Response {
 		}
 	}
 
-	var viewData ProductViewData
+	var viewData productViewData
 
 	// 1. Handle Configurables
 	if product.Type() == "configurable" {
@@ -181,7 +178,7 @@ func (vc *View) Get(c web.Context) web.Response {
 			if urlName != c.MustParam1("name") && skipnamecheck == "" {
 				return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "name": urlName})
 			}
-			viewData = ProductViewData{
+			viewData = productViewData{
 				ConfigurableProduct: configurableProduct,
 				VariantSelected:     false,
 				RenderContext:       "configurable",
@@ -196,7 +193,7 @@ func (vc *View) Get(c web.Context) web.Response {
 				return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "variantcode": variantCode, "name": urlName})
 			}
 			log.Printf("Variant Price %v / %v", activeVariant.ActivePrice.Default, activeVariant.ActivePrice)
-			viewData = ProductViewData{
+			viewData = productViewData{
 				ConfigurableProduct: configurableProduct,
 				ActiveVariant:       *activeVariant,
 				VariantSelected:     true,
@@ -215,7 +212,7 @@ func (vc *View) Get(c web.Context) web.Response {
 		}
 
 		simpleProduct := product.(domain.SimpleProduct)
-		viewData = ProductViewData{SimpleProduct: simpleProduct, RenderContext: "simple"}
+		viewData = productViewData{SimpleProduct: simpleProduct, RenderContext: "simple"}
 	}
 
 	paths := product.BaseData().CategoryPath
@@ -229,29 +226,4 @@ func (vc *View) Get(c web.Context) web.Response {
 	}
 
 	return vc.Render(c, vc.Template, viewData)
-}
-
-type dbgrender struct {
-	data interface{}
-}
-
-func (d *dbgrender) Render(context web.Context, tpl string, data interface{}) web.Response {
-	d.data = data
-	return nil
-}
-
-func (d *DebugData) Get(c web.Context) web.Response {
-	vc := (*View)(d)
-	r := &dbgrender{}
-	vc.RenderAware = r
-
-	params := c.ParamAll()
-	params["skipnamecheck"] = "1"
-	params["name"] = ""
-	c.LoadParams(params)
-	vc.Get(c)
-
-	return &web.JSONResponse{
-		Data: pugjs.Convert(r.data),
-	}
 }
