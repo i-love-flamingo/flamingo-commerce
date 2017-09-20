@@ -44,8 +44,8 @@ type (
 var (
 	_ Filter = NewKeyValueFilter("a", []string{"b", "c"})
 
-	// SearchNotFound error
-	SearchNotFound = errors.New("search not found")
+	// ErrNotFound error
+	ErrNotFound = errors.New("search not found")
 )
 
 // NewKeyValueFilter factory
