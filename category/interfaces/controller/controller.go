@@ -38,7 +38,7 @@ func (vc *View) Get(c web.Context) web.Response {
 		return vc.Error(c, err)
 	}
 
-	expectedName := web.UrlTitle(category.Name())
+	expectedName := web.URLTitle(category.Name())
 	if expectedName != c.MustParam1("name") {
 		return vc.Redirect("category.view", router.P{
 			"code": category.Code(),
