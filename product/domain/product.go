@@ -18,6 +18,7 @@ type (
 	BasicProduct interface {
 		BaseData() BasicProductData
 		TeaserData() TeaserData
+		SaleableData() Saleable
 		Type() string
 	}
 
@@ -25,7 +26,7 @@ type (
 	SimpleProduct struct {
 		Identifier string
 		BasicProductData
-		SaleableData
+		Saleable
 		Teaser TeaserData
 	}
 
@@ -40,7 +41,7 @@ type (
 
 	Variant struct {
 		BasicProductData
-		SaleableData
+		Saleable
 	}
 
 	// baseData is the basic product model
@@ -67,7 +68,7 @@ type (
 	}
 
 	// SaleableData are properties required for beeing selled
-	SaleableData struct {
+	Saleable struct {
 		IsSaleable      bool
 		SaleableFrom    time.Time
 		SaleableTo      time.Time
@@ -135,6 +136,10 @@ func (ps SimpleProduct) TeaserData() TeaserData {
 	return ps.Teaser
 }
 
+func (ps SimpleProduct) SaleableData() Saleable {
+	return ps.Saleable
+}
+
 // Type interface implementation for SimpleProduct
 func (p ConfigurableProduct) Type() string {
 	return TypeConfigurable
@@ -159,4 +164,8 @@ func (p ConfigurableProduct) Variant(marketplaceCode string) (*Variant, error) {
 		}
 	}
 	return nil, errors.New("No Variant with code " + marketplaceCode + " found ")
+}
+
+func (p ConfigurableProduct) SaleableData() Saleable {
+	return p.Variants[0].Saleable
 }
