@@ -43,7 +43,7 @@ type (
 		SaleableData
 	}
 
-	// basicProductData is the basic product model
+	// baseData is the basic product model
 	BasicProductData struct {
 		Title            string
 		Attributes       Attributes
