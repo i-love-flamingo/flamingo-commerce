@@ -169,3 +169,11 @@ func (p ConfigurableProduct) Variant(marketplaceCode string) (*Variant, error) {
 func (p ConfigurableProduct) SaleableData() Saleable {
 	return p.Variants[0].Saleable
 }
+
+func (v Variant) BaseData() BasicProductData {
+	return v.BasicProductData
+}
+
+func (v Variant) SaleableData() Saleable {
+	return v.Saleable
+}
