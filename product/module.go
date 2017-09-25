@@ -27,3 +27,13 @@ func (m *Module) DefaultConfig() config.Map {
 		"core.product.view.template": "product/product",
 	}
 }
+
+// URL for a product
+func URL(marketplacecode, name string) (string, map[string]string) {
+	return "product.view", map[string]string{"marketplacecode": marketplacecode, "name": name}
+}
+
+// URLWithVariant for a product with a selected variant
+func URLWithVariant(marketplacecode, name, variantcode string) (string, map[string]string) {
+	return "product.view", map[string]string{"marketplacecode": marketplacecode, "name": name, "variantcode": variantcode}
+}

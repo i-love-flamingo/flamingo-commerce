@@ -2,6 +2,8 @@ package controller
 
 import (
 	"flamingo/core/breadcrumbs"
+	"flamingo/core/category"
+	module "flamingo/core/product"
 	"flamingo/core/product/domain"
 	"flamingo/framework/router"
 	"flamingo/framework/web"
@@ -176,7 +178,7 @@ func (vc *View) Get(c web.Context) web.Response {
 			// normalize URL
 			urlName := web.URLTitle(product.BaseData().Title)
 			if urlName != c.MustParam1("name") && skipnamecheck == "" {
-				return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "name": urlName})
+				return vc.Redirect(module.URL(c.MustParam1("marketplacecode"), urlName))
 			}
 			viewData = productViewData{
 				ConfigurableProduct: configurableProduct,
@@ -190,7 +192,7 @@ func (vc *View) Get(c web.Context) web.Response {
 			// normalize URL
 			urlName := web.URLTitle(activeVariant.BasicProductData.Title)
 			if urlName != c.MustParam1("name") && skipnamecheck == "" {
-				return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "variantcode": variantCode, "name": urlName})
+				return vc.Redirect(module.URLWithVariant(c.MustParam1("marketplacecode"), urlName, variantCode))
 			}
 			log.Printf("Variant Price %v / %v", activeVariant.ActivePrice.Default, activeVariant.ActivePrice)
 			viewData = productViewData{
@@ -208,7 +210,7 @@ func (vc *View) Get(c web.Context) web.Response {
 		// normalize URL
 		urlName := web.URLTitle(product.BaseData().Title)
 		if urlName != c.MustParam1("name") && skipnamecheck == "" {
-			return vc.Redirect("product.view", router.P{"marketplacecode": c.MustParam1("marketplacecode"), "name": urlName})
+			return vc.Redirect(module.URL(c.MustParam1("marketplacecode"), urlName))
 		}
 
 		simpleProduct := product.(domain.SimpleProduct)
@@ -220,7 +222,10 @@ func (vc *View) Get(c web.Context) web.Response {
 	var stringHead string
 	for _, p := range paths {
 		if strings.HasPrefix(p, stringHead) {
-			breadcrumbs.Add(c, breadcrumbs.Crumb{Title: p[len(stringHead):]})
+			breadcrumbs.Add(c, breadcrumbs.Crumb{
+				Title: p[len(stringHead):],
+				URL:   vc.Router.URL(category.URLWithName(p[len(stringHead):], p[len(stringHead):])).String(),
+			})
 			stringHead = p + "/"
 		}
 	}
