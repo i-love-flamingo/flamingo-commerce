@@ -3,7 +3,6 @@ package controller
 import (
 	"flamingo/core/breadcrumbs"
 	"flamingo/core/category"
-	module "flamingo/core/product"
 	"flamingo/core/product/domain"
 	"flamingo/framework/router"
 	"flamingo/framework/web"
@@ -178,7 +177,7 @@ func (vc *View) Get(c web.Context) web.Response {
 			// normalize URL
 			urlName := web.URLTitle(product.BaseData().Title)
 			if urlName != c.MustParam1("name") && skipnamecheck == "" {
-				return vc.Redirect(module.URL(c.MustParam1("marketplacecode"), urlName))
+				return vc.Redirect(URL(c.MustParam1("marketplacecode"), urlName))
 			}
 			viewData = productViewData{
 				ConfigurableProduct: configurableProduct,
@@ -192,7 +191,7 @@ func (vc *View) Get(c web.Context) web.Response {
 			// normalize URL
 			urlName := web.URLTitle(activeVariant.BasicProductData.Title)
 			if urlName != c.MustParam1("name") && skipnamecheck == "" {
-				return vc.Redirect(module.URLWithVariant(c.MustParam1("marketplacecode"), urlName, variantCode))
+				return vc.Redirect(URLWithVariant(c.MustParam1("marketplacecode"), urlName, variantCode))
 			}
 			log.Printf("Variant Price %v / %v", activeVariant.ActivePrice.Default, activeVariant.ActivePrice)
 			viewData = productViewData{
@@ -210,7 +209,7 @@ func (vc *View) Get(c web.Context) web.Response {
 		// normalize URL
 		urlName := web.URLTitle(product.BaseData().Title)
 		if urlName != c.MustParam1("name") && skipnamecheck == "" {
-			return vc.Redirect(module.URL(c.MustParam1("marketplacecode"), urlName))
+			return vc.Redirect(URL(c.MustParam1("marketplacecode"), urlName))
 		}
 
 		simpleProduct := product.(domain.SimpleProduct)
@@ -231,4 +230,14 @@ func (vc *View) Get(c web.Context) web.Response {
 	}
 
 	return vc.Render(c, vc.Template, viewData)
+}
+
+// URL for a product
+func URL(marketplacecode, name string) (string, map[string]string) {
+	return "product.view", map[string]string{"marketplacecode": marketplacecode, "name": name}
+}
+
+// URLWithVariant for a product with a selected variant
+func URLWithVariant(marketplacecode, name, variantcode string) (string, map[string]string) {
+	return "product.view", map[string]string{"marketplacecode": marketplacecode, "name": name, "variantcode": variantcode}
 }
