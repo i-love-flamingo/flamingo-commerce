@@ -5,6 +5,7 @@ import (
 	"flamingo/framework/config"
 	"flamingo/framework/dingo"
 	"flamingo/framework/router"
+	"flamingo/framework/web"
 )
 
 type (
@@ -21,7 +22,7 @@ func URL(code string) (string, map[string]string) {
 
 // URL with name to category
 func URLWithName(code, name string) (string, map[string]string) {
-	return controller.URLWithName(code, name)
+	return controller.URLWithName(code, web.URLTitle(name))
 }
 
 // Configure the product URL
