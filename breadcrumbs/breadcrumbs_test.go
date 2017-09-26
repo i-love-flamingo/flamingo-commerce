@@ -11,7 +11,7 @@ func TestAdd(t *testing.T) {
 	ctx := new(mocks.Context)
 	crumb := Crumb{
 		Title: "Test",
-		URL:   "http://testurl/",
+		Url:   "http://testurl/",
 	}
 
 	ctx.On("Value", contextKey).Once().Return(nil)
@@ -31,7 +31,7 @@ func TestController_Data(t *testing.T) {
 	ctx := new(mocks.Context)
 	crumb := Crumb{
 		Title: "Test",
-		URL:   "http://testurl/",
+		Url:   "http://testurl/",
 	}
 	c := new(Controller)
 
