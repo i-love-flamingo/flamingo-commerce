@@ -39,12 +39,13 @@ type (
 		Variants                   []Variant
 	}
 
+	// Variant is a concrete kind of a product
 	Variant struct {
 		BasicProductData
 		Saleable
 	}
 
-	// baseData is the basic product model
+	// BasicProductData is the basic product model
 	BasicProductData struct {
 		Title            string
 		Attributes       Attributes
@@ -68,7 +69,7 @@ type (
 		Keywords []string
 	}
 
-	// SaleableData are properties required for beeing selled
+	// Saleable are properties required for beeing selled
 	Saleable struct {
 		IsSaleable      bool
 		SaleableFrom    time.Time
@@ -77,6 +78,7 @@ type (
 		AvailablePrices []PriceInfo
 	}
 
+	// PriceInfo holds product price information
 	PriceInfo struct {
 		Default           float64
 		Discounted        float64
@@ -135,6 +137,7 @@ func (ps SimpleProduct) TeaserData() TeaserData {
 	return ps.Teaser
 }
 
+// SaleableData getter for SimpleProduct
 func (ps SimpleProduct) SaleableData() Saleable {
 	return ps.Saleable
 }
@@ -155,7 +158,8 @@ func (p ConfigurableProduct) TeaserData() TeaserData {
 	return p.Teaser
 }
 
-// BaseData interface implementation for SimpleProduct
+// Variant getter for ConfigurableProduct
+// Variant is retrieved via marketplaceCode of the variant
 func (p ConfigurableProduct) Variant(marketplaceCode string) (*Variant, error) {
 	for _, variant := range p.Variants {
 		if variant.BasicProductData.MarketPlaceCode == marketplaceCode {
@@ -165,14 +169,17 @@ func (p ConfigurableProduct) Variant(marketplaceCode string) (*Variant, error) {
 	return nil, errors.New("No Variant with code " + marketplaceCode + " found ")
 }
 
+// SaleableData getter for ConfigurableProduct
 func (p ConfigurableProduct) SaleableData() Saleable {
 	return p.Variants[0].Saleable
 }
 
+// BaseData getter for Variant
 func (v Variant) BaseData() BasicProductData {
 	return v.BasicProductData
 }
 
+// SaleableData getter for Variant
 func (v Variant) SaleableData() Saleable {
 	return v.Saleable
 }

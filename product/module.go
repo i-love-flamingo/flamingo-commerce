@@ -30,10 +30,10 @@ func (m *Module) DefaultConfig() config.Map {
 
 // URL for a product
 func URL(marketplacecode, name string) (string, map[string]string) {
-	return "product.view", map[string]string{"marketplacecode": marketplacecode, "name": name}
+	return controller.URL(marketplacecode, name)
 }
 
 // URLWithVariant for a product with a selected variant
 func URLWithVariant(marketplacecode, name, variantcode string) (string, map[string]string) {
-	return "product.view", map[string]string{"marketplacecode": marketplacecode, "name": name, "variantcode": variantcode}
+	return controller.URLWithVariant(marketplacecode, name, variantcode)
 }
