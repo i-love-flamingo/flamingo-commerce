@@ -6,7 +6,7 @@ type (
 	// Crumb defines a breadcrumb
 	Crumb struct {
 		Title string
-		URL   string
+		Url   string
 	}
 
 	// Controller defines the data controller
