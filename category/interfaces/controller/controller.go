@@ -25,8 +25,9 @@ type (
 
 	// ViewData for rendering context
 	ViewData struct {
-		Category domain.Category
-		Products []productdomain.BasicProduct
+		Category     domain.Category
+		CategoryTree domain.Category
+		Products     []productdomain.BasicProduct
 	}
 )
 
@@ -79,8 +80,9 @@ func (vc *View) Get(c web.Context) web.Response {
 	vc.addBreadcrumb(c, categoryRoot)
 
 	return vc.Render(c, vc.Template, ViewData{
-		Category: categoryRoot,
-		Products: products,
+		Category:     category,
+		CategoryTree: categoryRoot,
+		Products:     products,
 	})
 }
 
