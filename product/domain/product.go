@@ -61,8 +61,9 @@ type (
 		VisibleFrom time.Time
 		VisibleTo   time.Time
 
-		CategoryPath  []string
-		CategoryCodes []string
+		CategoryPath          []string
+		CategoryCodes         []string
+		CategoryToCodeMapping []string
 
 		Keywords []string
 	}

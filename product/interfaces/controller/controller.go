@@ -8,7 +8,6 @@ import (
 	"flamingo/framework/web"
 	"flamingo/framework/web/responder"
 	"log"
-	"sort"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -216,16 +215,19 @@ func (vc *View) Get(c web.Context) web.Response {
 		viewData = productViewData{SimpleProduct: simpleProduct, RenderContext: "simple"}
 	}
 
-	paths := product.BaseData().CategoryPath
-	sort.Strings(paths)
+	paths := product.BaseData().CategoryToCodeMapping
+	//sort.Strings(paths)
 	var stringHead string
 	for _, p := range paths {
-		if strings.HasPrefix(p, stringHead) {
+		parts := strings.Split(p, ":")
+		name, code := parts[0], parts[1]
+		if strings.HasPrefix(name, stringHead) {
+			name = name[len(stringHead):]
 			breadcrumbs.Add(c, breadcrumbs.Crumb{
-				Title: p[len(stringHead):],
-				Url:   vc.Router.URL(category.URLWithName(p[len(stringHead):], p[len(stringHead):])).String(),
+				Title: name,
+				Url:   vc.Router.URL(category.URLWithName(code, name)).String(),
 			})
-			stringHead = p + "/"
+			stringHead = name + "/"
 		}
 	}
 
