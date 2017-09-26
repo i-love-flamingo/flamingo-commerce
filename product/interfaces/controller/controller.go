@@ -223,7 +223,7 @@ func (vc *View) Get(c web.Context) web.Response {
 		if strings.HasPrefix(p, stringHead) {
 			breadcrumbs.Add(c, breadcrumbs.Crumb{
 				Title: p[len(stringHead):],
-				URL:   vc.Router.URL(category.URLWithName(p[len(stringHead):], p[len(stringHead):])).String(),
+				Url:   vc.Router.URL(category.URLWithName(p[len(stringHead):], p[len(stringHead):])).String(),
 			})
 			stringHead = p + "/"
 		}
