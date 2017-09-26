@@ -96,9 +96,7 @@ type (
 
 	// TeaserData is the teaser-information for product previews
 	TeaserData struct {
-		Title            string
 		ShortTitle       string
-		Teaser           string
 		ShortDescription string
 		Media            []Media
 	}
