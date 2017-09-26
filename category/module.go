@@ -16,12 +16,12 @@ type (
 
 // URL to category
 func URL(code string) (string, map[string]string) {
-	return "category.view", map[string]string{"code": code}
+	return controller.URL(code)
 }
 
 // URL with name to category
 func URLWithName(code, name string) (string, map[string]string) {
-	return "category.view", map[string]string{"code": code, "name": name}
+	return controller.URLWithName(code, name)
 }
 
 // Configure the product URL

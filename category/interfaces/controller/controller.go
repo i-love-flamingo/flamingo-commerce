@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"flamingo/core/breadcrumbs"
 	"flamingo/core/category/domain"
 	productdomain "flamingo/core/product/domain"
 	searchdomain "flamingo/core/search/domain"
@@ -29,14 +30,38 @@ type (
 	}
 )
 
+// URL to category
+func URL(code string) (string, map[string]string) {
+	return "category.view", map[string]string{"code": code}
+}
+
+// URL with name to category
+func URLWithName(code, name string) (string, map[string]string) {
+	return "category.view", map[string]string{"code": code, "name": name}
+}
+
+func getActive(category domain.Category) domain.Category {
+	for _, sub := range category.Categories() {
+		if active := getActive(sub); active != nil {
+			return active
+		}
+	}
+	if category.Active() {
+		return category
+	}
+	return nil
+}
+
 // Get Response for Product matching sku param
 func (vc *View) Get(c web.Context) web.Response {
-	category, err := vc.CategoryService.Get(c, c.MustParam1("code"))
+	categoryRoot, err := vc.CategoryService.Get(c, c.MustParam1("code"))
 	if err == domain.NotFound {
 		return vc.ErrorNotFound(c, err)
 	} else if err != nil {
 		return vc.Error(c, err)
 	}
+
+	category := getActive(categoryRoot)
 
 	expectedName := web.URLTitle(category.Name())
 	if expectedName != c.MustParam1("name") {
@@ -51,8 +76,26 @@ func (vc *View) Get(c web.Context) web.Response {
 		return vc.Error(c, err)
 	}
 
+	vc.addBreadcrumb(c, categoryRoot)
+
 	return vc.Render(c, vc.Template, ViewData{
-		Category: category,
+		Category: categoryRoot,
 		Products: products,
 	})
+}
+
+func (vc *View) addBreadcrumb(c web.Context, category domain.Category) {
+	if !category.Active() {
+		return
+	}
+	if category.Code() != "" {
+		breadcrumbs.Add(c, breadcrumbs.Crumb{
+			category.Name(),
+			vc.Router.URL(URLWithName(category.Code(), web.URLTitle(category.Name()))).String(),
+		})
+	}
+
+	for _, subcat := range category.Categories() {
+		vc.addBreadcrumb(c, subcat)
+	}
 }

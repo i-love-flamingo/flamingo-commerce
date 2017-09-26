@@ -11,6 +11,7 @@ type (
 		Code() string
 		Name() string
 		Categories() []Category
+		Active() bool
 	}
 
 	// CategoryFacet search filter
