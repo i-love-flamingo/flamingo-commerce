@@ -1,7 +1,7 @@
 package infrastructure
 
 import (
-	"flamingo/core/cart/domain"
+	"flamingo/core/cart/domain/cart"
 	"log"
 
 	"math/rand"
@@ -13,25 +13,20 @@ import (
 
 // In Session Cart Storage
 type InMemoryCartService struct {
-	GuestCarts map[int]domain.Cart
+	GuestCarts map[int]cart.Cart
 }
+
+// TEst Assignement and if Interface is implemeted correct
+//var _ cart.GuestCartService = InMemoryCartService{}
 
 func (cs *InMemoryCartService) init() {
 	if cs.GuestCarts == nil {
-		cs.GuestCarts = make(map[int]domain.Cart)
+		cs.GuestCarts = make(map[int]cart.Cart)
 	}
 }
 
-func (cs *InMemoryCartService) GetEmptyCart() (domain.Cart, error) {
-
-	emptyCart := domain.Cart{
-		Cartitems: nil,
-	}
-	return emptyCart, nil
-}
-
-func (cs *InMemoryCartService) GetGuestCart(guestcartid int) (domain.Cart, error) {
-	var cart domain.Cart
+func (cs *InMemoryCartService) GetCart(guestcartid int) (cart.Cart, error) {
+	var cart cart.Cart
 	cs.init()
 	if guestCart, ok := cs.GuestCarts[guestcartid]; ok {
 		guestCart.CurrencyCode = "EUR"
@@ -51,9 +46,9 @@ func (cs *InMemoryCartService) GetGuestCart(guestcartid int) (domain.Cart, error
 }
 
 //Creates a new guest cart and returns it
-func (cs *InMemoryCartService) GetNewGuestCart() (domain.Cart, error) {
+func (cs *InMemoryCartService) GetNewCart() (cart.Cart, error) {
 	cs.init()
-	guestCart := domain.Cart{
+	guestCart := cart.Cart{
 		ID: rand.Int(),
 	}
 	cs.GuestCarts[guestCart.ID] = guestCart
@@ -62,16 +57,16 @@ func (cs *InMemoryCartService) GetNewGuestCart() (domain.Cart, error) {
 }
 
 //TODO Get price from product package
-func (cs *InMemoryCartService) AddToGuestCart(guestcartid int, productCode string, qty int) error {
+func (cs InMemoryCartService) AddToCart(guestcartid int, marketplaceCode string, qty int) error {
 	if _, ok := cs.GuestCarts[guestcartid]; !ok {
 		return errors.New(fmt.Sprintf("cart.infrastructure.inmemorycartservice: Cannot add - Guestcart with id %v not existend", guestcartid))
 	}
 	guestcart := cs.GuestCarts[guestcartid]
-	cartItem := domain.Cartitem{
-		ProductCode: productCode,
-		Qty:         qty,
-		Price:       12.99,
-		RowTotal:    (12.99 * float32(qty)),
+	cartItem := cart.Cartitem{
+		MarketplaceCode: marketplaceCode,
+		Qty:             qty,
+		Price:           12.99,
+		RowTotal:        (12.99 * float32(qty)),
 	}
 	guestcart.Cartitems = append(guestcart.Cartitems, cartItem)
 	cs.GuestCarts[guestcartid] = guestcart
@@ -82,7 +77,7 @@ func (cs *InMemoryCartService) AddToGuestCart(guestcartid int, productCode strin
 // AddOrUpdateByCode if cartitem with code is already in the cart its updated. Otherwise added
 func (Cart *Cart) AddOrUpdateByCode(code string, qty int, price float32) {
 	for id, cartItem := range Cart.Cartitems {
-		if cartItem.ProductCode == code {
+		if cartItem.ProductIdendifier == code {
 			cartItem.Qty = cartItem.Qty + qty
 			Cart.Cartitems[id] = cartItem
 			return

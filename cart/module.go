@@ -2,7 +2,7 @@ package cart
 
 import (
 	"encoding/gob"
-	"flamingo/core/cart/domain"
+	"flamingo/core/cart/domain/cart"
 	"flamingo/core/cart/infrastructure"
 	controller "flamingo/core/cart/interfaces/controller"
 	"flamingo/framework/dingo"
@@ -19,12 +19,12 @@ type (
 
 // Configure module
 func (m *Module) Configure(injector *dingo.Injector) {
-	injector.Bind((*domain.CartService)(nil)).In(dingo.Singleton).To(infrastructure.InMemoryCartService{})
+	injector.Bind((*cart.GuestCartService)(nil)).In(dingo.Singleton).To(infrastructure.InMemoryCartService{})
 
 	m.RouterRegistry.Handle("cart.view", new(controller.CartViewController))
 	m.RouterRegistry.Route("/cart", "cart.view")
 
-	gob.Register(domain.Cart{})
+	gob.Register(cart.Cart{})
 
 	//DecoratedCart API:
 

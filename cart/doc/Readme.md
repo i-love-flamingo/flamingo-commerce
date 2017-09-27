@@ -1,0 +1,1 @@
+This folder just contains the standalone version of the api-console and can be used during development

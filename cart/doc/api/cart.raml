@@ -1,0 +1,13 @@
+/items
+  post:
+    body:
+      application/json:
+           type: PriceRequest
+           example: !include examples/price-request.raml
+
+    responses:
+      200:
+        body:
+          application/json:
+            type: PriceResponse
+            example: !include examples/price-response.raml

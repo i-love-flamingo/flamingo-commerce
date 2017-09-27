@@ -1,0 +1,26 @@
+#%RAML 1.0
+title: Flamingo Cart API
+version: v1
+baseUri: /
+securedBy: [null ]
+documentation:
+  - title: Cart
+    content: >
+      ## Introduction
+
+      The API provides Enpoints for standard cart operations.
+      Normaly used via Ajax
+
+types:
+  Float:
+    description: Float Value
+    type: number
+    format: float
+
+  # Used in request
+  AddRequest:           !include api/types/AddRequest.raml
+
+
+/api/cart:                    !include api/cart.raml
+
+

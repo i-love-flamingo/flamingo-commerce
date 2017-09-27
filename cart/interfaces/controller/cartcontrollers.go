@@ -2,7 +2,7 @@ package controller
 
 import (
 	"flamingo/core/cart/application"
-	"flamingo/core/cart/domain"
+	"flamingo/core/cart/domain/cart"
 	"flamingo/framework/web"
 	"flamingo/framework/web/responder"
 	"fmt"
@@ -11,8 +11,8 @@ import (
 type (
 	// ViewData is used for cart views/templates
 	CartViewData struct {
-		DecoratedCart domain.DecoratedCart
-		Items         []domain.DecoratedCartItem
+		DecoratedCart cart.DecoratedCart
+		Items         []cart.DecoratedCartItem
 	}
 
 	// CartController for carts

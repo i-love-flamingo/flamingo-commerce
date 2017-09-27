@@ -21,6 +21,12 @@ type (
 		responder.JSONAware    `inject:""`
 		ApplicationCartService application.CartService `inject:""`
 	}
+
+	AddRequest struct {
+		MarketplaceCode        string
+		Qty                    int
+		VariantMarketplaceCode string
+	}
 )
 
 // Get JSON Format of API
