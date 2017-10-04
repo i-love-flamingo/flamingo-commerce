@@ -1,11 +1,11 @@
 package category
 
 import (
-	"flamingo/core/category/interfaces/controller"
-	"flamingo/framework/config"
-	"flamingo/framework/dingo"
-	"flamingo/framework/router"
-	"flamingo/framework/web"
+	"go.aoe.com/flamingo/core/category/interfaces/controller"
+	"go.aoe.com/flamingo/framework/config"
+	"go.aoe.com/flamingo/framework/dingo"
+	"go.aoe.com/flamingo/framework/router"
+	"go.aoe.com/flamingo/framework/web"
 )
 
 type (

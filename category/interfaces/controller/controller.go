@@ -1,13 +1,13 @@
 package controller
 
 import (
-	"flamingo/core/breadcrumbs"
-	"flamingo/core/category/domain"
-	productdomain "flamingo/core/product/domain"
-	searchdomain "flamingo/core/search/domain"
-	"flamingo/framework/router"
-	"flamingo/framework/web"
-	"flamingo/framework/web/responder"
+	"go.aoe.com/flamingo/core/breadcrumbs"
+	"go.aoe.com/flamingo/core/category/domain"
+	productdomain "go.aoe.com/flamingo/core/product/domain"
+	searchdomain "go.aoe.com/flamingo/core/search/domain"
+	"go.aoe.com/flamingo/framework/router"
+	"go.aoe.com/flamingo/framework/web"
+	"go.aoe.com/flamingo/framework/web/responder"
 )
 
 type (

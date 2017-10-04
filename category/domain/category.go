@@ -1,8 +1,9 @@
 package domain
 
 import (
-	"flamingo/core/search/domain"
 	"net/url"
+
+	"go.aoe.com/flamingo/core/search/domain"
 )
 
 type (
