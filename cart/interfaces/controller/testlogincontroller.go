@@ -2,12 +2,13 @@ package controller
 
 import (
 	"bytes"
-	"flamingo/core/cart/domain"
-	"flamingo/framework/event"
-	"flamingo/framework/web"
-	"flamingo/framework/web/responder"
 	"fmt"
 	"net/http"
+
+	"go.aoe.com/flamingo/core/cart/domain"
+	"go.aoe.com/flamingo/framework/event"
+	"go.aoe.com/flamingo/framework/web"
+	"go.aoe.com/flamingo/framework/web/responder"
 )
 
 type (

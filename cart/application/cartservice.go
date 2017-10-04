@@ -1,14 +1,12 @@
 package application
 
 import (
-	"flamingo/core/cart/domain/cart"
-	productDomain "flamingo/core/product/domain"
-
-	"flamingo/framework/web"
-
 	"log"
 
 	"github.com/pkg/errors"
+	"go.aoe.com/flamingo/core/cart/domain/cart"
+	productDomain "go.aoe.com/flamingo/core/product/domain"
+	"go.aoe.com/flamingo/framework/web"
 )
 
 // CartService application struct

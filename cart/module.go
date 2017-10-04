@@ -2,12 +2,14 @@ package cart
 
 import (
 	"encoding/gob"
-	"flamingo/core/cart/domain/cart"
-	"flamingo/core/cart/infrastructure"
-	controller "flamingo/core/cart/interfaces/controller"
-	"flamingo/framework/config"
-	"flamingo/framework/dingo"
-	"flamingo/framework/router"
+
+	controller "go.aoe.com/flamingo/core/cart/interfaces/controller"
+
+	"go.aoe.com/flamingo/core/cart/domain/cart"
+	"go.aoe.com/flamingo/core/cart/infrastructure"
+	"go.aoe.com/flamingo/framework/config"
+	"go.aoe.com/flamingo/framework/dingo"
+	"go.aoe.com/flamingo/framework/router"
 )
 
 type (

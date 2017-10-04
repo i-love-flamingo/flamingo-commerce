@@ -2,7 +2,8 @@ package cart
 
 import (
 	"context"
-	"flamingo/core/product/domain"
+
+	"go.aoe.com/flamingo/core/product/domain"
 
 	"log"
 )

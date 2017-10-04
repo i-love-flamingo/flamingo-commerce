@@ -1,11 +1,12 @@
 package controller
 
 import (
-	"flamingo/core/cart/application"
-	"flamingo/core/cart/domain/cart"
-	"flamingo/framework/web"
-	"flamingo/framework/web/responder"
 	"fmt"
+
+	"go.aoe.com/flamingo/core/cart/application"
+	"go.aoe.com/flamingo/core/cart/domain/cart"
+	"go.aoe.com/flamingo/framework/web"
+	"go.aoe.com/flamingo/framework/web/responder"
 )
 
 type (
