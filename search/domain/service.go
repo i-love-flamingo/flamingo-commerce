@@ -3,8 +3,9 @@ package domain
 import (
 	"context"
 	"errors"
-	"flamingo/core/product/domain"
 	"net/url"
+
+	"go.aoe.com/flamingo/core/product/domain"
 )
 
 type (
