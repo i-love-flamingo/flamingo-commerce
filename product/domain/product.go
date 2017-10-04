@@ -8,9 +8,9 @@ import (
 
 const (
 	// TypeSimple denotes simple products
-	TypeSimple = "simple"
-	// TypeConfigurable denotes configurable products
-	TypeConfigurable = "configurable"
+	TYPESIMPLE = "simple"
+	// TYPECONFIGURABLE denotes configurable products
+	TYPECONFIGURABLE = "configurable"
 )
 
 type (
@@ -123,7 +123,7 @@ var _ BasicProduct = ConfigurableProduct{}
 
 // Type interface implementation for SimpleProduct
 func (ps SimpleProduct) Type() string {
-	return TypeSimple
+	return TYPESIMPLE
 }
 
 // BaseData interface implementation for SimpleProduct
@@ -144,7 +144,7 @@ func (ps SimpleProduct) SaleableData() Saleable {
 
 // Type interface implementation for SimpleProduct
 func (p ConfigurableProduct) Type() string {
-	return TypeConfigurable
+	return TYPECONFIGURABLE
 }
 
 // BaseData interface implementation for SimpleProduct
@@ -160,13 +160,13 @@ func (p ConfigurableProduct) TeaserData() TeaserData {
 
 // Variant getter for ConfigurableProduct
 // Variant is retrieved via marketplaceCode of the variant
-func (p ConfigurableProduct) Variant(marketplaceCode string) (*Variant, error) {
+func (p ConfigurableProduct) Variant(variantMarketplaceCode string) (*Variant, error) {
 	for _, variant := range p.Variants {
-		if variant.BasicProductData.MarketPlaceCode == marketplaceCode {
+		if variant.BasicProductData.MarketPlaceCode == variantMarketplaceCode {
 			return &variant, nil
 		}
 	}
-	return nil, errors.New("No Variant with code " + marketplaceCode + " found ")
+	return nil, errors.New("No Variant with code " + variantMarketplaceCode + " found ")
 }
 
 // SaleableData getter for ConfigurableProduct
@@ -174,12 +174,20 @@ func (p ConfigurableProduct) SaleableData() Saleable {
 	return p.Variants[0].Saleable
 }
 
-// BaseData getter for Variant
+// BaseData getter for BasicProductData
 func (v Variant) BaseData() BasicProductData {
 	return v.BasicProductData
 }
 
-// SaleableData getter for Variant
+// SaleableData getter for Saleable
 func (v Variant) SaleableData() Saleable {
 	return v.Saleable
+}
+
+// GetFinalPrice getter for price that should be used in calculations (either discounted or default)
+func (p PriceInfo) GetFinalPrice() float64 {
+	if p.IsDiscounted {
+		return p.Discounted
+	}
+	return p.Default
 }
