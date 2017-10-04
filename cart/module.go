@@ -57,3 +57,10 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	//m.RouterRegistry.Mount("/api/cart", new(controller.CartApiController))
 	//m.RouterRegistry.Mount("/cart", new(controller.CartController))
 }
+
+// DefaultConfig enables inMemory cart service adapter
+func (m *Module) DefaultConfig() config.Map {
+	return config.Map{
+		"cart.useInMemoryCartServiceAdapters": true,
+	}
+}
