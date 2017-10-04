@@ -8,24 +8,27 @@ import (
 
 	"fmt"
 
+	"strconv"
+
 	"github.com/pkg/errors"
 )
 
 // In Session Cart Storage
 type InMemoryCartService struct {
-	GuestCarts map[int]cart.Cart
+	GuestCarts map[string]cart.Cart
 }
 
-// TEst Assignement and if Interface is implemeted correct
-//var _ cart.GuestCartService = InMemoryCartService{}
+// Test Assignement and if Interface is implemeted correct
+//var _ cart.GuestCartService = cart.GuestCartService(&InMemoryCartService{})
 
 func (cs *InMemoryCartService) init() {
 	if cs.GuestCarts == nil {
-		cs.GuestCarts = make(map[int]cart.Cart)
+		cs.GuestCarts = make(map[string]cart.Cart)
 	}
+
 }
 
-func (cs *InMemoryCartService) GetCart(guestcartid int) (cart.Cart, error) {
+func (cs *InMemoryCartService) GetCart(guestcartid string) (cart.Cart, error) {
 	var cart cart.Cart
 	cs.init()
 	if guestCart, ok := cs.GuestCarts[guestcartid]; ok {
@@ -49,7 +52,7 @@ func (cs *InMemoryCartService) GetCart(guestcartid int) (cart.Cart, error) {
 func (cs *InMemoryCartService) GetNewCart() (cart.Cart, error) {
 	cs.init()
 	guestCart := cart.Cart{
-		ID: rand.Int(),
+		ID: strconv.Itoa(rand.Int()),
 	}
 	cs.GuestCarts[guestCart.ID] = guestCart
 	log.Println("New created:", cs.GuestCarts)
@@ -57,16 +60,17 @@ func (cs *InMemoryCartService) GetNewCart() (cart.Cart, error) {
 }
 
 //TODO Get price from product package
-func (cs InMemoryCartService) AddToCart(guestcartid int, marketplaceCode string, qty int) error {
+func (cs InMemoryCartService) AddToCart(guestcartid string, addRequest cart.AddRequest) error {
 	if _, ok := cs.GuestCarts[guestcartid]; !ok {
 		return errors.New(fmt.Sprintf("cart.infrastructure.inmemorycartservice: Cannot add - Guestcart with id %v not existend", guestcartid))
 	}
 	guestcart := cs.GuestCarts[guestcartid]
 	cartItem := cart.Cartitem{
-		MarketplaceCode: marketplaceCode,
-		Qty:             qty,
-		Price:           12.99,
-		RowTotal:        (12.99 * float32(qty)),
+		MarketplaceCode:        addRequest.MarketplaceCode,
+		VariantMarketPlaceCode: addRequest.VariantMarketplaceCode,
+		Qty:      addRequest.Qty,
+		Price:    12.99,
+		RowTotal: (12.99 * float32(addRequest.Qty)),
 	}
 	guestcart.Cartitems = append(guestcart.Cartitems, cartItem)
 	cs.GuestCarts[guestcartid] = guestcart
