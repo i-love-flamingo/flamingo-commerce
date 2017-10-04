@@ -3,12 +3,13 @@ package controller
 import (
 	"context"
 	"errors"
-	"flamingo/core/product/domain"
-	"flamingo/framework/router"
-	"flamingo/framework/web"
-	"flamingo/framework/web/responder/mocks"
 	"net/url"
 	"testing"
+
+	"go.aoe.com/flamingo/core/product/domain"
+	"go.aoe.com/flamingo/framework/router"
+	"go.aoe.com/flamingo/framework/web"
+	"go.aoe.com/flamingo/framework/web/responder/mocks"
 
 	"github.com/stretchr/testify/mock"
 )

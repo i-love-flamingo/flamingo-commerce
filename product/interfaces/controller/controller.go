@@ -1,14 +1,15 @@
 package controller
 
 import (
-	"flamingo/core/breadcrumbs"
-	"flamingo/core/category"
-	"flamingo/core/product/domain"
-	"flamingo/framework/router"
-	"flamingo/framework/web"
-	"flamingo/framework/web/responder"
 	"log"
 	"strings"
+
+	"go.aoe.com/flamingo/core/breadcrumbs"
+	"go.aoe.com/flamingo/core/category"
+	"go.aoe.com/flamingo/core/product/domain"
+	"go.aoe.com/flamingo/framework/router"
+	"go.aoe.com/flamingo/framework/web"
+	"go.aoe.com/flamingo/framework/web/responder"
 
 	"github.com/pkg/errors"
 )

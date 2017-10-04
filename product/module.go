@@ -1,10 +1,10 @@
 package product
 
 import (
-	"flamingo/core/product/interfaces/controller"
-	"flamingo/framework/config"
-	"flamingo/framework/dingo"
-	"flamingo/framework/router"
+	"go.aoe.com/flamingo/core/product/interfaces/controller"
+	"go.aoe.com/flamingo/framework/config"
+	"go.aoe.com/flamingo/framework/dingo"
+	"go.aoe.com/flamingo/framework/router"
 )
 
 type (
