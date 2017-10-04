@@ -30,7 +30,7 @@ func (cc *CartViewController) Get(ctx web.Context) web.Response {
 		fmt.Println(e)
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
-	fmt.Printf("%+v", decoratedCart.Cartitems)
+
 	return cc.Render(ctx, "checkout/cart", CartViewData{
 		DecoratedCart: decoratedCart,
 		Items:         decoratedCart.Cartitems,

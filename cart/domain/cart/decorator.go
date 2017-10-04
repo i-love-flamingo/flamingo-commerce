@@ -55,3 +55,51 @@ func decorateCartItem(ctx context.Context, cartitem Cartitem, productService dom
 	decorateditem.Product = product
 	return decorateditem
 }
+
+// IsConfigurable - checks if current CartItem is a Configurable Product
+func (dci DecoratedCartItem) IsConfigurable() bool {
+	return dci.Product.Type() == domain.TYPECONFIGURABLE
+}
+
+// GetVariant
+func (dci DecoratedCartItem) GetVariant() (*domain.Variant, error) {
+	return dci.Product.(domain.ConfigurableProduct).Variant(dci.Cartitem.VariantMarketPlaceCode)
+}
+
+// GetDisplayTitle
+func (dci DecoratedCartItem) GetDisplayTitle() string {
+	if dci.IsConfigurable() {
+		variant, e := dci.GetVariant()
+		if e != nil {
+			return "Error Getting Variant"
+		}
+		return variant.Title
+	}
+	return dci.Product.BaseData().Title
+}
+
+// GetDisplayMarketplaceCode
+func (dci DecoratedCartItem) GetDisplayMarketplaceCode() string {
+	if dci.IsConfigurable() {
+		variant, e := dci.GetVariant()
+		if e != nil {
+			return "Error Getting Variant"
+		}
+		return variant.MarketPlaceCode
+	}
+	return dci.Product.BaseData().MarketPlaceCode
+}
+
+// GetVariantsVariationAttribute
+func (dci DecoratedCartItem) GetVariantsVariationAttributes() domain.Attributes {
+	attributes := domain.Attributes{}
+	if dci.IsConfigurable() {
+		variant, _ := dci.GetVariant()
+
+		for _, attributeName := range dci.Product.(domain.ConfigurableProduct).VariantVariationAttributes {
+			attributes[attributeName] = variant.BaseData().Attributes[attributeName]
+		}
+	}
+	log.Println(attributes)
+	return attributes
+}

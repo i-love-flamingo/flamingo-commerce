@@ -1,18 +1,20 @@
 package cart
 
-import "github.com/pkg/errors"
+import (
+	"github.com/pkg/errors"
+)
 
 type (
 	// Cart Value Object (immutable - because the cartservice is responsible to return a cart).
 	Cart struct {
-		ID             int
+		ID             string
 		Cartitems      []Cartitem
 		Totalitems     []Totalitem
 		ShippingItem   ShippingItem
-		GrandTotal     float32
-		SubTotal       float32
-		DiscountAmount float32
-		TaxAmount      float32
+		GrandTotal     float64
+		SubTotal       float64
+		DiscountAmount float64
+		TaxAmount      float64
 
 		CurrencyCode string
 		//Intention is optional and expresses the intented use case for this cart - it is used when multiple carts are used to distinguish between them
@@ -27,40 +29,50 @@ type (
 		VariantMarketPlaceCode string
 		ProductName            string
 
-		Price float32
+		Price float64
 		Qty   int
 
-		RowTotal       float32
-		TaxAmount      float32
-		DiscountAmount float32
+		RowTotal       float64
+		TaxAmount      float64
+		DiscountAmount float64
 
-		PriceInclTax    float32
-		RowTotalInclTax float32
+		PriceInclTax    float64
+		RowTotalInclTax float64
 	}
 
 	// Totalitem for totals
 	Totalitem struct {
 		Code  string
 		Title string
-		Price float32
+		Price float64
 	}
 
 	// ShippingItem
 	ShippingItem struct {
 		Title string
-		Price float32
+		Price float64
 
-		TaxAmount      float32
-		DiscountAmount float32
+		TaxAmount      float64
+		DiscountAmount float64
 	}
 )
 
-// GetLine gets an item - starting with 1
-func (Cart *Cart) GetLine(lineNr int) (Cartitem, error) {
+// GetByLineNr gets an item - starting with 1
+func (Cart *Cart) GetByLineNr(lineNr int) (*Cartitem, error) {
 	var item Cartitem
-	if len(Cart.Cartitems) > lineNr {
-		return Cart.Cartitems[lineNr-1], nil
+	if len(Cart.Cartitems) >= lineNr && lineNr > 0 {
+		return &Cart.Cartitems[lineNr-1], nil
 	} else {
-		return item, errors.New("Line in cart not existend")
+		return &item, errors.New("Line in cart not existend")
 	}
+}
+
+// HasItem checks if a cartitem for that sku exists and returns lineNr if found
+func (Cart *Cart) HasItem(marketplaceCode string, variantMarketplaceCode string) (bool, int) {
+	for lineNr, item := range Cart.Cartitems {
+		if item.MarketplaceCode == marketplaceCode && item.VariantMarketPlaceCode == variantMarketplaceCode {
+			return true, lineNr + 1
+		}
+	}
+	return false, 0
 }

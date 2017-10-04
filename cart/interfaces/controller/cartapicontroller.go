@@ -2,6 +2,7 @@ package controller
 
 import (
 	"flamingo/core/cart/application"
+	"flamingo/core/cart/domain/cart"
 	"flamingo/framework/web"
 	"flamingo/framework/web/responder"
 	"fmt"
@@ -11,26 +12,14 @@ import (
 type (
 
 	// CartAPIController for cart api
-	CartApiAddController struct {
+	CartApiController struct {
 		responder.JSONAware    `inject:""`
 		ApplicationCartService application.CartService `inject:""`
-	}
-
-	// CartAPIController for cart api
-	CartApiGetController struct {
-		responder.JSONAware    `inject:""`
-		ApplicationCartService application.CartService `inject:""`
-	}
-
-	AddRequest struct {
-		MarketplaceCode        string
-		Qty                    int
-		VariantMarketplaceCode string
 	}
 )
 
 // Get JSON Format of API
-func (cc *CartApiGetController) Get(ctx web.Context) web.Response {
+func (cc *CartApiController) GetAction(ctx web.Context) web.Response {
 	cart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
 	if e != nil {
 		fmt.Println(e.Error())
@@ -40,21 +29,25 @@ func (cc *CartApiGetController) Get(ctx web.Context) web.Response {
 }
 
 // Add Item to cart
-func (cc *CartApiAddController) Get(ctx web.Context) web.Response {
-	productCode := ctx.MustQuery1("productcode")
+func (cc *CartApiController) AddAction(ctx web.Context) web.Response {
+	marketplaceCode := ctx.MustQuery1("marketplaceCode")
 	qty, e := ctx.Query1("qty")
 	if e != nil {
 		qty = "1"
 	}
+	variantMarketplaceCode, e := ctx.Query1("variantMarketplaceCode")
+	if e != nil {
+		variantMarketplaceCode = ""
+	}
 	qtyInt, _ := strconv.Atoi(qty)
-
-	e = cc.ApplicationCartService.AddProduct(ctx, productCode, qtyInt)
+	addRequest := cart.AddRequest{MarketplaceCode: marketplaceCode, Qty: qtyInt, VariantMarketplaceCode: variantMarketplaceCode}
+	e = cc.ApplicationCartService.AddProduct(ctx, addRequest)
 	if e != nil {
 		return cc.JSON(struct{ Message string }{
 			e.Error(),
 		})
 	}
 	return cc.JSON(struct{ Message string }{
-		"added " + productCode + "qty " + qty,
+		"added " + marketplaceCode + "/" + variantMarketplaceCode + " qty: " + qty,
 	})
 }

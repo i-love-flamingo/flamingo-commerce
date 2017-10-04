@@ -5,6 +5,7 @@ import (
 	"flamingo/core/cart/domain/cart"
 	"flamingo/core/cart/infrastructure"
 	controller "flamingo/core/cart/interfaces/controller"
+	"flamingo/framework/config"
 	"flamingo/framework/dingo"
 	"flamingo/framework/router"
 )
@@ -13,13 +14,16 @@ type (
 	// Module registers our profiler
 	Module struct {
 		RouterRegistry *router.Registry `inject:""`
+		Config         config.Map       `inject:"config:cart"`
 		//EventRouter    event.Router     `inject:""`
 	}
 )
 
 // Configure module
 func (m *Module) Configure(injector *dingo.Injector) {
-	injector.Bind((*cart.GuestCartService)(nil)).In(dingo.Singleton).To(infrastructure.InMemoryCartService{})
+	if v, ok := m.Config["useInMemoryCartServiceAdapters"].(bool); v && ok {
+		injector.Bind((*cart.GuestCartService)(nil)).In(dingo.Singleton).To(infrastructure.InMemoryCartServiceAdapter{})
+	}
 
 	m.RouterRegistry.Handle("cart.view", new(controller.CartViewController))
 	m.RouterRegistry.Route("/cart", "cart.view")
@@ -28,11 +32,11 @@ func (m *Module) Configure(injector *dingo.Injector) {
 
 	//DecoratedCart API:
 
-	m.RouterRegistry.Handle("cart.api.get", new(controller.CartApiGetController))
-	m.RouterRegistry.Handle("cart.api.add", new(controller.CartApiAddController))
+	m.RouterRegistry.Handle("cart.api.get", (*controller.CartApiController).GetAction)
+	m.RouterRegistry.Handle("cart.api.add", (*controller.CartApiController).AddAction)
 
 	m.RouterRegistry.Route("/api/cart", "cart.api.get")
-	m.RouterRegistry.Route("/api/cart/add", "cart.api.add(productcode)")
+	m.RouterRegistry.Route("/api/cart/add", "cart.api.add(marketplaceCode)")
 
 	//
 	//m.RouterRegistry.Handle("cart.api", new(controller.CartApiController))
