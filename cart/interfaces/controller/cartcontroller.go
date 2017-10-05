@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"fmt"
+	"log"
 
 	"go.aoe.com/flamingo/core/cart/application"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
@@ -23,12 +23,12 @@ type (
 	}
 )
 
-// Get the DecoratedCart View ( / cart)
-func (cc *CartViewController) Get(ctx web.Context) web.Response {
+// ViewAction the DecoratedCart View ( / cart)
+func (cc *CartViewController) ViewAction(ctx web.Context) web.Response {
 
 	decoratedCart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
 	if e != nil {
-		fmt.Println(e)
+		log.Printf("cart.cartcontroller.viewaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
 
@@ -36,5 +36,17 @@ func (cc *CartViewController) Get(ctx web.Context) web.Response {
 		DecoratedCart: decoratedCart,
 		Items:         decoratedCart.Cartitems,
 	})
+
+}
+
+// AddAndViewAction the DecoratedCart View ( / cart)
+func (cc *CartViewController) AddAndViewAction(ctx web.Context) web.Response {
+	addRequest := AddRequestFromRequestContext(ctx)
+	e := cc.ApplicationCartService.AddProduct(ctx, addRequest)
+	if e != nil {
+		log.Printf("cart.cartcontroller.addandviewaction: Error %v", e)
+		return cc.Render(ctx, "checkout/carterror", nil)
+	}
+	return cc.ViewAction(ctx)
 
 }

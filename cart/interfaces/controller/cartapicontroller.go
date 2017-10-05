@@ -31,24 +31,29 @@ func (cc *CartApiController) GetAction(ctx web.Context) web.Response {
 
 // Add Item to cart
 func (cc *CartApiController) AddAction(ctx web.Context) web.Response {
-	marketplaceCode := ctx.MustQuery1("marketplaceCode")
-	qty, e := ctx.Query1("qty")
-	if e != nil {
-		qty = "1"
-	}
-	variantMarketplaceCode, e := ctx.Query1("variantMarketplaceCode")
-	if e != nil {
-		variantMarketplaceCode = ""
-	}
-	qtyInt, _ := strconv.Atoi(qty)
-	addRequest := cart.AddRequest{MarketplaceCode: marketplaceCode, Qty: qtyInt, VariantMarketplaceCode: variantMarketplaceCode}
-	e = cc.ApplicationCartService.AddProduct(ctx, addRequest)
+	addRequest := AddRequestFromRequestContext(ctx)
+	e := cc.ApplicationCartService.AddProduct(ctx, addRequest)
 	if e != nil {
 		return cc.JSON(struct{ Message string }{
 			e.Error(),
 		})
 	}
 	return cc.JSON(struct{ Message string }{
-		"added " + marketplaceCode + "/" + variantMarketplaceCode + " qty: " + qty,
+		fmt.Sprintf("added %v / %v Qty %v", addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode, addRequest.Qty),
 	})
+}
+
+func AddRequestFromRequestContext(ctx web.Context) cart.AddRequest {
+	marketplaceCode := ctx.MustParam1("marketplaceCode")
+	qty, e := ctx.Param1("qty")
+	if e != nil {
+		qty = "1"
+	}
+	variantMarketplaceCode, e := ctx.Param1("variantMarketplaceCode")
+	if e != nil {
+		variantMarketplaceCode = ""
+	}
+	qtyInt, _ := strconv.Atoi(qty)
+	addRequest := cart.AddRequest{MarketplaceCode: marketplaceCode, Qty: qtyInt, VariantMarketplaceCode: variantMarketplaceCode}
+	return addRequest
 }

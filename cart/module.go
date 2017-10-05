@@ -30,6 +30,9 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	m.RouterRegistry.Handle("cart.view", new(controller.CartViewController))
 	m.RouterRegistry.Route("/cart", "cart.view")
 
+	m.RouterRegistry.Handle("cart.add", new(controller.CartViewController))
+	m.RouterRegistry.Route("/cart/add/:marketplaceCode", `cart.add(marketplaceCode,variantMarketplaceCode?="",qty?="1")`)
+
 	gob.Register(cart.Cart{})
 
 	//DecoratedCart API:
@@ -38,26 +41,8 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	m.RouterRegistry.Handle("cart.api.add", (*controller.CartApiController).AddAction)
 
 	m.RouterRegistry.Route("/api/cart", "cart.api.get")
-	m.RouterRegistry.Route("/api/cart/add", "cart.api.add(marketplaceCode)")
+	m.RouterRegistry.Route("/api/cart/add/:marketplaceCode", `cart.api.add(marketplaceCode,variantMarketplaceCode?="",qty?="1")`)
 
-	//
-	//m.RouterRegistry.Handle("cart.api", new(controller.CartApiController))
-	//m.RouterRegistry.Route("/api/cart", "cart.view")
-	//m.RouterRegistry.Handle("/api/cart/item/add", new(controller.CartItemAddApiController))
-	//m.RouterRegistry.Route("/api/cart", "cart.item.add.api")
-	//
-	////	m.RouterRegistry.Handle("foo", controller.CartItemAddApiController.AddToBasketAction)
-	//
-	//m.RouterRegistry.Handle("logintest", new(controller.TestLoginController))
-	//m.RouterRegistry.Route("/logintest", "logintest")
-	//
-	//m.EventRouter.AddSubscriber(new(application.EventOrchestration))
-	//
-	////	a := controller.CartItemAddApiController.AddToBasketAction
-	////	a
-
-	//m.RouterRegistry.Mount("/api/cart", new(controller.CartApiController))
-	//m.RouterRegistry.Mount("/cart", new(controller.CartController))
 }
 
 // DefaultConfig enables inMemory cart service adapter
