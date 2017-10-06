@@ -73,7 +73,7 @@ func (cs InMemoryCartServiceAdapter) AddToCart(ctx context.Context, guestcartid 
 	} else {
 		product, _ := cs.ProductService.Get(ctx, addRequest.MarketplaceCode)
 		rowTotal, _ := new(big.Float).Mul(big.NewFloat(product.SaleableData().ActivePrice.GetFinalPrice()), new(big.Float).SetInt64(int64(addRequest.Qty))).Float64()
-		cartItem := cart.Cartitem{
+		cartItem := cart.Item{
 			MarketplaceCode:        addRequest.MarketplaceCode,
 			VariantMarketPlaceCode: addRequest.VariantMarketplaceCode,
 			Qty:      addRequest.Qty,
@@ -90,19 +90,19 @@ func (cs InMemoryCartServiceAdapter) AddToCart(ctx context.Context, guestcartid 
 /*
 // AddOrUpdateByCode if cartitem with code is already in the cart its updated. Otherwise added
 func (Cart *Cart) AddOrUpdateByCode(code string, qty int, price float32) {
-	for id, cartItem := range Cart.Cartitems {
+	for id, cartItem := range Cart.DecoratedItems {
 		if cartItem.ProductIdendifier == code {
 			cartItem.Qty = cartItem.Qty + qty
-			Cart.Cartitems[id] = cartItem
+			Cart.DecoratedItems[id] = cartItem
 			return
 		}
 	}
-	newCartItem := Cartitem{
+	newCartItem := Item{
 		code,
 		qty,
 		price,
 	}
-	Cart.Cartitems = append(Cart.Cartitems, newCartItem)
+	Cart.DecoratedItems = append(Cart.DecoratedItems, newCartItem)
 }
 */
 

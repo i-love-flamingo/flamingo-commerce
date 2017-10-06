@@ -14,8 +14,8 @@ var _ = Describe("Domain Test", func() {
 		BeforeEach(func() {
 			cart = new(Cart)
 		})
-		It("Can add and get Items", func() {
-			cartItem := Cartitem{MarketplaceCode: "code1", Qty: 5}
+		It("Can add and get DecoratedItems", func() {
+			cartItem := Item{MarketplaceCode: "code1", Qty: 5}
 			cart.Cartitems = append(cart.Cartitems, cartItem)
 
 			found, nr := cart.HasItem("code1", "")

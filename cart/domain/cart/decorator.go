@@ -16,14 +16,20 @@ type (
 
 	// DecoratedCart Decorates Access To a Cart
 	DecoratedCart struct {
-		Cart
-		Cartitems []DecoratedCartItem
-		Ctx       context.Context `json:"-"`
+		Cart           Cart
+		DecoratedItems []DecoratedCartItem
+		Ctx            context.Context `json:"-"`
+	}
+
+	// DecoratedCartItem Decorates a CartItem with its Product
+	GroupedDecoratedCartItem struct {
+		DecoratedItems []DecoratedCartItem
+		Group          string
 	}
 
 	// DecoratedCartItem Decorates a CartItem with its Product
 	DecoratedCartItem struct {
-		Cartitem
+		Item    Item
 		Product domain.BasicProduct
 	}
 )
@@ -34,7 +40,7 @@ func CreateDecoratedCart(ctx context.Context, Cart Cart, productService domain.P
 	DecoratedCart := DecoratedCart{Cart: Cart}
 	for _, cartitem := range Cart.Cartitems {
 		decoratedItem := decorateCartItem(ctx, cartitem, productService)
-		DecoratedCart.Cartitems = append(DecoratedCart.Cartitems, decoratedItem)
+		DecoratedCart.DecoratedItems = append(DecoratedCart.DecoratedItems, decoratedItem)
 	}
 	DecoratedCart.Ctx = ctx
 	return &DecoratedCart
@@ -46,8 +52,8 @@ func (df *DecoratedCartFactory) Create(ctx context.Context, Cart Cart) *Decorate
 }
 
 //decorateCartItem factory method
-func decorateCartItem(ctx context.Context, cartitem Cartitem, productService domain.ProductService) DecoratedCartItem {
-	decorateditem := DecoratedCartItem{Cartitem: cartitem}
+func decorateCartItem(ctx context.Context, cartitem Item, productService domain.ProductService) DecoratedCartItem {
+	decorateditem := DecoratedCartItem{Item: cartitem}
 	product, e := productService.Get(ctx, cartitem.MarketplaceCode)
 	if e != nil {
 		log.Println("cart.decorator - no product for item:", e)
@@ -64,7 +70,7 @@ func (dci DecoratedCartItem) IsConfigurable() bool {
 
 // GetVariant
 func (dci DecoratedCartItem) GetVariant() (*domain.Variant, error) {
-	return dci.Product.(domain.ConfigurableProduct).Variant(dci.Cartitem.VariantMarketPlaceCode)
+	return dci.Product.(domain.ConfigurableProduct).Variant(dci.Item.VariantMarketPlaceCode)
 }
 
 // GetDisplayTitle
@@ -103,4 +109,15 @@ func (dci DecoratedCartItem) GetVariantsVariationAttributes() domain.Attributes 
 	}
 	log.Println(attributes)
 	return attributes
+}
+
+// GetGroupedBy
+func (dc DecoratedCart) GetGroupedBy(group string) []GroupedDecoratedCartItem {
+	var groupedItemsCollection []GroupedDecoratedCartItem
+	groupedItems := GroupedDecoratedCartItem{
+		DecoratedItems: dc.DecoratedItems,
+		Group:          "TESTRETAILER",
+	}
+	groupedItemsCollection = append(groupedItemsCollection, groupedItems)
+	return groupedItemsCollection
 }

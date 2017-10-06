@@ -27,10 +27,10 @@ func (m *Module) Configure(injector *dingo.Injector) {
 		injector.Bind((*cart.GuestCartService)(nil)).In(dingo.Singleton).To(infrastructure.InMemoryCartServiceAdapter{})
 	}
 
-	m.RouterRegistry.Handle("cart.view", new(controller.CartViewController))
+	m.RouterRegistry.Handle("cart.view", (*controller.CartViewController).ViewAction)
 	m.RouterRegistry.Route("/cart", "cart.view")
 
-	m.RouterRegistry.Handle("cart.add", new(controller.CartViewController))
+	m.RouterRegistry.Handle("cart.add", (*controller.CartViewController).AddAndViewAction)
 	m.RouterRegistry.Route("/cart/add/:marketplaceCode", `cart.add(marketplaceCode,variantMarketplaceCode?="",qty?="1")`)
 
 	gob.Register(cart.Cart{})

@@ -8,7 +8,7 @@ type (
 	// Cart Value Object (immutable - because the cartservice is responsible to return a cart).
 	Cart struct {
 		ID             string
-		Cartitems      []Cartitem
+		Cartitems      []Item
 		Totalitems     []Totalitem
 		ShippingItem   ShippingItem
 		GrandTotal     float64
@@ -21,8 +21,8 @@ type (
 		Intention string
 	}
 
-	// Cartitem for Cart
-	Cartitem struct {
+	// Item for Cart
+	Item struct {
 		ID              int
 		MarketplaceCode string
 		//VariantMarketPlaceCode is used for Configurable products
@@ -58,8 +58,8 @@ type (
 )
 
 // GetByLineNr gets an item - starting with 1
-func (Cart *Cart) GetByLineNr(lineNr int) (*Cartitem, error) {
-	var item Cartitem
+func (Cart *Cart) GetByLineNr(lineNr int) (*Item, error) {
+	var item Item
 	if len(Cart.Cartitems) >= lineNr && lineNr > 0 {
 		return &Cart.Cartitems[lineNr-1], nil
 	} else {

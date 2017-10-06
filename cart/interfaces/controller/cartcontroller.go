@@ -34,7 +34,6 @@ func (cc *CartViewController) ViewAction(ctx web.Context) web.Response {
 
 	return cc.Render(ctx, "checkout/cart", CartViewData{
 		DecoratedCart: decoratedCart,
-		Items:         decoratedCart.Cartitems,
 	})
 
 }
