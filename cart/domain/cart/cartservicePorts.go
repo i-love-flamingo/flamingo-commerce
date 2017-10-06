@@ -24,5 +24,6 @@ type (
 		MarketplaceCode        string
 		Qty                    int
 		VariantMarketplaceCode string
+		Identifier             string
 	}
 )

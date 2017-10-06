@@ -46,7 +46,7 @@ func (cs *CartService) GetDecoratedCart(ctx web.Context) (cart.DecoratedCart, er
 
 // AddProduct Add a product
 func (cs *CartService) AddProduct(ctx web.Context, addRequest cart.AddRequest) error {
-	e := cs.checkProduct(ctx, addRequest)
+	addRequest, e := cs.checkProductAndEnrichAddRequest(ctx, addRequest)
 	if e != nil {
 		return e
 	}
@@ -58,23 +58,27 @@ func (cs *CartService) AddProduct(ctx web.Context, addRequest cart.AddRequest) e
 	}
 }
 
-// checkProduct existence and validate with productService
-func (cs *CartService) checkProduct(ctx web.Context, addRequest cart.AddRequest) error {
+// checkProductAndEnrichAddRequest existence and validate with productService
+func (cs *CartService) checkProductAndEnrichAddRequest(ctx web.Context, addRequest cart.AddRequest) (cart.AddRequest, error) {
 	product, e := cs.ProductService.Get(ctx, addRequest.MarketplaceCode)
+	if e != nil {
+		return addRequest, errors.New("cart.application.cartservice - AddProduct:Product not found")
+	}
 	if product.Type() == productDomain.TYPECONFIGURABLE {
 		if addRequest.VariantMarketplaceCode == "" {
-			return errors.New("cart.application.cartservice - AddProduct:No Variant given for configurable product")
+			return addRequest, errors.New("cart.application.cartservice - AddProduct:No Variant given for configurable product")
 		}
 		configurableProduct := product.(productDomain.ConfigurableProduct)
 		_, e := configurableProduct.Variant(addRequest.VariantMarketplaceCode)
 		if e != nil {
-			return errors.New("cart.application.cartservice - AddProduct:Product has not the given variant")
+			return addRequest, errors.New("cart.application.cartservice - AddProduct:Product has not the given variant")
 		}
+		configurable, _ := product.(productDomain.ConfigurableProduct)
+		addRequest.Identifier = configurable.Identifier
 	}
-	if e != nil {
-		return errors.New("cart.application.cartservice - AddProduct:Product not found")
-	}
-	return nil
+	simple, _ := product.(productDomain.SimpleProduct)
+	addRequest.Identifier = simple.Identifier
+	return addRequest, nil
 }
 
 // addProductToGuestCart Handle Adding to Guest Cart
