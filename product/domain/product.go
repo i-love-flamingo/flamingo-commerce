@@ -20,6 +20,7 @@ type (
 		TeaserData() TeaserData
 		SaleableData() Saleable
 		Type() string
+		GetIdentifier() string
 	}
 
 	// SimpleProduct - A product without Variants that can be teasered and selled
@@ -142,9 +143,19 @@ func (ps SimpleProduct) SaleableData() Saleable {
 	return ps.Saleable
 }
 
+// GetIdentifier interface implementation for SimpleProduct
+func (p SimpleProduct) GetIdentifier() string {
+	return p.Identifier
+}
+
 // Type interface implementation for SimpleProduct
 func (p ConfigurableProduct) Type() string {
 	return TYPECONFIGURABLE
+}
+
+// GetIdentifier interface implementation for SimpleProduct
+func (p ConfigurableProduct) GetIdentifier() string {
+	return p.Identifier
 }
 
 // BaseData interface implementation for SimpleProduct
@@ -190,4 +201,15 @@ func (p PriceInfo) GetFinalPrice() float64 {
 		return p.Discounted
 	}
 	return p.Default
+}
+
+// GetListImage
+func (b BasicProductData) GetListMedia() Media {
+	var emptyMedia Media
+	for _, media := range b.Media {
+		if media.Usage == "list" {
+			return media
+		}
+	}
+	return emptyMedia
 }
