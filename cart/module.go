@@ -15,15 +15,15 @@ import (
 type (
 	// Module registers our profiler
 	Module struct {
-		RouterRegistry *router.Registry `inject:""`
-		Config         config.Map       `inject:"config:cart"`
+		RouterRegistry  *router.Registry `inject:""`
+		UseInMemoryCart bool             `inject:"config:cart.useInMemoryCartServiceAdapters"`
 		//EventRouter    event.Router     `inject:""`
 	}
 )
 
 // Configure module
 func (m *Module) Configure(injector *dingo.Injector) {
-	if v, ok := m.Config["useInMemoryCartServiceAdapters"].(bool); v && ok {
+	if m.UseInMemoryCart {
 		injector.Bind((*cart.GuestCartService)(nil)).In(dingo.Singleton).To(infrastructure.InMemoryCartServiceAdapter{})
 	}
 
@@ -48,6 +48,8 @@ func (m *Module) Configure(injector *dingo.Injector) {
 // DefaultConfig enables inMemory cart service adapter
 func (m *Module) DefaultConfig() config.Map {
 	return config.Map{
-		"cart.useInMemoryCartServiceAdapters": true,
+		"cart": config.Map{
+			"useInMemoryCartServiceAdapters": true,
+		},
 	}
 }
