@@ -216,6 +216,13 @@ func (vc *View) Get(c web.Context) web.Response {
 		viewData = productViewData{SimpleProduct: simpleProduct, RenderContext: "simple"}
 	}
 
+	vc.addBreadCrum(product, c)
+
+	return vc.Render(c, vc.Template, viewData)
+}
+
+// addBreadCrum
+func (vc *View) addBreadCrum(product domain.BasicProduct, c web.Context) {
 	paths := product.BaseData().CategoryToCodeMapping
 	//sort.Strings(paths)
 	var stringHead string
@@ -231,8 +238,6 @@ func (vc *View) Get(c web.Context) web.Response {
 			stringHead = name + "/"
 		}
 	}
-
-	return vc.Render(c, vc.Template, viewData)
 }
 
 // URL for a product
