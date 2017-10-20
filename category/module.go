@@ -20,7 +20,7 @@ func URL(code string) (string, map[string]string) {
 	return controller.URL(code)
 }
 
-// URL with name to category
+// URLWithName to category
 func URLWithName(code, name string) (string, map[string]string) {
 	return controller.URLWithName(code, web.URLTitle(name))
 }
@@ -30,6 +30,8 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	m.RouterRegistry.Handle("category.view", new(controller.View))
 	m.RouterRegistry.Route("/category/:code/:name.html", "category.view")
 	m.RouterRegistry.Route("/category/:code", "category.view")
+
+	m.RouterRegistry.Handle("category.tree", new(controller.Tree))
 }
 
 // DefaultConfig for this module
