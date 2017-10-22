@@ -242,6 +242,7 @@ func (vc *View) addBreadCrum(product domain.BasicProduct, c web.Context) {
 
 // URL for a product
 func URL(marketplacecode, name string) (string, map[string]string) {
+	name = web.URLTitle(name)
 	return "product.view", map[string]string{"marketplacecode": marketplacecode, "name": name}
 }
 
