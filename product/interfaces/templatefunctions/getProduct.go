@@ -1,6 +1,8 @@
 package templatefunctions
 
 import (
+	"log"
+
 	"go.aoe.com/flamingo/core/product/domain"
 	"go.aoe.com/flamingo/framework/web"
 )
@@ -19,7 +21,10 @@ func (tf GetProduct) Name() string {
 
 func (tf GetProduct) Func(ctx web.Context) interface{} {
 	return func(marketplaceCode string) domain.BasicProduct {
-		product, _ := tf.ProductService.Get(ctx, marketplaceCode)
+		product, e := tf.ProductService.Get(ctx, marketplaceCode)
+		if e != nil {
+			log.Printf("Error: product.interfaces.templatefunc %v", e)
+		}
 		return product
 	}
 }

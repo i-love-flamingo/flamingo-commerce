@@ -21,6 +21,8 @@ type (
 		SaleableData() Saleable
 		Type() string
 		GetIdentifier() string
+		HasMedia(group string, usage string) bool
+		GetMedia(group string, usage string) Media
 	}
 
 	// SimpleProduct - A product without Variants that can be teasered and selled
@@ -148,6 +150,20 @@ func (p SimpleProduct) GetIdentifier() string {
 	return p.Identifier
 }
 
+// HasMedia  for SimpleProduct
+func (p SimpleProduct) HasMedia(group string, usage string) bool {
+	media := findMediaInProduct(BasicProduct(p), group, usage)
+	if media == nil {
+		return false
+	}
+	return true
+}
+
+// GetMedia  for SimpleProduct
+func (p SimpleProduct) GetMedia(group string, usage string) Media {
+	return *findMediaInProduct(BasicProduct(p), group, usage)
+}
+
 // Type interface implementation for SimpleProduct
 func (p ConfigurableProduct) Type() string {
 	return TYPECONFIGURABLE
@@ -185,6 +201,20 @@ func (p ConfigurableProduct) SaleableData() Saleable {
 	return p.Variants[0].Saleable
 }
 
+// HasMedia  for ConfigurableProduct
+func (p ConfigurableProduct) HasMedia(group string, usage string) bool {
+	media := findMediaInProduct(BasicProduct(p), group, usage)
+	if media == nil {
+		return false
+	}
+	return true
+}
+
+// GetMedia  for ConfigurableProduct
+func (p ConfigurableProduct) GetMedia(group string, usage string) Media {
+	return *findMediaInProduct(BasicProduct(p), group, usage)
+}
+
 // BaseData getter for BasicProductData
 func (v Variant) BaseData() BasicProductData {
 	return v.BasicProductData
@@ -212,4 +242,24 @@ func (b BasicProductData) GetListMedia() Media {
 		}
 	}
 	return emptyMedia
+}
+
+func findMediaInProduct(p BasicProduct, group string, usage string) *Media {
+	var mediaList []Media
+	if group == "teaser" {
+		mediaList = p.TeaserData().Media
+		for _, media := range mediaList {
+			if media.Usage == usage {
+				return &media
+			}
+		}
+	}
+
+	mediaList = p.BaseData().Media
+	for _, media := range mediaList {
+		if media.Usage == usage {
+			return &media
+		}
+	}
+	return nil
 }

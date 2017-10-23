@@ -1,9 +1,8 @@
 package templatefunctions
 
 import (
-	"net/url"
-
 	"go.aoe.com/flamingo/core/product/interfaces/controller"
+	"go.aoe.com/flamingo/core/pugtemplate/pugjs"
 	"go.aoe.com/flamingo/framework/router"
 )
 
@@ -21,7 +20,8 @@ func (tf GetProductUrl) Name() string {
 
 // Func returns the JSON object
 func (tf GetProductUrl) Func() interface{} {
-	return func(productdata interface{}) *url.URL {
-		return tf.Router.URL(controller.URL("jjj", "kkk"))
+	return func(p *pugjs.Map) string {
+		sku := p.Field("baseData").Field("marketPlaceCode").String()
+		return tf.Router.URL(controller.URL(sku, sku)).String()
 	}
 }
