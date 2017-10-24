@@ -21,6 +21,9 @@ func (tf GetProductUrl) Name() string {
 // Func returns the JSON object
 func (tf GetProductUrl) Func() interface{} {
 	return func(p domain.BasicProduct) string {
+		if p == nil {
+			return "-"
+		}
 		return tf.Router.URL(controller.URL(p.BaseData().MarketPlaceCode, p.BaseData().Title)).String()
 	}
 }
