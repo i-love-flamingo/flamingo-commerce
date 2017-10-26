@@ -12,7 +12,10 @@
 
 ### Cart API ###
 
-Adding simple products:
+### Get Cart Content:
+http://localhost:3210/en/api/cart
+
+### Adding products:
 
 http://localhost:3210/en/api/cart/add/fake_simple
 
