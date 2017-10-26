@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 
 	"go.aoe.com/flamingo/core/cart/application"
@@ -17,14 +18,18 @@ type (
 		responder.JSONAware    `inject:""`
 		ApplicationCartService application.CartService `inject:""`
 	}
+	Result struct {
+		Message string
+		Success bool
+	}
 )
 
 // Get JSON Format of API
 func (cc *CartApiController) GetAction(ctx web.Context) web.Response {
 	cart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
 	if e != nil {
-		fmt.Println(e.Error())
-		return cc.JSON(struct{ Message string }{e.Error()})
+		log.Printf("cart.cartapicontroller.get: %v", e.Error())
+		return cc.JSONError(Result{Message: e.Error(), Success: false}, 500)
 	}
 	return cc.JSON(cart)
 }
@@ -34,12 +39,12 @@ func (cc *CartApiController) AddAction(ctx web.Context) web.Response {
 	addRequest := AddRequestFromRequestContext(ctx)
 	e := cc.ApplicationCartService.AddProduct(ctx, addRequest)
 	if e != nil {
-		return cc.JSON(struct{ Message string }{
-			e.Error(),
-		})
+		log.Printf("cart.cartapicontroller.add: %v", e.Error())
+		return cc.JSONError(Result{Message: e.Error(), Success: false}, 500)
 	}
-	return cc.JSON(struct{ Message string }{
-		fmt.Sprintf("added %v / %v Qty %v", addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode, addRequest.Qty),
+	return cc.JSON(Result{
+		Success: true,
+		Message: fmt.Sprintf("added %v / %v Qty %v", addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode, addRequest.Qty),
 	})
 }
 

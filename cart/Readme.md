@@ -14,10 +14,10 @@
 
 Adding simple products:
 
-http://localhost:3210/en/api/cart/add?marketplaceCode=fake_simple
+http://localhost:3210/en/api/cart/add/fake_simple
 
 With qty:
-http://localhost:3210/en/api/cart/add?marketplaceCode=fake_simple&qty=10
+http://localhost:3210/en/api/cart/add/fake_simple?qty=10
 
 Adding configurables:
-http://localhost:3210/en/api/cart/add?marketplaceCode=fake_configurable&variantMarketplaceCode=shirt-white-s
+http://localhost:3210/en/api/cart/add/fake_configurable?variantMarketplaceCode=shirt-white-s
