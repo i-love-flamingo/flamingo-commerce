@@ -13,14 +13,10 @@
 ### Cart API ###
 
 ### Get Cart Content:
-http://localhost:3210/en/api/cart
+* http://localhost:3210/en/api/cart
 
 ### Adding products:
 
-http://localhost:3210/en/api/cart/add/fake_simple
-
-With qty:
-http://localhost:3210/en/api/cart/add/fake_simple?qty=10
-
-Adding configurables:
-http://localhost:3210/en/api/cart/add/fake_configurable?variantMarketplaceCode=shirt-white-s
+* Simple product: http://localhost:3210/en/api/cart/add/fake_simple
+* With qty: http://localhost:3210/en/api/cart/add/fake_simple?qty=10
+* Adding configurables: http://localhost:3210/en/api/cart/add/fake_configurable?variantMarketplaceCode=shirt-white-s
