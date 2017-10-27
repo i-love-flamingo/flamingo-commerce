@@ -75,19 +75,19 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 		for _, variant := range configurable.Variants {
 			for _, subattribute := range configurable.VariantVariationAttributes {
 				if subattribute != attribute {
-					if variant.Attributes[attribute] == nil {
+					if _, ok := variant.Attributes[attribute]; !ok {
 						continue
 					}
 
-					if combinations[attribute][variant.Attributes[attribute].(string)] == nil {
-						combinations[attribute][variant.Attributes[attribute].(string)] = make(map[string]map[string]bool)
+					if combinations[attribute][variant.Attributes[attribute].Value()] == nil {
+						combinations[attribute][variant.Attributes[attribute].Value()] = make(map[string]map[string]bool)
 					}
 
-					if variant.Attributes[subattribute] != nil {
-						if combinations[attribute][variant.Attributes[attribute].(string)][subattribute] == nil {
-							combinations[attribute][variant.Attributes[attribute].(string)][subattribute] = make(map[string]bool)
+					if _, ok := variant.Attributes[subattribute]; ok {
+						if combinations[attribute][variant.Attributes[attribute].Value()][subattribute] == nil {
+							combinations[attribute][variant.Attributes[attribute].Value()][subattribute] = make(map[string]bool)
 						}
-						combinations[attribute][variant.Attributes[attribute].(string)][subattribute][variant.Attributes[subattribute].(string)] = true
+						combinations[attribute][variant.Attributes[attribute].Value()][subattribute][variant.Attributes[attribute].Value()] = true
 					}
 				}
 			}
@@ -109,7 +109,7 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 			}
 
 			var selected bool
-			if activeVariant != nil && activeVariant.Attributes[code] == optionCode {
+			if activeVariant != nil && activeVariant.Attributes[code].Value() == optionCode {
 				selected = true
 			}
 			viewVariantAttribute.Options = append(viewVariantAttribute.Options, viewVariantOption{
@@ -130,10 +130,10 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 		attributes := make(map[string]string)
 
 		for _, attr := range variants.Attributes {
-			if variant.Attributes[attr.Key] == nil {
+			if !variant.HasAttribute(attr.Key) {
 				continue
 			}
-			attributes[attr.Key] = variant.Attributes[attr.Key].(string)
+			attributes[attr.Key] = variant.Attributes[attr.Key].Value()
 		}
 
 		variants.Variants = append(variants.Variants, viewVariant{

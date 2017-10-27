@@ -3,6 +3,8 @@ package domain
 import (
 	"time"
 
+	"fmt"
+
 	"github.com/pkg/errors"
 )
 
@@ -93,11 +95,13 @@ type (
 		IsDiscounted      bool
 		CampaignRules     []string
 		DenyMoreDiscounts bool
-		Context           struct {
-			CustomerGroup interface{} `json:"customerGroup"`
-			ChannelCode   string      `json:"channelCode"`
-			Locale        string      `json:"locale"`
-		}
+		Context           PriceContext
+	}
+
+	PriceContext struct {
+		CustomerGroup string
+		ChannelCode   string
+		Locale        string
 	}
 
 	// TeaserData is the teaser-information for product previews
@@ -116,13 +120,45 @@ type (
 		Reference string
 	}
 
-	// Attributes is a generic map[string]interface{}
-	Attributes map[string]interface{}
+	Attributes map[string]Attribute
+
+	Attribute struct {
+		Code     string
+		Label    string
+		RawValue interface{}
+	}
 )
 
 // Verify Interfaces
 var _ BasicProduct = SimpleProduct{}
 var _ BasicProduct = ConfigurableProduct{}
+
+func (at Attribute) Value() string {
+	return fmt.Sprintf("%v", at.RawValue)
+}
+
+func (at Attribute) HasMultipleValues() bool {
+	_, ok := at.RawValue.([]interface{})
+	return ok
+}
+
+func (at Attribute) Values() []string {
+	var result []string
+	list, ok := at.RawValue.([]interface{})
+	if ok {
+		for _, entry := range list {
+			result = append(result, fmt.Sprintf("%v", entry))
+		}
+	}
+	return result
+}
+
+func (bp BasicProductData) HasAttribute(key string) bool {
+	if _, ok := bp.Attributes[key]; ok {
+		return true
+	}
+	return false
+}
 
 // Type interface implementation for SimpleProduct
 func (ps SimpleProduct) Type() string {
