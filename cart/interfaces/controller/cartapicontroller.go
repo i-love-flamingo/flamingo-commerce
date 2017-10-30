@@ -59,6 +59,9 @@ func AddRequestFromRequestContext(ctx web.Context) cart.AddRequest {
 		variantMarketplaceCode = ""
 	}
 	qtyInt, _ := strconv.Atoi(qty)
+	if qtyInt < 0 {
+		qtyInt = 0
+	}
 	addRequest := cart.AddRequest{MarketplaceCode: marketplaceCode, Qty: qtyInt, VariantMarketplaceCode: variantMarketplaceCode}
 	return addRequest
 }
