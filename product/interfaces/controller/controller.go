@@ -87,7 +87,7 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 						if combinations[attribute][variant.Attributes[attribute].Value()][subattribute] == nil {
 							combinations[attribute][variant.Attributes[attribute].Value()][subattribute] = make(map[string]bool)
 						}
-						combinations[attribute][variant.Attributes[attribute].Value()][subattribute][variant.Attributes[attribute].Value()] = true
+						combinations[attribute][variant.Attributes[attribute].Value()][subattribute][variant.Attributes[subattribute].Value()] = true
 					}
 				}
 			}
