@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	// TypeSimple denotes simple products
+	// TYPESIMPLE denotes simple products
 	TYPESIMPLE = "simple"
 	// TYPECONFIGURABLE denotes configurable products
 	TYPECONFIGURABLE = "configurable"
@@ -98,6 +98,7 @@ type (
 		Context           PriceContext
 	}
 
+	// PriceContext defines the scope in which the price was calculated
 	PriceContext struct {
 		CustomerGroup string
 		ChannelCode   string
@@ -120,8 +121,10 @@ type (
 		Reference string
 	}
 
+	// Attributes describe a product attributes map
 	Attributes map[string]Attribute
 
+	// Attribute for product attributes
 	Attribute struct {
 		Code     string
 		Label    string
@@ -133,15 +136,18 @@ type (
 var _ BasicProduct = SimpleProduct{}
 var _ BasicProduct = ConfigurableProduct{}
 
+// Value returns the raw value
 func (at Attribute) Value() string {
 	return fmt.Sprintf("%v", at.RawValue)
 }
 
+// HasMultipleValues checks for multiple raw values
 func (at Attribute) HasMultipleValues() bool {
 	_, ok := at.RawValue.([]interface{})
 	return ok
 }
 
+// Values builds a list of product attribute values
 func (at Attribute) Values() []string {
 	var result []string
 	list, ok := at.RawValue.([]interface{})
@@ -153,32 +159,33 @@ func (at Attribute) Values() []string {
 	return result
 }
 
-func (bp BasicProductData) HasAttribute(key string) bool {
-	if _, ok := bp.Attributes[key]; ok {
+// HasAttribute check
+func (bpd BasicProductData) HasAttribute(key string) bool {
+	if _, ok := bpd.Attributes[key]; ok {
 		return true
 	}
 	return false
 }
 
 // Type interface implementation for SimpleProduct
-func (ps SimpleProduct) Type() string {
+func (p SimpleProduct) Type() string {
 	return TYPESIMPLE
 }
 
 // BaseData interface implementation for SimpleProduct
-func (ps SimpleProduct) BaseData() BasicProductData {
-	bp := ps.BasicProductData
+func (p SimpleProduct) BaseData() BasicProductData {
+	bp := p.BasicProductData
 	return bp
 }
 
 // TeaserData interface implementation for SimpleProduct
-func (ps SimpleProduct) TeaserData() TeaserData {
-	return ps.Teaser
+func (p SimpleProduct) TeaserData() TeaserData {
+	return p.Teaser
 }
 
 // SaleableData getter for SimpleProduct
-func (ps SimpleProduct) SaleableData() Saleable {
-	return ps.Saleable
+func (p SimpleProduct) SaleableData() Saleable {
+	return p.Saleable
 }
 
 // GetIdentifier interface implementation for SimpleProduct
@@ -269,10 +276,10 @@ func (p PriceInfo) GetFinalPrice() float64 {
 	return p.Default
 }
 
-// GetListImage
-func (b BasicProductData) GetListMedia() Media {
+// GetListMedia returns the product media for listing
+func (bpd BasicProductData) GetListMedia() Media {
 	var emptyMedia Media
-	for _, media := range b.Media {
+	for _, media := range bpd.Media {
 		if media.Usage == "list" {
 			return media
 		}
