@@ -3,10 +3,9 @@ package cart
 import (
 	"encoding/gob"
 
-	controller "go.aoe.com/flamingo/core/cart/interfaces/controller"
-
 	"go.aoe.com/flamingo/core/cart/domain/cart"
 	"go.aoe.com/flamingo/core/cart/infrastructure"
+	"go.aoe.com/flamingo/core/cart/interfaces/controller"
 	"go.aoe.com/flamingo/framework/config"
 	"go.aoe.com/flamingo/framework/dingo"
 	"go.aoe.com/flamingo/framework/router"

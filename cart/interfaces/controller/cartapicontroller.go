@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"go.aoe.com/flamingo/core/cart/application"
-	"go.aoe.com/flamingo/core/cart/domain/cart"
+	domaincart "go.aoe.com/flamingo/core/cart/domain/cart"
 	"go.aoe.com/flamingo/framework/web"
 	"go.aoe.com/flamingo/framework/web/responder"
 )
@@ -48,7 +48,7 @@ func (cc *CartApiController) AddAction(ctx web.Context) web.Response {
 	})
 }
 
-func AddRequestFromRequestContext(ctx web.Context) cart.AddRequest {
+func AddRequestFromRequestContext(ctx web.Context) domaincart.AddRequest {
 	marketplaceCode := ctx.MustParam1("marketplaceCode")
 	qty, e := ctx.Param1("qty")
 	if e != nil {
@@ -62,6 +62,6 @@ func AddRequestFromRequestContext(ctx web.Context) cart.AddRequest {
 	if qtyInt < 0 {
 		qtyInt = 0
 	}
-	addRequest := cart.AddRequest{MarketplaceCode: marketplaceCode, Qty: qtyInt, VariantMarketplaceCode: variantMarketplaceCode}
+	addRequest := domaincart.AddRequest{MarketplaceCode: marketplaceCode, Qty: qtyInt, VariantMarketplaceCode: variantMarketplaceCode}
 	return addRequest
 }

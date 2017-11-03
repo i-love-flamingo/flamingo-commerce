@@ -8,29 +8,28 @@ import (
 	"math/rand"
 	"strconv"
 
-	"github.com/pkg/errors"
-	"go.aoe.com/flamingo/core/cart/domain/cart"
+	domaincart "go.aoe.com/flamingo/core/cart/domain/cart"
 	productDomain "go.aoe.com/flamingo/core/product/domain"
 )
 
 // In Session Cart Storage
 type InMemoryCartServiceAdapter struct {
-	GuestCarts     map[string]cart.Cart
+	GuestCarts     map[string]domaincart.Cart
 	ProductService productDomain.ProductService `inject:""`
 }
 
 // Test Assignement and if Interface is implemeted correct
-var _ cart.GuestCartService = cart.GuestCartService(&InMemoryCartServiceAdapter{})
+var _ domaincart.GuestCartService = &InMemoryCartServiceAdapter{}
 
 func (cs *InMemoryCartServiceAdapter) init() {
 	if cs.GuestCarts == nil {
-		cs.GuestCarts = make(map[string]cart.Cart)
+		cs.GuestCarts = make(map[string]domaincart.Cart)
 	}
 
 }
 
-func (cs *InMemoryCartServiceAdapter) GetCart(ctx context.Context, guestcartid string) (cart.Cart, error) {
-	var cart cart.Cart
+func (cs *InMemoryCartServiceAdapter) GetCart(ctx context.Context, guestcartid string) (domaincart.Cart, error) {
+	var cart domaincart.Cart
 	cs.init()
 	if guestCart, ok := cs.GuestCarts[guestcartid]; ok {
 		guestCart.CurrencyCode = "EUR"
@@ -46,13 +45,13 @@ func (cs *InMemoryCartServiceAdapter) GetCart(ctx context.Context, guestcartid s
 		return guestCart, nil
 	}
 
-	return cart, errors.New(fmt.Sprintf("cart.infrastructure.inmemorycartservice: Guest Cart with ID %v not exitend", guestcartid))
+	return cart, fmt.Errorf("cart.infrastructure.inmemorycartservice: Guest Cart with ID %v not exitend", guestcartid)
 }
 
 //Creates a new guest cart and returns it
-func (cs *InMemoryCartServiceAdapter) GetNewCart(ctx context.Context) (cart.Cart, error) {
+func (cs *InMemoryCartServiceAdapter) GetNewCart(ctx context.Context) (domaincart.Cart, error) {
 	cs.init()
-	guestCart := cart.Cart{
+	guestCart := domaincart.Cart{
 		ID: strconv.Itoa(rand.Int()),
 	}
 	cs.GuestCarts[guestCart.ID] = guestCart
@@ -61,9 +60,9 @@ func (cs *InMemoryCartServiceAdapter) GetNewCart(ctx context.Context) (cart.Cart
 }
 
 //AddToCart
-func (cs InMemoryCartServiceAdapter) AddToCart(ctx context.Context, guestcartid string, addRequest cart.AddRequest) error {
+func (cs InMemoryCartServiceAdapter) AddToCart(ctx context.Context, guestcartid string, addRequest domaincart.AddRequest) error {
 	if _, ok := cs.GuestCarts[guestcartid]; !ok {
-		return errors.New(fmt.Sprintf("cart.infrastructure.inmemorycartservice: Cannot add - Guestcart with id %v not existend", guestcartid))
+		return fmt.Errorf("cart.infrastructure.inmemorycartservice: Cannot add - Guestcart with id %v not existend", guestcartid)
 	}
 	guestcart := cs.GuestCarts[guestcartid]
 	found, lineNr := guestcart.HasItem(addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode)
@@ -73,7 +72,7 @@ func (cs InMemoryCartServiceAdapter) AddToCart(ctx context.Context, guestcartid 
 	} else {
 		product, _ := cs.ProductService.Get(ctx, addRequest.MarketplaceCode)
 		rowTotal, _ := new(big.Float).Mul(big.NewFloat(product.SaleableData().ActivePrice.GetFinalPrice()), new(big.Float).SetInt64(int64(addRequest.Qty))).Float64()
-		cartItem := cart.Item{
+		cartItem := domaincart.Item{
 			MarketplaceCode:        addRequest.MarketplaceCode,
 			VariantMarketPlaceCode: addRequest.VariantMarketplaceCode,
 			Qty:      addRequest.Qty,
