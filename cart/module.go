@@ -12,16 +12,21 @@ import (
 )
 
 type (
-	// Module registers our profiler
-	Module struct {
+	// CartModule registers our profiler
+	CartModule struct {
 		RouterRegistry  *router.Registry `inject:""`
 		UseInMemoryCart bool             `inject:"config:cart.useInMemoryCartServiceAdapters"`
 		//EventRouter    event.Router     `inject:""`
 	}
+
+	// CheckoutModule registers our profiler
+	CheckoutModule struct {
+		RouterRegistry *router.Registry `inject:""`
+	}
 )
 
 // Configure module
-func (m *Module) Configure(injector *dingo.Injector) {
+func (m *CartModule) Configure(injector *dingo.Injector) {
 	if m.UseInMemoryCart {
 		injector.Bind((*cart.GuestCartService)(nil)).In(dingo.Singleton).To(infrastructure.InMemoryCartServiceAdapter{})
 	}
@@ -45,10 +50,18 @@ func (m *Module) Configure(injector *dingo.Injector) {
 }
 
 // DefaultConfig enables inMemory cart service adapter
-func (m *Module) DefaultConfig() config.Map {
+func (m *CartModule) DefaultConfig() config.Map {
 	return config.Map{
 		"cart": config.Map{
 			"useInMemoryCartServiceAdapters": true,
 		},
 	}
+}
+
+// Configure module
+func (m *CheckoutModule) Configure(injector *dingo.Injector) {
+
+	m.RouterRegistry.Handle("checkout.start", (*controller.CheckoutController).StartAction)
+	m.RouterRegistry.Route("/checkout", "checkout.start")
+
 }
