@@ -58,7 +58,7 @@ type (
 )
 
 // GetByLineNr gets an item - starting with 1
-func (Cart *Cart) GetByLineNr(lineNr int) (*Item, error) {
+func (Cart Cart) GetByLineNr(lineNr int) (*Item, error) {
 	var item Item
 	if len(Cart.Cartitems) >= lineNr && lineNr > 0 {
 		return &Cart.Cartitems[lineNr-1], nil
@@ -68,11 +68,16 @@ func (Cart *Cart) GetByLineNr(lineNr int) (*Item, error) {
 }
 
 // HasItem checks if a cartitem for that sku exists and returns lineNr if found
-func (Cart *Cart) HasItem(marketplaceCode string, variantMarketplaceCode string) (bool, int) {
+func (Cart Cart) HasItem(marketplaceCode string, variantMarketplaceCode string) (bool, int) {
 	for lineNr, item := range Cart.Cartitems {
 		if item.MarketplaceCode == marketplaceCode && item.VariantMarketPlaceCode == variantMarketplaceCode {
 			return true, lineNr + 1
 		}
 	}
 	return false, 0
+}
+
+// ItemCount - returns amount of Cartitems
+func (Cart Cart) ItemCount() int {
+	return len(Cart.Cartitems)
 }
