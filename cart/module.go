@@ -18,11 +18,6 @@ type (
 		UseInMemoryCart bool             `inject:"config:cart.useInMemoryCartServiceAdapters"`
 		//EventRouter    event.Router     `inject:""`
 	}
-
-	// CheckoutModule registers our profiler
-	CheckoutModule struct {
-		RouterRegistry *router.Registry `inject:""`
-	}
 )
 
 // Configure module
@@ -56,12 +51,4 @@ func (m *CartModule) DefaultConfig() config.Map {
 			"useInMemoryCartServiceAdapters": true,
 		},
 	}
-}
-
-// Configure module
-func (m *CheckoutModule) Configure(injector *dingo.Injector) {
-
-	m.RouterRegistry.Handle("checkout.start", (*controller.CheckoutController).StartAction)
-	m.RouterRegistry.Route("/checkout", "checkout.start")
-
 }
