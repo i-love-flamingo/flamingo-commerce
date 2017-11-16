@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"errors"
+
 	"go.aoe.com/flamingo/core/breadcrumbs"
 	"go.aoe.com/flamingo/core/category/domain"
 	productdomain "go.aoe.com/flamingo/core/product/domain"
@@ -62,6 +64,10 @@ func (vc *View) Get(c web.Context) web.Response {
 	}
 
 	category := getActive(categoryRoot)
+
+	if category == nil {
+		return vc.ErrorNotFound(c, errors.New("Active Category not found"))
+	}
 
 	expectedName := web.URLTitle(category.Name())
 	if expectedName != c.MustParam1("name") {
