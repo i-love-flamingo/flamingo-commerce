@@ -25,11 +25,34 @@ type (
 		NumResults int
 	}
 
+	FacetType string
+
+	FacetItem struct {
+		Label    string
+		Value    string
+		Active   bool
+		Selected bool
+
+		// Tree Facet
+		Items []*FacetItem
+
+		// Range Facet
+		Min, Max                 float64
+		SelectedMin, SelectedMax float64
+	}
+
+	Facet struct {
+		Type  string
+		Name  string
+		Label string
+		Items []*FacetItem
+	}
+
 	// Result defines a search result for one type
 	Result struct {
 		SearchMeta SearchMeta
 		Hits       []Document
-		Filters    []Filter
+		Facets     map[string]Facet
 	}
 
 	// Document holds a search result document
@@ -41,6 +64,12 @@ type (
 		Search(ctx context.Context, filter ...Filter) (results map[string]Result, err error)
 		SearchFor(ctx context.Context, typ string, filter ...Filter) (result Result, err error)
 	}
+)
+
+const (
+	ListFacet  FacetType = "ListFacet"
+	TreeFacet            = "TreeFacet"
+	RangeFacet           = "RangeFacet"
 )
 
 var (

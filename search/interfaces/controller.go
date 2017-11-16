@@ -2,7 +2,6 @@ package interfaces
 
 import (
 	"go.aoe.com/flamingo/core/search/domain"
-	"go.aoe.com/flamingo/framework/router"
 	"go.aoe.com/flamingo/framework/web"
 	"go.aoe.com/flamingo/framework/web/responder"
 )
@@ -16,49 +15,39 @@ type (
 		domain.SearchService    `inject:""`
 	}
 
-	// ViewData is used for search rendering
-	ViewData struct {
-		SearchResults map[string]domain.Result
-		SearchHost    string
+	viewData struct {
+		SearchMeta   domain.SearchMeta
+		SearchResult map[string]domain.Result
 	}
 )
 
-func getSearchType(st string) string {
-	switch st {
-	case
-		"retailer",
-		"location",
-		"brand":
-		return st
-	}
-	return "product"
-}
-
 // Get Response for search
 func (vc *ViewController) Get(c web.Context) web.Response {
-	query, queryErr := c.Query1("q")
-	_ = queryErr
-	searchType := getSearchType(c.MustParam1("type"))
-
-	if searchType != c.MustParam1("type") {
-		return vc.Redirect("search.search?q="+query, router.P{"type": searchType})
+	filter := make([]domain.Filter, len(c.QueryAll()))
+	i := 0
+	for k, v := range c.QueryAll() {
+		filter[i] = domain.NewKeyValueFilter(k, v)
+		i++
 	}
 
-	//if query == "" || queryErr != nil {
-	//	return vc.Render(c, "search/search", vd)
-	//}
+	vd := viewData{
+		SearchMeta: domain.SearchMeta{
+			Query: c.MustQuery1("q"),
+		},
+	}
 
-	//searchResult, err := vc.SearchService.Search(c, c.Request().URL.Query())
-	searchResult, err := vc.SearchService.Search(c)
+	if typ, err := c.Param1("type"); err == nil {
+		searchResult, err := vc.SearchService.SearchFor(c, typ, filter...)
+		if err != nil {
+			return vc.Error(c, err)
+		}
+		vd.SearchResult = map[string]domain.Result{typ: searchResult}
+		return vc.Render(c, "search/"+typ, vd)
+	}
+	searchResult, err := vc.SearchService.Search(c, filter...)
 	if err != nil {
 		return vc.Error(c, err)
 	}
-
-	vd := ViewData{
-		SearchResults: searchResult,
-		SearchHost:    c.Request().Host,
-	}
-
-	// render page
+	vd.SearchResult = searchResult
 	return vc.Render(c, "search/search", vd)
 }
