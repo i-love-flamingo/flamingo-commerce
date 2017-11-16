@@ -3,15 +3,12 @@ package domain
 import (
 	"context"
 	"errors"
-	"net/url"
-
-	"go.aoe.com/flamingo/core/product/domain"
 )
 
 type (
 	// Filter interface for search queries
 	Filter interface {
-		Values() url.Values
+		Value() (string, []string)
 	}
 
 	// KeyValueFilter allows simple k -> []values filtering
@@ -22,23 +19,27 @@ type (
 
 	// SearchMeta data
 	SearchMeta struct {
+		Query      string
 		Page       int
 		NumPages   int
 		NumResults int
 	}
 
+	// Result defines a search result for one type
+	Result struct {
+		SearchMeta SearchMeta
+		Hits       []Document
+		Filters    []Filter
+	}
+
+	// Document holds a search result document
+	Document interface{}
+
 	// SearchService defines how to access search
 	SearchService interface {
-		GetProducts(
-			ctx context.Context,
-			searchMeta SearchMeta, // todo: refactor and make it a Filter
-			filter ...Filter,
-		) (
-			meta SearchMeta,
-			products []domain.BasicProduct,
-			availableFilter []Filter,
-			err error,
-		)
+		//Types() []string
+		Search(ctx context.Context, filter ...Filter) (results map[string]Result, err error)
+		SearchFor(ctx context.Context, typ string, filter ...Filter) (result Result, err error)
 	}
 )
 
@@ -57,9 +58,7 @@ func NewKeyValueFilter(k string, v []string) *KeyValueFilter {
 	}
 }
 
-// Values of the current filter
-func (f *KeyValueFilter) Values() url.Values {
-	return url.Values{
-		f.k: f.v,
-	}
+// Value of the current filter
+func (f *KeyValueFilter) Value() (string, []string) {
+	return f.k, f.v
 }
