@@ -1,8 +1,6 @@
 package domain
 
 import (
-	"net/url"
-
 	"go.aoe.com/flamingo/core/search/domain"
 )
 
@@ -24,23 +22,22 @@ type (
 )
 
 const (
+	// CategoryKey donates the default category facet key
 	CategoryKey categoryKey = "category"
 )
 
 var (
-	_ domain.Filter = new(CategoryFacet)
+	_ domain.Filter = CategoryFacet{}
 )
 
 // NewCategoryFacet filter factory
-func NewCategoryFacet(category string) *CategoryFacet {
-	return &CategoryFacet{
+func NewCategoryFacet(category string) CategoryFacet {
+	return CategoryFacet{
 		category: category,
 	}
 }
 
-// Values for category/domain.Filter
-func (cf *CategoryFacet) Values() url.Values {
-	return url.Values{
-		string(CategoryKey): {cf.category},
-	}
+// Value for category/domain.Filter
+func (cf CategoryFacet) Value() (string, []string) {
+	return string(CategoryKey), []string{cf.category}
 }

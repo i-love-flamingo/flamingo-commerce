@@ -4,7 +4,6 @@ import (
 	"go.aoe.com/flamingo/core/breadcrumbs"
 	"go.aoe.com/flamingo/core/category/domain"
 	productdomain "go.aoe.com/flamingo/core/product/domain"
-	searchdomain "go.aoe.com/flamingo/core/search/domain"
 	"go.aoe.com/flamingo/framework/router"
 	"go.aoe.com/flamingo/framework/web"
 	"go.aoe.com/flamingo/framework/web/responder"
@@ -13,11 +12,11 @@ import (
 type (
 	// View demonstrates a product view controller
 	View struct {
-		responder.ErrorAware       `inject:""`
-		responder.RenderAware      `inject:""`
-		responder.RedirectAware    `inject:""`
-		domain.CategoryService     `inject:""`
-		searchdomain.SearchService `inject:""`
+		responder.ErrorAware        `inject:""`
+		responder.RenderAware       `inject:""`
+		responder.RedirectAware     `inject:""`
+		domain.CategoryService      `inject:""`
+		productdomain.SearchService `inject:""`
 
 		Router   *router.Router `inject:""`
 		Template string         `inject:"config:core.category.view.template"`
@@ -36,7 +35,7 @@ func URL(code string) (string, map[string]string) {
 	return "category.view", map[string]string{"code": code}
 }
 
-// URL with name to category
+// URLWithName points to a category with a given name
 func URLWithName(code, name string) (string, map[string]string) {
 	return "category.view", map[string]string{"code": code, "name": name}
 }
@@ -56,7 +55,7 @@ func getActive(category domain.Category) domain.Category {
 // Get Response for Product matching sku param
 func (vc *View) Get(c web.Context) web.Response {
 	categoryRoot, err := vc.CategoryService.Get(c, c.MustParam1("code"))
-	if err == domain.NotFound {
+	if err == domain.ErrNotFound {
 		return vc.ErrorNotFound(c, err)
 	} else if err != nil {
 		return vc.Error(c, err)
@@ -72,7 +71,7 @@ func (vc *View) Get(c web.Context) web.Response {
 		})
 	}
 
-	_, products, _, err := vc.SearchService.GetProducts(c, searchdomain.SearchMeta{}, domain.NewCategoryFacet(c.MustParam1("code")))
+	products, err := vc.SearchService.Search(c, domain.NewCategoryFacet(c.MustParam1("code")))
 	if err != nil {
 		return vc.Error(c, err)
 	}
@@ -82,7 +81,7 @@ func (vc *View) Get(c web.Context) web.Response {
 	return vc.Render(c, vc.Template, ViewData{
 		Category:     category,
 		CategoryTree: categoryRoot,
-		Products:     products,
+		Products:     products.Hits,
 	})
 }
 

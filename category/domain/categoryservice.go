@@ -6,8 +6,8 @@ import (
 )
 
 var (
-	// NotFound error
-	NotFound = errors.New("category not found")
+	// ErrNotFound error
+	ErrNotFound = errors.New("category not found")
 )
 
 type (
