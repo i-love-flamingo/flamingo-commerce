@@ -2,6 +2,8 @@ package checkout
 
 import (
 	"go.aoe.com/flamingo/core/checkout/interfaces/controller"
+	"go.aoe.com/flamingo/core/checkout/interfaces/controller/formDto"
+	"go.aoe.com/flamingo/core/form/domain"
 	"go.aoe.com/flamingo/framework/config"
 	"go.aoe.com/flamingo/framework/dingo"
 	"go.aoe.com/flamingo/framework/router"
@@ -23,6 +25,8 @@ func (m *CheckoutModule) Configure(injector *dingo.Injector) {
 
 	m.RouterRegistry.Handle("checkout.success", (*controller.CheckoutController).SuccessAction)
 	m.RouterRegistry.Route("/checkout/success", "checkout.success")
+
+	injector.Bind((*domain.FormService)(nil)).In(dingo.Singleton).To(formDto.CheckoutFormService{})
 
 }
 

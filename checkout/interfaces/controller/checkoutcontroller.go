@@ -9,6 +9,8 @@ import (
 
 	"errors"
 
+	"encoding/gob"
+
 	application2 "go.aoe.com/flamingo/core/checkout/application"
 	"go.aoe.com/flamingo/core/checkout/interfaces/controller/formDto"
 	formApplicationService "go.aoe.com/flamingo/core/form/application"
@@ -37,11 +39,17 @@ type (
 		ApplicationCartService  application.CartService     `inject:""`
 		PaymentService          application2.PaymentService `inject:""`
 		Router                  *router.Router              `inject:""`
+		CheckoutFormService     domain.FormService          `inject:""`
 	}
 )
 
+func init() {
+	gob.Register(SuccessViewData{})
+}
+
 func (cc *CheckoutController) SubmitAction(ctx web.Context) web.Response {
 
+	//Guard Clause if Cart cannout be fetched
 	decoratedCart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
 	if e != nil {
 		log.Printf("cart.checkoutcontroller.viewaction: Error %v", e)
@@ -57,11 +65,22 @@ func (cc *CheckoutController) SubmitAction(ctx web.Context) web.Response {
 		Url:   cc.Router.URL("checkout.start", nil).String(),
 	})
 
-	form, e := formApplicationService.ProcessFormRequest(ctx, new(formDto.CheckoutFormService))
-	log.Printf("lkjlklkj %#v %#v", form, e)
-	log.Printf("lkjlklkj %#v %#v", form, e)
+	if cc.CheckoutFormService == nil {
+		log.Printf("cart.checkoutcontroller.viewaction: Error CheckoutFormService not present!", e)
+		return cc.Render(ctx, "checkout/carterror", nil)
+	}
+
+	form, e := formApplicationService.ProcessFormRequest(ctx, cc.CheckoutFormService)
 	// return on error (template need to handle error display)
 	if e != nil {
+		return cc.Render(ctx, "checkout/checkout", CheckoutViewData{
+			DecoratedCart: decoratedCart,
+			Form:          form,
+		})
+	}
+
+	//Guard Clause if Cart is empty
+	if decoratedCart.Cart.ItemCount() == 0 {
 		return cc.Render(ctx, "checkout/checkout", CheckoutViewData{
 			DecoratedCart: decoratedCart,
 			Form:          form,
@@ -109,8 +128,9 @@ func (cc *CheckoutController) SuccessAction(ctx web.Context) web.Response {
 func (cc *CheckoutController) placeOrder(ctx web.Context, checkoutFormData formDto.CheckoutFormData, cart cart.Cart) (string, error) {
 
 	billingAddress, shippingAddress := formDto.MapAddresses(checkoutFormData)
-	log.Printf("Checkoutcontroller.submit - Info: billingAddress: %#v", billingAddress)
-	err := cart.SetShippingInformation(ctx, shippingAddress, billingAddress, "flatrate", "flatrate")
+	_ = shippingAddress
+	log.Printf("Checkoutcontroller.submit - Info: billingAddress: %#v", checkoutFormData)
+	err := cart.SetShippingInformation(ctx, billingAddress, billingAddress, "flatrate", "flatrate")
 	if err != nil {
 		log.Printf("Error during place Order: %v", err)
 		return "", errors.New("Error while setting shipping informations.")

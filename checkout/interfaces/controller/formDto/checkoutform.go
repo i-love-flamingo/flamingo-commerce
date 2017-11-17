@@ -5,11 +5,14 @@ import (
 
 	"errors"
 
+	"strings"
+
 	"github.com/go-playground/form"
 	"github.com/leebenson/conform"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
 	"go.aoe.com/flamingo/core/form/application"
 	"go.aoe.com/flamingo/core/form/domain"
+	"go.aoe.com/flamingo/framework/config"
 	"go.aoe.com/flamingo/framework/web"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -25,21 +28,24 @@ type (
 	AddressFormData struct {
 		RegionCode    string `form:"regionCode" conform:"name"`
 		CountryCode   string `form:"countryCode" conform:"name"`
-		Company       string `form:"company" conform:"name"`
-		Street        string `form:"street" conform:"name"`
-		StreetNr      string `form:"streetNr" conform:"name"`
-		AddressLine1  string `form:"addressLine1" conform:"name"`
-		AddressLine2  string `form:"addressLine2" conform:"name"`
-		PhoneAreaCode string `form:"phoneAreaCode" conform:"name"`
-		PhoneNumber   string `form:"phoneNumber" conform:"name"`
-		PostCode      string `form:"postCode" conform:"name"`
+		Company       string `form:"company" conform:"trim"`
+		Street        string `form:"street" conform:"trim"`
+		StreetNr      string `form:"streetNr" conform:"trim"`
+		AddressLine1  string `form:"addressLine1" conform:"trim"`
+		AddressLine2  string `form:"addressLine2" conform:"trim"`
+		PhoneAreaCode string `form:"phoneAreaCode" validate:"required" conform:"num"`
+		PhoneNumber   string `form:"phoneNumber" validate:"required" conform:"num"`
+		PostCode      string `form:"postCode" conform:"trim"`
 		City          string `form:"city" conform:"name"`
 		Firstname     string `form:"firstname" validate:"required" conform:"name"`
 		Lastname      string `form:"lastname" validate:"required" conform:"name"`
-		Email         string `form:"email" validate:"required" conform:"name"`
+		Email         string `form:"email" validate:"required,email" conform:"email"`
 	}
 
-	CheckoutFormService struct{}
+	CheckoutFormService struct {
+		DefaultFormValues  config.Map `inject:"config:checkout.checkoutForm.defaultValues,optional"`
+		OverrideFormValues config.Map `inject:"config:checkout.checkoutForm.overrideValues,optional"`
+	}
 )
 
 // use a single instance of Decoder, it caches struct info
@@ -47,6 +53,44 @@ var decoder *form.Decoder
 
 // ParseFormData - from FormService interface
 func (fs *CheckoutFormService) ParseFormData(ctx web.Context, formValues url.Values) (interface{}, error) {
+	if formValues == nil {
+		formValues = make(map[string][]string)
+	}
+	//Merge in DefaultValues
+	if fs.DefaultFormValues != nil {
+		for k, v := range fs.DefaultFormValues {
+			k = strings.Replace(k, "_", ".", -1)
+			if _, ok := formValues[k]; ok {
+				//value is passed - no override
+				continue
+			}
+			stringV, ok := v.(string)
+			if !ok {
+				//value configured is no string - missconfiguration - continue
+				continue
+			}
+			newStringSlice := make([]string, 1)
+			newStringSlice[0] = stringV
+			formValues[k] = newStringSlice
+		}
+	}
+
+	//OverrideValues
+	//log.Printf("settings %#v", fs.OverrideFormValues)
+	if fs.OverrideFormValues != nil {
+		for k, v := range fs.OverrideFormValues {
+			k = strings.Replace(k, "_", ".", -1)
+			stringV, ok := v.(string)
+			if !ok {
+				//value configured is no string - missconfiguration - continue
+				continue
+			}
+			newStringSlice := make([]string, 1)
+			newStringSlice[0] = stringV
+			formValues[k] = newStringSlice
+		}
+	}
+	//log.Printf("formValues %#v", formValues)
 	decoder = form.NewDecoder()
 	var formData CheckoutFormData
 	decoder.Decode(&formData, formValues)
