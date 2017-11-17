@@ -88,11 +88,17 @@ func (cart Cart) HasItem(marketplaceCode string, variantMarketplaceCode string) 
 
 // SetShippingInformation
 func (cart Cart) SetShippingInformation(ctx context.Context, shippingAddress *Address, billingAddress *Address, shippingCarrierCode string, shippingMethodCode string) error {
+	if cart.CartOrderBehaviour == nil {
+		return errors.New("This Cart has no Behaviour attached!")
+	}
 	return cart.CartOrderBehaviour.SetShippingInformation(ctx, &cart, shippingAddress, billingAddress, shippingCarrierCode, shippingMethodCode)
 }
 
 // PlaceOrder
 func (cart Cart) PlaceOrder(ctx context.Context, payment *Payment) (string, error) {
+	if cart.CartOrderBehaviour == nil {
+		return "", errors.New("This Cart has no Behaviour attached!")
+	}
 	return cart.CartOrderBehaviour.PlaceOrder(ctx, &cart, payment)
 }
 
