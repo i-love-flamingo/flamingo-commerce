@@ -1,20 +1,23 @@
 package cart
 
 import (
+	"context"
+
 	"github.com/pkg/errors"
 )
 
 type (
-	// Cart Value Object (immutable - because the cartservice is responsible to return a cart).
+	// Cart Value Object (immutable data - because the cartservice is responsible to return a cart).
 	Cart struct {
-		ID             string
-		Cartitems      []Item
-		Totalitems     []Totalitem
-		ShippingItem   ShippingItem
-		GrandTotal     float64
-		SubTotal       float64
-		DiscountAmount float64
-		TaxAmount      float64
+		CartOrderBehaviour CartOrderBehaviour
+		ID                 string
+		Cartitems          []Item
+		Totalitems         []Totalitem
+		ShippingItem       ShippingItem
+		GrandTotal         float64
+		SubTotal           float64
+		DiscountAmount     float64
+		TaxAmount          float64
 
 		CurrencyCode string
 		//Intention is optional and expresses the intented use case for this cart - it is used when multiple carts are used to distinguish between them
@@ -55,6 +58,12 @@ type (
 		TaxAmount      float64
 		DiscountAmount float64
 	}
+
+	//CartBehaviour is a Port that can be implemented by other packages to implement  cart actions required for Ordering a Cart
+	CartOrderBehaviour interface {
+		PlaceOrder(ctx context.Context, cart *Cart, payment *Payment) (string, error)
+		SetShippingInformation(ctx context.Context, cart *Cart, shippingAddress *Address, billingAddress *Address, shippingCarrierCode string, shippingMethodCode string) error
+	}
 )
 
 // GetByLineNr gets an item - starting with 1
@@ -68,13 +77,23 @@ func (Cart Cart) GetByLineNr(lineNr int) (*Item, error) {
 }
 
 // HasItem checks if a cartitem for that sku exists and returns lineNr if found
-func (Cart Cart) HasItem(marketplaceCode string, variantMarketplaceCode string) (bool, int) {
-	for lineNr, item := range Cart.Cartitems {
+func (cart Cart) HasItem(marketplaceCode string, variantMarketplaceCode string) (bool, int) {
+	for lineNr, item := range cart.Cartitems {
 		if item.MarketplaceCode == marketplaceCode && item.VariantMarketPlaceCode == variantMarketplaceCode {
 			return true, lineNr + 1
 		}
 	}
 	return false, 0
+}
+
+// SetShippingInformation
+func (cart Cart) SetShippingInformation(ctx context.Context, shippingAddress *Address, billingAddress *Address, shippingCarrierCode string, shippingMethodCode string) error {
+	return cart.CartOrderBehaviour.SetShippingInformation(ctx, &cart, shippingAddress, billingAddress, shippingCarrierCode, shippingMethodCode)
+}
+
+// PlaceOrder
+func (cart Cart) PlaceOrder(ctx context.Context, payment *Payment) (string, error) {
+	return cart.CartOrderBehaviour.PlaceOrder(ctx, &cart, payment)
 }
 
 // ItemCount - returns amount of Cartitems

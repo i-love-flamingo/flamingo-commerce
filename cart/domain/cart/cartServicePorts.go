@@ -2,6 +2,14 @@ package cart
 
 import "context"
 
+/**
+
+CartServicePorts General Informations
+ - GuestCartService: Used if no customer is logged in
+ - CustomerCartService: Used if a customer is authenticated. You can access the users information in your Adapter implementation
+ - When implementing the Ports in an own package, be sure to also set the correct "CartOrderBehaviour" on the cart!
+
+*/
 type (
 	// GuestCartService interface
 	GuestCartService interface {
