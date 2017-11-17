@@ -43,13 +43,11 @@ type (
 	}
 
 	CheckoutFormService struct {
-		DefaultFormValues  config.Map `inject:"config:checkout.checkoutForm.defaultValues,optional"`
-		OverrideFormValues config.Map `inject:"config:checkout.checkoutForm.overrideValues,optional"`
+		DefaultFormValues  config.Map    `inject:"config:checkout.checkoutForm.defaultValues,optional"`
+		OverrideFormValues config.Map    `inject:"config:checkout.checkoutForm.overrideValues,optional"`
+		Decoder            *form.Decoder `inject:""`
 	}
 )
-
-// use a single instance of Decoder, it caches struct info
-var decoder *form.Decoder
 
 // ParseFormData - from FormService interface
 func (fs *CheckoutFormService) ParseFormData(ctx web.Context, formValues url.Values) (interface{}, error) {
@@ -91,9 +89,8 @@ func (fs *CheckoutFormService) ParseFormData(ctx web.Context, formValues url.Val
 		}
 	}
 	//log.Printf("formValues %#v", formValues)
-	decoder = form.NewDecoder()
 	var formData CheckoutFormData
-	decoder.Decode(&formData, formValues)
+	fs.Decoder.Decode(&formData, formValues)
 	conform.Strings(&formData)
 	return formData, nil
 }

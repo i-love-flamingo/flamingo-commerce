@@ -1,6 +1,7 @@
 package checkout
 
 import (
+	"github.com/go-playground/form"
 	"go.aoe.com/flamingo/core/checkout/interfaces/controller"
 	"go.aoe.com/flamingo/core/checkout/interfaces/controller/formDto"
 	"go.aoe.com/flamingo/core/form/domain"
@@ -28,6 +29,7 @@ func (m *CheckoutModule) Configure(injector *dingo.Injector) {
 
 	injector.Bind((*domain.FormService)(nil)).In(dingo.Singleton).To(formDto.CheckoutFormService{})
 
+	injector.Bind((*form.Decoder)(nil)).ToProvider(form.NewDecoder).AsEagerSingleton()
 }
 
 // DefaultConfig
