@@ -57,3 +57,20 @@ func (cc *CartViewController) AddAndViewAction(ctx web.Context) web.Response {
 	return cc.ViewAction(ctx)
 
 }
+
+// AddAndViewAction the DecoratedCart View ( / cart)
+func (cc *CartViewController) DeleteAndViewAction(ctx web.Context) web.Response {
+	decoratedCart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
+	if e != nil {
+		log.Printf("cart.cartcontroller.viewaction: Error %v", e)
+		return cc.Render(ctx, "checkout/carterror", nil)
+	}
+	id, e := ctx.Param1("id")
+	if e != nil {
+		return cc.ViewAction(ctx)
+	}
+
+	decoratedCart.Cart.DeleteItem(ctx, id)
+	return cc.ViewAction(ctx)
+
+}

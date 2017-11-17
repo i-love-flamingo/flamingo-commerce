@@ -26,7 +26,7 @@ type (
 
 	// Item for Cart
 	Item struct {
-		ID              int
+		ID              string
 		MarketplaceCode string
 		//VariantMarketPlaceCode is used for Configurable products
 		VariantMarketPlaceCode string
@@ -62,6 +62,7 @@ type (
 	//CartBehaviour is a Port that can be implemented by other packages to implement  cart actions required for Ordering a Cart
 	CartOrderBehaviour interface {
 		PlaceOrder(ctx context.Context, cart *Cart, payment *Payment) (string, error)
+		DeleteItem(ctx context.Context, cart *Cart, itemId string) error
 		SetShippingInformation(ctx context.Context, cart *Cart, shippingAddress *Address, billingAddress *Address, shippingCarrierCode string, shippingMethodCode string) error
 	}
 )
@@ -100,6 +101,14 @@ func (cart Cart) PlaceOrder(ctx context.Context, payment *Payment) (string, erro
 		return "", errors.New("This Cart has no Behaviour attached!")
 	}
 	return cart.CartOrderBehaviour.PlaceOrder(ctx, &cart, payment)
+}
+
+// PlaceOrder
+func (cart Cart) DeleteItem(ctx context.Context, id string) error {
+	if cart.CartOrderBehaviour == nil {
+		return errors.New("This Cart has no Behaviour attached!")
+	}
+	return cart.CartOrderBehaviour.DeleteItem(ctx, &cart, id)
 }
 
 // ItemCount - returns amount of Cartitems

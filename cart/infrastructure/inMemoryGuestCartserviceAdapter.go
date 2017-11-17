@@ -8,15 +8,20 @@ import (
 	"math/rand"
 	"strconv"
 
+	"time"
+
 	domaincart "go.aoe.com/flamingo/core/cart/domain/cart"
 	productDomain "go.aoe.com/flamingo/core/product/domain"
 )
 
 // In Session Cart Storage
-type InMemoryCartServiceAdapter struct {
-	GuestCarts     map[string]domaincart.Cart
-	ProductService productDomain.ProductService `inject:""`
-}
+type (
+	InMemoryCartServiceAdapter struct {
+		GuestCarts     map[string]domaincart.Cart
+		ProductService productDomain.ProductService `inject:""`
+	}
+	CartOrderBehaviour struct{}
+)
 
 // Test Assignement and if Interface is implemeted correct
 var _ domaincart.GuestCartService = &InMemoryCartServiceAdapter{}
@@ -30,6 +35,7 @@ func (cs *InMemoryCartServiceAdapter) init() {
 
 func (cs *InMemoryCartServiceAdapter) GetCart(ctx context.Context, guestcartid string) (domaincart.Cart, error) {
 	var cart domaincart.Cart
+	cart.CartOrderBehaviour = new(CartOrderBehaviour)
 	cs.init()
 	if guestCart, ok := cs.GuestCarts[guestcartid]; ok {
 		guestCart.CurrencyCode = "EUR"
@@ -54,6 +60,7 @@ func (cs *InMemoryCartServiceAdapter) GetNewCart(ctx context.Context) (domaincar
 	guestCart := domaincart.Cart{
 		ID: strconv.Itoa(rand.Int()),
 	}
+	guestCart.CartOrderBehaviour = new(CartOrderBehaviour)
 	cs.GuestCarts[guestCart.ID] = guestCart
 	log.Println("New created:", cs.GuestCarts)
 	return guestCart, nil
@@ -86,71 +93,26 @@ func (cs InMemoryCartServiceAdapter) AddToCart(ctx context.Context, guestcartid 
 	return nil
 }
 
-/*
-// AddOrUpdateByCode if cartitem with code is already in the cart its updated. Otherwise added
-func (Cart *Cart) AddOrUpdateByCode(code string, qty int, price float32) {
-	for id, cartItem := range Cart.DecoratedItems {
-		if cartItem.ProductIdendifier == code {
-			cartItem.Qty = cartItem.Qty + qty
-			Cart.DecoratedItems[id] = cartItem
-			return
+// SetShippingInformation adds a product
+func (cs *CartOrderBehaviour) SetShippingInformation(ctx context.Context, cart *domaincart.Cart, shippingAddress *domaincart.Address, billingAddress *domaincart.Address, shippingCarrierCode string, shippingMethodCode string) error {
+	return nil
+}
+
+// SetShippingInformation adds a product
+func (cs *CartOrderBehaviour) PlaceOrder(ctx context.Context, cart *domaincart.Cart, payment *domaincart.Payment) (string, error) {
+	rand.Seed(time.Now().Unix())
+	return string(rand.Int()), nil
+}
+
+func (cs *CartOrderBehaviour) DeleteItem(ctx context.Context, cart *domaincart.Cart, itemId string) error {
+	for k, item := range cart.Cartitems {
+		if item.ID == itemId {
+			if len(cart.Cartitems) > k {
+				cart.Cartitems = append(cart.Cartitems[:k], cart.Cartitems[k+1:]...)
+			} else {
+				cart.Cartitems = cart.Cartitems[:k]
+			}
 		}
 	}
-	newCartItem := Item{
-		code,
-		qty,
-		price,
-	}
-	Cart.DecoratedItems = append(Cart.DecoratedItems, newCartItem)
-}
-*/
-
-/*
-
-
-// FakecartrepositoryFactory factory
-func FakecartrepositoryFactory() *Fakecartrepository {
-	return &Fakecartrepository{
-		GuestCarts: make(map[int]*domain.Cart),
-	}
-}
-
-
-// Add to cart
-func (cr *Fakecartrepository) Add(Cart domain.Cart) (int, error) {
-	cr.init()
-	fmt.Println("Fake cartrepo impl called add")
-	if Cart.ID == 0 {
-		Cart.ID = rand.Int()
-	}
-	cr.GuestCarts[Cart.ID] = &Cart
-	return Cart.ID, nil
-}
-
-// Update cart
-func (cr *Fakecartrepository) Update(Cart domain.Cart) error {
-	cr.init()
-	fmt.Println("Fake cartrepo impl called Update")
-	cr.GuestCarts[Cart.ID] = &Cart
 	return nil
 }
-
-// Delete cart
-func (cr *Fakecartrepository) Delete(Cart domain.Cart) error {
-	cr.init()
-	fmt.Println("Fake cartrepo impl called delete")
-	delete(cr.GuestCarts, Cart.ID)
-	return nil
-}
-
-// Get cart
-func (cr *Fakecartrepository) Get(ID int) (*domain.Cart, error) {
-	cr.init()
-	fmt.Printf("Fake cartrepo impl called get for %s", ID)
-	if val, ok := cr.GuestCarts[ID]; ok {
-		return val, nil
-	}
-
-	return nil, errors.New("No cart with that ID")
-}
-*/
