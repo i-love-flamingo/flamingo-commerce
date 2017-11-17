@@ -15,6 +15,7 @@ import (
 	"go.aoe.com/flamingo/core/checkout/interfaces/controller/formDto"
 	formApplicationService "go.aoe.com/flamingo/core/form/application"
 	"go.aoe.com/flamingo/core/form/domain"
+	"go.aoe.com/flamingo/framework/flamingo"
 	"go.aoe.com/flamingo/framework/router"
 	"go.aoe.com/flamingo/framework/web"
 	"go.aoe.com/flamingo/framework/web/responder"
@@ -40,6 +41,7 @@ type (
 		PaymentService          application2.PaymentService `inject:""`
 		Router                  *router.Router              `inject:""`
 		CheckoutFormService     domain.FormService          `inject:""`
+		Logger                  flamingo.Logger             `inject:""`
 	}
 )
 
@@ -52,7 +54,7 @@ func (cc *CheckoutController) SubmitAction(ctx web.Context) web.Response {
 	//Guard Clause if Cart cannout be fetched
 	decoratedCart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
 	if e != nil {
-		log.Printf("cart.checkoutcontroller.viewaction: Error %v", e)
+		cc.Logger.Errorf("cart.checkoutcontroller.viewaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
 
@@ -66,7 +68,7 @@ func (cc *CheckoutController) SubmitAction(ctx web.Context) web.Response {
 	})
 
 	if cc.CheckoutFormService == nil {
-		log.Printf("cart.checkoutcontroller.viewaction: Error CheckoutFormService not present!", e)
+		cc.Logger.Error("cart.checkoutcontroller.viewaction: Error CheckoutFormService not present!", e)
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
 
