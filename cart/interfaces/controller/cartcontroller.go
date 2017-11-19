@@ -20,9 +20,10 @@ type (
 
 	// CartController for carts
 	CartViewController struct {
-		responder.RenderAware  `inject:""`
-		ApplicationCartService application.CartService `inject:""`
-		Router                 *router.Router          `inject:""`
+		responder.RenderAware   `inject:""`
+		responder.RedirectAware `inject:""`
+		ApplicationCartService  application.CartService `inject:""`
+		Router                  *router.Router          `inject:""`
 	}
 )
 
@@ -62,15 +63,19 @@ func (cc *CartViewController) AddAndViewAction(ctx web.Context) web.Response {
 func (cc *CartViewController) DeleteAndViewAction(ctx web.Context) web.Response {
 	decoratedCart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
 	if e != nil {
-		log.Printf("cart.cartcontroller.viewaction: Error %v", e)
+		log.Printf("cart.cartcontroller.deleteaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
 	id, e := ctx.Param1("id")
 	if e != nil {
-		return cc.ViewAction(ctx)
+		log.Printf("cart.cartcontroller.deleteaction: Error %v", e)
+		return cc.Redirect("cart.view", nil)
 	}
 
-	decoratedCart.Cart.DeleteItem(ctx, id)
-	return cc.ViewAction(ctx)
+	e = decoratedCart.Cart.DeleteItem(ctx, id)
+	if e != nil {
+		log.Printf("cart.cartcontroller.deleteaction: Error %v", e)
+	}
+	return cc.Redirect("cart.view", nil)
 
 }

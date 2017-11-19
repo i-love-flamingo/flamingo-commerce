@@ -9,7 +9,7 @@ import (
 type (
 	// Cart Value Object (immutable data - because the cartservice is responsible to return a cart).
 	Cart struct {
-		CartOrderBehaviour CartOrderBehaviour
+		CartOrderBehaviour CartOrderBehaviour `json:"-"`
 		ID                 string
 		Cartitems          []Item
 		Totalitems         []Totalitem
@@ -18,7 +18,7 @@ type (
 		SubTotal           float64
 		DiscountAmount     float64
 		TaxAmount          float64
-
+		//TODO - move to Item?
 		CurrencyCode string
 		//Intention is optional and expresses the intented use case for this cart - it is used when multiple carts are used to distinguish between them
 		Intention string

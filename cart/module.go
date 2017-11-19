@@ -23,7 +23,8 @@ type (
 // Configure module
 func (m *CartModule) Configure(injector *dingo.Injector) {
 	if m.UseInMemoryCart {
-		injector.Bind((*cart.GuestCartService)(nil)).In(dingo.Singleton).To(infrastructure.InMemoryCartServiceAdapter{})
+		injector.Bind((*infrastructure.GuestCartStorage)(nil)).To(infrastructure.InmemoryGuestCartStorage{}).AsEagerSingleton()
+		injector.Bind((*cart.GuestCartService)(nil)).To(infrastructure.GuestCartServiceAdapter{})
 	}
 
 	m.RouterRegistry.Handle("cart.view", (*controller.CartViewController).ViewAction)
