@@ -34,6 +34,14 @@ type (
 		AddToCart(context.Context, string, AddRequest) error
 	}
 
+	//CartBehaviour is a Port that can be implemented by other packages to implement  cart actions required for Ordering a Cart
+	CartOrderBehaviour interface {
+		PlaceOrder(ctx context.Context, cart *Cart, payment *Payment) (string, error)
+		DeleteItem(ctx context.Context, cart *Cart, itemId string) error
+		UpdateItem(ctx context.Context, cart *Cart, itemId string, item Item) error
+		SetShippingInformation(ctx context.Context, cart *Cart, shippingAddress *Address, billingAddress *Address, shippingCarrierCode string, shippingMethodCode string) error
+	}
+
 	AddRequest struct {
 		MarketplaceCode        string
 		Qty                    int

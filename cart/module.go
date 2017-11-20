@@ -33,6 +33,9 @@ func (m *CartModule) Configure(injector *dingo.Injector) {
 	m.RouterRegistry.Handle("cart.add", (*controller.CartViewController).AddAndViewAction)
 	m.RouterRegistry.Route("/cart/add/:marketplaceCode", `cart.add(marketplaceCode,variantMarketplaceCode?="",qty?="1")`)
 
+	m.RouterRegistry.Handle("cart.updateQty", (*controller.CartViewController).UpdateQtyAndViewAction)
+	m.RouterRegistry.Route("/cart/update/:id", `cart.updateQty(id,qty?="1")`)
+
 	m.RouterRegistry.Handle("cart.deleteItem", (*controller.CartViewController).DeleteAndViewAction)
 	m.RouterRegistry.Route("/cart/delete/:id", `cart.deleteItem(id)`)
 

@@ -3,6 +3,10 @@ package cart
 import (
 	"context"
 
+	"fmt"
+
+	"log"
+
 	"github.com/pkg/errors"
 )
 
@@ -58,13 +62,6 @@ type (
 		TaxAmount      float64
 		DiscountAmount float64
 	}
-
-	//CartBehaviour is a Port that can be implemented by other packages to implement  cart actions required for Ordering a Cart
-	CartOrderBehaviour interface {
-		PlaceOrder(ctx context.Context, cart *Cart, payment *Payment) (string, error)
-		DeleteItem(ctx context.Context, cart *Cart, itemId string) error
-		SetShippingInformation(ctx context.Context, cart *Cart, shippingAddress *Address, billingAddress *Address, shippingCarrierCode string, shippingMethodCode string) error
-	}
 )
 
 // GetByLineNr gets an item - starting with 1
@@ -77,6 +74,17 @@ func (Cart Cart) GetByLineNr(lineNr int) (*Item, error) {
 	}
 }
 
+// GetByItemId gets an item by its id
+func (Cart Cart) GetByItemId(itemId string) (*Item, error) {
+	for _, currentItem := range Cart.Cartitems {
+		log.Println(currentItem.ID)
+		if currentItem.ID == itemId {
+			return &currentItem, nil
+		}
+	}
+	return nil, errors.New(fmt.Sprintf("itemId %v in cart not existend", itemId))
+}
+
 // HasItem checks if a cartitem for that sku exists and returns lineNr if found
 func (cart Cart) HasItem(marketplaceCode string, variantMarketplaceCode string) (bool, int) {
 	for lineNr, item := range cart.Cartitems {
@@ -85,6 +93,14 @@ func (cart Cart) HasItem(marketplaceCode string, variantMarketplaceCode string) 
 		}
 	}
 	return false, 0
+}
+
+//HasShippingItem
+func (cart Cart) HasShippingItem() bool {
+	if cart.ShippingItem.Title != "" {
+		return true
+	}
+	return false
 }
 
 // SetShippingInformation
@@ -103,12 +119,25 @@ func (cart Cart) PlaceOrder(ctx context.Context, payment *Payment) (string, erro
 	return cart.CartOrderBehaviour.PlaceOrder(ctx, &cart, payment)
 }
 
-// PlaceOrder
+// DeleteItem
 func (cart Cart) DeleteItem(ctx context.Context, id string) error {
 	if cart.CartOrderBehaviour == nil {
 		return errors.New("This Cart has no Behaviour attached!")
 	}
 	return cart.CartOrderBehaviour.DeleteItem(ctx, &cart, id)
+}
+
+// PlaceOrder
+func (cart Cart) UpdateItemQty(ctx context.Context, id string, qty int) error {
+	if cart.CartOrderBehaviour == nil {
+		return errors.New("This Cart has no Behaviour attached!")
+	}
+	item, e := cart.GetByItemId(id)
+	if e != nil {
+		return e
+	}
+	item.Qty = qty
+	return cart.CartOrderBehaviour.UpdateItem(ctx, &cart, id, *item)
 }
 
 // ItemCount - returns amount of Cartitems

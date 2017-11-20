@@ -7,6 +7,8 @@ import (
 	"go.aoe.com/flamingo/core/cart/application"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
 
+	"strconv"
+
 	"go.aoe.com/flamingo/framework/router"
 	"go.aoe.com/flamingo/framework/web"
 	"go.aoe.com/flamingo/framework/web/responder"
@@ -56,6 +58,35 @@ func (cc *CartViewController) AddAndViewAction(ctx web.Context) web.Response {
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
 	return cc.ViewAction(ctx)
+
+}
+
+// UpdateAndViewAction the DecoratedCart View ( / cart)
+func (cc *CartViewController) UpdateQtyAndViewAction(ctx web.Context) web.Response {
+	decoratedCart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
+	if e != nil {
+		log.Printf("cart.cartcontroller.UpdateAndViewAction: Error %v", e)
+		return cc.Render(ctx, "checkout/carterror", nil)
+	}
+	id, e := ctx.Param1("id")
+	if e != nil {
+		log.Printf("cart.cartcontroller.UpdateAndViewAction: Error %v", e)
+		return cc.Redirect("cart.view", nil)
+	}
+	qty, e := ctx.Param1("qty")
+	if e != nil {
+		qty = "1"
+	}
+	var qtyInt int
+	qtyInt, e = strconv.Atoi(qty)
+	if e != nil {
+		qtyInt = 1
+	}
+	e = decoratedCart.Cart.UpdateItemQty(ctx, id, qtyInt)
+	if e != nil {
+		log.Printf("cart.cartcontroller.UpdateAndViewAction: Error %v", e)
+	}
+	return cc.Redirect("cart.view", nil)
 
 }
 

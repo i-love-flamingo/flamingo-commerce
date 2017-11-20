@@ -96,15 +96,14 @@ func (cs GuestCartServiceAdapter) AddToCart(ctx context.Context, guestcartid str
 		item.Qty = item.Qty + addRequest.Qty
 	} else {
 		product, _ := cs.ProductService.Get(ctx, addRequest.MarketplaceCode)
-		rowTotal, _ := new(big.Float).Mul(big.NewFloat(product.SaleableData().ActivePrice.GetFinalPrice()), new(big.Float).SetInt64(int64(addRequest.Qty))).Float64()
 		cartItem := domaincart.Item{
 			MarketplaceCode:        addRequest.MarketplaceCode,
 			VariantMarketPlaceCode: addRequest.VariantMarketplaceCode,
-			Qty:      addRequest.Qty,
-			Price:    product.SaleableData().ActivePrice.GetFinalPrice(),
-			RowTotal: rowTotal,
-			ID:       strconv.Itoa((rand.Int())),
+			Qty:   addRequest.Qty,
+			Price: product.SaleableData().ActivePrice.GetFinalPrice(),
+			ID:    strconv.Itoa((rand.Int())),
 		}
+		calculateItemPrices(&cartItem)
 		guestcart.Cartitems = append(guestcart.Cartitems, cartItem)
 		cs.GuestCartOrderBehaviour.GuestCartStorage.StoreCart(*guestcart)
 	}
@@ -143,6 +142,29 @@ func (cs GuestCartOrderBehaviour) DeleteItem(ctx context.Context, cart *domainca
 	}
 	cs.GuestCartStorage.StoreCart(*cart)
 	return nil
+}
+
+func (cs GuestCartOrderBehaviour) UpdateItem(ctx context.Context, cart *domaincart.Cart, itemId string, item domaincart.Item) error {
+	if cs.GuestCartStorage == nil {
+		return fmt.Errorf("cart.infrastructure.GuestCartOrderBehaviour: no GuestCartStorage given")
+	}
+	if !cs.GuestCartStorage.HasCart(cart.ID) {
+		return fmt.Errorf("cart.infrastructure.GuestCartOrderBehaviour: Cannot update - Guestcart with id %v not existend", cart.ID)
+	}
+
+	calculateItemPrices(&item)
+	for k, currentItem := range cart.Cartitems {
+		if currentItem.ID == itemId {
+			cart.Cartitems[k] = item
+		}
+	}
+
+	cs.GuestCartStorage.StoreCart(*cart)
+	return nil
+}
+
+func calculateItemPrices(item *domaincart.Item) {
+	item.RowTotal, _ = new(big.Float).Mul(big.NewFloat(item.Price), new(big.Float).SetInt64(int64(item.Qty))).Float64()
 }
 
 //********InmemoryGuestCartStorage************
