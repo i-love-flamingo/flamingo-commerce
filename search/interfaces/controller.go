@@ -41,7 +41,7 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 		if err != nil {
 			return vc.Error(c, err)
 		}
-		vd.SearchMeta.NumPages = searchResult.SearchMeta.NumResults
+		vd.SearchMeta.NumResults = searchResult.SearchMeta.NumResults
 		vd.SearchResult = map[string]domain.Result{typ: searchResult}
 		return vc.Render(c, "search/"+typ, vd)
 	}
