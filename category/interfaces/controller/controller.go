@@ -6,6 +6,7 @@ import (
 	"go.aoe.com/flamingo/core/breadcrumbs"
 	"go.aoe.com/flamingo/core/category/domain"
 	productdomain "go.aoe.com/flamingo/core/product/domain"
+	searchdomain "go.aoe.com/flamingo/core/search/domain"
 	"go.aoe.com/flamingo/framework/router"
 	"go.aoe.com/flamingo/framework/web"
 	"go.aoe.com/flamingo/framework/web/responder"
@@ -29,6 +30,8 @@ type (
 		Category     domain.Category
 		CategoryTree domain.Category
 		Products     []productdomain.BasicProduct
+		SearchMeta   searchdomain.SearchMeta
+		Facets       map[string]searchdomain.Facet
 	}
 )
 
@@ -88,6 +91,8 @@ func (vc *View) Get(c web.Context) web.Response {
 		Category:     category,
 		CategoryTree: categoryRoot,
 		Products:     products.Hits,
+		SearchMeta:   products.SearchMeta,
+		Facets:       products.Facets,
 	})
 }
 
