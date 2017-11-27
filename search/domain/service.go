@@ -19,10 +19,11 @@ type (
 
 	// SearchMeta data
 	SearchMeta struct {
-		Query      string
-		Page       int
-		NumPages   int
-		NumResults int
+		Query          string
+		Page           int
+		NumPages       int
+		NumResults     int
+		SelectedFacets []Facet
 	}
 
 	FacetType string
