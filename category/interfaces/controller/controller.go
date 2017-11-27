@@ -80,7 +80,15 @@ func (vc *View) Get(c web.Context) web.Response {
 		})
 	}
 
-	products, err := vc.SearchService.Search(c, domain.NewCategoryFacet(c.MustParam1("code")))
+	filter := make([]searchdomain.Filter, len(c.QueryAll())+1)
+	filter[0] = domain.NewCategoryFacet(c.MustParam1("code"))
+	i := 1
+	for k, v := range c.QueryAll() {
+		filter[i] = searchdomain.NewKeyValueFilter(k, v)
+		i++
+	}
+
+	products, err := vc.SearchService.Search(c, filter...)
 	if err != nil {
 		return vc.Error(c, err)
 	}
