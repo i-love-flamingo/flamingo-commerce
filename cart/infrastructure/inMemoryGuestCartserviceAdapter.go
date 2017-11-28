@@ -152,6 +152,9 @@ func (cs GuestCartOrderBehaviour) UpdateItem(ctx context.Context, cart *domainca
 		return fmt.Errorf("cart.infrastructure.GuestCartOrderBehaviour: Cannot update - Guestcart with id %v not existend", cart.ID)
 	}
 
+	if item.Qty < 1 {
+		item.Qty = 1
+	}
 	calculateItemPrices(&item)
 	for k, currentItem := range cart.Cartitems {
 		if currentItem.ID == itemId {

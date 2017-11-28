@@ -127,7 +127,7 @@ func (cart Cart) DeleteItem(ctx context.Context, id string) error {
 	return cart.CartOrderBehaviour.DeleteItem(ctx, &cart, id)
 }
 
-// PlaceOrder
+// UpdateItemQty - delete item if qty =< 0
 func (cart Cart) UpdateItemQty(ctx context.Context, id string, qty int) error {
 	if cart.CartOrderBehaviour == nil {
 		return errors.New("This Cart has no Behaviour attached!")
@@ -135,6 +135,9 @@ func (cart Cart) UpdateItemQty(ctx context.Context, id string, qty int) error {
 	item, e := cart.GetByItemId(id)
 	if e != nil {
 		return e
+	}
+	if qty < 1 {
+		return cart.DeleteItem(ctx, id)
 	}
 	item.Qty = qty
 	return cart.CartOrderBehaviour.UpdateItem(ctx, &cart, id, *item)
