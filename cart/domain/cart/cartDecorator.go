@@ -6,6 +6,7 @@ import (
 	"go.aoe.com/flamingo/core/product/domain"
 
 	"log"
+	"sort"
 )
 
 type (
@@ -114,6 +115,7 @@ func (dci DecoratedCartItem) GetVariantsVariationAttributes() domain.Attributes 
 // GetGroupedBy
 func (dc DecoratedCart) GetGroupedBy(group string) map[string]*GroupedDecoratedCartItem {
 	groupedItemsCollection := make(map[string]*GroupedDecoratedCartItem)
+	var groupedItemsCollectionKeys []string
 
 	var groupKey string
 	for _, item := range dc.DecoratedItems {
@@ -127,12 +129,21 @@ func (dc DecoratedCart) GetGroupedBy(group string) map[string]*GroupedDecoratedC
 			groupedItemsCollection[groupKey] = &GroupedDecoratedCartItem{
 				Group: groupKey,
 			}
+			groupedItemsCollectionKeys = append(groupedItemsCollectionKeys, groupKey)
 		}
 
 		if groupedItemsEntry, ok := groupedItemsCollection[groupKey]; ok {
 			groupedItemsEntry.DecoratedItems = append(groupedItemsEntry.DecoratedItems, item)
 		}
-
 	}
-	return groupedItemsCollection
+
+	//sort before return
+	groupedItemsCollectionSorted := make(map[string]*GroupedDecoratedCartItem)
+	sort.Strings(groupedItemsCollectionKeys)
+	for _, keyName := range groupedItemsCollectionKeys {
+		if groupedItemsEntry, ok := groupedItemsCollection[keyName]; ok {
+			groupedItemsCollectionSorted[keyName] = groupedItemsEntry
+		}
+	}
+	return groupedItemsCollectionSorted
 }
