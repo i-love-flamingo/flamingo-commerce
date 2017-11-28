@@ -113,7 +113,7 @@ func (dci DecoratedCartItem) GetVariantsVariationAttributes() domain.Attributes 
 }
 
 // GetGroupedBy
-func (dc DecoratedCart) GetGroupedBy(group string) map[string]*GroupedDecoratedCartItem {
+func (dc DecoratedCart) GetGroupedBy(group string) []*GroupedDecoratedCartItem {
 	groupedItemsCollection := make(map[string]*GroupedDecoratedCartItem)
 	var groupedItemsCollectionKeys []string
 
@@ -138,11 +138,11 @@ func (dc DecoratedCart) GetGroupedBy(group string) map[string]*GroupedDecoratedC
 	}
 
 	//sort before return
-	groupedItemsCollectionSorted := make(map[string]*GroupedDecoratedCartItem)
+	var groupedItemsCollectionSorted []*GroupedDecoratedCartItem
 	sort.Strings(groupedItemsCollectionKeys)
 	for _, keyName := range groupedItemsCollectionKeys {
 		if groupedItemsEntry, ok := groupedItemsCollection[keyName]; ok {
-			groupedItemsCollectionSorted[keyName] = groupedItemsEntry
+			groupedItemsCollectionSorted = append(groupedItemsCollectionSorted, groupedItemsEntry)
 		}
 	}
 	return groupedItemsCollectionSorted
