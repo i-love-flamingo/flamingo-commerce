@@ -112,12 +112,27 @@ func (dci DecoratedCartItem) GetVariantsVariationAttributes() domain.Attributes 
 }
 
 // GetGroupedBy
-func (dc DecoratedCart) GetGroupedBy(group string) []GroupedDecoratedCartItem {
-	var groupedItemsCollection []GroupedDecoratedCartItem
-	groupedItems := GroupedDecoratedCartItem{
-		DecoratedItems: dc.DecoratedItems,
-		Group:          "TESTRETAILER",
+func (dc DecoratedCart) GetGroupedBy(group string) map[string]*GroupedDecoratedCartItem {
+	groupedItemsCollection := make(map[string]*GroupedDecoratedCartItem)
+
+	var groupKey string
+	for _, item := range dc.DecoratedItems {
+		switch group {
+		case "retailer_code":
+			groupKey = item.Product.BaseData().RetailerCode
+		default:
+			groupKey = "default"
+		}
+		if _, ok := groupedItemsCollection[groupKey]; !ok {
+			groupedItemsCollection[groupKey] = &GroupedDecoratedCartItem{
+				Group: groupKey,
+			}
+		}
+
+		if groupedItemsEntry, ok := groupedItemsCollection[groupKey]; ok {
+			groupedItemsEntry.DecoratedItems = append(groupedItemsEntry.DecoratedItems, item)
+		}
+
 	}
-	groupedItemsCollection = append(groupedItemsCollection, groupedItems)
 	return groupedItemsCollection
 }
