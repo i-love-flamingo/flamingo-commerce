@@ -94,6 +94,7 @@ func (cs GuestCartServiceAdapter) AddToCart(ctx context.Context, guestcartid str
 	if found {
 		item, _ := guestcart.GetByLineNr(lineNr)
 		item.Qty = item.Qty + addRequest.Qty
+		calculateItemPrices(item)
 	} else {
 		product, _ := cs.ProductService.Get(ctx, addRequest.MarketplaceCode)
 		cartItem := domaincart.Item{
@@ -105,8 +106,8 @@ func (cs GuestCartServiceAdapter) AddToCart(ctx context.Context, guestcartid str
 		}
 		calculateItemPrices(&cartItem)
 		guestcart.Cartitems = append(guestcart.Cartitems, cartItem)
-		cs.GuestCartOrderBehaviour.GuestCartStorage.StoreCart(*guestcart)
 	}
+	cs.GuestCartOrderBehaviour.GuestCartStorage.StoreCart(*guestcart)
 
 	return nil
 }
