@@ -11,6 +11,7 @@ import (
 
 	"encoding/gob"
 
+	application3 "go.aoe.com/flamingo/core/auth/application"
 	application2 "go.aoe.com/flamingo/core/checkout/application"
 	"go.aoe.com/flamingo/core/checkout/interfaces/controller/formDto"
 	formApplicationService "go.aoe.com/flamingo/core/form/application"
@@ -39,6 +40,7 @@ type (
 		responder.RedirectAware `inject:""`
 		ApplicationCartService  application.CartService     `inject:""`
 		PaymentService          application2.PaymentService `inject:""`
+		UserService             application3.UserService    `inject:""`
 		Router                  *router.Router              `inject:""`
 		CheckoutFormService     domain.FormService          `inject:""`
 		Logger                  flamingo.Logger             `inject:""`
@@ -58,6 +60,10 @@ func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
 
+	if cc.UserService.IsLoggedIn(ctx) {
+		cc.Redirect("checkout.user", nil)
+	}
+
 	breadCrumbInit(ctx, cc)
 
 	//Guard Clause if Cart is empty
@@ -73,7 +79,12 @@ func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
 	})
 }
 
-func (cc *CheckoutController) SubmitAction(ctx web.Context) web.Response {
+//TODO
+func (cc *CheckoutController) SubmitUserCheckoutAction(ctx web.Context) web.Response {
+	return cc.SubmitGuestCheckoutAction(ctx)
+}
+
+func (cc *CheckoutController) SubmitGuestCheckoutAction(ctx web.Context) web.Response {
 
 	//Guard Clause if Cart cannout be fetched
 	decoratedCart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
@@ -105,6 +116,7 @@ func (cc *CheckoutController) SubmitAction(ctx web.Context) web.Response {
 			Form:          form,
 		})
 	}
+
 	if form.IsValidAndSubmitted() {
 		if checkoutFormData, ok := form.Data.(formDto.CheckoutFormData); ok {
 			orderId, err := cc.placeOrder(ctx, checkoutFormData, decoratedCart.Cart)
@@ -125,7 +137,6 @@ func (cc *CheckoutController) SubmitAction(ctx web.Context) web.Response {
 				Email:   shippingEmail,
 			})
 		}
-
 	}
 
 	return cc.Render(ctx, "checkout/checkout", CheckoutViewData{
