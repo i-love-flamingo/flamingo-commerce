@@ -54,6 +54,13 @@ func (fs *CheckoutFormService) ParseFormData(ctx web.Context, formValues url.Val
 	if formValues == nil {
 		formValues = make(map[string][]string)
 	}
+
+	// Preset eMail when email parameter is given:
+	email, e := ctx.Query("email")
+	if e == nil {
+		formValues["billingAddress.email"] = email
+	}
+
 	//Merge in DefaultValues
 	if fs.DefaultFormValues != nil {
 		for k, v := range fs.DefaultFormValues {
@@ -74,7 +81,6 @@ func (fs *CheckoutFormService) ParseFormData(ctx web.Context, formValues url.Val
 	}
 
 	//OverrideValues
-	//log.Printf("settings %#v", fs.OverrideFormValues)
 	if fs.OverrideFormValues != nil {
 		for k, v := range fs.OverrideFormValues {
 			k = strings.Replace(k, "_", ".", -1)

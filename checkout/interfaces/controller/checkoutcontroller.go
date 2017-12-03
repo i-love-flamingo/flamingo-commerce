@@ -49,6 +49,30 @@ func init() {
 	gob.Register(SuccessViewData{})
 }
 
+func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
+
+	//Guard Clause if Cart cannout be fetched
+	decoratedCart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
+	if e != nil {
+		cc.Logger.Errorf("cart.checkoutcontroller.viewaction: Error %v", e)
+		return cc.Render(ctx, "checkout/carterror", nil)
+	}
+
+	breadCrumbInit(ctx, cc)
+
+	//Guard Clause if Cart is empty
+	if decoratedCart.Cart.ItemCount() == 0 {
+		return cc.Render(ctx, "checkout/startcheckout", CheckoutViewData{
+			DecoratedCart: decoratedCart,
+		})
+	}
+
+	return cc.Render(ctx, "checkout/startcheckout", CheckoutViewData{
+		DecoratedCart: decoratedCart,
+		HasError:      false,
+	})
+}
+
 func (cc *CheckoutController) SubmitAction(ctx web.Context) web.Response {
 
 	//Guard Clause if Cart cannout be fetched
@@ -58,14 +82,7 @@ func (cc *CheckoutController) SubmitAction(ctx web.Context) web.Response {
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
 
-	breadcrumbs.Add(ctx, breadcrumbs.Crumb{
-		Title: "Shopping Bag",
-		Url:   cc.Router.URL("cart.view", nil).String(),
-	})
-	breadcrumbs.Add(ctx, breadcrumbs.Crumb{
-		Title: "Reserve & Collect",
-		Url:   cc.Router.URL("checkout.start", nil).String(),
-	})
+	breadCrumbInit(ctx, cc)
 
 	if cc.CheckoutFormService == nil {
 		cc.Logger.Error("cart.checkoutcontroller.viewaction: Error CheckoutFormService not present!", e)
@@ -144,4 +161,15 @@ func (cc *CheckoutController) placeOrder(ctx web.Context, checkoutFormData formD
 		return "", errors.New("Error while placing the order.")
 	}
 	return orderid, nil
+}
+
+func breadCrumbInit(ctx web.Context, cc *CheckoutController) {
+	breadcrumbs.Add(ctx, breadcrumbs.Crumb{
+		Title: "Shopping Bag",
+		Url:   cc.Router.URL("cart.view", nil).String(),
+	})
+	breadcrumbs.Add(ctx, breadcrumbs.Crumb{
+		Title: "Reserve & Collect",
+		Url:   cc.Router.URL("checkout.start", nil).String(),
+	})
 }
