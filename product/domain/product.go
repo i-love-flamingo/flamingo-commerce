@@ -27,7 +27,7 @@ type (
 		GetMedia(group string, usage string) Media
 	}
 
-	// SimpleProduct - A product without Variants that can be teasered and selled
+	// SimpleProduct - A product without Variants that can be teasered and being sold
 	SimpleProduct struct {
 		Identifier string
 		BasicProductData
@@ -74,7 +74,7 @@ type (
 		Keywords []string
 	}
 
-	// Saleable are properties required for beeing selled
+	// Saleable are properties required for being selled
 	Saleable struct {
 		IsSaleable      bool
 		SaleableFrom    time.Time
