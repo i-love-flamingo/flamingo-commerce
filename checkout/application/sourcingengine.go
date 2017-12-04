@@ -20,11 +20,11 @@ type (
 	}
 
 	DeliveryLocations struct {
-		RetailerLocations []RetailerLocations
+		RetailerLocations []RetailerLocationCollection
 		CollectionPointLocations []Location
 	}
 
-	RetailerLocations struct {
+	RetailerLocationCollection struct {
 		Retailer string
 		Locations []Location
 	}
@@ -61,9 +61,9 @@ func (se *SourcingEngine) GetSources(ctx web.Context) error {
 	return nil
 }
 
-// getByRetailerCode returns just the RetailerLocations for a given Retailer from a List of
-func (dl *DeliveryLocations) getByRetailerCode (retailerCode string) (RetailerLocations, error) {
-	var result RetailerLocations
+// getByRetailerCode returns just the RetailerLocationCollection for a given Retailer from a List of
+func (dl *DeliveryLocations) getByRetailerCode (retailerCode string) (RetailerLocationCollection, error) {
+	var result RetailerLocationCollection
 
 	for _, retailerLocation := range dl.RetailerLocations {
 		if retailerLocation.Retailer == retailerCode {
