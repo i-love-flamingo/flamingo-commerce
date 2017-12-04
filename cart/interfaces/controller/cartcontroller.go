@@ -57,8 +57,7 @@ func (cc *CartViewController) AddAndViewAction(ctx web.Context) web.Response {
 		log.Printf("cart.cartcontroller.addandviewaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
-	return cc.ViewAction(ctx)
-
+	return cc.Redirect("cart.view", nil)
 }
 
 // UpdateAndViewAction the DecoratedCart View ( / cart)
