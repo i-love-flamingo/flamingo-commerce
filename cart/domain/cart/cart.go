@@ -36,6 +36,9 @@ type (
 		VariantMarketPlaceCode string
 		ProductName            string
 
+		// Source Id of Ispu Location or Collection Point
+		SourceId string
+
 		Price float64
 		Qty   int
 
