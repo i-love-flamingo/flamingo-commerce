@@ -44,6 +44,7 @@ type (
 		Router                  *router.Router              `inject:""`
 		CheckoutFormService     domain.FormService          `inject:""`
 		Logger                  flamingo.Logger             `inject:""`
+		SourcingEngine          application2.SourcingEngine `inject:""`
 	}
 )
 
@@ -160,7 +161,11 @@ func (cc *CheckoutController) placeOrder(ctx web.Context, checkoutFormData formD
 	billingAddress, shippingAddress := formDto.MapAddresses(checkoutFormData)
 	_ = shippingAddress
 	log.Printf("Checkoutcontroller.submit - Info: billingAddress: %#v", checkoutFormData)
+
 	err := cart.SetShippingInformation(ctx, billingAddress, billingAddress, "flatrate", "flatrate")
+
+	cc.SourcingEngine.GetSources(ctx)
+
 	if err != nil {
 		log.Printf("Error during place Order: %v", err)
 		return "", errors.New("Error while setting shipping informations.")
