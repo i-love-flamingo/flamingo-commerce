@@ -162,14 +162,15 @@ func (cc *CheckoutController) placeOrder(ctx web.Context, checkoutFormData formD
 	_ = shippingAddress
 	log.Printf("Checkoutcontroller.submit - Info: billingAddress: %#v", checkoutFormData)
 
-	err := cart.SetShippingInformation(ctx, billingAddress, billingAddress, "flatrate", "flatrate")
-
 	cc.SourcingEngine.GetSources(ctx)
+
+	err := cart.SetShippingInformation(ctx, billingAddress, billingAddress, "flatrate", "flatrate")
 
 	if err != nil {
 		log.Printf("Error during place Order: %v", err)
 		return "", errors.New("Error while setting shipping informations.")
 	}
+
 	orderid, err := cart.PlaceOrder(ctx, cc.PaymentService.GetPayment())
 
 	if err != nil {
