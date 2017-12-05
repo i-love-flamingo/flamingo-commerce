@@ -1,11 +1,13 @@
 package application
 
 import (
+	"errors"
+	"fmt"
+
+	cartApplication "go.aoe.com/flamingo/core/cart/application"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
 	"go.aoe.com/flamingo/framework/flamingo"
 	"go.aoe.com/flamingo/framework/web"
-	"fmt"
-	"errors"
 )
 
 type (
@@ -14,35 +16,43 @@ type (
 	}
 
 	SourcingEngine struct {
-		DecoratedCart cart.DecoratedCart `inject:""`
-		SourceLocator SourceLocator `inject:""`
-		Logger flamingo.Logger `inject:""`
+		Cartservice   cartApplication.CartService `inject:""`
+		DecoratedCart cart.DecoratedCart          `inject:""`
+		SourceLocator SourceLocator               `inject:""`
+		Logger        flamingo.Logger             `inject:""`
 	}
 
 	DeliveryLocations struct {
-		RetailerLocations []RetailerLocationCollection
+		RetailerLocations        []RetailerLocationCollection
 		CollectionPointLocations []Location
 	}
 
 	RetailerLocationCollection struct {
-		Retailer string
+		Retailer  string
 		Locations []Location
 	}
 
 	Location struct {
-		Id string
+		Id       string
 		Priority string
 	}
 )
+
 // GetSources gets Sources and modifies the Cart Items
 func (se *SourcingEngine) GetSources(ctx web.Context) error {
 	locations, err := se.SourceLocator.DeliveryLocationsService(ctx)
 
 	if err != nil {
-		se.Logger.Error("checkout.application.sourcingengine: Get sources failed")
+		return errors.New("checkout.application.sourcingengine: Get sources failed")
 	}
 
-	for _, decoratedCartItem := range se.DecoratedCart.DecoratedItems {
+	decoratedCart, err := se.Cartservice.GetDecoratedCart(ctx)
+
+	if err != nil {
+		return errors.New("checkout.application.sourcingengine: Could not get the decorated Cart")
+	}
+
+	for _, decoratedCartItem := range decoratedCart.DecoratedItems {
 		// get retailer code for item and then get the retailers ispu locations
 		retailerCode := decoratedCartItem.Product.BaseData().RetailerCode
 		ispuLocations, err := locations.getByRetailerCode(retailerCode)
@@ -55,19 +65,23 @@ func (se *SourcingEngine) GetSources(ctx web.Context) error {
 
 		// todo: get stock for product and check if a location with stock for the product is in ispulocations
 		// currently just using the first locations id since there is no stock service to ask
-		decoratedCartItem.Item.SourceId = ispuLocations.Locations[0].Id
+		cartitem := decoratedCartItem.Item
+
+		cartitem.SourceId = ispuLocations.Locations[0].Id
+		err = decoratedCart.Cart.UpdateItem(ctx, cartitem)
 	}
 
 	return nil
 }
 
 // getByRetailerCode returns just the RetailerLocationCollection for a given Retailer from a List of
-func (dl *DeliveryLocations) getByRetailerCode (retailerCode string) (RetailerLocationCollection, error) {
+func (dl *DeliveryLocations) getByRetailerCode(retailerCode string) (RetailerLocationCollection, error) {
 	var result RetailerLocationCollection
 
 	for _, retailerLocation := range dl.RetailerLocations {
 		if retailerLocation.Retailer == retailerCode {
 			result = retailerLocation
+			break
 		}
 	}
 
