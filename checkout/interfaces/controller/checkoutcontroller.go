@@ -62,7 +62,7 @@ func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
 	}
 
 	if cc.UserService.IsLoggedIn(ctx) {
-		cc.Redirect("checkout.user", nil)
+		return cc.Redirect("checkout.user", nil)
 	}
 
 	breadCrumbInit(ctx, cc)
