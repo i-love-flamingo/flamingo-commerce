@@ -54,7 +54,7 @@ func (cs *GuestCartServiceAdapter) GetCart(ctx context.Context, guestcartid stri
 		if e != nil {
 			return cart, fmt.Errorf("cart.infrastructure.GuestCartServiceAdapter: Cart with ID %v could not be received from storage: %v", guestcartid, e)
 		}
-		guestCart.CurrencyCode = "EUR"
+
 		var total big.Float
 		total.SetFloat64(0)
 		for _, item := range guestCart.Cartitems {
@@ -104,9 +104,11 @@ func (cs GuestCartServiceAdapter) AddToCart(ctx context.Context, guestcartid str
 			Price: product.SaleableData().ActivePrice.GetFinalPrice(),
 			ID:    strconv.Itoa((rand.Int())),
 		}
+		guestcart.CurrencyCode = product.SaleableData().ActivePrice.Currency
 		calculateItemPrices(&cartItem)
 		guestcart.Cartitems = append(guestcart.Cartitems, cartItem)
 	}
+
 	cs.GuestCartOrderBehaviour.GuestCartStorage.StoreCart(*guestcart)
 
 	return nil
