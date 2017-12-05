@@ -146,6 +146,11 @@ func (cart Cart) UpdateItemQty(ctx context.Context, id string, qty int) error {
 	return cart.CartOrderBehaviour.UpdateItem(ctx, &cart, id, *item)
 }
 
+// UpdateItem replaces value in Cart Item
+func (cart Cart) UpdateItem(ctx context.Context, item Item) error {
+	return cart.CartOrderBehaviour.UpdateItem(ctx, &cart, item.ID, item)
+}
+
 // ItemCount - returns amount of Cartitems
 func (Cart Cart) ItemCount() int {
 	return len(Cart.Cartitems)
