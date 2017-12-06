@@ -21,17 +21,19 @@ type (
 		domain.CategoryService      `inject:""`
 		productdomain.SearchService `inject:""`
 
-		Router   *router.Router `inject:""`
-		Template string         `inject:"config:core.category.view.template"`
+		Router                *router.Router        `inject:""`
+		Template              string                `inject:"config:core.category.view.template"`
+		PaginationInfoFactory PaginationInfoFactory `inject:""`
 	}
 
 	// ViewData for rendering context
 	ViewData struct {
-		Category     domain.Category
-		CategoryTree domain.Category
-		Products     []productdomain.BasicProduct
-		SearchMeta   searchdomain.SearchMeta
-		Facets       map[string]searchdomain.Facet
+		Category       domain.Category
+		CategoryTree   domain.Category
+		Products       []productdomain.BasicProduct
+		SearchMeta     searchdomain.SearchMeta
+		Facets         map[string]searchdomain.Facet
+		PaginationInfo PaginationInfo
 	}
 )
 
@@ -96,11 +98,12 @@ func (vc *View) Get(c web.Context) web.Response {
 	vc.addBreadcrumb(c, categoryRoot)
 
 	return vc.Render(c, vc.Template, ViewData{
-		Category:     category,
-		CategoryTree: categoryRoot,
-		Products:     products.Hits,
-		SearchMeta:   products.SearchMeta,
-		Facets:       products.Facets,
+		Category:       category,
+		CategoryTree:   categoryRoot,
+		Products:       products.Hits,
+		SearchMeta:     products.SearchMeta,
+		Facets:         products.Facets,
+		PaginationInfo: vc.PaginationInfoFactory.Build(3, 1200, 20),
 	})
 }
 
