@@ -69,6 +69,7 @@ func (se *SourcingEngine) GetSources(ctx web.Context) error {
 
 		cartitem.SourceId = ispuLocations.Locations[0].Id
 		err = decoratedCart.Cart.UpdateItem(ctx, cartitem)
+		return err
 	}
 
 	return nil

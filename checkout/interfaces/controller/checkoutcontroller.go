@@ -23,6 +23,7 @@ import (
 )
 
 type (
+	// CheckoutViewData represents the checkout view data
 	CheckoutViewData struct {
 		DecoratedCart cart.DecoratedCart
 		Form          domain.Form
@@ -30,11 +31,13 @@ type (
 		HasError      bool
 	}
 
+	// SuccessViewData represents the success view data
 	SuccessViewData struct {
 		OrderId string
 		Email   string
 	}
 
+	// CheckoutController represents the checkout controller with its injectsions
 	CheckoutController struct {
 		responder.RenderAware   `inject:""`
 		responder.RedirectAware `inject:""`
@@ -52,6 +55,7 @@ func init() {
 	gob.Register(SuccessViewData{})
 }
 
+// StartAction handles the checkout start action
 func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
 
 	//Guard Clause if Cart cannout be fetched
@@ -80,11 +84,13 @@ func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
 	})
 }
 
-//TODO
+// SubmitUserCheckoutAction handles the user order submit
+// TODO: implement this
 func (cc *CheckoutController) SubmitUserCheckoutAction(ctx web.Context) web.Response {
 	return cc.SubmitGuestCheckoutAction(ctx)
 }
 
+// SubmitGuestCheckoutAction handles the guest order submit
 func (cc *CheckoutController) SubmitGuestCheckoutAction(ctx web.Context) web.Response {
 
 	//Guard Clause if Cart cannout be fetched
@@ -120,7 +126,7 @@ func (cc *CheckoutController) SubmitGuestCheckoutAction(ctx web.Context) web.Res
 
 	if form.IsValidAndSubmitted() {
 		if checkoutFormData, ok := form.Data.(formDto.CheckoutFormData); ok {
-			orderId, err := cc.placeOrder(ctx, checkoutFormData, decoratedCart.Cart)
+			orderID, err := cc.placeOrder(ctx, checkoutFormData, decoratedCart.Cart)
 			if err != nil {
 				return cc.Render(ctx, "checkout/checkout", CheckoutViewData{
 					DecoratedCart: decoratedCart,
@@ -134,7 +140,7 @@ func (cc *CheckoutController) SubmitGuestCheckoutAction(ctx web.Context) web.Res
 				shippingEmail = checkoutFormData.BillingAddress.Email
 			}
 			return cc.Redirect("checkout.success", nil).With("checkout.success.data", SuccessViewData{
-				OrderId: orderId,
+				OrderId: orderID,
 				Email:   shippingEmail,
 			})
 		}
@@ -147,6 +153,7 @@ func (cc *CheckoutController) SubmitGuestCheckoutAction(ctx web.Context) web.Res
 	})
 }
 
+// SuccessAction handles the order success action
 func (cc *CheckoutController) SuccessAction(ctx web.Context) web.Response {
 	flashes := ctx.Session().Flashes("checkout.success.data")
 	if len(flashes) > 0 {
@@ -162,10 +169,13 @@ func (cc *CheckoutController) placeOrder(ctx web.Context, checkoutFormData formD
 	_ = shippingAddress
 	log.Printf("Checkoutcontroller.submit - Info: billingAddress: %#v", checkoutFormData)
 
-	cc.SourcingEngine.GetSources(ctx)
+	err := cc.SourcingEngine.GetSources(ctx)
+	if err != nil {
+		log.Printf("Error while getting pickup sources: %v", err)
+		return "", errors.New("Error while getting pickup sources.")
+	}
 
-	err := cart.SetShippingInformation(ctx, billingAddress, billingAddress, "flatrate", "flatrate")
-
+	err = cart.SetShippingInformation(ctx, billingAddress, billingAddress, "ispu", "ispu")
 	if err != nil {
 		log.Printf("Error during place Order: %v", err)
 		return "", errors.New("Error while setting shipping informations.")
