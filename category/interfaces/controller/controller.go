@@ -7,6 +7,7 @@ import (
 	"go.aoe.com/flamingo/core/category/domain"
 	productdomain "go.aoe.com/flamingo/core/product/domain"
 	searchdomain "go.aoe.com/flamingo/core/search/domain"
+	"go.aoe.com/flamingo/core/search/utils"
 	"go.aoe.com/flamingo/framework/router"
 	"go.aoe.com/flamingo/framework/web"
 	"go.aoe.com/flamingo/framework/web/responder"
@@ -21,9 +22,9 @@ type (
 		domain.CategoryService      `inject:""`
 		productdomain.SearchService `inject:""`
 
-		Router                *router.Router        `inject:""`
-		Template              string                `inject:"config:core.category.view.template"`
-		PaginationInfoFactory PaginationInfoFactory `inject:""`
+		Router                *router.Router              `inject:""`
+		Template              string                      `inject:"config:core.category.view.template"`
+		PaginationInfoFactory utils.PaginationInfoFactory `inject:""`
 	}
 
 	// ViewData for rendering context
@@ -33,7 +34,7 @@ type (
 		Products       []productdomain.BasicProduct
 		SearchMeta     searchdomain.SearchMeta
 		Facets         map[string]searchdomain.Facet
-		PaginationInfo PaginationInfo
+		PaginationInfo utils.PaginationInfo
 	}
 )
 
@@ -103,7 +104,7 @@ func (vc *View) Get(c web.Context) web.Response {
 		Products:       products.Hits,
 		SearchMeta:     products.SearchMeta,
 		Facets:         products.Facets,
-		PaginationInfo: vc.PaginationInfoFactory.Build(3, 1200, 20),
+		PaginationInfo: vc.PaginationInfoFactory.Build(products.SearchMeta.Page, products.SearchMeta.NumResults, 30, c.Request().URL),
 	})
 }
 
