@@ -3,6 +3,8 @@ package domain
 import (
 	"context"
 	"errors"
+	"log"
+	"sort"
 )
 
 type (
@@ -49,11 +51,14 @@ type (
 		Items []*FacetItem
 	}
 
+	FacetCollection map[string]Facet
+	FacetSlice      []Facet
+
 	// Result defines a search result for one type
 	Result struct {
 		SearchMeta SearchMeta
 		Hits       []Document
-		Facets     map[string]Facet
+		Facets     FacetCollection
 	}
 
 	// Document holds a search result document
@@ -66,6 +71,38 @@ type (
 		SearchFor(ctx context.Context, typ string, filter ...Filter) (result Result, err error)
 	}
 )
+
+func (fs FacetSlice) Len() int {
+	return len(fs)
+}
+
+func (fs FacetSlice) Less(i, j int) bool {
+	return fs[i].Name < fs[j].Name
+}
+
+func (fs FacetSlice) Swap(i, j int) {
+	fs[i], fs[j] = fs[j], fs[i]
+}
+
+func (fc FacetCollection) Order() []string {
+	order := make(FacetSlice, len(fc))
+	i := 0
+	for _, k := range fc {
+		order[i] = k
+		i++
+	}
+
+	sort.Sort(order)
+
+	strings := make([]string, len(order))
+	for i, v := range order {
+		strings[i] = v.Name
+	}
+
+	log.Println(strings)
+
+	return strings
+}
 
 const (
 	ListFacet  FacetType = "ListFacet"
