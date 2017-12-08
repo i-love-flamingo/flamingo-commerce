@@ -33,7 +33,7 @@ type (
 		CategoryTree   domain.Category
 		Products       []productdomain.BasicProduct
 		SearchMeta     searchdomain.SearchMeta
-		Facets         map[string]searchdomain.Facet
+		Facets         searchdomain.FacetCollection
 		PaginationInfo utils.PaginationInfo
 	}
 )
