@@ -2,6 +2,7 @@ package interfaces
 
 import (
 	"go.aoe.com/flamingo/core/search/domain"
+	"go.aoe.com/flamingo/core/search/utils"
 	"go.aoe.com/flamingo/framework/web"
 	"go.aoe.com/flamingo/framework/web/responder"
 )
@@ -13,11 +14,13 @@ type (
 		responder.RenderAware   `inject:""`
 		responder.RedirectAware `inject:""`
 		domain.SearchService    `inject:""`
+		PaginationInfoFactory   utils.PaginationInfoFactory `inject:""`
 	}
 
 	viewData struct {
-		SearchMeta   domain.SearchMeta
-		SearchResult map[string]domain.Result
+		SearchMeta     domain.SearchMeta
+		SearchResult   map[string]domain.Result
+		PaginationInfo utils.PaginationInfo
 	}
 )
 
@@ -43,6 +46,7 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 		}
 		vd.SearchMeta.NumResults = searchResult.SearchMeta.NumResults
 		vd.SearchResult = map[string]domain.Result{typ: searchResult}
+		vd.PaginationInfo = vc.PaginationInfoFactory.Build(searchResult.SearchMeta.Page, searchResult.SearchMeta.NumResults, 30, c.Request().URL)
 		return vc.Render(c, "search/"+typ, vd)
 	}
 	searchResult, err := vc.SearchService.Search(c, filter...)
@@ -50,5 +54,6 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 		return vc.Error(c, err)
 	}
 	vd.SearchResult = searchResult
+	//vd.PaginationInfo = vc.PaginationInfoFactory.Build(1, 0, 50, c.Request().URL)
 	return vc.Render(c, "search/search", vd)
 }
