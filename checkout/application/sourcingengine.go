@@ -1,9 +1,9 @@
 package application
 
 import (
-	"errors"
 	"fmt"
 
+	"github.com/pkg/errors"
 	cartApplication "go.aoe.com/flamingo/core/cart/application"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
 	"go.aoe.com/flamingo/framework/flamingo"
@@ -41,15 +41,13 @@ type (
 // GetSources gets Sources and modifies the Cart Items
 func (se *SourcingEngine) GetSources(ctx web.Context) error {
 	locations, err := se.SourceLocator.DeliveryLocationsService(ctx)
-
 	if err != nil {
-		return errors.New("checkout.application.sourcingengine: Get sources failed")
+		return errors.Wrap(err, "checkout.application.sourcingengine: Get sources failed")
 	}
 
 	decoratedCart, err := se.Cartservice.GetDecoratedCart(ctx)
-
 	if err != nil {
-		return errors.New("checkout.application.sourcingengine: Could not get the decorated Cart")
+		return errors.Wrap(err, "checkout.application.sourcingengine: Could not get the decorated Cart")
 	}
 
 	for _, decoratedCartItem := range decoratedCart.DecoratedItems {
@@ -69,7 +67,9 @@ func (se *SourcingEngine) GetSources(ctx web.Context) error {
 
 		cartitem.SourceId = ispuLocations.Locations[0].Id
 		err = decoratedCart.Cart.UpdateItem(ctx, cartitem)
-		return err
+		if err != nil {
+			errors.Wrap(err, "masterdataportal.application.sourcelocator: Could not update cart item")
+		}
 	}
 
 	return nil
@@ -87,7 +87,7 @@ func (dl *DeliveryLocations) getByRetailerCode(retailerCode string) (RetailerLoc
 	}
 
 	if result.Retailer == "" {
-		return result, errors.New(fmt.Sprintf("could not find ispu location for retailer %s", retailerCode))
+		return result, fmt.Errorf("could not find ispu location for retailer %s", retailerCode)
 	}
 
 	return result, nil
