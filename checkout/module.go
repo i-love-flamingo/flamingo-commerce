@@ -2,6 +2,8 @@ package checkout
 
 import (
 	"github.com/go-playground/form"
+	"go.aoe.com/flamingo/core/checkout/application"
+	"go.aoe.com/flamingo/core/checkout/infrastructure"
 	"go.aoe.com/flamingo/core/checkout/interfaces/controller"
 	"go.aoe.com/flamingo/core/checkout/interfaces/controller/formDto"
 	"go.aoe.com/flamingo/core/form/domain"
@@ -14,7 +16,8 @@ type (
 
 	// CheckoutModule registers our profiler
 	CheckoutModule struct {
-		RouterRegistry *router.Registry `inject:""`
+		RouterRegistry                  *router.Registry `inject:""`
+		UseFakeDeliveryLocationsService bool             `inject:"config:checkout.useFakeDeliveryLocationsService,optional"`
 	}
 )
 
@@ -36,6 +39,9 @@ func (m *CheckoutModule) Configure(injector *dingo.Injector) {
 	injector.Bind((*domain.FormService)(nil)).In(dingo.Singleton).To(formDto.CheckoutFormService{})
 
 	injector.Bind((*form.Decoder)(nil)).ToProvider(form.NewDecoder).AsEagerSingleton()
+	if m.UseFakeDeliveryLocationsService {
+		injector.Bind((*application.DeliveryLocationsService)(nil)).To(infrastructure.FakeDeliveryLocationsService{})
+	}
 }
 
 // DefaultConfig

@@ -11,15 +11,15 @@ import (
 )
 
 type (
-	SourceLocator interface {
-		DeliveryLocationsService(ctx web.Context) (DeliveryLocations, error)
+	DeliveryLocationsService interface {
+		GetDeliveryLocations(ctx web.Context) (DeliveryLocations, error)
 	}
 
 	SourcingEngine struct {
-		Cartservice   cartApplication.CartService `inject:""`
-		DecoratedCart cart.DecoratedCart          `inject:""`
-		SourceLocator SourceLocator               `inject:""`
-		Logger        flamingo.Logger             `inject:""`
+		Cartservice              cartApplication.CartService `inject:""`
+		DecoratedCart            cart.DecoratedCart          `inject:""`
+		DeliveryLocationsService DeliveryLocationsService    `inject:""`
+		Logger                   flamingo.Logger             `inject:""`
 	}
 
 	DeliveryLocations struct {
@@ -40,7 +40,7 @@ type (
 
 // GetSources gets Sources and modifies the Cart Items
 func (se *SourcingEngine) GetSources(ctx web.Context) error {
-	locations, err := se.SourceLocator.DeliveryLocationsService(ctx)
+	locations, err := se.DeliveryLocationsService.GetDeliveryLocations(ctx)
 	if err != nil {
 		return errors.Wrap(err, "checkout.application.sourcingengine: Get sources failed")
 	}
