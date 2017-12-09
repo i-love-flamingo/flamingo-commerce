@@ -18,8 +18,8 @@ var (
 )
 
 // FakeDeliveryLocationsService provides fake delivery locations
-func (sl *FakeDeliveryLocationsService) GetDeliveryLocations(ctx web.Context) (checkoutApplication.DeliveryLocations, error) {
-	return checkoutApplication.DeliveryLocations{
+func (sl *FakeDeliveryLocationsService) GetDeliveryLocations(ctx web.Context) (*checkoutApplication.DeliveryLocations, error) {
+	return &checkoutApplication.DeliveryLocations{
 		RetailerLocations: []checkoutApplication.RetailerLocationCollection{
 			{
 				Retailer: "om3CommonTestretailer",

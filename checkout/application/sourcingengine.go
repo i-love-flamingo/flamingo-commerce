@@ -12,7 +12,7 @@ import (
 
 type (
 	DeliveryLocationsService interface {
-		GetDeliveryLocations(ctx web.Context) (DeliveryLocations, error)
+		GetDeliveryLocations(ctx web.Context) (*DeliveryLocations, error)
 	}
 
 	SourcingEngine struct {
