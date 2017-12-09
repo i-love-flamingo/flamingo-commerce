@@ -3,13 +3,11 @@ package infrastructure
 import (
 	checkoutApplication "go.aoe.com/flamingo/core/checkout/application"
 	"go.aoe.com/flamingo/framework/web"
-	flightapplication "go.aoe.com/om3/flamingo/flight/application"
 )
 
 type (
 	// FakeSourceLocator represents the fake source locator
 	FakeDeliveryLocationsService struct {
-		FlightsaveService flightapplication.SaveFlightService `inject:""`
 	}
 )
 
