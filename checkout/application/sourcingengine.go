@@ -12,7 +12,7 @@ import (
 
 type (
 	DeliveryLocationsService interface {
-		GetDeliveryLocations(ctx web.Context) (*DeliveryLocations, error)
+		GetDeliveryLocations(ctx web.Context) (DeliveryLocations, error)
 	}
 
 	SourcingEngine struct {
@@ -56,15 +56,16 @@ func (se *SourcingEngine) GetSources(ctx web.Context) error {
 		ispuLocations, err := locations.getByRetailerCode(retailerCode)
 
 		if err != nil {
-			// todo: do we need additional error handling here?
-			// cannot get location for product
-			continue
+			return fmt.Errorf("checkout.application.sourcingengine: Could not fetch locations for retailer '%s'", retailerCode)
 		}
 
 		// todo: get stock for product and check if a location with stock for the product is in ispulocations
 		// currently just using the first locations id since there is no stock service to ask
 		cartitem := decoratedCartItem.Item
 
+		if 0 == len(ispuLocations.Locations) {
+			return fmt.Errorf("checkout.application.sourcingengine: Got no locations for retailer '%s'", retailerCode)
+		}
 		cartitem.SourceId = ispuLocations.Locations[0].Id
 		err = decoratedCart.Cart.UpdateItem(ctx, cartitem)
 		if err != nil {

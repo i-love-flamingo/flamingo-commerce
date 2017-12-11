@@ -6,7 +6,7 @@ import (
 )
 
 type (
-	// FakeSourceLocator represents the fake source locator
+	// FakeDeliveryLocationsService represents the fake source locator
 	FakeDeliveryLocationsService struct {
 	}
 )
@@ -15,9 +15,9 @@ var (
 	_ checkoutApplication.DeliveryLocationsService = new(FakeDeliveryLocationsService)
 )
 
-// FakeDeliveryLocationsService provides fake delivery locations
-func (sl *FakeDeliveryLocationsService) GetDeliveryLocations(ctx web.Context) (*checkoutApplication.DeliveryLocations, error) {
-	return &checkoutApplication.DeliveryLocations{
+// GetDeliveryLocations provides fake delivery locations
+func (sl *FakeDeliveryLocationsService) GetDeliveryLocations(ctx web.Context) (checkoutApplication.DeliveryLocations, error) {
+	return checkoutApplication.DeliveryLocations{
 		RetailerLocations: []checkoutApplication.RetailerLocationCollection{
 			{
 				Retailer: "om3CommonTestretailer",
