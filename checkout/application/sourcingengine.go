@@ -41,6 +41,7 @@ type (
 // GetSources gets Sources and modifies the Cart Items
 func (se *SourcingEngine) GetSources(ctx web.Context) error {
 	locations, err := se.DeliveryLocationsService.GetDeliveryLocations(ctx)
+
 	if err != nil {
 		return errors.Wrap(err, "checkout.application.sourcingengine: Get sources failed")
 	}
@@ -53,10 +54,11 @@ func (se *SourcingEngine) GetSources(ctx web.Context) error {
 	for _, decoratedCartItem := range decoratedCart.DecoratedItems {
 		// get retailer code for item and then get the retailers ispu locations
 		retailerCode := decoratedCartItem.Product.BaseData().RetailerCode
+
 		ispuLocations, err := locations.getByRetailerCode(retailerCode)
 
 		if err != nil {
-			return fmt.Errorf("checkout.application.sourcingengine: Could not fetch locations for retailer '%s'", retailerCode)
+			errors.Wrap(err, "checkout.application.sourcingengine: ")
 		}
 
 		// todo: get stock for product and check if a location with stock for the product is in ispulocations
