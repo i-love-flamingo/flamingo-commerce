@@ -26,6 +26,16 @@ type (
 		NumPages       int
 		NumResults     int
 		SelectedFacets []Facet
+		SortOptions    []SortOption
+	}
+
+	// SortOption defines how sorting is possible, with both an asc and desc option
+	SortOption struct {
+		Label        string
+		Asc          string
+		Desc         string
+		SelectedAsc  bool
+		SelectedDesc bool
 	}
 
 	FacetType string
