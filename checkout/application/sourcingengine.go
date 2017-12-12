@@ -58,7 +58,7 @@ func (se *SourcingEngine) GetSources(ctx web.Context) error {
 		ispuLocations, err := locations.getByRetailerCode(retailerCode)
 
 		if err != nil {
-			errors.Wrap(err, "checkout.application.sourcingengine: ")
+			return errors.Wrap(err, "checkout.application.sourcingengine: ")
 		}
 
 		// todo: get stock for product and check if a location with stock for the product is in ispulocations
