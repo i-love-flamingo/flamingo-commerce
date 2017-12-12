@@ -2,6 +2,7 @@ package application
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/pkg/errors"
 	cartApplication "go.aoe.com/flamingo/core/cart/application"
@@ -83,7 +84,7 @@ func (dl *DeliveryLocations) getByRetailerCode(retailerCode string) (RetailerLoc
 	var result RetailerLocationCollection
 
 	for _, retailerLocation := range dl.RetailerLocations {
-		if retailerLocation.Retailer == retailerCode {
+		if strings.EqualFold(retailerLocation.Retailer, retailerCode) {
 			result = retailerLocation
 			break
 		}
