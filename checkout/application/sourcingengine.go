@@ -72,7 +72,7 @@ func (se *SourcingEngine) GetSources(ctx web.Context) error {
 		cartitem.SourceId = ispuLocations.Locations[0].Id
 		err = decoratedCart.Cart.UpdateItem(ctx, cartitem)
 		if err != nil {
-			errors.Wrap(err, "masterdataportal.application.sourcelocator: Could not update cart item")
+			return errors.Wrap(err, "masterdataportal.application.sourcelocator: Could not update cart item")
 		}
 	}
 
