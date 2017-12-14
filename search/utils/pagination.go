@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"log"
 	"math"
 	"net/url"
 	"sort"
@@ -68,7 +67,6 @@ func (f *PaginationInfoFactory) Build(activePage int, totalHits int, pageSize in
 			pagesToAdd = append(pagesToAdd, i)
 		}
 	}
-	log.Printf("%#v - %v", pagesToAdd, showAroundActivePageAmount)
 
 	sort.Ints(pagesToAdd)
 

@@ -3,7 +3,6 @@ package domain
 import (
 	"context"
 	"errors"
-	"log"
 	"sort"
 )
 
@@ -108,8 +107,6 @@ func (fc FacetCollection) Order() []string {
 	for i, v := range order {
 		strings[i] = v.Name
 	}
-
-	log.Println(strings)
 
 	return strings
 }
