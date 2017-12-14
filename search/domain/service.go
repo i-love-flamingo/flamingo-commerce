@@ -21,6 +21,7 @@ type (
 	// SearchMeta data
 	SearchMeta struct {
 		Query          string
+		OriginalQuery  string
 		Page           int
 		NumPages       int
 		NumResults     int

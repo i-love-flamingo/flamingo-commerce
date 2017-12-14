@@ -33,10 +33,16 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 		i++
 	}
 
+	query, err := c.Query1("q")
+
 	vd := viewData{
 		SearchMeta: domain.SearchMeta{
-			Query: c.MustQuery1("q"),
+			Query: query,
 		},
+	}
+
+	if err != nil {
+		return vc.Render(c, "search/search", vd)
 	}
 
 	if typ, err := c.Param1("type"); err == nil {
