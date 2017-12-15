@@ -12,43 +12,43 @@ import (
 )
 
 type (
-
-	// CartAPIController for cart api
+	// CartApiController for cart api
 	CartApiController struct {
 		responder.JSONAware    `inject:""`
 		ApplicationCartService application.CartService `inject:""`
 	}
-	Result struct {
+
+	result struct {
 		Message string
 		Success bool
 	}
 )
 
-// Get JSON Format of API
+// GetAction Get JSON Format of API
 func (cc *CartApiController) GetAction(ctx web.Context) web.Response {
 	cart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
 	if e != nil {
 		log.Printf("cart.cartapicontroller.get: %v", e.Error())
-		return cc.JSONError(Result{Message: e.Error(), Success: false}, 500)
+		return cc.JSONError(result{Message: e.Error(), Success: false}, 500)
 	}
 	return cc.JSON(cart)
 }
 
-// Add Item to cart
+// AddAction Add Item to cart
 func (cc *CartApiController) AddAction(ctx web.Context) web.Response {
-	addRequest := AddRequestFromRequestContext(ctx)
+	addRequest := addRequestFromRequestContext(ctx)
 	e := cc.ApplicationCartService.AddProduct(ctx, addRequest)
 	if e != nil {
 		log.Printf("cart.cartapicontroller.add: %v", e.Error())
-		return cc.JSONError(Result{Message: e.Error(), Success: false}, 500)
+		return cc.JSONError(result{Message: e.Error(), Success: false}, 500)
 	}
-	return cc.JSON(Result{
+	return cc.JSON(result{
 		Success: true,
 		Message: fmt.Sprintf("added %v / %v Qty %v", addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode, addRequest.Qty),
 	})
 }
 
-func AddRequestFromRequestContext(ctx web.Context) domaincart.AddRequest {
+func addRequestFromRequestContext(ctx web.Context) domaincart.AddRequest {
 	marketplaceCode := ctx.MustParam1("marketplaceCode")
 	qty, e := ctx.Param1("qty")
 	if e != nil {
@@ -62,6 +62,5 @@ func AddRequestFromRequestContext(ctx web.Context) domaincart.AddRequest {
 	if qtyInt < 0 {
 		qtyInt = 0
 	}
-	addRequest := domaincart.AddRequest{MarketplaceCode: marketplaceCode, Qty: qtyInt, VariantMarketplaceCode: variantMarketplaceCode}
-	return addRequest
+	return domaincart.AddRequest{MarketplaceCode: marketplaceCode, Qty: qtyInt, VariantMarketplaceCode: variantMarketplaceCode}
 }

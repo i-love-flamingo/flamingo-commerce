@@ -3,30 +3,20 @@ package cart
 import (
 	"testing"
 
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
+	"github.com/stretchr/testify/assert"
 )
 
-var _ = Describe("Domain Test", func() {
-	var cart *Cart
-
-	Context("Simple Cart Tests", func() {
-		BeforeEach(func() {
-			cart = new(Cart)
-		})
-		It("Can add and get DecoratedItems", func() {
-			cartItem := Item{MarketplaceCode: "code1", Qty: 5}
-			cart.Cartitems = append(cart.Cartitems, cartItem)
-
-			found, nr := cart.HasItem("code1", "")
-			Expect(found).To(Equal(true))
-			Expect(nr).To(Equal(1))
-			Expect(cart.GetByLineNr(1)).To(Equal(&cartItem))
-		})
-	})
-})
-
 func TestDomain(t *testing.T) {
-	RegisterFailHandler(Fail)
-	RunSpecs(t, "Cart Suite")
+	var cart = new(Cart)
+
+	cartItem := Item{MarketplaceCode: "code1", Qty: 5}
+	cart.Cartitems = append(cart.Cartitems, cartItem)
+
+	found, nr := cart.HasItem("code1", "")
+	assert.True(t, found)
+	assert.Equal(t, nr, 1)
+
+	item, err := cart.GetByLineNr(1)
+	assert.NoError(t, err)
+	assert.Equal(t, &cartItem, item)
 }

@@ -2,14 +2,12 @@ package infrastructure
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math/big"
 	"math/rand"
 	"strconv"
-
 	"time"
-
-	"errors"
 
 	domaincart "go.aoe.com/flamingo/core/cart/domain/cart"
 	productDomain "go.aoe.com/flamingo/core/product/domain"
@@ -122,7 +120,7 @@ func (cs GuestCartOrderBehaviour) SetShippingInformation(ctx context.Context, ca
 // SetShippingInformation adds a product
 func (cs GuestCartOrderBehaviour) PlaceOrder(ctx context.Context, cart *domaincart.Cart, payment *domaincart.Payment) (string, error) {
 	rand.Seed(time.Now().Unix())
-	return strconv.Itoa((rand.Int())), nil
+	return strconv.Itoa(rand.Int()), nil
 }
 
 func (cs GuestCartOrderBehaviour) DeleteItem(ctx context.Context, cart *domaincart.Cart, itemId string) error {

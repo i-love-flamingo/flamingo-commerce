@@ -2,11 +2,10 @@ package cart
 
 import (
 	"context"
-
-	"go.aoe.com/flamingo/core/product/domain"
-
 	"log"
 	"sort"
+
+	"go.aoe.com/flamingo/core/product/domain"
 )
 
 type (
@@ -37,14 +36,13 @@ type (
 
 // CreateDecoratedCart Native Factory
 func CreateDecoratedCart(ctx context.Context, Cart Cart, productService domain.ProductService) *DecoratedCart {
-
-	DecoratedCart := DecoratedCart{Cart: Cart}
+	decoratedCart := DecoratedCart{Cart: Cart}
 	for _, cartitem := range Cart.Cartitems {
 		decoratedItem := decorateCartItem(ctx, cartitem, productService)
-		DecoratedCart.DecoratedItems = append(DecoratedCart.DecoratedItems, decoratedItem)
+		decoratedCart.DecoratedItems = append(decoratedCart.DecoratedItems, decoratedItem)
 	}
-	DecoratedCart.Ctx = ctx
-	return &DecoratedCart
+	decoratedCart.Ctx = ctx
+	return &decoratedCart
 }
 
 // Create Factory - with injected ProductService
@@ -69,12 +67,12 @@ func (dci DecoratedCartItem) IsConfigurable() bool {
 	return dci.Product.Type() == domain.TYPECONFIGURABLE
 }
 
-// GetVariant
+// GetVariant getter
 func (dci DecoratedCartItem) GetVariant() (*domain.Variant, error) {
 	return dci.Product.(domain.ConfigurableProduct).Variant(dci.Item.VariantMarketPlaceCode)
 }
 
-// GetDisplayTitle
+// GetDisplayTitle getter
 func (dci DecoratedCartItem) GetDisplayTitle() string {
 	if dci.IsConfigurable() {
 		variant, e := dci.GetVariant()
@@ -86,7 +84,7 @@ func (dci DecoratedCartItem) GetDisplayTitle() string {
 	return dci.Product.BaseData().Title
 }
 
-// GetDisplayMarketplaceCode
+// GetDisplayMarketplaceCode getter
 func (dci DecoratedCartItem) GetDisplayMarketplaceCode() string {
 	if dci.IsConfigurable() {
 		variant, e := dci.GetVariant()
@@ -98,7 +96,7 @@ func (dci DecoratedCartItem) GetDisplayMarketplaceCode() string {
 	return dci.Product.BaseData().MarketPlaceCode
 }
 
-// GetVariantsVariationAttribute
+// GetVariantsVariationAttribute getter
 func (dci DecoratedCartItem) GetVariantsVariationAttributes() domain.Attributes {
 	attributes := domain.Attributes{}
 	if dci.IsConfigurable() {
@@ -112,7 +110,7 @@ func (dci DecoratedCartItem) GetVariantsVariationAttributes() domain.Attributes 
 	return attributes
 }
 
-// GetGroupedBy
+// GetGroupedBy getter
 func (dc DecoratedCart) GetGroupedBy(group string) []*GroupedDecoratedCartItem {
 	groupedItemsCollection := make(map[string]*GroupedDecoratedCartItem)
 	var groupedItemsCollectionKeys []string

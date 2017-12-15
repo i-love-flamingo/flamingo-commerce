@@ -2,24 +2,22 @@ package controller
 
 import (
 	"log"
+	"strconv"
 
 	"go.aoe.com/flamingo/core/cart/application"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
-
-	"strconv"
-
 	"go.aoe.com/flamingo/framework/router"
 	"go.aoe.com/flamingo/framework/web"
 	"go.aoe.com/flamingo/framework/web/responder"
 )
 
 type (
-	// ViewData is used for cart views/templates
+	// CartViewData is used for cart views/templates
 	CartViewData struct {
 		DecoratedCart cart.DecoratedCart
 	}
 
-	// CartController for carts
+	// CartViewController for carts
 	CartViewController struct {
 		responder.RenderAware   `inject:""`
 		responder.RedirectAware `inject:""`
@@ -30,7 +28,6 @@ type (
 
 // ViewAction the DecoratedCart View ( / cart)
 func (cc *CartViewController) ViewAction(ctx web.Context) web.Response {
-
 	decoratedCart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
 	if e != nil {
 		log.Printf("cart.cartcontroller.viewaction: Error %v", e)
@@ -45,7 +42,7 @@ func (cc *CartViewController) ViewAction(ctx web.Context) web.Response {
 
 // AddAndViewAction the DecoratedCart View ( / cart)
 func (cc *CartViewController) AddAndViewAction(ctx web.Context) web.Response {
-	addRequest := AddRequestFromRequestContext(ctx)
+	addRequest := addRequestFromRequestContext(ctx)
 	e := cc.ApplicationCartService.AddProduct(ctx, addRequest)
 	if e != nil {
 		log.Printf("cart.cartcontroller.addandviewaction: Error %v", e)

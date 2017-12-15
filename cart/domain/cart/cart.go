@@ -2,9 +2,7 @@ package cart
 
 import (
 	"context"
-
 	"fmt"
-
 	"log"
 
 	"github.com/pkg/errors"
