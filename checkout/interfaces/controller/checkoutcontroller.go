@@ -3,7 +3,6 @@ package controller
 import (
 	"log"
 
-	"go.aoe.com/flamingo/core/breadcrumbs"
 	"go.aoe.com/flamingo/core/cart/application"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
 
@@ -69,8 +68,6 @@ func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
 		return cc.Redirect("checkout.user", nil)
 	}
 
-	breadCrumbInit(ctx, cc)
-
 	//Guard Clause if Cart is empty
 	if decoratedCart.Cart.ItemCount() == 0 {
 		return cc.Render(ctx, "checkout/startcheckout", CheckoutViewData{
@@ -99,8 +96,6 @@ func (cc *CheckoutController) SubmitGuestCheckoutAction(ctx web.Context) web.Res
 		cc.Logger.Errorf("cart.checkoutcontroller.viewaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
-
-	breadCrumbInit(ctx, cc)
 
 	if cc.CheckoutFormService == nil {
 		cc.Logger.Error("cart.checkoutcontroller.viewaction: Error CheckoutFormService not present!", e)
@@ -188,15 +183,4 @@ func (cc *CheckoutController) placeOrder(ctx web.Context, checkoutFormData formD
 		return "", errors.New("Error while placing the order.")
 	}
 	return orderid, nil
-}
-
-func breadCrumbInit(ctx web.Context, cc *CheckoutController) {
-	breadcrumbs.Add(ctx, breadcrumbs.Crumb{
-		Title: "Shopping Bag",
-		Url:   cc.Router.URL("cart.view", nil).String(),
-	})
-	breadcrumbs.Add(ctx, breadcrumbs.Crumb{
-		Title: "Reserve & Collect",
-		Url:   cc.Router.URL("checkout.start", nil).String(),
-	})
 }
