@@ -3,7 +3,6 @@ package controller
 import (
 	"log"
 
-	"go.aoe.com/flamingo/core/breadcrumbs"
 	"go.aoe.com/flamingo/core/cart/application"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
 
@@ -37,11 +36,6 @@ func (cc *CartViewController) ViewAction(ctx web.Context) web.Response {
 		log.Printf("cart.cartcontroller.viewaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
-
-	breadcrumbs.Add(ctx, breadcrumbs.Crumb{
-		Title: "Shopping Bag",
-		Url:   cc.Router.URL("cart.view", nil).String(),
-	})
 
 	return cc.Render(ctx, "checkout/cart", CartViewData{
 		DecoratedCart: decoratedCart,
