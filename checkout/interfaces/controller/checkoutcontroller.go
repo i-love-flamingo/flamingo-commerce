@@ -1,12 +1,11 @@
 package controller
 
 import (
-	"go.aoe.com/flamingo/core/cart/application"
-	"go.aoe.com/flamingo/core/cart/domain/cart"
-
 	"encoding/gob"
 
 	application3 "go.aoe.com/flamingo/core/auth/application"
+	"go.aoe.com/flamingo/core/cart/application"
+	"go.aoe.com/flamingo/core/cart/domain/cart"
 	application2 "go.aoe.com/flamingo/core/checkout/application"
 	"go.aoe.com/flamingo/core/checkout/interfaces/controller/formDto"
 	formApplicationService "go.aoe.com/flamingo/core/form/application"

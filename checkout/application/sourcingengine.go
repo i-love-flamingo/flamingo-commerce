@@ -63,7 +63,7 @@ func (se *SourcingEngine) SetSourcesForCartItems(ctx web.Context, decoratedCart 
 			return fmt.Errorf("checkout.application.sourcingengine: Got no locations for retailer '%s'", retailerCode)
 		}
 		cartitem.SourceId = ispuLocations.Locations[0].Id
-		err = decoratedCart.Cart.UpdateItem(ctx, cartitem)
+		err = decoratedCart.Cart.UpdateItem(ctx, se.Cartservice.Auth(ctx), cartitem)
 		if err != nil {
 			return errors.Wrap(err, "masterdataportal.application.sourcelocator: Could not update cart item")
 		}
