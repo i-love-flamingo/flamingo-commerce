@@ -66,6 +66,14 @@ func (f *PaginationInfoFactory) Build(activePage int, totalHits int, pageSize in
 		}
 	}
 
+	if activePage == 1 && lastPage > activePage+2 {
+		pagesToAdd = append(pagesToAdd, activePage+2)
+	}
+
+	if activePage == lastPage && lastPage > 2 {
+		pagesToAdd = append(pagesToAdd, activePage-2)
+	}
+
 	sort.Ints(pagesToAdd)
 
 	previousPageNr := 0
