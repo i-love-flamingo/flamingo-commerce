@@ -104,7 +104,7 @@ func (vc *View) Get(c web.Context) web.Response {
 		Products:       products.Hits,
 		SearchMeta:     products.SearchMeta,
 		Facets:         products.Facets,
-		PaginationInfo: vc.PaginationInfoFactory.Build(products.SearchMeta.Page, products.SearchMeta.NumResults, 30, c.Request().URL),
+		PaginationInfo: vc.PaginationInfoFactory.Build(products.SearchMeta.Page, products.SearchMeta.NumResults, 30, products.SearchMeta.NumPages, c.Request().URL),
 	})
 }
 
