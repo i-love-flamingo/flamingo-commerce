@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"math"
 	"net/url"
 	"sort"
 	"strconv"
@@ -29,7 +28,7 @@ type (
 )
 
 //Build Pagination
-func (f *PaginationInfoFactory) Build(activePage int, totalHits int, pageSize int, urlBase *url.URL) PaginationInfo {
+func (f *PaginationInfoFactory) Build(activePage int, totalHits int, pageSize int, lastPage int, urlBase *url.URL) PaginationInfo {
 	if pageSize < 1 {
 		pageSize = 1
 	}
@@ -43,7 +42,6 @@ func (f *PaginationInfoFactory) Build(activePage int, totalHits int, pageSize in
 	if f.ShowFirstPage {
 		pagesToAdd = append(pagesToAdd, 1)
 	}
-	lastPage := int(math.Ceil(float64(totalHits) / float64(pageSize)))
 	if f.ShowLastPage {
 		pagesToAdd = append(pagesToAdd, lastPage)
 	}

@@ -52,7 +52,7 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 		}
 		vd.SearchMeta.NumResults = searchResult.SearchMeta.NumResults
 		vd.SearchResult = map[string]domain.Result{typ: searchResult}
-		vd.PaginationInfo = vc.PaginationInfoFactory.Build(searchResult.SearchMeta.Page, searchResult.SearchMeta.NumResults, 30, c.Request().URL)
+		vd.PaginationInfo = vc.PaginationInfoFactory.Build(searchResult.SearchMeta.Page, searchResult.SearchMeta.NumResults, 30, searchResult.SearchMeta.NumPages, c.Request().URL)
 		return vc.Render(c, "search/"+typ, vd)
 	}
 	searchResult, err := vc.SearchService.Search(c, filter...)
