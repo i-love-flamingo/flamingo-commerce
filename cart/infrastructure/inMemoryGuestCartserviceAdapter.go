@@ -37,9 +37,12 @@ type (
 )
 
 // Test Assignement and if Interface is implemeted correct
-var _ domaincart.GuestCartService = &GuestCartServiceAdapter{}
+var (
+	_ domaincart.GuestCartService   = &GuestCartServiceAdapter{}
+	_ domaincart.CartOrderBehaviour = &GuestCartOrderBehaviour{}
+)
 
-func (cs *GuestCartServiceAdapter) GetCart(ctx context.Context, guestcartid string) (domaincart.Cart, error) {
+func (cs *GuestCartServiceAdapter) GetCart(ctx context.Context, auth domaincart.Auth, guestcartid string) (domaincart.Cart, error) {
 	var cart domaincart.Cart
 	if cs.GuestCartOrderBehaviour.GuestCartStorage == nil {
 		return cart, fmt.Errorf("cart.infrastructure.GuestCartServiceAdapter: no GuestCartStorage given")
@@ -68,8 +71,8 @@ func (cs *GuestCartServiceAdapter) GetCart(ctx context.Context, guestcartid stri
 	return cart, fmt.Errorf("cart.infrastructure.GuestCartServiceAdapter: Guest Cart with ID %v not exitend", guestcartid)
 }
 
-//Creates a new guest cart and returns it
-func (cs *GuestCartServiceAdapter) GetNewCart(ctx context.Context) (domaincart.Cart, error) {
+// GetNewCart Creates a new guest cart and returns it
+func (cs *GuestCartServiceAdapter) GetNewCart(ctx context.Context, auth domaincart.Auth) (domaincart.Cart, error) {
 	guestCart := domaincart.Cart{
 		ID: strconv.Itoa(rand.Int()),
 	}
@@ -78,8 +81,8 @@ func (cs *GuestCartServiceAdapter) GetNewCart(ctx context.Context) (domaincart.C
 	return guestCart, nil
 }
 
-//AddToCart
-func (cs GuestCartServiceAdapter) AddToCart(ctx context.Context, guestcartid string, addRequest domaincart.AddRequest) error {
+// AddToCart adds products to a cart
+func (cs GuestCartServiceAdapter) AddToCart(ctx context.Context, auth domaincart.Auth, guestcartid string, addRequest domaincart.AddRequest) error {
 	if !cs.GuestCartOrderBehaviour.GuestCartStorage.HasCart(guestcartid) {
 		return fmt.Errorf("cart.infrastructure.GuestCartServiceAdapter: Cannot add - Guestcart with id %v not existend", guestcartid)
 	}
@@ -113,17 +116,17 @@ func (cs GuestCartServiceAdapter) AddToCart(ctx context.Context, guestcartid str
 }
 
 // SetShippingInformation adds a product
-func (cs GuestCartOrderBehaviour) SetShippingInformation(ctx context.Context, cart *domaincart.Cart, shippingAddress *domaincart.Address, billingAddress *domaincart.Address, shippingCarrierCode string, shippingMethodCode string) error {
+func (cs GuestCartOrderBehaviour) SetShippingInformation(ctx context.Context, auth domaincart.Auth, cart *domaincart.Cart, shippingAddress *domaincart.Address, billingAddress *domaincart.Address, shippingCarrierCode string, shippingMethodCode string) error {
 	return nil
 }
 
 // SetShippingInformation adds a product
-func (cs GuestCartOrderBehaviour) PlaceOrder(ctx context.Context, cart *domaincart.Cart, payment *domaincart.Payment) (string, error) {
+func (cs GuestCartOrderBehaviour) PlaceOrder(ctx context.Context, auth domaincart.Auth, cart *domaincart.Cart, payment *domaincart.Payment) (string, error) {
 	rand.Seed(time.Now().Unix())
 	return strconv.Itoa(rand.Int()), nil
 }
 
-func (cs GuestCartOrderBehaviour) DeleteItem(ctx context.Context, cart *domaincart.Cart, itemId string) error {
+func (cs GuestCartOrderBehaviour) DeleteItem(ctx context.Context, auth domaincart.Auth, cart *domaincart.Cart, itemId string) error {
 	if cs.GuestCartStorage == nil {
 		return fmt.Errorf("cart.infrastructure.GuestCartOrderBehaviour: no GuestCartStorage given")
 	}
@@ -145,7 +148,7 @@ func (cs GuestCartOrderBehaviour) DeleteItem(ctx context.Context, cart *domainca
 	return nil
 }
 
-func (cs GuestCartOrderBehaviour) UpdateItem(ctx context.Context, cart *domaincart.Cart, itemId string, item domaincart.Item) error {
+func (cs GuestCartOrderBehaviour) UpdateItem(ctx context.Context, auth domaincart.Auth, cart *domaincart.Cart, itemId string, item domaincart.Item) error {
 	if cs.GuestCartStorage == nil {
 		return fmt.Errorf("cart.infrastructure.GuestCartOrderBehaviour: no GuestCartStorage given")
 	}

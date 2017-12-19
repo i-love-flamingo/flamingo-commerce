@@ -74,7 +74,7 @@ func (cc *CartViewController) UpdateQtyAndViewAction(ctx web.Context) web.Respon
 	if e != nil {
 		qtyInt = 1
 	}
-	e = decoratedCart.Cart.UpdateItemQty(ctx, id, qtyInt)
+	e = decoratedCart.Cart.UpdateItemQty(ctx, cc.ApplicationCartService.Auth(ctx), id, qtyInt)
 	if e != nil {
 		log.Printf("cart.cartcontroller.UpdateAndViewAction: Error %v", e)
 	}
@@ -95,7 +95,7 @@ func (cc *CartViewController) DeleteAndViewAction(ctx web.Context) web.Response 
 		return cc.Redirect("cart.view", nil)
 	}
 
-	e = decoratedCart.Cart.DeleteItem(ctx, id)
+	e = decoratedCart.Cart.DeleteItem(ctx, cc.ApplicationCartService.Auth(ctx), id)
 	if e != nil {
 		log.Printf("cart.cartcontroller.deleteaction: Error %v", e)
 	}

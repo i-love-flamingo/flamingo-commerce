@@ -105,31 +105,31 @@ func (cart Cart) HasShippingItem() bool {
 }
 
 // SetShippingInformation
-func (cart Cart) SetShippingInformation(ctx context.Context, shippingAddress *Address, billingAddress *Address, shippingCarrierCode string, shippingMethodCode string) error {
+func (cart Cart) SetShippingInformation(ctx context.Context, auth Auth, shippingAddress *Address, billingAddress *Address, shippingCarrierCode string, shippingMethodCode string) error {
 	if cart.CartOrderBehaviour == nil {
 		return errors.New("This Cart has no Behaviour attached!")
 	}
-	return cart.CartOrderBehaviour.SetShippingInformation(ctx, &cart, shippingAddress, billingAddress, shippingCarrierCode, shippingMethodCode)
+	return cart.CartOrderBehaviour.SetShippingInformation(ctx, auth, &cart, shippingAddress, billingAddress, shippingCarrierCode, shippingMethodCode)
 }
 
 // PlaceOrder
-func (cart Cart) PlaceOrder(ctx context.Context, payment *Payment) (string, error) {
+func (cart Cart) PlaceOrder(ctx context.Context, auth Auth, payment *Payment) (string, error) {
 	if cart.CartOrderBehaviour == nil {
 		return "", errors.New("This Cart has no Behaviour attached!")
 	}
-	return cart.CartOrderBehaviour.PlaceOrder(ctx, &cart, payment)
+	return cart.CartOrderBehaviour.PlaceOrder(ctx, auth, &cart, payment)
 }
 
 // DeleteItem
-func (cart Cart) DeleteItem(ctx context.Context, id string) error {
+func (cart Cart) DeleteItem(ctx context.Context, auth Auth, id string) error {
 	if cart.CartOrderBehaviour == nil {
 		return errors.New("This Cart has no Behaviour attached!")
 	}
-	return cart.CartOrderBehaviour.DeleteItem(ctx, &cart, id)
+	return cart.CartOrderBehaviour.DeleteItem(ctx, auth, &cart, id)
 }
 
 // UpdateItemQty - delete item if qty =< 0
-func (cart Cart) UpdateItemQty(ctx context.Context, id string, qty int) error {
+func (cart Cart) UpdateItemQty(ctx context.Context, auth Auth, id string, qty int) error {
 	if cart.CartOrderBehaviour == nil {
 		return errors.New("This Cart has no Behaviour attached!")
 	}
@@ -138,15 +138,15 @@ func (cart Cart) UpdateItemQty(ctx context.Context, id string, qty int) error {
 		return e
 	}
 	if qty < 1 {
-		return cart.DeleteItem(ctx, id)
+		return cart.DeleteItem(ctx, auth, id)
 	}
 	item.Qty = qty
-	return cart.CartOrderBehaviour.UpdateItem(ctx, &cart, id, *item)
+	return cart.CartOrderBehaviour.UpdateItem(ctx, auth, &cart, id, *item)
 }
 
 // UpdateItem replaces value in Cart Item
-func (cart Cart) UpdateItem(ctx context.Context, item Item) error {
-	return cart.CartOrderBehaviour.UpdateItem(ctx, &cart, item.ID, item)
+func (cart Cart) UpdateItem(ctx context.Context, auth Auth, item Item) error {
+	return cart.CartOrderBehaviour.UpdateItem(ctx, auth, &cart, item.ID, item)
 }
 
 // ItemCount - returns amount of Cartitems

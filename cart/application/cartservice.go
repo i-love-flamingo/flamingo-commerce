@@ -2,6 +2,7 @@ package application
 
 import (
 	"github.com/pkg/errors"
+	"go.aoe.com/flamingo/core/auth/application"
 	domaincart "go.aoe.com/flamingo/core/cart/domain/cart"
 	productDomain "go.aoe.com/flamingo/core/product/domain"
 	"go.aoe.com/flamingo/framework/flamingo"
@@ -11,27 +12,40 @@ import (
 // CartService application struct
 type (
 	CartService struct {
-		GuestCartService domaincart.GuestCartService `inject:""`
-		//CustomerCartService  cart.CustomerCartService  `inject:""`
+		GuestCartService     domaincart.GuestCartService     `inject:""`
+		CustomerCartService  domaincart.CustomerCartService  `inject:""`
 		CartDecoratorFactory domaincart.DecoratedCartFactory `inject:""`
 		ProductService       productDomain.ProductService    `inject:""`
 		Logger               flamingo.Logger                 `inject:""`
 		CartValidator        domaincart.CartValidator        `inject:",optional"`
+		AuthManager          application.AuthManager         `inject:""`
+		UserService          application.UserService         `inject:""`
 	}
 )
+
+// Auth tries to retrieve the authentication context for a active session
+func (cs *CartService) Auth(c web.Context) domaincart.Auth {
+	ts, _ := cs.AuthManager.TokenSource(c)
+	idtoken, _ := cs.AuthManager.IDToken(c)
+
+	return domaincart.Auth{
+		TokenSource: ts,
+		IDToken:     idtoken,
+	}
+}
 
 // GetCart Get the correct Cart
 func (cs *CartService) GetCart(ctx web.Context) (domaincart.Cart, error) {
 	if cs.isLoggedIn(ctx) {
-		return cs.getEmptyCart()
-	} else {
-		guestCart, e := cs.getSessionsGuestCart(ctx)
-		if e != nil {
-			cs.Logger.Warn("cart.application.cartservice: GetCart - No cart in session return empty")
-			return cs.getEmptyCart()
-		}
-		return guestCart, nil
+		return cs.GetCart(ctx)
 	}
+
+	guestCart, e := cs.getSessionsGuestCart(ctx)
+	if e != nil {
+		cs.Logger.Warn("cart.application.cartservice: GetCart - No cart in session return empty")
+		return cs.getEmptyCart()
+	}
+	return guestCart, nil
 }
 
 func (cs CartService) ValidateCart(ctx web.Context, decoratedCart domaincart.DecoratedCart) domaincart.CartValidationResult {
@@ -61,8 +75,7 @@ func (cs *CartService) AddProduct(ctx web.Context, addRequest domaincart.AddRequ
 		return e
 	}
 	if cs.isLoggedIn(ctx) {
-		//TODO
-		return nil
+		return cs.AddProduct(ctx, addRequest)
 	} else {
 		return cs.addProductToGuestCart(ctx, addRequest)
 	}
@@ -104,7 +117,7 @@ func (cs *CartService) addProductToGuestCart(ctx web.Context, addRequest domainc
 	}
 	guestCartID := ctx.Session().Values["cart.guestid"].(string)
 	// Add to guest cart
-	e := cs.GuestCartService.AddToCart(ctx, guestCartID, addRequest)
+	e := cs.GuestCartService.AddToCart(ctx, cs.Auth(ctx), guestCartID, addRequest)
 	if e != nil {
 		cs.Logger.Errorf("cart.application.cartservice: Failed Adding to cart %s Error %s", guestCartID, e)
 		return e
@@ -116,7 +129,7 @@ func (cs *CartService) addProductToGuestCart(ctx web.Context, addRequest domainc
 // isLoggedIn Checks if a user is logged in / authenticated
 // @TODO
 func (cs *CartService) isLoggedIn(ctx web.Context) bool {
-	return false
+	return cs.UserService.IsLoggedIn(ctx)
 }
 
 // getSessionsGuestCart Checks if a valid guest cart exists for the session and tries to get it
@@ -124,7 +137,7 @@ func (cs *CartService) isLoggedIn(ctx web.Context) bool {
 func (cs *CartService) getSessionsGuestCart(ctx web.Context) (domaincart.Cart, error) {
 	var cart domaincart.Cart
 	if guestcartid, ok := ctx.Session().Values["cart.guestid"]; ok {
-		existingCart, e := cs.GuestCartService.GetCart(ctx, guestcartid.(string))
+		existingCart, e := cs.GuestCartService.GetCart(ctx, cs.Auth(ctx), guestcartid.(string))
 		if e != nil {
 			cs.Logger.Errorf("cart.application.cartservice: Guestcart id in session cannot be retrieved. Id %s, Error: %s", guestcartid, e)
 		}
@@ -135,7 +148,7 @@ func (cs *CartService) getSessionsGuestCart(ctx web.Context) (domaincart.Cart, e
 
 // createNewSessionGuestCart Requests a new Guest Cart and stores the id in the session, if possible
 func (cs *CartService) createNewSessionGuestCart(ctx web.Context) (domaincart.Cart, error) {
-	newGuestCart, e := cs.GuestCartService.GetNewCart(ctx)
+	newGuestCart, e := cs.GuestCartService.GetNewCart(ctx, cs.Auth(ctx))
 	if e != nil {
 		cs.Logger.Errorf("cart.application.cartservice: Cannot create a new guest cart. Error %s", e)
 		delete(ctx.Session().Values, "cart.guestid")
