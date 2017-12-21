@@ -32,7 +32,6 @@ type (
 		RenderContext       string
 		SimpleProduct       domain.SimpleProduct
 		ConfigurableProduct domain.ConfigurableProduct
-		ActiveVariant       domain.Variant
 		VariantSelected     bool
 		VariantSelection    variantSelection
 	}
@@ -194,9 +193,9 @@ func (vc *View) Get(c web.Context) web.Response {
 				return vc.Redirect(URLWithVariant(c.MustParam1("marketplacecode"), urlName, variantCode))
 			}
 			log.Printf("Variant Price %v / %v", activeVariant.ActivePrice.Default, activeVariant.ActivePrice)
+			configurableProduct.ActiveVariant = activeVariant
 			viewData = productViewData{
 				ConfigurableProduct: configurableProduct,
-				ActiveVariant:       *activeVariant,
 				VariantSelected:     true,
 				RenderContext:       "configurable_with_activevariant",
 			}
