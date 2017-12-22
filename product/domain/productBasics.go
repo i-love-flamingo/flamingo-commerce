@@ -143,9 +143,10 @@ func (p Saleable) IsSaleableNow() bool {
 	if !p.IsSaleable {
 		return false
 	}
-
-	if (p.SaleableFrom.IsZero() || p.SaleableFrom.Before(time.Now())) &&
-		(p.SaleableTo.IsZero() || p.SaleableTo.After(time.Now())) {
+	//log.Printf("11111 %#v  %#v", p.SaleableFrom.IsZero(), p.SaleableTo.Format(time.RFC850))
+	//For some reasons IsZero does not always work - thats why we check for 1970
+	if (p.SaleableFrom.Year() == 1970 || p.SaleableFrom.Before(time.Now())) &&
+		(p.SaleableTo.Year() == 1970 || p.SaleableTo.After(time.Now())) {
 		return true
 	}
 	return false
