@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	cartApplication "go.aoe.com/flamingo/core/cart/application"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
 	"go.aoe.com/flamingo/framework/flamingo"
 	"go.aoe.com/flamingo/framework/web"
@@ -17,10 +16,9 @@ type (
 	}
 
 	SourcingEngine struct {
-		Cartservice              cartApplication.CartService `inject:""`
-		DecoratedCart            cart.DecoratedCart          `inject:""`
-		DeliveryLocationsService DeliveryLocationsService    `inject:""`
-		Logger                   flamingo.Logger             `inject:""`
+		DecoratedCart            cart.DecoratedCart       `inject:""`
+		DeliveryLocationsService DeliveryLocationsService `inject:""`
+		Logger                   flamingo.Logger          `inject:""`
 	}
 
 	DeliveryLocations struct {
@@ -39,17 +37,12 @@ type (
 	}
 )
 
-// GetSources gets Sources and modifies the Cart Items
-func (se *SourcingEngine) GetSources(ctx web.Context) error {
+// SetSourcesForCartItems gets Sources and modifies the Cart Items
+func (se *SourcingEngine) SetSourcesForCartItems(ctx web.Context, decoratedCart cart.DecoratedCart) error {
 	locations, err := se.DeliveryLocationsService.GetDeliveryLocations(ctx)
 
 	if err != nil {
 		return errors.Wrap(err, "checkout.application.sourcingengine: Get sources failed")
-	}
-
-	decoratedCart, err := se.Cartservice.GetDecoratedCart(ctx)
-	if err != nil {
-		return errors.Wrap(err, "checkout.application.sourcingengine: Could not get the decorated Cart")
 	}
 
 	for _, decoratedCartItem := range decoratedCart.DecoratedItems {

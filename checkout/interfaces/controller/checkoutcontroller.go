@@ -121,7 +121,7 @@ func (cc *CheckoutController) SubmitGuestCheckoutAction(ctx web.Context) web.Res
 
 	if form.IsValidAndSubmitted() {
 		if checkoutFormData, ok := form.Data.(formDto.CheckoutFormData); ok {
-			orderID, err := cc.placeOrder(ctx, checkoutFormData, decoratedCart.Cart)
+			orderID, err := cc.placeOrder(ctx, checkoutFormData, decoratedCart)
 			if err != nil {
 				return cc.Render(ctx, "checkout/checkout", CheckoutViewData{
 					DecoratedCart: decoratedCart,
@@ -158,25 +158,25 @@ func (cc *CheckoutController) SuccessAction(ctx web.Context) web.Response {
 	return cc.Render(ctx, "checkout/expired", nil)
 }
 
-func (cc *CheckoutController) placeOrder(ctx web.Context, checkoutFormData formDto.CheckoutFormData, cart cart.Cart) (string, error) {
+func (cc *CheckoutController) placeOrder(ctx web.Context, checkoutFormData formDto.CheckoutFormData, decoratedCart cart.DecoratedCart) (string, error) {
 
 	billingAddress, shippingAddress := formDto.MapAddresses(checkoutFormData)
 	_ = shippingAddress
 	log.Printf("Checkoutcontroller.submit - Info: billingAddress: %#v", checkoutFormData)
 
-	err := cc.SourcingEngine.GetSources(ctx)
+	err := cc.SourcingEngine.SetSourcesForCartItems(ctx, decoratedCart)
 	if err != nil {
 		log.Printf("Error while getting pickup sources: %v", err)
 		return "", errors.New("Error while getting pickup sources.")
 	}
 
-	err = cart.SetShippingInformation(ctx, billingAddress, billingAddress, "ispu", "ispu")
+	err = decoratedCart.Cart.SetShippingInformation(ctx, billingAddress, billingAddress, "ispu", "ispu")
 	if err != nil {
 		log.Printf("Error during place Order: %v", err)
 		return "", errors.New("Error while setting shipping informations.")
 	}
 
-	orderid, err := cart.PlaceOrder(ctx, cc.PaymentService.GetPayment())
+	orderid, err := decoratedCart.Cart.PlaceOrder(ctx, cc.PaymentService.GetPayment())
 
 	if err != nil {
 		log.Printf("Error during place Order: %v", err)
