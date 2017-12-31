@@ -1,12 +1,8 @@
 package controller
 
 import (
-	"log"
-
 	"go.aoe.com/flamingo/core/cart/application"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
-
-	"errors"
 
 	"encoding/gob"
 
@@ -47,6 +43,7 @@ type (
 		CheckoutFormService     domain.FormService          `inject:""`
 		Logger                  flamingo.Logger             `inject:""`
 		SourcingEngine          application2.SourcingEngine `inject:""`
+		OrderService            application2.OrderService   `inject:""`
 	}
 )
 
@@ -162,25 +159,5 @@ func (cc *CheckoutController) placeOrder(ctx web.Context, checkoutFormData formD
 
 	billingAddress, shippingAddress := formDto.MapAddresses(checkoutFormData)
 	_ = shippingAddress
-	log.Printf("Checkoutcontroller.submit - Info: billingAddress: %#v", checkoutFormData)
-
-	err := cc.SourcingEngine.SetSourcesForCartItems(ctx, decoratedCart)
-	if err != nil {
-		log.Printf("Error while getting pickup sources: %v", err)
-		return "", errors.New("Error while getting pickup sources.")
-	}
-
-	err = decoratedCart.Cart.SetShippingInformation(ctx, billingAddress, billingAddress, "ispu", "ispu")
-	if err != nil {
-		log.Printf("Error during place Order: %v", err)
-		return "", errors.New("Error while setting shipping informations.")
-	}
-
-	orderid, err := decoratedCart.Cart.PlaceOrder(ctx, cc.PaymentService.GetPayment())
-
-	if err != nil {
-		log.Printf("Error during place Order: %v", err)
-		return "", errors.New("Error while placing the order.")
-	}
-	return orderid, nil
+	return cc.OrderService.PlaceOrder(ctx, decoratedCart, "ispu", "ispu", billingAddress, billingAddress)
 }
