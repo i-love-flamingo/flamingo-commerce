@@ -14,7 +14,8 @@ import (
 type (
 	// CartViewData is used for cart views/templates
 	CartViewData struct {
-		DecoratedCart cart.DecoratedCart
+		DecoratedCart        cart.DecoratedCart
+		CartValidationResult cart.CartValidationResult
 	}
 
 	// CartViewController for carts
@@ -35,7 +36,8 @@ func (cc *CartViewController) ViewAction(ctx web.Context) web.Response {
 	}
 
 	return cc.Render(ctx, "checkout/cart", CartViewData{
-		DecoratedCart: decoratedCart,
+		DecoratedCart:        decoratedCart,
+		CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, decoratedCart),
 	})
 
 }

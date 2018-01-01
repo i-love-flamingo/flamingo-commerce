@@ -16,6 +16,7 @@ type (
 		CartDecoratorFactory domaincart.DecoratedCartFactory `inject:""`
 		ProductService       productDomain.ProductService    `inject:""`
 		Logger               flamingo.Logger                 `inject:""`
+		CartValidator        domaincart.CartValidator        `inject:",optional"`
 	}
 )
 
@@ -31,6 +32,15 @@ func (cs *CartService) GetCart(ctx web.Context) (domaincart.Cart, error) {
 		}
 		return guestCart, nil
 	}
+}
+
+func (cs CartService) ValidateCart(ctx web.Context, decoratedCart domaincart.DecoratedCart) domaincart.CartValidationResult {
+	if cs.CartValidator != nil {
+		//TODO - pass delivery MEthod
+		result := cs.CartValidator.Validate(ctx, decoratedCart, "")
+		return result
+	}
+	return domaincart.CartValidationResult{}
 }
 
 // GetDecoratedCart Get the correct Cart
