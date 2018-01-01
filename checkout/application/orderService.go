@@ -2,8 +2,8 @@ package application
 
 import (
 	"errors"
-	"log"
 
+	"go.aoe.com/flamingo/core/cart/application"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
 	"go.aoe.com/flamingo/framework/flamingo"
 	"go.aoe.com/flamingo/framework/web"
@@ -13,16 +13,23 @@ type (
 
 	// PaymentService
 	OrderService struct {
-		SourcingEngine SourcingEngine  `inject:""`
-		PaymentService PaymentService  `inject:""`
-		Logger         flamingo.Logger `inject:""`
+		SourcingEngine SourcingEngine          `inject:""`
+		PaymentService PaymentService          `inject:""`
+		Logger         flamingo.Logger         `inject:""`
+		CartService    application.CartService `inject:""`
 	}
 )
 
 func (os OrderService) PlaceOrder(ctx web.Context, decoratedCart cart.DecoratedCart, shippingMethod string, shippingCarrierCode string, billingAddress *cart.Address, shippingAddress *cart.Address) (orderid string, orderError error) {
+	validationResult := os.CartService.ValidateCart(ctx, decoratedCart)
+	if !validationResult.IsValid() {
+		os.Logger.Warn("Try to place an invalid cart")
+		return "", errors.New("Cart is Invalid.")
+	}
+
 	err := os.SourcingEngine.SetSourcesForCartItems(ctx, decoratedCart)
 	if err != nil {
-		log.Printf("Error while getting pickup sources: %v", err)
+		os.Logger.Errorf("Error while getting pickup sources: %v", err)
 		return "", errors.New("Error while getting pickup sources.")
 	}
 

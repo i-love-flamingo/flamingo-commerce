@@ -20,10 +20,11 @@ import (
 type (
 	// CheckoutViewData represents the checkout view data
 	CheckoutViewData struct {
-		DecoratedCart cart.DecoratedCart
-		Form          domain.Form
-		ErrorMessage  string
-		HasError      bool
+		DecoratedCart        cart.DecoratedCart
+		Form                 domain.Form
+		CartValidationResult cart.CartValidationResult
+		ErrorMessage         string
+		HasFormError         bool
 	}
 
 	// SuccessViewData represents the success view data
@@ -74,7 +75,7 @@ func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
 
 	return cc.Render(ctx, "checkout/startcheckout", CheckoutViewData{
 		DecoratedCart: decoratedCart,
-		HasError:      false,
+		HasFormError:  false,
 	})
 }
 
@@ -103,16 +104,18 @@ func (cc *CheckoutController) SubmitGuestCheckoutAction(ctx web.Context) web.Res
 	// return on error (template need to handle error display)
 	if e != nil {
 		return cc.Render(ctx, "checkout/checkout", CheckoutViewData{
-			DecoratedCart: decoratedCart,
-			Form:          form,
+			DecoratedCart:        decoratedCart,
+			CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, decoratedCart),
+			Form:                 form,
 		})
 	}
 
 	//Guard Clause if Cart is empty
 	if decoratedCart.Cart.ItemCount() == 0 {
 		return cc.Render(ctx, "checkout/checkout", CheckoutViewData{
-			DecoratedCart: decoratedCart,
-			Form:          form,
+			DecoratedCart:        decoratedCart,
+			CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, decoratedCart),
+			Form:                 form,
 		})
 	}
 
@@ -121,10 +124,11 @@ func (cc *CheckoutController) SubmitGuestCheckoutAction(ctx web.Context) web.Res
 			orderID, err := cc.placeOrder(ctx, checkoutFormData, decoratedCart)
 			if err != nil {
 				return cc.Render(ctx, "checkout/checkout", CheckoutViewData{
-					DecoratedCart: decoratedCart,
-					HasError:      true,
-					Form:          form,
-					ErrorMessage:  err.Error(),
+					DecoratedCart:        decoratedCart,
+					CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, decoratedCart),
+					HasFormError:         true,
+					Form:                 form,
+					ErrorMessage:         err.Error(),
 				})
 			}
 			shippingEmail := checkoutFormData.ShippingAddress.Email
@@ -139,9 +143,9 @@ func (cc *CheckoutController) SubmitGuestCheckoutAction(ctx web.Context) web.Res
 	}
 
 	return cc.Render(ctx, "checkout/checkout", CheckoutViewData{
-		DecoratedCart: decoratedCart,
-		HasError:      false,
-		Form:          form,
+		DecoratedCart:        decoratedCart,
+		CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, decoratedCart),
+		Form:                 form,
 	})
 }
 
