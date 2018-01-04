@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
+	"go.aoe.com/flamingo/core/cart/application"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
 	"go.aoe.com/flamingo/framework/flamingo"
 	"go.aoe.com/flamingo/framework/web"
@@ -19,6 +20,7 @@ type (
 		DecoratedCart            cart.DecoratedCart       `inject:""`
 		DeliveryLocationsService DeliveryLocationsService `inject:""`
 		Logger                   flamingo.Logger          `inject:""`
+		Cartservice              application.CartService  `inject:""`
 	}
 
 	DeliveryLocations struct {
