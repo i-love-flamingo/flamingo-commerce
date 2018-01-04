@@ -19,10 +19,10 @@ import (
 
 type (
 	CheckoutFormData struct {
-		BillingAddress                    AddressFormData `form:"billingAddress"`
-		ShippingAddress                   AddressFormData `form:"shippingAddress" validate:"-"`
-		UseBillingAddressAsShippinAddress bool            `form:"billingAsShipping"`
-		TermsAndConditions                bool            `form:"termsAndConditions" validate:"required"`
+		BillingAddress                     AddressFormData `form:"billingAddress"`
+		ShippingAddress                    AddressFormData `form:"shippingAddress" validate:"-"`
+		UseBillingAddressAsShippingAddress bool            `form:"billingAsShipping"`
+		TermsAndConditions                 bool            `form:"termsAndConditions" validate:"required"`
 	}
 
 	AddressFormData struct {
@@ -80,6 +80,8 @@ func (fs *CheckoutFormService) ParseFormData(ctx web.Context, formValues url.Val
 		}
 	}
 
+	//log.Printf("formValues before %#v", formValues)
+	//log.Printf("fs.OverrideFormValues %#v", fs.OverrideFormValues)
 	//OverrideValues
 	if fs.OverrideFormValues != nil {
 		for k, v := range fs.OverrideFormValues {
@@ -113,7 +115,7 @@ func (fs *CheckoutFormService) ValidateFormData(data interface{}) (domain.Valida
 
 func MapAddresses(data CheckoutFormData) (billingAddress *cart.Address, shippingAddress *cart.Address) {
 	billingAddress = mapAddress(data.BillingAddress)
-	if data.UseBillingAddressAsShippinAddress {
+	if data.UseBillingAddressAsShippingAddress {
 		shippingAddress = billingAddress
 	} else {
 		shippingAddress = mapAddress(data.ShippingAddress)
