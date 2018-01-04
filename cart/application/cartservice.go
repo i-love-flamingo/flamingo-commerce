@@ -102,13 +102,7 @@ func (cs *CartService) checkProductAndEnrichAddRequest(ctx web.Context, addReque
 		if err != nil {
 			return addRequest, errors.New("cart.application.cartservice - AddProduct:Product has not the given variant")
 		}
-
-		configurable, _ := product.(productDomain.ConfigurableProduct)
-		addRequest.Identifier = configurable.Identifier
 	}
-
-	simple, _ := product.(productDomain.SimpleProduct)
-	addRequest.Identifier = simple.Identifier
 	return addRequest, nil
 }
 
