@@ -52,8 +52,6 @@ type (
 		MarketplaceCode        string
 		Qty                    int
 		VariantMarketplaceCode string
-		//Identifier - some Adapters may need the Identifier instead of the MarketplaceCode, thats the reason why the AddRequest has it additionally to the MarketplaceCode attributes
-		Identifier string
 	}
 
 	// Auth defines cart authentication information
