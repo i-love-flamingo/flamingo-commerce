@@ -10,6 +10,7 @@ import (
 	"github.com/go-playground/form"
 	"github.com/leebenson/conform"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
+	domain2 "go.aoe.com/flamingo/core/customer/domain"
 	"go.aoe.com/flamingo/core/form/application"
 	"go.aoe.com/flamingo/core/form/domain"
 	"go.aoe.com/flamingo/framework/config"
@@ -33,8 +34,8 @@ type (
 		StreetNr      string `form:"streetNr" conform:"trim"`
 		AddressLine1  string `form:"addressLine1" conform:"trim"`
 		AddressLine2  string `form:"addressLine2" conform:"trim"`
-		PhoneAreaCode string `form:"phoneAreaCode" validate:"required" conform:"num"`
-		PhoneNumber   string `form:"phoneNumber" validate:"required" conform:"num"`
+		PhoneAreaCode string `form:"phoneAreaCode" conform:"num"`
+		PhoneNumber   string `form:"phoneNumber"  conform:"num"`
 		PostCode      string `form:"postCode" conform:"trim"`
 		City          string `form:"city" conform:"name"`
 		Firstname     string `form:"firstname" validate:"required" conform:"name"`
@@ -46,6 +47,8 @@ type (
 		DefaultFormValues  config.Map    `inject:"config:checkout.checkoutForm.defaultValues,optional"`
 		OverrideFormValues config.Map    `inject:"config:checkout.checkoutForm.overrideValues,optional"`
 		Decoder            *form.Decoder `inject:""`
+		//Customer  might be passed by the controller - we use it to initialize the form
+		Customer domain2.Customer
 	}
 )
 
@@ -99,8 +102,28 @@ func (fs *CheckoutFormService) ParseFormData(ctx web.Context, formValues url.Val
 	//log.Printf("formValues %#v", formValues)
 	var formData CheckoutFormData
 	fs.Decoder.Decode(&formData, formValues)
+	//If customer is given - get default values for the form if not empty yet
+	if fs.Customer != nil {
+		fillAddressFormWithCustomerAddress(&formData.BillingAddress, fs.Customer.GetDefaultBillingAddress())
+		fillAddressFormWithCustomerAddress(&formData.ShippingAddress, fs.Customer.GetDefaultShippingAddress())
+	}
 	conform.Strings(&formData)
 	return formData, nil
+}
+
+func fillAddressFormWithCustomerAddress(addressForm *AddressFormData, address *domain2.Address) {
+	if address == nil || addressForm == nil {
+		return
+	}
+	if addressForm.Email == "" {
+		addressForm.Email = address.Email
+	}
+	if addressForm.Firstname == "" {
+		addressForm.Firstname = address.Firstname
+	}
+	if addressForm.Lastname == "" {
+		addressForm.Lastname = address.Lastname
+	}
 }
 
 //ValidateFormData - from FormService interface

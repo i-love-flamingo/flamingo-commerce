@@ -3,11 +3,12 @@ package controller
 import (
 	"encoding/gob"
 
-	application3 "go.aoe.com/flamingo/core/auth/application"
-	"go.aoe.com/flamingo/core/cart/application"
+	authApplication "go.aoe.com/flamingo/core/auth/application"
+	cartApplication "go.aoe.com/flamingo/core/cart/application"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
-	application2 "go.aoe.com/flamingo/core/checkout/application"
+	"go.aoe.com/flamingo/core/checkout/application"
 	"go.aoe.com/flamingo/core/checkout/interfaces/controller/formDto"
+	customerApplication "go.aoe.com/flamingo/core/customer/application"
 	formApplicationService "go.aoe.com/flamingo/core/form/application"
 	"go.aoe.com/flamingo/core/form/domain"
 	"go.aoe.com/flamingo/framework/flamingo"
@@ -36,14 +37,19 @@ type (
 	CheckoutController struct {
 		responder.RenderAware   `inject:""`
 		responder.RedirectAware `inject:""`
-		ApplicationCartService  application.CartService      `inject:""`
-		PaymentService          application2.PaymentService  `inject:""`
-		UserService             application3.UserService     `inject:""`
-		Router                  *router.Router               `inject:""`
-		CheckoutFormService     *formDto.CheckoutFormService `inject:""`
-		Logger                  flamingo.Logger              `inject:""`
-		SourcingEngine          application2.SourcingEngine  `inject:""`
-		OrderService            application2.OrderService    `inject:""`
+		Router                  *router.Router `inject:""`
+
+		CheckoutFormService *formDto.CheckoutFormService `inject:""`
+		OrderService        application.OrderService     `inject:""`
+		PaymentService      application.PaymentService   `inject:""`
+
+		ApplicationCartService cartApplication.CartService `inject:""`
+
+		UserService authApplication.UserService `inject:""`
+
+		Logger flamingo.Logger `inject:""`
+
+		CustomerApplicationService customerApplication.Service `inject:""`
 	}
 )
 
@@ -80,11 +86,21 @@ func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
 // SubmitUserCheckoutAction handles the user order submit
 // TODO: implement this
 func (cc *CheckoutController) SubmitUserCheckoutAction(ctx web.Context) web.Response {
+	//Guard
+	if !cc.UserService.IsLoggedIn(ctx) {
+		return cc.Redirect("checkout.start", nil)
+	}
+	customer, err := cc.CustomerApplicationService.GetForAuthenticatedUser(ctx)
+	if err == nil {
+		//give the customer to the form service - so that it can prepopulate default values
+		cc.CheckoutFormService.Customer = customer
+	}
 	return cc.submitOrderForm(ctx, cc.CheckoutFormService, "checkout/usercheckout")
 }
 
 // SubmitGuestCheckoutAction handles the guest order submit
 func (cc *CheckoutController) SubmitGuestCheckoutAction(ctx web.Context) web.Response {
+	cc.CheckoutFormService.Customer = nil
 	return cc.submitOrderForm(ctx, cc.CheckoutFormService, "checkout/guestcheckout")
 }
 
