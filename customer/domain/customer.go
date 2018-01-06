@@ -8,13 +8,13 @@ import (
 
 type (
 	Customer interface {
-		GetPersonalData() PersonalData
+		GetPersonalData() PersonData
 		GetAddresses() []Address
 		GetDefaultShippingAddress() *Address
 		GetDefaultBillingAddress() *Address
 	}
 
-	PersonalData struct {
+	PersonData struct {
 		//Gender male, female, other, unknown
 		Gender     string
 		FirstName  string

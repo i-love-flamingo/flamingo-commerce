@@ -8,12 +8,15 @@ import (
 
 type (
 	Service struct {
-		AuthManager            application.AuthManager `inject:""`
-		domain.CustomerService `inject:""`
+		AuthManager     application.AuthManager `inject:""`
+		CustomerService domain.CustomerService  `inject:""`
 	}
 )
 
 func (s *Service) GetForAuthenticatedUser(ctx web.Context) (domain.Customer, error) {
-	auth := s.AuthManager.Auth(ctx)
+	auth, err := s.AuthManager.Auth(ctx)
+	if err != nil {
+		return nil, err
+	}
 	return s.CustomerService.GetByAuth(auth)
 }
