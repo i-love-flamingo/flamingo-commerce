@@ -32,6 +32,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	m.RouterRegistry.Route("/category/:code", "category.view")
 
 	m.RouterRegistry.Handle("category.tree", new(controller.Tree))
+	m.RouterRegistry.Handle("category", new(controller.Entity))
 }
 
 // DefaultConfig for this module
