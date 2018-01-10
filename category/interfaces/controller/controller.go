@@ -62,7 +62,7 @@ func getActive(category domain.Category) domain.Category {
 
 // Get Response for Product matching sku param
 func (vc *View) Get(c web.Context) web.Response {
-	categoryRoot, err := vc.CategoryService.Get(c, c.MustParam1("code"))
+	categoryRoot, err := vc.CategoryService.Tree(c, c.MustParam1("code"))
 	if err == domain.ErrNotFound {
 		return vc.ErrorNotFound(c, err)
 	} else if err != nil {

@@ -13,7 +13,10 @@ var (
 type (
 	// CategoryService interface
 	CategoryService interface {
-		// Get a category
+		// Tree a category
+		Tree(ctx context.Context, categoryCode string) (Category, error)
+
+		// Get a category with more data
 		Get(ctx context.Context, categoryCode string) (Category, error)
 	}
 )

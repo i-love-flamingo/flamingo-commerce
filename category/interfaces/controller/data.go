@@ -21,7 +21,7 @@ type (
 func (controller *Tree) Data(c web.Context) interface{} {
 	code, _ := c.Param1("code") // no err check, empty code is fine if not set
 
-	categoryRoot, err := controller.CategoryService.Get(c, code)
+	categoryRoot, err := controller.CategoryService.Tree(c, code)
 	_ = err
 
 	return categoryRoot
