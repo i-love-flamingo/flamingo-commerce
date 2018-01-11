@@ -172,3 +172,24 @@ func findMediaInProduct(p BasicProduct, group string, usage string) *Media {
 	}
 	return nil
 }
+
+func isNew(newFromDateStr string, newToDateStr string) bool {
+
+	if newFromDateStr == "" && newToDateStr == "" {
+		return false
+	}
+
+	now := time.Now()
+	newFromDate, _ := time.Parse(time.RFC3339, newFromDateStr)
+	newToDate, _ := time.Parse(time.RFC3339, newToDateStr)
+
+	if newToDateStr == "" && now.After(newFromDate) {
+		return true
+	}
+
+	if now.After(newFromDate) && now.Before(newToDate) {
+		return true
+	}
+
+	return false
+}
