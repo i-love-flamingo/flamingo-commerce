@@ -63,28 +63,28 @@ func getVariantWithOffset(newFromDateOffset int, newToDateOffset int) Variant {
 
 func TestIsNew(t *testing.T) {
 	productWithoutAttributes := Variant{}
-	assert.False(t, productWithoutAttributes.isNew(), "product without attributes")
+	assert.False(t, productWithoutAttributes.IsNew(), "product without attributes")
 
 	startInThePastNoEnd := getVariantWithOffset(-1, 0)
 	delete(startInThePastNoEnd.Attributes, "newToDate")
-	assert.True(t, startInThePastNoEnd.isNew(), "start in the past, no end")
+	assert.True(t, startInThePastNoEnd.IsNew(), "start in the past, no end")
 
 	startInThePastEndInTheFuture := getVariantWithOffset(-1, 1)
-	assert.True(t, startInThePastEndInTheFuture.isNew(), "start in the past, end in the future")
+	assert.True(t, startInThePastEndInTheFuture.IsNew(), "start in the past, end in the future")
 
 	startInTheFutureEndInTheFuture := getVariantWithOffset(1, 1)
-	assert.False(t, startInTheFutureEndInTheFuture.isNew(), "start in the future, end in the future")
+	assert.False(t, startInTheFutureEndInTheFuture.IsNew(), "start in the future, end in the future")
 
 	startInTheFutureNoEnd := getVariantWithOffset(1, 0)
 	delete(startInTheFutureNoEnd.Attributes, "newToDate")
-	assert.False(t, startInTheFutureNoEnd.isNew(), "start in future, no end")
+	assert.False(t, startInTheFutureNoEnd.IsNew(), "start in future, no end")
 
 	noStartEndInThePast := getVariantWithOffset(0, -1)
 	delete(noStartEndInThePast.Attributes, "newFromDate")
-	assert.False(t, noStartEndInThePast.isNew(), "no start, end in the past")
+	assert.False(t, noStartEndInThePast.IsNew(), "no start, end in the past")
 
 	noStartEndInTheFuture := getVariantWithOffset(0, 1)
 	delete(noStartEndInTheFuture.Attributes, "newFromDate")
-	assert.True(t, noStartEndInTheFuture.isNew(), "no start, end in the future")
+	assert.True(t, noStartEndInTheFuture.IsNew(), "no start, end in the future")
 
 }
