@@ -87,4 +87,11 @@ func TestIsNew(t *testing.T) {
 	delete(noStartEndInTheFuture.Attributes, "newFromDate")
 	assert.True(t, noStartEndInTheFuture.IsNew(), "no start, end in the future")
 
+	invalidDates := getVariantWithOffset(0, 1)
+	invalidDates.Attributes["newFromDate"] = Attribute{
+		RawValue: "8765..88",
+		Code:     "newFromDate",
+	}
+	assert.False(t, invalidDates.IsNew(), "invalid date should return false")
+
 }

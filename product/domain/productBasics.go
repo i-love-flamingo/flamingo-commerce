@@ -180,8 +180,14 @@ func isNew(newFromDateStr string, newToDateStr string) bool {
 	}
 
 	now := time.Now()
-	newFromDate, _ := time.Parse(time.RFC3339, newFromDateStr)
-	newToDate, _ := time.Parse(time.RFC3339, newToDateStr)
+	newFromDate, err := time.Parse(time.RFC3339, newFromDateStr)
+	if err != nil && newFromDateStr != "" {
+		return false
+	}
+	newToDate, err := time.Parse(time.RFC3339, newToDateStr)
+	if err != nil && newToDateStr != "" {
+		return false
+	}
 
 	if newToDateStr == "" && now.After(newFromDate) {
 		return true
