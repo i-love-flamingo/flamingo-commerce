@@ -94,7 +94,17 @@ func (p SimpleProduct) GetMedia(group string, usage string) Media {
 }
 
 func (p SimpleProduct) IsNew() bool {
-	return true
+	newFromDate := ""
+	if p.HasAttribute("newFromDate") {
+		newFromDate = p.Attributes["newFromDate"].Value()
+	}
+
+	newToDate := ""
+	if p.HasAttribute("newToDate") {
+		newToDate = p.Attributes["newToDate"].Value()
+	}
+
+	return isNew(newFromDate, newToDate)
 }
 
 // Type interface implementation for SimpleProduct
