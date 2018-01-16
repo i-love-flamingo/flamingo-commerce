@@ -7,6 +7,8 @@ type (
 		CreationTime string
 		UpdateTime   string
 		OrderItems   []OrderItem
+		Status       string
+		Total        float64
 	}
 	// OrderItem
 	OrderItem struct {
