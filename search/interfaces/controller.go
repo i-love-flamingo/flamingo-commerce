@@ -33,7 +33,7 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 		i++
 	}
 
-	query, err := c.Query1("q")
+	query, _ := c.Query1("q")
 
 	vd := viewData{
 		SearchMeta: domain.SearchMeta{
@@ -41,9 +41,9 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 		},
 	}
 
-	if err != nil {
-		return vc.Render(c, "search/search", vd)
-	}
+	//if err != nil {
+	//	return vc.Render(c, "search/search", vd)
+	//}
 
 	if typ, err := c.Param1("type"); err == nil {
 		searchResult, err := vc.SearchService.SearchFor(c, typ, filter...)
