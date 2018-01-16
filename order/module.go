@@ -10,7 +10,6 @@ type (
 	// OrdersModule for Orders
 	Module struct {
 		RouterRegistry *router.Registry `inject:""`
-		Debug          bool             `inject:"config:debug.mode"`
 	}
 )
 

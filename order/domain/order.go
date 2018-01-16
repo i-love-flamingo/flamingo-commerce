@@ -12,7 +12,7 @@ type (
 	OrderItem struct {
 		Sku          string
 		Name         string
-		Price        float32
-		PriceInclTax float32
+		Price        float64
+		PriceInclTax float64
 	}
 )
