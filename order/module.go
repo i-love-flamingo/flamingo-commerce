@@ -1,8 +1,6 @@
 package order
 
 import (
-	"go.aoe.com/flamingo/core/magento/infrastructure/orderservice"
-	"go.aoe.com/flamingo/core/order/domain"
 	"go.aoe.com/flamingo/core/order/interfaces/controller"
 	"go.aoe.com/flamingo/framework/dingo"
 	"go.aoe.com/flamingo/framework/router"
