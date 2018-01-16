@@ -140,7 +140,7 @@ func (bpd BasicProductData) GetListMedia() Media {
 
 // IsSaleableNow  checks flag and time
 func (p Saleable) IsSaleableNow() bool {
-	if !p.IsSaleable {
+	if p.IsSaleable == false {
 		return false
 	}
 
