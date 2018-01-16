@@ -18,6 +18,5 @@ type (
 
 // Configure DI
 func (m *Module) Configure(injector *dingo.Injector) {
-	injector.Bind((*domain.CustomerOrderService)(nil)).To(orderservice.CustomerOrders{})
 	m.RouterRegistry.Handle("customerorders", new(controller.DataControllerCustomerOrders))
 }
