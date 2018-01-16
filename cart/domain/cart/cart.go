@@ -13,6 +13,7 @@ type (
 	Cart struct {
 		CartOrderBehaviour CartOrderBehaviour `json:"-"`
 		ID                 string
+		EntityID           string
 		Cartitems          []Item
 		Totalitems         []Totalitem
 		ShippingItem       ShippingItem
