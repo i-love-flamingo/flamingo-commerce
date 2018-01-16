@@ -1,10 +1,12 @@
 package domain
 
+import "time"
+
 type (
 	// Order
 	Order struct {
 		ID           int
-		CreationTime string
+		CreationTime time.Time
 		UpdateTime   string
 		OrderItems   []OrderItem
 		Status       string
