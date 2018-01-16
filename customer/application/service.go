@@ -8,8 +8,8 @@ import (
 
 type (
 	Service struct {
-		AuthManager     application.AuthManager `inject:""`
-		CustomerService domain.CustomerService  `inject:""`
+		AuthManager     *application.AuthManager `inject:""`
+		CustomerService domain.CustomerService   `inject:""`
 	}
 )
 
