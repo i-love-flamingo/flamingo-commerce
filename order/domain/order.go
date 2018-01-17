@@ -11,6 +11,7 @@ type (
 		OrderItems   []OrderItem
 		Status       string
 		Total        float64
+		CurrencyCode string
 	}
 	// OrderItem
 	OrderItem struct {
