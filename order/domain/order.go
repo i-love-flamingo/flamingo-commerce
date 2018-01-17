@@ -7,7 +7,7 @@ type (
 	Order struct {
 		ID           int
 		CreationTime time.Time
-		UpdateTime   string
+		UpdateTime   time.Time
 		OrderItems   []OrderItem
 		Status       string
 		Total        float64
