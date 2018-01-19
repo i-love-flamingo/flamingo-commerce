@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"context"
 	"time"
 
 	"go.aoe.com/flamingo/core/auth/domain"
@@ -44,7 +45,7 @@ type (
 
 	CustomerService interface {
 		//GetByAuth - returns Customer by the provided Auth infos
-		GetByAuth(auth domain.Auth) (Customer, error)
+		GetByAuth(ctx context.Context, auth domain.Auth) (Customer, error)
 	}
 )
 

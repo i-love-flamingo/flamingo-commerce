@@ -18,5 +18,5 @@ func (s *Service) GetForAuthenticatedUser(ctx web.Context) (domain.Customer, err
 	if err != nil {
 		return nil, err
 	}
-	return s.CustomerService.GetByAuth(auth)
+	return s.CustomerService.GetByAuth(ctx, auth)
 }
