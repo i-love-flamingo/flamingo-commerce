@@ -3,7 +3,6 @@ package domain
 import (
 	"context"
 	"errors"
-	"sort"
 )
 
 type (
@@ -102,7 +101,7 @@ func (fc FacetCollection) Order() []string {
 		i++
 	}
 
-	sort.Sort(order)
+	//sort.Sort(order)
 
 	strings := make([]string, len(order))
 	for i, v := range order {
