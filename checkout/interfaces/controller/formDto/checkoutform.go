@@ -10,10 +10,11 @@ import (
 	"github.com/go-playground/form"
 	"github.com/leebenson/conform"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
-	domain2 "go.aoe.com/flamingo/core/customer/domain"
+	customerDomain "go.aoe.com/flamingo/core/customer/domain"
 	"go.aoe.com/flamingo/core/form/application"
 	"go.aoe.com/flamingo/core/form/domain"
 	"go.aoe.com/flamingo/framework/config"
+	"go.aoe.com/flamingo/framework/flamingo"
 	"go.aoe.com/flamingo/framework/web"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -48,7 +49,8 @@ type (
 		OverrideFormValues config.Map    `inject:"config:checkout.checkoutForm.overrideValues,optional"`
 		Decoder            *form.Decoder `inject:""`
 		//Customer  might be passed by the controller - we use it to initialize the form
-		Customer domain2.Customer
+		Customer customerDomain.Customer
+		Logger   flamingo.Logger `inject:""`
 	}
 )
 
@@ -59,17 +61,59 @@ func (fs *CheckoutFormService) ParseFormData(ctx web.Context, formValues url.Val
 	}
 
 	// Preset eMail when email parameter is given:
-	email, e := ctx.Query("email")
-	if e == nil {
-		formValues["billingAddress.email"] = email
+	if ctx != nil {
+		email, e := ctx.Query("email")
+		if e == nil {
+			formValues["billingAddress.email"] = email
+		}
 	}
 
-	//Merge in DefaultValues
+	fs.Logger.WithField("category", "checkout").Debugf("passed formValues before modifications: %#v", formValues)
+
+	//Merge in DefaultValues that are configured
+	formValues = fs.setDefaultFormValuesFromCustomer(formValues)
+
+	//Merge in configured DefaultValues that are configured
+	formValues = fs.setConfiguredDefaultFormValues(formValues)
+
+	//OverrideValues
+	formValues = fs.overrideConfiguredDefaultFormValues(formValues)
+
+	fs.Logger.WithField("category", "checkout").Debugf("formValues after modifications: %#v", formValues)
+
+	var formData CheckoutFormData
+	fs.Decoder.Decode(&formData, formValues)
+
+	conform.Strings(&formData)
+	return formData, nil
+}
+
+func (fs *CheckoutFormService) setDefaultFormValuesFromCustomer(formValues url.Values) url.Values {
+	//If customer is given - get default values for the form if not empty yet
+	if fs.Customer != nil {
+		formValues["billingAddress.email"] = make([]string, 1)
+		formValues["billingAddress.email"][0] = fs.Customer.GetDefaultBillingAddress().Email
+		formValues["billingAddress.firstname"] = make([]string, 1)
+		formValues["billingAddress.firstname"][0] = fs.Customer.GetDefaultBillingAddress().Firstname
+		formValues["billingAddress.lastname"] = make([]string, 1)
+		formValues["billingAddress.lastname"][0] = fs.Customer.GetDefaultBillingAddress().Lastname
+
+		formValues["shippingAddress.email"] = make([]string, 1)
+		formValues["shippingAddress.email"][0] = fs.Customer.GetDefaultShippingAddress().Email
+		formValues["shippingAddress.firstname"] = make([]string, 1)
+		formValues["shippingAddress.firstname"][0] = fs.Customer.GetDefaultShippingAddress().Firstname
+		formValues["shippingAddress.lastname"] = make([]string, 1)
+		formValues["shippingAddress.lastname"][0] = fs.Customer.GetDefaultShippingAddress().Lastname
+	}
+	return formValues
+}
+
+func (fs *CheckoutFormService) setConfiguredDefaultFormValues(formValues url.Values) url.Values {
 	if fs.DefaultFormValues != nil {
 		for k, v := range fs.DefaultFormValues {
 			k = strings.Replace(k, "_", ".", -1)
 			if _, ok := formValues[k]; ok {
-				//value is passed - no override
+				//value is passed - dont set default
 				continue
 			}
 			stringV, ok := v.(string)
@@ -82,10 +126,10 @@ func (fs *CheckoutFormService) ParseFormData(ctx web.Context, formValues url.Val
 			formValues[k] = newStringSlice
 		}
 	}
+	return formValues
+}
 
-	//log.Printf("formValues before %#v", formValues)
-	//log.Printf("fs.OverrideFormValues %#v", fs.OverrideFormValues)
-	//OverrideValues
+func (fs *CheckoutFormService) overrideConfiguredDefaultFormValues(formValues url.Values) url.Values {
 	if fs.OverrideFormValues != nil {
 		for k, v := range fs.OverrideFormValues {
 			k = strings.Replace(k, "_", ".", -1)
@@ -99,31 +143,7 @@ func (fs *CheckoutFormService) ParseFormData(ctx web.Context, formValues url.Val
 			formValues[k] = newStringSlice
 		}
 	}
-	//log.Printf("formValues %#v", formValues)
-	var formData CheckoutFormData
-	fs.Decoder.Decode(&formData, formValues)
-	//If customer is given - get default values for the form if not empty yet
-	if fs.Customer != nil {
-		fillAddressFormWithCustomerAddress(&formData.BillingAddress, fs.Customer.GetDefaultBillingAddress())
-		fillAddressFormWithCustomerAddress(&formData.ShippingAddress, fs.Customer.GetDefaultShippingAddress())
-	}
-	conform.Strings(&formData)
-	return formData, nil
-}
-
-func fillAddressFormWithCustomerAddress(addressForm *AddressFormData, address *domain2.Address) {
-	if address == nil || addressForm == nil {
-		return
-	}
-	if addressForm.Email == "" {
-		addressForm.Email = address.Email
-	}
-	if addressForm.Firstname == "" {
-		addressForm.Firstname = address.Firstname
-	}
-	if addressForm.Lastname == "" {
-		addressForm.Lastname = address.Lastname
-	}
+	return formValues
 }
 
 //ValidateFormData - from FormService interface
