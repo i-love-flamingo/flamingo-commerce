@@ -73,15 +73,14 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 
 		for _, variant := range configurable.Variants {
 			for _, subattribute := range configurable.VariantVariationAttributes {
+				if _, ok := variant.Attributes[attribute]; !ok {
+					continue
+				}
+				if combinations[attribute][variant.Attributes[attribute].Value()] == nil {
+					combinations[attribute][variant.Attributes[attribute].Value()] = make(map[string]map[string]bool)
+				}
+
 				if subattribute != attribute {
-					if _, ok := variant.Attributes[attribute]; !ok {
-						continue
-					}
-
-					if combinations[attribute][variant.Attributes[attribute].Value()] == nil {
-						combinations[attribute][variant.Attributes[attribute].Value()] = make(map[string]map[string]bool)
-					}
-
 					if _, ok := variant.Attributes[subattribute]; ok {
 						if combinations[attribute][variant.Attributes[attribute].Value()][subattribute] == nil {
 							combinations[attribute][variant.Attributes[attribute].Value()][subattribute] = make(map[string]bool)
