@@ -54,6 +54,12 @@ func (df *DecoratedCartFactory) Create(ctx context.Context, Cart Cart) *Decorate
 func decorateCartItem(ctx context.Context, cartitem Item, productService domain.ProductService) DecoratedCartItem {
 	decorateditem := DecoratedCartItem{Item: cartitem}
 	product, e := productService.Get(ctx, cartitem.MarketplaceCode)
+	if product.Type() == domain.TYPECONFIGURABLE && cartitem.VariantMarketPlaceCode != "" {
+		if configureable, ok := product.(domain.ConfigurableProduct); ok {
+			configureable.ActiveVariant, _ = configureable.Variant(cartitem.VariantMarketPlaceCode)
+			product = configureable
+		}
+	}
 	if e != nil {
 		log.Println("cart.decorator - no product for item:", e)
 		return decorateditem
