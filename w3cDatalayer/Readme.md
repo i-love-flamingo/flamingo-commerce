@@ -11,11 +11,22 @@ It:
 
 Usage:
 
-If you want to populate the w3c datalayer (digitalData object)
-```
-script(type="text/javascript")
-  - var w3cDatalayerData = data("w3cDatalayer")
-  | var digitalData = !{w3cDatalayerData}
+The templatefunc provides you access to the current requests datalayer.
+You can get the datalayer and you can modify it:
 
+For some values in the datalayer the template knows better than the backend what to put in:
+```
+  - var result = w3cDatalayerService().setPageCategories("masterdata","brand","detail")
+  - var result = w3cDatalayerService().setBreadCrumb("Home/Checkout/Step1")
+```
+
+
+If you want to populate the w3c datalayer to your page (digitalData object)
+```
+- var w3cDatalayerData = w3cDatalayerService().get()
+script(type="text/javascript").
+  var digitalData = !{w3cDatalayerData}
+  digitalData.page.pageInfo.referringUrl = document.referrer
+  digitalData.siteInfo.domain = document.location.hostname
 ```
 
