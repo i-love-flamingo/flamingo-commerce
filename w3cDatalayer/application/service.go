@@ -66,6 +66,16 @@ func (s Service) SetCartData(cart cart.DecoratedCart) error {
 	return s.store(layer)
 }
 
+func (s Service) AddEvent(eventName string) error {
+	layer := s.Get()
+	layer.Event = append(layer.Event, domain.Event{
+		EventInfo: domain.EventInfo{
+			EventName: eventName,
+		},
+	})
+	return s.store(layer)
+}
+
 //store datalayer in current context
 func (s Service) store(layer domain.Datalayer) error {
 	s.Logger.Debugf("Update %#v", layer)
