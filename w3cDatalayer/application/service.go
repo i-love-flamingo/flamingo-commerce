@@ -13,13 +13,20 @@ import (
 
 type (
 	ServiceProvider func() *Service
-	Service         struct {
+	/*
+		Service can be used from outside is expected to be initialized with the current request context
+		It stores a dataLayer Value object for the current request context and allows interaction with it
+	*/
+	Service struct {
 		//CurrentContext need to be set when using the service
 		CurrentContext web.Context
 		Logger         flamingo.Logger `inject:""`
 		Factory        Factory         `inject:""`
 	}
 
+	/**
+	Factory is used to build new datalayers
+	*/
 	Factory struct {
 		Router              *router.Router                  `inject:""`
 		DatalayerProvider   domain.DatalayerProvider        `inject:""`
@@ -68,7 +75,7 @@ func (s Service) SetPageCategories(category string, subcategory1 string, subcate
 	return s.store(layer)
 }
 
-//Update
+//store datalayer in current context
 func (s Service) store(layer domain.Datalayer) error {
 	s.Logger.Debugf("Update %#v", layer)
 	if s.CurrentContext == nil {

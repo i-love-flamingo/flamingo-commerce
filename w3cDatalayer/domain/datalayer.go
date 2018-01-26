@@ -2,7 +2,11 @@ package domain
 
 type (
 	DatalayerProvider func() *Datalayer
-	Datalayer         struct {
+	/**
+	Datalayer Value object - represents the structure of the w3c Datalayer.
+	Therefore it has the json annotations and its intended to be directly converted to Json in the output
+	*/
+	Datalayer struct {
 		PageInstanceID string    `json:"pageInstanceID" inject:"config:w3cDatalayer.pageInstanceID,optional"`
 		Page           *Page     `json:"page,omitempty"`
 		SiteInfo       *SiteInfo `json:"siteInfo,omitempty"`

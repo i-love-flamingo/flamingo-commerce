@@ -9,6 +9,24 @@ It:
 * listens to various events and adds informations to the datalayer
 
 
+Configurations:
+```
+w3cDatalayer:
+  pageInstanceID: "%%ENV:STAGE%%production"
+  pageNamePrefix: Heathrow Boutique
+  siteName: Heathrow Boutique
+  defaultCurrency: GBP
+  version: 1.0
+
+```
+
+Also it reuse the configuration from locale package to extract the language:
+```
+locale:
+  locale: en-gb
+``` 
+
+
 Usage:
 
 The templatefunc provides you access to the current requests datalayer.
