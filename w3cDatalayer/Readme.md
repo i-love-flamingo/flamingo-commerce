@@ -17,7 +17,8 @@ w3cDatalayer:
   siteName: Heathrow Boutique
   defaultCurrency: GBP
   version: 1.0
-
+  //If you want sha512 hashes instead real user values
+  hashUserValues: true
 ```
 
 Also it reuse the configuration from locale package to extract the language:
