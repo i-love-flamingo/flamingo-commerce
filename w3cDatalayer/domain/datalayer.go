@@ -13,6 +13,16 @@ type (
 		Version        string    `json:"version" inject:"config:w3cDatalayer.version,optional"`
 		//User List of user(s) interacting with the page. (Although typically web data has a single user per recorded interaction, this object is an array and can capture multiple users.)
 		User []User `json:"user,omitempty"`
+		//The Cart object carries details about a shopping cart or basket and the products that have been added to it.
+		Cart *Cart `json:"cart,omitempty"`
+		// The Event object collects information about an interaction event by the user. An event might be a button click, the addition of a portal widget, playing a video, adding a product to the shopping cart, etc. Any action on the page could be captured by an Event object.
+		Event []Event `json:"event,omitempty"`
+	}
+	Event struct {
+		EventInfo EventInfo `json:"eventInfo"`
+	}
+	EventInfo struct {
+		EventName string `json:"eventName"`
 	}
 	Page struct {
 		PageInfo   PageInfo               `json:"pageInfo,omitempty"`
@@ -66,5 +76,53 @@ type (
 		EmailID   string `json:"emailID,omitempty"`
 		ProfileID string `json:"profileID,omitempty"`
 		Rewards   string `json:"rewards,omitempty"`
+	}
+
+	Cart struct {
+		CartID     string                 `json:"cartID,omitempty"`
+		Price      *CartPrice             `json:"price,omitempty"`
+		Attributes map[string]interface{} `json:"attributes,omitempty"`
+		Item       []CartItem             `json:"item,omitempty"`
+	}
+	CartPrice struct {
+		//The basePrice SHOULD be the price of the items before applicable discounts,shipping charges, and tax.
+		BasePrice       float64 `json:"basePrice"`
+		VoucherCode     string  `json:"voucherCode"`
+		VoucherDiscount float64 `json:"voucherDiscount"`
+		Currency        string  `json:"currency"`
+		TaxRate         float64 `json:"taxRate"`
+		Shipping        float64 `json:"shipping"`
+		ShippingMethod  string  `json:"shippingMethod"`
+		PriceWithTax    float64 `json:"priceWithTax"`
+		//cartTotal SHOULD be the total price inclusive of all discounts, charges, and tax
+		CartTotal float64 `json:"cartTotal"`
+	}
+	CartItem struct {
+		ProductInfo ProductInfo       `json:"productInfo"`
+		Quantity    int               `json:"quantity"`
+		Category    *CartItemCategory `json:"category,omitempty"`
+		Price       CartItemPrice     `json:"price"`
+	}
+	CartItemPrice struct {
+		BasePrice    float64 `json:"basePrice"`
+		Currency     string  `json:"currency"`
+		TaxRate      float64 `json:"taxRate"`
+		PriceWithTax float64 `json:"priceWithTax"`
+	}
+	CartItemCategory struct {
+		PrimaryCategory string `json:"primaryCategory,omitempty"`
+		SubCategory1    string `json:"subCategory1,omitempty"`
+		ProductType     string `json:"productType"`
+	}
+	ProductInfo struct {
+		ProductID                string  `json:"productID"`
+		ProductName              string  `json:"productName"`
+		ProductThumbnail         string  `json:"productThumbnail"`
+		Manufacturer             string  `json:"manufacturer"`
+		Size                     string  `json:"size"`
+		Color                    string  `json:"color"`
+		ParentId                 *string `json:"parentId,omitempty"`
+		VariantSelectedAttribute *string `json:"variantSelectedAttribute,omitempty"`
+		ProductType              string  `json:"productType"`
 	}
 )
