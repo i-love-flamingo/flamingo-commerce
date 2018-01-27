@@ -114,48 +114,10 @@ func (s Factory) BuildCartData(cart cart.DecoratedCart) *domain.Cart {
 		Attributes: make(map[string]interface{}),
 	}
 	for _, item := range cart.DecoratedItems {
-		level0 := ""
-		level1 := ""
-		if len(item.Product.BaseData().CategoryPath) > 0 {
-			level0 = item.Product.BaseData().CategoryPath[0]
-		}
-		if len(item.Product.BaseData().CategoryPath) > 1 {
-			level0 = item.Product.BaseData().CategoryPath[1]
-		}
-		productFamily := ""
-		if item.Product.BaseData().HasAttribute("gs1Family") {
-			productFamily = item.Product.BaseData().Attributes["gs1Family"].Value()
-		}
-
-		//Handle Variants if it is a Configurable
-		var parentIdRef *string = nil
-		var variantSelectedAttributeRef *string = nil
-		if item.Product.Type() == productDomain.TYPECONFIGURABLE {
-			if configurable, ok := item.Product.(productDomain.ConfigurableProduct); ok {
-				parentId := configurable.BaseData().MarketPlaceCode
-				parentIdRef = &parentId
-				if configurable.HasActiveVariant() && len(configurable.VariantVariationAttributes) > 0 && configurable.ActiveVariant.HasAttribute(configurable.VariantVariationAttributes[0]) {
-					variantSelectedAttribute := configurable.ActiveVariant.BaseData().Attributes[configurable.VariantVariationAttributes[0]].Value()
-					variantSelectedAttributeRef = &variantSelectedAttribute
-				}
-			}
-		}
-
 		itemData := domain.CartItem{
-			Category: &domain.CartItemCategory{
-				PrimaryCategory: level0,
-				SubCategory1:    level1,
-				ProductType:     productFamily,
-			},
-			Quantity: item.Item.Qty,
-			ProductInfo: domain.ProductInfo{
-				ProductID:                item.GetDisplayMarketplaceCode(),
-				ProductName:              item.GetDisplayTitle(),
-				ProductThumbnail:         s.getItemImageUrl(item.Product),
-				ProductType:              item.Product.Type(),
-				ParentId:                 parentIdRef,
-				VariantSelectedAttribute: variantSelectedAttributeRef,
-			},
+			Category:    s.getProductCategory(item.Product),
+			Quantity:    item.Item.Qty,
+			ProductInfo: s.getProductInfo(item.Product),
 			Price: domain.CartItemPrice{
 				BasePrice:    item.Item.Price,
 				PriceWithTax: item.Item.PriceInclTax,
@@ -168,8 +130,89 @@ func (s Factory) BuildCartData(cart cart.DecoratedCart) *domain.Cart {
 	return &cartData
 }
 
-func (s Factory) getItemImageUrl(product productDomain.BasicProduct) string {
-	return "catalog/" + product.BaseData().GetListMedia().Reference
+func (s Factory) BuildProductData(product productDomain.BasicProduct) domain.Product {
+	productData := domain.Product{
+		ProductInfo: s.getProductInfo(product),
+		Category:    s.getProductCategory(product),
+	}
+	return productData
+}
+
+func (s Factory) getProductCategory(product productDomain.BasicProduct) *domain.ProductCategory {
+	level0 := ""
+	level1 := ""
+	if len(product.BaseData().CategoryPath) > 0 {
+		firstPathLevels := strings.Split(product.BaseData().CategoryPath[0], "/")
+		if len(firstPathLevels) > 0 {
+			level0 = firstPathLevels[0]
+		}
+		if len(firstPathLevels) > 1 {
+			level1 = firstPathLevels[1]
+		}
+	}
+	productFamily := ""
+	if product.BaseData().HasAttribute("gs1Family") {
+		productFamily = product.BaseData().Attributes["gs1Family"].Value()
+	}
+	return &domain.ProductCategory{
+		PrimaryCategory: level0,
+		SubCategory1:    level1,
+		ProductType:     productFamily,
+	}
+}
+
+func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.ProductInfo {
+	baseData := product.BaseData()
+	//Handle Variants if it is a Configurable
+	var parentIdRef *string = nil
+	var variantSelectedAttributeRef *string = nil
+	if product.Type() == productDomain.TYPECONFIGURABLE {
+		if configurable, ok := product.(productDomain.ConfigurableProduct); ok {
+			parentId := configurable.BaseData().MarketPlaceCode
+			parentIdRef = &parentId
+			if configurable.HasActiveVariant() && len(configurable.VariantVariationAttributes) > 0 && configurable.ActiveVariant.HasAttribute(configurable.VariantVariationAttributes[0]) {
+				variantSelectedAttribute := configurable.ActiveVariant.BaseData().Attributes[configurable.VariantVariationAttributes[0]].Value()
+				variantSelectedAttributeRef = &variantSelectedAttribute
+				baseData = configurable.ActiveVariant.BaseData()
+			}
+		}
+	}
+	// Search for some common product attributes to fill the productInfos (This maybe better to be configurable later)
+	color := ""
+	if baseData.HasAttribute("manufacturerColor") {
+		color = baseData.Attributes["manufacturerColor"].Value()
+	}
+	if baseData.HasAttribute("baseColor") {
+		color = baseData.Attributes["baseColor"].Value()
+	}
+	size := ""
+	if baseData.HasAttribute("shoeSize") {
+		size = baseData.Attributes["shoeSize"].Value()
+	}
+	if baseData.HasAttribute("clothingSize") {
+		size = baseData.Attributes["clothingSize"].Value()
+	}
+	brand := ""
+	if baseData.HasAttribute("brandCode") {
+		size = baseData.Attributes["brandCode"].Value()
+	}
+	return domain.ProductInfo{
+		ProductID:                baseData.MarketPlaceCode,
+		ProductName:              baseData.Title,
+		ProductThumbnail:         s.getItemImageUrl(baseData),
+		ProductType:              product.Type(),
+		ParentId:                 parentIdRef,
+		VariantSelectedAttribute: variantSelectedAttributeRef,
+		Retailer:                 baseData.RetailerCode,
+		SKU:                      baseData.MarketPlaceCode,
+		Manufacturer:             brand,
+		Color:                    color,
+		Size:                     size,
+	}
+}
+
+func (s Factory) getItemImageUrl(baseData productDomain.BasicProductData) string {
+	return "catalog/" + baseData.GetListMedia().Reference
 }
 
 func hashWithSHA512(value string) string {

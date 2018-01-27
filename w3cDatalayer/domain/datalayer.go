@@ -17,6 +17,13 @@ type (
 		Cart *Cart `json:"cart,omitempty"`
 		// The Event object collects information about an interaction event by the user. An event might be a button click, the addition of a portal widget, playing a video, adding a product to the shopping cart, etc. Any action on the page could be captured by an Event object.
 		Event []Event `json:"event,omitempty"`
+		//The Product object carries details about a particular product with frequently used properties listed below. This is intended for data about products displayed on pages or other content. For products added to a shopping cart or ordered in a transaction, see the Cart and Transaction objects below.
+		Product []Product `json:"product,omitempty"`
+	}
+	Product struct {
+		ProductInfo ProductInfo            `json:"productInfo"`
+		Category    *ProductCategory       `json:"category,omitempty"`
+		Attributes  map[string]interface{} `json:"attributes,omitempty"`
 	}
 	Event struct {
 		EventInfo EventInfo `json:"eventInfo"`
@@ -98,10 +105,10 @@ type (
 		CartTotal float64 `json:"cartTotal"`
 	}
 	CartItem struct {
-		ProductInfo ProductInfo       `json:"productInfo"`
-		Quantity    int               `json:"quantity"`
-		Category    *CartItemCategory `json:"category,omitempty"`
-		Price       CartItemPrice     `json:"price"`
+		ProductInfo ProductInfo      `json:"productInfo"`
+		Quantity    int              `json:"quantity"`
+		Category    *ProductCategory `json:"category,omitempty"`
+		Price       CartItemPrice    `json:"price"`
 	}
 	CartItemPrice struct {
 		BasePrice    float64 `json:"basePrice"`
@@ -109,13 +116,14 @@ type (
 		TaxRate      float64 `json:"taxRate"`
 		PriceWithTax float64 `json:"priceWithTax"`
 	}
-	CartItemCategory struct {
+	ProductCategory struct {
 		PrimaryCategory string `json:"primaryCategory,omitempty"`
 		SubCategory1    string `json:"subCategory1,omitempty"`
 		ProductType     string `json:"productType"`
 	}
 	ProductInfo struct {
 		ProductID                string  `json:"productID"`
+		SKU                      string  `json:"sku"`
 		ProductName              string  `json:"productName"`
 		ProductThumbnail         string  `json:"productThumbnail"`
 		Manufacturer             string  `json:"manufacturer"`
@@ -124,5 +132,6 @@ type (
 		ParentId                 *string `json:"parentId,omitempty"`
 		VariantSelectedAttribute *string `json:"variantSelectedAttribute,omitempty"`
 		ProductType              string  `json:"productType"`
+		Retailer                 string  `json:"retailer"`
 	}
 )

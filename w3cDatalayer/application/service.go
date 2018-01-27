@@ -7,6 +7,7 @@ import (
 	"go.aoe.com/flamingo/framework/flamingo"
 
 	"go.aoe.com/flamingo/core/cart/domain/cart"
+	productDomain "go.aoe.com/flamingo/core/product/domain"
 	"go.aoe.com/flamingo/framework/web"
 )
 
@@ -66,6 +67,14 @@ func (s Service) SetCartData(cart cart.DecoratedCart) error {
 	return s.store(layer)
 }
 
+// AddProduct - appends the productData to the datalayer
+func (s Service) AddProduct(product productDomain.BasicProduct) error {
+	layer := s.Get()
+	layer.Product = append(layer.Product, s.Factory.BuildProductData(product))
+	return s.store(layer)
+}
+
+//AddEvent - adds an event with the given eventName to the datalayer
 func (s Service) AddEvent(eventName string) error {
 	layer := s.Get()
 	layer.Event = append(layer.Event, domain.Event{
