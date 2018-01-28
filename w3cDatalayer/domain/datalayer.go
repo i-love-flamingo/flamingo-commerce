@@ -19,6 +19,8 @@ type (
 		Event []Event `json:"event,omitempty"`
 		//The Product object carries details about a particular product with frequently used properties listed below. This is intended for data about products displayed on pages or other content. For products added to a shopping cart or ordered in a transaction, see the Cart and Transaction objects below.
 		Product []Product `json:"product,omitempty"`
+		//The Transaction object is similar to the Cart object, but represents a completed order. The Transaction object contains analogous sub-objects to the Cart object as well as additional subobjects specific to completed orders.
+		Transaction *Transaction `json:"transaction,omitempty"`
 	}
 	Product struct {
 		ProductInfo ProductInfo            `json:"productInfo"`
@@ -76,11 +78,22 @@ type (
 	}
 	// UserProfile A profile for information about the user
 	UserProfile struct {
-		ProfileInfo UserProfileInfo `json:"profileInfo,omitempty"`
+		ProfileInfo     UserProfileInfo `json:"profileInfo,omitempty"`
+		Address         *Address        `json:"address,omitempty"`
+		ShippingAddress *Address        `json:"shippingAddress,omitempty"`
+	}
+	Address struct {
+		Line1         string `json:"line1,omitempty"`
+		Line2         string `json:"line2,omitempty"`
+		City          string `json:"city,omitempty"`
+		StateProvince string `json:"stateProvince,omitempty"`
+		PostalCode    string `json:"postalCode,omitempty"`
+		Country       string `json:"postalCode,omitempty"`
 	}
 	//UserProfileInfo An extensible object for providing information about the user.
 	UserProfileInfo struct {
 		EmailID   string `json:"emailID,omitempty"`
+		UserName  string `json:"userName,omitempty"`
 		ProfileID string `json:"profileID,omitempty"`
 		Rewards   string `json:"rewards,omitempty"`
 	}
@@ -105,16 +118,35 @@ type (
 		CartTotal float64 `json:"cartTotal"`
 	}
 	CartItem struct {
-		ProductInfo ProductInfo      `json:"productInfo"`
-		Quantity    int              `json:"quantity"`
-		Category    *ProductCategory `json:"category,omitempty"`
-		Price       CartItemPrice    `json:"price"`
+		ProductInfo ProductInfo            `json:"productInfo"`
+		Quantity    int                    `json:"quantity"`
+		Category    *ProductCategory       `json:"category,omitempty"`
+		Price       CartItemPrice          `json:"price"`
+		Attributes  map[string]interface{} `json:"attributes,omitempty"`
 	}
 	CartItemPrice struct {
 		BasePrice    float64 `json:"basePrice"`
 		Currency     string  `json:"currency"`
 		TaxRate      float64 `json:"taxRate"`
 		PriceWithTax float64 `json:"priceWithTax"`
+	}
+	Transaction struct {
+		TransactionID string            `json:"transactionID,omitempty"`
+		Profile       *UserProfile      `json:"profile,omitempty"`
+		Price         *TransactionPrice `json:"total,omitempty"`
+		Item          []CartItem        `json:"item,omitempty"`
+	}
+	TransactionPrice struct {
+		//The basePrice SHOULD be the price of the items before applicable discounts,shipping charges, and tax.
+		BasePrice        float64 `json:"basePrice"`
+		VoucherCode      string  `json:"voucherCode"`
+		VoucherDiscount  float64 `json:"voucherDiscount"`
+		Currency         string  `json:"currency"`
+		TaxRate          float64 `json:"taxRate"`
+		Shipping         float64 `json:"shipping"`
+		ShippingMethod   string  `json:"shippingMethod"`
+		PriceWithTax     float64 `json:"priceWithTax"`
+		TransactionTotal float64 `json:"transactionTotal"`
 	}
 	ProductCategory struct {
 		PrimaryCategory string `json:"primaryCategory,omitempty"`
@@ -125,6 +157,8 @@ type (
 		ProductID                string  `json:"productID"`
 		SKU                      string  `json:"sku"`
 		ProductName              string  `json:"productName"`
+		ProductURL               string  `json:"productURL"`
+		ProductImage             string  `json:"productImage"`
 		ProductThumbnail         string  `json:"productThumbnail"`
 		Manufacturer             string  `json:"manufacturer"`
 		Size                     string  `json:"size"`

@@ -114,26 +114,56 @@ func (s Factory) BuildCartData(cart cart.DecoratedCart) *domain.Cart {
 		Attributes: make(map[string]interface{}),
 	}
 	for _, item := range cart.DecoratedItems {
-		itemData := domain.CartItem{
-			Category:    s.getProductCategory(item.Product),
-			Quantity:    item.Item.Qty,
-			ProductInfo: s.getProductInfo(item.Product),
-			Price: domain.CartItemPrice{
-				BasePrice:    item.Item.Price,
-				PriceWithTax: item.Item.PriceInclTax,
-				TaxRate:      item.Item.TaxAmount,
-				Currency:     cart.Cart.CurrencyCode,
-			},
-		}
+		itemData := s.buildCartItem(item, cart.Cart.CurrencyCode)
 		cartData.Item = append(cartData.Item, itemData)
 	}
 	return &cartData
+}
+
+func (s Factory) BuildTransactionData(cartTotals cart.CartTotals, decoratedItems []cart.DecoratedCartItem, orderId string) *domain.Transaction {
+	transactionData := domain.Transaction{
+		TransactionID: orderId,
+		Price: &domain.TransactionPrice{
+			Currency:         cartTotals.CurrencyCode,
+			BasePrice:        cartTotals.SubTotal,
+			TransactionTotal: cartTotals.GrandTotal,
+			Shipping:         cartTotals.ShippingItem.Price,
+			ShippingMethod:   cartTotals.ShippingItem.Title,
+		},
+	}
+	for _, item := range decoratedItems {
+		itemData := s.buildCartItem(item, cartTotals.CurrencyCode)
+		transactionData.Item = append(transactionData.Item, itemData)
+	}
+	return &transactionData
+}
+
+func (s Factory) buildCartItem(item cart.DecoratedCartItem, currencyCode string) domain.CartItem {
+	cartItem := domain.CartItem{
+		Category:    s.getProductCategory(item.Product),
+		Quantity:    item.Item.Qty,
+		ProductInfo: s.getProductInfo(item.Product),
+		Price: domain.CartItemPrice{
+			BasePrice:    item.Item.Price,
+			PriceWithTax: item.Item.PriceInclTax,
+			TaxRate:      item.Item.TaxAmount,
+			Currency:     currencyCode,
+		},
+		Attributes: make(map[string]interface{}),
+	}
+	//cartItem.Attributes["sourceId"] = item.Item.SourceId
+	return cartItem
 }
 
 func (s Factory) BuildProductData(product productDomain.BasicProduct) domain.Product {
 	productData := domain.Product{
 		ProductInfo: s.getProductInfo(product),
 		Category:    s.getProductCategory(product),
+		Attributes:  make(map[string]interface{}),
+	}
+	productData.Attributes["productPrice"] = product.SaleableData().ActivePrice.GetFinalPrice()
+	if product.BaseData().HasAttribute("ispuLimitedToAreas") {
+		productData.Attributes["ispuLimitedToAreas"] = product.BaseData().Attributes["ispuLimitedToAreas"]
 	}
 	return productData
 }
@@ -168,7 +198,7 @@ func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.Produ
 	var variantSelectedAttributeRef *string = nil
 	if product.Type() == productDomain.TYPECONFIGURABLE {
 		if configurable, ok := product.(productDomain.ConfigurableProduct); ok {
-			parentId := configurable.BaseData().MarketPlaceCode
+			parentId := configurable.ConfigurableBaseData().MarketPlaceCode
 			parentIdRef = &parentId
 			if configurable.HasActiveVariant() && len(configurable.VariantVariationAttributes) > 0 && configurable.ActiveVariant.HasAttribute(configurable.VariantVariationAttributes[0]) {
 				variantSelectedAttribute := configurable.ActiveVariant.BaseData().Attributes[configurable.VariantVariationAttributes[0]].Value()

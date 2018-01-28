@@ -62,8 +62,16 @@ func (s Service) SetPageCategories(category string, subcategory1 string, subcate
 }
 
 func (s Service) SetCartData(cart cart.DecoratedCart) error {
+	s.Logger.WithField("category", "w3cDatalayer").Debugf("Set Cart Data for cart %v", cart.Cart.ID)
 	layer := s.Get()
 	layer.Cart = s.Factory.BuildCartData(cart)
+	return s.store(layer)
+}
+
+func (s Service) SetTransaction(cartTotals cart.CartTotals, decoratedItems []cart.DecoratedCartItem, orderId string) error {
+	s.Logger.WithField("category", "w3cDatalayer").Debugf("Set Transaction Data for order %v", orderId)
+	layer := s.Get()
+	layer.Transaction = s.Factory.BuildTransactionData(cartTotals, decoratedItems, orderId)
 	return s.store(layer)
 }
 
