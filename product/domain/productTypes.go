@@ -117,10 +117,17 @@ func (p ConfigurableProduct) GetIdentifier() string {
 	return p.Identifier
 }
 
-// BaseData interface implementation for SimpleProduct
+// BaseData interface implementation for ConfigurableProduct
+// Returns only BaseData for Active Variant. If you need the BaseData of the Configurable - use ConfigurableBaseData()
 func (p ConfigurableProduct) BaseData() BasicProductData {
-	bp := p.BasicProductData
-	return bp
+	if p.HasActiveVariant() {
+		return p.ActiveVariant.BasicProductData
+	}
+	return BasicProductData{}
+}
+
+func (p ConfigurableProduct) ConfigurableBaseData() BasicProductData {
+	return p.BasicProductData
 }
 
 // TeaserData interface implementation for SimpleProduct
@@ -139,6 +146,14 @@ func (p ConfigurableProduct) Variant(variantMarketplaceCode string) (*Variant, e
 	return nil, errors.New("No Variant with code " + variantMarketplaceCode + " found ")
 }
 
+// GetDefaultVariant
+func (p ConfigurableProduct) GetDefaultVariant() (*Variant, error) {
+	if len(p.Variants) > 0 {
+		return &p.Variants[0], nil
+	}
+	return nil, errors.New("There is no Variant")
+}
+
 /*
 	SaleableData getter for ConfigurableProduct
 	Gets either the first or the active variants saleableData
@@ -146,9 +161,6 @@ func (p ConfigurableProduct) Variant(variantMarketplaceCode string) (*Variant, e
 func (p ConfigurableProduct) SaleableData() Saleable {
 	if p.HasActiveVariant() {
 		return p.ActiveVariant.Saleable
-	}
-	if len(p.Variants) > 0 {
-		return p.Variants[0].Saleable
 	}
 	return Saleable{}
 }
@@ -172,6 +184,7 @@ func (p ConfigurableProduct) HasActiveVariant() bool {
 	return p.ActiveVariant != nil
 }
 
+// IsNew - returns is New if any of Variants IsNew
 func (p ConfigurableProduct) IsNew() bool {
 	for _, variant := range p.Variants {
 		if variant.IsNew() {
