@@ -3,6 +3,7 @@ package cart
 import (
 	"encoding/gob"
 
+	"go.aoe.com/flamingo/core/cart/application"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
 	"go.aoe.com/flamingo/core/cart/infrastructure"
 	"go.aoe.com/flamingo/core/cart/interfaces/controller"
@@ -28,6 +29,8 @@ func (m *CartModule) Configure(injector *dingo.Injector) {
 		injector.Bind((*cart.GuestCartService)(nil)).To(infrastructure.GuestCartServiceAdapter{})
 		injector.Bind((*cart.CustomerCartService)(nil)).To(infrastructure.CustomerCartServiceAdapter{})
 	}
+	//Register DomainEventPublisher
+	injector.Bind((*cart.EventPublisher)(nil)).To(application.DomainEventPublisher{})
 
 	m.RouterRegistry.Handle("cart.view", (*controller.CartViewController).ViewAction)
 	m.RouterRegistry.Route("/cart", "cart.view")

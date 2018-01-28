@@ -18,6 +18,7 @@ type (
 	CustomerCartServiceAdapter struct {
 		ProductService             productDomain.ProductService `inject:""`
 		CustomerCartOrderBehaviour CustomerCartOrderBehaviour   `inject:""`
+		CartProvider               domaincart.CartProvider      `inject:""`
 	}
 	CustomerCartOrderBehaviour struct {
 		CustomerCartStorage CustomerCartStorage `inject:""`
@@ -43,9 +44,9 @@ var (
 )
 
 func (cs *CustomerCartServiceAdapter) GetCart(ctx context.Context, auth domaincart.Auth, guestcartid string) (domaincart.Cart, error) {
-	var cart domaincart.Cart
+	cart := cs.CartProvider()
 	if cs.CustomerCartOrderBehaviour.CustomerCartStorage == nil {
-		return cart, fmt.Errorf("cart.infrastructure.CustomerCartServiceAdapter: no CustomerCartStorage given")
+		return *cart, fmt.Errorf("cart.infrastructure.CustomerCartServiceAdapter: no CustomerCartStorage given")
 	}
 
 	cart.CartOrderBehaviour = domaincart.CartOrderBehaviour(cs.CustomerCartOrderBehaviour)
@@ -53,7 +54,7 @@ func (cs *CustomerCartServiceAdapter) GetCart(ctx context.Context, auth domainca
 	if cs.CustomerCartOrderBehaviour.CustomerCartStorage.HasCart(guestcartid) {
 		guestCart, e := cs.CustomerCartOrderBehaviour.CustomerCartStorage.GetCart(guestcartid)
 		if e != nil {
-			return cart, fmt.Errorf("cart.infrastructure.CustomerCartServiceAdapter: Cart with ID %v could not be received from storage: %v", guestcartid, e)
+			return *cart, fmt.Errorf("cart.infrastructure.CustomerCartServiceAdapter: Cart with ID %v could not be received from storage: %v", guestcartid, e)
 		}
 
 		var total big.Float
@@ -68,7 +69,7 @@ func (cs *CustomerCartServiceAdapter) GetCart(ctx context.Context, auth domainca
 		return *guestCart, nil
 	}
 
-	return cart, fmt.Errorf("cart.infrastructure.CustomerCartServiceAdapter: Customer Cart with ID %v not exitend", guestcartid)
+	return *cart, fmt.Errorf("cart.infrastructure.CustomerCartServiceAdapter: Customer Cart with ID %v not exitend", guestcartid)
 }
 
 // AddToCart adds products to a cart

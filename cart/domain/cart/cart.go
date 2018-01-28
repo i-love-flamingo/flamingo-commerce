@@ -8,23 +8,47 @@ import (
 	"github.com/pkg/errors"
 )
 
+/**
+TODO
+ - Adjust Interface CARTService -> GetBehaviour and Refactor
+ - Refactore multiple Auth object parameters (make it part of behavour)
+ - Refactor Cart Object to split behaviour and Data more (structure it)
+ - Cart object - can also hold related data (adresses, payment) - and this need to be reconstituted by adapters
+*/
 type (
+	//CartProvider should be used to create cart Value objects
+	CartProvider func() *Cart
+
 	// Cart Value Object (immutable data - because the cartservice is responsible to return a cart).
 	Cart struct {
 		CartOrderBehaviour CartOrderBehaviour `json:"-"`
-		ID                 string
-		EntityID           string
-		Cartitems          []Item
-		Totalitems         []Totalitem
-		ShippingItem       ShippingItem
-		GrandTotal         float64
-		SubTotal           float64
-		DiscountAmount     float64
-		TaxAmount          float64
-		//TODO - move to Item?
+		EventPublisher     EventPublisher     `inject:"" json:"-"`
+
+		ID        string
+		EntityID  string
+		Cartitems []Item
+		//TODO use CartTotals
+		Totalitems     []Totalitem
+		ShippingItem   ShippingItem
+		GrandTotal     float64
+		SubTotal       float64
+		DiscountAmount float64
+		TaxAmount      float64
+
+		//TODO - also needed in items?
 		CurrencyCode string
 		//Intention is optional and expresses the intented use case for this cart - it is used when multiple carts are used to distinguish between them
 		Intention string
+	}
+	//CartTotals - todo - should be used later instead direct access to cart
+	CartTotals struct {
+		Totalitems     []Totalitem
+		ShippingItem   ShippingItem
+		GrandTotal     float64
+		SubTotal       float64
+		DiscountAmount float64
+		TaxAmount      float64
+		CurrencyCode   string
 	}
 
 	// Item for Cart
@@ -97,6 +121,19 @@ func (cart Cart) HasItem(marketplaceCode string, variantMarketplaceCode string) 
 	return false, 0
 }
 
+//GetCartTotals - TMP method to allow access to CartTotals - TODO - remove after refactoring (See above)
+func (cart Cart) GetCartTotals() CartTotals {
+	return CartTotals{
+		TaxAmount:      cart.TaxAmount,
+		ShippingItem:   cart.ShippingItem,
+		GrandTotal:     cart.GrandTotal,
+		SubTotal:       cart.SubTotal,
+		DiscountAmount: cart.DiscountAmount,
+		Totalitems:     cart.Totalitems,
+		CurrencyCode:   cart.CurrencyCode,
+	}
+}
+
 //HasShippingItem
 func (cart Cart) HasShippingItem() bool {
 	if cart.ShippingItem.Title != "" {
@@ -118,7 +155,14 @@ func (cart Cart) PlaceOrder(ctx context.Context, auth Auth, payment *Payment) (s
 	if cart.CartOrderBehaviour == nil {
 		return "", errors.New("This Cart has no Behaviour attached!")
 	}
-	return cart.CartOrderBehaviour.PlaceOrder(ctx, auth, &cart, payment)
+	orderId, err := cart.CartOrderBehaviour.PlaceOrder(ctx, auth, &cart, payment)
+	if cart.EventPublisher == nil {
+		fmt.Printf("DEBUG: No cart.EventPublisher")
+	}
+	if err == nil && cart.EventPublisher != nil {
+		cart.EventPublisher.PublishOrderPlacedEvent(ctx, &cart, orderId)
+	}
+	return orderId, err
 }
 
 // DeleteItem

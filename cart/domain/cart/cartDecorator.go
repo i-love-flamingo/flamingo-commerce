@@ -6,12 +6,14 @@ import (
 	"sort"
 
 	"go.aoe.com/flamingo/core/product/domain"
+	"go.aoe.com/flamingo/framework/flamingo"
 )
 
 type (
 	// DecoratedCartFactory - Factory to be injected: If you need to create a new Decorator then get the factory injected and use the factory
 	DecoratedCartFactory struct {
 		ProductService domain.ProductService `inject:""`
+		Logger         flamingo.Logger       `inject:""`
 	}
 
 	// DecoratedCart Decorates Access To a Cart
@@ -34,35 +36,54 @@ type (
 	}
 )
 
-// CreateDecoratedCart Native Factory
-func CreateDecoratedCart(ctx context.Context, Cart Cart, productService domain.ProductService) *DecoratedCart {
+// Create Factory method to get Decorated Cart
+func (df *DecoratedCartFactory) Create(ctx context.Context, Cart Cart) *DecoratedCart {
 	decoratedCart := DecoratedCart{Cart: Cart}
-	for _, cartitem := range Cart.Cartitems {
-		decoratedItem := decorateCartItem(ctx, cartitem, productService)
-		decoratedCart.DecoratedItems = append(decoratedCart.DecoratedItems, decoratedItem)
-	}
+	decoratedCart.DecoratedItems = df.CreateDecorateCartItems(ctx, Cart.Cartitems)
 	decoratedCart.Ctx = ctx
 	return &decoratedCart
 }
 
-// Create Factory - with injected ProductService
-func (df *DecoratedCartFactory) Create(ctx context.Context, Cart Cart) *DecoratedCart {
-	return CreateDecoratedCart(ctx, Cart, df.ProductService)
+// CreateDecorateCartItems Factory method to get Decorated Cart
+func (df *DecoratedCartFactory) CreateDecorateCartItems(ctx context.Context, items []Item) []DecoratedCartItem {
+	var decoratedItems []DecoratedCartItem
+	for _, cartitem := range items {
+		decoratedItem := df.decorateCartItem(ctx, cartitem)
+		decoratedItems = append(decoratedItems, decoratedItem)
+	}
+	return decoratedItems
 }
 
 //decorateCartItem factory method
-func decorateCartItem(ctx context.Context, cartitem Item, productService domain.ProductService) DecoratedCartItem {
+func (df *DecoratedCartFactory) decorateCartItem(ctx context.Context, cartitem Item) DecoratedCartItem {
 	decorateditem := DecoratedCartItem{Item: cartitem}
-	product, e := productService.Get(ctx, cartitem.MarketplaceCode)
+	product, e := df.ProductService.Get(ctx, cartitem.MarketplaceCode)
+	if e != nil {
+		df.Logger.Errorf("cart.decorator - no product for item: %v", e)
+		if product == nil {
+			//To avoid errors if consumers want to access the product data
+			product = domain.SimpleProduct{
+				BasicProductData: domain.BasicProductData{
+					Title: cartitem.ProductName + "[outdated]",
+				},
+			}
+		}
+		return decorateditem
+	}
 	if product.Type() == domain.TYPECONFIGURABLE && cartitem.VariantMarketPlaceCode != "" {
 		if configureable, ok := product.(domain.ConfigurableProduct); ok {
-			configureable.ActiveVariant, _ = configureable.Variant(cartitem.VariantMarketPlaceCode)
+			var err error
+			configureable.ActiveVariant, err = configureable.Variant(cartitem.VariantMarketPlaceCode)
+			if err != nil {
+				//To avoid errors if consumers want to access the product data
+				product = domain.SimpleProduct{
+					BasicProductData: domain.BasicProductData{
+						Title: cartitem.ProductName + "[outdated]",
+					},
+				}
+			}
 			product = configureable
 		}
-	}
-	if e != nil {
-		log.Println("cart.decorator - no product for item:", e)
-		return decorateditem
 	}
 	decorateditem.Product = product
 	return decorateditem
