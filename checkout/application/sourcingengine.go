@@ -77,6 +77,9 @@ func (se *SourcingEngine) SetSourcesForCartItems(ctx web.Context, decoratedCart 
 // getByRetailerCode returns just the RetailerLocationCollection for a given Retailer from a List of
 func (dl *DeliveryLocations) getByRetailerCode(retailerCode string) (RetailerLocationCollection, error) {
 	var result RetailerLocationCollection
+	if retailerCode == "" {
+		return result, fmt.Errorf("No retailer_code given %s", retailerCode)
+	}
 
 	for _, retailerLocation := range dl.RetailerLocations {
 		if strings.EqualFold(retailerLocation.Retailer, retailerCode) {
