@@ -29,8 +29,19 @@ type (
 
 	// SuccessViewData represents the success view data
 	SuccessViewData struct {
+		OrderId              string
+		Email                string
+		PlacedDecoratedItems []cart.DecoratedCartItem
+		CartTotals           cart.CartTotals
+	}
+
+	// PlaceOrderFlashData represents the data passed to the success page - they need to be "glob"able
+	PlaceOrderFlashData struct {
 		OrderId string
 		Email   string
+		//Encodeable cart data to pass
+		PlacedItems []cart.Item
+		CartTotals  cart.CartTotals
 	}
 
 	// CheckoutController represents the checkout controller with its injectsions
@@ -39,9 +50,10 @@ type (
 		responder.RedirectAware `inject:""`
 		Router                  *router.Router `inject:""`
 
-		CheckoutFormService *formDto.CheckoutFormService `inject:""`
-		OrderService        application.OrderService     `inject:""`
-		PaymentService      application.PaymentService   `inject:""`
+		CheckoutFormService  *formDto.CheckoutFormService `inject:""`
+		OrderService         application.OrderService     `inject:""`
+		PaymentService       application.PaymentService   `inject:""`
+		DecoratedCartFactory cart.DecoratedCartFactory    `inject:""`
 
 		ApplicationCartService cartApplication.CartService `inject:""`
 
@@ -54,7 +66,7 @@ type (
 )
 
 func init() {
-	gob.Register(SuccessViewData{})
+	gob.Register(PlaceOrderFlashData{})
 }
 
 // StartAction handles the checkout start action
@@ -108,7 +120,15 @@ func (cc *CheckoutController) SubmitGuestCheckoutAction(ctx web.Context) web.Res
 func (cc *CheckoutController) SuccessAction(ctx web.Context) web.Response {
 	flashes := ctx.Session().Flashes("checkout.success.data")
 	if len(flashes) > 0 {
-		return cc.Render(ctx, "checkout/success", flashes[0].(SuccessViewData))
+		if placeOrderFlashData, ok := flashes[0].(PlaceOrderFlashData); ok {
+			viewData := SuccessViewData{
+				CartTotals:           placeOrderFlashData.CartTotals,
+				Email:                placeOrderFlashData.Email,
+				OrderId:              placeOrderFlashData.OrderId,
+				PlacedDecoratedItems: cc.DecoratedCartFactory.CreateDecorateCartItems(ctx, placeOrderFlashData.PlacedItems),
+			}
+			return cc.Render(ctx, "checkout/success", viewData)
+		}
 	}
 
 	return cc.Render(ctx, "checkout/expired", nil)
@@ -164,9 +184,11 @@ func (cc *CheckoutController) submitOrderForm(ctx web.Context, formservice *form
 			if shippingEmail == "" {
 				shippingEmail = checkoutFormData.BillingAddress.Email
 			}
-			return cc.Redirect("checkout.success", nil).With("checkout.success.data", SuccessViewData{
-				OrderId: orderID,
-				Email:   shippingEmail,
+			return cc.Redirect("checkout.success", nil).With("checkout.success.data", PlaceOrderFlashData{
+				OrderId:     orderID,
+				Email:       shippingEmail,
+				PlacedItems: decoratedCart.Cart.Cartitems,
+				CartTotals:  decoratedCart.Cart.GetCartTotals(),
 			})
 		} else {
 			cc.Logger.Error("cart.checkoutcontroller.submitaction: Error cannot type convert to CheckoutFormData!")
