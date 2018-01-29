@@ -12,7 +12,8 @@ It:
 Configurations:
 ```
 w3cDatalayer:
-  pageInstanceID: "%%ENV:STAGE%%production"
+  pageInstanceIDPrefix: "heathrowboutique"
+  pageInstanceIDStage: "%%ENV:STAGE%%production"
   pageNamePrefix: Heathrow Boutique
   siteName: Heathrow Boutique
   defaultCurrency: GBP

@@ -12,7 +12,7 @@ type (
 		PageInstanceID string
 		Page           *Page
 		SiteInfo       *SiteInfo
-		Version        string
+		Version        string `inject:"config:w3cDatalayer.version,optional"`
 		//User List of user(s) interacting with the page. (Although typically web data has a single user per recorded interaction, this object is an array and can capture multiple users.)
 		User []User
 		//The Cart object carries details about a shopping cart or basket and the products that have been added to it.
@@ -177,10 +177,10 @@ func (d Datalayer) MarshalJSON() ([]byte, error) {
 	//myDataLayer should match the Datalayer struct and is just here to define the top level json marshal annotations
 	// we need this since json.Marshal(&d) would result in endless loop
 	type myDataLayer struct {
-		PageInstanceID string    `json:"pageInstanceID" inject:"config:w3cDatalayer.pageInstanceID,optional"`
+		PageInstanceID string    `json:"pageInstanceID"`
 		Page           *Page     `json:"page,omitempty"`
 		SiteInfo       *SiteInfo `json:"siteInfo,omitempty"`
-		Version        string    `json:"version" inject:"config:w3cDatalayer.version,optional"`
+		Version        string    `json:"version"`
 		//User List of user(s) interacting with the page. (Although typically web data has a single user per recorded interaction, this object is an array and can capture multiple users.)
 		User []User `json:"user,omitempty"`
 		//The Cart object carries details about a shopping cart or basket and the products that have been added to it.

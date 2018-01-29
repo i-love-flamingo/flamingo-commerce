@@ -24,11 +24,13 @@ type (
 		CanonicalUrlService canonicalUrlApplication.Service `inject:""`
 		UserService         authApplication.UserService     `inject:""`
 
-		PageNamePrefix  string `inject:"config:w3cDatalayer.pageNamePrefix,optional"`
-		SiteName        string `inject:"config:w3cDatalayer.siteName,optional"`
-		Locale          string `inject:"config:locale.locale,optional"`
-		DefaultCurrency string `inject:"config:w3cDatalayer.defaultCurrency,optional"`
-		HashUserValues  bool   `inject:"config:w3cDatalayer.hashUserValues,optional"`
+		PageInstanceIDPrefix string `inject:"config:w3cDatalayer.pageInstanceIDPrefix,optional"`
+		PageInstanceIDStage  string `inject:"config:w3cDatalayer.pageInstanceIDStage,optional"`
+		PageNamePrefix       string `inject:"config:w3cDatalayer.pageNamePrefix,optional"`
+		SiteName             string `inject:"config:w3cDatalayer.siteName,optional"`
+		Locale               string `inject:"config:locale.locale,optional"`
+		DefaultCurrency      string `inject:"config:w3cDatalayer.defaultCurrency,optional"`
+		HashUserValues       bool   `inject:"config:w3cDatalayer.hashUserValues,optional"`
 	}
 )
 
@@ -64,6 +66,8 @@ func (s Factory) BuildForCurrentRequest(ctx web.Context) domain.Datalayer {
 	layer.SiteInfo = &domain.SiteInfo{
 		SiteName: s.SiteName,
 	}
+
+	layer.PageInstanceID = s.PageInstanceIDPrefix + s.PageInstanceIDStage
 
 	//Handle User
 	layer.Page.Attributes["loggedIn"] = false
