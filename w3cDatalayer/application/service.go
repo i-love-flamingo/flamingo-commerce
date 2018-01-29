@@ -52,12 +52,29 @@ func (s Service) SetBreadCrumb(breadcrumb string) error {
 
 func (s Service) SetPageCategories(category string, subcategory1 string, subcategory2 string) error {
 	layer := s.Get()
+	if layer.Page == nil {
+		layer.Page = &domain.Page{}
+	}
 	layer.Page.Category.PrimaryCategory = category
 	layer.Page.Category.Section = category
 
 	layer.Page.Category.SubCategory1 = subcategory1
 	layer.Page.Category.SubCategory2 = subcategory2
 
+	return s.store(layer)
+}
+
+func (s Service) SetPageInfos(pageId string, pageName string) error {
+	layer := s.Get()
+	if layer.Page == nil {
+		layer.Page = &domain.Page{}
+	}
+	if pageId != "" {
+		layer.Page.PageInfo.PageID = pageId
+	}
+	if pageName != "" {
+		layer.Page.PageInfo.PageName = pageName
+	}
 	return s.store(layer)
 }
 
