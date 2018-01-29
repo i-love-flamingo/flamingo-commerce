@@ -1,5 +1,7 @@
 package domain
 
+import "encoding/json"
+
 type (
 	DatalayerProvider func() *Datalayer
 	/**
@@ -7,20 +9,20 @@ type (
 	Therefore it has the json annotations and its intended to be directly converted to Json in the output
 	*/
 	Datalayer struct {
-		PageInstanceID string    `json:"pageInstanceID" inject:"config:w3cDatalayer.pageInstanceID,optional"`
-		Page           *Page     `json:"page,omitempty"`
-		SiteInfo       *SiteInfo `json:"siteInfo,omitempty"`
-		Version        string    `json:"version" inject:"config:w3cDatalayer.version,optional"`
+		PageInstanceID string
+		Page           *Page
+		SiteInfo       *SiteInfo
+		Version        string
 		//User List of user(s) interacting with the page. (Although typically web data has a single user per recorded interaction, this object is an array and can capture multiple users.)
-		User []User `json:"user,omitempty"`
+		User []User
 		//The Cart object carries details about a shopping cart or basket and the products that have been added to it.
-		Cart *Cart `json:"cart,omitempty"`
+		Cart *Cart
 		// The Event object collects information about an interaction event by the user. An event might be a button click, the addition of a portal widget, playing a video, adding a product to the shopping cart, etc. Any action on the page could be captured by an Event object.
-		Event []Event `json:"event,omitempty"`
+		Event []Event
 		//The Product object carries details about a particular product with frequently used properties listed below. This is intended for data about products displayed on pages or other content. For products added to a shopping cart or ordered in a transaction, see the Cart and Transaction objects below.
-		Product []Product `json:"product,omitempty"`
+		Product []Product
 		//The Transaction object is similar to the Cart object, but represents a completed order. The Transaction object contains analogous sub-objects to the Cart object as well as additional subobjects specific to completed orders.
-		Transaction *Transaction `json:"transaction,omitempty"`
+		Transaction *Transaction
 	}
 	Product struct {
 		ProductInfo ProductInfo            `json:"productInfo"`
@@ -169,3 +171,27 @@ type (
 		Retailer                 string  `json:"retailer"`
 	}
 )
+
+//MarshalJSON - is here to make sure the renderingengine uses this json interface instead of own encoding
+func (d Datalayer) MarshalJSON() ([]byte, error) {
+	//myDataLayer should match the Datalayer struct and is just here to define the top level json marshal annotations
+	// we need this since json.Marshal(&d) would result in endless loop
+	type myDataLayer struct {
+		PageInstanceID string    `json:"pageInstanceID" inject:"config:w3cDatalayer.pageInstanceID,optional"`
+		Page           *Page     `json:"page,omitempty"`
+		SiteInfo       *SiteInfo `json:"siteInfo,omitempty"`
+		Version        string    `json:"version" inject:"config:w3cDatalayer.version,optional"`
+		//User List of user(s) interacting with the page. (Although typically web data has a single user per recorded interaction, this object is an array and can capture multiple users.)
+		User []User `json:"user,omitempty"`
+		//The Cart object carries details about a shopping cart or basket and the products that have been added to it.
+		Cart *Cart `json:"cart,omitempty"`
+		// The Event object collects information about an interaction event by the user. An event might be a button click, the addition of a portal widget, playing a video, adding a product to the shopping cart, etc. Any action on the page could be captured by an Event object.
+		Event []Event `json:"event,omitempty"`
+		//The Product object carries details about a particular product with frequently used properties listed below. This is intended for data about products displayed on pages or other content. For products added to a shopping cart or ordered in a transaction, see the Cart and Transaction objects below.
+		Product []Product `json:"product,omitempty"`
+		//The Transaction object is similar to the Cart object, but represents a completed order. The Transaction object contains analogous sub-objects to the Cart object as well as additional subobjects specific to completed orders.
+		Transaction *Transaction `json:"transaction,omitempty"`
+	}
+	myDataLayerInstance := myDataLayer(d)
+	return json.Marshal(&myDataLayerInstance)
+}
