@@ -129,9 +129,14 @@ func (p PriceInfo) GetFinalPrice() float64 {
 
 // GetListMedia returns the product media for listing
 func (bpd BasicProductData) GetListMedia() Media {
+	return bpd.GetMedia("list")
+}
+
+// GetMedia returns the FIRST found product media by usage
+func (bpd BasicProductData) GetMedia(usage string) Media {
 	var emptyMedia Media
 	for _, media := range bpd.Media {
-		if media.Usage == "list" {
+		if media.Usage == usage {
 			return media
 		}
 	}
