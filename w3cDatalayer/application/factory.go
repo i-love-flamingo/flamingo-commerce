@@ -24,13 +24,16 @@ type (
 		CanonicalUrlService canonicalUrlApplication.Service `inject:""`
 		UserService         authApplication.UserService     `inject:""`
 
-		PageInstanceIDPrefix string `inject:"config:w3cDatalayer.pageInstanceIDPrefix,optional"`
-		PageInstanceIDStage  string `inject:"config:w3cDatalayer.pageInstanceIDStage,optional"`
-		PageNamePrefix       string `inject:"config:w3cDatalayer.pageNamePrefix,optional"`
-		SiteName             string `inject:"config:w3cDatalayer.siteName,optional"`
-		Locale               string `inject:"config:locale.locale,optional"`
-		DefaultCurrency      string `inject:"config:w3cDatalayer.defaultCurrency,optional"`
-		HashUserValues       bool   `inject:"config:w3cDatalayer.hashUserValues,optional"`
+		PageInstanceIDPrefix           string `inject:"config:w3cDatalayer.pageInstanceIDPrefix,optional"`
+		PageInstanceIDStage            string `inject:"config:w3cDatalayer.pageInstanceIDStage,optional"`
+		ProductMediaBaseUrl            string `inject:"config:w3cDatalayer.productMediaBaseUrl,optional"`
+		ProductMediaUrlPrefix          string `inject:"config:w3cDatalayer.productMediaUrlPrefix,optional"`
+		ProductMediaThumbnailUrlPrefix string `inject:"config:w3cDatalayer.productMediaThumbnailUrlPrefix,optional"`
+		PageNamePrefix                 string `inject:"config:w3cDatalayer.pageNamePrefix,optional"`
+		SiteName                       string `inject:"config:w3cDatalayer.siteName,optional"`
+		Locale                         string `inject:"config:locale.locale,optional"`
+		DefaultCurrency                string `inject:"config:w3cDatalayer.defaultCurrency,optional"`
+		HashUserValues                 bool   `inject:"config:w3cDatalayer.hashUserValues,optional"`
 	}
 )
 
@@ -230,23 +233,49 @@ func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.Produ
 	if baseData.HasAttribute("brandCode") {
 		size = baseData.Attributes["brandCode"].Value()
 	}
+	gtin := ""
+	if baseData.HasAttribute("gtin") {
+		if baseData.Attributes["gtin"].HasMultipleValues() {
+			gtins := baseData.Attributes["gtin"].Values()
+			gtin = strings.Join(gtins, ",")
+		} else {
+			gtin = baseData.Attributes["gtin"].Value()
+		}
+	}
 	return domain.ProductInfo{
 		ProductID:                baseData.MarketPlaceCode,
 		ProductName:              baseData.Title,
-		ProductThumbnail:         s.getItemImageUrl(baseData),
+		ProductThumbnail:         s.getProductThumbnailUrl(baseData),
+		ProductImage:             s.getProductImageUrl(baseData),
 		ProductType:              product.Type(),
 		ParentId:                 parentIdRef,
 		VariantSelectedAttribute: variantSelectedAttributeRef,
 		Retailer:                 baseData.RetailerCode,
-		SKU:                      baseData.MarketPlaceCode,
+		SKU:                      gtin,
 		Manufacturer:             brand,
 		Color:                    color,
 		Size:                     size,
 	}
 }
 
-func (s Factory) getItemImageUrl(baseData productDomain.BasicProductData) string {
-	return "catalog/" + baseData.GetListMedia().Reference
+func (s Factory) getProductThumbnailUrl(baseData productDomain.BasicProductData) string {
+	media := baseData.GetMedia("thumbnail")
+	if media.Reference != "" {
+		return s.ProductMediaBaseUrl + s.ProductMediaThumbnailUrlPrefix + media.Reference
+	}
+	media = baseData.GetMedia("list")
+	if media.Reference != "" {
+		return s.ProductMediaBaseUrl + s.ProductMediaThumbnailUrlPrefix + media.Reference
+	}
+	return ""
+}
+
+func (s Factory) getProductImageUrl(baseData productDomain.BasicProductData) string {
+	media := baseData.GetMedia("detail")
+	if media.Reference != "" {
+		return s.ProductMediaBaseUrl + s.ProductMediaUrlPrefix + media.Reference
+	}
+	return ""
 }
 
 func hashWithSHA512(value string) string {

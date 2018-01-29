@@ -156,10 +156,10 @@ type (
 		ProductType     string `json:"productType"`
 	}
 	ProductInfo struct {
-		ProductID                string  `json:"productID"`
-		SKU                      string  `json:"sku"`
-		ProductName              string  `json:"productName"`
-		ProductURL               string  `json:"productURL"`
+		ProductID   string `json:"productID"`
+		SKU         string `json:"sku"`
+		ProductName string `json:"productName"`
+		//ProductURL               string  `json:"productURL"`
 		ProductImage             string  `json:"productImage"`
 		ProductThumbnail         string  `json:"productThumbnail"`
 		Manufacturer             string  `json:"manufacturer"`
