@@ -12,14 +12,14 @@ import (
 // CartService application struct
 type (
 	CartService struct {
-		GuestCartService     domaincart.GuestCartService     `inject:""`
-		CustomerCartService  domaincart.CustomerCartService  `inject:""`
-		CartDecoratorFactory domaincart.DecoratedCartFactory `inject:""`
-		ProductService       productDomain.ProductService    `inject:""`
-		Logger               flamingo.Logger                 `inject:""`
-		CartValidator        domaincart.CartValidator        `inject:",optional"`
-		AuthManager          application.AuthManager         `inject:""`
-		UserService          application.UserService         `inject:""`
+		GuestCartService     domaincart.GuestCartService      `inject:""`
+		CustomerCartService  domaincart.CustomerCartService   `inject:""`
+		CartDecoratorFactory *domaincart.DecoratedCartFactory `inject:""`
+		ProductService       productDomain.ProductService     `inject:""`
+		Logger               flamingo.Logger                  `inject:""`
+		CartValidator        domaincart.CartValidator         `inject:",optional"`
+		AuthManager          *application.AuthManager         `inject:""`
+		UserService          *application.UserService         `inject:""`
 	}
 )
 

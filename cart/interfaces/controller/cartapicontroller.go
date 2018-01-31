@@ -15,7 +15,7 @@ type (
 	// CartApiController for cart api
 	CartApiController struct {
 		responder.JSONAware    `inject:""`
-		ApplicationCartService application.CartService `inject:""`
+		ApplicationCartService *application.CartService `inject:""`
 	}
 
 	result struct {
