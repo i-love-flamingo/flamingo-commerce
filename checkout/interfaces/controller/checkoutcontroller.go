@@ -51,17 +51,17 @@ type (
 		Router                  *router.Router `inject:""`
 
 		CheckoutFormService  *formDto.CheckoutFormService `inject:""`
-		OrderService         application.OrderService     `inject:""`
-		PaymentService       application.PaymentService   `inject:""`
-		DecoratedCartFactory cart.DecoratedCartFactory    `inject:""`
+		OrderService         *application.OrderService    `inject:""`
+		PaymentService       *application.PaymentService  `inject:""`
+		DecoratedCartFactory *cart.DecoratedCartFactory   `inject:""`
 
-		ApplicationCartService cartApplication.CartService `inject:""`
+		ApplicationCartService *cartApplication.CartService `inject:""`
 
-		UserService authApplication.UserService `inject:""`
+		UserService *authApplication.UserService `inject:""`
 
 		Logger flamingo.Logger `inject:""`
 
-		CustomerApplicationService customerApplication.Service `inject:""`
+		CustomerApplicationService *customerApplication.Service `inject:""`
 	}
 )
 

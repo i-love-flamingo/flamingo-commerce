@@ -17,10 +17,10 @@ type (
 	}
 
 	SourcingEngine struct {
-		DecoratedCart            cart.DecoratedCart       `inject:""`
+		DecoratedCart            *cart.DecoratedCart      `inject:""`
 		DeliveryLocationsService DeliveryLocationsService `inject:""`
 		Logger                   flamingo.Logger          `inject:""`
-		Cartservice              application.CartService  `inject:""`
+		Cartservice              *application.CartService `inject:""`
 	}
 
 	DeliveryLocations struct {

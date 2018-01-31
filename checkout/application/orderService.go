@@ -13,10 +13,10 @@ type (
 
 	// PaymentService
 	OrderService struct {
-		SourcingEngine SourcingEngine          `inject:""`
-		PaymentService PaymentService          `inject:""`
-		Logger         flamingo.Logger         `inject:""`
-		CartService    application.CartService `inject:""`
+		SourcingEngine *SourcingEngine          `inject:""`
+		PaymentService *PaymentService          `inject:""`
+		Logger         flamingo.Logger          `inject:""`
+		CartService    *application.CartService `inject:""`
 	}
 )
 
