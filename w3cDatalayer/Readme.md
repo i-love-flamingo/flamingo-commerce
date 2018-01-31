@@ -38,6 +38,12 @@ For some values in the datalayer the template knows better than the backend what
 ```
   - var result = w3cDatalayerService().setPageCategories("masterdata","brand","detail")
   - var result = w3cDatalayerService().setBreadCrumb("Home/Checkout/Step1")
+  - var result = w3cDatalayerService().setPageInfos("pageID","pageName")
+  - var result = w3cDatalayerService().setCartData(decoratedCart)
+  - var result = w3cDatalayerService().setTransaction(cartTotals, decoratedItems, orderid)
+  - var result = w3cDatalayerService().addProduct(product)
+  - var result = w3cDatalayerService().addEvent("eventName")
+      
 ```
 
 
