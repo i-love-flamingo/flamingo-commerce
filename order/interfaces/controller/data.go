@@ -10,7 +10,7 @@ type (
 	// DataControllerCustomerOrders for `get("orders.customerorders", ...)` requests
 	DataControllerCustomerOrders struct {
 		CustomerOrderService domain.CustomerOrderService `inject:""`
-		AuthManager          application.AuthManager     `inject:""`
+		AuthManager          *application.AuthManager    `inject:""`
 	}
 )
 
