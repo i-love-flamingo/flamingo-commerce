@@ -21,7 +21,7 @@ type (
 		//CurrentContext need to be set when using the service
 		CurrentContext web.Context
 		Logger         flamingo.Logger `inject:""`
-		Factory        Factory         `inject:""`
+		Factory        *Factory        `inject:""`
 	}
 )
 

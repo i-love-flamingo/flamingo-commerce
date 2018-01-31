@@ -19,10 +19,10 @@ type (
 	Factory is used to build new datalayers
 	*/
 	Factory struct {
-		Router              *router.Router                  `inject:""`
-		DatalayerProvider   domain.DatalayerProvider        `inject:""`
-		CanonicalUrlService canonicalUrlApplication.Service `inject:""`
-		UserService         authApplication.UserService     `inject:""`
+		Router              *router.Router                   `inject:""`
+		DatalayerProvider   domain.DatalayerProvider         `inject:""`
+		CanonicalUrlService *canonicalUrlApplication.Service `inject:""`
+		UserService         *authApplication.UserService     `inject:""`
 
 		PageInstanceIDPrefix           string `inject:"config:w3cDatalayer.pageInstanceIDPrefix,optional"`
 		PageInstanceIDStage            string `inject:"config:w3cDatalayer.pageInstanceIDStage,optional"`

@@ -8,9 +8,9 @@ import (
 
 type (
 	EventReceiver struct {
-		Service              Service                   `inject:""`
-		CartDecoratorFactory cart.DecoratedCartFactory `inject:""`
-		Logger               flamingo.Logger           `inject:""`
+		Service              *Service                   `inject:""`
+		CartDecoratorFactory *cart.DecoratedCartFactory `inject:""`
+		Logger               flamingo.Logger            `inject:""`
 	}
 )
 
