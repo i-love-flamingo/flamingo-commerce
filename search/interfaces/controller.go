@@ -14,7 +14,7 @@ type (
 		responder.RenderAware   `inject:""`
 		responder.RedirectAware `inject:""`
 		domain.SearchService    `inject:""`
-		PaginationInfoFactory   utils.PaginationInfoFactory `inject:""`
+		PaginationInfoFactory   *utils.PaginationInfoFactory `inject:""`
 	}
 
 	viewData struct {
