@@ -17,7 +17,7 @@ import (
 type (
 	CustomerCartServiceAdapter struct {
 		ProductService             productDomain.ProductService `inject:""`
-		CustomerCartOrderBehaviour CustomerCartOrderBehaviour   `inject:""`
+		CustomerCartOrderBehaviour *CustomerCartOrderBehaviour  `inject:""`
 		CartProvider               domaincart.CartProvider      `inject:""`
 	}
 	CustomerCartOrderBehaviour struct {
