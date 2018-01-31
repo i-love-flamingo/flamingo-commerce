@@ -22,9 +22,9 @@ type (
 		domain.CategoryService      `inject:""`
 		productdomain.SearchService `inject:""`
 
-		Router                *router.Router              `inject:""`
-		Template              string                      `inject:"config:core.category.view.template"`
-		PaginationInfoFactory utils.PaginationInfoFactory `inject:""`
+		Router                *router.Router               `inject:""`
+		Template              string                       `inject:"config:core.category.view.template"`
+		PaginationInfoFactory *utils.PaginationInfoFactory `inject:""`
 	}
 
 	// ViewData for rendering context
