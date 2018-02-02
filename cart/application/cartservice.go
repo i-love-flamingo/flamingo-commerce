@@ -20,6 +20,8 @@ type (
 		CartValidator        domaincart.CartValidator         `inject:",optional"`
 		AuthManager          *application.AuthManager         `inject:""`
 		UserService          *application.UserService         `inject:""`
+
+		DefaultDeliveryMethodForValidation string `inject:"config:cart.validation.defaultDeliveryMethod,optional"`
 	}
 )
 
@@ -52,8 +54,8 @@ func (cs *CartService) GetCart(ctx web.Context) (domaincart.Cart, error) {
 // ValidateCart validates a carts content
 func (cs CartService) ValidateCart(ctx web.Context, decoratedCart domaincart.DecoratedCart) domaincart.CartValidationResult {
 	if cs.CartValidator != nil {
-		// TODO pass delivery Method
-		result := cs.CartValidator.Validate(ctx, decoratedCart, "")
+		// TODO pass delivery Method from CART - once cart supports this!
+		result := cs.CartValidator.Validate(ctx, decoratedCart, cs.DefaultDeliveryMethodForValidation)
 		return result
 	}
 	return domaincart.CartValidationResult{}
