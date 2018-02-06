@@ -66,6 +66,8 @@ type (
 		ShortTitle       string
 		ShortDescription string
 		Media            []Media
+		//The sku that should be used to link from Teasers
+		MarketPlaceCode string
 	}
 
 	// Media holds product media information
