@@ -80,7 +80,10 @@ func (cs *CartService) AddProduct(ctx web.Context, addRequest domaincart.AddRequ
 	}
 
 	if cs.isLoggedIn(ctx) {
-		cart, _ := cs.CustomerCartService.GetCart(ctx, cs.Auth(ctx), "me")
+		cart, err := cs.CustomerCartService.GetCart(ctx, cs.Auth(ctx), "me")
+		if err != nil {
+			return err
+		}
 		return cs.CustomerCartService.AddToCart(ctx, cs.Auth(ctx), cart.ID, addRequest)
 	}
 
