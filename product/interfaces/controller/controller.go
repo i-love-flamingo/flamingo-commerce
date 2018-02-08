@@ -173,7 +173,7 @@ func (vc *View) Get(c web.Context) web.Response {
 		if err != nil {
 			// 1.A. No variant selected
 			// normalize URL
-			urlName := web.URLTitle(product.BaseData().Title)
+			urlName := web.URLTitle(configurableProduct.ConfigurableBaseData().Title)
 			if urlName != c.MustParam1("name") && skipnamecheck == "" {
 				return vc.Redirect(URL(c.MustParam1("marketplacecode"), urlName))
 			}
