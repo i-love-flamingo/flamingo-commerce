@@ -30,10 +30,7 @@ type (
 		Attributes  map[string]interface{} `json:"attributes,omitempty"`
 	}
 	Event struct {
-		EventInfo EventInfo `json:"eventInfo"`
-	}
-	EventInfo struct {
-		EventName string `json:"eventName"`
+		EventInfo map[string]interface{} `json:"eventInfo,omitempty"`
 	}
 	Page struct {
 		PageInfo   PageInfo               `json:"pageInfo,omitempty"`

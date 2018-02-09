@@ -1,13 +1,13 @@
 package application
 
 import (
+	"fmt"
 	"github.com/pkg/errors"
-
-	"go.aoe.com/flamingo/core/w3cDatalayer/domain"
-	"go.aoe.com/flamingo/framework/flamingo"
-
 	"go.aoe.com/flamingo/core/cart/domain/cart"
 	productDomain "go.aoe.com/flamingo/core/product/domain"
+	"go.aoe.com/flamingo/core/pugtemplate/pugjs"
+	"go.aoe.com/flamingo/core/w3cDatalayer/domain"
+	"go.aoe.com/flamingo/framework/flamingo"
 	"go.aoe.com/flamingo/framework/web"
 )
 
@@ -100,13 +100,22 @@ func (s Service) AddProduct(product productDomain.BasicProduct) error {
 }
 
 //AddEvent - adds an event with the given eventName to the datalayer
-func (s Service) AddEvent(eventName string) error {
+func (s Service) AddEvent(eventName string, params ...*pugjs.Map) error {
 	layer := s.Get()
-	layer.Event = append(layer.Event, domain.Event{
-		EventInfo: domain.EventInfo{
-			EventName: eventName,
-		},
-	})
+
+	event := domain.Event{
+		EventInfo: make(map[string]interface{}),
+	}
+
+	event.EventInfo["eventName"] = eventName
+
+	if len(params) == 1 {
+		for k, v := range params[0].Items {
+			event.EventInfo[k.String()] = fmt.Sprint(v)
+		}
+	}
+
+	layer.Event = append(layer.Event, event)
 	return s.store(layer)
 }
 
