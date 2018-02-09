@@ -21,7 +21,6 @@ type (
 		GetIdentifier() string
 		HasMedia(group string, usage string) bool
 		GetMedia(group string, usage string) Media
-		IsNew() bool
 	}
 
 	// SimpleProduct - A product without Variants that can be teasered and being sold
@@ -91,20 +90,6 @@ func (p SimpleProduct) HasMedia(group string, usage string) bool {
 // GetMedia  for SimpleProduct
 func (p SimpleProduct) GetMedia(group string, usage string) Media {
 	return *findMediaInProduct(BasicProduct(p), group, usage)
-}
-
-func (p SimpleProduct) IsNew() bool {
-	newFromDate := ""
-	if p.HasAttribute("newFromDate") {
-		newFromDate = p.Attributes["newFromDate"].Value()
-	}
-
-	newToDate := ""
-	if p.HasAttribute("newToDate") {
-		newToDate = p.Attributes["newToDate"].Value()
-	}
-
-	return isNew(newFromDate, newToDate)
 }
 
 // Type interface implementation for SimpleProduct
@@ -184,16 +169,6 @@ func (p ConfigurableProduct) HasActiveVariant() bool {
 	return p.ActiveVariant != nil
 }
 
-// IsNew - returns is New if any of Variants IsNew
-func (p ConfigurableProduct) IsNew() bool {
-	for _, variant := range p.Variants {
-		if variant.IsNew() {
-			return true
-		}
-	}
-	return false
-}
-
 // BaseData getter for BasicProductData
 func (v Variant) BaseData() BasicProductData {
 	return v.BasicProductData
@@ -202,18 +177,4 @@ func (v Variant) BaseData() BasicProductData {
 // SaleableData getter for Saleable
 func (v Variant) SaleableData() Saleable {
 	return v.Saleable
-}
-
-func (v Variant) IsNew() bool {
-	newFromDate := ""
-	if v.HasAttribute("newFromDate") {
-		newFromDate = v.Attributes["newFromDate"].Value()
-	}
-
-	newToDate := ""
-	if v.HasAttribute("newToDate") {
-		newToDate = v.Attributes["newToDate"].Value()
-	}
-
-	return isNew(newFromDate, newToDate)
 }

@@ -28,6 +28,7 @@ type (
 		CategoryToCodeMapping []string
 
 		Keywords []string
+		IsNew    bool
 	}
 
 	// Saleable are properties required for being selled
@@ -178,31 +179,4 @@ func findMediaInProduct(p BasicProduct, group string, usage string) *Media {
 		}
 	}
 	return nil
-}
-
-func isNew(newFromDateStr string, newToDateStr string) bool {
-
-	if newFromDateStr == "" && newToDateStr == "" {
-		return false
-	}
-
-	now := time.Now()
-	newFromDate, err := time.Parse(time.RFC3339, newFromDateStr)
-	if err != nil && newFromDateStr != "" {
-		return false
-	}
-	newToDate, err := time.Parse(time.RFC3339, newToDateStr)
-	if err != nil && newToDateStr != "" {
-		return false
-	}
-
-	if newToDateStr == "" && now.After(newFromDate) {
-		return true
-	}
-
-	if now.After(newFromDate) && now.Before(newToDate) {
-		return true
-	}
-
-	return false
 }
