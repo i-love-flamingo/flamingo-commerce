@@ -9,6 +9,7 @@ import (
 	"go.aoe.com/flamingo/core/cart/interfaces/controller"
 	"go.aoe.com/flamingo/framework/config"
 	"go.aoe.com/flamingo/framework/dingo"
+	"go.aoe.com/flamingo/framework/event"
 	"go.aoe.com/flamingo/framework/router"
 )
 
@@ -53,6 +54,9 @@ func (m *CartModule) Configure(injector *dingo.Injector) {
 
 	m.RouterRegistry.Route("/api/cart", "cart.api.get")
 	m.RouterRegistry.Route("/api/cart/add/:marketplaceCode", `cart.api.add(marketplaceCode,variantMarketplaceCode?="",qty?="1")`)
+
+	//Event
+	injector.BindMulti((*event.Subscriber)(nil)).To(application.EventReceiver{})
 
 }
 

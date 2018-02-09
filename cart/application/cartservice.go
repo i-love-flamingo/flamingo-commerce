@@ -42,7 +42,7 @@ func (cs *CartService) GetCart(ctx web.Context) (domaincart.Cart, error) {
 		return cs.CustomerCartService.GetCart(ctx, cs.Auth(ctx), "me")
 	}
 
-	guestCart, err := cs.getSessionsGuestCart(ctx)
+	guestCart, err := cs.GetSessionGuestCart(ctx)
 	if err != nil {
 		cs.Logger.Warn("cart.application.cartservice: GetCart - No cart in session return empty")
 		return cs.getEmptyCart()
@@ -114,7 +114,7 @@ func (cs *CartService) checkProductAndEnrichAddRequest(ctx web.Context, addReque
 // addProductToGuestCart Handle Adding to Guest Cart
 func (cs *CartService) addProductToGuestCart(ctx web.Context, addRequest domaincart.AddRequest) error {
 	//check if we have a guest cart in the session
-	if _, err := cs.getSessionsGuestCart(ctx); err != nil {
+	if _, err := cs.GetSessionGuestCart(ctx); err != nil {
 		// if not try to create a new one
 		_, err := cs.createNewSessionGuestCart(ctx)
 		if err != nil {
@@ -140,9 +140,16 @@ func (cs *CartService) isLoggedIn(ctx web.Context) bool {
 	return cs.UserService.IsLoggedIn(ctx)
 }
 
-// getSessionsGuestCart Checks if a valid guest cart exists for the session and tries to get it
-// If no guest cart is registered or the existing one cannot be get it returns error that need to be handeled
-func (cs *CartService) getSessionsGuestCart(ctx web.Context) (domaincart.Cart, error) {
+// HasSessionAGuestCart
+func (cs *CartService) HasSessionAGuestCart(ctx web.Context) bool {
+	if _, ok := ctx.Session().Values["cart.guestid"]; ok {
+		return true
+	}
+	return false
+}
+
+// GetSessionGuestCart
+func (cs *CartService) GetSessionGuestCart(ctx web.Context) (domaincart.Cart, error) {
 	var cart domaincart.Cart
 	if guestcartid, ok := ctx.Session().Values["cart.guestid"]; ok {
 		existingCart, err := cs.GuestCartService.GetCart(ctx, cs.Auth(ctx), guestcartid.(string))
