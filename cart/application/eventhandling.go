@@ -66,6 +66,7 @@ func (e *EventReceiver) Notify(event event.Event) {
 
 			e.CartService.AddProduct(eventType.Context, cart.AddRequest{MarketplaceCode: item.MarketplaceCode, Qty: item.Qty, VariantMarketplaceCode: item.VariantMarketPlaceCode})
 		}
+		e.CartService.DeleteSessionGuestCart(eventType.Context)
 
 	}
 }

@@ -161,6 +161,13 @@ func (cs *CartService) GetSessionGuestCart(ctx web.Context) (domaincart.Cart, er
 	return cart, errors.New("No cart in session yet")
 }
 
+// GetSessionGuestCart
+func (cs *CartService) DeleteSessionGuestCart(ctx web.Context) error {
+	delete(ctx.Session().Values, "cart.guestid")
+	//TODO - trigger backend also to be able to delete the cart there ( cs.GuestCartService.DeleteCart())
+	return nil
+}
+
 // createNewSessionGuestCart Requests a new Guest Cart and stores the id in the session, if possible
 func (cs *CartService) createNewSessionGuestCart(ctx web.Context) (domaincart.Cart, error) {
 	newGuestCart, err := cs.GuestCartService.GetNewCart(ctx, cs.Auth(ctx))
