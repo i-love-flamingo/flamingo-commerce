@@ -23,8 +23,9 @@ type (
 	Cart struct {
 		CartOrderBehaviour CartOrderBehaviour `json:"-"`
 		EventPublisher     EventPublisher     `inject:"" json:"-"`
-
-		ID        string
+		//ID is the main idendifier of the cart
+		ID string
+		//EntityID is a second idendifier that may be used by some backends
 		EntityID  string
 		Cartitems []Item
 		//TODO use CartTotals
