@@ -1,8 +1,6 @@
 package application
 
 import (
-	"strconv"
-
 	"go.aoe.com/flamingo/core/cart/domain/cart"
 	"go.aoe.com/flamingo/framework/event"
 	"go.aoe.com/flamingo/framework/flamingo"
