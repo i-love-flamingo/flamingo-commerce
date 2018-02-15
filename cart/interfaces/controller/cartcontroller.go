@@ -66,7 +66,7 @@ func (cc *CartViewController) AddAndViewAction(ctx web.Context) web.Response {
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
 
-	currentCart.EventPublisher.PublishAddToCartEvent(ctx, &addedProduct, addRequest.Qty)
+	currentCart.EventPublisher.PublishAddToCartEvent(ctx, addedProduct, addRequest.Qty)
 
 	return cc.Redirect("cart.view", nil)
 }
