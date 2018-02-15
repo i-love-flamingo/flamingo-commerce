@@ -122,9 +122,11 @@ func (cs *CartService) checkProductAndEnrichAddRequest(ctx web.Context, addReque
 // addProductToGuestCart Handle Adding to Guest Cart
 func (cs *CartService) addProductToGuestCart(ctx web.Context, addRequest domaincart.AddRequest) error {
 	//check if we have a guest cart in the session
-	if _, err := cs.GetSessionGuestCart(ctx); err != nil {
+	guestCart, err := cs.GetSessionGuestCart(ctx)
+
+	if err != nil {
 		// if not try to create a new one
-		_, err := cs.createNewSessionGuestCart(ctx)
+		guestCart, err = cs.createNewSessionGuestCart(ctx)
 		if err != nil {
 			//no mitigation - return error
 			return err
@@ -133,13 +135,12 @@ func (cs *CartService) addProductToGuestCart(ctx web.Context, addRequest domainc
 
 	guestCartID := ctx.Session().Values["cart.guestid"].(string)
 	// Add to guest cart
-	err := cs.GuestCartService.AddToCart(ctx, cs.Auth(ctx), guestCartID, addRequest)
+
+	err = cs.GuestCartService.AddToCart(ctx, cs.Auth(ctx), guestCartID, addRequest)
 	if err != nil {
 		cs.Logger.Errorf("cart.application.cartservice: Failed Adding to cart %s Error %s", guestCartID, err)
 		return err
 	}
-
-	guestCart, err := cs.GetSessionGuestCart(ctx)
 
 	if err != nil {
 		return err
