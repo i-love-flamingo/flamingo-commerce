@@ -84,7 +84,15 @@ func (cs *CartService) AddProduct(ctx web.Context, addRequest domaincart.AddRequ
 		if err != nil {
 			return err
 		}
-		return cs.CustomerCartService.AddToCart(ctx, cs.Auth(ctx), cart.ID, addRequest)
+
+		err = cs.CustomerCartService.AddToCart(ctx, cs.Auth(ctx), cart.ID, addRequest)
+
+		if err == nil {
+			// publish cart event if addtocart was successful
+			cs.publishAddtoCartEvent(ctx, cart, addRequest)
+		}
+
+		return err
 	}
 
 	return cs.addProductToGuestCart(ctx, addRequest)
@@ -130,6 +138,14 @@ func (cs *CartService) addProductToGuestCart(ctx web.Context, addRequest domainc
 		cs.Logger.Errorf("cart.application.cartservice: Failed Adding to cart %s Error %s", guestCartID, err)
 		return err
 	}
+
+	guestCart, err := cs.GetSessionGuestCart(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	cs.publishAddtoCartEvent(ctx, guestCart, addRequest)
 
 	cs.Logger.Infof("cart.application.cartservice: Added to cart %s", guestCartID)
 	return nil
@@ -183,4 +199,14 @@ func (cs *CartService) createNewSessionGuestCart(ctx web.Context) (domaincart.Ca
 
 func (cs *CartService) getEmptyCart() (domaincart.Cart, error) {
 	return domaincart.Cart{}, nil
+}
+
+func (cs *CartService) publishAddtoCartEvent(ctx web.Context, currentCart domaincart.Cart, addRequest domaincart.AddRequest) {
+	addedProduct, err := cs.ProductService.Get(ctx, addRequest.MarketplaceCode)
+
+	if err != nil {
+		cs.Logger.Printf("cart.application.cartservice: Error %v", err)
+		return
+	}
+	currentCart.EventPublisher.PublishAddToCartEvent(ctx, addedProduct, addRequest.Qty)
 }
