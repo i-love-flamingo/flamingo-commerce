@@ -5,6 +5,7 @@ import (
 
 	"go.aoe.com/flamingo/core/auth/domain"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
+	productDomain "go.aoe.com/flamingo/core/product/domain"
 	"go.aoe.com/flamingo/framework/event"
 	"go.aoe.com/flamingo/framework/flamingo"
 	"go.aoe.com/flamingo/framework/web"
@@ -24,17 +25,30 @@ type (
 )
 
 func (d *DomainEventPublisher) PublishOrderPlacedEvent(ctx context.Context, carto *cart.Cart, orderId string) {
-	event := cart.OrderPlacedEvent{
+	eventObject := cart.OrderPlacedEvent{
 		Cart:    carto,
 		OrderId: orderId,
 	}
 	if webContext, ok := ctx.(web.Context); ok {
 		d.Logger.Infof("Publish Event OrderPlacedEvent for Order: %v", orderId)
-		event.CurrentContext = webContext
+		eventObject.CurrentContext = webContext
 		//For now we publish only to Flamingo default Event Router
-		webContext.EventRouter().Dispatch(event)
+		webContext.EventRouter().Dispatch(eventObject)
 	}
+}
 
+func (d *DomainEventPublisher) PublishAddToCartEvent(ctx context.Context, product productDomain.BasicProduct, qty int) {
+	eventObject := cart.AddToCartEvent{
+		MarketplaceCode: product.BaseData().MarketPlaceCode,
+		ProductTitle:    product.BaseData().Title,
+		Qty:             qty,
+	}
+	if webContext, ok := ctx.(web.Context); ok {
+		d.Logger.Infof("Publish Event PublishAddToCartEvent: %v", eventObject)
+		eventObject.CurrentContext = webContext
+		//For now we publish only to Flamingo default Event Router
+		webContext.EventRouter().Dispatch(eventObject)
+	}
 }
 
 //Notify should get called by flamingo Eventlogic
