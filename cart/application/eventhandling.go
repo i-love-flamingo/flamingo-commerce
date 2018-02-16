@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"go.aoe.com/flamingo/core/auth/domain"
-	"go.aoe.com/flamingo/core/cart/domain/cart"
+	cartDomain "go.aoe.com/flamingo/core/cart/domain/cart"
 	productDomain "go.aoe.com/flamingo/core/product/domain"
 	"go.aoe.com/flamingo/framework/event"
 	"go.aoe.com/flamingo/framework/flamingo"
@@ -14,7 +14,8 @@ import (
 type (
 	//DomainEventPublisher implements the event publisher of the domain and uses the framework event router
 	DomainEventPublisher struct {
-		Logger flamingo.Logger `inject:""`
+		Logger         flamingo.Logger              `inject:""`
+		ProductService productDomain.ProductService `inject:""`
 	}
 
 	//EventReceiver
@@ -24,9 +25,9 @@ type (
 	}
 )
 
-func (d *DomainEventPublisher) PublishOrderPlacedEvent(ctx context.Context, carto *cart.Cart, orderId string) {
-	eventObject := cart.OrderPlacedEvent{
-		Cart:    carto,
+func (d *DomainEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, orderId string) {
+	eventObject := cartDomain.OrderPlacedEvent{
+		Cart:    cart,
 		OrderId: orderId,
 	}
 	if webContext, ok := ctx.(web.Context); ok {
@@ -38,14 +39,33 @@ func (d *DomainEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart
 }
 
 func (d *DomainEventPublisher) PublishAddToCartEvent(ctx context.Context, product productDomain.BasicProduct, qty int) {
-	eventObject := cart.AddToCartEvent{
-		MarketplaceCode: product.BaseData().MarketPlaceCode,
-		ProductTitle:    product.BaseData().Title,
-		Qty:             qty,
+	eventObject := cartDomain.AddToCartEvent{
+		Product: product,
+		Qty:     qty,
 	}
 	if webContext, ok := ctx.(web.Context); ok {
 		d.Logger.Infof("Publish Event PublishAddToCartEvent: %v", eventObject)
-		eventObject.CurrentContext = webContext
+		webContext.EventRouter().Dispatch(eventObject)
+	}
+}
+
+func (d *DomainEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context, item *cartDomain.Item, qtyBefore int, qtyAfter int, cartId string) {
+	marketPlaceCode := item.MarketplaceCode
+
+	if item.VariantMarketPlaceCode != "" {
+		marketPlaceCode = item.VariantMarketPlaceCode
+	}
+
+	product, _ := d.ProductService.Get(ctx, marketPlaceCode)
+
+	eventObject := cartDomain.ChangedQtyInCartEvent{
+		CartId:    cartId,
+		Product:   product,
+		QtyBefore: qtyBefore,
+		QtyAfter:  qtyAfter,
+	}
+	if webContext, ok := ctx.(web.Context); ok {
+		d.Logger.Infof("Publish Event PublishCartChangedQtyEvent: %v", eventObject)
 		webContext.EventRouter().Dispatch(eventObject)
 	}
 }
@@ -77,7 +97,7 @@ func (e *EventReceiver) Notify(event event.Event) {
 		for _, item := range guestCart.Cartitems {
 			e.Logger.WithField("category", "cart").Debugf("Merging item from guest to user cart %v", item)
 
-			e.CartService.AddProduct(eventType.Context, cart.AddRequest{MarketplaceCode: item.MarketplaceCode, Qty: item.Qty, VariantMarketplaceCode: item.VariantMarketPlaceCode})
+			e.CartService.AddProduct(eventType.Context, cartDomain.AddRequest{MarketplaceCode: item.MarketplaceCode, Qty: item.Qty, VariantMarketplaceCode: item.VariantMarketPlaceCode})
 		}
 		e.CartService.DeleteSessionGuestCart(eventType.Context)
 

@@ -137,6 +137,7 @@ func (cs *CartService) addProductToGuestCart(ctx web.Context, addRequest domainc
 	// Add to guest cart
 
 	err = cs.GuestCartService.AddToCart(ctx, cs.Auth(ctx), guestCartID, addRequest)
+
 	if err != nil {
 		cs.Logger.Errorf("cart.application.cartservice: Failed Adding to cart %s Error %s", guestCartID, err)
 		return err

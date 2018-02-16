@@ -3,7 +3,7 @@ package cart
 import (
 	"context"
 
-	"go.aoe.com/flamingo/core/product/domain"
+	productDomain "go.aoe.com/flamingo/core/product/domain"
 	"go.aoe.com/flamingo/framework/web"
 )
 
@@ -15,15 +15,21 @@ type (
 	}
 
 	AddToCartEvent struct {
-		MarketplaceCode string
-		ProductTitle    string
+		Product         productDomain.BasicProduct
 		Qty             int
-		CurrentContext web.Context
+	}
+
+	ChangedQtyInCartEvent struct {
+		CartId          string
+		Product         productDomain.BasicProduct
+		QtyBefore       int
+		QtyAfter        int
 	}
 
 	//EventPublisher - technology free interface which is used in the Domain Layer to publish events that might be interesting for outside (Publish)
 	EventPublisher interface {
 		PublishOrderPlacedEvent(ctx context.Context, cart *Cart, orderId string)
-		PublishAddToCartEvent(ctx context.Context, product domain.BasicProduct, qty int)
+		PublishAddToCartEvent(ctx context.Context, product productDomain.BasicProduct, qty int)
+		PublishChangedQtyInCartEvent(ctx context.Context, item *Item, qtyBefore int, qtyAfter int, cartId string)
 	}
 )

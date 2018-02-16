@@ -184,8 +184,13 @@ func (cart Cart) UpdateItemQty(ctx context.Context, auth Auth, id string, qty in
 		return e
 	}
 	if qty < 1 {
+		cart.publishChangedQtyEvent(ctx, item, item.Qty, 0, cart.ID)
+
 		return cart.DeleteItem(ctx, auth, id)
 	}
+
+	cart.publishChangedQtyEvent(ctx, item, item.Qty, qty, cart.ID)
+
 	item.Qty = qty
 	return cart.CartOrderBehaviour.UpdateItem(ctx, auth, &cart, id, *item)
 }
@@ -198,4 +203,8 @@ func (cart Cart) UpdateItem(ctx context.Context, auth Auth, item Item) error {
 // ItemCount - returns amount of Cartitems
 func (Cart Cart) ItemCount() int {
 	return len(Cart.Cartitems)
+}
+
+func (cart Cart) publishChangedQtyEvent(ctx context.Context, item *Item, qtyBefore int, qtyAfter int, cartId string) {
+	cart.EventPublisher.PublishChangedQtyInCartEvent(ctx, item, qtyBefore, qtyAfter, cartId)
 }
