@@ -32,13 +32,17 @@ func (e *EventReceiver) Notify(event event.Event) {
 		}
 	case *cart.AddToCartEvent:
 		e.Logger.WithField("category", "w3cDatalayer").Debugf("Receive Event")
-		if currentEvent.CurrentContext == nil {
-			break
-		}
 
 		e.Service.CurrentContext.Session().AddFlash(
 			currentEvent,
 			"addToCart",
+		)
+	case *cart.ChangedQtyInCartEvent:
+		e.Logger.WithField("category", "w3cDatalayer").Debugf("Receive Event")
+
+		e.Service.CurrentContext.Session().AddFlash(
+			currentEvent,
+			"changedQtyInCart",
 		)
 	}
 }
