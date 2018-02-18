@@ -6,8 +6,8 @@ import (
 	"go.aoe.com/flamingo/core/breadcrumbs"
 	"go.aoe.com/flamingo/core/category/domain"
 	productdomain "go.aoe.com/flamingo/core/product/domain"
+	productInterfaceViewData "go.aoe.com/flamingo/core/product/interfaces/viewData"
 	searchdomain "go.aoe.com/flamingo/core/search/domain"
-	"go.aoe.com/flamingo/core/search/utils"
 	"go.aoe.com/flamingo/framework/router"
 	"go.aoe.com/flamingo/framework/web"
 	"go.aoe.com/flamingo/framework/web/responder"
@@ -16,25 +16,21 @@ import (
 type (
 	// View demonstrates a product view controller
 	View struct {
-		responder.ErrorAware        `inject:""`
-		responder.RenderAware       `inject:""`
-		responder.RedirectAware     `inject:""`
-		domain.CategoryService      `inject:""`
-		productdomain.SearchService `inject:""`
-
-		Router                *router.Router               `inject:""`
-		Template              string                       `inject:"config:core.category.view.template"`
-		PaginationInfoFactory *utils.PaginationInfoFactory `inject:""`
+		responder.ErrorAware                                         `inject:""`
+		responder.RenderAware                                        `inject:""`
+		responder.RedirectAware                                      `inject:""`
+		domain.CategoryService                                       `inject:""`
+		productdomain.SearchService                                  `inject:""`
+		*productInterfaceViewData.ProductSearchResultViewDataFactory `inject:""`
+		Router                                                       *router.Router `inject:""`
+		Template                                                     string         `inject:"config:core.category.view.template"`
 	}
 
 	// ViewData for rendering context
 	ViewData struct {
-		Category       domain.Category
-		CategoryTree   domain.Category
-		Products       []productdomain.BasicProduct
-		SearchMeta     searchdomain.SearchMeta
-		Facets         searchdomain.FacetCollection
-		PaginationInfo utils.PaginationInfo
+		ProductSearchResult productInterfaceViewData.ProductSearchResultViewData
+		Category            domain.Category
+		CategoryTree        domain.Category
 	}
 )
 
@@ -99,12 +95,9 @@ func (vc *View) Get(c web.Context) web.Response {
 	vc.addBreadcrumb(c, categoryRoot)
 
 	return vc.Render(c, vc.Template, ViewData{
-		Category:       category,
-		CategoryTree:   categoryRoot,
-		Products:       products.Hits,
-		SearchMeta:     products.SearchMeta,
-		Facets:         products.Facets,
-		PaginationInfo: vc.PaginationInfoFactory.Build(products.SearchMeta.Page, products.SearchMeta.NumResults, 30, products.SearchMeta.NumPages, c.Request().URL),
+		Category:            category,
+		CategoryTree:        categoryRoot,
+		ProductSearchResult: vc.ProductSearchResultViewDataFactory.NewProductSearchResultViewDataFromResult(c, products),
 	})
 }
 
