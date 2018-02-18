@@ -1,11 +1,11 @@
-## Product Module
+# Product Package
 
-### About
+## About
 
 * Provides product domain models and the related Port (ProductService).
 * Provides Controller for product detail view, including variant logic
 
-### Product Detail View
+## Product Detail View
 
 The view gets the following Data passed:
 
@@ -20,3 +20,6 @@ The view gets the following Data passed:
 		VariantSelection    variantSelection
 	}
 ``` 
+
+## Dependencies:
+* search package: the product.SearchService uses the search Result and Filter objects

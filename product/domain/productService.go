@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"go.aoe.com/flamingo/core/search/domain"
+	searchDomain "go.aoe.com/flamingo/core/search/domain"
 )
 
 type (
@@ -15,13 +15,13 @@ type (
 	}
 
 	SearchResult struct {
-		domain.Result
+		searchDomain.Result
 		Hits []BasicProduct
 	}
 
 	// SearchService is a typed search for products
 	SearchService interface {
-		Search(ctx context.Context, filter ...domain.Filter) (SearchResult, error)
+		Search(ctx context.Context, filter ...searchDomain.Filter) (SearchResult, error)
 	}
 
 	// ProductNotFound is an error
