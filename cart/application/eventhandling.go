@@ -73,7 +73,7 @@ func (d *DomainEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context,
 //Notify should get called by flamingo Eventlogic
 func (e *EventReceiver) Notify(event event.Event) {
 	switch eventType := event.(type) {
-	//Handle OrderPlacedEvent and Set Transaction to current datalayer
+	//Handle LoginEvent and Merge Cart
 	case *domain.LoginEvent:
 		if eventType == nil {
 			return
