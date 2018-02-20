@@ -28,20 +28,21 @@ type (
 	}
 
 	AddressFormData struct {
-		RegionCode    string `form:"regionCode" conform:"name"`
-		CountryCode   string `form:"countryCode" conform:"name"`
-		Company       string `form:"company" conform:"trim"`
-		Street        string `form:"street" conform:"trim"`
-		StreetNr      string `form:"streetNr" conform:"trim"`
-		AddressLine1  string `form:"addressLine1" conform:"trim"`
-		AddressLine2  string `form:"addressLine2" conform:"trim"`
-		PhoneAreaCode string `form:"phoneAreaCode" conform:"num"`
-		PhoneNumber   string `form:"phoneNumber"  conform:"num"`
-		PostCode      string `form:"postCode" conform:"trim"`
-		City          string `form:"city" conform:"name"`
-		Firstname     string `form:"firstname" validate:"required" conform:"name"`
-		Lastname      string `form:"lastname" validate:"required" conform:"name"`
-		Email         string `form:"email" validate:"required,email" conform:"email"`
+		RegionCode       string `form:"regionCode" conform:"name"`
+		CountryCode      string `form:"countryCode" conform:"name"`
+		Company          string `form:"company" conform:"trim"`
+		Street           string `form:"street" conform:"trim"`
+		StreetNr         string `form:"streetNr" conform:"trim"`
+		AddressLine1     string `form:"addressLine1" conform:"trim"`
+		AddressLine2     string `form:"addressLine2" conform:"trim"`
+		PhoneAreaCode    string `form:"phoneAreaCode"`
+		PhoneCountryCode string `form:"phoneCountryCode"`
+		PhoneNumber      string `form:"phoneNumber" conform:"num"`
+		PostCode         string `form:"postCode" conform:"trim"`
+		City             string `form:"city" conform:"name"`
+		Firstname        string `form:"firstname" validate:"required" conform:"name"`
+		Lastname         string `form:"lastname" validate:"required" conform:"name"`
+		Email            string `form:"email" validate:"required,email" conform:"email"`
 	}
 
 	CheckoutFormService struct {
@@ -173,18 +174,18 @@ func mapAddress(addressData AddressFormData) *cart.Address {
 	lines[1] = addressData.AddressLine2
 
 	address := cart.Address{
-		CountryCode: addressData.CountryCode,
-		Company:     addressData.Company,
-		Lastname:    addressData.Lastname,
-		Firstname:   addressData.Firstname,
-		Email:       addressData.Email,
-		City:        addressData.City,
+		CountryCode:            addressData.CountryCode,
+		Company:                addressData.Company,
+		Lastname:               addressData.Lastname,
+		Firstname:              addressData.Firstname,
+		Email:                  addressData.Email,
+		City:                   addressData.City,
 		AdditionalAddressLines: lines,
 		RegionCode:             addressData.RegionCode,
 		Street:                 addressData.Street,
 		PostCode:               addressData.PostCode,
 		StreetNr:               addressData.StreetNr,
-		Telephone:              addressData.PhoneAreaCode + addressData.PhoneNumber,
+		Telephone:              addressData.PhoneCountryCode + addressData.PhoneAreaCode + addressData.PhoneNumber,
 	}
 	return &address
 }
