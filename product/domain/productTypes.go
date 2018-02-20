@@ -169,6 +169,15 @@ func (p ConfigurableProduct) HasActiveVariant() bool {
 	return p.ActiveVariant != nil
 }
 
+// HasVariant  for ConfigurableProduct
+func (p ConfigurableProduct) HasVariant(variantMarketplaceCode string) bool {
+	for _, variant := range p.Variants {
+		if variant.BasicProductData.MarketPlaceCode == variantMarketplaceCode {
+			return true
+		}
+	}
+	return false
+}
 // BaseData getter for BasicProductData
 func (v Variant) BaseData() BasicProductData {
 	return v.BasicProductData
