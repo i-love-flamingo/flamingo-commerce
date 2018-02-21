@@ -17,6 +17,8 @@ type (
 //Notify should get called by flamingo Eventlogic
 // - OrderPlacedEvent is used to attach TransactionData - This is only useful in case where not directly redirected to a success page for example
 func (e *EventReceiver) Notify(event event.Event) {
+	return
+
 	switch currentEvent := event.(type) {
 	//Handle OrderPlacedEvent and Set Transaction to current datalayer
 	case *cart.OrderPlacedEvent:
