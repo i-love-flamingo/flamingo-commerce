@@ -15,15 +15,17 @@ type (
 	}
 
 	AddToCartEvent struct {
-		Product         productDomain.BasicProduct
-		Qty             int
+		Product        productDomain.BasicProduct
+		Qty            int
+		CurrentContext web.Context
 	}
 
 	ChangedQtyInCartEvent struct {
-		CartId          string
-		Product         productDomain.BasicProduct
-		QtyBefore       int
-		QtyAfter        int
+		CartId         string
+		Product        productDomain.BasicProduct
+		QtyBefore      int
+		QtyAfter       int
+		CurrentContext web.Context
 	}
 
 	//EventPublisher - technology free interface which is used in the Domain Layer to publish events that might be interesting for outside (Publish)

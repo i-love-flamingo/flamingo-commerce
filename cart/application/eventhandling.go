@@ -45,6 +45,7 @@ func (d *DomainEventPublisher) PublishAddToCartEvent(ctx context.Context, produc
 	}
 	if webContext, ok := ctx.(web.Context); ok {
 		d.Logger.Infof("Publish Event PublishAddToCartEvent: %v", eventObject)
+		eventObject.CurrentContext = webContext
 		webContext.EventRouter().Dispatch(&eventObject)
 	}
 }
@@ -66,6 +67,7 @@ func (d *DomainEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context,
 	}
 	if webContext, ok := ctx.(web.Context); ok {
 		d.Logger.Infof("Publish Event PublishCartChangedQtyEvent: %v", eventObject)
+		eventObject.CurrentContext = webContext
 		webContext.EventRouter().Dispatch(&eventObject)
 	}
 }
