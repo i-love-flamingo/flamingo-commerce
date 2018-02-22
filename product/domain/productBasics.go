@@ -5,6 +5,11 @@ import (
 	"time"
 )
 
+const (
+	MediaUsageList   = "list"
+	MediaUsageDetail = "detail"
+)
+
 type (
 	// BasicProductData is the basic product model
 	BasicProductData struct {
