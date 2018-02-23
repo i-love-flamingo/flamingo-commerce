@@ -58,6 +58,7 @@ type (
 		CampaignRules     []string
 		DenyMoreDiscounts bool
 		Context           PriceContext
+		TaxClass          string
 	}
 
 	// PriceContext defines the scope in which the price was calculated
