@@ -171,6 +171,13 @@ func (cart Cart) DeleteItem(ctx context.Context, auth Auth, id string) error {
 	if cart.CartOrderBehaviour == nil {
 		return errors.New("This Cart has no Behaviour attached!")
 	}
+
+	item, e := cart.GetByItemId(id)
+	if e != nil {
+		return e
+	}
+
+	cart.publishChangedQtyEvent(ctx, item, 0, 0, cart.ID)
 	return cart.CartOrderBehaviour.DeleteItem(ctx, auth, &cart, id)
 }
 
@@ -184,8 +191,6 @@ func (cart Cart) UpdateItemQty(ctx context.Context, auth Auth, id string, qty in
 		return e
 	}
 	if qty < 1 {
-		cart.publishChangedQtyEvent(ctx, item, item.Qty, 0, cart.ID)
-
 		return cart.DeleteItem(ctx, auth, id)
 	}
 
