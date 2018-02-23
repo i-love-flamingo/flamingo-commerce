@@ -19,9 +19,10 @@ type (
 	*/
 	Service struct {
 		//CurrentContext need to be set when using the service
-		CurrentContext web.Context
-		Logger         flamingo.Logger `inject:""`
-		Factory        *Factory        `inject:""`
+		CurrentContext               web.Context
+		Logger                       flamingo.Logger `inject:""`
+		Factory                      *Factory        `inject:""`
+		productDomain.ProductService `inject:""`
 	}
 )
 
@@ -36,6 +37,8 @@ func (s Service) Get() domain.Datalayer {
 		s.store(s.Factory.BuildForCurrentRequest(s.CurrentContext))
 	}
 
+	s.AddSessionEvents()
+
 	if savedDataLayer, ok := s.CurrentContext.Value("w3cDatalayer").(domain.Datalayer); ok {
 		return savedDataLayer
 	}
@@ -48,6 +51,41 @@ func (s Service) SetBreadCrumb(breadcrumb string) error {
 	layer := s.Get()
 	layer.Page.PageInfo.BreadCrumbs = breadcrumb
 	return s.store(layer)
+}
+
+func (s Service) AddSessionEvents() error {
+	session := s.CurrentContext.Session()
+	addToCartEvents := session.Flashes("addToCart")
+	for _, event := range addToCartEvents {
+		if addToCartEvent, ok := event.(cart.AddToCartEvent); ok {
+			s.Logger.WithField("category", "w3cDatalayer").Println("addToCartEvent", addToCartEvent)
+			product, err := s.ProductService.Get(s.CurrentContext, addToCartEvent.ProductIdentifier)
+
+			if err != nil {
+				return err
+			}
+			title := product.BaseData().Title
+
+			s.AddToBagEvent(addToCartEvent.ProductIdentifier, title, addToCartEvent.Qty)
+		}
+	}
+
+	changedQtyInCartEvents := session.Flashes("changedQtyInCart")
+	for _, event := range changedQtyInCartEvents {
+		if changedQtyInCartEvent, ok := event.(cart.ChangedQtyInCartEvent); ok {
+			s.Logger.WithField("category", "w3cDatalayer").Println("changedQtyInCartEvent", changedQtyInCartEvent)
+			product, err := s.ProductService.Get(s.CurrentContext, changedQtyInCartEvent.ProductIdentifier)
+
+			if err != nil {
+				return err
+			}
+
+			title := product.BaseData().Title
+			s.AddChangeQtyEvent(changedQtyInCartEvent.ProductIdentifier, title, changedQtyInCartEvent.QtyAfter, changedQtyInCartEvent.QtyBefore, changedQtyInCartEvent.CartId)
+		}
+	}
+
+	return nil
 }
 
 func (s Service) SetPageCategories(category string, subcategory1 string, subcategory2 string) error {
@@ -103,16 +141,45 @@ func (s Service) AddProduct(product productDomain.BasicProduct) error {
 func (s Service) AddEvent(eventName string, params ...*pugjs.Map) error {
 	layer := s.Get()
 
-	event := domain.Event{
-		EventInfo: make(map[string]interface{}),
-	}
-
+	event := domain.Event{EventInfo: make(map[string]interface{})}
 	event.EventInfo["eventName"] = eventName
 
 	if len(params) == 1 {
 		for k, v := range params[0].Items {
 			event.EventInfo[k.String()] = fmt.Sprint(v)
 		}
+	}
+
+	layer.Event = append(layer.Event, event)
+	return s.store(layer)
+}
+
+func (s Service) AddToBagEvent(productIdentifier string, productName string, qty int) error {
+	layer := s.Get()
+
+	event := domain.Event{EventInfo: make(map[string]interface{})}
+	event.EventInfo["eventName"] = "Add To Bag"
+	event.EventInfo["productId"] = productIdentifier
+	event.EventInfo["productName"] = productName
+	event.EventInfo["quantity"] = qty
+
+	layer.Event = append(layer.Event, event)
+	return s.store(layer)
+}
+
+func (s Service) AddChangeQtyEvent(productIdentifier string, productName string, qty int, qtyBefore int, cartId string) error {
+	layer := s.Get()
+
+	event := domain.Event{EventInfo: make(map[string]interface{})}
+	event.EventInfo["productId"] = productIdentifier
+	event.EventInfo["productName"] = productName
+	event.EventInfo["cartId"] = cartId
+
+	if qty == 0 {
+		event.EventInfo["eventName"] = "Remove Product"
+	} else {
+		event.EventInfo["eventName"] = "Update Quantity"
+		event.EventInfo["quantity"] = qty
 	}
 
 	layer.Event = append(layer.Event, event)
