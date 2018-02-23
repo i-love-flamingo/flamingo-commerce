@@ -2,36 +2,36 @@ package cart
 
 import (
 	"context"
-
-	productDomain "go.aoe.com/flamingo/core/product/domain"
-	"go.aoe.com/flamingo/framework/web"
+	"encoding/gob"
 )
 
 type (
 	OrderPlacedEvent struct {
 		Cart           *Cart
 		OrderId        string
-		CurrentContext web.Context
 	}
 
 	AddToCartEvent struct {
-		Product        productDomain.BasicProduct
-		Qty            int
-		CurrentContext web.Context
+		ProductIdentifier string
+		Qty               int
 	}
 
 	ChangedQtyInCartEvent struct {
-		CartId         string
-		Product        productDomain.BasicProduct
-		QtyBefore      int
-		QtyAfter       int
-		CurrentContext web.Context
+		CartId            string
+		ProductIdentifier string
+		QtyBefore         int
+		QtyAfter          int
 	}
 
 	//EventPublisher - technology free interface which is used in the Domain Layer to publish events that might be interesting for outside (Publish)
 	EventPublisher interface {
 		PublishOrderPlacedEvent(ctx context.Context, cart *Cart, orderId string)
-		PublishAddToCartEvent(ctx context.Context, product productDomain.BasicProduct, qty int)
+		PublishAddToCartEvent(ctx context.Context, marketPlaceCode string, qty int)
 		PublishChangedQtyInCartEvent(ctx context.Context, item *Item, qtyBefore int, qtyAfter int, cartId string)
 	}
 )
+
+func init() {
+	gob.Register(AddToCartEvent{})
+	gob.Register(ChangedQtyInCartEvent{})
+}

@@ -32,21 +32,19 @@ func (d *DomainEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart
 	}
 	if webContext, ok := ctx.(web.Context); ok {
 		d.Logger.Infof("Publish Event OrderPlacedEvent for Order: %v", orderId)
-		eventObject.CurrentContext = webContext
 		//For now we publish only to Flamingo default Event Router
-		webContext.EventRouter().Dispatch(&eventObject)
+		webContext.EventRouter().Dispatch(ctx, &eventObject)
 	}
 }
 
-func (d *DomainEventPublisher) PublishAddToCartEvent(ctx context.Context, product productDomain.BasicProduct, qty int) {
+func (d *DomainEventPublisher) PublishAddToCartEvent(ctx context.Context, marketPlaceCode string, qty int) {
 	eventObject := cartDomain.AddToCartEvent{
-		Product: product,
-		Qty:     qty,
+		ProductIdentifier: marketPlaceCode,
+		Qty:               qty,
 	}
 	if webContext, ok := ctx.(web.Context); ok {
 		d.Logger.Infof("Publish Event PublishAddToCartEvent: %v", eventObject)
-		eventObject.CurrentContext = webContext
-		webContext.EventRouter().Dispatch(&eventObject)
+		webContext.EventRouter().Dispatch(ctx, &eventObject)
 	}
 }
 
@@ -57,18 +55,15 @@ func (d *DomainEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context,
 		marketPlaceCode = item.VariantMarketPlaceCode
 	}
 
-	product, _ := d.ProductService.Get(ctx, marketPlaceCode)
-
 	eventObject := cartDomain.ChangedQtyInCartEvent{
-		CartId:    cartId,
-		Product:   product,
-		QtyBefore: qtyBefore,
-		QtyAfter:  qtyAfter,
+		CartId:            cartId,
+		ProductIdentifier: marketPlaceCode,
+		QtyBefore:         qtyBefore,
+		QtyAfter:          qtyAfter,
 	}
 	if webContext, ok := ctx.(web.Context); ok {
 		d.Logger.Infof("Publish Event PublishCartChangedQtyEvent: %v", eventObject)
-		eventObject.CurrentContext = webContext
-		webContext.EventRouter().Dispatch(&eventObject)
+		webContext.EventRouter().Dispatch(ctx, &eventObject)
 	}
 }
 
