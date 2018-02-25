@@ -37,10 +37,17 @@ func (d *DomainEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart
 	}
 }
 
-func (d *DomainEventPublisher) PublishAddToCartEvent(ctx context.Context, marketPlaceCode string, qty int) {
+func (d *DomainEventPublisher) PublishAddToCartEvent(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode string, qty int) {
+
+	product, err := d.ProductService.Get(ctx, marketPlaceCode)
+	if err != nil {
+		return
+	}
 	eventObject := cartDomain.AddToCartEvent{
-		ProductIdentifier: marketPlaceCode,
-		Qty:               qty,
+		MarketplaceCode:        marketPlaceCode,
+		VariantMarketplaceCode: variantMarketPlaceCode,
+		ProductName:            product.TeaserData().ShortTitle,
+		Qty:                    qty,
 	}
 	if webContext, ok := ctx.(web.Context); ok {
 		d.Logger.Infof("Publish Event PublishAddToCartEvent: %v", eventObject)
@@ -49,17 +56,14 @@ func (d *DomainEventPublisher) PublishAddToCartEvent(ctx context.Context, market
 }
 
 func (d *DomainEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context, item *cartDomain.Item, qtyBefore int, qtyAfter int, cartId string) {
-	marketPlaceCode := item.MarketplaceCode
-
-	if item.VariantMarketPlaceCode != "" {
-		marketPlaceCode = item.VariantMarketPlaceCode
-	}
 
 	eventObject := cartDomain.ChangedQtyInCartEvent{
-		CartId:            cartId,
-		ProductIdentifier: marketPlaceCode,
-		QtyBefore:         qtyBefore,
-		QtyAfter:          qtyAfter,
+		CartId:                 cartId,
+		MarketplaceCode:        item.MarketplaceCode,
+		VariantMarketplaceCode: item.VariantMarketPlaceCode,
+		ProductName:            item.ProductName,
+		QtyBefore:              qtyBefore,
+		QtyAfter:               qtyAfter,
 	}
 	if webContext, ok := ctx.(web.Context); ok {
 		d.Logger.Infof("Publish Event PublishCartChangedQtyEvent: %v", eventObject)

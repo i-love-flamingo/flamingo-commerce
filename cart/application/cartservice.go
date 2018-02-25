@@ -204,5 +204,5 @@ func (cs *CartService) getEmptyCart() (domaincart.Cart, error) {
 }
 
 func (cs *CartService) publishAddtoCartEvent(ctx web.Context, currentCart domaincart.Cart, addRequest domaincart.AddRequest) {
-	currentCart.EventPublisher.PublishAddToCartEvent(ctx, addRequest.MarketplaceCode, addRequest.Qty)
+	currentCart.EventPublisher.PublishAddToCartEvent(ctx, addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode, addRequest.Qty)
 }
