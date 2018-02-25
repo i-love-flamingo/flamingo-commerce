@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"log"
 	"strings"
 
 	"go.aoe.com/flamingo/core/breadcrumbs"
@@ -183,7 +182,6 @@ func (vc *View) Get(c web.Context) web.Response {
 				RenderContext:       "configurable",
 			}
 		} else {
-			log.Println("get variant by " + variantCode)
 			activeVariant, _ = configurableProduct.Variant(variantCode)
 			// 1.B. Variant selected
 			// normalize URL
@@ -191,7 +189,6 @@ func (vc *View) Get(c web.Context) web.Response {
 			if urlName != c.MustParam1("name") && skipnamecheck == "" {
 				return vc.Redirect(URLWithVariant(c.MustParam1("marketplacecode"), urlName, variantCode))
 			}
-			log.Printf("Variant Price %v / %v", activeVariant.ActivePrice.Default, activeVariant.ActivePrice)
 			configurableProduct.ActiveVariant = activeVariant
 			viewData = productViewData{
 				ConfigurableProduct: configurableProduct,
