@@ -286,3 +286,29 @@ func hashWithSHA512(value string) string {
 	//since we want to uuse it in a variable we base64 encode it (other alternative would be Hexadecimal representation "% x", h.Sum(nil)
 	return base64.URLEncoding.EncodeToString(result)
 }
+
+func (s Factory) BuildAddChangeQtyEvent(productIdentifier string, productName string, qty int, qtyBefore int, cartId string) domain.Event {
+	event := domain.Event{EventInfo: make(map[string]interface{})}
+	event.EventInfo["productId"] = productIdentifier
+	event.EventInfo["productName"] = productName
+	event.EventInfo["cartId"] = cartId
+
+	if qty == 0 {
+		event.EventInfo["eventName"] = "Remove Product"
+	} else {
+		event.EventInfo["eventName"] = "Update Quantity"
+		event.EventInfo["quantity"] = qty
+	}
+	return event
+}
+
+func (s Factory) BuildAddToBagEvent(productIdentifier string, productName string, qty int) domain.Event {
+
+	event := domain.Event{EventInfo: make(map[string]interface{})}
+	event.EventInfo["eventName"] = "Add To Bag"
+	event.EventInfo["productId"] = productIdentifier
+	event.EventInfo["productName"] = productName
+	event.EventInfo["quantity"] = qty
+
+	return event
+}

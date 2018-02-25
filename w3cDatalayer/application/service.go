@@ -2,6 +2,7 @@ package application
 
 import (
 	"fmt"
+
 	"github.com/pkg/errors"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
 	productDomain "go.aoe.com/flamingo/core/product/domain"
@@ -18,28 +19,37 @@ type (
 		It stores a dataLayer Value object for the current request context and allows interaction with it
 	*/
 	Service struct {
-		//CurrentContext need to be set when using the service
-		CurrentContext               web.Context
+		//currentContext need to be set when using the service
+		currentContext               web.Context
 		Logger                       flamingo.Logger `inject:""`
 		Factory                      *Factory        `inject:""`
 		productDomain.ProductService `inject:""`
 	}
 )
 
+const (
+	SESSION_EVENTS_KEY = "w3cdatalayer_events"
+	DATALAYER_CTX_KEY  = "w3cDatalayer"
+)
+
+func (s *Service) Init(ctx web.Context) {
+	s.currentContext = ctx
+}
+
 //Get gets the datalayer value object stored in the current context - or a freshly new build one if its the first call
-func (s Service) Get() domain.Datalayer {
-	if s.CurrentContext == nil {
+func (s *Service) Get() domain.Datalayer {
+	if s.currentContext == nil {
 		s.Logger.WithField("category", "w3cDatalayer").Error("Get called without context!")
 
 		return domain.Datalayer{}
 	}
-	if _, ok := s.CurrentContext.Value("w3cDatalayer").(domain.Datalayer); !ok {
-		s.store(s.Factory.BuildForCurrentRequest(s.CurrentContext))
+	if _, ok := s.currentContext.Value(DATALAYER_CTX_KEY).(domain.Datalayer); !ok {
+		s.store(s.Factory.BuildForCurrentRequest(s.currentContext))
 	}
 
 	s.AddSessionEvents()
 
-	if savedDataLayer, ok := s.CurrentContext.Value("w3cDatalayer").(domain.Datalayer); ok {
+	if savedDataLayer, ok := s.currentContext.Value(DATALAYER_CTX_KEY).(domain.Datalayer); ok {
 		return savedDataLayer
 	}
 	//error
@@ -47,48 +57,43 @@ func (s Service) Get() domain.Datalayer {
 	return domain.Datalayer{}
 }
 
-func (s Service) SetBreadCrumb(breadcrumb string) error {
+func (s *Service) SetBreadCrumb(breadcrumb string) error {
+	if s.currentContext == nil {
+		return errors.New("Service can only be used with currentContext - call Init() first")
+	}
 	layer := s.Get()
+	if layer.Page != nil {
+
+	}
 	layer.Page.PageInfo.BreadCrumbs = breadcrumb
 	return s.store(layer)
 }
 
-func (s Service) AddSessionEvents() error {
-	session := s.CurrentContext.Session()
-	addToCartEvents := session.Flashes("addToCart")
-	for _, event := range addToCartEvents {
-		if addToCartEvent, ok := event.(cart.AddToCartEvent); ok {
-			s.Logger.WithField("category", "w3cDatalayer").Println("addToCartEvent", addToCartEvent)
-			product, err := s.ProductService.Get(s.CurrentContext, addToCartEvent.ProductIdentifier)
-
-			if err != nil {
-				return err
-			}
-			title := product.BaseData().Title
-
-			s.AddToBagEvent(addToCartEvent.ProductIdentifier, title, addToCartEvent.Qty)
-		}
+func (s *Service) AddSessionEvents() error {
+	if s.currentContext == nil {
+		return errors.New("Service can only be used with currentContext - call Init() first")
 	}
-
-	changedQtyInCartEvents := session.Flashes("changedQtyInCart")
-	for _, event := range changedQtyInCartEvents {
-		if changedQtyInCartEvent, ok := event.(cart.ChangedQtyInCartEvent); ok {
-			s.Logger.WithField("category", "w3cDatalayer").Println("changedQtyInCartEvent", changedQtyInCartEvent)
-			product, err := s.ProductService.Get(s.CurrentContext, changedQtyInCartEvent.ProductIdentifier)
-
+	session := s.currentContext.Session()
+	sessionEvents := session.Flashes(SESSION_EVENTS_KEY)
+	for _, event := range sessionEvents {
+		if event, ok := event.(domain.Event); ok {
+			s.Logger.WithField("category", "w3cDatalayer").Debugf("SESSION_EVENTS_KEY Event", event.EventInfo)
+			layer := s.Get()
+			layer.Event = append(layer.Event, event)
+			err := s.store(layer)
 			if err != nil {
 				return err
 			}
-
-			title := product.BaseData().Title
-			s.AddChangeQtyEvent(changedQtyInCartEvent.ProductIdentifier, title, changedQtyInCartEvent.QtyAfter, changedQtyInCartEvent.QtyBefore, changedQtyInCartEvent.CartId)
 		}
 	}
 
 	return nil
 }
 
-func (s Service) SetPageCategories(category string, subcategory1 string, subcategory2 string) error {
+func (s *Service) SetPageCategories(category string, subcategory1 string, subcategory2 string) error {
+	if s.currentContext == nil {
+		return errors.New("Service can only be used with currentContext - call Init() first")
+	}
 	layer := s.Get()
 	if layer.Page == nil {
 		layer.Page = &domain.Page{}
@@ -102,7 +107,10 @@ func (s Service) SetPageCategories(category string, subcategory1 string, subcate
 	return s.store(layer)
 }
 
-func (s Service) SetPageInfos(pageId string, pageName string) error {
+func (s *Service) SetPageInfos(pageId string, pageName string) error {
+	if s.currentContext == nil {
+		return errors.New("Service can only be used with currentContext - call Init() first")
+	}
 	layer := s.Get()
 	if layer.Page == nil {
 		layer.Page = &domain.Page{}
@@ -116,14 +124,20 @@ func (s Service) SetPageInfos(pageId string, pageName string) error {
 	return s.store(layer)
 }
 
-func (s Service) SetCartData(cart cart.DecoratedCart) error {
+func (s *Service) SetCartData(cart cart.DecoratedCart) error {
+	if s.currentContext == nil {
+		return errors.New("Service can only be used with currentContext - call Init() first")
+	}
 	s.Logger.WithField("category", "w3cDatalayer").Debugf("Set Cart Data for cart %v", cart.Cart.ID)
 	layer := s.Get()
 	layer.Cart = s.Factory.BuildCartData(cart)
 	return s.store(layer)
 }
 
-func (s Service) SetTransaction(cartTotals cart.CartTotals, decoratedItems []cart.DecoratedCartItem, orderId string) error {
+func (s *Service) SetTransaction(cartTotals cart.CartTotals, decoratedItems []cart.DecoratedCartItem, orderId string) error {
+	if s.currentContext == nil {
+		return errors.New("Service can only be used with currentContext - call Init() first")
+	}
 	s.Logger.WithField("category", "w3cDatalayer").Debugf("Set Transaction Data for order %v", orderId)
 	layer := s.Get()
 	layer.Transaction = s.Factory.BuildTransactionData(cartTotals, decoratedItems, orderId)
@@ -131,14 +145,20 @@ func (s Service) SetTransaction(cartTotals cart.CartTotals, decoratedItems []car
 }
 
 // AddProduct - appends the productData to the datalayer
-func (s Service) AddProduct(product productDomain.BasicProduct) error {
+func (s *Service) AddProduct(product productDomain.BasicProduct) error {
+	if s.currentContext == nil {
+		return errors.New("Service can only be used with currentContext - call Init() first")
+	}
 	layer := s.Get()
 	layer.Product = append(layer.Product, s.Factory.BuildProductData(product))
 	return s.store(layer)
 }
 
 //AddEvent - adds an event with the given eventName to the datalayer
-func (s Service) AddEvent(eventName string, params ...*pugjs.Map) error {
+func (s *Service) AddEvent(eventName string, params ...*pugjs.Map) error {
+	if s.currentContext == nil {
+		return errors.New("Service can only be used with currentContext - call Init() first")
+	}
 	layer := s.Get()
 
 	event := domain.Event{EventInfo: make(map[string]interface{})}
@@ -154,7 +174,10 @@ func (s Service) AddEvent(eventName string, params ...*pugjs.Map) error {
 	return s.store(layer)
 }
 
-func (s Service) AddToBagEvent(productIdentifier string, productName string, qty int) error {
+func (s *Service) AddToBagEvent(productIdentifier string, productName string, qty int) error {
+	if s.currentContext == nil {
+		return errors.New("Service can only be used with currentContext - call Init() first")
+	}
 	layer := s.Get()
 
 	event := domain.Event{EventInfo: make(map[string]interface{})}
@@ -167,7 +190,10 @@ func (s Service) AddToBagEvent(productIdentifier string, productName string, qty
 	return s.store(layer)
 }
 
-func (s Service) AddChangeQtyEvent(productIdentifier string, productName string, qty int, qtyBefore int, cartId string) error {
+func (s *Service) AddChangeQtyEvent(productIdentifier string, productName string, qty int, qtyBefore int, cartId string) error {
+	if s.currentContext == nil {
+		return errors.New("Service can only be used with currentContext - call Init() first")
+	}
 	layer := s.Get()
 
 	event := domain.Event{EventInfo: make(map[string]interface{})}
@@ -187,13 +213,13 @@ func (s Service) AddChangeQtyEvent(productIdentifier string, productName string,
 }
 
 //store datalayer in current context
-func (s Service) store(layer domain.Datalayer) error {
+func (s *Service) store(layer domain.Datalayer) error {
 	s.Logger.Debugf("Update %#v", layer)
-	if s.CurrentContext == nil {
+	if s.currentContext == nil {
 		s.Logger.WithField("category", "w3cDatalayer").Error("Update called without context!")
 		return errors.New("Update called without context")
 	}
-	s.CurrentContext.WithValue("w3cDatalayer", layer)
+	s.currentContext.WithValue(DATALAYER_CTX_KEY, layer)
 
 	return nil
 }

@@ -1,6 +1,9 @@
 package domain
 
-import "encoding/json"
+import (
+	"encoding/gob"
+	"encoding/json"
+)
 
 type (
 	DatalayerProvider func() *Datalayer
@@ -168,6 +171,10 @@ type (
 		Retailer                 string  `json:"retailer"`
 	}
 )
+
+func init() {
+	gob.Register(Event{})
+}
 
 //MarshalJSON - is here to make sure the renderingengine uses this json interface instead of own encoding
 func (d Datalayer) MarshalJSON() ([]byte, error) {

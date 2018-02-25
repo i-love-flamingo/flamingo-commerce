@@ -11,45 +11,46 @@ import (
 
 type (
 	EventReceiver struct {
-		Service              *Service                   `inject:""`
+		Factory              *Factory                   `inject:""`
 		CartDecoratorFactory *cart.DecoratedCartFactory `inject:""`
 		Logger               flamingo.Logger            `inject:""`
 	}
 )
 
-//NotifyWithContext should get called by flamingo Eventlogic
-// - OrderPlacedEvent is used to attach TransactionData - This is only useful in case where not directly redirected to a success page for example
+//NotifyWithContext should get called by flamingo Eventlogic.
+// We use it to listen to Events that are relevant for the Datalayer
+// In case the events might be asycron (e.g. the origin action does a redirect to a sucess page) - we save the datalayer Event to a Session Flash - to make sure it is still available the first time the DatalayerService.Get is calles
 func (e *EventReceiver) NotifyWithContext(ctx context.Context, event event.Event) {
 	switch currentEvent := event.(type) {
 	//Handle OrderPlacedEvent and Set Transaction to current datalayer
-	case *cart.OrderPlacedEvent:
-		e.Logger.WithField("category", "w3cDatalayer").Debugf("Receive Event")
-
-		decoratedCart := e.CartDecoratorFactory.Create(ctx, *currentEvent.Cart)
-		if decoratedCart != nil {
-			if webContext, ok := ctx.(web.Context); ok {
-				e.Service.CurrentContext = webContext
-				e.Service.SetTransaction(decoratedCart.Cart.GetCartTotals(), decoratedCart.DecoratedItems, currentEvent.OrderId)
-				e.Service.AddEvent("orderplaced")
-			}
-		}
 	case *cart.AddToCartEvent:
-		e.Logger.WithField("category", "w3cDatalayer").Debugf("Receive Event")
-
+		e.Logger.WithField("category", "w3cDatalayer").Debugf("Receive Event AddToCartEvent")
 		if webContext, ok := ctx.(web.Context); ok {
+			// In case of Configurable: the MarketplaceCode which is interesting for the datalayer is the Variant that is selected
+			saleableProductCode := currentEvent.MarketplaceCode
+			if currentEvent.VariantMarketplaceCode != "" {
+				saleableProductCode = currentEvent.VariantMarketplaceCode
+			}
+			dataLayerEvent := e.Factory.BuildAddToBagEvent(saleableProductCode, currentEvent.ProductName, currentEvent.Qty)
 			webContext.Session().AddFlash(
-				event,
-				"addToCart",
+				dataLayerEvent,
+				SESSION_EVENTS_KEY,
 			)
 		}
 	case *cart.ChangedQtyInCartEvent:
-		e.Logger.WithField("category", "w3cDatalayer").Debugf("Receive Event")
+		e.Logger.WithField("category", "w3cDatalayer").Debugf("Receive Event ChangedQtyInCartEvent")
 
 		if webContext, ok := ctx.(web.Context); ok {
+			saleableProductCode := currentEvent.MarketplaceCode
+			if currentEvent.VariantMarketplaceCode != "" {
+				saleableProductCode = currentEvent.VariantMarketplaceCode
+			}
+			dataLayerEvent := e.Factory.BuildAddChangeQtyEvent(saleableProductCode, currentEvent.ProductName, currentEvent.QtyAfter, currentEvent.QtyBefore, currentEvent.CartId)
 			webContext.Session().AddFlash(
-				event,
-				"changedQtyInCart",
+				dataLayerEvent,
+				SESSION_EVENTS_KEY,
 			)
+
 		}
 	}
 }

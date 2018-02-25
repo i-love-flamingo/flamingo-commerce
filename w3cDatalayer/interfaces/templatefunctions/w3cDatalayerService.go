@@ -20,9 +20,9 @@ func (w3cdl W3cDatalayerService) Name() string {
 func (w3cdl W3cDatalayerService) Func(ctx web.Context) interface{} {
 	// Usage
 	// w3cDatalayerService().get()
-	return func() application.Service {
+	return func() *application.Service {
 		service := w3cdl.ApplicationServiceProvider()
-		service.CurrentContext = ctx
-		return *service
+		service.Init(ctx)
+		return service
 	}
 }
