@@ -28,6 +28,7 @@ type (
 	}
 
 	AddressFormData struct {
+		Title            string `form:"title"`
 		RegionCode       string `form:"regionCode" conform:"name"`
 		CountryCode      string `form:"countryCode" conform:"name"`
 		Company          string `form:"company" conform:"trim"`
@@ -173,13 +174,17 @@ func mapAddress(addressData AddressFormData) *cart.Address {
 	lines[0] = addressData.AddressLine1
 	lines[1] = addressData.AddressLine2
 
+	firstName := addressData.Firstname
+	if addressData.Title != "" {
+		firstName = addressData.Title + " " + firstName
+	}
 	address := cart.Address{
-		CountryCode:            addressData.CountryCode,
-		Company:                addressData.Company,
-		Lastname:               addressData.Lastname,
-		Firstname:              addressData.Firstname,
-		Email:                  addressData.Email,
-		City:                   addressData.City,
+		CountryCode: addressData.CountryCode,
+		Company:     addressData.Company,
+		Lastname:    addressData.Lastname,
+		Firstname:   firstName,
+		Email:       addressData.Email,
+		City:        addressData.City,
 		AdditionalAddressLines: lines,
 		RegionCode:             addressData.RegionCode,
 		Street:                 addressData.Street,
