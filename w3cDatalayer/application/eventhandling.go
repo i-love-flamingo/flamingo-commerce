@@ -45,7 +45,7 @@ func (e *EventReceiver) NotifyWithContext(ctx context.Context, event event.Event
 			if currentEvent.VariantMarketplaceCode != "" {
 				saleableProductCode = currentEvent.VariantMarketplaceCode
 			}
-			dataLayerEvent := e.Factory.BuildAddChangeQtyEvent(saleableProductCode, currentEvent.ProductName, currentEvent.QtyAfter, currentEvent.QtyBefore, currentEvent.CartId)
+			dataLayerEvent := e.Factory.BuildChangeQtyEvent(saleableProductCode, currentEvent.ProductName, currentEvent.QtyAfter, currentEvent.QtyBefore, currentEvent.CartId)
 			webContext.Session().AddFlash(
 				dataLayerEvent,
 				SESSION_EVENTS_KEY,

@@ -287,7 +287,7 @@ func hashWithSHA512(value string) string {
 	return base64.URLEncoding.EncodeToString(result)
 }
 
-func (s Factory) BuildAddChangeQtyEvent(productIdentifier string, productName string, qty int, qtyBefore int, cartId string) domain.Event {
+func (s Factory) BuildChangeQtyEvent(productIdentifier string, productName string, qty int, qtyBefore int, cartId string) domain.Event {
 	event := domain.Event{EventInfo: make(map[string]interface{})}
 	event.EventInfo["productId"] = productIdentifier
 	event.EventInfo["productName"] = productName
