@@ -9,6 +9,7 @@ type (
 	Category interface {
 		Code() string
 		Name() string
+		Path() string
 		Categories() []Category
 		Active() bool
 	}
