@@ -73,18 +73,25 @@ func (s *Service) AddSessionEvents() error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
 	}
-	session := s.currentContext.Session()
-	sessionEvents := session.Flashes(SESSION_EVENTS_KEY)
+	sessionEvents := s.currentContext.Session().Flashes(SESSION_EVENTS_KEY)
+
+	// early return if there are no events
+	if len(sessionEvents) == 0 {
+		return nil
+	}
+
+	layer := s.Get()
+
 	for _, event := range sessionEvents {
 		if event, ok := event.(domain.Event); ok {
 			s.Logger.WithField("category", "w3cDatalayer").Debugf("SESSION_EVENTS_KEY Event", event.EventInfo)
-			layer := s.Get()
 			layer.Event = append(layer.Event, event)
-			err := s.store(layer)
-			if err != nil {
-				return err
-			}
 		}
+	}
+
+	err := s.store(layer)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -168,44 +175,6 @@ func (s *Service) AddEvent(eventName string, params ...*pugjs.Map) error {
 		for k, v := range params[0].Items {
 			event.EventInfo[k.String()] = fmt.Sprint(v)
 		}
-	}
-
-	layer.Event = append(layer.Event, event)
-	return s.store(layer)
-}
-
-func (s *Service) AddToBagEvent(productIdentifier string, productName string, qty int) error {
-	if s.currentContext == nil {
-		return errors.New("Service can only be used with currentContext - call Init() first")
-	}
-	layer := s.Get()
-
-	event := domain.Event{EventInfo: make(map[string]interface{})}
-	event.EventInfo["eventName"] = "Add To Bag"
-	event.EventInfo["productId"] = productIdentifier
-	event.EventInfo["productName"] = productName
-	event.EventInfo["quantity"] = qty
-
-	layer.Event = append(layer.Event, event)
-	return s.store(layer)
-}
-
-func (s *Service) AddChangeQtyEvent(productIdentifier string, productName string, qty int, qtyBefore int, cartId string) error {
-	if s.currentContext == nil {
-		return errors.New("Service can only be used with currentContext - call Init() first")
-	}
-	layer := s.Get()
-
-	event := domain.Event{EventInfo: make(map[string]interface{})}
-	event.EventInfo["productId"] = productIdentifier
-	event.EventInfo["productName"] = productName
-	event.EventInfo["cartId"] = cartId
-
-	if qty == 0 {
-		event.EventInfo["eventName"] = "Remove Product"
-	} else {
-		event.EventInfo["eventName"] = "Update Quantity"
-		event.EventInfo["quantity"] = qty
 	}
 
 	layer.Event = append(layer.Event, event)
