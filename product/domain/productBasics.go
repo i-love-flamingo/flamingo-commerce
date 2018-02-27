@@ -72,7 +72,12 @@ type (
 	TeaserData struct {
 		ShortTitle       string
 		ShortDescription string
-		Media            []Media
+		//TeaserPrice is the price that should be shown in teasers (listview)
+		TeaserPrice PriceInfo
+		//TeaserPriceIsFromPrice - is set to true in cases where a product might have different prices (e.g. configurable)
+		TeaserPriceIsFromPrice bool
+
+		Media []Media
 		//The sku that should be used to link from Teasers
 		MarketPlaceCode string
 	}
