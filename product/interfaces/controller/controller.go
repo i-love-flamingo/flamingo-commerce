@@ -174,7 +174,7 @@ func (vc *View) Get(c web.Context) web.Response {
 			// normalize URL
 			urlName := web.URLTitle(configurableProduct.ConfigurableBaseData().Title)
 			if urlName != c.MustParam1("name") && skipnamecheck == "" {
-				return vc.Redirect(URL(c.MustParam1("marketplacecode"), urlName))
+				return vc.RedirectPermanent(URL(c.MustParam1("marketplacecode"), urlName))
 			}
 			viewData = productViewData{
 				ConfigurableProduct: configurableProduct,
@@ -187,7 +187,7 @@ func (vc *View) Get(c web.Context) web.Response {
 			// normalize URL
 			urlName := web.URLTitle(activeVariant.BasicProductData.Title)
 			if urlName != c.MustParam1("name") && skipnamecheck == "" {
-				return vc.Redirect(URLWithVariant(c.MustParam1("marketplacecode"), urlName, variantCode))
+				return vc.RedirectPermanent(URLWithVariant(c.MustParam1("marketplacecode"), urlName, variantCode))
 			}
 			configurableProduct.ActiveVariant = activeVariant
 			viewData = productViewData{
@@ -204,7 +204,7 @@ func (vc *View) Get(c web.Context) web.Response {
 		// normalize URL
 		urlName := web.URLTitle(product.BaseData().Title)
 		if urlName != c.MustParam1("name") && skipnamecheck == "" {
-			return vc.Redirect(URL(c.MustParam1("marketplacecode"), urlName))
+			return vc.RedirectPermanent(URL(c.MustParam1("marketplacecode"), urlName))
 		}
 
 		simpleProduct := product.(domain.SimpleProduct)
