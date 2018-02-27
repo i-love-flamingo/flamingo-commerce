@@ -96,7 +96,6 @@ func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
 }
 
 // SubmitUserCheckoutAction handles the user order submit
-// TODO: implement this
 func (cc *CheckoutController) SubmitUserCheckoutAction(ctx web.Context) web.Response {
 	//Guard
 	if !cc.UserService.IsLoggedIn(ctx) {
@@ -113,6 +112,9 @@ func (cc *CheckoutController) SubmitUserCheckoutAction(ctx web.Context) web.Resp
 // SubmitGuestCheckoutAction handles the guest order submit
 func (cc *CheckoutController) SubmitGuestCheckoutAction(ctx web.Context) web.Response {
 	cc.CheckoutFormService.Customer = nil
+	if cc.UserService.IsLoggedIn(ctx) {
+		return cc.Redirect("checkout.user", nil)
+	}
 	return cc.submitOrderForm(ctx, cc.CheckoutFormService, "checkout/guestcheckout")
 }
 
