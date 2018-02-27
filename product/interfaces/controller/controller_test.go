@@ -50,10 +50,10 @@ func TestViewController_Get(t *testing.T) {
 	vc.Router.SetBase(u)
 	vc.Router.RouterRegistry.Route("/", `product.view(marketplacecode?="test", name?="test", variant?="test")`)
 
-	redirectAware.On("Redirect", mock.AnythingOfType("string"), mock.AnythingOfType("map[string]string")).Return(nil)
+	redirectAware.On("RedirectPermanent", mock.AnythingOfType("string"), mock.AnythingOfType("map[string]string")).Return(nil)
 	ctx.LoadParams(router.P{"marketplacecode": "test", "name": "testname"})
 	vc.Get(ctx)
-	redirectAware.AssertCalled(t, "Redirect", "product.view", map[string]string{"name": expectedUrlTitle, "marketplacecode": "test"})
+	redirectAware.AssertCalled(t, "RedirectPermanent", "product.view", map[string]string{"name": expectedUrlTitle, "marketplacecode": "test"})
 
 	renderAware.On("Render", ctx, mock.AnythingOfType("string"), mock.AnythingOfType("controller.productViewData")).Return(nil)
 	ctx.LoadParams(router.P{"marketplacecode": "test", "name": expectedUrlTitle})
