@@ -81,6 +81,8 @@ func (s Factory) BuildForCurrentRequest(ctx web.Context) domain.Datalayer {
 		if userData != nil {
 			layer.User = append(layer.User, *userData)
 		}
+	} else {
+		layer.Page.Attributes["logintype"] = "guest"
 	}
 	return *layer
 }

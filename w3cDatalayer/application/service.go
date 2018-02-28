@@ -131,14 +131,20 @@ func (s *Service) SetPageInfos(pageId string, pageName string) error {
 	return s.store(layer)
 }
 
-//SetUserEMail
-func (s *Service) SetUserEMail(mail string) error {
+//SetUserEmail to a User object
+func (s *Service) SetUserEmail(mail string) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
 	}
 	s.Logger.WithField("category", "w3cDatalayer").Debugf("Set Usermail %v", mail)
 	layer := s.Get()
-
+	layer.User = append(layer.User, domain.User{
+		Profile: []domain.UserProfile{domain.UserProfile{
+			ProfileInfo: domain.UserProfileInfo{
+				EmailID: mail,
+			},
+		}},
+	})
 	return s.store(layer)
 }
 
