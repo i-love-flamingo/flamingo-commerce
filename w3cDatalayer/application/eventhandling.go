@@ -3,7 +3,9 @@ package application
 import (
 	"context"
 
+	authDomain "go.aoe.com/flamingo/core/auth/domain"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
+	"go.aoe.com/flamingo/core/w3cDatalayer/domain"
 	"go.aoe.com/flamingo/framework/event"
 	"go.aoe.com/flamingo/framework/flamingo"
 	"go.aoe.com/flamingo/framework/web"
@@ -52,5 +54,18 @@ func (e *EventReceiver) NotifyWithContext(ctx context.Context, event event.Event
 			)
 
 		}
+	case *authDomain.LoginEvent:
+		e.Logger.WithField("category", "w3cDatalayer").Debugf("Receive Event LoginEvent")
+		if webContext, ok := ctx.(web.Context); ok {
+
+			dataLayerEvent := domain.Event{EventInfo: make(map[string]interface{})}
+			dataLayerEvent.EventInfo["eventName"] = "login"
+			webContext.Session().AddFlash(
+				dataLayerEvent,
+				SESSION_EVENTS_KEY,
+			)
+
+		}
 	}
+
 }
