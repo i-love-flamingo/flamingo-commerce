@@ -38,8 +38,15 @@ type (
 	Page struct {
 		PageInfo   PageInfo               `json:"pageInfo,omitempty"`
 		Category   PageCategory           `json:"category,omitempty"`
+		Search     SearchInfo             `json:"search,omitempty"`
 		Attributes map[string]interface{} `json:"attributes,omitempty"`
 	}
+
+	SearchInfo struct {
+		SearchKeyword string      `json:"searchKeyword,omitempty"`
+		Result        interface{} `json:"result,omitempty"`
+	}
+
 	PageInfo struct {
 		PageID         string `json:"pageID,omitempty"`
 		DestinationURL string `json:"destinationURL,omitempty"`

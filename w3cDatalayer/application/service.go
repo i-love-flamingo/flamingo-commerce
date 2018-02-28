@@ -148,6 +148,22 @@ func (s *Service) SetUserEmail(mail string) error {
 	return s.store(layer)
 }
 
+//SetUserEmail to a User object
+func (s *Service) SetSearchData(keyword string, results interface{}) error {
+	if s.currentContext == nil {
+		return errors.New("Service can only be used with currentContext - call Init() first")
+	}
+	s.Logger.WithField("category", "w3cDatalayer").Debugf("SetSearchData Keyword %v Result: %#v", keyword, results)
+	layer := s.Get()
+	if layer.Page != nil {
+		layer.Page.Search = domain.SearchInfo{
+			SearchKeyword: keyword,
+			Result:        results,
+		}
+	}
+	return s.store(layer)
+}
+
 func (s *Service) SetCartData(cart cart.DecoratedCart) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
