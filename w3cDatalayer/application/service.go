@@ -131,6 +131,17 @@ func (s *Service) SetPageInfos(pageId string, pageName string) error {
 	return s.store(layer)
 }
 
+//SetUserEMail
+func (s *Service) SetUserEMail(mail string) error {
+	if s.currentContext == nil {
+		return errors.New("Service can only be used with currentContext - call Init() first")
+	}
+	s.Logger.WithField("category", "w3cDatalayer").Debugf("Set Usermail %v", mail)
+	layer := s.Get()
+
+	return s.store(layer)
+}
+
 func (s *Service) SetCartData(cart cart.DecoratedCart) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
