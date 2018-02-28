@@ -48,6 +48,10 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 	if typ, err := c.Param1("type"); err == nil {
 		searchResult, err := vc.SearchService.SearchFor(c, typ, filter...)
 		if err != nil {
+			if re, ok := err.(*domain.RedirectError); ok {
+				return vc.RedirectPermanentURL(re.To)
+			}
+
 			return vc.Error(c, err)
 		}
 		vd.SearchMeta.NumResults = searchResult.SearchMeta.NumResults
@@ -55,8 +59,13 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 		vd.PaginationInfo = vc.PaginationInfoFactory.Build(searchResult.SearchMeta.Page, searchResult.SearchMeta.NumResults, 30, searchResult.SearchMeta.NumPages, c.Request().URL)
 		return vc.Render(c, "search/"+typ, vd)
 	}
+
 	searchResult, err := vc.SearchService.Search(c, filter...)
 	if err != nil {
+		if re, ok := err.(*domain.RedirectError); ok {
+			return vc.RedirectPermanentURL(re.To)
+		}
+
 		return vc.Error(c, err)
 	}
 	vd.SearchResult = searchResult

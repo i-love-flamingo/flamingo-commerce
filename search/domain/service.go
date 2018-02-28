@@ -79,7 +79,15 @@ type (
 		Search(ctx context.Context, filter ...Filter) (results map[string]Result, err error)
 		SearchFor(ctx context.Context, typ string, filter ...Filter) (result Result, err error)
 	}
+
+	RedirectError struct {
+		To string
+	}
 )
+
+func (re *RedirectError) Error() string {
+	return "Error: enforced redirect to " + re.To
+}
 
 func (fs FacetSlice) Len() int {
 	return len(fs)
