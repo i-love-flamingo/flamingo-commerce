@@ -196,6 +196,7 @@ func (s Factory) getProductCategory(product productDomain.BasicProduct) *domain.
 	return &domain.ProductCategory{
 		PrimaryCategory: level0,
 		SubCategory1:    level1,
+		SubCategory:     level1,
 		ProductType:     productFamily,
 	}
 }

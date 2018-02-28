@@ -161,6 +161,7 @@ type (
 	ProductCategory struct {
 		PrimaryCategory string `json:"primaryCategory,omitempty"`
 		SubCategory1    string `json:"subCategory1,omitempty"`
+		SubCategory     string `json:"subCategory,omitempty"`
 		ProductType     string `json:"productType"`
 	}
 	ProductInfo struct {
