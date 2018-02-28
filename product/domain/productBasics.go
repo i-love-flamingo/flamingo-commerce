@@ -76,7 +76,9 @@ type (
 		TeaserPrice PriceInfo
 		//TeaserPriceIsFromPrice - is set to true in cases where a product might have different prices (e.g. configurable)
 		TeaserPriceIsFromPrice bool
-
+		//PreSelectedVariantSku - might be set for configurables to give a hint to link to a variant of a configurable (That might be the case if a user filters for an attribute and in the teaser the variant with that attribute is shown)
+		PreSelectedVariantSku string
+		//Media
 		Media []Media
 		//The sku that should be used to link from Teasers
 		MarketPlaceCode string
