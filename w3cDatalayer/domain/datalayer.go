@@ -163,7 +163,8 @@ type (
 		PrimaryCategory string `json:"primaryCategory,omitempty"`
 		SubCategory1    string `json:"subCategory1,omitempty"`
 		SubCategory     string `json:"subCategory,omitempty"`
-		ProductType     string `json:"productType"`
+		SubCategory2    string `json:"subCategory2,omitempty"`
+		ProductType     string `json:"productType,omitempty"`
 	}
 	ProductInfo struct {
 		ProductID   string `json:"productID"`

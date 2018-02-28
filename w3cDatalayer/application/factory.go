@@ -206,15 +206,29 @@ func (s Factory) BuildProductData(product productDomain.BasicProduct) domain.Pro
 func (s Factory) getProductCategory(product productDomain.BasicProduct) *domain.ProductCategory {
 	level0 := ""
 	level1 := ""
-	if len(product.BaseData().CategoryPath) > 0 {
-		firstPathLevels := strings.Split(product.BaseData().CategoryPath[0], "/")
-		if len(firstPathLevels) > 0 {
-			level0 = firstPathLevels[0]
-		}
-		if len(firstPathLevels) > 1 {
-			level1 = firstPathLevels[1]
+	level2 := ""
+	previousPathParts := 0
+	longestFirstPath := ""
+	for _, path := range product.BaseData().CategoryPath {
+		pathParts := strings.Count(path, "/") + 1
+		if pathParts > previousPathParts {
+			previousPathParts = pathParts
+		} else {
+			//last path was longest first match
+			longestFirstPath = path
 		}
 	}
+	firstPathLevels := strings.Split(longestFirstPath, "/")
+	if len(firstPathLevels) > 0 {
+		level0 = firstPathLevels[0]
+	}
+	if len(firstPathLevels) > 1 {
+		level1 = firstPathLevels[1]
+	}
+	if len(firstPathLevels) > 2 {
+		level2 = firstPathLevels[2]
+	}
+
 	productFamily := ""
 	if product.BaseData().HasAttribute("gs1Family") {
 		productFamily = product.BaseData().Attributes["gs1Family"].Value()
@@ -222,6 +236,7 @@ func (s Factory) getProductCategory(product productDomain.BasicProduct) *domain.
 	return &domain.ProductCategory{
 		PrimaryCategory: level0,
 		SubCategory1:    level1,
+		SubCategory2:    level2,
 		SubCategory:     level1,
 		ProductType:     productFamily,
 	}
@@ -240,6 +255,8 @@ func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.Produ
 				variantSelectedAttribute := configurable.ActiveVariant.BaseData().Attributes[configurable.VariantVariationAttributes[0]].Value()
 				variantSelectedAttributeRef = &variantSelectedAttribute
 				baseData = configurable.ActiveVariant.BaseData()
+			} else {
+				baseData = configurable.ConfigurableBaseData()
 			}
 		}
 	}
@@ -260,7 +277,7 @@ func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.Produ
 	}
 	brand := ""
 	if baseData.HasAttribute("brandCode") {
-		size = baseData.Attributes["brandCode"].Value()
+		brand = baseData.Attributes["brandCode"].Value()
 	}
 	gtin := ""
 	if baseData.HasAttribute("gtin") {
