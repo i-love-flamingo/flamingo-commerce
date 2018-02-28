@@ -174,13 +174,24 @@ func (s *Service) SetCartData(cart cart.DecoratedCart) error {
 	return s.store(layer)
 }
 
-func (s *Service) SetTransaction(cartTotals cart.CartTotals, decoratedItems []cart.DecoratedCartItem, orderId string) error {
+func (s *Service) SetTransaction(cartTotals cart.CartTotals, decoratedItems []cart.DecoratedCartItem, orderId string, email string) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
 	}
-	s.Logger.WithField("category", "w3cDatalayer").Debugf("Set Transaction Data for order %v", orderId)
+	s.Logger.WithField("category", "w3cDatalayer").Debugf("Set Transaction Data for order %v mail %v", orderId, email)
 	layer := s.Get()
-	layer.Transaction = s.Factory.BuildTransactionData(cartTotals, decoratedItems, orderId)
+	layer.Transaction = s.Factory.BuildTransactionData(s.currentContext, cartTotals, decoratedItems, orderId, email)
+	return s.store(layer)
+}
+
+func (s *Service) AddTransactionAttribute(key string, value string) error {
+	if s.currentContext == nil {
+		return errors.New("Service can only be used with currentContext - call Init() first")
+	}
+	layer := s.Get()
+	if layer.Transaction != nil && layer.Transaction.Attributes != nil {
+		layer.Transaction.Attributes[key] = value
+	}
 	return s.store(layer)
 }
 

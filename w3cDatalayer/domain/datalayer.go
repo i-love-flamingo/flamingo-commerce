@@ -104,7 +104,7 @@ type (
 	UserProfileInfo struct {
 		EmailID   string `json:"emailID,omitempty"`
 		UserName  string `json:"userName,omitempty"`
-		ProfileID string `json:"profileID,omitempty"`
+		ProfileID string `json:"profileID"`
 		Rewards   string `json:"rewards,omitempty"`
 	}
 
@@ -141,10 +141,11 @@ type (
 		PriceWithTax float64 `json:"priceWithTax"`
 	}
 	Transaction struct {
-		TransactionID string            `json:"transactionID,omitempty"`
-		Profile       *UserProfile      `json:"profile,omitempty"`
-		Price         *TransactionPrice `json:"total,omitempty"`
-		Item          []CartItem        `json:"item,omitempty"`
+		TransactionID string                 `json:"transactionID,omitempty"`
+		Profile       *UserProfile           `json:"profile,omitempty"`
+		Price         *TransactionPrice      `json:"total,omitempty"`
+		Item          []CartItem             `json:"item,omitempty"`
+		Attributes    map[string]interface{} `json:"attributes,omitempty"`
 	}
 	TransactionPrice struct {
 		//The basePrice SHOULD be the price of the items before applicable discounts,shipping charges, and tax.

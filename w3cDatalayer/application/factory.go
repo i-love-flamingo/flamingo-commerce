@@ -88,26 +88,41 @@ func (s Factory) BuildForCurrentRequest(ctx web.Context) domain.Datalayer {
 }
 
 func (s Factory) getUser(ctx web.Context) *domain.User {
+
+	dataLayerProfile := s.getUserProfileForCurrentUser(ctx)
+	if dataLayerProfile == nil {
+		return nil
+	}
+
+	dataLayerUser := domain.User{}
+	dataLayerUser.Profile = append(dataLayerUser.Profile, *dataLayerProfile)
+	return &dataLayerUser
+}
+
+func (s Factory) getUserProfileForCurrentUser(ctx web.Context) *domain.UserProfile {
 	user := s.UserService.GetUser(ctx)
 	if user == nil {
 		return nil
 	}
+	return s.getUserProfile(user.Email, user.Sub)
+}
 
+func (s Factory) getUserProfile(email string, sub string) *domain.UserProfile {
 	dataLayerProfile := domain.UserProfile{
 		ProfileInfo: domain.UserProfileInfo{
-			EmailID:   user.Email,
-			ProfileID: user.Sub,
+			EmailID:   email,
+			ProfileID: sub,
 		},
 	}
-
 	if s.HashUserValues {
-		dataLayerProfile.ProfileInfo.EmailID = hashWithSHA512(dataLayerProfile.ProfileInfo.EmailID)
-		dataLayerProfile.ProfileInfo.ProfileID = hashWithSHA512(dataLayerProfile.ProfileInfo.ProfileID)
+		if dataLayerProfile.ProfileInfo.EmailID != "" {
+			dataLayerProfile.ProfileInfo.EmailID = hashWithSHA512(dataLayerProfile.ProfileInfo.EmailID)
+		}
+		if dataLayerProfile.ProfileInfo.ProfileID != "" {
+			dataLayerProfile.ProfileInfo.ProfileID = hashWithSHA512(dataLayerProfile.ProfileInfo.ProfileID)
+		}
 	}
-
-	dataLayerUser := domain.User{}
-	dataLayerUser.Profile = append(dataLayerUser.Profile, dataLayerProfile)
-	return &dataLayerUser
+	return &dataLayerProfile
 }
 
 func (s Factory) BuildCartData(cart cart.DecoratedCart) *domain.Cart {
@@ -129,7 +144,14 @@ func (s Factory) BuildCartData(cart cart.DecoratedCart) *domain.Cart {
 	return &cartData
 }
 
-func (s Factory) BuildTransactionData(cartTotals cart.CartTotals, decoratedItems []cart.DecoratedCartItem, orderId string) *domain.Transaction {
+func (s Factory) BuildTransactionData(ctx web.Context, cartTotals cart.CartTotals, decoratedItems []cart.DecoratedCartItem, orderId string, email string) *domain.Transaction {
+	var profile *domain.UserProfile
+	if s.UserService.IsLoggedIn(ctx) {
+		profile = s.getUserProfileForCurrentUser(ctx)
+	} else {
+		profile = s.getUserProfile(email, "")
+	}
+
 	transactionData := domain.Transaction{
 		TransactionID: orderId,
 		Price: &domain.TransactionPrice{
@@ -139,6 +161,8 @@ func (s Factory) BuildTransactionData(cartTotals cart.CartTotals, decoratedItems
 			Shipping:         cartTotals.ShippingItem.Price,
 			ShippingMethod:   cartTotals.ShippingItem.Title,
 		},
+		Profile:    profile,
+		Attributes: make(map[string]interface{}),
 	}
 	for _, item := range decoratedItems {
 		itemData := s.buildCartItem(item, cartTotals.CurrencyCode)
@@ -160,7 +184,9 @@ func (s Factory) buildCartItem(item cart.DecoratedCartItem, currencyCode string)
 		},
 		Attributes: make(map[string]interface{}),
 	}
-	//cartItem.Attributes["sourceId"] = item.Item.SourceId
+	cartItem.Attributes["sourceId"] = item.Item.SourceId
+	cartItem.Attributes["terminal"] = ""
+	cartItem.Attributes["leadtime"] = ""
 	return cartItem
 }
 
