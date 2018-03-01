@@ -198,7 +198,7 @@ func (s Factory) BuildProductData(product productDomain.BasicProduct) domain.Pro
 	}
 	productData.Attributes["productPrice"] = product.SaleableData().ActivePrice.GetFinalPrice()
 	if product.BaseData().HasAttribute("ispuLimitedToAreas") {
-		productData.Attributes["ispuLimitedToAreas"] = product.BaseData().Attributes["ispuLimitedToAreas"]
+		productData.Attributes["ispuLimitedToAreas"] = product.BaseData().Attributes["ispuLimitedToAreas"].Value()
 	}
 	return productData
 }
