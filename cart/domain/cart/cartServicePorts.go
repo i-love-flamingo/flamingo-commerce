@@ -52,6 +52,7 @@ type (
 		MarketplaceCode        string
 		Qty                    int
 		VariantMarketplaceCode string
+		DeliveryIntent         string
 	}
 
 	// Auth defines cart authentication information

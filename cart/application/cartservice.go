@@ -21,6 +21,9 @@ type (
 		AuthManager          *application.AuthManager         `inject:""`
 		UserService          *application.UserService         `inject:""`
 
+		ItemValidator domaincart.ItemValidator `inject:",optional"`
+
+		//DefaultDeliveryMethodForValidation - used for calling the CartValidator (this is something that might get obsolete if the Cart and the CartItems have theire Deliverymethod "saved")
 		DefaultDeliveryMethodForValidation string `inject:"config:cart.validation.defaultDeliveryMethod,optional"`
 	}
 )
@@ -116,6 +119,12 @@ func (cs *CartService) checkProductAndEnrichAddRequest(ctx web.Context, addReque
 			return addRequest, errors.New("cart.application.cartservice - AddProduct:Product has not the given variant")
 		}
 	}
+
+	//Now Validate the Item with the optional registered ItemValidator
+	if cs.ItemValidator != nil {
+		return addRequest, cs.ItemValidator.Validate(ctx, addRequest, product)
+	}
+
 	return addRequest, nil
 }
 

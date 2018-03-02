@@ -16,6 +16,7 @@ type (
 	CartApiController struct {
 		responder.JSONAware    `inject:""`
 		ApplicationCartService *application.CartService `inject:""`
+		DefaultDeliveryIntent  string                   `inject:"config:cart.defaultDeliveryIntent,optional"`
 	}
 
 	result struct {
@@ -36,7 +37,7 @@ func (cc *CartApiController) GetAction(ctx web.Context) web.Response {
 
 // AddAction Add Item to cart
 func (cc *CartApiController) AddAction(ctx web.Context) web.Response {
-	addRequest := addRequestFromRequestContext(ctx)
+	addRequest := addRequestFromRequestContext(ctx, cc.DefaultDeliveryIntent)
 	e := cc.ApplicationCartService.AddProduct(ctx, addRequest)
 	if e != nil {
 		log.Printf("cart.cartapicontroller.add: %v", e.Error())
@@ -48,7 +49,7 @@ func (cc *CartApiController) AddAction(ctx web.Context) web.Response {
 	})
 }
 
-func addRequestFromRequestContext(ctx web.Context) domaincart.AddRequest {
+func addRequestFromRequestContext(ctx web.Context, defaultDeliveryIntent string) domaincart.AddRequest {
 	marketplaceCode := ctx.MustParam1("marketplaceCode")
 	qty, e := ctx.Param1("qty")
 	if e != nil {
@@ -62,5 +63,11 @@ func addRequestFromRequestContext(ctx web.Context) domaincart.AddRequest {
 	if qtyInt < 0 {
 		qtyInt = 0
 	}
-	return domaincart.AddRequest{MarketplaceCode: marketplaceCode, Qty: qtyInt, VariantMarketplaceCode: variantMarketplaceCode}
+
+	deliveryIntent, e := ctx.Param1("deliveryIntent")
+	if e != nil {
+		deliveryIntent = defaultDeliveryIntent
+	}
+
+	return domaincart.AddRequest{MarketplaceCode: marketplaceCode, Qty: qtyInt, VariantMarketplaceCode: variantMarketplaceCode, DeliveryIntent: deliveryIntent}
 }

@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"go.aoe.com/flamingo/core/cart/application"
-	"go.aoe.com/flamingo/core/cart/domain/cart"
+	cartDomain "go.aoe.com/flamingo/core/cart/domain/cart"
 	"go.aoe.com/flamingo/framework/router"
 	"go.aoe.com/flamingo/framework/web"
 	"go.aoe.com/flamingo/framework/web/responder"
@@ -14,14 +14,16 @@ import (
 type (
 	// CartViewData is used for cart views/templates
 	CartViewData struct {
-		DecoratedCart        cart.DecoratedCart
-		CartValidationResult cart.CartValidationResult
+		DecoratedCart        cartDomain.DecoratedCart
+		CartValidationResult cartDomain.CartValidationResult
 	}
 
 	// CartViewController for carts
 	CartViewController struct {
 		responder.RenderAware   `inject:""`
 		responder.RedirectAware `inject:""`
+
+		DefaultDeliveryIntent string `inject:"config:cart.defaultDeliveryIntent,optional"`
 
 		ApplicationCartService *application.CartService `inject:""`
 		Router                 *router.Router           `inject:""`
@@ -45,8 +47,13 @@ func (cc *CartViewController) ViewAction(ctx web.Context) web.Response {
 
 // AddAndViewAction the DecoratedCart View ( / cart)
 func (cc *CartViewController) AddAndViewAction(ctx web.Context) web.Response {
-	addRequest := addRequestFromRequestContext(ctx)
+	addRequest := addRequestFromRequestContext(ctx, cc.DefaultDeliveryIntent)
 	err := cc.ApplicationCartService.AddProduct(ctx, addRequest)
+	if notAllowedErr, ok := err.(*cartDomain.AddToCartNotAllowed); ok {
+		if notAllowedErr.RedirectHandlerName != "" {
+			return cc.Redirect(notAllowedErr.RedirectHandlerName, notAllowedErr.RedirectParams)
+		}
+	}
 	if err != nil {
 		log.Printf("cart.cartcontroller.addandviewaction: Error %v", err)
 		return cc.Render(ctx, "checkout/carterror", nil)
