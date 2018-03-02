@@ -65,6 +65,7 @@ type (
 func (vc *View) variantSelection(configurable domain.ConfigurableProduct, activeVariant *domain.Variant) variantSelection {
 	var variants variantSelection
 	combinations := make(map[string]map[string]map[string]map[string]bool)
+	titles := make(map[string]string)
 
 	for _, attribute := range configurable.VariantVariationAttributes {
 		// attribute -> value -> combinableAttribute -> combinaleValue -> true
@@ -79,6 +80,7 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 					combinations[attribute][variant.Attributes[attribute].Value()] = make(map[string]map[string]bool)
 				}
 
+				titles[variant.Attributes[attribute].Value()] = variant.Attributes[attribute].Label
 				if subattribute != attribute {
 					if _, ok := variant.Attributes[subattribute]; ok {
 						if combinations[attribute][variant.Attributes[attribute].Value()][subattribute] == nil {
@@ -109,9 +111,14 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 			if activeVariant != nil && activeVariant.Attributes[code].Value() == optionCode {
 				selected = true
 			}
+
+			label, ok := titles[optionCode]
+			if !ok {
+				label = strings.Title(optionCode)
+			}
 			viewVariantAttribute.Options = append(viewVariantAttribute.Options, viewVariantOption{
 				Key:          optionCode,
-				Title:        strings.Title(optionCode),
+				Title:        label,
 				Selected:     selected,
 				Combinations: combinations,
 			})
