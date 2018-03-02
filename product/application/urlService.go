@@ -17,31 +17,34 @@ func (s *UrlService) Get(product domain.BasicProduct, variantCode string) (strin
 	if product == nil {
 		return "-", errors.New("no product given")
 	}
+	params := s.GetUrlParams(product, variantCode)
+	url := s.Router.URL("product.view", params)
+	return url.String(), nil
+}
+
+func (s *UrlService) GetUrlParams(product domain.BasicProduct, variantCode string) map[string]string {
+	params := make(map[string]string)
+	if product == nil {
+		return params
+	}
 	if configurableProduct, ok := product.(domain.ConfigurableProduct); ok {
+		params["marketplacecode"] = configurableProduct.ConfigurableBaseData().MarketPlaceCode
 		if variantCode != "" && configurableProduct.HasVariant(variantCode) {
-			return s.urlWithVariant(configurableProduct.ConfigurableBaseData().MarketPlaceCode, variantCode, configurableProduct.ConfigurableBaseData().Title)
+			params["variantcode"] = variantCode
+			params["name"] = web.URLTitle(configurableProduct.ConfigurableBaseData().Title)
 		}
 		if configurableProduct.HasActiveVariant() {
-			return s.urlWithVariant(configurableProduct.ConfigurableBaseData().MarketPlaceCode, configurableProduct.ActiveVariant.MarketPlaceCode, configurableProduct.ActiveVariant.BaseData().Title)
+			params["variantcode"] = configurableProduct.ActiveVariant.MarketPlaceCode
+			params["name"] = web.URLTitle(configurableProduct.ActiveVariant.BaseData().Title)
 		}
 		if configurableProduct.TeaserData().PreSelectedVariantSku != "" {
-			return s.urlWithVariant(configurableProduct.ConfigurableBaseData().MarketPlaceCode, configurableProduct.TeaserData().PreSelectedVariantSku, configurableProduct.TeaserData().ShortTitle)
+			params["variantcode"] = configurableProduct.TeaserData().PreSelectedVariantSku
+			params["name"] = web.URLTitle(configurableProduct.TeaserData().ShortTitle)
 		}
-		return s.url(configurableProduct.ConfigurableBaseData().MarketPlaceCode, configurableProduct.ConfigurableBaseData().Title)
+		params["name"] = web.URLTitle(configurableProduct.ConfigurableBaseData().Title)
+	} else {
+		params["marketplacecode"] = product.BaseData().MarketPlaceCode
+		params["name"] = product.BaseData().Title
 	}
-	return s.url(product.BaseData().MarketPlaceCode, product.BaseData().Title)
-}
-
-// URL for a product
-func (s *UrlService) url(marketplacecode, name string) (string, error) {
-	name = web.URLTitle(name)
-	url := s.Router.URL("product.view", map[string]string{"marketplacecode": marketplacecode, "name": name})
-	return url.String(), nil
-}
-
-// URL for a product
-func (s *UrlService) urlWithVariant(marketplacecode, variantcode, name string) (string, error) {
-	name = web.URLTitle(name)
-	url := s.Router.URL("product.view", map[string]string{"marketplacecode": marketplacecode, "name": name, "variantcode": variantcode})
-	return url.String(), nil
+	return params
 }
