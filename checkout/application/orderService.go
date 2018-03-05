@@ -43,7 +43,7 @@ func (os OrderService) PlaceOrder(ctx web.Context, decoratedCart cart.DecoratedC
 
 	if orderError != nil {
 		os.Logger.Errorf("Error during place Order: %v", err)
-		return "", errors.New("Error while placing the order.")
+		return "", errors.New("Error while placing the order. Please contact customer support.")
 	}
 	return orderid, nil
 
