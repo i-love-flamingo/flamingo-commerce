@@ -109,6 +109,40 @@ func (at Attribute) Value() string {
 	return fmt.Sprintf("%v", at.RawValue)
 }
 
+// IsEnabledValue returns true if the value can be seen as a toogle and is enabled
+func (at Attribute) IsEnabledValue() bool {
+	if at.RawValue == "Yes" {
+		return true
+	}
+	if at.RawValue == "true" {
+		return true
+	}
+	if at.RawValue == "yes" {
+		return true
+	}
+	if at.RawValue == "1" {
+		return true
+	}
+	return false
+}
+
+// IsDisabledValue returns true if the value can be seen as a disable toggle/swicth value
+func (at Attribute) IsDisabledValue() bool {
+	if at.RawValue == "no" {
+		return true
+	}
+	if at.RawValue == "false" {
+		return true
+	}
+	if at.RawValue == "No" {
+		return true
+	}
+	if at.RawValue == "0" {
+		return true
+	}
+	return false
+}
+
 // HasMultipleValues checks for multiple raw values
 func (at Attribute) HasMultipleValues() bool {
 	_, ok := at.RawValue.([]interface{})
