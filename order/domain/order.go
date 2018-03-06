@@ -5,7 +5,7 @@ import "time"
 type (
 	// Order
 	Order struct {
-		ID           int
+		ID           string
 		CreationTime time.Time
 		UpdateTime   time.Time
 		OrderItems   []OrderItem
