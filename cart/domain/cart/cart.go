@@ -72,6 +72,8 @@ type (
 
 		PriceInclTax    float64
 		RowTotalInclTax float64
+
+		DeliveryIntent string
 	}
 
 	// Totalitem for totals
@@ -139,6 +141,26 @@ func (cart Cart) GetCartTotals() CartTotals {
 func (cart Cart) HasShippingItem() bool {
 	if cart.ShippingItem.Title != "" {
 		return true
+	}
+	return false
+}
+
+//HasShippingItem
+func (cart Cart) GetDeliveryIntents() []string {
+	var deliveryIntents []string
+	for _, item := range cart.Cartitems {
+		if !inStruct(item.DeliveryIntent, deliveryIntents) {
+			deliveryIntents = append(deliveryIntents, item.DeliveryIntent)
+		}
+	}
+	return deliveryIntents
+}
+
+func inStruct(value string, list []string) bool {
+	for _, item := range list {
+		if item == value {
+			return true
+		}
 	}
 	return false
 }

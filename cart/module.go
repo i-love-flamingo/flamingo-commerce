@@ -37,7 +37,7 @@ func (m *CartModule) Configure(injector *dingo.Injector) {
 	m.RouterRegistry.Route("/cart", "cart.view")
 
 	m.RouterRegistry.Handle("cart.add", (*controller.CartViewController).AddAndViewAction)
-	m.RouterRegistry.Route("/cart/add/:marketplaceCode", `cart.add(marketplaceCode,variantMarketplaceCode?="",qty?="1")`)
+	m.RouterRegistry.Route("/cart/add/:marketplaceCode", `cart.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryIntent?="")`)
 
 	m.RouterRegistry.Handle("cart.updateQty", (*controller.CartViewController).UpdateQtyAndViewAction)
 	m.RouterRegistry.Route("/cart/update/:id", `cart.updateQty(id,qty?="1")`)
@@ -53,7 +53,7 @@ func (m *CartModule) Configure(injector *dingo.Injector) {
 	m.RouterRegistry.Handle("cart.api.add", (*controller.CartApiController).AddAction)
 
 	m.RouterRegistry.Route("/api/cart", "cart.api.get")
-	m.RouterRegistry.Route("/api/cart/add/:marketplaceCode", `cart.api.add(marketplaceCode,variantMarketplaceCode?="",qty?="1")`)
+	m.RouterRegistry.Route("/api/cart/add/:marketplaceCode", `cart.api.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryIntent?="")`)
 
 	//Event
 	injector.BindMulti((*event.Subscriber)(nil)).To(application.EventReceiver{})
