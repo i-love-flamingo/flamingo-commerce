@@ -178,7 +178,7 @@ func (cs *CartService) HasSessionAGuestCart(ctx web.Context) bool {
 	if _, ok := ctx.Session().Values["cart.guestid"]; ok {
 		return true
 	}
-	
+
 	return false
 }
 
