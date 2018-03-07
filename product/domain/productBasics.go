@@ -123,6 +123,9 @@ func (at Attribute) IsEnabledValue() bool {
 	if at.RawValue == "1" {
 		return true
 	}
+	if at.RawValue == 1 {
+		return true
+	}
 	return false
 }
 
