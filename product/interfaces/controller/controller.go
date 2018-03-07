@@ -185,9 +185,10 @@ func (vc *View) Get(c web.Context) web.Response {
 			// 1.A. No variant selected
 			// normalize URL
 			urlParams := vc.UrlService.GetUrlParams(configurableProduct, "")
-			urlName := urlParams["name"]
-			if urlName != c.MustParam1("name") && skipnamecheck == "" {
-				return vc.RedirectPermanent(URL(c.MustParam1("marketplacecode"), urlName))
+			if urlName, ok := urlParams["name"]; ok {
+				if urlName != c.MustParam1("name") && skipnamecheck == "" {
+					return vc.RedirectPermanent("product.view", urlParams)
+				}
 			}
 			viewData = productViewData{
 				ConfigurableProduct: configurableProduct,
@@ -199,9 +200,10 @@ func (vc *View) Get(c web.Context) web.Response {
 			// 1.B. Variant selected
 			// normalize URL
 			urlParams := vc.UrlService.GetUrlParams(configurableProduct, "")
-			urlName := urlParams["name"]
-			if urlName != c.MustParam1("name") && skipnamecheck == "" {
-				return vc.RedirectPermanent(URLWithVariant(c.MustParam1("marketplacecode"), urlName, variantCode))
+			if urlName, ok := urlParams["name"]; ok {
+				if urlName != c.MustParam1("name") && skipnamecheck == "" {
+					return vc.RedirectPermanent("product.view", urlParams)
+				}
 			}
 			configurableProduct.ActiveVariant = activeVariant
 			viewData = productViewData{
@@ -217,9 +219,10 @@ func (vc *View) Get(c web.Context) web.Response {
 		// 2. Handle Simples
 		// normalize URL
 		urlParams := vc.UrlService.GetUrlParams(product, "")
-		urlName := urlParams["name"]
-		if urlName != c.MustParam1("name") && skipnamecheck == "" {
-			return vc.RedirectPermanent(URL(c.MustParam1("marketplacecode"), urlName))
+		if urlName, ok := urlParams["name"]; ok {
+			if urlName != c.MustParam1("name") && skipnamecheck == "" {
+				return vc.RedirectPermanent("product.view", urlParams)
+			}
 		}
 
 		simpleProduct := product.(domain.SimpleProduct)
@@ -248,15 +251,4 @@ func (vc *View) addBreadCrum(product domain.BasicProduct, c web.Context) {
 			stringHead = name + "/"
 		}
 	}
-}
-
-// URL for a product
-func URL(marketplacecode, name string) (string, map[string]string) {
-	name = web.URLTitle(name)
-	return "product.view", map[string]string{"marketplacecode": marketplacecode, "name": name}
-}
-
-// URLWithVariant for a product with a selected variant
-func URLWithVariant(marketplacecode, name, variantcode string) (string, map[string]string) {
-	return "product.view", map[string]string{"marketplacecode": marketplacecode, "name": name, "variantcode": variantcode}
 }
