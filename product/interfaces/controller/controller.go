@@ -11,6 +11,7 @@ import (
 	"go.aoe.com/flamingo/framework/web/responder"
 
 	"github.com/pkg/errors"
+	"go.aoe.com/flamingo/core/product/application"
 )
 
 type (
@@ -20,6 +21,7 @@ type (
 		responder.RenderAware   `inject:""`
 		responder.RedirectAware `inject:""`
 		domain.ProductService   `inject:""`
+		UrlService              *application.UrlService `inject:""`
 
 		Template string         `inject:"config:core.product.view.template"`
 		Router   *router.Router `inject:""`
@@ -182,7 +184,8 @@ func (vc *View) Get(c web.Context) web.Response {
 		if err != nil {
 			// 1.A. No variant selected
 			// normalize URL
-			urlName := web.URLTitle(configurableProduct.ConfigurableBaseData().Title)
+			urlParams := vc.UrlService.GetUrlParams(configurableProduct, "")
+			urlName := urlParams["name"]
 			if urlName != c.MustParam1("name") && skipnamecheck == "" {
 				return vc.RedirectPermanent(URL(c.MustParam1("marketplacecode"), urlName))
 			}
@@ -195,7 +198,8 @@ func (vc *View) Get(c web.Context) web.Response {
 			activeVariant, _ = configurableProduct.Variant(variantCode)
 			// 1.B. Variant selected
 			// normalize URL
-			urlName := web.URLTitle(activeVariant.BasicProductData.Title)
+			urlParams := vc.UrlService.GetUrlParams(configurableProduct, "")
+			urlName := urlParams["name"]
 			if urlName != c.MustParam1("name") && skipnamecheck == "" {
 				return vc.RedirectPermanent(URLWithVariant(c.MustParam1("marketplacecode"), urlName, variantCode))
 			}
@@ -212,7 +216,8 @@ func (vc *View) Get(c web.Context) web.Response {
 	} else {
 		// 2. Handle Simples
 		// normalize URL
-		urlName := web.URLTitle(product.BaseData().Title)
+		urlParams := vc.UrlService.GetUrlParams(product, "")
+		urlName := urlParams["name"]
 		if urlName != c.MustParam1("name") && skipnamecheck == "" {
 			return vc.RedirectPermanent(URL(c.MustParam1("marketplacecode"), urlName))
 		}
