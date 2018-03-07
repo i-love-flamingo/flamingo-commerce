@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"testing"
 
+	"go.aoe.com/flamingo/core/product/application"
 	"go.aoe.com/flamingo/core/product/domain"
 	"go.aoe.com/flamingo/framework/router"
 	"go.aoe.com/flamingo/framework/web"
@@ -41,6 +42,7 @@ func TestViewController_Get(t *testing.T) {
 		RedirectAware:  redirectAware,
 		RenderAware:    renderAware,
 		ErrorAware:     errorAware,
+		UrlService:     &application.UrlService{},
 		Template:       "product/product",
 		Router: &router.Router{
 			RouterRegistry: router.NewRegistry(),

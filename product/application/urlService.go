@@ -44,7 +44,7 @@ func (s *UrlService) GetUrlParams(product domain.BasicProduct, variantCode strin
 		params["name"] = web.URLTitle(configurableProduct.ConfigurableBaseData().Title)
 	} else {
 		params["marketplacecode"] = product.BaseData().MarketPlaceCode
-		params["name"] = product.BaseData().Title
+		params["name"] = web.URLTitle(product.BaseData().Title)
 	}
 	return params
 }
