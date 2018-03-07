@@ -178,12 +178,14 @@ func (cs *CartService) HasSessionAGuestCart(ctx web.Context) bool {
 	if _, ok := ctx.Session().Values["cart.guestid"]; ok {
 		return true
 	}
+	
 	return false
 }
 
 // GetSessionGuestCart
 func (cs *CartService) GetSessionGuestCart(ctx web.Context) (cartDomain.Cart, error) {
 	var cart cartDomain.Cart
+
 	if guestcartid, ok := ctx.Session().Values["cart.guestid"]; ok {
 		existingCart, err := cs.GuestCartService.GetCart(ctx, cs.Auth(ctx), guestcartid.(string))
 		if err != nil {
@@ -207,12 +209,14 @@ func (cs *CartService) DeleteSessionGuestCart(ctx web.Context) error {
 // createNewSessionGuestCart Requests a new Guest Cart and stores the id in the session, if possible
 func (cs *CartService) createNewSessionGuestCart(ctx web.Context) (cartDomain.Cart, error) {
 	newGuestCart, err := cs.GuestCartService.GetNewCart(ctx, cs.Auth(ctx))
+
 	if err != nil {
 		cs.Logger.Errorf("cart.application.cartservice: Cannot create a new guest cart. Error %s", err)
 		delete(ctx.Session().Values, "cart.guestid")
 
 		return newGuestCart, err
 	}
+
 	cs.Logger.Infof("cart.application.cartservice: Requested new Guestcart %v", newGuestCart)
 	ctx.Session().Values["cart.guestid"] = newGuestCart.ID
 
