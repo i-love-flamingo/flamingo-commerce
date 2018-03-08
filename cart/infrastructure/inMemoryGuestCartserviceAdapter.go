@@ -77,6 +77,7 @@ func (cs *GuestCartServiceAdapter) GetNewCart(ctx context.Context, auth domainca
 	guestCart := domaincart.Cart{
 		ID: strconv.Itoa(rand.Int()),
 	}
+
 	guestCart.CartOrderBehaviour = domaincart.CartOrderBehaviour(cs.GuestCartOrderBehaviour)
 	cs.GuestCartOrderBehaviour.GuestCartStorage.StoreCart(guestCart)
 	return guestCart, nil

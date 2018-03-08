@@ -228,5 +228,7 @@ func (cs *CartService) getEmptyCart() (cartDomain.Cart, error) {
 }
 
 func (cs *CartService) publishAddtoCartEvent(ctx web.Context, currentCart cartDomain.Cart, addRequest cartDomain.AddRequest) {
-	currentCart.EventPublisher.PublishAddToCartEvent(ctx, addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode, addRequest.Qty)
+	if currentCart.EventPublisher != nil {
+		currentCart.EventPublisher.PublishAddToCartEvent(ctx, addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode, addRequest.Qty)
+	}
 }
