@@ -233,5 +233,7 @@ func (Cart Cart) ItemCount() int {
 }
 
 func (cart Cart) publishChangedQtyEvent(ctx context.Context, item *Item, qtyBefore int, qtyAfter int, cartId string) {
-	cart.EventPublisher.PublishChangedQtyInCartEvent(ctx, item, qtyBefore, qtyAfter, cartId)
+	if cart.EventPublisher != nil {
+		cart.EventPublisher.PublishChangedQtyInCartEvent(ctx, item, qtyBefore, qtyAfter, cartId)
+	}
 }
