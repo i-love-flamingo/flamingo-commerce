@@ -236,7 +236,13 @@ func (vc *View) Get(c web.Context) web.Response {
 
 // addBreadCrum
 func (vc *View) addBreadCrum(product domain.BasicProduct, c web.Context) {
-	paths := product.BaseData().CategoryToCodeMapping
+	var paths []string
+	if product.Type() == domain.TYPESIMPLE {
+		paths = product.BaseData().CategoryToCodeMapping
+	} else if configurableProduct, ok := product.(domain.ConfigurableProduct); ok {
+		paths = configurableProduct.ConfigurableBaseData().CategoryToCodeMapping
+	}
+
 	//sort.Strings(paths)
 	var stringHead string
 	for _, p := range paths {
