@@ -65,7 +65,7 @@ func addRequestFromRequestContext(ctx web.Context, defaultDeliveryIntent string)
 	}
 
 	deliveryIntent, e := ctx.Param1("deliveryIntent")
-	if e != nil {
+	if deliveryIntent == "" {
 		deliveryIntent = defaultDeliveryIntent
 	}
 
