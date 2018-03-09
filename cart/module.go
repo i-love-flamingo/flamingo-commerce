@@ -11,6 +11,8 @@ import (
 	"go.aoe.com/flamingo/framework/dingo"
 	"go.aoe.com/flamingo/framework/event"
 	"go.aoe.com/flamingo/framework/router"
+	"go.aoe.com/flamingo/framework/template"
+	"go.aoe.com/flamingo/core/cart/interfaces/templatefunctions"
 )
 
 type (
@@ -57,6 +59,9 @@ func (m *CartModule) Configure(injector *dingo.Injector) {
 
 	//Event
 	injector.BindMulti((*event.Subscriber)(nil)).To(application.EventReceiver{})
+
+	// TemplateFunction
+	injector.BindMulti((*template.ContextFunction)(nil)).To(templatefunctions.GetCart{})
 
 }
 
