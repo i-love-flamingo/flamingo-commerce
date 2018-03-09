@@ -23,47 +23,92 @@ func (mps *MockProductService) Get(ctx context.Context, marketplacecode string) 
 	if marketplacecode == "fail" {
 		return nil, errors.New("fail")
 	}
-
-	return domain.SimpleProduct{
-		BasicProductData: domain.BasicProductData{Title: "My Product Title", MarketPlaceCode: marketplacecode},
+	if marketplacecode == "simple" {
+		return domain.SimpleProduct{
+			BasicProductData: domain.BasicProductData{Title: "My Product Title", MarketPlaceCode: marketplacecode},
+		}, nil
+	}
+	return domain.ConfigurableProduct{
+		BasicProductData: domain.BasicProductData{Title: "My Configurable Product Title", MarketPlaceCode: marketplacecode},
+		Variants: []domain.Variant{
+			domain.Variant{
+				BasicProductData: domain.BasicProductData{Title: "My Variant Title", MarketPlaceCode: marketplacecode + "_1"},
+			},
+		},
 	}, nil
 }
 
 func TestViewController_Get(t *testing.T) {
-	expectedUrlTitle := "my-product-title"
+
 	ctx := web.NewContext()
 
 	redirectAware := new(mocks.RedirectAware)
 	renderAware := new(mocks.RenderAware)
 	errorAware := new(mocks.ErrorAware)
+	vc := getController(redirectAware, renderAware, errorAware)
 
+	// Test 2: call with corrent name parameter and expect Rendering
+	expectedUrlTitleSimple := "my-product-title"
+	renderAware.On("Render", ctx, mock.AnythingOfType("string"), mock.AnythingOfType("controller.productViewData")).Return(nil)
+	ctx.LoadParams(router.P{"marketplacecode": "simple", "name": expectedUrlTitleSimple})
+	vc.Get(ctx)
+	renderAware.AssertCalled(t, "Render", ctx, vc.Template, mock.AnythingOfType("controller.productViewData"))
+
+	// Test 3: call with error by service
+	errorAware.On("Error", ctx, mock.Anything).Return(nil)
+	ctx.LoadParams(router.P{"marketplacecode": "fail", "name": "fail"})
+	vc.Get(ctx)
+	errorAware.AssertCalled(t, "Error", ctx, mock.Anything)
+
+}
+
+func TestViewController_ExpectRedirect(t *testing.T) {
+
+	ctx := web.NewContext()
+
+	redirectAware := new(mocks.RedirectAware)
+	renderAware := new(mocks.RenderAware)
+	errorAware := new(mocks.ErrorAware)
+	vc := getController(redirectAware, renderAware, errorAware)
+
+	// Test 1: call simple with wrong name and expect redirect
+	redirectAware.On("RedirectPermanentURL", mock.AnythingOfType("string")).Return(&web.RedirectResponse{})
+	ctx.LoadParams(router.P{"marketplacecode": "simple", "name": "testname"})
+	vc.Get(ctx)
+	redirectAware.AssertCalled(t, "RedirectPermanentURL", "?marketplacecode=simple&name=my-product-title")
+
+	// Test 2: call configurable with wrong name and expect redirect
+	redirectAware.On("RedirectPermanentURL", mock.AnythingOfType("string")).Return(&web.RedirectResponse{})
+	ctx.LoadParams(router.P{"marketplacecode": "configurable", "name": "testname"})
+	vc.Get(ctx)
+	redirectAware.AssertCalled(t, "RedirectPermanentURL", "?marketplacecode=configurable&name=my-configurable-product-title")
+
+	// Test 3: call configurable_with_variant with wrong name and expect redirect
+	redirectAware.On("RedirectPermanentURL", mock.AnythingOfType("string")).Return(&web.RedirectResponse{})
+	ctx.LoadParams(router.P{"marketplacecode": "configurable", "name": "testname", "variantcode": "configurable_1"})
+	vc.Get(ctx)
+	redirectAware.AssertCalled(t, "RedirectPermanentURL", "?marketplacecode=configurable&name=my-variant-title&variantcode=configurable_1")
+
+}
+
+func getController(redirectAware *mocks.RedirectAware, renderAware *mocks.RenderAware, errorAware *mocks.ErrorAware) *View {
+	u, _ := url.Parse(`http://test/`)
+	router := &router.Router{
+		RouterRegistry: router.NewRegistry(),
+	}
 	vc := &View{
 		ProductService: new(MockProductService),
 		RedirectAware:  redirectAware,
 		RenderAware:    renderAware,
 		ErrorAware:     errorAware,
-		UrlService:     &application.UrlService{},
-		Template:       "product/product",
-		Router: &router.Router{
-			RouterRegistry: router.NewRegistry(),
+		UrlService: &application.UrlService{
+			Router: router,
 		},
+		Template: "product/product",
+		Router:   router,
 	}
-	u, _ := url.Parse(`http://test/`)
 	vc.Router.SetBase(u)
-	vc.Router.RouterRegistry.Route("/", `product.view(marketplacecode?="test", name?="test", variant?="test")`)
+	vc.Router.RouterRegistry.Route("/", `product.view(marketplacecode?="test", name?="test", variantcode?="test")`)
 
-	redirectAware.On("RedirectPermanent", mock.AnythingOfType("string"), mock.AnythingOfType("map[string]string")).Return(nil)
-	ctx.LoadParams(router.P{"marketplacecode": "test", "name": "testname"})
-	vc.Get(ctx)
-	redirectAware.AssertCalled(t, "RedirectPermanent", "product.view", map[string]string{"name": expectedUrlTitle, "marketplacecode": "test"})
-
-	renderAware.On("Render", ctx, mock.AnythingOfType("string"), mock.AnythingOfType("controller.productViewData")).Return(nil)
-	ctx.LoadParams(router.P{"marketplacecode": "test", "name": expectedUrlTitle})
-	vc.Get(ctx)
-	renderAware.AssertCalled(t, "Render", ctx, vc.Template, mock.AnythingOfType("controller.productViewData"))
-
-	errorAware.On("Error", ctx, mock.Anything).Return(nil)
-	ctx.LoadParams(router.P{"marketplacecode": "fail", "name": "fail"})
-	vc.Get(ctx)
-	errorAware.AssertCalled(t, "Error", ctx, mock.Anything)
+	return vc
 }

@@ -179,52 +179,43 @@ func (vc *View) Get(c web.Context) web.Response {
 		configurableProduct := product.(domain.ConfigurableProduct)
 		var activeVariant *domain.Variant
 
+		viewData = productViewData{
+			ConfigurableProduct: configurableProduct,
+		}
 		variantCode, err := c.Param1("variantcode")
 
 		if err != nil {
+			//Redirect if url is not canonical
+			redirect := vc.getRedirectIfRequired(configurableProduct, c.MustParam1("name"), skipnamecheck)
+			if redirect != nil {
+				return redirect
+			}
 			// 1.A. No variant selected
-			// normalize URL
-			urlParams := vc.UrlService.GetUrlParams(configurableProduct, "")
-			if urlName, ok := urlParams["name"]; ok {
-				if urlName != c.MustParam1("name") && skipnamecheck == "" {
-					return vc.RedirectPermanent("product.view", urlParams)
-				}
-			}
-			viewData = productViewData{
-				ConfigurableProduct: configurableProduct,
-				VariantSelected:     false,
-				RenderContext:       "configurable",
-			}
+			viewData.VariantSelected = false
+			viewData.RenderContext = "configurable"
 		} else {
-			activeVariant, _ = configurableProduct.Variant(variantCode)
 			// 1.B. Variant selected
-			// normalize URL
-			urlParams := vc.UrlService.GetUrlParams(configurableProduct, "")
-			if urlName, ok := urlParams["name"]; ok {
-				if urlName != c.MustParam1("name") && skipnamecheck == "" {
-					return vc.RedirectPermanent("product.view", urlParams)
-				}
-			}
+			activeVariant, err = configurableProduct.Variant(variantCode)
 			configurableProduct.ActiveVariant = activeVariant
-			viewData = productViewData{
-				ConfigurableProduct: configurableProduct,
-				VariantSelected:     true,
-				RenderContext:       "configurable_with_activevariant",
-			}
-		}
 
+			//Redirect if url is not canonical
+			redirect := vc.getRedirectIfRequired(configurableProduct, c.MustParam1("name"), skipnamecheck)
+			if redirect != nil {
+				return redirect
+			}
+			viewData.VariantSelected = true
+			viewData.RenderContext = "configurable_with_activevariant"
+		}
 		viewData.VariantSelection = vc.variantSelection(configurableProduct, activeVariant)
 
 	} else {
-		// 2. Handle Simples
-		// normalize URL
-		urlParams := vc.UrlService.GetUrlParams(product, "")
-		if urlName, ok := urlParams["name"]; ok {
-			if urlName != c.MustParam1("name") && skipnamecheck == "" {
-				return vc.RedirectPermanent("product.view", urlParams)
-			}
+		//Redirect if url is not canonical
+		redirect := vc.getRedirectIfRequired(product, c.MustParam1("name"), skipnamecheck)
+		if redirect != nil {
+			return redirect
 		}
 
+		// 2. Handle Simples
 		simpleProduct := product.(domain.SimpleProduct)
 		viewData = productViewData{SimpleProduct: simpleProduct, RenderContext: "simple"}
 	}
@@ -257,4 +248,18 @@ func (vc *View) addBreadCrum(product domain.BasicProduct, c web.Context) {
 			stringHead = name + "/"
 		}
 	}
+}
+
+func (vc *View) getRedirectIfRequired(product domain.BasicProduct, currentNameParameter string, skipnamecheck string) web.Redirect {
+
+	if skipnamecheck != "" {
+		return nil
+	}
+	//Redirect if url is not canonical
+	if vc.UrlService.GetNameParam(product, "") != currentNameParameter {
+		if url, err := vc.UrlService.Get(product, ""); err == nil {
+			return vc.RedirectPermanentURL(url)
+		}
+	}
+	return nil
 }

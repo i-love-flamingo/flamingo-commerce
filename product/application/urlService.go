@@ -29,9 +29,13 @@ func (s *UrlService) GetUrlParams(product domain.BasicProduct, variantCode strin
 	}
 	if configurableProduct, ok := product.(domain.ConfigurableProduct); ok {
 		params["marketplacecode"] = configurableProduct.ConfigurableBaseData().MarketPlaceCode
+		params["name"] = web.URLTitle(configurableProduct.ConfigurableBaseData().Title)
 		if variantCode != "" && configurableProduct.HasVariant(variantCode) {
-			params["variantcode"] = variantCode
-			params["name"] = web.URLTitle(configurableProduct.ConfigurableBaseData().Title)
+			variantInstance, err := configurableProduct.Variant(variantCode)
+			if err != nil {
+				params["variantcode"] = variantCode
+				params["name"] = web.URLTitle(variantInstance.BaseData().Title)
+			}
 		}
 		if configurableProduct.HasActiveVariant() {
 			params["variantcode"] = configurableProduct.ActiveVariant.MarketPlaceCode
@@ -41,10 +45,17 @@ func (s *UrlService) GetUrlParams(product domain.BasicProduct, variantCode strin
 			params["variantcode"] = configurableProduct.TeaserData().PreSelectedVariantSku
 			params["name"] = web.URLTitle(configurableProduct.TeaserData().ShortTitle)
 		}
-		params["name"] = web.URLTitle(configurableProduct.ConfigurableBaseData().Title)
 	} else {
 		params["marketplacecode"] = product.BaseData().MarketPlaceCode
 		params["name"] = web.URLTitle(product.BaseData().Title)
 	}
 	return params
+}
+
+func (s *UrlService) GetNameParam(product domain.BasicProduct, variantCode string) string {
+	params := s.GetUrlParams(product, variantCode)
+	if name, ok := params["name"]; ok {
+		return name
+	}
+	return ""
 }
