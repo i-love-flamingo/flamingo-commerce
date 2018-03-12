@@ -179,9 +179,7 @@ func (vc *View) Get(c web.Context) web.Response {
 		configurableProduct := product.(domain.ConfigurableProduct)
 		var activeVariant *domain.Variant
 
-		viewData = productViewData{
-			ConfigurableProduct: configurableProduct,
-		}
+		viewData = productViewData{}
 		variantCode, err := c.Param1("variantcode")
 
 		if err != nil {
@@ -193,6 +191,7 @@ func (vc *View) Get(c web.Context) web.Response {
 			// 1.A. No variant selected
 			viewData.VariantSelected = false
 			viewData.RenderContext = "configurable"
+			viewData.ConfigurableProduct = configurableProduct
 		} else {
 			// 1.B. Variant selected
 			activeVariant, err = configurableProduct.Variant(variantCode)
@@ -205,6 +204,7 @@ func (vc *View) Get(c web.Context) web.Response {
 			}
 			viewData.VariantSelected = true
 			viewData.RenderContext = "configurable_with_activevariant"
+			viewData.ConfigurableProduct = configurableProduct
 		}
 		viewData.VariantSelection = vc.variantSelection(configurableProduct, activeVariant)
 
