@@ -174,17 +174,14 @@ func mapAddress(addressData AddressFormData) *cart.Address {
 	lines[0] = addressData.AddressLine1
 	lines[1] = addressData.AddressLine2
 
-	firstName := addressData.Firstname
-	if addressData.Title != "" {
-		firstName = addressData.Title + " " + firstName
-	}
 	address := cart.Address{
-		CountryCode: addressData.CountryCode,
-		Company:     addressData.Company,
-		Lastname:    addressData.Lastname,
-		Firstname:   firstName,
-		Email:       addressData.Email,
-		City:        addressData.City,
+		CountryCode:            addressData.CountryCode,
+		Company:                addressData.Company,
+		Salutation:             addressData.Title,
+		Lastname:               addressData.Lastname,
+		Firstname:              addressData.Firstname,
+		Email:                  addressData.Email,
+		City:                   addressData.City,
 		AdditionalAddressLines: lines,
 		RegionCode:             addressData.RegionCode,
 		Street:                 addressData.Street,
