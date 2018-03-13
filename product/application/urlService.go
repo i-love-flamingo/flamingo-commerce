@@ -32,7 +32,7 @@ func (s *UrlService) GetUrlParams(product domain.BasicProduct, variantCode strin
 		params["name"] = web.URLTitle(configurableProduct.ConfigurableBaseData().Title)
 		if variantCode != "" && configurableProduct.HasVariant(variantCode) {
 			variantInstance, err := configurableProduct.Variant(variantCode)
-			if err != nil {
+			if err == nil {
 				params["variantcode"] = variantCode
 				params["name"] = web.URLTitle(variantInstance.BaseData().Title)
 			}
