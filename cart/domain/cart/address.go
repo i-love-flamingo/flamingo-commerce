@@ -14,5 +14,6 @@ type (
 		Firstname              string
 		Lastname               string
 		Email                  string
+		Salutation             string
 	}
 )
