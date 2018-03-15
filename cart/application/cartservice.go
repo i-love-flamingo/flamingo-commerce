@@ -47,7 +47,7 @@ func (cs *CartService) GetCart(ctx web.Context) (cartDomain.Cart, error) {
 
 	guestCart, err := cs.GetSessionGuestCart(ctx)
 	if err != nil {
-		cs.Logger.Warn("cart.application.cartservice: GetCart - No cart in session return empty")
+		cs.Logger.Debug("cart.application.cartservice: GetCart - No cart in session return empty")
 
 		return cs.getEmptyCart()
 	}
