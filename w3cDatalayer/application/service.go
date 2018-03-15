@@ -141,7 +141,7 @@ func (s *Service) SetUserEmail(mail string) error {
 	layer.User = append(layer.User, domain.User{
 		Profile: []domain.UserProfile{domain.UserProfile{
 			ProfileInfo: domain.UserProfileInfo{
-				EmailID: mail,
+				EmailID: s.Factory.HashValueIfConfigured(mail),
 			},
 		}},
 	})

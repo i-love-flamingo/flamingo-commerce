@@ -110,19 +110,18 @@ func (s Factory) getUserProfileForCurrentUser(ctx web.Context) *domain.UserProfi
 func (s Factory) getUserProfile(email string, sub string) *domain.UserProfile {
 	dataLayerProfile := domain.UserProfile{
 		ProfileInfo: domain.UserProfileInfo{
-			EmailID:   email,
-			ProfileID: sub,
+			EmailID:   s.HashValueIfConfigured(email),
+			ProfileID: s.HashValueIfConfigured(sub),
 		},
 	}
-	if s.HashUserValues {
-		if dataLayerProfile.ProfileInfo.EmailID != "" {
-			dataLayerProfile.ProfileInfo.EmailID = hashWithSHA512(dataLayerProfile.ProfileInfo.EmailID)
-		}
-		if dataLayerProfile.ProfileInfo.ProfileID != "" {
-			dataLayerProfile.ProfileInfo.ProfileID = hashWithSHA512(dataLayerProfile.ProfileInfo.ProfileID)
-		}
-	}
 	return &dataLayerProfile
+}
+
+func (s Factory) HashValueIfConfigured(value string) string {
+	if s.HashUserValues && value != "" {
+		return hashWithSHA512(value)
+	}
+	return value
 }
 
 func (s Factory) BuildCartData(cart cart.DecoratedCart) *domain.Cart {
@@ -134,6 +133,7 @@ func (s Factory) BuildCartData(cart cart.DecoratedCart) *domain.Cart {
 			CartTotal:      cart.Cart.GrandTotal,
 			Shipping:       cart.Cart.ShippingItem.Price,
 			ShippingMethod: cart.Cart.ShippingItem.Title,
+			PriceWithTax:   cart.Cart.GrandTotal,
 		},
 		Attributes: make(map[string]interface{}),
 	}
@@ -209,7 +209,17 @@ func (s Factory) getProductCategory(product productDomain.BasicProduct) *domain.
 	level2 := ""
 	previousPathParts := 0
 	longestFirstPath := ""
-	for _, path := range product.BaseData().CategoryPath {
+
+	categoryPaths := product.BaseData().CategoryPath
+	baseData := product.BaseData()
+	if product.Type() == productDomain.TYPECONFIGURABLE {
+		if configurable, ok := product.(productDomain.ConfigurableProduct); ok {
+			//Category assignement is always from configurable
+			categoryPaths = configurable.ConfigurableBaseData().CategoryPath
+			baseData = configurable.ConfigurableBaseData()
+		}
+	}
+	for _, path := range categoryPaths {
 		pathParts := strings.Count(path, "/") + 1
 		if pathParts > previousPathParts {
 			previousPathParts = pathParts
@@ -230,8 +240,8 @@ func (s Factory) getProductCategory(product productDomain.BasicProduct) *domain.
 	}
 
 	productFamily := ""
-	if product.BaseData().HasAttribute("gs1Family") {
-		productFamily = product.BaseData().Attributes["gs1Family"].Value()
+	if baseData.HasAttribute("gs1Family") {
+		productFamily = baseData.Attributes["gs1Family"].Value()
 	}
 	return &domain.ProductCategory{
 		PrimaryCategory: level0,
