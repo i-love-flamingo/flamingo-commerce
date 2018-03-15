@@ -75,7 +75,7 @@ func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
 	//Guard Clause if Cart cannout be fetched
 	decoratedCart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
 	if e != nil {
-		cc.Logger.Errorf("cart.checkoutcontroller.viewaction: Error %v", e)
+		cc.Logger.WithField("category", "checkout").Errorf("cart.checkoutcontroller.viewaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
 
@@ -141,12 +141,12 @@ func (cc *CheckoutController) submitOrderForm(ctx web.Context, formservice *form
 	//Guard Clause if Cart cannout be fetched
 	decoratedCart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
 	if e != nil {
-		cc.Logger.Errorf("cart.checkoutcontroller.submitaction: Error %v", e)
+		cc.Logger.WithField("category", "checkout").Errorf("cart.checkoutcontroller.submitaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
 
 	if formservice == nil {
-		cc.Logger.Error("cart.checkoutcontroller.submitaction: Error CheckoutFormService not present!")
+		cc.Logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error CheckoutFormService not present!")
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
 
@@ -193,8 +193,12 @@ func (cc *CheckoutController) submitOrderForm(ctx web.Context, formservice *form
 				CartTotals:  decoratedCart.Cart.GetCartTotals(),
 			})
 		} else {
-			cc.Logger.Error("cart.checkoutcontroller.submitaction: Error cannot type convert to CheckoutFormData!")
+			cc.Logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error cannot type convert to CheckoutFormData!")
 			return cc.Render(ctx, "checkout/carterror", nil)
+		}
+	} else {
+		if form.IsSubmitted && form.HasGeneralErrors() {
+			cc.Logger.WithField("category", "checkout").Warnf("CheckoutForm has general error: %#v", form.ValidationInfo.GeneralErrors)
 		}
 	}
 	//Default: Form not submitted yet or submitted with validation errors:

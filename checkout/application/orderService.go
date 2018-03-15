@@ -29,20 +29,20 @@ func (os OrderService) PlaceOrder(ctx web.Context, decoratedCart cart.DecoratedC
 
 	err := os.SourcingEngine.SetSourcesForCartItems(ctx, decoratedCart)
 	if err != nil {
-		os.Logger.Errorf("Error while getting pickup sources: %v", err)
+		os.Logger.WithField("category", "checkout.orderService").Errorf("Error while getting pickup sources: %v", err)
 		return "", errors.New("Error while getting pickup sources.")
 	}
 
 	err = decoratedCart.Cart.SetShippingInformation(ctx, os.CartService.Auth(ctx), shippingAddress, billingAddress, shippingCarrierCode, shippingMethod)
 	if err != nil {
-		os.Logger.Errorf("Error during place Order: %v", err)
+		os.Logger.WithField("category", "checkout.orderService").Errorf("Error during place Order: %v", err)
 		return "", errors.New("Error while setting shipping informations.")
 	}
 
 	orderid, orderError = decoratedCart.Cart.PlaceOrder(ctx, os.CartService.Auth(ctx), os.PaymentService.GetPayment())
 
 	if orderError != nil {
-		os.Logger.Errorf("Error during place Order: %v", err)
+		os.Logger.WithField("category", "checkout.orderService").Errorf("Error during place Order: %v", err)
 		return "", errors.New("Error while placing the order. Please contact customer support.")
 	}
 	return orderid, nil
