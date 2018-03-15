@@ -47,7 +47,7 @@ func (cs *CartService) GetCart(ctx web.Context) (cartDomain.Cart, error) {
 
 	guestCart, err := cs.GetSessionGuestCart(ctx)
 	if err != nil {
-		cs.Logger.Debug("cart.application.cartservice: GetCart - No cart in session return empty")
+		cs.Logger.WithField("category", "checkout.cartservice").Debug("cart.application.cartservice: GetCart - No cart in session return empty")
 
 		return cs.getEmptyCart()
 	}
@@ -70,7 +70,7 @@ func (cs CartService) ValidateCart(ctx web.Context, decoratedCart cartDomain.Dec
 // GetDecoratedCart Get the correct Cart
 func (cs *CartService) GetDecoratedCart(ctx web.Context) (cartDomain.DecoratedCart, error) {
 	var empty cartDomain.DecoratedCart
-	cs.Logger.Info("cart.application.cartservice: Get decorated cart ")
+	cs.Logger.WithField("category", "checkout.cartservice").Info("cart.application.cartservice: Get decorated cart ")
 
 	cart, err := cs.GetCart(ctx)
 	if err != nil {
@@ -153,7 +153,7 @@ func (cs *CartService) addProductToGuestCart(ctx web.Context, addRequest cartDom
 	err = cs.GuestCartService.AddToCart(ctx, cs.Auth(ctx), guestCartID, addRequest)
 
 	if err != nil {
-		cs.Logger.Errorf("cart.application.cartservice: Failed Adding to cart %s Error %s", guestCartID, err)
+		cs.Logger.WithField("category", "checkout.cartservice").Errorf("cart.application.cartservice: Failed Adding to cart %s Error %s", guestCartID, err)
 		return err
 	}
 
@@ -163,7 +163,7 @@ func (cs *CartService) addProductToGuestCart(ctx web.Context, addRequest cartDom
 
 	cs.publishAddtoCartEvent(ctx, guestCart, addRequest)
 
-	cs.Logger.Infof("cart.application.cartservice: Added to cart %s", guestCartID)
+	cs.Logger.WithField("category", "checkout.cartservice").Infof("cart.application.cartservice: Added to cart %s", guestCartID)
 
 	return nil
 }
@@ -189,7 +189,7 @@ func (cs *CartService) GetSessionGuestCart(ctx web.Context) (cartDomain.Cart, er
 	if guestcartid, ok := ctx.Session().Values["cart.guestid"]; ok {
 		existingCart, err := cs.GuestCartService.GetCart(ctx, cs.Auth(ctx), guestcartid.(string))
 		if err != nil {
-			cs.Logger.Errorf("cart.application.cartservice: Guestcart id in session cannot be retrieved. Id %s, Error: %s", guestcartid, err)
+			cs.Logger.WithField("category", "checkout.cartservice").Errorf("cart.application.cartservice: Guestcart id in session cannot be retrieved. Id %s, Error: %s", guestcartid, err)
 		}
 
 		return existingCart, err
@@ -211,13 +211,13 @@ func (cs *CartService) createNewSessionGuestCart(ctx web.Context) (cartDomain.Ca
 	newGuestCart, err := cs.GuestCartService.GetNewCart(ctx, cs.Auth(ctx))
 
 	if err != nil {
-		cs.Logger.Errorf("cart.application.cartservice: Cannot create a new guest cart. Error %s", err)
+		cs.Logger.WithField("category", "checkout.cartservice").Errorf("cart.application.cartservice: Cannot create a new guest cart. Error %s", err)
 		delete(ctx.Session().Values, "cart.guestid")
 
 		return newGuestCart, err
 	}
 
-	cs.Logger.Infof("cart.application.cartservice: Requested new Guestcart %v", newGuestCart)
+	cs.Logger.WithField("category", "checkout.cartservice").Infof("cart.application.cartservice: Requested new Guestcart %v", newGuestCart)
 	ctx.Session().Values["cart.guestid"] = newGuestCart.ID
 
 	return newGuestCart, nil
