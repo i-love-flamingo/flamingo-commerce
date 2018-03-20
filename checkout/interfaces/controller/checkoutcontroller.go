@@ -7,6 +7,7 @@ import (
 	cartApplication "go.aoe.com/flamingo/core/cart/application"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
 	"go.aoe.com/flamingo/core/checkout/application"
+	paymentDomain "go.aoe.com/flamingo/core/checkout/domain/payment"
 	"go.aoe.com/flamingo/core/checkout/interfaces/controller/formDto"
 	customerApplication "go.aoe.com/flamingo/core/customer/application"
 	formApplicationService "go.aoe.com/flamingo/core/form/application"
@@ -18,6 +19,8 @@ import (
 )
 
 type (
+	PaymentProviderProvider func() map[string]paymentDomain.PaymentProvider
+
 	// CheckoutViewData represents the checkout view data
 	CheckoutViewData struct {
 		DecoratedCart        cart.DecoratedCart
@@ -48,7 +51,7 @@ type (
 	CheckoutController struct {
 		responder.RenderAware   `inject:""`
 		responder.RedirectAware `inject:""`
-		Router                  *router.Router `inject:""`
+		Router *router.Router   `inject:""`
 
 		CheckoutFormService  *formDto.CheckoutFormService `inject:""`
 		OrderService         *application.OrderService    `inject:""`
@@ -62,6 +65,7 @@ type (
 		Logger flamingo.Logger `inject:""`
 
 		CustomerApplicationService *customerApplication.Service `inject:""`
+		PaymentProvider            PaymentProviderProvider      `inject:""`
 	}
 )
 
@@ -71,7 +75,6 @@ func init() {
 
 // StartAction handles the checkout start action
 func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
-
 	//Guard Clause if Cart cannout be fetched
 	decoratedCart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
 	if e != nil {
@@ -212,4 +215,20 @@ func (cc *CheckoutController) submitOrderForm(ctx web.Context, formservice *form
 func (cc *CheckoutController) placeOrder(ctx web.Context, checkoutFormData formDto.CheckoutFormData, decoratedCart cart.DecoratedCart) (string, error) {
 	billingAddress, shippingAddress := formDto.MapAddresses(checkoutFormData)
 	return cc.OrderService.PlaceOrder(ctx, decoratedCart, "ispu", "ispu", billingAddress, shippingAddress)
+}
+
+func (cc *CheckoutController) getPaymentMethods() map[string]paymentDomain.PaymentProvider {
+	result := make(map[string]paymentDomain.PaymentProvider)
+
+	paymentProviders := cc.PaymentProvider()
+
+	if paymentProviders != nil {
+		for name, paymentProvider := range cc.PaymentProvider() {
+			if paymentProvider.IsActive() {
+				result[name] = paymentProvider
+			}
+		}
+	}
+
+	return result
 }
