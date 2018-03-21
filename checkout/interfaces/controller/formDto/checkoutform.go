@@ -64,7 +64,7 @@ func (fs *CheckoutFormService) ParseFormData(ctx web.Context, formValues url.Val
 
 	// Preset eMail when email parameter is given:
 	if ctx != nil {
-		email, e := ctx.Query("email")
+		email, e := ctx.Form("email")
 		if e == nil && len(formValues["billingAddress.email"]) == 0 {
 			formValues["billingAddress.email"] = email
 		}
