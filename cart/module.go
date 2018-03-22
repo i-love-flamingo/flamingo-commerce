@@ -5,14 +5,13 @@ import (
 
 	"go.aoe.com/flamingo/core/cart/application"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
-	"go.aoe.com/flamingo/core/cart/infrastructure"
 	"go.aoe.com/flamingo/core/cart/interfaces/controller"
+	"go.aoe.com/flamingo/core/cart/interfaces/templatefunctions"
 	"go.aoe.com/flamingo/framework/config"
 	"go.aoe.com/flamingo/framework/dingo"
 	"go.aoe.com/flamingo/framework/event"
 	"go.aoe.com/flamingo/framework/router"
 	"go.aoe.com/flamingo/framework/template"
-	"go.aoe.com/flamingo/core/cart/interfaces/templatefunctions"
 )
 
 type (
@@ -27,13 +26,13 @@ type (
 // Configure module
 func (m *CartModule) Configure(injector *dingo.Injector) {
 	if m.UseInMemoryCart {
-		injector.Bind((*infrastructure.GuestCartStorage)(nil)).To(infrastructure.InmemoryGuestCartStorage{}).AsEagerSingleton()
-		injector.Bind((*infrastructure.CustomerCartStorage)(nil)).To(infrastructure.InmemoryCustomerCartStorage{}).AsEagerSingleton()
-		injector.Bind((*cart.GuestCartService)(nil)).To(infrastructure.GuestCartServiceAdapter{})
-		injector.Bind((*cart.CustomerCartService)(nil)).To(infrastructure.CustomerCartServiceAdapter{})
+		//injector.Bind((*infrastructure.GuestCartStorage)(nil)).To(infrastructure.InmemoryGuestCartStorage{}).AsEagerSingleton()
+		//injector.Bind((*infrastructure.CustomerCartStorage)(nil)).To(infrastructure.InmemoryCustomerCartStorage{}).AsEagerSingleton()
+		//injector.Bind((*cart.GuestCartService)(nil)).To(infrastructure.GuestCartServiceAdapter{})
+		//injector.Bind((*cart.CustomerCartService)(nil)).To(infrastructure.CustomerCartServiceAdapter{})
 	}
-	//Register DomainEventPublisher
-	injector.Bind((*cart.EventPublisher)(nil)).To(application.DomainEventPublisher{})
+	//Register Default EventPublisher
+	injector.Bind((*application.EventPublisher)(nil)).To(application.DefaultEventPublisher{})
 
 	m.RouterRegistry.Handle("cart.view", (*controller.CartViewController).ViewAction)
 	m.RouterRegistry.Route("/cart", "cart.view")

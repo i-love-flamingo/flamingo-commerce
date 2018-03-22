@@ -7,45 +7,30 @@ import (
 	"golang.org/x/oauth2"
 )
 
-/**
-
-CartServicePorts General Informations
- - GuestCartService: Used if no customer is logged in
- - CustomerCartService: Used if a customer is authenticated. You can access the users information in your Adapter implementation
- - When implementing the Ports in an own package, be sure to also set the correct "CartOrderBehaviour" on the cart!
-
-*/
-
 type (
 	// GuestCartService interface
 	GuestCartService interface {
-		CommonCartService
+		GetCart(ctx context.Context, cartId string) (*Cart, error)
 
 		//GetGuestCart - should return a new guest cart (including the id of the cart)
-		GetNewCart(ctx context.Context, auth Auth) (Cart, error)
+		GetNewCart(ctx context.Context) (*Cart, error)
+
+		GetCartOrderBehaviour(context.Context) (CartOrderBehaviour, error)
 	}
 
 	// CustomerCartService  interface
 	CustomerCartService interface {
-		CommonCartService
-
-		//MergeWithGuestCart
-		//MergeWithGuestCart(ctx context.Context, auth Auth, cart Cart) error
-	}
-
-	CommonCartService interface {
-		//GetGuestCart - should return the guest Cart with the given id
-		GetCart(ctx context.Context, auth Auth, cartId string) (Cart, error)
-		//AddToGuestCart - adds an item to a guest cart (cartid, marketplaceCode, qty)
-		AddToCart(ctx context.Context, auth Auth, cartId string, addRequest AddRequest) error
+		GetCartOrderBehaviour(context.Context, Auth) (CartOrderBehaviour, error)
+		GetCart(ctx context.Context, auth Auth, cartId string) (*Cart, error)
 	}
 
 	// CartOrderBehaviour is a Port that can be implemented by other packages to implement  cart actions required for Ordering a Cart
 	CartOrderBehaviour interface {
-		PlaceOrder(ctx context.Context, auth Auth, cart *Cart, payment *Payment) (string, error)
-		DeleteItem(ctx context.Context, auth Auth, cart *Cart, itemId string) error
-		UpdateItem(ctx context.Context, auth Auth, cart *Cart, itemId string, item Item) error
-		SetShippingInformation(ctx context.Context, auth Auth, cart *Cart, shippingAddress *Address, billingAddress *Address, shippingCarrierCode string, shippingMethodCode string) error
+		PlaceOrder(ctx context.Context, cart *Cart, payment *PaymentInfo) (string, error)
+		DeleteItem(ctx context.Context, cart *Cart, itemId string) error
+		UpdateItem(ctx context.Context, cart *Cart, itemId string, item Item) error
+		AddToCart(ctx context.Context, cart *Cart, addRequest AddRequest) error
+		SetShippingInformation(ctx context.Context, cart *Cart, shippingAddress *Address, billingAddress *Address, shippingCarrierCode string, shippingMethodCode string) error
 	}
 
 	AddRequest struct {

@@ -1,5 +1,6 @@
 package infrastructure
 
+/*
 import (
 	"context"
 	"errors"
@@ -190,3 +191,4 @@ func (s *InmemoryCustomerCartStorage) StoreCart(cart domaincart.Cart) error {
 	s.guestCarts[cart.ID] = cart
 	return nil
 }
+*/

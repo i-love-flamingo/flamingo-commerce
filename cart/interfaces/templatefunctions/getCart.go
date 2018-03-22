@@ -1,18 +1,17 @@
 package templatefunctions
 
 import (
-
-	cartDomain "go.aoe.com/flamingo/core/cart/domain/cart"
 	"go.aoe.com/flamingo/core/cart/application"
-	"go.aoe.com/flamingo/framework/web"
+	cartDomain "go.aoe.com/flamingo/core/cart/domain/cart"
 	"go.aoe.com/flamingo/framework/flamingo"
+	"go.aoe.com/flamingo/framework/web"
 )
 
 type (
 	// GetProduct is exported as a template function
 	GetCart struct {
-		ApplicationCartService *application.CartService `inject:""`
-		Logger flamingo.Logger `inject:""`
+		ApplicationCartReceiverService *application.CartReceiverService `inject:""`
+		Logger                         flamingo.Logger                  `inject:""`
 	}
 )
 
@@ -23,10 +22,14 @@ func (tf GetCart) Name() string {
 
 func (tf GetCart) Func(ctx web.Context) interface{} {
 	return func() cartDomain.Cart {
-		cart, e := tf.ApplicationCartService.GetCart(ctx)
+		cart, e := tf.ApplicationCartReceiverService.ViewCart(ctx)
 		if e != nil {
 			tf.Logger.Error("Error: cart.interfaces.templatefunc %v", e)
 		}
-		return cart
+		if cart == nil {
+			cart = &cartDomain.Cart{}
+		}
+		//dereference (should lower risk of undesired sideeffects if missused in template)
+		return *cart
 	}
 }

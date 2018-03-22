@@ -14,9 +14,10 @@ import (
 type (
 	// CartApiController for cart api
 	CartApiController struct {
-		responder.JSONAware    `inject:""`
-		ApplicationCartService *application.CartService `inject:""`
-		DefaultDeliveryIntent  string                   `inject:"config:cart.defaultDeliveryIntent,optional"`
+		responder.JSONAware            `inject:""`
+		ApplicationCartService         *application.CartService         `inject:""`
+		ApplicationCartReceiverService *application.CartReceiverService `inject:""`
+		DefaultDeliveryIntent          string                           `inject:"config:cart.defaultDeliveryIntent,optional"`
 	}
 
 	result struct {
@@ -27,7 +28,7 @@ type (
 
 // GetAction Get JSON Format of API
 func (cc *CartApiController) GetAction(ctx web.Context) web.Response {
-	cart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
+	cart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
 	if e != nil {
 		log.Printf("cart.cartapicontroller.get: %v", e.Error())
 		return cc.JSONError(result{Message: e.Error(), Success: false}, 500)

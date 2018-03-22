@@ -25,22 +25,23 @@ type (
 
 		DefaultDeliveryIntent string `inject:"config:cart.defaultDeliveryIntent,optional"`
 
-		ApplicationCartService *application.CartService `inject:""`
-		Router                 *router.Router           `inject:""`
+		ApplicationCartService         *application.CartService         `inject:""`
+		ApplicationCartReceiverService *application.CartReceiverService `inject:""`
+		Router                         *router.Router                   `inject:""`
 	}
 )
 
 // ViewAction the DecoratedCart View ( / cart)
 func (cc *CartViewController) ViewAction(ctx web.Context) web.Response {
-	decoratedCart, err := cc.ApplicationCartService.GetDecoratedCart(ctx)
+	decoratedCart, err := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
 	if err != nil {
 		log.Printf("cart.cartcontroller.viewaction: Error %v", err)
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
 
 	return cc.Render(ctx, "checkout/cart", CartViewData{
-		DecoratedCart:        decoratedCart,
-		CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, decoratedCart),
+		DecoratedCart:        *decoratedCart,
+		CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, *decoratedCart),
 	})
 
 }
@@ -64,11 +65,6 @@ func (cc *CartViewController) AddAndViewAction(ctx web.Context) web.Response {
 
 // UpdateQtyAndViewAction the DecoratedCart View ( / cart)
 func (cc *CartViewController) UpdateQtyAndViewAction(ctx web.Context) web.Response {
-	decoratedCart, err := cc.ApplicationCartService.GetDecoratedCart(ctx)
-	if err != nil {
-		log.Printf("cart.cartcontroller.UpdateAndViewAction: Error %v", err)
-		return cc.Render(ctx, "checkout/carterror", nil)
-	}
 
 	id, err := ctx.Param1("id")
 	if err != nil {
@@ -86,7 +82,8 @@ func (cc *CartViewController) UpdateQtyAndViewAction(ctx web.Context) web.Respon
 		qtyInt = 1
 	}
 
-	err = decoratedCart.Cart.UpdateItemQty(ctx, cc.ApplicationCartService.Auth(ctx), id, qtyInt)
+	err = cc.ApplicationCartService.UpdateItemQty(ctx, id, qtyInt)
+
 	if err != nil {
 		log.Printf("cart.cartcontroller.UpdateAndViewAction: Error %v", err)
 	}
@@ -96,11 +93,6 @@ func (cc *CartViewController) UpdateQtyAndViewAction(ctx web.Context) web.Respon
 
 // DeleteAndViewAction the DecoratedCart View ( / cart)
 func (cc *CartViewController) DeleteAndViewAction(ctx web.Context) web.Response {
-	decoratedCart, err := cc.ApplicationCartService.GetDecoratedCart(ctx)
-	if err != nil {
-		log.Printf("cart.cartcontroller.deleteaction: Error %v", err)
-		return cc.Render(ctx, "checkout/carterror", nil)
-	}
 
 	id, err := ctx.Param1("id")
 	if err != nil {
@@ -108,7 +100,7 @@ func (cc *CartViewController) DeleteAndViewAction(ctx web.Context) web.Response 
 		return cc.Redirect("cart.view", nil)
 	}
 
-	err = decoratedCart.Cart.DeleteItem(ctx, cc.ApplicationCartService.Auth(ctx), id)
+	err = cc.ApplicationCartService.DeleteItem(ctx, id)
 	if err != nil {
 		log.Printf("cart.cartcontroller.deleteaction: Error %v", err)
 	}
