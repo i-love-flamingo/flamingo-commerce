@@ -3,9 +3,7 @@ package checkout
 import (
 	"github.com/go-playground/form"
 	"go.aoe.com/flamingo/core/checkout/application"
-	paymentDomain "go.aoe.com/flamingo/core/checkout/domain/payment"
 	"go.aoe.com/flamingo/core/checkout/infrastructure"
-	"go.aoe.com/flamingo/core/checkout/infrastructure/payment"
 	"go.aoe.com/flamingo/core/checkout/interfaces/controller"
 	"go.aoe.com/flamingo/framework/config"
 	"go.aoe.com/flamingo/framework/dingo"
@@ -42,8 +40,6 @@ func (m *CheckoutModule) Configure(injector *dingo.Injector) {
 	if m.UseFakeDeliveryLocationsService {
 		injector.Bind((*application.SourcingService)(nil)).To(infrastructure.FakeSourcingService{})
 	}
-
-	injector.BindMap((*paymentDomain.PaymentProvider)(nil), "zerodummypayment").To(payment.DummyPaymentProvider{})
 }
 
 // DefaultConfig
