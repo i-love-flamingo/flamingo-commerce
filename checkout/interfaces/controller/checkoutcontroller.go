@@ -75,6 +75,17 @@ func init() {
 
 // StartAction handles the checkout start action
 func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
+	methods := cc.getPaymentMethods()
+	paymark := methods["paymark"]
+
+	paymentMethod := paymark.GetPaymentMethods()[0]
+	test, error :=paymark.RedirectExternalPayment(ctx, paymentMethod)
+
+	cc.Logger.Info("hallo: %v error: %v", test, error)
+
+	return test
+
+
 	//Guard Clause if Cart cannout be fetched
 	decoratedCart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
 	if e != nil {
