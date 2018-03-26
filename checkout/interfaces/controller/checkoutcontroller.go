@@ -2,7 +2,7 @@ package controller
 
 import (
 	"encoding/gob"
-
+	"errors"
 	authApplication "go.aoe.com/flamingo/core/auth/application"
 	cartApplication "go.aoe.com/flamingo/core/cart/application"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
@@ -28,6 +28,7 @@ type (
 		CartValidationResult cart.CartValidationResult
 		ErrorMessage         string
 		HasSubmitError       bool
+		PaymentProviders     []paymentDomain.PaymentProvider
 	}
 
 	// SuccessViewData represents the success view data
@@ -75,18 +76,6 @@ func init() {
 
 // StartAction handles the checkout start action
 func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
-	methods := cc.getPaymentMethods()
-	paymark := methods["paymark"]
-
-
-	paymentMethod := paymark.GetPaymentMethods()[0]
-	test, error :=paymark.RedirectExternalPayment(ctx, paymentMethod)
-
-	cc.Logger.Info("hallo: %v error: %v", test, error)
-
-	return test
-
-
 	//Guard Clause if Cart cannout be fetched
 	decoratedCart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
 	if e != nil {
@@ -106,8 +95,46 @@ func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
 	}
 
 	return cc.Render(ctx, "checkout/startcheckout", CheckoutViewData{
-		DecoratedCart: decoratedCart,
+		DecoratedCart:    decoratedCart,
 	})
+}
+
+func (cc *CheckoutController) isAvailablePaymentProvider() bool {
+	return len(cc.getPaymentProviders()) > 0
+}
+
+func (cc *CheckoutController) doPayment(ctx web.Context, paymentProviderCode string, paymentMethodCode string) (web.Response, error) {
+	providers := cc.getPaymentProviders()
+
+	provider := providers[paymentProviderCode]
+
+	if provider == nil {
+		return nil, errors.New("Payment provider not found")
+	}
+
+	paymentMethods := provider.GetPaymentMethods()
+
+	var paymentMethod *paymentDomain.PaymentMethod
+	for _, method := range paymentMethods {
+		if method.Code == paymentMethodCode && method.IsExternalPayment {
+			paymentMethod = &method
+			break
+		}
+	}
+
+	if paymentMethod == nil {
+		return nil, errors.New("payment method not found")
+
+	} else if paymentMethod.IsExternalPayment {
+		hostedPaymentPageResponse, _ := provider.RedirectExternalPayment(ctx, paymentMethod)
+
+		//log.Error(fmt.Printf("%v",err))
+		return hostedPaymentPageResponse, nil
+
+	} else {
+		//todo show form TBD
+	}
+	return nil, errors.New("todo else case when payment method is not external")
 }
 
 // SubmitUserCheckoutAction handles the user order submit
@@ -121,6 +148,7 @@ func (cc *CheckoutController) SubmitUserCheckoutAction(ctx web.Context) web.Resp
 		//give the customer to the form service - so that it can prepopulate default values
 		cc.CheckoutFormService.Customer = customer
 	}
+
 	return cc.submitOrderForm(ctx, cc.CheckoutFormService, "checkout/usercheckout")
 }
 
@@ -149,6 +177,21 @@ func (cc *CheckoutController) SuccessAction(ctx web.Context) web.Response {
 	}
 
 	return cc.Render(ctx, "checkout/expired", nil)
+}
+
+func (cc *CheckoutController) initPayment(ctx web.Context, paymentProviderCode string, paymentMethodCode string) web.Response {
+	if cc.isAvailablePaymentProvider() {
+		redirectResponse, err := cc.doPayment(ctx, paymentProviderCode, paymentMethodCode)
+
+		if err == nil {
+			return redirectResponse
+		} else {
+			//todo return error data
+			return cc.Render(ctx, "checkout/carterror", nil)
+		}
+	} else {
+		return nil
+	}
 }
 
 func (cc *CheckoutController) submitOrderForm(ctx web.Context, formservice *formDto.CheckoutFormService, template string) web.Response {
@@ -185,6 +228,12 @@ func (cc *CheckoutController) submitOrderForm(ctx web.Context, formservice *form
 	}
 
 	if form.IsValidAndSubmitted() {
+		//todo get payment method and provider from context
+		paymentResponse := cc.initPayment(ctx, "paymark", "cc")
+		if paymentResponse != nil {
+			return paymentResponse
+		}
+
 		if checkoutFormData, ok := form.Data.(formDto.CheckoutFormData); ok {
 			orderID, err := cc.placeOrder(ctx, checkoutFormData, decoratedCart)
 			if err != nil {
@@ -216,6 +265,7 @@ func (cc *CheckoutController) submitOrderForm(ctx web.Context, formservice *form
 			cc.Logger.WithField("category", "checkout").Warnf("CheckoutForm has general error: %#v", form.ValidationInfo.GeneralErrors)
 		}
 	}
+
 	//Default: Form not submitted yet or submitted with validation errors:
 	return cc.Render(ctx, template, CheckoutViewData{
 		DecoratedCart:        decoratedCart,
@@ -229,7 +279,7 @@ func (cc *CheckoutController) placeOrder(ctx web.Context, checkoutFormData formD
 	return cc.OrderService.PlaceOrder(ctx, decoratedCart, "ispu", "ispu", billingAddress, shippingAddress)
 }
 
-func (cc *CheckoutController) getPaymentMethods() map[string]paymentDomain.PaymentProvider {
+func (cc *CheckoutController) getPaymentProviders() map[string]paymentDomain.PaymentProvider {
 	result := make(map[string]paymentDomain.PaymentProvider)
 
 	paymentProviders := cc.PaymentProvider()

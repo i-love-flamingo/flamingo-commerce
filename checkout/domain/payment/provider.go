@@ -13,10 +13,11 @@ type (
 	}
 
 	PaymentProvider interface {
+		GetCode() string
 		// GetPaymentMethods returns the Payment Providers available Payment Methods
 		GetPaymentMethods() []PaymentMethod
 		// RedirectExternalPayment starts a Redirect to an external Payment Page (if applicable)
-		RedirectExternalPayment (web.Context, PaymentMethod) (web.Response, error)
+		RedirectExternalPayment (web.Context, *PaymentMethod) (web.Response, error)
 		IsActive() bool
 	}
 )

@@ -10,6 +10,10 @@ type (
 	DummyPaymentProvider struct{}
 )
 
+func (pa *DummyPaymentProvider) GetCode() string {
+	return "dummy"
+}
+
 // GetPaymentMethods returns the Payment Providers available Payment Methods
 func (pa *DummyPaymentProvider) GetPaymentMethods() []payment.PaymentMethod {
 	var result []payment.PaymentMethod
@@ -18,7 +22,7 @@ func (pa *DummyPaymentProvider) GetPaymentMethods() []payment.PaymentMethod {
 }
 
 // RedirectExternalPayment starts a Redirect to an external Payment Page (if applicable)
-func (pa *DummyPaymentProvider) RedirectExternalPayment(ctx web.Context, method payment.PaymentMethod) (web.Response, error) {
+func (pa *DummyPaymentProvider) RedirectExternalPayment(ctx web.Context, method *payment.PaymentMethod) (web.Response, error) {
 	return nil, errors.New("Only a Dummy Adapter")
 }
 
