@@ -1,41 +1,22 @@
 package infrastructure
 
 import (
+	cartDomain "go.aoe.com/flamingo/core/cart/domain/cart"
 	checkoutApplication "go.aoe.com/flamingo/core/checkout/application"
 	"go.aoe.com/flamingo/framework/web"
 )
 
 type (
 	// FakeDeliveryLocationsService represents the fake source locator
-	FakeDeliveryLocationsService struct {
+	FakeSourcingService struct {
 	}
 )
 
 var (
-	_ checkoutApplication.DeliveryLocationsService = new(FakeDeliveryLocationsService)
+	_ checkoutApplication.SourcingService = new(FakeSourcingService)
 )
 
 // GetDeliveryLocations provides fake delivery locations
-func (sl *FakeDeliveryLocationsService) GetDeliveryLocations(ctx web.Context) (checkoutApplication.DeliveryLocations, error) {
-	return checkoutApplication.DeliveryLocations{
-		RetailerLocations: []checkoutApplication.RetailerLocationCollection{
-			{
-				Retailer: "om3CommonTestretailer",
-				Locations: []checkoutApplication.Location{
-					{
-						Id:       "mock_ispu_location1",
-						Priority: "1",
-					},
-					{
-						Id:       "mock_ispu_location2",
-						Priority: "2",
-					},
-					{
-						Id:       "mock_ispu_location3",
-						Priority: "3",
-					},
-				},
-			},
-		},
-	}, nil
+func (sl *FakeSourcingService) GetSourceId(ctx web.Context, decoratedCart *cartDomain.DecoratedCart, item *cartDomain.DecoratedCartItem) (string, error) {
+	return "mock_ispu_location1", nil
 }

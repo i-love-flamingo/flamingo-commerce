@@ -10,8 +10,8 @@ type (
 	}
 )
 
-func (p PaymentService) GetPayment() *cart.Payment {
-	return &cart.Payment{
+func (p PaymentService) GetPayment() *cart.PaymentInfo {
+	return &cart.PaymentInfo{
 		Method: p.DefaultPaymentMethod,
 	}
 }

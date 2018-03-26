@@ -40,7 +40,7 @@ func (m *CheckoutModule) Configure(injector *dingo.Injector) {
 
 	injector.Bind((*form.Decoder)(nil)).ToProvider(form.NewDecoder).AsEagerSingleton()
 	if m.UseFakeDeliveryLocationsService {
-		injector.Bind((*application.DeliveryLocationsService)(nil)).To(infrastructure.FakeDeliveryLocationsService{})
+		injector.Bind((*application.SourcingService)(nil)).To(infrastructure.FakeSourcingService{})
 	}
 
 	injector.BindMap((*paymentDomain.PaymentProvider)(nil), "zerodummypayment").To(payment.DummyPaymentProvider{})

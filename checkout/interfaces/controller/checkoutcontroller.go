@@ -63,7 +63,8 @@ type (
 		PaymentService       *application.PaymentService  `inject:""`
 		DecoratedCartFactory *cart.DecoratedCartFactory   `inject:""`
 
-		ApplicationCartService *cartApplication.CartService `inject:""`
+		ApplicationCartService         *cartApplication.CartService         `inject:""`
+		ApplicationCartReceiverService *cartApplication.CartReceiverService `inject:""`
 
 		UserService *authApplication.UserService `inject:""`
 
@@ -83,7 +84,7 @@ func init() {
 // StartAction handles the checkout start action
 func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
 	//Guard Clause if Cart cannout be fetched
-	decoratedCart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
+	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
 	if e != nil {
 		cc.Logger.WithField("category", "checkout").Errorf("cart.checkoutcontroller.viewaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil)
@@ -96,12 +97,12 @@ func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
 	//Guard Clause if Cart is empty
 	if decoratedCart.Cart.ItemCount() == 0 {
 		return cc.Render(ctx, "checkout/startcheckout", CheckoutViewData{
-			DecoratedCart: decoratedCart,
+			DecoratedCart: *decoratedCart,
 		})
 	}
 
 	return cc.Render(ctx, "checkout/startcheckout", CheckoutViewData{
-		DecoratedCart: decoratedCart,
+		DecoratedCart: *decoratedCart,
 	})
 }
 
@@ -267,7 +268,7 @@ func (cc *CheckoutController) submitOrderForm(ctx web.Context, formservice *form
 	}
 
 	//Guard Clause if Cart cannout be fetched
-	decoratedCart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
+	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
 	if e != nil {
 		cc.Logger.WithField("category", "checkout").Errorf("cart.checkoutcontroller.submitaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil)
@@ -282,7 +283,7 @@ func (cc *CheckoutController) submitOrderForm(ctx web.Context, formservice *form
 	// return on error (template need to handle error display)
 	if e != nil {
 		return cc.Render(ctx, template, CheckoutViewData{
-			DecoratedCart:        decoratedCart,
+			DecoratedCart:        *decoratedCart,
 			CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, decoratedCart),
 			Form:                 form,
 		})
@@ -291,7 +292,7 @@ func (cc *CheckoutController) submitOrderForm(ctx web.Context, formservice *form
 	//Guard Clause if Cart is empty
 	if decoratedCart.Cart.ItemCount() == 0 {
 		return cc.Render(ctx, template, CheckoutViewData{
-			DecoratedCart:        decoratedCart,
+			DecoratedCart:        *decoratedCart,
 			CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, decoratedCart),
 			Form:                 form,
 		})
@@ -299,11 +300,11 @@ func (cc *CheckoutController) submitOrderForm(ctx web.Context, formservice *form
 
 	if form.IsValidAndSubmitted() {
 		if checkoutFormData, ok := form.Data.(formDto.CheckoutFormData); ok {
-			orderID, err := cc.placeOrder(ctx, checkoutFormData, decoratedCart)
+			orderID, err := cc.placeOrder(ctx, checkoutFormData)
 			if err != nil {
 				//Place Order Error
 				return cc.Render(ctx, template, CheckoutViewData{
-					DecoratedCart:        decoratedCart,
+					DecoratedCart:        *decoratedCart,
 					CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, decoratedCart),
 					HasSubmitError:       true,
 					Form:                 form,
@@ -318,7 +319,7 @@ func (cc *CheckoutController) submitOrderForm(ctx web.Context, formservice *form
 				OrderId:     orderID,
 				Email:       shippingEmail,
 				PlacedItems: decoratedCart.Cart.Cartitems,
-				CartTotals:  decoratedCart.Cart.GetCartTotals(),
+				CartTotals:  decoratedCart.Cart.CartTotals,
 			})
 		} else {
 			cc.Logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error cannot type convert to CheckoutFormData!")
@@ -332,15 +333,15 @@ func (cc *CheckoutController) submitOrderForm(ctx web.Context, formservice *form
 
 	//Default: Form not submitted yet or submitted with validation errors:
 	return cc.Render(ctx, template, CheckoutViewData{
-		DecoratedCart:        decoratedCart,
+		DecoratedCart:        *decoratedCart,
 		CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, decoratedCart),
 		Form:                 form,
 	})
 }
 
-func (cc *CheckoutController) placeOrder(ctx web.Context, checkoutFormData formDto.CheckoutFormData, decoratedCart cart.DecoratedCart) (string, error) {
+func (cc *CheckoutController) placeOrder(ctx web.Context, checkoutFormData formDto.CheckoutFormData) (string, error) {
 	billingAddress, shippingAddress := formDto.MapAddresses(checkoutFormData)
-	return cc.OrderService.PlaceOrder(ctx, decoratedCart, "ispu", "ispu", billingAddress, shippingAddress)
+	return cc.OrderService.PlaceOrder(ctx, "ispu", "ispu", billingAddress, shippingAddress)
 }
 
 func (cc *CheckoutController) getPaymentProviders() map[string]paymentDomain.PaymentProvider {
