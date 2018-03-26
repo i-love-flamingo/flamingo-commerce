@@ -25,7 +25,7 @@ type (
 )
 
 //BuildDeliveryIntent - gets DeliveryIntent by string representation
-func BuildDeliveryIntent(representation string) DeliveryIntent {
+func (b *DeliveryIntentBuilder) BuildDeliveryIntent(representation string) DeliveryIntent {
 	if representation == DELIVERY_METHOD_DELIVERY {
 		return DeliveryIntent{
 			Method: DELIVERY_METHOD_DELIVERY,
@@ -33,32 +33,36 @@ func BuildDeliveryIntent(representation string) DeliveryIntent {
 	}
 
 	//"pickup-autodetect"
-	if representation == "pickup-autodetect" {
+	if representation == "store-autodetect" {
 		return DeliveryIntent{
 			Method: DELIVERY_METHOD_PICKUP,
 		}
 	}
 
-	intentParts := strings.SplitN(representation, "_", 2)
-	if len(intentParts) != 2 {
+	intentParts := strings.SplitN(representation, "_", 3)
+	if len(intentParts) != 3 {
+		b.Logger.WithField("category", "cart").WithField("subcategory", "DeliveryIntentBuilder").Warnf("Unknown IntentString %v", representation)
 		return DeliveryIntent{
 			Method: DELIVERY_METHOD_UNSPECIFIED,
 		}
 	}
 	if intentParts[0] == DELIVERY_METHOD_PICKUP {
-		return DeliveryIntent{
-			Method:               DELIVERY_METHOD_PICKUP,
-			DeliveryLocationCode: intentParts[1],
-			DeliveryLocationType: DELIVERYLOCATION_TYPE_STORE,
+		if intentParts[1] == DELIVERYLOCATION_TYPE_STORE {
+			return DeliveryIntent{
+				Method:               DELIVERY_METHOD_PICKUP,
+				DeliveryLocationCode: intentParts[2],
+				DeliveryLocationType: DELIVERYLOCATION_TYPE_STORE,
+			}
+		}
+		if intentParts[1] == DELIVERYLOCATION_TYPE_COLLECTIONPOINT {
+			return DeliveryIntent{
+				Method:               DELIVERY_METHOD_PICKUP,
+				DeliveryLocationCode: intentParts[2],
+				DeliveryLocationType: DELIVERYLOCATION_TYPE_COLLECTIONPOINT,
+			}
 		}
 	}
-	if intentParts[0] == DELIVERYLOCATION_TYPE_COLLECTIONPOINT {
-		return DeliveryIntent{
-			Method:               DELIVERY_METHOD_PICKUP,
-			DeliveryLocationCode: intentParts[1],
-			DeliveryLocationType: DELIVERYLOCATION_TYPE_COLLECTIONPOINT,
-		}
-	}
+	b.Logger.WithField("category", "cart").WithField("subcategory", "DeliveryIntentBuilder").Warnf("Unknown IntentString %v", representation)
 	return DeliveryIntent{
 		Method: DELIVERY_METHOD_UNSPECIFIED,
 	}
@@ -77,5 +81,8 @@ func (di *DeliveryIntent) GetDeliveryInfo() DeliveryInfo {
 
 //String - Gets String representation of DeliveryIntent
 func (di *DeliveryIntent) String() string {
-	return di.Method + "_" + di.DeliveryLocationCode
+	if di.Method == DELIVERY_METHOD_PICKUP {
+		return di.Method + "_" + di.DeliveryLocationType + "_" + di.DeliveryLocationCode
+	}
+	return di.Method
 }

@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"go.aoe.com/flamingo/framework/flamingo"
 )
 
 func TestSimpleCartItem(t *testing.T) {
@@ -22,25 +23,33 @@ func TestSimpleCartItem(t *testing.T) {
 }
 
 func TestDeliveryIntent(t *testing.T) {
-	intent := BuildDeliveryIntent("pickup_location_1")
+	builder := DeliveryIntentBuilder{
+		Logger: flamingo.NullLogger{},
+	}
+	intent := builder.BuildDeliveryIntent("pickup_store_location_1")
+	assert.Equal(t, "pickup_store_location_1", intent.String())
 	assert.Equal(t, "location_1", intent.DeliveryLocationCode)
 	assert.Equal(t, DELIVERYLOCATION_TYPE_STORE, intent.DeliveryLocationType)
 	assert.Equal(t, DELIVERY_METHOD_PICKUP, intent.Method)
 
-	intent = BuildDeliveryIntent("")
+	intent = builder.BuildDeliveryIntent("")
+	assert.Equal(t, DELIVERY_METHOD_UNSPECIFIED, intent.String())
 	assert.Equal(t, "", intent.DeliveryLocationCode)
 	assert.Equal(t, DELIVERY_METHOD_UNSPECIFIED, intent.Method, "empty intent string should by unspecified")
 
-	intent = BuildDeliveryIntent("lkjlkj")
+	intent = builder.BuildDeliveryIntent("lkjlkj")
+	assert.Equal(t, DELIVERY_METHOD_UNSPECIFIED, intent.String())
 	assert.Equal(t, "", intent.DeliveryLocationCode)
 	assert.Equal(t, DELIVERY_METHOD_UNSPECIFIED, intent.Method, "random unvalid intent string should by unspecified")
 
-	intent = BuildDeliveryIntent("delivery")
+	intent = builder.BuildDeliveryIntent("delivery")
+	assert.Equal(t, "delivery", intent.String())
 	assert.Equal(t, "", intent.DeliveryLocationCode)
 	assert.Equal(t, DELIVERY_METHOD_DELIVERY, intent.Method)
 
-	intent = BuildDeliveryIntent("collection_point_1-2_3")
-	assert.Equal(t, "point_1-2_3", intent.DeliveryLocationCode)
+	intent = builder.BuildDeliveryIntent("pickup_collection_locpoint_1-2_3")
+	assert.Equal(t, "pickup_collection_locpoint_1-2_3", intent.String())
+	assert.Equal(t, "locpoint_1-2_3", intent.DeliveryLocationCode)
 	assert.Equal(t, DELIVERY_METHOD_PICKUP, intent.Method)
 	assert.Equal(t, DELIVERYLOCATION_TYPE_COLLECTIONPOINT, intent.DeliveryLocationType)
 }

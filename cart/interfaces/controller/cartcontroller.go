@@ -48,7 +48,20 @@ func (cc *CartViewController) ViewAction(ctx web.Context) web.Response {
 
 // AddAndViewAction the DecoratedCart View ( / cart)
 func (cc *CartViewController) AddAndViewAction(ctx web.Context) web.Response {
-	addRequest := addRequestFromRequestContext(ctx, cc.DefaultDeliveryIntent)
+
+	variantMarketplaceCode, e := ctx.Param1("variantMarketplaceCode")
+	if e != nil {
+		variantMarketplaceCode = ""
+	}
+	qty, e := ctx.Param1("qty")
+	if e != nil {
+		qty = "1"
+	}
+	qtyInt, _ := strconv.Atoi(qty)
+	deliveryIntent, e := ctx.Param1("deliveryIntent")
+
+	addRequest := cc.ApplicationCartService.BuildAddRequest(ctx, ctx.MustParam1("marketplaceCode"), variantMarketplaceCode, qtyInt, deliveryIntent)
+
 	err := cc.ApplicationCartService.AddProduct(ctx, addRequest)
 	if notAllowedErr, ok := err.(*cartDomain.AddToCartNotAllowed); ok {
 		if notAllowedErr.RedirectHandlerName != "" {

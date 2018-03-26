@@ -22,6 +22,7 @@ type (
 
 		PickUpDetectionService cartDomain.PickUpDetectionService `inject:",optional"`
 
+		DeliveryIntentBuilder *cartDomain.DeliveryIntentBuilder `inject:""`
 		//DefaultDeliveryMethodForValidation - used for calling the CartValidator (this is something that might get obsolete if the Cart and the CartItems have theire Deliverymethod "saved")
 		DefaultDeliveryMethodForValidation string `inject:"config:cart.validation.defaultDeliveryMethod,optional"`
 
@@ -135,11 +136,14 @@ func (cs *CartService) BuildAddRequest(ctx web.Context, marketplaceCode string, 
 	if qty < 0 {
 		qty = 0
 	}
+	if deliveryIntentStringRepresentation == "" {
+		deliveryIntentStringRepresentation = cs.DefaultDeliveryIntent
+	}
 	return cartDomain.AddRequest{
 		MarketplaceCode: marketplaceCode,
 		Qty:             qty,
 		VariantMarketplaceCode: variantMarketplaceCode,
-		DeliveryIntent:         cartDomain.BuildDeliveryIntent(deliveryIntentStringRepresentation)}
+		DeliveryIntent:         cs.DeliveryIntentBuilder.BuildDeliveryIntent(deliveryIntentStringRepresentation)}
 }
 
 // AddProduct Add a product
@@ -150,6 +154,8 @@ func (cs *CartService) AddProduct(ctx web.Context, addRequest cartDomain.AddRequ
 		return err
 	}
 
+	cs.Logger.WithField("category", "cartService").WithField("subCategory", "AddProduct").Debugf("AddRequest received %#v  / %v", addRequest, addRequest.DeliveryIntent.String())
+
 	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx)
 	if err != nil {
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "AddProduct").Error(err)
@@ -157,11 +163,11 @@ func (cs *CartService) AddProduct(ctx web.Context, addRequest cartDomain.AddRequ
 	}
 
 	//Check if we can autodetect empty location code for pickup
-	//TODO - Implement PickUpDetectionService
 	if addRequest.DeliveryIntent.Method == cartDomain.DELIVERY_METHOD_PICKUP && addRequest.DeliveryIntent.DeliveryLocationCode == "" {
 		if cs.PickUpDetectionService != nil {
 			locationCode, locationType, err := cs.PickUpDetectionService.Detect(product, addRequest)
-			if err != nil {
+			if err == nil {
+				cs.Logger.WithField("category", "cartService").WithField("subCategory", "AddProduct").Debugf("Detected pickup location %v / %v", locationCode, locationType)
 				addRequest.DeliveryIntent.DeliveryLocationCode = locationCode
 				addRequest.DeliveryIntent.DeliveryLocationType = locationType
 			}
