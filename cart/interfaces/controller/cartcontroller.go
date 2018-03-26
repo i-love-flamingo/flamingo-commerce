@@ -41,7 +41,7 @@ func (cc *CartViewController) ViewAction(ctx web.Context) web.Response {
 
 	return cc.Render(ctx, "checkout/cart", CartViewData{
 		DecoratedCart:        *decoratedCart,
-		CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, *decoratedCart),
+		CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, decoratedCart),
 	})
 
 }

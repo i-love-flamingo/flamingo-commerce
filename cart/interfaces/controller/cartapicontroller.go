@@ -70,5 +70,5 @@ func addRequestFromRequestContext(ctx web.Context, defaultDeliveryIntent string)
 		deliveryIntent = defaultDeliveryIntent
 	}
 
-	return domaincart.AddRequest{MarketplaceCode: marketplaceCode, Qty: qtyInt, VariantMarketplaceCode: variantMarketplaceCode, DeliveryIntent: deliveryIntent}
+	return domaincart.AddRequest{MarketplaceCode: marketplaceCode, Qty: qtyInt, VariantMarketplaceCode: variantMarketplaceCode, DeliveryIntent: domaincart.BuildDeliveryIntent(deliveryIntent)}
 }

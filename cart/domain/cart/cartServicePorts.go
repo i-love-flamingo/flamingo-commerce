@@ -15,17 +15,17 @@ type (
 		//GetGuestCart - should return a new guest cart (including the id of the cart)
 		GetNewCart(ctx context.Context) (*Cart, error)
 
-		GetCartOrderBehaviour(context.Context) (CartOrderBehaviour, error)
+		GetCartOrderBehaviour(context.Context) (CartBehaviour, error)
 	}
 
 	// CustomerCartService  interface
 	CustomerCartService interface {
-		GetCartOrderBehaviour(context.Context, Auth) (CartOrderBehaviour, error)
+		GetCartOrderBehaviour(context.Context, Auth) (CartBehaviour, error)
 		GetCart(ctx context.Context, auth Auth, cartId string) (*Cart, error)
 	}
 
-	// CartOrderBehaviour is a Port that can be implemented by other packages to implement  cart actions required for Ordering a Cart
-	CartOrderBehaviour interface {
+	// CartBehaviour is a Port that can be implemented by other packages to implement  cart actions required for Ordering a Cart
+	CartBehaviour interface {
 		PlaceOrder(ctx context.Context, cart *Cart, payment *PaymentInfo) (string, error)
 		DeleteItem(ctx context.Context, cart *Cart, itemId string) error
 		UpdateItem(ctx context.Context, cart *Cart, itemId string, item Item) error
@@ -37,7 +37,7 @@ type (
 		MarketplaceCode        string
 		Qty                    int
 		VariantMarketplaceCode string
-		DeliveryIntent         string
+		DeliveryIntent         DeliveryIntent
 	}
 
 	// Auth defines cart authentication information

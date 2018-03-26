@@ -18,7 +18,7 @@ type (
 		AuthManager          *authApplication.AuthManager     `inject:""`
 		UserService          *authApplication.UserService     `inject:""`
 		Logger               flamingo.Logger                  `inject:""`
-		CartCache            CartCache                        `inject:""`
+		CartCache            CartCache                        `inject:",optional"`
 	}
 )
 
@@ -80,7 +80,7 @@ func (cs *CartReceiverService) ViewCart(ctx web.Context) (*cartDomain.Cart, erro
 }
 
 // GetCart Get the correct Cart (either Guest or User)
-func (cs *CartReceiverService) GetCart(ctx web.Context) (*cartDomain.Cart, cartDomain.CartOrderBehaviour, error) {
+func (cs *CartReceiverService) GetCart(ctx web.Context) (*cartDomain.Cart, cartDomain.CartBehaviour, error) {
 	if cs.UserService.IsLoggedIn(ctx) {
 		cart, err := cs.CustomerCartService.GetCart(ctx, cs.Auth(ctx), "me")
 		if err != nil {
@@ -164,12 +164,12 @@ func (cs *CartReceiverService) DecorateCart(ctx web.Context, cart *cartDomain.Ca
 }
 
 // GetDecoratedCart Get the correct Cart
-func (cs *CartReceiverService) GetDecoratedCart(ctx web.Context) (*cartDomain.DecoratedCart, error) {
-	cart, _, err := cs.GetCart(ctx)
+func (cs *CartReceiverService) GetDecoratedCart(ctx web.Context) (*cartDomain.DecoratedCart, cartDomain.CartBehaviour, error) {
+	cart, behaviour, err := cs.GetCart(ctx)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return cs.CartDecoratorFactory.Create(ctx, *cart), nil
+	return cs.CartDecoratorFactory.Create(ctx, *cart), behaviour, nil
 }
 
 func (cs *CartReceiverService) getEmptyCart() *cartDomain.Cart {

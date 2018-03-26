@@ -20,13 +20,17 @@ type (
 		ItemValidator  cartDomain.ItemValidator `inject:",optional"`
 		EventPublisher EventPublisher           `inject:""`
 
+		PickUpDetectionService cartDomain.PickUpDetectionService `inject:",optional"`
+
 		//DefaultDeliveryMethodForValidation - used for calling the CartValidator (this is something that might get obsolete if the Cart and the CartItems have theire Deliverymethod "saved")
 		DefaultDeliveryMethodForValidation string `inject:"config:cart.validation.defaultDeliveryMethod,optional"`
+
+		DefaultDeliveryIntent string `inject:"config:cart.validation.defaultDeliveryIntent,optional"`
 	}
 )
 
 // ValidateCart validates a carts content
-func (cs CartService) ValidateCart(ctx web.Context, decoratedCart cartDomain.DecoratedCart) cartDomain.CartValidationResult {
+func (cs CartService) ValidateCart(ctx web.Context, decoratedCart *cartDomain.DecoratedCart) cartDomain.CartValidationResult {
 	if cs.CartValidator != nil {
 		// TODO pass delivery Method from CART - once cart supports this!
 		result := cs.CartValidator.Validate(ctx, decoratedCart, cs.DefaultDeliveryMethodForValidation)
@@ -35,6 +39,16 @@ func (cs CartService) ValidateCart(ctx web.Context, decoratedCart cartDomain.Dec
 	}
 
 	return cartDomain.CartValidationResult{}
+}
+
+// ValidateCurrentCart validates the current active cart
+func (cs CartService) ValidateCurrentCart(ctx web.Context) (cartDomain.CartValidationResult, error) {
+	decoratedCart, err := cs.CartReceiverService.ViewDecoratedCart(ctx)
+	if err != nil {
+		return cartDomain.CartValidationResult{}, err
+	}
+
+	return cs.ValidateCart(ctx, decoratedCart), nil
 }
 
 // UpdateItemQty
@@ -116,9 +130,21 @@ func (cs *CartService) PlaceOrder(ctx web.Context, payment *cartDomain.PaymentIn
 	return orderNumber, err
 }
 
+// BuildAddRequest Helper to build
+func (cs *CartService) BuildAddRequest(ctx web.Context, marketplaceCode string, variantMarketplaceCode string, qty int, deliveryIntentStringRepresentation string) cartDomain.AddRequest {
+	if qty < 0 {
+		qty = 0
+	}
+	return cartDomain.AddRequest{
+		MarketplaceCode: marketplaceCode,
+		Qty:             qty,
+		VariantMarketplaceCode: variantMarketplaceCode,
+		DeliveryIntent:         cartDomain.BuildDeliveryIntent(deliveryIntentStringRepresentation)}
+}
+
 // AddProduct Add a product
 func (cs *CartService) AddProduct(ctx web.Context, addRequest cartDomain.AddRequest) error {
-	addRequest, err := cs.checkProductAndEnrichAddRequest(ctx, addRequest)
+	addRequest, product, err := cs.checkProductForAddRequest(ctx, addRequest)
 	if err != nil {
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "AddProduct").Error(err)
 		return err
@@ -128,6 +154,18 @@ func (cs *CartService) AddProduct(ctx web.Context, addRequest cartDomain.AddRequ
 	if err != nil {
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "AddProduct").Error(err)
 		return err
+	}
+
+	//Check if we can autodetect empty location code for pickup
+	//TODO - Implement PickUpDetectionService
+	if addRequest.DeliveryIntent.Method == cartDomain.DELIVERY_METHOD_PICKUP && addRequest.DeliveryIntent.DeliveryLocationCode == "" {
+		if cs.PickUpDetectionService != nil {
+			locationCode, locationType, err := cs.PickUpDetectionService.Detect(product, addRequest)
+			if err != nil {
+				addRequest.DeliveryIntent.DeliveryLocationCode = locationCode
+				addRequest.DeliveryIntent.DeliveryLocationType = locationType
+			}
+		}
 	}
 
 	err = behaviour.AddToCart(ctx, cart, addRequest)
@@ -140,31 +178,32 @@ func (cs *CartService) AddProduct(ctx web.Context, addRequest cartDomain.AddRequ
 	return nil
 }
 
-// checkProductAndEnrichAddRequest existence and validate with productService
-func (cs *CartService) checkProductAndEnrichAddRequest(ctx web.Context, addRequest cartDomain.AddRequest) (cartDomain.AddRequest, error) {
+// checkProductForAddRequest existence and validate with productService
+func (cs *CartService) checkProductForAddRequest(ctx web.Context, addRequest cartDomain.AddRequest) (cartDomain.AddRequest, productDomain.BasicProduct, error) {
 	product, err := cs.ProductService.Get(ctx, addRequest.MarketplaceCode)
 	if err != nil {
-		return addRequest, errors.New("cart.application.cartservice - AddProduct:Product not found")
+		return addRequest, nil, errors.New("cart.application.cartservice - AddProduct:Product not found")
 	}
 
 	if product.Type() == productDomain.TYPECONFIGURABLE {
 		if addRequest.VariantMarketplaceCode == "" {
-			return addRequest, errors.New("cart.application.cartservice - AddProduct:No Variant given for configurable product")
+			return addRequest, nil, errors.New("cart.application.cartservice - AddProduct:No Variant given for configurable product")
 		}
 
 		configurableProduct := product.(productDomain.ConfigurableProduct)
-		_, err := configurableProduct.Variant(addRequest.VariantMarketplaceCode)
+		variant, err := configurableProduct.Variant(addRequest.VariantMarketplaceCode)
 		if err != nil {
-			return addRequest, errors.New("cart.application.cartservice - AddProduct:Product has not the given variant")
+			return addRequest, nil, errors.New("cart.application.cartservice - AddProduct:Product has not the given variant")
 		}
+		configurableProduct.ActiveVariant = variant
 	}
 
 	//Now Validate the Item with the optional registered ItemValidator
 	if cs.ItemValidator != nil {
-		return addRequest, cs.ItemValidator.Validate(ctx, addRequest, product)
+		return addRequest, product, cs.ItemValidator.Validate(ctx, addRequest, product)
 	}
 
-	return addRequest, nil
+	return addRequest, product, nil
 }
 
 func (cs *CartService) publishAddtoCartEvent(ctx web.Context, currentCart cartDomain.Cart, addRequest cartDomain.AddRequest) {

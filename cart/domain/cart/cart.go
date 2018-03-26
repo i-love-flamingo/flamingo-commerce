@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 
+	"time"
+
 	"github.com/pkg/errors"
 )
 
@@ -23,28 +25,34 @@ type (
 		CartTotals CartTotals
 		//BillingAdress - the main billing address (relevant for all payments)
 		BillingAdress Address
-		//PaymentInfos - list of Payments involved in this cart - referenced from the items
-		PaymentInfos []PaymentInfo
+
 		//DeliveryInfos - list of desired Deliverys (or Shippments) involved in this cart - referenced from the items
 		DeliveryInfos []DeliveryInfo
 	}
 
-	//DeliveryInfo - informations for a wished delivery
+	//DeliveryInfo - represents the Delivery
 	DeliveryInfo struct {
-		Method       string
-		Carrier      string
-		Destination  Destination
-		ShippingItem ShippingItem
+		Method           string
+		Carrier          string
+		DeliveryLocation DeliveryLocation
+		ShippingItem     ShippingItem
+		DesiredTime      time.Time
+	}
+	DeliveryLocation struct {
+		Type    string
+		Address Address
+		//Code - optional idendifier of this location/destination - is used in special destination Types
+		Code string
 	}
 
 	CartTotals struct {
-		Totalitems []Totalitem
-
-		GrandTotal     float64
-		SubTotal       float64
-		DiscountAmount float64
-		TaxAmount      float64
-		CurrencyCode   string
+		Totalitems        []Totalitem
+		TotalShippingItem ShippingItem
+		GrandTotal        float64
+		SubTotal          float64
+		DiscountAmount    float64
+		TaxAmount         float64
+		CurrencyCode      string
 	}
 
 	// Item for Cart
@@ -68,9 +76,11 @@ type (
 		PriceInclTax    float64
 		RowTotalInclTax float64
 
-		ShippingMethodReference *DeliveryInfo
-		PaymentReference        *PaymentInfo
-		CurrencyCode            string
+		DeliveryInfoReference *DeliveryInfo
+		CurrencyCode          string
+
+		//OriginalDeliveryIntent can be "delivery" for homedelivery or "pickup_locationcode" or "collectionpoint_locationcode"
+		OriginalDeliveryIntent *DeliveryIntent
 	}
 
 	// Totalitem for totals
@@ -90,6 +100,17 @@ type (
 
 		CurrencyCode string
 	}
+)
+
+const (
+	DELIVERY_METHOD_PICKUP      = "pickup"
+	DELIVERY_METHOD_DELIVERY    = "delivery"
+	DELIVERY_METHOD_UNSPECIFIED = "unspecified"
+
+	DELIVERYLOCATION_TYPE_COLLECTIONPOINT = "collection"
+	DELIVERYLOCATION_TYPE_STORE           = "store"
+	DELIVERYLOCATION_TYPE_ADDRESS         = "address"
+	DELIVERYLOCATION_TYPE_FREIGHTSTATION  = "freight-station"
 )
 
 // GetByLineNr gets an item - starting with 1
@@ -135,4 +156,18 @@ func inStruct(value string, list []string) bool {
 // ItemCount - returns amount of Cartitems
 func (Cart Cart) ItemCount() int {
 	return len(Cart.Cartitems)
+}
+
+// GetDeliveryMethodForIntent - returns the DeliveryInfo for the given intent - if existing
+func (Cart Cart) GetDeliveryMethodForIntent(intent DeliveryIntent) (*DeliveryInfo, error) {
+	for _, deliveryInfo := range Cart.DeliveryInfos {
+		if deliveryInfo.Method == intent.Method && deliveryInfo.Method == DELIVERY_METHOD_DELIVERY {
+			return &deliveryInfo, nil
+		}
+		if deliveryInfo.Method == intent.Method && deliveryInfo.Method == DELIVERY_METHOD_PICKUP &&
+			deliveryInfo.DeliveryLocation.Type == intent.DeliveryLocationType && deliveryInfo.DeliveryLocation.Code == intent.DeliveryLocationCode {
+			return &deliveryInfo, nil
+		}
+	}
+	return nil, errors.New("fitting deliveryInfo not found in cart")
 }

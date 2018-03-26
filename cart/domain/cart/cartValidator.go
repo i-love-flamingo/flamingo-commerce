@@ -15,7 +15,7 @@ type (
 	}
 
 	CartValidator interface {
-		Validate(ctx web.Context, cart DecoratedCart, deliveryMethod string) CartValidationResult
+		Validate(ctx web.Context, cart *DecoratedCart, deliveryMethod string) CartValidationResult
 	}
 )
 

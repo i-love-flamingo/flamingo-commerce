@@ -1,6 +1,11 @@
 package cart
 
 type (
+	CartPayment struct {
+		PaymentInfos   []PaymentInfo
+		ItemAssignment map[string]*PaymentInfo
+	}
+
 	PaymentInfo struct {
 		//Method like "paymark" , "paypal",
 		Method string
@@ -10,3 +15,13 @@ type (
 		TransactionId string
 	}
 )
+
+func (cp *CartPayment) AddPayment(paymentInfo PaymentInfo, items []string) {
+	cp.PaymentInfos = append(cp.PaymentInfos, paymentInfo)
+	if cp.ItemAssignment == nil {
+		cp.ItemAssignment = make(map[string]*PaymentInfo)
+	}
+	for _, v := range items {
+		cp.ItemAssignment[v] = &paymentInfo
+	}
+}
