@@ -1,8 +1,6 @@
 package payment
 
 import (
-	"context"
-
 	"github.com/pkg/errors"
 	"go.aoe.com/flamingo/core/checkout/domain/payment"
 	"go.aoe.com/flamingo/framework/web"
@@ -20,7 +18,7 @@ func (pa *DummyPaymentProvider) GetPaymentMethods() []payment.PaymentMethod {
 }
 
 // RedirectExternalPayment starts a Redirect to an external Payment Page (if applicable)
-func (pa *DummyPaymentProvider) RedirectExternalPayment(ctx context.Context, method payment.PaymentMethod) (web.Response, error) {
+func (pa *DummyPaymentProvider) RedirectExternalPayment(ctx web.Context, method payment.PaymentMethod) (web.Response, error) {
 	return nil, errors.New("Only a Dummy Adapter")
 }
 

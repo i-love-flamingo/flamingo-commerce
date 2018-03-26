@@ -78,6 +78,7 @@ func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
 	methods := cc.getPaymentMethods()
 	paymark := methods["paymark"]
 
+
 	paymentMethod := paymark.GetPaymentMethods()[0]
 	test, error :=paymark.RedirectExternalPayment(ctx, paymentMethod)
 
