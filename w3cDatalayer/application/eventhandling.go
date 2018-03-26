@@ -4,6 +4,7 @@ import (
 	"context"
 
 	authDomain "go.aoe.com/flamingo/core/auth/domain"
+	"go.aoe.com/flamingo/core/cart/application"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
 	"go.aoe.com/flamingo/core/w3cDatalayer/domain"
 	"go.aoe.com/flamingo/framework/event"
@@ -25,7 +26,7 @@ type (
 func (e *EventReceiver) NotifyWithContext(ctx context.Context, event event.Event) {
 	switch currentEvent := event.(type) {
 	//Handle OrderPlacedEvent and Set Transaction to current datalayer
-	case *cart.AddToCartEvent:
+	case *application.AddToCartEvent:
 		e.Logger.WithField("category", "w3cDatalayer").Debugf("Receive Event AddToCartEvent")
 		if webContext, ok := ctx.(web.Context); ok {
 			// In case of Configurable: the MarketplaceCode which is interesting for the datalayer is the Variant that is selected
@@ -39,7 +40,7 @@ func (e *EventReceiver) NotifyWithContext(ctx context.Context, event event.Event
 				SESSION_EVENTS_KEY,
 			)
 		}
-	case *cart.ChangedQtyInCartEvent:
+	case *application.ChangedQtyInCartEvent:
 		e.Logger.WithField("category", "w3cDatalayer").Debugf("Receive Event ChangedQtyInCartEvent")
 
 		if webContext, ok := ctx.(web.Context); ok {

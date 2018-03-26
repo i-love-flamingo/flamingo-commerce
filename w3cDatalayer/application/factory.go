@@ -128,17 +128,17 @@ func (s Factory) BuildCartData(cart cart.DecoratedCart) *domain.Cart {
 	cartData := domain.Cart{
 		CartID: cart.Cart.ID,
 		Price: &domain.CartPrice{
-			Currency:       cart.Cart.CurrencyCode,
-			BasePrice:      cart.Cart.SubTotal,
-			CartTotal:      cart.Cart.GrandTotal,
-			Shipping:       cart.Cart.ShippingItem.Price,
-			ShippingMethod: cart.Cart.ShippingItem.Title,
-			PriceWithTax:   cart.Cart.GrandTotal,
+			Currency:       cart.Cart.CartTotals.CurrencyCode,
+			BasePrice:      cart.Cart.CartTotals.SubTotal,
+			CartTotal:      cart.Cart.CartTotals.GrandTotal,
+			Shipping:       cart.Cart.CartTotals.TotalShippingItem.Price,
+			ShippingMethod: cart.Cart.CartTotals.TotalShippingItem.Title,
+			PriceWithTax:   cart.Cart.CartTotals.GrandTotal,
 		},
 		Attributes: make(map[string]interface{}),
 	}
 	for _, item := range cart.DecoratedItems {
-		itemData := s.buildCartItem(item, cart.Cart.CurrencyCode)
+		itemData := s.buildCartItem(item, cart.Cart.CartTotals.CurrencyCode)
 		cartData.Item = append(cartData.Item, itemData)
 	}
 	return &cartData
@@ -158,8 +158,8 @@ func (s Factory) BuildTransactionData(ctx web.Context, cartTotals cart.CartTotal
 			Currency:         cartTotals.CurrencyCode,
 			BasePrice:        cartTotals.SubTotal,
 			TransactionTotal: cartTotals.GrandTotal,
-			Shipping:         cartTotals.ShippingItem.Price,
-			ShippingMethod:   cartTotals.ShippingItem.Title,
+			Shipping:         cartTotals.TotalShippingItem.Price,
+			ShippingMethod:   cartTotals.TotalShippingItem.Title,
 		},
 		Profile:    profile,
 		Attributes: make(map[string]interface{}),
