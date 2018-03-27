@@ -3,7 +3,11 @@ package controller
 import (
 	"encoding/gob"
 	"errors"
+	"net/url"
+	"strings"
+
 	authApplication "go.aoe.com/flamingo/core/auth/application"
+	canonicalApp "go.aoe.com/flamingo/core/canonicalUrl/application"
 	cartApplication "go.aoe.com/flamingo/core/cart/application"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
 	"go.aoe.com/flamingo/core/checkout/application"
@@ -67,6 +71,8 @@ type (
 
 		CustomerApplicationService *customerApplication.Service `inject:""`
 		PaymentProvider            PaymentProviderProvider      `inject:""`
+
+		CanonicalService *canonicalApp.Service `inject:""`
 	}
 )
 
@@ -95,7 +101,7 @@ func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
 	}
 
 	return cc.Render(ctx, "checkout/startcheckout", CheckoutViewData{
-		DecoratedCart:    decoratedCart,
+		DecoratedCart: decoratedCart,
 	})
 }
 
@@ -124,9 +130,10 @@ func (cc *CheckoutController) doPayment(ctx web.Context, paymentProviderCode str
 
 	if paymentMethod == nil {
 		return nil, errors.New("payment method not found")
-
 	} else if paymentMethod.IsExternalPayment {
-		hostedPaymentPageResponse, _ := provider.RedirectExternalPayment(ctx, paymentMethod)
+		returnUrl := cc.getPaymentReturnUrl(provider.GetCode(), paymentMethod.Code)
+
+		hostedPaymentPageResponse, _ := provider.RedirectExternalPayment(ctx, paymentMethod, returnUrl)
 
 		//log.Error(fmt.Printf("%v",err))
 		return hostedPaymentPageResponse, nil
@@ -159,6 +166,37 @@ func (cc *CheckoutController) SubmitGuestCheckoutAction(ctx web.Context) web.Res
 		return cc.Redirect("checkout.user", nil)
 	}
 	return cc.submitOrderForm(ctx, cc.CheckoutFormService, "checkout/guestcheckout")
+}
+
+// ProcessPaymentAction functions as a return/notification URL for Payment Providers
+func (cc *CheckoutController) ProcessPaymentAction(ctx web.Context) web.Response {
+	request := ctx.Request()
+
+	providercode := ctx.MustParam1("providercode")
+	methodcode := ctx.MustParam1("methodcode")
+
+	err := request.ParseForm()
+
+	if err != nil {
+		panic("No Form Data Sent from Payment Provider")
+	}
+
+	postData := make(map[string][]string)
+	for key, value := range request.PostForm {
+		postData[key] = value
+	}
+
+	if err != nil {
+		panic("Request Body from Payment Provider not supplied")
+	}
+
+	cc.Logger.Printf("Providercode: %s, MethodCode: %s", providercode, methodcode)
+	cc.Logger.Printf("Request Data: %+v", postData)
+
+	// TODO: Next Step: Post Transaction Information (Retailer + Price/Tally) to Adapter
+	// TODO: Decide where to send the customer next ("Success Page?")
+
+	return cc.Redirect("checkout.success", nil)
 }
 
 // SuccessAction handles the order success action
@@ -194,7 +232,23 @@ func (cc *CheckoutController) initPayment(ctx web.Context, paymentProviderCode s
 	}
 }
 
+func (cc *CheckoutController) getPaymentReturnUrl(PaymentProvider string, PaymentMethod string) *url.URL {
+	baseUrl := cc.CanonicalService.BaseUrl
+	paymentUrl := cc.Router.URL("checkout.processpayment", router.P{"providercode": PaymentProvider, "methodcode": PaymentMethod})
+
+	rawUrl := strings.TrimRight(baseUrl, "/") + paymentUrl.String()
+
+	urlResult, _ := url.Parse(rawUrl)
+
+	return urlResult
+}
+
 func (cc *CheckoutController) submitOrderForm(ctx web.Context, formservice *formDto.CheckoutFormService, template string) web.Response {
+	//todo get payment method and provider from context
+	paymentResponse := cc.initPayment(ctx, "paymark", "cc")
+	if paymentResponse != nil {
+		return paymentResponse
+	}
 
 	//Guard Clause if Cart cannout be fetched
 	decoratedCart, e := cc.ApplicationCartService.GetDecoratedCart(ctx)
@@ -228,12 +282,6 @@ func (cc *CheckoutController) submitOrderForm(ctx web.Context, formservice *form
 	}
 
 	if form.IsValidAndSubmitted() {
-		//todo get payment method and provider from context
-		paymentResponse := cc.initPayment(ctx, "paymark", "cc")
-		if paymentResponse != nil {
-			return paymentResponse
-		}
-
 		if checkoutFormData, ok := form.Data.(formDto.CheckoutFormData); ok {
 			orderID, err := cc.placeOrder(ctx, checkoutFormData, decoratedCart)
 			if err != nil {

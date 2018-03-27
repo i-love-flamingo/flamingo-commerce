@@ -35,6 +35,9 @@ func (m *CheckoutModule) Configure(injector *dingo.Injector) {
 	m.RouterRegistry.Handle("checkout.success", (*controller.CheckoutController).SuccessAction)
 	m.RouterRegistry.Route("/checkout/success", "checkout.success")
 
+	m.RouterRegistry.Handle("checkout.processpayment", (*controller.CheckoutController).ProcessPaymentAction)
+	m.RouterRegistry.Route("/checkout/processpayment/:providercode/:methodcode", "checkout.processpayment")
+
 	injector.Bind((*form.Decoder)(nil)).ToProvider(form.NewDecoder).AsEagerSingleton()
 	if m.UseFakeDeliveryLocationsService {
 		injector.Bind((*application.DeliveryLocationsService)(nil)).To(infrastructure.FakeDeliveryLocationsService{})
