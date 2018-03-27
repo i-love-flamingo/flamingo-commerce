@@ -158,9 +158,18 @@ func (Cart Cart) ItemCount() int {
 	return len(Cart.Cartitems)
 }
 
+// HasDeliveryMethodForIntent
+func (c Cart) HasDeliveryMethodForIntent(intentString string) bool {
+	_, err := c.GetDeliveryMethodForIntent(buildDeliveryIntent(intentString))
+	if err != nil {
+		return false
+	}
+	return true
+}
+
 // GetDeliveryMethodForIntent - returns the DeliveryInfo for the given intent - if existing
-func (Cart Cart) GetDeliveryMethodForIntent(intent DeliveryIntent) (*DeliveryInfo, error) {
-	for _, deliveryInfo := range Cart.DeliveryInfos {
+func (c Cart) GetDeliveryMethodForIntent(intent DeliveryIntent) (*DeliveryInfo, error) {
+	for _, deliveryInfo := range c.DeliveryInfos {
 		if deliveryInfo.Method == intent.Method && deliveryInfo.Method == DELIVERY_METHOD_DELIVERY {
 			return &deliveryInfo, nil
 		}

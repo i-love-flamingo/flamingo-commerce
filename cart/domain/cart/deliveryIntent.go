@@ -8,6 +8,7 @@ import (
 )
 
 type (
+	//DeliveryIntentBuilder - Factory
 	DeliveryIntentBuilder struct {
 		Logger flamingo.Logger `inject:""`
 	}
@@ -23,6 +24,14 @@ type (
 		Detect(product productDomain.BasicProduct, request AddRequest) (locationCode string, locationType string, err error)
 	}
 )
+
+//buildDeliveryIntent - dependency free private Factory method (used in cart)
+func buildDeliveryIntent(representation string) DeliveryIntent {
+	builder := DeliveryIntentBuilder{
+		Logger: flamingo.NullLogger{},
+	}
+	return builder.BuildDeliveryIntent(representation)
+}
 
 //BuildDeliveryIntent - gets DeliveryIntent by string representation
 func (b *DeliveryIntentBuilder) BuildDeliveryIntent(representation string) DeliveryIntent {
@@ -83,6 +92,7 @@ func (di *DeliveryIntent) GetDeliveryInfo() DeliveryInfo {
 func (di *DeliveryIntent) String() string {
 	if di.Method == DELIVERY_METHOD_PICKUP {
 		return di.Method + "_" + di.DeliveryLocationType + "_" + di.DeliveryLocationCode
+
 	}
 	return di.Method
 }
