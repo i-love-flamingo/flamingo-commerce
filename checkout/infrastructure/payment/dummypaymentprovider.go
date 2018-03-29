@@ -32,7 +32,7 @@ func (pa *DummyPaymentProvider) IsActive() bool {
 	return false
 }
 
-func (pa *DummyPaymentProvider)ProcessPayment(ctx web.Context, method *payment.PaymentMethod) (bool, error) {
-	return true, nil
+func (pa *DummyPaymentProvider)ProcessPayment(ctx web.Context, method *payment.PaymentMethod) (bool, error, interface{}) {
+	return true, nil, nil
 }
 

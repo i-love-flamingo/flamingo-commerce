@@ -21,7 +21,7 @@ type (
 		// RedirectExternalPayment starts a Redirect to an external Payment Page (if applicable)
 		RedirectExternalPayment(web.Context, *PaymentMethod, *url.URL) (web.Response, error)
 
-		ProcessPayment(web.Context, *PaymentMethod) (bool, error)
+		ProcessPayment(web.Context, *PaymentMethod) (bool, error, interface {})
 		IsActive() bool
 	}
 )
