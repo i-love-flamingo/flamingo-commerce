@@ -31,3 +31,8 @@ func (pa *DummyPaymentProvider) RedirectExternalPayment(ctx web.Context, method 
 func (pa *DummyPaymentProvider) IsActive() bool {
 	return false
 }
+
+func (pa *DummyPaymentProvider)ProcessPayment(ctx web.Context, method *payment.PaymentMethod) (bool, error) {
+	return true, nil
+}
+

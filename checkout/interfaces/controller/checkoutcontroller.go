@@ -195,6 +195,21 @@ func (cc *CheckoutController) ProcessPaymentAction(ctx web.Context) web.Response
 
 	// TODO: Next Step: Post Transaction Information (Retailer + Price/Tally) to Adapter
 	// TODO: Decide where to send the customer next ("Success Page?")
+	providers := cc.getPaymentProviders()
+
+	provider := providers[providercode]
+	paymentMethods := provider.GetPaymentMethods()
+
+	var paymentMethod *paymentDomain.PaymentMethod
+	for _, method := range paymentMethods {
+		if method.Code == methodcode && method.IsExternalPayment {
+			paymentMethod = &method
+			break
+		}
+	}
+
+	provider.ProcessPayment(ctx, paymentMethod)
+
 
 	return cc.Redirect("checkout.success", nil)
 }
