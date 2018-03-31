@@ -2,10 +2,10 @@ package controller
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 
 	"go.aoe.com/flamingo/core/cart/application"
+	"go.aoe.com/flamingo/framework/flamingo"
 	"go.aoe.com/flamingo/framework/web"
 	"go.aoe.com/flamingo/framework/web/responder"
 )
@@ -16,6 +16,7 @@ type (
 		responder.JSONAware            `inject:""`
 		ApplicationCartService         *application.CartService         `inject:""`
 		ApplicationCartReceiverService *application.CartReceiverService `inject:""`
+		Logger                         flamingo.Logger                  `inject:""`
 	}
 
 	result struct {
@@ -28,7 +29,7 @@ type (
 func (cc *CartApiController) GetAction(ctx web.Context) web.Response {
 	cart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
 	if e != nil {
-		log.Printf("cart.cartapicontroller.get: %v", e.Error())
+		cc.Logger.WithField("category", "CartApiController").Errorf("cart.cartapicontroller.get: %v", e.Error())
 		return cc.JSONError(result{Message: e.Error(), Success: false}, 500)
 	}
 	return cc.JSON(cart)
@@ -50,7 +51,7 @@ func (cc *CartApiController) AddAction(ctx web.Context) web.Response {
 	addRequest := cc.ApplicationCartService.BuildAddRequest(ctx, ctx.MustParam1("marketplaceCode"), variantMarketplaceCode, qtyInt, deliveryIntent)
 	e = cc.ApplicationCartService.AddProduct(ctx, addRequest)
 	if e != nil {
-		log.Printf("cart.cartapicontroller.add: %v", e.Error())
+		cc.Logger.WithField("category", "CartApiController").Errorf("cart.cartapicontroller.add: %v", e.Error())
 		return cc.JSONError(result{Message: e.Error(), Success: false}, 500)
 	}
 	return cc.JSON(result{

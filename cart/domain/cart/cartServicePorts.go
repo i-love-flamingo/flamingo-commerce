@@ -44,12 +44,12 @@ type (
 	// CartBehaviour is a Port that can be implemented by other packages to implement  cart actions required for Ordering a Cart
 	CartBehaviour interface {
 		PlaceOrder(ctx context.Context, cart *Cart, payment *CartPayment) (string, error)
-		DeleteItem(ctx context.Context, cart *Cart, itemId string) error
-		UpdateItem(ctx context.Context, cart *Cart, itemId string, itemUpdateCommand ItemUpdateCommand) error
-		AddToCart(ctx context.Context, cart *Cart, addRequest AddRequest) error
-		UpdatePurchaser(ctx context.Context, cart *Cart, purchaser *Person, additionalData map[string]string) error
-		UpdateAdditionalData(ctx context.Context, cart *Cart, additionalData map[string]string) error
-		UpdateDeliveryInfosAndBilling(ctx context.Context, cart *Cart, billingAddress *Address, deliveryInfoUpdates []DeliveryInfoUpdateCommand) error
+		DeleteItem(ctx context.Context, cart *Cart, itemId string) (*Cart, error)
+		UpdateItem(ctx context.Context, cart *Cart, itemId string, itemUpdateCommand ItemUpdateCommand) (*Cart, error)
+		AddToCart(ctx context.Context, cart *Cart, addRequest AddRequest) (*Cart, error)
+		UpdatePurchaser(ctx context.Context, cart *Cart, purchaser *Person, additionalData map[string]string) (*Cart, error)
+		UpdateAdditionalData(ctx context.Context, cart *Cart, additionalData map[string]string) (*Cart, error)
+		UpdateDeliveryInfosAndBilling(ctx context.Context, cart *Cart, billingAddress *Address, deliveryInfoUpdates []DeliveryInfoUpdateCommand) (*Cart, error)
 	}
 
 	AddRequest struct {

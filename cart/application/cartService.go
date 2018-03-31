@@ -27,6 +27,8 @@ type (
 		DefaultDeliveryMethodForValidation string `inject:"config:cart.validation.defaultDeliveryMethod,optional"`
 
 		DefaultDeliveryIntent string `inject:"config:cart.validation.defaultDeliveryIntent,optional"`
+
+		CartCache CartCache `inject:",optional"`
 	}
 )
 
@@ -52,6 +54,33 @@ func (cs CartService) ValidateCurrentCart(ctx web.Context) (cartDomain.CartValid
 	return cs.ValidateCart(ctx, decoratedCart), nil
 }
 
+func (cs CartService) UpdateDeliveryInfosAndBilling(ctx web.Context, billingAddress *cartDomain.Address, updateCommands []cartDomain.DeliveryInfoUpdateCommand) error {
+	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx)
+	if err != nil {
+		return err
+	}
+	cart, err = behaviour.UpdateDeliveryInfosAndBilling(ctx, cart, billingAddress, updateCommands)
+	if err != nil {
+		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemQty").Error(err)
+		return err
+	}
+	cs.updateCartInCache(ctx, cart)
+	return nil
+}
+func (cs CartService) UpdatePurchaser(ctx web.Context, purchaser *cartDomain.Person, additionalData map[string]string) error {
+	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx)
+	if err != nil {
+		return err
+	}
+	cart, err = behaviour.UpdatePurchaser(ctx, cart, purchaser, additionalData)
+	if err != nil {
+		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemQty").Error(err)
+		return err
+	}
+	cs.updateCartInCache(ctx, cart)
+	return nil
+}
+
 // UpdateItemQty
 func (cs CartService) UpdateItemQty(ctx web.Context, itemId string, qty int) error {
 	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx)
@@ -72,11 +101,34 @@ func (cs CartService) UpdateItemQty(ctx web.Context, itemId string, qty int) err
 	itemUpdate := cartDomain.ItemUpdateCommand{
 		Qty: &qty,
 	}
-	err = behaviour.UpdateItem(ctx, cart, itemId, itemUpdate)
+	cart, err = behaviour.UpdateItem(ctx, cart, itemId, itemUpdate)
 	if err != nil {
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemQty").Error(err)
 		return err
 	}
+	cs.updateCartInCache(ctx, cart)
+	return nil
+}
+
+func (cs CartService) UpdateItemSourceId(ctx web.Context, itemId string, sourceId string) error {
+	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx)
+	if err != nil {
+		return err
+	}
+	_, err = cart.GetByItemId(itemId)
+	if err != nil {
+		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemSourceId").Error(err)
+		return err
+	}
+	itemUpdate := cartDomain.ItemUpdateCommand{
+		SourceId: &sourceId,
+	}
+	cart, err = behaviour.UpdateItem(ctx, cart, itemId, itemUpdate)
+	if err != nil {
+		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemSourceId").Error(err)
+		return err
+	}
+	cs.updateCartInCache(ctx, cart)
 	return nil
 }
 
@@ -92,12 +144,13 @@ func (cs CartService) DeleteItem(ctx web.Context, itemId string) error {
 		return err
 	}
 	qtyBefore := item.Qty
-	err = behaviour.DeleteItem(ctx, cart, itemId)
+	cart, err = behaviour.DeleteItem(ctx, cart, itemId)
 	if err != nil {
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "DeleteItem").Error(err)
 		return err
 	}
 	cs.EventPublisher.PublishChangedQtyInCartEvent(ctx, item, qtyBefore, 0, cart.ID)
+	cs.updateCartInCache(ctx, cart)
 	return nil
 }
 
@@ -115,6 +168,7 @@ func (cs *CartService) PlaceOrder(ctx web.Context, payment *cartDomain.CartPayme
 	}
 	cs.EventPublisher.PublishOrderPlacedEvent(ctx, cart, orderNumber)
 	cs.DeleteSessionGuestCart(ctx)
+	cs.deleteCartInCache(ctx, cart)
 	return orderNumber, err
 }
 
@@ -162,13 +216,13 @@ func (cs *CartService) AddProduct(ctx web.Context, addRequest cartDomain.AddRequ
 		}
 	}
 
-	err = behaviour.AddToCart(ctx, cart, addRequest)
+	cart, err = behaviour.AddToCart(ctx, cart, addRequest)
 	if err != nil {
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "AddProduct").Error(err)
 		return err
 	}
 	cs.publishAddtoCartEvent(ctx, *cart, addRequest)
-
+	cs.updateCartInCache(ctx, cart)
 	return nil
 }
 
@@ -203,5 +257,31 @@ func (cs *CartService) checkProductForAddRequest(ctx web.Context, addRequest car
 func (cs *CartService) publishAddtoCartEvent(ctx web.Context, currentCart cartDomain.Cart, addRequest cartDomain.AddRequest) {
 	if cs.EventPublisher != nil {
 		cs.EventPublisher.PublishAddToCartEvent(ctx, addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode, addRequest.Qty)
+	}
+}
+
+func (cs *CartService) updateCartInCache(ctx web.Context, cart *cartDomain.Cart) {
+	if cs.CartCache != nil {
+		id, err := BuildIdendifierFromCart(cart)
+		if err != nil {
+			return
+		}
+		err = cs.CartCache.CacheCart(ctx, *id, cart)
+		if err != nil {
+			cs.Logger.Errorf("Error while caching cart: %v", err)
+		}
+	}
+}
+
+func (cs *CartService) deleteCartInCache(ctx web.Context, cart *cartDomain.Cart) {
+	if cs.CartCache != nil {
+		id, err := BuildIdendifierFromCart(cart)
+		if err != nil {
+			return
+		}
+		err = cs.CartCache.Delete(ctx, *id)
+		if err != nil {
+			cs.Logger.Errorf("Error while caching cart: %v", err)
+		}
 	}
 }

@@ -19,7 +19,7 @@ type (
 	CartModule struct {
 		RouterRegistry  *router.Registry `inject:""`
 		UseInMemoryCart bool             `inject:"config:cart.useInMemoryCartServiceAdapters"`
-		//EventRouter    event.Router     `inject:""`
+		EnableCartCache bool             `inject:"config:cart.enableCartCache,optional"`
 	}
 )
 
@@ -63,6 +63,10 @@ func (m *CartModule) Configure(injector *dingo.Injector) {
 	injector.BindMulti((*template.ContextFunction)(nil)).To(templatefunctions.GetCart{})
 
 	injector.Bind((*cart.DeliveryInfoBuilder)(nil)).To(cart.DefaultDeliveryInfoBuilder{})
+
+	if m.EnableCartCache {
+		injector.Bind((*application.CartCache)(nil)).To(application.CartSessionCache{})
+	}
 
 }
 
