@@ -24,12 +24,12 @@ type (
 )
 
 func (os *OrderService) SetSources(ctx web.Context) error {
-	decoratedCart, behaviour, err := os.CartReceiverService.GetDecoratedCart(ctx)
+	decoratedCart, err := os.CartReceiverService.ViewDecoratedCart(ctx)
 	if err != nil {
 		os.Logger.Errorf("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
 		return err
 	}
-	err = os.SourcingEngine.SetSourcesForCartItems(ctx, decoratedCart, behaviour)
+	err = os.SourcingEngine.SetSourcesForCartItems(ctx, decoratedCart)
 	if err != nil {
 		os.Logger.WithField("category", "checkout.orderService").Errorf("Error while getting sources: %v", err)
 		return errors.New("Error while setting sources.")
@@ -55,7 +55,7 @@ func (os *OrderService) OnStepCurrentCartPlaceOrder(ctx web.Context, billingAddr
 		os.Logger.Warn("OnStepCurrentCartPlaceOrder called without billing address")
 		return "", errors.New("Billing Address is missing")
 	}
-	decoratedCart, behaviour, err := os.CartReceiverService.GetDecoratedCart(ctx)
+	decoratedCart, err := os.CartReceiverService.ViewDecoratedCart(ctx)
 	if err != nil {
 		os.Logger.Errorf("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
 		return "", err
@@ -77,13 +77,13 @@ func (os *OrderService) OnStepCurrentCartPlaceOrder(ctx web.Context, billingAddr
 			updateCommands[k].DeliveryInfo.DeliveryLocation.Address = *shippingAddress
 		}
 	}
-	err = behaviour.UpdateDeliveryInfosAndBilling(ctx, &decoratedCart.Cart, billingAddress, updateCommands)
+	err = os.CartService.UpdateDeliveryInfosAndBilling(ctx, billingAddress, updateCommands)
 	if err != nil {
 		os.Logger.Errorf("OnStepCurrentCartPlaceOrder UpdateDeliveryInfosAndBilling Error %v", err)
 		return "", err
 	}
 
-	err = behaviour.UpdatePurchaser(ctx, &decoratedCart.Cart, purchaser, nil)
+	err = os.CartService.UpdatePurchaser(ctx, purchaser, nil)
 	if err != nil {
 		os.Logger.Errorf("OnStepCurrentCartPlaceOrder UpdatePurchaser Error %v", err)
 		return "", err
@@ -105,6 +105,7 @@ func (os *OrderService) OnStepCurrentCartPlaceOrder(ctx web.Context, billingAddr
 		os.Logger.Warn("Try to place an invalid cart")
 		return "", errors.New("Cart is Invalid.")
 	}
+
 	orderid, orderError = os.PlaceOrder(ctx, decoratedCart, payment)
 
 	if orderError != nil {

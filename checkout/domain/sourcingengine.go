@@ -23,7 +23,7 @@ type (
 )
 
 // SetSourcesForCartItems gets Sources and modifies the Cart Items
-func (se *SourcingEngine) SetSourcesForCartItems(ctx web.Context, decoratedCart *cart.DecoratedCart, behaviour cart.CartBehaviour) error {
+func (se *SourcingEngine) SetSourcesForCartItems(ctx web.Context, decoratedCart *cart.DecoratedCart) error {
 	if se.SourcingService == nil {
 		return nil
 	}
@@ -32,11 +32,7 @@ func (se *SourcingEngine) SetSourcesForCartItems(ctx web.Context, decoratedCart 
 		if err != nil {
 			return fmt.Errorf("checkout.application.sourcingengine error: %v", err)
 		}
-		cartItem := decoratedCartItem.Item
-		itemUpdate := cart.ItemUpdateCommand{
-			SourceId: &sourceId,
-		}
-		err = behaviour.UpdateItem(ctx, &decoratedCart.Cart, cartItem.ID, itemUpdate)
+		err = se.Cartservice.UpdateItemSourceId(ctx, decoratedCartItem.Item.ID, sourceId)
 		if err != nil {
 			return errors.Wrap(err, "Could not update cart item")
 		}
