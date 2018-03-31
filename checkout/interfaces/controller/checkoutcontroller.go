@@ -56,12 +56,14 @@ type (
 	CheckoutController struct {
 		responder.RenderAware   `inject:""`
 		responder.RedirectAware `inject:""`
-		Router *router.Router   `inject:""`
+		Router                  *router.Router `inject:""`
 
 		CheckoutFormService  *formDto.CheckoutFormService `inject:""`
 		OrderService         *application.OrderService    `inject:""`
 		PaymentService       *application.PaymentService  `inject:""`
 		DecoratedCartFactory *cart.DecoratedCartFactory   `inject:""`
+
+		SkipStartAction bool `inject:"config:checkout.skipStartAction"`
 
 		ApplicationCartService         *cartApplication.CartService         `inject:""`
 		ApplicationCartReceiverService *cartApplication.CartReceiverService `inject:""`
@@ -90,15 +92,19 @@ func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
 
-	if cc.UserService.IsLoggedIn(ctx) {
-		return cc.Redirect("checkout.user", nil)
-	}
-
 	//Guard Clause if Cart is empty
 	if decoratedCart.Cart.ItemCount() == 0 {
 		return cc.Render(ctx, "checkout/startcheckout", CheckoutViewData{
 			DecoratedCart: *decoratedCart,
 		})
+	}
+
+	if cc.UserService.IsLoggedIn(ctx) {
+		return cc.Redirect("checkout.user", nil)
+	}
+
+	if cc.SkipStartAction {
+		return cc.Redirect("checkout.guest", nil)
 	}
 
 	return cc.Render(ctx, "checkout/startcheckout", CheckoutViewData{
@@ -300,7 +306,7 @@ func (cc *CheckoutController) submitOrderForm(ctx web.Context, formservice *form
 
 	if form.IsValidAndSubmitted() {
 		if checkoutFormData, ok := form.Data.(formDto.CheckoutFormData); ok {
-			orderID, err := cc.placeOrder(ctx, checkoutFormData)
+			orderID, err := cc.placeOrder(ctx, checkoutFormData, decoratedCart)
 			if err != nil {
 				//Place Order Error
 				return cc.Render(ctx, template, CheckoutViewData{
@@ -339,9 +345,10 @@ func (cc *CheckoutController) submitOrderForm(ctx web.Context, formservice *form
 	})
 }
 
-func (cc *CheckoutController) placeOrder(ctx web.Context, checkoutFormData formDto.CheckoutFormData) (string, error) {
+func (cc *CheckoutController) placeOrder(ctx web.Context, checkoutFormData formDto.CheckoutFormData, decoratedCart *cart.DecoratedCart) (string, error) {
 	billingAddress, shippingAddress := formDto.MapAddresses(checkoutFormData)
-	return cc.OrderService.PlaceOrder(ctx, "ispu", "ispu", billingAddress, shippingAddress)
+	person := formDto.MapPerson(checkoutFormData)
+	return cc.OrderService.OnStepCurrentCartPlaceOrder(ctx, billingAddress, shippingAddress, nil, person)
 }
 
 func (cc *CheckoutController) getPaymentProviders() map[string]paymentDomain.PaymentProvider {

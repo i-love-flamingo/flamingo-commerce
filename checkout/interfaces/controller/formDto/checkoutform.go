@@ -22,9 +22,16 @@ import (
 type (
 	CheckoutFormData struct {
 		BillingAddress                     AddressFormData `form:"billingAddress"`
+		PersonalData                       PersonalData    `form:"personalData"`
 		ShippingAddress                    AddressFormData `form:"shippingAddress" validate:"-"`
 		UseBillingAddressAsShippingAddress bool            `form:"billingAsShipping"`
 		TermsAndConditions                 bool            `form:"termsAndConditions" validate:"required"`
+	}
+
+	PersonalData struct {
+		DateOfBirth     string `form:"dateOfBirth"`
+		PassportCountry string `form:"passportCountry"`
+		PassportNumber  string `form:"passportNumber"`
 	}
 
 	AddressFormData struct {
@@ -168,6 +175,20 @@ func MapAddresses(data CheckoutFormData) (billingAddress *cart.Address, shipping
 	return billingAddress, shippingAddress
 }
 
+func MapPerson(data CheckoutFormData) *cart.Person {
+	if data.PersonalData.IsEmpty() {
+		return nil
+	}
+	person := cart.Person{
+		PersonalDetails: cart.PersonalDetails{
+			PassportNumber:  data.PersonalData.PassportNumber,
+			PassportCountry: data.PersonalData.PassportCountry,
+			DateOfBirth:     data.PersonalData.DateOfBirth,
+		},
+	}
+	return &person
+}
+
 func mapAddress(addressData AddressFormData) *cart.Address {
 
 	lines := make([]string, 2)
@@ -175,13 +196,13 @@ func mapAddress(addressData AddressFormData) *cart.Address {
 	lines[1] = addressData.AddressLine2
 
 	address := cart.Address{
-		CountryCode:            addressData.CountryCode,
-		Company:                addressData.Company,
-		Salutation:             addressData.Title,
-		Lastname:               addressData.Lastname,
-		Firstname:              addressData.Firstname,
-		Email:                  addressData.Email,
-		City:                   addressData.City,
+		CountryCode: addressData.CountryCode,
+		Company:     addressData.Company,
+		Salutation:  addressData.Title,
+		Lastname:    addressData.Lastname,
+		Firstname:   addressData.Firstname,
+		Email:       addressData.Email,
+		City:        addressData.City,
 		AdditionalAddressLines: lines,
 		RegionCode:             addressData.RegionCode,
 		Street:                 addressData.Street,
@@ -190,4 +211,11 @@ func mapAddress(addressData AddressFormData) *cart.Address {
 		Telephone:              addressData.PhoneCountryCode + addressData.PhoneAreaCode + addressData.PhoneNumber,
 	}
 	return &address
+}
+
+func (p PersonalData) IsEmpty() bool {
+	if p.PassportNumber == "" && p.PassportCountry == "" && p.DateOfBirth == "" {
+		return true
+	}
+	return false
 }

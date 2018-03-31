@@ -2,7 +2,7 @@ package checkout
 
 import (
 	"github.com/go-playground/form"
-	"go.aoe.com/flamingo/core/checkout/application"
+	"go.aoe.com/flamingo/core/checkout/domain"
 	"go.aoe.com/flamingo/core/checkout/infrastructure"
 	"go.aoe.com/flamingo/core/checkout/interfaces/controller"
 	"go.aoe.com/flamingo/framework/config"
@@ -38,7 +38,7 @@ func (m *CheckoutModule) Configure(injector *dingo.Injector) {
 
 	injector.Bind((*form.Decoder)(nil)).ToProvider(form.NewDecoder).AsEagerSingleton()
 	if m.UseFakeDeliveryLocationsService {
-		injector.Bind((*application.SourcingService)(nil)).To(infrastructure.FakeSourcingService{})
+		injector.Bind((*domain.SourcingService)(nil)).To(infrastructure.FakeSourcingService{})
 	}
 }
 

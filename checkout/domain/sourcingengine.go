@@ -1,4 +1,4 @@
-package application
+package domain
 
 import (
 	"fmt"
@@ -33,8 +33,10 @@ func (se *SourcingEngine) SetSourcesForCartItems(ctx web.Context, decoratedCart 
 			return fmt.Errorf("checkout.application.sourcingengine error: %v", err)
 		}
 		cartItem := decoratedCartItem.Item
-		cartItem.SourceId = sourceId
-		err = behaviour.UpdateItem(ctx, &decoratedCart.Cart, cartItem.ID, cartItem)
+		itemUpdate := cart.ItemUpdateCommand{
+			SourceId: &sourceId,
+		}
+		err = behaviour.UpdateItem(ctx, &decoratedCart.Cart, cartItem.ID, itemUpdate)
 		if err != nil {
 			return errors.Wrap(err, "Could not update cart item")
 		}

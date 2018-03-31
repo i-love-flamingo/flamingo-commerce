@@ -2,7 +2,7 @@ package infrastructure
 
 import (
 	cartDomain "go.aoe.com/flamingo/core/cart/domain/cart"
-	checkoutApplication "go.aoe.com/flamingo/core/checkout/application"
+	"go.aoe.com/flamingo/core/checkout/domain"
 	"go.aoe.com/flamingo/framework/web"
 )
 
@@ -13,7 +13,7 @@ type (
 )
 
 var (
-	_ checkoutApplication.SourcingService = new(FakeSourcingService)
+	_ domain.SourcingService = new(FakeSourcingService)
 )
 
 // GetDeliveryLocations provides fake delivery locations

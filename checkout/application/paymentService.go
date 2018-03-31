@@ -1,6 +1,6 @@
 package application
 
-import "go.aoe.com/flamingo/core/cart/domain/cart"
+import cartDomain "go.aoe.com/flamingo/core/cart/domain/cart"
 
 type (
 
@@ -10,8 +10,11 @@ type (
 	}
 )
 
-func (p PaymentService) GetPayment() *cart.PaymentInfo {
-	return &cart.PaymentInfo{
+func (p PaymentService) GetDefaultCartPayment(cart *cartDomain.Cart) *cartDomain.CartPayment {
+	payment := &cartDomain.CartPayment{}
+	paymentInfo := cartDomain.PaymentInfo{
 		Method: p.DefaultPaymentMethod,
 	}
+	payment.AddPayment(paymentInfo, cart.GetItemIds())
+	return payment
 }
