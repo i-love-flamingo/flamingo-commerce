@@ -18,6 +18,23 @@ type (
 		GetCartOrderBehaviour(context.Context) (CartBehaviour, error)
 	}
 
+	//DeliveryInfoUpdateCommand that is consumed by the CartBehaviour and is used to update the Cart with DeliveryInfos
+	DeliveryInfoUpdateCommand struct {
+		//DeliveryInfo - the deliveryinfo for update
+		DeliveryInfo *DeliveryInfo
+		//DeliveryInfoID - if set the ID that should be updated (if not given a new DeliveryInfo should be added to the cart)
+		DeliveryInfoID  string
+		AssignedItemIds []string
+	}
+
+	ItemUpdateCommand struct {
+		// Source Id of where the items should be initial picked - This is set by the SourcingLogic
+		SourceId               *string
+		Qty                    *int
+		OriginalDeliveryIntent *DeliveryIntent
+		AdditionalData         map[string]string
+	}
+
 	// CustomerCartService  interface
 	CustomerCartService interface {
 		GetCartOrderBehaviour(context.Context, Auth) (CartBehaviour, error)
@@ -26,11 +43,13 @@ type (
 
 	// CartBehaviour is a Port that can be implemented by other packages to implement  cart actions required for Ordering a Cart
 	CartBehaviour interface {
-		PlaceOrder(ctx context.Context, cart *Cart, payment *PaymentInfo) (string, error)
+		PlaceOrder(ctx context.Context, cart *Cart, payment *CartPayment) (string, error)
 		DeleteItem(ctx context.Context, cart *Cart, itemId string) error
-		UpdateItem(ctx context.Context, cart *Cart, itemId string, item Item) error
+		UpdateItem(ctx context.Context, cart *Cart, itemId string, itemUpdateCommand ItemUpdateCommand) error
 		AddToCart(ctx context.Context, cart *Cart, addRequest AddRequest) error
-		SetShippingInformation(ctx context.Context, cart *Cart, shippingAddress *Address, billingAddress *Address, shippingCarrierCode string, shippingMethodCode string) error
+		UpdatePurchaser(ctx context.Context, cart *Cart, purchaser *Person, additionalData map[string]string) error
+		UpdateAdditionalData(ctx context.Context, cart *Cart, additionalData map[string]string) error
+		UpdateDeliveryInfosAndBilling(ctx context.Context, cart *Cart, billingAddress *Address, deliveryInfoUpdates []DeliveryInfoUpdateCommand) error
 	}
 
 	AddRequest struct {

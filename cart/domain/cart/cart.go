@@ -23,21 +23,40 @@ type (
 		Cartitems []Item
 		//CartTotals - the cart totals (contain summary costs and discounts etc)
 		CartTotals CartTotals
-		//BillingAdress - the main billing address (relevant for all payments)
+		//BillingAdress - the main billing address (relevant for all payments/invoices)
 		BillingAdress Address
+
+		//Purchaser - additional infos for the legal contact person in this order
+		Purchaser Person
 
 		//DeliveryInfos - list of desired Deliverys (or Shippments) involved in this cart - referenced from the items
 		DeliveryInfos []DeliveryInfo
+		//AdditionalData   can be used for Custom attributes
+		AdditionalData map[string]string
+	}
+
+	Person struct {
+		Address         Address
+		PersonalDetails PersonalDetails
+	}
+
+	PersonalDetails struct {
+		DateOfBirth     string
+		PassportCountry string
+		PassportNumber  string
 	}
 
 	//DeliveryInfo - represents the Delivery
 	DeliveryInfo struct {
+		ID               string
 		Method           string
 		Carrier          string
 		DeliveryLocation DeliveryLocation
 		ShippingItem     ShippingItem
 		DesiredTime      time.Time
+		AdditionalData   map[string]string
 	}
+
 	DeliveryLocation struct {
 		Type    string
 		Address Address
@@ -81,6 +100,8 @@ type (
 
 		//OriginalDeliveryIntent can be "delivery" for homedelivery or "pickup_locationcode" or "collectionpoint_locationcode"
 		OriginalDeliveryIntent *DeliveryIntent
+
+		AdditionalData map[string]string
 	}
 
 	// Totalitem for totals
@@ -158,25 +179,20 @@ func (Cart Cart) ItemCount() int {
 	return len(Cart.Cartitems)
 }
 
-// HasDeliveryMethodForIntent
-func (c Cart) HasDeliveryMethodForIntent(intentString string) bool {
-	_, err := c.GetDeliveryMethodForIntent(buildDeliveryIntent(intentString))
-	if err != nil {
-		return false
+// GetItemIds - returns amount of Cartitems
+func (Cart Cart) GetItemIds() []string {
+	ids := []string{}
+	for _, item := range Cart.Cartitems {
+		ids = append(ids, item.ID)
 	}
-	return true
+	return ids
 }
 
-// GetDeliveryMethodForIntent - returns the DeliveryInfo for the given intent - if existing
-func (c Cart) GetDeliveryMethodForIntent(intent DeliveryIntent) (*DeliveryInfo, error) {
-	for _, deliveryInfo := range c.DeliveryInfos {
-		if deliveryInfo.Method == intent.Method && deliveryInfo.Method == DELIVERY_METHOD_DELIVERY {
-			return &deliveryInfo, nil
-		}
-		if deliveryInfo.Method == intent.Method && deliveryInfo.Method == DELIVERY_METHOD_PICKUP &&
-			deliveryInfo.DeliveryLocation.Type == intent.DeliveryLocationType && deliveryInfo.DeliveryLocation.Code == intent.DeliveryLocationCode {
-			return &deliveryInfo, nil
-		}
+// GetCartItemsByOriginalIntend - returns the cart Items grouped by the original DeliveryIntent
+func (Cart Cart) GetCartItemsByOriginalDeliveryIntent() map[string][]Item {
+	result := make(map[string][]Item)
+	for _, item := range Cart.Cartitems {
+		result[item.OriginalDeliveryIntent.String()] = append(result[item.OriginalDeliveryIntent.String()], item)
 	}
-	return nil, errors.New("fitting deliveryInfo not found in cart")
+	return result
 }

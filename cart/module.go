@@ -62,6 +62,8 @@ func (m *CartModule) Configure(injector *dingo.Injector) {
 	// TemplateFunction
 	injector.BindMulti((*template.ContextFunction)(nil)).To(templatefunctions.GetCart{})
 
+	injector.Bind((*cart.DeliveryInfoBuilder)(nil)).To(cart.DefaultDeliveryInfoBuilder{})
+
 }
 
 // DefaultConfig enables inMemory cart service adapter

@@ -2,8 +2,8 @@ package cart
 
 type (
 	CartPayment struct {
-		PaymentInfos   []PaymentInfo
-		ItemAssignment map[string]*PaymentInfo
+		PaymentInfos     []PaymentInfo
+		ItemIDAssignment map[string]*PaymentInfo
 	}
 
 	PaymentInfo struct {
@@ -18,10 +18,10 @@ type (
 
 func (cp *CartPayment) AddPayment(paymentInfo PaymentInfo, items []string) {
 	cp.PaymentInfos = append(cp.PaymentInfos, paymentInfo)
-	if cp.ItemAssignment == nil {
-		cp.ItemAssignment = make(map[string]*PaymentInfo)
+	if cp.ItemIDAssignment == nil {
+		cp.ItemIDAssignment = make(map[string]*PaymentInfo)
 	}
 	for _, v := range items {
-		cp.ItemAssignment[v] = &paymentInfo
+		cp.ItemIDAssignment[v] = &paymentInfo
 	}
 }

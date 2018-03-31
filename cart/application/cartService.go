@@ -69,9 +69,10 @@ func (cs CartService) UpdateItemQty(ctx web.Context, itemId string, qty int) err
 	}
 
 	cs.EventPublisher.PublishChangedQtyInCartEvent(ctx, item, qtyBefore, qty, cart.ID)
-
-	item.Qty = qty
-	err = behaviour.UpdateItem(ctx, cart, itemId, *item)
+	itemUpdate := cartDomain.ItemUpdateCommand{
+		Qty: &qty,
+	}
+	err = behaviour.UpdateItem(ctx, cart, itemId, itemUpdate)
 	if err != nil {
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemQty").Error(err)
 		return err
@@ -100,23 +101,8 @@ func (cs CartService) DeleteItem(ctx web.Context, itemId string) error {
 	return nil
 }
 
-// SetShippingInformation
-func (cs *CartService) SetShippingInformation(ctx web.Context, shippingAddress *cartDomain.Address, billingAddress *cartDomain.Address, shippingCarrierCode string, shippingMethodCode string) error {
-	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx)
-	if err != nil {
-		cs.Logger.WithField("category", "cartService").WithField("subCategory", "SetShippingInformation").Error(err)
-		return err
-	}
-
-	err = behaviour.SetShippingInformation(ctx, cart, shippingAddress, billingAddress, shippingCarrierCode, shippingMethodCode)
-	if err != nil {
-		cs.Logger.WithField("category", "cartService").WithField("subCategory", "SetShippingInformation").Error(err)
-	}
-	return nil
-}
-
 // PlaceOrder
-func (cs *CartService) PlaceOrder(ctx web.Context, payment *cartDomain.PaymentInfo) (string, error) {
+func (cs *CartService) PlaceOrder(ctx web.Context, payment *cartDomain.CartPayment) (string, error) {
 	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx)
 	if err != nil {
 		return "", err
@@ -128,6 +114,7 @@ func (cs *CartService) PlaceOrder(ctx web.Context, payment *cartDomain.PaymentIn
 		return "", err
 	}
 	cs.EventPublisher.PublishOrderPlacedEvent(ctx, cart, orderNumber)
+	cs.DeleteSessionGuestCart(ctx)
 	return orderNumber, err
 }
 
@@ -143,7 +130,8 @@ func (cs *CartService) BuildAddRequest(ctx web.Context, marketplaceCode string, 
 		MarketplaceCode: marketplaceCode,
 		Qty:             qty,
 		VariantMarketplaceCode: variantMarketplaceCode,
-		DeliveryIntent:         cs.DeliveryIntentBuilder.BuildDeliveryIntent(deliveryIntentStringRepresentation)}
+		DeliveryIntent:         cs.DeliveryIntentBuilder.BuildDeliveryIntent(deliveryIntentStringRepresentation),
+	}
 }
 
 // AddProduct Add a product

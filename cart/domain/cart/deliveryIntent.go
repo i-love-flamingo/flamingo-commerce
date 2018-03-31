@@ -5,12 +5,21 @@ import (
 
 	productDomain "go.aoe.com/flamingo/core/product/domain"
 	"go.aoe.com/flamingo/framework/flamingo"
+	"go.aoe.com/flamingo/framework/web"
 )
 
 type (
 	//DeliveryIntentBuilder - Factory
 	DeliveryIntentBuilder struct {
 		Logger flamingo.Logger `inject:""`
+	}
+
+	//DeliveryInfoBuilder - Factory
+	DeliveryInfoBuilder interface {
+		BuildDeliveryInfoUpdateCommand(ctx web.Context, decoratedCart *DecoratedCart) ([]DeliveryInfoUpdateCommand, error)
+	}
+
+	DefaultDeliveryInfoBuilder struct {
 	}
 
 	//DeliveryIntent - represents the Intent for delivery
@@ -25,12 +34,24 @@ type (
 	}
 )
 
-//buildDeliveryIntent - dependency free private Factory method (used in cart)
-func buildDeliveryIntent(representation string) DeliveryIntent {
-	builder := DeliveryIntentBuilder{
-		Logger: flamingo.NullLogger{},
+//BuildDeliveryInfoUpdateCommand - default implementation to get DeliveryInfo for cart. It is simply using the DeliverIntent on the Items
+func (dib *DefaultDeliveryInfoBuilder) BuildDeliveryInfoUpdateCommand(ctx web.Context, decoratedCart *DecoratedCart) ([]DeliveryInfoUpdateCommand, error) {
+	var updateCommands []DeliveryInfoUpdateCommand
+	for _, cartitems := range decoratedCart.Cart.GetCartItemsByOriginalDeliveryIntent() {
+		if len(cartitems) < 1 {
+			continue
+		}
+		deliveryInfo := cartitems[0].OriginalDeliveryIntent.BuildDeliveryInfo()
+		itemIds := make([]string, len(cartitems))
+		for _, cartitem := range cartitems {
+			itemIds = append(itemIds, cartitem.ID)
+		}
+		updateCommands = append(updateCommands, DeliveryInfoUpdateCommand{
+			DeliveryInfo:    &deliveryInfo,
+			AssignedItemIds: itemIds,
+		})
 	}
-	return builder.BuildDeliveryIntent(representation)
+	return updateCommands, nil
 }
 
 //BuildDeliveryIntent - gets DeliveryIntent by string representation
@@ -77,8 +98,8 @@ func (b *DeliveryIntentBuilder) BuildDeliveryIntent(representation string) Deliv
 	}
 }
 
-//GetDeliveryInfo - gets the (initial) GetDeliveryInfo that is meant by this Intent
-func (di *DeliveryIntent) GetDeliveryInfo() DeliveryInfo {
+//BuildDeliveryInfo - gets the (initial) DeliveryInfo that is meant by this Intent
+func (di *DeliveryIntent) BuildDeliveryInfo() DeliveryInfo {
 	return DeliveryInfo{
 		Method: di.Method,
 		DeliveryLocation: DeliveryLocation{
