@@ -1,0 +1,162 @@
+<svg width="252pt" height="360pt" viewBox="0.00 0.00 252.50 360.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g id="graph0" class="graph" transform="scale(.5956 .5956) rotate(0) translate(4 600.4)">
+    <title>hierarchy</title>
+    <polygon fill="#ffffff" stroke="transparent" points="-4,4 -4,-600.4 419.918,-600.4 419.918,4 -4,4"></polygon>
+    <!-- cart -->
+    <g id="node1" class="node">
+      <title>cart</title>
+      <polygon fill="#f2f2f2" stroke="#000000" points="167.5477,-521.5 167.5477,-595.9 221.5477,-595.9 221.5477,-521.5 167.5477,-521.5"></polygon>
+      <text text-anchor="middle" x="194.1286" y="-579.3" font-family="Times,serif" font-size="14.00" fill="#000000">Cart</text>
+      <polyline fill="none" stroke="#000000" points="167.5477,-571.1 220.7095,-571.1 "></polyline>
+      <text text-anchor="middle" x="194.1286" y="-554.5" font-family="Times,serif" font-size="14.00" fill="#000000">+ ID</text>
+      <polyline fill="none" stroke="#000000" points="167.5477,-546.3 220.7095,-546.3 "></polyline>
+      <text text-anchor="middle" x="194.1286" y="-529.7" font-family="Times,serif" font-size="14.00" fill="#000000">...</text>
+    </g>
+    <!-- totals -->
+    <g id="node2" class="node">
+      <title>totals</title>
+      <polygon fill="#f2f2f2" stroke="#000000" points="0,-334.5 0,-408.9 75.0954,-408.9 75.0954,-334.5 0,-334.5"></polygon>
+      <text text-anchor="middle" x="37.5477" y="-392.3" font-family="Times,serif" font-size="14.00" fill="#000000">CartTotals</text>
+      <polyline fill="none" stroke="#000000" points="0,-384.1 75.0954,-384.1 "></polyline>
+      <text text-anchor="middle" x="37.5477" y="-367.5" font-family="Times,serif" font-size="14.00" fill="#000000">ID</text>
+      <polyline fill="none" stroke="#000000" points="0,-359.3 75.0954,-359.3 "></polyline>
+      <text text-anchor="middle" x="37.5477" y="-342.7" font-family="Times,serif" font-size="14.00" fill="#000000">...</text>
+    </g>
+    <!-- cart&#45;&gt;totals -->
+    <g id="edge2" class="edge">
+      <title>cart-&gt;totals</title>
+      <path fill="none" stroke="#000000" d="M157.3264,-535.6528C133.5143,-519.3111 103.4654,-495.4932 83.5477,-468.2 72.5729,-453.1612 63.1359,-435.0912 55.7168,-418.6748"></path>
+      <polygon fill="#000000" stroke="#000000" points="157.4557,-535.7391 164.6668,-535.7449 167.435,-542.4035 160.2239,-542.3977 157.4557,-535.7391"></polygon>
+      <polygon fill="#000000" stroke="#000000" points="51.5853,-409.2355 59.7174,-416.592 53.5901,-413.8159 55.595,-418.3964 55.595,-418.3964 55.595,-418.3964 53.5901,-413.8159 51.4726,-420.2008 51.5853,-409.2355 51.5853,-409.2355"></polygon>
+      <text text-anchor="middle" x="41.0853" y="-413.4355" font-family="Times,serif" font-size="14.00" fill="#000000">    1</text>
+    </g>
+    <!-- address -->
+    <g id="node4" class="node">
+      <title>address</title>
+      <polygon fill="#f2f2f2" stroke="#000000" points="92.6122,-334.5 92.6122,-408.9 154.4832,-408.9 154.4832,-334.5 92.6122,-334.5"></polygon>
+      <text text-anchor="middle" x="123.5477" y="-392.3" font-family="Times,serif" font-size="14.00" fill="#000000">Address</text>
+      <polyline fill="none" stroke="#000000" points="92.6122,-384.1 154.4832,-384.1 "></polyline>
+      <text text-anchor="middle" x="123.5477" y="-367.5" font-family="Times,serif" font-size="14.00" fill="#000000">ID</text>
+      <polyline fill="none" stroke="#000000" points="92.6122,-359.3 154.4832,-359.3 "></polyline>
+      <text text-anchor="middle" x="123.5477" y="-342.7" font-family="Times,serif" font-size="14.00" fill="#000000">...</text>
+    </g>
+    <!-- cart&#45;&gt;address -->
+    <g id="edge4" class="edge">
+      <title>cart-&gt;address</title>
+      <path fill="none" stroke="#000000" d="M167.5437,-542.6112C153.9819,-532.962 138.7705,-519.3818 130.7777,-503 118.1841,-477.1885 116.2218,-445.0383 117.4833,-419.0122"></path>
+      <polygon fill="#000000" stroke="#000000" points="118.1388,-409.0007 121.9757,-419.2734 117.8121,-413.9901 117.4853,-418.9794 117.4853,-418.9794 117.4853,-418.9794 117.8121,-413.9901 112.995,-418.6853 118.1388,-409.0007 118.1388,-409.0007"></polygon>
+      <text text-anchor="middle" x="173.9327" y="-490.4" font-family="Times,serif" font-size="14.00" fill="#000000">BillingAddress</text>
+    </g>
+    <!-- item -->
+    <g id="node5" class="node">
+      <title>item</title>
+      <polygon fill="#f2f2f2" stroke="#000000" points="172.4123,-275.7 172.4123,-467.7 330.6831,-467.7 330.6831,-275.7 172.4123,-275.7"></polygon>
+      <text text-anchor="middle" x="251.5477" y="-451.1" font-family="Times,serif" font-size="14.00" fill="#000000">Item</text>
+      <polyline fill="none" stroke="#000000" points="172.4123,-442.9 330.6831,-442.9 "></polyline>
+      <text text-anchor="middle" x="251.5477" y="-426.3" font-family="Times,serif" font-size="14.00" fill="#000000">ID</text>
+      <text text-anchor="middle" x="251.5477" y="-409.5" font-family="Times,serif" font-size="14.00" fill="#000000">Price</text>
+      <text text-anchor="middle" x="251.5477" y="-392.7" font-family="Times,serif" font-size="14.00" fill="#000000">MarketplaceCode</text>
+      <text text-anchor="middle" x="251.5477" y="-375.9" font-family="Times,serif" font-size="14.00" fill="#000000">VariantMarketPlaceCode</text>
+      <text text-anchor="middle" x="251.5477" y="-359.1" font-family="Times,serif" font-size="14.00" fill="#000000">Price</text>
+      <text text-anchor="middle" x="251.5477" y="-342.3" font-family="Times,serif" font-size="14.00" fill="#000000">Qty</text>
+      <text text-anchor="middle" x="251.5477" y="-325.5" font-family="Times,serif" font-size="14.00" fill="#000000">SourceId</text>
+      <text text-anchor="middle" x="251.5477" y="-308.7" font-family="Times,serif" font-size="14.00" fill="#000000">OriginalDeliveryIntent</text>
+      <polyline fill="none" stroke="#000000" points="172.4123,-300.5 330.6831,-300.5 "></polyline>
+      <text text-anchor="middle" x="251.5477" y="-283.9" font-family="Times,serif" font-size="14.00" fill="#000000">...</text>
+    </g>
+    <!-- cart&#45;&gt;item -->
+    <g id="edge5" class="edge">
+      <title>cart-&gt;item</title>
+      <path fill="none" stroke="#000000" d="M216.9616,-510.1329C217.8735,-507.7363 218.7416,-505.3498 219.5477,-503 222.3411,-494.8571 224.9911,-486.3512 227.4815,-477.7537"></path>
+      <polygon fill="#000000" stroke="#000000" points="216.936,-510.1965 218.3983,-517.2578 212.4425,-521.3235 210.9803,-514.2622 216.936,-510.1965"></polygon>
+      <polygon fill="#000000" stroke="#000000" points="230.2245,-468.0222 231.8427,-478.868 228.868,-472.8347 227.5114,-477.6471 227.5114,-477.6471 227.5114,-477.6471 228.868,-472.8347 223.1802,-476.4263 230.2245,-468.0222 230.2245,-468.0222"></polygon>
+    </g>
+    <!-- deliveryinfo -->
+    <g id="node6" class="node">
+      <title>deliveryinfo</title>
+      <polygon fill="#f2f2f2" stroke="#000000" points="314.3983,-138.1 314.3983,-212.5 402.6971,-212.5 402.6971,-138.1 314.3983,-138.1"></polygon>
+      <text text-anchor="middle" x="358.5477" y="-195.9" font-family="Times,serif" font-size="14.00" fill="#000000">DeliveryInfo</text>
+      <polyline fill="none" stroke="#000000" points="314.3983,-187.7 402.6971,-187.7 "></polyline>
+      <text text-anchor="middle" x="358.5477" y="-171.1" font-family="Times,serif" font-size="14.00" fill="#000000">Method</text>
+      <polyline fill="none" stroke="#000000" points="314.3983,-162.9 402.6971,-162.9 "></polyline>
+      <text text-anchor="middle" x="358.5477" y="-146.3" font-family="Times,serif" font-size="14.00" fill="#000000">...</text>
+    </g>
+    <!-- cart&#45;&gt;deliveryinfo -->
+    <g id="edge1" class="edge">
+      <title>cart-&gt;deliveryinfo</title>
+      <path fill="none" stroke="#000000" d="M233.2943,-546.0427C267.6445,-532.5925 315.9167,-507.7303 339.5477,-468.2 385.0263,-392.1228 377.4759,-284.2106 367.962,-222.8441"></path>
+      <polygon fill="#000000" stroke="#000000" points="233.0329,-546.14 228.807,-551.9831 221.788,-550.3296 226.0139,-544.4865 233.0329,-546.14"></polygon>
+      <polygon fill="#000000" stroke="#000000" points="366.301,-212.6762 372.3544,-221.8198 367.1071,-217.6108 367.9132,-222.5454 367.9132,-222.5454 367.9132,-222.5454 367.1071,-217.6108 363.4721,-223.2709 366.301,-212.6762 366.301,-212.6762"></polygon>
+    </g>
+    <!-- totalItem -->
+    <g id="node3" class="node">
+      <title>totalItem</title>
+      <polygon fill="#f2f2f2" stroke="#000000" points="1.9453,-129.7 1.9453,-220.9 73.1501,-220.9 73.1501,-129.7 1.9453,-129.7"></polygon>
+      <text text-anchor="middle" x="37.5477" y="-204.3" font-family="Times,serif" font-size="14.00" fill="#000000">TotalItem</text>
+      <polyline fill="none" stroke="#000000" points="1.9453,-196.1 73.1501,-196.1 "></polyline>
+      <text text-anchor="middle" x="37.5477" y="-179.5" font-family="Times,serif" font-size="14.00" fill="#000000">Code</text>
+      <text text-anchor="middle" x="37.5477" y="-162.7" font-family="Times,serif" font-size="14.00" fill="#000000">Price</text>
+      <polyline fill="none" stroke="#000000" points="1.9453,-154.5 73.1501,-154.5 "></polyline>
+      <text text-anchor="middle" x="37.5477" y="-137.9" font-family="Times,serif" font-size="14.00" fill="#000000">...</text>
+    </g>
+    <!-- totals&#45;&gt;totalItem -->
+    <g id="edge3" class="edge">
+      <title>totals-&gt;totalItem</title>
+      <path fill="none" stroke="#000000" d="M37.5477,-322.0274C37.5477,-294.4335 37.5477,-260.0109 37.5477,-231.4432"></path>
+      <polygon fill="#000000" stroke="#000000" points="37.5478,-322.2964 41.5477,-328.2964 37.5477,-334.2964 33.5477,-328.2963 37.5478,-322.2964"></polygon>
+      <polygon fill="#000000" stroke="#000000" points="37.5477,-221.2066 42.0478,-231.2066 37.5477,-226.2066 37.5478,-231.2066 37.5478,-231.2066 37.5478,-231.2066 37.5477,-226.2066 33.0478,-231.2067 37.5477,-221.2066 37.5477,-221.2066"></polygon>
+    </g>
+    <!-- item&#45;&gt;deliveryinfo -->
+    <g id="edge8" class="edge">
+      <title>item-&gt;deliveryinfo</title>
+      <path fill="none" stroke="#000000" d="M303.9506,-275.5137C314.1312,-256.8272 324.3647,-238.0434 333.1759,-221.8704"></path>
+      <polygon fill="#000000" stroke="#000000" points="338.1882,-212.6702 337.3556,-223.6044 335.7961,-217.0608 333.404,-221.4515 333.404,-221.4515 333.404,-221.4515 335.7961,-217.0608 329.4524,-219.2986 338.1882,-212.6702 338.1882,-212.6702"></polygon>
+      <text text-anchor="middle" x="327.6882" y="-216.8702" font-family="Times,serif" font-size="14.00" fill="#000000">    1</text>
+      <text text-anchor="middle" x="289.9506" y="-262.9137" font-family="Times,serif" font-size="14.00" fill="#000000"> 1...*</text>
+    </g>
+    <!-- deliveryintent -->
+    <g id="node7" class="node">
+      <title>deliveryintent</title>
+      <polygon fill="#f2f2f2" stroke="#000000" points="186.5007,-112.9 186.5007,-237.7 296.5947,-237.7 296.5947,-112.9 186.5007,-112.9"></polygon>
+      <text text-anchor="middle" x="241.5477" y="-221.1" font-family="Times,serif" font-size="14.00" fill="#000000">DeliveryIntent</text>
+      <polyline fill="none" stroke="#000000" points="186.5007,-212.9 296.5947,-212.9 "></polyline>
+      <text text-anchor="middle" x="241.5477" y="-196.3" font-family="Times,serif" font-size="14.00" fill="#000000">Method</text>
+      <text text-anchor="middle" x="241.5477" y="-179.5" font-family="Times,serif" font-size="14.00" fill="#000000">DestinationType</text>
+      <text text-anchor="middle" x="241.5477" y="-162.7" font-family="Times,serif" font-size="14.00" fill="#000000">DestinationCode</text>
+      <text text-anchor="middle" x="241.5477" y="-145.9" font-family="Times,serif" font-size="14.00" fill="#000000">Autodetect</text>
+      <polyline fill="none" stroke="#000000" points="186.5007,-137.7 296.5947,-137.7 "></polyline>
+      <text text-anchor="middle" x="241.5477" y="-121.1" font-family="Times,serif" font-size="14.00" fill="#000000">...</text>
+    </g>
+    <!-- item&#45;&gt;deliveryintent -->
+    <g id="edge9" class="edge">
+      <title>item-&gt;deliveryintent</title>
+      <path fill="none" stroke="#000000" d="M246.6502,-275.5137C246.1756,-266.1925 245.6998,-256.847 245.2398,-247.8135"></path>
+      <polygon fill="#000000" stroke="#000000" points="244.7282,-237.7648 249.731,-247.523 244.9825,-242.7583 245.2368,-247.7518 245.2368,-247.7518 245.2368,-247.7518 244.9825,-242.7583 240.7426,-247.9807 244.7282,-237.7648 244.7282,-237.7648"></polygon>
+      <text text-anchor="middle" x="181.5533" y="-260.9947" font-family="Times,serif" font-size="14.00" fill="#000000">OriginalDeliveryIntent</text>
+    </g>
+    <!-- dlocation -->
+    <g id="node8" class="node">
+      <title>dlocation</title>
+      <polygon fill="#f2f2f2" stroke="#000000" points="301.1774,-.5 301.1774,-74.9 415.918,-74.9 415.918,-.5 301.1774,-.5"></polygon>
+      <text text-anchor="middle" x="358.5477" y="-58.3" font-family="Times,serif" font-size="14.00" fill="#000000">DeliveryLocation</text>
+      <polyline fill="none" stroke="#000000" points="301.1774,-50.1 415.918,-50.1 "></polyline>
+      <text text-anchor="middle" x="358.5477" y="-33.5" font-family="Times,serif" font-size="14.00" fill="#000000">...</text>
+      <polyline fill="none" stroke="#000000" points="301.1774,-25.3 415.918,-25.3 "></polyline>
+      <text text-anchor="middle" x="358.5477" y="-8.7" font-family="Times,serif" font-size="14.00" fill="#000000">...</text>
+    </g>
+    <!-- deliveryinfo&#45;&gt;dlocation -->
+    <g id="edge6" class="edge">
+      <title>deliveryinfo-&gt;dlocation</title>
+      <path fill="none" stroke="#000000" d="M358.5477,-138.0635C358.5477,-121.8492 358.5477,-102.6488 358.5477,-85.4056"></path>
+      <polygon fill="#000000" stroke="#000000" points="358.5477,-74.9663 363.0478,-84.9663 358.5477,-79.9663 358.5478,-84.9663 358.5478,-84.9663 358.5478,-84.9663 358.5477,-79.9663 354.0478,-84.9663 358.5477,-74.9663 358.5477,-74.9663"></polygon>
+    </g>
+    <!-- dlocation&#45;&gt;address -->
+    <g id="edge7" class="edge">
+      <title>dlocation-&gt;address</title>
+      <path fill="none" stroke="#000000" stroke-dasharray="1,5" d="M301.168,-46.8414C260.6817,-56.3231 208.3623,-75.2425 177.5477,-112.4 127.5313,-172.7119 120.1736,-267.6134 120.8456,-324.3387"></path>
+      <polygon fill="#000000" stroke="#000000" points="121.0561,-334.4693 116.3493,-324.565 120.9522,-329.4704 120.8483,-324.4714 120.8483,-324.4714 120.8483,-324.4714 120.9522,-329.4704 125.3473,-324.3779 121.0561,-334.4693 121.0561,-334.4693"></polygon>
+      <text text-anchor="middle" x="126.5938" y="-166.9685" font-family="Times,serif" font-size="14.00" fill="#000000">address</text>
+      <text text-anchor="middle" x="110.5561" y="-321.8693" font-family="Times,serif" font-size="14.00" fill="#000000">0..1</text>
+    </g>
+  </g>
+</svg>
