@@ -63,7 +63,7 @@ type (
 		PaymentService       *application.PaymentService  `inject:""`
 		DecoratedCartFactory *cart.DecoratedCartFactory   `inject:""`
 
-		SkipStartAction bool `inject:"config:checkout.skipStartAction"`
+		SkipStartAction bool `inject:"config:checkout.skipStartAction,optional"`
 
 		ApplicationCartService         *cartApplication.CartService         `inject:""`
 		ApplicationCartReceiverService *cartApplication.CartReceiverService `inject:""`
