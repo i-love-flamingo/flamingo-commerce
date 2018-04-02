@@ -281,7 +281,7 @@ func (cs *CartService) deleteCartInCache(ctx web.Context, cart *cartDomain.Cart)
 		}
 		err = cs.CartCache.Delete(ctx, *id)
 		if err != nil {
-			cs.Logger.Errorf("Error while caching cart: %v", err)
+			cs.Logger.Errorf("Error while deleting cart in cache: %v", err)
 		}
 	}
 }
