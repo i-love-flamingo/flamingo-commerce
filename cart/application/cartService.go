@@ -26,7 +26,7 @@ type (
 		//DefaultDeliveryMethodForValidation - used for calling the CartValidator (this is something that might get obsolete if the Cart and the CartItems have theire Deliverymethod "saved")
 		DefaultDeliveryMethodForValidation string `inject:"config:cart.validation.defaultDeliveryMethod,optional"`
 
-		DefaultDeliveryIntent string `inject:"config:cart.validation.defaultDeliveryIntent,optional"`
+		DefaultDeliveryIntent string `inject:"config:cart.defaultDeliveryIntent,optional"`
 
 		CartCache CartCache `inject:",optional"`
 	}

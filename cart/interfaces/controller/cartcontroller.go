@@ -23,8 +23,6 @@ type (
 		responder.RenderAware   `inject:""`
 		responder.RedirectAware `inject:""`
 
-		DefaultDeliveryIntent string `inject:"config:cart.defaultDeliveryIntent,optional"`
-
 		ApplicationCartService         *application.CartService         `inject:""`
 		ApplicationCartReceiverService *application.CartReceiverService `inject:""`
 		Router                         *router.Router                   `inject:""`

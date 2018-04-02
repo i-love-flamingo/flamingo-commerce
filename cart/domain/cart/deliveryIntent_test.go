@@ -38,4 +38,9 @@ func TestDeliveryIntent(t *testing.T) {
 	assert.Equal(t, "locpoint_1-2_3", intent.DeliveryLocationCode)
 	assert.Equal(t, DELIVERY_METHOD_PICKUP, intent.Method)
 	assert.Equal(t, DELIVERYLOCATION_TYPE_COLLECTIONPOINT, intent.DeliveryLocationType)
+
+	intent = builder.BuildDeliveryIntent("pickup_autodetect")
+	assert.Equal(t, "pickup_autodetect", intent.String())
+	assert.Equal(t, "", intent.DeliveryLocationCode)
+	assert.Equal(t, DELIVERY_METHOD_PICKUP, intent.Method)
 }

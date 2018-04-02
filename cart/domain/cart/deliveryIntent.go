@@ -24,9 +24,10 @@ type (
 
 	//DeliveryIntent - represents the Intent for delivery
 	DeliveryIntent struct {
-		Method               string
-		DeliveryLocationCode string
-		DeliveryLocationType string
+		Method                     string
+		AutodetectDeliveryLocation bool
+		DeliveryLocationCode       string
+		DeliveryLocationType       string
 	}
 
 	PickUpDetectionService interface {
@@ -56,16 +57,22 @@ func (dib *DefaultDeliveryInfoBuilder) BuildDeliveryInfoUpdateCommand(ctx web.Co
 
 //BuildDeliveryIntent - gets DeliveryIntent by string representation
 func (b *DeliveryIntentBuilder) BuildDeliveryIntent(representation string) DeliveryIntent {
+	if representation == "" {
+		b.Logger.WithField("category", "cart").WithField("subcategory", "DeliveryIntentBuilder").Warnf("Empty IntentString ")
+		return DeliveryIntent{
+			Method: DELIVERY_METHOD_UNSPECIFIED,
+		}
+	}
 	if representation == DELIVERY_METHOD_DELIVERY {
 		return DeliveryIntent{
 			Method: DELIVERY_METHOD_DELIVERY,
 		}
 	}
 
-	//"pickup-autodetect"
-	if representation == "store-autodetect" {
+	if representation == "pickup_autodetect" {
 		return DeliveryIntent{
 			Method: DELIVERY_METHOD_PICKUP,
+			AutodetectDeliveryLocation: true,
 		}
 	}
 
@@ -111,6 +118,9 @@ func (di *DeliveryIntent) BuildDeliveryInfo() DeliveryInfo {
 
 //String - Gets String representation of DeliveryIntent
 func (di *DeliveryIntent) String() string {
+	if di.Method == DELIVERY_METHOD_PICKUP && di.AutodetectDeliveryLocation {
+		return "pickup_autodetect"
+	}
 	if di.Method == DELIVERY_METHOD_PICKUP {
 		return di.Method + "_" + di.DeliveryLocationType + "_" + di.DeliveryLocationCode
 
