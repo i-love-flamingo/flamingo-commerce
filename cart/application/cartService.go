@@ -205,7 +205,7 @@ func (cs *CartService) AddProduct(ctx web.Context, addRequest cartDomain.AddRequ
 	}
 
 	//Check if we can autodetect empty location code for pickup
-	if addRequest.DeliveryIntent.Method == cartDomain.DELIVERY_METHOD_PICKUP && addRequest.DeliveryIntent.DeliveryLocationCode == "" {
+	if addRequest.DeliveryIntent.Method == cartDomain.DELIVERY_METHOD_PICKUP && addRequest.DeliveryIntent.DeliveryLocationCode == "" && addRequest.DeliveryIntent.AutodetectDeliveryLocation {
 		if cs.PickUpDetectionService != nil {
 			locationCode, locationType, err := cs.PickUpDetectionService.Detect(product, addRequest)
 			if err == nil {
