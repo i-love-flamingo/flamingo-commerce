@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"sort"
 	"strings"
 
 	"go.aoe.com/flamingo/core/breadcrumbs"
@@ -54,6 +55,7 @@ type (
 		Title        string
 		Combinations map[string][]string
 		Selected     bool
+
 	}
 
 	viewVariant struct {
@@ -69,8 +71,10 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 	combinations := make(map[string]map[string]map[string]map[string]bool)
 	titles := make(map[string]map[string]string)
 
+	combinationsOrder := make(map[string][]string)
+
 	for _, attribute := range configurable.VariantVariationAttributes {
-		// attribute -> value -> combinableAttribute -> combinaleValue -> true
+		// attribute -> value -> combinableAttribute -> combinableValue -> true
 		combinations[attribute] = make(map[string]map[string]map[string]bool)
 		titles[attribute] = make(map[string]string)
 
@@ -83,6 +87,7 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 				}
 				if combinations[attribute][variant.Attributes[attribute].Value()] == nil {
 					combinations[attribute][variant.Attributes[attribute].Value()] = make(map[string]map[string]bool)
+					combinationsOrder[attribute] = append(combinationsOrder[attribute], variant.Attributes[attribute].Value())
 				}
 
 				//titles[variant.Attributes[subattribute].Value()] = variant.Attributes[subattribute].Label
@@ -129,8 +134,18 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 			})
 		}
 
+		// Resort Attribute Options to align to the original sorting which is kept in combinationsOrder
+		sort.Slice(viewVariantAttribute.Options, func(i, j int) bool {
+			return viewVariantAttribute.Options[i].Key < combinationsOrder[viewVariantAttribute.Key][i]
+		})
+
 		variants.Attributes = append(variants.Attributes, viewVariantAttribute)
 	}
+
+	// Resort Attributes to align to the original sorting which is defined by configurable.VariantVariationAttributes
+	sort.Slice(variants.Attributes, func(i, j int) bool {
+		return variants.Attributes[i].Key < configurable.VariantVariationAttributes[i]
+	})
 
 	for _, variant := range configurable.Variants {
 		urlName := web.URLTitle(variant.BasicProductData.Title)
