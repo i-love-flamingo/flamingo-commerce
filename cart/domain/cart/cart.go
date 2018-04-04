@@ -200,14 +200,12 @@ func (Cart Cart) GetCartItemsByOriginalDeliveryIntent() map[string][]Item {
 	return result
 }
 
-// Check if one item in the cart already has the deliveryMethod set to define if it is an arrival or departure cart
-func (Cart Cart) HasDeliveryMethodForIntent(deliveryMethod string) bool {
-	cartItemsByDeliveryIntent := Cart.GetCartItemsByOriginalDeliveryIntent()
-	hasMethod := false
-	for index, _ := range cartItemsByDeliveryIntent {
-		if index == deliveryMethod {
-			hasMethod = true
+// HasDeliveryMethodForIntent - returns if the cart has an item with the delivery intent
+func (Cart Cart) HasDeliveryMethodForIntent(intent string) bool {
+	for _, item := range Cart.Cartitems {
+		if item.OriginalDeliveryIntent.String() == intent {
+			return true
 		}
 	}
-	return hasMethod
+	return false
 }
