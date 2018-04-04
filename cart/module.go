@@ -61,6 +61,7 @@ func (m *CartModule) Configure(injector *dingo.Injector) {
 
 	// TemplateFunction
 	injector.BindMulti((*template.ContextFunction)(nil)).To(templatefunctions.GetCart{})
+	injector.BindMulti((*template.ContextFunction)(nil)).To(templatefunctions.GetDecoratedCart{})
 
 	injector.Bind((*cart.DeliveryInfoBuilder)(nil)).To(cart.DefaultDeliveryInfoBuilder{})
 
