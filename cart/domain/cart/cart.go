@@ -179,7 +179,12 @@ func inStruct(value string, list []string) bool {
 
 // ItemCount - returns amount of Cartitems
 func (Cart Cart) ItemCount() int {
-	return len(Cart.Cartitems)
+	count := 0
+	for _, item := range Cart.Cartitems {
+		count += item.Qty
+	}
+
+	return count
 }
 
 // GetItemIds - returns amount of Cartitems
