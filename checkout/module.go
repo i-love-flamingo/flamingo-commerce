@@ -38,7 +38,7 @@ func (m *CheckoutModule) Configure(injector *dingo.Injector) {
 
 	injector.Bind((*form.Decoder)(nil)).ToProvider(form.NewDecoder).AsEagerSingleton()
 	if m.UseFakeDeliveryLocationsService {
-		injector.Bind((*domain.SourcingService)(nil)).To(infrastructure.FakeSourcingService{})
+		injector.Override((*domain.SourcingService)(nil), "").To(infrastructure.FakeSourcingService{})
 	}
 }
 
