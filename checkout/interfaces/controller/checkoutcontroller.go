@@ -214,7 +214,7 @@ func (cc *CheckoutController) ProcessPaymentAction(ctx web.Context) web.Response
 		}
 	}
 
-	cartPayment, err := provider.ProcessPayment(ctx, paymentMethod)
+	cartPayment, err := provider.ProcessPayment(ctx, paymentMethod, nil)
 	// TODO: Create Order by OrderService use cartPayment
 
 	cc.Logger.Printf("Data: %#v %#v", cartPayment, err)

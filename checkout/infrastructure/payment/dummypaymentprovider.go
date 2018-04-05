@@ -33,6 +33,6 @@ func (pa *DummyPaymentProvider) IsActive() bool {
 	return false
 }
 
-func (pa *DummyPaymentProvider) ProcessPayment(ctx web.Context, method *payment.PaymentMethod) (*cartDomain.CartPayment, error) {
+func (pa *DummyPaymentProvider) ProcessPayment(ctx web.Context, method *payment.PaymentMethod, _ map[string]string) (*cartDomain.CartPayment, error) {
 	return nil, nil
 }
