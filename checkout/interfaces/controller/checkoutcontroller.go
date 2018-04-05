@@ -268,7 +268,7 @@ func (cc *CheckoutController) getPaymentReturnUrl(PaymentProvider string, Paymen
 func (cc *CheckoutController) submitOrderForm(ctx web.Context, formservice *formDto.CheckoutFormService, template string) web.Response {
 	// TODO: get payment method and provider from context
 	// Needs proper input from Template
-	paymentResponse := cc.initPayment(ctx, "paymark", "cc")
+	paymentResponse := cc.initPayment(ctx, "paymark", "paymark_cc")
 	if paymentResponse != nil {
 		return paymentResponse
 	}
