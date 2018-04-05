@@ -4,10 +4,13 @@ type (
 	CartPayment struct {
 		PaymentInfos     []PaymentInfo
 		ItemIDAssignment map[string]*PaymentInfo
+		RawTransactionData interface{}
 	}
 
 	PaymentInfo struct {
-		//Method like "paymark" , "paypal",
+		//Provider code like "paymark"
+		Provider string
+		//Method like "paymark_cc" , "paypal",
 		Method string
 		//Status - Method specific status e.g. Auth, Captured, Open, ...
 		Status string
