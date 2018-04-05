@@ -79,20 +79,20 @@ func (cs *CartReceiverService) ViewCart(ctx web.Context) (*cartDomain.Cart, erro
 	return cs.getEmptyCart(), nil
 }
 
-func (cs *CartReceiverService) getCartFromCache(ctx web.Context, idendifier CartCacheIdendifier) (*cartDomain.Cart, error) {
+func (cs *CartReceiverService) getCartFromCache(ctx web.Context, identifier CartCacheIdentifier) (*cartDomain.Cart, error) {
 	if cs.CartCache == nil {
 		cs.Logger.Debugf("no cache set")
 		return nil, errors.New("no cache")
 	}
-	cs.Logger.Debugf("query cart cache %#v", idendifier)
-	return cs.CartCache.GetCart(ctx, idendifier)
+	cs.Logger.Debugf("query cart cache %#v", identifier)
+	return cs.CartCache.GetCart(ctx, identifier)
 }
 
 func (cs *CartReceiverService) storeCartInCache(ctx web.Context, cart *cartDomain.Cart) error {
 	if cs.CartCache == nil {
 		return errors.New("no cache")
 	}
-	id, err := BuildIdendifierFromCart(cart)
+	id, err := BuildIdentifierFromCart(cart)
 	if err != nil {
 		return err
 	}
@@ -102,7 +102,7 @@ func (cs *CartReceiverService) storeCartInCache(ctx web.Context, cart *cartDomai
 // GetCart Get the correct Cart (either Guest or User)
 func (cs *CartReceiverService) GetCart(ctx web.Context) (*cartDomain.Cart, cartDomain.CartBehaviour, error) {
 	if cs.UserService.IsLoggedIn(ctx) {
-		cacheId := CartCacheIdendifier{
+		cacheId := CartCacheIdentifier{
 			IsCustomerCart: true,
 		}
 		cart, cacheErr := cs.getCartFromCache(ctx, cacheId)
@@ -132,7 +132,7 @@ func (cs *CartReceiverService) GetCart(ctx web.Context) (*cartDomain.Cart, cartD
 		if !ok {
 			panic("Fatal - ShouldHaveGuestCart returned true but got no GuestCartSessionKey string")
 		}
-		cacheId := CartCacheIdendifier{
+		cacheId := CartCacheIdentifier{
 			GuestCartId: guestcartidString,
 		}
 		guestCart, cacheErr = cs.getCartFromCache(ctx, cacheId)

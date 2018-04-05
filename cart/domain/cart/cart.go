@@ -15,9 +15,9 @@ type (
 
 	// Cart Value Object (immutable data - because the cartservice is responsible to return a cart).
 	Cart struct {
-		//ID is the main idendifier of the cart
+		//ID is the main identifier of the cart
 		ID string
-		//EntityID is a second idendifier that may be used by some backends
+		//EntityID is a second identifier that may be used by some backends
 		EntityID string
 		//Cartitems - list of cartitems
 		Cartitems []Item
@@ -63,7 +63,7 @@ type (
 	DeliveryLocation struct {
 		Type    string
 		Address Address
-		//Code - optional idendifier of this location/destination - is used in special destination Types
+		//Code - optional identifier of this location/destination - is used in special destination Types
 		Code string
 	}
 

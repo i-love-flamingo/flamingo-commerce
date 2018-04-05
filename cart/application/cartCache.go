@@ -11,13 +11,13 @@ import (
 
 type (
 	CartCache interface {
-		GetCart(web.Context, CartCacheIdendifier) (*cart.Cart, error)
-		CacheCart(web.Context, CartCacheIdendifier, *cart.Cart) error
-		Invalidate(web.Context, CartCacheIdendifier) error
-		Delete(web.Context, CartCacheIdendifier) error
+		GetCart(web.Context, CartCacheIdentifier) (*cart.Cart, error)
+		CacheCart(web.Context, CartCacheIdentifier, *cart.Cart) error
+		Invalidate(web.Context, CartCacheIdentifier) error
+		Delete(web.Context, CartCacheIdentifier) error
 	}
 
-	CartCacheIdendifier struct {
+	CartCacheIdentifier struct {
 		GuestCartId    string
 		IsCustomerCart bool
 	}
@@ -44,28 +44,28 @@ func init() {
 	gob.Register(CachedCartEntry{})
 }
 
-func (ci *CartCacheIdendifier) CacheKey() string {
+func (ci *CartCacheIdentifier) CacheKey() string {
 	if ci.IsCustomerCart {
 		return "customer_" + ci.GuestCartId
 	}
 	return ci.GuestCartId
 }
 
-func BuildIdendifierFromCart(cart *cart.Cart) (*CartCacheIdendifier, error) {
+func BuildIdentifierFromCart(cart *cart.Cart) (*CartCacheIdentifier, error) {
 	if cart == nil {
 		return nil, errors.New("no cart")
 	}
 	if cart.IsCustomerCart {
-		return &CartCacheIdendifier{
+		return &CartCacheIdentifier{
 			IsCustomerCart: true,
 		}, nil
 	}
-	return &CartCacheIdendifier{
+	return &CartCacheIdentifier{
 		GuestCartId: cart.ID,
 	}, nil
 }
 
-func (c *CartSessionCache) GetCart(ctx web.Context, id CartCacheIdendifier) (*cart.Cart, error) {
+func (c *CartSessionCache) GetCart(ctx web.Context, id CartCacheIdentifier) (*cart.Cart, error) {
 	if cache, ok := ctx.Session().Values[CartSessionCache_CacheKeyPrefix+id.CacheKey()]; ok {
 		if cachedCartsEntry, ok := cache.(CachedCartEntry); ok {
 			c.Logger.WithField("category", "CartSessionCache").Debugf("Found cached cart %v", id.CacheKey())
@@ -82,7 +82,7 @@ func (c *CartSessionCache) GetCart(ctx web.Context, id CartCacheIdendifier) (*ca
 	return nil, errors.New("no cart in cache")
 }
 
-func (c *CartSessionCache) CacheCart(ctx web.Context, id CartCacheIdendifier, cartForCache *cart.Cart) error {
+func (c *CartSessionCache) CacheCart(ctx web.Context, id CartCacheIdentifier, cartForCache *cart.Cart) error {
 	if cartForCache == nil {
 		return errors.New("No cart given to cache")
 	}
@@ -94,7 +94,7 @@ func (c *CartSessionCache) CacheCart(ctx web.Context, id CartCacheIdendifier, ca
 	return nil
 }
 
-func (c *CartSessionCache) Invalidate(ctx web.Context, id CartCacheIdendifier) error {
+func (c *CartSessionCache) Invalidate(ctx web.Context, id CartCacheIdentifier) error {
 	if cache, ok := ctx.Session().Values[CartSessionCache_CacheKeyPrefix+id.CacheKey()]; ok {
 		if cachedCartsEntry, ok := cache.(CachedCartEntry); ok {
 			cachedCartsEntry.IsInvalid = false
@@ -105,7 +105,7 @@ func (c *CartSessionCache) Invalidate(ctx web.Context, id CartCacheIdendifier) e
 	return errors.New("not found for invalidate")
 }
 
-func (c *CartSessionCache) Delete(ctx web.Context, id CartCacheIdendifier) error {
+func (c *CartSessionCache) Delete(ctx web.Context, id CartCacheIdentifier) error {
 	if _, ok := ctx.Session().Values[CartSessionCache_CacheKeyPrefix+id.CacheKey()]; ok {
 		delete(ctx.Session().Values, CartSessionCache_CacheKeyPrefix+id.CacheKey())
 	}

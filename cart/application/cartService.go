@@ -262,7 +262,7 @@ func (cs *CartService) publishAddtoCartEvent(ctx web.Context, currentCart cartDo
 
 func (cs *CartService) updateCartInCache(ctx web.Context, cart *cartDomain.Cart) {
 	if cs.CartCache != nil {
-		id, err := BuildIdendifierFromCart(cart)
+		id, err := BuildIdentifierFromCart(cart)
 		if err != nil {
 			return
 		}
@@ -275,7 +275,7 @@ func (cs *CartService) updateCartInCache(ctx web.Context, cart *cartDomain.Cart)
 
 func (cs *CartService) deleteCartInCache(ctx web.Context, cart *cartDomain.Cart) {
 	if cs.CartCache != nil {
-		id, err := BuildIdendifierFromCart(cart)
+		id, err := BuildIdentifierFromCart(cart)
 		if err != nil {
 			return
 		}
