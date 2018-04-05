@@ -4,6 +4,7 @@ import (
 	"net/url"
 
 	"github.com/pkg/errors"
+	cartDomain "go.aoe.com/flamingo/core/cart/domain/cart"
 	"go.aoe.com/flamingo/core/checkout/domain/payment"
 	"go.aoe.com/flamingo/framework/web"
 )
@@ -32,7 +33,6 @@ func (pa *DummyPaymentProvider) IsActive() bool {
 	return false
 }
 
-func (pa *DummyPaymentProvider)ProcessPayment(ctx web.Context, method *payment.PaymentMethod) (bool, error, interface{}) {
-	return true, nil, nil
+func (pa *DummyPaymentProvider) ProcessPayment(ctx web.Context, method *payment.PaymentMethod) (*cartDomain.CartPayment, error) {
+	return nil, nil
 }
-

@@ -86,6 +86,7 @@ func init() {
 // StartAction handles the checkout start action
 func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
 	//Guard Clause if Cart cannout be fetched
+
 	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
 	if e != nil {
 		cc.Logger.WithField("category", "checkout").Errorf("cart.checkoutcontroller.viewaction: Error %v", e)
@@ -200,8 +201,6 @@ func (cc *CheckoutController) ProcessPaymentAction(ctx web.Context) web.Response
 	cc.Logger.Printf("Providercode: %s, MethodCode: %s", providercode, methodcode)
 	cc.Logger.Printf("Request Data: %+v", postData)
 
-	// TODO: Next Step: Post Transaction Information (Retailer + Price/Tally) to Adapter
-	// TODO: Decide where to send the customer next ("Success Page?")
 	providers := cc.getPaymentProviders()
 
 	provider := providers[providercode]
@@ -215,9 +214,12 @@ func (cc *CheckoutController) ProcessPaymentAction(ctx web.Context) web.Response
 		}
 	}
 
-	provider.ProcessPayment(ctx, paymentMethod)
+	cartPayment, err := provider.ProcessPayment(ctx, paymentMethod)
+	// TODO: Create Order by OrderService use cartPayment
 
+	cc.Logger.Printf("Data: %#v %#v", cartPayment, err)
 
+	// TODO: Decide where to send the customer next ("Success Page?")
 	return cc.Redirect("checkout.success", nil)
 }
 

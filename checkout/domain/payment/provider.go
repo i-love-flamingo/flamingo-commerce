@@ -3,6 +3,7 @@ package payment
 import (
 	"net/url"
 
+	cartDomain "go.aoe.com/flamingo/core/cart/domain/cart"
 	"go.aoe.com/flamingo/framework/web"
 )
 
@@ -20,8 +21,8 @@ type (
 		GetPaymentMethods() []PaymentMethod
 		// RedirectExternalPayment starts a Redirect to an external Payment Page (if applicable)
 		RedirectExternalPayment(web.Context, *PaymentMethod, *url.URL) (web.Response, error)
-
-		ProcessPayment(web.Context, *PaymentMethod) (bool, error, interface {})
+		// ProcessPayment
+		ProcessPayment(web.Context, *PaymentMethod) (*cartDomain.CartPayment, error)
 		IsActive() bool
 	}
 )
