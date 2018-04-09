@@ -1,5 +1,29 @@
 package infrastructure
 
+import (
+	"go.aoe.com/flamingo/core/cart/domain/cart"
+	"golang.org/x/net/context"
+)
+
+type (
+	InMemoryCustomerCartService struct {
+		InMemoryCartOrderBehaviour *InMemoryCartOrderBehaviour
+	}
+)
+
+var (
+	_ cart.CustomerCartService = (*InMemoryCustomerCartService)(nil)
+)
+
+func (gcs *InMemoryCustomerCartService) GetCart(ctx context.Context, auth cart.Auth, cartId string) (*cart.Cart, error) {
+	cart, err := gcs.InMemoryCartOrderBehaviour.GetCart(ctx, cartId)
+	return cart, err
+}
+
+func (gcs *InMemoryCustomerCartService) GetCartOrderBehaviour(context.Context, cart.Auth) (cart.CartBehaviour, error) {
+	return gcs.InMemoryCartOrderBehaviour, nil
+}
+
 /*
 import (
 	"context"
@@ -32,8 +56,8 @@ type (
 		StoreCart(cart domaincart.Cart) error
 	}
 
-	//InmemoryCustomerCartStorage - for now the default implementation of CustomerCartStorage
-	InmemoryCustomerCartStorage struct {
+	//InMemoryCartStorage - for now the default implementation of CustomerCartStorage
+	InMemoryCartStorage struct {
 		guestCarts map[string]domaincart.Cart
 	}
 )
@@ -162,15 +186,15 @@ func (cs CustomerCartOrderBehaviour) UpdateItem(ctx context.Context, auth domain
 	return nil
 }
 
-//********InmemoryCustomerCartStorage************
+//********InMemoryCartStorage************
 
-func (s *InmemoryCustomerCartStorage) init() {
+func (s *InMemoryCartStorage) init() {
 	if s.guestCarts == nil {
 		s.guestCarts = make(map[string]domaincart.Cart)
 	}
 }
 
-func (s *InmemoryCustomerCartStorage) HasCart(id string) bool {
+func (s *InMemoryCartStorage) HasCart(id string) bool {
 	s.init()
 	if _, ok := s.guestCarts[id]; ok {
 		return true
@@ -178,7 +202,7 @@ func (s *InmemoryCustomerCartStorage) HasCart(id string) bool {
 	return false
 }
 
-func (s *InmemoryCustomerCartStorage) GetCart(id string) (*domaincart.Cart, error) {
+func (s *InMemoryCartStorage) GetCart(id string) (*domaincart.Cart, error) {
 	s.init()
 	if cart, ok := s.guestCarts[id]; ok {
 		return &cart, nil
@@ -186,7 +210,7 @@ func (s *InmemoryCustomerCartStorage) GetCart(id string) (*domaincart.Cart, erro
 	return nil, errors.New("No cart stored")
 }
 
-func (s *InmemoryCustomerCartStorage) StoreCart(cart domaincart.Cart) error {
+func (s *InMemoryCartStorage) StoreCart(cart domaincart.Cart) error {
 	s.init()
 	s.guestCarts[cart.ID] = cart
 	return nil
