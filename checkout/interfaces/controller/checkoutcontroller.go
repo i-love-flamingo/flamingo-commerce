@@ -215,9 +215,14 @@ func (cc *CheckoutController) ProcessPaymentAction(ctx web.Context) web.Response
 	}
 
 	cartPayment, err := provider.ProcessPayment(ctx, paymentMethod, nil)
-	// TODO: Create Order by OrderService use cartPayment
+
+	if err != nil {
+		// Redirect to Checkout Start again
+		return cc.Redirect("checkout.start", nil)
+	}
 
 	cc.Logger.Printf("Data: %#v %#v", cartPayment, err)
+	// TODO: Create Order by OrderService use cartPayment
 
 	// TODO: Decide where to send the customer next ("Success Page?")
 	return cc.Redirect("checkout.success", nil)
