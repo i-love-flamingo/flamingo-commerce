@@ -2,7 +2,7 @@ package infrastructure
 
 import (
 	"go.aoe.com/flamingo/core/cart/domain/cart"
-	"golang.org/x/net/context"
+	"context"
 )
 
 type (
