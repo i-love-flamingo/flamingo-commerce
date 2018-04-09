@@ -8,6 +8,8 @@ import (
 	"go.aoe.com/flamingo/framework/config"
 	"go.aoe.com/flamingo/framework/dingo"
 	"go.aoe.com/flamingo/framework/router"
+	paymentDomain "go.aoe.com/flamingo/core/checkout/domain/payment"
+	paymentInfrastructure "go.aoe.com/flamingo/core/checkout/infrastructure/payment"
 )
 
 type (
@@ -35,6 +37,8 @@ func (m *CheckoutModule) Configure(injector *dingo.Injector) {
 
 	m.RouterRegistry.Handle("checkout.processpayment", (*controller.CheckoutController).ProcessPaymentAction)
 	m.RouterRegistry.Route("/checkout/processpayment/:providercode/:methodcode", "checkout.processpayment")
+
+	injector.BindMap((*paymentDomain.PaymentProvider)(nil), "DummyPayment").To(paymentInfrastructure.DummyPaymentProvider{})
 
 	injector.Bind((*form.Decoder)(nil)).ToProvider(form.NewDecoder).AsEagerSingleton()
 	if m.UseFakeDeliveryLocationsService {
