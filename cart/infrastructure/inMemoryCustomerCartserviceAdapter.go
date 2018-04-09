@@ -7,7 +7,7 @@ import (
 
 type (
 	InMemoryCustomerCartService struct {
-		InMemoryCartOrderBehaviour *InMemoryCartOrderBehaviour
+		InMemoryCartOrderBehaviour *InMemoryCartOrderBehaviour `inject:""`
 	}
 )
 
