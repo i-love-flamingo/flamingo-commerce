@@ -216,9 +216,8 @@ func (cc *CheckoutController) ProcessPaymentAction(ctx web.Context) web.Response
 
 	cartPayment, err := provider.ProcessPayment(ctx, paymentMethod, nil)
 
-	cc.Logger.Debugf("ProcessPayment Error: %s", err.Error())
-
 	if err != nil {
+		cc.Logger.Debugf("ProcessPayment Error: %s", err.Error())
 		// Redirect to Checkout Start again
 		return cc.Redirect("checkout.start", nil)
 	}
