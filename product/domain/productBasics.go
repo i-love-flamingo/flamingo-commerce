@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Media usage constants
 const (
 	MediaUsageList   = "list"
 	MediaUsageDetail = "detail"
@@ -114,6 +115,7 @@ type (
 		Code     string
 		Label    string
 		RawValue interface{}
+		UnitCode string
 	}
 )
 
@@ -124,39 +126,30 @@ func (at Attribute) Value() string {
 
 // IsEnabledValue returns true if the value can be seen as a toogle and is enabled
 func (at Attribute) IsEnabledValue() bool {
-	if at.RawValue == "Yes" {
+	switch at.RawValue {
+	case "Yes", "yes":
 		return true
-	}
-	if at.RawValue == "true" {
+	case "true", true:
 		return true
-	}
-	if at.RawValue == "yes" {
+	case "1", 1:
 		return true
+	default:
+		return false
 	}
-	if at.RawValue == "1" {
-		return true
-	}
-	if at.RawValue == 1 {
-		return true
-	}
-	return false
 }
 
 // IsDisabledValue returns true if the value can be seen as a disable toggle/swicth value
 func (at Attribute) IsDisabledValue() bool {
-	if at.RawValue == "no" {
+	switch at.RawValue {
+	case "No", "no":
 		return true
-	}
-	if at.RawValue == "false" {
+	case "false", false:
 		return true
-	}
-	if at.RawValue == "No" {
+	case "0", 0:
 		return true
+	default:
+		return false
 	}
-	if at.RawValue == "0" {
-		return true
-	}
-	return false
 }
 
 // HasMultipleValues checks for multiple raw values
@@ -177,6 +170,16 @@ func (at Attribute) Values() []string {
 	return result
 }
 
+// HasUnitCode checks if a unit code is set on the attribute
+func (at Attribute) HasUnitCode() bool {
+	return len(at.UnitCode) > 0
+}
+
+// GetUnit returns the unit on an attribute
+func (at Attribute) GetUnit() Unit {
+	return Units[at.UnitCode]
+}
+
 // HasAttribute check
 func (bpd BasicProductData) HasAttribute(key string) bool {
 	if _, ok := bpd.Attributes[key]; ok {
@@ -195,7 +198,7 @@ func (p PriceInfo) GetFinalPrice() float64 {
 
 // GetListMedia returns the product media for listing
 func (bpd BasicProductData) GetListMedia() Media {
-	return bpd.GetMedia("list")
+	return bpd.GetMedia(MediaUsageList)
 }
 
 // GetMedia returns the FIRST found product media by usage
