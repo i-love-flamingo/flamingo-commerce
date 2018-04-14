@@ -11,6 +11,18 @@ const (
 )
 
 type (
+	// BasicProduct interface - Need to be implements by all Product Types!
+	BasicProduct interface {
+		BaseData() BasicProductData
+		TeaserData() TeaserData
+		IsSaleable() bool
+		SaleableData() Saleable
+		Type() string
+		GetIdentifier() string
+		HasMedia(group string, usage string) bool
+		GetMedia(group string, usage string) Media
+	}
+
 	// BasicProductData is the basic product model
 	BasicProductData struct {
 		Title            string

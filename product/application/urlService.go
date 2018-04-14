@@ -27,28 +27,51 @@ func (s *UrlService) GetUrlParams(product domain.BasicProduct, variantCode strin
 	if product == nil {
 		return params
 	}
-	if configurableProduct, ok := product.(domain.ConfigurableProduct); ok {
-		params["marketplacecode"] = configurableProduct.ConfigurableBaseData().MarketPlaceCode
-		params["name"] = web.URLTitle(configurableProduct.ConfigurableBaseData().Title)
-		if variantCode != "" && configurableProduct.HasVariant(variantCode) {
-			variantInstance, err := configurableProduct.Variant(variantCode)
-			if err == nil {
-				params["variantcode"] = variantCode
-				params["name"] = web.URLTitle(variantInstance.BaseData().Title)
-			}
-		}
-		if configurableProduct.HasActiveVariant() {
-			params["variantcode"] = configurableProduct.ActiveVariant.MarketPlaceCode
-			params["name"] = web.URLTitle(configurableProduct.ActiveVariant.BaseData().Title)
-		}
-		if configurableProduct.TeaserData().PreSelectedVariantSku != "" {
-			params["variantcode"] = configurableProduct.TeaserData().PreSelectedVariantSku
-			params["name"] = web.URLTitle(configurableProduct.TeaserData().ShortTitle)
-		}
-	} else {
+
+	if product.Type() == domain.TYPESIMPLE {
 		params["marketplacecode"] = product.BaseData().MarketPlaceCode
 		params["name"] = web.URLTitle(product.BaseData().Title)
 	}
+	if product.Type() == domain.TYPECONFIGURABLE_WITH_ACTIVE_VARIANT {
+		if configurableProduct, ok := product.(domain.ConfigurableProductWithActiveVariant); ok {
+			params["marketplacecode"] = configurableProduct.ConfigurableBaseData().MarketPlaceCode
+			params["name"] = web.URLTitle(configurableProduct.ConfigurableBaseData().Title)
+			if variantCode != "" && configurableProduct.HasVariant(variantCode) {
+				variantInstance, err := configurableProduct.Variant(variantCode)
+				if err == nil {
+					params["variantcode"] = variantCode
+					params["name"] = web.URLTitle(variantInstance.BaseData().Title)
+				}
+			} else {
+				params["variantcode"] = configurableProduct.ActiveVariant.MarketPlaceCode
+				params["name"] = web.URLTitle(configurableProduct.ActiveVariant.BaseData().Title)
+			}
+		}
+	}
+
+	if product.Type() == domain.TYPECONFIGURABLE {
+		if configurableProduct, ok := product.(domain.ConfigurableProduct); ok {
+			params["marketplacecode"] = configurableProduct.ConfigurableBaseData().MarketPlaceCode
+			params["name"] = web.URLTitle(configurableProduct.ConfigurableBaseData().Title)
+			//TODO remove once we refactor everything to TYPECONFIGURABLE_WITH_ACTIVE_VARIANT
+			if variantCode != "" && configurableProduct.HasVariant(variantCode) {
+				variantInstance, err := configurableProduct.Variant(variantCode)
+				if err == nil {
+					params["variantcode"] = variantCode
+					params["name"] = web.URLTitle(variantInstance.BaseData().Title)
+				}
+			}
+			if configurableProduct.HasActiveVariant() {
+				params["variantcode"] = configurableProduct.ActiveVariant.MarketPlaceCode
+				params["name"] = web.URLTitle(configurableProduct.ActiveVariant.BaseData().Title)
+			}
+			if configurableProduct.TeaserData().PreSelectedVariantSku != "" {
+				params["variantcode"] = configurableProduct.TeaserData().PreSelectedVariantSku
+				params["name"] = web.URLTitle(configurableProduct.TeaserData().ShortTitle)
+			}
+		}
+	}
+
 	return params
 }
 

@@ -30,11 +30,10 @@ type (
 	// productViewData is used for product rendering
 	productViewData struct {
 		// simple / configurable / configurable_with_variant
-		RenderContext       string
-		SimpleProduct       domain.SimpleProduct
-		ConfigurableProduct domain.ConfigurableProduct
-		VariantSelected     bool
-		VariantSelection    variantSelection
+		RenderContext    string
+		Product          domain.BasicProduct
+		VariantSelected  bool
+		VariantSelection variantSelection
 	}
 
 	// variantSelection for templating
@@ -200,18 +199,19 @@ func (vc *View) Get(c web.Context) web.Response {
 			viewData.RenderContext = "configurable"
 			viewData.ConfigurableProduct = configurableProduct
 		} else {
-			// 1.B. Variant selected
-			activeVariant, err = configurableProduct.Variant(variantCode)
-			configurableProduct.ActiveVariant = activeVariant
 
+			configurableProductWithActiveVariant, err := configurableProduct.GetConfigurableWithActiveVariant(variantCode)
+			if err != nil {
+				return vc.ErrorNotFound(c, err)
+			}
 			//Redirect if url is not canonical
-			redirect := vc.getRedirectIfRequired(configurableProduct, c.MustParam1("name"), skipnamecheck)
+			redirect := vc.getRedirectIfRequired(configurableProductWithActiveVariant, c.MustParam1("name"), skipnamecheck)
 			if redirect != nil {
 				return redirect
 			}
 			viewData.VariantSelected = true
 			viewData.RenderContext = "configurable_with_activevariant"
-			viewData.ConfigurableProduct = configurableProduct
+			viewData.ConfigurableProduct = configurableProductWithActiveVariant
 		}
 		viewData.VariantSelection = vc.variantSelection(configurableProduct, activeVariant)
 
