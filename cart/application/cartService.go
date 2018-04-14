@@ -239,11 +239,9 @@ func (cs *CartService) checkProductForAddRequest(ctx web.Context, addRequest car
 		}
 
 		configurableProduct := product.(productDomain.ConfigurableProduct)
-		variant, err := configurableProduct.Variant(addRequest.VariantMarketplaceCode)
-		if err != nil {
+		if !configurableProduct.HasVariant(addRequest.VariantMarketplaceCode) {
 			return addRequest, nil, errors.New("cart.application.cartservice - AddProduct:Product has not the given variant")
 		}
-		configurableProduct.ActiveVariant = variant
 	}
 
 	//Now Validate the Item with the optional registered ItemValidator

@@ -70,19 +70,18 @@ func (df *DecoratedCartFactory) decorateCartItem(ctx context.Context, cartitem I
 		}
 		return decorateditem
 	}
-	if product.Type() == domain.TYPECONFIGURABLE && cartitem.VariantMarketPlaceCode != "" {
+	if product.Type() == domain.TYPECONFIGURABLE {
 		if configureable, ok := product.(domain.ConfigurableProduct); ok {
-			var err error
-			configureable.ActiveVariant, err = configureable.Variant(cartitem.VariantMarketPlaceCode)
+			configurableWithVariant, err := configureable.GetConfigurableWithActiveVariant(cartitem.VariantMarketPlaceCode)
 			if err != nil {
-				//To avoid errors if consumers want to access the product data
 				product = domain.SimpleProduct{
 					BasicProductData: domain.BasicProductData{
 						Title: cartitem.ProductName + "[outdated]",
 					},
 				}
+			} else {
+				product = configurableWithVariant
 			}
-			product = configureable
 		}
 	}
 	decorateditem.Product = product
