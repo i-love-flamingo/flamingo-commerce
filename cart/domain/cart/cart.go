@@ -58,12 +58,23 @@ type (
 		ShippingItem     ShippingItem
 		DesiredTime      time.Time
 		AdditionalData   map[string]string
+		RelatedFlight    *FlightData
+	}
+
+	FlightData struct {
+		ScheduledDateTime  time.Time
+		Direction          string
+		FlightNumber       string
+		AirportName        string
+		DestinationCountry string
 	}
 
 	DeliveryLocation struct {
-		Type    string
-		Address Address
-		//Code - optional identifier of this location/destination - is used in special destination Types
+		Type string
+		//Address - only set for type adress
+		Address *Address
+		//Code - optional idendifier of this location/destination - is used in special destination Types
+
 		Code string
 	}
 
@@ -151,6 +162,14 @@ const (
 )
 
 // GetByLineNr gets an item - starting with 1
+func (Cart Cart) HasDeliveryInfos() bool {
+	if len(Cart.DeliveryInfos) > 0 {
+		return true
+	}
+	return false
+}
+
+// GetByLineNr gets an item - starting with 1
 func (Cart Cart) GetByLineNr(lineNr int) (*Item, error) {
 	var item Item
 	if len(Cart.Cartitems) >= lineNr && lineNr > 0 {
@@ -218,8 +237,8 @@ func (Cart Cart) GetCartItemsByOriginalDeliveryIntent() map[string][]Item {
 	return result
 }
 
-// HasDeliveryMethodForIntent - returns if the cart has an item with the delivery intent
-func (Cart Cart) HasDeliveryMethodForIntent(intent string) bool {
+// HasItemWithIntent - returns if the cart has an item with the delivery intent
+func (Cart Cart) HasItemWithIntent(intent string) bool {
 	for _, item := range Cart.Cartitems {
 		if item.OriginalDeliveryIntent.String() == intent {
 			return true
@@ -244,4 +263,8 @@ func (item Item) GetSavingsByItem() float64 {
 		totalSavings = totalSavings + discount.Price
 	}
 	return totalSavings
+}
+
+func (d DeliveryInfo) HasRelatedFlight() bool {
+	return d.RelatedFlight != nil
 }
