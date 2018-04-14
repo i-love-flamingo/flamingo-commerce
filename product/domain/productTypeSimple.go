@@ -9,6 +9,9 @@ const (
 	TYPESIMPLE = "simple"
 	// TYPECONFIGURABLE denotes configurable products
 	TYPECONFIGURABLE = "configurable"
+
+	// TYPECONFIGURABLE denotes configurable products that has a variant selected
+	TYPECONFIGURABLE_WITH_ACTIVE_VARIANT = "configurable_with_activevariant"
 )
 
 type (
@@ -16,6 +19,7 @@ type (
 	BasicProduct interface {
 		BaseData() BasicProductData
 		TeaserData() TeaserData
+		//TODO IsSaleableType() ??
 		SaleableData() Saleable
 		Type() string
 		GetIdentifier() string
@@ -33,6 +37,17 @@ type (
 
 	// ConfigurableProduct - A product that can be teasered and that has Sellable Variants Aggregated
 	ConfigurableProduct struct {
+		Identifier string
+		BasicProductData
+		Teaser                     TeaserData
+		VariantVariationAttributes []string
+		Variants                   []Variant
+		//TODO REMOVE THIS HERE ONCE REFACTORED EVERYWHERE TO NEW TYPE ConfigurableProductWithActiveVariant
+		ActiveVariant *Variant
+	}
+
+	// ConfigurableProduct - A product that can be teasered and that has Sellable Variants Aggregated
+	ConfigurableProductWithActiveVariant struct {
 		Identifier string
 		BasicProductData
 		Teaser                     TeaserData
@@ -178,6 +193,7 @@ func (p ConfigurableProduct) HasVariant(variantMarketplaceCode string) bool {
 	}
 	return false
 }
+
 // BaseData getter for BasicProductData
 func (v Variant) BaseData() BasicProductData {
 	return v.BasicProductData
