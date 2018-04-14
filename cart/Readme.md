@@ -1,9 +1,11 @@
 # Cart Module
 
-The cart package offers a domain model for carts and its items.
-It requires several ports to be implemented in order to use it.
+The cart package offers a domain model for carts and its items - and the application services that should be used to get and modify cart(s).
 
-## Principles / Sumarry
+It requires several ports to be implemented in order to have fully working cart functionality. (for example the *magento* package implements Adapters for the Ports)
+
+
+## Principles / Summary
 * The "Cart" aggregate in the Domain Model is a complex object that should be used as a pure **immutable Value object**:
     * Never change it directly!
     * Only read from it
@@ -13,7 +15,7 @@ It requires several ports to be implemented in order to use it.
 
 ## Usage
 
-### Configurations###
+### Configurations
 
 ```
   
@@ -160,6 +162,19 @@ The "DefaultDeliveryInfoBuilder" that is part of the package should be ok for mo
 The DeliveryInfoBuilder interface can be used in checkout to prepare the DeliveryInfos on the cart.
 
 
+#### Optional Port: CartValidator
+The CartValidator interface defines an interface the validate the cart.
+
+If you want to register an implementation, it will be used to pass the validation results to the web view.
+
+
+#### Optional Port: ItemValidator
+ItemValidator defines an interface to validate an item BEFORE it is added to the cart.
+
+If an Item is not Valid according to the result of the registered ItemValidator it will not be added to the cart.
+
+
+
 #### I just have homedelivery - do I need this?
 Not really:
 A standard online shop won't need the flexibility provided by this objects.
@@ -236,17 +251,26 @@ A checkout package would use the cart package for adding informations to the car
 
 ## Interface Layer
 
+### Cart Controller ###
+Controller that expects the following templates:
+* checkout/cart
+* checkout/carterror
+
+The templates get the following variables passed:
+* DecoratedCart
+* CartValidationResult
+
 ### Cart Ajax API ###
 
-### Get Cart Content:
+#### Get Cart Content:
 * http://localhost:3210/en/api/cart
 
-### Adding products:
+#### Adding products:
 
 * Simple product: http://localhost:3210/en/api/cart/add/fake_simple
 * With qty: http://localhost:3210/en/api/cart/add/fake_simple?qty=10
 * Adding configurables: http://localhost:3210/en/api/cart/add/fake_configurable?variantMarketplaceCode=shirt-white-s
-* Adding configurables with a given intent: http://localhost:3210/en/api/cart/add/fake_configurable?variantMarketplaceCode=shirt-white-s&deliveryIntent=collection_arrivals
+* Adding configurables with a given intent: http://localhost:3210/en/api/cart/add/fake_configurable?variantMarketplaceCode=shirt-white-s&deliveryIntent=pickup_collection_arrivals
 
 
 
