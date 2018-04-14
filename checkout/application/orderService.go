@@ -74,7 +74,7 @@ func (os *OrderService) OnStepCurrentCartPlaceOrder(ctx web.Context, billingAddr
 			return "", errors.New("No DeliveryInfos Build - cannot set shippingAddress")
 		}
 		for k, _ := range updateCommands {
-			updateCommands[k].DeliveryInfo.DeliveryLocation.Address = *shippingAddress
+			updateCommands[k].DeliveryInfo.DeliveryLocation.Address = shippingAddress
 		}
 	}
 	err = os.CartService.UpdateDeliveryInfosAndBilling(ctx, billingAddress, updateCommands)

@@ -29,9 +29,10 @@ type (
 	}
 
 	PersonalData struct {
-		DateOfBirth     string `form:"dateOfBirth"`
-		PassportCountry string `form:"passportCountry"`
-		PassportNumber  string `form:"passportNumber"`
+		DateOfBirth     string          `form:"dateOfBirth"`
+		PassportCountry string          `form:"passportCountry"`
+		PassportNumber  string          `form:"passportNumber"`
+		Address         AddressFormData `form:"address" validate:"-"`
 	}
 
 	AddressFormData struct {
@@ -179,12 +180,14 @@ func MapPerson(data CheckoutFormData) *cart.Person {
 	if data.PersonalData.IsEmpty() {
 		return nil
 	}
+	address := mapAddress(data.PersonalData.Address)
 	person := cart.Person{
 		PersonalDetails: cart.PersonalDetails{
 			PassportNumber:  data.PersonalData.PassportNumber,
 			PassportCountry: data.PersonalData.PassportCountry,
 			DateOfBirth:     data.PersonalData.DateOfBirth,
 		},
+		Address: *address,
 	}
 	return &person
 }
