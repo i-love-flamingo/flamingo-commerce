@@ -22,3 +22,7 @@ type (
 func (e *AddToCartNotAllowed) Error() string {
 	return fmt.Sprintf("Product is not allowed: %v", e.Reason)
 }
+
+func (e *AddToCartNotAllowed) MessageCode() string {
+	return e.Reason
+}

@@ -20,8 +20,13 @@ type (
 	}
 
 	result struct {
-		Message string
-		Success bool
+		Message     string
+		MessageCode string
+		Success     bool
+	}
+
+	messageCodeAvailable interface {
+		MessageCode() string
 	}
 )
 
@@ -52,7 +57,11 @@ func (cc *CartApiController) AddAction(ctx web.Context) web.Response {
 	e = cc.ApplicationCartService.AddProduct(ctx, addRequest)
 	if e != nil {
 		cc.Logger.WithField("category", "CartApiController").Errorf("cart.cartapicontroller.add: %v", e.Error())
-		return cc.JSONError(result{Message: e.Error(), Success: false}, 500)
+		msgCode := ""
+		if e, ok := e.(messageCodeAvailable); ok {
+			msgCode = e.MessageCode()
+		}
+		return cc.JSONError(result{Message: e.Error(), MessageCode: msgCode, Success: false}, 500)
 	}
 	return cc.JSON(result{
 		Success: true,
