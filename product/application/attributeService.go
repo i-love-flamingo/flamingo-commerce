@@ -45,26 +45,35 @@ func (as *AttributeValueFormatService) formatValue(a *domain.Attribute) string {
 	case a.HasMultipleValues():
 		result := make([]string, len(a.Values()))
 		for i, v := range a.Values() {
-			result[i] = as.format(v)
+			result[i] = as.format(a.Code, v)
 		}
 		return strings.Join(result, ", ")
 	default:
-		return as.format(a.RawValue)
+		return as.format(a.Code, a.RawValue)
 	}
 }
 
-func (as *AttributeValueFormatService) format(i interface{}) string {
+func (as *AttributeValueFormatService) format(code string, i interface{}) string {
 	stringValue := fmt.Sprintf("%v", i)
 
+	// check if value ist an int
 	_, e := strconv.ParseInt(stringValue, 10, 64)
 	if e == nil {
 		return stringValue
 	}
 
+	// check if value is a float
 	f, e := strconv.ParseFloat(stringValue, 64)
 	if e == nil {
 		return accounting.FormatNumber(f, int(as.Precision), as.Thousand, as.Decimal)
 	}
 
-	return strings.Title(fmt.Sprintf("%v", i))
+	// return the nicified value - also try to translate it
+	return as.TranslationService.Translate(
+		"product.attribute."+code+".value."+stringValue,
+		strings.Title(stringValue),
+		"",
+		0,
+		nil,
+	)
 }
