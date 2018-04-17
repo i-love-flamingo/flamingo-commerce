@@ -55,7 +55,6 @@ type (
 		Title        string
 		Combinations map[string][]string
 		Selected     bool
-
 	}
 
 	viewVariant struct {
@@ -109,7 +108,9 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 			Title: strings.Title(code),
 		}
 
-		for optionCode, option := range attribute {
+		for _, optionCode := range combinationsOrder[viewVariantAttribute.Key] {
+			option := attribute[optionCode]
+
 			combinations := make(map[string][]string)
 			for cattr, cvalues := range option {
 				for cvalue := range cvalues {
@@ -133,11 +134,6 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 				Combinations: combinations,
 			})
 		}
-
-		// Resort Attribute Options to align to the original sorting which is kept in combinationsOrder
-		sort.Slice(viewVariantAttribute.Options, func(i, j int) bool {
-			return viewVariantAttribute.Options[i].Key < combinationsOrder[viewVariantAttribute.Key][i]
-		})
 
 		variants.Attributes = append(variants.Attributes, viewVariantAttribute)
 	}
