@@ -94,6 +94,7 @@ type (
 		RowTotal       float64
 		TaxAmount      float64
 		DiscountAmount float64
+		AppliedDiscounts []ItemDiscount
 
 		PriceInclTax    float64
 		RowTotalInclTax float64
@@ -105,6 +106,11 @@ type (
 		OriginalDeliveryIntent *DeliveryIntent
 
 		AdditionalData map[string]string
+	}
+
+	// DiscountItem
+	ItemDiscount struct {
+		Price float64
 	}
 
 	// Totalitem for totals
@@ -219,6 +225,14 @@ func (Cart Cart) GetTotalSavings() float64 {
 	totalSavings := 0.0
 	for _, item := range Cart.CartTotals.Totalitems {
 		totalSavings = totalSavings + item.Price
+	}
+	return totalSavings
+}
+
+func (item Item) GetTotalSavingsByItem() float64 {
+	totalSavings := 0.0
+	for _, discount := range item.AppliedDiscounts {
+		totalSavings = totalSavings + discount.Price
 	}
 	return totalSavings
 }
