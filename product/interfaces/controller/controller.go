@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"sort"
 	"strings"
 
 	"go.aoe.com/flamingo/core/breadcrumbs"
@@ -102,7 +101,9 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 		}
 	}
 
-	for code, attribute := range combinations {
+	for _, code := range configurable.VariantVariationAttributes {
+		attribute := combinations[code]
+
 		viewVariantAttribute := viewVariantAttribute{
 			Key:   code,
 			Title: strings.Title(code),
@@ -137,11 +138,6 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 
 		variants.Attributes = append(variants.Attributes, viewVariantAttribute)
 	}
-
-	// Resort Attributes to align to the original sorting which is defined by configurable.VariantVariationAttributes
-	sort.Slice(variants.Attributes, func(i, j int) bool {
-		return variants.Attributes[i].Key < configurable.VariantVariationAttributes[i]
-	})
 
 	for _, variant := range configurable.Variants {
 		urlName := web.URLTitle(variant.BasicProductData.Title)
