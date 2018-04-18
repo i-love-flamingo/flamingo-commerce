@@ -110,6 +110,8 @@ type (
 
 	// DiscountItem
 	ItemDiscount struct {
+		Code string
+		Title string
 		Price float64
 	}
 
@@ -118,6 +120,7 @@ type (
 		Code  string
 		Title string
 		Price float64
+		Type string
 	}
 
 	// ShippingItem
@@ -141,6 +144,8 @@ const (
 	DELIVERYLOCATION_TYPE_STORE           = "store"
 	DELIVERYLOCATION_TYPE_ADDRESS         = "address"
 	DELIVERYLOCATION_TYPE_FREIGHTSTATION  = "freight-station"
+
+	TOTALS_TYPE_DISCOUNT = "totals_type_discount"
 )
 
 // GetByLineNr gets an item - starting with 1
@@ -224,7 +229,9 @@ func (Cart Cart) HasDeliveryMethodForIntent(intent string) bool {
 func (Cart Cart) GetSavings() float64 {
 	totalSavings := 0.0
 	for _, item := range Cart.CartTotals.Totalitems {
-		totalSavings = totalSavings + item.Price
+		if item.Type == TOTALS_TYPE_DISCOUNT {
+			totalSavings = totalSavings + item.Price
+		}
 	}
 	return totalSavings
 }
