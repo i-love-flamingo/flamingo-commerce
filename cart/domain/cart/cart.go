@@ -146,6 +146,8 @@ const (
 	DELIVERYLOCATION_TYPE_FREIGHTSTATION  = "freight-station"
 
 	TOTALS_TYPE_DISCOUNT = "totals_type_discount"
+	TOTALS_TYPE_TAX = "totals_type_tax"
+	TOTALS_TYPE_SHIPPING = "totals_type_shipping"
 )
 
 // GetByLineNr gets an item - starting with 1
