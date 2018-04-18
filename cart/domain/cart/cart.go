@@ -221,7 +221,7 @@ func (Cart Cart) HasDeliveryMethodForIntent(intent string) bool {
 	return false
 }
 
-func (Cart Cart) GetTotalSavings() float64 {
+func (Cart Cart) GetSavings() float64 {
 	totalSavings := 0.0
 	for _, item := range Cart.CartTotals.Totalitems {
 		totalSavings = totalSavings + item.Price
@@ -229,7 +229,7 @@ func (Cart Cart) GetTotalSavings() float64 {
 	return totalSavings
 }
 
-func (item Item) GetTotalSavingsByItem() float64 {
+func (item Item) GetSavingsByItem() float64 {
 	totalSavings := 0.0
 	for _, discount := range item.AppliedDiscounts {
 		totalSavings = totalSavings + discount.Price
