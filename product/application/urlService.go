@@ -51,23 +51,20 @@ func (s *UrlService) GetUrlParams(product domain.BasicProduct, variantCode strin
 
 	if product.Type() == domain.TYPECONFIGURABLE {
 		if configurableProduct, ok := product.(domain.ConfigurableProduct); ok {
-			params["marketplacecode"] = configurableProduct.ConfigurableBaseData().MarketPlaceCode
-			params["name"] = web.URLTitle(configurableProduct.ConfigurableBaseData().Title)
-			//TODO remove once we refactor everything to TYPECONFIGURABLE_WITH_ACTIVE_VARIANT
+			params["marketplacecode"] = configurableProduct.BaseData().MarketPlaceCode
+			params["name"] = web.URLTitle(configurableProduct.BaseData().Title)
+			//if the teaser teasers a variant then link to this
+			if configurableProduct.TeaserData().PreSelectedVariantSku != "" {
+				params["variantcode"] = configurableProduct.TeaserData().PreSelectedVariantSku
+				params["name"] = web.URLTitle(configurableProduct.TeaserData().ShortTitle)
+			}
+			//if a variantCode is given then link to that variant
 			if variantCode != "" && configurableProduct.HasVariant(variantCode) {
 				variantInstance, err := configurableProduct.Variant(variantCode)
 				if err == nil {
 					params["variantcode"] = variantCode
 					params["name"] = web.URLTitle(variantInstance.BaseData().Title)
 				}
-			}
-			if configurableProduct.HasActiveVariant() {
-				params["variantcode"] = configurableProduct.ActiveVariant.MarketPlaceCode
-				params["name"] = web.URLTitle(configurableProduct.ActiveVariant.BaseData().Title)
-			}
-			if configurableProduct.TeaserData().PreSelectedVariantSku != "" {
-				params["variantcode"] = configurableProduct.TeaserData().PreSelectedVariantSku
-				params["name"] = web.URLTitle(configurableProduct.TeaserData().ShortTitle)
 			}
 		}
 	}

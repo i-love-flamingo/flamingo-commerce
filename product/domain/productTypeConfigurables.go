@@ -80,7 +80,6 @@ func (p ConfigurableProduct) GetIdentifier() string {
 }
 
 // BaseData interface implementation for ConfigurableProduct
-// Returns only BaseData for Active Variant. If you need the BaseData of the Configurable - use ConfigurableBaseData()
 func (p ConfigurableProduct) BaseData() BasicProductData {
 	return p.BasicProductData
 }

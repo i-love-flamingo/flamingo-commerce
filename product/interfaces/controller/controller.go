@@ -181,7 +181,7 @@ func (vc *View) Get(c web.Context) web.Response {
 	var viewData productViewData
 
 	// 1. Handle Configurables
-	if product.Type() == "configurable" {
+	if product.Type() == domain.TYPECONFIGURABLE {
 		configurableProduct := product.(domain.ConfigurableProduct)
 		var activeVariant *domain.Variant
 
@@ -197,7 +197,7 @@ func (vc *View) Get(c web.Context) web.Response {
 			// 1.A. No variant selected
 			viewData.VariantSelected = false
 			viewData.RenderContext = "configurable"
-			viewData.ConfigurableProduct = configurableProduct
+			viewData.Product = configurableProduct
 		} else {
 
 			configurableProductWithActiveVariant, err := configurableProduct.GetConfigurableWithActiveVariant(variantCode)
@@ -211,7 +211,7 @@ func (vc *View) Get(c web.Context) web.Response {
 			}
 			viewData.VariantSelected = true
 			viewData.RenderContext = "configurable_with_activevariant"
-			viewData.ConfigurableProduct = configurableProductWithActiveVariant
+			viewData.Product = configurableProductWithActiveVariant
 		}
 		viewData.VariantSelection = vc.variantSelection(configurableProduct, activeVariant)
 
@@ -224,7 +224,7 @@ func (vc *View) Get(c web.Context) web.Response {
 
 		// 2. Handle Simples
 		simpleProduct := product.(domain.SimpleProduct)
-		viewData = productViewData{SimpleProduct: simpleProduct, RenderContext: "simple"}
+		viewData = productViewData{Product: simpleProduct, RenderContext: "simple"}
 	}
 
 	vc.addBreadCrum(product, c)
@@ -235,9 +235,9 @@ func (vc *View) Get(c web.Context) web.Response {
 // addBreadCrum
 func (vc *View) addBreadCrum(product domain.BasicProduct, c web.Context) {
 	var paths []string
-	if product.Type() == domain.TYPESIMPLE {
+	if product.Type() == domain.TYPESIMPLE || product.Type() == domain.TYPECONFIGURABLE {
 		paths = product.BaseData().CategoryToCodeMapping
-	} else if configurableProduct, ok := product.(domain.ConfigurableProduct); ok {
+	} else if configurableProduct, ok := product.(domain.ConfigurableProductWithActiveVariant); ok {
 		paths = configurableProduct.ConfigurableBaseData().CategoryToCodeMapping
 	}
 
