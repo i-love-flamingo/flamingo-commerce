@@ -98,23 +98,92 @@ const (
 	KILOHM   = "KILOHM"
 	MEGOHM   = "MEGOHM"
 
-	// Piece Units
-	PCS = "PCS"
+	// Speed
+	METER_PER_SECOND   = "METER_PER_SECOND"
+	METER_PER_MINUTE   = "METER_PER_MINUTE"
+	METER_PER_HOUR     = "METER_PER_HOUR"
+	KILOMETER_PER_HOUR = "KILOMETER_PER_HOUR"
+	FOOT_PER_SECOND    = "FOOT_PER_SECOND"
+	FOOT_PER_HOUR      = "FOOT_PER_HOUR"
+	YARD_PER_HOUR      = "YARD_PER_HOUR"
+	MILE_PER_HOUR      = "MILE_PER_HOUR"
+
+	// Electric Charge
+	MILLIAMPEREHOUR = "MILLIAMPEREHOUR"
+	AMPEREHOUR      = "AMPEREHOUR"
+	MILLICOULOMB    = "MILLICOULOMB"
+	CENTICOULOMB    = "CENTICOULOMB"
+	DECICOULOMB     = "DECICOULOMB"
+	COULOMB         = "COULOMB"
+	DEKACOULOMB     = "DEKACOULOMB"
+	HECTOCOULOMB    = "HECTOCOULOMB"
+	KILOCOULOMB     = "KILOCOULOMB"
+
+	// Duration
+	MILLISECOND = "MILLISECOND"
+	SECOND      = "SECOND"
+	MINUTE      = "MINUTE"
+	HOUR        = "HOUR"
+	DAY         = "DAY"
+	WEEK        = "WEEK"
+	MONTH       = "MONTH"
+	YEAR        = "YEAR"
+
+	// Temperature
+	CELSIUS    = "CELSIUS"
+	FAHRENHEIT = "FAHRENHEIT"
+	KELVIN     = "KELVIN"
+	RANKINE    = "RANKINE"
+	REAUMUR    = "REAUMUR"
 
 	// Volume Units
-	MILLILITER = "MILLILITER"
-	CENTILITER = "CENTILITER"
-	LITER      = "LITER"
-	OUNCE      = "OUNCE"
-	PINT       = "PINT"
-	BARREL     = "BARREL"
-	GALLON     = "GALLON"
+	CUBIC_MILLIMETER = "CUBIC_MILLIMETER"
+	CUBIC_CENTIMETER = "CUBIC_CENTIMETER"
+	MILLILITER       = "MILLILITER"
+	CENTILITER       = "CENTILITER"
+	DECILITER        = "DECILITER"
+	CUBIC_DECIMETER  = "CUBIC_DECIMETER"
+	LITER            = "LITER"
+	CUBIC_METER      = "CUBIC_METER"
+	OUNCE            = "OUNCE"
+	PINT             = "PINT"
+	BARREL           = "BARREL"
+	GALLON           = "GALLON"
+	CUBIC_FOOT       = "CUBIC_FOOT"
+	CUBIC_INCH       = "CUBIC_INCH"
+	CUBIC_YARD       = "CUBIC_YARD"
 
 	// Weigt Units
 	MILLIGRAM = "MILLIGRAM"
 	GRAM      = "GRAM"
 	KILOGRAM  = "KILOGRAM"
+	TON       = "TON"
+	GRAIN     = "GRAIN"
+	DENIER    = "DENIER"
 	POUND     = "POUND"
+	MARC      = "MARC"
+	LIVRE     = "LIVRE"
+
+	// Pressure
+	BAR         = "BAR"
+	PASCAL      = "PASCAL"
+	HECTOPASCAL = "HECTOPASCAL"
+	MILLIBAR    = "MILLIBAR"
+	ATM         = "ATM"
+	PSI         = "PSI"
+	TORR        = "TORR"
+	MMHG        = "MMHG"
+
+	// Energy
+	JOULE       = "JOULE"
+	CALORIE     = "CALORIE"
+	KILOCALORIE = "KILOCALORIE"
+	KILOJOULE   = "KILOJOULE"
+
+	// Piece / CaseBox Units
+	PCS   = "PCS"
+	PIECE = "PIECE"
+	DOZEN = "DOZEN"
 )
 
 // Units provides the unit map
@@ -438,13 +507,143 @@ var Units = map[string]Unit{
 		Symbol: "MΩ",
 	},
 
-	// Piece Units
-	PCS: {
-		Code:   PCS,
-		Symbol: "pcs",
+	// Speed
+	METER_PER_SECOND: {
+		Code:   METER_PER_SECOND,
+		Symbol: "mdivs",
+	},
+	METER_PER_MINUTE: {
+		Code:   METER_PER_MINUTE,
+		Symbol: "mdivm",
+	},
+	METER_PER_HOUR: {
+		Code:   METER_PER_HOUR,
+		Symbol: "mdivh",
+	},
+	KILOMETER_PER_HOUR: {
+		Code:   KILOMETER_PER_HOUR,
+		Symbol: "kmdivh",
+	},
+	FOOT_PER_SECOND: {
+		Code:   FOOT_PER_SECOND,
+		Symbol: "ftdivs",
+	},
+	FOOT_PER_HOUR: {
+		Code:   FOOT_PER_HOUR,
+		Symbol: "ftdivh",
+	},
+	YARD_PER_HOUR: {
+		Code:   YARD_PER_HOUR,
+		Symbol: "yddivh",
+	},
+	MILE_PER_HOUR: {
+		Code:   MILE_PER_HOUR,
+		Symbol: "midivh",
+	},
+
+	// Electric Charge
+	MILLIAMPEREHOUR: {
+		Code:   MILLIAMPEREHOUR,
+		Symbol: "mAh",
+	},
+	AMPEREHOUR: {
+		Code:   AMPEREHOUR,
+		Symbol: "Ah",
+	},
+	MILLICOULOMB: {
+		Code:   MILLICOULOMB,
+		Symbol: "mC",
+	},
+	CENTICOULOMB: {
+		Code:   CENTICOULOMB,
+		Symbol: "cC",
+	},
+	DECICOULOMB: {
+		Code:   DECICOULOMB,
+		Symbol: "dC",
+	},
+	COULOMB: {
+		Code:   COULOMB,
+		Symbol: "C",
+	},
+	DEKACOULOMB: {
+		Code:   DEKACOULOMB,
+		Symbol: "daC",
+	},
+	HECTOCOULOMB: {
+		Code:   HECTOCOULOMB,
+		Symbol: "hC",
+	},
+	KILOCOULOMB: {
+		Code:   KILOCOULOMB,
+		Symbol: "kC",
+	},
+
+	// Duration
+	MILLISECOND: {
+		Code:   MILLISECOND,
+		Symbol: "ms",
+	},
+	SECOND: {
+		Code:   SECOND,
+		Symbol: "s",
+	},
+	MINUTE: {
+		Code:   MINUTE,
+		Symbol: "m",
+	},
+	HOUR: {
+		Code:   HOUR,
+		Symbol: "h",
+	},
+	DAY: {
+		Code:   DAY,
+		Symbol: "d",
+	},
+	WEEK: {
+		Code:   WEEK,
+		Symbol: "week",
+	},
+	MONTH: {
+		Code:   MONTH,
+		Symbol: "month",
+	},
+	YEAR: {
+		Code:   YEAR,
+		Symbol: "year",
+	},
+
+	// Temperature
+	CELSIUS: {
+		Code:   CELSIUS,
+		Symbol: "°C",
+	},
+	FAHRENHEIT: {
+		Code:   FAHRENHEIT,
+		Symbol: "°F",
+	},
+	KELVIN: {
+		Code:   KELVIN,
+		Symbol: "°K",
+	},
+	RANKINE: {
+		Code:   RANKINE,
+		Symbol: "°R",
+	},
+	REAUMUR: {
+		Code:   REAUMUR,
+		Symbol: "°r",
 	},
 
 	// Volume Units
+	CUBIC_MILLIMETER: {
+		Code:   CUBIC_MILLIMETER,
+		Symbol: "mm³",
+	},
+	CUBIC_CENTIMETER: {
+		Code:   CUBIC_CENTIMETER,
+		Symbol: "cm³",
+	},
 	MILLILITER: {
 		Code:   MILLILITER,
 		Symbol: "ml",
@@ -453,9 +652,21 @@ var Units = map[string]Unit{
 		Code:   CENTILITER,
 		Symbol: "cl",
 	},
+	DECILITER: {
+		Code:   DECILITER,
+		Symbol: "dl",
+	},
+	CUBIC_DECIMETER: {
+		Code:   CUBIC_DECIMETER,
+		Symbol: "dm³",
+	},
 	LITER: {
 		Code:   LITER,
 		Symbol: "l",
+	},
+	CUBIC_METER: {
+		Code:   CUBIC_METER,
+		Symbol: "m³",
 	},
 	OUNCE: {
 		Code:   OUNCE,
@@ -473,6 +684,18 @@ var Units = map[string]Unit{
 		Code:   GALLON,
 		Symbol: "gal",
 	},
+	CUBIC_FOOT: {
+		Code:   CUBIC_FOOT,
+		Symbol: "ft³",
+	},
+	CUBIC_INCH: {
+		Code:   CUBIC_INCH,
+		Symbol: "in³",
+	},
+	CUBIC_YARD: {
+		Code:   CUBIC_YARD,
+		Symbol: "yd³",
+	},
 
 	// Weight Units
 	MILLIGRAM: {
@@ -487,8 +710,94 @@ var Units = map[string]Unit{
 		Code:   KILOGRAM,
 		Symbol: "kg",
 	},
+	TON: {
+		Code:   TON,
+		Symbol: "t",
+	},
+	GRAIN: {
+		Code:   GRAIN,
+		Symbol: "gr",
+	},
+	DENIER: {
+		Code:   DENIER,
+		Symbol: "dernier",
+	},
 	POUND: {
 		Code:   POUND,
 		Symbol: "lb",
+	},
+	MARC: {
+		Code:   MARC,
+		Symbol: "marc",
+	},
+	LIVRE: {
+		Code:   LIVRE,
+		Symbol: "livre",
+	},
+
+	// Pressure
+	BAR: {
+		Code:   BAR,
+		Symbol: "Bar",
+	},
+	PASCAL: {
+		Code:   PASCAL,
+		Symbol: "Pa",
+	},
+	HECTOPASCAL: {
+		Code:   HECTOPASCAL,
+		Symbol: "hPa",
+	},
+	MILLIBAR: {
+		Code:   MILLIBAR,
+		Symbol: "mBar",
+	},
+	ATM: {
+		Code:   ATM,
+		Symbol: "atm",
+	},
+	PSI: {
+		Code:   PSI,
+		Symbol: "PSI",
+	},
+	TORR: {
+		Code:   TORR,
+		Symbol: "Torr",
+	},
+	MMHG: {
+		Code:   MMHG,
+		Symbol: "mmHg",
+	},
+
+	// Energy
+	JOULE: {
+		Code:   JOULE,
+		Symbol: "J",
+	},
+	CALORIE: {
+		Code:   CALORIE,
+		Symbol: "cal",
+	},
+	KILOCALORIE: {
+		Code:   KILOCALORIE,
+		Symbol: "kcal",
+	},
+	KILOJOULE: {
+		Code:   KILOJOULE,
+		Symbol: "kJ",
+	},
+
+	// Piece / CaseBox Units
+	PCS: {
+		Code:   PCS,
+		Symbol: "pcs",
+	},
+	PIECE: {
+		Code:   PIECE,
+		Symbol: "Pc",
+	},
+	DOZEN: {
+		Code:   DOZEN,
+		Symbol: "Dz",
 	},
 }
