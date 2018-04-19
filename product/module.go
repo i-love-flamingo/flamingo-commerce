@@ -31,5 +31,10 @@ func (m *Module) Configure(injector *dingo.Injector) {
 func (m *Module) DefaultConfig() config.Map {
 	return config.Map{
 		"core.product.view.template": "product/product",
+		"templating": config.Map{
+			"product": config.Map{
+				"attributeRenderer": config.Map{},
+			},
+		},
 	}
 }
