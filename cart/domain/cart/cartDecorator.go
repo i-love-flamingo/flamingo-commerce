@@ -90,7 +90,7 @@ func (df *DecoratedCartFactory) decorateCartItem(ctx context.Context, cartitem I
 
 // IsConfigurable - checks if current CartItem is a Configurable Product
 func (dci DecoratedCartItem) IsConfigurable() bool {
-	return dci.Product.Type() == domain.TYPECONFIGURABLE
+	return dci.Product.Type() == domain.TYPECONFIGURABLE_WITH_ACTIVE_VARIANT
 }
 
 // GetVariant getter

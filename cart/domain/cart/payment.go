@@ -2,8 +2,8 @@ package cart
 
 type (
 	CartPayment struct {
-		PaymentInfos     []PaymentInfo
-		ItemIDAssignment map[string]*PaymentInfo
+		PaymentInfos       []PaymentInfo
+		ItemIDAssignment   map[string]*PaymentInfo
 		RawTransactionData interface{}
 	}
 
@@ -17,6 +17,11 @@ type (
 		//TransactionId - The main reference of the payment that was done
 		TransactionId string
 	}
+)
+
+const (
+	PAYMENT_STATUS_CAPTURED = "CAPTURED"
+	PAYMENT_STATUS_OPEN     = "OPEN"
 )
 
 func (cp *CartPayment) AddPayment(paymentInfo PaymentInfo, items []string) {

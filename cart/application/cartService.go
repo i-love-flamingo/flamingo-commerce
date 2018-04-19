@@ -1,6 +1,8 @@
 package application
 
 import (
+	"fmt"
+
 	"github.com/pkg/errors"
 	cartDomain "go.aoe.com/flamingo/core/cart/domain/cart"
 	productDomain "go.aoe.com/flamingo/core/product/domain"
@@ -23,8 +25,6 @@ type (
 		PickUpDetectionService cartDomain.PickUpDetectionService `inject:",optional"`
 
 		DeliveryIntentBuilder *cartDomain.DeliveryIntentBuilder `inject:""`
-		//DefaultDeliveryMethodForValidation - used for calling the CartValidator (this is something that might get obsolete if the Cart and the CartItems have theire Deliverymethod "saved")
-		DefaultDeliveryMethodForValidation string `inject:"config:cart.validation.defaultDeliveryMethod,optional"`
 
 		DefaultDeliveryIntent string `inject:"config:cart.defaultDeliveryIntent,optional"`
 
@@ -34,10 +34,9 @@ type (
 
 // ValidateCart validates a carts content
 func (cs CartService) ValidateCart(ctx web.Context, decoratedCart *cartDomain.DecoratedCart) cartDomain.CartValidationResult {
-	if cs.CartValidator != nil {
-		// TODO pass delivery Method from CART - once cart supports this!
-		result := cs.CartValidator.Validate(ctx, decoratedCart, cs.DefaultDeliveryMethodForValidation)
 
+	if cs.CartValidator != nil {
+		result := cs.CartValidator.Validate(ctx, decoratedCart)
 		return result
 	}
 
@@ -218,6 +217,7 @@ func (cs *CartService) AddProduct(ctx web.Context, addRequest cartDomain.AddRequ
 
 	cart, err = behaviour.AddToCart(ctx, cart, addRequest)
 	if err != nil {
+		cs.handleCartNotFound(ctx, err)
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "AddProduct").Error(err)
 		return err
 	}
@@ -226,11 +226,17 @@ func (cs *CartService) AddProduct(ctx web.Context, addRequest cartDomain.AddRequ
 	return nil
 }
 
+func (cs *CartService) handleCartNotFound(ctx web.Context, err error) {
+	if err == cartDomain.CartNotFoundError {
+		cs.DeleteSessionGuestCart(ctx)
+	}
+}
+
 // checkProductForAddRequest existence and validate with productService
 func (cs *CartService) checkProductForAddRequest(ctx web.Context, addRequest cartDomain.AddRequest) (cartDomain.AddRequest, productDomain.BasicProduct, error) {
 	product, err := cs.ProductService.Get(ctx, addRequest.MarketplaceCode)
 	if err != nil {
-		return addRequest, nil, errors.New("cart.application.cartservice - AddProduct:Product not found")
+		return addRequest, nil, fmt.Errorf("cart.application.cartservice - AddProduct Error: %v", err)
 	}
 
 	if product.Type() == productDomain.TYPECONFIGURABLE {

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	oidc "github.com/coreos/go-oidc"
+	"github.com/pkg/errors"
 	"golang.org/x/oauth2"
 )
 
@@ -64,4 +65,8 @@ type (
 		TokenSource oauth2.TokenSource
 		IDToken     *oidc.IDToken
 	}
+)
+
+var (
+	CartNotFoundError = errors.New("Cart not found")
 )
