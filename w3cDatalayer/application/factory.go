@@ -212,13 +212,7 @@ func (s Factory) getProductCategory(product productDomain.BasicProduct) *domain.
 
 	categoryPaths := product.BaseData().CategoryPath
 	baseData := product.BaseData()
-	if product.Type() == productDomain.TYPECONFIGURABLE {
-		if configurable, ok := product.(productDomain.ConfigurableProduct); ok {
-			//Category assignement is always from configurable
-			categoryPaths = configurable.ConfigurableBaseData().CategoryPath
-			baseData = configurable.ConfigurableBaseData()
-		}
-	}
+
 	for _, path := range categoryPaths {
 		pathParts := strings.Count(path, "/") + 1
 		if pathParts > previousPathParts {
@@ -257,17 +251,18 @@ func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.Produ
 	//Handle Variants if it is a Configurable
 	var parentIdRef *string = nil
 	var variantSelectedAttributeRef *string = nil
+	if product.Type() == productDomain.TYPECONFIGURABLE_WITH_ACTIVE_VARIANT {
+		if configurableWithActiveVariant, ok := product.(productDomain.ConfigurableProductWithActiveVariant); ok {
+			parentId := configurableWithActiveVariant.ConfigurableBaseData().MarketPlaceCode
+			parentIdRef = &parentId
+			variantSelectedAttribute := configurableWithActiveVariant.ActiveVariant.BaseData().Attributes[configurableWithActiveVariant.VariantVariationAttributes[0]].Value()
+			variantSelectedAttributeRef = &variantSelectedAttribute
+		}
+	}
 	if product.Type() == productDomain.TYPECONFIGURABLE {
 		if configurable, ok := product.(productDomain.ConfigurableProduct); ok {
-			parentId := configurable.ConfigurableBaseData().MarketPlaceCode
+			parentId := configurable.BaseData().MarketPlaceCode
 			parentIdRef = &parentId
-			if configurable.HasActiveVariant() && len(configurable.VariantVariationAttributes) > 0 && configurable.ActiveVariant.HasAttribute(configurable.VariantVariationAttributes[0]) {
-				variantSelectedAttribute := configurable.ActiveVariant.BaseData().Attributes[configurable.VariantVariationAttributes[0]].Value()
-				variantSelectedAttributeRef = &variantSelectedAttribute
-				baseData = configurable.ActiveVariant.BaseData()
-			} else {
-				baseData = configurable.ConfigurableBaseData()
-			}
 		}
 	}
 	// Search for some common product attributes to fill the productInfos (This maybe better to be configurable later)
