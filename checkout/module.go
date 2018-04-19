@@ -3,13 +3,13 @@ package checkout
 import (
 	"github.com/go-playground/form"
 	"go.aoe.com/flamingo/core/checkout/domain"
+	paymentDomain "go.aoe.com/flamingo/core/checkout/domain/payment"
 	"go.aoe.com/flamingo/core/checkout/infrastructure"
+	paymentInfrastructure "go.aoe.com/flamingo/core/checkout/infrastructure/payment"
 	"go.aoe.com/flamingo/core/checkout/interfaces/controller"
 	"go.aoe.com/flamingo/framework/config"
 	"go.aoe.com/flamingo/framework/dingo"
 	"go.aoe.com/flamingo/framework/router"
-	paymentDomain "go.aoe.com/flamingo/core/checkout/domain/payment"
-	paymentInfrastructure "go.aoe.com/flamingo/core/checkout/infrastructure/payment"
 )
 
 type (
@@ -38,7 +38,7 @@ func (m *CheckoutModule) Configure(injector *dingo.Injector) {
 	m.RouterRegistry.Handle("checkout.processpayment", (*controller.CheckoutController).ProcessPaymentAction)
 	m.RouterRegistry.Route("/checkout/processpayment/:providercode/:methodcode", "checkout.processpayment")
 
-	injector.BindMap((*paymentDomain.PaymentProvider)(nil), "DummyPayment").To(paymentInfrastructure.DummyPaymentProvider{})
+	injector.BindMap((*paymentDomain.PaymentProvider)(nil), "offlinepayment").To(paymentInfrastructure.OfflinePaymentProvider{})
 
 	injector.Bind((*form.Decoder)(nil)).ToProvider(form.NewDecoder).AsEagerSingleton()
 	if m.UseFakeDeliveryLocationsService {

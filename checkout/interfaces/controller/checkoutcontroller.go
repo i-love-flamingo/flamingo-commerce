@@ -15,7 +15,7 @@ import (
 	"go.aoe.com/flamingo/core/checkout/interfaces/controller/formDto"
 	customerApplication "go.aoe.com/flamingo/core/customer/application"
 	formApplicationService "go.aoe.com/flamingo/core/form/application"
-	"go.aoe.com/flamingo/core/form/domain"
+	formDomain "go.aoe.com/flamingo/core/form/domain"
 	"go.aoe.com/flamingo/framework/flamingo"
 	"go.aoe.com/flamingo/framework/router"
 	"go.aoe.com/flamingo/framework/web"
@@ -28,11 +28,11 @@ type (
 	// CheckoutViewData represents the checkout view data
 	CheckoutViewData struct {
 		DecoratedCart        cart.DecoratedCart
-		Form                 domain.Form
+		Form                 formDomain.Form
 		CartValidationResult cart.CartValidationResult
 		ErrorMessage         string
 		HasSubmitError       bool
-		PaymentProviders     []paymentDomain.PaymentProvider
+		PaymentProviders     map[string]paymentDomain.PaymentProvider
 	}
 
 	// SuccessViewData represents the success view data
@@ -113,43 +113,33 @@ func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
 	})
 }
 
-func (cc *CheckoutController) isAvailablePaymentProvider() bool {
+func (cc *CheckoutController) hasAvailablePaymentProvider() bool {
 	return len(cc.getPaymentProviders()) > 0
 }
 
-func (cc *CheckoutController) doPayment(ctx web.Context, paymentProviderCode string, paymentMethodCode string) (web.Response, error) {
+func (cc *CheckoutController) getPayment(ctx web.Context, paymentProviderCode string, paymentMethodCode string) (paymentDomain.PaymentProvider, *paymentDomain.PaymentMethod, error) {
 	providers := cc.getPaymentProviders()
 
 	provider := providers[paymentProviderCode]
 
 	if provider == nil {
-		return nil, errors.New("Payment provider not found")
+		return nil, nil, errors.New("Payment provider " + paymentProviderCode + " not found")
 	}
 
 	paymentMethods := provider.GetPaymentMethods()
 
 	var paymentMethod *paymentDomain.PaymentMethod
 	for _, method := range paymentMethods {
-		if method.Code == paymentMethodCode && method.IsExternalPayment {
+		if method.Code == paymentMethodCode {
 			paymentMethod = &method
 			break
 		}
 	}
 
 	if paymentMethod == nil {
-		return nil, errors.New("payment method not found")
-	} else if paymentMethod.IsExternalPayment {
-		returnUrl := cc.getPaymentReturnUrl(provider.GetCode(), paymentMethod.Code)
-
-		hostedPaymentPageResponse, _ := provider.RedirectExternalPayment(ctx, paymentMethod, returnUrl)
-
-		//log.Error(fmt.Printf("%v",err))
-		return hostedPaymentPageResponse, nil
-
-	} else {
-		//todo show form TBD
+		return nil, nil, errors.New("payment method not found")
 	}
-	return nil, errors.New("todo else case when payment method is not external")
+	return provider, paymentMethod, nil
 }
 
 // SubmitUserCheckoutAction handles the user order submit
@@ -178,55 +168,37 @@ func (cc *CheckoutController) SubmitGuestCheckoutAction(ctx web.Context) web.Res
 
 // ProcessPaymentAction functions as a return/notification URL for Payment Providers
 func (cc *CheckoutController) ProcessPaymentAction(ctx web.Context) web.Response {
-	request := ctx.Request()
+
+	//Guard Clause if Cart cannout be fetched
+	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
+	if e != nil {
+		cc.Logger.WithField("category", "checkout").Errorf("cart.checkoutcontroller.submitaction: Error %v", e)
+		return cc.Render(ctx, "checkout/carterror", nil)
+	}
 
 	providercode := ctx.MustParam1("providercode")
 	methodcode := ctx.MustParam1("methodcode")
 
-	err := request.ParseForm()
+	//In case we need to show an error we need to know the template and the formdata:
+	template := "checkout/guestcheckout"
+	if cc.UserService.IsLoggedIn(ctx) {
+		template = "checkout/usercheckout"
+	}
+	checkoutForm := formDomain.Form{} //TODO - get from session or from cart...
+	email := "todo"
 
+	provider, paymentMethod, err := cc.getPayment(ctx, providercode, methodcode)
+
+	cartPayment, err := provider.ProcessPayment(ctx, &decoratedCart.Cart, paymentMethod, nil)
 	if err != nil {
-		panic("No Form Data Sent from Payment Provider")
+		return cc.placeOrderErrorResponse(ctx, template, *decoratedCart, checkoutForm, err)
 	}
 
-	postData := make(map[string][]string)
-	for key, value := range request.PostForm {
-		postData[key] = value
-	}
-
+	response, err := cc.placeOrder(ctx, *cartPayment, email, *decoratedCart)
 	if err != nil {
-		panic("Request Body from Payment Provider not supplied")
+		return cc.placeOrderErrorResponse(ctx, template, *decoratedCart, checkoutForm, err)
 	}
-
-	cc.Logger.Printf("Providercode: %s, MethodCode: %s", providercode, methodcode)
-	cc.Logger.Printf("Request Data: %+v", postData)
-
-	providers := cc.getPaymentProviders()
-
-	provider := providers[providercode]
-	paymentMethods := provider.GetPaymentMethods()
-
-	var paymentMethod *paymentDomain.PaymentMethod
-	for _, method := range paymentMethods {
-		if method.Code == methodcode && method.IsExternalPayment {
-			paymentMethod = &method
-			break
-		}
-	}
-
-	cartPayment, err := provider.ProcessPayment(ctx, paymentMethod, nil)
-
-	if err != nil {
-		cc.Logger.Debugf("ProcessPayment Error: %s", err.Error())
-		// Redirect to Checkout Start again
-		return cc.Redirect("checkout.start", nil)
-	}
-
-	cc.Logger.Printf("Data: %#v %#v", cartPayment, err)
-	// TODO: Create Order by OrderService use cartPayment
-
-	// TODO: Decide where to send the customer next ("Success Page?")
-	return cc.Redirect("checkout.success", nil)
+	return response
 }
 
 // SuccessAction handles the order success action
@@ -247,21 +219,6 @@ func (cc *CheckoutController) SuccessAction(ctx web.Context) web.Response {
 	return cc.Render(ctx, "checkout/expired", nil)
 }
 
-func (cc *CheckoutController) initPayment(ctx web.Context, paymentProviderCode string, paymentMethodCode string) web.Response {
-	if cc.isAvailablePaymentProvider() {
-		redirectResponse, err := cc.doPayment(ctx, paymentProviderCode, paymentMethodCode)
-
-		if err == nil {
-			return redirectResponse
-		} else {
-			//todo return error data
-			return cc.Render(ctx, "checkout/carterror", nil)
-		}
-	} else {
-		return nil
-	}
-}
-
 func (cc *CheckoutController) getPaymentReturnUrl(PaymentProvider string, PaymentMethod string) *url.URL {
 	baseUrl := cc.CanonicalService.BaseUrl
 	paymentUrl := cc.Router.URL("checkout.processpayment", router.P{"providercode": PaymentProvider, "methodcode": PaymentMethod})
@@ -274,12 +231,6 @@ func (cc *CheckoutController) getPaymentReturnUrl(PaymentProvider string, Paymen
 }
 
 func (cc *CheckoutController) submitOrderForm(ctx web.Context, formservice *formDto.CheckoutFormService, template string) web.Response {
-	// TODO: get payment method and provider from context
-	// Needs proper input from Template
-	paymentResponse := cc.initPayment(ctx, "paymark", "paymark_cc")
-	if paymentResponse != nil {
-		return paymentResponse
-	}
 
 	//Guard Clause if Cart cannout be fetched
 	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
@@ -293,6 +244,11 @@ func (cc *CheckoutController) submitOrderForm(ctx web.Context, formservice *form
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
 
+	if !cc.hasAvailablePaymentProvider() {
+		cc.Logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error No Payment set")
+		return cc.Render(ctx, "checkout/carterror", nil)
+	}
+
 	form, e := formApplicationService.ProcessFormRequest(ctx, formservice)
 	// return on error (template need to handle error display)
 	if e != nil {
@@ -300,6 +256,7 @@ func (cc *CheckoutController) submitOrderForm(ctx web.Context, formservice *form
 			DecoratedCart:        *decoratedCart,
 			CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, decoratedCart),
 			Form:                 form,
+			PaymentProviders:     cc.getPaymentProviders(),
 		})
 	}
 
@@ -309,32 +266,51 @@ func (cc *CheckoutController) submitOrderForm(ctx web.Context, formservice *form
 			DecoratedCart:        *decoratedCart,
 			CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, decoratedCart),
 			Form:                 form,
+			PaymentProviders:     cc.getPaymentProviders(),
 		})
 	}
 
 	if form.IsValidAndSubmitted() {
+
 		if checkoutFormData, ok := form.Data.(formDto.CheckoutFormData); ok {
-			orderID, err := cc.placeOrder(ctx, checkoutFormData, decoratedCart)
+
+			billingAddress, shippingAddress := formDto.MapAddresses(checkoutFormData)
+			person := formDto.MapPerson(checkoutFormData)
+
+			err := cc.OrderService.CurrentCartSaveInfos(ctx, billingAddress, shippingAddress, person)
 			if err != nil {
-				//Place Order Error
-				return cc.Render(ctx, template, CheckoutViewData{
-					DecoratedCart:        *decoratedCart,
-					CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, decoratedCart),
-					HasSubmitError:       true,
-					Form:                 form,
-					ErrorMessage:         err.Error(),
-				})
+				return cc.placeOrderErrorResponse(ctx, template, *decoratedCart, form, err)
+			}
+			//procces Payment:
+			paymentProvider, paymentMethod, err := cc.getPayment(ctx, checkoutFormData.SelectedPaymentProvider, checkoutFormData.SelectedPaymentProviderMethod)
+			if err != nil {
+				return cc.placeOrderErrorResponse(ctx, template, *decoratedCart, form, err)
+			}
+			//Payment Method requests an redirect - execute it
+			if paymentMethod.IsExternalPayment {
+				returnUrl := cc.getPaymentReturnUrl(paymentProvider.GetCode(), paymentMethod.Code)
+				hostedPaymentPageResponse, err := paymentProvider.RedirectExternalPayment(ctx, &decoratedCart.Cart, paymentMethod, returnUrl)
+				if err != nil {
+					return cc.placeOrderErrorResponse(ctx, template, *decoratedCart, form, err)
+				}
+				return hostedPaymentPageResponse
+			}
+
+			//Paymentmethod that need no external Redirect - can be processed directly
+			cartPayment, err := paymentProvider.ProcessPayment(ctx, &decoratedCart.Cart, paymentMethod, nil)
+			if err != nil {
+				return cc.placeOrderErrorResponse(ctx, template, *decoratedCart, form, err)
 			}
 			shippingEmail := checkoutFormData.ShippingAddress.Email
 			if shippingEmail == "" {
 				shippingEmail = checkoutFormData.BillingAddress.Email
 			}
-			return cc.Redirect("checkout.success", nil).With("checkout.success.data", PlaceOrderFlashData{
-				OrderId:     orderID,
-				Email:       shippingEmail,
-				PlacedItems: decoratedCart.Cart.Cartitems,
-				CartTotals:  decoratedCart.Cart.CartTotals,
-			})
+			response, err := cc.placeOrder(ctx, *cartPayment, shippingEmail, *decoratedCart)
+			if err != nil {
+				return cc.placeOrderErrorResponse(ctx, template, *decoratedCart, form, err)
+			}
+			return response
+
 		} else {
 			cc.Logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error cannot type convert to CheckoutFormData!")
 			return cc.Render(ctx, "checkout/carterror", nil)
@@ -345,20 +321,43 @@ func (cc *CheckoutController) submitOrderForm(ctx web.Context, formservice *form
 		}
 	}
 
+	cc.Logger.Debugf("paymentProviders %#v", cc.getPaymentProviders())
 	//Default: Form not submitted yet or submitted with validation errors:
 	return cc.Render(ctx, template, CheckoutViewData{
 		DecoratedCart:        *decoratedCart,
 		CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, decoratedCart),
 		Form:                 form,
+		PaymentProviders:     cc.getPaymentProviders(),
 	})
 }
 
-func (cc *CheckoutController) placeOrder(ctx web.Context, checkoutFormData formDto.CheckoutFormData, decoratedCart *cart.DecoratedCart) (string, error) {
-	billingAddress, shippingAddress := formDto.MapAddresses(checkoutFormData)
-	person := formDto.MapPerson(checkoutFormData)
-	return cc.OrderService.OnStepCurrentCartPlaceOrder(ctx, billingAddress, shippingAddress, nil, person)
+func (cc *CheckoutController) placeOrderErrorResponse(ctx web.Context, template string, decoratedCart cart.DecoratedCart, form formDomain.Form, err error) web.Response {
+	cc.Logger.Warnf("Place Order Error: %s", err.Error())
+	return cc.Render(ctx, template, CheckoutViewData{
+		DecoratedCart:        decoratedCart,
+		CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, &decoratedCart),
+		HasSubmitError:       true,
+		Form:                 form,
+		ErrorMessage:         err.Error(),
+		PaymentProviders:     cc.getPaymentProviders(),
+	})
+
 }
 
+func (cc *CheckoutController) placeOrder(ctx web.Context, cartPayment cart.CartPayment, email string, decoratedCart cart.DecoratedCart) (web.Response, error) {
+	orderID, err := cc.OrderService.CurrentCartPlaceOrder(ctx, cartPayment)
+	if err != nil {
+		return nil, err
+	}
+
+	return cc.Redirect("checkout.success", nil).With("checkout.success.data", PlaceOrderFlashData{
+		OrderId:     orderID,
+		Email:       email,
+		PlacedItems: decoratedCart.Cart.Cartitems,
+		CartTotals:  decoratedCart.Cart.CartTotals,
+	}), nil
+
+}
 func (cc *CheckoutController) getPaymentProviders() map[string]paymentDomain.PaymentProvider {
 	result := make(map[string]paymentDomain.PaymentProvider)
 

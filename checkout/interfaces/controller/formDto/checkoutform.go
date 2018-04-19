@@ -26,6 +26,8 @@ type (
 		ShippingAddress                    AddressFormData `form:"shippingAddress" validate:"-"`
 		UseBillingAddressAsShippingAddress bool            `form:"billingAsShipping"`
 		TermsAndConditions                 bool            `form:"termsAndConditions" validate:"required"`
+		SelectedPaymentProvider            string          `form:"selectedPaymentProvider" validate:"required"`
+		SelectedPaymentProviderMethod      string          `form:"selectedPaymentProviderMethod" validate:"required"`
 	}
 
 	PersonalData struct {
