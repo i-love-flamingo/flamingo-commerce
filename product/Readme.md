@@ -5,6 +5,9 @@
 * Provides product domain models and the related Port (ProductService).
 * Provides Controller for product detail view, including variant logic
 
+## Domain Layer
+* There are 
+
 ## Product Detail View
 
 The view gets the following Data passed:
