@@ -268,3 +268,11 @@ func (item Item) GetSavingsByItem() float64 {
 func (d DeliveryInfo) HasRelatedFlight() bool {
 	return d.RelatedFlight != nil
 }
+
+func (fd *FlightData) GetScheduledDate() string {
+	return fd.ScheduledDateTime.Format("2006-01-02")
+}
+
+func (fd *FlightData) GetScheduledDateTime() string {
+	return fd.ScheduledDateTime.Format(time.RFC3339)
+}
