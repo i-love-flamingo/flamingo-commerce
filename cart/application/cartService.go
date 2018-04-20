@@ -143,12 +143,12 @@ func (cs CartService) DeleteItem(ctx web.Context, itemId string) error {
 		return err
 	}
 	qtyBefore := item.Qty
+	cs.EventPublisher.PublishChangedQtyInCartEvent(ctx, item, qtyBefore, 0, cart.ID)
 	cart, err = behaviour.DeleteItem(ctx, cart, itemId)
 	if err != nil {
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "DeleteItem").Error(err)
 		return err
 	}
-	cs.EventPublisher.PublishChangedQtyInCartEvent(ctx, item, qtyBefore, 0, cart.ID)
 	cs.updateCartInCache(ctx, cart)
 	return nil
 }
