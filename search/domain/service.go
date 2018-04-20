@@ -3,6 +3,7 @@ package domain
 import (
 	"context"
 	"errors"
+	"sort"
 )
 
 type (
@@ -54,14 +55,15 @@ type (
 	}
 
 	Facet struct {
-		Type  string
-		Name  string
-		Label string
-		Items []*FacetItem
+		Type     string
+		Name     string
+		Label    string
+		Items    []*FacetItem
+		Position int
 	}
 
 	FacetCollection map[string]Facet
-	FacetSlice      []Facet
+	facetSlice      []Facet
 
 	// Result defines a search result for one type
 	Result struct {
@@ -89,27 +91,27 @@ func (re *RedirectError) Error() string {
 	return "Error: enforced redirect to " + re.To
 }
 
-func (fs FacetSlice) Len() int {
+func (fs facetSlice) Len() int {
 	return len(fs)
 }
 
-func (fs FacetSlice) Less(i, j int) bool {
-	return fs[i].Name < fs[j].Name
+func (fs facetSlice) Less(i, j int) bool {
+	return fs[i].Position < fs[j].Position
 }
 
-func (fs FacetSlice) Swap(i, j int) {
+func (fs facetSlice) Swap(i, j int) {
 	fs[i], fs[j] = fs[j], fs[i]
 }
 
 func (fc FacetCollection) Order() []string {
-	order := make(FacetSlice, len(fc))
+	order := make(facetSlice, len(fc))
 	i := 0
 	for _, k := range fc {
 		order[i] = k
 		i++
 	}
 
-	//sort.Sort(order)
+	sort.Stable(order)
 
 	strings := make([]string, len(order))
 	for i, v := range order {
