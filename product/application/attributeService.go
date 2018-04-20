@@ -128,24 +128,15 @@ func (as *AttributeValueFormatService) title(v string) string {
 
 // getAttributeRenderer fetches the rendererConfig for an attribute
 func (as *AttributeValueFormatService) getAttributeRenderer(a *domain.Attribute) rendererConfig {
-	fmt.Println("RENDERER CONFIG:")
-	fmt.Println(as.RendererConfig)
-	fmt.Println("CODE:", a.Code)
-	fmt.Println("Attribute", a)
 	c, ok := as.RendererConfig[a.Code]
 	if !ok {
-		fmt.Println("found nothing")
 		return rendererConfig{
 			Renderer: []string{RendererDefault},
 		}
 	}
 
-	fmt.Println("GOT A RENDERER: ")
-	fmt.Println(c)
 	result := rendererConfig{}
 	c.(config.Map).MapInto(&result)
-	fmt.Println("MAPPED RENDERER: ")
-	fmt.Println(result)
 
 	return result
 }
