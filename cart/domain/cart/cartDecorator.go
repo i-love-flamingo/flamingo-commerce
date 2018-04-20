@@ -95,7 +95,7 @@ func (dci DecoratedCartItem) IsConfigurable() bool {
 
 // GetVariant getter
 func (dci DecoratedCartItem) GetVariant() (*domain.Variant, error) {
-	return dci.Product.(domain.ConfigurableProduct).Variant(dci.Item.VariantMarketPlaceCode)
+	return dci.Product.(domain.ConfigurableProductWithActiveVariant).Variant(dci.Item.VariantMarketPlaceCode)
 }
 
 // GetDisplayTitle getter
@@ -128,7 +128,7 @@ func (dci DecoratedCartItem) GetVariantsVariationAttributes() domain.Attributes 
 	if dci.IsConfigurable() {
 		variant, _ := dci.GetVariant()
 
-		for _, attributeName := range dci.Product.(domain.ConfigurableProduct).VariantVariationAttributes {
+		for _, attributeName := range dci.Product.(domain.ConfigurableProductWithActiveVariant).VariantVariationAttributes {
 			attributes[attributeName] = variant.BaseData().Attributes[attributeName]
 		}
 	}
