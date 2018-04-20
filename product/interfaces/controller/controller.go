@@ -200,11 +200,11 @@ func (vc *View) Get(c web.Context) web.Response {
 			viewData.Product = configurableProduct
 		} else {
 
-			activeVariant, err = configurableProduct.Variant(variantCode)
 			configurableProductWithActiveVariant, err := configurableProduct.GetConfigurableWithActiveVariant(variantCode)
 			if err != nil {
 				return vc.ErrorNotFound(c, err)
 			}
+			activeVariant = &configurableProductWithActiveVariant.ActiveVariant
 			//Redirect if url is not canonical
 			redirect := vc.getRedirectIfRequired(configurableProductWithActiveVariant, c.MustParam1("name"), skipnamecheck)
 			if redirect != nil {
