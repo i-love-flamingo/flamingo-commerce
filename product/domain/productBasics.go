@@ -15,6 +15,7 @@ type (
 	BasicProduct interface {
 		BaseData() BasicProductData
 		TeaserData() TeaserData
+		//IsSaleable - indicates if that product type can be purchased
 		IsSaleable() bool
 		SaleableData() Saleable
 		Type() string
