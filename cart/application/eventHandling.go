@@ -40,7 +40,6 @@ func (e *EventReceiver) Notify(event event.Event) {
 			e.Logger.WithField("category", "cart").Error("Received LoginEvent but user is not logged in!!!")
 			return
 		}
-
 		for _, item := range guestCart.Cartitems {
 			e.Logger.WithField("category", "cart").Debugf("Merging item from guest to user cart %v", item)
 
