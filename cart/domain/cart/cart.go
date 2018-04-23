@@ -61,6 +61,8 @@ type (
 		RelatedFlight    *FlightData
 	}
 
+	// TODO: FlightData and RelatedFlight in the DeliveryInfo struct should not be forced on Flamingo Users here.
+	// Should move to OM3 somehow
 	FlightData struct {
 		ScheduledDateTime  time.Time
 		Direction          string
