@@ -60,6 +60,7 @@ func (cs CartService) UpdateDeliveryInfosAndBilling(ctx web.Context, billingAddr
 	}
 	cart, err = behaviour.UpdateDeliveryInfosAndBilling(ctx, cart, billingAddress, updateCommands)
 	if err != nil {
+		cs.handleCartNotFound(ctx, err)
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemQty").Error(err)
 		return err
 	}
@@ -73,6 +74,7 @@ func (cs CartService) UpdatePurchaser(ctx web.Context, purchaser *cartDomain.Per
 	}
 	cart, err = behaviour.UpdatePurchaser(ctx, cart, purchaser, additionalData)
 	if err != nil {
+		cs.handleCartNotFound(ctx, err)
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemQty").Error(err)
 		return err
 	}
@@ -102,6 +104,7 @@ func (cs CartService) UpdateItemQty(ctx web.Context, itemId string, qty int) err
 	}
 	cart, err = behaviour.UpdateItem(ctx, cart, itemId, itemUpdate)
 	if err != nil {
+		cs.handleCartNotFound(ctx, err)
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemQty").Error(err)
 		return err
 	}
@@ -124,6 +127,7 @@ func (cs CartService) UpdateItemSourceId(ctx web.Context, itemId string, sourceI
 	}
 	cart, err = behaviour.UpdateItem(ctx, cart, itemId, itemUpdate)
 	if err != nil {
+		cs.handleCartNotFound(ctx, err)
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemSourceId").Error(err)
 		return err
 	}
@@ -146,6 +150,7 @@ func (cs CartService) DeleteItem(ctx web.Context, itemId string) error {
 	cs.EventPublisher.PublishChangedQtyInCartEvent(ctx, item, qtyBefore, 0, cart.ID)
 	cart, err = behaviour.DeleteItem(ctx, cart, itemId)
 	if err != nil {
+		cs.handleCartNotFound(ctx, err)
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "DeleteItem").Error(err)
 		return err
 	}
@@ -162,6 +167,7 @@ func (cs *CartService) PlaceOrder(ctx web.Context, payment *cartDomain.CartPayme
 
 	orderNumber, err := behaviour.PlaceOrder(ctx, cart, payment)
 	if err != nil {
+		cs.handleCartNotFound(ctx, err)
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "PlaceOrder").Error(err)
 		return "", err
 	}
