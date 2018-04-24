@@ -184,7 +184,7 @@ func (Cart Cart) GetByLineNr(lineNr int) (*Item, error) {
 // GetByItemId gets an item by its id
 func (Cart Cart) GetByItemId(itemId string) (*Item, error) {
 	for _, currentItem := range Cart.Cartitems {
-		log.Println(currentItem.ID)
+		log.Println("Cart GetByItemId:" + currentItem.ID)
 		if currentItem.ID == itemId {
 			return &currentItem, nil
 		}
