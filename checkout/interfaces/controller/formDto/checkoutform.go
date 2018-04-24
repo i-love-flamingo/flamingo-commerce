@@ -7,12 +7,14 @@ import (
 
 	"strings"
 
+	"strconv"
+
 	"github.com/go-playground/form"
 	"github.com/leebenson/conform"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
 	customerDomain "go.aoe.com/flamingo/core/customer/domain"
 	"go.aoe.com/flamingo/core/form/application"
-	"go.aoe.com/flamingo/core/form/domain"
+	formDomain "go.aoe.com/flamingo/core/form/domain"
 	"go.aoe.com/flamingo/framework/config"
 	"go.aoe.com/flamingo/framework/flamingo"
 	"go.aoe.com/flamingo/framework/web"
@@ -63,6 +65,13 @@ type (
 		//Customer  might be passed by the controller - we use it to initialize the form
 		Customer customerDomain.Customer
 		Logger   flamingo.Logger `inject:""`
+
+		//A couple of configuration options for more flexible Validation
+		PersonalData_DateOfBirthRequired     bool    `inject:"config:checkout.checkoutForm.validation.personalData.dateOfBirthRequired,optional"`
+		PersonalData_MinAge                  float64 `inject:"config:checkout.checkoutForm.validation.personalData.minAge,optional"`
+		PersonalData_PassportCountryRequired bool    `inject:"config:checkout.checkoutForm.validation.personalData.passportCountryRequired,optional"`
+		PersonalData_PassportNumberRequired  bool    `inject:"config:checkout.checkoutForm.validation.personalData.passportNumberRequired,optional"`
+		BillingAddress_PhoneNumberRequired   bool    `inject:"config:checkout.checkoutForm.validation.billingAddress.phoneNumberRequired,optional"`
 	}
 )
 
@@ -97,6 +106,7 @@ func (fs *CheckoutFormService) ParseFormData(ctx web.Context, formValues url.Val
 	fs.Decoder.Decode(&formData, formValues)
 
 	conform.Strings(&formData)
+
 	return formData, nil
 }
 
@@ -159,13 +169,43 @@ func (fs *CheckoutFormService) overrideConfiguredDefaultFormValues(formValues ur
 }
 
 //ValidateFormData - from FormService interface
-func (fs *CheckoutFormService) ValidateFormData(data interface{}) (domain.ValidationInfo, error) {
-	if formData, ok := data.(CheckoutFormData); ok {
-		validate := validator.New()
-		return application.ValidationErrorsToValidationInfo(validate.Struct(formData)), nil
-	} else {
-		return domain.ValidationInfo{}, errors.New("Cannot convert to AddressFormData")
+func (fs *CheckoutFormService) ValidateFormData(data interface{}) (formDomain.ValidationInfo, error) {
+	formData, ok := data.(CheckoutFormData)
+	if !ok {
+		return formDomain.ValidationInfo{}, errors.New("Cannot convert to AddressFormData")
 	}
+	validate := validator.New()
+	validationInfo := application.ValidationErrorsToValidationInfo(validate.Struct(formData))
+
+	if fs.PersonalData_DateOfBirthRequired {
+		if formData.PersonalData.DateOfBirth == "" {
+			validationInfo.AddFieldError("personalData.dateOfBirth", "formerror_dateOfBirth_required", "date of birth is required")
+		} else if !formDomain.ValidateDate(formData.PersonalData.DateOfBirth) {
+			validationInfo.AddFieldError("personalData.dateOfBirth", "formerror_dateOfBirth_formaterror", "date of birth has wrong format required: yyyy-mm-dd")
+		} else if fs.PersonalData_MinAge > 0 {
+			if !formDomain.ValidateAge(formData.PersonalData.DateOfBirth, int(fs.PersonalData_MinAge)) {
+				validationInfo.AddFieldError("personalData.dateOfBirth", "formerror_dateOfBirth_tooyoung", "you need to be at least "+strconv.Itoa(int(fs.PersonalData_MinAge)))
+			}
+		}
+	}
+
+	if fs.BillingAddress_PhoneNumberRequired {
+		if formData.BillingAddress.PhoneNumber == "" {
+			validationInfo.AddFieldError("billingAddress.phoneNumber", "formerror_phoneNumber_required", "phone number is required")
+		}
+	}
+	if fs.PersonalData_PassportCountryRequired {
+		if formData.BillingAddress.PhoneNumber == "" {
+			validationInfo.AddFieldError("billingAddress.passportCountry", "formerror_passportCountry_required", "passport infos are required")
+		}
+	}
+	if fs.PersonalData_PassportNumberRequired {
+		if formData.BillingAddress.PhoneNumber == "" {
+			validationInfo.AddFieldError("billingAddress.passportNumber", "formerror_passportNumber_required", "passport infos are required")
+		}
+	}
+
+	return validationInfo, nil
 }
 
 func MapAddresses(data CheckoutFormData) (billingAddress *cart.Address, shippingAddress *cart.Address) {
