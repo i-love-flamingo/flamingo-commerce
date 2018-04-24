@@ -196,12 +196,12 @@ func (fs *CheckoutFormService) ValidateFormData(data interface{}) (formDomain.Va
 	}
 	if fs.PersonalData_PassportCountryRequired {
 		if formData.BillingAddress.PhoneNumber == "" {
-			validationInfo.AddFieldError("billingAddress.passportCountry", "formerror_passportCountry_required", "passport infos are required")
+			validationInfo.AddFieldError("personalData.passportCountry", "formerror_passportCountry_required", "passport infos are required")
 		}
 	}
 	if fs.PersonalData_PassportNumberRequired {
 		if formData.BillingAddress.PhoneNumber == "" {
-			validationInfo.AddFieldError("billingAddress.passportNumber", "formerror_passportNumber_required", "passport infos are required")
+			validationInfo.AddFieldError("personalData.passportNumber", "formerror_passportNumber_required", "passport infos are required")
 		}
 	}
 
