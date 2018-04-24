@@ -24,7 +24,6 @@ func (m *Module) Configure(injector *dingo.Injector) {
 
 	injector.BindMulti((*template.ContextFunction)(nil)).To(templatefunctions.GetProduct{})
 	injector.BindMulti((*template.Function)(nil)).To(templatefunctions.GetProductUrl{})
-	injector.BindMulti((*template.Function)(nil)).To(templatefunctions.GetFormattedAttributeValue{})
 }
 
 // DefaultConfig for this module
