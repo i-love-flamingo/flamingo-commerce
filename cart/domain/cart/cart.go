@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"math"
 )
 
 type (
@@ -253,7 +254,7 @@ func (Cart Cart) GetSavings() float64 {
 	totalSavings := 0.0
 	for _, item := range Cart.CartTotals.Totalitems {
 		if item.Type == TOTALS_TYPE_DISCOUNT {
-			totalSavings = totalSavings + item.Price
+			totalSavings = totalSavings + math.Abs(item.Price)
 		}
 	}
 	return totalSavings
@@ -262,7 +263,7 @@ func (Cart Cart) GetSavings() float64 {
 func (item Item) GetSavingsByItem() float64 {
 	totalSavings := 0.0
 	for _, discount := range item.AppliedDiscounts {
-		totalSavings = totalSavings + discount.Price
+		totalSavings = totalSavings + math.Abs(discount.Price)
 	}
 	return totalSavings
 }
