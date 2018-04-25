@@ -311,7 +311,8 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx web.Context, f
 			}
 
 			if cc.SkipReviewAction {
-				return cc.processPaymentOrPlaceOrderDirectly(ctx, checkoutFormData.SelectedPaymentProvider, checkoutFormData.SelectedPaymentProviderMethod, decoratedCart, template, &form)
+
+				return cc.processPaymentOrPlaceOrderDirectly(ctx, checkoutFormData.SelectedPaymentProvider, checkoutFormData.SelectedPaymentProviderMethod, template, &form)
 			}
 			return cc.Redirect("checkout.review", nil)
 		} else {
@@ -362,7 +363,14 @@ func (cc *CheckoutController) placeOrderErrorResponse(ctx web.Context, template 
 
 }
 
-func (cc *CheckoutController) processPaymentOrPlaceOrderDirectly(ctx web.Context, selectedPaymentProvider string, selectedPaymentProviderMethod string, decoratedCart *cart.DecoratedCart, orderFormTemplate string, checkoutForm *formDomain.Form) web.Response {
+func (cc *CheckoutController) processPaymentOrPlaceOrderDirectly(ctx web.Context, selectedPaymentProvider string, selectedPaymentProviderMethod string, orderFormTemplate string, checkoutForm *formDomain.Form) web.Response {
+	//Guard Clause if Cart cannout be fetched
+	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
+	if e != nil {
+		cc.Logger.WithField("category", "checkout").Errorf("cart.checkoutcontroller.submitaction: Error %v", e)
+		return cc.Render(ctx, "checkout/carterror", nil)
+	}
+
 	//procces Payment:
 	paymentProvider, paymentMethod, err := cc.getPayment(ctx, selectedPaymentProvider, selectedPaymentProviderMethod)
 	if err != nil {
@@ -383,6 +391,8 @@ func (cc *CheckoutController) processPaymentOrPlaceOrderDirectly(ctx web.Context
 	if err != nil {
 		return cc.placeOrderErrorResponse(ctx, orderFormTemplate, *decoratedCart, checkoutForm, err)
 	}
+
+	//Get Email from either the cart
 	shippingEmail := decoratedCart.Cart.GetMainShippingEMail()
 	if shippingEmail == "" {
 		shippingEmail = decoratedCart.Cart.BillingAdress.Email
@@ -426,6 +436,9 @@ func (cc *CheckoutController) getPaymentProviders() map[string]paymentDomain.Pay
 
 // ReviewAction
 func (cc *CheckoutController) ReviewAction(ctx web.Context) web.Response {
+	if cc.SkipReviewAction {
+		return cc.Render(ctx, "checkout/carterror", nil)
+	}
 
 	selectedProvider, _ := ctx.Form1("selectedPaymentProvider")
 	selectedMethod, _ := ctx.Form1("selectedPaymentProviderMethod")
@@ -442,7 +455,7 @@ func (cc *CheckoutController) ReviewAction(ctx web.Context) web.Response {
 	}
 
 	if proceed == "1" && termsAndConditions == "1" && selectedProvider != "" && selectedMethod != "" {
-		return cc.processPaymentOrPlaceOrderDirectly(ctx, selectedProvider, selectedMethod, decoratedCart, "", nil)
+		return cc.processPaymentOrPlaceOrderDirectly(ctx, selectedProvider, selectedMethod, "", nil)
 	}
 
 	viewData := ReviewStepViewData{
