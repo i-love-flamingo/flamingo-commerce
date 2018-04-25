@@ -54,10 +54,11 @@ func (pa *OfflinePaymentProvider) ProcessPayment(ctx web.Context, currentCart *c
 	for _, itemId := range currentCart.GetItemIds() {
 		idAssignments[itemId] = &paymentInfo
 	}
+	var paymentInfos []*cartDomain.PaymentInfo
+	paymentInfos = append(paymentInfos, &paymentInfo)
 	cartPayment := cartDomain.CartPayment{
-		PaymentInfos:     []cartDomain.PaymentInfo{paymentInfo},
+		PaymentInfos:     paymentInfos,
 		ItemIDAssignment: idAssignments,
 	}
-
 	return &cartPayment, nil
 }
