@@ -2,7 +2,7 @@ package cart
 
 type (
 	CartPayment struct {
-		PaymentInfos       []PaymentInfo
+		PaymentInfos       []*PaymentInfo
 		ItemIDAssignment   map[string]*PaymentInfo
 		RawTransactionData interface{}
 	}
@@ -16,6 +16,8 @@ type (
 		Status string
 		//TransactionId - The main reference of the payment that was done
 		TransactionId string
+		//AdditionalData - room for AdditionalData - specific to the payment
+		AdditionalData map[string]string
 	}
 )
 
@@ -25,11 +27,29 @@ const (
 )
 
 func (cp *CartPayment) AddPayment(paymentInfo PaymentInfo, items []string) {
-	cp.PaymentInfos = append(cp.PaymentInfos, paymentInfo)
+	cp.PaymentInfos = append(cp.PaymentInfos, &paymentInfo)
 	if cp.ItemIDAssignment == nil {
 		cp.ItemIDAssignment = make(map[string]*PaymentInfo)
 	}
 	for _, v := range items {
 		cp.ItemIDAssignment[v] = &paymentInfo
 	}
+}
+
+func (cp *CartPayment) GetItemIdsForPaymentInfo(paymentInfo *PaymentInfo) []string {
+	var ids []string
+	for k, v := range cp.ItemIDAssignment {
+		if v == paymentInfo {
+			ids = append(ids, k)
+		}
+	}
+	return ids
+}
+
+func (cp *CartPayment) GetProviders() []string {
+	var providers []string
+	for _, info := range cp.PaymentInfos {
+		providers = append(providers, info.Provider)
+	}
+	return providers
 }

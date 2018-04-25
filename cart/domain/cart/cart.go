@@ -48,6 +48,7 @@ type (
 		DateOfBirth     string
 		PassportCountry string
 		PassportNumber  string
+		Nationality     string
 	}
 
 	//DeliveryInfo - represents the Delivery
@@ -105,9 +106,9 @@ type (
 		Price float64
 		Qty   int
 
-		RowTotal       float64
-		TaxAmount      float64
-		DiscountAmount float64
+		RowTotal         float64
+		TaxAmount        float64
+		DiscountAmount   float64
 		AppliedDiscounts []ItemDiscount
 
 		PriceInclTax    float64
@@ -124,7 +125,7 @@ type (
 
 	// DiscountItem
 	ItemDiscount struct {
-		Code string
+		Code  string
 		Title string
 		Price float64
 	}
@@ -134,7 +135,7 @@ type (
 		Code  string
 		Title string
 		Price float64
-		Type string
+		Type  string
 	}
 
 	// ShippingItem
@@ -160,7 +161,7 @@ const (
 	DELIVERYLOCATION_TYPE_FREIGHTSTATION  = "freight-station"
 
 	TOTALS_TYPE_DISCOUNT = "totals_type_discount"
-	TOTALS_TYPE_TAX = "totals_type_tax"
+	TOTALS_TYPE_TAX      = "totals_type_tax"
 	TOTALS_TYPE_SHIPPING = "totals_type_shipping"
 )
 
@@ -180,6 +181,18 @@ func (Cart Cart) GetByLineNr(lineNr int) (*Item, error) {
 	} else {
 		return &item, errors.New("Line in cart not existend")
 	}
+}
+
+// GetMainShippingEMail
+func (Cart Cart) GetMainShippingEMail() string {
+	for _, info := range Cart.DeliveryInfos {
+		if info.DeliveryLocation.Address != nil {
+			if info.DeliveryLocation.Address.Email != "" {
+				return info.DeliveryLocation.Address.Email
+			}
+		}
+	}
+	return ""
 }
 
 // GetByItemId gets an item by its id
