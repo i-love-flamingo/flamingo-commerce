@@ -64,7 +64,11 @@ type (
 		Decoder            *form.Decoder `inject:""`
 		//Customer  might be passed by the controller - we use it to initialize the form
 		Customer customerDomain.Customer
-		Logger   flamingo.Logger `inject:""`
+		//Cart might be passed by Controller - we use it to prefill the form in case it was not submitted
+		Cart                *cart.Cart
+		PrefillFormFromCart bool
+
+		Logger flamingo.Logger `inject:""`
 
 		//A couple of configuration options for more flexible Validation
 		PersonalData_DateOfBirthRequired     bool    `inject:"config:checkout.checkoutForm.validation.personalData.dateOfBirthRequired,optional"`

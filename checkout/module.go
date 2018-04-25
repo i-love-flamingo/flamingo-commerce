@@ -26,6 +26,9 @@ func (m *CheckoutModule) Configure(injector *dingo.Injector) {
 	m.RouterRegistry.Handle("checkout.start", (*controller.CheckoutController).StartAction)
 	m.RouterRegistry.Route("/checkout", "checkout.start")
 
+	m.RouterRegistry.Handle("checkout.review", (*controller.CheckoutController).ReviewAction)
+	m.RouterRegistry.Route("/checkout/review", `checkout.review`)
+
 	m.RouterRegistry.Handle("checkout.guest", (*controller.CheckoutController).SubmitGuestCheckoutAction)
 	m.RouterRegistry.Route("/checkout/guest", "checkout.guest")
 
