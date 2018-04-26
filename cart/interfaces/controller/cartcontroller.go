@@ -46,7 +46,6 @@ func (cc *CartViewController) ViewAction(ctx web.Context) web.Response {
 
 // AddAndViewAction the DecoratedCart View ( / cart)
 func (cc *CartViewController) AddAndViewAction(ctx web.Context) web.Response {
-
 	variantMarketplaceCode, e := ctx.Param1("variantMarketplaceCode")
 	if e != nil {
 		variantMarketplaceCode = ""
