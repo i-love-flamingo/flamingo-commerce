@@ -6,8 +6,9 @@ import (
 
 	"time"
 
-	"github.com/pkg/errors"
 	"math"
+
+	"github.com/pkg/errors"
 )
 
 type (
@@ -40,7 +41,7 @@ type (
 	}
 
 	Person struct {
-		Address         Address
+		Address         *Address
 		PersonalDetails PersonalDetails
 	}
 
