@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"strings"
 
+	".../.../flamingo/src/.../infrastructure/dto/response"
 	authApplication "go.aoe.com/flamingo/core/auth/application"
 	canonicalApp "go.aoe.com/flamingo/core/canonicalUrl/application"
 	cartApplication "go.aoe.com/flamingo/core/cart/application"
@@ -106,6 +107,7 @@ type (
 
 func init() {
 	gob.Register(PlaceOrderFlashData{})
+	gob.Register([]response.AuthCaptureResponse{})
 }
 
 /*
