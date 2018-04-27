@@ -25,4 +25,13 @@ type (
 		ProcessPayment(web.Context, *cartDomain.Cart, *PaymentMethod, map[string]string) (*cartDomain.CartPayment, error)
 		IsActive() bool
 	}
+
+	// PaymentError  - should be used by PaymentProviders to indicate that payment failed (so that the customer can see a speaking message)
+	PaymentError struct {
+		ErrorMessage string
+	}
 )
+
+func (pe *PaymentError) Error() string {
+	return pe.ErrorMessage
+}
