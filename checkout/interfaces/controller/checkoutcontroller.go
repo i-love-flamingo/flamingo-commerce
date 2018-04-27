@@ -49,6 +49,7 @@ type (
 		Email                string
 		PlacedDecoratedItems []cart.DecoratedCartItem
 		CartTotals           cart.CartTotals
+		CartPayment          cart.CartPayment
 	}
 
 	// ReviewStepViewData represents the success view data
@@ -71,6 +72,7 @@ type (
 		//Encodeable cart data to pass
 		PlacedItems []cart.Item
 		CartTotals  cart.CartTotals
+		CartPayment cart.CartPayment
 	}
 
 	// CheckoutController represents the checkout controller with its injectsions
@@ -251,6 +253,7 @@ func (cc *CheckoutController) SuccessAction(ctx web.Context) web.Response {
 				Email:                placeOrderFlashData.Email,
 				OrderId:              placeOrderFlashData.OrderId,
 				PlacedDecoratedItems: cc.DecoratedCartFactory.CreateDecorateCartItems(ctx, placeOrderFlashData.PlacedItems),
+				CartPayment:          placeOrderFlashData.CartPayment,
 			}
 			return cc.Render(ctx, "checkout/success", viewData)
 		}
@@ -453,6 +456,7 @@ func (cc *CheckoutController) placeOrder(ctx web.Context, cartPayment cart.CartP
 		Email:       email,
 		PlacedItems: decoratedCart.Cart.Cartitems,
 		CartTotals:  decoratedCart.Cart.CartTotals,
+		CartPayment: cartPayment,
 	}), nil
 
 }
