@@ -65,8 +65,7 @@ type (
 		//Customer  might be passed by the controller - we use it to initialize the form
 		Customer customerDomain.Customer
 		//Cart might be passed by Controller - we use it to prefill the form in case it was not submitted
-		Cart                *cart.Cart
-		PrefillFormFromCart bool
+		Cart *cart.Cart
 
 		Logger flamingo.Logger `inject:""`
 
@@ -118,6 +117,7 @@ func (fs *CheckoutFormService) GetDefaultFormData(parsedData interface{}) interf
 	if checkoutFormData, ok := parsedData.(CheckoutFormData); ok {
 		checkoutFormData = fs.fillFormDataFromCart(checkoutFormData)
 		checkoutFormData = fs.fillFormDataFromCustomer(checkoutFormData)
+		return checkoutFormData
 	}
 	return parsedData
 
@@ -150,7 +150,7 @@ func (fs *CheckoutFormService) fillFormDataFromCustomer(formData CheckoutFormDat
 }
 
 func (fs *CheckoutFormService) fillFormDataFromCart(formData CheckoutFormData) CheckoutFormData {
-	if fs.PrefillFormFromCart && fs.Cart != nil {
+	if fs.Cart != nil {
 		fs.mapCartAddressToFormAddress(fs.Cart.BillingAdress, &formData.BillingAddress)
 		if len(fs.Cart.DeliveryInfos) > 0 {
 			if fs.Cart.DeliveryInfos[0].DeliveryLocation.Address != nil {

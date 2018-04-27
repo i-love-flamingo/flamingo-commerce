@@ -284,6 +284,7 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx web.Context, f
 		cc.Logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error CheckoutFormService not present!")
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
+	formservice.Cart = &decoratedCart.Cart
 
 	if !cc.hasAvailablePaymentProvider() {
 		cc.Logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error No Payment set")
@@ -359,7 +360,6 @@ func (cc *CheckoutController) showCheckoutFormWithErrors(ctx web.Context, templa
 	}
 	cc.Logger.Warnf("Place Order Error: %s", err.Error())
 	if form == nil {
-		cc.CheckoutFormService.PrefillFormFromCart = true
 		cc.CheckoutFormService.Cart = &decoratedCart.Cart
 		newForm, _ := formApplicationService.ProcessFormRequest(ctx, cc.CheckoutFormService)
 		form = &newForm
