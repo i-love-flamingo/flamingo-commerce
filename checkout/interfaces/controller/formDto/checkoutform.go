@@ -80,6 +80,7 @@ type (
 )
 
 // ParseFormData - from FormService interface
+// MEthod is Responsible to parse the Post Values and fill the FormData struct
 func (fs *CheckoutFormService) ParseFormData(ctx web.Context, formValues url.Values) (interface{}, error) {
 	if formValues == nil {
 		formValues = make(map[string][]string)
@@ -94,9 +95,6 @@ func (fs *CheckoutFormService) ParseFormData(ctx web.Context, formValues url.Val
 	}
 
 	fs.Logger.WithField("category", "checkout").Debugf("passed formValues before modifications: %#v", formValues)
-
-	//Merge in DefaultValues that are configured
-	formValues = fs.setDefaultFormValuesFromCustomer(formValues)
 
 	//Merge in configured DefaultValues that are configured
 	formValues = fs.setConfiguredDefaultFormValues(formValues)
@@ -114,24 +112,72 @@ func (fs *CheckoutFormService) ParseFormData(ctx web.Context, formValues url.Val
 	return formData, nil
 }
 
-func (fs *CheckoutFormService) setDefaultFormValuesFromCustomer(formValues url.Values) url.Values {
+//GetDefaultFormData - from interface GetDefaultFormData
+// Is called if form is not submitted - to get FormData with default values
+func (fs *CheckoutFormService) GetDefaultFormData(parsedData interface{}) interface{} {
+	if checkoutFormData, ok := parsedData.(CheckoutFormData); ok {
+		checkoutFormData = fs.fillFormDataFromCart(checkoutFormData)
+		checkoutFormData = fs.fillFormDataFromCustomer(checkoutFormData)
+	}
+	return parsedData
+
+}
+
+func (fs *CheckoutFormService) fillFormDataFromCustomer(formData CheckoutFormData) CheckoutFormData {
 	//If customer is given - get default values for the form if not empty yet
 	if fs.Customer != nil {
-		formValues["billingAddress.email"] = make([]string, 1)
-		formValues["billingAddress.email"][0] = fs.Customer.GetDefaultBillingAddress().Email
-		formValues["billingAddress.firstname"] = make([]string, 1)
-		formValues["billingAddress.firstname"][0] = fs.Customer.GetDefaultBillingAddress().Firstname
-		formValues["billingAddress.lastname"] = make([]string, 1)
-		formValues["billingAddress.lastname"][0] = fs.Customer.GetDefaultBillingAddress().Lastname
+		if formData.BillingAddress.Email == "" {
+			formData.BillingAddress.Email = fs.Customer.GetDefaultBillingAddress().Email
+		}
+		if formData.BillingAddress.Firstname == "" {
+			formData.BillingAddress.Email = fs.Customer.GetDefaultBillingAddress().Firstname
+		}
+		if formData.BillingAddress.Lastname == "" {
+			formData.BillingAddress.Email = fs.Customer.GetDefaultBillingAddress().Lastname
+		}
 
-		formValues["shippingAddress.email"] = make([]string, 1)
-		formValues["shippingAddress.email"][0] = fs.Customer.GetDefaultShippingAddress().Email
-		formValues["shippingAddress.firstname"] = make([]string, 1)
-		formValues["shippingAddress.firstname"][0] = fs.Customer.GetDefaultShippingAddress().Firstname
-		formValues["shippingAddress.lastname"] = make([]string, 1)
-		formValues["shippingAddress.lastname"][0] = fs.Customer.GetDefaultShippingAddress().Lastname
+		if formData.ShippingAddress.Email == "" {
+			formData.ShippingAddress.Email = fs.Customer.GetDefaultShippingAddress().Email
+		}
+		if formData.ShippingAddress.Firstname == "" {
+			formData.BillingAddress.Email = fs.Customer.GetDefaultShippingAddress().Firstname
+		}
+		if formData.BillingAddress.Lastname == "" {
+			formData.BillingAddress.Email = fs.Customer.GetDefaultShippingAddress().Lastname
+		}
 	}
-	return formValues
+	return formData
+}
+
+func (fs *CheckoutFormService) fillFormDataFromCart(formData CheckoutFormData) CheckoutFormData {
+	if fs.PrefillFormFromCart && fs.Cart != nil {
+		fs.mapCartAddressToFormAddress(fs.Cart.BillingAdress, &formData.BillingAddress)
+		if len(fs.Cart.DeliveryInfos) > 0 {
+			if fs.Cart.DeliveryInfos[0].DeliveryLocation.Address != nil {
+				fs.mapCartAddressToFormAddress(*fs.Cart.DeliveryInfos[0].DeliveryLocation.Address, &formData.ShippingAddress)
+			}
+		}
+
+		formData.PersonalData.DateOfBirth = fs.Cart.Purchaser.PersonalDetails.DateOfBirth
+		formData.PersonalData.PassportNumber = fs.Cart.Purchaser.PersonalDetails.PassportNumber
+		formData.PersonalData.PassportCountry = fs.Cart.Purchaser.PersonalDetails.PassportCountry
+		if fs.Cart.Purchaser.Address != nil {
+			fs.mapCartAddressToFormAddress(*fs.Cart.Purchaser.Address, &formData.PersonalData.Address)
+		}
+	}
+	return formData
+}
+
+func (fs *CheckoutFormService) mapCartAddressToFormAddress(address cart.Address, targetAddress *AddressFormData) {
+	targetAddress.Firstname = address.Firstname
+	targetAddress.Lastname = address.Lastname
+	targetAddress.Email = address.Email
+	targetAddress.Street = address.Street
+	targetAddress.StreetNr = address.StreetNr
+	targetAddress.Title = address.Salutation
+	targetAddress.City = address.City
+	targetAddress.PhoneNumber = address.Telephone
+	targetAddress.Company = address.CountryCode
 }
 
 func (fs *CheckoutFormService) setConfiguredDefaultFormValues(formValues url.Values) url.Values {
@@ -233,7 +279,7 @@ func MapPerson(data CheckoutFormData) *cart.Person {
 			PassportCountry: data.PersonalData.PassportCountry,
 			DateOfBirth:     data.PersonalData.DateOfBirth,
 		},
-		Address: *address,
+		Address: address,
 	}
 	return &person
 }
