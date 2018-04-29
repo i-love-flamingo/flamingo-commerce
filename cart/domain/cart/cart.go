@@ -43,6 +43,13 @@ type (
 	Person struct {
 		Address         *Address
 		PersonalDetails PersonalDetails
+		//ExistingCustomerData if the current purchaser is an existing customer - this contains infos about existing customer
+		ExistingCustomerData *ExistingCustomerData
+	}
+
+	ExistingCustomerData struct {
+		//ID of the customer
+		ID string
 	}
 
 	PersonalDetails struct {
@@ -161,9 +168,10 @@ const (
 	DELIVERYLOCATION_TYPE_ADDRESS         = "address"
 	DELIVERYLOCATION_TYPE_FREIGHTSTATION  = "freight-station"
 
-	TOTALS_TYPE_DISCOUNT = "totals_type_discount"
-	TOTALS_TYPE_TAX      = "totals_type_tax"
-	TOTALS_TYPE_SHIPPING = "totals_type_shipping"
+	TOTALS_TYPE_DISCOUNT      = "totals_type_discount"
+	TOTALS_TYPE_TAX           = "totals_type_tax"
+	TOTALS_TYPE_LOYALTYPOINTS = "totals_loyaltypoints"
+	TOTALS_TYPE_SHIPPING      = "totals_type_shipping"
 )
 
 // GetByLineNr gets an item - starting with 1
@@ -272,6 +280,16 @@ func (Cart Cart) GetSavings() float64 {
 		}
 	}
 	return totalSavings
+}
+
+func (ct CartTotals) GetTotalItemsByType(typeCode string) []Totalitem {
+	var totalitems []Totalitem
+	for _, item := range ct.Totalitems {
+		if item.Type == typeCode {
+			totalitems = append(totalitems, item)
+		}
+	}
+	return totalitems
 }
 
 func (item Item) GetSavingsByItem() float64 {

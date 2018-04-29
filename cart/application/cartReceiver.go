@@ -1,6 +1,7 @@
 package application
 
 import (
+	"context"
 	"errors"
 
 	authApplication "go.aoe.com/flamingo/core/auth/application"
@@ -205,7 +206,7 @@ func (cs *CartReceiverService) getSessionGuestCart(ctx web.Context) (*cartDomain
 }
 
 // DecorateCart Get the correct Cart
-func (cs *CartReceiverService) DecorateCart(ctx web.Context, cart *cartDomain.Cart) (*cartDomain.DecoratedCart, error) {
+func (cs *CartReceiverService) DecorateCart(ctx context.Context, cart *cartDomain.Cart) (*cartDomain.DecoratedCart, error) {
 	if cart == nil {
 		return nil, errors.New("no cart given")
 	}
