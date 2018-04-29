@@ -9,6 +9,7 @@ import (
 
 type (
 	Customer interface {
+		GetId() string
 		GetPersonalData() PersonData
 		GetAddresses() []Address
 		GetDefaultShippingAddress() *Address
