@@ -6,7 +6,6 @@ import (
 	"net/url"
 	"strings"
 
-	".../.../flamingo/src/.../infrastructure/dto/response"
 	authApplication "go.aoe.com/flamingo/core/auth/application"
 	canonicalApp "go.aoe.com/flamingo/core/canonicalUrl/application"
 	cartApplication "go.aoe.com/flamingo/core/cart/application"
@@ -50,7 +49,7 @@ type (
 		Email                string
 		PlacedDecoratedItems []cart.DecoratedCartItem
 		CartTotals           cart.CartTotals
-		CartPayment          cart.CartPayment
+		PaymentInfos         []PlaceOrderPaymentInfo
 	}
 
 	// ReviewStepViewData represents the success view data
@@ -71,9 +70,17 @@ type (
 		OrderId string
 		Email   string
 		//Encodeable cart data to pass
-		PlacedItems []cart.Item
-		CartTotals  cart.CartTotals
-		CartPayment cart.CartPayment
+		PlacedItems  []cart.Item
+		CartTotals   cart.CartTotals
+		PaymentInfos []PlaceOrderPaymentInfo
+	}
+
+	PlaceOrderPaymentInfo struct {
+		Provider       string
+		Method         string
+		Amount         float64
+		Title          string
+		CreditCardInfo *cart.CreditCardInfo
 	}
 
 	// CheckoutController represents the checkout controller with its injectsions
@@ -107,7 +114,6 @@ type (
 
 func init() {
 	gob.Register(PlaceOrderFlashData{})
-	gob.Register([]response.AuthCaptureResponse{})
 }
 
 /*
@@ -255,7 +261,7 @@ func (cc *CheckoutController) SuccessAction(ctx web.Context) web.Response {
 				Email:                placeOrderFlashData.Email,
 				OrderId:              placeOrderFlashData.OrderId,
 				PlacedDecoratedItems: cc.DecoratedCartFactory.CreateDecorateCartItems(ctx, placeOrderFlashData.PlacedItems),
-				CartPayment:          placeOrderFlashData.CartPayment,
+				PaymentInfos:         placeOrderFlashData.PaymentInfos,
 			}
 			return cc.Render(ctx, "checkout/success", viewData)
 		}
@@ -366,7 +372,7 @@ func (cc *CheckoutController) showCheckoutFormWithErrors(ctx web.Context, templa
 	cc.Logger.Warnf("Place Order Error: %s", err.Error())
 	if form == nil {
 		cc.CheckoutFormService.Cart = &decoratedCart.Cart
-		newForm, _ := formApplicationService.ProcessFormRequest(ctx, cc.CheckoutFormService)
+		newForm, _ := formApplicationService.GetUnsubmittedForm(ctx, cc.CheckoutFormService)
 		form = &newForm
 	}
 
@@ -453,12 +459,23 @@ func (cc *CheckoutController) placeOrder(ctx web.Context, cartPayment cart.CartP
 		return nil, err
 	}
 
+	var paymentInfos []PlaceOrderPaymentInfo
+	for _, cartPayment := range cartPayment.PaymentInfos {
+		paymentInfos = append(paymentInfos, PlaceOrderPaymentInfo{
+			Method:         cartPayment.Method,
+			Provider:       cartPayment.Provider,
+			Title:          "title",
+			Amount:         cartPayment.Amount,
+			CreditCardInfo: cartPayment.CreditCardInfo,
+		})
+	}
+
 	return cc.Redirect("checkout.success", nil).With("checkout.success.data", PlaceOrderFlashData{
-		OrderId:     orderID,
-		Email:       email,
-		PlacedItems: decoratedCart.Cart.Cartitems,
-		CartTotals:  decoratedCart.Cart.CartTotals,
-		CartPayment: cartPayment,
+		OrderId:      orderID,
+		Email:        email,
+		PlacedItems:  decoratedCart.Cart.Cartitems,
+		CartTotals:   decoratedCart.Cart.CartTotals,
+		PaymentInfos: paymentInfos,
 	}), nil
 
 }

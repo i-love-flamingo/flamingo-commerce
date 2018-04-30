@@ -30,8 +30,10 @@ func (se *SourcingEngine) SetSourcesForCartItems(ctx web.Context, decoratedCart 
 	for _, decoratedCartItem := range decoratedCart.DecoratedItems {
 		sourceId, err := se.SourcingService.GetSourceId(ctx, decoratedCart, &decoratedCartItem)
 		if err != nil {
+			se.Logger.WithField("category", "checkout").WithField("subcategory", "SourcingEngine").Error(err)
 			return fmt.Errorf("checkout.application.sourcingengine error: %v", err)
 		}
+		se.Logger.WithField("category", "checkout").WithField("subcategory", "SourcingEngine").Debugf("SourcingEngine detected source %v for item %v", sourceId, decoratedCartItem.Item.ID)
 		err = se.Cartservice.UpdateItemSourceId(ctx, decoratedCartItem.Item.ID, sourceId)
 		if err != nil {
 			return errors.Wrap(err, "Could not update cart item")
