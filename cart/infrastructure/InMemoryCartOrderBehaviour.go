@@ -186,3 +186,8 @@ func (s *InMemoryCartStorage) StoreCart(cart domaincart.Cart) error {
 	s.guestCarts[cart.ID] = cart
 	return nil
 }
+
+func (cob *InMemoryCartOrderBehaviour) ApplyVoucher(ctx context.Context, cartId string, couponCode string) (*domaincart.Cart, error) {
+	// @todo needs implementation
+	return nil, nil
+}

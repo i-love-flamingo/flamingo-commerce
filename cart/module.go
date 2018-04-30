@@ -52,9 +52,11 @@ func (m *CartModule) Configure(injector *dingo.Injector) {
 
 	m.RouterRegistry.Handle("cart.api.get", (*controller.CartApiController).GetAction)
 	m.RouterRegistry.Handle("cart.api.add", (*controller.CartApiController).AddAction)
+	m.RouterRegistry.Handle("cart.api.applyVoucher", (*controller.CartApiController).ApplyVoucherAndGetAction)
 
 	m.RouterRegistry.Route("/api/cart", "cart.api.get")
 	m.RouterRegistry.Route("/api/cart/add/:marketplaceCode", `cart.api.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryIntent?="")`)
+	m.RouterRegistry.Route("/api/cart/applyvoucher/:couponCode", `cart.api.applyVoucher(couponCode)`)
 
 	//Event
 	injector.BindMulti((*event.Subscriber)(nil)).To(application.EventReceiver{})

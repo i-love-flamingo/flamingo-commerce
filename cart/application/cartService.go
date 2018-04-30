@@ -232,6 +232,19 @@ func (cs *CartService) AddProduct(ctx web.Context, addRequest cartDomain.AddRequ
 	return nil
 }
 
+func (cs *CartService) ApplyVoucher(ctx web.Context, couponCode string) (*cartDomain.Cart, error) {
+
+	oldCart, behaviour, err := cs.CartReceiverService.GetCart(ctx)
+	if err != nil {
+		cs.Logger.WithField("category", "cartService").WithField("subCategory", "ApplyVoucher").Error(err)
+		return nil, err
+	}
+
+	cart, err := behaviour.ApplyVoucher(ctx, oldCart.ID, couponCode)
+	cs.updateCartInCache(ctx, cart)
+	return cart, err
+}
+
 func (cs *CartService) handleCartNotFound(ctx web.Context, err error) {
 	if err == cartDomain.CartNotFoundError {
 		cs.DeleteSessionGuestCart(ctx)
