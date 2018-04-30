@@ -29,6 +29,7 @@ type (
 	// PaymentError  - should be used by PaymentProviders to indicate that payment failed (so that the customer can see a speaking message)
 	PaymentError struct {
 		ErrorMessage string
+		ErrorCode string
 	}
 )
 
