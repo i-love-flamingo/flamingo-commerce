@@ -68,8 +68,6 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 	combinations := make(map[string]map[string]map[string]map[string]bool)
 	titles := make(map[string]map[string]string)
 
-	combinationsOrder := make(map[string][]string)
-
 	for _, attribute := range configurable.VariantVariationAttributes {
 		// attribute -> value -> combinableAttribute -> combinableValue -> true
 		combinations[attribute] = make(map[string]map[string]map[string]bool)
@@ -84,7 +82,6 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 				}
 				if combinations[attribute][variant.Attributes[attribute].Value()] == nil {
 					combinations[attribute][variant.Attributes[attribute].Value()] = make(map[string]map[string]bool)
-					combinationsOrder[attribute] = append(combinationsOrder[attribute], variant.Attributes[attribute].Value())
 				}
 
 				//titles[variant.Attributes[subattribute].Value()] = variant.Attributes[subattribute].Label
@@ -108,8 +105,11 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 			Title: strings.Title(code),
 		}
 
-		for _, optionCode := range combinationsOrder[viewVariantAttribute.Key] {
-			option := attribute[optionCode]
+		for _, optionCode := range configurable.VariantVariationAttributesSorting[viewVariantAttribute.Key] {
+			option, ok := attribute[optionCode]
+			if !ok {
+				continue
+			}
 
 			combinations := make(map[string][]string)
 			for cattr, cvalues := range option {

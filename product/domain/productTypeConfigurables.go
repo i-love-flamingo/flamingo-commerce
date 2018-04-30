@@ -19,9 +19,10 @@ type (
 	ConfigurableProduct struct {
 		Identifier string
 		BasicProductData
-		Teaser                     TeaserData
-		VariantVariationAttributes []string
-		Variants                   []Variant
+		Teaser                            TeaserData
+		VariantVariationAttributes        []string
+		Variants                          []Variant
+		VariantVariationAttributesSorting map[string][]string
 	}
 
 	// ConfigurableProductWithActiveVariant - A product that can be teasered and that has Sellable Variants Aggregated, One Variant is Active
