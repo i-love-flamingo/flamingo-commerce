@@ -18,6 +18,17 @@ type (
 		TransactionId string
 		//AdditionalData - room for AdditionalData - specific to the payment
 		AdditionalData map[string]string
+		//Amount optional the amount payed
+		Amount float64
+		//CreditCardInfo Optional
+		CreditCardInfo *CreditCardInfo
+	}
+
+	CreditCardInfo struct {
+		AnonymizedCardNumber string
+		Type                 string
+		CardHolder           string
+		Expire               string
 	}
 )
 
