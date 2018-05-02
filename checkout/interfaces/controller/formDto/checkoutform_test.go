@@ -32,6 +32,10 @@ func (f *FakeCustomer) GetDefaultBillingAddress() *domain.Address {
 	}
 }
 
+func (f *FakeCustomer) GetId() string {
+	return "customerID32929"
+}
+
 var (
 	_ domain.Customer = &FakeCustomer{}
 )
@@ -45,6 +49,7 @@ func TestFormService(t *testing.T) {
 
 	urlValues := make(map[string][]string)
 	form, err := service.ParseFormData(nil, urlValues)
+	form = service.GetDefaultFormData(form)
 	if checkoutForm, ok := form.(CheckoutFormData); ok {
 		if checkoutForm.BillingAddress.Email != "mail" {
 			t.Errorf("Wrong mail in data - expected to be initialized")

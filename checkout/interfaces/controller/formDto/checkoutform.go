@@ -126,24 +126,16 @@ func (fs *CheckoutFormService) GetDefaultFormData(parsedData interface{}) interf
 func (fs *CheckoutFormService) fillFormDataFromCustomer(formData CheckoutFormData) CheckoutFormData {
 	//If customer is given - get default values for the form if not empty yet
 	if fs.Customer != nil {
-		if formData.BillingAddress.Email == "" {
-			formData.BillingAddress.Email = fs.Customer.GetDefaultBillingAddress().Email
+		billingAddress := fs.Customer.GetDefaultBillingAddress()
+		if billingAddress != nil {
+			fs.mapCustomerAddressToFormAddress(*billingAddress, &formData.BillingAddress)
 		}
-		if formData.BillingAddress.Firstname == "" {
-			formData.BillingAddress.Email = fs.Customer.GetDefaultBillingAddress().Firstname
+		shippingAddress := fs.Customer.GetDefaultShippingAddress()
+		if shippingAddress != nil {
+			fs.mapCustomerAddressToFormAddress(*shippingAddress, &formData.ShippingAddress)
 		}
-		if formData.BillingAddress.Lastname == "" {
-			formData.BillingAddress.Email = fs.Customer.GetDefaultBillingAddress().Lastname
-		}
-
-		if formData.ShippingAddress.Email == "" {
-			formData.ShippingAddress.Email = fs.Customer.GetDefaultShippingAddress().Email
-		}
-		if formData.ShippingAddress.Firstname == "" {
-			formData.BillingAddress.Email = fs.Customer.GetDefaultShippingAddress().Firstname
-		}
-		if formData.BillingAddress.Lastname == "" {
-			formData.BillingAddress.Email = fs.Customer.GetDefaultShippingAddress().Lastname
+		if !fs.Customer.GetPersonalData().Birthday.IsZero() {
+			formData.PersonalData.DateOfBirth = fs.Customer.GetPersonalData().Birthday.Format("2006-01-02")
 		}
 	}
 	return formData
@@ -166,6 +158,30 @@ func (fs *CheckoutFormService) fillFormDataFromCart(formData CheckoutFormData) C
 		}
 	}
 	return formData
+}
+
+func (fs *CheckoutFormService) mapCustomerAddressToFormAddress(address customerDomain.Address, targetAddress *AddressFormData) {
+	if targetAddress.Email == "" {
+		targetAddress.Email = address.Email
+	}
+	if targetAddress.Firstname == "" {
+		targetAddress.Firstname = address.Firstname
+	}
+	if targetAddress.Lastname == "" {
+		targetAddress.Lastname = address.Lastname
+	}
+	if targetAddress.CountryCode == "" {
+		targetAddress.Lastname = address.CountryCode
+	}
+	if targetAddress.PhoneNumber == "" {
+		targetAddress.Lastname = address.Telephone
+	}
+
+	if targetAddress.Street == "" && targetAddress.City == "" {
+		targetAddress.Street = address.Street
+		targetAddress.StreetNr = address.StreetNr
+		targetAddress.Lastname = address.City
+	}
 }
 
 func (fs *CheckoutFormService) mapCartAddressToFormAddress(address cart.Address, targetAddress *AddressFormData) {
