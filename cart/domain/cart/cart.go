@@ -38,6 +38,12 @@ type (
 
 		//IsCustomerCart - false = Guest Cart true = cart from the authenticated user
 		IsCustomerCart bool
+
+		AppliedCouponCodes []CouponCode
+	}
+
+	CouponCode struct {
+		Code string
 	}
 
 	Person struct {
@@ -280,6 +286,10 @@ func (Cart Cart) GetSavings() float64 {
 		}
 	}
 	return totalSavings
+}
+
+func (Cart Cart) HasAppliedCouponCode() bool {
+	return len(Cart.AppliedCouponCodes) > 0
 }
 
 func (ct CartTotals) GetTotalItemsByType(typeCode string) []Totalitem {
