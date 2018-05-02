@@ -50,6 +50,7 @@ type (
 		PlacedDecoratedItems []cart.DecoratedCartItem
 		CartTotals           cart.CartTotals
 		PaymentInfos         []PlaceOrderPaymentInfo
+		CartValidationResult cart.CartValidationResult
 	}
 
 	// ReviewStepViewData represents the success view data
@@ -70,9 +71,10 @@ type (
 		OrderId string
 		Email   string
 		//Encodeable cart data to pass
-		PlacedItems  []cart.Item
-		CartTotals   cart.CartTotals
-		PaymentInfos []PlaceOrderPaymentInfo
+		PlacedItems          []cart.Item
+		CartTotals           cart.CartTotals
+		PaymentInfos         []PlaceOrderPaymentInfo
+		CartValidationResult cart.CartValidationResult
 	}
 
 	PlaceOrderPaymentInfo struct {
@@ -87,7 +89,7 @@ type (
 	CheckoutController struct {
 		responder.RenderAware   `inject:""`
 		responder.RedirectAware `inject:""`
-		Router                  *router.Router `inject:""`
+		Router *router.Router   `inject:""`
 
 		CheckoutFormService  *formDto.CheckoutFormService `inject:""`
 		OrderService         *application.OrderService    `inject:""`
@@ -262,6 +264,7 @@ func (cc *CheckoutController) SuccessAction(ctx web.Context) web.Response {
 				OrderId:              placeOrderFlashData.OrderId,
 				PlacedDecoratedItems: cc.DecoratedCartFactory.CreateDecorateCartItems(ctx, placeOrderFlashData.PlacedItems),
 				PaymentInfos:         placeOrderFlashData.PaymentInfos,
+				CartValidationResult: placeOrderFlashData.CartValidationResult,
 			}
 			return cc.Render(ctx, "checkout/success", viewData)
 		}
@@ -471,11 +474,12 @@ func (cc *CheckoutController) placeOrder(ctx web.Context, cartPayment cart.CartP
 	}
 
 	return cc.Redirect("checkout.success", nil).With("checkout.success.data", PlaceOrderFlashData{
-		OrderId:      orderID,
-		Email:        email,
-		PlacedItems:  decoratedCart.Cart.Cartitems,
-		CartTotals:   decoratedCart.Cart.CartTotals,
-		PaymentInfos: paymentInfos,
+		OrderId:              orderID,
+		Email:                email,
+		PlacedItems:          decoratedCart.Cart.Cartitems,
+		CartTotals:           decoratedCart.Cart.CartTotals,
+		PaymentInfos:         paymentInfos,
+		CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, &decoratedCart),
 	}), nil
 
 }
