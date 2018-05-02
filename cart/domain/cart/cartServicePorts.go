@@ -51,7 +51,7 @@ type (
 		UpdatePurchaser(ctx context.Context, cart *Cart, purchaser *Person, additionalData map[string]string) (*Cart, error)
 		UpdateAdditionalData(ctx context.Context, cart *Cart, additionalData map[string]string) (*Cart, error)
 		UpdateDeliveryInfosAndBilling(ctx context.Context, cart *Cart, billingAddress *Address, deliveryInfoUpdates []DeliveryInfoUpdateCommand) (*Cart, error)
-		ApplyVoucher(ctx context.Context, cartId string, couponCode string) (*Cart, error)
+		ApplyVoucher(ctx context.Context, cart *Cart, couponCode string) (*Cart, error)
 	}
 
 	AddRequest struct {

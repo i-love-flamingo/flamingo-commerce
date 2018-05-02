@@ -240,7 +240,7 @@ func (cs *CartService) ApplyVoucher(ctx web.Context, couponCode string) (*cartDo
 		return nil, err
 	}
 
-	cart, err := behaviour.ApplyVoucher(ctx, oldCart.ID, couponCode)
+	cart, err := behaviour.ApplyVoucher(ctx, oldCart, couponCode)
 	cs.updateCartInCache(ctx, cart)
 	return cart, err
 }
