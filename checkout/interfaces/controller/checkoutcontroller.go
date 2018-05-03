@@ -47,6 +47,7 @@ type (
 	SuccessViewData struct {
 		OrderId              string
 		Email                string
+		BillingAddress       cart.Address
 		PlacedDecoratedItems []cart.DecoratedCartItem
 		CartTotals           cart.CartTotals
 		PaymentInfos         []PlaceOrderPaymentInfo
@@ -68,8 +69,9 @@ type (
 
 	// PlaceOrderFlashData represents the data passed to the success page - they need to be "glob"able
 	PlaceOrderFlashData struct {
-		OrderId string
-		Email   string
+		OrderId        string
+		Email          string
+		BillingAddress cart.Address
 		//Encodeable cart data to pass
 		PlacedItems          []cart.Item
 		CartTotals           cart.CartTotals
@@ -261,6 +263,7 @@ func (cc *CheckoutController) SuccessAction(ctx web.Context) web.Response {
 			viewData := SuccessViewData{
 				CartTotals:           placeOrderFlashData.CartTotals,
 				Email:                placeOrderFlashData.Email,
+				BillingAddress:       placeOrderFlashData.BillingAddress,
 				OrderId:              placeOrderFlashData.OrderId,
 				PlacedDecoratedItems: cc.DecoratedCartFactory.CreateDecorateCartItems(ctx, placeOrderFlashData.PlacedItems),
 				PaymentInfos:         placeOrderFlashData.PaymentInfos,
@@ -476,6 +479,7 @@ func (cc *CheckoutController) placeOrder(ctx web.Context, cartPayment cart.CartP
 	return cc.Redirect("checkout.success", nil).With("checkout.success.data", PlaceOrderFlashData{
 		OrderId:              orderID,
 		Email:                email,
+		BillingAddress:       decoratedCart.Cart.BillingAdress,
 		PlacedItems:          decoratedCart.Cart.Cartitems,
 		CartTotals:           decoratedCart.Cart.CartTotals,
 		PaymentInfos:         paymentInfos,
