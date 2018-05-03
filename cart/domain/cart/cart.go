@@ -36,8 +36,9 @@ type (
 		//AdditionalData   can be used for Custom attributes
 		AdditionalData map[string]string
 
-		//IsCustomerCart - false = Guest Cart true = cart from the authenticated user
-		IsCustomerCart bool
+		//BelongsToAuthenticatedUser - false = Guest Cart true = cart from the authenticated user
+		BelongsToAuthenticatedUser bool
+		AuthenticatedUserId        string
 
 		AppliedCouponCodes []CouponCode
 	}

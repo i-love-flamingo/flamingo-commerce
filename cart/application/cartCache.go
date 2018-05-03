@@ -3,6 +3,8 @@ package application
 import (
 	"encoding/gob"
 
+	"strings"
+
 	"github.com/pkg/errors"
 	"go.aoe.com/flamingo/core/cart/domain/cart"
 	"go.aoe.com/flamingo/framework/flamingo"
@@ -15,11 +17,13 @@ type (
 		CacheCart(web.Context, CartCacheIdentifier, *cart.Cart) error
 		Invalidate(web.Context, CartCacheIdentifier) error
 		Delete(web.Context, CartCacheIdentifier) error
+		DeleteAll(web.Context) error
 	}
 
 	CartCacheIdentifier struct {
 		GuestCartId    string
 		IsCustomerCart bool
+		CustomerId     string
 	}
 
 	CartSessionCache struct {
@@ -46,7 +50,7 @@ func init() {
 
 func (ci *CartCacheIdentifier) CacheKey() string {
 	if ci.IsCustomerCart {
-		return "customer_" + ci.GuestCartId
+		return "customer_" + ci.CustomerId + "_" + ci.GuestCartId
 	}
 	return ci.GuestCartId
 }
@@ -55,13 +59,15 @@ func BuildIdentifierFromCart(cart *cart.Cart) (*CartCacheIdentifier, error) {
 	if cart == nil {
 		return nil, errors.New("no cart")
 	}
-	if cart.IsCustomerCart {
+	if cart.BelongsToAuthenticatedUser {
 		return &CartCacheIdentifier{
 			IsCustomerCart: true,
 		}, nil
 	}
+
 	return &CartCacheIdentifier{
 		GuestCartId: cart.ID,
+		CustomerId:  cart.AuthenticatedUserId,
 	}, nil
 }
 
@@ -108,6 +114,17 @@ func (c *CartSessionCache) Invalidate(ctx web.Context, id CartCacheIdentifier) e
 func (c *CartSessionCache) Delete(ctx web.Context, id CartCacheIdentifier) error {
 	if _, ok := ctx.Session().Values[CartSessionCache_CacheKeyPrefix+id.CacheKey()]; ok {
 		delete(ctx.Session().Values, CartSessionCache_CacheKeyPrefix+id.CacheKey())
+	}
+	return errors.New("not found for delete")
+}
+
+func (c *CartSessionCache) DeleteAll(ctx web.Context) error {
+	for k, _ := range ctx.Session().Values {
+		if stringKey, ok := k.(string); ok {
+			if strings.Contains(stringKey, CartSessionCache_CacheKeyPrefix) {
+				delete(ctx.Session().Values, k)
+			}
+		}
 	}
 	return errors.New("not found for delete")
 }

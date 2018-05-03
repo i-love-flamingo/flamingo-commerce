@@ -2,7 +2,6 @@ package application
 
 import (
 	"go.aoe.com/flamingo/core/auth/domain"
-	cartDomain "go.aoe.com/flamingo/core/cart/domain/cart"
 	"go.aoe.com/flamingo/framework/event"
 	"go.aoe.com/flamingo/framework/flamingo"
 )
@@ -14,12 +13,18 @@ type (
 		Logger              flamingo.Logger      `inject:""`
 		CartService         *CartService         `inject:""`
 		CartReceiverService *CartReceiverService `inject:""`
+		CartCache           CartCache            `inject:",optional"`
 	}
 )
 
 //Notify should get called by flamingo Eventlogic
 func (e *EventReceiver) Notify(event event.Event) {
 	switch eventType := event.(type) {
+	//Handle Logout
+	case *domain.LogoutEvent:
+		if e.CartCache != nil {
+			e.CartCache.DeleteAll(eventType.Context)
+		}
 	//Handle LoginEvent and Merge Cart
 	case *domain.LoginEvent:
 		if eventType == nil {
@@ -42,10 +47,16 @@ func (e *EventReceiver) Notify(event event.Event) {
 		}
 		for _, item := range guestCart.Cartitems {
 			e.Logger.WithField("category", "cart").Debugf("Merging item from guest to user cart %v", item)
-
-			e.CartService.AddProduct(eventType.Context, cartDomain.AddRequest{MarketplaceCode: item.MarketplaceCode, Qty: item.Qty, VariantMarketplaceCode: item.VariantMarketPlaceCode})
+			addRequest := e.CartService.BuildAddRequest(eventType.Context, item.MarketplaceCode, item.VariantMarketPlaceCode, item.Qty, item.OriginalDeliveryIntent.String())
+			e.CartService.AddProduct(eventType.Context, addRequest)
 		}
-		e.CartService.DeleteSessionGuestCart(eventType.Context)
+		if e.CartCache != nil {
+			cacheId, err := BuildIdentifierFromCart(guestCart)
+			if err != nil {
+				e.CartCache.Delete(eventType.Context, *cacheId)
+			}
+		}
+		e.CartService.DeleteSavedSessionGuestCartId(eventType.Context)
 
 	}
 }

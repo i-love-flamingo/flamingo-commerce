@@ -106,9 +106,10 @@ func (cs *CartReceiverService) GetCart(ctx web.Context) (*cartDomain.Cart, cartD
 		cacheId := CartCacheIdentifier{
 			IsCustomerCart: true,
 		}
+		var err error
 		cart, cacheErr := cs.getCartFromCache(ctx, cacheId)
 		if cacheErr != nil {
-			cart, err := cs.CustomerCartService.GetCart(ctx, cs.Auth(ctx), "me")
+			cart, err = cs.CustomerCartService.GetCart(ctx, cs.Auth(ctx), "me")
 			if err != nil {
 				return nil, nil, err
 			}
@@ -186,7 +187,7 @@ func (cs *CartReceiverService) ViewGuestCart(ctx web.Context) (*cartDomain.Cart,
 }
 
 // GetSessionGuestCart
-func (cs *CartService) DeleteSessionGuestCart(ctx web.Context) error {
+func (cs *CartService) DeleteSavedSessionGuestCartId(ctx web.Context) error {
 	delete(ctx.Session().Values, GuestCartSessionKey)
 	//TODO - trigger backend also to be able to delete the cart there ( cs.GuestCartService.DeleteCart())
 	return nil

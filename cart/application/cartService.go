@@ -172,7 +172,7 @@ func (cs *CartService) PlaceOrder(ctx web.Context, payment *cartDomain.CartPayme
 		return "", err
 	}
 	cs.EventPublisher.PublishOrderPlacedEvent(ctx, cart, orderNumber)
-	cs.DeleteSessionGuestCart(ctx)
+	cs.DeleteSavedSessionGuestCartId(ctx)
 	cs.deleteCartInCache(ctx, cart)
 	return orderNumber, err
 }
@@ -247,7 +247,7 @@ func (cs *CartService) ApplyVoucher(ctx web.Context, couponCode string) (*cartDo
 
 func (cs *CartService) handleCartNotFound(ctx web.Context, err error) {
 	if err == cartDomain.CartNotFoundError {
-		cs.DeleteSessionGuestCart(ctx)
+		cs.DeleteSavedSessionGuestCartId(ctx)
 	}
 }
 
