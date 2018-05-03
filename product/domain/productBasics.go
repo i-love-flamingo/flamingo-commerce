@@ -177,7 +177,14 @@ func (at Attribute) HasUnitCode() bool {
 
 // GetUnit returns the unit on an attribute
 func (at Attribute) GetUnit() Unit {
-	return Units[at.UnitCode]
+	unit, ok := Units[at.UnitCode]
+	if !ok {
+		return Unit{
+			Code:   at.UnitCode,
+			Symbol: "",
+		}
+	}
+	return unit
 }
 
 // HasAttribute check
