@@ -16,7 +16,7 @@ type (
 
 	// CategoryFacet search filter
 	CategoryFacet struct {
-		category string
+		Category Category
 	}
 
 	categoryKey string
@@ -32,13 +32,13 @@ var (
 )
 
 // NewCategoryFacet filter factory
-func NewCategoryFacet(category string) CategoryFacet {
+func NewCategoryFacet(category Category) CategoryFacet {
 	return CategoryFacet{
-		category: category,
+		Category: category,
 	}
 }
 
 // Value for category/domain.Filter
 func (cf CategoryFacet) Value() (string, []string) {
-	return string(CategoryKey), []string{cf.category}
+	return string(CategoryKey), []string{cf.Category.Code()}
 }

@@ -31,6 +31,7 @@ type (
 		ProductSearchResult productInterfaceViewData.ProductSearchResultViewData
 		Category            domain.Category
 		CategoryTree        domain.Category
+		SearchMeta          searchdomain.SearchMeta
 	}
 )
 
@@ -80,7 +81,7 @@ func (vc *View) Get(c web.Context) web.Response {
 	}
 
 	filter := make([]searchdomain.Filter, len(c.QueryAll())+1)
-	filter[0] = domain.NewCategoryFacet(c.MustParam1("code"))
+	filter[0] = domain.NewCategoryFacet(category)
 	i := 1
 	for k, v := range c.QueryAll() {
 		filter[i] = searchdomain.NewKeyValueFilter(k, v)
@@ -93,11 +94,13 @@ func (vc *View) Get(c web.Context) web.Response {
 	}
 
 	vc.addBreadcrumb(c, categoryRoot)
+	result := vc.ProductSearchResultViewDataFactory.NewProductSearchResultViewDataFromResult(c, products)
 
 	return vc.Render(c, vc.Template, ViewData{
 		Category:            category,
 		CategoryTree:        categoryRoot,
-		ProductSearchResult: vc.ProductSearchResultViewDataFactory.NewProductSearchResultViewDataFromResult(c, products),
+		ProductSearchResult: result,
+		SearchMeta:          result.SearchMeta,
 	})
 }
 
