@@ -58,9 +58,18 @@ func (cp *CartPayment) GetItemIdsForPaymentInfo(paymentInfo *PaymentInfo) []stri
 }
 
 func (cp *CartPayment) GetProviders() []string {
-	var providers []string
+
+	providerMap := make(map[string]bool)
+
 	for _, info := range cp.PaymentInfos {
-		providers = append(providers, info.Provider)
+		providerMap[info.Provider] = true
 	}
+
+	var providers []string
+
+	for provider, _ := range providerMap {
+		providers = append(providers, provider)
+	}
+
 	return providers
 }
