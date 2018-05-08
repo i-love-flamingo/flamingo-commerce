@@ -136,6 +136,11 @@ func (dci DecoratedCartItem) GetVariantsVariationAttributes() domain.Attributes 
 	return attributes
 }
 
+// GetVariantsVariationAttribute getter
+func (dci DecoratedCartItem) GetVariantsVariationAttributeCodes() []string {
+	return dci.Product.(domain.ConfigurableProductWithActiveVariant).VariantVariationAttributes
+}
+
 // GetGroupedBy getter
 func (dc DecoratedCart) GetGroupedBy(group string) []*GroupedDecoratedCartItem {
 	groupedItemsCollection := make(map[string]*GroupedDecoratedCartItem)
