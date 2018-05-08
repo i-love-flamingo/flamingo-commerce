@@ -1,6 +1,8 @@
 package cart
 
 type (
+
+	//CartPayment represents the all payments done for the cart and which items have been purchased by what methhod
 	CartPayment struct {
 		PaymentInfos       []*PaymentInfo
 		ItemIDAssignment   map[string]*PaymentInfo
@@ -22,6 +24,8 @@ type (
 		Amount float64
 		//CreditCardInfo Optional
 		CreditCardInfo *CreditCardInfo
+		//Title - speaking title - optional may describe the payment and may be shown to the customer
+		Title string
 	}
 
 	CreditCardInfo struct {
@@ -57,6 +61,7 @@ func (cp *CartPayment) GetItemIdsForPaymentInfo(paymentInfo *PaymentInfo) []stri
 	return ids
 }
 
+//GetProviders - gets (deduplicated) list of PaymentProvider names used in the CartPayment
 func (cp *CartPayment) GetProviders() []string {
 
 	providerMap := make(map[string]bool)
