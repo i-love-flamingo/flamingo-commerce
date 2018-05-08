@@ -188,6 +188,16 @@ func (s *InMemoryCartStorage) StoreCart(cart domaincart.Cart) error {
 }
 
 func (cob *InMemoryCartOrderBehaviour) ApplyVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, error) {
-	// @todo needs implementation
-	return nil, nil
+	if couponCode != "valid" || couponCode == "" {
+		err := errors.New("Code invalid")
+		return nil, err
+	}
+
+	coupon := domaincart.CouponCode{
+		Code: couponCode,
+	}
+	cart.AppliedCouponCodes = append(cart.AppliedCouponCodes, coupon)
+	err := cob.CartStorage.StoreCart(*cart)
+
+	return cart, err
 }
