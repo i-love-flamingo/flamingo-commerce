@@ -261,12 +261,12 @@ func (fs *CheckoutFormService) ValidateFormData(data interface{}) (formDomain.Va
 		}
 	}
 	if fs.PersonalData_PassportCountryRequired {
-		if formData.BillingAddress.PhoneNumber == "" {
+		if formData.PersonalData.PassportCountry == "" {
 			validationInfo.AddFieldError("personalData.passportCountry", "formerror_passportCountry_required", "passport infos are required")
 		}
 	}
 	if fs.PersonalData_PassportNumberRequired {
-		if formData.BillingAddress.PhoneNumber == "" {
+		if formData.PersonalData.PassportNumber == "" {
 			validationInfo.AddFieldError("personalData.passportNumber", "formerror_passportNumber_required", "passport infos are required")
 		}
 	}
