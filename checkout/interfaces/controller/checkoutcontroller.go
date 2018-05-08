@@ -234,8 +234,6 @@ func (cc *CheckoutController) ProcessPaymentAction(ctx web.Context) web.Response
 	providercode := ctx.MustParam1("providercode")
 	methodcode := ctx.MustParam1("methodcode")
 
-	email := "todo"
-
 	provider, paymentMethod, err := cc.getPayment(ctx, providercode, methodcode)
 
 	cartPayment, err := provider.ProcessPayment(ctx, &decoratedCart.Cart, paymentMethod, nil)
@@ -246,7 +244,7 @@ func (cc *CheckoutController) ProcessPaymentAction(ctx web.Context) web.Response
 		return cc.showCheckoutFormWithErrors(ctx, "", *decoratedCart, nil, err)
 	}
 
-	response, err := cc.placeOrder(ctx, *cartPayment, email, *decoratedCart)
+	response, err := cc.placeOrder(ctx, *cartPayment, *decoratedCart)
 	if err != nil {
 		return cc.showCheckoutFormWithErrors(ctx, "", *decoratedCart, nil, err)
 	}
@@ -446,30 +444,36 @@ func (cc *CheckoutController) processPaymentOrPlaceOrderDirectly(ctx web.Context
 		return cc.showCheckoutFormWithErrors(ctx, orderFormTemplate, *decoratedCart, checkoutForm, err)
 	}
 
-	//Get Email from either the cart
-	shippingEmail := decoratedCart.Cart.GetMainShippingEMail()
-	if shippingEmail == "" {
-		shippingEmail = decoratedCart.Cart.BillingAdress.Email
-	}
-	response, err := cc.placeOrder(ctx, *cartPayment, shippingEmail, *decoratedCart)
+	response, err := cc.placeOrder(ctx, *cartPayment, *decoratedCart)
 	if err != nil {
 		return cc.showCheckoutFormWithErrors(ctx, orderFormTemplate, *decoratedCart, checkoutForm, err)
 	}
 	return response
 }
 
-func (cc *CheckoutController) placeOrder(ctx web.Context, cartPayment cart.CartPayment, email string, decoratedCart cart.DecoratedCart) (web.Response, error) {
+func (cc *CheckoutController) getContactMail(cart cart.Cart) string {
+	//Get Email from either the cart
+	shippingEmail := cart.GetMainShippingEMail()
+	if shippingEmail == "" {
+		shippingEmail = cart.BillingAdress.Email
+	}
+	return shippingEmail
+}
+
+func (cc *CheckoutController) placeOrder(ctx web.Context, cartPayment cart.CartPayment, decoratedCart cart.DecoratedCart) (web.Response, error) {
 	orderID, err := cc.OrderService.CurrentCartPlaceOrder(ctx, cartPayment)
 	if err != nil {
 		return nil, err
 	}
 
-	var paymentInfos []PlaceOrderPaymentInfo
+	email := cc.getContactMail(decoratedCart.Cart)
+
+	var placeOrderPaymentInfos []PlaceOrderPaymentInfo
 	for _, cartPayment := range cartPayment.PaymentInfos {
-		paymentInfos = append(paymentInfos, PlaceOrderPaymentInfo{
+		placeOrderPaymentInfos = append(placeOrderPaymentInfos, PlaceOrderPaymentInfo{
 			Method:         cartPayment.Method,
 			Provider:       cartPayment.Provider,
-			Title:          "title",
+			Title:          cartPayment.Title,
 			Amount:         cartPayment.Amount,
 			CreditCardInfo: cartPayment.CreditCardInfo,
 		})
@@ -479,7 +483,7 @@ func (cc *CheckoutController) placeOrder(ctx web.Context, cartPayment cart.CartP
 		OrderId:      orderID,
 		Email:        email,
 		PlacedCart:   decoratedCart.Cart,
-		PaymentInfos: paymentInfos,
+		PaymentInfos: placeOrderPaymentInfos,
 	}), nil
 
 }
