@@ -54,7 +54,8 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 
 			return vc.Error(c, err)
 		}
-		vd.SearchMeta.NumResults = searchResult.SearchMeta.NumResults
+		vd.SearchMeta = searchResult.SearchMeta
+		vd.SearchMeta.Query = query
 		vd.SearchResult = map[string]domain.Result{typ: searchResult}
 		vd.PaginationInfo = vc.PaginationInfoFactory.Build(searchResult.SearchMeta.Page, searchResult.SearchMeta.NumResults, 30, searchResult.SearchMeta.NumPages, c.Request().URL)
 		return vc.Render(c, "search/"+typ, vd)
