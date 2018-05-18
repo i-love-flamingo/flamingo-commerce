@@ -22,15 +22,13 @@ func (f *FakeCustomer) GetAddresses() []domain.Address {
 func (f *FakeCustomer) GetDefaultShippingAddress() *domain.Address {
 	return &domain.Address{
 		Firstname: "first",
-		//Email:     "example@mail.dmn",
-		Email: "mail",
+		Email:     "mail",
 	}
 }
 func (f *FakeCustomer) GetDefaultBillingAddress() *domain.Address {
 	return &domain.Address{
 		Firstname: "first",
-		//Email:     "example@mail.dmn",
-		Email: "mail",
+		Email:     "mail",
 	}
 }
 
@@ -52,7 +50,6 @@ func TestFormService(t *testing.T) {
 	urlValues := make(map[string][]string)
 	form, err := service.ParseFormData(nil, urlValues)
 	form = service.GetDefaultFormData(form)
-
 	if checkoutForm, ok := form.(CheckoutFormData); ok {
 		if checkoutForm.BillingAddress.Email != "mail" {
 			t.Errorf("Wrong mail in data - expected to be initialized")
