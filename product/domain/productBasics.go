@@ -36,6 +36,7 @@ type (
 		MarketPlaceCode string
 		RetailerCode    string
 		RetailerSku     string
+		RetailerName    string
 
 		CreatedAt   time.Time
 		UpdatedAt   time.Time
