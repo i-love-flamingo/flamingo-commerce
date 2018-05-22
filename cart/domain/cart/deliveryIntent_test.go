@@ -33,8 +33,8 @@ func TestDeliveryIntent(t *testing.T) {
 	assert.Equal(t, "", intent.DeliveryLocationCode)
 	assert.Equal(t, DELIVERY_METHOD_DELIVERY, intent.Method)
 
-	intent = builder.BuildDeliveryIntent("pickup_collection_locpoint_1-2_3")
-	assert.Equal(t, "pickup_collection_locpoint_1-2_3", intent.String())
+	intent = builder.BuildDeliveryIntent("pickup_collection-point_locpoint_1-2_3")
+	assert.Equal(t, "pickup_collection-point_locpoint_1-2_3", intent.String())
 	assert.Equal(t, "locpoint_1-2_3", intent.DeliveryLocationCode)
 	assert.Equal(t, DELIVERY_METHOD_PICKUP, intent.Method)
 	assert.Equal(t, DELIVERYLOCATION_TYPE_COLLECTIONPOINT, intent.DeliveryLocationType)
