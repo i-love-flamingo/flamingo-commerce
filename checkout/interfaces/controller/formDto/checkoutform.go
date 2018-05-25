@@ -171,29 +171,59 @@ func (fs *CheckoutFormService) mapCustomerAddressToFormAddress(address customerD
 		targetAddress.Lastname = address.Lastname
 	}
 	if targetAddress.CountryCode == "" {
-		targetAddress.Lastname = address.CountryCode
+		targetAddress.CountryCode = address.CountryCode
 	}
 	if targetAddress.PhoneNumber == "" {
-		targetAddress.Lastname = address.Telephone
+		targetAddress.PhoneNumber = address.Telephone
 	}
 
 	if targetAddress.Street == "" && targetAddress.City == "" {
 		targetAddress.Street = address.Street
 		targetAddress.StreetNr = address.StreetNr
-		targetAddress.Lastname = address.City
+		targetAddress.City = address.City
 	}
 }
 
 func (fs *CheckoutFormService) mapCartAddressToFormAddress(address cart.Address, targetAddress *AddressFormData) {
-	targetAddress.Firstname = address.Firstname
-	targetAddress.Lastname = address.Lastname
-	targetAddress.Email = address.Email
-	targetAddress.Street = address.Street
-	targetAddress.StreetNr = address.StreetNr
-	targetAddress.Title = address.Salutation
-	targetAddress.City = address.City
-	targetAddress.PhoneNumber = address.Telephone
-	targetAddress.Company = address.CountryCode
+	if address.Firstname != "" {
+		targetAddress.Firstname = address.Firstname
+	}
+
+	if address.Lastname != "" {
+		targetAddress.Lastname = address.Lastname
+	}
+
+	if address.Email != "" {
+		targetAddress.Email = address.Email
+	}
+
+	if address.Street != "" {
+		targetAddress.Street = address.Street
+	}
+
+	if address.StreetNr != "" {
+		targetAddress.StreetNr = address.StreetNr
+	}
+
+	if address.Salutation != "" {
+		targetAddress.Title = address.Salutation
+	}
+
+	if address.City != "" {
+		targetAddress.City = address.City
+	}
+
+	if address.Telephone != "" {
+		targetAddress.PhoneNumber = address.Telephone
+	}
+
+	if address.CountryCode != "" {
+		targetAddress.CountryCode = address.CountryCode
+	}
+
+	if address.Company != "" {
+		targetAddress.Company = address.Company
+	}
 }
 
 func (fs *CheckoutFormService) setConfiguredDefaultFormValues(formValues url.Values) url.Values {
