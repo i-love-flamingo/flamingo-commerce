@@ -26,6 +26,8 @@ type (
 		ApplicationCartService         *application.CartService         `inject:""`
 		ApplicationCartReceiverService *application.CartReceiverService `inject:""`
 		Router                         *router.Router                   `inject:""`
+
+		ShowEmptyCartPageIfNoItems     bool `inject:"config:checkout.showEmptyCartPageIfNoItems,optional"`
 	}
 )
 
@@ -35,6 +37,10 @@ func (cc *CartViewController) ViewAction(ctx web.Context) web.Response {
 	if err != nil {
 		log.Printf("cart.cartcontroller.viewaction: Error %v", err)
 		return cc.Render(ctx, "checkout/carterror", nil)
+	}
+
+	if cc.ShowEmptyCartPageIfNoItems && decoratedCart.Cart.ItemCount() == 0 {
+		return cc.Render(ctx, "checkout/emptycart", nil)
 	}
 
 	return cc.Render(ctx, "checkout/cart", CartViewData{
