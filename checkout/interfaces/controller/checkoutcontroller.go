@@ -85,11 +85,15 @@ type (
 		CreditCardInfo *cart.CreditCardInfo
 	}
 
+	EmptyCartInfo struct {
+		CartExpired bool
+	}
+
 	// CheckoutController represents the checkout controller with its injectsions
 	CheckoutController struct {
 		responder.RenderAware   `inject:""`
 		responder.RedirectAware `inject:""`
-		Router                  *router.Router `inject:""`
+		Router *router.Router   `inject:""`
 
 		CheckoutFormService  *formDto.CheckoutFormService `inject:""`
 		OrderService         *application.OrderService    `inject:""`
@@ -99,6 +103,7 @@ type (
 		SkipStartAction                 bool `inject:"config:checkout.skipStartAction,optional"`
 		SkipReviewAction                bool `inject:"config:checkout.skipReviewAction,optional"`
 		ShowReviewStepAfterPaymentError bool `inject:"config:checkout.showReviewStepAfterPaymentError,optional"`
+		ShowEmptyCartPageIfNoItems      bool `inject:"config:checkout.showEmptyCartPageIfNoItems,optional"`
 
 		ApplicationCartService         *cartApplication.CartService         `inject:""`
 		ApplicationCartReceiverService *cartApplication.CartReceiverService `inject:""`
@@ -150,6 +155,9 @@ func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
 
 	//Guard Clause if Cart is empty
 	if decoratedCart.Cart.ItemCount() == 0 {
+		if cc.ShowEmptyCartPageIfNoItems {
+			return cc.Render(ctx, "checkout/emptycart", nil)
+		}
 		return cc.Render(ctx, "checkout/startcheckout", CheckoutViewData{
 			DecoratedCart: *decoratedCart,
 		})
@@ -231,6 +239,10 @@ func (cc *CheckoutController) ProcessPaymentAction(ctx web.Context) web.Response
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
 
+	if cc.ShowEmptyCartPageIfNoItems && decoratedCart.Cart.ItemCount() == 0 {
+		return cc.Render(ctx, "checkout/emptycart", nil)
+	}
+
 	providercode := ctx.MustParam1("providercode")
 	methodcode := ctx.MustParam1("methodcode")
 
@@ -269,7 +281,15 @@ func (cc *CheckoutController) SuccessAction(ctx web.Context) web.Response {
 			return cc.Render(ctx, "checkout/success", viewData)
 		}
 	}
+	return cc.Redirect("checkout.expired", nil)
+}
 
+func (cc *CheckoutController) ExpiredAction(ctx web.Context) web.Response {
+	if cc.ShowEmptyCartPageIfNoItems {
+		return cc.Render(ctx, "checkout/emptycart", EmptyCartInfo{
+			CartExpired: true,
+		})
+	}
 	return cc.Render(ctx, "checkout/expired", nil)
 }
 
@@ -318,6 +338,10 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx web.Context, f
 
 	//Guard Clause if Cart is empty
 	if decoratedCart.Cart.ItemCount() == 0 {
+		if cc.ShowEmptyCartPageIfNoItems {
+			return cc.Render(ctx, "checkout/emptycart", nil)
+		}
+
 		return cc.Render(ctx, template, CheckoutViewData{
 			DecoratedCart:        *decoratedCart,
 			CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, decoratedCart),
@@ -521,6 +545,10 @@ func (cc *CheckoutController) ReviewAction(ctx web.Context) web.Response {
 	if e != nil {
 		cc.Logger.WithField("category", "checkout").Errorf("cart.checkoutcontroller.submitaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil)
+	}
+
+	if cc.ShowEmptyCartPageIfNoItems && decoratedCart.Cart.ItemCount() == 0 {
+		return cc.Render(ctx, "checkout/emptycart", nil)
 	}
 
 	if proceed == "1" && termsAndConditions == "1" && selectedProvider != "" && selectedMethod != "" {
