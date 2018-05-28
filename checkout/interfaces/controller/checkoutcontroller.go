@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/gob"
 	"errors"
+	"fmt"
 	"net/url"
 	"strings"
 
@@ -93,7 +94,7 @@ type (
 	CheckoutController struct {
 		responder.RenderAware   `inject:""`
 		responder.RedirectAware `inject:""`
-		Router *router.Router   `inject:""`
+		Router                  *router.Router `inject:""`
 
 		CheckoutFormService  *formDto.CheckoutFormService `inject:""`
 		OrderService         *application.OrderService    `inject:""`
@@ -487,6 +488,22 @@ func (cc *CheckoutController) getContactMail(cart cart.Cart) string {
 func (cc *CheckoutController) placeOrder(ctx web.Context, cartPayment cart.CartPayment, decoratedCart cart.DecoratedCart) (web.Response, error) {
 	orderID, err := cc.OrderService.CurrentCartPlaceOrder(ctx, cartPayment)
 	if err != nil {
+		name := decoratedCart.Cart.BillingAdress.Firstname + " " + decoratedCart.Cart.BillingAdress.Lastname
+		subAmounts := ""
+		for _, cartPayment := range cartPayment.PaymentInfos {
+			retailer := cartPayment.Title
+			if retailer == "" {
+				retailer = cartPayment.Provider
+			}
+
+			if subAmounts != "" {
+				subAmounts += ", "
+			}
+
+			subAmounts += retailer + ":" + fmt.Sprintf("%f", cartPayment.Amount)
+		}
+
+		cc.Logger.WithField("category", "checkout").Errorf("place order failed: order group id: %v / name: %v / total amount: %v / sub amounts: %v", decoratedCart.Cart.EntityID, name, decoratedCart.Cart.CartTotals.GrandTotal, subAmounts)
 		return nil, err
 	}
 
