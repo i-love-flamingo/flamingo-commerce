@@ -27,7 +27,7 @@ type (
 		ApplicationCartReceiverService *application.CartReceiverService `inject:""`
 		Router                         *router.Router                   `inject:""`
 
-		ShowEmptyCartPageIfNoItems     bool `inject:"config:checkout.showEmptyCartPageIfNoItems,optional"`
+		ShowEmptyCartPageIfNoItems     bool `inject:"config:cart.showEmptyCartPageIfNoItems,optional"`
 	}
 )
 
