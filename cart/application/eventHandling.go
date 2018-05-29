@@ -50,6 +50,13 @@ func (e *EventReceiver) Notify(event event.Event) {
 			addRequest := e.CartService.BuildAddRequest(eventType.Context, item.MarketplaceCode, item.VariantMarketPlaceCode, item.Qty, item.OriginalDeliveryIntent.String())
 			e.CartService.AddProduct(eventType.Context, addRequest)
 		}
+
+		if guestCart.HasAppliedCouponCode() {
+			for _, code := range guestCart.AppliedCouponCodes {
+				e.CartService.ApplyVoucher(eventType.Context, code.Code)
+			}
+		}
+
 		if e.CartCache != nil {
 			cacheId, err := BuildIdentifierFromCart(guestCart)
 			if err != nil {
