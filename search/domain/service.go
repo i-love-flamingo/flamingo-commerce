@@ -69,7 +69,13 @@ type (
 	Result struct {
 		SearchMeta SearchMeta
 		Hits       []Document
+		Suggestion []Suggestion
 		Facets     FacetCollection
+	}
+
+	Suggestion struct {
+		Text      string
+		Highlight string
 	}
 
 	// Document holds a search result document
