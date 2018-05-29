@@ -236,13 +236,13 @@ func (vc *View) Get(c web.Context) web.Response {
 		viewData = productViewData{Product: simpleProduct, RenderContext: "simple"}
 	}
 
-	vc.addBreadCrum(product, c)
+	vc.addBreadCrumb(product, c)
 
 	return vc.Render(c, vc.Template, viewData)
 }
 
 // addBreadCrum
-func (vc *View) addBreadCrum(product domain.BasicProduct, c web.Context) {
+func (vc *View) addBreadCrumb(product domain.BasicProduct, c web.Context) {
 	var paths []string
 	if product.Type() == domain.TYPESIMPLE || product.Type() == domain.TYPECONFIGURABLE {
 		paths = product.BaseData().CategoryToCodeMapping
@@ -261,7 +261,7 @@ func (vc *View) addBreadCrum(product domain.BasicProduct, c web.Context) {
 				Title: name,
 				Url:   vc.Router.URL(category.URLWithName(code, name)).String(),
 			})
-			stringHead = name + "/"
+			stringHead = stringHead + name + "/"
 		}
 	}
 }
