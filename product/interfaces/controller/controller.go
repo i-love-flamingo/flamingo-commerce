@@ -241,7 +241,7 @@ func (vc *View) Get(c web.Context) web.Response {
 	return vc.Render(c, vc.Template, viewData)
 }
 
-// addBreadCrum
+// addBreadCrumb
 func (vc *View) addBreadCrumb(product domain.BasicProduct, c web.Context) {
 	var paths []string
 	if product.Type() == domain.TYPESIMPLE || product.Type() == domain.TYPECONFIGURABLE {
