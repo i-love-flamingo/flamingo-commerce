@@ -6,16 +6,19 @@ import (
 
 	"go.aoe.com/flamingo/core/cart/application"
 	cartDomain "go.aoe.com/flamingo/core/cart/domain/cart"
+	productDomain "go.aoe.com/flamingo/core/product/domain"
 	"go.aoe.com/flamingo/framework/router"
 	"go.aoe.com/flamingo/framework/web"
 	"go.aoe.com/flamingo/framework/web/responder"
+	"encoding/gob"
 )
 
 type (
 	// CartViewData is used for cart views/templates
 	CartViewData struct {
-		DecoratedCart        cartDomain.DecoratedCart
-		CartValidationResult cartDomain.CartValidationResult
+		DecoratedCart         cartDomain.DecoratedCart
+		CartValidationResult  cartDomain.CartValidationResult
+		AddToCartProductsData []productDomain.BasicProductData
 	}
 
 	// CartViewController for carts
@@ -27,9 +30,17 @@ type (
 		ApplicationCartReceiverService *application.CartReceiverService `inject:""`
 		Router                         *router.Router                   `inject:""`
 
-		ShowEmptyCartPageIfNoItems     bool `inject:"config:cart.showEmptyCartPageIfNoItems,optional"`
+		ShowEmptyCartPageIfNoItems bool `inject:"config:cart.showEmptyCartPageIfNoItems,optional"`
+	}
+
+	CartViewActionData struct {
+		AddToCartProductsData []productDomain.BasicProductData
 	}
 )
+
+func init() {
+	gob.Register(CartViewActionData{})
+}
 
 // ViewAction the DecoratedCart View ( / cart)
 func (cc *CartViewController) ViewAction(ctx web.Context) web.Response {
@@ -43,10 +54,19 @@ func (cc *CartViewController) ViewAction(ctx web.Context) web.Response {
 		return cc.Render(ctx, "checkout/emptycart", nil)
 	}
 
-	return cc.Render(ctx, "checkout/cart", CartViewData{
+	cartViewData := CartViewData{
 		DecoratedCart:        *decoratedCart,
 		CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, decoratedCart),
-	})
+	}
+
+	flashes := ctx.Session().Flashes("cart.view.data")
+	if len(flashes) > 0 {
+		if cartViewActionData, ok := flashes[0].(CartViewActionData); ok {
+			cartViewData.AddToCartProductsData = cartViewActionData.AddToCartProductsData
+		}
+	}
+
+	return cc.Render(ctx, "checkout/cart", cartViewData)
 
 }
 
@@ -65,7 +85,7 @@ func (cc *CartViewController) AddAndViewAction(ctx web.Context) web.Response {
 
 	addRequest := cc.ApplicationCartService.BuildAddRequest(ctx, ctx.MustParam1("marketplaceCode"), variantMarketplaceCode, qtyInt, deliveryIntent)
 
-	err := cc.ApplicationCartService.AddProduct(ctx, addRequest)
+	err, product := cc.ApplicationCartService.AddProduct(ctx, addRequest)
 	if notAllowedErr, ok := err.(*cartDomain.AddToCartNotAllowed); ok {
 		if notAllowedErr.RedirectHandlerName != "" {
 			return cc.Redirect(notAllowedErr.RedirectHandlerName, notAllowedErr.RedirectParams)
@@ -76,7 +96,9 @@ func (cc *CartViewController) AddAndViewAction(ctx web.Context) web.Response {
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
 
-	return cc.Redirect("cart.view", nil)
+	return cc.Redirect("cart.view", nil).With("cart.view.data", CartViewActionData{
+		AddToCartProductsData: []productDomain.BasicProductData{product.BaseData()},
+	})
 }
 
 // UpdateQtyAndViewAction the DecoratedCart View ( / cart)

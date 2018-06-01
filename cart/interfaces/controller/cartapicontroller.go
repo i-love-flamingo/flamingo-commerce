@@ -54,7 +54,7 @@ func (cc *CartApiController) AddAction(ctx web.Context) web.Response {
 	deliveryIntent, e := ctx.Param1("deliveryIntent")
 
 	addRequest := cc.ApplicationCartService.BuildAddRequest(ctx, ctx.MustParam1("marketplaceCode"), variantMarketplaceCode, qtyInt, deliveryIntent)
-	e = cc.ApplicationCartService.AddProduct(ctx, addRequest)
+	e, _ = cc.ApplicationCartService.AddProduct(ctx, addRequest)
 	if e != nil {
 		cc.Logger.WithField("category", "CartApiController").Errorf("cart.cartapicontroller.add: %v", e.Error())
 		msgCode := ""

@@ -194,11 +194,11 @@ func (cs *CartService) BuildAddRequest(ctx web.Context, marketplaceCode string, 
 }
 
 // AddProduct Add a product
-func (cs *CartService) AddProduct(ctx web.Context, addRequest cartDomain.AddRequest) error {
+func (cs *CartService) AddProduct(ctx web.Context, addRequest cartDomain.AddRequest) (error, productDomain.BasicProduct) {
 	addRequest, product, err := cs.checkProductForAddRequest(ctx, addRequest)
 	if err != nil {
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "AddProduct").Error(err)
-		return err
+		return err, nil
 	}
 
 	cs.Logger.WithField("category", "cartService").WithField("subCategory", "AddProduct").Debugf("AddRequest received %#v  / %v", addRequest, addRequest.DeliveryIntent.String())
@@ -206,7 +206,7 @@ func (cs *CartService) AddProduct(ctx web.Context, addRequest cartDomain.AddRequ
 	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx)
 	if err != nil {
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "AddProduct").Error(err)
-		return err
+		return err, nil
 	}
 
 	//Check if we can autodetect empty location code for pickup
@@ -225,11 +225,11 @@ func (cs *CartService) AddProduct(ctx web.Context, addRequest cartDomain.AddRequ
 	if err != nil {
 		cs.handleCartNotFound(ctx, err)
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "AddProduct").Error(err)
-		return err
+		return err, nil
 	}
 	cs.publishAddtoCartEvent(ctx, *cart, addRequest)
 	cs.updateCartInCache(ctx, cart)
-	return nil
+	return nil, product
 }
 
 func (cs *CartService) ApplyVoucher(ctx web.Context, couponCode string) (*cartDomain.Cart, error) {
