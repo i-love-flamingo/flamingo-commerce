@@ -19,8 +19,8 @@ type (
 // Configure the product URL
 func (m *Module) Configure(injector *dingo.Injector) {
 	m.RouterRegistry.Handle("product.view", new(controller.View))
-	m.RouterRegistry.Route("/product/:marketplacecode/:name.html", "product.view")
-	m.RouterRegistry.Route("/product/:marketplacecode/:variantcode/:name.html", "product.view")
+	m.RouterRegistry.Route("/product/:marketplacecode/:name.html", `product.view(marketplacecode, name, backurl?="")`)
+	m.RouterRegistry.Route("/product/:marketplacecode/:variantcode/:name.html", `product.view(marketplacecode, variantcode, name, backurl?="")`)
 
 	injector.BindMulti((*template.ContextFunction)(nil)).To(templatefunctions.GetProduct{})
 	injector.BindMulti((*template.Function)(nil)).To(templatefunctions.GetProductUrl{})
