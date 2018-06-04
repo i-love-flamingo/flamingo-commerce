@@ -12,7 +12,6 @@ import (
 
 	"github.com/pkg/errors"
 	"go.aoe.com/flamingo/core/product/application"
-	"net/url"
 )
 
 type (
@@ -199,7 +198,7 @@ func (vc *View) Get(c web.Context) web.Response {
 
 		if err != nil {
 			//Redirect if url is not canonical
-			redirect := vc.getRedirectIfRequired(configurableProduct, c, skipnamecheck)
+			redirect := vc.getRedirectIfRequired(configurableProduct, c.MustParam1("name"), skipnamecheck)
 			if redirect != nil {
 				return redirect
 			}
@@ -215,7 +214,7 @@ func (vc *View) Get(c web.Context) web.Response {
 			}
 			activeVariant = &configurableProductWithActiveVariant.ActiveVariant
 			//Redirect if url is not canonical
-			redirect := vc.getRedirectIfRequired(configurableProductWithActiveVariant, c, skipnamecheck)
+			redirect := vc.getRedirectIfRequired(configurableProductWithActiveVariant, c.MustParam1("name"), skipnamecheck)
 			if redirect != nil {
 				return redirect
 			}
@@ -227,7 +226,7 @@ func (vc *View) Get(c web.Context) web.Response {
 
 	} else {
 		//Redirect if url is not canonical
-		redirect := vc.getRedirectIfRequired(product, c, skipnamecheck)
+		redirect := vc.getRedirectIfRequired(product, c.MustParam1("name"), skipnamecheck)
 		if redirect != nil {
 			return redirect
 		}
@@ -267,20 +266,15 @@ func (vc *View) addBreadCrumb(product domain.BasicProduct, c web.Context) {
 	}
 }
 
-func (vc *View) getRedirectIfRequired(product domain.BasicProduct, context web.Context, skipnamecheck string) web.Redirect {
-
-	currentNameParameter := context.MustParam1("name")
-	allParams := url.Values(context.QueryAll())
+func (vc *View) getRedirectIfRequired(product domain.BasicProduct, currentNameParameter string, skipnamecheck string) web.Redirect {
 
 	if skipnamecheck != "" {
 		return nil
 	}
 	//Redirect if url is not canonical
 	if vc.UrlService.GetNameParam(product, "") != currentNameParameter {
-		if redirectUrl, err := vc.UrlService.Get(product, ""); err == nil {
-			newUrl, _ := url.Parse(redirectUrl)
-			newUrl.RawQuery = allParams.Encode()
-			return vc.RedirectPermanentURL(newUrl.String())
+		if url, err := vc.UrlService.Get(product, ""); err == nil {
+			return vc.RedirectPermanentURL(url)
 		}
 	}
 	return nil
