@@ -35,6 +35,7 @@ type (
 		Product          domain.BasicProduct
 		VariantSelected  bool
 		VariantSelection variantSelection
+		BackUrl          string
 	}
 
 	// variantSelection for templating
@@ -238,6 +239,11 @@ func (vc *View) Get(c web.Context) web.Response {
 	}
 
 	vc.addBreadCrumb(product, c)
+
+	backUrl, err := c.Query1("backurl")
+	if err == nil {
+		viewData.BackUrl = backUrl
+	}
 
 	return vc.Render(c, vc.Template, viewData)
 }
