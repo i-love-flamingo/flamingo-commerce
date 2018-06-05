@@ -286,6 +286,11 @@ func (Cart Cart) GetSavings() float64 {
 			totalSavings = totalSavings + math.Abs(item.Price)
 		}
 	}
+
+	if totalSavings < 0 {
+		return 0.0
+	}
+
 	return totalSavings
 }
 
@@ -308,6 +313,11 @@ func (item Item) GetSavingsByItem() float64 {
 	for _, discount := range item.AppliedDiscounts {
 		totalSavings = totalSavings + math.Abs(discount.Price)
 	}
+
+	if totalSavings < 0 {
+		return 0.0
+	}
+
 	return totalSavings
 }
 
