@@ -176,6 +176,7 @@ const (
 	DELIVERYLOCATION_TYPE_FREIGHTSTATION  = "freight-station"
 
 	TOTALS_TYPE_DISCOUNT      = "totals_type_discount"
+	TOTALS_TYPE_VOUCHER       = "totals_type_voucher"
 	TOTALS_TYPE_TAX           = "totals_type_tax"
 	TOTALS_TYPE_LOYALTYPOINTS = "totals_loyaltypoints"
 	TOTALS_TYPE_SHIPPING      = "totals_type_shipping"
@@ -277,6 +278,21 @@ func (Cart Cart) HasItemWithIntent(intent string) bool {
 		}
 	}
 	return false
+}
+
+func (Cart Cart) GetVoucherSavings() float64 {
+	totalSavings := 0.0
+	for _, item := range Cart.CartTotals.Totalitems {
+		if item.Type == TOTALS_TYPE_VOUCHER {
+			totalSavings = totalSavings + math.Abs(item.Price)
+		}
+	}
+
+	if totalSavings < 0 {
+		return 0.0
+	}
+
+	return totalSavings
 }
 
 func (Cart Cart) GetSavings() float64 {
