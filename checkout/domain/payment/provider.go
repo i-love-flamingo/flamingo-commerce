@@ -33,6 +33,11 @@ type (
 	}
 )
 
+const (
+	PaymentCancelled = "payment_cancelled"
+	PaymentAuthorizeFailed= "authorization_failed"
+	PaymentCaptureFailed = "capture_failed"
+)
 func (pe *PaymentError) Error() string {
 	return pe.ErrorMessage
 }

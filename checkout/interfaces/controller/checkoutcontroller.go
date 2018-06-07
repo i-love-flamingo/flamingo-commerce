@@ -429,9 +429,12 @@ func (cc *CheckoutController) showReviewFormWithErrors(ctx web.Context, decorate
 
 func getViewErrorInfo(err error) ViewErrorInfos {
 	hasPaymentError := false
-	if _, ok := err.(*paymentDomain.PaymentError); ok {
-		hasPaymentError = true
+
+
+	if paymentErr, ok := err.(*paymentDomain.PaymentError); ok {
+		hasPaymentError =  paymentErr.ErrorCode != paymentDomain.PaymentCancelled
 	}
+
 	errorInfos := ViewErrorInfos{
 		HasError:        true,
 		ErrorMessage:    err.Error(),
