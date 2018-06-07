@@ -104,6 +104,7 @@ func (cs *CartReceiverService) storeCartInCache(ctx web.Context, cart *cartDomai
 func (cs *CartReceiverService) GetCart(ctx web.Context) (*cartDomain.Cart, cartDomain.CartBehaviour, error) {
 	if cs.UserService.IsLoggedIn(ctx) {
 		cacheId := CartCacheIdentifier{
+			CustomerId:     cs.Auth(ctx).IDToken.Subject,
 			IsCustomerCart: true,
 		}
 		var err error

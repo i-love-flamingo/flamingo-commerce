@@ -2,6 +2,7 @@ package application
 
 import (
 	"encoding/gob"
+	"fmt"
 
 	"strings"
 
@@ -49,10 +50,11 @@ func init() {
 }
 
 func (ci *CartCacheIdentifier) CacheKey() string {
-	if ci.IsCustomerCart {
-		return "customer_" + ci.CustomerId + "_" + ci.GuestCartId
-	}
-	return ci.GuestCartId
+	return fmt.Sprintf(
+		"cart_%v_%v",
+		ci.CustomerId,
+		ci.GuestCartId,
+	)
 }
 
 func BuildIdentifierFromCart(cart *cart.Cart) (*CartCacheIdentifier, error) {
@@ -61,13 +63,15 @@ func BuildIdentifierFromCart(cart *cart.Cart) (*CartCacheIdentifier, error) {
 	}
 	if cart.BelongsToAuthenticatedUser {
 		return &CartCacheIdentifier{
+			CustomerId:     cart.AuthenticatedUserId,
 			IsCustomerCart: true,
 		}, nil
 	}
 
 	return &CartCacheIdentifier{
-		GuestCartId: cart.ID,
-		CustomerId:  cart.AuthenticatedUserId,
+		GuestCartId:    cart.ID,
+		CustomerId:     cart.AuthenticatedUserId,
+		IsCustomerCart: false,
 	}, nil
 }
 
