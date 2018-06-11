@@ -212,11 +212,9 @@ func (cc *CheckoutController) SubmitUserCheckoutAction(ctx web.Context) web.Resp
 	if !cc.UserService.IsLoggedIn(ctx) {
 		return cc.Redirect("checkout.start", nil)
 	}
-	customer, err := cc.CustomerApplicationService.GetForAuthenticatedUser(ctx)
-	if err == nil {
-		//give the customer to the form service - so that it can prepopulate default values
-		cc.CheckoutFormService.Customer = customer
-	}
+	customer, _ := cc.CustomerApplicationService.GetForAuthenticatedUser(ctx)
+	// set the customer on the form service even if nil + err is returned here
+	cc.CheckoutFormService.Customer = customer
 
 	return cc.showCheckoutFormAndHandleSubmit(ctx, cc.CheckoutFormService, "checkout/usercheckout")
 }
@@ -430,9 +428,8 @@ func (cc *CheckoutController) showReviewFormWithErrors(ctx web.Context, decorate
 func getViewErrorInfo(err error) ViewErrorInfos {
 	hasPaymentError := false
 
-
 	if paymentErr, ok := err.(*paymentDomain.PaymentError); ok {
-		hasPaymentError =  paymentErr.ErrorCode != paymentDomain.PaymentCancelled
+		hasPaymentError = paymentErr.ErrorCode != paymentDomain.PaymentCancelled
 	}
 
 	errorInfos := ViewErrorInfos{
