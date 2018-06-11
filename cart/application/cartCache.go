@@ -112,23 +112,35 @@ func (c *CartSessionCache) Invalidate(ctx web.Context, id CartCacheIdentifier) e
 			return nil
 		}
 	}
+
 	return errors.New("not found for invalidate")
 }
 
 func (c *CartSessionCache) Delete(ctx web.Context, id CartCacheIdentifier) error {
 	if _, ok := ctx.Session().Values[CartSessionCache_CacheKeyPrefix+id.CacheKey()]; ok {
 		delete(ctx.Session().Values, CartSessionCache_CacheKeyPrefix+id.CacheKey())
+		// ok deleted something
+		return nil
 	}
+
 	return errors.New("not found for delete")
 }
 
 func (c *CartSessionCache) DeleteAll(ctx web.Context) error {
+	deleted := false
 	for k, _ := range ctx.Session().Values {
 		if stringKey, ok := k.(string); ok {
 			if strings.Contains(stringKey, CartSessionCache_CacheKeyPrefix) {
 				delete(ctx.Session().Values, k)
+				deleted = true
 			}
 		}
 	}
+
+	if deleted {
+		// successfully deleted something
+		return nil
+	}
+
 	return errors.New("not found for delete")
 }
