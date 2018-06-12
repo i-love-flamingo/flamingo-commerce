@@ -28,8 +28,8 @@ func URLWithName(code, name string) (string, map[string]string) {
 // Configure the product URL
 func (m *Module) Configure(injector *dingo.Injector) {
 	m.RouterRegistry.Handle("category.view", new(controller.View))
-	m.RouterRegistry.Route("/category/:code/:name.html", "category.view")
-	m.RouterRegistry.Route("/category/:code", "category.view")
+	m.RouterRegistry.Route("/category/:code/:name.html", "category.view(code, name, *)")
+	m.RouterRegistry.Route("/category/:code", "category.view(code, *)")
 
 	m.RouterRegistry.Handle("category.tree", new(controller.Tree))
 	m.RouterRegistry.Handle("category", new(controller.Entity))

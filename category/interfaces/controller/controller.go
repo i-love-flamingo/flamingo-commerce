@@ -8,9 +8,11 @@ import (
 	productdomain "go.aoe.com/flamingo/core/product/domain"
 	productInterfaceViewData "go.aoe.com/flamingo/core/product/interfaces/viewData"
 	searchdomain "go.aoe.com/flamingo/core/search/domain"
+	"go.aoe.com/flamingo/framework/flamingo"
 	"go.aoe.com/flamingo/framework/router"
 	"go.aoe.com/flamingo/framework/web"
 	"go.aoe.com/flamingo/framework/web/responder"
+	"strings"
 )
 
 type (
@@ -22,8 +24,9 @@ type (
 		domain.CategoryService                                       `inject:""`
 		productdomain.SearchService                                  `inject:""`
 		*productInterfaceViewData.ProductSearchResultViewDataFactory `inject:""`
-		Router                                                       *router.Router `inject:""`
-		Template                                                     string         `inject:"config:core.category.view.template"`
+		Router                                                       *router.Router  `inject:""`
+		Template                                                     string          `inject:"config:core.category.view.template"`
+		Logger                                                       flamingo.Logger `inject:""`
 	}
 
 	// ViewData for rendering context
@@ -74,10 +77,20 @@ func (vc *View) Get(c web.Context) web.Response {
 
 	expectedName := web.URLTitle(category.Name())
 	if name, _ := c.Param1("name"); expectedName != name {
-		return vc.RedirectPermanent("category.view", router.P{
+
+		redirectParams := router.P{
 			"code": category.Code(),
 			"name": expectedName,
-		})
+		}
+
+		// add all params if there are some
+		if len(c.QueryAll()) > 0 {
+			for index, param := range c.QueryAll() {
+				redirectParams[index] = strings.Join(param, ",")
+			}
+		}
+
+		return vc.RedirectPermanent("category.view", redirectParams)
 	}
 
 	filter := make([]searchdomain.Filter, len(c.QueryAll())+1)
