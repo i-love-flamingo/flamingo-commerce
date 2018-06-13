@@ -100,11 +100,29 @@ type (
 	CartTotals struct {
 		Totalitems        []Totalitem
 		TotalShippingItem ShippingItem
-		GrandTotal        float64
-		SubTotal          float64
-		DiscountAmount    float64
-		TaxAmount         float64
-		CurrencyCode      string
+		//Final sum that need to be payed: GrandTotal = SubTotal + TaxAmount - DiscountAmount + SOME of Totalitems = (Sum of Items RowTotalWithDiscountInclTax) + SOME of Totalitems
+		GrandTotal float64
+		//SubTotal = SUM of Item RowTotal
+		SubTotal float64
+		//SubTotalInclTax = SUM of Item RowTotalInclTax
+		SubTotalInclTax float64
+		//SubTotalWithDiscounts = SubTotal - Sum of Item ItemRelatedDiscountAmount
+		SubTotalWithDiscounts float64
+		//SubTotalWithDiscountsAndTax= Sum of RowTotalWithItemRelatedDiscountInclTax
+		SubTotalWithDiscountsAndTax float64
+
+		//TotalDiscountAmount = SUM of Item TotalDiscountAmount
+		TotalDiscountAmount float64
+		//TotalNonItemRelatedDiscountAmount= SUM of Item NonItemRelatedDiscountAmount
+		TotalNonItemRelatedDiscountAmount float64
+
+		//DEPRICATED
+		//DiscountAmount float64
+
+		//TaxAmount = Sum of Item TaxAmount
+		TaxAmount float64
+		//CurrencyCode of the Total positions
+		CurrencyCode string
 	}
 
 	// Item for Cart
@@ -118,16 +136,14 @@ type (
 		// Source Id of where the items should be initial picked - This is set by the SourcingLogic
 		SourceId string
 
-		Price float64
-		Qty   int
+		Qty int
 
-		RowTotal         float64
-		TaxAmount        float64
-		DiscountAmount   float64
-		AppliedDiscounts []ItemDiscount
-
-		PriceInclTax    float64
-		RowTotalInclTax float64
+		//DEPRICATED
+		//Price float64
+		// DEPRICATED
+		//DiscountAmount float64
+		// DEPRICATED
+		//PriceInclTax float64
 
 		DeliveryInfoReference *DeliveryInfo
 		CurrencyCode          string
@@ -136,6 +152,30 @@ type (
 		OriginalDeliveryIntent *DeliveryIntent
 
 		AdditionalData map[string]string
+		//brutto for single item
+		SinglePrice float64
+		//netto for single item
+		SinglePriceInclTax float64
+		//RowTotal = SinglePrice * Qty
+		RowTotal float64
+		//TaxAmount=Qty * (SinglePriceInclTax-SinglePrice)
+		TaxAmount float64
+		//RowTotalInclTax= RowTotal + TaxAmount
+		RowTotalInclTax float64
+		//AppliedDiscounts contains the details about the discounts applied to this item - they can be "itemrelated" or not
+		AppliedDiscounts []ItemDiscount
+		// TotalDiscountAmount = Sum of AppliedDiscounts = ItemRelatedDiscountAmount +NonItemRelatedDiscountAmount
+		TotalDiscountAmount float64
+		// ItemRelatedDiscountAmount = Sum of AppliedDiscounts where IsItemRelated = True
+		ItemRelatedDiscountAmount float64
+		//NonItemRelatedDiscountAmount = Sum of AppliedDiscounts where IsItemRelated = false
+		NonItemRelatedDiscountAmount float64
+		//RowTotalWithItemRelatedDiscountInclTax=RowTotal-ItemRelatedDiscountAmount
+		RowTotalWithItemRelatedDiscount float64
+		//RowTotalWithItemRelatedDiscountInclTax=RowTotalInclTax-ItemRelatedDiscountAmount
+		RowTotalWithItemRelatedDiscountInclTax float64
+		//This is the price the customer finaly need to pay for this item:  RowTotalWithDiscountInclTax = RowTotalInclTax-TotalDiscountAmount
+		RowTotalWithDiscountInclTax float64
 	}
 
 	// DiscountItem
@@ -143,6 +183,8 @@ type (
 		Code  string
 		Title string
 		Price float64
+		//IsItemRelated is a flag indicating if the discount should be displayed in the item or if it the result of a cart discount
+		IsItemRelated bool
 	}
 
 	// Totalitem for totals

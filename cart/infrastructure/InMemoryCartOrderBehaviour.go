@@ -1,14 +1,15 @@
 package infrastructure
 
 import (
-	domaincart "go.aoe.com/flamingo/core/cart/domain/cart"
 	"context"
 	"errors"
 	"fmt"
-	"go.aoe.com/flamingo/core/product/domain"
-	"strconv"
-	"math/rand"
 	"math/big"
+	"math/rand"
+	"strconv"
+
+	domaincart "go.aoe.com/flamingo/core/cart/domain/cart"
+	"go.aoe.com/flamingo/core/product/domain"
 )
 
 type (
@@ -87,7 +88,7 @@ func (cob *InMemoryCartOrderBehaviour) UpdateItem(ctx context.Context, cart *dom
 
 /**
 add item to cart and store in memory
- */
+*/
 func (cob *InMemoryCartOrderBehaviour) AddToCart(ctx context.Context, cart *domaincart.Cart, addRequest domaincart.AddRequest) (*domaincart.Cart, error) {
 
 	if !cob.CartStorage.HasCart(cart.ID) {
@@ -107,12 +108,12 @@ func (cob *InMemoryCartOrderBehaviour) AddToCart(ctx context.Context, cart *doma
 		cartItem := domaincart.Item{
 			MarketplaceCode:        addRequest.MarketplaceCode,
 			VariantMarketPlaceCode: addRequest.VariantMarketplaceCode,
-			Qty:                    addRequest.Qty,
-			Price:                  product.SaleableData().ActivePrice.GetFinalPrice(),
-			ID:                     strconv.Itoa(rand.Int()),
-			CurrencyCode:           product.SaleableData().ActivePrice.Currency,
+			Qty:          addRequest.Qty,
+			SinglePrice:  product.SaleableData().ActivePrice.GetFinalPrice(),
+			ID:           strconv.Itoa(rand.Int()),
+			CurrencyCode: product.SaleableData().ActivePrice.Currency,
 			OriginalDeliveryIntent: &domaincart.DeliveryIntent{
-				Method:                     addRequest.DeliveryIntent.Method,
+				Method: addRequest.DeliveryIntent.Method,
 				AutodetectDeliveryLocation: false,
 				DeliveryLocationType:       addRequest.DeliveryIntent.DeliveryLocationType,
 				DeliveryLocationCode:       addRequest.DeliveryIntent.DeliveryLocationCode,
@@ -128,7 +129,7 @@ func (cob *InMemoryCartOrderBehaviour) AddToCart(ctx context.Context, cart *doma
 }
 
 func calculateItemPrices(item *domaincart.Item) {
-	item.RowTotal, _ = new(big.Float).Mul(big.NewFloat(item.Price), new(big.Float).SetInt64(int64(item.Qty))).Float64()
+	item.RowTotal, _ = new(big.Float).Mul(big.NewFloat(item.SinglePrice), new(big.Float).SetInt64(int64(item.Qty))).Float64()
 }
 
 // @todo implement when needed
@@ -148,7 +149,7 @@ func (cob *InMemoryCartOrderBehaviour) UpdateDeliveryInfosAndBilling(ctx context
 
 /*
 return the current cart from storage
- */
+*/
 func (cob *InMemoryCartOrderBehaviour) GetCart(ctx context.Context, cartId string) (*domaincart.Cart, error) {
 	if cob.CartStorage.HasCart(cartId) {
 		// if cart exists, there is no error ;)
