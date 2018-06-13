@@ -105,6 +105,7 @@ type (
 		SkipReviewAction                bool `inject:"config:checkout.skipReviewAction,optional"`
 		ShowReviewStepAfterPaymentError bool `inject:"config:checkout.showReviewStepAfterPaymentError,optional"`
 		ShowEmptyCartPageIfNoItems      bool `inject:"config:checkout.showEmptyCartPageIfNoItems,optional"`
+		RedirectToCartOnInvalideCart    bool `inject:"config:checkout.redirectToCartOnInvalideCart,optional"`
 
 		ApplicationCartService         *cartApplication.CartService         `inject:""`
 		ApplicationCartReceiverService *cartApplication.CartReceiverService `inject:""`
@@ -152,6 +153,10 @@ func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
 	if e != nil {
 		cc.Logger.WithField("category", "checkout").Errorf("cart.checkoutcontroller.viewaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil)
+	}
+	guardRedirect := cc.getCommonGuardRedirects(ctx, decoratedCart)
+	if guardRedirect != nil {
+		return guardRedirect
 	}
 
 	//Guard Clause if Cart is empty
@@ -236,6 +241,10 @@ func (cc *CheckoutController) ProcessPaymentAction(ctx web.Context) web.Response
 	if e != nil {
 		cc.Logger.WithField("category", "checkout").Errorf("cart.checkoutcontroller.submitaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil)
+	}
+	guardRedirect := cc.getCommonGuardRedirects(ctx, decoratedCart)
+	if guardRedirect != nil {
+		return guardRedirect
 	}
 
 	if cc.ShowEmptyCartPageIfNoItems && decoratedCart.Cart.ItemCount() == 0 {
@@ -567,6 +576,10 @@ func (cc *CheckoutController) ReviewAction(ctx web.Context) web.Response {
 	if cc.ShowEmptyCartPageIfNoItems && decoratedCart.Cart.ItemCount() == 0 {
 		return cc.Render(ctx, "checkout/emptycart", nil)
 	}
+	guardRedirect := cc.getCommonGuardRedirects(ctx, decoratedCart)
+	if guardRedirect != nil {
+		return guardRedirect
+	}
 
 	if proceed == "1" && termsAndConditions == "1" && selectedProvider != "" && selectedMethod != "" {
 		return cc.processPaymentOrPlaceOrderDirectly(ctx, selectedProvider, selectedMethod, "", nil)
@@ -581,4 +594,16 @@ func (cc *CheckoutController) ReviewAction(ctx web.Context) web.Response {
 	}
 	return cc.Render(ctx, "checkout/review", viewData)
 
+}
+
+//getCommonGuardRedirects - checks config and may return a redirect that should be executed before the common checkou actions
+func (cc *CheckoutController) getCommonGuardRedirects(ctx web.Context, decoratedCart *cart.DecoratedCart) web.Response {
+	if cc.RedirectToCartOnInvalideCart {
+		result := cc.ApplicationCartService.ValidateCart(ctx, decoratedCart)
+		if !result.IsValid() {
+			cc.Logger.WithField("category", "checkout").Infof("StartAction > RedirectToCartOnInvalideCart")
+			return cc.Redirect("cart.view", nil)
+		}
+	}
+	return nil
 }
