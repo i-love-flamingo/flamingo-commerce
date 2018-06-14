@@ -38,15 +38,15 @@ func (e *EventReceiver) Notify(event event.Event) {
 		}
 		guestCart, err := e.CartReceiverService.ViewGuestCart(eventType.Context)
 		if err != nil {
-			e.Logger.WithField("category", "cart").Errorf("LoginEvent - Guestcart cannot be received %v", err)
+			e.Logger.WithField(flamingo.LogKeyCategory, "cart").Error("LoginEvent - Guestcart cannot be received %v", err)
 			return
 		}
 		if !e.CartReceiverService.UserService.IsLoggedIn(eventType.Context) {
-			e.Logger.WithField("category", "cart").Error("Received LoginEvent but user is not logged in!!!")
+			e.Logger.WithField(flamingo.LogKeyCategory, "cart").Error("Received LoginEvent but user is not logged in!!!")
 			return
 		}
 		for _, item := range guestCart.Cartitems {
-			e.Logger.WithField("category", "cart").Debugf("Merging item from guest to user cart %v", item)
+			e.Logger.WithField(flamingo.LogKeyCategory, "cart").Debug("Merging item from guest to user cart %v", item)
 			addRequest := e.CartService.BuildAddRequest(eventType.Context, item.MarketplaceCode, item.VariantMarketPlaceCode, item.Qty, item.OriginalDeliveryIntent.String())
 			e.CartService.AddProduct(eventType.Context, addRequest)
 		}

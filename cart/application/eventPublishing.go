@@ -51,7 +51,7 @@ func (d *DefaultEventPublisher) PublishOrderPlacedEvent(ctx context.Context, car
 		OrderId: orderId,
 	}
 	if webContext, ok := ctx.(web.Context); ok {
-		d.Logger.Infof("Publish Event OrderPlacedEvent for Order: %v", orderId)
+		d.Logger.Info("Publish Event OrderPlacedEvent for Order: %v", orderId)
 		//For now we publish only to Flamingo default Event Router
 		webContext.EventRouter().Dispatch(ctx, &eventObject)
 	}
@@ -70,7 +70,7 @@ func (d *DefaultEventPublisher) PublishAddToCartEvent(ctx context.Context, marke
 		Qty:                    qty,
 	}
 	if webContext, ok := ctx.(web.Context); ok {
-		d.Logger.Infof("Publish Event PublishAddToCartEvent: %v", eventObject)
+		d.Logger.Info("Publish Event PublishAddToCartEvent: %v", eventObject)
 		webContext.EventRouter().Dispatch(ctx, &eventObject)
 	}
 }
@@ -86,7 +86,7 @@ func (d *DefaultEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context
 		QtyAfter:               qtyAfter,
 	}
 	if webContext, ok := ctx.(web.Context); ok {
-		d.Logger.Infof("Publish Event PublishCartChangedQtyEvent: %v", eventObject)
+		d.Logger.Info("Publish Event PublishCartChangedQtyEvent: %v", eventObject)
 		webContext.EventRouter().Dispatch(ctx, &eventObject)
 	}
 }

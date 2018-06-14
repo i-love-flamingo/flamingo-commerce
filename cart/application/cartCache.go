@@ -78,16 +78,16 @@ func BuildIdentifierFromCart(cart *cart.Cart) (*CartCacheIdentifier, error) {
 func (c *CartSessionCache) GetCart(ctx web.Context, id CartCacheIdentifier) (*cart.Cart, error) {
 	if cache, ok := ctx.Session().Values[CartSessionCache_CacheKeyPrefix+id.CacheKey()]; ok {
 		if cachedCartsEntry, ok := cache.(CachedCartEntry); ok {
-			c.Logger.WithField("category", "CartSessionCache").Debugf("Found cached cart %v", id.CacheKey())
+			c.Logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").Debug("Found cached cart %v", id.CacheKey())
 			if cachedCartsEntry.IsInvalid {
 				return &cachedCartsEntry.Entry, CacheIsInvalidError
 			}
 			return &cachedCartsEntry.Entry, nil
 		} else {
-			c.Logger.WithField("category", "CartSessionCache").Errorf("Cannot Cast Cache Entry %v", id.CacheKey())
+			c.Logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").Error("Cannot Cast Cache Entry %v", id.CacheKey())
 		}
 	}
-	c.Logger.WithField("category", "CartSessionCache").Debugf("Did not Found cached cart %v", id.CacheKey())
+	c.Logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").Debug("Did not Found cached cart %v", id.CacheKey())
 
 	return nil, errors.New("no cart in cache")
 }
@@ -99,7 +99,7 @@ func (c *CartSessionCache) CacheCart(ctx web.Context, id CartCacheIdentifier, ca
 	entry := CachedCartEntry{
 		Entry: *cartForCache,
 	}
-	c.Logger.WithField("category", "CartSessionCache").Debugf("Caching cart %v", id.CacheKey())
+	c.Logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").Debug("Caching cart %v", id.CacheKey())
 	ctx.Session().Values[CartSessionCache_CacheKeyPrefix+id.CacheKey()] = entry
 	return nil
 }

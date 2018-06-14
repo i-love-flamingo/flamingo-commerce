@@ -34,7 +34,7 @@ type (
 func (cc *CartApiController) GetAction(ctx web.Context) web.Response {
 	cart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
 	if e != nil {
-		cc.Logger.WithField("category", "CartApiController").Errorf("cart.cartapicontroller.get: %v", e.Error())
+		cc.Logger.WithField("category", "CartApiController").Error("cart.cartapicontroller.get: %v", e.Error())
 		return cc.JSONError(result{Message: e.Error(), Success: false}, 500)
 	}
 	return cc.JSON(cart)
@@ -56,7 +56,7 @@ func (cc *CartApiController) AddAction(ctx web.Context) web.Response {
 	addRequest := cc.ApplicationCartService.BuildAddRequest(ctx, ctx.MustParam1("marketplaceCode"), variantMarketplaceCode, qtyInt, deliveryIntent)
 	e, _ = cc.ApplicationCartService.AddProduct(ctx, addRequest)
 	if e != nil {
-		cc.Logger.WithField("category", "CartApiController").Errorf("cart.cartapicontroller.add: %v", e.Error())
+		cc.Logger.WithField("category", "CartApiController").Error("cart.cartapicontroller.add: %v", e.Error())
 		msgCode := ""
 		if e, ok := e.(messageCodeAvailable); ok {
 			msgCode = e.MessageCode()
@@ -68,7 +68,6 @@ func (cc *CartApiController) AddAction(ctx web.Context) web.Response {
 		Message: fmt.Sprintf("added %v / %v Qty %v", addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode, addRequest.Qty),
 	})
 }
-
 
 func (cc *CartApiController) ApplyVoucherAndGetAction(ctx web.Context) web.Response {
 	couponCode := ctx.MustParam1("couponCode")

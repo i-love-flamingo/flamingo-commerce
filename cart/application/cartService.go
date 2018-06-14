@@ -197,11 +197,11 @@ func (cs *CartService) BuildAddRequest(ctx web.Context, marketplaceCode string, 
 func (cs *CartService) AddProduct(ctx web.Context, addRequest cartDomain.AddRequest) (error, productDomain.BasicProduct) {
 	addRequest, product, err := cs.checkProductForAddRequest(ctx, addRequest)
 	if err != nil {
-		cs.Logger.WithField("category", "cartService").WithField("subCategory", "AddProduct").Error(err)
+		cs.Logger.WithField("category", "cartService").WithField(flamingo.LogKeySubCategory, "AddProduct").Error(err)
 		return err, nil
 	}
 
-	cs.Logger.WithField("category", "cartService").WithField("subCategory", "AddProduct").Debugf("AddRequest received %#v  / %v", addRequest, addRequest.DeliveryIntent.String())
+	cs.Logger.WithField(flamingo.LogKeyCategory, "cartService").WithField(flamingo.LogKeySubCategory, "AddProduct").Debug("AddRequest received %#v  / %v", addRequest, addRequest.DeliveryIntent.String())
 
 	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx)
 	if err != nil {
@@ -214,7 +214,7 @@ func (cs *CartService) AddProduct(ctx web.Context, addRequest cartDomain.AddRequ
 		if cs.PickUpDetectionService != nil {
 			locationCode, locationType, err := cs.PickUpDetectionService.Detect(product, addRequest)
 			if err == nil {
-				cs.Logger.WithField("category", "cartService").WithField("subCategory", "AddProduct").Debugf("Detected pickup location %v / %v", locationCode, locationType)
+				cs.Logger.WithField(flamingo.LogKeyCategory, "cartService").WithField("subCategory", "AddProduct").Debug("Detected pickup location %v / %v", locationCode, locationType)
 				addRequest.DeliveryIntent.DeliveryLocationCode = locationCode
 				addRequest.DeliveryIntent.DeliveryLocationType = locationType
 			}
@@ -291,7 +291,7 @@ func (cs *CartService) updateCartInCache(ctx web.Context, cart *cartDomain.Cart)
 		}
 		err = cs.CartCache.CacheCart(ctx, *id, cart)
 		if err != nil {
-			cs.Logger.Errorf("Error while caching cart: %v", err)
+			cs.Logger.Error("Error while caching cart: %v", err)
 		}
 	}
 }
@@ -304,7 +304,7 @@ func (cs *CartService) deleteCartInCache(ctx web.Context, cart *cartDomain.Cart)
 		}
 		err = cs.CartCache.Delete(ctx, *id)
 		if err != nil {
-			cs.Logger.Errorf("Error while deleting cart in cache: %v", err)
+			cs.Logger.Error("Error while deleting cart in cache: %v", err)
 		}
 	}
 }

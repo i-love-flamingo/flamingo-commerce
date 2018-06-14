@@ -58,7 +58,7 @@ func (dib *DefaultDeliveryInfoBuilder) BuildDeliveryInfoUpdateCommand(ctx web.Co
 //BuildDeliveryIntent - gets DeliveryIntent by string representation
 func (b *DeliveryIntentBuilder) BuildDeliveryIntent(representation string) DeliveryIntent {
 	if representation == "" {
-		b.Logger.WithField("category", "cart").WithField("subcategory", "DeliveryIntentBuilder").Warnf("Empty IntentString ")
+		b.Logger.WithField("category", "cart").WithField("subcategory", "DeliveryIntentBuilder").Warn("Empty IntentString")
 		return DeliveryIntent{
 			Method: DELIVERY_METHOD_UNSPECIFIED,
 		}
@@ -78,7 +78,7 @@ func (b *DeliveryIntentBuilder) BuildDeliveryIntent(representation string) Deliv
 
 	intentParts := strings.SplitN(representation, "_", 3)
 	if len(intentParts) != 3 {
-		b.Logger.WithField("category", "cart").WithField("subcategory", "DeliveryIntentBuilder").Warnf("Unknown IntentString %v", representation)
+		b.Logger.WithField("category", "cart").WithField("subcategory", "DeliveryIntentBuilder").Warn("Unknown IntentString", representation)
 		return DeliveryIntent{
 			Method: DELIVERY_METHOD_UNSPECIFIED,
 		}
@@ -99,7 +99,7 @@ func (b *DeliveryIntentBuilder) BuildDeliveryIntent(representation string) Deliv
 			}
 		}
 	}
-	b.Logger.WithField("category", "cart").WithField("subcategory", "DeliveryIntentBuilder").Warnf("Unknown IntentString %v", representation)
+	b.Logger.WithField("category", "cart").WithField("subcategory", "DeliveryIntentBuilder").Warn("Unknown IntentString", representation)
 	return DeliveryIntent{
 		Method: DELIVERY_METHOD_UNSPECIFIED,
 	}
