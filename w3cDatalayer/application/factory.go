@@ -177,8 +177,8 @@ func (s Factory) buildCartItem(item cart.DecoratedCartItem, currencyCode string)
 		Quantity:    item.Item.Qty,
 		ProductInfo: s.getProductInfo(item.Product),
 		Price: domain.CartItemPrice{
-			BasePrice:    item.Item.Price,
-			PriceWithTax: item.Item.PriceInclTax,
+			BasePrice:    item.Item.SinglePrice,
+			PriceWithTax: item.Item.SinglePriceInclTax,
 			TaxRate:      item.Item.TaxAmount,
 			Currency:     currencyCode,
 		},
