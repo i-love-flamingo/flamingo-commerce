@@ -26,12 +26,12 @@ type (
 func (os *OrderService) SetSources(ctx web.Context) error {
 	decoratedCart, err := os.CartReceiverService.ViewDecoratedCart(ctx)
 	if err != nil {
-		os.Logger.Errorf("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
+		os.Logger.Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
 		return err
 	}
 	err = os.SourcingEngine.SetSourcesForCartItems(ctx, decoratedCart)
 	if err != nil {
-		os.Logger.WithField("category", "checkout.orderService").Errorf("Error while getting sources: %v", err)
+		os.Logger.WithField("category", "checkout.orderService").Error("Error while getting sources: %v", err)
 		return errors.New("Error while setting sources.")
 	}
 	return nil
@@ -47,7 +47,7 @@ func (os *OrderService) PlaceOrder(ctx web.Context, decoratedCart *cart.Decorate
 }
 
 func (os *OrderService) CurrentCartSaveInfos(ctx web.Context, billingAddress *cart.Address, shippingAddress *cart.Address, purchaser *cart.Person) error {
-	os.Logger.Debugf("CurrentCartSaveInfos call billingAddress:%v shippingAddress:%v payment:%v", billingAddress, shippingAddress)
+	os.Logger.Debug("CurrentCartSaveInfos call billingAddress:%v shippingAddress:%v payment:%v", billingAddress, shippingAddress)
 
 	if billingAddress == nil {
 		os.Logger.Warn("CurrentCartSaveInfos called without billing address")
@@ -55,20 +55,20 @@ func (os *OrderService) CurrentCartSaveInfos(ctx web.Context, billingAddress *ca
 	}
 	decoratedCart, err := os.CartReceiverService.ViewDecoratedCart(ctx)
 	if err != nil {
-		os.Logger.Errorf("CurrentCartSaveInfos GetDecoratedCart Error %v", err)
+		os.Logger.Error("CurrentCartSaveInfos GetDecoratedCart Error %v", err)
 		return err
 	}
 
 	updateCommands, err := os.DeliveryInfoBuilder.BuildDeliveryInfoUpdateCommand(ctx, decoratedCart)
 	if err != nil {
-		os.Logger.Errorf("OnStepCurrentCartPlaceOrder BuildDeliveryInfoUpdateCommand Error %v", err)
+		os.Logger.Error("OnStepCurrentCartPlaceOrder BuildDeliveryInfoUpdateCommand Error %v", err)
 		return err
 	}
 
 	//If an Address is given - add it to every DeliveryInfo(s)
 	if shippingAddress != nil {
 		if len(updateCommands) == 0 {
-			os.Logger.Warnf("OnStepCurrentCartPlaceOrder Cart has no DeliveryInfoUpdates Build - cannot set shippingAddress")
+			os.Logger.Warn("OnStepCurrentCartPlaceOrder Cart has no DeliveryInfoUpdates Build - cannot set shippingAddress")
 			return errors.New("No DeliveryInfos Build - cannot set shippingAddress")
 		}
 		for k, _ := range updateCommands {
@@ -77,20 +77,20 @@ func (os *OrderService) CurrentCartSaveInfos(ctx web.Context, billingAddress *ca
 	}
 	err = os.CartService.UpdateDeliveryInfosAndBilling(ctx, billingAddress, updateCommands)
 	if err != nil {
-		os.Logger.Errorf("OnStepCurrentCartPlaceOrder UpdateDeliveryInfosAndBilling Error %v", err)
+		os.Logger.Error("OnStepCurrentCartPlaceOrder UpdateDeliveryInfosAndBilling Error %v", err)
 		return err
 	}
 
 	err = os.CartService.UpdatePurchaser(ctx, purchaser, nil)
 	if err != nil {
-		os.Logger.Errorf("OnStepCurrentCartPlaceOrder UpdatePurchaser Error %v", err)
+		os.Logger.Error("OnStepCurrentCartPlaceOrder UpdatePurchaser Error %v", err)
 		return err
 	}
 
 	//After setting DeliveryInfos - call SourcingEnginge (this will reload the cart and update all items!)
 	err = os.SetSources(ctx)
 	if err != nil {
-		os.Logger.Errorf("OnStepCurrentCartPlaceOrder SetSources Error %v", err)
+		os.Logger.Error("OnStepCurrentCartPlaceOrder SetSources Error %v", err)
 		return err
 	}
 	return nil
@@ -101,7 +101,7 @@ func (os *OrderService) CurrentCartSaveInfos(ctx web.Context, billingAddress *ca
 func (os *OrderService) CurrentCartPlaceOrder(ctx web.Context, payment cart.CartPayment) (orderid string, orderError error) {
 	decoratedCart, err := os.CartReceiverService.ViewDecoratedCart(ctx)
 	if err != nil {
-		os.Logger.Errorf("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
+		os.Logger.Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
 		return "", err
 	}
 
@@ -114,7 +114,7 @@ func (os *OrderService) CurrentCartPlaceOrder(ctx web.Context, payment cart.Cart
 	orderid, orderError = os.PlaceOrder(ctx, decoratedCart, &payment)
 
 	if orderError != nil {
-		os.Logger.WithField("category", "checkout.orderService").Errorf("Error during place Order: %v", err)
+		os.Logger.WithField("category", "checkout.orderService").Error("Error during place Order: %v", err)
 		return "", errors.New("Error while placing the order. Please contact customer support.")
 	}
 	return orderid, nil

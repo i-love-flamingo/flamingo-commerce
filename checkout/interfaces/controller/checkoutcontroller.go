@@ -151,7 +151,7 @@ func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
 
 	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
 	if e != nil {
-		cc.Logger.WithField("category", "checkout").Errorf("cart.checkoutcontroller.viewaction: Error %v", e)
+		cc.Logger.WithField("category", "checkout").Error("cart.checkoutcontroller.viewaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
 	guardRedirect := cc.getCommonGuardRedirects(ctx, decoratedCart)
@@ -239,7 +239,7 @@ func (cc *CheckoutController) ProcessPaymentAction(ctx web.Context) web.Response
 	//Guard Clause if Cart cannout be fetched
 	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
 	if e != nil {
-		cc.Logger.WithField("category", "checkout").Errorf("cart.checkoutcontroller.submitaction: Error %v", e)
+		cc.Logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
 	guardRedirect := cc.getCommonGuardRedirects(ctx, decoratedCart)
@@ -318,7 +318,7 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx web.Context, f
 	//Guard Clause if Cart cannout be fetched
 	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
 	if e != nil {
-		cc.Logger.WithField("category", "checkout").Errorf("cart.checkoutcontroller.submitaction: Error %v", e)
+		cc.Logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
 
@@ -381,11 +381,11 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx web.Context, f
 		}
 	} else {
 		if form.IsSubmitted && form.HasGeneralErrors() {
-			cc.Logger.WithField("category", "checkout").Warnf("CheckoutForm has general error: %#v", form.ValidationInfo.GeneralErrors)
+			cc.Logger.WithField("category", "checkout").Warn("CheckoutForm has general error: %#v", form.ValidationInfo.GeneralErrors)
 		}
 	}
 
-	cc.Logger.Debugf("paymentProviders %#v", cc.getPaymentProviders())
+	cc.Logger.Debug("paymentProviders %#v", cc.getPaymentProviders())
 	//Default: Form not submitted yet or submitted with validation errors:
 	return cc.Render(ctx, template, CheckoutViewData{
 		DecoratedCart:        *decoratedCart,
@@ -404,7 +404,7 @@ func (cc *CheckoutController) showCheckoutFormWithErrors(ctx web.Context, templa
 			template = "checkout/usercheckout"
 		}
 	}
-	cc.Logger.Warnf("Place Order Error: %s", err.Error())
+	cc.Logger.Warn("Place Order Error: %s", err.Error())
 	if form == nil {
 		cc.CheckoutFormService.Cart = &decoratedCart.Cart
 		newForm, _ := formApplicationService.GetUnsubmittedForm(ctx, cc.CheckoutFormService)
@@ -422,7 +422,7 @@ func (cc *CheckoutController) showCheckoutFormWithErrors(ctx web.Context, templa
 
 //showReviewFormWithErrors
 func (cc *CheckoutController) showReviewFormWithErrors(ctx web.Context, decoratedCart cart.DecoratedCart, selectedProvider string, selectedMethod string, err error) web.Response {
-	cc.Logger.Warnf("Show Error (review step): %s", err.Error())
+	cc.Logger.Warn("Show Error (review step): %s", err.Error())
 	viewData := ReviewStepViewData{
 		DecoratedCart: decoratedCart,
 		ErrorInfos:    getViewErrorInfo(err),
@@ -453,7 +453,7 @@ func (cc *CheckoutController) processPaymentOrPlaceOrderDirectly(ctx web.Context
 	//Guard Clause if Cart cannout be fetched
 	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
 	if e != nil {
-		cc.Logger.WithField("category", "checkout").Errorf("cart.checkoutcontroller.submitaction: Error %v", e)
+		cc.Logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
 
@@ -512,7 +512,7 @@ func (cc *CheckoutController) placeOrder(ctx web.Context, cartPayment cart.CartP
 			subAmounts += retailer + ":" + fmt.Sprintf("%f", cartPayment.Amount)
 		}
 
-		cc.Logger.WithField("category", "checkout").Errorf("place order failed: order group id: %v / name: %v / total amount: %v / sub amounts: %v", decoratedCart.Cart.EntityID, name, decoratedCart.Cart.CartTotals.GrandTotal, subAmounts)
+		cc.Logger.WithField("category", "checkout").Error("place order failed: order group id: %v / name: %v / total amount: %v / sub amounts: %v", decoratedCart.Cart.EntityID, name, decoratedCart.Cart.CartTotals.GrandTotal, subAmounts)
 		return nil, err
 	}
 
@@ -564,12 +564,12 @@ func (cc *CheckoutController) ReviewAction(ctx web.Context) web.Response {
 	proceed, _ := ctx.Form1("proceed")
 	termsAndConditions, _ := ctx.Form1("termsAndConditions")
 
-	cc.Logger.Debugf("ReviewAction: selectedProvider: %v / selectedMethod: %v / proceed: %v / termsAndConditions: %v", selectedProvider, selectedMethod, proceed, termsAndConditions)
+	cc.Logger.Debug("ReviewAction: selectedProvider: %v / selectedMethod: %v / proceed: %v / termsAndConditions: %v", selectedProvider, selectedMethod, proceed, termsAndConditions)
 
 	//Guard Clause if Cart cannout be fetched
 	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
 	if e != nil {
-		cc.Logger.WithField("category", "checkout").Errorf("cart.checkoutcontroller.submitaction: Error %v", e)
+		cc.Logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
 
@@ -601,7 +601,7 @@ func (cc *CheckoutController) getCommonGuardRedirects(ctx web.Context, decorated
 	if cc.RedirectToCartOnInvalideCart {
 		result := cc.ApplicationCartService.ValidateCart(ctx, decoratedCart)
 		if !result.IsValid() {
-			cc.Logger.WithField("category", "checkout").Infof("StartAction > RedirectToCartOnInvalideCart")
+			cc.Logger.WithField("category", "checkout").Info("StartAction > RedirectToCartOnInvalideCart")
 			return cc.Redirect("cart.view", nil)
 		}
 	}

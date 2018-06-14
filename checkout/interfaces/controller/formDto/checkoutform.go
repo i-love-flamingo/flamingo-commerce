@@ -93,7 +93,7 @@ func (fs *CheckoutFormService) ParseFormData(ctx web.Context, formValues url.Val
 		}
 	}
 
-	fs.Logger.WithField("category", "checkout").Debugf("passed formValues before modifications: %#v", formValues)
+	fs.Logger.WithField("category", "checkout").Debug("passed formValues before modifications: %#v", formValues)
 
 	//Merge in configured DefaultValues that are configured
 	formValues = fs.setConfiguredDefaultFormValues(formValues)
@@ -101,7 +101,7 @@ func (fs *CheckoutFormService) ParseFormData(ctx web.Context, formValues url.Val
 	//OverrideValues
 	formValues = fs.overrideConfiguredDefaultFormValues(formValues)
 
-	fs.Logger.WithField("category", "checkout").Debugf("formValues after modifications: %#v", formValues)
+	fs.Logger.WithField("category", "checkout").Debug("formValues after modifications: %#v", formValues)
 
 	var formData CheckoutFormData
 	fs.Decoder.Decode(&formData, formValues)
