@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"strconv"
 
-	"go.aoe.com/flamingo/core/cart/application"
-	"go.aoe.com/flamingo/framework/flamingo"
-	"go.aoe.com/flamingo/framework/web"
-	"go.aoe.com/flamingo/framework/web/responder"
+	"flamingo.me/flamingo-commerce/cart/application"
+	"flamingo.me/flamingo/framework/flamingo"
+	"flamingo.me/flamingo/framework/web"
+	"flamingo.me/flamingo/framework/web/responder"
 )
 
 type (

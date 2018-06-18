@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"go.aoe.com/flamingo/core/auth/domain"
+	"flamingo.me/flamingo/core/auth/domain"
 )
 
 type (

@@ -4,12 +4,12 @@ import (
 	"log"
 	"strconv"
 
-	"go.aoe.com/flamingo/core/cart/application"
-	cartDomain "go.aoe.com/flamingo/core/cart/domain/cart"
-	productDomain "go.aoe.com/flamingo/core/product/domain"
-	"go.aoe.com/flamingo/framework/router"
-	"go.aoe.com/flamingo/framework/web"
-	"go.aoe.com/flamingo/framework/web/responder"
+	"flamingo.me/flamingo-commerce/cart/application"
+	cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
+	productDomain "flamingo.me/flamingo-commerce/product/domain"
+	"flamingo.me/flamingo/framework/router"
+	"flamingo.me/flamingo/framework/web"
+	"flamingo.me/flamingo/framework/web/responder"
 	"encoding/gob"
 )
 

@@ -3,7 +3,7 @@ package breadcrumbs
 import (
 	"testing"
 
-	"go.aoe.com/flamingo/framework/web/mocks"
+	"flamingo.me/flamingo/framework/web/mocks"
 
 	"github.com/stretchr/testify/assert"
 )

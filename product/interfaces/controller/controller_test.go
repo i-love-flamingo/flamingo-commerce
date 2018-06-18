@@ -6,11 +6,11 @@ import (
 	"net/url"
 	"testing"
 
-	"go.aoe.com/flamingo/core/product/application"
-	"go.aoe.com/flamingo/core/product/domain"
-	"go.aoe.com/flamingo/framework/router"
-	"go.aoe.com/flamingo/framework/web"
-	"go.aoe.com/flamingo/framework/web/responder/mocks"
+	"flamingo.me/flamingo-commerce/product/application"
+	"flamingo.me/flamingo-commerce/product/domain"
+	"flamingo.me/flamingo/framework/router"
+	"flamingo.me/flamingo/framework/web"
+	"flamingo.me/flamingo/framework/web/responder/mocks"
 
 	"github.com/stretchr/testify/mock"
 )

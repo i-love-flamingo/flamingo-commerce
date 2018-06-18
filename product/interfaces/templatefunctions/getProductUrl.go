@@ -1,8 +1,8 @@
 package templatefunctions
 
 import (
-	"go.aoe.com/flamingo/core/product/application"
-	"go.aoe.com/flamingo/core/product/domain"
+	"flamingo.me/flamingo-commerce/product/application"
+	"flamingo.me/flamingo-commerce/product/domain"
 )
 
 type (

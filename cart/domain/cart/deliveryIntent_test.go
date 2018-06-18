@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"go.aoe.com/flamingo/framework/flamingo"
+	"flamingo.me/flamingo/framework/flamingo"
 )
 
 func TestDeliveryIntent(t *testing.T) {

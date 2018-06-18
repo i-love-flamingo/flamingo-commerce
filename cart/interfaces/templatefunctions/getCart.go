@@ -1,10 +1,10 @@
 package templatefunctions
 
 import (
-	"go.aoe.com/flamingo/core/cart/application"
-	cartDomain "go.aoe.com/flamingo/core/cart/domain/cart"
-	"go.aoe.com/flamingo/framework/flamingo"
-	"go.aoe.com/flamingo/framework/web"
+	"flamingo.me/flamingo-commerce/cart/application"
+	cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
+	"flamingo.me/flamingo/framework/flamingo"
+	"flamingo.me/flamingo/framework/web"
 )
 
 type (

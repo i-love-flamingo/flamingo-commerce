@@ -2,14 +2,14 @@ package checkout
 
 import (
 	"github.com/go-playground/form"
-	"go.aoe.com/flamingo/core/checkout/domain"
-	paymentDomain "go.aoe.com/flamingo/core/checkout/domain/payment"
-	"go.aoe.com/flamingo/core/checkout/infrastructure"
-	paymentInfrastructure "go.aoe.com/flamingo/core/checkout/infrastructure/payment"
-	"go.aoe.com/flamingo/core/checkout/interfaces/controller"
-	"go.aoe.com/flamingo/framework/config"
-	"go.aoe.com/flamingo/framework/dingo"
-	"go.aoe.com/flamingo/framework/router"
+	"flamingo.me/flamingo-commerce/checkout/domain"
+	paymentDomain "flamingo.me/flamingo-commerce/checkout/domain/payment"
+	"flamingo.me/flamingo-commerce/checkout/infrastructure"
+	paymentInfrastructure "flamingo.me/flamingo-commerce/checkout/infrastructure/payment"
+	"flamingo.me/flamingo-commerce/checkout/interfaces/controller"
+	"flamingo.me/flamingo/framework/config"
+	"flamingo.me/flamingo/framework/dingo"
+	"flamingo.me/flamingo/framework/router"
 )
 
 type (

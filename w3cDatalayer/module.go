@@ -1,11 +1,11 @@
 package w3cDatalayer
 
 import (
-	"go.aoe.com/flamingo/core/w3cDatalayer/application"
-	"go.aoe.com/flamingo/core/w3cDatalayer/interfaces/templatefunctions"
-	"go.aoe.com/flamingo/framework/dingo"
-	"go.aoe.com/flamingo/framework/event"
-	"go.aoe.com/flamingo/framework/template"
+	"flamingo.me/flamingo/core/w3cDatalayer/application"
+	"flamingo.me/flamingo/core/w3cDatalayer/interfaces/templatefunctions"
+	"flamingo.me/flamingo/framework/dingo"
+	"flamingo.me/flamingo/framework/event"
+	"flamingo.me/flamingo/framework/template"
 )
 
 type (

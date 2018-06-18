@@ -1,9 +1,9 @@
 package search
 
 import (
-	"go.aoe.com/flamingo/core/search/interfaces"
-	"go.aoe.com/flamingo/framework/dingo"
-	"go.aoe.com/flamingo/framework/router"
+	"flamingo.me/flamingo-commerce/search/interfaces"
+	"flamingo.me/flamingo/framework/dingo"
+	"flamingo.me/flamingo/framework/router"
 )
 
 type (

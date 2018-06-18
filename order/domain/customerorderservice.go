@@ -3,7 +3,7 @@ package domain
 import (
 	"context"
 
-	"go.aoe.com/flamingo/core/auth/domain"
+	"flamingo.me/flamingo/core/auth/domain"
 )
 
 // CustomerOrderService for customer order retrieval

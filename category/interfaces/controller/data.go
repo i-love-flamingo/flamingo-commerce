@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"go.aoe.com/flamingo/core/category/domain"
-	"go.aoe.com/flamingo/framework/web"
+	"flamingo.me/flamingo-commerce/category/domain"
+	"flamingo.me/flamingo/framework/web"
 )
 
 type (

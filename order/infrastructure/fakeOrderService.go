@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	coreAuthDomain "go.aoe.com/flamingo/core/auth/domain"
-	"go.aoe.com/flamingo/core/order/domain"
+	coreAuthDomain "flamingo.me/flamingo/core/auth/domain"
+	"flamingo.me/flamingo-commerce/order/domain"
 )
 
 type (

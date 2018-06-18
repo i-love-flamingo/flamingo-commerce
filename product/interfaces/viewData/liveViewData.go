@@ -1,10 +1,10 @@
 package viewData
 
 import (
-	"go.aoe.com/flamingo/core/product/domain"
-	searchdomain "go.aoe.com/flamingo/core/search/domain"
-	"go.aoe.com/flamingo/core/search/utils"
-	"go.aoe.com/flamingo/framework/web"
+	"flamingo.me/flamingo-commerce/product/domain"
+	searchdomain "flamingo.me/flamingo-commerce/search/domain"
+	"flamingo.me/flamingo-commerce/search/utils"
+	"flamingo.me/flamingo/framework/web"
 )
 
 type (

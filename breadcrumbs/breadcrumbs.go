@@ -1,6 +1,6 @@
 package breadcrumbs
 
-import "go.aoe.com/flamingo/framework/web"
+import "flamingo.me/flamingo/framework/web"
 
 type (
 	// Crumb defines a breadcrumb

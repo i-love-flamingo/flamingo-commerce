@@ -5,13 +5,13 @@ import (
 	"encoding/base64"
 	"strings"
 
-	authApplication "go.aoe.com/flamingo/core/auth/application"
-	canonicalUrlApplication "go.aoe.com/flamingo/core/canonicalUrl/application"
-	"go.aoe.com/flamingo/core/cart/domain/cart"
-	productDomain "go.aoe.com/flamingo/core/product/domain"
-	"go.aoe.com/flamingo/core/w3cDatalayer/domain"
-	"go.aoe.com/flamingo/framework/router"
-	"go.aoe.com/flamingo/framework/web"
+	authApplication "flamingo.me/flamingo/core/auth/application"
+	canonicalUrlApplication "flamingo.me/flamingo/core/canonicalUrl/application"
+	"flamingo.me/flamingo-commerce/cart/domain/cart"
+	productDomain "flamingo.me/flamingo-commerce/product/domain"
+	"flamingo.me/flamingo/core/w3cDatalayer/domain"
+	"flamingo.me/flamingo/framework/router"
+	"flamingo.me/flamingo/framework/web"
 )
 
 type (

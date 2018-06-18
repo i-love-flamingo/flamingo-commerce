@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/pkg/errors"
-	"go.aoe.com/flamingo/core/cart/domain/cart"
-	productDomain "go.aoe.com/flamingo/core/product/domain"
-	"go.aoe.com/flamingo/core/pugtemplate/pugjs"
-	"go.aoe.com/flamingo/core/w3cDatalayer/domain"
-	"go.aoe.com/flamingo/framework/flamingo"
-	"go.aoe.com/flamingo/framework/web"
+	"flamingo.me/flamingo-commerce/cart/domain/cart"
+	productDomain "flamingo.me/flamingo-commerce/product/domain"
+	"flamingo.me/flamingo/core/pugtemplate/pugjs"
+	"flamingo.me/flamingo/core/w3cDatalayer/domain"
+	"flamingo.me/flamingo/framework/flamingo"
+	"flamingo.me/flamingo/framework/web"
 )
 
 type (

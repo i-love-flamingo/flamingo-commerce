@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 
-	authApplication "go.aoe.com/flamingo/core/auth/application"
-	cartDomain "go.aoe.com/flamingo/core/cart/domain/cart"
-	"go.aoe.com/flamingo/framework/flamingo"
-	"go.aoe.com/flamingo/framework/web"
+	authApplication "flamingo.me/flamingo/core/auth/application"
+	cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
+	"flamingo.me/flamingo/framework/flamingo"
+	"flamingo.me/flamingo/framework/web"
 )
 
 type (

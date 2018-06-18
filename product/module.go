@@ -1,12 +1,12 @@
 package product
 
 import (
-	"go.aoe.com/flamingo/core/product/interfaces/controller"
-	"go.aoe.com/flamingo/core/product/interfaces/templatefunctions"
-	"go.aoe.com/flamingo/framework/config"
-	"go.aoe.com/flamingo/framework/dingo"
-	"go.aoe.com/flamingo/framework/router"
-	"go.aoe.com/flamingo/framework/template"
+	"flamingo.me/flamingo-commerce/product/interfaces/controller"
+	"flamingo.me/flamingo-commerce/product/interfaces/templatefunctions"
+	"flamingo.me/flamingo/framework/config"
+	"flamingo.me/flamingo/framework/dingo"
+	"flamingo.me/flamingo/framework/router"
+	"flamingo.me/flamingo/framework/template"
 )
 
 type (

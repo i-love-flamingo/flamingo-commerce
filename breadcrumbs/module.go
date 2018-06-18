@@ -1,8 +1,8 @@
 package breadcrumbs
 
 import (
-	"go.aoe.com/flamingo/framework/dingo"
-	"go.aoe.com/flamingo/framework/router"
+	"flamingo.me/flamingo/framework/dingo"
+	"flamingo.me/flamingo/framework/router"
 )
 
 // Module for breadcrumbs

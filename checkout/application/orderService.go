@@ -3,11 +3,11 @@ package application
 import (
 	"errors"
 
-	"go.aoe.com/flamingo/core/cart/application"
-	"go.aoe.com/flamingo/core/cart/domain/cart"
-	"go.aoe.com/flamingo/core/checkout/domain"
-	"go.aoe.com/flamingo/framework/flamingo"
-	"go.aoe.com/flamingo/framework/web"
+	"flamingo.me/flamingo-commerce/cart/application"
+	"flamingo.me/flamingo-commerce/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/checkout/domain"
+	"flamingo.me/flamingo/framework/flamingo"
+	"flamingo.me/flamingo/framework/web"
 )
 
 type (

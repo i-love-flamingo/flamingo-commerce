@@ -1,8 +1,8 @@
 package templatefunctions
 
 import (
-	"go.aoe.com/flamingo/core/w3cDatalayer/application"
-	"go.aoe.com/flamingo/framework/web"
+	"flamingo.me/flamingo/core/w3cDatalayer/application"
+	"flamingo.me/flamingo/framework/web"
 )
 
 type (

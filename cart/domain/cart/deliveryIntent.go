@@ -3,9 +3,9 @@ package cart
 import (
 	"strings"
 
-	productDomain "go.aoe.com/flamingo/core/product/domain"
-	"go.aoe.com/flamingo/framework/flamingo"
-	"go.aoe.com/flamingo/framework/web"
+	productDomain "flamingo.me/flamingo-commerce/product/domain"
+	"flamingo.me/flamingo/framework/flamingo"
+	"flamingo.me/flamingo/framework/web"
 )
 
 type (

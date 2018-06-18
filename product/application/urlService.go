@@ -2,9 +2,9 @@ package application
 
 import (
 	"github.com/pkg/errors"
-	"go.aoe.com/flamingo/core/product/domain"
-	"go.aoe.com/flamingo/framework/router"
-	"go.aoe.com/flamingo/framework/web"
+	"flamingo.me/flamingo-commerce/product/domain"
+	"flamingo.me/flamingo/framework/router"
+	"flamingo.me/flamingo/framework/web"
 )
 
 type (

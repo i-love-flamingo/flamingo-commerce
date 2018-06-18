@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	form2 "github.com/go-playground/form"
-	"go.aoe.com/flamingo/core/customer/domain"
-	"go.aoe.com/flamingo/framework/flamingo"
+	"flamingo.me/flamingo-commerce/customer/domain"
+	"flamingo.me/flamingo/framework/flamingo"
 )
 
 type (

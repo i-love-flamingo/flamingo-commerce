@@ -3,15 +3,15 @@ package controller
 import (
 	"errors"
 
-	"go.aoe.com/flamingo/core/breadcrumbs"
-	"go.aoe.com/flamingo/core/category/domain"
-	productdomain "go.aoe.com/flamingo/core/product/domain"
-	productInterfaceViewData "go.aoe.com/flamingo/core/product/interfaces/viewData"
-	searchdomain "go.aoe.com/flamingo/core/search/domain"
-	"go.aoe.com/flamingo/framework/flamingo"
-	"go.aoe.com/flamingo/framework/router"
-	"go.aoe.com/flamingo/framework/web"
-	"go.aoe.com/flamingo/framework/web/responder"
+	"flamingo.me/flamingo-commerce/breadcrumbs"
+	"flamingo.me/flamingo-commerce/category/domain"
+	productdomain "flamingo.me/flamingo-commerce/product/domain"
+	productInterfaceViewData "flamingo.me/flamingo-commerce/product/interfaces/viewData"
+	searchdomain "flamingo.me/flamingo-commerce/search/domain"
+	"flamingo.me/flamingo/framework/flamingo"
+	"flamingo.me/flamingo/framework/router"
+	"flamingo.me/flamingo/framework/web"
+	"flamingo.me/flamingo/framework/web/responder"
 	"strings"
 )
 

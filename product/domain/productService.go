@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	searchDomain "go.aoe.com/flamingo/core/search/domain"
+	searchDomain "flamingo.me/flamingo-commerce/search/domain"
 )
 
 type (

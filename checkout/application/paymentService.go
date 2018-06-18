@@ -1,6 +1,6 @@
 package application
 
-import cartDomain "go.aoe.com/flamingo/core/cart/domain/cart"
+import cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
 
 type (
 

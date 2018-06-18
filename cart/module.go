@@ -3,16 +3,16 @@ package cart
 import (
 	"encoding/gob"
 
-	"go.aoe.com/flamingo/core/cart/application"
-	"go.aoe.com/flamingo/core/cart/domain/cart"
-	"go.aoe.com/flamingo/core/cart/interfaces/controller"
-	"go.aoe.com/flamingo/core/cart/interfaces/templatefunctions"
-	"go.aoe.com/flamingo/framework/config"
-	"go.aoe.com/flamingo/framework/dingo"
-	"go.aoe.com/flamingo/framework/event"
-	"go.aoe.com/flamingo/framework/router"
-	"go.aoe.com/flamingo/framework/template"
-	"go.aoe.com/flamingo/core/cart/infrastructure"
+	"flamingo.me/flamingo-commerce/cart/application"
+	"flamingo.me/flamingo-commerce/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/cart/interfaces/controller"
+	"flamingo.me/flamingo-commerce/cart/interfaces/templatefunctions"
+	"flamingo.me/flamingo/framework/config"
+	"flamingo.me/flamingo/framework/dingo"
+	"flamingo.me/flamingo/framework/event"
+	"flamingo.me/flamingo/framework/router"
+	"flamingo.me/flamingo/framework/template"
+	"flamingo.me/flamingo-commerce/cart/infrastructure"
 )
 
 type (

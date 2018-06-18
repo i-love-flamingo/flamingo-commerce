@@ -1,9 +1,9 @@
 package application
 
 import (
-	"go.aoe.com/flamingo/core/auth/domain"
-	"go.aoe.com/flamingo/framework/event"
-	"go.aoe.com/flamingo/framework/flamingo"
+	"flamingo.me/flamingo/core/auth/domain"
+	"flamingo.me/flamingo/framework/event"
+	"flamingo.me/flamingo/framework/flamingo"
 )
 
 type (

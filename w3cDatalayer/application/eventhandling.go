@@ -3,13 +3,13 @@ package application
 import (
 	"context"
 
-	authDomain "go.aoe.com/flamingo/core/auth/domain"
-	"go.aoe.com/flamingo/core/cart/application"
-	"go.aoe.com/flamingo/core/cart/domain/cart"
-	"go.aoe.com/flamingo/core/w3cDatalayer/domain"
-	"go.aoe.com/flamingo/framework/event"
-	"go.aoe.com/flamingo/framework/flamingo"
-	"go.aoe.com/flamingo/framework/web"
+	authDomain "flamingo.me/flamingo/core/auth/domain"
+	"flamingo.me/flamingo-commerce/cart/application"
+	"flamingo.me/flamingo-commerce/cart/domain/cart"
+	"flamingo.me/flamingo/core/w3cDatalayer/domain"
+	"flamingo.me/flamingo/framework/event"
+	"flamingo.me/flamingo/framework/flamingo"
+	"flamingo.me/flamingo/framework/web"
 )
 
 type (

@@ -4,9 +4,9 @@ import (
 	"net/url"
 
 	"github.com/pkg/errors"
-	cartDomain "go.aoe.com/flamingo/core/cart/domain/cart"
-	"go.aoe.com/flamingo/core/checkout/domain/payment"
-	"go.aoe.com/flamingo/framework/web"
+	cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/checkout/domain/payment"
+	"flamingo.me/flamingo/framework/web"
 )
 
 type (

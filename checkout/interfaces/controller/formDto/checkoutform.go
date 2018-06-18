@@ -11,13 +11,13 @@ import (
 
 	"github.com/go-playground/form"
 	"github.com/leebenson/conform"
-	"go.aoe.com/flamingo/core/cart/domain/cart"
-	customerDomain "go.aoe.com/flamingo/core/customer/domain"
-	"go.aoe.com/flamingo/core/form/application"
-	formDomain "go.aoe.com/flamingo/core/form/domain"
-	"go.aoe.com/flamingo/framework/config"
-	"go.aoe.com/flamingo/framework/flamingo"
-	"go.aoe.com/flamingo/framework/web"
+	"flamingo.me/flamingo-commerce/cart/domain/cart"
+	customerDomain "flamingo.me/flamingo-commerce/customer/domain"
+	"flamingo.me/flamingo/core/form/application"
+	formDomain "flamingo.me/flamingo/core/form/domain"
+	"flamingo.me/flamingo/framework/config"
+	"flamingo.me/flamingo/framework/flamingo"
+	"flamingo.me/flamingo/framework/web"
 	"gopkg.in/go-playground/validator.v9"
 )
 

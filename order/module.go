@@ -1,11 +1,11 @@
 package order
 
 import (
-	"go.aoe.com/flamingo/core/order/domain"
-	"go.aoe.com/flamingo/core/order/infrastructure"
-	"go.aoe.com/flamingo/core/order/interfaces/controller"
-	"go.aoe.com/flamingo/framework/dingo"
-	"go.aoe.com/flamingo/framework/router"
+	"flamingo.me/flamingo-commerce/order/domain"
+	"flamingo.me/flamingo-commerce/order/infrastructure"
+	"flamingo.me/flamingo-commerce/order/interfaces/controller"
+	"flamingo.me/flamingo/framework/dingo"
+	"flamingo.me/flamingo/framework/router"
 )
 
 type (

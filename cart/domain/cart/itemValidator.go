@@ -3,8 +3,8 @@ package cart
 import (
 	"fmt"
 
-	"go.aoe.com/flamingo/core/product/domain"
-	"go.aoe.com/flamingo/framework/web"
+	"flamingo.me/flamingo-commerce/product/domain"
+	"flamingo.me/flamingo/framework/web"
 )
 
 type (

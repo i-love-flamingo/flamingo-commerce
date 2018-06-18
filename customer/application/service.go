@@ -1,9 +1,9 @@
 package application
 
 import (
-	"go.aoe.com/flamingo/core/auth/application"
-	"go.aoe.com/flamingo/core/customer/domain"
-	"go.aoe.com/flamingo/framework/web"
+	"flamingo.me/flamingo/core/auth/application"
+	"flamingo.me/flamingo-commerce/customer/domain"
+	"flamingo.me/flamingo/framework/web"
 )
 
 type (

@@ -8,8 +8,8 @@ import (
 	"math/rand"
 	"strconv"
 
-	domaincart "go.aoe.com/flamingo/core/cart/domain/cart"
-	"go.aoe.com/flamingo/core/product/domain"
+	domaincart "flamingo.me/flamingo-commerce/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/product/domain"
 )
 
 type (

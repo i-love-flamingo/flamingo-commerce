@@ -3,10 +3,10 @@ package application
 import (
 	"context"
 
-	cartDomain "go.aoe.com/flamingo/core/cart/domain/cart"
-	productDomain "go.aoe.com/flamingo/core/product/domain"
-	"go.aoe.com/flamingo/framework/flamingo"
-	"go.aoe.com/flamingo/framework/web"
+	cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
+	productDomain "flamingo.me/flamingo-commerce/product/domain"
+	"flamingo.me/flamingo/framework/flamingo"
+	"flamingo.me/flamingo/framework/web"
 )
 
 type (

@@ -5,8 +5,8 @@ import (
 	"log"
 	"sort"
 
-	"go.aoe.com/flamingo/core/product/domain"
-	"go.aoe.com/flamingo/framework/flamingo"
+	"flamingo.me/flamingo-commerce/product/domain"
+	"flamingo.me/flamingo/framework/flamingo"
 )
 
 type (
