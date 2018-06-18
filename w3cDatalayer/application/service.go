@@ -7,7 +7,7 @@ import (
 	"flamingo.me/flamingo-commerce/cart/domain/cart"
 	productDomain "flamingo.me/flamingo-commerce/product/domain"
 	"flamingo.me/flamingo/core/pugtemplate/pugjs"
-	"flamingo.me/flamingo/core/w3cDatalayer/domain"
+	"flamingo.me/flamingo-commerce/w3cDatalayer/domain"
 	"flamingo.me/flamingo/framework/flamingo"
 	"flamingo.me/flamingo/framework/web"
 )

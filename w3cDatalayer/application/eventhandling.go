@@ -6,7 +6,7 @@ import (
 	authDomain "flamingo.me/flamingo/core/auth/domain"
 	"flamingo.me/flamingo-commerce/cart/application"
 	"flamingo.me/flamingo-commerce/cart/domain/cart"
-	"flamingo.me/flamingo/core/w3cDatalayer/domain"
+	"flamingo.me/flamingo-commerce/w3cDatalayer/domain"
 	"flamingo.me/flamingo/framework/event"
 	"flamingo.me/flamingo/framework/flamingo"
 	"flamingo.me/flamingo/framework/web"

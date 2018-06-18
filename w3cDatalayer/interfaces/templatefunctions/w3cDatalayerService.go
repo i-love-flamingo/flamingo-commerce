@@ -1,7 +1,7 @@
 package templatefunctions
 
 import (
-	"flamingo.me/flamingo/core/w3cDatalayer/application"
+	"flamingo.me/flamingo-commerce/w3cDatalayer/application"
 	"flamingo.me/flamingo/framework/web"
 )
 
