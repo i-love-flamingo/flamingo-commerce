@@ -1,0 +1,14 @@
+stages:
+- test
+
+test flamingo-commerce:
+  stage: test
+  image: thebod/goenv:0.0.1
+  script:
+  - mkdir -p "${GOPATH}/src/flamingo.me/"
+  - export GODIR="${GOPATH}/src/flamingo.me/flamingo-commerce"
+  - ln -sfv "$(pwd -P)" "${GODIR}"
+  - /pact/pact-go_linux_amd64 daemon &
+  - cd "${GODIR}"
+  - dep ensure
+  - go test ./...
