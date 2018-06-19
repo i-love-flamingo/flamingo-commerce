@@ -23,8 +23,8 @@
     "framework/web/responder",
     "framework/web/responder/mocks"
   ]
-  revision = "40ed95e396409d7e14b6742b50a02d3e275fd622"
-  version = "v2.0.0"
+  revision = "fd7cbdcdf73190a3dabab206553c7ac4829e3503"
+  version = "v2.0.1"
 
 [[projects]]
   name = "github.com/coreos/go-oidc"
