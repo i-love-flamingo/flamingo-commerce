@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/gob"
 	"log"
 	"strconv"
 
@@ -10,7 +11,6 @@ import (
 	"flamingo.me/flamingo/framework/router"
 	"flamingo.me/flamingo/framework/web"
 	"flamingo.me/flamingo/framework/web/responder"
-	"encoding/gob"
 )
 
 type (
@@ -139,6 +139,16 @@ func (cc *CartViewController) DeleteAndViewAction(ctx web.Context) web.Response 
 	}
 
 	err = cc.ApplicationCartService.DeleteItem(ctx, id)
+	if err != nil {
+		log.Printf("cart.cartcontroller.deleteaction: Error %v", err)
+	}
+
+	return cc.Redirect("cart.view", nil)
+}
+
+// DeleteAllAndViewAction the empty
+func (cc *CartViewController) DeleteAllAndViewAction(ctx web.Context) web.Response {
+	err := cc.ApplicationCartService.DeleteAllItems(ctx)
 	if err != nil {
 		log.Printf("cart.cartcontroller.deleteaction: Error %v", err)
 	}

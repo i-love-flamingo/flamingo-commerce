@@ -3,11 +3,11 @@ package application
 import (
 	"fmt"
 
-	"github.com/pkg/errors"
 	cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
 	productDomain "flamingo.me/flamingo-commerce/product/domain"
 	"flamingo.me/flamingo/framework/flamingo"
 	"flamingo.me/flamingo/framework/web"
+	"github.com/pkg/errors"
 )
 
 // CartService application struct
@@ -154,6 +154,34 @@ func (cs CartService) DeleteItem(ctx web.Context, itemId string) error {
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "DeleteItem").Error(err)
 		return err
 	}
+	cs.updateCartInCache(ctx, cart)
+	return nil
+}
+
+// DeleteAllItems in current cart
+func (cs CartService) DeleteAllItems(ctx web.Context) error {
+	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx)
+	if err != nil {
+		return err
+	}
+
+	for _, itemId := range cart.GetItemIds() {
+		item, err := cart.GetByItemId(itemId)
+		if err != nil {
+			cs.Logger.WithField("category", "cartService").WithField("subCategory", "DeleteAllItems").Error(err)
+			return err
+		}
+
+		qtyBefore := item.Qty
+		cs.EventPublisher.PublishChangedQtyInCartEvent(ctx, item, qtyBefore, 0, cart.ID)
+		cart, err = behaviour.DeleteItem(ctx, cart, itemId)
+		if err != nil {
+			cs.handleCartNotFound(ctx, err)
+			cs.Logger.WithField("category", "cartService").WithField("subCategory", "DeleteAllItems").Error(err)
+			return err
+		}
+	}
+
 	cs.updateCartInCache(ctx, cart)
 	return nil
 }

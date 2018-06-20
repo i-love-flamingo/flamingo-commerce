@@ -5,6 +5,7 @@ import (
 
 	"flamingo.me/flamingo-commerce/cart/application"
 	"flamingo.me/flamingo-commerce/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/cart/infrastructure"
 	"flamingo.me/flamingo-commerce/cart/interfaces/controller"
 	"flamingo.me/flamingo-commerce/cart/interfaces/templatefunctions"
 	"flamingo.me/flamingo/framework/config"
@@ -12,7 +13,6 @@ import (
 	"flamingo.me/flamingo/framework/event"
 	"flamingo.me/flamingo/framework/router"
 	"flamingo.me/flamingo/framework/template"
-	"flamingo.me/flamingo-commerce/cart/infrastructure"
 )
 
 type (
@@ -42,6 +42,9 @@ func (m *CartModule) Configure(injector *dingo.Injector) {
 
 	m.RouterRegistry.Handle("cart.updateQty", (*controller.CartViewController).UpdateQtyAndViewAction)
 	m.RouterRegistry.Route("/cart/update/:id", `cart.updateQty(id,qty?="1")`)
+
+	m.RouterRegistry.Handle("cart.deleteAllItems", (*controller.CartViewController).DeleteAllAndViewAction)
+	m.RouterRegistry.Route("/cart/delete/all", `cart.deleteAllItems`)
 
 	m.RouterRegistry.Handle("cart.deleteItem", (*controller.CartViewController).DeleteAndViewAction)
 	m.RouterRegistry.Route("/cart/delete/:id", `cart.deleteItem(id)`)
