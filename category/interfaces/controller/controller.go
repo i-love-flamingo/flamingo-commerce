@@ -3,16 +3,18 @@ package controller
 import (
 	"errors"
 
+	"strings"
+
 	"flamingo.me/flamingo-commerce/breadcrumbs"
 	"flamingo.me/flamingo-commerce/category/domain"
 	productdomain "flamingo.me/flamingo-commerce/product/domain"
 	productInterfaceViewData "flamingo.me/flamingo-commerce/product/interfaces/viewData"
 	searchdomain "flamingo.me/flamingo-commerce/search/domain"
+	"flamingo.me/flamingo-commerce/search/utils"
 	"flamingo.me/flamingo/framework/flamingo"
 	"flamingo.me/flamingo/framework/router"
 	"flamingo.me/flamingo/framework/web"
 	"flamingo.me/flamingo/framework/web/responder"
-	"strings"
 )
 
 type (
@@ -35,6 +37,7 @@ type (
 		Category            domain.Category
 		CategoryTree        domain.Category
 		SearchMeta          searchdomain.SearchMeta
+		PaginationInfo      utils.PaginationInfo
 	}
 )
 
@@ -109,11 +112,14 @@ func (vc *View) Get(c web.Context) web.Response {
 	vc.addBreadcrumb(c, categoryRoot)
 	result := vc.ProductSearchResultViewDataFactory.NewProductSearchResultViewDataFromResult(c, products)
 
+	paginationInfo := vc.PaginationInfoFactory.Build(result.SearchMeta.Page, result.SearchMeta.NumResults, 30, result.SearchMeta.NumPages, c.Request().URL)
+
 	return vc.Render(c, vc.Template, ViewData{
 		Category:            category,
 		CategoryTree:        categoryRoot,
 		ProductSearchResult: result,
 		SearchMeta:          result.SearchMeta,
+		PaginationInfo:      paginationInfo,
 	})
 }
 
