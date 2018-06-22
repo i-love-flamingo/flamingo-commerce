@@ -26,9 +26,10 @@ type (
 		domain.CategoryService                                       `inject:""`
 		productdomain.SearchService                                  `inject:""`
 		*productInterfaceViewData.ProductSearchResultViewDataFactory `inject:""`
-		Router                                                       *router.Router  `inject:""`
-		Template                                                     string          `inject:"config:core.category.view.template"`
-		Logger                                                       flamingo.Logger `inject:""`
+		Router                                                       *router.Router               `inject:""`
+		Template                                                     string                       `inject:"config:core.category.view.template"`
+		Logger                                                       flamingo.Logger              `inject:""`
+		PaginationInfoFactory                                        *utils.PaginationInfoFactory `inject:""`
 	}
 
 	// ViewData for rendering context
