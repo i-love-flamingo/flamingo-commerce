@@ -7,14 +7,14 @@ import (
 	"net/url"
 	"strings"
 
-	authApplication "flamingo.me/flamingo/core/auth/application"
-	canonicalApp "flamingo.me/flamingo/core/canonicalUrl/application"
 	cartApplication "flamingo.me/flamingo-commerce/cart/application"
 	"flamingo.me/flamingo-commerce/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/checkout/application"
 	paymentDomain "flamingo.me/flamingo-commerce/checkout/domain/payment"
 	"flamingo.me/flamingo-commerce/checkout/interfaces/controller/formDto"
 	customerApplication "flamingo.me/flamingo-commerce/customer/application"
+	authApplication "flamingo.me/flamingo/core/auth/application"
+	canonicalApp "flamingo.me/flamingo/core/canonicalUrl/application"
 	formApplicationService "flamingo.me/flamingo/core/form/application"
 	formDomain "flamingo.me/flamingo/core/form/domain"
 	"flamingo.me/flamingo/framework/flamingo"
@@ -46,10 +46,11 @@ type (
 
 	// SuccessViewData represents the success view data
 	SuccessViewData struct {
-		PaymentInfos        []PlaceOrderPaymentInfo
-		OrderId             string
-		Email               string
-		PlacedDecoratedCart cart.DecoratedCart
+		PaymentInfos         []PlaceOrderPaymentInfo
+		OrderId              string
+		Email                string
+		PlacedDecoratedCart  cart.DecoratedCart
+		ShowRegistrationForm bool
 
 		//PlacedDecoratedItems - Depricated
 		PlacedDecoratedItems []cart.DecoratedCartItem
@@ -286,6 +287,11 @@ func (cc *CheckoutController) SuccessAction(ctx web.Context) web.Response {
 				PaymentInfos:         placeOrderFlashData.PaymentInfos,
 				PlacedDecoratedCart:  *decoratedCart,
 			}
+
+			// @todo: Add check if user explicitly want to checkout as guest
+			// even if mail is registed and hide form
+			viewData.ShowRegistrationForm = cc.UserService.IsLoggedIn(ctx) == false
+
 			return cc.Render(ctx, "checkout/success", viewData)
 		}
 	}
