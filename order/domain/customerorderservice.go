@@ -9,4 +9,5 @@ import (
 // CustomerOrderService for customer order retrieval
 type CustomerOrderService interface {
 	Get(context.Context, domain.Auth) ([]*Order, error)
+	GetById(context.Context, domain.Auth, string) (*Order, error)
 }
