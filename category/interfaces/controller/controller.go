@@ -3,7 +3,7 @@ package controller
 import (
 	"errors"
 
-	"strings"
+	"net/url"
 
 	"flamingo.me/flamingo-commerce/breadcrumbs"
 	"flamingo.me/flamingo-commerce/category/domain"
@@ -87,14 +87,9 @@ func (vc *View) Get(c web.Context) web.Response {
 			"name": expectedName,
 		}
 
-		// add all params if there are some
-		if len(c.QueryAll()) > 0 {
-			for index, param := range c.QueryAll() {
-				redirectParams[index] = strings.Join(param, ",")
-			}
-		}
-
-		return vc.RedirectPermanent("category.view", redirectParams)
+		u := vc.Router.URL("category.view", redirectParams)
+		u.RawQuery = url.Values(c.QueryAll()).Encode()
+		return vc.RedirectPermanentURL(u.String())
 	}
 
 	filter := make([]searchdomain.Filter, len(c.QueryAll())+1)
