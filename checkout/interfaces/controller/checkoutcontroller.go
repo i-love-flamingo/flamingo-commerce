@@ -14,7 +14,6 @@ import (
 	"flamingo.me/flamingo-commerce/checkout/interfaces/controller/formDto"
 	customerApplication "flamingo.me/flamingo-commerce/customer/application"
 	authApplication "flamingo.me/flamingo/core/auth/application"
-	canonicalApp "flamingo.me/flamingo/core/canonicalUrl/application"
 	formApplicationService "flamingo.me/flamingo/core/form/application"
 	formDomain "flamingo.me/flamingo/core/form/domain"
 	"flamingo.me/flamingo/framework/flamingo"
@@ -117,7 +116,7 @@ type (
 		CustomerApplicationService *customerApplication.Service `inject:""`
 		PaymentProvider            PaymentProviderProvider      `inject:""`
 
-		CanonicalService *canonicalApp.Service `inject:""`
+		BaseURL string `inject:"config:canonicalurl.baseurl"`
 	}
 )
 
@@ -303,7 +302,7 @@ func (cc *CheckoutController) ExpiredAction(ctx web.Context) web.Response {
 }
 
 func (cc *CheckoutController) getPaymentReturnUrl(PaymentProvider string, PaymentMethod string) *url.URL {
-	baseUrl := cc.CanonicalService.BaseUrl
+	baseUrl := cc.BaseURL
 	paymentUrl := cc.Router.URL("checkout.processpayment", router.P{"providercode": PaymentProvider, "methodcode": PaymentMethod})
 
 	rawUrl := strings.TrimRight(baseUrl, "/") + paymentUrl.String()
