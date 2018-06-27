@@ -96,7 +96,8 @@ type (
 		//Media
 		Media []Media
 		//The sku that should be used to link from Teasers
-		MarketPlaceCode string
+		MarketPlaceCode       string
+		TeaserAvailablePrices []PriceInfo
 	}
 
 	// Media holds product media information
