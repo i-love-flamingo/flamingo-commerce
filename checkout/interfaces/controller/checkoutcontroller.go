@@ -46,11 +46,10 @@ type (
 
 	// SuccessViewData represents the success view data
 	SuccessViewData struct {
-		PaymentInfos         []PlaceOrderPaymentInfo
-		OrderId              string
-		Email                string
-		PlacedDecoratedCart  cart.DecoratedCart
-		ShowRegistrationForm bool
+		PaymentInfos        []PlaceOrderPaymentInfo
+		OrderId             string
+		Email               string
+		PlacedDecoratedCart cart.DecoratedCart
 
 		//PlacedDecoratedItems - Depricated
 		PlacedDecoratedItems []cart.DecoratedCartItem
@@ -287,10 +286,6 @@ func (cc *CheckoutController) SuccessAction(ctx web.Context) web.Response {
 				PaymentInfos:         placeOrderFlashData.PaymentInfos,
 				PlacedDecoratedCart:  *decoratedCart,
 			}
-
-			// @todo: Add check if user explicitly want to checkout as guest
-			// even if mail is registed and hide form
-			viewData.ShowRegistrationForm = cc.UserService.IsLoggedIn(ctx) == false
 
 			return cc.Render(ctx, "checkout/success", viewData)
 		}
