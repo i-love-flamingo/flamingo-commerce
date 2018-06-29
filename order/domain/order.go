@@ -12,6 +12,7 @@ type (
 		Status       string
 		Total        float64
 		CurrencyCode string
+		Attributes   Attributes
 	}
 	// OrderItem
 	OrderItem struct {
@@ -20,4 +21,10 @@ type (
 		Price        float64
 		PriceInclTax float64
 	}
+
+	// Attributes
+	Attributes map[string]Attribute
+
+	// Attribute
+	Attribute interface{}
 )
