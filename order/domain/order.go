@@ -16,7 +16,9 @@ type (
 	}
 	// OrderItem
 	OrderItem struct {
-		Sku                    string
+		// DEPRICATED
+		Sku string
+
 		MarketplaceCode        string
 		VariantMarketplaceCode string
 
