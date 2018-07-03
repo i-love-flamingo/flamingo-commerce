@@ -19,6 +19,7 @@ type (
 // Configure DI
 func (m *Module) Configure(injector *dingo.Injector) {
 	m.RouterRegistry.Handle("customerorders", new(controller.DataControllerCustomerOrders))
+	injector.Bind((*domain.OrderDecoratorInterface)(nil)).To(domain.OrderDecorator{})
 	if m.UseFakeAdapters {
 		injector.Bind((*domain.CustomerOrderService)(nil)).To(infrastructure.FakeCustomerOrders{})
 	}

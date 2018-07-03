@@ -9,6 +9,10 @@ import (
 )
 
 type (
+	OrderDecoratorInterface interface {
+		Create(context.Context, *Order) *DecoratedOrder
+	}
+
 	// OrderDecorator
 	OrderDecorator struct {
 		ProductService domain.ProductService `inject:""`
