@@ -16,7 +16,10 @@ type (
 	}
 	// OrderItem
 	OrderItem struct {
-		Sku          string
+		Sku                    string
+		MarketplaceCode        string
+		VariantMarketplaceCode string
+
 		Name         string
 		Price        float64
 		PriceInclTax float64
