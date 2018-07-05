@@ -11,7 +11,7 @@ import (
 
 type (
 	OrderDecoratorInterface interface {
-		Create(context.Context, Order) DecoratedOrder
+		Create(context.Context, *Order) *DecoratedOrder
 	}
 
 	// OrderDecorator
@@ -39,9 +39,12 @@ type (
 	}
 )
 
+// check interface implementation
+var _ OrderDecoratorInterface = (*OrderDecorator)(nil)
+
 // Create creates a new decorated order
-func (rd *OrderDecorator) Create(ctx context.Context, order *Order) DecoratedOrder {
-	result := DecoratedOrder{Order: order}
+func (rd *OrderDecorator) Create(ctx context.Context, order *Order) *DecoratedOrder {
+	result := &DecoratedOrder{Order: order}
 	result.DecoratedItems = rd.createDecoratedItems(ctx, &order.OrderItems)
 
 	return result
