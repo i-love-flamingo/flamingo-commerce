@@ -22,6 +22,15 @@ type (
 		MarketplaceCode        string
 		VariantMarketplaceCode string
 
+		Qty float64
+
+		CurrencyCode       string
+		SinglePrice        float64
+		SinglePriceInclTax float64
+		RowTotal           float64
+		TaxAmount          float64
+		RowTotalInclTax    float64
+
 		Name         string
 		Price        float64
 		PriceInclTax float64
