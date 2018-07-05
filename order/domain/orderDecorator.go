@@ -22,43 +22,43 @@ type (
 
 	// DecoratedOrder
 	DecoratedOrder struct {
-		Order          Order
-		DecoratedItems []DecoratedOrderItem
+		Order          *Order
+		DecoratedItems []*DecoratedOrderItem
 	}
 
 	// DecoratedOrderItem
 	DecoratedOrderItem struct {
-		Item    OrderItem
-		Product domain.BasicProduct
+		Item    *OrderItem
+		Product *domain.BasicProduct
 	}
 
 	//
 	GroupedDecoratedOrderItem struct {
-		DecoratedItems []DecoratedOrderItem
+		DecoratedItems []*DecoratedOrderItem
 		Group          string
 	}
 )
 
 // Create creates a new decorated order
-func (rd *OrderDecorator) Create(ctx context.Context, order Order) DecoratedOrder {
+func (rd *OrderDecorator) Create(ctx context.Context, order *Order) DecoratedOrder {
 	result := DecoratedOrder{Order: order}
-	result.DecoratedItems = rd.createDecoratedItems(ctx, order.OrderItems)
+	result.DecoratedItems = rd.createDecoratedItems(ctx, &order.OrderItems)
 
 	return result
 }
 
-func (rd *OrderDecorator) createDecoratedItems(ctx context.Context, items []OrderItem) []DecoratedOrderItem {
-	result := make([]DecoratedOrderItem, len(items))
-	for i, item := range items {
-		decoratedItem := rd.createDecoratedItem(ctx, item)
+func (rd *OrderDecorator) createDecoratedItems(ctx context.Context, items *[]OrderItem) []*DecoratedOrderItem {
+	result := make([]*DecoratedOrderItem, len(*items))
+	for i, item := range *items {
+		decoratedItem := rd.createDecoratedItem(ctx, &item)
 		result[i] = decoratedItem
 	}
 
 	return result
 }
 
-func (rd *OrderDecorator) createDecoratedItem(ctx context.Context, item OrderItem) DecoratedOrderItem {
-	result := DecoratedOrderItem{
+func (rd *OrderDecorator) createDecoratedItem(ctx context.Context, item *OrderItem) *DecoratedOrderItem {
+	result := &DecoratedOrderItem{
 		Item: item,
 	}
 
@@ -82,13 +82,13 @@ func (rd *OrderDecorator) createDecoratedItem(ctx context.Context, item OrderIte
 			product = rd.createFallbackProduct(item)
 		}
 	}
-	result.Product = product
+	result.Product = &product
 
 	return result
 }
 
-func (rd *OrderDecorator) createFallbackProduct(item OrderItem) domain.SimpleProduct {
-	return domain.SimpleProduct{
+func (rd *OrderDecorator) createFallbackProduct(item *OrderItem) *domain.SimpleProduct {
+	return &domain.SimpleProduct{
 		BasicProductData: domain.BasicProductData{
 			Title: item.Name,
 		},
@@ -100,12 +100,12 @@ func (rd *OrderDecorator) createFallbackProduct(item OrderItem) domain.SimplePro
 
 // IsConfigurable - checks if current order item is a configurable product
 func (doi DecoratedOrderItem) IsConfigurable() bool {
-	return doi.Product.Type() == domain.TYPECONFIGURABLE_WITH_ACTIVE_VARIANT
+	return (*doi.Product).Type() == domain.TYPECONFIGURABLE_WITH_ACTIVE_VARIANT
 }
 
 // GetVariant getter
 func (doi DecoratedOrderItem) GetVariant() (*domain.Variant, error) {
-	return doi.Product.(domain.ConfigurableProductWithActiveVariant).Variant(doi.Item.VariantMarketplaceCode)
+	return (*doi.Product).(domain.ConfigurableProductWithActiveVariant).Variant(doi.Item.VariantMarketplaceCode)
 }
 
 // GetDisplayTitle getter
@@ -117,7 +117,7 @@ func (doi DecoratedOrderItem) GetDisplayTitle() string {
 		}
 		return variant.Title
 	}
-	return doi.Product.BaseData().Title
+	return (*doi.Product).BaseData().Title
 }
 
 // GetDisplayMarketplaceCode getter
@@ -129,7 +129,7 @@ func (doi DecoratedOrderItem) GetDisplayMarketplaceCode() string {
 		}
 		return variant.MarketPlaceCode
 	}
-	return doi.Product.BaseData().MarketPlaceCode
+	return (*doi.Product).BaseData().MarketPlaceCode
 }
 
 // GetVariantsVariationAttribute getter
@@ -138,7 +138,7 @@ func (doi DecoratedOrderItem) GetVariantsVariationAttributes() domain.Attributes
 	if doi.IsConfigurable() {
 		variant, _ := doi.GetVariant()
 
-		for _, attributeName := range doi.Product.(domain.ConfigurableProductWithActiveVariant).VariantVariationAttributes {
+		for _, attributeName := range (*doi.Product).(domain.ConfigurableProductWithActiveVariant).VariantVariationAttributes {
 			attributes[attributeName] = variant.BaseData().Attributes[attributeName]
 		}
 	}
@@ -148,7 +148,7 @@ func (doi DecoratedOrderItem) GetVariantsVariationAttributes() domain.Attributes
 
 // GetVariantsVariationAttribute getter
 func (doi DecoratedOrderItem) GetVariantsVariationAttributeCodes() []string {
-	return doi.Product.(domain.ConfigurableProductWithActiveVariant).VariantVariationAttributes
+	return (*doi.Product).(domain.ConfigurableProductWithActiveVariant).VariantVariationAttributes
 }
 
 // GetGroupedBy
@@ -160,7 +160,7 @@ func (rd *DecoratedOrder) GetGroupedBy(group string, sortGroup bool) []GroupedDe
 	for _, item := range rd.DecoratedItems {
 		switch group {
 		case "retailer_code":
-			groupKey = item.Product.BaseData().RetailerCode
+			groupKey = (*item.Product).BaseData().RetailerCode
 		default:
 			groupKey = "default"
 		}
