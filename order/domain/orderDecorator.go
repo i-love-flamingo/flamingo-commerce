@@ -152,8 +152,8 @@ func (doi DecoratedOrderItem) GetVariantsVariationAttributeCodes() []string {
 }
 
 // GetGroupedBy
-func (rd *DecoratedOrder) GetGroupedBy(group string, sortGroup bool) []*GroupedDecoratedOrderItem {
-	groupedItemsCollection := make(map[string]*GroupedDecoratedOrderItem)
+func (rd *DecoratedOrder) GetGroupedBy(group string, sortGroup bool) []GroupedDecoratedOrderItem {
+	groupedItemsCollection := make(map[string]GroupedDecoratedOrderItem)
 	var groupedItemKeys []string
 
 	var groupKey string
@@ -166,7 +166,7 @@ func (rd *DecoratedOrder) GetGroupedBy(group string, sortGroup bool) []*GroupedD
 		}
 
 		if _, ok := groupedItemsCollection[groupKey]; !ok {
-			groupedItemsCollection[groupKey] = &GroupedDecoratedOrderItem{
+			groupedItemsCollection[groupKey] = GroupedDecoratedOrderItem{
 				Group: groupKey,
 			}
 
@@ -181,7 +181,7 @@ func (rd *DecoratedOrder) GetGroupedBy(group string, sortGroup bool) []*GroupedD
 		sort.Strings(groupedItemKeys)
 	}
 
-	result := make([]*GroupedDecoratedOrderItem, len(groupedItemKeys))
+	result := make([]GroupedDecoratedOrderItem, len(groupedItemKeys))
 	for _, key := range groupedItemKeys {
 		groupedItemsEntry, _ := groupedItemsCollection[key]
 		result = append(result, groupedItemsEntry)
