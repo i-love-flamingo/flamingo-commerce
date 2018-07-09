@@ -2,7 +2,6 @@ package domain
 
 import (
 	"context"
-	"log"
 	"sort"
 
 	"flamingo.me/flamingo-commerce/product/domain"
@@ -144,7 +143,6 @@ func (doi DecoratedOrderItem) GetVariantsVariationAttributes() domain.Attributes
 			attributes[attributeName] = variant.BaseData().Attributes[attributeName]
 		}
 	}
-	log.Println(attributes)
 	return attributes
 }
 
