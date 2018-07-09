@@ -3,6 +3,7 @@ package domain
 import (
 	"context"
 	"errors"
+	"net/url"
 	"sort"
 )
 
@@ -90,6 +91,11 @@ type (
 
 	RedirectError struct {
 		To string
+	}
+
+	// RequestQueryHook can be used to enforce redirect errors
+	RequestQueryHook interface {
+		Hook(ctx context.Context, path string, query *url.Values) error
 	}
 )
 
