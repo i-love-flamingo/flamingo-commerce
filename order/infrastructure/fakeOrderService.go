@@ -22,7 +22,7 @@ func (co *FakeCustomerOrders) Get(ctx context.Context, authentication coreAuthDo
 			CreationTime: time.Now(),
 			UpdateTime:   time.Now(),
 			Status:       "Teststatus",
-			OrderItems:   make([]domain.OrderItem, 0),
+			OrderItems:   make([]*domain.OrderItem, 0),
 			Total:        123.45,
 			CurrencyCode: "EUR",
 		}, {
@@ -31,7 +31,7 @@ func (co *FakeCustomerOrders) Get(ctx context.Context, authentication coreAuthDo
 			CreationTime: time.Now(),
 			UpdateTime:   time.Now(),
 			Status:       "Teststatus",
-			OrderItems:   make([]domain.OrderItem, 0),
+			OrderItems:   make([]*domain.OrderItem, 0),
 			Total:        123.45,
 			CurrencyCode: "EUR",
 		}, {
@@ -40,7 +40,7 @@ func (co *FakeCustomerOrders) Get(ctx context.Context, authentication coreAuthDo
 			CreationTime: time.Now(),
 			UpdateTime:   time.Now(),
 			Status:       "Teststatus",
-			OrderItems:   make([]domain.OrderItem, 0),
+			OrderItems:   make([]*domain.OrderItem, 0),
 			Total:        123.45,
 			CurrencyCode: "EUR",
 		}, {
@@ -49,7 +49,7 @@ func (co *FakeCustomerOrders) Get(ctx context.Context, authentication coreAuthDo
 			CreationTime: time.Now(),
 			UpdateTime:   time.Now(),
 			Status:       "Teststatus",
-			OrderItems:   make([]domain.OrderItem, 0),
+			OrderItems:   make([]*domain.OrderItem, 0),
 			Total:        123.45,
 			CurrencyCode: "EUR",
 		},
@@ -62,7 +62,7 @@ func (co *FakeCustomerOrders) GetById(ctx context.Context, authentication coreAu
 		CreationTime: time.Now(),
 		UpdateTime:   time.Now(),
 		Status:       "Teststatus",
-		OrderItems:   make([]domain.OrderItem, 0),
+		OrderItems:   make([]*domain.OrderItem, 0),
 		Total:        123.45,
 		CurrencyCode: "EUR",
 	}, nil

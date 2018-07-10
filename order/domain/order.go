@@ -1,6 +1,8 @@
 package domain
 
-import "time"
+import (
+	"time"
+)
 
 type (
 	// Order
@@ -8,12 +10,13 @@ type (
 		ID           string
 		CreationTime time.Time
 		UpdateTime   time.Time
-		OrderItems   []OrderItem
+		OrderItems   []*OrderItem
 		Status       string
 		Total        float64
 		CurrencyCode string
 		Attributes   Attributes
 	}
+
 	// OrderItem
 	OrderItem struct {
 		// DEPRICATED
@@ -34,6 +37,9 @@ type (
 		Name         string
 		Price        float64
 		PriceInclTax float64
+
+		// Source Id where the item shoudl be picked
+		SourceId string
 	}
 
 	// Attributes

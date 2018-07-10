@@ -31,8 +31,14 @@ type (
 		Product *domain.BasicProduct
 	}
 
-	//
-	GroupedDecoratedOrderItem struct {
+	// GroupedDecoratedOrder
+	GroupedDecoratedOrder struct {
+		Order  *DecoratedOrder
+		Groups []*GroupedDecoratedOrderItems
+	}
+
+	// GroupedDecoratedOrderItem
+	GroupedDecoratedOrderItems struct {
 		DecoratedItems []*DecoratedOrderItem
 		Group          string
 	}
@@ -44,15 +50,15 @@ var _ OrderDecoratorInterface = (*OrderDecorator)(nil)
 // Create creates a new decorated order
 func (rd *OrderDecorator) Create(ctx context.Context, order *Order) *DecoratedOrder {
 	result := &DecoratedOrder{Order: order}
-	result.DecoratedItems = rd.createDecoratedItems(ctx, &order.OrderItems)
+	result.DecoratedItems = rd.createDecoratedItems(ctx, order.OrderItems)
 
 	return result
 }
 
-func (rd *OrderDecorator) createDecoratedItems(ctx context.Context, items *[]OrderItem) []*DecoratedOrderItem {
-	result := make([]*DecoratedOrderItem, len(*items))
-	for i, item := range *items {
-		result[i] = rd.createDecoratedItem(ctx, &item)
+func (rd *OrderDecorator) createDecoratedItems(ctx context.Context, items []*OrderItem) []*DecoratedOrderItem {
+	result := make([]*DecoratedOrderItem, len(items))
+	for i, item := range items {
+		result[i] = rd.createDecoratedItem(ctx, item)
 	}
 
 	return result
@@ -152,8 +158,11 @@ func (doi DecoratedOrderItem) GetVariantsVariationAttributeCodes() []string {
 }
 
 // GetGroupedBy
-func (rd *DecoratedOrder) GetGroupedBy(group string, sortGroup bool) []*GroupedDecoratedOrderItem {
-	groupedItemsCollection := make(map[string]*GroupedDecoratedOrderItem)
+func (rd *DecoratedOrder) GetGroupedBy(group string, sortGroup bool) *GroupedDecoratedOrder {
+	result := &GroupedDecoratedOrder{
+		Order: rd,
+	}
+	groupedItemsCollection := make(map[string]*GroupedDecoratedOrderItems)
 	var groupedItemKeys []string
 
 	var groupKey string
@@ -166,7 +175,7 @@ func (rd *DecoratedOrder) GetGroupedBy(group string, sortGroup bool) []*GroupedD
 		}
 
 		if _, ok := groupedItemsCollection[groupKey]; !ok {
-			groupedItemsCollection[groupKey] = &GroupedDecoratedOrderItem{
+			groupedItemsCollection[groupKey] = &GroupedDecoratedOrderItems{
 				Group: groupKey,
 			}
 
@@ -181,10 +190,29 @@ func (rd *DecoratedOrder) GetGroupedBy(group string, sortGroup bool) []*GroupedD
 		sort.Strings(groupedItemKeys)
 	}
 
-	result := make([]*GroupedDecoratedOrderItem, len(groupedItemKeys))
+	groups := make([]*GroupedDecoratedOrderItems, len(groupedItemKeys))
 	for i, key := range groupedItemKeys {
 		groupedItemsEntry, _ := groupedItemsCollection[key]
-		result[i] = groupedItemsEntry
+		groups[i] = groupedItemsEntry
+	}
+	result.Groups = groups
+
+	return result
+}
+
+// GetSourceIds collects the source ids of the items of the group
+func (i *GroupedDecoratedOrderItems) GetSourceIds() []string {
+	// the group has at least one group in there
+	sourceIds := make(map[string]bool, 1)
+	result := make([]string, 1)
+	for _, item := range i.DecoratedItems {
+		sourceId := item.Item.SourceId
+		if _, ok := sourceIds[sourceId]; ok {
+			continue
+		}
+
+		sourceIds[sourceId] = true
+		result = append(result, sourceId)
 	}
 
 	return result
