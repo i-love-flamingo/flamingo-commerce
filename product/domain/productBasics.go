@@ -3,6 +3,7 @@ package domain
 import (
 	"fmt"
 	"time"
+	"gopkg.in/yaml.v2"
 )
 
 // Media usage constants
@@ -16,6 +17,7 @@ type (
 	BasicProduct interface {
 		BaseData() BasicProductData
 		TeaserData() TeaserData
+		GetSpecifications() []SpecificationGroup
 		//IsSaleable - indicates if that product type can be purchased
 		IsSaleable() bool
 		SaleableData() Saleable
@@ -119,6 +121,20 @@ type (
 		RawValue interface{}
 		UnitCode string
 	}
+
+	Specifications struct {
+		Groups []SpecificationGroup
+	}
+
+	SpecificationGroup struct {
+		Title   string
+		Entries []SpecificationEntry
+	}
+
+	SpecificationEntry struct {
+		Label string
+		Value string
+	}
 )
 
 // Value returns the raw value
@@ -208,6 +224,17 @@ func (p PriceInfo) GetFinalPrice() float64 {
 // GetListMedia returns the product media for listing
 func (bpd BasicProductData) GetListMedia() Media {
 	return bpd.GetMedia(MediaUsageList)
+}
+
+func (bpd BasicProductData) GetSpecifications() []SpecificationGroup {
+	if specs, ok := bpd.Attributes["specifications"]; ok {
+		result := Specifications{}
+		err := yaml.Unmarshal([]byte(specs.Value()), &result)
+		if err == nil {
+			return result.Groups
+		}
+	}
+	return nil
 }
 
 // GetMedia returns the FIRST found product media by usage
