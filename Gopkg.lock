@@ -23,8 +23,8 @@
     "framework/web/responder",
     "framework/web/responder/mocks"
   ]
-  revision = "f07b477beab3e9ace43354b1a4f781f5d2ba4171"
-  version = "v2.1.0"
+  revision = "e7628c7464437512172ccc440ba7e4ad62ae50c7"
+  version = "v2.1.2"
 
 [[projects]]
   name = "github.com/coreos/go-oidc"
@@ -249,6 +249,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "deb88e26ebff750ab45eecb394c5f78ea43cf79843dde7e0912d5ba27681adfe"
+  inputs-digest = "54979758dd4d7bd32aa515fd82cdbc42d3aefcc32362eec8d9370e4598e20f37"
   solver-name = "gps-cdcl"
   solver-version = 1
