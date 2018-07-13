@@ -16,7 +16,7 @@ type (
 	BasicProduct interface {
 		BaseData() BasicProductData
 		TeaserData() TeaserData
-		GetSpecifications() *Specifications
+		GetSpecifications() Specifications
 		//IsSaleable - indicates if that product type can be purchased
 		IsSaleable() bool
 		SaleableData() Saleable
@@ -225,12 +225,12 @@ func (bpd BasicProductData) GetListMedia() Media {
 	return bpd.GetMedia(MediaUsageList)
 }
 
-func (bpd BasicProductData) GetSpecifications() *Specifications {
-	if specs, ok := bpd.Attributes["specifications"].RawValue.(*Specifications); ok {
+func (bpd BasicProductData) GetSpecifications() Specifications {
+	if specs, ok := bpd.Attributes["specifications"].RawValue.(Specifications); ok {
 		return specs
 	}
 
-	return &Specifications{}
+	return Specifications{}
 }
 
 // GetMedia returns the FIRST found product media by usage
