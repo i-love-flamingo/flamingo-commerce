@@ -1,7 +1,7 @@
 package domain
 
 import (
-	"github.com/pkg/errors"
+	"errors"
 )
 
 const (

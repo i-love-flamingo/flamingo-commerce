@@ -1,7 +1,8 @@
 package application
 
 import (
-	"github.com/pkg/errors"
+	"errors"
+
 	"flamingo.me/flamingo-commerce/product/domain"
 	"flamingo.me/flamingo/framework/router"
 	"flamingo.me/flamingo/framework/web"

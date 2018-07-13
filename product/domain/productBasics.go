@@ -131,8 +131,8 @@ type (
 	}
 
 	SpecificationEntry struct {
-		Label string
-		Value string
+		Label  string
+		Values []string
 	}
 )
 
