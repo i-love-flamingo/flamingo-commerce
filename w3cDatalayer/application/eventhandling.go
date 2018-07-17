@@ -3,10 +3,10 @@ package application
 import (
 	"context"
 
-	authDomain "flamingo.me/flamingo/core/auth/domain"
 	"flamingo.me/flamingo-commerce/cart/application"
 	"flamingo.me/flamingo-commerce/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/w3cDatalayer/domain"
+	authDomain "flamingo.me/flamingo/core/auth/domain"
 	"flamingo.me/flamingo/framework/event"
 	"flamingo.me/flamingo/framework/flamingo"
 	"flamingo.me/flamingo/framework/web"
@@ -14,11 +14,17 @@ import (
 
 type (
 	EventReceiver struct {
-		Factory              *Factory                   `inject:""`
-		CartDecoratorFactory *cart.DecoratedCartFactory `inject:""`
-		Logger               flamingo.Logger            `inject:""`
+		factory              *Factory
+		cartDecoratorFactory *cart.DecoratedCartFactory
+		logger               flamingo.Logger
 	}
 )
+
+func (e *EventReceiver) Inject(factory *Factory, cartFactory *cart.DecoratedCartFactory, logger flamingo.Logger) {
+	e.factory = factory
+	e.cartDecoratorFactory = cartFactory
+	e.logger = logger
+}
 
 //NotifyWithContext should get called by flamingo Eventlogic.
 // We use it to listen to Events that are relevant for the Datalayer
@@ -27,28 +33,28 @@ func (e *EventReceiver) NotifyWithContext(ctx context.Context, event event.Event
 	switch currentEvent := event.(type) {
 	//Handle OrderPlacedEvent and Set Transaction to current datalayer
 	case *application.AddToCartEvent:
-		e.Logger.WithField("category", "w3cDatalayer").Debug("Receive Event AddToCartEvent")
+		e.logger.WithField("category", "w3cDatalayer").Debug("Receive Event AddToCartEvent")
 		if webContext, ok := ctx.(web.Context); ok {
 			// In case of Configurable: the MarketplaceCode which is interesting for the datalayer is the Variant that is selected
 			saleableProductCode := currentEvent.MarketplaceCode
 			if currentEvent.VariantMarketplaceCode != "" {
 				saleableProductCode = currentEvent.VariantMarketplaceCode
 			}
-			dataLayerEvent := e.Factory.BuildAddToBagEvent(saleableProductCode, currentEvent.ProductName, currentEvent.Qty)
+			dataLayerEvent := e.factory.BuildAddToBagEvent(saleableProductCode, currentEvent.ProductName, currentEvent.Qty)
 			webContext.Session().AddFlash(
 				dataLayerEvent,
 				SESSION_EVENTS_KEY,
 			)
 		}
 	case *application.ChangedQtyInCartEvent:
-		e.Logger.WithField("category", "w3cDatalayer").Debug("Receive Event ChangedQtyInCartEvent")
+		e.logger.WithField("category", "w3cDatalayer").Debug("Receive Event ChangedQtyInCartEvent")
 
 		if webContext, ok := ctx.(web.Context); ok {
 			saleableProductCode := currentEvent.MarketplaceCode
 			if currentEvent.VariantMarketplaceCode != "" {
 				saleableProductCode = currentEvent.VariantMarketplaceCode
 			}
-			dataLayerEvent := e.Factory.BuildChangeQtyEvent(saleableProductCode, currentEvent.ProductName, currentEvent.QtyAfter, currentEvent.QtyBefore, currentEvent.CartId)
+			dataLayerEvent := e.factory.BuildChangeQtyEvent(saleableProductCode, currentEvent.ProductName, currentEvent.QtyAfter, currentEvent.QtyBefore, currentEvent.CartId)
 			webContext.Session().AddFlash(
 				dataLayerEvent,
 				SESSION_EVENTS_KEY,
@@ -56,7 +62,7 @@ func (e *EventReceiver) NotifyWithContext(ctx context.Context, event event.Event
 
 		}
 	case *authDomain.LoginEvent:
-		e.Logger.WithField("category", "w3cDatalayer").Debug("Receive Event LoginEvent")
+		e.logger.WithField("category", "w3cDatalayer").Debug("Receive Event LoginEvent")
 		if webContext, ok := ctx.(web.Context); ok {
 
 			dataLayerEvent := domain.Event{EventInfo: make(map[string]interface{})}

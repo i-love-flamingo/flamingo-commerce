@@ -5,25 +5,41 @@ import (
 	"encoding/base64"
 	"strings"
 
-	authApplication "flamingo.me/flamingo/core/auth/application"
-	canonicalUrlApplication "flamingo.me/flamingo/core/canonicalUrl/application"
 	"flamingo.me/flamingo-commerce/cart/domain/cart"
 	productDomain "flamingo.me/flamingo-commerce/product/domain"
 	"flamingo.me/flamingo-commerce/w3cDatalayer/domain"
+	authApplication "flamingo.me/flamingo/core/auth/application"
+	canonicalUrlApplication "flamingo.me/flamingo/core/canonicalUrl/application"
 	"flamingo.me/flamingo/framework/router"
 	"flamingo.me/flamingo/framework/web"
 )
 
-type (
-	/**
-	Factory is used to build new datalayers
-	*/
-	Factory struct {
-		Router              *router.Router                   `inject:""`
-		DatalayerProvider   domain.DatalayerProvider         `inject:""`
-		CanonicalUrlService *canonicalUrlApplication.Service `inject:""`
-		UserService         *authApplication.UserService     `inject:""`
+// Factory is used to build new datalayers
+type Factory struct {
+	router              *router.Router
+	datalayerProvider   domain.DatalayerProvider
+	canonicalUrlService *canonicalUrlApplication.Service
+	userService         *authApplication.UserService
 
+	pageInstanceIDPrefix           string
+	pageInstanceIDStage            string
+	productMediaBaseUrl            string
+	productMediaUrlPrefix          string
+	productMediaThumbnailUrlPrefix string
+	pageNamePrefix                 string
+	siteName                       string
+	locale                         string
+	defaultCurrency                string
+	hashUserValues                 bool
+}
+
+// Inject factory dependencies
+func (s *Factory) Inject(
+	router2 *router.Router,
+	provider domain.DatalayerProvider,
+	service *canonicalUrlApplication.Service,
+	userService *authApplication.UserService,
+	config *struct {
 		PageInstanceIDPrefix           string `inject:"config:w3cDatalayer.pageInstanceIDPrefix,optional"`
 		PageInstanceIDStage            string `inject:"config:w3cDatalayer.pageInstanceIDStage,optional"`
 		ProductMediaBaseUrl            string `inject:"config:w3cDatalayer.productMediaBaseUrl,optional"`
@@ -34,17 +50,33 @@ type (
 		Locale                         string `inject:"config:locale.locale,optional"`
 		DefaultCurrency                string `inject:"config:w3cDatalayer.defaultCurrency,optional"`
 		HashUserValues                 bool   `inject:"config:w3cDatalayer.hashUserValues,optional"`
-	}
-)
+	},
+) {
+	s.router = router2
+	s.datalayerProvider = provider
+	s.canonicalUrlService = service
+	s.userService = userService
+
+	s.pageInstanceIDPrefix = config.PageInstanceIDPrefix
+	s.pageInstanceIDStage = config.PageInstanceIDStage
+	s.productMediaBaseUrl = config.ProductMediaBaseUrl
+	s.productMediaUrlPrefix = config.ProductMediaUrlPrefix
+	s.productMediaThumbnailUrlPrefix = config.ProductMediaThumbnailUrlPrefix
+	s.pageNamePrefix = config.PageNamePrefix
+	s.siteName = config.SiteName
+	s.locale = config.Locale
+	s.defaultCurrency = config.DefaultCurrency
+	s.hashUserValues = config.HashUserValues
+}
 
 //Update
 func (s Factory) BuildForCurrentRequest(ctx web.Context) domain.Datalayer {
 
-	layer := s.DatalayerProvider()
+	layer := s.datalayerProvider()
 
 	//get langiage from locale code configuration
 	language := ""
-	localeParts := strings.Split(s.Locale, "-")
+	localeParts := strings.Split(s.locale, "-")
 	if len(localeParts) > 0 {
 		language = localeParts[0]
 	}
@@ -52,14 +84,14 @@ func (s Factory) BuildForCurrentRequest(ctx web.Context) domain.Datalayer {
 	layer.Page = &domain.Page{
 		PageInfo: domain.PageInfo{
 			PageID:         ctx.Request().URL.Path,
-			PageName:       s.PageNamePrefix + ctx.Request().URL.Path,
-			DestinationURL: s.CanonicalUrlService.GetCanonicalUrlForCurrentRequest(ctx),
+			PageName:       s.pageNamePrefix + ctx.Request().URL.Path,
+			DestinationURL: s.canonicalUrlService.GetCanonicalUrlForCurrentRequest(ctx),
 			Language:       language,
 		},
 		Attributes: make(map[string]interface{}),
 	}
 
-	layer.Page.Attributes["currency"] = s.DefaultCurrency
+	layer.Page.Attributes["currency"] = s.defaultCurrency
 
 	//Use the handler name as PageId if available
 	if controllerHandler, ok := ctx.Value("HandlerName").(string); ok {
@@ -67,14 +99,14 @@ func (s Factory) BuildForCurrentRequest(ctx web.Context) domain.Datalayer {
 	}
 
 	layer.SiteInfo = &domain.SiteInfo{
-		SiteName: s.SiteName,
+		SiteName: s.siteName,
 	}
 
-	layer.PageInstanceID = s.PageInstanceIDPrefix + s.PageInstanceIDStage
+	layer.PageInstanceID = s.pageInstanceIDPrefix + s.pageInstanceIDStage
 
 	//Handle User
 	layer.Page.Attributes["loggedIn"] = false
-	if s.UserService.IsLoggedIn(ctx) {
+	if s.userService.IsLoggedIn(ctx) {
 		layer.Page.Attributes["loggedIn"] = true
 		layer.Page.Attributes["logintype"] = "external"
 		userData := s.getUser(ctx)
@@ -100,7 +132,7 @@ func (s Factory) getUser(ctx web.Context) *domain.User {
 }
 
 func (s Factory) getUserProfileForCurrentUser(ctx web.Context) *domain.UserProfile {
-	user := s.UserService.GetUser(ctx)
+	user := s.userService.GetUser(ctx)
 	if user == nil {
 		return nil
 	}
@@ -118,7 +150,7 @@ func (s Factory) getUserProfile(email string, sub string) *domain.UserProfile {
 }
 
 func (s Factory) HashValueIfConfigured(value string) string {
-	if s.HashUserValues && value != "" {
+	if s.hashUserValues && value != "" {
 		return hashWithSHA512(value)
 	}
 	return value
@@ -146,7 +178,7 @@ func (s Factory) BuildCartData(cart cart.DecoratedCart) *domain.Cart {
 
 func (s Factory) BuildTransactionData(ctx web.Context, cartTotals cart.CartTotals, decoratedItems []cart.DecoratedCartItem, orderId string, email string) *domain.Transaction {
 	var profile *domain.UserProfile
-	if s.UserService.IsLoggedIn(ctx) {
+	if s.userService.IsLoggedIn(ctx) {
 		profile = s.getUserProfileForCurrentUser(ctx)
 	} else {
 		profile = s.getUserProfile(email, "")
@@ -312,11 +344,11 @@ func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.Produ
 func (s Factory) getProductThumbnailUrl(baseData productDomain.BasicProductData) string {
 	media := baseData.GetMedia("thumbnail")
 	if media.Reference != "" {
-		return s.ProductMediaBaseUrl + s.ProductMediaThumbnailUrlPrefix + media.Reference
+		return s.productMediaBaseUrl + s.productMediaThumbnailUrlPrefix + media.Reference
 	}
 	media = baseData.GetMedia("list")
 	if media.Reference != "" {
-		return s.ProductMediaBaseUrl + s.ProductMediaThumbnailUrlPrefix + media.Reference
+		return s.productMediaBaseUrl + s.productMediaThumbnailUrlPrefix + media.Reference
 	}
 	return ""
 }
@@ -324,7 +356,7 @@ func (s Factory) getProductThumbnailUrl(baseData productDomain.BasicProductData)
 func (s Factory) getProductImageUrl(baseData productDomain.BasicProductData) string {
 	media := baseData.GetMedia("detail")
 	if media.Reference != "" {
-		return s.ProductMediaBaseUrl + s.ProductMediaUrlPrefix + media.Reference
+		return s.productMediaBaseUrl + s.productMediaUrlPrefix + media.Reference
 	}
 	return ""
 }
