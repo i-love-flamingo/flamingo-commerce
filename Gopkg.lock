@@ -2,6 +2,7 @@
 
 
 [[projects]]
+  branch = "master"
   name = "flamingo.me/flamingo"
   packages = [
     "core/auth/application",
@@ -23,8 +24,7 @@
     "framework/web/responder",
     "framework/web/responder/mocks"
   ]
-  revision = "e7628c7464437512172ccc440ba7e4ad62ae50c7"
-  version = "v2.1.2"
+  revision = "5c4ae6a1af8f3811c59e634d06c26204b369c8bd"
 
 [[projects]]
   name = "github.com/coreos/go-oidc"
@@ -249,6 +249,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "deb88e26ebff750ab45eecb394c5f78ea43cf79843dde7e0912d5ba27681adfe"
+  inputs-digest = "2e73a14c585eb9b3caf3ac50d655c686ebfa0b06e760217f5f42697e9f0cf0b0"
   solver-name = "gps-cdcl"
   solver-version = 1

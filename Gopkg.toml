@@ -1,4 +1,5 @@
 [[constraint]]
   name = "flamingo.me/flamingo"
-  version = "^2.0.0"
+  # version = "^2.0.0"
+  branch = "master"
 
