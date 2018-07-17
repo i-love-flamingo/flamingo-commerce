@@ -8,12 +8,8 @@ import (
 	"flamingo.me/flamingo/framework/web"
 )
 
-type (
-	// Module registers our profiler
-	Module struct {
-		RouterRegistry *router.Registry `inject:""`
-	}
-)
+// Module registers our profiler
+type Module struct{}
 
 // URL to category
 func URL(code string) (string, map[string]string) {
@@ -27,12 +23,7 @@ func URLWithName(code, name string) (string, map[string]string) {
 
 // Configure the product URL
 func (m *Module) Configure(injector *dingo.Injector) {
-	m.RouterRegistry.Handle("category.view", new(controller.View))
-	m.RouterRegistry.Route("/category/:code/:name.html", "category.view(code, name, *)")
-	m.RouterRegistry.Route("/category/:code", "category.view(code, *)")
-
-	m.RouterRegistry.Handle("category.tree", new(controller.Tree))
-	m.RouterRegistry.Handle("category", new(controller.Entity))
+	router.Bind(injector, new(routes))
 }
 
 // DefaultConfig for this module
@@ -40,4 +31,25 @@ func (m *Module) DefaultConfig() config.Map {
 	return config.Map{
 		"core.category.view.template": "category/category",
 	}
+}
+
+type routes struct {
+	view   *controller.View
+	entity *controller.Entity
+	tree   *controller.Tree
+}
+
+func (r *routes) Inject(view *controller.View, entity *controller.Entity, tree *controller.Tree) {
+	r.view = view
+	r.entity = entity
+	r.tree = tree
+}
+
+func (r *routes) Routes(registry *router.Registry) {
+	registry.HandleGet("category.view", r.view.Get)
+	registry.Route("/category/:code/:name.html", "category.view(code, name, *)")
+	registry.Route("/category/:code", "category.view(code, *)")
+
+	registry.Handle("category.tree", r.tree)
+	registry.Handle("category", r.entity)
 }
