@@ -4,6 +4,8 @@ import (
 	"context"
 	"log"
 	"sort"
+	"errors"
+	"fmt"
 
 	"flamingo.me/flamingo-commerce/product/domain"
 	"flamingo.me/flamingo/framework/flamingo"
@@ -178,4 +180,13 @@ func (dc DecoratedCart) GetGroupedBy(group string, sortGroup bool) []*GroupedDec
 		}
 	}
 	return groupedItemsCollectionSorted
+}
+
+func (dc DecoratedCart) GetByItemId(itemId string) (*DecoratedCartItem, error) {
+	for _, item := range dc.DecoratedItems {
+		if item.Item.ID == itemId {
+			return &item, nil
+		}
+	}
+	return nil, errors.New(fmt.Sprintf("itemId %v not existend not existent in decorated cart", itemId))
 }
