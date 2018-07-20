@@ -34,7 +34,7 @@ func (e *EventReceiver) NotifyWithContext(ctx context.Context, event event.Event
 	//Handle OrderPlacedEvent and Set Transaction to current datalayer
 	case *application.AddToCartEvent:
 		e.logger.WithField("category", "w3cDatalayer").Debug("Receive Event AddToCartEvent")
-		if webContext, ok := ctx.(web.Context); ok {
+		if webContext := web.ToContext(ctx); nil != webContext {
 			// In case of Configurable: the MarketplaceCode which is interesting for the datalayer is the Variant that is selected
 			saleableProductCode := currentEvent.MarketplaceCode
 			if currentEvent.VariantMarketplaceCode != "" {
@@ -49,7 +49,7 @@ func (e *EventReceiver) NotifyWithContext(ctx context.Context, event event.Event
 	case *application.ChangedQtyInCartEvent:
 		e.logger.WithField("category", "w3cDatalayer").Debug("Receive Event ChangedQtyInCartEvent")
 
-		if webContext, ok := ctx.(web.Context); ok {
+		if webContext := web.ToContext(ctx); nil != webContext {
 			saleableProductCode := currentEvent.MarketplaceCode
 			if currentEvent.VariantMarketplaceCode != "" {
 				saleableProductCode = currentEvent.VariantMarketplaceCode
@@ -63,7 +63,7 @@ func (e *EventReceiver) NotifyWithContext(ctx context.Context, event event.Event
 		}
 	case *authDomain.LoginEvent:
 		e.logger.WithField("category", "w3cDatalayer").Debug("Receive Event LoginEvent")
-		if webContext, ok := ctx.(web.Context); ok {
+		if webContext := web.ToContext(ctx); nil != webContext {
 
 			dataLayerEvent := domain.Event{EventInfo: make(map[string]interface{})}
 			dataLayerEvent.EventInfo["eventName"] = "login"

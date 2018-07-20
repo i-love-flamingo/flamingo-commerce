@@ -50,7 +50,7 @@ func (d *DefaultEventPublisher) PublishOrderPlacedEvent(ctx context.Context, car
 		Cart:    cart,
 		OrderId: orderId,
 	}
-	if webContext, ok := ctx.(web.Context); ok {
+	if webContext := web.ToContext(ctx); nil != webContext {
 		d.Logger.Info("Publish Event OrderPlacedEvent for Order: %v", orderId)
 		//For now we publish only to Flamingo default Event Router
 		webContext.EventRouter().Dispatch(ctx, &eventObject)
@@ -69,7 +69,7 @@ func (d *DefaultEventPublisher) PublishAddToCartEvent(ctx context.Context, marke
 		ProductName:            product.TeaserData().ShortTitle,
 		Qty:                    qty,
 	}
-	if webContext, ok := ctx.(web.Context); ok {
+	if webContext := web.ToContext(ctx); nil != webContext {
 		d.Logger.Info("Publish Event PublishAddToCartEvent: %v", eventObject)
 		webContext.EventRouter().Dispatch(ctx, &eventObject)
 	}
@@ -85,7 +85,7 @@ func (d *DefaultEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context
 		QtyBefore:              qtyBefore,
 		QtyAfter:               qtyAfter,
 	}
-	if webContext, ok := ctx.(web.Context); ok {
+	if webContext := web.ToContext(ctx); nil != webContext {
 		d.Logger.Info("Publish Event PublishCartChangedQtyEvent: %v", eventObject)
 		webContext.EventRouter().Dispatch(ctx, &eventObject)
 	}
