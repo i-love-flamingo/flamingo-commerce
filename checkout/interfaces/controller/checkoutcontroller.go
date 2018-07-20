@@ -216,6 +216,18 @@ func (cc *CheckoutController) SubmitUserCheckoutAction(ctx web.Context) web.Resp
 	if !cc.UserService.IsLoggedIn(ctx) {
 		return cc.Redirect("checkout.start", nil)
 	}
+
+	//Guard Clause if Cart cannout be fetched
+	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
+	if e != nil {
+		cc.Logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error %v", e)
+		return cc.Render(ctx, "checkout/carterror", nil)
+	}
+	guardRedirect := cc.getCommonGuardRedirects(ctx, decoratedCart)
+	if guardRedirect != nil {
+		return guardRedirect
+	}
+
 	customer, _ := cc.CustomerApplicationService.GetForAuthenticatedUser(ctx)
 	// set the customer on the form service even if nil + err is returned here
 	cc.CheckoutFormService.Customer = customer
@@ -229,6 +241,18 @@ func (cc *CheckoutController) SubmitGuestCheckoutAction(ctx web.Context) web.Res
 	if cc.UserService.IsLoggedIn(ctx) {
 		return cc.Redirect("checkout.user", nil)
 	}
+
+	//Guard Clause if Cart cannout be fetched
+	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
+	if e != nil {
+		cc.Logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error %v", e)
+		return cc.Render(ctx, "checkout/carterror", nil)
+	}
+	guardRedirect := cc.getCommonGuardRedirects(ctx, decoratedCart)
+	if guardRedirect != nil {
+		return guardRedirect
+	}
+
 	return cc.showCheckoutFormAndHandleSubmit(ctx, cc.CheckoutFormService, "checkout/guestcheckout")
 }
 
