@@ -75,19 +75,19 @@ func TestViewController_ExpectRedirect(t *testing.T) {
 	redirectAware.On("RedirectPermanentURL", mock.AnythingOfType("string")).Return(&web.RedirectResponse{})
 	ctx.LoadParams(router.P{"marketplacecode": "simple", "name": "testname"})
 	vc.Get(ctx)
-	redirectAware.AssertCalled(t, "RedirectPermanentURL", "?marketplacecode=simple&name=my-product-title")
+	redirectAware.AssertCalled(t, "RedirectPermanentURL", "/?marketplacecode=simple&name=my-product-title")
 
 	// Test 2: call configurable with wrong name and expect redirect
 	redirectAware.On("RedirectPermanentURL", mock.AnythingOfType("string")).Return(&web.RedirectResponse{})
 	ctx.LoadParams(router.P{"marketplacecode": "configurable", "name": "testname"})
 	vc.Get(ctx)
-	redirectAware.AssertCalled(t, "RedirectPermanentURL", "?marketplacecode=configurable&name=my-configurable-product-title")
+	redirectAware.AssertCalled(t, "RedirectPermanentURL", "/?marketplacecode=configurable&name=my-configurable-product-title")
 
 	// Test 3: call configurable_with_variant with wrong name and expect redirect
 	redirectAware.On("RedirectPermanentURL", mock.AnythingOfType("string")).Return(&web.RedirectResponse{})
 	ctx.LoadParams(router.P{"marketplacecode": "configurable", "name": "testname", "variantcode": "configurable_1"})
 	vc.Get(ctx)
-	redirectAware.AssertCalled(t, "RedirectPermanentURL", "?marketplacecode=configurable&name=my-variant-title&variantcode=configurable_1")
+	redirectAware.AssertCalled(t, "RedirectPermanentURL", "/?marketplacecode=configurable&name=my-variant-title&variantcode=configurable_1")
 
 }
 
