@@ -1,8 +1,9 @@
 package application
 
 import (
-	"flamingo.me/flamingo/core/auth/application"
 	"flamingo.me/flamingo-commerce/customer/domain"
+	"flamingo.me/flamingo/core/auth"
+	"flamingo.me/flamingo/core/auth/application"
 	"flamingo.me/flamingo/framework/web"
 )
 
@@ -14,7 +15,7 @@ type (
 )
 
 func (s *Service) GetForAuthenticatedUser(ctx web.Context) (domain.Customer, error) {
-	auth, err := s.AuthManager.Auth(ctx)
+	auth, err := s.AuthManager.Auth(auth.CtxSession(ctx))
 	if err != nil {
 		return nil, err
 	}

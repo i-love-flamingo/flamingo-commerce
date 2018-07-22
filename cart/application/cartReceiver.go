@@ -4,8 +4,9 @@ import (
 	"context"
 	"errors"
 
-	authApplication "flamingo.me/flamingo/core/auth/application"
 	cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
+	"flamingo.me/flamingo/core/auth"
+	authApplication "flamingo.me/flamingo/core/auth/application"
 	"flamingo.me/flamingo/framework/flamingo"
 	"flamingo.me/flamingo/framework/web"
 )
@@ -34,8 +35,8 @@ const (
 
 // Auth tries to retrieve the authentication context for a active session
 func (cs *CartReceiverService) Auth(c web.Context) cartDomain.Auth {
-	ts, _ := cs.AuthManager.TokenSource(c)
-	idToken, _ := cs.AuthManager.IDToken(c)
+	ts, _ := cs.AuthManager.TokenSource(auth.CtxSession(c))
+	idToken, _ := cs.AuthManager.IDToken(auth.CtxSession(c))
 
 	return cartDomain.Auth{
 		TokenSource: ts,
@@ -45,7 +46,7 @@ func (cs *CartReceiverService) Auth(c web.Context) cartDomain.Auth {
 
 // ShouldHaveCart - checks if there should be a cart. Indicated if a call to GetCart should return a real cart
 func (cs *CartReceiverService) ShouldHaveCart(ctx web.Context) bool {
-	if cs.UserService.IsLoggedIn(ctx) {
+	if cs.UserService.IsLoggedIn(auth.CtxSession(ctx)) {
 		return true
 	}
 	return cs.ShouldHaveGuestCart(ctx)
@@ -102,7 +103,7 @@ func (cs *CartReceiverService) storeCartInCache(ctx web.Context, cart *cartDomai
 
 // GetCart Get the correct Cart (either Guest or User)
 func (cs *CartReceiverService) GetCart(ctx web.Context) (*cartDomain.Cart, cartDomain.CartBehaviour, error) {
-	if cs.UserService.IsLoggedIn(ctx) {
+	if cs.UserService.IsLoggedIn(auth.CtxSession(ctx)) {
 		cacheId := CartCacheIdentifier{
 			CustomerId:     cs.Auth(ctx).IDToken.Subject,
 			IsCustomerCart: true,

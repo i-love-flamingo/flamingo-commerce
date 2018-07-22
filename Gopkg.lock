@@ -5,8 +5,10 @@
   branch = "master"
   name = "flamingo.me/flamingo"
   packages = [
+    "core/auth",
     "core/auth/application",
     "core/auth/domain",
+    "core/auth/interfaces",
     "core/canonicalUrl/application",
     "core/form/application",
     "core/form/domain",
@@ -24,7 +26,7 @@
     "framework/web/responder",
     "framework/web/responder/mocks"
   ]
-  revision = "878a8189d97353c5d5c4b75a6c93841d5224fdcd"
+  revision = "88305fb225e631c8986f0c96316358f00d0de351"
 
 [[projects]]
   name = "github.com/coreos/go-oidc"
@@ -175,13 +177,24 @@
   version = "v1.2.2"
 
 [[projects]]
+  name = "go.opencensus.io"
+  packages = [
+    ".",
+    "internal",
+    "trace",
+    "trace/internal"
+  ]
+  revision = "e262766cd0d230a1bb7c37281e345e465f19b41b"
+  version = "v0.14.0"
+
+[[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
   packages = [
     "ed25519",
     "ed25519/internal/edwards25519"
   ]
-  revision = "027cca12c2d63e3d62b670d901e8a2c95854feec"
+  revision = "a2144134853fc9a27a7b1e3eb4f19f1a76df13c9"
 
 [[projects]]
   branch = "master"
@@ -190,7 +203,7 @@
     "context",
     "context/ctxhttp"
   ]
-  revision = "db08ff08e8622530d9ed3a0e8ac279f6d4c02196"
+  revision = "a680a1efc54dd51c040b3b5ce4939ea3cf2ea0d1"
 
 [[projects]]
   branch = "master"
@@ -199,7 +212,7 @@
     ".",
     "internal"
   ]
-  revision = "1e0a3fa8ba9a5c9eb35c271780101fdaf1b205d7"
+  revision = "ef147856a6ddbb60760db74283d2424e98c87bff"
 
 [[projects]]
   name = "google.golang.org/appengine"
@@ -218,8 +231,8 @@
 [[projects]]
   name = "gopkg.in/go-playground/validator.v9"
   packages = ["."]
-  revision = "f28cb45dc0f0f406ba2015cdb59a5203ad220bc2"
-  version = "v9.17.1"
+  revision = "ab2a8a99087e827c9af87ed6777ba897348fb178"
+  version = "v9.20.2"
 
 [[projects]]
   name = "gopkg.in/sourcemap.v1"
@@ -249,6 +262,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "2e73a14c585eb9b3caf3ac50d655c686ebfa0b06e760217f5f42697e9f0cf0b0"
+  inputs-digest = "63149e1e6649715c2e0e5588bceb9754c4ae1381521b16b220c02b406f0fc4bf"
   solver-name = "gps-cdcl"
   solver-version = 1

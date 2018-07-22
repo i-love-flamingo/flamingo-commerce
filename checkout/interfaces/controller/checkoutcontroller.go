@@ -13,6 +13,7 @@ import (
 	paymentDomain "flamingo.me/flamingo-commerce/checkout/domain/payment"
 	"flamingo.me/flamingo-commerce/checkout/interfaces/controller/formDto"
 	customerApplication "flamingo.me/flamingo-commerce/customer/application"
+	"flamingo.me/flamingo/core/auth"
 	authApplication "flamingo.me/flamingo/core/auth/application"
 	formApplicationService "flamingo.me/flamingo/core/form/application"
 	formDomain "flamingo.me/flamingo/core/form/domain"
@@ -168,7 +169,7 @@ func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
 		})
 	}
 
-	if cc.UserService.IsLoggedIn(ctx) {
+	if cc.UserService.IsLoggedIn(auth.CtxSession(ctx)) {
 		return cc.Redirect("checkout.user", nil)
 	}
 
@@ -213,7 +214,7 @@ func (cc *CheckoutController) getPayment(ctx web.Context, paymentProviderCode st
 // SubmitUserCheckoutAction handles the user order submit
 func (cc *CheckoutController) SubmitUserCheckoutAction(ctx web.Context) web.Response {
 	//Guard
-	if !cc.UserService.IsLoggedIn(ctx) {
+	if !cc.UserService.IsLoggedIn(auth.CtxSession(ctx)) {
 		return cc.Redirect("checkout.start", nil)
 	}
 
@@ -238,7 +239,7 @@ func (cc *CheckoutController) SubmitUserCheckoutAction(ctx web.Context) web.Resp
 // SubmitGuestCheckoutAction handles the guest order submit
 func (cc *CheckoutController) SubmitGuestCheckoutAction(ctx web.Context) web.Response {
 	cc.CheckoutFormService.Customer = nil
-	if cc.UserService.IsLoggedIn(ctx) {
+	if cc.UserService.IsLoggedIn(auth.CtxSession(ctx)) {
 		return cc.Redirect("checkout.user", nil)
 	}
 
@@ -424,7 +425,7 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx web.Context, f
 func (cc *CheckoutController) showCheckoutFormWithErrors(ctx web.Context, template string, decoratedCart cart.DecoratedCart, form *formDomain.Form, err error) web.Response {
 	if template == "" {
 		template = "checkout/guestcheckout"
-		if cc.UserService.IsLoggedIn(ctx) {
+		if cc.UserService.IsLoggedIn(auth.CtxSession(ctx)) {
 			template = "checkout/usercheckout"
 		}
 	}

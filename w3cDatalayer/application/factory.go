@@ -8,6 +8,7 @@ import (
 	"flamingo.me/flamingo-commerce/cart/domain/cart"
 	productDomain "flamingo.me/flamingo-commerce/product/domain"
 	"flamingo.me/flamingo-commerce/w3cDatalayer/domain"
+	"flamingo.me/flamingo/core/auth"
 	authApplication "flamingo.me/flamingo/core/auth/application"
 	canonicalUrlApplication "flamingo.me/flamingo/core/canonicalUrl/application"
 	"flamingo.me/flamingo/framework/router"
@@ -106,7 +107,7 @@ func (s Factory) BuildForCurrentRequest(ctx web.Context) domain.Datalayer {
 
 	//Handle User
 	layer.Page.Attributes["loggedIn"] = false
-	if s.userService.IsLoggedIn(ctx) {
+	if s.userService.IsLoggedIn(auth.CtxSession(ctx)) {
 		layer.Page.Attributes["loggedIn"] = true
 		layer.Page.Attributes["logintype"] = "external"
 		userData := s.getUser(ctx)
@@ -132,7 +133,7 @@ func (s Factory) getUser(ctx web.Context) *domain.User {
 }
 
 func (s Factory) getUserProfileForCurrentUser(ctx web.Context) *domain.UserProfile {
-	user := s.userService.GetUser(ctx)
+	user := s.userService.GetUser(auth.CtxSession(ctx))
 	if user == nil {
 		return nil
 	}
@@ -178,7 +179,7 @@ func (s Factory) BuildCartData(cart cart.DecoratedCart) *domain.Cart {
 
 func (s Factory) BuildTransactionData(ctx web.Context, cartTotals cart.CartTotals, decoratedItems []cart.DecoratedCartItem, orderId string, email string) *domain.Transaction {
 	var profile *domain.UserProfile
-	if s.userService.IsLoggedIn(ctx) {
+	if s.userService.IsLoggedIn(auth.CtxSession(ctx)) {
 		profile = s.getUserProfileForCurrentUser(ctx)
 	} else {
 		profile = s.getUserProfile(email, "")
