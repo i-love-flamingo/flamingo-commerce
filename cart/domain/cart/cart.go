@@ -322,6 +322,29 @@ func (Cart Cart) HasItemWithIntent(intent string) bool {
 	return false
 }
 
+func (Cart Cart) HasItemWithDifferentIntent(intent string) bool {
+	for _, item := range Cart.Cartitems {
+		if item.OriginalDeliveryIntent.String() != intent {
+			return true
+		}
+	}
+	return false
+}
+
+// check if it is a mixed cart with different delivery intents
+func (Cart Cart) HasMixedCart() bool {
+	// if there is only one or less items in the cart, it can not be a mixed cart
+	if Cart.ItemCount() <= 1 {
+		return false
+	}
+
+	// get intent from first item
+	firstItem := Cart.Cartitems[0]
+	firstDeliveryIntent := firstItem.OriginalDeliveryIntent.String()
+
+	return Cart.HasItemWithDifferentIntent(firstDeliveryIntent)
+}
+
 func (Cart Cart) GetVoucherSavings() float64 {
 	totalSavings := 0.0
 	for _, item := range Cart.CartTotals.Totalitems {
