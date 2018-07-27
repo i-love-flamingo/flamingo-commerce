@@ -18,6 +18,7 @@
     "framework/dingo",
     "framework/event",
     "framework/flamingo",
+    "framework/opencensus",
     "framework/profiler",
     "framework/router",
     "framework/template",
@@ -26,7 +27,20 @@
     "framework/web/responder",
     "framework/web/responder/mocks"
   ]
-  revision = "88305fb225e631c8986f0c96316358f00d0de351"
+  revision = "2ddb88735b370fc01812c56853e8a71a884c7d1e"
+
+[[projects]]
+  branch = "master"
+  name = "git.apache.org/thrift.git"
+  packages = ["lib/go/thrift"]
+  revision = "f2867c24984aa53edec54a138c03db934221bdea"
+  source = "github.com/apache/thrift"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/beorn7/perks"
+  packages = ["quantile"]
+  revision = "3a771d992973f24aa725d07868b467d1ddfceafb"
 
 [[projects]]
   name = "github.com/coreos/go-oidc"
@@ -110,6 +124,12 @@
   version = "1.2.0"
 
 [[projects]]
+  name = "github.com/matttproud/golang_protobuf_extensions"
+  packages = ["pbutil"]
+  revision = "c12348ce28de40eed0136aa2b644d0ee0650e56c"
+  version = "v1.0.1"
+
+[[projects]]
   name = "github.com/pkg/errors"
   packages = ["."]
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
@@ -129,6 +149,42 @@
     "cacheobject"
   ]
   revision = "1555304b9b35fdd2b425bccf1a5613677705e7d0"
+
+[[projects]]
+  name = "github.com/prometheus/client_golang"
+  packages = [
+    "prometheus",
+    "prometheus/promhttp"
+  ]
+  revision = "c5b7fccd204277076155f10851dad72b76a49317"
+  version = "v0.8.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/prometheus/client_model"
+  packages = ["go"]
+  revision = "5c3871d89910bfb32f5fcab2aa4b9ec68e65a99f"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/prometheus/common"
+  packages = [
+    "expfmt",
+    "internal/bitbucket.org/ww/goautoneg",
+    "model"
+  ]
+  revision = "7600349dcfe1abd18d72d3a1770870d9800a7801"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/prometheus/procfs"
+  packages = [
+    ".",
+    "internal/util",
+    "nfs",
+    "xfs"
+  ]
+  revision = "05ee40e3a273f7245e8777337fc7b46e533a9a92"
 
 [[projects]]
   branch = "master"
@@ -180,9 +236,20 @@
   name = "go.opencensus.io"
   packages = [
     ".",
+    "exporter/jaeger",
+    "exporter/jaeger/internal/gen-go/jaeger",
+    "exporter/prometheus",
     "internal",
+    "internal/tagencoding",
+    "plugin/ochttp",
+    "plugin/ochttp/propagation/b3",
+    "stats",
+    "stats/internal",
+    "stats/view",
+    "tag",
     "trace",
-    "trace/internal"
+    "trace/internal",
+    "trace/propagation"
   ]
   revision = "e262766cd0d230a1bb7c37281e345e465f19b41b"
   version = "v0.14.0"
@@ -213,6 +280,18 @@
     "internal"
   ]
   revision = "ef147856a6ddbb60760db74283d2424e98c87bff"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/sync"
+  packages = ["semaphore"]
+  revision = "1d60e4601c6fd243af51cc01ddf169918a5407ca"
+
+[[projects]]
+  branch = "master"
+  name = "google.golang.org/api"
+  packages = ["support/bundler"]
+  revision = "082d5fa4f1f046d7c35245229282ed6f488892c0"
 
 [[projects]]
   name = "google.golang.org/appengine"
@@ -262,6 +341,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "63149e1e6649715c2e0e5588bceb9754c4ae1381521b16b220c02b406f0fc4bf"
+  inputs-digest = "b19032c0d0508f165af5bf0f431f1a49afbba87f17fa7a50ac8253a70b5234a9"
   solver-name = "gps-cdcl"
   solver-version = 1

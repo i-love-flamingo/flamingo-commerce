@@ -21,6 +21,9 @@ import (
 	"flamingo.me/flamingo/framework/router"
 	"flamingo.me/flamingo/framework/web"
 	"flamingo.me/flamingo/framework/web/responder"
+	"flamingo.me/flamingo/framework/opencensus"
+	"go.opencensus.io/stats"
+	"go.opencensus.io/stats/view"
 )
 
 type (
@@ -121,8 +124,11 @@ type (
 	}
 )
 
+var rt = stats.Int64("lamingo-commerce/orderfailed", "my stat records 1 occurences per error", stats.UnitDimensionless)
+
 func init() {
 	gob.Register(PlaceOrderFlashData{})
+	opencensus.View("flamingo-commerce/orderfailed/count", rt, view.Count())
 }
 
 /*
@@ -536,6 +542,9 @@ func (cc *CheckoutController) placeOrder(ctx web.Context, cartPayment cart.CartP
 
 			subAmounts += retailer + ":" + fmt.Sprintf("%f", cartPayment.Amount)
 		}
+
+		// record 5ms per call
+		stats.Record(ctx, rt.M(1))
 
 		cc.Logger.WithField("category", "checkout").Error("place order failed: order group id: %v / name: %v / total amount: %v / sub amounts: %v", decoratedCart.Cart.EntityID, name, decoratedCart.Cart.CartTotals.GrandTotal, subAmounts)
 		return nil, err
