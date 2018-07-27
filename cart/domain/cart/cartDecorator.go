@@ -2,10 +2,10 @@ package cart
 
 import (
 	"context"
-	"log"
-	"sort"
 	"errors"
 	"fmt"
+	"log"
+	"sort"
 
 	"flamingo.me/flamingo-commerce/product/domain"
 	"flamingo.me/flamingo/framework/flamingo"
@@ -140,7 +140,10 @@ func (dci DecoratedCartItem) GetVariantsVariationAttributes() domain.Attributes 
 
 // GetVariantsVariationAttribute getter
 func (dci DecoratedCartItem) GetVariantsVariationAttributeCodes() []string {
-	return dci.Product.(domain.ConfigurableProductWithActiveVariant).VariantVariationAttributes
+	if dci.Product.Type() == domain.TYPECONFIGURABLE_WITH_ACTIVE_VARIANT {
+		return dci.Product.(domain.ConfigurableProductWithActiveVariant).VariantVariationAttributes
+	}
+	return nil
 }
 
 // GetGroupedBy getter
@@ -153,6 +156,8 @@ func (dc DecoratedCart) GetGroupedBy(group string, sortGroup bool) []*GroupedDec
 		switch group {
 		case "retailer_code":
 			groupKey = item.Product.BaseData().RetailerCode
+		case "deliveryIntent":
+			groupKey = item.Item.OriginalDeliveryIntent.String()
 		default:
 			groupKey = "default"
 		}
