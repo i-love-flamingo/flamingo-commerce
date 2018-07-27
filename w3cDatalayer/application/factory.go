@@ -250,8 +250,6 @@ func (s Factory) getProductCategory(product productDomain.BasicProduct) *domain.
 		pathParts := strings.Count(path, "/") + 1
 		if pathParts > previousPathParts {
 			previousPathParts = pathParts
-		} else {
-			//last path was longest first match
 			longestFirstPath = path
 		}
 	}
