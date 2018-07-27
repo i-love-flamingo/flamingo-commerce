@@ -124,7 +124,7 @@ type (
 	}
 )
 
-var rt = stats.Int64("lamingo-commerce/orderfailed", "my stat records 1 occurences per error", stats.UnitDimensionless)
+var rt = stats.Int64("flamingo-commerce/orderfailed", "my stat records 1 occurences per error", stats.UnitDimensionless)
 
 func init() {
 	gob.Register(PlaceOrderFlashData{})
