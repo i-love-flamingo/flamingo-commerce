@@ -27,7 +27,7 @@
     "framework/web/responder",
     "framework/web/responder/mocks"
   ]
-  revision = "2ddb88735b370fc01812c56853e8a71a884c7d1e"
+  revision = "77dde0d401f1a44703981804f42037ce2d53a8d6"
 
 [[projects]]
   branch = "master"
