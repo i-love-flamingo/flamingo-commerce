@@ -20,6 +20,7 @@ type (
 	}
 
 	DefaultDeliveryInfoBuilder struct {
+		UseMultiShippingCartFeature bool `inject:"config:magento.cartApi.useMultiShippingCartFeature,optional""`
 	}
 
 	//DeliveryIntent - represents the Intent for delivery
@@ -39,44 +40,61 @@ type (
 func (dib *DefaultDeliveryInfoBuilder) BuildDeliveryInfoUpdateCommand(ctx web.Context, decoratedCart *DecoratedCart) ([]DeliveryInfoUpdateCommand, error) {
 	var updateCommands []DeliveryInfoUpdateCommand
 
-	// check for all items
-	cartItemsToHandle := make(map[string]Item)
-	for _, currentItem := range decoratedCart.Cart.Cartitems {
-		cartItemsToHandle[currentItem.ID] = currentItem
-	}
+	if dib.UseMultiShippingCartFeature {
+		// check for all items
+		cartItemsToHandle := make(map[string]Item)
+		for _, currentItem := range decoratedCart.Cart.Cartitems {
+			cartItemsToHandle[currentItem.ID] = currentItem
+		}
 
-	if decoratedCart.Cart.HasDeliveryInfos() {
-		for _, delInfo := range decoratedCart.Cart.DeliveryInfos {
-			currentlyAssignedItems := []string{}
-			for _, item := range decoratedCart.Cart.Cartitems {
-				if item.DeliveryInfoReference != nil && item.DeliveryInfoReference.ID == delInfo.ID {
-					currentlyAssignedItems = append(currentlyAssignedItems, item.ID)
-					delete(cartItemsToHandle, item.ID)
+		if decoratedCart.Cart.HasDeliveryInfos() {
+			for _, delInfo := range decoratedCart.Cart.DeliveryInfos {
+				currentlyAssignedItems := []string{}
+				for _, item := range decoratedCart.Cart.Cartitems {
+					if item.DeliveryInfoReference != nil && item.DeliveryInfoReference.ID == delInfo.ID {
+						currentlyAssignedItems = append(currentlyAssignedItems, item.ID)
+						delete(cartItemsToHandle, item.ID)
+					}
 				}
+				newDelInfo := delInfo
+				updateCommands = append(updateCommands, DeliveryInfoUpdateCommand{
+					DeliveryInfo:    &newDelInfo,
+					AssignedItemIds: currentlyAssignedItems,
+				})
 			}
-			newDelInfo := delInfo
-			updateCommands = append(updateCommands, DeliveryInfoUpdateCommand{
-				DeliveryInfo:    &newDelInfo,
-				AssignedItemIds: currentlyAssignedItems,
-			})
+
+			// check if all items are assigned or if there is still something to assign
+			if len(cartItemsToHandle) <= 0 {
+				return updateCommands, nil
+			}
 		}
 
-		// check if all items are assigned or if there is still something to assign
-		if len(cartItemsToHandle) <= 0 {
-			return updateCommands, nil
-		}
-	}
+		//Else - There are no deliveryInfos on the cart. So we use the DeliveryIntent to build the initial commands
+		for _, cartitems := range decoratedCart.Cart.GetCartItemsByOriginalDeliveryIntent() {
+			if len(cartitems) < 1 {
+				continue
+			}
 
-	//Else - There are no deliveryInfos on the cart. So we use the DeliveryIntent to build the initial commands
-	for _, cartitems := range decoratedCart.Cart.GetCartItemsByOriginalDeliveryIntent() {
-		if len(cartitems) < 1 {
-			continue
+			// only continue if cartItem is in cartItemsToHandle
+			if _, ok := cartItemsToHandle[cartitems[0].ID]; ok {
+				deliveryInfo := cartitems[0].OriginalDeliveryIntent.BuildDeliveryInfo()
+				itemIds := make([]string, 0)
+				for _, cartitem := range cartitems {
+					itemIds = append(itemIds, cartitem.ID)
+				}
+				updateCommands = append(updateCommands, DeliveryInfoUpdateCommand{
+					DeliveryInfo:    &deliveryInfo,
+					AssignedItemIds: itemIds,
+				})
+			}
 		}
-
-		// only continue if cartItem is in cartItemsToHandle
-		if _, ok := cartItemsToHandle[cartitems[0].ID]; ok {
+	} else {
+		for _, cartitems := range decoratedCart.Cart.GetCartItemsByOriginalDeliveryIntent() {
+			if len(cartitems) < 1 {
+				continue
+			}
 			deliveryInfo := cartitems[0].OriginalDeliveryIntent.BuildDeliveryInfo()
-			itemIds := make([]string, 0)
+			itemIds := make([]string, len(cartitems))
 			for _, cartitem := range cartitems {
 				itemIds = append(itemIds, cartitem.ID)
 			}
@@ -86,6 +104,7 @@ func (dib *DefaultDeliveryInfoBuilder) BuildDeliveryInfoUpdateCommand(ctx web.Co
 			})
 		}
 	}
+
 	return updateCommands, nil
 }
 
