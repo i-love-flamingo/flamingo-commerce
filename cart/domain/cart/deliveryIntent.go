@@ -39,12 +39,19 @@ type (
 func (dib *DefaultDeliveryInfoBuilder) BuildDeliveryInfoUpdateCommand(ctx web.Context, decoratedCart *DecoratedCart) ([]DeliveryInfoUpdateCommand, error) {
 	var updateCommands []DeliveryInfoUpdateCommand
 
+	// check for all items
+	cartItemsToHandle := make(map[string]Item)
+	for _, currentItem := range decoratedCart.Cart.Cartitems {
+		cartItemsToHandle[currentItem.ID] = currentItem
+	}
+
 	if decoratedCart.Cart.HasDeliveryInfos() {
 		for _, delInfo := range decoratedCart.Cart.DeliveryInfos {
 			currentlyAssignedItems := []string{}
 			for _, item := range decoratedCart.Cart.Cartitems {
-				if item.DeliveryInfoReference.ID == delInfo.ID {
+				if item.DeliveryInfoReference != nil && item.DeliveryInfoReference.ID == delInfo.ID {
 					currentlyAssignedItems = append(currentlyAssignedItems, item.ID)
+					delete(cartItemsToHandle, item.ID)
 				}
 			}
 			newDelInfo := delInfo
@@ -53,7 +60,11 @@ func (dib *DefaultDeliveryInfoBuilder) BuildDeliveryInfoUpdateCommand(ctx web.Co
 				AssignedItemIds: currentlyAssignedItems,
 			})
 		}
-		return updateCommands, nil
+
+		// check if all items are assigned or if there is still something to assign
+		if len(cartItemsToHandle) <= 0 {
+			return updateCommands, nil
+		}
 	}
 
 	//Else - There are no deliveryInfos on the cart. So we use the DeliveryIntent to build the initial commands
@@ -61,15 +72,19 @@ func (dib *DefaultDeliveryInfoBuilder) BuildDeliveryInfoUpdateCommand(ctx web.Co
 		if len(cartitems) < 1 {
 			continue
 		}
-		deliveryInfo := cartitems[0].OriginalDeliveryIntent.BuildDeliveryInfo()
-		itemIds := make([]string, 0)
-		for _, cartitem := range cartitems {
-			itemIds = append(itemIds, cartitem.ID)
+
+		// only continue if cartItem is in cartItemsToHandle
+		if _, ok := cartItemsToHandle[cartitems[0].ID]; ok {
+			deliveryInfo := cartitems[0].OriginalDeliveryIntent.BuildDeliveryInfo()
+			itemIds := make([]string, 0)
+			for _, cartitem := range cartitems {
+				itemIds = append(itemIds, cartitem.ID)
+			}
+			updateCommands = append(updateCommands, DeliveryInfoUpdateCommand{
+				DeliveryInfo:    &deliveryInfo,
+				AssignedItemIds: itemIds,
+			})
 		}
-		updateCommands = append(updateCommands, DeliveryInfoUpdateCommand{
-			DeliveryInfo:    &deliveryInfo,
-			AssignedItemIds: itemIds,
-		})
 	}
 	return updateCommands, nil
 }
