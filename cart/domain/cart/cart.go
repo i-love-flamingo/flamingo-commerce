@@ -222,6 +222,8 @@ const (
 	TOTALS_TYPE_TAX           = "totals_type_tax"
 	TOTALS_TYPE_LOYALTYPOINTS = "totals_loyaltypoints"
 	TOTALS_TYPE_SHIPPING      = "totals_type_shipping"
+
+	FLIGHT_DATE_FORMAT = time.RFC3339
 )
 
 // GetByLineNr gets an item - starting with 1
@@ -412,6 +414,16 @@ func (fd *FlightData) GetScheduledDate() string {
 
 func (fd *FlightData) GetScheduledDateTime() string {
 	return fd.ScheduledDateTime.Format(time.RFC3339)
+}
+
+//GetScheduledDateTime string from ScheduledDateTime - used for display
+func (fd *FlightData) ParseScheduledDateTime() time.Time {
+	//"scheduledDateTime": "2017-11-25T06:30:00Z",
+	timeResult, e := time.Parse(FLIGHT_DATE_FORMAT, fd.ScheduledDateTime.String())
+	if e != nil {
+		return time.Now()
+	}
+	return timeResult
 }
 
 func (di DeliveryInfo) String() string {
