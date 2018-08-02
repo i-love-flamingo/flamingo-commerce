@@ -75,7 +75,7 @@ func (dib *DefaultDeliveryInfoBuilder) BuildDeliveryInfoUpdateCommand(ctx web.Co
 			continue
 		}
 		deliveryInfo := cartitems[0].OriginalDeliveryIntent.BuildDeliveryInfo()
-		itemIds := make([]string, len(cartitems))
+		itemIds := make([]string, 0)
 		for _, cartitem := range cartitems {
 			itemIds = append(itemIds, cartitem.ID)
 		}
