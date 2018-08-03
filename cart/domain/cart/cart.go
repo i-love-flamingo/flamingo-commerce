@@ -414,9 +414,13 @@ func (fd *FlightData) GetScheduledDateTime() string {
 	return fd.ScheduledDateTime.Format(time.RFC3339)
 }
 
-func (di DeliveryInfo) String() string {
+func (di *DeliveryInfo) String() string {
+	if di.Method == DELIVERY_METHOD_PICKUP {
+		return "pickup_autodetect"
+	}
 	if di.Method == DELIVERY_METHOD_PICKUP {
 		return di.Method + "_" + di.DeliveryLocation.Type + "_" + di.DeliveryLocation.Code
+
 	}
 	return di.Method
 }
