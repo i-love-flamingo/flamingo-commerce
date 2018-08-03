@@ -68,21 +68,41 @@ func (dib *DefaultDeliveryInfoBuilder) BuildDeliveryInfoUpdateCommand(ctx web.Co
 				return updateCommands, nil
 			}
 		}
-	}
 
-	for _, cartitems := range decoratedCart.Cart.GetCartItemsByOriginalDeliveryIntent() {
-		if len(cartitems) < 1 {
-			continue
+		//Else - There are no deliveryInfos on the cart. So we use the DeliveryIntent to build the initial commands
+		for _, cartitems := range decoratedCart.Cart.GetCartItemsByOriginalDeliveryIntent() {
+			if len(cartitems) < 1 {
+				continue
+			}
+
+			// only continue if cartItem is in cartItemsToHandle
+			if _, ok := cartItemsToHandle[cartitems[0].ID]; ok {
+				deliveryInfo := cartitems[0].OriginalDeliveryIntent.BuildDeliveryInfo()
+				itemIds := make([]string, 0)
+				for _, cartitem := range cartitems {
+					itemIds = append(itemIds, cartitem.ID)
+				}
+				updateCommands = append(updateCommands, DeliveryInfoUpdateCommand{
+					DeliveryInfo:    &deliveryInfo,
+					AssignedItemIds: itemIds,
+				})
+			}
 		}
-		deliveryInfo := cartitems[0].OriginalDeliveryIntent.BuildDeliveryInfo()
-		itemIds := make([]string, len(cartitems))
-		for _, cartitem := range cartitems {
-			itemIds = append(itemIds, cartitem.ID)
+	} else {
+		for _, cartitems := range decoratedCart.Cart.GetCartItemsByOriginalDeliveryIntent() {
+			if len(cartitems) < 1 {
+				continue
+			}
+			deliveryInfo := cartitems[0].OriginalDeliveryIntent.BuildDeliveryInfo()
+			itemIds := make([]string, len(cartitems))
+			for _, cartitem := range cartitems {
+				itemIds = append(itemIds, cartitem.ID)
+			}
+			updateCommands = append(updateCommands, DeliveryInfoUpdateCommand{
+				DeliveryInfo:    &deliveryInfo,
+				AssignedItemIds: itemIds,
+			})
 		}
-		updateCommands = append(updateCommands, DeliveryInfoUpdateCommand{
-			DeliveryInfo:    &deliveryInfo,
-			AssignedItemIds: itemIds,
-		})
 	}
 
 	return updateCommands, nil
