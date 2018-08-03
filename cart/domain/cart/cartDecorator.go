@@ -2,8 +2,6 @@ package cart
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"log"
 	"sort"
 
@@ -20,15 +18,16 @@ type (
 
 	// DecoratedCart Decorates Access To a Cart
 	DecoratedCart struct {
-		Cart           Cart
-		DecoratedItems []DecoratedCartItem
-		Ctx            context.Context `json:"-"`
+		Cart                Cart
+		DecoratedDeliveries []DecoratedDelivery
+		Ctx                 context.Context `json:"-"`
+		Logger              flamingo.Logger
 	}
 
-	// DecoratedCartItem Decorates a CartItem with its Product
-	GroupedDecoratedCartItem struct {
+	// DecoratedDelivery Decorates a CartItem with its Product
+	DecoratedDelivery struct {
+		Delivery       *Delivery
 		DecoratedItems []DecoratedCartItem
-		Group          string
 	}
 
 	// DecoratedCartItem Decorates a CartItem with its Product
@@ -36,12 +35,23 @@ type (
 		Item    Item
 		Product domain.BasicProduct
 	}
+
+	// GroupedDecoratedCartItem - value object used for grouping (generated on the fly)
+	GroupedDecoratedCartItem struct {
+		DecoratedItems []DecoratedCartItem
+		Group          string
+	}
 )
 
 // Create Factory method to get Decorated Cart
 func (df *DecoratedCartFactory) Create(ctx context.Context, Cart Cart) *DecoratedCart {
-	decoratedCart := DecoratedCart{Cart: Cart}
-	decoratedCart.DecoratedItems = df.CreateDecorateCartItems(ctx, Cart.Cartitems)
+	decoratedCart := DecoratedCart{Cart: Cart, Logger: df.Logger}
+	for _, d := range Cart.Deliveries {
+		decoratedCart.DecoratedDeliveries = append(decoratedCart.DecoratedDeliveries, DecoratedDelivery{
+			Delivery:       &d,
+			DecoratedItems: df.CreateDecorateCartItems(ctx, d.Cartitems),
+		})
+	}
 	decoratedCart.Ctx = ctx
 	return &decoratedCart
 }
@@ -146,8 +156,45 @@ func (dci DecoratedCartItem) GetVariantsVariationAttributeCodes() []string {
 	return nil
 }
 
-// GetGroupedBy getter
+//DecoratedItems
+// @DEPRICATED - only here to support the old structure of accesing DecoratedItems in the Decorated Cart
+// Use instead:
+// 		Either GetAllDecoratedItems() - if you prefer a flat list of items or
+//		or iterate over DecoratedCart.DecoratedDelivery	and its DecoratedItems
+
+func (dc DecoratedCart) DecoratedItems() []DecoratedCartItem {
+	if dc.Logger != nil {
+		dc.Logger.Warn("DEPRICATED: DecoratedCart.DecoratedItems()")
+	}
+	return dc.GetAllDecoratedItems()
+}
+
+//DecoratedItems
+// @DEPRICATED - only here to support the old structure of accesing DecoratedItems in the Decorated Cart
+// Use instead:
+//		or iterate over DecoratedCart.DecoratedDelivery
+
 func (dc DecoratedCart) GetGroupedBy(group string, sortGroup bool, params ...string) []*GroupedDecoratedCartItem {
+
+	if dc.Logger != nil {
+		dc.Logger.Warn("DEPRICATED: DecoratedCart.GetGroupedBy()")
+	}
+	if len(dc.DecoratedDeliveries) != 1 {
+		return nil
+	}
+	return dc.DecoratedDeliveries[0].GetGroupedBy(group, sortGroup, params...)
+}
+
+func (dc DecoratedCart) GetAllDecoratedItems() []DecoratedCartItem {
+	var allItems []DecoratedCartItem
+	for _, dd := range dc.DecoratedDeliveries {
+		allItems = append(allItems, dd.DecoratedItems...)
+	}
+	return allItems
+}
+
+// GetGroupedBy getter
+func (dc DecoratedDelivery) GetGroupedBy(group string, sortGroup bool, params ...string) []*GroupedDecoratedCartItem {
 	groupedItemsCollection := make(map[string]*GroupedDecoratedCartItem)
 	var groupedItemsCollectionKeys []string
 
@@ -156,8 +203,6 @@ func (dc DecoratedCart) GetGroupedBy(group string, sortGroup bool, params ...str
 		switch group {
 		case "retailer_code":
 			groupKey = item.Product.BaseData().RetailerCode
-		case "deliveryIntent":
-			groupKey = item.Item.OriginalDeliveryIntent.String()
 		default:
 			groupKey = "default"
 		}
@@ -194,13 +239,4 @@ func (dc DecoratedCart) GetGroupedBy(group string, sortGroup bool, params ...str
 		}
 	}
 	return groupedItemsCollectionSorted
-}
-
-func (dc DecoratedCart) GetByItemId(itemId string) (*DecoratedCartItem, error) {
-	for _, item := range dc.DecoratedItems {
-		if item.Item.ID == itemId {
-			return &item, nil
-		}
-	}
-	return nil, errors.New(fmt.Sprintf("itemId %v not existend not existent in decorated cart", itemId))
 }

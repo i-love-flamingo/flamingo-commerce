@@ -38,16 +38,16 @@ func (m *CartModule) Configure(injector *dingo.Injector) {
 	m.RouterRegistry.Route("/cart", "cart.view")
 
 	m.RouterRegistry.Handle("cart.add", (*controller.CartViewController).AddAndViewAction)
-	m.RouterRegistry.Route("/cart/add/:marketplaceCode", `cart.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryIntent?="")`)
+	m.RouterRegistry.Route("/cart/add/:marketplaceCode", `cart.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryCode?="")`)
 
 	m.RouterRegistry.Handle("cart.updateQty", (*controller.CartViewController).UpdateQtyAndViewAction)
-	m.RouterRegistry.Route("/cart/update/:id", `cart.updateQty(id,qty?="1")`)
+	m.RouterRegistry.Route("/cart/update/:id", `cart.updateQty(id,qty?="1",deliveryCode?="")`)
 
 	m.RouterRegistry.Handle("cart.deleteAllItems", (*controller.CartViewController).DeleteAllAndViewAction)
 	m.RouterRegistry.Route("/cart/delete/all", `cart.deleteAllItems`)
 
 	m.RouterRegistry.Handle("cart.deleteItem", (*controller.CartViewController).DeleteAndViewAction)
-	m.RouterRegistry.Route("/cart/delete/:id", `cart.deleteItem(id)`)
+	m.RouterRegistry.Route("/cart/delete/:id", `cart.deleteItem(id,deliveryCode?="")`)
 
 	gob.Register(cart.Cart{})
 
@@ -58,7 +58,7 @@ func (m *CartModule) Configure(injector *dingo.Injector) {
 	m.RouterRegistry.Handle("cart.api.applyVoucher", (*controller.CartApiController).ApplyVoucherAndGetAction)
 
 	m.RouterRegistry.Route("/api/cart", "cart.api.get")
-	m.RouterRegistry.Route("/api/cart/add/:marketplaceCode", `cart.api.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryIntent?="")`)
+	m.RouterRegistry.Route("/api/cart/add/:marketplaceCode", `cart.api.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryCode?="")`)
 	m.RouterRegistry.Route("/api/cart/applyvoucher/:couponCode", `cart.api.applyVoucher(couponCode)`)
 
 	//Event

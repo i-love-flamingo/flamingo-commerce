@@ -170,7 +170,7 @@ func (s Factory) BuildCartData(cart cart.DecoratedCart) *domain.Cart {
 		},
 		Attributes: make(map[string]interface{}),
 	}
-	for _, item := range cart.DecoratedItems {
+	for _, item := range cart.GetAllDecoratedItems() {
 		itemData := s.buildCartItem(item, cart.Cart.CartTotals.CurrencyCode)
 		cartData.Item = append(cartData.Item, itemData)
 	}

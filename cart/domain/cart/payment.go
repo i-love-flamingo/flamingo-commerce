@@ -5,8 +5,14 @@ type (
 	//CartPayment represents the all payments done for the cart and which items have been purchased by what methhod
 	CartPayment struct {
 		PaymentInfos       []*PaymentInfo
-		ItemIDAssignment   map[string]*PaymentInfo
+		Assignments        []CartPaymentAssignment
 		RawTransactionData interface{}
+	}
+
+	//CartPaymentAssignment - represents the infos required to reference a CartItem
+	CartPaymentAssignment struct {
+		ItemCartReference ItemCartReference
+		PaymentInfo       *PaymentInfo
 	}
 
 	PaymentInfo struct {
@@ -41,21 +47,23 @@ const (
 	PAYMENT_STATUS_OPEN     = "OPEN"
 )
 
-func (cp *CartPayment) AddPayment(paymentInfo PaymentInfo, items []string) {
+func (cp *CartPayment) AddPayment(paymentInfo PaymentInfo, cartItemReferences []ItemCartReference) {
 	cp.PaymentInfos = append(cp.PaymentInfos, &paymentInfo)
-	if cp.ItemIDAssignment == nil {
-		cp.ItemIDAssignment = make(map[string]*PaymentInfo)
-	}
-	for _, v := range items {
-		cp.ItemIDAssignment[v] = &paymentInfo
+
+	for _, cartItemReference := range cartItemReferences {
+		cp.Assignments = append(cp.Assignments, CartPaymentAssignment{
+			ItemCartReference: cartItemReference,
+			PaymentInfo:       &paymentInfo,
+		})
 	}
 }
 
-func (cp *CartPayment) GetItemIdsForPaymentInfo(paymentInfo *PaymentInfo) []string {
-	var ids []string
-	for k, v := range cp.ItemIDAssignment {
-		if v == paymentInfo {
-			ids = append(ids, k)
+//GetAssignmentsForPaymentInfo - returns the CartItemReferences that are payed with the given paymentInfo
+func (cp *CartPayment) GetAssignmentsForPaymentInfo(paymentInfo *PaymentInfo) []ItemCartReference {
+	var ids []ItemCartReference
+	for _, v := range cp.Assignments {
+		if v.PaymentInfo == paymentInfo {
+			ids = append(ids, v.ItemCartReference)
 		}
 	}
 	return ids

@@ -1,13 +1,6 @@
 package infrastructure
 
 import (
-	"context"
-	"errors"
-	"fmt"
-	"math/big"
-	"math/rand"
-	"strconv"
-
 	domaincart "flamingo.me/flamingo-commerce/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/product/domain"
 )
@@ -30,6 +23,8 @@ type (
 		guestCarts map[string]domaincart.Cart
 	}
 )
+
+/*
 
 var (
 	_ domaincart.CartBehaviour = (*InMemoryCartOrderBehaviour)(nil)
@@ -86,9 +81,11 @@ func (cob *InMemoryCartOrderBehaviour) UpdateItem(ctx context.Context, cart *dom
 	return cart, nil
 }
 
+*/
 /**
 add item to cart and store in memory
-*/
+*/ /*
+
 func (cob *InMemoryCartOrderBehaviour) AddToCart(ctx context.Context, cart *domaincart.Cart, addRequest domaincart.AddRequest) (*domaincart.Cart, error) {
 
 	if !cob.CartStorage.HasCart(cart.ID) {
@@ -147,9 +144,11 @@ func (cob *InMemoryCartOrderBehaviour) UpdateDeliveryInfosAndBilling(ctx context
 	return nil, nil
 }
 
+*/
 /*
 return the current cart from storage
-*/
+*/ /*
+
 func (cob *InMemoryCartOrderBehaviour) GetCart(ctx context.Context, cartId string) (*domaincart.Cart, error) {
 	if cob.CartStorage.HasCart(cartId) {
 		// if cart exists, there is no error ;)
@@ -159,7 +158,9 @@ func (cob *InMemoryCartOrderBehaviour) GetCart(ctx context.Context, cartId strin
 	return nil, fmt.Errorf("cart.infrastructure.InMemoryCartOrderBehaviour: Cannot get - Guestcart with id %v not existend", cartId)
 }
 
-/** Implementation fo the storage **/
+*/
+/** Implementation fo the storage **/ /*
+
 func (s *InMemoryCartStorage) init() {
 	if s.guestCarts == nil {
 		s.guestCarts = make(map[string]domaincart.Cart)
@@ -202,3 +203,4 @@ func (cob *InMemoryCartOrderBehaviour) ApplyVoucher(ctx context.Context, cart *d
 
 	return cart, err
 }
+*/

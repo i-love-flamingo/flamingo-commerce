@@ -9,7 +9,7 @@ import (
 
 type (
 	ItemValidator interface {
-		Validate(ctx web.Context, request AddRequest, product domain.BasicProduct) error
+		Validate(ctx web.Context, deliveryCode string, request AddRequest, product domain.BasicProduct) error
 	}
 
 	AddToCartNotAllowed struct {

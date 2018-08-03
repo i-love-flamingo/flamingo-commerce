@@ -1,13 +1,6 @@
 package cart
 
-import (
-	"testing"
-
-	"github.com/stretchr/testify/assert"
-
-	"flamingo.me/flamingo/framework/flamingo"
-)
-
+/*
 func TestDeliveryIntent(t *testing.T) {
 	builder := DeliveryIntentBuilder{
 		Logger: flamingo.NullLogger{},
@@ -44,3 +37,4 @@ func TestDeliveryIntent(t *testing.T) {
 	assert.Equal(t, "", intent.DeliveryLocationCode)
 	assert.Equal(t, DELIVERY_METHOD_PICKUP, intent.Method)
 }
+*/

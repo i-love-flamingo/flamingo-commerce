@@ -9,8 +9,6 @@ import (
 
 	"strconv"
 
-	"github.com/go-playground/form"
-	"github.com/leebenson/conform"
 	"flamingo.me/flamingo-commerce/cart/domain/cart"
 	customerDomain "flamingo.me/flamingo-commerce/customer/domain"
 	"flamingo.me/flamingo/core/form/application"
@@ -18,6 +16,8 @@ import (
 	"flamingo.me/flamingo/framework/config"
 	"flamingo.me/flamingo/framework/flamingo"
 	"flamingo.me/flamingo/framework/web"
+	"github.com/go-playground/form"
+	"github.com/leebenson/conform"
 	"gopkg.in/go-playground/validator.v9"
 )
 
@@ -144,9 +144,9 @@ func (fs *CheckoutFormService) fillFormDataFromCustomer(formData CheckoutFormDat
 func (fs *CheckoutFormService) fillFormDataFromCart(formData CheckoutFormData) CheckoutFormData {
 	if fs.Cart != nil {
 		fs.mapCartAddressToFormAddress(fs.Cart.BillingAdress, &formData.BillingAddress)
-		if len(fs.Cart.DeliveryInfos) > 0 {
-			if fs.Cart.DeliveryInfos[0].DeliveryLocation.Address != nil {
-				fs.mapCartAddressToFormAddress(*fs.Cart.DeliveryInfos[0].DeliveryLocation.Address, &formData.ShippingAddress)
+		if len(fs.Cart.Deliveries) > 0 {
+			if fs.Cart.Deliveries[0].DeliveryInfo.DeliveryLocation.Address != nil {
+				fs.mapCartAddressToFormAddress(*fs.Cart.Deliveries[0].DeliveryInfo.DeliveryLocation.Address, &formData.ShippingAddress)
 			}
 		}
 

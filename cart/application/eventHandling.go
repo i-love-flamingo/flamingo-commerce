@@ -46,10 +46,12 @@ func (e *EventReceiver) Notify(event event.Event) {
 			e.Logger.WithField(flamingo.LogKeyCategory, "cart").Error("Received LoginEvent but user is not logged in!!!")
 			return
 		}
-		for _, item := range guestCart.Cartitems {
-			e.Logger.WithField(flamingo.LogKeyCategory, "cart").Debug("Merging item from guest to user cart %v", item)
-			addRequest := e.CartService.BuildAddRequest(eventType.Context, item.MarketplaceCode, item.VariantMarketPlaceCode, item.Qty, item.OriginalDeliveryIntent.String())
-			e.CartService.AddProduct(eventType.Context, addRequest)
+		for _, d := range guestCart.Deliveries {
+			for _, item := range d.Cartitems {
+				e.Logger.WithField(flamingo.LogKeyCategory, "cart").Debug("Merging item from guest to user cart %v", item)
+				addRequest := e.CartService.BuildAddRequest(eventType.Context, item.MarketplaceCode, item.VariantMarketPlaceCode, item.Qty)
+				e.CartService.AddProduct(eventType.Context, d.DeliveryInfo.Code, addRequest)
+			}
 		}
 
 		if guestCart.HasAppliedCouponCode() {

@@ -2,7 +2,6 @@ package cart
 
 import (
 	"fmt"
-	"log"
 
 	"time"
 
@@ -21,8 +20,7 @@ type (
 		ID string
 		//EntityID is a second identifier that may be used by some backends
 		EntityID string
-		//Cartitems - list of cartitems
-		Cartitems []Item
+
 		//CartTotals - the cart totals (contain summary costs and discounts etc)
 		CartTotals CartTotals
 		//BillingAdress - the main billing address (relevant for all payments/invoices)
@@ -31,8 +29,8 @@ type (
 		//Purchaser - additional infos for the legal contact person in this order
 		Purchaser Person
 
-		//DeliveryInfos - list of desired Deliverys (or Shippments) involved in this cart - referenced from the items
-		DeliveryInfos []DeliveryInfo
+		//Deliveries - list of desired Deliverys (or Shippments) involved in this cart
+		Deliveries []Delivery
 		//AdditionalData   can be used for Custom attributes
 		AdditionalData map[string]string
 
@@ -66,9 +64,16 @@ type (
 		Nationality     string
 	}
 
+	//Delivery - represents the DeliveryInfo and the assigned Items
+	Delivery struct {
+		DeliveryInfo DeliveryInfo
+		//Cartitems - list of cartitems
+		Cartitems []Item
+	}
+
 	//DeliveryInfo - represents the Delivery
 	DeliveryInfo struct {
-		ID               string
+		Code             string
 		Method           string
 		Carrier          string
 		DeliveryLocation DeliveryLocation
@@ -78,8 +83,6 @@ type (
 		RelatedFlight    *FlightData
 	}
 
-	// TODO: FlightData and RelatedFlight in the DeliveryInfo struct should not be forced on Flamingo Users here.
-	// Should move to OM3 somehow
 	FlightData struct {
 		ScheduledDateTime  time.Time
 		Direction          string
@@ -138,18 +141,7 @@ type (
 
 		Qty int
 
-		//DEPRICATED
-		//Price float64
-		// DEPRICATED
-		//DiscountAmount float64
-		// DEPRICATED
-		//PriceInclTax float64
-
-		DeliveryInfoReference *DeliveryInfo
-		CurrencyCode          string
-
-		//OriginalDeliveryIntent can be "delivery" for homedelivery or "pickup_locationcode" or "collectionpoint_locationcode"
-		OriginalDeliveryIntent *DeliveryIntent
+		CurrencyCode string
 
 		AdditionalData map[string]string
 		//brutto for single item
@@ -176,6 +168,13 @@ type (
 		RowTotalWithItemRelatedDiscountInclTax float64
 		//This is the price the customer finaly need to pay for this item:  RowTotalWithDiscountInclTax = RowTotalInclTax-TotalDiscountAmount
 		RowTotalWithDiscountInclTax float64
+	}
+
+	//ItemCartReference - value object that can be used to reference a Item in a Cart
+	//@todo - Use in ServiePort methods...
+	ItemCartReference struct {
+		ItemId       string
+		DeliveryCode string
 	}
 
 	// DiscountItem
@@ -224,30 +223,12 @@ const (
 	TOTALS_TYPE_SHIPPING      = "totals_type_shipping"
 )
 
-// GetByLineNr gets an item - starting with 1
-func (Cart Cart) HasDeliveryInfos() bool {
-	if len(Cart.DeliveryInfos) > 0 {
-		return true
-	}
-	return false
-}
-
-// GetByLineNr gets an item - starting with 1
-func (Cart Cart) GetByLineNr(lineNr int) (*Item, error) {
-	var item Item
-	if len(Cart.Cartitems) >= lineNr && lineNr > 0 {
-		return &Cart.Cartitems[lineNr-1], nil
-	} else {
-		return &item, errors.New("Line in cart not existend")
-	}
-}
-
 // GetMainShippingEMail
 func (Cart Cart) GetMainShippingEMail() string {
-	for _, info := range Cart.DeliveryInfos {
-		if info.DeliveryLocation.Address != nil {
-			if info.DeliveryLocation.Address.Email != "" {
-				return info.DeliveryLocation.Address.Email
+	for _, deliveries := range Cart.Deliveries {
+		if deliveries.DeliveryInfo.DeliveryLocation.Address != nil {
+			if deliveries.DeliveryInfo.DeliveryLocation.Address.Email != "" {
+				return deliveries.DeliveryInfo.DeliveryLocation.Address.Email
 			}
 		}
 	}
@@ -255,24 +236,36 @@ func (Cart Cart) GetMainShippingEMail() string {
 }
 
 // GetByItemId gets an item by its id
-func (Cart Cart) GetByItemId(itemId string) (*Item, error) {
-	for _, currentItem := range Cart.Cartitems {
-		log.Println("Cart GetByItemId:" + currentItem.ID)
+func (Cart Cart) GetDeliveryByCode(deliveryCode string) (*Delivery, error) {
+	for _, delivery := range Cart.Deliveries {
+		if delivery.DeliveryInfo.Code == deliveryCode {
+			return &delivery, nil
+		}
+	}
+	return nil, errors.New(fmt.Sprintf("Delivery with code %v in cart not existend", deliveryCode))
+}
+
+func (Cart Cart) HasDeliveryForCode(deliveryCode string) bool {
+	for _, d := range Cart.Deliveries {
+		if d.DeliveryInfo.Code == deliveryCode {
+			return true
+		}
+	}
+	return false
+}
+
+// GetByItemId gets an item by its id
+func (Cart Cart) GetByItemId(itemId string, deliveryCode string) (*Item, error) {
+	delivery, err := Cart.GetDeliveryByCode(deliveryCode)
+	if err != nil {
+		return nil, err
+	}
+	for _, currentItem := range delivery.Cartitems {
 		if currentItem.ID == itemId {
 			return &currentItem, nil
 		}
 	}
 	return nil, errors.New(fmt.Sprintf("itemId %v in cart not existend", itemId))
-}
-
-// HasItem checks if a cartitem for that sku exists and returns lineNr if found
-func (cart Cart) HasItem(marketplaceCode string, variantMarketplaceCode string) (bool, int) {
-	for lineNr, item := range cart.Cartitems {
-		if item.MarketplaceCode == marketplaceCode && item.VariantMarketPlaceCode == variantMarketplaceCode {
-			return true, lineNr + 1
-		}
-	}
-	return false, 0
 }
 
 func inStruct(value string, list []string) bool {
@@ -287,62 +280,32 @@ func inStruct(value string, list []string) bool {
 // ItemCount - returns amount of Cartitems
 func (Cart Cart) ItemCount() int {
 	count := 0
-	for _, item := range Cart.Cartitems {
-		count += item.Qty
+	for _, delivery := range Cart.Deliveries {
+		for _, item := range delivery.Cartitems {
+			count += item.Qty
+		}
 	}
 
 	return count
 }
 
-// GetItemIds - returns amount of Cartitems
-func (Cart Cart) GetItemIds() []string {
-	ids := []string{}
-	for _, item := range Cart.Cartitems {
-		ids = append(ids, item.ID)
+func (Cart Cart) GetItemCartReferences() []ItemCartReference {
+	var ids []ItemCartReference
+	for _, delivery := range Cart.Deliveries {
+		for _, item := range delivery.Cartitems {
+			ids = append(ids, ItemCartReference{
+				ItemId:       item.ID,
+				DeliveryCode: delivery.DeliveryInfo.Code,
+			})
+		}
 	}
 	return ids
 }
 
-// GetCartItemsByOriginalIntend - returns the cart Items grouped by the original DeliveryIntent
-func (Cart Cart) GetCartItemsByOriginalDeliveryIntent() map[string][]Item {
-	result := make(map[string][]Item)
-	for _, item := range Cart.Cartitems {
-		result[item.OriginalDeliveryIntent.String()] = append(result[item.OriginalDeliveryIntent.String()], item)
-	}
-	return result
-}
-
-// HasItemWithIntent - returns if the cart has an item with the delivery intent
-func (Cart Cart) HasItemWithIntent(intent string) bool {
-	for _, item := range Cart.Cartitems {
-		if item.OriginalDeliveryIntent.String() == intent {
-			return true
-		}
-	}
-	return false
-}
-
-func (Cart Cart) HasItemWithDifferentIntent(intent string) bool {
-	for _, item := range Cart.Cartitems {
-		if item.OriginalDeliveryIntent.String() != intent {
-			return true
-		}
-	}
-	return false
-}
-
 // check if it is a mixed cart with different delivery intents
+//@todo - only non empty Deliveries should count
 func (Cart Cart) HasMixedCart() bool {
-	// if there is only one or less items in the cart, it can not be a mixed cart
-	if Cart.ItemCount() <= 1 {
-		return false
-	}
-
-	// get intent from first item
-	firstItem := Cart.Cartitems[0]
-	firstDeliveryIntent := firstItem.OriginalDeliveryIntent.String()
-
-	return Cart.HasItemWithDifferentIntent(firstDeliveryIntent)
+	return len(Cart.Deliveries) > 1
 }
 
 func (Cart Cart) GetVoucherSavings() float64 {

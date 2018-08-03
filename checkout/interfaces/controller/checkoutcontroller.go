@@ -54,8 +54,9 @@ type (
 		Email               string
 		PlacedDecoratedCart cart.DecoratedCart
 
-		//PlacedDecoratedItems - Depricated
-		PlacedDecoratedItems []cart.DecoratedCartItem
+		//PlacedDecoratedItems - DEPRICATED!!!
+		// PlacedDecoratedItems []cart.DecoratedCartItem
+
 		//CartTotals - Depricated
 		CartTotals cart.CartTotals
 	}
@@ -309,12 +310,11 @@ func (cc *CheckoutController) SuccessAction(ctx web.Context) web.Response {
 		if placeOrderFlashData, ok := flashes[0].(PlaceOrderFlashData); ok {
 			decoratedCart := cc.DecoratedCartFactory.Create(ctx, placeOrderFlashData.PlacedCart)
 			viewData := SuccessViewData{
-				CartTotals:           placeOrderFlashData.PlacedCart.CartTotals,
-				Email:                placeOrderFlashData.Email,
-				OrderId:              placeOrderFlashData.OrderId,
-				PlacedDecoratedItems: decoratedCart.DecoratedItems,
-				PaymentInfos:         placeOrderFlashData.PaymentInfos,
-				PlacedDecoratedCart:  *decoratedCart,
+				CartTotals:          placeOrderFlashData.PlacedCart.CartTotals,
+				Email:               placeOrderFlashData.Email,
+				OrderId:             placeOrderFlashData.OrderId,
+				PaymentInfos:        placeOrderFlashData.PaymentInfos,
+				PlacedDecoratedCart: *decoratedCart,
 			}
 
 			return cc.Render(ctx, "checkout/success", viewData).Hook(web.NoCache)

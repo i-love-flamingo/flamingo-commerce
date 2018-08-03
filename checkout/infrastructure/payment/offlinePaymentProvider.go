@@ -3,10 +3,10 @@ package payment
 import (
 	"net/url"
 
-	"github.com/pkg/errors"
 	cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/checkout/domain/payment"
 	"flamingo.me/flamingo/framework/web"
+	"github.com/pkg/errors"
 )
 
 type (
@@ -50,15 +50,19 @@ func (pa *OfflinePaymentProvider) ProcessPayment(ctx web.Context, currentCart *c
 		Status:   cartDomain.PAYMENT_STATUS_OPEN,
 	}
 
-	idAssignments := make(map[string]*cartDomain.PaymentInfo)
-	for _, itemId := range currentCart.GetItemIds() {
-		idAssignments[itemId] = &paymentInfo
+	var assignments []cartDomain.CartPaymentAssignment
+	for _, itemReference := range currentCart.GetItemCartReferences() {
+		assignments = append(assignments, cartDomain.CartPaymentAssignment{
+			ItemCartReference: itemReference,
+			PaymentInfo:       &paymentInfo,
+		})
 	}
 	var paymentInfos []*cartDomain.PaymentInfo
 	paymentInfos = append(paymentInfos, &paymentInfo)
+
 	cartPayment := cartDomain.CartPayment{
-		PaymentInfos:     paymentInfos,
-		ItemIDAssignment: idAssignments,
+		PaymentInfos: paymentInfos,
+		Assignments:  assignments,
 	}
 	return &cartPayment, nil
 }

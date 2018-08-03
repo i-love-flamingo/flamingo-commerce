@@ -81,11 +81,11 @@ func (cc *CartViewController) AddAndViewAction(ctx web.Context) web.Response {
 		qty = "1"
 	}
 	qtyInt, _ := strconv.Atoi(qty)
-	deliveryIntent, e := ctx.Param1("deliveryIntent")
+	deliveryCode, e := ctx.Param1("deliveryCode")
 
-	addRequest := cc.ApplicationCartService.BuildAddRequest(ctx, ctx.MustParam1("marketplaceCode"), variantMarketplaceCode, qtyInt, deliveryIntent)
+	addRequest := cc.ApplicationCartService.BuildAddRequest(ctx, ctx.MustParam1("marketplaceCode"), variantMarketplaceCode, qtyInt)
 
-	err, product := cc.ApplicationCartService.AddProduct(ctx, addRequest)
+	err, product := cc.ApplicationCartService.AddProduct(ctx, deliveryCode, addRequest)
 	if notAllowedErr, ok := err.(*cartDomain.AddToCartNotAllowed); ok {
 		if notAllowedErr.RedirectHandlerName != "" {
 			return cc.Redirect(notAllowedErr.RedirectHandlerName, notAllowedErr.RedirectParams)
@@ -119,8 +119,9 @@ func (cc *CartViewController) UpdateQtyAndViewAction(ctx web.Context) web.Respon
 	if err != nil {
 		qtyInt = 1
 	}
+	deliveryCode, _ := ctx.Param1("deliveryCode")
 
-	err = cc.ApplicationCartService.UpdateItemQty(ctx, id, qtyInt)
+	err = cc.ApplicationCartService.UpdateItemQty(ctx, id, deliveryCode, qtyInt)
 
 	if err != nil {
 		log.Printf("cart.cartcontroller.UpdateAndViewAction: Error %v", err)
@@ -137,8 +138,8 @@ func (cc *CartViewController) DeleteAndViewAction(ctx web.Context) web.Response 
 		log.Printf("cart.cartcontroller.deleteaction: Error %v", err)
 		return cc.Redirect("cart.view", nil)
 	}
-
-	err = cc.ApplicationCartService.DeleteItem(ctx, id)
+	deliveryCode, _ := ctx.Param1("deliveryCode")
+	err = cc.ApplicationCartService.DeleteItem(ctx, id, deliveryCode)
 	if err != nil {
 		log.Printf("cart.cartcontroller.deleteaction: Error %v", err)
 	}

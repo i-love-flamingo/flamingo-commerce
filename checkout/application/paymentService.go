@@ -15,6 +15,6 @@ func (p PaymentService) GetDefaultCartPayment(cart *cartDomain.Cart) *cartDomain
 	paymentInfo := cartDomain.PaymentInfo{
 		Method: p.DefaultPaymentMethod,
 	}
-	payment.AddPayment(paymentInfo, cart.GetItemIds())
+	payment.AddPayment(paymentInfo, cart.GetItemCartReferences())
 	return payment
 }

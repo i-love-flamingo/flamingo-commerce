@@ -1,17 +1,12 @@
 package infrastructure
 
-import (
-	"flamingo.me/flamingo-commerce/cart/domain/cart"
-	"context"
-	"strconv"
-	"math/rand"
-)
-
 type (
 	InMemoryGuestCartService struct {
 		InMemoryCartOrderBehaviour *InMemoryCartOrderBehaviour `inject:""`
 	}
 )
+
+/*
 
 var (
 	_ cart.GuestCartService = (*InMemoryGuestCartService)(nil)
@@ -34,3 +29,4 @@ func (gcs *InMemoryGuestCartService) GetNewCart(ctx context.Context) (*cart.Cart
 func (gcs *InMemoryGuestCartService) GetCartOrderBehaviour(context.Context) (cart.CartBehaviour, error) {
 	return gcs.InMemoryCartOrderBehaviour, nil
 }
+*/

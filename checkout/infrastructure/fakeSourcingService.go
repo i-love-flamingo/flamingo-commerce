@@ -17,6 +17,6 @@ var (
 )
 
 // GetDeliveryLocations provides fake delivery locations
-func (sl *FakeSourcingService) GetSourceId(ctx web.Context, decoratedCart *cartDomain.DecoratedCart, item *cartDomain.DecoratedCartItem) (string, error) {
+func (sl *FakeSourcingService) GetSourceId(ctx web.Context, decoratedCart *cartDomain.DecoratedCart, deliveryCode string, item *cartDomain.DecoratedCartItem) (string, error) {
 	return "mock_ispu_location1", nil
 }
