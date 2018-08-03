@@ -419,8 +419,7 @@ func (fd *FlightData) GetScheduledDateTime() string {
 //GetScheduledDateTime string from ScheduledDateTime - used for display
 func (fd *FlightData) ParseScheduledDateTime() time.Time {
 	//"scheduledDateTime": "2017-11-25T06:30:00Z",
-	// @todo this looks really strange
-	timeResult, e := time.Parse(FLIGHT_DATE_FORMAT, fd.ScheduledDateTime.Format(FLIGHT_DATE_FORMAT))
+	timeResult, e := time.Parse(FLIGHT_DATE_FORMAT, fd.ScheduledDateTime.String())
 	if e != nil {
 		return time.Now()
 	}
