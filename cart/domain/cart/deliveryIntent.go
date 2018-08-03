@@ -38,30 +38,12 @@ type (
 //BuildDeliveryInfoUpdateCommand - default implementation to get DeliveryInfo for cart. It is simply using the DeliverIntent on the Items
 func (dib *DefaultDeliveryInfoBuilder) BuildDeliveryInfoUpdateCommand(ctx web.Context, decoratedCart *DecoratedCart) ([]DeliveryInfoUpdateCommand, error) {
 	var updateCommands []DeliveryInfoUpdateCommand
-
-	if decoratedCart.Cart.HasDeliveryInfos() {
-		for _, delInfo := range decoratedCart.Cart.DeliveryInfos {
-			currentlyAssignedItems := []string{}
-			for _, item := range decoratedCart.Cart.Cartitems {
-				if item.DeliveryInfoReference == &delInfo {
-					currentlyAssignedItems = append(currentlyAssignedItems, item.ID)
-				}
-			}
-			updateCommands = append(updateCommands, DeliveryInfoUpdateCommand{
-				DeliveryInfo:    &delInfo,
-				AssignedItemIds: currentlyAssignedItems,
-			})
-		}
-		return updateCommands, nil
-	}
-
-	//Else - There are no deliveryInfos on the cart. So we use the DeliveryIntent to build the initial commands
 	for _, cartitems := range decoratedCart.Cart.GetCartItemsByOriginalDeliveryIntent() {
 		if len(cartitems) < 1 {
 			continue
 		}
 		deliveryInfo := cartitems[0].OriginalDeliveryIntent.BuildDeliveryInfo()
-		itemIds := make([]string, 0)
+		itemIds := make([]string, len(cartitems))
 		for _, cartitem := range cartitems {
 			itemIds = append(itemIds, cartitem.ID)
 		}
