@@ -43,13 +43,12 @@ func (dib *DefaultDeliveryInfoBuilder) BuildDeliveryInfoUpdateCommand(ctx web.Co
 		for _, delInfo := range decoratedCart.Cart.DeliveryInfos {
 			currentlyAssignedItems := []string{}
 			for _, item := range decoratedCart.Cart.Cartitems {
-				if item.DeliveryInfoReference.ID == delInfo.ID {
+				if item.DeliveryInfoReference == &delInfo {
 					currentlyAssignedItems = append(currentlyAssignedItems, item.ID)
 				}
 			}
-			newDelInfo := delInfo
 			updateCommands = append(updateCommands, DeliveryInfoUpdateCommand{
-				DeliveryInfo:    &newDelInfo,
+				DeliveryInfo:    &delInfo,
 				AssignedItemIds: currentlyAssignedItems,
 			})
 		}
