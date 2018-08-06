@@ -71,6 +71,9 @@ func (cs CartService) UpdateDeliveryInfo(ctx web.Context, deliveryCode string, d
 	if err != nil {
 		return err
 	}
+	if deliveryCode == "" {
+		deliveryCode = cs.DefaultDeliveryCode
+	}
 	cart, err = behaviour.UpdateDeliveryInfo(ctx, cart, deliveryCode, deliveryInfo)
 	if err != nil {
 		cs.handleCartNotFound(ctx, err)
@@ -102,6 +105,9 @@ func (cs CartService) UpdateItemQty(ctx web.Context, itemId string, deliveryCode
 	if err != nil {
 		return err
 	}
+	if deliveryCode == "" {
+		deliveryCode = cs.DefaultDeliveryCode
+	}
 	item, err := cart.GetByItemId(itemId, deliveryCode)
 	if err != nil {
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemQty").Error(err)
@@ -131,6 +137,9 @@ func (cs CartService) UpdateItemSourceId(ctx web.Context, itemId string, deliver
 	if err != nil {
 		return err
 	}
+	if deliveryCode == "" {
+		deliveryCode = cs.DefaultDeliveryCode
+	}
 	_, err = cart.GetByItemId(itemId, deliveryCode)
 	if err != nil {
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemSourceId").Error(err)
@@ -154,6 +163,9 @@ func (cs CartService) DeleteItem(ctx web.Context, itemId string, deliveryCode st
 	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx)
 	if err != nil {
 		return err
+	}
+	if deliveryCode == "" {
+		deliveryCode = cs.DefaultDeliveryCode
 	}
 	item, err := cart.GetByItemId(itemId, deliveryCode)
 	if err != nil {
@@ -229,6 +241,10 @@ func (cs *CartService) BuildAddRequest(ctx web.Context, marketplaceCode string, 
 
 // AddProduct Add a product
 func (cs *CartService) AddProduct(ctx web.Context, deliveryCode string, addRequest cartDomain.AddRequest) (error, productDomain.BasicProduct) {
+	if deliveryCode == "" {
+		deliveryCode = cs.DefaultDeliveryCode
+	}
+
 	addRequest, product, err := cs.checkProductForAddRequest(ctx, deliveryCode, addRequest)
 	if err != nil {
 		cs.Logger.WithField("category", "cartService").WithField(flamingo.LogKeySubCategory, "AddProduct").Error(err)

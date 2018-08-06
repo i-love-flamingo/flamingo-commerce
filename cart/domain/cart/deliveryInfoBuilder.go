@@ -44,7 +44,7 @@ func (dib *DefaultDeliveryInfoBuilder) BuildDeliveryInfoUpdateCommand(ctx web.Co
 
 func (b *DefaultDeliveryInfoBuilder) BuildByDeliveryCode(deliverycode string) (DeliveryInfo, error) {
 	if deliverycode == "" {
-		b.Logger.WithField("category", "cart").WithField("subcategory", "DefaultDeliveryInfoBuilder").Warn("Empty IntentString")
+		b.Logger.WithField("category", "cart").WithField("subcategory", "DefaultDeliveryInfoBuilder").Warn("Empty deliverycode")
 		return DeliveryInfo{
 			Method: DELIVERY_METHOD_UNSPECIFIED,
 		}, nil
@@ -55,9 +55,18 @@ func (b *DefaultDeliveryInfoBuilder) BuildByDeliveryCode(deliverycode string) (D
 		}, nil
 	}
 
+	if deliverycode == "pickup_store" {
+		return DeliveryInfo{
+			Method: DELIVERY_METHOD_PICKUP,
+			DeliveryLocation: DeliveryLocation{
+				Type: DELIVERYLOCATION_TYPE_STORE,
+			},
+		}, nil
+	}
+
 	intentParts := strings.SplitN(deliverycode, "_", 3)
 	if len(intentParts) != 3 {
-		b.Logger.WithField("category", "cart").WithField("subcategory", "DefaultDeliveryInfoBuilder").Warn("Unknown IntentString", deliverycode)
+		b.Logger.WithField("category", "cart").WithField("subcategory", "DefaultDeliveryInfoBuilder").Warn("Unknown deliverycode", deliverycode)
 		return DeliveryInfo{
 			Method: DELIVERY_METHOD_UNSPECIFIED,
 		}, nil

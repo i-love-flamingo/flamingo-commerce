@@ -96,7 +96,6 @@ type (
 		//Address - only set for type adress
 		Address *Address
 		//Code - optional idendifier of this location/destination - is used in special destination Types
-
 		Code string
 	}
 
