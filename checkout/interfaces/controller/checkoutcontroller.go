@@ -307,7 +307,7 @@ func (cc *CheckoutController) SuccessAction(ctx web.Context) web.Response {
 	flashes := ctx.Session().Flashes("checkout.success.data")
 	if len(flashes) > 0 {
 
-		if placeOrderFlashData, ok := flashes[0].(PlaceOrderFlashData); ok {
+		if placeOrderFlashData, ok := flashes[len(flashes)-1].(PlaceOrderFlashData); ok {
 			decoratedCart := cc.DecoratedCartFactory.Create(ctx, placeOrderFlashData.PlacedCart)
 			viewData := SuccessViewData{
 				CartTotals:          placeOrderFlashData.PlacedCart.CartTotals,
