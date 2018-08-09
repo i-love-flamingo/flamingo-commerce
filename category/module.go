@@ -47,8 +47,8 @@ func (r *routes) Inject(view *controller.View, entity *controller.Entity, tree *
 
 func (r *routes) Routes(registry *router.Registry) {
 	registry.HandleGet("category.view", r.view.Get)
-	registry.Route("/category/:code/:name.html", "category.view(code, name, *)")
-	registry.Route("/category/:code", "category.view(code, *)")
+	registry.Route("/category/:code/:name.html", "category.view(code, name, *)").Normalize("code", "name")
+	registry.Route("/category/:code", "category.view(code, *)").Normalize("code")
 
 	registry.Handle("category.tree", r.tree)
 	registry.Handle("category", r.entity)
