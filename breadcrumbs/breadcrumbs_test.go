@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"flamingo.me/flamingo/framework/web/mocks"
-
 	"github.com/stretchr/testify/assert"
 )
 
@@ -37,8 +36,8 @@ func TestController_Data(t *testing.T) {
 	c := new(Controller)
 
 	ctx.On("Value", contextKey).Once().Return([]Crumb{crumb, crumb})
-	assert.Equal(t, c.Data(ctx), []Crumb{crumb, crumb})
+	assert.Equal(t, c.Data(ctx, nil), []Crumb{crumb, crumb})
 
 	ctx.On("Value", contextKey).Once().Return(nil)
-	assert.Equal(t, c.Data(ctx), []Crumb{})
+	assert.Equal(t, c.Data(ctx, nil), []Crumb{})
 }

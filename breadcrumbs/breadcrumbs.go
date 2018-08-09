@@ -1,6 +1,10 @@
 package breadcrumbs
 
-import "flamingo.me/flamingo/framework/web"
+import (
+	"context"
+
+	"flamingo.me/flamingo/framework/web"
+)
 
 type (
 	// Crumb defines a breadcrumb
@@ -18,7 +22,8 @@ type (
 const contextKey contextKeyTyp = "breadcrumbs"
 
 // Add a breadcrumb to the current context
-func Add(ctx web.Context, b Crumb) {
+func Add(ctx_ context.Context, b Crumb) {
+	ctx := web.ToContext(ctx_)
 	if breadcrumbs, ok := ctx.Value(contextKey).([]Crumb); ok {
 		ctx.WithValue(contextKey, append(breadcrumbs, b))
 	} else {
@@ -27,7 +32,7 @@ func Add(ctx web.Context, b Crumb) {
 }
 
 // Data controller
-func (bc *Controller) Data(ctx web.Context) interface{} {
+func (bc *Controller) Data(ctx context.Context, _ *web.Request) interface{} {
 	if breadcrumbs, ok := ctx.Value(contextKey).([]Crumb); ok {
 		return breadcrumbs
 	}

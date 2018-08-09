@@ -6,11 +6,21 @@ import (
 )
 
 // Module for breadcrumbs
-type Module struct {
-	RouterRegistry *router.Registry `inject:""`
-}
+type Module struct{}
 
 // Configure module
 func (m *Module) Configure(injector *dingo.Injector) {
-	m.RouterRegistry.Handle("breadcrumbs", new(Controller))
+	router.Bind(injector, new(routes))
+}
+
+type routes struct {
+	controller *Controller
+}
+
+func (r *routes) Inject(controller *Controller) {
+	r.controller = controller
+}
+
+func (r *routes) Routes(registry *router.Registry) {
+	registry.HandleData("breadcrumbs", r.controller.Data)
 }
