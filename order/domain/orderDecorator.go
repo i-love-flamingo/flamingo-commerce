@@ -28,7 +28,7 @@ type (
 	// DecoratedOrderItem
 	DecoratedOrderItem struct {
 		Item    *OrderItem
-		Product *domain.BasicProduct
+		Product domain.BasicProduct
 	}
 
 	// GroupedDecoratedOrder
@@ -75,7 +75,7 @@ func (rd *OrderDecorator) createDecoratedItem(ctx context.Context, item *OrderIt
 		rd.Logger.Error("order.decorator - no product for item", err)
 		// fallback to return something the frontend still could use
 		product = rd.createFallbackProduct(item)
-	case product.Type() == domain.TYPECONFIGURABLE:
+	case product.Type() == domain.TYPECONFIGURABLE && item.VariantMarketplaceCode != "":
 		configurable, ok := product.(domain.ConfigurableProduct)
 		if !ok {
 			// not a usable configrable
@@ -89,7 +89,7 @@ func (rd *OrderDecorator) createDecoratedItem(ctx context.Context, item *OrderIt
 			product = rd.createFallbackProduct(item)
 		}
 	}
-	result.Product = &product
+	result.Product = product
 
 	return result
 }
@@ -107,12 +107,12 @@ func (rd *OrderDecorator) createFallbackProduct(item *OrderItem) *domain.SimpleP
 
 // IsConfigurable - checks if current order item is a configurable product
 func (doi DecoratedOrderItem) IsConfigurable() bool {
-	return (*doi.Product).Type() == domain.TYPECONFIGURABLE_WITH_ACTIVE_VARIANT
+	return doi.Product.Type() == domain.TYPECONFIGURABLE_WITH_ACTIVE_VARIANT
 }
 
 // GetVariant getter
 func (doi DecoratedOrderItem) GetVariant() (*domain.Variant, error) {
-	return (*doi.Product).(domain.ConfigurableProductWithActiveVariant).Variant(doi.Item.VariantMarketplaceCode)
+	return doi.Product.(domain.ConfigurableProductWithActiveVariant).Variant(doi.Item.VariantMarketplaceCode)
 }
 
 // GetDisplayTitle getter
@@ -124,7 +124,7 @@ func (doi DecoratedOrderItem) GetDisplayTitle() string {
 		}
 		return variant.Title
 	}
-	return (*doi.Product).BaseData().Title
+	return doi.Product.BaseData().Title
 }
 
 // GetDisplayMarketplaceCode getter
@@ -136,7 +136,7 @@ func (doi DecoratedOrderItem) GetDisplayMarketplaceCode() string {
 		}
 		return variant.MarketPlaceCode
 	}
-	return (*doi.Product).BaseData().MarketPlaceCode
+	return doi.Product.BaseData().MarketPlaceCode
 }
 
 // GetVariantsVariationAttribute getter
@@ -145,7 +145,7 @@ func (doi DecoratedOrderItem) GetVariantsVariationAttributes() domain.Attributes
 	if doi.IsConfigurable() {
 		variant, _ := doi.GetVariant()
 
-		for _, attributeName := range (*doi.Product).(domain.ConfigurableProductWithActiveVariant).VariantVariationAttributes {
+		for _, attributeName := range doi.Product.(domain.ConfigurableProductWithActiveVariant).VariantVariationAttributes {
 			attributes[attributeName] = variant.BaseData().Attributes[attributeName]
 		}
 	}
@@ -154,7 +154,10 @@ func (doi DecoratedOrderItem) GetVariantsVariationAttributes() domain.Attributes
 
 // GetVariantsVariationAttribute getter
 func (doi DecoratedOrderItem) GetVariantsVariationAttributeCodes() []string {
-	return (*doi.Product).(domain.ConfigurableProductWithActiveVariant).VariantVariationAttributes
+	if doi.Product.Type() == domain.TYPECONFIGURABLE_WITH_ACTIVE_VARIANT {
+		return doi.Product.(domain.ConfigurableProductWithActiveVariant).VariantVariationAttributes
+	}
+	return nil
 }
 
 // GetGroupedBy
@@ -169,7 +172,7 @@ func (rd *DecoratedOrder) GetGroupedBy(group string, sortGroup bool) *GroupedDec
 	for _, item := range rd.DecoratedItems {
 		switch group {
 		case "retailer_code":
-			groupKey = (*item.Product).BaseData().RetailerCode
+			groupKey = item.Product.BaseData().RetailerCode
 		default:
 			groupKey = "default"
 		}
