@@ -11,17 +11,27 @@ import (
 type (
 	// OrdersModule for Orders
 	Module struct {
-		RouterRegistry  *router.Registry `inject:""`
-		UseFakeAdapters bool             `inject:"config:order.useFakeAdapters,optional"`
+		UseFakeAdapters bool `inject:"config:order.useFakeAdapters,optional"`
 	}
 )
 
 // Configure DI
 func (m *Module) Configure(injector *dingo.Injector) {
-	m.RouterRegistry.Handle("customerorders", new(controller.DataControllerCustomerOrders))
 	injector.Bind((*domain.OrderDecoratorInterface)(nil)).To(domain.OrderDecorator{})
 	if m.UseFakeAdapters {
 		injector.Bind((*domain.CustomerOrderService)(nil)).To(infrastructure.FakeCustomerOrders{})
 	}
+	router.Bind(injector, new(routes))
+}
 
+type routes struct {
+	controller *controller.DataControllerCustomerOrders
+}
+
+func (r *routes) Inject(controller *controller.DataControllerCustomerOrders) {
+	r.controller = controller
+}
+
+func (r *routes) Routes(registry *router.Registry) {
+	registry.HandleData("customerorders", r.controller.Data)
 }

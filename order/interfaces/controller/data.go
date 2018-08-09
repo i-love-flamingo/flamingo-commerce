@@ -1,8 +1,9 @@
 package controller
 
 import (
+	"context"
+
 	"flamingo.me/flamingo-commerce/order/domain"
-	"flamingo.me/flamingo/core/auth"
 	"flamingo.me/flamingo/core/auth/application"
 	"flamingo.me/flamingo/framework/web"
 )
@@ -16,8 +17,8 @@ type (
 )
 
 // Data controller for blocks
-func (dc *DataControllerCustomerOrders) Data(c web.Context) interface{} {
-	auth, err := dc.AuthManager.Auth(auth.CtxSession(c))
+func (dc *DataControllerCustomerOrders) Data(c context.Context, r *web.Request) interface{} {
+	auth, err := dc.AuthManager.Auth(c, r.Session())
 	if err != nil {
 		return nil
 	}
