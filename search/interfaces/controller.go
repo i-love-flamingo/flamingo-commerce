@@ -1,6 +1,8 @@
 package interfaces
 
 import (
+	"context"
+
 	"flamingo.me/flamingo-commerce/search/domain"
 	"flamingo.me/flamingo-commerce/search/utils"
 	"flamingo.me/flamingo/framework/web"
@@ -25,15 +27,15 @@ type (
 )
 
 // Get Response for search
-func (vc *ViewController) Get(c web.Context) web.Response {
-	filter := make([]domain.Filter, len(c.QueryAll()))
+func (vc *ViewController) Get(c context.Context, r *web.Request) web.Response {
+	filter := make([]domain.Filter, len(r.QueryAll()))
 	i := 0
-	for k, v := range c.QueryAll() {
+	for k, v := range r.QueryAll() {
 		filter[i] = domain.NewKeyValueFilter(k, v)
 		i++
 	}
 
-	query, _ := c.Query1("q")
+	query, _ := r.Query1("q")
 
 	vd := viewData{
 		SearchMeta: domain.SearchMeta{
@@ -41,11 +43,7 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 		},
 	}
 
-	//if err != nil {
-	//	return vc.Render(c, "search/search", vd)
-	//}
-
-	if typ, err := c.Param1("type"); err == nil {
+	if typ, ok := r.Param1("type"); ok {
 		searchResult, err := vc.SearchService.SearchFor(c, typ, filter...)
 		if err != nil {
 			if re, ok := err.(*domain.RedirectError); ok {
@@ -57,7 +55,7 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 		vd.SearchMeta = searchResult.SearchMeta
 		vd.SearchMeta.Query = query
 		vd.SearchResult = map[string]domain.Result{typ: searchResult}
-		vd.PaginationInfo = vc.PaginationInfoFactory.Build(searchResult.SearchMeta.Page, searchResult.SearchMeta.NumResults, 30, searchResult.SearchMeta.NumPages, c.Request().URL)
+		vd.PaginationInfo = vc.PaginationInfoFactory.Build(searchResult.SearchMeta.Page, searchResult.SearchMeta.NumResults, 30, searchResult.SearchMeta.NumPages, r.Request().URL)
 		return vc.Render(c, "search/"+typ, vd)
 	}
 
@@ -70,6 +68,5 @@ func (vc *ViewController) Get(c web.Context) web.Response {
 		return vc.Error(c, err)
 	}
 	vd.SearchResult = searchResult
-	//vd.PaginationInfo = vc.PaginationInfoFactory.Build(1, 0, 50, c.Request().URL)
 	return vc.Render(c, "search/search", vd)
 }

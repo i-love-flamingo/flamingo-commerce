@@ -6,16 +6,24 @@ import (
 	"flamingo.me/flamingo/framework/router"
 )
 
-type (
-	// Module registers our search package
-	Module struct {
-		RouterRegistry *router.Registry `inject:""`
-	}
-)
+// Module registers our search package
+type Module struct{}
 
 // Configure the search URL
 func (m *Module) Configure(injector *dingo.Injector) {
-	m.RouterRegistry.Handle("search.search", new(interfaces.ViewController))
-	m.RouterRegistry.Route("/search/:type", `search.search(type, *)`)
-	m.RouterRegistry.Route("/search", `search.search`)
+	router.Bind(injector, new(routes))
+}
+
+type routes struct {
+	controller *interfaces.ViewController
+}
+
+func (r *routes) Inject(controller *interfaces.ViewController) {
+	r.controller = controller
+}
+
+func (r *routes) Routes(registry *router.Registry) {
+	registry.HandleGet("search.search", r.controller.Get)
+	registry.Route("/search/:type", `search.search(type, *)`)
+	registry.Route("/search", `search.search`)
 }
