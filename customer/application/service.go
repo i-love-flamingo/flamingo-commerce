@@ -1,10 +1,11 @@
 package application
 
 import (
+	"context"
+
 	"flamingo.me/flamingo-commerce/customer/domain"
-	"flamingo.me/flamingo/core/auth"
 	"flamingo.me/flamingo/core/auth/application"
-	"flamingo.me/flamingo/framework/web"
+	"github.com/gorilla/sessions"
 )
 
 type (
@@ -14,8 +15,8 @@ type (
 	}
 )
 
-func (s *Service) GetForAuthenticatedUser(ctx web.Context) (domain.Customer, error) {
-	auth, err := s.AuthManager.Auth(auth.CtxSession(ctx))
+func (s *Service) GetForAuthenticatedUser(ctx context.Context, session *sessions.Session) (domain.Customer, error) {
+	auth, err := s.AuthManager.Auth(ctx, session)
 	if err != nil {
 		return nil, err
 	}

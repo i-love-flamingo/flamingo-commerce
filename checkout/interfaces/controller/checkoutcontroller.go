@@ -236,7 +236,7 @@ func (cc *CheckoutController) SubmitUserCheckoutAction(ctx web.Context) web.Resp
 		return guardRedirect
 	}
 
-	customer, _ := cc.CustomerApplicationService.GetForAuthenticatedUser(ctx)
+	customer, _ := cc.CustomerApplicationService.GetForAuthenticatedUser(ctx, ctx.Session())
 	// set the customer on the form service even if nil + err is returned here
 	cc.CheckoutFormService.Customer = customer
 
