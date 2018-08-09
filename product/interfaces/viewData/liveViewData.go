@@ -11,7 +11,7 @@ import (
 type (
 	ProductSearchResultLiveViewDataFactory struct {
 		PaginationInfoFactory *utils.PaginationInfoFactory `inject:""`
-		PageSize              float64                      `inject:"pagination.defaultPageSize"`
+		PageSize              float64                      `inject:"pagination.defaultPageSize,optional"`
 	}
 
 	//ProductSearchResultViewData - struct with common values typical for views that show product search results
@@ -24,6 +24,9 @@ type (
 )
 
 func (f *ProductSearchResultLiveViewDataFactory) NewProductSearchResultLiveViewDataFromResult(url *url.URL, products domain.SearchResult) ProductSearchResultLiveViewData {
+	if f.PageSize == 0 {
+		f.PageSize = 36
+	}
 	return ProductSearchResultLiveViewData{
 		Products:       products.Hits,
 		SearchMeta:     products.SearchMeta,

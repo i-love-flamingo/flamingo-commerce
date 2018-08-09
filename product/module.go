@@ -29,7 +29,6 @@ func (m *Module) DefaultConfig() config.Map {
 				"attributeRenderer": config.Map{},
 			},
 		},
-		"pagination.defaultPageSize": float64(36),
 	}
 }
 
