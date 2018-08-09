@@ -3,7 +3,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:ba4e44e8c2174cea0e0c0147c76ddd774ec49714103bb5772e79d2b15db42a3b"
+  digest = "1:3d61512db5e0decf2eb0ed1bc87133a90cd472c1a0e55188515347069241b5a4"
   name = "flamingo.me/flamingo"
   packages = [
     "core/auth",
@@ -29,7 +29,7 @@
     "framework/web/responder/mocks",
   ]
   pruneopts = ""
-  revision = "97323acffecb987aa4311b1d583fd7984f68cec4"
+  revision = "7057357eef48fc8d15bff428840e5a8be36c413c"
 
 [[projects]]
   branch = "master"
@@ -444,6 +444,7 @@
     "flamingo.me/flamingo/framework/web/responder/mocks",
     "github.com/coreos/go-oidc",
     "github.com/go-playground/form",
+    "github.com/gorilla/sessions",
     "github.com/leebenson/conform",
     "github.com/pkg/errors",
     "github.com/stretchr/testify/assert",
