@@ -9,21 +9,15 @@ import (
 	"flamingo.me/flamingo/framework/template"
 )
 
-type (
-	// Module registers our profiler
-	Module struct {
-		RouterRegistry *router.Registry `inject:""`
-	}
-)
+// Module registers our profiler
+type Module struct{}
 
 // Configure the product URL
 func (m *Module) Configure(injector *dingo.Injector) {
-	m.RouterRegistry.Handle("product.view", new(controller.View))
-	m.RouterRegistry.Route("/product/:marketplacecode/:name.html", `product.view(marketplacecode, name, backurl?="")`).Normalize("marketplacecode", "name")
-	m.RouterRegistry.Route("/product/:marketplacecode/:variantcode/:name.html", `product.view(marketplacecode, variantcode, name, backurl?="")`).Normalize("marketplacecode", "name", "variantcode")
+	injector.BindMap(new(template.CtxFunc), "getProduct").To(templatefunctions.GetProduct{})
+	injector.BindMap(new(template.Func), "getProductUrl").To(templatefunctions.GetProductUrl{})
 
-	injector.BindMulti((*template.ContextFunction)(nil)).To(templatefunctions.GetProduct{})
-	injector.BindMulti((*template.Function)(nil)).To(templatefunctions.GetProductUrl{})
+	router.Bind(injector, new(routes))
 }
 
 // DefaultConfig for this module
@@ -35,5 +29,20 @@ func (m *Module) DefaultConfig() config.Map {
 				"attributeRenderer": config.Map{},
 			},
 		},
+		"pagination.defaultPageSize": float64(36),
 	}
+}
+
+type routes struct {
+	controller *controller.View
+}
+
+func (r *routes) Inject(controller *controller.View) {
+	r.controller = controller
+}
+
+func (r *routes) Routes(registry *router.Registry) {
+	registry.HandleGet("product.view", r.controller.Get)
+	registry.Route("/product/:marketplacecode/:name.html", `product.view(marketplacecode, name, backurl?="")`).Normalize("marketplacecode", "name")
+	registry.Route("/product/:marketplacecode/:variantcode/:name.html", `product.view(marketplacecode, variantcode, name, backurl?="")`).Normalize("marketplacecode", "name", "variantcode")
 }

@@ -12,13 +12,8 @@ type (
 	}
 )
 
-// Name alias for use in template
-func (tf GetProductUrl) Name() string {
-	return "getProductUrl"
-}
-
 // Func returns the JSON object
-func (tf GetProductUrl) Func() interface{} {
+func (tf *GetProductUrl) Func() interface{} {
 	return func(p domain.BasicProduct) string {
 		if p == nil {
 			return ""

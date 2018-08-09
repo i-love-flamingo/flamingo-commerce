@@ -51,13 +51,13 @@ func TestViewController_Get(t *testing.T) {
 	expectedUrlTitleSimple := "my-product-title"
 	renderAware.On("Render", ctx, mock.AnythingOfType("string"), mock.AnythingOfType("controller.productViewData")).Return(nil)
 	ctx.LoadParams(router.P{"marketplacecode": "simple", "name": expectedUrlTitleSimple})
-	vc.Get(ctx)
+	vc.Get(web.ToRequest(ctx))
 	renderAware.AssertCalled(t, "Render", ctx, vc.Template, mock.AnythingOfType("controller.productViewData"))
 
 	// Test 3: call with error by service
 	errorAware.On("Error", ctx, mock.Anything).Return(nil)
 	ctx.LoadParams(router.P{"marketplacecode": "fail", "name": "fail"})
-	vc.Get(ctx)
+	vc.Get(web.ToRequest(ctx))
 	errorAware.AssertCalled(t, "Error", ctx, mock.Anything)
 
 }
@@ -74,19 +74,19 @@ func TestViewController_ExpectRedirect(t *testing.T) {
 	// Test 1: call simple with wrong name and expect redirect
 	redirectAware.On("RedirectPermanentURL", mock.AnythingOfType("string")).Return(&web.RedirectResponse{})
 	ctx.LoadParams(router.P{"marketplacecode": "simple", "name": "testname"})
-	vc.Get(ctx)
+	vc.Get(web.ToRequest(ctx))
 	redirectAware.AssertCalled(t, "RedirectPermanentURL", "/?marketplacecode=simple&name=my-product-title")
 
 	// Test 2: call configurable with wrong name and expect redirect
 	redirectAware.On("RedirectPermanentURL", mock.AnythingOfType("string")).Return(&web.RedirectResponse{})
 	ctx.LoadParams(router.P{"marketplacecode": "configurable", "name": "testname"})
-	vc.Get(ctx)
+	vc.Get(web.ToRequest(ctx))
 	redirectAware.AssertCalled(t, "RedirectPermanentURL", "/?marketplacecode=configurable&name=my-configurable-product-title")
 
 	// Test 3: call configurable_with_variant with wrong name and expect redirect
 	redirectAware.On("RedirectPermanentURL", mock.AnythingOfType("string")).Return(&web.RedirectResponse{})
 	ctx.LoadParams(router.P{"marketplacecode": "configurable", "name": "testname", "variantcode": "configurable_1"})
-	vc.Get(ctx)
+	vc.Get(web.ToRequest(ctx))
 	redirectAware.AssertCalled(t, "RedirectPermanentURL", "/?marketplacecode=configurable&name=my-variant-title&variantcode=configurable_1")
 
 }

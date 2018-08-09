@@ -1,10 +1,10 @@
 package templatefunctions
 
 import (
+	"context"
 	"log"
 
 	"flamingo.me/flamingo-commerce/product/domain"
-	"flamingo.me/flamingo/framework/web"
 )
 
 type (
@@ -14,12 +14,7 @@ type (
 	}
 )
 
-// Name alias for use in template
-func (tf GetProduct) Name() string {
-	return "getProduct"
-}
-
-func (tf GetProduct) Func(ctx web.Context) interface{} {
+func (tf *GetProduct) Func(ctx context.Context) interface{} {
 	return func(marketplaceCode string) domain.BasicProduct {
 		product, e := tf.ProductService.Get(ctx, marketplaceCode)
 		if e != nil {
