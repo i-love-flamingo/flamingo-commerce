@@ -7,7 +7,6 @@ import (
 	cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
 	authApplication "flamingo.me/flamingo/core/auth/application"
 	"flamingo.me/flamingo/framework/flamingo"
-	"flamingo.me/flamingo/framework/web"
 	"github.com/gorilla/sessions"
 )
 
@@ -81,16 +80,16 @@ func (cs *CartReceiverService) ViewCart(ctx context.Context, session *sessions.S
 	return cs.getEmptyCart(), nil
 }
 
-func (cs *CartReceiverService) getCartFromCache(ctx context.Context, identifier CartCacheIdentifier) (*cartDomain.Cart, error) {
+func (cs *CartReceiverService) getCartFromCache(ctx context.Context, session *sessions.Session, identifier CartCacheIdentifier) (*cartDomain.Cart, error) {
 	if cs.CartCache == nil {
 		cs.Logger.Debug("no cache set")
 		return nil, errors.New("no cache")
 	}
 	cs.Logger.Debug("query cart cache %#v", identifier)
-	return cs.CartCache.GetCart(web.ToContext(ctx), identifier)
+	return cs.CartCache.GetCart(ctx, session, identifier)
 }
 
-func (cs *CartReceiverService) storeCartInCache(ctx context.Context, cart *cartDomain.Cart) error {
+func (cs *CartReceiverService) storeCartInCache(ctx context.Context, session *sessions.Session, cart *cartDomain.Cart) error {
 	if cs.CartCache == nil {
 		return errors.New("no cache")
 	}
@@ -98,7 +97,7 @@ func (cs *CartReceiverService) storeCartInCache(ctx context.Context, cart *cartD
 	if err != nil {
 		return err
 	}
-	return cs.CartCache.CacheCart(web.ToContext(ctx), *id, cart)
+	return cs.CartCache.CacheCart(ctx, session, *id, cart)
 }
 
 // GetCart Get the correct Cart (either Guest or User)
@@ -109,13 +108,13 @@ func (cs *CartReceiverService) GetCart(ctx context.Context, session *sessions.Se
 			IsCustomerCart: true,
 		}
 		var err error
-		cart, cacheErr := cs.getCartFromCache(ctx, cacheId)
+		cart, cacheErr := cs.getCartFromCache(ctx, session, cacheId)
 		if cacheErr != nil {
 			cart, err = cs.CustomerCartService.GetCart(ctx, cs.Auth(ctx, session), "me")
 			if err != nil {
 				return nil, nil, err
 			}
-			cs.storeCartInCache(ctx, cart)
+			cs.storeCartInCache(ctx, session, cart)
 		}
 		behaviour, err := cs.CustomerCartService.GetCartOrderBehaviour(ctx, cs.Auth(ctx, session))
 		if err != nil {
@@ -139,7 +138,7 @@ func (cs *CartReceiverService) GetCart(ctx context.Context, session *sessions.Se
 		cacheId := CartCacheIdentifier{
 			GuestCartId: guestcartidString,
 		}
-		guestCart, cacheErr = cs.getCartFromCache(ctx, cacheId)
+		guestCart, cacheErr = cs.getCartFromCache(ctx, session, cacheId)
 		if cacheErr != nil {
 			guestCart, err = cs.getSessionGuestCart(ctx, session)
 			if err != nil {
@@ -148,7 +147,7 @@ func (cs *CartReceiverService) GetCart(ctx context.Context, session *sessions.Se
 				//delete(ctx.Session().Values, "cart.guestid")
 				return nil, nil, TemporaryCartServiceError
 			}
-			cs.storeCartInCache(ctx, guestCart)
+			cs.storeCartInCache(ctx, session, guestCart)
 			cs.Logger.WithField(flamingo.LogKeyCategory, "checkout.cartreceiver").Info("guestcart not in cache - requested and passed to cache from service")
 		}
 	} else {
@@ -159,7 +158,7 @@ func (cs *CartReceiverService) GetCart(ctx context.Context, session *sessions.Se
 		}
 		cs.Logger.WithField(flamingo.LogKeyCategory, "checkout.cartreceiver").Info("cart.application.cartservice: Requested new Guestcart %v", guestCart)
 		session.Values[GuestCartSessionKey] = guestCart.ID
-		cs.storeCartInCache(ctx, guestCart)
+		cs.storeCartInCache(ctx, session, guestCart)
 	}
 	behaviour, err := cs.GuestCartService.GetCartOrderBehaviour(ctx)
 

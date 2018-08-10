@@ -7,7 +7,6 @@ import (
 	cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
 	productDomain "flamingo.me/flamingo-commerce/product/domain"
 	"flamingo.me/flamingo/framework/flamingo"
-	"flamingo.me/flamingo/framework/web"
 	"github.com/gorilla/sessions"
 	"github.com/pkg/errors"
 )
@@ -66,7 +65,7 @@ func (cs CartService) UpdateDeliveryInfosAndBilling(ctx context.Context, session
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemQty").Error(err)
 		return err
 	}
-	cs.updateCartInCache(ctx, cart)
+	cs.updateCartInCache(ctx, session, cart)
 	return nil
 }
 func (cs CartService) UpdatePurchaser(ctx context.Context, session *sessions.Session, purchaser *cartDomain.Person, additionalData map[string]string) error {
@@ -80,7 +79,7 @@ func (cs CartService) UpdatePurchaser(ctx context.Context, session *sessions.Ses
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemQty").Error(err)
 		return err
 	}
-	cs.updateCartInCache(ctx, cart)
+	cs.updateCartInCache(ctx, session, cart)
 	return nil
 }
 
@@ -110,7 +109,7 @@ func (cs CartService) UpdateItemQty(ctx context.Context, session *sessions.Sessi
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemQty").Error(err)
 		return err
 	}
-	cs.updateCartInCache(ctx, cart)
+	cs.updateCartInCache(ctx, session, cart)
 	return nil
 }
 
@@ -133,7 +132,7 @@ func (cs CartService) UpdateItemSourceId(ctx context.Context, session *sessions.
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemSourceId").Error(err)
 		return err
 	}
-	cs.updateCartInCache(ctx, cart)
+	cs.updateCartInCache(ctx, session, cart)
 	return nil
 }
 
@@ -156,7 +155,7 @@ func (cs CartService) DeleteItem(ctx context.Context, session *sessions.Session,
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "DeleteItem").Error(err)
 		return err
 	}
-	cs.updateCartInCache(ctx, cart)
+	cs.updateCartInCache(ctx, session, cart)
 	return nil
 }
 
@@ -184,7 +183,7 @@ func (cs CartService) DeleteAllItems(ctx context.Context, session *sessions.Sess
 		}
 	}
 
-	cs.updateCartInCache(ctx, cart)
+	cs.updateCartInCache(ctx, session, cart)
 	return nil
 }
 
@@ -203,7 +202,7 @@ func (cs *CartService) PlaceOrder(ctx context.Context, session *sessions.Session
 	}
 	cs.EventPublisher.PublishOrderPlacedEvent(ctx, cart, orderNumber)
 	cs.DeleteSavedSessionGuestCartId(session)
-	cs.deleteCartInCache(ctx, cart)
+	cs.deleteCartInCache(ctx, session, cart)
 	return orderNumber, err
 }
 
@@ -258,7 +257,7 @@ func (cs *CartService) AddProduct(ctx context.Context, session *sessions.Session
 		return err, nil
 	}
 	cs.publishAddtoCartEvent(ctx, *cart, addRequest)
-	cs.updateCartInCache(ctx, cart)
+	cs.updateCartInCache(ctx, session, cart)
 	return nil, product
 }
 
@@ -271,7 +270,7 @@ func (cs *CartService) ApplyVoucher(ctx context.Context, session *sessions.Sessi
 	}
 
 	cart, err := behaviour.ApplyVoucher(ctx, oldCart, couponCode)
-	cs.updateCartInCache(ctx, cart)
+	cs.updateCartInCache(ctx, session, cart)
 	return cart, err
 }
 
@@ -313,26 +312,26 @@ func (cs *CartService) publishAddtoCartEvent(ctx context.Context, currentCart ca
 	}
 }
 
-func (cs *CartService) updateCartInCache(ctx context.Context, cart *cartDomain.Cart) {
+func (cs *CartService) updateCartInCache(ctx context.Context, session *sessions.Session, cart *cartDomain.Cart) {
 	if cs.CartCache != nil {
 		id, err := BuildIdentifierFromCart(cart)
 		if err != nil {
 			return
 		}
-		err = cs.CartCache.CacheCart(web.ToContext(ctx), *id, cart)
+		err = cs.CartCache.CacheCart(ctx, session, *id, cart)
 		if err != nil {
 			cs.Logger.Error("Error while caching cart: %v", err)
 		}
 	}
 }
 
-func (cs *CartService) deleteCartInCache(ctx context.Context, cart *cartDomain.Cart) {
+func (cs *CartService) deleteCartInCache(ctx context.Context, session *sessions.Session, cart *cartDomain.Cart) {
 	if cs.CartCache != nil {
 		id, err := BuildIdentifierFromCart(cart)
 		if err != nil {
 			return
 		}
-		err = cs.CartCache.Delete(web.ToContext(ctx), *id)
+		err = cs.CartCache.Delete(ctx, session, *id)
 		if err != nil {
 			cs.Logger.Error("Error while deleting cart in cache: %v", err)
 		}

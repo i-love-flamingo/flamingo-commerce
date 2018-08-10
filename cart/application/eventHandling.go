@@ -24,7 +24,7 @@ func (e *EventReceiver) Notify(event event.Event) {
 	//Handle Logout
 	case *domain.LogoutEvent:
 		if e.CartCache != nil {
-			e.CartCache.DeleteAll(eventType.Context)
+			e.CartCache.DeleteAll(eventType.Context, eventType.Context.Session())
 		}
 	//Handle LoginEvent and Merge Cart
 	case *domain.LoginEvent:
@@ -61,7 +61,7 @@ func (e *EventReceiver) Notify(event event.Event) {
 		if e.CartCache != nil {
 			cacheId, err := BuildIdentifierFromCart(guestCart)
 			if err != nil {
-				e.CartCache.Delete(eventType.Context, *cacheId)
+				e.CartCache.Delete(eventType.Context, eventType.Context.Session(), *cacheId)
 			}
 		}
 		e.CartService.DeleteSavedSessionGuestCartId(eventType.Context.Session())
