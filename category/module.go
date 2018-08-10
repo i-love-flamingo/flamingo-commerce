@@ -51,6 +51,6 @@ func (r *routes) Routes(registry *router.Registry) {
 	registry.Route("/category/:code/:name.html", "category.view(code, name, *)").Normalize("name")
 	registry.Route("/category/:code", "category.view(code, *)")
 
-	registry.Handle("category.tree", r.tree)
-	registry.Handle("category", r.entity)
+	registry.HandleData("category.tree", r.tree.Data)
+	registry.HandleData("category", r.entity.Data)
 }

@@ -156,7 +156,7 @@ func (vc *View) Get(c context.Context, request *web.Request) web.Response {
 	})
 }
 
-func (vc *View) addBreadcrumb(c web.Context, category domain.Category) {
+func (vc *View) addBreadcrumb(c context.Context, category domain.Category) {
 	if !category.Active() {
 		return
 	}

@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"context"
+
 	"flamingo.me/flamingo-commerce/category/domain"
 	"flamingo.me/flamingo/framework/web"
 )
@@ -22,8 +24,8 @@ func (controller *Tree) Inject(service domain.CategoryService) {
 }
 
 // Data controller for category trees
-func (controller *Tree) Data(c web.Context) interface{} {
-	code, _ := c.Param1("code") // no err check, empty code is fine if not set
+func (controller *Tree) Data(c context.Context, r *web.Request) interface{} {
+	code, _ := r.Param1("code") // no err check, empty code is fine if not set
 
 	categoryRoot, err := controller.categoryService.Tree(c, code)
 	_ = err
@@ -36,8 +38,8 @@ func (controller *Entity) Inject(service domain.CategoryService) {
 }
 
 // Data controller for category entities
-func (controller *Entity) Data(c web.Context) interface{} {
-	code, _ := c.Param1("code") // no err check, empty code is fine if not set
+func (controller *Entity) Data(c context.Context, r *web.Request) interface{} {
+	code, _ := r.Param1("code") // no err check, empty code is fine if not set
 
 	category, err := controller.categoryService.Get(c, code)
 	_ = err
