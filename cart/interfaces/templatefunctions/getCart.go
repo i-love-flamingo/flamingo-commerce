@@ -1,6 +1,8 @@
 package templatefunctions
 
 import (
+	"context"
+
 	"flamingo.me/flamingo-commerce/cart/application"
 	cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
 	"flamingo.me/flamingo/framework/flamingo"
@@ -20,14 +22,9 @@ type (
 	}
 )
 
-// Name alias for use in template
-func (tf GetCart) Name() string {
-	return "getCart"
-}
-
-func (tf GetCart) Func(ctx web.Context) interface{} {
+func (tf *GetCart) Func(ctx context.Context) interface{} {
 	return func() cartDomain.Cart {
-		cart, e := tf.ApplicationCartReceiverService.ViewCart(ctx, ctx.Session())
+		cart, e := tf.ApplicationCartReceiverService.ViewCart(ctx, web.ToContext(ctx).Session())
 		if e != nil {
 			tf.Logger.Error("Error: cart.interfaces.templatefunc %v", e)
 		}
@@ -39,14 +36,9 @@ func (tf GetCart) Func(ctx web.Context) interface{} {
 	}
 }
 
-// Name alias for use in template
-func (tf GetDecoratedCart) Name() string {
-	return "getDecoratedCart"
-}
-
-func (tf GetDecoratedCart) Func(ctx web.Context) interface{} {
+func (tf *GetDecoratedCart) Func(ctx context.Context) interface{} {
 	return func() cartDomain.DecoratedCart {
-		cart, e := tf.ApplicationCartReceiverService.ViewDecoratedCart(ctx, ctx.Session())
+		cart, e := tf.ApplicationCartReceiverService.ViewDecoratedCart(ctx, web.ToContext(ctx).Session())
 		if e != nil {
 			tf.Logger.Error("Error: cart.interfaces.templatefunc %v", e)
 		}

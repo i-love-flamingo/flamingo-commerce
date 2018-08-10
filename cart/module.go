@@ -38,8 +38,8 @@ func (m *CartModule) Configure(injector *dingo.Injector) {
 	injector.BindMulti((*event.Subscriber)(nil)).To(application.EventReceiver{})
 
 	// TemplateFunction
-	injector.BindMulti((*template.ContextFunction)(nil)).To(templatefunctions.GetCart{})
-	injector.BindMulti((*template.ContextFunction)(nil)).To(templatefunctions.GetDecoratedCart{})
+	injector.BindMap(new(template.CtxFunc), "getCart").To(templatefunctions.GetCart{})
+	injector.BindMap(new(template.CtxFunc), "getDecoratedCart").To(templatefunctions.GetDecoratedCart{})
 
 	injector.Bind((*cart.DeliveryInfoBuilder)(nil)).To(cart.DefaultDeliveryInfoBuilder{})
 
