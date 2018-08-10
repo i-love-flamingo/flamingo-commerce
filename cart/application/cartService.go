@@ -35,10 +35,10 @@ type (
 )
 
 // ValidateCart validates a carts content
-func (cs CartService) ValidateCart(ctx context.Context, decoratedCart *cartDomain.DecoratedCart) cartDomain.CartValidationResult {
+func (cs CartService) ValidateCart(ctx context.Context, session *sessions.Session, decoratedCart *cartDomain.DecoratedCart) cartDomain.CartValidationResult {
 
 	if cs.CartValidator != nil {
-		result := cs.CartValidator.Validate(web.ToContext(ctx), decoratedCart)
+		result := cs.CartValidator.Validate(ctx, session, decoratedCart)
 		return result
 	}
 
@@ -52,7 +52,7 @@ func (cs CartService) ValidateCurrentCart(ctx context.Context, session *sessions
 		return cartDomain.CartValidationResult{}, err
 	}
 
-	return cs.ValidateCart(ctx, decoratedCart), nil
+	return cs.ValidateCart(ctx, session, decoratedCart), nil
 }
 
 func (cs CartService) UpdateDeliveryInfosAndBilling(ctx context.Context, session *sessions.Session, billingAddress *cartDomain.Address, updateCommands []cartDomain.DeliveryInfoUpdateCommand) error {

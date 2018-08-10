@@ -40,7 +40,7 @@ func (os *OrderService) SetSources(ctx context.Context, session *sessions.Sessio
 }
 
 func (os *OrderService) PlaceOrder(ctx context.Context, session *sessions.Session, decoratedCart *cart.DecoratedCart, payment *cart.CartPayment) (orderid string, orderError error) {
-	validationResult := os.CartService.ValidateCart(ctx, decoratedCart)
+	validationResult := os.CartService.ValidateCart(ctx, session, decoratedCart)
 	if !validationResult.IsValid() {
 		os.Logger.Warn("Try to place an invalid cart")
 		return "", errors.New("Cart is Invalid.")
@@ -107,7 +107,7 @@ func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *sess
 		return "", err
 	}
 
-	validationResult := os.CartService.ValidateCart(ctx, decoratedCart)
+	validationResult := os.CartService.ValidateCart(ctx, session, decoratedCart)
 	if !validationResult.IsValid() {
 		os.Logger.Warn("Try to place an invalid cart")
 		return "", errors.New("Cart is Invalid.")

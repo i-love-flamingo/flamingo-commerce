@@ -213,7 +213,7 @@ func (cc *CheckoutController) StartAction(ctx context.Context, r *web.Request) w
 		cc.logger.WithField("category", "checkout").Error("cart.checkoutcontroller.viewaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil).Hook(web.NoCache)
 	}
-	guardRedirect := cc.getCommonGuardRedirects(ctx, decoratedCart)
+	guardRedirect := cc.getCommonGuardRedirects(ctx, r.Session(), decoratedCart)
 	if guardRedirect != nil {
 		return guardRedirect
 	}
@@ -283,7 +283,7 @@ func (cc *CheckoutController) SubmitUserCheckoutAction(ctx context.Context, r *w
 		cc.logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil).Hook(web.NoCache)
 	}
-	guardRedirect := cc.getCommonGuardRedirects(ctx, decoratedCart)
+	guardRedirect := cc.getCommonGuardRedirects(ctx, r.Session(), decoratedCart)
 	if guardRedirect != nil {
 		return guardRedirect
 	}
@@ -308,7 +308,7 @@ func (cc *CheckoutController) SubmitGuestCheckoutAction(ctx context.Context, r *
 		cc.logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil).Hook(web.NoCache)
 	}
-	guardRedirect := cc.getCommonGuardRedirects(ctx, decoratedCart)
+	guardRedirect := cc.getCommonGuardRedirects(ctx, r.Session(), decoratedCart)
 	if guardRedirect != nil {
 		return guardRedirect
 	}
@@ -325,7 +325,7 @@ func (cc *CheckoutController) ProcessPaymentAction(ctx context.Context, r *web.R
 		cc.logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil).Hook(web.NoCache)
 	}
-	guardRedirect := cc.getCommonGuardRedirects(ctx, decoratedCart)
+	guardRedirect := cc.getCommonGuardRedirects(ctx, r.Session(), decoratedCart)
 	if guardRedirect != nil {
 		return guardRedirect
 	}
@@ -421,7 +421,7 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 	if e != nil {
 		return cc.Render(ctx, template, CheckoutViewData{
 			DecoratedCart:        *decoratedCart,
-			CartValidationResult: cc.applicationCartService.ValidateCart(ctx, decoratedCart),
+			CartValidationResult: cc.applicationCartService.ValidateCart(ctx, session, decoratedCart),
 			Form:                 form,
 			PaymentProviders:     cc.getPaymentProviders(),
 		})
@@ -435,7 +435,7 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 
 		return cc.Render(ctx, template, CheckoutViewData{
 			DecoratedCart:        *decoratedCart,
-			CartValidationResult: cc.applicationCartService.ValidateCart(ctx, decoratedCart),
+			CartValidationResult: cc.applicationCartService.ValidateCart(ctx, session, decoratedCart),
 			Form:                 form,
 			PaymentProviders:     cc.getPaymentProviders(),
 		})
@@ -472,7 +472,7 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 	//Default: Form not submitted yet or submitted with validation errors:
 	return cc.Render(ctx, template, CheckoutViewData{
 		DecoratedCart:        *decoratedCart,
-		CartValidationResult: cc.applicationCartService.ValidateCart(ctx, decoratedCart),
+		CartValidationResult: cc.applicationCartService.ValidateCart(ctx, session, decoratedCart),
 		Form:                 form,
 		PaymentProviders:     cc.getPaymentProviders(),
 	})
@@ -496,7 +496,7 @@ func (cc *CheckoutController) showCheckoutFormWithErrors(ctx context.Context, se
 
 	return cc.Render(ctx, template, CheckoutViewData{
 		DecoratedCart:        decoratedCart,
-		CartValidationResult: cc.applicationCartService.ValidateCart(ctx, &decoratedCart),
+		CartValidationResult: cc.applicationCartService.ValidateCart(ctx, session, &decoratedCart),
 		Form:                 *form,
 		ErrorInfos:           getViewErrorInfo(err),
 		PaymentProviders:     cc.getPaymentProviders(),
@@ -662,7 +662,7 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 	if cc.showEmptyCartPageIfNoItems && decoratedCart.Cart.ItemCount() == 0 {
 		return cc.Render(ctx, "checkout/emptycart", nil).Hook(web.NoCache)
 	}
-	guardRedirect := cc.getCommonGuardRedirects(ctx, decoratedCart)
+	guardRedirect := cc.getCommonGuardRedirects(ctx, r.Session(), decoratedCart)
 	if guardRedirect != nil {
 		return guardRedirect
 	}
@@ -683,9 +683,9 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 }
 
 //getCommonGuardRedirects - checks config and may return a redirect that should be executed before the common checkou actions
-func (cc *CheckoutController) getCommonGuardRedirects(ctx context.Context, decoratedCart *cart.DecoratedCart) web.Response {
+func (cc *CheckoutController) getCommonGuardRedirects(ctx context.Context, session *sessions.Session, decoratedCart *cart.DecoratedCart) web.Response {
 	if cc.redirectToCartOnInvalideCart {
-		result := cc.applicationCartService.ValidateCart(ctx, decoratedCart)
+		result := cc.applicationCartService.ValidateCart(ctx, session, decoratedCart)
 		if !result.IsValid() {
 			cc.logger.WithField("category", "checkout").Info("StartAction > RedirectToCartOnInvalideCart")
 			return cc.Redirect("cart.view", nil).Hook(web.NoCache)

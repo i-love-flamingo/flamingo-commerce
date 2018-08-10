@@ -57,7 +57,7 @@ func (cc *CartViewController) ViewAction(ctx context.Context, r *web.Request) we
 
 	cartViewData := CartViewData{
 		DecoratedCart:        *decoratedCart,
-		CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, decoratedCart),
+		CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, r.Session(), decoratedCart),
 	}
 
 	flashes := r.Session().Flashes("cart.view.data")

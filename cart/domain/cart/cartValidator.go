@@ -1,6 +1,10 @@
 package cart
 
-import "flamingo.me/flamingo/framework/web"
+import (
+	"context"
+
+	"github.com/gorilla/sessions"
+)
 
 type (
 	CartValidationResult struct {
@@ -15,7 +19,7 @@ type (
 	}
 
 	CartValidator interface {
-		Validate(ctx web.Context, cart *DecoratedCart) CartValidationResult
+		Validate(ctx context.Context, session *sessions.Session, cart *DecoratedCart) CartValidationResult
 	}
 )
 
