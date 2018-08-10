@@ -12,6 +12,8 @@ type (
 		Path() string
 		Categories() []Category
 		Active() bool
+		Promoted() bool
+		CategoryType() string
 	}
 
 	// CategoryFacet search filter
@@ -25,6 +27,15 @@ type (
 const (
 	// CategoryKey donates the default category facet key
 	CategoryKey categoryKey = "category"
+
+	// TypeProduct donates the product category type
+	TypeProduct = "product"
+	// TypeTeaser donates the teaser category type
+	TypeTeaser = "teaser"
+	// TypeBrand donates the brand category type
+	TypeBrand = "brand"
+	// TypePromotion donates the promotion category type
+	TypePromotion = "promotion"
 )
 
 var (
