@@ -5,7 +5,7 @@ up:
 	rm -rf vendor/
 	dep ensure -v -vendor-only
 
-update: updateTools
+update:
 	rm -rf vendor/
 	dep ensure -v -update flamingo.me/flamingo
 
