@@ -32,10 +32,6 @@ const (
 	TypeProduct = "product"
 	// TypeTeaser donates the teaser category type
 	TypeTeaser = "teaser"
-	// TypeBrand donates the brand category type
-	TypeBrand = "brand"
-	// TypePromotion donates the promotion category type
-	TypePromotion = "promotion"
 )
 
 var (

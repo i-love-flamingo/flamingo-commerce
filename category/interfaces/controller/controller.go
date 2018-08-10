@@ -28,6 +28,7 @@ type (
 		*productInterfaceViewData.ProductSearchResultViewDataFactory
 		router                *router.Router
 		template              string
+		teaserTemplate        string
 		logger                flamingo.Logger
 		paginationInfoFactory *utils.PaginationInfoFactory
 	}
@@ -73,7 +74,8 @@ func (vc *View) Inject(
 	productSearchResultViewDataFactory *productInterfaceViewData.ProductSearchResultViewDataFactory,
 	router *router.Router,
 	config *struct {
-		Template string `inject:"config:core.category.view.template"`
+		Template       string `inject:"config:core.category.view.template"`
+		TeaserTemplate string `inject:"config:core.category.view.teaserTemplate"`
 	},
 	logger flamingo.Logger,
 	paginationInfoFactory *utils.PaginationInfoFactory,
@@ -88,6 +90,7 @@ func (vc *View) Inject(
 	vc.logger = logger
 	vc.paginationInfoFactory = paginationInfoFactory
 	vc.template = config.Template
+	vc.teaserTemplate = config.TeaserTemplate
 }
 
 // Get Response for Product matching sku param
@@ -136,7 +139,15 @@ func (vc *View) Get(c context.Context, request *web.Request) web.Response {
 
 	paginationInfo := vc.PaginationInfoFactory.Build(result.SearchMeta.Page, result.SearchMeta.NumResults, 30, result.SearchMeta.NumPages, request.Request().URL)
 
-	return vc.Render(c, vc.template, ViewData{
+	var template string
+	switch category.CategoryType() {
+	case domain.TypeTeaser:
+		template = vc.teaserTemplate
+	default:
+		template = vc.template
+	}
+
+	return vc.Render(c, template, ViewData{
 		Category:            category,
 		CategoryTree:        categoryRoot,
 		ProductSearchResult: result,

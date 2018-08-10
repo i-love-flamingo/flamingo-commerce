@@ -29,7 +29,8 @@ func (m *Module) Configure(injector *dingo.Injector) {
 // DefaultConfig for this module
 func (m *Module) DefaultConfig() config.Map {
 	return config.Map{
-		"core.category.view.template": "category/category",
+		"core.category.view.template":       "category/category",
+		"core.category.view.teaserTemplate": "category/teaser",
 	}
 }
 
