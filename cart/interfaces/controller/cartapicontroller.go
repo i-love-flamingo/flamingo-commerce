@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 
@@ -13,10 +14,10 @@ import (
 type (
 	// CartApiController for cart api
 	CartApiController struct {
-		responder.JSONAware            `inject:""`
-		ApplicationCartService         *application.CartService         `inject:""`
-		ApplicationCartReceiverService *application.CartReceiverService `inject:""`
-		Logger                         flamingo.Logger                  `inject:""`
+		responder.JSONAware
+		cartService         *application.CartService
+		cartReceiverService *application.CartReceiverService
+		logger              flamingo.Logger
 	}
 
 	result struct {
@@ -30,38 +31,48 @@ type (
 	}
 )
 
+func (cc *CartApiController) Inject(
+	aware responder.JSONAware,
+	ApplicationCartService *application.CartService,
+	ApplicationCartReceiverService *application.CartReceiverService,
+	Logger flamingo.Logger,
+) {
+	cc.JSONAware = aware
+	cc.cartService = ApplicationCartService
+	cc.cartReceiverService = ApplicationCartReceiverService
+	cc.logger = Logger
+}
+
 // GetAction Get JSON Format of API
-func (cc *CartApiController) GetAction(ctx web.Context) web.Response {
-	cart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
+func (cc *CartApiController) GetAction(ctx context.Context, r *web.Request) web.Response {
+	cart, e := cc.cartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if e != nil {
-		cc.Logger.WithField("category", "CartApiController").Error("cart.cartapicontroller.get: %v", e.Error())
+		cc.logger.WithField("category", "CartApiController").Error("cart.cartapicontroller.get: %v", e.Error())
 		return cc.JSONError(result{Message: e.Error(), Success: false}, 500)
 	}
 	return cc.JSON(cart)
 }
 
 // AddAction Add Item to cart
-func (cc *CartApiController) AddAction(ctx web.Context) web.Response {
-	variantMarketplaceCode, e := ctx.Param1("variantMarketplaceCode")
-	if e != nil {
-		variantMarketplaceCode = ""
-	}
-	qty, e := ctx.Param1("qty")
-	if e != nil {
+func (cc *CartApiController) AddAction(ctx context.Context, r *web.Request) web.Response {
+	variantMarketplaceCode, _ := r.Param1("variantMarketplaceCode")
+
+	qty, ok := r.Param1("qty")
+	if !ok {
 		qty = "1"
 	}
 	qtyInt, _ := strconv.Atoi(qty)
-	deliveryCode, e := ctx.Param1("deliveryCode")
+	deliveryIntent, _ := r.Param1("deliveryIntent")
 
-	addRequest := cc.ApplicationCartService.BuildAddRequest(ctx, ctx.MustParam1("marketplaceCode"), variantMarketplaceCode, qtyInt)
-	e, _ = cc.ApplicationCartService.AddProduct(ctx, deliveryCode, addRequest)
-	if e != nil {
-		cc.Logger.WithField("category", "CartApiController").Error("cart.cartapicontroller.add: %v", e.Error())
+	addRequest := cc.cartService.BuildAddRequest(ctx, r.MustParam1("marketplaceCode"), variantMarketplaceCode, qtyInt, deliveryIntent)
+	err, _ := cc.cartService.AddProduct(ctx, r.Session(), addRequest)
+	if err != nil {
+		cc.logger.WithField("category", "CartApiController").Error("cart.cartapicontroller.add: %v", err.Error())
 		msgCode := ""
-		if e, ok := e.(messageCodeAvailable); ok {
+		if e, ok := err.(messageCodeAvailable); ok {
 			msgCode = e.MessageCode()
 		}
-		return cc.JSONError(result{Message: e.Error(), MessageCode: msgCode, Success: false}, 500)
+		return cc.JSONError(result{Message: err.Error(), MessageCode: msgCode, Success: false}, 500)
 	}
 	return cc.JSON(result{
 		Success: true,
@@ -69,10 +80,10 @@ func (cc *CartApiController) AddAction(ctx web.Context) web.Response {
 	})
 }
 
-func (cc *CartApiController) ApplyVoucherAndGetAction(ctx web.Context) web.Response {
-	couponCode := ctx.MustParam1("couponCode")
+func (cc *CartApiController) ApplyVoucherAndGetAction(ctx context.Context, r *web.Request) web.Response {
+	couponCode := r.MustParam1("couponCode")
 
-	cart, err := cc.ApplicationCartService.ApplyVoucher(ctx, couponCode)
+	cart, err := cc.cartService.ApplyVoucher(ctx, r.Session(), couponCode)
 	if err != nil {
 		return cc.JSONError(result{Message: err.Error(), Success: false}, 500)
 	}

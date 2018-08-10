@@ -1,12 +1,14 @@
 package application
 
 import (
+	"context"
 	"fmt"
 
 	cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
 	productDomain "flamingo.me/flamingo-commerce/product/domain"
 	"flamingo.me/flamingo/framework/flamingo"
 	"flamingo.me/flamingo/framework/web"
+	"github.com/gorilla/sessions"
 	"github.com/pkg/errors"
 )
 
@@ -22,19 +24,21 @@ type (
 		ItemValidator  cartDomain.ItemValidator `inject:",optional"`
 		EventPublisher EventPublisher           `inject:""`
 
-		DefaultDeliveryCode string `inject:"config:cart.defaultDeliveryCode,optional"`
+		PickUpDetectionService cartDomain.PickUpDetectionService `inject:",optional"`
 
-		DeliveryInfoBuilder cartDomain.DeliveryInfoBuilder `inject:""`
+		DeliveryIntentBuilder *cartDomain.DeliveryIntentBuilder `inject:""`
+
+		DefaultDeliveryIntent string `inject:"config:cart.defaultDeliveryIntent,optional"`
 
 		CartCache CartCache `inject:",optional"`
 	}
 )
 
 // ValidateCart validates a carts content
-func (cs CartService) ValidateCart(ctx web.Context, decoratedCart *cartDomain.DecoratedCart) cartDomain.CartValidationResult {
+func (cs CartService) ValidateCart(ctx context.Context, decoratedCart *cartDomain.DecoratedCart) cartDomain.CartValidationResult {
 
 	if cs.CartValidator != nil {
-		result := cs.CartValidator.Validate(ctx, decoratedCart)
+		result := cs.CartValidator.Validate(web.ToContext(ctx), decoratedCart)
 		return result
 	}
 
@@ -42,8 +46,8 @@ func (cs CartService) ValidateCart(ctx web.Context, decoratedCart *cartDomain.De
 }
 
 // ValidateCurrentCart validates the current active cart
-func (cs CartService) ValidateCurrentCart(ctx web.Context) (cartDomain.CartValidationResult, error) {
-	decoratedCart, err := cs.CartReceiverService.ViewDecoratedCart(ctx)
+func (cs CartService) ValidateCurrentCart(ctx context.Context, session *sessions.Session) (cartDomain.CartValidationResult, error) {
+	decoratedCart, err := cs.CartReceiverService.ViewDecoratedCart(ctx, session)
 	if err != nil {
 		return cartDomain.CartValidationResult{}, err
 	}
@@ -51,47 +55,28 @@ func (cs CartService) ValidateCurrentCart(ctx web.Context) (cartDomain.CartValid
 	return cs.ValidateCart(ctx, decoratedCart), nil
 }
 
-func (cs CartService) UpdateBillingAddress(ctx web.Context, billingAddress *cartDomain.Address) error {
-	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx)
+func (cs CartService) UpdateDeliveryInfosAndBilling(ctx context.Context, session *sessions.Session, billingAddress *cartDomain.Address, updateCommands []cartDomain.DeliveryInfoUpdateCommand) error {
+	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return err
 	}
-	cart, err = behaviour.UpdateBillingAddress(ctx, cart, billingAddress)
+	cart, err = behaviour.UpdateDeliveryInfosAndBilling(ctx, cart, billingAddress, updateCommands)
 	if err != nil {
-		cs.handleCartNotFound(ctx, err)
+		cs.handleCartNotFound(session, err)
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemQty").Error(err)
 		return err
 	}
 	cs.updateCartInCache(ctx, cart)
 	return nil
 }
-
-func (cs CartService) UpdateDeliveryInfo(ctx web.Context, deliveryCode string, deliveryInfo cartDomain.DeliveryInfo) error {
-	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx)
-	if err != nil {
-		return err
-	}
-	if deliveryCode == "" {
-		deliveryCode = cs.DefaultDeliveryCode
-	}
-	cart, err = behaviour.UpdateDeliveryInfo(ctx, cart, deliveryCode, deliveryInfo)
-	if err != nil {
-		cs.handleCartNotFound(ctx, err)
-		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemQty").Error(err)
-		return err
-	}
-	cs.updateCartInCache(ctx, cart)
-	return nil
-}
-
-func (cs CartService) UpdatePurchaser(ctx web.Context, purchaser *cartDomain.Person, additionalData map[string]string) error {
-	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx)
+func (cs CartService) UpdatePurchaser(ctx context.Context, session *sessions.Session, purchaser *cartDomain.Person, additionalData map[string]string) error {
+	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return err
 	}
 	cart, err = behaviour.UpdatePurchaser(ctx, cart, purchaser, additionalData)
 	if err != nil {
-		cs.handleCartNotFound(ctx, err)
+		cs.handleCartNotFound(session, err)
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemQty").Error(err)
 		return err
 	}
@@ -100,31 +85,28 @@ func (cs CartService) UpdatePurchaser(ctx web.Context, purchaser *cartDomain.Per
 }
 
 // UpdateItemQty
-func (cs CartService) UpdateItemQty(ctx web.Context, itemId string, deliveryCode string, qty int) error {
-	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx)
+func (cs CartService) UpdateItemQty(ctx context.Context, session *sessions.Session, itemId string, qty int) error {
+	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return err
 	}
-	if deliveryCode == "" {
-		deliveryCode = cs.DefaultDeliveryCode
-	}
-	item, err := cart.GetByItemId(itemId, deliveryCode)
+	item, err := cart.GetByItemId(itemId)
 	if err != nil {
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemQty").Error(err)
 		return err
 	}
 	qtyBefore := item.Qty
 	if qty < 1 {
-		return cs.DeleteItem(ctx, itemId, deliveryCode)
+		return cs.DeleteItem(ctx, session, itemId)
 	}
 
 	cs.EventPublisher.PublishChangedQtyInCartEvent(ctx, item, qtyBefore, qty, cart.ID)
 	itemUpdate := cartDomain.ItemUpdateCommand{
 		Qty: &qty,
 	}
-	cart, err = behaviour.UpdateItem(ctx, cart, itemId, deliveryCode, itemUpdate)
+	cart, err = behaviour.UpdateItem(ctx, cart, itemId, itemUpdate)
 	if err != nil {
-		cs.handleCartNotFound(ctx, err)
+		cs.handleCartNotFound(session, err)
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemQty").Error(err)
 		return err
 	}
@@ -132,15 +114,12 @@ func (cs CartService) UpdateItemQty(ctx web.Context, itemId string, deliveryCode
 	return nil
 }
 
-func (cs CartService) UpdateItemSourceId(ctx web.Context, itemId string, deliveryCode string, sourceId string) error {
-	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx)
+func (cs CartService) UpdateItemSourceId(ctx context.Context, session *sessions.Session, itemId string, sourceId string) error {
+	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return err
 	}
-	if deliveryCode == "" {
-		deliveryCode = cs.DefaultDeliveryCode
-	}
-	_, err = cart.GetByItemId(itemId, deliveryCode)
+	_, err = cart.GetByItemId(itemId)
 	if err != nil {
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemSourceId").Error(err)
 		return err
@@ -148,9 +127,9 @@ func (cs CartService) UpdateItemSourceId(ctx web.Context, itemId string, deliver
 	itemUpdate := cartDomain.ItemUpdateCommand{
 		SourceId: &sourceId,
 	}
-	cart, err = behaviour.UpdateItem(ctx, cart, itemId, deliveryCode, itemUpdate)
+	cart, err = behaviour.UpdateItem(ctx, cart, itemId, itemUpdate)
 	if err != nil {
-		cs.handleCartNotFound(ctx, err)
+		cs.handleCartNotFound(session, err)
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemSourceId").Error(err)
 		return err
 	}
@@ -159,24 +138,21 @@ func (cs CartService) UpdateItemSourceId(ctx web.Context, itemId string, deliver
 }
 
 // DeleteItem in current cart
-func (cs CartService) DeleteItem(ctx web.Context, itemId string, deliveryCode string) error {
-	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx)
+func (cs CartService) DeleteItem(ctx context.Context, session *sessions.Session, itemId string) error {
+	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return err
 	}
-	if deliveryCode == "" {
-		deliveryCode = cs.DefaultDeliveryCode
-	}
-	item, err := cart.GetByItemId(itemId, deliveryCode)
+	item, err := cart.GetByItemId(itemId)
 	if err != nil {
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "DeleteItem").Error(err)
 		return err
 	}
 	qtyBefore := item.Qty
 	cs.EventPublisher.PublishChangedQtyInCartEvent(ctx, item, qtyBefore, 0, cart.ID)
-	cart, err = behaviour.DeleteItem(ctx, cart, itemId, deliveryCode)
+	cart, err = behaviour.DeleteItem(ctx, cart, itemId)
 	if err != nil {
-		cs.handleCartNotFound(ctx, err)
+		cs.handleCartNotFound(session, err)
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "DeleteItem").Error(err)
 		return err
 	}
@@ -185,21 +161,26 @@ func (cs CartService) DeleteItem(ctx web.Context, itemId string, deliveryCode st
 }
 
 // DeleteAllItems in current cart
-func (cs CartService) DeleteAllItems(ctx web.Context) error {
-	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx)
+func (cs CartService) DeleteAllItems(ctx context.Context, session *sessions.Session) error {
+	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return err
 	}
-	for _, delivery := range cart.Deliveries {
-		for _, item := range delivery.Cartitems {
-			qtyBefore := item.Qty
-			cs.EventPublisher.PublishChangedQtyInCartEvent(ctx, &item, qtyBefore, 0, cart.ID)
-			cart, err = behaviour.DeleteItem(ctx, cart, item.ID, delivery.DeliveryInfo.Code)
-			if err != nil {
-				cs.handleCartNotFound(ctx, err)
-				cs.Logger.WithField("category", "cartService").WithField("subCategory", "DeleteAllItems").Error(err)
-				return err
-			}
+
+	for _, itemId := range cart.GetItemIds() {
+		item, err := cart.GetByItemId(itemId)
+		if err != nil {
+			cs.Logger.WithField("category", "cartService").WithField("subCategory", "DeleteAllItems").Error(err)
+			return err
+		}
+
+		qtyBefore := item.Qty
+		cs.EventPublisher.PublishChangedQtyInCartEvent(ctx, item, qtyBefore, 0, cart.ID)
+		cart, err = behaviour.DeleteItem(ctx, cart, itemId)
+		if err != nil {
+			cs.handleCartNotFound(session, err)
+			cs.Logger.WithField("category", "cartService").WithField("subCategory", "DeleteAllItems").Error(err)
+			return err
 		}
 	}
 
@@ -208,75 +189,71 @@ func (cs CartService) DeleteAllItems(ctx web.Context) error {
 }
 
 // PlaceOrder
-func (cs *CartService) PlaceOrder(ctx web.Context, payment *cartDomain.CartPayment) (string, error) {
-	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx)
+func (cs *CartService) PlaceOrder(ctx context.Context, session *sessions.Session, payment *cartDomain.CartPayment) (string, error) {
+	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return "", err
 	}
 
 	orderNumber, err := behaviour.PlaceOrder(ctx, cart, payment)
 	if err != nil {
-		cs.handleCartNotFound(ctx, err)
+		cs.handleCartNotFound(session, err)
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "PlaceOrder").Error(err)
 		return "", err
 	}
 	cs.EventPublisher.PublishOrderPlacedEvent(ctx, cart, orderNumber)
-	cs.DeleteSavedSessionGuestCartId(ctx)
+	cs.DeleteSavedSessionGuestCartId(session)
 	cs.deleteCartInCache(ctx, cart)
 	return orderNumber, err
 }
 
 // BuildAddRequest Helper to build
-func (cs *CartService) BuildAddRequest(ctx web.Context, marketplaceCode string, variantMarketplaceCode string, qty int) cartDomain.AddRequest {
+func (cs *CartService) BuildAddRequest(ctx context.Context, marketplaceCode string, variantMarketplaceCode string, qty int, deliveryIntentStringRepresentation string) cartDomain.AddRequest {
 	if qty < 0 {
 		qty = 0
 	}
-
+	if deliveryIntentStringRepresentation == "" {
+		deliveryIntentStringRepresentation = cs.DefaultDeliveryIntent
+	}
 	return cartDomain.AddRequest{
 		MarketplaceCode: marketplaceCode,
 		Qty:             qty,
 		VariantMarketplaceCode: variantMarketplaceCode,
+		DeliveryIntent:         cs.DeliveryIntentBuilder.BuildDeliveryIntent(deliveryIntentStringRepresentation),
 	}
 }
 
 // AddProduct Add a product
-func (cs *CartService) AddProduct(ctx web.Context, deliveryCode string, addRequest cartDomain.AddRequest) (error, productDomain.BasicProduct) {
-	if deliveryCode == "" {
-		deliveryCode = cs.DefaultDeliveryCode
-	}
-
-	addRequest, product, err := cs.checkProductForAddRequest(ctx, deliveryCode, addRequest)
+func (cs *CartService) AddProduct(ctx context.Context, session *sessions.Session, addRequest cartDomain.AddRequest) (error, productDomain.BasicProduct) {
+	addRequest, product, err := cs.checkProductForAddRequest(ctx, addRequest)
 	if err != nil {
 		cs.Logger.WithField("category", "cartService").WithField(flamingo.LogKeySubCategory, "AddProduct").Error(err)
 		return err, nil
 	}
 
-	cs.Logger.WithField(flamingo.LogKeyCategory, "cartService").WithField(flamingo.LogKeySubCategory, "AddProduct").Debug("AddRequest received %#v  / %v", addRequest, deliveryCode)
+	cs.Logger.WithField(flamingo.LogKeyCategory, "cartService").WithField(flamingo.LogKeySubCategory, "AddProduct").Debug("AddRequest received %#v  / %v", addRequest, addRequest.DeliveryIntent.String())
 
-	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx)
-	cart, err = cs.CreateInitialDeliveryIfNotPresent(ctx, deliveryCode)
-
-	if err != nil {
-		cs.Logger.WithField("category", "cartService").WithField(flamingo.LogKeySubCategory, "AddProduct").Error(err)
-		return err, nil
-	}
-
+	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "AddProduct").Error(err)
 		return err, nil
 	}
 
-	cart, err = behaviour.AddToCart(ctx, cart, deliveryCode, addRequest)
-	if err == cartDomain.DeliveryCodeNotFound {
-		//old Magento adapter will never return this
-		//Edge case...
-		// For later - todo:
-		// call initialCreateDelivery
-		// retry AddToCart
+	//Check if we can autodetect empty location code for pickup
+	if addRequest.DeliveryIntent.Method == cartDomain.DELIVERY_METHOD_PICKUP && addRequest.DeliveryIntent.DeliveryLocationCode == "" && addRequest.DeliveryIntent.AutodetectDeliveryLocation {
+		if cs.PickUpDetectionService != nil {
+			locationCode, locationType, err := cs.PickUpDetectionService.Detect(product, addRequest)
+			if err == nil {
+				cs.Logger.WithField(flamingo.LogKeyCategory, "cartService").WithField("subCategory", "AddProduct").Debug("Detected pickup location %v / %v", locationCode, locationType)
+				addRequest.DeliveryIntent.DeliveryLocationCode = locationCode
+				addRequest.DeliveryIntent.DeliveryLocationType = locationType
+			}
+		}
 	}
 
+	cart, err = behaviour.AddToCart(ctx, cart, addRequest)
 	if err != nil {
-		cs.handleCartNotFound(ctx, err)
+		cs.handleCartNotFound(session, err)
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "AddProduct").Error(err)
 		return err, nil
 	}
@@ -285,22 +262,9 @@ func (cs *CartService) AddProduct(ctx web.Context, deliveryCode string, addReque
 	return nil, product
 }
 
-func (cs *CartService) CreateInitialDeliveryIfNotPresent(ctx web.Context, deliveryCode string) (*cartDomain.Cart, error) {
-	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx)
+func (cs *CartService) ApplyVoucher(ctx context.Context, session *sessions.Session, couponCode string) (*cartDomain.Cart, error) {
 
-	if cart.HasDeliveryForCode(deliveryCode) {
-		return cart, nil
-	}
-	delInfo, err := cs.DeliveryInfoBuilder.BuildByDeliveryCode(deliveryCode)
-	if err != nil {
-		return nil, err
-	}
-	return behaviour.UpdateDeliveryInfo(ctx, cart, deliveryCode, delInfo)
-}
-
-func (cs *CartService) ApplyVoucher(ctx web.Context, couponCode string) (*cartDomain.Cart, error) {
-
-	oldCart, behaviour, err := cs.CartReceiverService.GetCart(ctx)
+	oldCart, behaviour, err := cs.CartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "ApplyVoucher").Error(err)
 		return nil, err
@@ -311,14 +275,14 @@ func (cs *CartService) ApplyVoucher(ctx web.Context, couponCode string) (*cartDo
 	return cart, err
 }
 
-func (cs *CartService) handleCartNotFound(ctx web.Context, err error) {
+func (cs *CartService) handleCartNotFound(session *sessions.Session, err error) {
 	if err == cartDomain.CartNotFoundError {
-		cs.DeleteSavedSessionGuestCartId(ctx)
+		cs.DeleteSavedSessionGuestCartId(session)
 	}
 }
 
 // checkProductForAddRequest existence and validate with productService
-func (cs *CartService) checkProductForAddRequest(ctx web.Context, deliveryCode string, addRequest cartDomain.AddRequest) (cartDomain.AddRequest, productDomain.BasicProduct, error) {
+func (cs *CartService) checkProductForAddRequest(ctx context.Context, addRequest cartDomain.AddRequest) (cartDomain.AddRequest, productDomain.BasicProduct, error) {
 	product, err := cs.ProductService.Get(ctx, addRequest.MarketplaceCode)
 	if err != nil {
 		return addRequest, nil, fmt.Errorf("cart.application.cartservice - AddProduct Error: %v", err)
@@ -337,38 +301,38 @@ func (cs *CartService) checkProductForAddRequest(ctx web.Context, deliveryCode s
 
 	//Now Validate the Item with the optional registered ItemValidator
 	if cs.ItemValidator != nil {
-		return addRequest, product, cs.ItemValidator.Validate(ctx, deliveryCode, addRequest, product)
+		return addRequest, product, cs.ItemValidator.Validate(web.ToContext(ctx), addRequest, product)
 	}
 
 	return addRequest, product, nil
 }
 
-func (cs *CartService) publishAddtoCartEvent(ctx web.Context, currentCart cartDomain.Cart, addRequest cartDomain.AddRequest) {
+func (cs *CartService) publishAddtoCartEvent(ctx context.Context, currentCart cartDomain.Cart, addRequest cartDomain.AddRequest) {
 	if cs.EventPublisher != nil {
 		cs.EventPublisher.PublishAddToCartEvent(ctx, addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode, addRequest.Qty)
 	}
 }
 
-func (cs *CartService) updateCartInCache(ctx web.Context, cart *cartDomain.Cart) {
+func (cs *CartService) updateCartInCache(ctx context.Context, cart *cartDomain.Cart) {
 	if cs.CartCache != nil {
 		id, err := BuildIdentifierFromCart(cart)
 		if err != nil {
 			return
 		}
-		err = cs.CartCache.CacheCart(ctx, *id, cart)
+		err = cs.CartCache.CacheCart(web.ToContext(ctx), *id, cart)
 		if err != nil {
 			cs.Logger.Error("Error while caching cart: %v", err)
 		}
 	}
 }
 
-func (cs *CartService) deleteCartInCache(ctx web.Context, cart *cartDomain.Cart) {
+func (cs *CartService) deleteCartInCache(ctx context.Context, cart *cartDomain.Cart) {
 	if cs.CartCache != nil {
 		id, err := BuildIdentifierFromCart(cart)
 		if err != nil {
 			return
 		}
-		err = cs.CartCache.Delete(ctx, *id)
+		err = cs.CartCache.Delete(web.ToContext(ctx), *id)
 		if err != nil {
 			cs.Logger.Error("Error while deleting cart in cache: %v", err)
 		}

@@ -24,7 +24,7 @@ type (
 )
 
 func (os *OrderService) SetSources(ctx web.Context) error {
-	decoratedCart, err := os.CartReceiverService.ViewDecoratedCart(ctx)
+	decoratedCart, err := os.CartReceiverService.ViewDecoratedCart(ctx, ctx.Session())
 	if err != nil {
 		os.Logger.Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
 		return err
@@ -43,7 +43,7 @@ func (os *OrderService) PlaceOrder(ctx web.Context, decoratedCart *cart.Decorate
 		os.Logger.Warn("Try to place an invalid cart")
 		return "", errors.New("Cart is Invalid.")
 	}
-	return os.CartService.PlaceOrder(ctx, payment)
+	return os.CartService.PlaceOrder(ctx, ctx.Session(), payment)
 }
 
 func (os *OrderService) CurrentCartSaveInfos(ctx web.Context, billingAddress *cart.Address, shippingAddress *cart.Address, purchaser *cart.Person) error {
@@ -53,36 +53,35 @@ func (os *OrderService) CurrentCartSaveInfos(ctx web.Context, billingAddress *ca
 		os.Logger.Warn("CurrentCartSaveInfos called without billing address")
 		return errors.New("Billing Address is missing")
 	}
-	decoratedCart, err := os.CartReceiverService.ViewDecoratedCart(ctx)
+	decoratedCart, err := os.CartReceiverService.ViewDecoratedCart(ctx, ctx.Session())
 	if err != nil {
 		os.Logger.Error("CurrentCartSaveInfos GetDecoratedCart Error %v", err)
 		return err
 	}
 
-	//update Billing
-	err = os.CartService.UpdateBillingAddress(ctx, billingAddress)
+	updateCommands, err := os.DeliveryInfoBuilder.BuildDeliveryInfoUpdateCommand(ctx, decoratedCart)
 	if err != nil {
-		os.Logger.Error("OnStepCurrentCartPlaceOrder UpdateBillingAddress Error %v", err)
+		os.Logger.Error("OnStepCurrentCartPlaceOrder BuildDeliveryInfoUpdateCommand Error %v", err)
 		return err
 	}
 
-	//Update ShippingAddress on ALL Deliveries in the Cart if given
-	// Maybe later we need to support different shipping addresses in the Checkout
+	//If an Address is given - add it to every DeliveryInfo(s)
 	if shippingAddress != nil {
-		for _, d := range decoratedCart.Cart.Deliveries {
-			newDeliveryInfo := d.DeliveryInfo
-			newDeliveryInfo.DeliveryLocation.Address = shippingAddress
-			err = os.CartService.UpdateDeliveryInfo(ctx, d.DeliveryInfo.Code, newDeliveryInfo)
-			if err != nil {
-				os.Logger.Error("OnStepCurrentCartPlaceOrder UpdateDeliveryInfosAndBilling Error %v", err)
-				return err
-			}
+		if len(updateCommands) == 0 {
+			os.Logger.Warn("OnStepCurrentCartPlaceOrder Cart has no DeliveryInfoUpdates Build - cannot set shippingAddress")
+			return errors.New("No DeliveryInfos Build - cannot set shippingAddress")
 		}
-
+		for k, _ := range updateCommands {
+			updateCommands[k].DeliveryInfo.DeliveryLocation.Address = shippingAddress
+		}
+	}
+	err = os.CartService.UpdateDeliveryInfosAndBilling(ctx, ctx.Session(), billingAddress, updateCommands)
+	if err != nil {
+		os.Logger.Error("OnStepCurrentCartPlaceOrder UpdateDeliveryInfosAndBilling Error %v", err)
+		return err
 	}
 
-	//Update Purchaser
-	err = os.CartService.UpdatePurchaser(ctx, purchaser, nil)
+	err = os.CartService.UpdatePurchaser(ctx, ctx.Session(), purchaser, nil)
 	if err != nil {
 		os.Logger.Error("OnStepCurrentCartPlaceOrder UpdatePurchaser Error %v", err)
 		return err
@@ -100,7 +99,7 @@ func (os *OrderService) CurrentCartSaveInfos(ctx web.Context, billingAddress *ca
 //OnStepCurrentCartPlaceOrder - probably the best choice for a simple checkout
 // Assumptions: Only one BuildDeliveryInfo is used on the cart!
 func (os *OrderService) CurrentCartPlaceOrder(ctx web.Context, payment cart.CartPayment) (orderid string, orderError error) {
-	decoratedCart, err := os.CartReceiverService.ViewDecoratedCart(ctx)
+	decoratedCart, err := os.CartReceiverService.ViewDecoratedCart(ctx, ctx.Session())
 	if err != nil {
 		os.Logger.Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
 		return "", err

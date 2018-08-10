@@ -156,7 +156,7 @@ The checkoutController implements a default process for a checkout:
 func (cc *CheckoutController) StartAction(ctx web.Context) web.Response {
 	//Guard Clause if Cart cannout be fetched
 
-	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
+	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx, ctx.Session())
 	if e != nil {
 		cc.Logger.WithField("category", "checkout").Error("cart.checkoutcontroller.viewaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil).Hook(web.NoCache)
@@ -226,7 +226,7 @@ func (cc *CheckoutController) SubmitUserCheckoutAction(ctx web.Context) web.Resp
 	}
 
 	//Guard Clause if Cart cannout be fetched
-	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
+	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx, ctx.Session())
 	if e != nil {
 		cc.Logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil).Hook(web.NoCache)
@@ -251,7 +251,7 @@ func (cc *CheckoutController) SubmitGuestCheckoutAction(ctx web.Context) web.Res
 	}
 
 	//Guard Clause if Cart cannout be fetched
-	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
+	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx, ctx.Session())
 	if e != nil {
 		cc.Logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil).Hook(web.NoCache)
@@ -268,7 +268,7 @@ func (cc *CheckoutController) SubmitGuestCheckoutAction(ctx web.Context) web.Res
 func (cc *CheckoutController) ProcessPaymentAction(ctx web.Context) web.Response {
 
 	//Guard Clause if Cart cannout be fetched
-	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
+	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx, ctx.Session())
 	if e != nil {
 		cc.Logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil).Hook(web.NoCache)
@@ -347,7 +347,7 @@ func (cc *CheckoutController) getPaymentReturnUrl(PaymentProvider string, Paymen
 func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx web.Context, formservice *formDto.CheckoutFormService, template string) web.Response {
 
 	//Guard Clause if Cart cannout be fetched
-	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
+	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx, ctx.Session())
 	if e != nil {
 		cc.Logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil)
@@ -482,7 +482,7 @@ func getViewErrorInfo(err error) ViewErrorInfos {
 
 func (cc *CheckoutController) processPaymentOrPlaceOrderDirectly(ctx web.Context, selectedPaymentProvider string, selectedPaymentProviderMethod string, orderFormTemplate string, checkoutForm *formDomain.Form) web.Response {
 	//Guard Clause if Cart cannout be fetched
-	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
+	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx, ctx.Session())
 	if e != nil {
 		cc.Logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil)
@@ -601,7 +601,7 @@ func (cc *CheckoutController) ReviewAction(ctx web.Context) web.Response {
 	cc.Logger.Debug("ReviewAction: selectedProvider: %v / selectedMethod: %v / proceed: %v / termsAndConditions: %v", selectedProvider, selectedMethod, proceed, termsAndConditions)
 
 	//Guard Clause if Cart cannout be fetched
-	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
+	decoratedCart, e := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx, ctx.Session())
 	if e != nil {
 		cc.Logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil).Hook(web.NoCache)

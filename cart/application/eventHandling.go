@@ -34,10 +34,10 @@ func (e *EventReceiver) Notify(event event.Event) {
 		if eventType.Context == nil {
 			return
 		}
-		if !e.CartReceiverService.ShouldHaveGuestCart(eventType.Context) {
+		if !e.CartReceiverService.ShouldHaveGuestCart(eventType.Context.Session()) {
 			return
 		}
-		guestCart, err := e.CartReceiverService.ViewGuestCart(eventType.Context)
+		guestCart, err := e.CartReceiverService.ViewGuestCart(eventType.Context, eventType.Context.Session())
 		if err != nil {
 			e.Logger.WithField(flamingo.LogKeyCategory, "cart").Error("LoginEvent - Guestcart cannot be received %v", err)
 			return
@@ -46,17 +46,15 @@ func (e *EventReceiver) Notify(event event.Event) {
 			e.Logger.WithField(flamingo.LogKeyCategory, "cart").Error("Received LoginEvent but user is not logged in!!!")
 			return
 		}
-		for _, d := range guestCart.Deliveries {
-			for _, item := range d.Cartitems {
-				e.Logger.WithField(flamingo.LogKeyCategory, "cart").Debug("Merging item from guest to user cart %v", item)
-				addRequest := e.CartService.BuildAddRequest(eventType.Context, item.MarketplaceCode, item.VariantMarketPlaceCode, item.Qty)
-				e.CartService.AddProduct(eventType.Context, d.DeliveryInfo.Code, addRequest)
-			}
+		for _, item := range guestCart.Cartitems {
+			e.Logger.WithField(flamingo.LogKeyCategory, "cart").Debug("Merging item from guest to user cart %v", item)
+			addRequest := e.CartService.BuildAddRequest(eventType.Context, item.MarketplaceCode, item.VariantMarketPlaceCode, item.Qty, item.OriginalDeliveryIntent.String())
+			e.CartService.AddProduct(eventType.Context, eventType.Context.Session(), addRequest)
 		}
 
 		if guestCart.HasAppliedCouponCode() {
 			for _, code := range guestCart.AppliedCouponCodes {
-				e.CartService.ApplyVoucher(eventType.Context, code.Code)
+				e.CartService.ApplyVoucher(eventType.Context, eventType.Context.Session(), code.Code)
 			}
 		}
 
@@ -66,7 +64,7 @@ func (e *EventReceiver) Notify(event event.Event) {
 				e.CartCache.Delete(eventType.Context, *cacheId)
 			}
 		}
-		e.CartService.DeleteSavedSessionGuestCartId(eventType.Context)
+		e.CartService.DeleteSavedSessionGuestCartId(eventType.Context.Session())
 
 	}
 }

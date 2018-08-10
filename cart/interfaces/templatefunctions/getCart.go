@@ -27,7 +27,7 @@ func (tf GetCart) Name() string {
 
 func (tf GetCart) Func(ctx web.Context) interface{} {
 	return func() cartDomain.Cart {
-		cart, e := tf.ApplicationCartReceiverService.ViewCart(ctx)
+		cart, e := tf.ApplicationCartReceiverService.ViewCart(ctx, ctx.Session())
 		if e != nil {
 			tf.Logger.Error("Error: cart.interfaces.templatefunc %v", e)
 		}
@@ -46,7 +46,7 @@ func (tf GetDecoratedCart) Name() string {
 
 func (tf GetDecoratedCart) Func(ctx web.Context) interface{} {
 	return func() cartDomain.DecoratedCart {
-		cart, e := tf.ApplicationCartReceiverService.ViewDecoratedCart(ctx)
+		cart, e := tf.ApplicationCartReceiverService.ViewDecoratedCart(ctx, ctx.Session())
 		if e != nil {
 			tf.Logger.Error("Error: cart.interfaces.templatefunc %v", e)
 		}
