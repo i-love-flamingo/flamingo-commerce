@@ -3,16 +3,21 @@ CONTEXT?=dev
 
 up:
 	rm -rf vendor/
-	dep ensure -v
+	dep ensure -v -vendor-only
 
-update:
+update: updateTools
 	rm -rf vendor/
 	dep ensure -v -update flamingo.me/flamingo
 
-localup: up
+localup: up local
+	
+local:
 	rm -rf vendor/flamingo.me/flamingo
 	ln -sf ../../../flamingo vendor/flamingo.me/flamingo
 	rm -rf vendor/flamingo.me/flamingo/vendor
 	
 test:
-	go test ./...
+	go test -v ./...
+
+updateTools:
+	go get -v -u github.com/golang/dep/cmd/dep
