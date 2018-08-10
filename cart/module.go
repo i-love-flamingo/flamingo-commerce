@@ -34,33 +34,6 @@ func (m *CartModule) Configure(injector *dingo.Injector) {
 	//Register Default EventPublisher
 	injector.Bind((*application.EventPublisher)(nil)).To(application.DefaultEventPublisher{})
 
-	m.RouterRegistry.Handle("cart.view", (*controller.CartViewController).ViewAction)
-	m.RouterRegistry.Route("/cart", "cart.view")
-
-	m.RouterRegistry.Handle("cart.add", (*controller.CartViewController).AddAndViewAction)
-	m.RouterRegistry.Route("/cart/add/:marketplaceCode", `cart.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryCode?="")`)
-
-	m.RouterRegistry.Handle("cart.updateQty", (*controller.CartViewController).UpdateQtyAndViewAction)
-	m.RouterRegistry.Route("/cart/update/:id", `cart.updateQty(id,qty?="1",deliveryCode?="")`)
-
-	m.RouterRegistry.Handle("cart.deleteAllItems", (*controller.CartViewController).DeleteAllAndViewAction)
-	m.RouterRegistry.Route("/cart/delete/all", `cart.deleteAllItems`)
-
-	m.RouterRegistry.Handle("cart.deleteItem", (*controller.CartViewController).DeleteAndViewAction)
-	m.RouterRegistry.Route("/cart/delete/:id", `cart.deleteItem(id,deliveryCode?="")`)
-
-	gob.Register(cart.Cart{})
-
-	//DecoratedCart API:
-
-	m.RouterRegistry.Handle("cart.api.get", (*controller.CartApiController).GetAction)
-	m.RouterRegistry.Handle("cart.api.add", (*controller.CartApiController).AddAction)
-	m.RouterRegistry.Handle("cart.api.applyVoucher", (*controller.CartApiController).ApplyVoucherAndGetAction)
-
-	m.RouterRegistry.Route("/api/cart", "cart.api.get")
-	m.RouterRegistry.Route("/api/cart/add/:marketplaceCode", `cart.api.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryCode?="")`)
-	m.RouterRegistry.Route("/api/cart/applyvoucher/:couponCode", `cart.api.applyVoucher(couponCode)`)
-
 	//Event
 	injector.BindMulti((*event.Subscriber)(nil)).To(application.EventReceiver{})
 
@@ -74,6 +47,7 @@ func (m *CartModule) Configure(injector *dingo.Injector) {
 		injector.Bind((*application.CartCache)(nil)).To(application.CartSessionCache{})
 	}
 
+	router.Bind(injector, new(routes))
 }
 
 // DefaultConfig enables inMemory cart service adapter
@@ -83,4 +57,43 @@ func (m *CartModule) DefaultConfig() config.Map {
 			"useInMemoryCartServiceAdapters": true,
 		},
 	}
+}
+
+type routes struct {
+	viewController *controller.CartViewController
+	apiController  *controller.CartApiController
+}
+
+func (r *routes) Inject(viewController *controller.CartViewController, apiController *controller.CartApiController) {
+	r.viewController = viewController
+	r.apiController = apiController
+}
+
+func (r *routes) Routes(registry *router.Registry) {
+	registry.HandleAny("cart.view", r.viewController.ViewAction)
+	registry.Route("/cart", "cart.view")
+
+	registry.HandleAny("cart.add", r.viewController.AddAndViewAction)
+	registry.Route("/cart/add/:marketplaceCode", `cart.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryIntent?="")`)
+
+	registry.HandleAny("cart.updateQty", r.viewController.UpdateQtyAndViewAction)
+	registry.Route("/cart/update/:id", `cart.updateQty(id,qty?="1")`)
+
+	registry.HandleAny("cart.deleteAllItems", r.viewController.DeleteAllAndViewAction)
+	registry.Route("/cart/delete/all", `cart.deleteAllItems`)
+
+	registry.HandleAny("cart.deleteItem", r.viewController.DeleteAndViewAction)
+	registry.Route("/cart/delete/:id", `cart.deleteItem(id)`)
+
+	gob.Register(cart.Cart{})
+
+	//DecoratedCart API:
+
+	registry.HandleAny("cart.api.get", r.apiController.GetAction)
+	registry.HandleAny("cart.api.add", r.apiController.AddAction)
+	registry.HandleAny("cart.api.applyVoucher", r.apiController.ApplyVoucherAndGetAction)
+
+	registry.Route("/api/cart", "cart.api.get")
+	registry.Route("/api/cart/add/:marketplaceCode", `cart.api.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryIntent?="")`)
+	registry.Route("/api/cart/applyvoucher/:couponCode", `cart.api.applyVoucher(couponCode)`)
 }
