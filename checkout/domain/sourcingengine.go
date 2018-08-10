@@ -7,14 +7,13 @@ import (
 	"flamingo.me/flamingo-commerce/cart/application"
 	"flamingo.me/flamingo-commerce/cart/domain/cart"
 	"flamingo.me/flamingo/framework/flamingo"
-	"flamingo.me/flamingo/framework/web"
 	"github.com/gorilla/sessions"
 	"github.com/pkg/errors"
 )
 
 type (
 	SourcingService interface {
-		GetSourceId(ctx web.Context, decoratedCart *cart.DecoratedCart, item *cart.DecoratedCartItem) (string, error)
+		GetSourceId(ctx context.Context, session *sessions.Session, decoratedCart *cart.DecoratedCart, item *cart.DecoratedCartItem) (string, error)
 	}
 
 	SourcingEngine struct {
@@ -31,7 +30,7 @@ func (se *SourcingEngine) SetSourcesForCartItems(ctx context.Context, session *s
 		return nil
 	}
 	for _, decoratedCartItem := range decoratedCart.DecoratedItems {
-		sourceId, err := se.SourcingService.GetSourceId(web.ToContext(ctx), decoratedCart, &decoratedCartItem)
+		sourceId, err := se.SourcingService.GetSourceId(ctx, session, decoratedCart, &decoratedCartItem)
 		if err != nil {
 			se.Logger.WithField("category", "checkout").WithField("subcategory", "SourcingEngine").Error(err)
 			return fmt.Errorf("checkout.application.sourcingengine error: %v", err)
