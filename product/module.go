@@ -42,6 +42,6 @@ func (r *routes) Inject(controller *controller.View) {
 
 func (r *routes) Routes(registry *router.Registry) {
 	registry.HandleGet("product.view", r.controller.Get)
-	registry.Route("/product/:marketplacecode/:name.html", `product.view(marketplacecode, name, backurl?="")`).Normalize("marketplacecode", "name")
-	registry.Route("/product/:marketplacecode/:variantcode/:name.html", `product.view(marketplacecode, variantcode, name, backurl?="")`).Normalize("marketplacecode", "name", "variantcode")
+	registry.Route("/product/:marketplacecode/:name.html", `product.view(marketplacecode, name, backurl?="")`).Normalize("name")
+	registry.Route("/product/:marketplacecode/:variantcode/:name.html", `product.view(marketplacecode, variantcode, name, backurl?="")`).Normalize("name")
 }
