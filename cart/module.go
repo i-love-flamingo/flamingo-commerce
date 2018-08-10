@@ -74,7 +74,7 @@ func (r *routes) Routes(registry *router.Registry) {
 	registry.Route("/cart", "cart.view")
 
 	registry.HandleAny("cart.add", r.viewController.AddAndViewAction)
-	registry.Route("/cart/add/:marketplaceCode", `cart.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryIntent?="")`)
+	registry.Route("/cart/add/:marketplaceCode", `cart.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryCode?="")`)
 
 	registry.HandleAny("cart.updateQty", r.viewController.UpdateQtyAndViewAction)
 	registry.Route("/cart/update/:id", `cart.updateQty(id,qty?="1")`)
@@ -83,7 +83,7 @@ func (r *routes) Routes(registry *router.Registry) {
 	registry.Route("/cart/delete/all", `cart.deleteAllItems`)
 
 	registry.HandleAny("cart.deleteItem", r.viewController.DeleteAndViewAction)
-	registry.Route("/cart/delete/:id", `cart.deleteItem(id)`)
+	registry.Route("/cart/delete/:id", `cart.deleteItem(id,deliveryCode?="")`)
 
 	gob.Register(cart.Cart{})
 
@@ -94,6 +94,6 @@ func (r *routes) Routes(registry *router.Registry) {
 	registry.HandleAny("cart.api.applyVoucher", r.apiController.ApplyVoucherAndGetAction)
 
 	registry.Route("/api/cart", "cart.api.get")
-	registry.Route("/api/cart/add/:marketplaceCode", `cart.api.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryIntent?="")`)
+	registry.Route("/api/cart/add/:marketplaceCode", `cart.api.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryCode?="")`)
 	registry.Route("/api/cart/applyvoucher/:couponCode", `cart.api.applyVoucher(couponCode)`)
 }

@@ -31,6 +31,7 @@ type (
 
 		//Deliveries - list of desired Deliverys (or Shippments) involved in this cart
 		Deliveries []Delivery
+
 		//AdditionalData   can be used for Custom attributes
 		AdditionalData map[string]string
 
