@@ -1,6 +1,7 @@
 package payment
 
 import (
+	"context"
 	"net/url"
 
 	cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
@@ -35,7 +36,7 @@ func (pa *OfflinePaymentProvider) GetPaymentMethods() []payment.PaymentMethod {
 }
 
 // RedirectExternalPayment starts a Redirect to an external Payment Page (if applicable)
-func (pa *OfflinePaymentProvider) RedirectExternalPayment(ctx web.Context, currentCart *cartDomain.Cart, method *payment.PaymentMethod, returnUrl *url.URL) (web.Response, error) {
+func (pa *OfflinePaymentProvider) RedirectExternalPayment(ctx context.Context, r *web.Request, currentCart *cartDomain.Cart, method *payment.PaymentMethod, returnUrl *url.URL) (web.Response, error) {
 	return nil, errors.New("No Redirect")
 }
 
@@ -43,7 +44,7 @@ func (pa *OfflinePaymentProvider) IsActive() bool {
 	return pa.Enabled
 }
 
-func (pa *OfflinePaymentProvider) ProcessPayment(ctx web.Context, currentCart *cartDomain.Cart, method *payment.PaymentMethod, _ map[string]string) (*cartDomain.CartPayment, error) {
+func (pa *OfflinePaymentProvider) ProcessPayment(ctx context.Context, r *web.Request, currentCart *cartDomain.Cart, method *payment.PaymentMethod, _ map[string]string) (*cartDomain.CartPayment, error) {
 	paymentInfo := cartDomain.PaymentInfo{
 		Method:   method.Code,
 		Provider: pa.GetCode(),
