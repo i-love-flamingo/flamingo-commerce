@@ -134,7 +134,7 @@ func (vc *View) Get(c context.Context, request *web.Request) web.Response {
 		return vc.Error(c, err)
 	}
 
-	vc.addBreadcrumb(web.ToContext(c), categoryRoot)
+	vc.addBreadcrumb(c, categoryRoot)
 	result := vc.ProductSearchResultViewDataFactory.NewProductSearchResultViewDataFromResult(request.Request().URL, products)
 
 	paginationInfo := vc.PaginationInfoFactory.Build(result.SearchMeta.Page, result.SearchMeta.NumResults, 30, result.SearchMeta.NumPages, request.Request().URL)

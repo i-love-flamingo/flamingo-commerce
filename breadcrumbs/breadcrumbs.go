@@ -19,21 +19,24 @@ type (
 	contextKeyTyp string
 )
 
-const contextKey contextKeyTyp = "breadcrumbs"
+const requestKey contextKeyTyp = "breadcrumbs"
 
 // Add a breadcrumb to the current context
-func Add(ctx_ context.Context, b Crumb) {
-	ctx := web.ToContext(ctx_)
-	if breadcrumbs, ok := ctx.Value(contextKey).([]Crumb); ok {
-		ctx.WithValue(contextKey, append(breadcrumbs, b))
+func Add(ctx context.Context, b Crumb) {
+	req, _ := web.FromContext(ctx)
+
+	if breadcrumbs, ok := req.Values[requestKey].([]Crumb); ok {
+		req.Values[requestKey] = append(breadcrumbs, b)
 	} else {
-		ctx.WithValue(contextKey, []Crumb{b})
+		req.Values[requestKey] = []Crumb{b}
 	}
 }
 
 // Data controller
 func (bc *Controller) Data(ctx context.Context, _ *web.Request) interface{} {
-	if breadcrumbs, ok := ctx.Value(contextKey).([]Crumb); ok {
+	req, _ := web.FromContext(ctx)
+
+	if breadcrumbs, ok := req.Values[requestKey].([]Crumb); ok {
 		return breadcrumbs
 	}
 	return []Crumb{}

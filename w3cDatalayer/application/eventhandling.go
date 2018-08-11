@@ -9,7 +9,7 @@ import (
 	authDomain "flamingo.me/flamingo/core/auth/domain"
 	"flamingo.me/flamingo/framework/event"
 	"flamingo.me/flamingo/framework/flamingo"
-	"flamingo.me/flamingo/framework/web"
+	"flamingo.me/flamingo/framework/session"
 )
 
 type (
@@ -34,14 +34,15 @@ func (e *EventReceiver) NotifyWithContext(ctx context.Context, event event.Event
 	//Handle OrderPlacedEvent and Set Transaction to current datalayer
 	case *application.AddToCartEvent:
 		e.logger.WithField("category", "w3cDatalayer").Debug("Receive Event AddToCartEvent")
-		if webContext := web.ToContext(ctx); nil != webContext {
+		session, ok := session.FromContext(ctx)
+		if ok {
 			// In case of Configurable: the MarketplaceCode which is interesting for the datalayer is the Variant that is selected
 			saleableProductCode := currentEvent.MarketplaceCode
 			if currentEvent.VariantMarketplaceCode != "" {
 				saleableProductCode = currentEvent.VariantMarketplaceCode
 			}
 			dataLayerEvent := e.factory.BuildAddToBagEvent(saleableProductCode, currentEvent.ProductName, currentEvent.Qty)
-			webContext.Session().AddFlash(
+			session.AddFlash(
 				dataLayerEvent,
 				SESSION_EVENTS_KEY,
 			)
@@ -49,13 +50,14 @@ func (e *EventReceiver) NotifyWithContext(ctx context.Context, event event.Event
 	case *application.ChangedQtyInCartEvent:
 		e.logger.WithField("category", "w3cDatalayer").Debug("Receive Event ChangedQtyInCartEvent")
 
-		if webContext := web.ToContext(ctx); nil != webContext {
+		session, ok := session.FromContext(ctx)
+		if ok {
 			saleableProductCode := currentEvent.MarketplaceCode
 			if currentEvent.VariantMarketplaceCode != "" {
 				saleableProductCode = currentEvent.VariantMarketplaceCode
 			}
 			dataLayerEvent := e.factory.BuildChangeQtyEvent(saleableProductCode, currentEvent.ProductName, currentEvent.QtyAfter, currentEvent.QtyBefore, currentEvent.CartId)
-			webContext.Session().AddFlash(
+			session.AddFlash(
 				dataLayerEvent,
 				SESSION_EVENTS_KEY,
 			)
@@ -63,11 +65,12 @@ func (e *EventReceiver) NotifyWithContext(ctx context.Context, event event.Event
 		}
 	case *authDomain.LoginEvent:
 		e.logger.WithField("category", "w3cDatalayer").Debug("Receive Event LoginEvent")
-		if webContext := web.ToContext(ctx); nil != webContext {
+		session, ok := session.FromContext(ctx)
+		if ok {
 
 			dataLayerEvent := domain.Event{EventInfo: make(map[string]interface{})}
 			dataLayerEvent.EventInfo["eventName"] = "login"
-			webContext.Session().AddFlash(
+			session.AddFlash(
 				dataLayerEvent,
 				SESSION_EVENTS_KEY,
 			)

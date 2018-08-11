@@ -8,7 +8,6 @@ import (
 	"flamingo.me/flamingo-commerce/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/checkout/domain"
 	"flamingo.me/flamingo/framework/flamingo"
-	"flamingo.me/flamingo/framework/web"
 	"github.com/gorilla/sessions"
 )
 
@@ -61,7 +60,7 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *sessi
 		return err
 	}
 
-	updateCommands, err := os.DeliveryInfoBuilder.BuildDeliveryInfoUpdateCommand(web.ToContext(ctx), decoratedCart)
+	updateCommands, err := os.DeliveryInfoBuilder.BuildDeliveryInfoUpdateCommand(ctx, decoratedCart)
 	if err != nil {
 		os.Logger.Error("OnStepCurrentCartPlaceOrder BuildDeliveryInfoUpdateCommand Error %v", err)
 		return err
