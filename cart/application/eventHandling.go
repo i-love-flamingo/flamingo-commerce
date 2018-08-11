@@ -1,7 +1,6 @@
 package application
 
 import (
-	"flamingo.me/flamingo/core/auth"
 	"flamingo.me/flamingo/core/auth/domain"
 	"flamingo.me/flamingo/framework/event"
 	"flamingo.me/flamingo/framework/flamingo"
@@ -42,7 +41,7 @@ func (e *EventReceiver) Notify(event event.Event) {
 			e.Logger.WithField(flamingo.LogKeyCategory, "cart").Error("LoginEvent - Guestcart cannot be received %v", err)
 			return
 		}
-		if !e.CartReceiverService.UserService.IsLoggedIn(auth.CtxSession(eventType.Context)) {
+		if !e.CartReceiverService.UserService.IsLoggedIn(eventType.Context, eventType.Context.Session()) {
 			e.Logger.WithField(flamingo.LogKeyCategory, "cart").Error("Received LoginEvent but user is not logged in!!!")
 			return
 		}
