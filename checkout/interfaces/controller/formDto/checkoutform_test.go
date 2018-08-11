@@ -3,9 +3,9 @@ package formDto
 import (
 	"testing"
 
-	form2 "github.com/go-playground/form"
 	"flamingo.me/flamingo-commerce/customer/domain"
 	"flamingo.me/flamingo/framework/flamingo"
+	form2 "github.com/go-playground/form"
 )
 
 type (
@@ -48,7 +48,7 @@ func TestFormService(t *testing.T) {
 	}
 
 	urlValues := make(map[string][]string)
-	form, err := service.ParseFormData(nil, urlValues)
+	form, err := service.ParseFormData(nil, nil, urlValues)
 	form = service.GetDefaultFormData(form)
 	if checkoutForm, ok := form.(CheckoutFormData); ok {
 		if checkoutForm.BillingAddress.Email != "example@mail.dmn" {
