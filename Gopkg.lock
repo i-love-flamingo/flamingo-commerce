@@ -3,13 +3,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:91c860f79f16663cd661d0e2257427b41b0daf044a674676d758239687f49986"
+  digest = "1:dbc17dd3340e64801e38f36a3bd62db0ab6b6ccef1c013f90cd6e1e6535d0bf2"
   name = "flamingo.me/flamingo"
   packages = [
-    "core/auth",
     "core/auth/application",
     "core/auth/domain",
-    "core/auth/interfaces",
     "core/canonicalUrl/application",
     "core/form/application",
     "core/form/domain",
@@ -22,6 +20,7 @@
     "framework/opencensus",
     "framework/profiler",
     "framework/router",
+    "framework/session",
     "framework/template",
     "framework/web",
     "framework/web/mocks",
@@ -29,7 +28,7 @@
     "framework/web/responder/mocks",
   ]
   pruneopts = ""
-  revision = "5f16eda141ff9eae071eb5baf5c190696a867656"
+  revision = "f2581c1f4d41ad20fbd785403255e18b2bcc8cef"
 
 [[projects]]
   branch = "master"
@@ -47,6 +46,14 @@
   packages = ["quantile"]
   pruneopts = ""
   revision = "3a771d992973f24aa725d07868b467d1ddfceafb"
+
+[[projects]]
+  digest = "1:d55006554e83099f43c7769b5054109058a7c5417ed33645043663a831c287a4"
+  name = "github.com/boj/redistore"
+  packages = ["."]
+  pruneopts = ""
+  revision = "fc113767cd6b051980f260d6dbe84b2740c46ab0"
+  version = "v1.2"
 
 [[projects]]
   digest = "1:d8ee1b165eb7f4fd9ada718e1e7eeb0bc1fd462592d0bd823df694443f448681"
@@ -71,6 +78,17 @@
   packages = ["."]
   pruneopts = ""
   revision = "31534ccd8cac1d3d205c906ea5722928b045ed8c"
+
+[[projects]]
+  digest = "1:9525d0e79ccf382e32edeef466b9a91f16eb0eebdca5971a03fad1bb3be9cd89"
+  name = "github.com/garyburd/redigo"
+  packages = [
+    "internal",
+    "redis",
+  ]
+  pruneopts = ""
+  revision = "a69d19351219b6dd56f274f96d85a7014a2ec34e"
+  version = "v1.6.0"
 
 [[projects]]
   branch = "master"
@@ -293,6 +311,14 @@
   version = "v1.2.2"
 
 [[projects]]
+  branch = "master"
+  digest = "1:a849c01eb2ea7d6d2a34ba8f3a9cdd8306df268697e7a4ece1102c919e2ed4a0"
+  name = "github.com/zemirco/memorystore"
+  packages = ["."]
+  pruneopts = ""
+  revision = "ecd57e5134f622ea7ebd8ae93ea00b4fe94741a5"
+
+[[projects]]
   digest = "1:eb3da47361162f0ad991ddf391e6dc03e23889201d76046e2917687b84977aee"
   name = "go.opencensus.io"
   packages = [
@@ -424,7 +450,6 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "flamingo.me/flamingo/core/auth",
     "flamingo.me/flamingo/core/auth/application",
     "flamingo.me/flamingo/core/auth/domain",
     "flamingo.me/flamingo/core/canonicalUrl/application",
@@ -437,6 +462,7 @@
     "flamingo.me/flamingo/framework/flamingo",
     "flamingo.me/flamingo/framework/opencensus",
     "flamingo.me/flamingo/framework/router",
+    "flamingo.me/flamingo/framework/session",
     "flamingo.me/flamingo/framework/template",
     "flamingo.me/flamingo/framework/web",
     "flamingo.me/flamingo/framework/web/mocks",
