@@ -1,6 +1,7 @@
 package formDto
 
 import (
+	"context"
 	"net/url"
 
 	"errors"
@@ -78,17 +79,20 @@ type (
 	}
 )
 
+var _ formDomain.FormService = new(CheckoutFormService)
+var _ formDomain.GetDefaultFormData = new(CheckoutFormService)
+
 // ParseFormData - from FormService interface
 // MEthod is Responsible to parse the Post Values and fill the FormData struct
-func (fs *CheckoutFormService) ParseFormData(ctx web.Context, formValues url.Values) (interface{}, error) {
+func (fs *CheckoutFormService) ParseFormData(ctx context.Context, r *web.Request, formValues url.Values) (interface{}, error) {
 	if formValues == nil {
 		formValues = make(map[string][]string)
 	}
 
 	// Preset eMail when email parameter is given:
 	if ctx != nil {
-		email, e := ctx.Form("email")
-		if e == nil && len(formValues["billingAddress.email"]) == 0 {
+		email, ok := r.Form("email")
+		if ok && len(formValues["billingAddress.email"]) == 0 {
 			formValues["billingAddress.email"] = email
 		}
 	}
