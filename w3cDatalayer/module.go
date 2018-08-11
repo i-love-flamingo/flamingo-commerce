@@ -15,6 +15,6 @@ type (
 
 // Configure the product URL
 func (m *Module) Configure(injector *dingo.Injector) {
-	injector.BindMulti((*template.ContextFunction)(nil)).To(templatefunctions.W3cDatalayerService{})
+	template.BindCtxFunc(injector, "w3cDatalayerService", new(templatefunctions.W3cDatalayerService))
 	injector.BindMulti((*event.SubscriberWithContext)(nil)).To(application.EventReceiver{})
 }

@@ -1,6 +1,7 @@
 package application
 
 import (
+	"context"
 	"fmt"
 
 	"flamingo.me/flamingo-commerce/cart/domain/cart"
@@ -8,6 +9,7 @@ import (
 	"flamingo.me/flamingo-commerce/w3cDatalayer/domain"
 	"flamingo.me/flamingo/core/pugtemplate/pugjs"
 	"flamingo.me/flamingo/framework/flamingo"
+	"flamingo.me/flamingo/framework/session"
 	"flamingo.me/flamingo/framework/web"
 	"github.com/pkg/errors"
 )
@@ -19,7 +21,7 @@ type (
 	// It stores a dataLayer Value object for the current request context and allows interaction with it
 	Service struct {
 		//currentContext need to be set when using the service
-		currentContext web.Context
+		currentContext context.Context
 		logger         flamingo.Logger
 		factory        *Factory
 		productDomain.ProductService
@@ -28,7 +30,7 @@ type (
 
 const (
 	SESSION_EVENTS_KEY = "w3cdatalayer_events"
-	DATALAYER_CTX_KEY  = "w3cDatalayer"
+	DATALAYER_REQ_KEY  = "w3cDatalayer"
 )
 
 func (s *Service) Inject(logger flamingo.Logger, factory *Factory, service productDomain.ProductService) {
@@ -37,7 +39,7 @@ func (s *Service) Inject(logger flamingo.Logger, factory *Factory, service produ
 	s.ProductService = service
 }
 
-func (s *Service) Init(ctx web.Context) {
+func (s *Service) Init(ctx context.Context) {
 	s.currentContext = ctx
 }
 
@@ -48,13 +50,14 @@ func (s *Service) Get() domain.Datalayer {
 
 		return domain.Datalayer{}
 	}
-	if _, ok := s.currentContext.Value(DATALAYER_CTX_KEY).(domain.Datalayer); !ok {
-		s.store(s.factory.BuildForCurrentRequest(s.currentContext))
+	req, _ := web.FromContext(s.currentContext)
+	if _, ok := req.Values[DATALAYER_REQ_KEY].(domain.Datalayer); !ok {
+		s.store(s.factory.BuildForCurrentRequest(s.currentContext, req))
 	}
 
 	s.AddSessionEvents()
 
-	if savedDataLayer, ok := s.currentContext.Value(DATALAYER_CTX_KEY).(domain.Datalayer); ok {
+	if savedDataLayer, ok := req.Values[DATALAYER_REQ_KEY].(domain.Datalayer); ok {
 		return savedDataLayer
 	}
 	//error
@@ -78,7 +81,8 @@ func (s *Service) AddSessionEvents() error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
 	}
-	sessionEvents := s.currentContext.Session().Flashes(SESSION_EVENTS_KEY)
+	session, _ := session.FromContext(s.currentContext)
+	sessionEvents := session.Flashes(SESSION_EVENTS_KEY)
 
 	// early return if there are no events
 	if len(sessionEvents) == 0 {
@@ -237,7 +241,8 @@ func (s *Service) store(layer domain.Datalayer) error {
 		s.logger.WithField("category", "w3cDatalayer").Error("Update called without context!")
 		return errors.New("Update called without context")
 	}
-	s.currentContext.WithValue(DATALAYER_CTX_KEY, layer)
+	req, _ := web.FromContext(s.currentContext)
+	req.Values[DATALAYER_REQ_KEY] = layer
 
 	return nil
 }

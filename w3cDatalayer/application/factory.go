@@ -1,6 +1,7 @@
 package application
 
 import (
+	"context"
 	"crypto/sha512"
 	"encoding/base64"
 	"strings"
@@ -11,7 +12,9 @@ import (
 	authApplication "flamingo.me/flamingo/core/auth/application"
 	canonicalUrlApplication "flamingo.me/flamingo/core/canonicalUrl/application"
 	"flamingo.me/flamingo/framework/router"
+	"flamingo.me/flamingo/framework/session"
 	"flamingo.me/flamingo/framework/web"
+	"github.com/gorilla/sessions"
 )
 
 // Factory is used to build new datalayers
@@ -70,7 +73,7 @@ func (s *Factory) Inject(
 }
 
 //Update
-func (s Factory) BuildForCurrentRequest(ctx web.Context) domain.Datalayer {
+func (s Factory) BuildForCurrentRequest(ctx context.Context, request *web.Request) domain.Datalayer {
 
 	layer := s.datalayerProvider()
 
@@ -83,8 +86,8 @@ func (s Factory) BuildForCurrentRequest(ctx web.Context) domain.Datalayer {
 
 	layer.Page = &domain.Page{
 		PageInfo: domain.PageInfo{
-			PageID:         ctx.Request().URL.Path,
-			PageName:       s.pageNamePrefix + ctx.Request().URL.Path,
+			PageID:         request.Request().URL.Path,
+			PageName:       s.pageNamePrefix + request.Request().URL.Path,
 			DestinationURL: s.canonicalUrlService.GetCanonicalUrlForCurrentRequest(ctx),
 			Language:       language,
 		},
@@ -106,10 +109,10 @@ func (s Factory) BuildForCurrentRequest(ctx web.Context) domain.Datalayer {
 
 	//Handle User
 	layer.Page.Attributes["loggedIn"] = false
-	if s.userService.IsLoggedIn(ctx, ctx.Session()) {
+	if s.userService.IsLoggedIn(ctx, request.Session()) {
 		layer.Page.Attributes["loggedIn"] = true
 		layer.Page.Attributes["logintype"] = "external"
-		userData := s.getUser(ctx)
+		userData := s.getUser(ctx, request.Session())
 		if userData != nil {
 			layer.User = append(layer.User, *userData)
 		}
@@ -119,9 +122,9 @@ func (s Factory) BuildForCurrentRequest(ctx web.Context) domain.Datalayer {
 	return *layer
 }
 
-func (s Factory) getUser(ctx web.Context) *domain.User {
+func (s Factory) getUser(ctx context.Context, session *sessions.Session) *domain.User {
 
-	dataLayerProfile := s.getUserProfileForCurrentUser(ctx)
+	dataLayerProfile := s.getUserProfileForCurrentUser(ctx, session)
 	if dataLayerProfile == nil {
 		return nil
 	}
@@ -131,8 +134,8 @@ func (s Factory) getUser(ctx web.Context) *domain.User {
 	return &dataLayerUser
 }
 
-func (s Factory) getUserProfileForCurrentUser(ctx web.Context) *domain.UserProfile {
-	user := s.userService.GetUser(ctx, ctx.Session())
+func (s Factory) getUserProfileForCurrentUser(ctx context.Context, session *sessions.Session) *domain.UserProfile {
+	user := s.userService.GetUser(ctx, session)
 	if user == nil {
 		return nil
 	}
@@ -176,10 +179,11 @@ func (s Factory) BuildCartData(cart cart.DecoratedCart) *domain.Cart {
 	return &cartData
 }
 
-func (s Factory) BuildTransactionData(ctx web.Context, cartTotals cart.CartTotals, decoratedItems []cart.DecoratedCartItem, orderId string, email string) *domain.Transaction {
+func (s Factory) BuildTransactionData(ctx context.Context, cartTotals cart.CartTotals, decoratedItems []cart.DecoratedCartItem, orderId string, email string) *domain.Transaction {
 	var profile *domain.UserProfile
-	if s.userService.IsLoggedIn(ctx, ctx.Session()) {
-		profile = s.getUserProfileForCurrentUser(ctx)
+	session, _ := session.FromContext(ctx)
+	if s.userService.IsLoggedIn(ctx, session) {
+		profile = s.getUserProfileForCurrentUser(ctx, session)
 	} else {
 		profile = s.getUserProfile(email, "")
 	}
