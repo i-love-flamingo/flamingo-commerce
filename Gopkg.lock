@@ -3,7 +3,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:dbc17dd3340e64801e38f36a3bd62db0ab6b6ccef1c013f90cd6e1e6535d0bf2"
+  digest = "1:cea8442de4567c6be7d301e952f752385c73f705798bb50d4bf2410193a424d0"
   name = "flamingo.me/flamingo"
   packages = [
     "core/auth/application",
@@ -18,17 +18,15 @@
     "framework/event",
     "framework/flamingo",
     "framework/opencensus",
-    "framework/profiler",
     "framework/router",
     "framework/session",
     "framework/template",
     "framework/web",
-    "framework/web/mocks",
     "framework/web/responder",
     "framework/web/responder/mocks",
   ]
   pruneopts = ""
-  revision = "f2581c1f4d41ad20fbd785403255e18b2bcc8cef"
+  revision = "7bc555507b76de0b990895ca21b9573156732286"
 
 [[projects]]
   branch = "master"
@@ -268,14 +266,6 @@
   source = "https://github.com/thebod/otto.git"
 
 [[projects]]
-  digest = "1:7f569d906bdd20d906b606415b7d794f798f91a62fcfb6a4daa6d50690fb7a3f"
-  name = "github.com/satori/go.uuid"
-  packages = ["."]
-  pruneopts = ""
-  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
-  version = "v1.2.0"
-
-[[projects]]
   digest = "1:a1403cc8a94b8d7956ee5e9694badef0e7b051af289caad1cf668331e3ffa4f6"
   name = "github.com/spf13/cobra"
   packages = ["."]
@@ -465,7 +455,6 @@
     "flamingo.me/flamingo/framework/session",
     "flamingo.me/flamingo/framework/template",
     "flamingo.me/flamingo/framework/web",
-    "flamingo.me/flamingo/framework/web/mocks",
     "flamingo.me/flamingo/framework/web/responder",
     "flamingo.me/flamingo/framework/web/responder/mocks",
     "github.com/coreos/go-oidc",

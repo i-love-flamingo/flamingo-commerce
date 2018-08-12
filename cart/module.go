@@ -35,7 +35,7 @@ func (m *CartModule) Configure(injector *dingo.Injector) {
 	injector.Bind((*application.EventPublisher)(nil)).To(application.DefaultEventPublisher{})
 
 	//Event
-	injector.BindMulti((*event.Subscriber)(nil)).To(application.EventReceiver{})
+	injector.BindMulti((*event.SubscriberWithContext)(nil)).To(application.EventReceiver{})
 
 	// TemplateFunction
 	injector.BindMap(new(template.CtxFunc), "getCart").To(templatefunctions.GetCart{})
