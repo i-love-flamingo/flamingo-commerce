@@ -77,7 +77,7 @@ func (r *routes) Routes(registry *router.Registry) {
 	registry.Route("/cart/add/:marketplaceCode", `cart.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryCode?="")`)
 
 	registry.HandleAny("cart.updateQty", r.viewController.UpdateQtyAndViewAction)
-	registry.Route("/cart/update/:id", `cart.updateQty(id,qty?="1")`)
+	registry.Route("/cart/update/:id", `cart.updateQty(id,qty?="1",deliveryCode?="")`)
 
 	registry.HandleAny("cart.deleteAllItems", r.viewController.DeleteAllAndViewAction)
 	registry.Route("/cart/delete/all", `cart.deleteAllItems`)
