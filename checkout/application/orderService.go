@@ -12,8 +12,7 @@ import (
 )
 
 type (
-
-	// PaymentService
+	// OrderService defines the order service
 	OrderService struct {
 		SourcingEngine      *domain.SourcingEngine           `inject:""`
 		PaymentService      *PaymentService                  `inject:""`
@@ -24,6 +23,7 @@ type (
 	}
 )
 
+// SetSources sets sources for sessions carts items
 func (os *OrderService) SetSources(ctx context.Context, session *sessions.Session) error {
 	decoratedCart, err := os.CartReceiverService.ViewDecoratedCart(ctx, session)
 	if err != nil {
@@ -38,6 +38,7 @@ func (os *OrderService) SetSources(ctx context.Context, session *sessions.Sessio
 	return nil
 }
 
+// PlaceOrder places the order
 func (os *OrderService) PlaceOrder(ctx context.Context, session *sessions.Session, decoratedCart *cart.DecoratedCart, payment *cart.CartPayment) (orderid string, orderError error) {
 	validationResult := os.CartService.ValidateCart(ctx, session, decoratedCart)
 	if !validationResult.IsValid() {
@@ -47,6 +48,7 @@ func (os *OrderService) PlaceOrder(ctx context.Context, session *sessions.Sessio
 	return os.CartService.PlaceOrder(ctx, session, payment)
 }
 
+// CurrentCartSaveInfos saves additional informations on current cart
 func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *sessions.Session, billingAddress *cart.Address, shippingAddress *cart.Address, purchaser *cart.Person) error {
 	os.Logger.Debug("CurrentCartSaveInfos call billingAddress:%v shippingAddress:%v payment:%v", billingAddress, shippingAddress)
 
@@ -72,7 +74,7 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *sessi
 			os.Logger.Warn("OnStepCurrentCartPlaceOrder Cart has no DeliveryInfoUpdates Build - cannot set shippingAddress")
 			return errors.New("No DeliveryInfos Build - cannot set shippingAddress")
 		}
-		for k, _ := range updateCommands {
+		for k := range updateCommands {
 			updateCommands[k].DeliveryInfo.DeliveryLocation.Address = shippingAddress
 		}
 	}
@@ -97,7 +99,7 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *sessi
 	return nil
 }
 
-//OnStepCurrentCartPlaceOrder - probably the best choice for a simple checkout
+//CurrentCartPlaceOrder - probably the best choice for a simple checkout
 // Assumptions: Only one BuildDeliveryInfo is used on the cart!
 func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *sessions.Session, payment cart.CartPayment) (orderid string, orderError error) {
 	decoratedCart, err := os.CartReceiverService.ViewDecoratedCart(ctx, session)
@@ -112,9 +114,9 @@ func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *sess
 		return "", errors.New("Cart is Invalid.")
 	}
 
-	orderid, orderError = os.PlaceOrder(ctx, session, decoratedCart, &payment)
+	orderid, err = os.PlaceOrder(ctx, session, decoratedCart, &payment)
 
-	if orderError != nil {
+	if err != nil {
 		os.Logger.WithField("category", "checkout.orderService").Error("Error during place Order: %v", err)
 		return "", errors.New("Error while placing the order. Please contact customer support.")
 	}
