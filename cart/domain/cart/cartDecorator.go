@@ -26,7 +26,7 @@ type (
 
 	// DecoratedDelivery Decorates a CartItem with its Product
 	DecoratedDelivery struct {
-		Delivery       *Delivery
+		Delivery       Delivery
 		DecoratedItems []DecoratedCartItem
 	}
 
@@ -48,7 +48,7 @@ func (df *DecoratedCartFactory) Create(ctx context.Context, Cart Cart) *Decorate
 	decoratedCart := DecoratedCart{Cart: Cart, Logger: df.Logger}
 	for _, d := range Cart.Deliveries {
 		decoratedCart.DecoratedDeliveries = append(decoratedCart.DecoratedDeliveries, DecoratedDelivery{
-			Delivery:       &d,
+			Delivery:       d,
 			DecoratedItems: df.CreateDecorateCartItems(ctx, d.Cartitems),
 		})
 	}
