@@ -38,6 +38,7 @@ type (
 		ProductSearchResult productInterfaceViewData.ProductSearchResultViewData
 		Category            domain.Category
 		CategoryTree        domain.Category
+		CategoryChildren    []domain.Category
 		SearchMeta          searchdomain.SearchMeta
 		PaginationInfo      utils.PaginationInfo
 	}
@@ -103,9 +104,15 @@ func (vc *View) Get(c context.Context, request *web.Request) web.Response {
 	}
 
 	category := getActive(categoryRoot)
-
 	if category == nil {
 		return vc.ErrorNotFound(c, errors.New("Active Category not found"))
+	}
+
+	categoryChildren, err := vc.CategoryService.Children(c, category.Code())
+	if err == domain.ErrNotFound {
+		return vc.ErrorNotFound(c, err)
+	} else if err != nil {
+		return vc.Error(c, err)
 	}
 
 	expectedName := web.URLTitle(category.Name())
@@ -150,6 +157,7 @@ func (vc *View) Get(c context.Context, request *web.Request) web.Response {
 	return vc.Render(c, template, ViewData{
 		Category:            category,
 		CategoryTree:        categoryRoot,
+		CategoryChildren:    categoryChildren.Categories(),
 		ProductSearchResult: result,
 		SearchMeta:          result.SearchMeta,
 		PaginationInfo:      paginationInfo,
