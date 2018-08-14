@@ -8,6 +8,7 @@ import (
 	"math"
 
 	"github.com/pkg/errors"
+	"go.aoe.com/flamingo-om3/flight/domain"
 )
 
 type (
@@ -380,7 +381,7 @@ func (fd *FlightData) GetScheduledDateTime() string {
 //GetScheduledDateTime string from ScheduledDateTime - used for display
 func (f *FlightData) ParseScheduledDateTime() time.Time {
 	//"scheduledDateTime": "2017-11-25T06:30:00Z",
-	timeResult, e := time.Parse(time.RFC3339, f.GetScheduledDateTime())
+	timeResult, e := time.Parse(domain.FLIGHT_DATE_FORMAT, f.GetScheduledDateTime())
 	if e != nil {
 		return time.Now()
 	}
