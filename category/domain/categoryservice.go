@@ -17,7 +17,7 @@ type (
 		Tree(ctx context.Context, categoryCode string) (Category, error)
 
 		// Children of a category
-		Children(ctx context.Context, categoryCode string) (Category, error)
+		Children(ctx context.Context, categoryCode string) ([]Category, error)
 
 		// Get a category with more data
 		Get(ctx context.Context, categoryCode string) (Category, error)
