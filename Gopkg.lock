@@ -3,7 +3,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:cea8442de4567c6be7d301e952f752385c73f705798bb50d4bf2410193a424d0"
+  digest = "1:1a18505160698d649c82ca2a5e61eae5cc57fd49e1024ca86bdd25d6fbed216e"
   name = "flamingo.me/flamingo"
   packages = [
     "core/auth/application",
@@ -26,7 +26,7 @@
     "framework/web/responder/mocks",
   ]
   pruneopts = ""
-  revision = "7bc555507b76de0b990895ca21b9573156732286"
+  revision = "445966038e17f590c1e1732d75bbabdb154edc89"
 
 [[projects]]
   branch = "master"
@@ -463,9 +463,9 @@
     "github.com/leebenson/conform",
     "github.com/pkg/errors",
     "github.com/stretchr/testify/assert",
-    "github.com/stretchr/testify/mock",
     "go.opencensus.io/stats",
     "go.opencensus.io/stats/view",
+    "go.opencensus.io/tag",
     "golang.org/x/oauth2",
     "gopkg.in/go-playground/validator.v9",
   ]

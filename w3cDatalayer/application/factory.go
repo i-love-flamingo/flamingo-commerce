@@ -15,20 +15,21 @@ import (
 	"flamingo.me/flamingo/framework/session"
 	"flamingo.me/flamingo/framework/web"
 	"github.com/gorilla/sessions"
+	"go.opencensus.io/tag"
 )
 
 // Factory is used to build new datalayers
 type Factory struct {
 	router              *router.Router
 	datalayerProvider   domain.DatalayerProvider
-	canonicalUrlService *canonicalUrlApplication.Service
+	canonicalURLService *canonicalUrlApplication.Service
 	userService         *authApplication.UserService
 
 	pageInstanceIDPrefix           string
 	pageInstanceIDStage            string
-	productMediaBaseUrl            string
-	productMediaUrlPrefix          string
-	productMediaThumbnailUrlPrefix string
+	productMediaBaseURL            string
+	productMediaURLPrefix          string
+	productMediaThumbnailURLPrefix string
 	pageNamePrefix                 string
 	siteName                       string
 	locale                         string
@@ -45,9 +46,9 @@ func (s *Factory) Inject(
 	config *struct {
 		PageInstanceIDPrefix           string `inject:"config:w3cDatalayer.pageInstanceIDPrefix,optional"`
 		PageInstanceIDStage            string `inject:"config:w3cDatalayer.pageInstanceIDStage,optional"`
-		ProductMediaBaseUrl            string `inject:"config:w3cDatalayer.productMediaBaseUrl,optional"`
-		ProductMediaUrlPrefix          string `inject:"config:w3cDatalayer.productMediaUrlPrefix,optional"`
-		ProductMediaThumbnailUrlPrefix string `inject:"config:w3cDatalayer.productMediaThumbnailUrlPrefix,optional"`
+		ProductMediaBaseURL            string `inject:"config:w3cDatalayer.productMediaBaseUrl,optional"`
+		ProductMediaURLPrefix          string `inject:"config:w3cDatalayer.productMediaUrlPrefix,optional"`
+		ProductMediaThumbnailURLPrefix string `inject:"config:w3cDatalayer.productMediaThumbnailUrlPrefix,optional"`
 		PageNamePrefix                 string `inject:"config:w3cDatalayer.pageNamePrefix,optional"`
 		SiteName                       string `inject:"config:w3cDatalayer.siteName,optional"`
 		Locale                         string `inject:"config:locale.locale,optional"`
@@ -57,14 +58,14 @@ func (s *Factory) Inject(
 ) {
 	s.router = router2
 	s.datalayerProvider = provider
-	s.canonicalUrlService = service
+	s.canonicalURLService = service
 	s.userService = userService
 
 	s.pageInstanceIDPrefix = config.PageInstanceIDPrefix
 	s.pageInstanceIDStage = config.PageInstanceIDStage
-	s.productMediaBaseUrl = config.ProductMediaBaseUrl
-	s.productMediaUrlPrefix = config.ProductMediaUrlPrefix
-	s.productMediaThumbnailUrlPrefix = config.ProductMediaThumbnailUrlPrefix
+	s.productMediaBaseURL = config.ProductMediaBaseURL
+	s.productMediaURLPrefix = config.ProductMediaURLPrefix
+	s.productMediaThumbnailURLPrefix = config.ProductMediaThumbnailURLPrefix
 	s.pageNamePrefix = config.PageNamePrefix
 	s.siteName = config.SiteName
 	s.locale = config.Locale
@@ -72,9 +73,8 @@ func (s *Factory) Inject(
 	s.hashUserValues = config.HashUserValues
 }
 
-//Update
+// BuildForCurrentRequest builds the datalayer for the current request
 func (s Factory) BuildForCurrentRequest(ctx context.Context, request *web.Request) domain.Datalayer {
-
 	layer := s.datalayerProvider()
 
 	//get langiage from locale code configuration
@@ -88,7 +88,7 @@ func (s Factory) BuildForCurrentRequest(ctx context.Context, request *web.Reques
 		PageInfo: domain.PageInfo{
 			PageID:         request.Request().URL.Path,
 			PageName:       s.pageNamePrefix + request.Request().URL.Path,
-			DestinationURL: s.canonicalUrlService.GetCanonicalUrlForCurrentRequest(ctx),
+			DestinationURL: s.canonicalURLService.GetCanonicalUrlForCurrentRequest(ctx),
 			Language:       language,
 		},
 		Attributes: make(map[string]interface{}),
@@ -97,7 +97,7 @@ func (s Factory) BuildForCurrentRequest(ctx context.Context, request *web.Reques
 	layer.Page.Attributes["currency"] = s.defaultCurrency
 
 	//Use the handler name as PageId if available
-	if controllerHandler, ok := ctx.Value("HandlerName").(string); ok {
+	if controllerHandler, ok := tag.FromContext(ctx).Value(router.ControllerKey); ok {
 		layer.Page.PageInfo.PageID = controllerHandler
 	}
 
@@ -152,6 +152,7 @@ func (s Factory) getUserProfile(email string, sub string) *domain.UserProfile {
 	return &dataLayerProfile
 }
 
+// HashValueIfConfigured returns the hashed `value` if hashing is configured
 func (s Factory) HashValueIfConfigured(value string) string {
 	if s.hashUserValues && value != "" {
 		return hashWithSHA512(value)
@@ -159,6 +160,7 @@ func (s Factory) HashValueIfConfigured(value string) string {
 	return value
 }
 
+// BuildCartData builds the domain cart data
 func (s Factory) BuildCartData(cart cart.DecoratedCart) *domain.Cart {
 	cartData := domain.Cart{
 		CartID: cart.Cart.ID,
@@ -179,7 +181,8 @@ func (s Factory) BuildCartData(cart cart.DecoratedCart) *domain.Cart {
 	return &cartData
 }
 
-func (s Factory) BuildTransactionData(ctx context.Context, cartTotals cart.CartTotals, decoratedItems []cart.DecoratedCartItem, orderId string, email string) *domain.Transaction {
+// BuildTransactionData builds the domain transaction data
+func (s Factory) BuildTransactionData(ctx context.Context, cartTotals cart.CartTotals, decoratedItems []cart.DecoratedCartItem, orderID string, email string) *domain.Transaction {
 	var profile *domain.UserProfile
 	session, _ := session.FromContext(ctx)
 	if s.userService.IsLoggedIn(ctx, session) {
@@ -189,7 +192,7 @@ func (s Factory) BuildTransactionData(ctx context.Context, cartTotals cart.CartT
 	}
 
 	transactionData := domain.Transaction{
-		TransactionID: orderId,
+		TransactionID: orderID,
 		Price: &domain.TransactionPrice{
 			Currency:         cartTotals.CurrencyCode,
 			BasePrice:        cartTotals.SubTotal,
@@ -226,6 +229,7 @@ func (s Factory) buildCartItem(item cart.DecoratedCartItem, currencyCode string)
 	return cartItem
 }
 
+// BuildProductData builds the domain product data
 func (s Factory) BuildProductData(product productDomain.BasicProduct) domain.Product {
 	productData := domain.Product{
 		ProductInfo: s.getProductInfo(product),
@@ -283,20 +287,20 @@ func (s Factory) getProductCategory(product productDomain.BasicProduct) *domain.
 func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.ProductInfo {
 	baseData := product.BaseData()
 	//Handle Variants if it is a Configurable
-	var parentIdRef *string = nil
-	var variantSelectedAttributeRef *string = nil
+	var parentIDRef *string
+	var variantSelectedAttributeRef *string
 	if product.Type() == productDomain.TYPECONFIGURABLE_WITH_ACTIVE_VARIANT {
 		if configurableWithActiveVariant, ok := product.(productDomain.ConfigurableProductWithActiveVariant); ok {
-			parentId := configurableWithActiveVariant.ConfigurableBaseData().MarketPlaceCode
-			parentIdRef = &parentId
+			parentID := configurableWithActiveVariant.ConfigurableBaseData().MarketPlaceCode
+			parentIDRef = &parentID
 			variantSelectedAttribute := configurableWithActiveVariant.ActiveVariant.BaseData().Attributes[configurableWithActiveVariant.VariantVariationAttributes[0]].Value()
 			variantSelectedAttributeRef = &variantSelectedAttribute
 		}
 	}
 	if product.Type() == productDomain.TYPECONFIGURABLE {
 		if configurable, ok := product.(productDomain.ConfigurableProduct); ok {
-			parentId := configurable.BaseData().MarketPlaceCode
-			parentIdRef = &parentId
+			parentID := configurable.BaseData().MarketPlaceCode
+			parentIDRef = &parentID
 		}
 	}
 	// Search for some common product attributes to fill the productInfos (This maybe better to be configurable later)
@@ -330,10 +334,10 @@ func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.Produ
 	return domain.ProductInfo{
 		ProductID:                baseData.MarketPlaceCode,
 		ProductName:              baseData.Title,
-		ProductThumbnail:         s.getProductThumbnailUrl(baseData),
-		ProductImage:             s.getProductImageUrl(baseData),
+		ProductThumbnail:         s.getProductThumbnailURL(baseData),
+		ProductImage:             s.getProductImageURL(baseData),
 		ProductType:              product.Type(),
-		ParentId:                 parentIdRef,
+		ParentId:                 parentIDRef,
 		VariantSelectedAttribute: variantSelectedAttributeRef,
 		Retailer:                 baseData.RetailerCode,
 		SKU:                      gtin,
@@ -343,22 +347,22 @@ func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.Produ
 	}
 }
 
-func (s Factory) getProductThumbnailUrl(baseData productDomain.BasicProductData) string {
+func (s Factory) getProductThumbnailURL(baseData productDomain.BasicProductData) string {
 	media := baseData.GetMedia("thumbnail")
 	if media.Reference != "" {
-		return s.productMediaBaseUrl + s.productMediaThumbnailUrlPrefix + media.Reference
+		return s.productMediaBaseURL + s.productMediaThumbnailURLPrefix + media.Reference
 	}
 	media = baseData.GetMedia("list")
 	if media.Reference != "" {
-		return s.productMediaBaseUrl + s.productMediaThumbnailUrlPrefix + media.Reference
+		return s.productMediaBaseURL + s.productMediaThumbnailURLPrefix + media.Reference
 	}
 	return ""
 }
 
-func (s Factory) getProductImageUrl(baseData productDomain.BasicProductData) string {
+func (s Factory) getProductImageURL(baseData productDomain.BasicProductData) string {
 	media := baseData.GetMedia("detail")
 	if media.Reference != "" {
-		return s.productMediaBaseUrl + s.productMediaUrlPrefix + media.Reference
+		return s.productMediaBaseURL + s.productMediaURLPrefix + media.Reference
 	}
 	return ""
 }
@@ -372,11 +376,12 @@ func hashWithSHA512(value string) string {
 	return base64.URLEncoding.EncodeToString(result)
 }
 
-func (s Factory) BuildChangeQtyEvent(productIdentifier string, productName string, qty int, qtyBefore int, cartId string) domain.Event {
+// BuildChangeQtyEvent builds the change quantity domain event
+func (s Factory) BuildChangeQtyEvent(productIdentifier string, productName string, qty int, qtyBefore int, cartID string) domain.Event {
 	event := domain.Event{EventInfo: make(map[string]interface{})}
 	event.EventInfo["productId"] = productIdentifier
 	event.EventInfo["productName"] = productName
-	event.EventInfo["cartId"] = cartId
+	event.EventInfo["cartId"] = cartID
 
 	if qty == 0 {
 		event.EventInfo["eventName"] = "Remove Product"
@@ -387,8 +392,8 @@ func (s Factory) BuildChangeQtyEvent(productIdentifier string, productName strin
 	return event
 }
 
+// BuildAddToBagEvent builds the add to bag domain event
 func (s Factory) BuildAddToBagEvent(productIdentifier string, productName string, qty int) domain.Event {
-
 	event := domain.Event{EventInfo: make(map[string]interface{})}
 	event.EventInfo["eventName"] = "Add To Bag"
 	event.EventInfo["productId"] = productIdentifier
