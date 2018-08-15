@@ -132,6 +132,7 @@ type (
 	// Item for Cart
 	Item struct {
 		ID              string
+		AddressLineId   string
 		MarketplaceCode string
 		//VariantMarketPlaceCode is used for Configurable products
 		VariantMarketPlaceCode string
