@@ -31,7 +31,18 @@ func (vc *ViewController) Get(c context.Context, r *web.Request) web.Response {
 	filter := make([]domain.Filter, len(r.QueryAll()))
 	i := 0
 	for k, v := range r.QueryAll() {
-		filter[i] = domain.NewKeyValueFilter(k, v)
+		switch k {
+		case "q":
+			if len(v) > 0 {
+				filter[i] = domain.NewQueryFilter(v[0])
+			}
+		case "sort":
+			if len(v) > 0 {
+				filter[i] = domain.NewSortFilter(k, v[0])
+			}
+		default:
+			filter[i] = domain.NewKeyValueFilter(k, v)
+		}
 		i++
 	}
 

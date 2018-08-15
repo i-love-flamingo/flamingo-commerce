@@ -19,6 +19,17 @@ type (
 		v []string
 	}
 
+	// SortFilter - specifies the request to sort by some criteria(label) in a certain direction. Possible values for label and direction should be in SearchMeta.SortOption
+	SortFilter struct {
+		label     string
+		direction string
+	}
+
+	// QueryFilter - represents a query
+	QueryFilter struct {
+		query string
+	}
+
 	// SearchMeta data
 	SearchMeta struct {
 		Query          string
@@ -157,4 +168,29 @@ func NewKeyValueFilter(k string, v []string) *KeyValueFilter {
 // Value of the current filter
 func (f *KeyValueFilter) Value() (string, []string) {
 	return f.k, f.v
+}
+
+// NewSortFilter factory
+func NewSortFilter(label string, direction string) *SortFilter {
+	return &SortFilter{
+		label:     label,
+		direction: direction,
+	}
+}
+
+// Value of the current filter
+func (f *SortFilter) Value() (string, []string) {
+	return f.label, []string{f.direction}
+}
+
+// NewQueryFilter factory
+func NewQueryFilter(query string) *QueryFilter {
+	return &QueryFilter{
+		query: query,
+	}
+}
+
+// Value of the current filter
+func (f *QueryFilter) Value() (string, []string) {
+	return "q", []string{f.query}
 }
