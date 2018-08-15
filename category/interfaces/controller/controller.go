@@ -157,7 +157,7 @@ func (vc *View) Get(c context.Context, request *web.Request) web.Response {
 	return vc.Render(c, template, ViewData{
 		Category:            category,
 		CategoryTree:        categoryRoot,
-		CategoryChildren:    categoryChildren,
+		CategoryChildren:    categoryChildren.Categories(),
 		ProductSearchResult: result,
 		SearchMeta:          result.SearchMeta,
 		PaginationInfo:      paginationInfo,

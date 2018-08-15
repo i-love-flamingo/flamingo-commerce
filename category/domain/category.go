@@ -2,7 +2,6 @@ package domain
 
 import (
 	"flamingo.me/flamingo-commerce/search/domain"
-	productDomain "flamingo.me/flamingo-commerce/product/domain"
 )
 
 type (
@@ -11,7 +10,6 @@ type (
 		Code() string
 		Name() string
 		Path() string
-		Media() []productDomain.Media
 		Categories() []Category
 		Active() bool
 		Promoted() bool
