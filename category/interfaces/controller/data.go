@@ -13,11 +13,6 @@ type (
 		categoryService domain.CategoryService
 	}
 
-	// Children controller for category children retrieval
-	Children struct {
-		categoryService domain.CategoryService
-	}
-
 	// Entity controller for category entity retrieval
 	Entity struct {
 		categoryService domain.CategoryService
@@ -32,22 +27,10 @@ func (controller *Tree) Inject(service domain.CategoryService) {
 func (controller *Tree) Data(c context.Context, r *web.Request) interface{} {
 	code, _ := r.Param1("code") // no err check, empty code is fine if not set
 
-	categoryRoot, _ := controller.categoryService.Tree(c, code)
+	categoryRoot, err := controller.categoryService.Tree(c, code)
+	_ = err
 
 	return categoryRoot
-}
-
-func (controller *Children) Inject(service domain.CategoryService) {
-	controller.categoryService = service
-}
-
-// Data controller for category entities
-func (controller *Children) Data(c context.Context, r *web.Request) interface{} {
-	code, _ := r.Param1("code") // no err check, empty code is fine if not set
-
-	category, _ := controller.categoryService.Get(c, code)
-
-	return category
 }
 
 func (controller *Entity) Inject(service domain.CategoryService) {
@@ -58,7 +41,8 @@ func (controller *Entity) Inject(service domain.CategoryService) {
 func (controller *Entity) Data(c context.Context, r *web.Request) interface{} {
 	code, _ := r.Param1("code") // no err check, empty code is fine if not set
 
-	category, _ := controller.categoryService.Get(c, code)
+	category, err := controller.categoryService.Get(c, code)
+	_ = err
 
 	return category
 }
