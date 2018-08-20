@@ -281,7 +281,7 @@ func findMediaInProduct(p BasicProduct, group string, usage string) *Media {
 	return nil
 }
 
-// IsInStock returns information if current product weather in stock or not
+// IsInStock returns information if current product whether in stock or not
 func (bpd BasicProductData) IsInStock() bool {
 	if bpd.StockLevel == "" || bpd.StockLevel == "out" {
 		return false
