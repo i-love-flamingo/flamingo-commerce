@@ -12,7 +12,7 @@ import (
 type (
 	OrderPlacedEvent struct {
 		Cart     *cartDomain.Cart
-		OrderIds []string
+		OrderIds string
 	}
 
 	AddToCartEvent struct {
@@ -33,7 +33,7 @@ type (
 
 	//EventPublisher - technology free interface  to publish events that might be interesting for outside (Publish)
 	EventPublisher interface {
-		PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, orderIds []string)
+		PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, orderIds string)
 		PublishAddToCartEvent(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode string, qty int)
 		PublishChangedQtyInCartEvent(ctx context.Context, item *cartDomain.Item, qtyBefore int, qtyAfter int, cartId string)
 	}
@@ -46,7 +46,7 @@ type (
 	}
 )
 
-func (d *DefaultEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, orderIds []string) {
+func (d *DefaultEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, orderIds string) {
 	eventObject := OrderPlacedEvent{
 		Cart:     cart,
 		OrderIds: orderIds,
