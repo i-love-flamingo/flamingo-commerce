@@ -34,7 +34,7 @@ type (
 
 	// CartBehaviour is a Port that can be implemented by other packages to implement  cart actions required for Ordering a Cart
 	CartBehaviour interface {
-		PlaceOrder(ctx context.Context, cart *Cart, payment *CartPayment) (string, error)
+		PlaceOrder(ctx context.Context, cart *Cart, payment *CartPayment) ([]string, error)
 		DeleteItem(ctx context.Context, cart *Cart, itemId string, deliveryCode string) (*Cart, error)
 		UpdateItem(ctx context.Context, cart *Cart, itemId string, deliveryCode string, itemUpdateCommand ItemUpdateCommand) (*Cart, error)
 		AddToCart(ctx context.Context, cart *Cart, deliveryCode string, addRequest AddRequest) (*Cart, error)

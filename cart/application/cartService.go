@@ -188,22 +188,22 @@ func (cs CartService) DeleteAllItems(ctx context.Context, session *sessions.Sess
 }
 
 // PlaceOrder
-func (cs *CartService) PlaceOrder(ctx context.Context, session *sessions.Session, payment *cartDomain.CartPayment) (string, error) {
+func (cs *CartService) PlaceOrder(ctx context.Context, session *sessions.Session, payment *cartDomain.CartPayment) ([]string, error) {
 	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx, session)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	orderNumber, err := behaviour.PlaceOrder(ctx, cart, payment)
+	orderNumbers, err := behaviour.PlaceOrder(ctx, cart, payment)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "PlaceOrder").Error(err)
-		return "", err
+		return nil, err
 	}
-	cs.EventPublisher.PublishOrderPlacedEvent(ctx, cart, orderNumber)
+	cs.EventPublisher.PublishOrderPlacedEvent(ctx, cart, orderNumbers)
 	cs.DeleteSavedSessionGuestCartId(session)
 	cs.deleteCartInCache(ctx, session, cart)
-	return orderNumber, err
+	return orderNumbers, err
 }
 
 // BuildAddRequest Helper to build
