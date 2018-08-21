@@ -59,7 +59,8 @@ type (
 		// PlacedDecoratedItems []cart.DecoratedCartItem
 
 		//CartTotals - Depricated
-		CartTotals cart.CartTotals
+		CartTotals    cart.CartTotals
+		OrderIdsArray map[string]string
 	}
 
 	// ReviewStepViewData represents the success view data
@@ -358,7 +359,6 @@ func (cc *CheckoutController) ProcessPaymentAction(ctx context.Context, r *web.R
 func (cc *CheckoutController) SuccessAction(ctx context.Context, r *web.Request) web.Response {
 	flashes := r.Session().Flashes("checkout.success.data")
 	if len(flashes) > 0 {
-
 		if placeOrderFlashData, ok := flashes[len(flashes)-1].(PlaceOrderFlashData); ok {
 			decoratedCart := cc.decoratedCartFactory.Create(ctx, placeOrderFlashData.PlacedCart)
 			viewData := SuccessViewData{
@@ -367,12 +367,30 @@ func (cc *CheckoutController) SuccessAction(ctx context.Context, r *web.Request)
 				OrderIds:            placeOrderFlashData.OrderIds,
 				PaymentInfos:        placeOrderFlashData.PaymentInfos,
 				PlacedDecoratedCart: *decoratedCart,
+				OrderIdsArray:       cc.splitOrderIdsIfPossible(placeOrderFlashData.OrderIds),
 			}
 
 			return cc.Render(ctx, "checkout/success", viewData).Hook(web.NoCache)
 		}
 	}
 	return cc.Redirect("checkout.expired", nil).Hook(web.NoCache)
+}
+
+// helper function to generate array of orderIds
+func (cc *CheckoutController) splitOrderIdsIfPossible(orderIds string) map[string]string {
+	orderIdArray := make(map[string]string)
+	parts := strings.Split(orderIds, "#")
+	if len(parts) > 0 {
+		for _, part := range parts {
+			subParts := strings.Split(part, ",")
+			if len(subParts) != 2 {
+				return orderIdArray
+			}
+			orderIdArray[subParts[0]] = subParts[1]
+		}
+		return orderIdArray
+	}
+	return orderIdArray
 }
 
 func (cc *CheckoutController) ExpiredAction(ctx context.Context, r *web.Request) web.Response {
