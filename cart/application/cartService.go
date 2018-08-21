@@ -201,6 +201,7 @@ func (cs *CartService) PlaceOrder(ctx context.Context, session *sessions.Session
 		return "", err
 	}
 	cs.EventPublisher.PublishOrderPlacedEvent(ctx, cart, orderNumbers)
+	cs.DeleteSavedSessionGuestCartId(session)
 	cs.deleteCartInCache(ctx, session, cart)
 	return orderNumbers, err
 }
