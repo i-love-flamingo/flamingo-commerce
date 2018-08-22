@@ -53,18 +53,7 @@ func URLWithName(code, name string) (string, map[string]string) {
 	return "category.view", map[string]string{"code": code, "name": name}
 }
 
-func getActive(category domain.Category) domain.Category {
-	for _, sub := range category.Categories() {
-		if active := getActive(sub); active != nil {
-			return active
-		}
-	}
-	if category.Active() {
-		return category
-	}
-	return nil
-}
-
+// Inject the View controller required dependencies
 func (vc *View) Inject(
 	errorAware responder.ErrorAware,
 	renderAware responder.RenderAware,
@@ -102,8 +91,7 @@ func (vc *View) Get(c context.Context, request *web.Request) web.Response {
 		return vc.Error(c, err)
 	}
 
-	category := getActive(categoryRoot)
-
+	category := domain.GetActive(categoryRoot)
 	if category == nil {
 		return vc.ErrorNotFound(c, errors.New("Active Category not found"))
 	}
@@ -162,8 +150,8 @@ func (vc *View) addBreadcrumb(c context.Context, category domain.Category) {
 	}
 	if category.Code() != "" {
 		breadcrumbs.Add(c, breadcrumbs.Crumb{
-			category.Name(),
-			vc.router.URL(URLWithName(category.Code(), web.URLTitle(category.Name()))).String(),
+			Title: category.Name(),
+			Url:   vc.router.URL(URLWithName(category.Code(), web.URLTitle(category.Name()))).String(),
 		})
 	}
 

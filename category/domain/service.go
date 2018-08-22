@@ -11,7 +11,7 @@ var (
 )
 
 type (
-	// categoryService interface
+	// CategoryService interface
 	CategoryService interface {
 		// Tree a category
 		Tree(ctx context.Context, categoryCode string) (Category, error)

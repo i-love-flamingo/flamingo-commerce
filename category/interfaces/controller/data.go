@@ -19,6 +19,7 @@ type (
 	}
 )
 
+// Inject the Tree controller required dependencies
 func (controller *Tree) Inject(service domain.CategoryService) {
 	controller.categoryService = service
 }
@@ -27,12 +28,12 @@ func (controller *Tree) Inject(service domain.CategoryService) {
 func (controller *Tree) Data(c context.Context, r *web.Request) interface{} {
 	code, _ := r.Param1("code") // no err check, empty code is fine if not set
 
-	categoryRoot, err := controller.categoryService.Tree(c, code)
-	_ = err
+	categoryRoot, _ := controller.categoryService.Tree(c, code)
 
 	return categoryRoot
 }
 
+// Inject the Entity controller required dependencies
 func (controller *Entity) Inject(service domain.CategoryService) {
 	controller.categoryService = service
 }
@@ -41,8 +42,7 @@ func (controller *Entity) Inject(service domain.CategoryService) {
 func (controller *Entity) Data(c context.Context, r *web.Request) interface{} {
 	code, _ := r.Param1("code") // no err check, empty code is fine if not set
 
-	category, err := controller.categoryService.Get(c, code)
-	_ = err
+	category, _ := controller.categoryService.Get(c, code)
 
 	return category
 }
