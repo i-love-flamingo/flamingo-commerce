@@ -8,8 +8,9 @@ import (
 
 // Media usage constants
 const (
-	MediaUsageList   = "list"
-	MediaUsageDetail = "detail"
+	MediaUsageList      = "list"
+	MediaUsageDetail    = "detail"
+	MediaUsageThumbnail = "thumbnail"
 )
 
 type (

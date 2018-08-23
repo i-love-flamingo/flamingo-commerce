@@ -16,6 +16,7 @@ type Module struct{}
 func (m *Module) Configure(injector *dingo.Injector) {
 	injector.BindMap(new(template.CtxFunc), "getProduct").To(templatefunctions.GetProduct{})
 	injector.BindMap(new(template.Func), "getProductUrl").To(templatefunctions.GetProductUrl{})
+	injector.BindMap(new(template.CtxFunc), "findProducts").To(templatefunctions.FindProducts{})
 
 	router.Bind(injector, new(routes))
 }
