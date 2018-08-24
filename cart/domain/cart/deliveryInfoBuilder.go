@@ -19,29 +19,6 @@ type (
 	}
 )
 
-/*
-//BuildDeliveryInfoUpdateCommand - default implementation to get DeliveryInfo for cart. It is simply using the DeliverIntent on the Items
-func (dib *DefaultDeliveryInfoBuilder) BuildDeliveryInfoUpdateCommand(ctx web.Context, decoratedCart *DecoratedCart) ([]DeliveryInfoUpdateCommand, error) {
-	var updateCommands []DeliveryInfoUpdateCommand
-	for _, cartitems := range decoratedCart.Cart.GetCartItemsByOriginalDeliveryIntent() {
-		if len(cartitems) < 1 {
-			continue
-		}
-		deliveryInfo := cartitems[0].OriginalDeliveryIntent.BuildDeliveryInfo()
-		itemIds := make([]string, len(cartitems))
-		for _, cartitem := range cartitems {
-			itemIds = append(itemIds, cartitem.ID)
-		}
-		updateCommands = append(updateCommands, DeliveryInfoUpdateCommand{
-			DeliveryInfo:    &deliveryInfo,
-			AssignedItemIds: itemIds,
-		})
-	}
-	return updateCommands, nil
-}
-
-*/
-
 func (b *DefaultDeliveryInfoBuilder) BuildByDeliveryCode(deliverycode string) (DeliveryInfo, error) {
 	if deliverycode == "" {
 		b.Logger.WithField("category", "cart").WithField("subcategory", "DefaultDeliveryInfoBuilder").Warn("Empty deliverycode")

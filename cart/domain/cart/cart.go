@@ -237,29 +237,25 @@ func (Cart Cart) GetMainShippingEMail() string {
 }
 
 // GetByItemId gets an item by its id
-func (Cart Cart) GetDeliveryByCode(deliveryCode string) (*Delivery, error) {
+func (Cart Cart) GetDeliveryByCode(deliveryCode string) (*Delivery, bool) {
 	for _, delivery := range Cart.Deliveries {
 		if delivery.DeliveryInfo.Code == deliveryCode {
-			return &delivery, nil
+			return &delivery, true
 		}
 	}
-	return nil, errors.New(fmt.Sprintf("Delivery with code %v in cart not existend", deliveryCode))
+	return nil, false
 }
 
 func (Cart Cart) HasDeliveryForCode(deliveryCode string) bool {
-	for _, d := range Cart.Deliveries {
-		if d.DeliveryInfo.Code == deliveryCode {
-			return true
-		}
-	}
-	return false
+	_, found := Cart.GetDeliveryByCode(deliveryCode)
+	return found == true
 }
 
 // GetByItemId gets an item by its id
 func (Cart Cart) GetByItemId(itemId string, deliveryCode string) (*Item, error) {
-	delivery, err := Cart.GetDeliveryByCode(deliveryCode)
-	if err != nil {
-		return nil, err
+	delivery, found := Cart.GetDeliveryByCode(deliveryCode)
+	if found != true {
+		return nil, errors.New(fmt.Sprintf("Delivery for code %v not found", deliveryCode))
 	}
 	for _, currentItem := range delivery.Cartitems {
 		if currentItem.ID == itemId {
@@ -301,12 +297,6 @@ func (Cart Cart) GetItemCartReferences() []ItemCartReference {
 		}
 	}
 	return ids
-}
-
-// check if it is a mixed cart with different delivery intents
-//@todo - only non empty Deliveries should count
-func (Cart Cart) HasMixedCart() bool {
-	return len(Cart.Deliveries) > 1
 }
 
 func (Cart Cart) GetVoucherSavings() float64 {
