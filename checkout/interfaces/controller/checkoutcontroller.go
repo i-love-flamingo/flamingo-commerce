@@ -598,7 +598,7 @@ func (cc *CheckoutController) placeOrder(ctx context.Context, session *sessions.
 		// record 5ms per call
 		stats.Record(ctx, rt.M(1))
 
-		cc.logger.WithField("category", "checkout").Error("place order failed: order group id: %v / name: %v / total amount: %v / sub amounts: %v", decoratedCart.Cart.EntityID, name, decoratedCart.Cart.CartTotals.GrandTotal, subAmounts)
+		cc.logger.WithField("category", "checkout").WithField("subcategory", "checkoutError").WithField("errorMsg", err.Error()).Error(fmt.Sprintf("place order failed: cart id: %v / customer-name: %v / total-amount: %v / sub-amounts: %v", decoratedCart.Cart.EntityID, name, decoratedCart.Cart.CartTotals.GrandTotal, subAmounts))
 		return nil, err
 	}
 
