@@ -7,6 +7,7 @@ import (
 
 	"math"
 
+	"flamingo.me/flamingo/framework/flamingo"
 	"github.com/pkg/errors"
 )
 
@@ -90,6 +91,7 @@ type (
 		FlightNumber       string
 		AirportName        string
 		DestinationCountry string
+		Logger             flamingo.Logger `inject:""`
 	}
 
 	DeliveryLocation struct {
@@ -371,9 +373,11 @@ func (fd *FlightData) GetScheduledDateTime() string {
 //GetScheduledDateTime string from ScheduledDateTime - used for display
 func (f *FlightData) ParseScheduledDateTime() time.Time {
 	//"scheduledDateTime": "2017-11-25T06:30:00Z",
-	timeResult, e := time.Parse(time.RFC3339, f.GetScheduledDateTime())
-	if e != nil {
-		return time.Now()
+	timeResult, err := time.Parse(time.RFC3339, f.GetScheduledDateTime())
+	if err != nil {
+		// returning a zero time in case of an error and log the error
+		f.Logger.Error(err)
+		return time.Time{}
 	}
 	return timeResult
 }
