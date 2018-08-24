@@ -39,11 +39,11 @@ func (os *OrderService) SetSources(ctx context.Context, session *sessions.Sessio
 }
 
 // PlaceOrder places the order
-func (os *OrderService) PlaceOrder(ctx context.Context, session *sessions.Session, decoratedCart *cart.DecoratedCart, payment *cart.CartPayment) (orderIds string, orderError error) {
+func (os *OrderService) PlaceOrder(ctx context.Context, session *sessions.Session, decoratedCart *cart.DecoratedCart, payment *cart.CartPayment) (cart.PlacedOrderInfos, error) {
 	validationResult := os.CartService.ValidateCart(ctx, session, decoratedCart)
 	if !validationResult.IsValid() {
 		os.Logger.Warn("Try to place an invalid cart")
-		return "", errors.New("Cart is Invalid.")
+		return nil, errors.New("Cart is Invalid.")
 	}
 	return os.CartService.PlaceOrder(ctx, session, payment)
 }
@@ -101,24 +101,24 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *sessi
 
 //CurrentCartPlaceOrder - probably the best choice for a simple checkout
 // Assumptions: Only one BuildDeliveryInfo is used on the cart!
-func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *sessions.Session, payment cart.CartPayment) (orderIds string, orderError error) {
+func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *sessions.Session, payment cart.CartPayment) (cart.PlacedOrderInfos, error) {
 	decoratedCart, err := os.CartReceiverService.ViewDecoratedCart(ctx, session)
 	if err != nil {
 		os.Logger.Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
-		return "", err
+		return nil, err
 	}
 
 	validationResult := os.CartService.ValidateCart(ctx, session, decoratedCart)
 	if !validationResult.IsValid() {
 		os.Logger.Warn("Try to place an invalid cart")
-		return "", errors.New("Cart is Invalid.")
+		return nil, errors.New("Cart is Invalid.")
 	}
 
-	orderIds, err = os.PlaceOrder(ctx, session, decoratedCart, &payment)
+	placedOrderInfos, err := os.PlaceOrder(ctx, session, decoratedCart, &payment)
 
 	if err != nil {
 		os.Logger.WithField("category", "checkout.orderService").Error("Error during place Order: %v", err)
-		return "", errors.New("Error while placing the order. Please contact customer support.")
+		return nil, errors.New("Error while placing the order. Please contact customer support.")
 	}
-	return orderIds, nil
+	return placedOrderInfos, nil
 }

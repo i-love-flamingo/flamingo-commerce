@@ -132,8 +132,10 @@ type (
 
 	// Item for Cart
 	Item struct {
-		ID              string
-		AddressLineId   string
+		//ID of the item - need to be unique under a delivery
+		ID string
+		//
+		UniqueId        string
 		MarketplaceCode string
 		//VariantMarketPlaceCode is used for Configurable products
 		VariantMarketPlaceCode string

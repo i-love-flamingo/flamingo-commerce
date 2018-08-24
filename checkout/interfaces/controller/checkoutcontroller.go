@@ -51,7 +51,7 @@ type (
 	// SuccessViewData represents the success view data
 	SuccessViewData struct {
 		PaymentInfos        []PlaceOrderPaymentInfo
-		OrderIds            string
+		PlacedOrderInfos    cart.PlacedOrderInfos
 		Email               string
 		PlacedDecoratedCart cart.DecoratedCart
 
@@ -59,8 +59,7 @@ type (
 		// PlacedDecoratedItems []cart.DecoratedCartItem
 
 		//CartTotals - Depricated
-		CartTotals    cart.CartTotals
-		OrderIdsArray map[string]string
+		CartTotals cart.CartTotals
 	}
 
 	// ReviewStepViewData represents the success view data
@@ -78,10 +77,10 @@ type (
 
 	// PlaceOrderFlashData represents the data passed to the success page - they need to be "glob"able
 	PlaceOrderFlashData struct {
-		OrderIds     string
-		Email        string
-		PaymentInfos []PlaceOrderPaymentInfo
-		PlacedCart   cart.Cart
+		PlacedOrderInfos cart.PlacedOrderInfos
+		Email            string
+		PaymentInfos     []PlaceOrderPaymentInfo
+		PlacedCart       cart.Cart
 	}
 
 	PlaceOrderPaymentInfo struct {
@@ -364,33 +363,15 @@ func (cc *CheckoutController) SuccessAction(ctx context.Context, r *web.Request)
 			viewData := SuccessViewData{
 				CartTotals:          placeOrderFlashData.PlacedCart.CartTotals,
 				Email:               placeOrderFlashData.Email,
-				OrderIds:            placeOrderFlashData.OrderIds,
 				PaymentInfos:        placeOrderFlashData.PaymentInfos,
 				PlacedDecoratedCart: *decoratedCart,
-				OrderIdsArray:       cc.splitOrderIdsIfPossible(placeOrderFlashData.OrderIds),
+				PlacedOrderInfos:    placeOrderFlashData.PlacedOrderInfos,
 			}
 
 			return cc.Render(ctx, "checkout/success", viewData).Hook(web.NoCache)
 		}
 	}
 	return cc.Redirect("checkout.expired", nil).Hook(web.NoCache)
-}
-
-// helper function to generate array of orderIds
-func (cc *CheckoutController) splitOrderIdsIfPossible(orderIds string) map[string]string {
-	orderIdArray := make(map[string]string)
-	parts := strings.Split(orderIds, "#")
-	if len(parts) > 0 {
-		for _, part := range parts {
-			subParts := strings.Split(part, ",")
-			if len(subParts) != 2 {
-				return orderIdArray
-			}
-			orderIdArray[subParts[0]] = subParts[1]
-		}
-		return orderIdArray
-	}
-	return orderIdArray
 }
 
 func (cc *CheckoutController) ExpiredAction(ctx context.Context, r *web.Request) web.Response {
@@ -597,7 +578,7 @@ func (cc *CheckoutController) getContactMail(cart cart.Cart) string {
 }
 
 func (cc *CheckoutController) placeOrder(ctx context.Context, session *sessions.Session, cartPayment cart.CartPayment, decoratedCart cart.DecoratedCart) (web.Response, error) {
-	orderID, err := cc.orderService.CurrentCartPlaceOrder(ctx, session, cartPayment)
+	placedOrderInfos, err := cc.orderService.CurrentCartPlaceOrder(ctx, session, cartPayment)
 	if err != nil {
 		name := decoratedCart.Cart.BillingAdress.Firstname + " " + decoratedCart.Cart.BillingAdress.Lastname
 		subAmounts := ""
@@ -635,10 +616,10 @@ func (cc *CheckoutController) placeOrder(ctx context.Context, session *sessions.
 	}
 
 	return cc.Redirect("checkout.success", nil).With("checkout.success.data", PlaceOrderFlashData{
-		OrderIds:     orderID,
-		Email:        email,
-		PlacedCart:   decoratedCart.Cart,
-		PaymentInfos: placeOrderPaymentInfos,
+		PlacedOrderInfos: placedOrderInfos,
+		Email:            email,
+		PlacedCart:       decoratedCart.Cart,
+		PaymentInfos:     placeOrderPaymentInfos,
 	}), nil
 
 }

@@ -11,8 +11,8 @@ import (
 
 type (
 	OrderPlacedEvent struct {
-		Cart     *cartDomain.Cart
-		OrderIds string
+		Cart             *cartDomain.Cart
+		PlacedOrderInfos cartDomain.PlacedOrderInfos
 	}
 
 	AddToCartEvent struct {
@@ -33,7 +33,7 @@ type (
 
 	//EventPublisher - technology free interface  to publish events that might be interesting for outside (Publish)
 	EventPublisher interface {
-		PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, orderIds string)
+		PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos cartDomain.PlacedOrderInfos)
 		PublishAddToCartEvent(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode string, qty int)
 		PublishChangedQtyInCartEvent(ctx context.Context, item *cartDomain.Item, qtyBefore int, qtyAfter int, cartId string)
 	}
@@ -46,12 +46,12 @@ type (
 	}
 )
 
-func (d *DefaultEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, orderIds string) {
+func (d *DefaultEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos cartDomain.PlacedOrderInfos) {
 	eventObject := OrderPlacedEvent{
-		Cart:     cart,
-		OrderIds: orderIds,
+		Cart:             cart,
+		PlacedOrderInfos: placedOrderInfos,
 	}
-	d.Logger.Info("Publish Event OrderPlacedEvent for Order: %v", orderIds)
+	d.Logger.Info("Publish Event OrderPlacedEvent for Order: %#v", placedOrderInfos)
 	//For now we publish only to Flamingo default Event Router
 	d.EventRouter.Dispatch(ctx, &eventObject)
 }
