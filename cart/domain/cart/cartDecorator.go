@@ -193,6 +193,16 @@ func (dc DecoratedCart) GetAllDecoratedItems() []DecoratedCartItem {
 	return allItems
 }
 
+func (dc DecoratedCart) GetDecoratedDeliveryByCode(deliveryCode string) (*DecoratedDelivery, bool) {
+	for _, dd := range dc.DecoratedDeliveries {
+		if dd.Delivery.DeliveryInfo.Code == deliveryCode {
+			return &dd, true
+		}
+
+	}
+	return nil, false
+}
+
 // GetGroupedBy getter
 func (dc DecoratedDelivery) GetGroupedBy(group string, sortGroup bool, params ...string) []*GroupedDecoratedCartItem {
 	groupedItemsCollection := make(map[string]*GroupedDecoratedCartItem)

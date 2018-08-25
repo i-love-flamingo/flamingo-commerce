@@ -70,7 +70,8 @@ type (
 	Delivery struct {
 		DeliveryInfo DeliveryInfo
 		//Cartitems - list of cartitems
-		Cartitems []Item
+		Cartitems      []Item
+		DeliveryTotals DeliveryTotals
 	}
 
 	//DeliveryInfo - represents the Delivery
@@ -91,6 +92,8 @@ type (
 		FlightNumber       string
 		AirportName        string
 		DestinationCountry string
+		Terminal           string
+		AirlineName        string
 		Logger             flamingo.Logger `inject:""`
 	}
 
@@ -120,12 +123,26 @@ type (
 		TotalDiscountAmount float64
 		//TotalNonItemRelatedDiscountAmount= SUM of Item NonItemRelatedDiscountAmount
 		TotalNonItemRelatedDiscountAmount float64
-
-		//DEPRICATED
-		//DiscountAmount float64
-
 		//TaxAmount = Sum of Item TaxAmount
 		TaxAmount float64
+		//CurrencyCode of the Total positions
+		CurrencyCode string
+	}
+
+	DeliveryTotals struct {
+		//SubTotal = SUM of Item RowTotal
+		SubTotal float64
+		//SubTotalInclTax = SUM of Item RowTotalInclTax
+		SubTotalInclTax float64
+		//SubTotalWithDiscounts = SubTotal - Sum of Item ItemRelatedDiscountAmount
+		SubTotalWithDiscounts float64
+		//SubTotalWithDiscountsAndTax= Sum of RowTotalWithItemRelatedDiscountInclTax
+		SubTotalWithDiscountsAndTax float64
+
+		//TotalDiscountAmount = SUM of Item TotalDiscountAmount
+		TotalDiscountAmount float64
+		//TotalNonItemRelatedDiscountAmount= SUM of Item NonItemRelatedDiscountAmount
+		TotalNonItemRelatedDiscountAmount float64
 		//CurrencyCode of the Total positions
 		CurrencyCode string
 	}
