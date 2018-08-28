@@ -12,7 +12,7 @@ func TestMedias_Has(t *testing.T) {
 
 	var (
 		detailMedia Media = MediaData{MediaUsage: MediaUsageDetail}
-		listMedia   Media = MediaData{MediaUsage: MediaUsageList}
+		teaserMedia Media = MediaData{MediaUsage: MediaUsageTeaser}
 	)
 	tests := []struct {
 		name string
@@ -24,7 +24,7 @@ func TestMedias_Has(t *testing.T) {
 			name: "Test empty media has no list item",
 			m:    Medias{},
 			args: args{
-				usage: MediaUsageList,
+				usage: MediaUsageTeaser,
 			},
 			want: false,
 		},
@@ -43,14 +43,14 @@ func TestMedias_Has(t *testing.T) {
 				detailMedia,
 			},
 			args: args{
-				usage: MediaUsageList,
+				usage: MediaUsageTeaser,
 			},
 			want: false,
 		},
 		{
 			name: "Test detail only media has detail item",
 			m: Medias{
-				listMedia,
+				teaserMedia,
 				detailMedia,
 			},
 			args: args{
@@ -75,7 +75,7 @@ func TestMedias_Get(t *testing.T) {
 
 	var (
 		detailMedia Media = MediaData{MediaUsage: MediaUsageDetail}
-		listMedia   Media = MediaData{MediaUsage: MediaUsageList}
+		teaserMedia Media = MediaData{MediaUsage: MediaUsageTeaser}
 	)
 	tests := []struct {
 		name string
@@ -98,7 +98,7 @@ func TestMedias_Get(t *testing.T) {
 				detailMedia,
 			},
 			args: args{
-				usage: MediaUsageList,
+				usage: MediaUsageTeaser,
 			},
 			want: MediaData{},
 		},
@@ -106,7 +106,7 @@ func TestMedias_Get(t *testing.T) {
 			name: "List with list media returns correct media",
 			m: Medias{
 				detailMedia,
-				listMedia,
+				teaserMedia,
 			},
 			args: args{
 				usage: MediaUsageDetail,

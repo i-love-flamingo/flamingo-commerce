@@ -25,7 +25,7 @@ type (
 
 // Media usage constants
 const (
-	MediaUsageList   = "list"
+	MediaUsageTeaser = "teaser"
 	MediaUsageDetail = "detail"
 )
 
