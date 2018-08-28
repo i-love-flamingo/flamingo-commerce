@@ -11,8 +11,8 @@ func TestGetActive(t *testing.T) {
 	}
 
 	var (
-		inactiveCategory Category = CategoryData{IsActive: false}
-		activeCategory   Category = CategoryData{IsActive: true}
+		inactiveCategory = CategoryData{IsActive: false}
+		activeCategory   = CategoryData{IsActive: true}
 	)
 	tests := []struct {
 		name string
@@ -30,9 +30,9 @@ func TestGetActive(t *testing.T) {
 			name: "Inactive tree retuns nil",
 			args: args{
 				c: CategoryData{
-					Children: []Category{
-						inactiveCategory,
-						inactiveCategory,
+					Children: []*CategoryData{
+						&inactiveCategory,
+						&inactiveCategory,
 					},
 					IsActive: false,
 				},
@@ -43,14 +43,14 @@ func TestGetActive(t *testing.T) {
 			name: "Active tree returns non nil active category",
 			args: args{
 				c: CategoryData{
-					Children: []Category{
-						inactiveCategory,
-						activeCategory,
+					Children: []*CategoryData{
+						&inactiveCategory,
+						&activeCategory,
 					},
 					IsActive: false,
 				},
 			},
-			want: activeCategory,
+			want: &activeCategory,
 		},
 	}
 	for _, tt := range tests {

@@ -18,7 +18,7 @@ type (
 		CategoryCode     string
 		CategoryName     string
 		CategoryPath     string
-		Children         []Category
+		Children         []*CategoryData
 		IsActive         bool
 		IsPromoted       bool
 		CategoryMedia    Medias
@@ -78,7 +78,12 @@ func (c CategoryData) Path() string {
 
 // Categories gets the child categories
 func (c CategoryData) Categories() []Category {
-	return c.Children
+	result := make([]Category, len(c.Children))
+	for i, child := range c.Children {
+		result[i] = Category(child)
+	}
+
+	return result
 }
 
 // Promoted gets the category promoted state
