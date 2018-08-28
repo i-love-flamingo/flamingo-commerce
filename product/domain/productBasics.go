@@ -3,6 +3,7 @@ package domain
 import (
 	"fmt"
 	"time"
+	"strings"
 )
 
 // Media usage constants
@@ -140,7 +141,7 @@ type (
 
 // Value returns the raw value
 func (at Attribute) Value() string {
-	return fmt.Sprintf("%v", at.RawValue)
+	return strings.Trim(fmt.Sprintf("%v", at.RawValue), " ")
 }
 
 // IsEnabledValue returns true if the value can be seen as a toogle and is enabled
