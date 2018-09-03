@@ -1,6 +1,13 @@
 package infrastructure
 
 import (
+	"context"
+	"errors"
+	"fmt"
+	"math/big"
+	"math/rand"
+	"strconv"
+
 	domaincart "flamingo.me/flamingo-commerce/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/product/domain"
 )
@@ -24,29 +31,29 @@ type (
 	}
 )
 
-/*
-
 var (
 	_ domaincart.CartBehaviour = (*InMemoryCartOrderBehaviour)(nil)
 )
 
 // @todo implement when needed
-func (cob *InMemoryCartOrderBehaviour) PlaceOrder(ctx context.Context, cart *domaincart.Cart, payment *domaincart.CartPayment) (string, error) {
-	return "", nil
+func (cob *InMemoryCartOrderBehaviour) PlaceOrder(ctx context.Context, cart *domaincart.Cart, payment *domaincart.CartPayment) (domaincart.PlacedOrderInfos, error) {
+	return nil, nil
 }
 
-func (cob *InMemoryCartOrderBehaviour) DeleteItem(ctx context.Context, cart *domaincart.Cart, itemId string) (*domaincart.Cart, error) {
+func (cob *InMemoryCartOrderBehaviour) DeleteItem(ctx context.Context, cart *domaincart.Cart, itemId string, deliveryCode string) (*domaincart.Cart, error) {
 	if !cob.CartStorage.HasCart(cart.ID) {
 		return nil, fmt.Errorf("cart.infrastructure.InMemoryCartOrderBehaviour: Cannot delete - Guestcart with id %v not existend", cart.ID)
 	}
 
-	fmt.Printf("Inmemory Service Delete %v in %#v", itemId, cart.Cartitems)
-	for k, item := range cart.Cartitems {
-		if item.ID == itemId {
-			if len(cart.Cartitems) > k {
-				cart.Cartitems = append(cart.Cartitems[:k], cart.Cartitems[k+1:]...)
-			} else {
-				cart.Cartitems = cart.Cartitems[:k]
+	if delivery, ok := cart.GetDeliveryByCode(deliveryCode); ok {
+		fmt.Printf("Inmemory Service Delete %v in %#v", itemId, delivery.Cartitems)
+		for k, item := range delivery.Cartitems {
+			if item.ID == itemId {
+				if len(delivery.Cartitems) > k {
+					delivery.Cartitems = append(delivery.Cartitems[:k], delivery.Cartitems[k+1:]...)
+				} else {
+					delivery.Cartitems = delivery.Cartitems[:k]
+				}
 			}
 		}
 	}
@@ -55,52 +62,78 @@ func (cob *InMemoryCartOrderBehaviour) DeleteItem(ctx context.Context, cart *dom
 	return cart, nil
 }
 
-func (cob *InMemoryCartOrderBehaviour) UpdateItem(ctx context.Context, cart *domaincart.Cart, itemId string, itemUpdateCommand domaincart.ItemUpdateCommand) (*domaincart.Cart, error) {
+func (cob *InMemoryCartOrderBehaviour) UpdateItem(ctx context.Context, cart *domaincart.Cart, itemId string, deliveryCode string, itemUpdateCommand domaincart.ItemUpdateCommand) (*domaincart.Cart, error) {
 	if !cob.CartStorage.HasCart(cart.ID) {
 		return nil, fmt.Errorf("cart.infrastructure.InMemoryCartOrderBehaviour: Cannot add - Guestcart with id %v not existend", cart.ID)
 	}
 
-	fmt.Printf("Inmemory Service Update %v in %#v", itemId, cart.Cartitems)
+	if delivery, ok := cart.GetDeliveryByCode(deliveryCode); ok {
+		fmt.Printf("Inmemory Service Update %v in %#v", itemId, delivery.Cartitems)
 
-	item, err := cart.GetByItemId(itemId)
-	if err != nil {
-		return nil, fmt.Errorf("cart.infrastructure.InMemoryCartOrderBehaviour: Cannot delete - Guestcart item with id %v not existend", itemId)
-	}
+		for _, item := range delivery.Cartitems {
+			if itemId == item.ID {
+				item.Qty = *itemUpdateCommand.Qty
 
-	item.Qty = *itemUpdateCommand.Qty
-
-	calculateItemPrices(item)
-	for k, currentItem := range cart.Cartitems {
-		if currentItem.ID == itemId {
-			cart.Cartitems[k] = *item
+				calculateItemPrices(&item)
+				for k, currentItem := range delivery.Cartitems {
+					if currentItem.ID == itemId {
+						delivery.Cartitems[k] = item
+					}
+				}
+			}
 		}
-	}
 
-	cob.CartStorage.StoreCart(*cart)
+		cob.CartStorage.StoreCart(*cart)
+	}
 
 	return cart, nil
 }
 
-*/
 /**
 add item to cart and store in memory
-*/ /*
+*/
 
-func (cob *InMemoryCartOrderBehaviour) AddToCart(ctx context.Context, cart *domaincart.Cart, addRequest domaincart.AddRequest) (*domaincart.Cart, error) {
+func (cob *InMemoryCartOrderBehaviour) AddToCart(ctx context.Context, cart *domaincart.Cart, deliveryCode string, addRequest domaincart.AddRequest) (*domaincart.Cart, error) {
 
-	if !cob.CartStorage.HasCart(cart.ID) {
+	if cart != nil && !cob.CartStorage.HasCart(cart.ID) {
 		return nil, fmt.Errorf("cart.infrastructure.InMemoryCartOrderBehaviour: Cannot add - Guestcart with id %v not existend", cart.ID)
 	}
 
-	// check if the current item is in the cart and add or increase qty
-	// @todo for the future we have to check the deliveryIntent too, it will be possible to add the same item twice
-	// with different delivery intents
-	found, lineNr := cart.HasItem(addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode)
-	if found {
-		item, _ := cart.GetByLineNr(lineNr)
-		item.Qty = item.Qty + addRequest.Qty
-		calculateItemPrices(item)
+	// has cart current delivery, check if there is an item present for this delivery
+	if cart.HasDeliveryForCode(deliveryCode) {
+		delivery, _ := cart.GetDeliveryByCode(deliveryCode)
+
+		// does the item already exist?
+		itemFound := false
+		for _, item := range delivery.Cartitems {
+			if item.MarketplaceCode == addRequest.MarketplaceCode {
+				item.Qty = item.Qty + addRequest.Qty
+				itemFound = true
+			}
+		}
+
+		if !itemFound {
+			// create and add new item
+			product, _ := cob.ProductService.Get(ctx, addRequest.MarketplaceCode)
+			cartItem := domaincart.Item{
+				MarketplaceCode:        addRequest.MarketplaceCode,
+				VariantMarketPlaceCode: addRequest.VariantMarketplaceCode,
+				Qty:          addRequest.Qty,
+				SinglePrice:  product.SaleableData().ActivePrice.GetFinalPrice(),
+				ID:           strconv.Itoa(rand.Int()),
+				CurrencyCode: product.SaleableData().ActivePrice.Currency,
+			}
+
+			calculateItemPrices(&cartItem)
+			delivery.Cartitems = append(delivery.Cartitems, cartItem)
+		}
+
 	} else {
+		// create delivery and add item
+		delivery := new(domaincart.Delivery)
+		delivery.DeliveryInfo.Code = deliveryCode
+
+		// create and add new item
 		product, _ := cob.ProductService.Get(ctx, addRequest.MarketplaceCode)
 		cartItem := domaincart.Item{
 			MarketplaceCode:        addRequest.MarketplaceCode,
@@ -109,15 +142,13 @@ func (cob *InMemoryCartOrderBehaviour) AddToCart(ctx context.Context, cart *doma
 			SinglePrice:  product.SaleableData().ActivePrice.GetFinalPrice(),
 			ID:           strconv.Itoa(rand.Int()),
 			CurrencyCode: product.SaleableData().ActivePrice.Currency,
-			OriginalDeliveryIntent: &domaincart.DeliveryIntent{
-				Method: addRequest.DeliveryIntent.Method,
-				AutodetectDeliveryLocation: false,
-				DeliveryLocationType:       addRequest.DeliveryIntent.DeliveryLocationType,
-				DeliveryLocationCode:       addRequest.DeliveryIntent.DeliveryLocationCode,
-			},
 		}
+
 		calculateItemPrices(&cartItem)
-		cart.Cartitems = append(cart.Cartitems, cartItem)
+
+		// append item
+		delivery.Cartitems = append(delivery.Cartitems, cartItem)
+		cart.Deliveries = append(cart.Deliveries, *delivery)
 	}
 
 	cob.CartStorage.StoreCart(*cart)
@@ -135,19 +166,27 @@ func (cob *InMemoryCartOrderBehaviour) UpdatePurchaser(ctx context.Context, cart
 }
 
 // @todo implement when needed
-func (cob *InMemoryCartOrderBehaviour) UpdateAdditionalData(ctx context.Context, cart *domaincart.Cart, additionalData map[string]string) (*domaincart.Cart, error) {
+func (cob *InMemoryCartOrderBehaviour) UpdateBillingAddress(ctx context.Context, cart *domaincart.Cart, billingAddress *domaincart.Address) (*domaincart.Cart, error) {
 	return nil, nil
 }
 
 // @todo implement when needed
-func (cob *InMemoryCartOrderBehaviour) UpdateDeliveryInfosAndBilling(ctx context.Context, cart *domaincart.Cart, billingAddress *domaincart.Address, deliveryInfoUpdates []domaincart.DeliveryInfoUpdateCommand) (*domaincart.Cart, error) {
+func (cob *InMemoryCartOrderBehaviour) UpdateAdditionalData(ctx context.Context, cart *domaincart.Cart, additionalData map[string]string) (*domaincart.Cart, error) {
 	return nil, nil
 }
 
-*/
+func (cob *InMemoryCartOrderBehaviour) UpdateDeliveryInfo(ctx context.Context, cart *domaincart.Cart, deliveryCode string, deliveryInfo domaincart.DeliveryInfo) (*domaincart.Cart, error) {
+	return nil, nil
+}
+
+// @todo implement when needed
+func (cob *InMemoryCartOrderBehaviour) UpdateDeliveryInfoAdditionalData(ctx context.Context, cart *domaincart.Cart, deliveryCode string, additionalData map[string]string) (*domaincart.Cart, error) {
+	return nil, nil
+}
+
 /*
 return the current cart from storage
-*/ /*
+*/
 
 func (cob *InMemoryCartOrderBehaviour) GetCart(ctx context.Context, cartId string) (*domaincart.Cart, error) {
 	if cob.CartStorage.HasCart(cartId) {
@@ -158,8 +197,7 @@ func (cob *InMemoryCartOrderBehaviour) GetCart(ctx context.Context, cartId strin
 	return nil, fmt.Errorf("cart.infrastructure.InMemoryCartOrderBehaviour: Cannot get - Guestcart with id %v not existend", cartId)
 }
 
-*/
-/** Implementation fo the storage **/ /*
+/** Implementation fo the storage **/
 
 func (s *InMemoryCartStorage) init() {
 	if s.guestCarts == nil {
@@ -203,4 +241,3 @@ func (cob *InMemoryCartOrderBehaviour) ApplyVoucher(ctx context.Context, cart *d
 
 	return cart, err
 }
-*/
