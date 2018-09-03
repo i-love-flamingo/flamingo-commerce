@@ -45,15 +45,23 @@ func (cob *InMemoryCartOrderBehaviour) DeleteItem(ctx context.Context, cart *dom
 		return nil, fmt.Errorf("cart.infrastructure.InMemoryCartOrderBehaviour: Cannot delete - Guestcart with id %v not existend", cart.ID)
 	}
 
-	if delivery, ok := cart.GetDeliveryByCode(deliveryCode); ok {
-		fmt.Printf("Inmemory Service Delete %v in %#v", itemId, delivery.Cartitems)
-		for k, item := range delivery.Cartitems {
+	if newDelivery, ok := cart.GetDeliveryByCode(deliveryCode); ok {
+		fmt.Printf("Inmemory Service Delete %v in %#v", itemId, newDelivery.Cartitems)
+		for k, item := range newDelivery.Cartitems {
 			if item.ID == itemId {
-				if len(delivery.Cartitems) > k {
-					delivery.Cartitems = append(delivery.Cartitems[:k], delivery.Cartitems[k+1:]...)
+				if len(newDelivery.Cartitems) > k {
+					newDelivery.Cartitems = append(newDelivery.Cartitems[:k], newDelivery.Cartitems[k+1:]...)
 				} else {
-					delivery.Cartitems = delivery.Cartitems[:k]
+					newDelivery.Cartitems = newDelivery.Cartitems[:k]
 				}
+
+				// update the delivery with the new info
+				for j, delivery := range cart.Deliveries {
+					if deliveryCode == delivery.DeliveryInfo.Code {
+						cart.Deliveries[j] = *newDelivery
+					}
+				}
+
 			}
 		}
 	}
@@ -83,8 +91,16 @@ func (cob *InMemoryCartOrderBehaviour) UpdateItem(ctx context.Context, cart *dom
 			}
 		}
 
-		cob.CartStorage.StoreCart(*cart)
+		// update the delivery with the new info
+		for j, delivery := range cart.Deliveries {
+			if deliveryCode == delivery.DeliveryInfo.Code {
+				cart.Deliveries[j] = delivery
+			}
+		}
+
 	}
+
+	cob.CartStorage.StoreCart(*cart)
 
 	return cart, nil
 }
@@ -176,7 +192,14 @@ func (cob *InMemoryCartOrderBehaviour) UpdateAdditionalData(ctx context.Context,
 }
 
 func (cob *InMemoryCartOrderBehaviour) UpdateDeliveryInfo(ctx context.Context, cart *domaincart.Cart, deliveryCode string, deliveryInfo domaincart.DeliveryInfo) (*domaincart.Cart, error) {
-	return nil, nil
+
+	for key, delivery := range cart.Deliveries {
+		if delivery.DeliveryInfo.Code == deliveryCode {
+			cart.Deliveries[key].DeliveryInfo = deliveryInfo
+		}
+	}
+
+	return cart, nil
 }
 
 // @todo implement when needed
