@@ -115,61 +115,58 @@ func (cob *InMemoryCartOrderBehaviour) AddToCart(ctx context.Context, cart *doma
 		return nil, fmt.Errorf("cart.infrastructure.InMemoryCartOrderBehaviour: Cannot add - Guestcart with id %v not existend", cart.ID)
 	}
 
-	// has cart current delivery, check if there is an item present for this delivery
-	if cart.HasDeliveryForCode(deliveryCode) {
-		delivery, _ := cart.GetDeliveryByCode(deliveryCode)
-
-		// does the item already exist?
-		itemFound := false
-		for _, item := range delivery.Cartitems {
-			if item.MarketplaceCode == addRequest.MarketplaceCode {
-				item.Qty = item.Qty + addRequest.Qty
-				itemFound = true
-			}
-		}
-
-		if !itemFound {
-			// create and add new item
-			product, _ := cob.ProductService.Get(ctx, addRequest.MarketplaceCode)
-			cartItem := domaincart.Item{
-				MarketplaceCode:        addRequest.MarketplaceCode,
-				VariantMarketPlaceCode: addRequest.VariantMarketplaceCode,
-				Qty:          addRequest.Qty,
-				SinglePrice:  product.SaleableData().ActivePrice.GetFinalPrice(),
-				ID:           strconv.Itoa(rand.Int()),
-				CurrencyCode: product.SaleableData().ActivePrice.Currency,
-			}
-
-			calculateItemPrices(&cartItem)
-			delivery.Cartitems = append(delivery.Cartitems, cartItem)
-		}
-
-	} else {
+	// create delivery if it does not yet exist
+	if !cart.HasDeliveryForCode(deliveryCode) {
 		// create delivery and add item
 		delivery := new(domaincart.Delivery)
 		delivery.DeliveryInfo.Code = deliveryCode
-
-		// create and add new item
-		product, _ := cob.ProductService.Get(ctx, addRequest.MarketplaceCode)
-		cartItem := domaincart.Item{
-			MarketplaceCode:        addRequest.MarketplaceCode,
-			VariantMarketPlaceCode: addRequest.VariantMarketplaceCode,
-			Qty:          addRequest.Qty,
-			SinglePrice:  product.SaleableData().ActivePrice.GetFinalPrice(),
-			ID:           strconv.Itoa(rand.Int()),
-			CurrencyCode: product.SaleableData().ActivePrice.Currency,
-		}
-
-		calculateItemPrices(&cartItem)
-
-		// append item
-		delivery.Cartitems = append(delivery.Cartitems, cartItem)
 		cart.Deliveries = append(cart.Deliveries, *delivery)
+	}
+
+	// has cart current delivery, check if there is an item present for this delivery
+	delivery, _ := cart.GetDeliveryByCode(deliveryCode)
+
+	// does the item already exist?
+	itemFound := false
+	for i, item := range delivery.Cartitems {
+		if item.MarketplaceCode == addRequest.MarketplaceCode {
+			delivery.Cartitems[i].Qty = item.Qty + addRequest.Qty
+			itemFound = true
+		}
+	}
+
+	if !itemFound {
+		// create and add new item
+		cartItem := cob.buildItemForCart(ctx, addRequest)
+		delivery.Cartitems = append(delivery.Cartitems, cartItem)
+	}
+
+	for k, del := range cart.Deliveries {
+		if del.DeliveryInfo.Code == delivery.DeliveryInfo.Code {
+			cart.Deliveries[k] = *delivery
+		}
 	}
 
 	cob.CartStorage.StoreCart(*cart)
 
 	return cart, nil
+}
+
+func (cob *InMemoryCartOrderBehaviour) buildItemForCart(ctx context.Context, addRequest domaincart.AddRequest) domaincart.Item {
+	// create and add new item
+	product, _ := cob.ProductService.Get(ctx, addRequest.MarketplaceCode)
+	cartItem := domaincart.Item{
+		MarketplaceCode:        addRequest.MarketplaceCode,
+		VariantMarketPlaceCode: addRequest.VariantMarketplaceCode,
+		Qty:          addRequest.Qty,
+		SinglePrice:  product.SaleableData().ActivePrice.GetFinalPrice(),
+		ID:           strconv.Itoa(rand.Int()),
+		CurrencyCode: product.SaleableData().ActivePrice.Currency,
+	}
+
+	calculateItemPrices(&cartItem)
+
+	return cartItem
 }
 
 func calculateItemPrices(item *domaincart.Item) {
