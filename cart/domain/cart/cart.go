@@ -388,15 +388,3 @@ func (fd *FlightData) GetScheduledDate() string {
 func (fd *FlightData) GetScheduledDateTime() string {
 	return fd.ScheduledDateTime.Format(time.RFC3339)
 }
-
-//GetScheduledDateTime string from ScheduledDateTime - used for display
-func (f *FlightData) ParseScheduledDateTime() time.Time {
-	//"scheduledDateTime": "2017-11-25T06:30:00Z",
-	timeResult, err := time.Parse(time.RFC3339, f.GetScheduledDateTime())
-	if err != nil {
-		// returning a zero time in case of an error and log the error
-		f.Logger.Error(err)
-		return time.Time{}
-	}
-	return timeResult
-}
