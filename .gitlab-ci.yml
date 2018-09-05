@@ -1,16 +1,40 @@
 stages:
 - test
 
-test flamingo-commerce:
+.prepare: &prepare
   stage: test
-  image: thebod/goenv:0.0.1
-  script:
+  image: iloveflamingo/buildenv:1.11
+  before_script:
   - mkdir ~/.ssh && echo -e "Host gitlab.aoe.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config && echo "${GITLAB_SSH_KEY}" > ~/.ssh/id_rsa && chmod 400 ~/.ssh/id_rsa
   - mkdir -p "${GOPATH}/src/flamingo.me/"
-  - export GODIR="${GOPATH}/src/flamingo.me/flamingo-commerce"
+  - export GODIR="${GOPATH}/src/flamingo.me/flamingo"
   - ln -sfv "$(pwd -P)" "${GODIR}"
   - /pact/pact-go_linux_amd64 daemon &
   - cd "${GODIR}"
-  - rm Gopkg.lock
+
+cover:
+  <<: *prepare
+  script:
   - dep ensure -v
-  - go test ./...
+  - go test -coverprofile cover.out ./...
+  - go tool cover -func cover.out
+
+test:
+  <<: *prepare
+  script:
+  - dep ensure -v
+  - go test -race ./...
+
+update:
+  <<: *prepare
+  script:
+  - dep ensure -v -update
+  - go test -race ./...
+  allow_failure: true
+
+test 1.10:
+  <<: *prepare
+  image: iloveflamingo/buildenv:1.10
+  script:
+  - dep ensure -v
+  - go test -race ./...
