@@ -7,7 +7,7 @@ stages:
   before_script:
   - mkdir ~/.ssh && echo -e "Host gitlab.aoe.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config && echo "${GITLAB_SSH_KEY}" > ~/.ssh/id_rsa && chmod 400 ~/.ssh/id_rsa
   - mkdir -p "${GOPATH}/src/flamingo.me/"
-  - export GODIR="${GOPATH}/src/flamingo.me/flamingo"
+  - export GODIR="${GOPATH}/src/flamingo.me/flamingo-commerce"
   - ln -sfv "$(pwd -P)" "${GODIR}"
   - /pact/pact-go_linux_amd64 daemon &
   - cd "${GODIR}"
