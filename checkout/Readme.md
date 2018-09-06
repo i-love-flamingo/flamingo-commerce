@@ -6,6 +6,8 @@ This package provides a One Page standard checkout with the following features:
 
 ## Standard Checkout Flow:
 
+This module implements controller and services for the following checkout flow (the checkout process for the end customer):
+
 1. check if user is logged in
     * yes: next action
     * no: show start template (where the user can login)
