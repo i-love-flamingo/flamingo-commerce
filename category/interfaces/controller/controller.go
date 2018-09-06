@@ -63,8 +63,8 @@ func (vc *View) Inject(
 	productSearchResultViewDataFactory *productInterfaceViewData.ProductSearchResultViewDataFactory,
 	router *router.Router,
 	config *struct {
-		Template       string `inject:"config:core.category.view.template"`
-		TeaserTemplate string `inject:"config:core.category.view.teaserTemplate"`
+		Template       string `inject:"config:category.view.template"`
+		TeaserTemplate string `inject:"config:category.view.teaserTemplate"`
 	},
 	logger flamingo.Logger,
 	paginationInfoFactory *utils.PaginationInfoFactory,

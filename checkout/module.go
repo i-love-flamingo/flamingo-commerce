@@ -15,7 +15,7 @@ import (
 type (
 	// CheckoutModule registers our profiler
 	CheckoutModule struct {
-		UseFakeDeliveryLocationsService bool `inject:"config:checkout.useFakeDeliveryLocationsService,optional"`
+		UseFakeSourcingService bool `inject:"config:checkout.useFakeSourcingService,optional"`
 	}
 )
 
@@ -24,7 +24,7 @@ func (m *CheckoutModule) Configure(injector *dingo.Injector) {
 	injector.BindMap((*paymentDomain.PaymentProvider)(nil), "offlinepayment").To(paymentInfrastructure.OfflinePaymentProvider{})
 
 	injector.Bind((*form.Decoder)(nil)).ToProvider(form.NewDecoder).AsEagerSingleton()
-	if m.UseFakeDeliveryLocationsService {
+	if m.UseFakeSourcingService {
 		injector.Override((*domain.SourcingService)(nil), "").To(infrastructure.FakeSourcingService{})
 	}
 
