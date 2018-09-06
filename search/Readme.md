@@ -1,4 +1,4 @@
-# Search package
+# Search Module
 
 Defines a common search domain and provides controllers to render search result and autosuggest.
 

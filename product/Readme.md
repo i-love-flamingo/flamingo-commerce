@@ -1,4 +1,4 @@
-# Product Package
+# Product Module
 
 ## About
 

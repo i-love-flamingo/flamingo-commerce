@@ -1,4 +1,4 @@
-# Module category
+# Category Module
 
 * Provides domain model for (product)category and category tree, and the related categoryService interface (=Secondary Port)
 * Provides Controller for rendering category pages, supporting different templates baed on the category type.

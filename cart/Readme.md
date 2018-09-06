@@ -32,27 +32,60 @@ Also the cart module and its services will be used by the checkout module.
     
 ```
 
-# Domain Model Details:
+## Domain Model Details:
 
 
-## Cart Aggregate
+### Cart Aggregate
 Represents the Cart with PaymentInfos, DeliveryInfos and its Items:
 
 ![](cart-model.png)
 
 
 
+### About Delivery
 
-## CartItem details
+In order to support Multidelivery the cart cannot directly have Items attached, instead the Items belong to a Delivery.
+
+That also means when adding Items to the cart you need to specify the delivery with a "code".
+
+In cases where you only need one Delivery this can be configured as default and will be added on the fly for you.
+
+
+
+#### DeliveryInfo
+
+DeliveryInfo represents the information about which deliverymethod should be used and what deliverylocation should be used.
+A deliverylocation can be a address, but also a location defined by a code (e.g. such as a collection point).
+
+A DeliveryInfo has a "code" that should idendify a Delivery unique.
+
+The DeliveryInfo object is normaly completed with all required infos during the checkout
+
+##### Optional Port: DeliveryInfoBuilder
+The DeliveryInfoBuilder interface defines an interface that builds DeliveryInfoUpdateCommand for a cart.
+
+The "DefaultDeliveryInfoBuilder" that is part of the package should be ok for most cases, it simply takes the code and builds an initial DeliveryInfo object.
+The code used by the "DefaultDeliveryInfoBuilder" should be speaking and is used to initialy create the DeliveryInfo:
+The following String representations exists:
+
+* pickup_store_LOCATIONCODE
+    * DeliveryInfo to pickup the item in a (in)store pickup location
+* pickup_collection_LOCATIONCODE
+    * DeliveryInfo to pickup the item in a a special pickup location (central collectionpoint)
+* pickup_autodetect
+    * DeliveryInfo to pickup the items - but leave it to the solution to figure out the pickup point
+* delivery (default)
+    * DeliveryInfo to have the item (home) delivered
+
+
+### CartItem details
 
 There are special properties that require some explainations:
 
-* OriginalDeliveryIntent: points to a description of what the user intent was when adding the item to the cart (see below)
-* DeliveryInfoReference: References the DeliveryInfo that is assigned to this item. (This allows a cart with multishippment) (Is only set if a DeliveryInfoUpdateCommand was send to the cartBehaviour)
 * SourceId: Optional represents a location that should be used to fillfill this Item. This can be the code of a certain warehouse or even the code of a retailstore (if item should be picked(sourced) from that location)
     * There is a SourcingService interface - that allows you to register the logic of how to decide on the sourceId
 
-## Decorated Cart
+### Decorated Cart
 
 If you need all the product informations at hand - use the Decorated Cart - its decorating the cart with references to the product (dependency product package)
 
@@ -113,7 +146,7 @@ cart->item[]
 | GrandTotal                   | The final amount that need to be payed by the customer                                            | GrandTotal = SubTotal + TaxAmount - DiscountAmount + SOME of Totalitems  / GrandTotal = (Sum of Items RowTotalWithDiscountInclTax) + SOME of Totalitems    |
 
 
-# Domain - Secondary Ports
+## Domain - Secondary Ports
 
 **Must Have Secondary Ports: GuestCartService, CustomerCartService and CartBehavior**
 
@@ -121,43 +154,6 @@ GuestCartService, CustomerCartService and CartBehaviour are defined as Interface
 They need to be implemented and registered.
 
 There are several example implementations available.
-
-
-
-## About Delivery
-
-In order to support Multidelivery the cart cannot directly have Items attached, instead the Items belong to a Delivery.
-
-That also means when adding Items to the cart you need to specify the delivery with a "code".
-
-In cases where you only need one Delivery this can be configured as default and will be added on the fly for you.
-
-
-
-#### DeliveryInfo
-
-DeliveryInfo represents the information about which deliverymethod should be used and what deliverylocation should be used.
-A deliverylocation can be a address, but also a location defined by a code (e.g. such as a collection point).
-
-A DeliveryInfo has a "code" that should idendify a Delivery unique.
-
-The DeliveryInfo object is normaly completed with all required infos during the checkout
-
-#### Optional Port: DeliveryInfoBuilder
-The DeliveryInfoBuilder interface defines an interface that builds DeliveryInfoUpdateCommand for a cart.
-
-The "DefaultDeliveryInfoBuilder" that is part of the package should be ok for most cases, it simply takes the code and builds an initial DeliveryInfo object.
-The code used by the "DefaultDeliveryInfoBuilder" should be speaking and is used to initialy create the DeliveryInfo:
-The following String representations exists:
-
-* pickup_store_LOCATIONCODE
-    * DeliveryInfo to pickup the item in a (in)store pickup location
-* pickup_collection_LOCATIONCODE
-    * DeliveryInfo to pickup the item in a a special pickup location (central collectionpoint)
-* pickup_autodetect
-    * DeliveryInfo to pickup the items - but leave it to the solution to figure out the pickup point
-* delivery (default)
-    * DeliveryInfo to have the item (home) delivered
 
 
 #### Optional Port: CartValidator
@@ -175,7 +171,7 @@ If an Item is not Valid according to the result of the registered ItemValidator 
 
 
 
-# Application Layer
+## Application Layer
 
 Offers the following services:
 * CartReceiverService:
@@ -190,7 +186,7 @@ Example Sequence for AddToCart Application Services to
 ![](cart-flow.png)
 
 
-# A typical Checkout "Flow"
+## A typical Checkout "Flow"
 
 A checkout package would use the cart package for adding informations to the cart, typically that would involve:
 
@@ -205,9 +201,9 @@ A checkout package would use the cart package for adding informations to the car
 * Finish by calling CartService->PlaceOrder(CartPayment)
     * CartPayment is an object, which holds the informations which Payment is used for which item
 
-# Interface Layer
+## Interface Layer
 
-## Cart Controller ##
+### Cart Controller
 The main Cart Controller expects the following templates by default:
 
 * checkout/cart
@@ -218,7 +214,7 @@ The templates get the following variables passed:
 * DecoratedCart
 * CartValidationResult
 
-## Cart Ajax API ##
+### Cart Ajax API
 There are also of course ajax endpoints, that can be used to interact with the cart directly from your browser and the javascript functionality of your template.
 
 #### Get Cart Content:

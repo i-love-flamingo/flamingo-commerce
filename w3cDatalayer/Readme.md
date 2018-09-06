@@ -1,4 +1,4 @@
-# Datalayer Module
+# W3C Datalayer Module
 
 Simple modul that helps implementing tracking pixels and tagmanagers.
 The datastructure is oriented at:
@@ -12,10 +12,10 @@ It:
 Configurations:
 ```
 w3cDatalayer:
-  pageInstanceIDPrefix: "heathrowboutique"
+  pageInstanceIDPrefix: "mywebsite"
   pageInstanceIDStage: "%%ENV:STAGE%%production"
-  pageNamePrefix: Heathrow Boutique
-  siteName: Heathrow Boutique
+  pageNamePrefix: My Shop
+  siteName:  My Shop
   defaultCurrency: GBP
   version: 1.0
   //If you want sha512 hashes instead real user values
@@ -34,7 +34,7 @@ Usage:
 The templatefunc provides you access to the current requests datalayer.
 You can get the datalayer and you can modify it:
 
-For some values in the datalayer the template knows better than the backend what to put in:
+For some values in the datalayer the template knows better than the backend what to put in, so please call the approriate setter like this:
 ```
   - var result = w3cDatalayerService().setPageCategories("masterdata","brand","detail")
   - var result = w3cDatalayerService().setBreadCrumb("Home/Checkout/Step1")
@@ -47,7 +47,7 @@ For some values in the datalayer the template knows better than the backend what
 ```
 
 
-If you want to populate the w3c datalayer to your page (digitalData object)
+If you want to populate the w3c datalayer to your page you can render the final digitalData object like this:
 ```
 - var w3cDatalayerData = w3cDatalayerService().get()
 script(type="text/javascript").
