@@ -2,8 +2,8 @@ package domain
 
 import (
 	"fmt"
-	"time"
 	"strings"
+	"time"
 )
 
 // Media usage constants
@@ -285,6 +285,10 @@ func findMediaInProduct(p BasicProduct, group string, usage string) *Media {
 
 // IsInStock returns information if current product whether in stock or not
 func (bpd BasicProductData) IsInStock() bool {
+	if bpd.HasAttribute("alwaysInStock") && bpd.Attributes["alwaysInStock"].Value() == "true" {
+		return true
+	}
+
 	if bpd.StockLevel == "" || bpd.StockLevel == "out" {
 		return false
 	}
