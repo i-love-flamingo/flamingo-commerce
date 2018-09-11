@@ -104,3 +104,8 @@ func NewPaginationPageSizeFilter(page int) *PaginationPageSize {
 func (f *PaginationPageSize) Value() (string, []string) {
 	return "pageSize", []string{strconv.Itoa(f.pageSize)}
 }
+
+// Value of the current filter
+func (f *PaginationPageSize) GetPageSize() int {
+	return f.pageSize
+}

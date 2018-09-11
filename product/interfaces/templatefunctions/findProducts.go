@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"fmt"
+	"strconv"
 
 	"flamingo.me/flamingo-commerce/product/application"
 	searchApplication "flamingo.me/flamingo-commerce/search/application"
@@ -20,20 +20,31 @@ type (
 
 func (tf *FindProducts) Func(ctx context.Context) interface{} {
 
-	return func(widgetName string, config interface{}) *application.SearchResult {
+	/*
+		widgetName - used to namespace widget - in case we need pagination
+		config - map with certain keys - used to specifiy th searchRequest better
+	*/
+	return func(widgetName string, searchConfig interface{}, additionalFilters interface{}) *application.SearchResult {
 		var searchRequest searchApplication.SearchRequest
-		if pugjsMap, ok := config.(pugjs.Map); ok {
-			configValues := pugjsMap.AsStringMap()
-			fmt.Printf("%#v", configValues)
-			//TODO - fill all the searchRequest
-			filters := make(map[string][]string)
-			for k, v := range configValues {
-				filters[k] = []string{v}
-			}
+		//fmt.Printf("%#v", searchConfig)
+
+		if pugjsMap, ok := searchConfig.(*pugjs.Map); ok {
+			searchConfigValues := pugjsMap.AsStringMap()
+			//fmt.Printf("%#v", searchConfigValues)
+
 			searchRequest = searchApplication.SearchRequest{
-				FilterBy: filters,
+				SortDirection: searchConfigValues["sortDirection"],
+				SortBy:        searchConfigValues["sortBy"],
+				Query:         searchConfigValues["query"],
+			}
+			pageSize, err := strconv.Atoi(searchConfigValues["pageSize"])
+			if err == nil {
+				searchRequest.PageSize = pageSize
 			}
 		}
+
+		searchRequest.FilterBy = asFilterMap(additionalFilters)
+		//fmt.Printf("%#v", searchRequest)
 		result, e := tf.SearchService.Find(ctx, &searchRequest)
 		if e != nil {
 			log.Printf("Error: product.interfaces.templatefunc %v", e)
@@ -42,4 +53,24 @@ func (tf *FindProducts) Func(ctx context.Context) interface{} {
 
 		return result
 	}
+}
+
+func asFilterMap(additionalFilters interface{}) map[string][]string {
+	filters := make(map[string][]string)
+	// use filtersPug as KeyValueFilter
+	if filtersPug, ok := additionalFilters.(*pugjs.Map); ok {
+		for k, v := range filtersPug.Items {
+			if v, ok := v.(*pugjs.Array); ok {
+				var filterList []string
+				for _, item := range v.Items() {
+					filterList = append(filterList, item.String())
+				}
+				filters[k.String()] = filterList
+			}
+			if v, ok := v.(pugjs.String); ok {
+				filters[k.String()] = []string{v.String()}
+			}
+		}
+	}
+	return filters
 }
