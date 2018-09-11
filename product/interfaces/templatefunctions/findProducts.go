@@ -3,50 +3,43 @@ package templatefunctions
 import (
 	"context"
 	"log"
-	"flamingo.me/flamingo/core/pugtemplate/pugjs"
 
-	productDomain "flamingo.me/flamingo-commerce/product/domain"
-	searchDomain "flamingo.me/flamingo-commerce/search/domain"
+	"fmt"
+
+	"flamingo.me/flamingo-commerce/product/application"
+	searchApplication "flamingo.me/flamingo-commerce/search/application"
+	"flamingo.me/flamingo/core/pugtemplate/pugjs"
 )
 
 type (
 	// FindProducts is exported as a template function
 	FindProducts struct {
-		SearchService productDomain.SearchService `inject:""`
+		SearchService *application.ProductSearchService `inject:""`
 	}
 )
 
 func (tf *FindProducts) Func(ctx context.Context) interface{} {
-	return func(filtersPug pugjs.Map, sortPug pugjs.Map) []productDomain.BasicProduct {
-		var filter []searchDomain.Filter
 
-		// use filtersPug as KeyValueFilter
-		for k, v := range filtersPug.Items {
-			if v, ok := v.(*pugjs.Array); ok {
-				var filterList []string
-				for _, item:= range v.Items() {
-					filterList = append(filterList, item.String())
-				}
-				filter = append(filter, searchDomain.NewKeyValueFilter(k.String(), filterList))
+	return func(widgetName string, config interface{}) *application.SearchResult {
+		var searchRequest searchApplication.SearchRequest
+		if pugjsMap, ok := config.(pugjs.Map); ok {
+			configValues := pugjsMap.AsStringMap()
+			fmt.Printf("%#v", configValues)
+			//TODO - fill all the searchRequest
+			filters := make(map[string][]string)
+			for k, v := range configValues {
+				filters[k] = []string{v}
 			}
-			if v, ok := v.(pugjs.String); ok {
-				filter = append(filter, searchDomain.NewKeyValueFilter(k.String(), []string{v.String()}))
-			}
-		}
-
-		// use sortPug as SortFilter
-		for k, v := range sortPug.Items {
-			if v, ok := v.(pugjs.String); ok {
-				filter = append(filter, searchDomain.NewSortFilter(k.String(), v.String()))
+			searchRequest = searchApplication.SearchRequest{
+				FilterBy: filters,
 			}
 		}
-
-		products, e := tf.SearchService.Search(ctx, filter...)
+		result, e := tf.SearchService.Find(ctx, &searchRequest)
 		if e != nil {
 			log.Printf("Error: product.interfaces.templatefunc %v", e)
-			return nil
+			return &application.SearchResult{}
 		}
 
-		return products.Hits
+		return result
 	}
 }

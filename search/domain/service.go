@@ -3,31 +3,26 @@ package domain
 import (
 	"context"
 	"errors"
+	"fmt"
+	"math"
 	"net/url"
 	"sort"
 )
 
 type (
-	// Filter interface for search queries
-	Filter interface {
-		Value() (string, []string)
+	// SearchService defines how to access search
+	SearchService interface {
+		//Types() []string
+		Search(ctx context.Context, filter ...Filter) (results map[string]Result, err error)
+		SearchFor(ctx context.Context, typ string, filter ...Filter) (result Result, err error)
 	}
 
-	// KeyValueFilter allows simple k -> []values filtering
-	KeyValueFilter struct {
-		k string
-		v []string
-	}
-
-	// SortFilter - specifies the request to sort by some criteria(label) in a certain direction. Possible values for label and direction should be in SearchMeta.SortOption
-	SortFilter struct {
-		label     string
-		direction string
-	}
-
-	// QueryFilter - represents a query
-	QueryFilter struct {
-		query string
+	// Result defines a search result for one type
+	Result struct {
+		SearchMeta SearchMeta
+		Hits       []Document
+		Suggestion []Suggestion
+		Facets     FacetCollection
 	}
 
 	// SearchMeta data
@@ -77,14 +72,6 @@ type (
 	FacetCollection map[string]Facet
 	facetSlice      []Facet
 
-	// Result defines a search result for one type
-	Result struct {
-		SearchMeta SearchMeta
-		Hits       []Document
-		Suggestion []Suggestion
-		Facets     FacetCollection
-	}
-
 	Suggestion struct {
 		Text      string
 		Highlight string
@@ -92,13 +79,6 @@ type (
 
 	// Document holds a search result document
 	Document interface{}
-
-	// SearchService defines how to access search
-	SearchService interface {
-		//Types() []string
-		Search(ctx context.Context, filter ...Filter) (results map[string]Result, err error)
-		SearchFor(ctx context.Context, typ string, filter ...Filter) (result Result, err error)
-	}
 
 	RedirectError struct {
 		To string
@@ -151,46 +131,19 @@ const (
 )
 
 var (
-	_ Filter = NewKeyValueFilter("a", []string{"b", "c"})
 
 	// ErrNotFound error
 	ErrNotFound = errors.New("search not found")
 )
 
-// NewKeyValueFilter factory
-func NewKeyValueFilter(k string, v []string) *KeyValueFilter {
-	return &KeyValueFilter{
-		k: k,
-		v: v,
+//ValidatePageSize checks if the pageSize is logical for current reult
+func (sm *SearchMeta) ValidatePageSize(pageSize int) error {
+	if pageSize == 0 {
+		return errors.New("cannot validate - no expected pageSize given")
 	}
-}
-
-// Value of the current filter
-func (f *KeyValueFilter) Value() (string, []string) {
-	return f.k, f.v
-}
-
-// NewSortFilter factory
-func NewSortFilter(label string, direction string) *SortFilter {
-	return &SortFilter{
-		label:     label,
-		direction: direction,
+	expectedNumPages := float64(sm.NumResults) / float64(pageSize)
+	if math.Ceil(expectedNumPages) != float64(sm.NumPages) {
+		return fmt.Errorf("Pagesize not valid expected ceil(%v) / given in result: %v", expectedNumPages, sm.NumPages)
 	}
-}
-
-// Value of the current filter
-func (f *SortFilter) Value() (string, []string) {
-	return f.label, []string{f.direction}
-}
-
-// NewQueryFilter factory
-func NewQueryFilter(query string) *QueryFilter {
-	return &QueryFilter{
-		query: query,
-	}
-}
-
-// Value of the current filter
-func (f *QueryFilter) Value() (string, []string) {
-	return "q", []string{f.query}
+	return nil
 }

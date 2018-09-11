@@ -1,3 +1,6 @@
+/**
+DEPRICATED Package.. Use application.searchService instead!
+*/
 package viewData
 
 import (

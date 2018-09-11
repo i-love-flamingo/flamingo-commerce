@@ -3,6 +3,8 @@ package interfaces
 import (
 	"context"
 
+	"strconv"
+
 	"flamingo.me/flamingo-commerce/search/domain"
 	"flamingo.me/flamingo-commerce/search/utils"
 	"flamingo.me/flamingo/framework/web"
@@ -39,6 +41,11 @@ func (vc *ViewController) Get(c context.Context, r *web.Request) web.Response {
 		case "sort":
 			if len(v) > 0 {
 				filter[i] = domain.NewSortFilter(k, v[0])
+			}
+		case "page":
+			if len(v) > 0 {
+				page, _ := strconv.Atoi(v[0])
+				filter[i] = domain.NewPaginationPageFilter(page)
 			}
 		default:
 			filter[i] = domain.NewKeyValueFilter(k, v)

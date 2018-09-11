@@ -1,0 +1,106 @@
+package domain
+
+import (
+	"strconv"
+)
+
+type (
+	// Filter interface for search queries
+	Filter interface {
+		//Value very generic method for filters - returning typical Parmeter Name and its setted values
+		Value() (string, []string)
+	}
+
+	// KeyValueFilter allows simple k -> []values filtering
+	KeyValueFilter struct {
+		k string
+		v []string
+	}
+
+	// SortFilter - specifies the request to sort by some criteria(label) in a certain direction. Possible values for label and direction should be in SearchMeta.SortOption
+	SortFilter struct {
+		label     string
+		direction string
+	}
+
+	// QueryFilter - represents a query string, normaly given by a user in the search result
+	QueryFilter struct {
+		query string
+	}
+
+	// PaginationPage - if serach supports pagination this filter tells which page to return
+	PaginationPage struct {
+		page int
+	}
+
+	// PaginationPageSize  - if serach supports setting the amount (limit) per page
+	PaginationPageSize struct {
+		pageSize int
+	}
+)
+
+var (
+	_ Filter = NewKeyValueFilter("a", []string{"b", "c"})
+)
+
+// NewKeyValueFilter factory
+func NewKeyValueFilter(k string, v []string) *KeyValueFilter {
+	return &KeyValueFilter{
+		k: k,
+		v: v,
+	}
+}
+
+// Value of the current filter
+func (f *KeyValueFilter) Value() (string, []string) {
+	return f.k, f.v
+}
+
+// NewSortFilter factory
+func NewSortFilter(label string, direction string) *SortFilter {
+	return &SortFilter{
+		label:     label,
+		direction: direction,
+	}
+}
+
+// Value of the current filter
+func (f *SortFilter) Value() (string, []string) {
+	return f.label, []string{f.direction}
+}
+
+// NewQueryFilter factory
+func NewQueryFilter(query string) *QueryFilter {
+	return &QueryFilter{
+		query: query,
+	}
+}
+
+// Value of the current filter
+func (f *QueryFilter) Value() (string, []string) {
+	return "q", []string{f.query}
+}
+
+// NewPaginationPageFilter factory
+func NewPaginationPageFilter(page int) *PaginationPage {
+	return &PaginationPage{
+		page: page,
+	}
+}
+
+// Value of the current filter
+func (f *PaginationPage) Value() (string, []string) {
+	return "page", []string{strconv.Itoa(f.page)}
+}
+
+// NewPaginationPageSizeFilter factory
+func NewPaginationPageSizeFilter(page int) *PaginationPageSize {
+	return &PaginationPageSize{
+		pageSize: page,
+	}
+}
+
+// Value of the current filter
+func (f *PaginationPageSize) Value() (string, []string) {
+	return "pageSize", []string{strconv.Itoa(f.pageSize)}
+}

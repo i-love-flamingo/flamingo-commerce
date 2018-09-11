@@ -7,71 +7,86 @@ import (
 )
 
 type (
-	PaginationInfoFactory struct {
+	//PaginationConfig - represents configuration Options used by the PaginationInfo Build method
+	PaginationConfig struct {
 		ShowFirstPage bool `inject:"config:pagination.showFirstPage"`
 		ShowLastPage  bool `inject:"config:pagination.showLastPage"`
 		//ShowAroundActivePageAmount - amount of pages to show before and after the current page (so a value of2 would show 2 pages before and 2 pages after)
 		ShowAroundActivePageAmount float64 `inject:"config:pagination.showAroundActivePageAmount"`
 	}
+
+	CurrentResultInfos struct {
+		ActivePage int
+		TotalHits  int
+		PageSize   int
+		LastPage   int
+	}
+
 	PaginationInfo struct {
 		NextPage       Page
 		PreviousPage   Page
 		TotalHits      int
 		PageNavigation []Page
 	}
+
 	Page struct {
 		Page     int
 		Url      string
 		IsActive bool
 		IsSpacer bool
 	}
+
+	//PaginationInfoFactory - used to build a configuration based on configured defaults
+	PaginationInfoFactory struct {
+		DefaultConfig *PaginationConfig `inject:""`
+	}
 )
 
-//Build Pagination
-func (f *PaginationInfoFactory) Build(activePage int, totalHits int, pageSize int, lastPage int, urlBase *url.URL) PaginationInfo {
-	if pageSize < 1 {
-		pageSize = 1
+//BuildWith builds a paginationInfo based on the given infos and config
+func BuildWith(currentResult CurrentResultInfos, paginationConfig PaginationConfig, urlBase *url.URL) PaginationInfo {
+	if currentResult.PageSize < 1 {
+		currentResult.PageSize = 1
 	}
-	if activePage < 1 {
-		activePage = 1
+	if currentResult.ActivePage < 1 {
+		currentResult.ActivePage = 1
 	}
 	paginationInfo := PaginationInfo{
-		TotalHits: totalHits,
+		TotalHits: currentResult.TotalHits,
 	}
 	var pagesToAdd []int
-	if f.ShowFirstPage {
+	if paginationConfig.ShowFirstPage {
 		pagesToAdd = append(pagesToAdd, 1)
 	}
-	if f.ShowLastPage {
-		pagesToAdd = append(pagesToAdd, lastPage)
+	if paginationConfig.ShowLastPage {
+		pagesToAdd = append(pagesToAdd, currentResult.LastPage)
 	}
-	if activePage > 1 {
+	if currentResult.ActivePage > 1 {
 		paginationInfo.PreviousPage = Page{
-			Page: activePage - 1,
-			Url:  makeUrl(urlBase, activePage-1),
+			Page: currentResult.ActivePage - 1,
+			Url:  makeUrl(urlBase, currentResult.ActivePage-1),
 		}
 	}
-	if activePage < lastPage {
+	if currentResult.ActivePage < currentResult.LastPage {
 		paginationInfo.NextPage = Page{
-			Page: activePage + 1,
-			Url:  makeUrl(urlBase, activePage+1),
+			Page: currentResult.ActivePage + 1,
+			Url:  makeUrl(urlBase, currentResult.ActivePage+1),
 		}
 	}
 
-	pagesToAdd = append(pagesToAdd, activePage)
-	showAroundActivePageAmount := int(f.ShowAroundActivePageAmount)
-	for i := activePage - showAroundActivePageAmount; i <= activePage+showAroundActivePageAmount; i++ {
-		if i > 0 && i < lastPage {
+	pagesToAdd = append(pagesToAdd, currentResult.ActivePage)
+	showAroundActivePageAmount := int(paginationConfig.ShowAroundActivePageAmount)
+	for i := currentResult.ActivePage - showAroundActivePageAmount; i <= currentResult.ActivePage+showAroundActivePageAmount; i++ {
+		if i > 0 && i < currentResult.LastPage {
 			pagesToAdd = append(pagesToAdd, i)
 		}
 	}
 
-	if activePage == 1 && lastPage > activePage+2 {
-		pagesToAdd = append(pagesToAdd, activePage+2)
+	if currentResult.ActivePage == 1 && currentResult.LastPage > currentResult.ActivePage+2 {
+		pagesToAdd = append(pagesToAdd, currentResult.ActivePage+2)
 	}
 
-	if activePage == lastPage && lastPage > 2 {
-		pagesToAdd = append(pagesToAdd, activePage-2)
+	if currentResult.ActivePage == currentResult.LastPage && currentResult.LastPage > 2 {
+		pagesToAdd = append(pagesToAdd, currentResult.ActivePage-2)
 	}
 
 	sort.Ints(pagesToAdd)
@@ -90,7 +105,7 @@ func (f *PaginationInfoFactory) Build(activePage int, totalHits int, pageSize in
 		}
 		page := Page{
 			Page:     pageNr,
-			IsActive: pageNr == activePage,
+			IsActive: pageNr == currentResult.ActivePage,
 			IsSpacer: false,
 			Url:      makeUrl(urlBase, pageNr),
 		}
@@ -98,6 +113,16 @@ func (f *PaginationInfoFactory) Build(activePage int, totalHits int, pageSize in
 		previousPageNr = pageNr
 	}
 	return paginationInfo
+}
+
+//Build Pagination with the default configuration
+func (f *PaginationInfoFactory) Build(activePage int, totalHits int, pageSize int, lastPage int, urlBase *url.URL) PaginationInfo {
+	return BuildWith(CurrentResultInfos{
+		ActivePage: activePage,
+		TotalHits:  totalHits,
+		PageSize:   pageSize,
+		LastPage:   lastPage,
+	}, *f.DefaultConfig, urlBase)
 }
 
 func makeUrl(base *url.URL, page int) string {
