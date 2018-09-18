@@ -157,27 +157,27 @@ func (dci DecoratedCartItem) GetVariantsVariationAttributeCodes() []string {
 }
 
 //DecoratedItems
-// @DEPRICATED - only here to support the old structure of accesing DecoratedItems in the Decorated Cart
+// @DEPRECATED - only here to support the old structure of accesing DecoratedItems in the Decorated Cart
 // Use instead:
 // 		Either GetAllDecoratedItems() - if you prefer a flat list of items or
 //		or iterate over DecoratedCart.DecoratedDelivery	and its DecoratedItems
 
 func (dc DecoratedCart) DecoratedItems() []DecoratedCartItem {
 	if dc.Logger != nil {
-		dc.Logger.Warn("DEPRICATED: DecoratedCart.DecoratedItems()")
+		dc.Logger.Warn("DEPRECATED: DecoratedCart.DecoratedItems()")
 	}
 	return dc.GetAllDecoratedItems()
 }
 
 //DecoratedItems
-// @DEPRICATED - only here to support the old structure of accesing DecoratedItems in the Decorated Cart
+// @DEPRECATED - only here to support the old structure of accesing DecoratedItems in the Decorated Cart
 // Use instead:
 //		or iterate over DecoratedCart.DecoratedDelivery
 
 func (dc DecoratedCart) GetGroupedBy(group string, sortGroup bool, params ...string) []*GroupedDecoratedCartItem {
 
 	if dc.Logger != nil {
-		dc.Logger.Warn("DEPRICATED: DecoratedCart.GetGroupedBy()")
+		dc.Logger.Warn("DEPRECATED: DecoratedCart.GetGroupedBy()")
 	}
 	if len(dc.DecoratedDeliveries) != 1 {
 		return nil

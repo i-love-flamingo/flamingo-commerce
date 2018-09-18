@@ -1,5 +1,5 @@
 /**
-DEPRICATED Package.. Use application.searchService instead!
+DEPRECATED Package.. Use application.searchService instead!
 */
 package viewData
 

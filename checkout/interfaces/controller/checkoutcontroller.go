@@ -55,7 +55,7 @@ type (
 		Email               string
 		PlacedDecoratedCart cart.DecoratedCart
 
-		//PlacedDecoratedItems - DEPRICATED!!!
+		//PlacedDecoratedItems - DEPRECATED!!!
 		// PlacedDecoratedItems []cart.DecoratedCartItem
 
 		//CartTotals - Depricated

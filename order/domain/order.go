@@ -19,7 +19,7 @@ type (
 
 	// OrderItem
 	OrderItem struct {
-		// DEPRICATED
+		// DEPRECATED
 		Sku string
 
 		MarketplaceCode        string
