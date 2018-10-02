@@ -11,19 +11,25 @@ type (
 		Promoted() bool
 		CategoryType() string
 		Media() Medias
+		Attributes() Attributes
+		Attribute(string) interface{}
 	}
 
 	// CategoryData defines the default domain category data model
 	CategoryData struct {
-		CategoryCode     string
-		CategoryName     string
-		CategoryPath     string
-		Children         []*CategoryData
-		IsActive         bool
-		IsPromoted       bool
-		CategoryMedia    Medias
-		CategoryTypeCode string
+		CategoryCode       string
+		CategoryName       string
+		CategoryPath       string
+		Children           []*CategoryData
+		IsActive           bool
+		IsPromoted         bool
+		CategoryMedia      Medias
+		CategoryTypeCode   string
+		CategoryAttributes Attributes
 	}
+
+	// Attributes define additional category attributes
+	Attributes map[string]interface{}
 )
 
 // Category Types
@@ -94,4 +100,18 @@ func (c CategoryData) Promoted() bool {
 // CategoryType gets the category type code
 func (c CategoryData) CategoryType() string {
 	return c.CategoryTypeCode
+}
+
+// Attributes gets the additional category attributes
+func (c CategoryData) Attributes() Attributes {
+	return c.CategoryAttributes
+}
+
+// Attribute gets an additional category attribute, returns nil if not available
+func (c CategoryData) Attribute(code string) interface{} {
+	if v, ok := c.CategoryAttributes[code]; ok {
+		return v
+	}
+
+	return nil
 }
