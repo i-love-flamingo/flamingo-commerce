@@ -135,8 +135,13 @@ func (vc *View) Get(c context.Context, request *web.Request) web.Response {
 		template = vc.template
 	}
 
+	enrichedCategory, err := vc.CategoryService.Get(c, category.Code())
+	if err != nil {
+		return vc.Error(c, err)
+	}
+
 	return vc.Render(c, template, ViewData{
-		Category:            category,
+		Category:            enrichedCategory,
 		CategoryTree:        categoryRoot,
 		ProductSearchResult: result,
 		SearchMeta:          result.SearchMeta,
