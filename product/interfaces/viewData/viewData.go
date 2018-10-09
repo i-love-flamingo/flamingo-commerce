@@ -14,7 +14,7 @@ import (
 type (
 	ProductSearchResultViewDataFactory struct {
 		PaginationInfoFactory *utils.PaginationInfoFactory `inject:""`
-		PageSize              float64                      `inject:"pagination.defaultPageSize,optional"`
+		PageSize              float64                      `inject:"config:pagination.defaultPageSize,optional"`
 	}
 
 	//ProductSearchResultViewData - struct with common values typical for views that show product search results
