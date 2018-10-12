@@ -59,6 +59,8 @@ type (
 		// Range Facet
 		Min, Max                 float64
 		SelectedMin, SelectedMax float64
+
+		Count int64
 	}
 
 	Facet struct {
