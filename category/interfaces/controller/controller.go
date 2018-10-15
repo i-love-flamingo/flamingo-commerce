@@ -127,14 +127,6 @@ func (vc *View) Get(c context.Context, request *web.Request) web.Response {
 
 	paginationInfo := vc.PaginationInfoFactory.Build(result.SearchMeta.Page, result.SearchMeta.NumResults, 30, result.SearchMeta.NumPages, request.Request().URL)
 
-	var template string
-	switch category.CategoryType() {
-	case domain.TypeTeaser:
-		template = vc.teaserTemplate
-	default:
-		template = vc.template
-	}
-
 	enrichedCategory := category
 	if category.Code() != "" {
 		// only a category with code (non-root categories) can be enriched
@@ -142,6 +134,14 @@ func (vc *View) Get(c context.Context, request *web.Request) web.Response {
 		if err != nil {
 			return vc.Error(c, err)
 		}
+	}
+
+	var template string
+	switch enrichedCategory.CategoryType() {
+	case domain.TypeTeaser:
+		template = vc.teaserTemplate
+	default:
+		template = vc.template
 	}
 
 	return vc.Render(c, template, ViewData{
