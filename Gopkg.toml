@@ -3,3 +3,7 @@
   # version = "^2.0.0"
   branch = "master"
 
+[[constraint]]
+  name = "golang.org/x/oauth2"
+  source = "https://github.com/ompluscator/oauth2"
+  branch = "claims-request-parameter-squashed"
