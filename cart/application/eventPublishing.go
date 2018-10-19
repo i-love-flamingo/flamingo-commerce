@@ -10,11 +10,13 @@ import (
 )
 
 type (
+	// OrderPlacedEvent defines event properties
 	OrderPlacedEvent struct {
 		Cart             *cartDomain.Cart
 		PlacedOrderInfos cartDomain.PlacedOrderInfos
 	}
 
+	// AddToCartEvent defines event properties
 	AddToCartEvent struct {
 		MarketplaceCode        string
 		VariantMarketplaceCode string
@@ -22,8 +24,9 @@ type (
 		Qty                    int
 	}
 
+	// ChangedQtyInCartEvent defines event properties
 	ChangedQtyInCartEvent struct {
-		CartId                 string
+		CartID                 string
 		MarketplaceCode        string
 		VariantMarketplaceCode string
 		ProductName            string
@@ -31,11 +34,11 @@ type (
 		QtyAfter               int
 	}
 
-	//EventPublisher - technology free interface  to publish events that might be interesting for outside (Publish)
+	//EventPublisher - technology free interface to publish events that might be interesting for outside (Publish)
 	EventPublisher interface {
 		PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos cartDomain.PlacedOrderInfos)
 		PublishAddToCartEvent(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode string, qty int)
-		PublishChangedQtyInCartEvent(ctx context.Context, item *cartDomain.Item, qtyBefore int, qtyAfter int, cartId string)
+		PublishChangedQtyInCartEvent(ctx context.Context, item *cartDomain.Item, qtyBefore int, qtyAfter int, cartID string)
 	}
 
 	//DefaultEventPublisher implements the event publisher of the domain and uses the framework event router
@@ -46,21 +49,26 @@ type (
 	}
 )
 
+// PublishOrderPlacedEvent publishes an event for placed orders
 func (d *DefaultEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos cartDomain.PlacedOrderInfos) {
 	eventObject := OrderPlacedEvent{
 		Cart:             cart,
 		PlacedOrderInfos: placedOrderInfos,
 	}
+
 	d.Logger.Info("Publish Event OrderPlacedEvent for Order: %#v", placedOrderInfos)
+
 	//For now we publish only to Flamingo default Event Router
 	d.EventRouter.Dispatch(ctx, &eventObject)
 }
 
+// PublishAddToCartEvent publishes an event for add to cart actions
 func (d *DefaultEventPublisher) PublishAddToCartEvent(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode string, qty int) {
 	product, err := d.ProductService.Get(ctx, marketPlaceCode)
 	if err != nil {
 		return
 	}
+
 	eventObject := AddToCartEvent{
 		MarketplaceCode:        marketPlaceCode,
 		VariantMarketplaceCode: variantMarketPlaceCode,
@@ -72,9 +80,10 @@ func (d *DefaultEventPublisher) PublishAddToCartEvent(ctx context.Context, marke
 	d.EventRouter.Dispatch(ctx, &eventObject)
 }
 
-func (d *DefaultEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context, item *cartDomain.Item, qtyBefore int, qtyAfter int, cartId string) {
+// PublishChangedQtyInCartEvent publishes an event for cart item quantity change actions
+func (d *DefaultEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context, item *cartDomain.Item, qtyBefore int, qtyAfter int, cartID string) {
 	eventObject := ChangedQtyInCartEvent{
-		CartId:                 cartId,
+		CartID:                 cartID,
 		MarketplaceCode:        item.MarketplaceCode,
 		VariantMarketplaceCode: item.VariantMarketPlaceCode,
 		ProductName:            item.ProductName,

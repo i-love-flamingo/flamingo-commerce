@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/gob"
 	"fmt"
-
 	"strings"
 
 	"flamingo.me/flamingo-commerce/cart/domain/cart"
@@ -14,6 +13,7 @@ import (
 )
 
 type (
+	// CartCache describes a cart caches methods
 	CartCache interface {
 		GetCart(context.Context, *sessions.Session, CartCacheIdentifier) (*cart.Cart, error)
 		CacheCart(context.Context, *sessions.Session, CartCacheIdentifier, *cart.Cart) error
@@ -22,16 +22,19 @@ type (
 		DeleteAll(context.Context, *sessions.Session) error
 	}
 
+	// CartCacheIdentifier identifies Cart Caches
 	CartCacheIdentifier struct {
-		GuestCartId    string
+		GuestCartID    string
 		IsCustomerCart bool
-		CustomerId     string
+		CustomerID     string
 	}
 
+	// CartSessionCache defines a Cart Cache
 	CartSessionCache struct {
 		Logger flamingo.Logger `inject:""`
 	}
 
+	// CachedCartEntry defines a single Cart Cache Entry
 	CachedCartEntry struct {
 		IsInvalid bool
 		Entry     cart.Cart
@@ -39,78 +42,92 @@ type (
 )
 
 const (
-	CartSessionCache_CacheKeyPrefix = "cart.sessioncache."
+	// CartSessionCacheCacheKeyPrefix is a string prefix for Cart Cache Keys
+	CartSessionCacheCacheKeyPrefix = "cart.sessioncache."
 )
 
 var (
-	CacheIsInvalidError error     = errors.New("Cache is invalid")
-	_                   CartCache = new(CartSessionCache)
+	// ErrCacheIsInvalid sets generalized invalid Cache Error
+	ErrCacheIsInvalid = errors.New("cache is invalid")
 )
 
 func init() {
 	gob.Register(CachedCartEntry{})
 }
 
+// CacheKey creates a Cache Key Identifier string
 func (ci *CartCacheIdentifier) CacheKey() string {
 	return fmt.Sprintf(
 		"cart_%v_%v",
-		ci.CustomerId,
-		ci.GuestCartId,
+		ci.CustomerID,
+		ci.GuestCartID,
 	)
 }
 
+// BuildIdentifierFromCart creates a Cache Identifier from Cart Data
 func BuildIdentifierFromCart(cart *cart.Cart) (*CartCacheIdentifier, error) {
 	if cart == nil {
 		return nil, errors.New("no cart")
 	}
+
 	if cart.BelongsToAuthenticatedUser {
 		return &CartCacheIdentifier{
-			CustomerId:     cart.AuthenticatedUserId,
+			CustomerID:     cart.AuthenticatedUserId,
 			IsCustomerCart: true,
 		}, nil
 	}
 
 	return &CartCacheIdentifier{
-		GuestCartId:    cart.ID,
-		CustomerId:     cart.AuthenticatedUserId,
+		GuestCartID:    cart.ID,
+		CustomerID:     cart.AuthenticatedUserId,
 		IsCustomerCart: false,
 	}, nil
 }
 
+// GetCart fetches a Cart from the Cache
 func (c *CartSessionCache) GetCart(ctx context.Context, session *sessions.Session, id CartCacheIdentifier) (*cart.Cart, error) {
-	if cache, ok := session.Values[CartSessionCache_CacheKeyPrefix+id.CacheKey()]; ok {
+	if cache, ok := session.Values[CartSessionCacheCacheKeyPrefix+id.CacheKey()]; ok {
 		if cachedCartsEntry, ok := cache.(CachedCartEntry); ok {
 			c.Logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").Debug("Found cached cart %v", id.CacheKey())
+
 			if cachedCartsEntry.IsInvalid {
-				return &cachedCartsEntry.Entry, CacheIsInvalidError
+				return &cachedCartsEntry.Entry, ErrCacheIsInvalid
 			}
+
 			return &cachedCartsEntry.Entry, nil
-		} else {
-			c.Logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").Error("Cannot Cast Cache Entry %v", id.CacheKey())
 		}
+		c.Logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").Error("Cannot Cast Cache Entry %v", id.CacheKey())
+
+		return nil, errors.New("cart cache contains invalid data at cache key")
 	}
 	c.Logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").Debug("Did not Found cached cart %v", id.CacheKey())
 
 	return nil, errors.New("no cart in cache")
 }
 
+// CacheCart adds a Cart to the Cache
 func (c *CartSessionCache) CacheCart(ctx context.Context, session *sessions.Session, id CartCacheIdentifier, cartForCache *cart.Cart) error {
 	if cartForCache == nil {
-		return errors.New("No cart given to cache")
+		return errors.New("no cart given to cache")
 	}
+
 	entry := CachedCartEntry{
 		Entry: *cartForCache,
 	}
+
 	c.Logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").Debug("Caching cart %v", id.CacheKey())
-	session.Values[CartSessionCache_CacheKeyPrefix+id.CacheKey()] = entry
+	session.Values[CartSessionCacheCacheKeyPrefix+id.CacheKey()] = entry
+
 	return nil
 }
 
+// Invalidate a Cache Entry
 func (c *CartSessionCache) Invalidate(ctx context.Context, session *sessions.Session, id CartCacheIdentifier) error {
-	if cache, ok := session.Values[CartSessionCache_CacheKeyPrefix+id.CacheKey()]; ok {
+	if cache, ok := session.Values[CartSessionCacheCacheKeyPrefix+id.CacheKey()]; ok {
 		if cachedCartsEntry, ok := cache.(CachedCartEntry); ok {
-			cachedCartsEntry.IsInvalid = false
-			session.Values[CartSessionCache_CacheKeyPrefix+id.CacheKey()] = cachedCartsEntry
+			cachedCartsEntry.IsInvalid = true
+			session.Values[CartSessionCacheCacheKeyPrefix+id.CacheKey()] = cachedCartsEntry
+
 			return nil
 		}
 	}
@@ -118,9 +135,11 @@ func (c *CartSessionCache) Invalidate(ctx context.Context, session *sessions.Ses
 	return errors.New("not found for invalidate")
 }
 
+// Delete a Cache entry
 func (c *CartSessionCache) Delete(ctx context.Context, session *sessions.Session, id CartCacheIdentifier) error {
-	if _, ok := session.Values[CartSessionCache_CacheKeyPrefix+id.CacheKey()]; ok {
-		delete(session.Values, CartSessionCache_CacheKeyPrefix+id.CacheKey())
+	if _, ok := session.Values[CartSessionCacheCacheKeyPrefix+id.CacheKey()]; ok {
+		delete(session.Values, CartSessionCacheCacheKeyPrefix+id.CacheKey())
+
 		// ok deleted something
 		return nil
 	}
@@ -128,11 +147,12 @@ func (c *CartSessionCache) Delete(ctx context.Context, session *sessions.Session
 	return errors.New("not found for delete")
 }
 
+// DeleteAll empties the Cache
 func (c *CartSessionCache) DeleteAll(ctx context.Context, session *sessions.Session) error {
 	deleted := false
-	for k, _ := range session.Values {
+	for k := range session.Values {
 		if stringKey, ok := k.(string); ok {
-			if strings.Contains(stringKey, CartSessionCache_CacheKeyPrefix) {
+			if strings.Contains(stringKey, CartSessionCacheCacheKeyPrefix) {
 				delete(session.Values, k)
 				deleted = true
 			}
