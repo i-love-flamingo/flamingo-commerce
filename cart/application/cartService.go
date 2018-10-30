@@ -124,7 +124,7 @@ func (cs CartService) UpdatePurchaser(ctx context.Context, session *sessions.Ses
 }
 
 // UpdateItemQty updates a single cart item qty
-func (cs CartService) UpdateItemQty(ctx context.Context, session *sessions.Session, itemId string, deliveryCode string, qty int) error {
+func (cs CartService) UpdateItemQty(ctx context.Context, session *sessions.Session, itemID string, deliveryCode string, qty int) error {
 	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return err
@@ -138,7 +138,7 @@ func (cs CartService) UpdateItemQty(ctx context.Context, session *sessions.Sessi
 		deliveryCode = cs.DefaultDeliveryCode
 	}
 
-	item, err := cart.GetByItemId(itemId, deliveryCode)
+	item, err := cart.GetByItemId(itemID, deliveryCode)
 	if err != nil {
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemQty").Error(err)
 
@@ -147,7 +147,7 @@ func (cs CartService) UpdateItemQty(ctx context.Context, session *sessions.Sessi
 
 	qtyBefore := item.Qty
 	if qty < 1 {
-		return cs.DeleteItem(ctx, session, itemId, deliveryCode)
+		return cs.DeleteItem(ctx, session, itemID, deliveryCode)
 	}
 
 	cs.EventPublisher.PublishChangedQtyInCartEvent(ctx, item, qtyBefore, qty, cart.ID)
@@ -155,7 +155,7 @@ func (cs CartService) UpdateItemQty(ctx context.Context, session *sessions.Sessi
 		Qty: &qty,
 	}
 
-	cart, err = behaviour.UpdateItem(ctx, cart, itemId, deliveryCode, itemUpdate)
+	cart, err = behaviour.UpdateItem(ctx, cart, itemID, deliveryCode, itemUpdate)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemQty").Error(err)
@@ -167,7 +167,7 @@ func (cs CartService) UpdateItemQty(ctx context.Context, session *sessions.Sessi
 }
 
 // UpdateItemSourceId updates an item source id
-func (cs CartService) UpdateItemSourceId(ctx context.Context, session *sessions.Session, itemId string, deliveryCode string, sourceId string) error {
+func (cs CartService) UpdateItemSourceId(ctx context.Context, session *sessions.Session, itemID string, deliveryCode string, sourceID string) error {
 	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return err
@@ -180,7 +180,7 @@ func (cs CartService) UpdateItemSourceId(ctx context.Context, session *sessions.
 	if deliveryCode == "" {
 		deliveryCode = cs.DefaultDeliveryCode
 	}
-	_, err = cart.GetByItemId(itemId, deliveryCode)
+	_, err = cart.GetByItemId(itemID, deliveryCode)
 	if err != nil {
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemSourceId").Error(err)
 
@@ -188,10 +188,10 @@ func (cs CartService) UpdateItemSourceId(ctx context.Context, session *sessions.
 	}
 
 	itemUpdate := cartDomain.ItemUpdateCommand{
-		SourceId: &sourceId,
+		SourceId: &sourceID,
 	}
 
-	cart, err = behaviour.UpdateItem(ctx, cart, itemId, deliveryCode, itemUpdate)
+	cart, err = behaviour.UpdateItem(ctx, cart, itemID, deliveryCode, itemUpdate)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemSourceId").Error(err)
@@ -203,7 +203,7 @@ func (cs CartService) UpdateItemSourceId(ctx context.Context, session *sessions.
 }
 
 // DeleteItem in current cart
-func (cs CartService) DeleteItem(ctx context.Context, session *sessions.Session, itemId string, deliveryCode string) error {
+func (cs CartService) DeleteItem(ctx context.Context, session *sessions.Session, itemID string, deliveryCode string) error {
 	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return err
@@ -217,7 +217,7 @@ func (cs CartService) DeleteItem(ctx context.Context, session *sessions.Session,
 		deliveryCode = cs.DefaultDeliveryCode
 	}
 
-	item, err := cart.GetByItemId(itemId, deliveryCode)
+	item, err := cart.GetByItemId(itemID, deliveryCode)
 	if err != nil {
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "DeleteItem").Error(err)
 
@@ -227,7 +227,7 @@ func (cs CartService) DeleteItem(ctx context.Context, session *sessions.Session,
 	qtyBefore := item.Qty
 	cs.EventPublisher.PublishChangedQtyInCartEvent(ctx, item, qtyBefore, 0, cart.ID)
 
-	cart, err = behaviour.DeleteItem(ctx, cart, itemId, deliveryCode)
+	cart, err = behaviour.DeleteItem(ctx, cart, itemID, deliveryCode)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "DeleteItem").Error(err)
@@ -296,8 +296,8 @@ func (cs *CartService) BuildAddRequest(ctx context.Context, marketplaceCode stri
 	}
 
 	return cartDomain.AddRequest{
-		MarketplaceCode: marketplaceCode,
-		Qty:             qty,
+		MarketplaceCode:        marketplaceCode,
+		Qty:                    qty,
 		VariantMarketplaceCode: variantMarketplaceCode,
 	}
 }

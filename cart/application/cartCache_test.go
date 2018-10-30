@@ -4,6 +4,7 @@ import (
 	"context"
 	"reflect"
 	"testing"
+	"time"
 
 	"flamingo.me/flamingo-commerce/cart/application"
 	"flamingo.me/flamingo-commerce/cart/domain/cart"
@@ -200,6 +201,7 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 					Values: map[interface{}]interface{}{
 						application.CartSessionCacheCacheKeyPrefix + "cart_customer_id_guest_cart_id": application.CachedCartEntry{
 							IsInvalid: false,
+							ExpiresOn: time.Now().Add(5 * time.Minute),
 						},
 					},
 				},
@@ -238,6 +240,31 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 			want:           nil,
 			wantErr:        true,
 			wantMessageErr: "cart cache contains invalid data at cache key",
+		}, {
+			name: "session contains expired cart cache",
+			fields: fields{
+				Logger: flamingo.NullLogger{},
+			},
+			args: args{
+				ctx: context.Background(),
+				session: &sessions.Session{
+					ID: "test_session",
+					Values: map[interface{}]interface{}{
+						application.CartSessionCacheCacheKeyPrefix + "cart_customer_id_guest_cart_id": application.CachedCartEntry{
+							IsInvalid: false,
+							ExpiresOn: time.Now().Add(-1 * time.Second),
+						},
+					},
+				},
+				id: application.CartCacheIdentifier{
+					GuestCartID:    "guest_cart_id",
+					IsCustomerCart: false,
+					CustomerID:     "customer_id",
+				},
+			},
+			want:           nil,
+			wantErr:        true,
+			wantMessageErr: "cache is invalid",
 		},
 	}
 
@@ -269,7 +296,8 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 
 func TestCartSessionCache_CacheCart(t *testing.T) {
 	type fields struct {
-		Logger flamingo.Logger
+		Logger   flamingo.Logger
+		Lifetime time.Duration
 	}
 	type args struct {
 		ctx          context.Context
@@ -287,7 +315,8 @@ func TestCartSessionCache_CacheCart(t *testing.T) {
 		{
 			name: "no cart given",
 			fields: fields{
-				Logger: flamingo.NullLogger{},
+				Logger:   flamingo.NullLogger{},
+				Lifetime: 300,
 			},
 			args: args{
 				ctx:     context.Background(),
@@ -331,7 +360,6 @@ func TestCartSessionCache_CacheCart(t *testing.T) {
 			}
 
 			err := c.CacheCart(tt.args.ctx, tt.args.session, tt.args.id, tt.args.cartForCache)
-
 			if (err != nil) != tt.wantErr {
 				t.Errorf("CartSessionCache.CacheCart() error = %v, wantErr %v", err, tt.wantErr)
 
@@ -342,6 +370,40 @@ func TestCartSessionCache_CacheCart(t *testing.T) {
 				t.Errorf("Error doesn't match - error = %v, wantMessageErr %v", err, tt.wantMessageErr)
 			}
 		})
+	}
+}
+
+func TestCartSessionCache_CartExpiry(t *testing.T) {
+	ctx := context.Background()
+	c := &application.CartSessionCache{
+		Logger:          flamingo.NullLogger{},
+		LifetimeSeconds: 1,
+	}
+
+	session := &sessions.Session{
+		ID:     "test_session",
+		Values: map[interface{}]interface{}{},
+	}
+
+	id := application.CartCacheIdentifier{
+		GuestCartID:    "guest_cart_id",
+		IsCustomerCart: false,
+		CustomerID:     "",
+	}
+
+	cartForCache := new(cart.Cart)
+
+	err := c.CacheCart(ctx, session, id, cartForCache)
+	if err != nil {
+		t.Errorf("Failed to cache the cart. Error: %v", err)
+	}
+
+	time.Sleep(1 * time.Second)
+
+	_, err = c.GetCart(context.Background(), session, id)
+	if err != application.ErrCacheIsInvalid {
+		t.Error("Expected cache invalid error. Received nil")
+		return
 	}
 }
 

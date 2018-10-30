@@ -5,6 +5,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"strings"
+	"time"
 
 	"flamingo.me/flamingo-commerce/cart/domain/cart"
 	"flamingo.me/flamingo/framework/flamingo"
@@ -31,13 +32,15 @@ type (
 
 	// CartSessionCache defines a Cart Cache
 	CartSessionCache struct {
-		Logger flamingo.Logger `inject:""`
+		Logger          flamingo.Logger `inject:""`
+		LifetimeSeconds float64         `inject:"config:cart.cacheLifetime"` // in seconds
 	}
 
 	// CachedCartEntry defines a single Cart Cache Entry
 	CachedCartEntry struct {
 		IsInvalid bool
 		Entry     cart.Cart
+		ExpiresOn time.Time
 	}
 )
 
@@ -94,6 +97,15 @@ func (c *CartSessionCache) GetCart(ctx context.Context, session *sessions.Sessio
 				return &cachedCartsEntry.Entry, ErrCacheIsInvalid
 			}
 
+			if time.Now().After(cachedCartsEntry.ExpiresOn) {
+				err := c.Invalidate(ctx, session, id)
+				if err != nil {
+					return nil, err
+				}
+
+				return nil, ErrCacheIsInvalid
+			}
+
 			return &cachedCartsEntry.Entry, nil
 		}
 		c.Logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").Error("Cannot Cast Cache Entry %v", id.CacheKey())
@@ -112,7 +124,8 @@ func (c *CartSessionCache) CacheCart(ctx context.Context, session *sessions.Sess
 	}
 
 	entry := CachedCartEntry{
-		Entry: *cartForCache,
+		Entry:     *cartForCache,
+		ExpiresOn: time.Now().Add(time.Duration(c.LifetimeSeconds * float64(time.Second))),
 	}
 
 	c.Logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").Debug("Caching cart %v", id.CacheKey())
