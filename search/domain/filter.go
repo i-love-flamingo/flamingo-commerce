@@ -7,7 +7,7 @@ import (
 type (
 	// Filter interface for search queries
 	Filter interface {
-		//Value very generic method for filters - returning typical Parmeter Name and its setted values
+		// Value very generic method for filters - returning typical Parmeter Name and its setted values
 		Value() (string, []string)
 	}
 
@@ -102,10 +102,10 @@ func NewPaginationPageSizeFilter(page int) *PaginationPageSize {
 
 // Value of the current filter
 func (f *PaginationPageSize) Value() (string, []string) {
-	return "pageSize", []string{strconv.Itoa(f.pageSize)}
+	return "limit", []string{strconv.Itoa(f.pageSize)}
 }
 
-// Value of the current filter
+// GetPageSize of the current filter
 func (f *PaginationPageSize) GetPageSize() int {
 	return f.pageSize
 }

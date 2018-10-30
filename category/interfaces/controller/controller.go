@@ -7,8 +7,8 @@ import (
 
 	"flamingo.me/flamingo-commerce/breadcrumbs"
 	"flamingo.me/flamingo-commerce/category/domain"
-	productdomain "flamingo.me/flamingo-commerce/product/domain"
-	productInterfaceViewData "flamingo.me/flamingo-commerce/product/interfaces/viewData"
+	"flamingo.me/flamingo-commerce/product/application"
+	searchApplication "flamingo.me/flamingo-commerce/search/application"
 	searchdomain "flamingo.me/flamingo-commerce/search/domain"
 	"flamingo.me/flamingo-commerce/search/utils"
 	"flamingo.me/flamingo/framework/flamingo"
@@ -24,8 +24,7 @@ type (
 		responder.RenderAware
 		responder.RedirectAware
 		domain.CategoryService
-		productdomain.SearchService
-		*productInterfaceViewData.ProductSearchResultViewDataFactory
+		SearchService         *application.ProductSearchService
 		router                *router.Router
 		template              string
 		teaserTemplate        string
@@ -35,7 +34,7 @@ type (
 
 	// ViewData for rendering context
 	ViewData struct {
-		ProductSearchResult productInterfaceViewData.ProductSearchResultViewData
+		ProductSearchResult *application.SearchResult
 		Category            domain.Category
 		CategoryTree        domain.Category
 		SearchMeta          searchdomain.SearchMeta
@@ -59,8 +58,7 @@ func (vc *View) Inject(
 	renderAware responder.RenderAware,
 	redirectAware responder.RedirectAware,
 	categoryService domain.CategoryService,
-	searchService productdomain.SearchService,
-	productSearchResultViewDataFactory *productInterfaceViewData.ProductSearchResultViewDataFactory,
+	searchService *application.ProductSearchService,
 	router *router.Router,
 	config *struct {
 		Template       string `inject:"config:category.view.template"`
@@ -74,7 +72,6 @@ func (vc *View) Inject(
 	vc.RedirectAware = redirectAware
 	vc.CategoryService = categoryService
 	vc.SearchService = searchService
-	vc.ProductSearchResultViewDataFactory = productSearchResultViewDataFactory
 	vc.router = router
 	vc.logger = logger
 	vc.paginationInfoFactory = paginationInfoFactory
@@ -109,23 +106,18 @@ func (vc *View) Get(c context.Context, request *web.Request) web.Response {
 		return vc.RedirectPermanentURL(u.String())
 	}
 
-	filter := make([]searchdomain.Filter, len(request.QueryAll())+1)
-	filter[0] = domain.NewCategoryFacet(category)
-	i := 1
-	for k, v := range request.QueryAll() {
-		filter[i] = searchdomain.NewKeyValueFilter(k, v)
-		i++
+	searchRequest := &searchApplication.SearchRequest{
+		FilterBy: request.QueryAll(),
 	}
 
-	products, err := vc.SearchService.Search(c, filter...)
+	products, err := vc.SearchService.Find(c, searchRequest)
 	if err != nil {
 		return vc.Error(c, err)
 	}
 
 	vc.addBreadcrumb(c, categoryRoot)
-	result := vc.ProductSearchResultViewDataFactory.NewProductSearchResultViewDataFromResult(request.Request().URL, products)
 
-	paginationInfo := vc.PaginationInfoFactory.Build(result.SearchMeta.Page, result.SearchMeta.NumResults, 30, result.SearchMeta.NumPages, request.Request().URL)
+	paginationInfo := vc.paginationInfoFactory.Build(products.SearchMeta.Page, products.SearchMeta.NumResults, 30, products.SearchMeta.NumPages, request.Request().URL)
 
 	var template string
 	switch category.CategoryType() {
@@ -138,8 +130,8 @@ func (vc *View) Get(c context.Context, request *web.Request) web.Response {
 	return vc.Render(c, template, ViewData{
 		Category:            category,
 		CategoryTree:        categoryRoot,
-		ProductSearchResult: result,
-		SearchMeta:          result.SearchMeta,
+		ProductSearchResult: products,
+		SearchMeta:          products.SearchMeta,
 		PaginationInfo:      paginationInfo,
 	})
 }

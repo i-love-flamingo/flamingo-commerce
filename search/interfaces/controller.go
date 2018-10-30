@@ -3,8 +3,7 @@ package interfaces
 import (
 	"context"
 
-	"strconv"
-
+	"flamingo.me/flamingo-commerce/search/application"
 	"flamingo.me/flamingo-commerce/search/domain"
 	"flamingo.me/flamingo-commerce/search/utils"
 	"flamingo.me/flamingo/framework/web"
@@ -17,42 +16,19 @@ type (
 		responder.ErrorAware    `inject:""`
 		responder.RenderAware   `inject:""`
 		responder.RedirectAware `inject:""`
-		domain.SearchService    `inject:""`
+		SearchService           *application.SearchService   `inject:""`
 		PaginationInfoFactory   *utils.PaginationInfoFactory `inject:""`
 	}
 
 	viewData struct {
 		SearchMeta     domain.SearchMeta
-		SearchResult   map[string]domain.Result
+		SearchResult   map[string]*application.SearchResult
 		PaginationInfo utils.PaginationInfo
 	}
 )
 
 // Get Response for search
 func (vc *ViewController) Get(c context.Context, r *web.Request) web.Response {
-	filter := make([]domain.Filter, len(r.QueryAll()))
-	i := 0
-	for k, v := range r.QueryAll() {
-		switch k {
-		case "q":
-			if len(v) > 0 {
-				filter[i] = domain.NewQueryFilter(v[0])
-			}
-		case "sort":
-			if len(v) > 0 {
-				filter[i] = domain.NewSortFilter(k, v[0])
-			}
-		case "page":
-			if len(v) > 0 {
-				page, _ := strconv.Atoi(v[0])
-				filter[i] = domain.NewPaginationPageFilter(page)
-			}
-		default:
-			filter[i] = domain.NewKeyValueFilter(k, v)
-		}
-		i++
-	}
-
 	query, _ := r.Query1("q")
 
 	vd := viewData{
@@ -61,8 +37,13 @@ func (vc *ViewController) Get(c context.Context, r *web.Request) web.Response {
 		},
 	}
 
+	searchRequest := application.SearchRequest{
+		FilterBy: r.QueryAll(),
+		Query:    query,
+	}
+
 	if typ, ok := r.Param1("type"); ok {
-		searchResult, err := vc.SearchService.SearchFor(c, typ, filter...)
+		searchResult, err := vc.SearchService.FindBy(c, typ, searchRequest)
 		if err != nil {
 			if re, ok := err.(*domain.RedirectError); ok {
 				return vc.RedirectPermanentURL(re.To)
@@ -72,12 +53,18 @@ func (vc *ViewController) Get(c context.Context, r *web.Request) web.Response {
 		}
 		vd.SearchMeta = searchResult.SearchMeta
 		vd.SearchMeta.Query = query
-		vd.SearchResult = map[string]domain.Result{typ: searchResult}
-		vd.PaginationInfo = vc.PaginationInfoFactory.Build(searchResult.SearchMeta.Page, searchResult.SearchMeta.NumResults, 30, searchResult.SearchMeta.NumPages, r.Request().URL)
+		vd.SearchResult = map[string]*application.SearchResult{typ: searchResult}
+		vd.PaginationInfo = vc.PaginationInfoFactory.Build(
+			searchResult.SearchMeta.Page,
+			searchResult.SearchMeta.NumResults,
+			searchRequest.PageSize,
+			searchResult.SearchMeta.NumPages,
+			r.Request().URL,
+		)
 		return vc.Render(c, "search/"+typ, vd)
 	}
 
-	searchResult, err := vc.SearchService.Search(c, filter...)
+	searchResult, err := vc.SearchService.Find(c, searchRequest)
 	if err != nil {
 		if re, ok := err.(*domain.RedirectError); ok {
 			return vc.RedirectPermanentURL(re.To)

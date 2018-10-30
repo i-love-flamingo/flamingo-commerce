@@ -12,7 +12,7 @@ import (
 type (
 	// SearchService defines how to access search
 	SearchService interface {
-		//Types() []string
+		// Types() []string
 		Search(ctx context.Context, filter ...Filter) (results map[string]Result, err error)
 		SearchFor(ctx context.Context, typ string, filter ...Filter) (result Result, err error)
 	}
@@ -133,12 +133,11 @@ const (
 )
 
 var (
-
 	// ErrNotFound error
 	ErrNotFound = errors.New("search not found")
 )
 
-//ValidatePageSize checks if the pageSize is logical for current reult
+// ValidatePageSize checks if the pageSize is logical for current reult
 func (sm *SearchMeta) ValidatePageSize(pageSize int) error {
 	if pageSize == 0 {
 		return errors.New("cannot validate - no expected pageSize given")
