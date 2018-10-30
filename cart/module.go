@@ -55,7 +55,7 @@ func (m *CartModule) DefaultConfig() config.Map {
 	return config.Map{
 		"cart": config.Map{
 			"useInMemoryCartServiceAdapters": true,
-			"cacheLifetime":                  1200, // in seconds
+			"cacheLifetime":                  float64(1200), // in seconds
 		},
 	}
 }
