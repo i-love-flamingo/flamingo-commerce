@@ -25,10 +25,12 @@ const requestKey contextKeyTyp = "breadcrumbs"
 func Add(ctx context.Context, b Crumb) {
 	req, _ := web.FromContext(ctx)
 
-	if breadcrumbs, ok := req.Values[requestKey].([]Crumb); ok {
-		req.Values[requestKey] = append(breadcrumbs, b)
+	breadcrumbs, _ := req.Values.Load(requestKey)
+	if breadcrumbs, ok := breadcrumbs.([]Crumb); ok {
+		breadcrumbs = append(breadcrumbs, b)
+		req.Values.Store(requestKey, breadcrumbs)
 	} else {
-		req.Values[requestKey] = []Crumb{b}
+		req.Values.Store(requestKey, []Crumb{b})
 	}
 }
 
@@ -36,7 +38,8 @@ func Add(ctx context.Context, b Crumb) {
 func (bc *Controller) Data(ctx context.Context, _ *web.Request) interface{} {
 	req, _ := web.FromContext(ctx)
 
-	if breadcrumbs, ok := req.Values[requestKey].([]Crumb); ok {
+	breadcrumbs, _ := req.Values.Load(requestKey)
+	if breadcrumbs, ok := breadcrumbs.([]Crumb); ok {
 		return breadcrumbs
 	}
 	return []Crumb{}

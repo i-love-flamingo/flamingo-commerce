@@ -51,15 +51,17 @@ func (s *Service) Get() domain.Datalayer {
 		return domain.Datalayer{}
 	}
 	req, _ := web.FromContext(s.currentContext)
-	if _, ok := req.Values[DATALAYER_REQ_KEY].(domain.Datalayer); !ok {
+	if _, ok := req.Values.Load(DATALAYER_REQ_KEY); !ok {
 		s.store(s.factory.BuildForCurrentRequest(s.currentContext, req))
 	}
 
 	s.AddSessionEvents()
 
-	if savedDataLayer, ok := req.Values[DATALAYER_REQ_KEY].(domain.Datalayer); ok {
+	layer, _ := req.Values.Load(DATALAYER_REQ_KEY)
+	if savedDataLayer, ok := layer.(domain.Datalayer); ok {
 		return savedDataLayer
 	}
+
 	//error
 	s.logger.WithField("category", "w3cDatalayer").Warn("Receiving datalayer from context failed %v")
 	return domain.Datalayer{}
@@ -242,7 +244,7 @@ func (s *Service) store(layer domain.Datalayer) error {
 		return errors.New("Update called without context")
 	}
 	req, _ := web.FromContext(s.currentContext)
-	req.Values[DATALAYER_REQ_KEY] = layer
+	req.Values.Store(DATALAYER_REQ_KEY, layer)
 
 	return nil
 }

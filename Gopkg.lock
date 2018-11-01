@@ -11,7 +11,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:206244ec0052ddb8b71442b2b2c09b336111b34a37d2a71c5ba048f7e301c6cf"
+  digest = "1:88f97fcaf601a06958f09c26d08a77fa58a3c47a27da5248281f069ebf47a4eb"
   name = "flamingo.me/flamingo"
   packages = [
     "core/auth/application",
@@ -34,7 +34,7 @@
     "framework/web/responder/mocks",
   ]
   pruneopts = ""
-  revision = "bc69fa3b7f9af12085207cd2bd5fbbf177b0956f"
+  revision = "5b3db4e4dd82c77bcce64e0a356c948bffb60d14"
 
 [[projects]]
   branch = "master"
@@ -138,6 +138,14 @@
   pruneopts = ""
   revision = "b4deda0973fb4c70b50d226b1af49f3da59f5265"
   version = "v1.1.0"
+
+[[projects]]
+  digest = "1:5247b135b5492aa232a731acdcb52b08f32b874cb398f21ab460396eadbe866b"
+  name = "github.com/google/uuid"
+  packages = ["."]
+  pruneopts = ""
+  revision = "d460ce9f8df2e77fb1ba55ca87fafed96c607494"
+  version = "v1.0.0"
 
 [[projects]]
   digest = "1:dbbeb8ddb0be949954c8157ee8439c2adfd8dc1c9510eb44a6e58cb68c3dce28"

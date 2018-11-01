@@ -45,7 +45,7 @@ func init() {
 
 // ViewAction the DecoratedCart View ( / cart)
 func (cc *CartViewController) ViewAction(ctx context.Context, r *web.Request) web.Response {
-	decoratedCart, err := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
+	decoratedCart, err := cc.ApplicationCartReceiverService.ViewDecoratedCart(ctx, r.Session().G())
 	if err != nil {
 		log.Printf("cart.cartcontroller.viewaction: Error %v", err)
 		return cc.Render(ctx, "checkout/carterror", nil)
@@ -57,7 +57,7 @@ func (cc *CartViewController) ViewAction(ctx context.Context, r *web.Request) we
 
 	cartViewData := CartViewData{
 		DecoratedCart:        *decoratedCart,
-		CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, r.Session(), decoratedCart),
+		CartValidationResult: cc.ApplicationCartService.ValidateCart(ctx, r.Session().G(), decoratedCart),
 	}
 
 	flashes := r.Session().Flashes("cart.view.data")
@@ -81,11 +81,11 @@ func (cc *CartViewController) AddAndViewAction(ctx context.Context, r *web.Reque
 	}
 
 	qtyInt, _ := strconv.Atoi(qty)
-	deliveryIntent, _ := r.Param1("deliveryIntent")
+	deliveryCode, _ := r.Param1("deliveryCode")
 
-	addRequest := cc.ApplicationCartService.BuildAddRequest(ctx, r.MustParam1("marketplaceCode"), variantMarketplaceCode, qtyInt, deliveryIntent)
+	addRequest := cc.ApplicationCartService.BuildAddRequest(ctx, r.MustParam1("marketplaceCode"), variantMarketplaceCode, qtyInt)
 
-	err, product := cc.ApplicationCartService.AddProduct(ctx, r.Session(), addRequest)
+	err, product := cc.ApplicationCartService.AddProduct(ctx, r.Session().G(), deliveryCode, addRequest)
 	if notAllowedErr, ok := err.(*cartDomain.AddToCartNotAllowed); ok {
 		if notAllowedErr.RedirectHandlerName != "" {
 			return cc.Redirect(notAllowedErr.RedirectHandlerName, notAllowedErr.RedirectParams)
@@ -119,8 +119,9 @@ func (cc *CartViewController) UpdateQtyAndViewAction(ctx context.Context, r *web
 	if err != nil {
 		qtyInt = 1
 	}
+	deliveryCode, _ := r.Param1("deliveryCode")
 
-	err = cc.ApplicationCartService.UpdateItemQty(ctx, r.Session(), id, qtyInt)
+	err = cc.ApplicationCartService.UpdateItemQty(ctx, r.Session().G(), id, deliveryCode, qtyInt)
 
 	if err != nil {
 		log.Printf("cart.cartcontroller.UpdateAndViewAction: Error %v", err)
@@ -137,8 +138,8 @@ func (cc *CartViewController) DeleteAndViewAction(ctx context.Context, r *web.Re
 		log.Printf("cart.cartcontroller.deleteaction: param id not found")
 		return cc.Redirect("cart.view", nil)
 	}
-
-	err := cc.ApplicationCartService.DeleteItem(ctx, r.Session(), id)
+	deliveryCode, _ := r.Param1("deliveryCode")
+	err := cc.ApplicationCartService.DeleteItem(ctx, r.Session().G(), id, deliveryCode)
 	if err != nil {
 		log.Printf("cart.cartcontroller.deleteaction: Error %v", err)
 	}
@@ -148,7 +149,7 @@ func (cc *CartViewController) DeleteAndViewAction(ctx context.Context, r *web.Re
 
 // DeleteAllAndViewAction the empty
 func (cc *CartViewController) DeleteAllAndViewAction(ctx context.Context, r *web.Request) web.Response {
-	err := cc.ApplicationCartService.DeleteAllItems(ctx, r.Session())
+	err := cc.ApplicationCartService.DeleteAllItems(ctx, r.Session().G())
 	if err != nil {
 		log.Printf("cart.cartcontroller.deleteaction: Error %v", err)
 	}

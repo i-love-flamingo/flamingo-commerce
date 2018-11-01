@@ -109,10 +109,10 @@ func (s Factory) BuildForCurrentRequest(ctx context.Context, request *web.Reques
 
 	//Handle User
 	layer.Page.Attributes["loggedIn"] = false
-	if s.userService.IsLoggedIn(ctx, request.Session()) {
+	if s.userService.IsLoggedIn(ctx, request.Session().G()) {
 		layer.Page.Attributes["loggedIn"] = true
 		layer.Page.Attributes["logintype"] = "external"
-		userData := s.getUser(ctx, request.Session())
+		userData := s.getUser(ctx, request.Session().G())
 		if userData != nil {
 			layer.User = append(layer.User, *userData)
 		}
@@ -185,8 +185,8 @@ func (s Factory) BuildCartData(cart cart.DecoratedCart) *domain.Cart {
 func (s Factory) BuildTransactionData(ctx context.Context, cartTotals cart.CartTotals, decoratedItems []cart.DecoratedCartItem, orderID string, email string) *domain.Transaction {
 	var profile *domain.UserProfile
 	session, _ := session.FromContext(ctx)
-	if s.userService.IsLoggedIn(ctx, session) {
-		profile = s.getUserProfileForCurrentUser(ctx, session)
+	if s.userService.IsLoggedIn(ctx, session.G()) {
+		profile = s.getUserProfileForCurrentUser(ctx, session.G())
 	} else {
 		profile = s.getUserProfile(email, "")
 	}

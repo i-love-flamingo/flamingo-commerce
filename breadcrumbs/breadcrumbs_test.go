@@ -2,6 +2,7 @@ package breadcrumbs
 
 import (
 	"context"
+	"sync"
 	"testing"
 
 	"flamingo.me/flamingo/framework/web"
@@ -14,11 +15,12 @@ func TestAdd(t *testing.T) {
 		Url:   "http://testurl/",
 	}
 
-	r := &web.Request{Values: make(map[interface{}]interface{})}
+	r := &web.Request{Values: new(sync.Map)}
 	ctx := web.Context_(context.Background(), r)
 
 	Add(ctx, crumb)
 	Add(ctx, crumb)
 
-	assert.Len(t, r.Values[requestKey], 2)
+	b, _ := r.Values.Load(requestKey)
+	assert.Len(t, b, 2)
 }
