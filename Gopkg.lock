@@ -2,8 +2,16 @@
 
 
 [[projects]]
+  digest = "1:b1c7e46490296222768c7b8fd110a404ea4c0caf20dca5ea1334b63c7c90f61a"
+  name = "flamingo.me/dingo"
+  packages = ["."]
+  pruneopts = ""
+  revision = "b9af1d57ada670f6118e82c3d73a695370727a42"
+  version = "v0.1.0"
+
+[[projects]]
   branch = "master"
-  digest = "1:9fd5aa9c6ca41af45006daf69f0505e3821f5f41669cf6b577ed0d182ccc1912"
+  digest = "1:5e0d15df2f7c8562005d83e9ee406d56275d2d5023e690cb1f947e1cdd7088df"
   name = "flamingo.me/flamingo"
   packages = [
     "core/auth/application",
@@ -26,7 +34,7 @@
     "framework/web/responder/mocks",
   ]
   pruneopts = ""
-  revision = "c28035e5234c1955fdc284d90b67e1ed886ed097"
+  revision = "08c6894f93264f2a58d9449904231f6c105af3cb"
 
 [[projects]]
   branch = "master"
