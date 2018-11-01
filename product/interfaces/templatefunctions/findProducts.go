@@ -18,6 +18,7 @@ type (
 	}
 )
 
+// Func defines the find products function
 func (tf *FindProducts) Func(ctx context.Context) interface{} {
 
 	/*
@@ -55,8 +56,8 @@ func (tf *FindProducts) Func(ctx context.Context) interface{} {
 	}
 }
 
-func asFilterMap(additionalFilters interface{}) map[string][]string {
-	filters := make(map[string][]string)
+func asFilterMap(additionalFilters interface{}) map[string]interface{} {
+	filters := make(map[string]interface{})
 	// use filtersPug as KeyValueFilter
 	if filtersPug, ok := additionalFilters.(*pugjs.Map); ok {
 		for k, v := range filtersPug.Items {

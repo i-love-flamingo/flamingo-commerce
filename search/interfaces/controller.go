@@ -37,8 +37,13 @@ func (vc *ViewController) Get(c context.Context, r *web.Request) web.Response {
 		},
 	}
 
+	queryAll := r.QueryAll()
+	filter := make(map[string]interface{})
+	for k, v := range queryAll {
+		filter[k] = v
+	}
 	searchRequest := application.SearchRequest{
-		FilterBy: r.QueryAll(),
+		FilterBy: filter,
 		Query:    query,
 	}
 

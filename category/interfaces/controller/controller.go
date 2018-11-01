@@ -106,8 +106,15 @@ func (vc *View) Get(c context.Context, request *web.Request) web.Response {
 		return vc.RedirectPermanentURL(u.String())
 	}
 
+	queryAll := request.QueryAll()
+	filter := make(map[string]interface{}, len(queryAll)+1)
+	for k, v := range queryAll {
+		filter[k] = v
+	}
+	filter[string(domain.CategoryKey)] = domain.NewCategoryFacet(category)
+
 	searchRequest := &searchApplication.SearchRequest{
-		FilterBy: request.QueryAll(),
+		FilterBy: filter,
 	}
 
 	products, err := vc.SearchService.Find(c, searchRequest)

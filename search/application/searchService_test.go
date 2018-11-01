@@ -21,8 +21,8 @@ func TestBuildFilters(t *testing.T) {
 			name: "default page size",
 			args: args{
 				request: SearchRequest{
-					FilterBy: map[string][]string{
-						"key": {"value1", "value2"},
+					FilterBy: map[string]interface{}{
+						"key": []string{"value1", "value2"},
 					},
 					Page:          3,
 					SortBy:        "price",
@@ -43,8 +43,8 @@ func TestBuildFilters(t *testing.T) {
 			name: "given page size",
 			args: args{
 				request: SearchRequest{
-					FilterBy: map[string][]string{
-						"key": {"value1", "value2"},
+					FilterBy: map[string]interface{}{
+						"key": []string{"value1", "value2"},
 					},
 					Page:          3,
 					PageSize:      33,

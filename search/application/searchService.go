@@ -8,6 +8,7 @@ import (
 	"context"
 	"net/url"
 
+	categoryDomain "flamingo.me/flamingo-commerce/category/domain"
 	"flamingo.me/flamingo-commerce/search/domain"
 	"flamingo.me/flamingo-commerce/search/utils"
 	"flamingo.me/flamingo/framework/flamingo"
@@ -25,7 +26,7 @@ type (
 
 	// SearchRequest is a simple DTO for the search query data
 	SearchRequest struct {
-		FilterBy         map[string][]string
+		FilterBy         map[string]interface{}
 		PageSize         int
 		Page             int
 		SortBy           string
@@ -172,7 +173,12 @@ func BuildFilters(request SearchRequest, defaultPageSize int) []domain.Filter {
 	}
 
 	for k, v := range request.FilterBy {
-		filters = append(filters, domain.NewKeyValueFilter(k, v))
+		switch k {
+		case string(categoryDomain.CategoryKey):
+			filters = append(filters, v.(categoryDomain.CategoryFacet))
+		default:
+			filters = append(filters, domain.NewKeyValueFilter(k, v.([]string)))
+		}
 	}
 
 	return filters
