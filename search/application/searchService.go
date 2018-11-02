@@ -175,7 +175,18 @@ func BuildFilters(request SearchRequest, defaultPageSize int) []domain.Filter {
 	for k, v := range request.FilterBy {
 		switch k {
 		case string(categoryDomain.CategoryKey):
-			filters = append(filters, v.(categoryDomain.CategoryFacet))
+			if _, ok := v.(categoryDomain.CategoryFacet); ok {
+				filters = append(filters, v.(categoryDomain.CategoryFacet))
+			} else {
+				filters = append(
+					filters,
+					categoryDomain.NewCategoryFacet(
+						categoryDomain.CategoryData{
+							CategoryCode: v.([]string)[0],
+						},
+					),
+				)
+			}
 		default:
 			filters = append(filters, domain.NewKeyValueFilter(k, v.([]string)))
 		}
