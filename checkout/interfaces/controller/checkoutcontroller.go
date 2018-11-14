@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
+	"flamingo.me/flamingo/framework/event"
 	"fmt"
 	"net/url"
 	"strings"
@@ -105,6 +106,7 @@ type (
 		orderService         *application.OrderService
 		paymentService       *application.PaymentService
 		decoratedCartFactory *cart.DecoratedCartFactory
+		eventRouter          event.Router
 
 		skipStartAction                 bool
 		skipReviewAction                bool
@@ -147,6 +149,7 @@ func (cc *CheckoutController) Inject(
 	logger flamingo.Logger,
 	customerApplicationService *customerApplication.Service,
 	paymentProvider PaymentProviderProvider,
+	eventRouter event.Router,
 	config *struct {
 		SkipStartAction                 bool   `inject:"config:checkout.skipStartAction,optional"`
 		SkipReviewAction                bool   `inject:"config:checkout.skipReviewAction,optional"`
@@ -164,6 +167,7 @@ func (cc *CheckoutController) Inject(
 	cc.orderService = orderService
 	cc.paymentService = paymentService
 	cc.decoratedCartFactory = decoratedCartFactory
+	cc.eventRouter = eventRouter
 
 	cc.skipStartAction = config.SkipStartAction
 	cc.skipReviewAction = config.SkipReviewAction
@@ -651,6 +655,9 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 	termsAndConditions, _ := r.Form1("termsAndConditions")
 
 	cc.logger.Debug("ReviewAction: selectedProvider: %v / selectedMethod: %v / proceed: %v / termsAndConditions: %v", selectedProvider, selectedMethod, proceed, termsAndConditions)
+
+	// Invalidate cart cache
+	cc.eventRouter.Dispatch(ctx, &cart.InvalidateCartEvent{Session: r.Session().G()})
 
 	//Guard Clause if Cart cannout be fetched
 	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session().G())

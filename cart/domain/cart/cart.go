@@ -2,6 +2,7 @@ package cart
 
 import (
 	"fmt"
+	"github.com/gorilla/sessions"
 
 	"time"
 
@@ -225,6 +226,10 @@ type (
 		DiscountAmount float64
 
 		CurrencyCode string
+	}
+
+	InvalidateCartEvent struct {
+		Session *sessions.Session
 	}
 )
 

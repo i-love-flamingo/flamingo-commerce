@@ -114,12 +114,12 @@ func (cs *CartReceiverService) storeCartInCache(ctx context.Context, session *se
 // GetCart Get the correct Cart (either Guest or User)
 func (cs *CartReceiverService) GetCart(ctx context.Context, session *sessions.Session) (*cartDomain.Cart, cartDomain.CartBehaviour, error) {
 	if cs.UserService.IsLoggedIn(ctx, session) {
-		cacheID := CartCacheIdentifier{
-			CustomerID:     cs.Auth(ctx, session).IDToken.Subject,
-			IsCustomerCart: true,
+		cacheID, err := cs.CartCache.BuildIdentifier(ctx, session)
+
+		if err != nil {
+			return nil, nil, err
 		}
 
-		var err error
 		cart, cacheErr := cs.getCartFromCache(ctx, session, cacheID)
 		if cacheErr != nil {
 			cart, err = cs.CustomerCartService.GetCart(ctx, cs.Auth(ctx, session), "me")
@@ -143,18 +143,10 @@ func (cs *CartReceiverService) GetCart(ctx context.Context, session *sessions.Se
 	var cacheErr error
 
 	if cs.ShouldHaveGuestCart(session) {
-		guestcartid, ok := session.Values[GuestCartSessionKey]
-		if !ok {
-			panic("Fatal - ShouldHaveGuestCart returned true but got no GuestCartSessionKey?")
-		}
+		cacheID, err := cs.CartCache.BuildIdentifier(ctx, session)
 
-		guestcartidString, ok := guestcartid.(string)
-		if !ok {
-			panic("Fatal - ShouldHaveGuestCart returned true but got no GuestCartSessionKey string")
-		}
-
-		cacheID := CartCacheIdentifier{
-			GuestCartID: guestcartidString,
+		if err != nil {
+			return nil, nil, err
 		}
 
 		guestCart, cacheErr = cs.getCartFromCache(ctx, session, cacheID)

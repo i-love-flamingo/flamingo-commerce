@@ -3,6 +3,7 @@ package application
 import (
 	"context"
 
+	cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
 	"flamingo.me/flamingo/core/auth/domain"
 	"flamingo.me/flamingo/framework/event"
 	"flamingo.me/flamingo/framework/flamingo"
@@ -59,10 +60,18 @@ func (e *EventReceiver) NotifyWithContext(ctx context.Context, event event.Event
 
 		if e.CartCache != nil {
 			cacheID, err := BuildIdentifierFromCart(guestCart)
-			if err != nil {
+			if err == nil {
 				e.CartCache.Delete(ctx, currentEvent.Session, *cacheID)
 			}
 		}
 		e.CartService.DeleteSavedSessionGuestCartID(currentEvent.Session)
+	// Handle Event to Invalidate the Cart Cache
+	case *cartDomain.InvalidateCartEvent:
+		if e.CartCache != nil {
+			cartId, err := e.CartCache.BuildIdentifier(ctx, currentEvent.Session)
+			if err == nil {
+				e.CartCache.Invalidate(ctx, currentEvent.Session, cartId)
+			}
+		}
 	}
 }
