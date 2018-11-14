@@ -118,6 +118,10 @@ func (m *MockCartCache) DeleteAll(context.Context, *sessions.Session) error {
 	return nil
 }
 
+func (m *MockCartCache) BuildIdentifier(context.Context, *sessions.Session) (cartApplication.CartCacheIdentifier, error) {
+	return cartApplication.CartCacheIdentifier{}, nil
+}
+
 // MockEventPublisher
 
 type (
