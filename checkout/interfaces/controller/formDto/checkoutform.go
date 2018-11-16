@@ -29,6 +29,7 @@ type (
 		ShippingAddress                    AddressFormData `form:"shippingAddress" validate:"-"`
 		UseBillingAddressAsShippingAddress bool            `form:"billingAsShipping"`
 		TermsAndConditions                 bool            `form:"termsAndConditions" validate:"required"`
+		LoyaltyMemberShipNumber            string          `form:"loyaltyPointsMembershipId"`
 		SelectedPaymentProvider            string          `form:"selectedPaymentProvider" validate:"required"`
 		SelectedPaymentProviderMethod      string          `form:"selectedPaymentProviderMethod" validate:"required"`
 	}
@@ -60,9 +61,10 @@ type (
 	}
 
 	CheckoutFormService struct {
-		DefaultFormValues  config.Map    `inject:"config:checkout.checkoutForm.defaultValues,optional"`
-		OverrideFormValues config.Map    `inject:"config:checkout.checkoutForm.overrideValues,optional"`
-		Decoder            *form.Decoder `inject:""`
+		DefaultFormValues    config.Map    `inject:"config:checkout.checkoutForm.defaultValues,optional"`
+		OverrideFormValues   config.Map    `inject:"config:checkout.checkoutForm.overrideValues,optional"`
+		AdditionalFormValues config.Slice  `inject:"config:checkout.checkoutForm.additionalFormValues,optional"`
+		Decoder              *form.Decoder `inject:""`
 		//Customer  might be passed by the controller - we use it to initialize the form
 		Customer customerDomain.Customer
 		//Cart might be passed by Controller - we use it to prefill the form in case it was not submitted
@@ -268,6 +270,20 @@ func (fs *CheckoutFormService) overrideConfiguredDefaultFormValues(formValues ur
 	return formValues
 }
 
+func (fs CheckoutFormService) GetAdditionFormFields(formData CheckoutFormData) map[string]string {
+	additionalFormData := make(map[string]string)
+
+	if fs.AdditionalFormValues != nil {
+		for _, key := range fs.AdditionalFormValues {
+			if key == "lp_membership_id" && formData.LoyaltyMemberShipNumber != "" {
+				additionalFormData[key.(string)] = formData.LoyaltyMemberShipNumber
+			}
+		}
+	}
+
+	return additionalFormData
+}
+
 //ValidateFormData - from FormService interface
 func (fs *CheckoutFormService) ValidateFormData(data interface{}) (formDomain.ValidationInfo, error) {
 	formData, ok := data.(CheckoutFormData)
@@ -341,13 +357,13 @@ func mapAddress(addressData AddressFormData) *cart.Address {
 	lines[1] = addressData.AddressLine2
 
 	address := cart.Address{
-		CountryCode: addressData.CountryCode,
-		Company:     addressData.Company,
-		Salutation:  addressData.Title,
-		Lastname:    addressData.Lastname,
-		Firstname:   addressData.Firstname,
-		Email:       addressData.Email,
-		City:        addressData.City,
+		CountryCode:            addressData.CountryCode,
+		Company:                addressData.Company,
+		Salutation:             addressData.Title,
+		Lastname:               addressData.Lastname,
+		Firstname:              addressData.Firstname,
+		Email:                  addressData.Email,
+		City:                   addressData.City,
 		AdditionalAddressLines: lines,
 		RegionCode:             addressData.RegionCode,
 		Street:                 addressData.Street,

@@ -451,8 +451,9 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 
 			billingAddress, shippingAddress := formDto.MapAddresses(checkoutFormData)
 			person := formDto.MapPerson(checkoutFormData)
+			additionalFormFields := formservice.GetAdditionFormFields(checkoutFormData)
 
-			err := cc.orderService.CurrentCartSaveInfos(ctx, session, billingAddress, shippingAddress, person)
+			err := cc.orderService.CurrentCartSaveInfos(ctx, session, billingAddress, shippingAddress, person, additionalFormFields)
 			if err != nil {
 				return cc.showCheckoutFormWithErrors(ctx, r, template, *decoratedCart, &form, err)
 			}

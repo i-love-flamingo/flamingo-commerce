@@ -49,7 +49,7 @@ func (os *OrderService) PlaceOrder(ctx context.Context, session *sessions.Sessio
 }
 
 // CurrentCartSaveInfos saves additional informations on current cart
-func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *sessions.Session, billingAddress *cart.Address, shippingAddress *cart.Address, purchaser *cart.Person) error {
+func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *sessions.Session, billingAddress *cart.Address, shippingAddress *cart.Address, purchaser *cart.Person, additionalCustomData map[string]string) error {
 	os.Logger.Debug("CurrentCartSaveInfos call billingAddress:%v shippingAddress:%v payment:%v", billingAddress, shippingAddress)
 
 	if billingAddress == nil {
@@ -62,29 +62,30 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *sessi
 		return err
 	}
 
-	updateCommands, err := os.DeliveryInfoBuilder.BuildDeliveryInfoUpdateCommand(ctx, decoratedCart)
+	//update Billing
+	err = os.CartService.UpdateBillingAddress(ctx, session, billingAddress)
 	if err != nil {
-		os.Logger.Error("OnStepCurrentCartPlaceOrder BuildDeliveryInfoUpdateCommand Error %v", err)
+		os.Logger.Error("OnStepCurrentCartPlaceOrder UpdateBillingAddress Error %v", err)
 		return err
 	}
 
-	//If an Address is given - add it to every DeliveryInfo(s)
+	//Update ShippingAddress on ALL Deliveries in the Cart if given
+	// Maybe later we need to support different shipping addresses in the Checkout
 	if shippingAddress != nil {
-		if len(updateCommands) == 0 {
-			os.Logger.Warn("OnStepCurrentCartPlaceOrder Cart has no DeliveryInfoUpdates Build - cannot set shippingAddress")
-			return errors.New("No DeliveryInfos Build - cannot set shippingAddress")
+		for _, d := range decoratedCart.Cart.Deliveries {
+			newDeliveryInfo := d.DeliveryInfo
+			newDeliveryInfo.DeliveryLocation.Address = shippingAddress
+			err = os.CartService.UpdateDeliveryInfo(ctx, session, d.DeliveryInfo.Code, newDeliveryInfo)
+			if err != nil {
+				os.Logger.Error("OnStepCurrentCartPlaceOrder UpdateDeliveryInfosAndBilling Error %v", err)
+				return err
+			}
 		}
-		for k := range updateCommands {
-			updateCommands[k].DeliveryInfo.DeliveryLocation.Address = shippingAddress
-		}
-	}
-	err = os.CartService.UpdateDeliveryInfosAndBilling(ctx, session, billingAddress, updateCommands)
-	if err != nil {
-		os.Logger.Error("OnStepCurrentCartPlaceOrder UpdateDeliveryInfosAndBilling Error %v", err)
-		return err
+
 	}
 
-	err = os.CartService.UpdatePurchaser(ctx, session, purchaser, nil)
+	//Update Purchaser
+	err = os.CartService.UpdatePurchaser(ctx, session, purchaser, additionalCustomData)
 	if err != nil {
 		os.Logger.Error("OnStepCurrentCartPlaceOrder UpdatePurchaser Error %v", err)
 		return err
