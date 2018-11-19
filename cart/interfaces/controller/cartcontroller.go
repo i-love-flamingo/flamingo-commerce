@@ -106,7 +106,7 @@ func (cc *CartViewController) UpdateQtyAndViewAction(ctx context.Context, r *web
 
 	id, ok := r.Param1("id")
 	if !ok {
-		log.Printf("cart.cartcontroller.UpdateAndViewAction: param id not found")
+		log.Printf("cart.cartcontroller.UpdateQtyAndViewAction: param id not found")
 		return cc.Redirect("cart.view", nil)
 	}
 
