@@ -52,24 +52,32 @@ func (b *DefaultDeliveryInfoBuilder) BuildByDeliveryCode(deliverycode string) (D
 			Method: DELIVERY_METHOD_UNSPECIFIED,
 		}, nil
 	}
-	if intentParts[0] == DELIVERY_METHOD_PICKUP {
+	if intentParts[0] == DELIVERY_METHOD_PICKUP || intentParts[0] == DELIVERY_METHOD_DELIVERY {
 		if intentParts[1] == DELIVERYLOCATION_TYPE_STORE {
 			return DeliveryInfo{
 				Code:   deliverycode,
-				Method: DELIVERY_METHOD_PICKUP,
+				Method: intentParts[0],
 				DeliveryLocation: DeliveryLocation{
 					Code: intentParts[2],
 					Type: DELIVERYLOCATION_TYPE_STORE,
 				},
 			}, nil
-		}
-		if intentParts[1] == DELIVERYLOCATION_TYPE_COLLECTIONPOINT {
+		} else if intentParts[1] == DELIVERYLOCATION_TYPE_COLLECTIONPOINT {
 			return DeliveryInfo{
 				Code:   deliverycode,
-				Method: DELIVERY_METHOD_PICKUP,
+				Method: intentParts[0],
 				DeliveryLocation: DeliveryLocation{
 					Code: intentParts[2],
 					Type: DELIVERYLOCATION_TYPE_COLLECTIONPOINT,
+				},
+			}, nil
+		} else {
+			return DeliveryInfo{
+				Code:   deliverycode,
+				Method: intentParts[0],
+				DeliveryLocation: DeliveryLocation{
+					Code: intentParts[2],
+					Type: intentParts[1],
 				},
 			}, nil
 		}
