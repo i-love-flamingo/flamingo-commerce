@@ -76,6 +76,6 @@ func (r *routes) Routes(registry *router.Registry) {
 	registry.Route("/checkout/processpayment/:providercode/:methodcode", "checkout.processpayment")
 
 	// api routes
-	registry.HandlePost("checkout.api.billing", r.apiController.SubmitBillingAddressAction)
-	registry.Route("/api/checkout/billing", "checkout.api.billing")
+	registry.HandlePost("checkout.api.shipping", r.apiController.UpdateShippingAddressAction)
+	registry.Route("/api/checkout/shipping", "checkout.api.shipping")
 }
