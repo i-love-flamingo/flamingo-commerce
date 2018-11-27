@@ -13,14 +13,14 @@ import (
 )
 
 type (
-	// CheckoutModule registers our profiler
-	CheckoutModule struct {
+	// Module registers our profiler
+	Module struct {
 		UseFakeSourcingService bool `inject:"config:checkout.useFakeSourcingService,optional"`
 	}
 )
 
 // Configure module
-func (m *CheckoutModule) Configure(injector *dingo.Injector) {
+func (m *Module) Configure(injector *dingo.Injector) {
 	injector.BindMap((*paymentDomain.PaymentProvider)(nil), "offlinepayment").To(paymentInfrastructure.OfflinePaymentProvider{})
 
 	injector.Bind((*form.Decoder)(nil)).ToProvider(form.NewDecoder).AsEagerSingleton()
@@ -31,8 +31,8 @@ func (m *CheckoutModule) Configure(injector *dingo.Injector) {
 	router.Bind(injector, new(routes))
 }
 
-// DefaultConfig
-func (m *CheckoutModule) DefaultConfig() config.Map {
+// DefaultConfig for checkout module
+func (m *Module) DefaultConfig() config.Map {
 	return config.Map{
 		"checkout": config.Map{
 			"defaultPaymentMethod": "checkmo",
@@ -41,14 +41,19 @@ func (m *CheckoutModule) DefaultConfig() config.Map {
 }
 
 type routes struct {
-	controller *controller.CheckoutController
+	controller    *controller.CheckoutController
+	apiController *controller.CheckoutAPIController
 }
 
-func (r *routes) Inject(controller *controller.CheckoutController) {
+// Inject required controller
+func (r *routes) Inject(controller *controller.CheckoutController, apiController *controller.CheckoutAPIController) {
 	r.controller = controller
+	r.apiController = apiController
 }
 
+// Routes  configuration for checkout controllers
 func (r *routes) Routes(registry *router.Registry) {
+	// routes
 	registry.HandleAny("checkout.start", r.controller.StartAction)
 	registry.Route("/checkout", "checkout.start")
 
@@ -69,4 +74,8 @@ func (r *routes) Routes(registry *router.Registry) {
 
 	registry.HandleAny("checkout.processpayment", r.controller.ProcessPaymentAction)
 	registry.Route("/checkout/processpayment/:providercode/:methodcode", "checkout.processpayment")
+
+	// api routes
+	registry.HandlePost("checkout.api.billing", r.apiController.SubmitBillingAddressAction)
+	registry.Route("/api/checkout/billing", "checkout.api.billing")
 }
