@@ -6,6 +6,8 @@ import (
 	"flamingo.me/flamingo-commerce/checkout/infrastructure"
 	paymentInfrastructure "flamingo.me/flamingo-commerce/checkout/infrastructure/payment"
 	"flamingo.me/flamingo-commerce/checkout/interfaces/controller"
+	"flamingo.me/flamingo-commerce/checkout/interfaces/controller/formDto"
+	formDomain "flamingo.me/flamingo/core/form/domain"
 	"flamingo.me/flamingo/framework/config"
 	"flamingo.me/flamingo/framework/dingo"
 	"flamingo.me/flamingo/framework/router"
@@ -27,6 +29,8 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	if m.UseFakeSourcingService {
 		injector.Override((*domain.SourcingService)(nil), "").To(infrastructure.FakeSourcingService{})
 	}
+
+	injector.Bind((*formDomain.FormService)(nil)).To(formDto.CheckoutFormService{})
 
 	router.Bind(injector, new(routes))
 }
