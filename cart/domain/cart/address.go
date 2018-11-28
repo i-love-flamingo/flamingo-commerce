@@ -15,5 +15,7 @@ type (
 		Lastname               string
 		Email                  string
 		Salutation             string
+		State                  string
+		Country                string
 	}
 )
