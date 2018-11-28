@@ -8,7 +8,7 @@ import (
 	formDomain "flamingo.me/flamingo/core/form/domain"
 	"flamingo.me/flamingo/framework/flamingo"
 	"flamingo.me/flamingo/framework/web"
-	...CheckoutDomain ".../.../flamingo/src/checkout/domain"
+	// ..CheckoutDomain ".../.../flamingo/src/checkout/domain"
 )
 
 type (
@@ -67,42 +67,44 @@ func (cac *CheckoutAPIController) SubmitBillingAddressAction(ctx context.Context
 	}
 
 	// submit valid data
-	if billingFormData, ok := form.Data.(...CheckoutDomain.BillingAddressForm); ok {
-		billingAddress := billingFormData.MapBillingAddress(billingFormData.AddressFormData)
+	/*
+		if billingFormData, ok := form.Data.(...CheckoutDomain.BillingAddressForm); ok {
+			billingAddress := billingFormData.MapBillingAddress(billingFormData.AddressFormData)
 
-		cart, cartOrderBehaviour, err := cac.cartReceiverService.GetCart(ctx, r.Session().G())
-		if err != nil {
-			cac.logger.Error("no cart to update")
-			return &web.JSONResponse{
-				BasicResponse: web.BasicResponse{
-					Status: 400,
-				},
-				Data: JSONResult{
-					Message:     "error saving information to cart",
-					MessageCode: "submit.error",
-					Success:     false,
-					FieldErrors: nil,
-				},
+			cart, cartOrderBehaviour, err := cac.cartReceiverService.GetCart(ctx, r.Session().G())
+			if err != nil {
+				cac.logger.Error("no cart to update")
+				return &web.JSONResponse{
+					BasicResponse: web.BasicResponse{
+						Status: 400,
+					},
+					Data: JSONResult{
+						Message:     "error saving information to cart",
+						MessageCode: "submit.error",
+						Success:     false,
+						FieldErrors: nil,
+					},
+				}
 			}
-		}
 
-		_, cartUpdateErr := cartOrderBehaviour.UpdateBillingAddress(ctx, cart, billingAddress)
-		if cartUpdateErr != nil {
-			cac.logger.Error(cartUpdateErr)
-			return &web.JSONResponse{
-				BasicResponse: web.BasicResponse{
-					Status: 400,
-				},
-				Data: JSONResult{
-					Message:     "error saving information to cart",
-					MessageCode: "submit.error",
-					Success:     false,
-					FieldErrors: nil,
-				},
+			_, cartUpdateErr := cartOrderBehaviour.UpdateBillingAddress(ctx, cart, billingAddress)
+			if cartUpdateErr != nil {
+				cac.logger.Error(cartUpdateErr)
+				return &web.JSONResponse{
+					BasicResponse: web.BasicResponse{
+						Status: 400,
+					},
+					Data: JSONResult{
+						Message:     "error saving information to cart",
+						MessageCode: "submit.error",
+						Success:     false,
+						FieldErrors: nil,
+					},
+				}
 			}
-		}
 
-	}
+		}
+	*/
 
 	return &web.JSONResponse{
 		Data: JSONResult{
