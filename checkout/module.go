@@ -45,14 +45,12 @@ func (m *Module) DefaultConfig() config.Map {
 }
 
 type routes struct {
-	controller    *controller.CheckoutController
-	apiController *controller.CheckoutAPIController
+	controller *controller.CheckoutController
 }
 
 // Inject required controller
-func (r *routes) Inject(controller *controller.CheckoutController, apiController *controller.CheckoutAPIController) {
+func (r *routes) Inject(controller *controller.CheckoutController) {
 	r.controller = controller
-	r.apiController = apiController
 }
 
 // Routes  configuration for checkout controllers
@@ -78,8 +76,4 @@ func (r *routes) Routes(registry *router.Registry) {
 
 	registry.HandleAny("checkout.processpayment", r.controller.ProcessPaymentAction)
 	registry.Route("/checkout/processpayment/:providercode/:methodcode", "checkout.processpayment")
-
-	// api routes
-	registry.HandlePost("checkout.api.billing", r.apiController.SubmitBillingAddressAction)
-	registry.Route("/api/checkout/billing", "checkout.api.billing")
 }
