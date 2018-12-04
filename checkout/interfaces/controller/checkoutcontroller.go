@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
-	"flamingo.me/flamingo/framework/event"
 	"fmt"
 	"net/url"
 	"strings"
+
+	"flamingo.me/flamingo/framework/event"
 
 	cartApplication "flamingo.me/flamingo-commerce/cart/application"
 	"flamingo.me/flamingo-commerce/cart/domain/cart"
@@ -113,6 +114,7 @@ type (
 		showReviewStepAfterPaymentError bool
 		showEmptyCartPageIfNoItems      bool
 		redirectToCartOnInvalideCart    bool
+		privacyPolicyRequired           bool
 
 		applicationCartService         *cartApplication.CartService
 		applicationCartReceiverService *cartApplication.CartReceiverService
@@ -156,6 +158,7 @@ func (cc *CheckoutController) Inject(
 		ShowReviewStepAfterPaymentError bool   `inject:"config:checkout.showReviewStepAfterPaymentError,optional"`
 		ShowEmptyCartPageIfNoItems      bool   `inject:"config:checkout.showEmptyCartPageIfNoItems,optional"`
 		RedirectToCartOnInvalideCart    bool   `inject:"config:checkout.redirectToCartOnInvalideCart,optional"`
+		PrivacyPolicyRequired           bool   `inject:"config:checkout.privacyPolicyRequired,optional"`
 		BaseURL                         string `inject:"config:canonicalurl.baseurl"`
 	},
 ) {
@@ -174,6 +177,7 @@ func (cc *CheckoutController) Inject(
 	cc.showReviewStepAfterPaymentError = config.ShowReviewStepAfterPaymentError
 	cc.showEmptyCartPageIfNoItems = config.ShowEmptyCartPageIfNoItems
 	cc.redirectToCartOnInvalideCart = config.RedirectToCartOnInvalideCart
+	cc.privacyPolicyRequired = config.PrivacyPolicyRequired
 
 	cc.applicationCartService = applicationCartService
 	cc.applicationCartReceiverService = applicationCartReceiverService
@@ -654,8 +658,9 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 	selectedMethod, _ := r.Form1("selectedPaymentProviderMethod")
 	proceed, _ := r.Form1("proceed")
 	termsAndConditions, _ := r.Form1("termsAndConditions")
+	privacyPolicy, _ := r.Form1("privacyPolicy")
 
-	cc.logger.Debug("ReviewAction: selectedProvider: %v / selectedMethod: %v / proceed: %v / termsAndConditions: %v", selectedProvider, selectedMethod, proceed, termsAndConditions)
+	cc.logger.Debug("ReviewAction: selectedProvider: %v / selectedMethod: %v / proceed: %v / termsAndConditions: %v", selectedProvider, selectedMethod, proceed, termsAndConditions, privacyPolicy)
 
 	// Invalidate cart cache
 	cc.eventRouter.Dispatch(ctx, &cart.InvalidateCartEvent{Session: r.Session().G()})
@@ -675,10 +680,6 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 		return guardRedirect
 	}
 
-	if proceed == "1" && termsAndConditions == "1" && selectedProvider != "" && selectedMethod != "" {
-		return cc.processPaymentOrPlaceOrderDirectly(ctx, r, selectedProvider, selectedMethod, "", nil).Hook(web.NoCache)
-	}
-
 	viewData := ReviewStepViewData{
 		DecoratedCart: *decoratedCart,
 		SelectedPayment: SelectedPayment{
@@ -686,6 +687,27 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 			Method:   selectedMethod,
 		},
 	}
+
+	if cc.privacyPolicyRequired && privacyPolicy != "1" {
+		viewData.ErrorInfos = ViewErrorInfos{
+			HasError:        true,
+			ErrorMessage:    "privacy_policy_required",
+			HasPaymentError: false,
+		}
+	}
+
+	if termsAndConditions != "1" {
+		viewData.ErrorInfos = ViewErrorInfos{
+			HasError:        true,
+			ErrorMessage:    "terms_and_conditions_required",
+			HasPaymentError: false,
+		}
+	}
+
+	if proceed == "1" && (!cc.privacyPolicyRequired || privacyPolicy == "1") && termsAndConditions == "1" && selectedProvider != "" && selectedMethod != "" {
+		return cc.processPaymentOrPlaceOrderDirectly(ctx, r, selectedProvider, selectedMethod, "", nil).Hook(web.NoCache)
+	}
+
 	return cc.Render(ctx, "checkout/review", viewData).Hook(web.NoCache)
 
 }
