@@ -688,18 +688,26 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 		},
 	}
 
-	if cc.privacyPolicyRequired && privacyPolicy != "1" {
+	errorMessage := ""
+	// check for privacy policy if required
+	if cc.privacyPolicyRequired && privacyPolicy != "1" && proceed == "1" {
+		errorMessage = "privacy_policy_required"
 		viewData.ErrorInfos = ViewErrorInfos{
 			HasError:        true,
-			ErrorMessage:    "privacy_policy_required",
+			ErrorMessage:    errorMessage,
 			HasPaymentError: false,
 		}
 	}
 
-	if termsAndConditions != "1" {
+	// check for terms and conditions if required
+	if termsAndConditions != "1" && proceed == "1" {
+		if errorMessage != "" {
+			errorMessage = errorMessage + ","
+		}
+		errorMessage = errorMessage + "terms_and_conditions_required"
 		viewData.ErrorInfos = ViewErrorInfos{
 			HasError:        true,
-			ErrorMessage:    "terms_and_conditions_required",
+			ErrorMessage:    errorMessage,
 			HasPaymentError: false,
 		}
 	}
