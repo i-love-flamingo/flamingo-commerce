@@ -17,6 +17,6 @@ type (
 		Salutation             string
 		State                  string
 		Country                string
-		SameAsBilling          int
+		SameAsBilling          bool
 	}
 )
