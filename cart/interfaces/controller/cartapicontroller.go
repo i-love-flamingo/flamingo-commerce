@@ -15,6 +15,7 @@ type (
 	// CartApiController for cart api
 	CartApiController struct {
 		responder.JSONAware
+		responder.RedirectAware
 		cartService         *application.CartService
 		cartReceiverService *application.CartReceiverService
 		logger              flamingo.Logger
@@ -31,13 +32,16 @@ type (
 	}
 )
 
+// Inject dependencies
 func (cc *CartApiController) Inject(
-	aware responder.JSONAware,
+	jsonAware responder.JSONAware,
+	redirectAware responder.RedirectAware,
 	ApplicationCartService *application.CartService,
 	ApplicationCartReceiverService *application.CartReceiverService,
 	Logger flamingo.Logger,
 ) {
-	cc.JSONAware = aware
+	cc.JSONAware = jsonAware
+	cc.RedirectAware = redirectAware
 	cc.cartService = ApplicationCartService
 	cc.cartReceiverService = ApplicationCartReceiverService
 	cc.logger = Logger
@@ -80,6 +84,7 @@ func (cc *CartApiController) AddAction(ctx context.Context, r *web.Request) web.
 	})
 }
 
+// ApplyVoucherAndGetAction applies the given voucher and returns the cart
 func (cc *CartApiController) ApplyVoucherAndGetAction(ctx context.Context, r *web.Request) web.Response {
 	couponCode := r.MustParam1("couponCode")
 
@@ -87,5 +92,26 @@ func (cc *CartApiController) ApplyVoucherAndGetAction(ctx context.Context, r *we
 	if err != nil {
 		return cc.JSONError(result{Message: err.Error(), Success: false}, 500)
 	}
+	return cc.JSON(cart)
+}
+
+// CleanAndGetAction cleans the cart and returns the cleaned cart
+func (cc *CartApiController) CleanAndGetAction(ctx context.Context, r *web.Request) web.Response {
+	err := cc.cartService.DeleteAllItems(ctx, r.Session().G())
+	if err != nil {
+		return cc.JSONError(result{Message: err.Error(), Success: false}, 500)
+	}
+
+	return cc.Redirect("cart.api.get", nil)
+}
+
+// CleanDeliveryAndGetAction cleans the given delivery from the cart and returns the cleaned cart
+func (cc *CartApiController) CleanDeliveryAndGetAction(ctx context.Context, r *web.Request) web.Response {
+	deliveryCode := r.MustParam1("deliveryCode")
+	cart, err := cc.cartService.DeleteDelivery(ctx, r.Session().G(), deliveryCode)
+	if err != nil {
+		return cc.JSONError(result{Message: err.Error(), Success: false}, 500)
+	}
+
 	return cc.JSON(cart)
 }

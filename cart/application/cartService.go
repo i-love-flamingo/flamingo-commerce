@@ -267,6 +267,62 @@ func (cs CartService) DeleteAllItems(ctx context.Context, session *sessions.Sess
 	return nil
 }
 
+// Clean current cart
+func (cs CartService) Clean(ctx context.Context, session *sessions.Session) error {
+	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx, session)
+	if err != nil {
+		return err
+	}
+	// cart cache must be updated - with the current value of cart
+	defer func() {
+		cs.updateCartInCache(ctx, session, cart)
+	}()
+
+	for _, delivery := range cart.Deliveries {
+		for _, item := range delivery.Cartitems {
+			qtyBefore := item.Qty
+			cs.EventPublisher.PublishChangedQtyInCartEvent(ctx, &item, qtyBefore, 0, cart.ID)
+		}
+	}
+
+	_, err = behaviour.CleanCart(ctx, cart)
+	if err != nil {
+		cs.Logger.WithField("category", "cartService").WithField("subCategory", "DeleteAllItems").Error(err)
+		return err
+	}
+
+	return nil
+}
+
+// DeleteDelivery in current cart
+func (cs CartService) DeleteDelivery(ctx context.Context, session *sessions.Session, deliveryCode string) (*cartDomain.Cart, error) {
+	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx, session)
+	if err != nil {
+		return nil, err
+	}
+	// cart cache must be updated - with the current value of cart
+	defer func() {
+		cs.updateCartInCache(ctx, session, cart)
+	}()
+
+	delivery, found := cart.GetDeliveryByCode(deliveryCode)
+	if !found {
+		return nil, errors.New("delivery not found: " + deliveryCode)
+	}
+	for _, item := range delivery.Cartitems {
+		qtyBefore := item.Qty
+		cs.EventPublisher.PublishChangedQtyInCartEvent(ctx, &item, qtyBefore, 0, cart.ID)
+	}
+
+	_, err = behaviour.CleanDelivery(ctx, cart, deliveryCode)
+	if err != nil {
+		cs.Logger.WithField("category", "cartService").WithField("subCategory", "DeleteAllItems").Error(err)
+		return nil, err
+	}
+
+	return cart, nil
+}
+
 // PlaceOrder submits the order
 func (cs *CartService) PlaceOrder(ctx context.Context, session *sessions.Session, payment *cartDomain.CartPayment) (cartDomain.PlacedOrderInfos, error) {
 	cart, behaviour, err := cs.CartReceiverService.GetCart(ctx, session)

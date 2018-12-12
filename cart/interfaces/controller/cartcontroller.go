@@ -34,6 +34,7 @@ type (
 		ShowEmptyCartPageIfNoItems bool `inject:"config:cart.showEmptyCartPageIfNoItems,optional"`
 	}
 
+	// CartViewActionData for rendering results
 	CartViewActionData struct {
 		AddToCartProductsData []productDomain.BasicProductData
 	}
@@ -147,9 +148,30 @@ func (cc *CartViewController) DeleteAndViewAction(ctx context.Context, r *web.Re
 	return cc.Redirect("cart.view", nil)
 }
 
-// DeleteAllAndViewAction the empty
+// DeleteAllAndViewAction empties the cart and shows it
 func (cc *CartViewController) DeleteAllAndViewAction(ctx context.Context, r *web.Request) web.Response {
 	err := cc.ApplicationCartService.DeleteAllItems(ctx, r.Session().G())
+	if err != nil {
+		log.Printf("cart.cartcontroller.deleteaction: Error %v", err)
+	}
+
+	return cc.Redirect("cart.view", nil)
+}
+
+// CleanAndViewAction empties the cart and shows it
+func (cc *CartViewController) CleanAndViewAction(ctx context.Context, r *web.Request) web.Response {
+	err := cc.ApplicationCartService.Clean(ctx, r.Session().G())
+	if err != nil {
+		log.Printf("cart.cartcontroller.deleteaction: Error %v", err)
+	}
+
+	return cc.Redirect("cart.view", nil)
+}
+
+// CleanDeliveryAndViewAction empties a single delivery and shows it
+func (cc *CartViewController) CleanDeliveryAndViewAction(ctx context.Context, r *web.Request) web.Response {
+	deliveryCode := r.MustParam1("deliveryCode")
+	_, err := cc.ApplicationCartService.DeleteDelivery(ctx, r.Session().G(), deliveryCode)
 	if err != nil {
 		log.Printf("cart.cartcontroller.deleteaction: Error %v", err)
 	}

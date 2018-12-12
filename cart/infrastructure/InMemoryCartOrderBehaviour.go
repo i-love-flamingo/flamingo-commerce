@@ -2,7 +2,6 @@ package infrastructure
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"math/big"
 	"math/rand"
@@ -10,6 +9,7 @@ import (
 
 	domaincart "flamingo.me/flamingo-commerce/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/product/domain"
+	"github.com/pkg/errors"
 )
 
 type (
@@ -42,7 +42,7 @@ func (cob *InMemoryCartOrderBehaviour) PlaceOrder(ctx context.Context, cart *dom
 
 func (cob *InMemoryCartOrderBehaviour) DeleteItem(ctx context.Context, cart *domaincart.Cart, itemId string, deliveryCode string) (*domaincart.Cart, error) {
 	if !cob.CartStorage.HasCart(cart.ID) {
-		return nil, fmt.Errorf("cart.infrastructure.InMemoryCartOrderBehaviour: Cannot delete - Guestcart with id %v not existend", cart.ID)
+		return nil, fmt.Errorf("cart.infrastructure.InMemoryCartOrderBehaviour: Cannot delete - Guestcart with id %v not existent", cart.ID)
 	}
 
 	if newDelivery, ok := cart.GetDeliveryByCode(deliveryCode); ok {
@@ -100,7 +100,10 @@ func (cob *InMemoryCartOrderBehaviour) UpdateItem(ctx context.Context, cart *dom
 
 	}
 
-	cob.CartStorage.StoreCart(*cart)
+	err := cob.CartStorage.StoreCart(*cart)
+	if err != nil {
+		return nil, errors.Wrap(err, "cart.infrastructure.InMemoryCartOrderBehaviour: error on saving cart")
+	}
 
 	return cart, nil
 }
@@ -147,7 +150,10 @@ func (cob *InMemoryCartOrderBehaviour) AddToCart(ctx context.Context, cart *doma
 		}
 	}
 
-	cob.CartStorage.StoreCart(*cart)
+	err := cob.CartStorage.StoreCart(*cart)
+	if err != nil {
+		return nil, errors.Wrap(err, "cart.infrastructure.InMemoryCartOrderBehaviour: error on saving cart")
+	}
 
 	return cart, nil
 }
@@ -158,10 +164,10 @@ func (cob *InMemoryCartOrderBehaviour) buildItemForCart(ctx context.Context, add
 	cartItem := domaincart.Item{
 		MarketplaceCode:        addRequest.MarketplaceCode,
 		VariantMarketPlaceCode: addRequest.VariantMarketplaceCode,
-		Qty:          addRequest.Qty,
-		SinglePrice:  product.SaleableData().ActivePrice.GetFinalPrice(),
-		ID:           strconv.Itoa(rand.Int()),
-		CurrencyCode: product.SaleableData().ActivePrice.Currency,
+		Qty:                    addRequest.Qty,
+		SinglePrice:            product.SaleableData().ActivePrice.GetFinalPrice(),
+		ID:                     strconv.Itoa(rand.Int()),
+		CurrencyCode:           product.SaleableData().ActivePrice.Currency,
 	}
 
 	calculateItemPrices(&cartItem)
@@ -171,6 +177,54 @@ func (cob *InMemoryCartOrderBehaviour) buildItemForCart(ctx context.Context, add
 
 func calculateItemPrices(item *domaincart.Item) {
 	item.RowTotal, _ = new(big.Float).Mul(big.NewFloat(item.SinglePrice), new(big.Float).SetInt64(int64(item.Qty))).Float64()
+}
+
+// CleanCart removes all deliveries and their items from the cart
+func (cob *InMemoryCartOrderBehaviour) CleanCart(ctx context.Context, cart *domaincart.Cart) (*domaincart.Cart, error) {
+	if !cob.CartStorage.HasCart(cart.ID) {
+		return nil, fmt.Errorf("cart.infrastructure.InMemoryCartOrderBehaviour: Cannot delete - Guestcart with id %v not existend", cart.ID)
+	}
+
+	cart.Deliveries = []domaincart.Delivery{}
+
+	err := cob.CartStorage.StoreCart(*cart)
+	if err != nil {
+		return nil, errors.Wrap(err, "cart.infrastructure.InMemoryCartOrderBehaviour: error on saving cart")
+	}
+
+	return cart, nil
+}
+
+// CleanDelivery removes a complete delivery with its items from the cart
+func (cob *InMemoryCartOrderBehaviour) CleanDelivery(ctx context.Context, cart *domaincart.Cart, deliveryCode string) (*domaincart.Cart, error) {
+	if !cob.CartStorage.HasCart(cart.ID) {
+		return nil, fmt.Errorf("cart.infrastructure.InMemoryCartOrderBehaviour: Cannot delete - Guestcart with id %v not existend", cart.ID)
+	}
+
+	// create delivery if it does not yet exist
+	if !cart.HasDeliveryForCode(deliveryCode) {
+		return nil, errors.Errorf("cart.infrastructure.InMemoryCartOrderBehaviour: delivery %s not found", deliveryCode)
+	}
+
+	var position int
+	for i, delivery := range cart.Deliveries {
+		if delivery.DeliveryInfo.Code == deliveryCode {
+			position = i
+			break
+		}
+	}
+
+	newLength := len(cart.Deliveries) - 1
+	cart.Deliveries[position] = cart.Deliveries[newLength]
+	cart.Deliveries[newLength] = domaincart.Delivery{}
+	cart.Deliveries = cart.Deliveries[:newLength]
+
+	err := cob.CartStorage.StoreCart(*cart)
+	if err != nil {
+		return nil, errors.Wrap(err, "cart.infrastructure.InMemoryCartOrderBehaviour: error on saving cart")
+	}
+
+	return cart, nil
 }
 
 // @todo implement when needed
@@ -204,17 +258,30 @@ func (cob *InMemoryCartOrderBehaviour) UpdateDeliveryInfoAdditionalData(ctx cont
 	return nil, nil
 }
 
-/*
-return the current cart from storage
-*/
-
+// GetCart returns the current cart from storage
 func (cob *InMemoryCartOrderBehaviour) GetCart(ctx context.Context, cartId string) (*domaincart.Cart, error) {
 	if cob.CartStorage.HasCart(cartId) {
 		// if cart exists, there is no error ;)
 		cart, _ := cob.CartStorage.GetCart(cartId)
 		return cart, nil
 	}
-	return nil, fmt.Errorf("cart.infrastructure.InMemoryCartOrderBehaviour: Cannot get - Guestcart with id %v not existend", cartId)
+	return nil, fmt.Errorf("cart.infrastructure.InMemoryCartOrderBehaviour: Cannot get - Guestcart with id %v not existent", cartId)
+}
+
+// ApplyVoucher applies a voucher to the cart
+func (cob *InMemoryCartOrderBehaviour) ApplyVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, error) {
+	if couponCode != "valid" {
+		err := errors.New("Code invalid")
+		return nil, err
+	}
+
+	coupon := domaincart.CouponCode{
+		Code: couponCode,
+	}
+	cart.AppliedCouponCodes = append(cart.AppliedCouponCodes, coupon)
+	err := cob.CartStorage.StoreCart(*cart)
+
+	return cart, err
 }
 
 /** Implementation fo the storage **/
@@ -245,19 +312,4 @@ func (s *InMemoryCartStorage) StoreCart(cart domaincart.Cart) error {
 	s.init()
 	s.guestCarts[cart.ID] = cart
 	return nil
-}
-
-func (cob *InMemoryCartOrderBehaviour) ApplyVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, error) {
-	if couponCode != "valid" || couponCode == "" {
-		err := errors.New("Code invalid")
-		return nil, err
-	}
-
-	coupon := domaincart.CouponCode{
-		Code: couponCode,
-	}
-	cart.AppliedCouponCodes = append(cart.AppliedCouponCodes, coupon)
-	err := cob.CartStorage.StoreCart(*cart)
-
-	return cart, err
 }

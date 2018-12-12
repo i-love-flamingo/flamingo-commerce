@@ -43,6 +43,8 @@ type (
 		DeleteItem(ctx context.Context, cart *Cart, itemId string, deliveryCode string) (*Cart, error)
 		UpdateItem(ctx context.Context, cart *Cart, itemId string, deliveryCode string, itemUpdateCommand ItemUpdateCommand) (*Cart, error)
 		AddToCart(ctx context.Context, cart *Cart, deliveryCode string, addRequest AddRequest) (*Cart, error)
+		CleanCart(ctx context.Context, cart *Cart) (*Cart, error)
+		CleanDelivery(ctx context.Context, cart *Cart, deliveryCode string) (*Cart, error)
 		UpdatePurchaser(ctx context.Context, cart *Cart, purchaser *Person, additionalData map[string]string) (*Cart, error)
 		UpdateAdditionalData(ctx context.Context, cart *Cart, additionalData map[string]string) (*Cart, error)
 		//UpdateDeliveryInfosAndBilling(ctx context.Context, cart *Cart, billingAddress *Address, deliveryInfoUpdates []DeliveryInfoUpdateCommand) (*Cart, error)

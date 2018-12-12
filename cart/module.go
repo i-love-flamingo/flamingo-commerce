@@ -81,20 +81,28 @@ func (r *routes) Routes(registry *router.Registry) {
 	registry.Route("/cart/update/:id", `cart.updateQty(id,qty?="1",deliveryCode?="")`)
 
 	registry.HandleAny("cart.deleteAllItems", r.viewController.DeleteAllAndViewAction)
-	registry.Route("/cart/delete/all", `cart.deleteAllItems`)
+	registry.Route("/cart/delete/all", "cart.deleteAllItems")
+
+	registry.HandleAny("cart.clean", r.viewController.CleanAndViewAction)
+	registry.Route("/cart/clean", "cart.clean")
+
+	registry.HandleAny("cart.cleanDelivery", r.viewController.CleanDeliveryAndViewAction)
+	registry.Route("/cart/delete/delivery/:deliveryCode", `cart.cleanDelivery(deliveryCode?="")`)
 
 	registry.HandleAny("cart.deleteItem", r.viewController.DeleteAndViewAction)
 	registry.Route("/cart/delete/:id", `cart.deleteItem(id,deliveryCode?="")`)
-
 	gob.Register(cart.Cart{})
 
-	//DecoratedCart API:
+	// DecoratedCart API:
 
-	registry.HandleAny("cart.api.get", r.apiController.GetAction)
+	registry.HandleGet("cart.api.get", r.apiController.GetAction)
+	registry.HandleDelete("cart.api.get", r.apiController.CleanAndGetAction)
+	registry.HandleDelete("cart.api.delivery", r.apiController.CleanDeliveryAndGetAction)
 	registry.HandleAny("cart.api.add", r.apiController.AddAction)
 	registry.HandleAny("cart.api.applyVoucher", r.apiController.ApplyVoucherAndGetAction)
 
 	registry.Route("/api/cart", "cart.api.get")
+	registry.Route("/api/cart/delivery/:deliveryCode", `cart.api.get(deliveryCode?="")`)
 	registry.Route("/api/cart/add/:marketplaceCode", `cart.api.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryCode?="")`)
 	registry.Route("/api/cart/applyvoucher/:couponCode", `cart.api.applyVoucher(couponCode)`)
 }
