@@ -17,7 +17,7 @@ local:
 	rm -rf vendor/flamingo.me/flamingo/vendor
 	
 test:
-	go test -v ./...
+	go test -race -v ./...
 
 updateTools:
 	go get -v -u github.com/golang/dep/cmd/dep
