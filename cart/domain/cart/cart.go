@@ -2,6 +2,7 @@ package cart
 
 import (
 	"fmt"
+
 	"github.com/gorilla/sessions"
 
 	"time"
@@ -275,6 +276,19 @@ func (Cart Cart) GetDeliveryByCode(deliveryCode string) (*Delivery, bool) {
 func (Cart Cart) HasDeliveryForCode(deliveryCode string) bool {
 	_, found := Cart.GetDeliveryByCode(deliveryCode)
 	return found == true
+}
+
+func (Cart Cart) GetDeliveryCodes() []string {
+	var deliveryCodes []string
+
+	for deliveryIndex := range Cart.Deliveries {
+		delivery := &Cart.Deliveries[deliveryIndex]
+		if len(delivery.Cartitems) > 0 {
+			deliveryCodes = append(deliveryCodes, delivery.DeliveryInfo.Code)
+		}
+	}
+
+	return deliveryCodes
 }
 
 // GetByItemId gets an item by its id
