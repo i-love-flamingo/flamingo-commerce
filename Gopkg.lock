@@ -11,10 +11,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:55b82e7e177167dd738830328a7dea1fd1d62131daacf3364951bb068f66c4aa"
+  digest = "1:d34069e850ae69005557ed6168d5e0a082494f265c3cf7cbec4c3167c061ecc2"
   name = "flamingo.me/flamingo"
   packages = [
     "core/auth/application",
+    "core/auth/application/store",
     "core/auth/domain",
     "core/canonicalUrl/application",
     "core/form/application",
@@ -34,7 +35,7 @@
     "framework/web/responder/mocks",
   ]
   pruneopts = ""
-  revision = "95e7890d23dde9fa11aa7d93ff01b3c1eb715e8b"
+  revision = "210f2e9aeab073021460c7b32b7e8396790baf04"
 
 [[projects]]
   branch = "master"
@@ -130,6 +131,14 @@
   pruneopts = ""
   revision = "b32fa301c9fe55953584134cb6853a13c87ec0a1"
   version = "v0.16.0"
+
+[[projects]]
+  digest = "1:fb6b4ea21671a4a8037cccc0a582caada51b4ac550219f42b9e8ce4671bc568b"
+  name = "github.com/go-test/deep"
+  packages = ["."]
+  pruneopts = ""
+  revision = "6592d9cc0a499ad2d5f574fde80a2b5c5cc3b4f5"
+  version = "v1.0.1"
 
 [[projects]]
   digest = "1:f958a1c137db276e52f0b50efee41a1a389dcdded59a69711f3e872757dab34b"
@@ -475,6 +484,7 @@
     "flamingo.me/flamingo/framework/web/responder/mocks",
     "github.com/coreos/go-oidc",
     "github.com/go-playground/form",
+    "github.com/go-test/deep",
     "github.com/gorilla/sessions",
     "github.com/leebenson/conform",
     "github.com/pkg/errors",
