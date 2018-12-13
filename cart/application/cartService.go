@@ -314,7 +314,7 @@ func (cs CartService) DeleteDelivery(ctx context.Context, session *sessions.Sess
 		cs.EventPublisher.PublishChangedQtyInCartEvent(ctx, &item, qtyBefore, 0, cart.ID)
 	}
 
-	_, err = behaviour.CleanDelivery(ctx, cart, deliveryCode)
+	cart, err = behaviour.CleanDelivery(ctx, cart, deliveryCode)
 	if err != nil {
 		cs.Logger.WithField("category", "cartService").WithField("subCategory", "DeleteAllItems").Error(err)
 		return nil, err
@@ -352,8 +352,8 @@ func (cs *CartService) BuildAddRequest(ctx context.Context, marketplaceCode stri
 	}
 
 	return cartDomain.AddRequest{
-		MarketplaceCode:        marketplaceCode,
-		Qty:                    qty,
+		MarketplaceCode: marketplaceCode,
+		Qty:             qty,
 		VariantMarketplaceCode: variantMarketplaceCode,
 	}
 }
