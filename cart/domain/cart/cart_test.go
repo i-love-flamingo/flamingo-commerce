@@ -11,17 +11,23 @@ import (
 func Test_GetDeliveryCodes(t *testing.T) {
 	cart := new(cartDomain.Cart)
 
+	dummyItem := cartDomain.Item{}
+
 	deliveryHome := cartDomain.Delivery{
 		DeliveryInfo: cartDomain.DeliveryInfo{
 			Code: "home",
 		},
-		Cartitems: []cartDomain.Item{},
+		Cartitems: []cartDomain.Item{
+			dummyItem,
+		},
 	}
 	deliveryInFlight := cartDomain.Delivery{
 		DeliveryInfo: cartDomain.DeliveryInfo{
 			Code: "inFlight",
 		},
-		Cartitems: []cartDomain.Item{},
+		Cartitems: []cartDomain.Item{
+			dummyItem,
+		},
 	}
 	deliveryWithoutItems := cartDomain.Delivery{
 		DeliveryInfo: cartDomain.DeliveryInfo{
