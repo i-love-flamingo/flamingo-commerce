@@ -11,7 +11,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:24914b4a416dbf0f0a1e9d4ec98e15e91c3fc334e00c5e2b03f505118406f9d1"
+  digest = "1:cbefeaff002abbbf2aa2b76b14ad8876ba834631bdb469a759bb81b45d366b22"
   name = "flamingo.me/flamingo"
   packages = [
     "core/auth/application",
@@ -35,7 +35,7 @@
     "framework/web/responder/mocks",
   ]
   pruneopts = ""
-  revision = "073f145307278fc2a73189d41298a6b2b2ee2f9c"
+  revision = "c2cb85d97edc8a0d93daad37c02071362272b7f4"
 
 [[projects]]
   branch = "master"
