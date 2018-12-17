@@ -223,6 +223,8 @@ func (cs *CartReceiverService) getSessionGuestCart(ctx context.Context, session 
 		existingCart, err := cs.GuestCartService.GetCart(ctx, guestcartid.(string))
 		if err != nil {
 			cs.Logger.WithField(flamingo.LogKeyCategory, "checkout.cartreceiver").Error("cart.application.cartservice: Guestcart id in session cannot be retrieved. Id %s, Error: %s", guestcartid, err)
+			// we seem to have an erratic session cart - remove it
+			delete(session.Values, GuestCartSessionKey)
 		}
 
 		return existingCart, err
