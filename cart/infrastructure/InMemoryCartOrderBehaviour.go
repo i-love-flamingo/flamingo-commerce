@@ -164,10 +164,10 @@ func (cob *InMemoryCartOrderBehaviour) buildItemForCart(ctx context.Context, add
 	cartItem := domaincart.Item{
 		MarketplaceCode:        addRequest.MarketplaceCode,
 		VariantMarketPlaceCode: addRequest.VariantMarketplaceCode,
-		Qty:                    addRequest.Qty,
-		SinglePrice:            product.SaleableData().ActivePrice.GetFinalPrice(),
-		ID:                     strconv.Itoa(rand.Int()),
-		CurrencyCode:           product.SaleableData().ActivePrice.Currency,
+		Qty:          addRequest.Qty,
+		SinglePrice:  product.SaleableData().ActivePrice.GetFinalPrice(),
+		ID:           strconv.Itoa(rand.Int()),
+		CurrencyCode: product.SaleableData().ActivePrice.Currency,
 	}
 
 	calculateItemPrices(&cartItem)
@@ -234,7 +234,15 @@ func (cob *InMemoryCartOrderBehaviour) UpdatePurchaser(ctx context.Context, cart
 
 // @todo implement when needed
 func (cob *InMemoryCartOrderBehaviour) UpdateBillingAddress(ctx context.Context, cart *domaincart.Cart, billingAddress *domaincart.Address) (*domaincart.Cart, error) {
-	return nil, nil
+
+	cart.BillingAdress = *billingAddress
+
+	err := cob.CartStorage.StoreCart(*cart)
+	if err != nil {
+		return nil, errors.Wrap(err, "cart.infrastructure.InMemoryCartOrderBehaviour: error on saving cart")
+	}
+
+	return cart, nil
 }
 
 // @todo implement when needed
