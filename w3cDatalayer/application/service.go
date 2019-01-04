@@ -15,6 +15,7 @@ import (
 )
 
 type (
+	// ServiceProvider func
 	ServiceProvider func() *Service
 
 	// Service can be used from outside is expected to be initialized with the current request context
@@ -33,17 +34,19 @@ const (
 	DATALAYER_REQ_KEY  = "w3cDatalayer"
 )
 
+// Inject method
 func (s *Service) Inject(logger flamingo.Logger, factory *Factory, service productDomain.ProductService) {
 	s.logger = logger
 	s.factory = factory
 	s.ProductService = service
 }
 
+// Init method - sets the context
 func (s *Service) Init(ctx context.Context) {
 	s.currentContext = ctx
 }
 
-//Get gets the datalayer value object stored in the current context - or a freshly new build one if its the first call
+// Get gets the datalayer value object stored in the current context - or a freshly new build one if its the first call
 func (s *Service) Get() domain.Datalayer {
 	if s.currentContext == nil {
 		s.logger.WithField("category", "w3cDatalayer").Error("Get called without context!")
@@ -67,6 +70,7 @@ func (s *Service) Get() domain.Datalayer {
 	return domain.Datalayer{}
 }
 
+// SetBreadCrumb to datalayer
 func (s *Service) SetBreadCrumb(breadcrumb string) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
@@ -79,6 +83,7 @@ func (s *Service) SetBreadCrumb(breadcrumb string) error {
 	return s.store(layer)
 }
 
+// AddSessionEvents to datalayer
 func (s *Service) AddSessionEvents() error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
@@ -108,6 +113,7 @@ func (s *Service) AddSessionEvents() error {
 	return nil
 }
 
+// SetPageCategories to datalayer
 func (s *Service) SetPageCategories(category string, subcategory1 string, subcategory2 string) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
@@ -125,6 +131,7 @@ func (s *Service) SetPageCategories(category string, subcategory1 string, subcat
 	return s.store(layer)
 }
 
+// SetPageInfos to datalayer
 func (s *Service) SetPageInfos(pageId string, pageName string) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
@@ -142,7 +149,7 @@ func (s *Service) SetPageInfos(pageId string, pageName string) error {
 	return s.store(layer)
 }
 
-//SetUserEmail to a User object
+// SetUserEmail to a User object
 func (s *Service) SetUserEmail(mail string) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
@@ -159,7 +166,7 @@ func (s *Service) SetUserEmail(mail string) error {
 	return s.store(layer)
 }
 
-//SetUserEmail to a User object
+// SetSearchData to datalayer
 func (s *Service) SetSearchData(keyword string, results interface{}) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
@@ -175,6 +182,7 @@ func (s *Service) SetSearchData(keyword string, results interface{}) error {
 	return s.store(layer)
 }
 
+// SetCartData to datalayer
 func (s *Service) SetCartData(cart cart.DecoratedCart) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
@@ -185,6 +193,7 @@ func (s *Service) SetCartData(cart cart.DecoratedCart) error {
 	return s.store(layer)
 }
 
+// SetTransaction information to datalayer
 func (s *Service) SetTransaction(cartTotals cart.CartTotals, decoratedItems []cart.DecoratedCartItem, orderId string, email string) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
@@ -195,6 +204,7 @@ func (s *Service) SetTransaction(cartTotals cart.CartTotals, decoratedItems []ca
 	return s.store(layer)
 }
 
+// AddTransactionAttribute to datalayer
 func (s *Service) AddTransactionAttribute(key string, value string) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
@@ -216,7 +226,7 @@ func (s *Service) AddProduct(product productDomain.BasicProduct) error {
 	return s.store(layer)
 }
 
-//AddEvent - adds an event with the given eventName to the datalayer
+// AddEvent - adds an event with the given eventName to the datalayer
 func (s *Service) AddEvent(eventName string, params ...*pugjs.Map) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
@@ -236,7 +246,7 @@ func (s *Service) AddEvent(eventName string, params ...*pugjs.Map) error {
 	return s.store(layer)
 }
 
-//store datalayer in current context
+// store datalayer in current context
 func (s *Service) store(layer domain.Datalayer) error {
 	s.logger.Debug("Update %#v", layer)
 	if s.currentContext == nil {

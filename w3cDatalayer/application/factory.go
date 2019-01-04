@@ -236,7 +236,14 @@ func (s Factory) BuildProductData(product productDomain.BasicProduct) domain.Pro
 		Category:    s.getProductCategory(product),
 		Attributes:  make(map[string]interface{}),
 	}
+
+	// set prices
 	productData.Attributes["productPrice"] = product.SaleableData().ActivePrice.GetFinalPrice()
+	productData.Attributes["highstreetPrice"] = product.SaleableData().ActivePrice.Default
+
+	// set badge
+	productData.Attributes["badge"] = s.EvaluateBadgeHierarchy(product)
+
 	if product.BaseData().HasAttribute("ispuLimitedToAreas") {
 		productData.Attributes["ispuLimitedToAreas"] = product.BaseData().Attributes["ispuLimitedToAreas"].Value()
 	}
@@ -319,8 +326,8 @@ func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.Produ
 		size = baseData.Attributes["clothingSize"].Value()
 	}
 	brand := ""
-	if baseData.HasAttribute("brandCode") {
-		brand = baseData.Attributes["brandCode"].Value()
+	if baseData.HasAttribute("brandName") {
+		brand = baseData.Attributes["brandName"].Value()
 	}
 	gtin := ""
 	if baseData.HasAttribute("gtin") {
@@ -331,19 +338,22 @@ func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.Produ
 			gtin = baseData.Attributes["gtin"].Value()
 		}
 	}
+
 	return domain.ProductInfo{
 		ProductID:                baseData.MarketPlaceCode,
 		ProductName:              baseData.Title,
 		ProductThumbnail:         s.getProductThumbnailURL(baseData),
 		ProductImage:             s.getProductImageURL(baseData),
 		ProductType:              product.Type(),
-		ParentId:                 parentIDRef,
+		ParentID:                 parentIDRef,
 		VariantSelectedAttribute: variantSelectedAttributeRef,
-		Retailer:                 baseData.RetailerCode,
+		Retailer:                 baseData.RetailerName,
+		Brand:                    brand,
 		SKU:                      gtin,
 		Manufacturer:             brand,
 		Color:                    color,
 		Size:                     size,
+		InStock:                  baseData.IsInStock(),
 	}
 }
 
@@ -401,4 +411,21 @@ func (s Factory) BuildAddToBagEvent(productIdentifier string, productName string
 	event.EventInfo["quantity"] = qty
 
 	return event
+}
+
+// EvaluateBadgeHierarchy get the active badge by product
+func (s *Factory) EvaluateBadgeHierarchy(product productDomain.BasicProduct) string {
+	badge := ""
+
+	if product.BaseData().HasAttribute("airportBadge") {
+		badge = "airportBadge"
+	} else if product.BaseData().HasAttribute("retailerBadge") {
+		badge = "retailerBadge"
+	} else if product.BaseData().HasAttribute("exclusiveProduct") && product.BaseData().Attributes["exclusiveProduct"].Value() == "true" {
+		badge = "travellerExclusive"
+	} else if product.BaseData().IsNew {
+		badge = "new"
+	}
+
+	return badge
 }

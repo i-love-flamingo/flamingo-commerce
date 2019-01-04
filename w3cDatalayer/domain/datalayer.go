@@ -6,6 +6,8 @@ import (
 )
 
 type (
+
+	// DatalayerProvider func
 	DatalayerProvider func() *Datalayer
 	/**
 	Datalayer Value object - represents the structure of the w3c Datalayer.
@@ -27,14 +29,20 @@ type (
 		//The Transaction object is similar to the Cart object, but represents a completed order. The Transaction object contains analogous sub-objects to the Cart object as well as additional subobjects specific to completed orders.
 		Transaction *Transaction
 	}
+
+	// Product struct
 	Product struct {
 		ProductInfo ProductInfo            `json:"productInfo"`
 		Category    *ProductCategory       `json:"category,omitempty"`
 		Attributes  map[string]interface{} `json:"attributes,omitempty"`
 	}
+
+	// Event struct
 	Event struct {
 		EventInfo map[string]interface{} `json:"eventInfo,omitempty"`
 	}
+
+	// Page struct
 	Page struct {
 		PageInfo   PageInfo               `json:"pageInfo,omitempty"`
 		Category   PageCategory           `json:"category,omitempty"`
@@ -42,11 +50,13 @@ type (
 		Attributes map[string]interface{} `json:"attributes,omitempty"`
 	}
 
+	// SearchInfo struct
 	SearchInfo struct {
 		SearchKeyword string      `json:"searchKeyword,omitempty"`
 		Result        interface{} `json:"result,omitempty"`
 	}
 
+	// PageInfo generall information about the page
 	PageInfo struct {
 		PageID         string `json:"pageID,omitempty"`
 		DestinationURL string `json:"destinationURL,omitempty"`
@@ -56,6 +66,8 @@ type (
 		Language       string `json:"language,omitempty"`
 		ErrorName      string `json:"errorName,omitempty"`
 	}
+
+	// PageCategory struct for the category and subcategories
 	PageCategory struct {
 		PrimaryCategory string `json:"primaryCategory"`
 		SubCategory1    string `json:"subCategory1,omitempty"`
@@ -64,12 +76,13 @@ type (
 		Section         string `json:"section,omitempty"`
 	}
 
+	// SiteInfo - struct for SiteName and Domain
 	SiteInfo struct {
 		SiteName string `json:"siteName,omitempty"`
 		Domain   string `json:"domain,omitempty"`
 	}
 
-	//User The User object captures the profile of a user who is interacting with the website.
+	// User The User object captures the profile of a user who is interacting with the website.
 	User struct {
 		/**
 		Profile
@@ -86,12 +99,15 @@ type (
 		*/
 		Segment string `json:"segment,omitempty"`
 	}
+
 	// UserProfile A profile for information about the user
 	UserProfile struct {
 		ProfileInfo     UserProfileInfo `json:"profileInfo,omitempty"`
 		Address         *Address        `json:"address,omitempty"`
 		ShippingAddress *Address        `json:"shippingAddress,omitempty"`
 	}
+
+	// Address basic address infromation
 	Address struct {
 		Line1         string `json:"line1,omitempty"`
 		Line2         string `json:"line2,omitempty"`
@@ -100,7 +116,8 @@ type (
 		PostalCode    string `json:"postalCode,omitempty"`
 		Country       string `json:"postalCode,omitempty"`
 	}
-	//UserProfileInfo An extensible object for providing information about the user.
+
+	// UserProfileInfo An extensible object for providing information about the user.
 	UserProfileInfo struct {
 		EmailID   string `json:"emailID,omitempty"`
 		UserName  string `json:"userName,omitempty"`
@@ -108,12 +125,15 @@ type (
 		Rewards   string `json:"rewards,omitempty"`
 	}
 
+	// Cart cartInformation
 	Cart struct {
 		CartID     string                 `json:"cartID,omitempty"`
 		Price      *CartPrice             `json:"price,omitempty"`
 		Attributes map[string]interface{} `json:"attributes,omitempty"`
 		Item       []CartItem             `json:"item,omitempty"`
 	}
+
+	// CartPrice used in Cart
 	CartPrice struct {
 		//The basePrice SHOULD be the price of the items before applicable discounts,shipping charges, and tax.
 		BasePrice       float64 `json:"basePrice"`
@@ -127,6 +147,8 @@ type (
 		//cartTotal SHOULD be the total price inclusive of all discounts, charges, and tax
 		CartTotal float64 `json:"cartTotal"`
 	}
+
+	// CartItem used in Cart
 	CartItem struct {
 		ProductInfo ProductInfo            `json:"productInfo"`
 		Quantity    int                    `json:"quantity"`
@@ -134,12 +156,16 @@ type (
 		Price       CartItemPrice          `json:"price"`
 		Attributes  map[string]interface{} `json:"attributes,omitempty"`
 	}
+
+	// CartItemPrice struct
 	CartItemPrice struct {
 		BasePrice    float64 `json:"basePrice"`
 		Currency     string  `json:"currency"`
 		TaxRate      float64 `json:"taxRate"`
 		PriceWithTax float64 `json:"priceWithTax"`
 	}
+
+	// Transaction struct
 	Transaction struct {
 		TransactionID string                 `json:"transactionID,omitempty"`
 		Profile       *UserProfile           `json:"profile,omitempty"`
@@ -147,6 +173,8 @@ type (
 		Item          []CartItem             `json:"item,omitempty"`
 		Attributes    map[string]interface{} `json:"attributes,omitempty"`
 	}
+
+	// TransactionPrice struct
 	TransactionPrice struct {
 		//The basePrice SHOULD be the price of the items before applicable discounts,shipping charges, and tax.
 		BasePrice        float64 `json:"basePrice"`
@@ -159,6 +187,8 @@ type (
 		PriceWithTax     float64 `json:"priceWithTax"`
 		TransactionTotal float64 `json:"transactionTotal"`
 	}
+
+	// ProductCategory struct
 	ProductCategory struct {
 		PrimaryCategory string `json:"primaryCategory,omitempty"`
 		SubCategory1    string `json:"subCategory1,omitempty"`
@@ -166,6 +196,8 @@ type (
 		SubCategory2    string `json:"subCategory2,omitempty"`
 		ProductType     string `json:"productType,omitempty"`
 	}
+
+	// ProductInfo dataLayer product information
 	ProductInfo struct {
 		ProductID   string `json:"productID"`
 		SKU         string `json:"sku"`
@@ -176,10 +208,12 @@ type (
 		Manufacturer             string  `json:"manufacturer"`
 		Size                     string  `json:"size"`
 		Color                    string  `json:"color"`
-		ParentId                 *string `json:"parentId,omitempty"`
+		ParentID                 *string `json:"parentId,omitempty"`
 		VariantSelectedAttribute *string `json:"variantSelectedAttribute,omitempty"`
 		ProductType              string  `json:"productType"`
 		Retailer                 string  `json:"retailer"`
+		Brand                    string  `json:"brand"`
+		InStock                  bool    `json:"inStock"`
 	}
 )
 
@@ -187,7 +221,7 @@ func init() {
 	gob.Register(Event{})
 }
 
-//MarshalJSON - is here to make sure the renderingengine uses this json interface instead of own encoding
+// MarshalJSON - is here to make sure the renderingengine uses this json interface instead of own encoding
 func (d Datalayer) MarshalJSON() ([]byte, error) {
 	//myDataLayer should match the Datalayer struct and is just here to define the top level json marshal annotations
 	// we need this since json.Marshal(&d) would result in endless loop
