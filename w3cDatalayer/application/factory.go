@@ -241,6 +241,11 @@ func (s Factory) BuildProductData(product productDomain.BasicProduct) domain.Pro
 	productData.Attributes["productPrice"] = product.SaleableData().ActivePrice.GetFinalPrice()
 	productData.Attributes["highstreetPrice"] = product.SaleableData().ActivePrice.Default
 
+	// if FinalPrice is discounted, add it to specialPrice
+	if product.SaleableData().ActivePrice.IsDiscounted && product.SaleableData().ActivePrice.DiscountText == "special_price" {
+		productData.Attributes["specialPrice"] = product.SaleableData().ActivePrice.Discounted
+	}
+
 	// set badge
 	productData.Attributes["badge"] = s.EvaluateBadgeHierarchy(product)
 
