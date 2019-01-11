@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha512"
 	"encoding/base64"
+	"strconv"
 	"strings"
 
 	"flamingo.me/flamingo-commerce/cart/domain/cart"
@@ -238,19 +239,20 @@ func (s Factory) BuildProductData(product productDomain.BasicProduct) domain.Pro
 	}
 
 	// set prices
-	productData.Attributes["productPrice"] = product.SaleableData().ActivePrice.GetFinalPrice()
-	productData.Attributes["highstreetPrice"] = product.SaleableData().ActivePrice.Default
+	productData.Attributes["productPrice"] = strconv.FormatFloat(product.SaleableData().ActivePrice.GetFinalPrice(), 'f', 2, 64)
+	productData.Attributes["highstreetPrice"] = strconv.FormatFloat(product.SaleableData().ActivePrice.Default, 'f', 2, 64)
 
 	// if FinalPrice is discounted, add it to specialPrice
 	if product.SaleableData().ActivePrice.IsDiscounted && product.SaleableData().ActivePrice.DiscountText == "special_price" {
-		productData.Attributes["specialPrice"] = product.SaleableData().ActivePrice.Discounted
+		productData.Attributes["specialPrice"] = strconv.FormatFloat(product.SaleableData().ActivePrice.Discounted, 'f', 2, 64)
 	}
 
 	// set badge
 	productData.Attributes["badge"] = s.EvaluateBadgeHierarchy(product)
 
 	if product.BaseData().HasAttribute("ispuLimitedToAreas") {
-		productData.Attributes["ispuLimitedToAreas"] = product.BaseData().Attributes["ispuLimitedToAreas"].Value()
+		replacer := strings.NewReplacer("[", "", "]", "", " ", "|")
+		productData.Attributes["ispuLimitedToAreas"] = replacer.Replace(product.BaseData().Attributes["ispuLimitedToAreas"].Value())
 	}
 	return productData
 }
@@ -358,7 +360,7 @@ func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.Produ
 		Manufacturer:             brand,
 		Color:                    color,
 		Size:                     size,
-		InStock:                  baseData.IsInStock(),
+		InStock:                  strconv.FormatBool(baseData.IsInStock()),
 	}
 }
 

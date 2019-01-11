@@ -213,7 +213,7 @@ type (
 		ProductType              string  `json:"productType"`
 		Retailer                 string  `json:"retailer"`
 		Brand                    string  `json:"brand"`
-		InStock                  bool    `json:"inStock"`
+		InStock                  string  `json:"inStock"`
 	}
 )
 
