@@ -240,7 +240,12 @@ func (s Factory) BuildProductData(product productDomain.BasicProduct) domain.Pro
 
 	// set prices
 	productData.Attributes["productPrice"] = strconv.FormatFloat(product.SaleableData().ActivePrice.GetFinalPrice(), 'f', 2, 64)
-	productData.Attributes["highstreetPrice"] = strconv.FormatFloat(product.SaleableData().ActivePrice.Default, 'f', 2, 64)
+
+	if product.BaseData().HasAttribute("rrp") {
+		productData.Attributes["highstreetPrice"] = product.BaseData().Attributes["rrp"].Value()
+	} else {
+		productData.Attributes["highstreetPrice"] = strconv.FormatFloat(product.SaleableData().ActivePrice.Default, 'f', 2, 64)
+	}
 
 	// if FinalPrice is discounted, add it to specialPrice
 	if product.SaleableData().ActivePrice.IsDiscounted && product.SaleableData().ActivePrice.DiscountText == "special_price" {
