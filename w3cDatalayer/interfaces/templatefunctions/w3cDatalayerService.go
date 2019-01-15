@@ -7,6 +7,7 @@ import (
 )
 
 type (
+	// W3cDatalayerService struct for the template function
 	W3cDatalayerService struct {
 		applicationServiceProvider application.ServiceProvider
 	}

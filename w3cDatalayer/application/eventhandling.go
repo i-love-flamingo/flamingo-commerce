@@ -13,7 +13,7 @@ import (
 )
 
 type (
-	// EventReceiver
+	// EventReceiver struct with required dependencies
 	EventReceiver struct {
 		factory              *Factory
 		cartDecoratorFactory *cart.DecoratedCartFactory
@@ -21,7 +21,7 @@ type (
 	}
 )
 
-// Inject
+// Inject method
 func (e *EventReceiver) Inject(factory *Factory, cartFactory *cart.DecoratedCartFactory, logger flamingo.Logger) {
 	e.factory = factory
 	e.cartDecoratorFactory = cartFactory

@@ -238,18 +238,29 @@ func (s Factory) BuildProductData(product productDomain.BasicProduct) domain.Pro
 		Attributes:  make(map[string]interface{}),
 	}
 
+	// check for defaultVariant
+	baseData := product.BaseData()
+	saleableData := product.SaleableData()
+	if product.Type() == productDomain.TYPECONFIGURABLE {
+		if configurable, ok := product.(productDomain.ConfigurableProduct); ok {
+			defaultVariant, _ := configurable.GetDefaultVariant()
+			baseData = defaultVariant.BaseData()
+			saleableData = defaultVariant.SaleableData()
+		}
+	}
+
 	// set prices
-	productData.Attributes["productPrice"] = strconv.FormatFloat(product.SaleableData().ActivePrice.GetFinalPrice(), 'f', 2, 64)
+	productData.Attributes["productPrice"] = strconv.FormatFloat(saleableData.ActivePrice.GetFinalPrice(), 'f', 2, 64)
 
 	// check for highstreet price
-	if product.BaseData().HasAttribute("rrp") {
-		productData.Attributes["highstreetPrice"] = product.BaseData().Attributes["rrp"].Value()
+	if baseData.HasAttribute("rrp") {
+		productData.Attributes["highstreetPrice"] = baseData.Attributes["rrp"].Value()
 	}
 
 	// if FinalPrice is discounted, add it to specialPrice
-	if product.SaleableData().ActivePrice.IsDiscounted {
-		productData.Attributes["specialPrice"] = strconv.FormatFloat(product.SaleableData().ActivePrice.Discounted, 'f', 2, 64)
-		productData.Attributes["productPrice"] = strconv.FormatFloat(product.SaleableData().ActivePrice.Default, 'f', 2, 64)
+	if saleableData.ActivePrice.IsDiscounted {
+		productData.Attributes["specialPrice"] = strconv.FormatFloat(saleableData.ActivePrice.Discounted, 'f', 2, 64)
+		productData.Attributes["productPrice"] = strconv.FormatFloat(saleableData.ActivePrice.Default, 'f', 2, 64)
 	}
 
 	// set badge
@@ -305,6 +316,7 @@ func (s Factory) getProductCategory(product productDomain.BasicProduct) *domain.
 
 func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.ProductInfo {
 	baseData := product.BaseData()
+	retailerName := baseData.RetailerName
 	//Handle Variants if it is a Configurable
 	var parentIDRef *string
 	var variantSelectedAttributeRef *string
@@ -320,6 +332,11 @@ func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.Produ
 		if configurable, ok := product.(productDomain.ConfigurableProduct); ok {
 			parentID := configurable.BaseData().MarketPlaceCode
 			parentIDRef = &parentID
+
+			defaultVariant, err := configurable.GetDefaultVariant()
+			if err == nil {
+				retailerName = defaultVariant.RetailerName
+			}
 		}
 	}
 	// Search for some common product attributes to fill the productInfos (This maybe better to be configurable later)
@@ -359,7 +376,7 @@ func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.Produ
 		ProductType:              product.Type(),
 		ParentID:                 parentIDRef,
 		VariantSelectedAttribute: variantSelectedAttributeRef,
-		Retailer:                 baseData.RetailerName,
+		Retailer:                 retailerName,
 		Brand:                    brand,
 		SKU:                      gtin,
 		Manufacturer:             brand,
