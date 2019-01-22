@@ -380,14 +380,14 @@
 
 [[projects]]
   branch = "claims-request-parameter-squashed"
-  digest = "1:10e8959b7cdce859a8598371d4e19a1bad6cfc41f9d97e5c301853206ab83b9e"
+  digest = "1:dc749de9c061e9beba971fbecfadefe3f3c2157dadbe21a20deefbf3027d794d"
   name = "golang.org/x/oauth2"
   packages = [
     ".",
     "internal",
   ]
   pruneopts = ""
-  revision = "5641e2160a306ced3c502eb34e0ebac405b48352"
+  revision = "b762685799422ab779adefde348535e7a204c363"
   source = "https://github.com/ompluscator/oauth2"
 
 [[projects]]
