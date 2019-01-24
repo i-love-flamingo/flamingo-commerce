@@ -277,20 +277,17 @@ func (s Factory) getProductCategory(product productDomain.BasicProduct) *domain.
 	level0 := ""
 	level1 := ""
 	level2 := ""
-	previousPathParts := 0
-	longestFirstPath := ""
 
 	categoryPaths := product.BaseData().CategoryPath
 	baseData := product.BaseData()
 
+	var firstPath string
 	for _, path := range categoryPaths {
-		pathParts := strings.Count(path, "/") + 1
-		if pathParts > previousPathParts {
-			previousPathParts = pathParts
-			longestFirstPath = path
+		if strings.HasPrefix(path, firstPath) {
+			firstPath = path
 		}
 	}
-	firstPathLevels := strings.Split(longestFirstPath, "/")
+	firstPathLevels := strings.Split(firstPath, "/")
 	if len(firstPathLevels) > 0 {
 		level0 = firstPathLevels[0]
 	}
