@@ -267,8 +267,8 @@ func (s Factory) BuildProductData(product productDomain.BasicProduct) domain.Pro
 	productData.Attributes["badge"] = s.EvaluateBadgeHierarchy(product)
 
 	if product.BaseData().HasAttribute("ispuLimitedToAreas") {
-		replacer := strings.NewReplacer("[", "", "]", "", " ", "|")
-		productData.Attributes["ispuLimitedToAreas"] = replacer.Replace(product.BaseData().Attributes["ispuLimitedToAreas"].Value())
+		replacer := strings.NewReplacer("[", "", "]", "")
+		productData.Attributes["ispuLimitedToAreas"] = strings.Split(replacer.Replace(product.BaseData().Attributes["ispuLimitedToAreas"].Value()), " ")
 	}
 	return productData
 }
