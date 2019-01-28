@@ -266,6 +266,7 @@ func (vc *View) addBreadCrumb(product domain.BasicProduct, c context.Context) {
 			breadcrumbs.Add(c, breadcrumbs.Crumb{
 				Title: name,
 				Url:   vc.Router.URL(category.URLWithName(code, name)).String(),
+				Code: code,
 			})
 			stringHead = stringHead + name + "/"
 		}
