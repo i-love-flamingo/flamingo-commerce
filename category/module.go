@@ -1,6 +1,7 @@
 package category
 
 import (
+	"flamingo.me/flamingo-commerce/category/application"
 	"flamingo.me/flamingo-commerce/category/interfaces/controller"
 	"flamingo.me/flamingo/framework/config"
 	"flamingo.me/flamingo/framework/dingo"
@@ -13,17 +14,18 @@ type Module struct{}
 
 // URL to category
 func URL(code string) (string, map[string]string) {
-	return controller.URL(code)
+	return application.URL(code)
 }
 
 // URLWithName to category
 func URLWithName(code, name string) (string, map[string]string) {
-	return controller.URLWithName(code, web.URLTitle(name))
+	return application.URLWithName(code, web.URLTitle(name))
 }
 
 // Configure the product URL
 func (m *Module) Configure(injector *dingo.Injector) {
 	router.Bind(injector, new(routes))
+	injector.Bind(new(application.RouterRouter)).To(new(router.Router))
 }
 
 // DefaultConfig for this module

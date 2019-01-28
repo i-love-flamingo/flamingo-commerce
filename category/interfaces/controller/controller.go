@@ -3,9 +3,9 @@ package controller
 import (
 	"context"
 	"errors"
+	breadcrumb "flamingo.me/flamingo-commerce/category/application"
 	"net/url"
 
-	"flamingo.me/flamingo-commerce/breadcrumbs"
 	"flamingo.me/flamingo-commerce/category/domain"
 	"flamingo.me/flamingo-commerce/product/application"
 	searchApplication "flamingo.me/flamingo-commerce/search/application"
@@ -30,6 +30,7 @@ type (
 		teaserTemplate        string
 		logger                flamingo.Logger
 		paginationInfoFactory *utils.PaginationInfoFactory
+		breadcrumbService     *breadcrumb.BreadcrumbService
 	}
 
 	// ViewData for rendering context
@@ -42,16 +43,6 @@ type (
 	}
 )
 
-// URL to category
-func URL(code string) (string, map[string]string) {
-	return "category.view", map[string]string{"code": code}
-}
-
-// URLWithName points to a category with a given name
-func URLWithName(code, name string) (string, map[string]string) {
-	return "category.view", map[string]string{"code": code, "name": name}
-}
-
 // Inject the View controller required dependencies
 func (vc *View) Inject(
 	errorAware responder.ErrorAware,
@@ -60,12 +51,14 @@ func (vc *View) Inject(
 	categoryService domain.CategoryService,
 	searchService *application.ProductSearchService,
 	router *router.Router,
+	logger flamingo.Logger,
+	paginationInfoFactory *utils.PaginationInfoFactory,
+	breadcrumbService *breadcrumb.BreadcrumbService,
+
 	config *struct {
 		Template       string `inject:"config:category.view.template"`
 		TeaserTemplate string `inject:"config:category.view.teaserTemplate"`
 	},
-	logger flamingo.Logger,
-	paginationInfoFactory *utils.PaginationInfoFactory,
 ) {
 	vc.ErrorAware = errorAware
 	vc.RenderAware = renderAware
@@ -77,6 +70,7 @@ func (vc *View) Inject(
 	vc.paginationInfoFactory = paginationInfoFactory
 	vc.template = config.Template
 	vc.teaserTemplate = config.TeaserTemplate
+	vc.breadcrumbService = breadcrumbService
 }
 
 // Get Response for Product matching sku param
@@ -122,7 +116,7 @@ func (vc *View) Get(c context.Context, request *web.Request) web.Response {
 		return vc.Error(c, err)
 	}
 
-	vc.addBreadcrumb(c, categoryRoot)
+	vc.breadcrumbService.AddBreadcrumb(c, categoryRoot)
 
 	paginationInfo := vc.paginationInfoFactory.Build(products.SearchMeta.Page, products.SearchMeta.NumResults, 30, products.SearchMeta.NumPages, request.Request().URL)
 
@@ -141,20 +135,4 @@ func (vc *View) Get(c context.Context, request *web.Request) web.Response {
 		SearchMeta:          products.SearchMeta,
 		PaginationInfo:      paginationInfo,
 	})
-}
-
-func (vc *View) addBreadcrumb(c context.Context, category domain.Category) {
-	if !category.Active() {
-		return
-	}
-	if category.Code() != "" {
-		breadcrumbs.Add(c, breadcrumbs.Crumb{
-			Title: category.Name(),
-			Url:   vc.router.URL(URLWithName(category.Code(), web.URLTitle(category.Name()))).String(),
-		})
-	}
-
-	for _, subcat := range category.Categories() {
-		vc.addBreadcrumb(c, subcat)
-	}
 }

@@ -17,10 +17,12 @@ type routes struct {
 	controller *Controller
 }
 
+// Inject required dependencies
 func (r *routes) Inject(controller *Controller) {
 	r.controller = controller
 }
 
+// Routes defining the name for the data controller
 func (r *routes) Routes(registry *router.Registry) {
 	registry.HandleData("breadcrumbs", r.controller.Data)
 }

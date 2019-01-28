@@ -11,6 +11,7 @@ type (
 	Crumb struct {
 		Title string
 		Url   string
+		Code  string
 	}
 
 	// Controller defines the data controller
