@@ -14,9 +14,14 @@
   digest = "1:92ba45e458d413441ad0bb5375d76978cf38d23297376c1adbfebdf76fedffb0"
   name = "flamingo.me/flamingo"
   packages = [
+    "core/auth",
     "core/auth/application",
+    "core/auth/application/fake",
+    "core/auth/application/mocks",
     "core/auth/application/store",
     "core/auth/domain",
+    "core/auth/interfaces",
+    "core/auth/interfaces/fake",
     "core/canonicalUrl/application",
     "core/form/application",
     "core/form/domain",
@@ -25,6 +30,7 @@
     "framework/config",
     "framework/dingo",
     "framework/event",
+    "framework/event/mocks",
     "framework/flamingo",
     "framework/opencensus",
     "framework/router",
@@ -291,6 +297,14 @@
   source = "https://github.com/thebod/otto.git"
 
 [[projects]]
+  digest = "1:7f569d906bdd20d906b606415b7d794f798f91a62fcfb6a4daa6d50690fb7a3f"
+  name = "github.com/satori/go.uuid"
+  packages = ["."]
+  pruneopts = ""
+  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
+  version = "v1.2.0"
+
+[[projects]]
   digest = "1:a1403cc8a94b8d7956ee5e9694badef0e7b051af289caad1cf668331e3ffa4f6"
   name = "github.com/spf13/cobra"
   packages = ["."]
@@ -465,7 +479,9 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "flamingo.me/flamingo/core/auth",
     "flamingo.me/flamingo/core/auth/application",
+    "flamingo.me/flamingo/core/auth/application/mocks",
     "flamingo.me/flamingo/core/auth/domain",
     "flamingo.me/flamingo/core/canonicalUrl/application",
     "flamingo.me/flamingo/core/form/application",
@@ -474,6 +490,7 @@
     "flamingo.me/flamingo/framework/config",
     "flamingo.me/flamingo/framework/dingo",
     "flamingo.me/flamingo/framework/event",
+    "flamingo.me/flamingo/framework/event/mocks",
     "flamingo.me/flamingo/framework/flamingo",
     "flamingo.me/flamingo/framework/opencensus",
     "flamingo.me/flamingo/framework/router",
@@ -489,6 +506,7 @@
     "github.com/leebenson/conform",
     "github.com/pkg/errors",
     "github.com/stretchr/testify/assert",
+    "github.com/stretchr/testify/mock",
     "go.opencensus.io/stats",
     "go.opencensus.io/stats/view",
     "go.opencensus.io/tag",

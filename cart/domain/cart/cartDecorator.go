@@ -12,8 +12,8 @@ import (
 type (
 	// DecoratedCartFactory - Factory to be injected: If you need to create a new Decorator then get the factory injected and use the factory
 	DecoratedCartFactory struct {
-		ProductService domain.ProductService `inject:""`
-		Logger         flamingo.Logger       `inject:""`
+		productService domain.ProductService
+		logger         flamingo.Logger
 	}
 
 	// DecoratedCart Decorates Access To a Cart
@@ -43,9 +43,18 @@ type (
 	}
 )
 
+// Inject dependencies
+func (df *DecoratedCartFactory) Inject(
+	productService domain.ProductService,
+	logger flamingo.Logger,
+) {
+	df.productService = productService
+	df.logger = logger
+}
+
 // Create Factory method to get Decorated Cart
 func (df *DecoratedCartFactory) Create(ctx context.Context, Cart Cart) *DecoratedCart {
-	decoratedCart := DecoratedCart{Cart: Cart, Logger: df.Logger}
+	decoratedCart := DecoratedCart{Cart: Cart, Logger: df.logger}
 	for _, d := range Cart.Deliveries {
 		decoratedCart.DecoratedDeliveries = append(decoratedCart.DecoratedDeliveries, DecoratedDelivery{
 			Delivery:       d,
@@ -69,9 +78,9 @@ func (df *DecoratedCartFactory) CreateDecorateCartItems(ctx context.Context, ite
 //decorateCartItem factory method
 func (df *DecoratedCartFactory) decorateCartItem(ctx context.Context, cartitem Item) DecoratedCartItem {
 	decorateditem := DecoratedCartItem{Item: cartitem}
-	product, e := df.ProductService.Get(ctx, cartitem.MarketplaceCode)
+	product, e := df.productService.Get(ctx, cartitem.MarketplaceCode)
 	if e != nil {
-		df.Logger.Error("cart.decorator - no product for item", e)
+		df.logger.Error("cart.decorator - no product for item", e)
 		if product == nil {
 			//To avoid errors if consumers want to access the product data
 			product = domain.SimpleProduct{

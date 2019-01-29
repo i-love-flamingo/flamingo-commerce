@@ -5,10 +5,11 @@ import (
 	"testing"
 
 	domaincart "flamingo.me/flamingo-commerce/cart/domain/cart"
+	"flamingo.me/flamingo/framework/flamingo"
 	"github.com/go-test/deep"
 )
 
-func TestInMemoryCartOrderBehaviour_CleanCart(t *testing.T) {
+func TestInMemoryBehaviour_CleanCart(t *testing.T) {
 	tests := []struct {
 		name    string
 		want    *domaincart.Cart
@@ -25,9 +26,12 @@ func TestInMemoryCartOrderBehaviour_CleanCart(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cob := &InMemoryCartOrderBehaviour{
-				CartStorage: &InMemoryCartStorage{},
-			}
+			cob := &InMemoryBehaviour{}
+			cob.Inject(
+				&InMemoryCartStorage{},
+				nil,
+				flamingo.NullLogger{},
+			)
 			cart := &domaincart.Cart{
 				ID: "17",
 				Deliveries: []domaincart.Delivery{
@@ -41,7 +45,7 @@ func TestInMemoryCartOrderBehaviour_CleanCart(t *testing.T) {
 				},
 			}
 
-			if err := cob.CartStorage.StoreCart(*cart); err != nil {
+			if err := cob.cartStorage.StoreCart(cart); err != nil {
 				t.Fatalf("cart could not be initialized")
 			}
 
@@ -57,7 +61,7 @@ func TestInMemoryCartOrderBehaviour_CleanCart(t *testing.T) {
 	}
 }
 
-func TestInMemoryCartOrderBehaviour_CleanDelivery(t *testing.T) {
+func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
 
 	type args struct {
 		cart         *domaincart.Cart
@@ -137,10 +141,13 @@ func TestInMemoryCartOrderBehaviour_CleanDelivery(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cob := &InMemoryCartOrderBehaviour{
-				CartStorage: &InMemoryCartStorage{},
-			}
-			if err := cob.CartStorage.StoreCart(*tt.args.cart); err != nil {
+			cob := &InMemoryBehaviour{}
+			cob.Inject(
+				&InMemoryCartStorage{},
+				nil,
+				flamingo.NullLogger{},
+			)
+			if err := cob.cartStorage.StoreCart(tt.args.cart); err != nil {
 				t.Fatalf("cart could not be initialized")
 			}
 

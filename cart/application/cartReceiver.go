@@ -6,6 +6,7 @@ import (
 
 	cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
 	authApplication "flamingo.me/flamingo/core/auth/application"
+	"flamingo.me/flamingo/core/auth/domain"
 	"flamingo.me/flamingo/framework/flamingo"
 	"github.com/gorilla/sessions"
 )
@@ -13,13 +14,14 @@ import (
 type (
 	//CartReceiverService provides methods to get the correct cart
 	CartReceiverService struct {
-		GuestCartService     cartDomain.GuestCartService      `inject:""`
-		CustomerCartService  cartDomain.CustomerCartService   `inject:""`
-		CartDecoratorFactory *cartDomain.DecoratedCartFactory `inject:""`
-		AuthManager          *authApplication.AuthManager     `inject:""`
-		UserService          *authApplication.UserService     `inject:""`
-		Logger               flamingo.Logger                  `inject:""`
-		CartCache            CartCache                        `inject:",optional"`
+		guestCartService     cartDomain.GuestCartService
+		customerCartService  cartDomain.CustomerCartService
+		cartDecoratorFactory *cartDomain.DecoratedCartFactory
+		authManager          *authApplication.AuthManager
+		userService          authApplication.UserServiceInterface
+		logger               flamingo.Logger
+		// CartCache is optional
+		cartCache CartCache
 	}
 )
 
@@ -33,20 +35,44 @@ const (
 	GuestCartSessionKey = "cart.guestid"
 )
 
-// Auth tries to retrieve the authentication context for a active session
-func (cs *CartReceiverService) Auth(c context.Context, session *sessions.Session) cartDomain.Auth {
-	ts, _ := cs.AuthManager.TokenSource(c, session)
-	idToken, _ := cs.AuthManager.IDToken(c, session)
+// Inject the dependencies
+func (cs *CartReceiverService) Inject(
+	guestCartService cartDomain.GuestCartService,
+	customerCartService cartDomain.CustomerCartService,
+	cartDecoratorFactory *cartDomain.DecoratedCartFactory,
+	authManager *authApplication.AuthManager,
+	userService authApplication.UserServiceInterface,
+	logger flamingo.Logger,
+	cartCache CartCache, // optional
+) {
+	cs.guestCartService = guestCartService
+	cs.customerCartService = customerCartService
+	cs.cartDecoratorFactory = cartDecoratorFactory
+	cs.authManager = authManager
+	cs.userService = userService
+	cs.logger = logger
+	cs.cartCache = cartCache
+}
 
-	return cartDomain.Auth{
+// Auth tries to retrieve the authentication context for a active session
+func (cs *CartReceiverService) Auth(c context.Context, session *sessions.Session) domain.Auth {
+	ts, _ := cs.authManager.TokenSource(c, session)
+	idToken, _ := cs.authManager.IDToken(c, session)
+
+	return domain.Auth{
 		TokenSource: ts,
 		IDToken:     idToken,
 	}
 }
 
+// IsLoggedIn returns the logged in state
+func (cs *CartReceiverService) IsLoggedIn(ctx context.Context, session *sessions.Session) bool {
+	return cs.userService.IsLoggedIn(ctx, session)
+}
+
 // ShouldHaveCart - checks if there should be a cart. Indicated if a call to GetCart should return a real cart
 func (cs *CartReceiverService) ShouldHaveCart(ctx context.Context, session *sessions.Session) bool {
-	if cs.UserService.IsLoggedIn(ctx, session) {
+	if cs.userService.IsLoggedIn(ctx, session) {
 		return true
 	}
 
@@ -87,19 +113,19 @@ func (cs *CartReceiverService) ViewCart(ctx context.Context, session *sessions.S
 }
 
 func (cs *CartReceiverService) getCartFromCache(ctx context.Context, session *sessions.Session, identifier CartCacheIdentifier) (*cartDomain.Cart, error) {
-	if cs.CartCache == nil {
-		cs.Logger.Debug("no cache set")
+	if cs.cartCache == nil {
+		cs.logger.Debug("no cache set")
 
 		return nil, errors.New("no cache")
 	}
 
-	cs.Logger.Debug("query cart cache %#v", identifier)
+	cs.logger.Debug("query cart cache %#v", identifier)
 
-	return cs.CartCache.GetCart(ctx, session, identifier)
+	return cs.cartCache.GetCart(ctx, session, identifier)
 }
 
 func (cs *CartReceiverService) storeCartInCache(ctx context.Context, session *sessions.Session, cart *cartDomain.Cart) error {
-	if cs.CartCache == nil {
+	if cs.cartCache == nil {
 		return errors.New("no cache")
 	}
 
@@ -108,13 +134,13 @@ func (cs *CartReceiverService) storeCartInCache(ctx context.Context, session *se
 		return err
 	}
 
-	return cs.CartCache.CacheCart(ctx, session, *id, cart)
+	return cs.cartCache.CacheCart(ctx, session, *id, cart)
 }
 
 // GetCart Get the correct Cart (either Guest or User)
-func (cs *CartReceiverService) GetCart(ctx context.Context, session *sessions.Session) (*cartDomain.Cart, cartDomain.CartBehaviour, error) {
-	if cs.UserService.IsLoggedIn(ctx, session) {
-		cacheID, err := cs.CartCache.BuildIdentifier(ctx, session)
+func (cs *CartReceiverService) GetCart(ctx context.Context, session *sessions.Session) (*cartDomain.Cart, cartDomain.Behaviour, error) {
+	if cs.userService.IsLoggedIn(ctx, session) {
+		cacheID, err := cs.cartCache.BuildIdentifier(ctx, session)
 
 		if err != nil {
 			return nil, nil, err
@@ -122,7 +148,7 @@ func (cs *CartReceiverService) GetCart(ctx context.Context, session *sessions.Se
 
 		cart, cacheErr := cs.getCartFromCache(ctx, session, cacheID)
 		if cacheErr != nil {
-			cart, err = cs.CustomerCartService.GetCart(ctx, cs.Auth(ctx, session), "me")
+			cart, err = cs.customerCartService.GetCart(ctx, cs.Auth(ctx, session), "me")
 			if err != nil {
 				return nil, nil, err
 			}
@@ -130,7 +156,7 @@ func (cs *CartReceiverService) GetCart(ctx context.Context, session *sessions.Se
 			cs.storeCartInCache(ctx, session, cart)
 		}
 
-		behaviour, err := cs.CustomerCartService.GetCartOrderBehaviour(ctx, cs.Auth(ctx, session))
+		behaviour, err := cs.customerCartService.GetBehaviour(ctx, cs.Auth(ctx, session))
 		if err != nil {
 			return nil, nil, err
 		}
@@ -143,7 +169,7 @@ func (cs *CartReceiverService) GetCart(ctx context.Context, session *sessions.Se
 	var cacheErr error
 
 	if cs.ShouldHaveGuestCart(session) {
-		cacheID, err := cs.CartCache.BuildIdentifier(ctx, session)
+		cacheID, err := cs.cartCache.BuildIdentifier(ctx, session)
 
 		if err != nil {
 			return nil, nil, err
@@ -156,35 +182,35 @@ func (cs *CartReceiverService) GetCart(ctx context.Context, session *sessions.Se
 
 			if err != nil {
 				//TODO - decide on recoverable errors (where we should communicate "try again" / and not recoverable (where we should clean up guest cart in session and try to get a new one)
-				cs.Logger.WithField(flamingo.LogKeyCategory, "checkout.cartreceiver").Warn("cart.application.cartservice: GetCart - No cart in session return empty")
+				cs.logger.WithField(flamingo.LogKeyCategory, "checkout.cartreceiver").Warn("cart.application.cartservice: GetCart - No cart in session return empty")
 
 				//delete(ctx.Session().Values, "cart.guestid")
 				return nil, nil, ErrTemporaryCartService
 			}
 
 			cs.storeCartInCache(ctx, session, guestCart)
-			cs.Logger.WithField(flamingo.LogKeyCategory, "checkout.cartreceiver").Info("guestcart not in cache - requested and passed to cache from service")
+			cs.logger.WithField(flamingo.LogKeyCategory, "checkout.cartreceiver").Info("guestcart not in cache - requested and passed to cache from service")
 		}
 	} else {
-		guestCart, err = cs.GuestCartService.GetNewCart(ctx)
+		guestCart, err = cs.guestCartService.GetNewCart(ctx)
 		if err != nil {
-			cs.Logger.WithField(flamingo.LogKeyCategory, "checkout.cartreceiver").Error("cart.application.cartservice: Cannot create a new guest cart. Error %s", err)
+			cs.logger.WithField(flamingo.LogKeyCategory, "checkout.cartreceiver").Error("cart.application.cartservice: Cannot create a new guest cart. Error %s", err)
 
 			return nil, nil, err
 		}
 
-		cs.Logger.WithField(flamingo.LogKeyCategory, "checkout.cartreceiver").Info("cart.application.cartservice: Requested new Guestcart %v", guestCart)
+		cs.logger.WithField(flamingo.LogKeyCategory, "checkout.cartreceiver").Info("cart.application.cartservice: Requested new Guestcart %v", guestCart)
 		session.Values[GuestCartSessionKey] = guestCart.ID
 		cs.storeCartInCache(ctx, session, guestCart)
 	}
-	behaviour, err := cs.GuestCartService.GetCartOrderBehaviour(ctx)
+	behaviour, err := cs.guestCartService.GetBehaviour(ctx)
 
 	if err != nil {
 		return guestCart, nil, err
 	}
 
 	if guestCart == nil {
-		cs.Logger.WithField("category", "checkout.cartreceiver").Error("Something unexpected went wrong! No guestcart!")
+		cs.logger.WithField("category", "checkout.cartreceiver").Error("Something unexpected went wrong! No guestcart!")
 
 		return nil, nil, errors.New("something unexpected went wrong - no guestcart")
 	}
@@ -198,7 +224,7 @@ func (cs *CartReceiverService) ViewGuestCart(ctx context.Context, session *sessi
 		guestCart, err := cs.getSessionGuestCart(ctx, session)
 		if err != nil {
 			//TODO - decide on recoverable errors (where we should communicate "try again" / and not recoverable (where we should clean up guest cart in session and try to get a new one)
-			cs.Logger.WithField(flamingo.LogKeyCategory, "checkout.cartreceiver").Warn("cart.application.cartservice: GetCart - No cart in session return empty")
+			cs.logger.WithField(flamingo.LogKeyCategory, "checkout.cartreceiver").Warn("cart.application.cartservice: GetCart - No cart in session return empty")
 
 			return nil, ErrTemporaryCartService
 		}
@@ -220,9 +246,9 @@ func (cs *CartService) DeleteSavedSessionGuestCartID(session *sessions.Session) 
 // GetSessionGuestCart
 func (cs *CartReceiverService) getSessionGuestCart(ctx context.Context, session *sessions.Session) (*cartDomain.Cart, error) {
 	if guestcartid, ok := session.Values[GuestCartSessionKey]; ok {
-		existingCart, err := cs.GuestCartService.GetCart(ctx, guestcartid.(string))
+		existingCart, err := cs.guestCartService.GetCart(ctx, guestcartid.(string))
 		if err != nil {
-			cs.Logger.WithField(flamingo.LogKeyCategory, "checkout.cartreceiver").Error("cart.application.cartservice: Guestcart id in session cannot be retrieved. Id %s, Error: %s", guestcartid, err)
+			cs.logger.WithField(flamingo.LogKeyCategory, "checkout.cartreceiver").Error("cart.application.cartservice: Guestcart id in session cannot be retrieved. Id %s, Error: %s", guestcartid, err)
 			// we seem to have an erratic session cart - remove it
 			delete(session.Values, GuestCartSessionKey)
 		}
@@ -230,7 +256,7 @@ func (cs *CartReceiverService) getSessionGuestCart(ctx context.Context, session 
 		return existingCart, err
 	}
 
-	cs.Logger.WithField(flamingo.LogKeyCategory, "checkout.cartreceiver").Error("No cart in session yet - getSessionGuestCart should be called only if HasSssionGuestCart returns true")
+	cs.logger.WithField(flamingo.LogKeyCategory, "checkout.cartreceiver").Error("No cart in session yet - getSessionGuestCart should be called only if HasSssionGuestCart returns true")
 
 	return nil, errors.New("no cart in session yet")
 }
@@ -241,19 +267,19 @@ func (cs *CartReceiverService) DecorateCart(ctx context.Context, cart *cartDomai
 		return nil, errors.New("no cart given")
 	}
 
-	cs.Logger.WithField(flamingo.LogKeyCategory, "checkout.cartreceiver").Debug("cart.application.cartservice: Get decorated cart ")
+	cs.logger.WithField(flamingo.LogKeyCategory, "checkout.cartreceiver").Debug("cart.application.cartservice: Get decorated cart ")
 
-	return cs.CartDecoratorFactory.Create(ctx, *cart), nil
+	return cs.cartDecoratorFactory.Create(ctx, *cart), nil
 }
 
 // GetDecoratedCart Get the correct Cart
-func (cs *CartReceiverService) GetDecoratedCart(ctx context.Context, session *sessions.Session) (*cartDomain.DecoratedCart, cartDomain.CartBehaviour, error) {
+func (cs *CartReceiverService) GetDecoratedCart(ctx context.Context, session *sessions.Session) (*cartDomain.DecoratedCart, cartDomain.Behaviour, error) {
 	cart, behaviour, err := cs.GetCart(ctx, session)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return cs.CartDecoratorFactory.Create(ctx, *cart), behaviour, nil
+	return cs.cartDecoratorFactory.Create(ctx, *cart), behaviour, nil
 }
 
 func (cs *CartReceiverService) getEmptyCart() *cartDomain.Cart {

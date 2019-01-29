@@ -1,26 +1,49 @@
 package order
 
 import (
+	"flamingo.me/flamingo-commerce/order/application"
 	"flamingo.me/flamingo-commerce/order/domain"
-	"flamingo.me/flamingo-commerce/order/infrastructure"
+	"flamingo.me/flamingo-commerce/order/infrastructure/fake"
+	"flamingo.me/flamingo-commerce/order/infrastructure/inmemory"
 	"flamingo.me/flamingo-commerce/order/interfaces/controller"
 	"flamingo.me/flamingo/framework/dingo"
 	"flamingo.me/flamingo/framework/router"
 )
 
 type (
-	// OrdersModule for Orders
+	// Module definition of the order module
 	Module struct {
-		UseFakeAdapters bool `inject:"config:order.useFakeAdapters,optional"`
+		useFakeAdapters    bool
+		useInMemoryService bool
 	}
 )
 
+// Inject dependencies
+func (m *Module) Inject(
+	config *struct {
+		UseFakeAdapters    bool `inject:"config:order.useFakeAdapters,optional"`
+		UseInMemoryService bool `inject:"config:order.useInMemoryService,optional"`
+	},
+) {
+	if config != nil {
+		m.useFakeAdapters = config.UseFakeAdapters
+		m.useInMemoryService = config.UseInMemoryService
+	}
+}
+
 // Configure DI
 func (m *Module) Configure(injector *dingo.Injector) {
-	injector.Bind((*domain.OrderDecoratorInterface)(nil)).To(domain.OrderDecorator{})
-	if m.UseFakeAdapters {
-		injector.Bind((*domain.CustomerOrderService)(nil)).To(infrastructure.FakeCustomerOrders{})
+	if m.useFakeAdapters {
+		injector.Bind((*domain.CustomerOrderService)(nil)).To(fake.CustomerOrders{})
 	}
+	if m.useInMemoryService {
+		injector.Bind((*inmemory.Storager)(nil)).To(inmemory.Storage{}).AsEagerSingleton()
+		injector.Bind((*domain.GuestOrderService)(nil)).To(inmemory.GuestOrderService{})
+		injector.Bind((*domain.CustomerOrderService)(nil)).To(inmemory.CustomerOrderService{})
+
+	}
+	injector.Bind((*application.EventPublisher)(nil)).To(application.DefaultEventPublisher{})
+	injector.Bind((*domain.OrderDecoratorInterface)(nil)).To(domain.OrderDecorator{})
 	router.Bind(injector, new(routes))
 }
 

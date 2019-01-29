@@ -45,10 +45,12 @@ type (
 		AppliedCouponCodes []CouponCode
 	}
 
+	// CouponCode value object
 	CouponCode struct {
 		Code string
 	}
 
+	// Person value object
 	Person struct {
 		Address         *Address
 		PersonalDetails PersonalDetails
@@ -56,11 +58,13 @@ type (
 		ExistingCustomerData *ExistingCustomerData
 	}
 
+	// ExistingCustomerData value object
 	ExistingCustomerData struct {
 		//ID of the customer
 		ID string
 	}
 
+	// PersonalDetails value object
 	PersonalDetails struct {
 		DateOfBirth     string
 		PassportCountry string
@@ -88,6 +92,7 @@ type (
 		RelatedFlight    *FlightData
 	}
 
+	// FlightData value object
 	FlightData struct {
 		ScheduledDateTime  time.Time
 		Direction          string
@@ -96,9 +101,10 @@ type (
 		DestinationCountry string
 		Terminal           string
 		AirlineName        string
-		Logger             flamingo.Logger `inject:""`
+		Logger             flamingo.Logger
 	}
 
+	// DeliveryLocation value object
 	DeliveryLocation struct {
 		Type string
 		//Address - only set for type adress
@@ -107,6 +113,7 @@ type (
 		Code string
 	}
 
+	// CartTotals value object
 	CartTotals struct {
 		Totalitems        []Totalitem
 		TotalShippingItem ShippingItem
@@ -131,6 +138,7 @@ type (
 		CurrencyCode string
 	}
 
+	// DeliveryTotals value object
 	DeliveryTotals struct {
 		//SubTotal = SUM of Item RowTotal
 		SubTotal float64
@@ -201,7 +209,7 @@ type (
 		DeliveryCode string
 	}
 
-	// DiscountItem
+	// ItemDiscount value object
 	ItemDiscount struct {
 		Code  string
 		Title string
@@ -218,7 +226,7 @@ type (
 		Type  string
 	}
 
-	// ShippingItem
+	// ShippingItem value object
 	ShippingItem struct {
 		Title string
 		Price float64
@@ -229,11 +237,13 @@ type (
 		CurrencyCode string
 	}
 
+	// InvalidateCartEvent value object
 	InvalidateCartEvent struct {
 		Session *sessions.Session
 	}
 )
 
+// Key constants
 const (
 	DELIVERY_METHOD_PICKUP      = "pickup"
 	DELIVERY_METHOD_DELIVERY    = "delivery"
@@ -251,7 +261,7 @@ const (
 	TOTALS_TYPE_SHIPPING      = "totals_type_shipping"
 )
 
-// GetMainShippingEMail
+// GetMainShippingEMail returns the main shipping address email, empty string if not available
 func (Cart Cart) GetMainShippingEMail() string {
 	for _, deliveries := range Cart.Deliveries {
 		if deliveries.DeliveryInfo.DeliveryLocation.Address != nil {
@@ -263,7 +273,7 @@ func (Cart Cart) GetMainShippingEMail() string {
 	return ""
 }
 
-// GetByItemId gets an item by its id
+// GetDeliveryByCode gets a delivery by code
 func (Cart Cart) GetDeliveryByCode(deliveryCode string) (*Delivery, bool) {
 	for _, delivery := range Cart.Deliveries {
 		if delivery.DeliveryInfo.Code == deliveryCode {
@@ -273,11 +283,13 @@ func (Cart Cart) GetDeliveryByCode(deliveryCode string) (*Delivery, bool) {
 	return nil, false
 }
 
+// HasDeliveryForCode checks if a delivery with the given code exists in the cart
 func (Cart Cart) HasDeliveryForCode(deliveryCode string) bool {
 	_, found := Cart.GetDeliveryByCode(deliveryCode)
 	return found == true
 }
 
+// GetDeliveryCodes returns a slice of all delivery codes in cart
 func (Cart Cart) GetDeliveryCodes() []string {
 	var deliveryCodes []string
 
@@ -326,6 +338,7 @@ func (Cart Cart) ItemCount() int {
 	return count
 }
 
+// GetItemCartReferences returns a slice of all ItemCartReferences
 func (Cart Cart) GetItemCartReferences() []ItemCartReference {
 	var ids []ItemCartReference
 	for _, delivery := range Cart.Deliveries {
@@ -339,6 +352,7 @@ func (Cart Cart) GetItemCartReferences() []ItemCartReference {
 	return ids
 }
 
+// GetVoucherSavings returns the savings of all vouchers
 func (Cart Cart) GetVoucherSavings() float64 {
 	totalSavings := 0.0
 	for _, item := range Cart.CartTotals.Totalitems {
@@ -354,6 +368,7 @@ func (Cart Cart) GetVoucherSavings() float64 {
 	return totalSavings
 }
 
+// GetSavings retuns the total of all savings
 func (Cart Cart) GetSavings() float64 {
 	totalSavings := 0.0
 	for _, item := range Cart.CartTotals.Totalitems {
@@ -369,10 +384,12 @@ func (Cart Cart) GetSavings() float64 {
 	return totalSavings
 }
 
+// HasAppliedCouponCode checks if a coupon code is applied to the cart
 func (Cart Cart) HasAppliedCouponCode() bool {
 	return len(Cart.AppliedCouponCodes) > 0
 }
 
+// GetTotalItemsByType gets a slice of all Totalitems by typeCode
 func (ct CartTotals) GetTotalItemsByType(typeCode string) []Totalitem {
 	var totalitems []Totalitem
 	for _, item := range ct.Totalitems {
@@ -383,6 +400,7 @@ func (ct CartTotals) GetTotalItemsByType(typeCode string) []Totalitem {
 	return totalitems
 }
 
+// GetSavingsByItem gets the savings by item
 func (item Item) GetSavingsByItem() float64 {
 	totalSavings := 0.0
 	for _, discount := range item.AppliedDiscounts {
@@ -396,14 +414,24 @@ func (item Item) GetSavingsByItem() float64 {
 	return totalSavings
 }
 
+// HasRelatedFlight checks if a flight is related to the delivery
 func (d DeliveryInfo) HasRelatedFlight() bool {
 	return d.RelatedFlight != nil
 }
 
+// Inject dependencies
+func (fd *FlightData) Inject(
+	logger flamingo.Logger,
+) {
+	fd.Logger = logger
+}
+
+// GetScheduledDate returns the flights scheduled data
 func (fd *FlightData) GetScheduledDate() string {
 	return fd.ScheduledDateTime.Format("2006-01-02")
 }
 
+// GetScheduledDateTime returns the flights scheduled datetime
 func (fd *FlightData) GetScheduledDateTime() string {
 	return fd.ScheduledDateTime.Format(time.RFC3339)
 }

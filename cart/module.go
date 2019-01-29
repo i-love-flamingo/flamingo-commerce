@@ -18,15 +18,30 @@ import (
 type (
 	// CartModule registers our profiler
 	CartModule struct {
-		RouterRegistry  *router.Registry `inject:""`
-		UseInMemoryCart bool             `inject:"config:cart.useInMemoryCartServiceAdapters"`
-		EnableCartCache bool             `inject:"config:cart.enableCartCache,optional"`
+		routerRegistry  *router.Registry
+		useInMemoryCart bool
+		enableCartCache bool
 	}
 )
 
+// Inject dependencies
+func (m *CartModule) Inject(
+	routerRegistry *router.Registry,
+	config *struct {
+		UseInMemoryCart bool `inject:"config:cart.useInMemoryCartServiceAdapters"`
+		EnableCartCache bool `inject:"config:cart.enableCartCache,optional"`
+	},
+) {
+	m.routerRegistry = routerRegistry
+	if config != nil {
+		m.useInMemoryCart = config.UseInMemoryCart
+		m.enableCartCache = config.EnableCartCache
+	}
+}
+
 // Configure module
 func (m *CartModule) Configure(injector *dingo.Injector) {
-	if m.UseInMemoryCart {
+	if m.useInMemoryCart {
 		injector.Bind((*infrastructure.CartStorage)(nil)).To(infrastructure.InMemoryCartStorage{}).AsEagerSingleton()
 		injector.Bind((*cart.GuestCartService)(nil)).To(infrastructure.InMemoryGuestCartService{})
 		injector.Bind((*cart.CustomerCartService)(nil)).To(infrastructure.InMemoryCustomerCartService{})
@@ -43,7 +58,7 @@ func (m *CartModule) Configure(injector *dingo.Injector) {
 
 	injector.Bind((*cart.DeliveryInfoBuilder)(nil)).To(cart.DefaultDeliveryInfoBuilder{})
 
-	if m.EnableCartCache {
+	if m.enableCartCache {
 		injector.Bind((*application.CartCache)(nil)).To(application.CartSessionCache{})
 	}
 

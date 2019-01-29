@@ -14,14 +14,23 @@ type (
 		//BuildDeliveryInfoUpdateCommand(ctx web.Context, decoratedCart *DecoratedCart) ([]DeliveryInfoUpdateCommand, error)
 	}
 
+	// DefaultDeliveryInfoBuilder defines the default delivery info builder used
 	DefaultDeliveryInfoBuilder struct {
-		Logger flamingo.Logger `inject:""`
+		logger flamingo.Logger
 	}
 )
 
+// Inject dependencies
+func (b *DefaultDeliveryInfoBuilder) Inject(
+	logger flamingo.Logger,
+) {
+	b.logger = logger
+}
+
+// BuildByDeliveryCode builds a DeliveryInfo by deliveryCode
 func (b *DefaultDeliveryInfoBuilder) BuildByDeliveryCode(deliverycode string) (DeliveryInfo, error) {
 	if deliverycode == "" {
-		b.Logger.WithField("category", "cart").WithField("subcategory", "DefaultDeliveryInfoBuilder").Warn("Empty deliverycode")
+		b.logger.WithField("category", "cart").WithField("subcategory", "DefaultDeliveryInfoBuilder").Warn("Empty deliverycode")
 		return DeliveryInfo{
 			Code:   deliverycode,
 			Method: DELIVERY_METHOD_UNSPECIFIED,
@@ -46,7 +55,7 @@ func (b *DefaultDeliveryInfoBuilder) BuildByDeliveryCode(deliverycode string) (D
 
 	intentParts := strings.SplitN(deliverycode, "_", 3)
 	if len(intentParts) != 3 {
-		b.Logger.WithField("category", "cart").WithField("subcategory", "DefaultDeliveryInfoBuilder").Warn("Unknown deliverycode", deliverycode)
+		b.logger.WithField("category", "cart").WithField("subcategory", "DefaultDeliveryInfoBuilder").Warn("Unknown deliverycode", deliverycode)
 		return DeliveryInfo{
 			Code:   deliverycode,
 			Method: DELIVERY_METHOD_UNSPECIFIED,
@@ -82,7 +91,7 @@ func (b *DefaultDeliveryInfoBuilder) BuildByDeliveryCode(deliverycode string) (D
 			}, nil
 		}
 	}
-	b.Logger.WithField("category", "cart").WithField("subcategory", "DefaultDeliveryInfoBuilder").Warn("Unknown IntentString", deliverycode)
+	b.logger.WithField("category", "cart").WithField("subcategory", "DefaultDeliveryInfoBuilder").Warn("Unknown IntentString", deliverycode)
 	return DeliveryInfo{
 		Code:   deliverycode,
 		Method: DELIVERY_METHOD_UNSPECIFIED,

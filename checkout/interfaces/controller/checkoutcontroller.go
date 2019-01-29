@@ -8,6 +8,8 @@ import (
 	"net/url"
 	"strings"
 
+	orderDomain "flamingo.me/flamingo-commerce/order/domain"
+
 	"flamingo.me/flamingo/framework/event"
 
 	cartApplication "flamingo.me/flamingo-commerce/cart/application"
@@ -53,7 +55,7 @@ type (
 	// SuccessViewData represents the success view data
 	SuccessViewData struct {
 		PaymentInfos        []PlaceOrderPaymentInfo
-		PlacedOrderInfos    cart.PlacedOrderInfos
+		PlacedOrderInfos    orderDomain.PlacedOrderInfos
 		Email               string
 		PlacedDecoratedCart cart.DecoratedCart
 
@@ -79,7 +81,7 @@ type (
 
 	// PlaceOrderFlashData represents the data passed to the success page - they need to be "glob"able
 	PlaceOrderFlashData struct {
-		PlacedOrderInfos cart.PlacedOrderInfos
+		PlacedOrderInfos orderDomain.PlacedOrderInfos
 		Email            string
 		PaymentInfos     []PlaceOrderPaymentInfo
 		PlacedCart       cart.Cart

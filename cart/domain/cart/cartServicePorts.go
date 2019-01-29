@@ -3,45 +3,34 @@ package cart
 import (
 	"context"
 
-	oidc "github.com/coreos/go-oidc"
+	"flamingo.me/flamingo/core/auth/domain"
 	"github.com/pkg/errors"
-	"golang.org/x/oauth2"
 )
 
 type (
 	// GuestCartService interface
 	GuestCartService interface {
-		GetCart(ctx context.Context, cartId string) (*Cart, error)
+		// GetBehaviour gets the behaviour for the guest cart service
+		GetBehaviour(context.Context) (Behaviour, error)
+
+		GetCart(ctx context.Context, cartID string) (*Cart, error)
 
 		//GetGuestCart - should return a new guest cart (including the id of the cart)
 		GetNewCart(ctx context.Context) (*Cart, error)
-
-		GetCartOrderBehaviour(context.Context) (CartBehaviour, error)
-	}
-
-	ItemUpdateCommand struct {
-		// Source Id of where the items should be initial picked - This is set by the SourcingLogic
-		SourceId       *string
-		Qty            *int
-		AdditionalData map[string]string
 	}
 
 	// CustomerCartService  interface
 	CustomerCartService interface {
-		GetCartOrderBehaviour(context.Context, Auth) (CartBehaviour, error)
-		GetCart(ctx context.Context, auth Auth, cartId string) (*Cart, error)
-	}
-	PlacedOrderInfos []PlacedOrderInfo
+		// GetBehaviour gets the behaviour for the customer cart service
+		GetBehaviour(context.Context, domain.Auth) (Behaviour, error)
 
-	PlacedOrderInfo struct {
-		OrderNumber  string
-		DeliveryCode string
+		GetCart(ctx context.Context, auth domain.Auth, cartID string) (*Cart, error)
 	}
-	// CartBehaviour is a Port that can be implemented by other packages to implement  cart actions required for Ordering a Cart
-	CartBehaviour interface {
-		PlaceOrder(ctx context.Context, cart *Cart, payment *CartPayment) (PlacedOrderInfos, error)
-		DeleteItem(ctx context.Context, cart *Cart, itemId string, deliveryCode string) (*Cart, error)
-		UpdateItem(ctx context.Context, cart *Cart, itemId string, deliveryCode string, itemUpdateCommand ItemUpdateCommand) (*Cart, error)
+
+	// Behaviour is a Port that can be implemented by other packages to provide cart actions
+	Behaviour interface {
+		DeleteItem(ctx context.Context, cart *Cart, itemID string, deliveryCode string) (*Cart, error)
+		UpdateItem(ctx context.Context, cart *Cart, itemID string, deliveryCode string, itemUpdateCommand ItemUpdateCommand) (*Cart, error)
 		AddToCart(ctx context.Context, cart *Cart, deliveryCode string, addRequest AddRequest) (*Cart, error)
 		CleanCart(ctx context.Context, cart *Cart) (*Cart, error)
 		CleanDelivery(ctx context.Context, cart *Cart, deliveryCode string) (*Cart, error)
@@ -54,16 +43,19 @@ type (
 		ApplyVoucher(ctx context.Context, cart *Cart, couponCode string) (*Cart, error)
 	}
 
+	// AddRequest defines add to cart requeset
 	AddRequest struct {
 		MarketplaceCode        string
 		Qty                    int
 		VariantMarketplaceCode string
 	}
 
-	// Auth defines cart authentication information
-	Auth struct {
-		TokenSource oauth2.TokenSource
-		IDToken     *oidc.IDToken
+	// ItemUpdateCommand defines the update item command
+	ItemUpdateCommand struct {
+		// Source Id of where the items should be initial picked - This is set by the SourcingLogic
+		SourceID       *string
+		Qty            *int
+		AdditionalData map[string]string
 	}
 )
 
@@ -71,12 +63,3 @@ var (
 	CartNotFoundError    = errors.New("Cart not found")
 	DeliveryCodeNotFound = errors.New("Delivery not found")
 )
-
-func (sv PlacedOrderInfos) GetOrderNumberForDeliverCode(deliveryCode string) string {
-	for _, v := range sv {
-		if v.DeliveryCode == deliveryCode {
-			return v.OrderNumber
-		}
-	}
-	return ""
-}

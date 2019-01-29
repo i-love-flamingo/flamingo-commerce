@@ -1,20 +1,31 @@
-package infrastructure
+package fake
 
 import (
 	"context"
 	"time"
 
+	"flamingo.me/flamingo-commerce/order/infrastructure/inmemory"
+
 	"flamingo.me/flamingo-commerce/order/domain"
-	coreAuthDomain "flamingo.me/flamingo/core/auth/domain"
+	authDomain "flamingo.me/flamingo/core/auth/domain"
 )
 
 type (
-	// CustomerOrders is the CustomerOrders api service
-	FakeCustomerOrders struct{}
+	// CustomerOrders is the fake customer orders api service
+	CustomerOrders struct{} 
 )
 
+var (
+	_ domain.CustomerOrderService = (*CustomerOrders)(nil)
+)
+
+// GetBehaviour returns the InMemoryBehaviour
+func (co *CustomerOrders) GetBehaviour(context.Context, authDomain.Auth) (domain.Behaviour, error) {
+	return new(inmemory.Behaviour), nil
+}
+
 // Get returns a CustomerOrders struct
-func (co *FakeCustomerOrders) Get(ctx context.Context, authentication coreAuthDomain.Auth) ([]*domain.Order, error) {
+func (co *CustomerOrders) Get(ctx context.Context, authentication authDomain.Auth) ([]*domain.Order, error) {
 	return []*domain.Order{
 		{
 			ID: "100",
@@ -56,7 +67,8 @@ func (co *FakeCustomerOrders) Get(ctx context.Context, authentication coreAuthDo
 	}, nil
 }
 
-func (co *FakeCustomerOrders) GetById(ctx context.Context, authentication coreAuthDomain.Auth, id string) (*domain.Order, error) {
+// GetByID fetches a faked customer order by id
+func (co *CustomerOrders) GetByID(ctx context.Context, authentication authDomain.Auth, id string) (*domain.Order, error) {
 	return &domain.Order{
 		ID:           "100",
 		CreationTime: time.Now(),

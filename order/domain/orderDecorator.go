@@ -9,35 +9,36 @@ import (
 )
 
 type (
+	// OrderDecoratorInterface defines the interface of the order decorator
 	OrderDecoratorInterface interface {
 		Create(context.Context, *Order) *DecoratedOrder
 	}
 
-	// OrderDecorator
+	// OrderDecorator struct defines the order decorator
 	OrderDecorator struct {
 		ProductService domain.ProductService `inject:""`
 		Logger         flamingo.Logger       `inject:""`
 	}
 
-	// DecoratedOrder
+	// DecoratedOrder struct
 	DecoratedOrder struct {
 		Order          *Order
 		DecoratedItems []*DecoratedOrderItem
 	}
 
-	// DecoratedOrderItem
+	// DecoratedOrderItem struct
 	DecoratedOrderItem struct {
 		Item    *OrderItem
 		Product domain.BasicProduct
 	}
 
-	// GroupedDecoratedOrder
+	// GroupedDecoratedOrder struct
 	GroupedDecoratedOrder struct {
 		Order  *DecoratedOrder
 		Groups []*GroupedDecoratedOrderItems
 	}
 
-	// GroupedDecoratedOrderItem
+	// GroupedDecoratedOrderItems struct
 	GroupedDecoratedOrderItems struct {
 		DecoratedItems []*DecoratedOrderItem
 		Group          string
@@ -139,7 +140,7 @@ func (doi DecoratedOrderItem) GetDisplayMarketplaceCode() string {
 	return doi.Product.BaseData().MarketPlaceCode
 }
 
-// GetVariantsVariationAttribute getter
+// GetVariantsVariationAttributes gets the decorated order item variant attributes
 func (doi DecoratedOrderItem) GetVariantsVariationAttributes() domain.Attributes {
 	attributes := domain.Attributes{}
 	if doi.IsConfigurable() {
@@ -152,7 +153,7 @@ func (doi DecoratedOrderItem) GetVariantsVariationAttributes() domain.Attributes
 	return attributes
 }
 
-// GetVariantsVariationAttribute getter
+// GetVariantsVariationAttributeCodes gets the decorated order item variant variation attributes
 func (doi DecoratedOrderItem) GetVariantsVariationAttributeCodes() []string {
 	if doi.Product.Type() == domain.TYPECONFIGURABLE_WITH_ACTIVE_VARIANT {
 		return doi.Product.(domain.ConfigurableProductWithActiveVariant).VariantVariationAttributes
@@ -160,7 +161,7 @@ func (doi DecoratedOrderItem) GetVariantsVariationAttributeCodes() []string {
 	return nil
 }
 
-// GetGroupedBy
+// GetGroupedBy groups the decorated order into a *GroupedDecoratedOrder
 func (rd *DecoratedOrder) GetGroupedBy(group string, sortGroup bool) *GroupedDecoratedOrder {
 	result := &GroupedDecoratedOrder{
 		Order: rd,
@@ -209,13 +210,13 @@ func (i *GroupedDecoratedOrderItems) GetSourceIds() []string {
 	sourceIds := make(map[string]bool, 1)
 	result := make([]string, 1)
 	for _, item := range i.DecoratedItems {
-		sourceId := item.Item.SourceId
-		if _, ok := sourceIds[sourceId]; ok {
+		sourceID := item.Item.SourceID
+		if _, ok := sourceIds[sourceID]; ok {
 			continue
 		}
 
-		sourceIds[sourceId] = true
-		result = append(result, sourceId)
+		sourceIds[sourceID] = true
+		result = append(result, sourceID)
 	}
 
 	return result

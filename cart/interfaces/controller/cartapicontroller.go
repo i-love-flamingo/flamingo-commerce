@@ -69,7 +69,7 @@ func (cc *CartApiController) AddAction(ctx context.Context, r *web.Request) web.
 	deliveryCode, _ := r.Param1("deliveryCode")
 
 	addRequest := cc.cartService.BuildAddRequest(ctx, r.MustParam1("marketplaceCode"), variantMarketplaceCode, qtyInt)
-	err, _ := cc.cartService.AddProduct(ctx, r.Session().G(), deliveryCode, addRequest)
+	_, err := cc.cartService.AddProduct(ctx, r.Session().G(), deliveryCode, addRequest)
 	if err != nil {
 		cc.logger.WithField("category", "CartApiController").Error("cart.cartapicontroller.add: %v", err.Error())
 		msgCode := ""

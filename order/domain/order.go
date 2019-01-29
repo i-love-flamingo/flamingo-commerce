@@ -5,7 +5,7 @@ import (
 )
 
 type (
-	// Order
+	// Order struct
 	Order struct {
 		ID           string
 		CreationTime time.Time
@@ -17,7 +17,7 @@ type (
 		Attributes   Attributes
 	}
 
-	// OrderItem
+	// OrderItem struct
 	OrderItem struct {
 		// DEPRECATED
 		Sku string
@@ -39,12 +39,31 @@ type (
 		PriceInclTax float64
 
 		// Source Id where the item shoudl be picked
-		SourceId string
+		SourceID string
 	}
 
-	// Attributes
+	// Attributes map
 	Attributes map[string]Attribute
 
-	// Attribute
+	// Attribute interface
 	Attribute interface{}
+
+	// PlacedOrderInfos represents a slice of PlacedOrderInfo
+	PlacedOrderInfos []PlacedOrderInfo
+
+	// PlacedOrderInfo defines the additional info struct for placed orders
+	PlacedOrderInfo struct {
+		OrderNumber  string
+		DeliveryCode string
+	}
 )
+
+// GetOrderNumberForDeliveryCode returns the order number for a delivery code
+func (poi PlacedOrderInfos) GetOrderNumberForDeliveryCode(deliveryCode string) string {
+	for _, v := range poi {
+		if v.DeliveryCode == deliveryCode {
+			return v.OrderNumber
+		}
+	}
+	return ""
+}

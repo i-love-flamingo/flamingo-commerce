@@ -1,0 +1,86 @@
+package application_test
+
+import (
+	"context"
+	"testing"
+
+	"flamingo.me/flamingo-commerce/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/order/application"
+	"flamingo.me/flamingo-commerce/order/domain"
+	"flamingo.me/flamingo/framework/event"
+	"flamingo.me/flamingo/framework/event/mocks"
+	"flamingo.me/flamingo/framework/flamingo"
+	"github.com/go-test/deep"
+	"github.com/stretchr/testify/mock"
+)
+
+func TestDefaultEventPublisher_PublishOrderPlacedEvent(t *testing.T) {
+	type fields struct {
+		logger flamingo.Logger
+	}
+	type args struct {
+		ctx              context.Context
+		cart             *cart.Cart
+		placedOrderInfos domain.PlacedOrderInfos
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+	}{
+		{
+			name: "test",
+			fields: fields{
+				logger: flamingo.NullLogger{},
+			},
+			args: args{
+				ctx:  context.Background(),
+				cart: &cart.Cart{},
+				placedOrderInfos: domain.PlacedOrderInfos{
+					domain.PlacedOrderInfo{
+						OrderNumber:  "124",
+						DeliveryCode: "test_delivery",
+					},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			// prepare the wantEvent for the mocked event router
+			wantEvent := &application.OrderPlacedEvent{
+				Cart:             tt.args.cart,
+				PlacedOrderInfos: tt.args.placedOrderInfos,
+			}
+
+			// prepare the event router
+			eventRouter := new(mocks.Router)
+			eventRouter.On(
+				"Dispatch",
+				context.Background(),
+				mock.MatchedBy(
+					func(e event.Event) bool {
+						if diff := deep.Equal(e, wantEvent); diff != nil {
+							t.Logf("PublishOrderPlacedEvent got!=want, diff: %#v", diff)
+							return false
+						}
+
+						return true
+					},
+				),
+			).Return(nil)
+
+			// prepare the event publisher
+			dep := &application.DefaultEventPublisher{}
+			dep.Inject(
+				tt.fields.logger,
+				eventRouter,
+			)
+
+			dep.PublishOrderPlacedEvent(tt.args.ctx, tt.args.cart, tt.args.placedOrderInfos)
+			eventRouter.AssertExpectations(t)
+			eventRouter.AssertNumberOfCalls(t, "Dispatch", 1)
+		})
+	}
+}

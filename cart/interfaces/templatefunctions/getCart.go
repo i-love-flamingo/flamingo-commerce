@@ -12,22 +12,33 @@ import (
 type (
 	// GetCart is exported as a template function
 	GetCart struct {
-		ApplicationCartReceiverService *application.CartReceiverService `inject:""`
-		Logger                         flamingo.Logger                  `inject:""`
+		cartReceiverService *application.CartReceiverService
+		logger              flamingo.Logger
 	}
 	// GetDecoratedCart is exported as a template function
 	GetDecoratedCart struct {
-		ApplicationCartReceiverService *application.CartReceiverService `inject:""`
-		Logger                         flamingo.Logger                  `inject:""`
+		cartReceiverService *application.CartReceiverService
+		logger              flamingo.Logger
 	}
 )
 
+// Inject dependencies
+func (tf *GetCart) Inject(
+	applicationCartReceiverService *application.CartReceiverService,
+	logger flamingo.Logger,
+
+) {
+	tf.cartReceiverService = applicationCartReceiverService
+	tf.logger = logger
+}
+
+// Func defines the GetCart template function
 func (tf *GetCart) Func(ctx context.Context) interface{} {
 	return func() cartDomain.Cart {
 		session, _ := session.FromContext(ctx)
-		cart, e := tf.ApplicationCartReceiverService.ViewCart(ctx, session.G())
+		cart, e := tf.cartReceiverService.ViewCart(ctx, session.G())
 		if e != nil {
-			tf.Logger.Error("Error: cart.interfaces.templatefunc %v", e)
+			tf.logger.Error("Error: cart.interfaces.templatefunc %v", e)
 		}
 		if cart == nil {
 			cart = &cartDomain.Cart{}
@@ -37,12 +48,22 @@ func (tf *GetCart) Func(ctx context.Context) interface{} {
 	}
 }
 
+// Inject dependencies
+func (tf *GetDecoratedCart) Inject(
+	cartReceiverService *application.CartReceiverService,
+	logger flamingo.Logger,
+) {
+	tf.cartReceiverService = cartReceiverService
+	tf.logger = logger
+}
+
+// Func defines the GetDecoratedCrt deplate function
 func (tf *GetDecoratedCart) Func(ctx context.Context) interface{} {
 	return func() cartDomain.DecoratedCart {
 		session, _ := session.FromContext(ctx)
-		cart, e := tf.ApplicationCartReceiverService.ViewDecoratedCart(ctx, session.G())
+		cart, e := tf.cartReceiverService.ViewDecoratedCart(ctx, session.G())
 		if e != nil {
-			tf.Logger.Error("Error: cart.interfaces.templatefunc %v", e)
+			tf.logger.Error("Error: cart.interfaces.templatefunc %v", e)
 		}
 		if cart == nil {
 			cart = &cartDomain.DecoratedCart{}

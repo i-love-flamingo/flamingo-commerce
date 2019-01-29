@@ -4,6 +4,10 @@ import (
 	"context"
 	"errors"
 
+	orderApplication "flamingo.me/flamingo-commerce/order/application"
+
+	orderDomain "flamingo.me/flamingo-commerce/order/domain"
+
 	"flamingo.me/flamingo-commerce/cart/application"
 	"flamingo.me/flamingo-commerce/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/checkout/domain"
@@ -14,14 +18,34 @@ import (
 type (
 	// OrderService defines the order service
 	OrderService struct {
-		SourcingEngine      *domain.SourcingEngine           `inject:""`
-		PaymentService      *PaymentService                  `inject:""`
-		Logger              flamingo.Logger                  `inject:""`
-		CartService         *application.CartService         `inject:""`
-		CartReceiverService *application.CartReceiverService `inject:""`
-		DeliveryInfoBuilder cart.DeliveryInfoBuilder         `inject:""`
+		SourcingEngine      *domain.SourcingEngine
+		PaymentService      *PaymentService
+		Logger              flamingo.Logger
+		CartService         *application.CartService
+		OrderService        *orderApplication.OrderService
+		CartReceiverService *application.CartReceiverService
+		DeliveryInfoBuilder cart.DeliveryInfoBuilder
 	}
 )
+
+// Inject dependencies
+func (os *OrderService) Inject(
+	SourcingEngine *domain.SourcingEngine,
+	PaymentService *PaymentService,
+	Logger flamingo.Logger,
+	CartService *application.CartService,
+	OrderService *orderApplication.OrderService,
+	CartReceiverService *application.CartReceiverService,
+	DeliveryInfoBuilder cart.DeliveryInfoBuilder,
+) {
+	os.SourcingEngine = SourcingEngine
+	os.PaymentService = PaymentService
+	os.Logger = Logger
+	os.CartService = CartService
+	os.OrderService = OrderService
+	os.CartReceiverService = CartReceiverService
+	os.DeliveryInfoBuilder = DeliveryInfoBuilder
+}
 
 // SetSources sets sources for sessions carts items
 func (os *OrderService) SetSources(ctx context.Context, session *sessions.Session) error {
@@ -39,13 +63,13 @@ func (os *OrderService) SetSources(ctx context.Context, session *sessions.Sessio
 }
 
 // PlaceOrder places the order
-func (os *OrderService) PlaceOrder(ctx context.Context, session *sessions.Session, decoratedCart *cart.DecoratedCart, payment *cart.CartPayment) (cart.PlacedOrderInfos, error) {
+func (os *OrderService) PlaceOrder(ctx context.Context, session *sessions.Session, decoratedCart *cart.DecoratedCart, payment *cart.CartPayment) (orderDomain.PlacedOrderInfos, error) {
 	validationResult := os.CartService.ValidateCart(ctx, session, decoratedCart)
 	if !validationResult.IsValid() {
 		os.Logger.Warn("Try to place an invalid cart")
 		return nil, errors.New("Cart is Invalid.")
 	}
-	return os.CartService.PlaceOrder(ctx, session, payment)
+	return os.OrderService.PlaceOrder(ctx, session, payment)
 }
 
 // CurrentCartSaveInfos saves additional informations on current cart
@@ -102,7 +126,7 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *sessi
 
 //CurrentCartPlaceOrder - probably the best choice for a simple checkout
 // Assumptions: Only one BuildDeliveryInfo is used on the cart!
-func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *sessions.Session, payment cart.CartPayment) (cart.PlacedOrderInfos, error) {
+func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *sessions.Session, payment cart.CartPayment) (orderDomain.PlacedOrderInfos, error) {
 	decoratedCart, err := os.CartReceiverService.ViewDecoratedCart(ctx, session)
 	if err != nil {
 		os.Logger.Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)

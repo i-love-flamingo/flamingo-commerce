@@ -9,8 +9,9 @@ import (
 )
 
 type (
+	// InMemoryGuestCartService defines the in memory guest cart service
 	InMemoryGuestCartService struct {
-		InMemoryCartOrderBehaviour *InMemoryCartOrderBehaviour `inject:""`
+		inMemoryCartOrderBehaviour *InMemoryBehaviour
 	}
 )
 
@@ -18,20 +19,30 @@ var (
 	_ cart.GuestCartService = (*InMemoryGuestCartService)(nil)
 )
 
-func (gcs *InMemoryGuestCartService) GetCart(ctx context.Context, cartId string) (*cart.Cart, error) {
-	cart, err := gcs.InMemoryCartOrderBehaviour.GetCart(ctx, cartId)
+// Inject dependencies
+func (gcs *InMemoryGuestCartService) Inject(
+	InMemoryCartOrderBehaviour *InMemoryBehaviour,
+) {
+	gcs.inMemoryCartOrderBehaviour = InMemoryCartOrderBehaviour
+}
+
+// GetCart fetches a cart from the in memory guest cart service
+func (gcs *InMemoryGuestCartService) GetCart(ctx context.Context, cartID string) (*cart.Cart, error) {
+	cart, err := gcs.inMemoryCartOrderBehaviour.GetCart(ctx, cartID)
 	return cart, err
 }
 
+// GetNewCart gets a new cart from the in memory guest cart service
 func (gcs *InMemoryGuestCartService) GetNewCart(ctx context.Context) (*cart.Cart, error) {
-	guestCart := cart.Cart{
+	guestCart := &cart.Cart{
 		ID: strconv.Itoa(rand.Int()),
 	}
 
-	error := gcs.InMemoryCartOrderBehaviour.CartStorage.StoreCart(guestCart)
-	return &guestCart, error
+	error := gcs.inMemoryCartOrderBehaviour.StoreCart(guestCart)
+	return guestCart, error
 }
 
-func (gcs *InMemoryGuestCartService) GetCartOrderBehaviour(context.Context) (cart.CartBehaviour, error) {
-	return gcs.InMemoryCartOrderBehaviour, nil
+// GetBehaviour returns the cart order behaviour of the service
+func (gcs *InMemoryGuestCartService) GetBehaviour(context.Context) (cart.Behaviour, error) {
+	return gcs.inMemoryCartOrderBehaviour, nil
 }

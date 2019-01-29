@@ -130,9 +130,6 @@ func TestBuildIdentifierFromCart(t *testing.T) {
 }
 
 func TestCartSessionCache_GetCart(t *testing.T) {
-	type fields struct {
-		Logger flamingo.Logger
-	}
 	type args struct {
 		ctx     context.Context
 		session *sessions.Session
@@ -140,7 +137,6 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 	}
 	tests := []struct {
 		name           string
-		fields         fields
 		args           args
 		want           *cart.Cart
 		wantErr        bool
@@ -148,9 +144,6 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 	}{
 		{
 			name: "error for no cart in cache",
-			fields: fields{
-				Logger: flamingo.NullLogger{},
-			},
 			args: args{
 				ctx: context.Background(),
 				session: &sessions.Session{
@@ -167,9 +160,6 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 			wantMessageErr: "no cart in cache",
 		}, {
 			name: "cached cart found/invalid cache entry",
-			fields: fields{
-				Logger: flamingo.NullLogger{},
-			},
 			args: args{
 				ctx: context.Background(),
 				session: &sessions.Session{
@@ -191,9 +181,6 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 			wantMessageErr: "cache is invalid",
 		}, {
 			name: "cached cart found/valid cache entry",
-			fields: fields{
-				Logger: flamingo.NullLogger{},
-			},
 			args: args{
 				ctx: context.Background(),
 				session: &sessions.Session{
@@ -216,9 +203,6 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 			wantMessageErr: "",
 		}, {
 			name: "session contains invalid data at cache key",
-			fields: fields{
-				Logger: flamingo.NullLogger{},
-			},
 			args: args{
 				ctx: context.Background(),
 				session: &sessions.Session{
@@ -242,9 +226,6 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 			wantMessageErr: "cart cache contains invalid data at cache key",
 		}, {
 			name: "session contains expired cart cache",
-			fields: fields{
-				Logger: flamingo.NullLogger{},
-			},
 			args: args{
 				ctx: context.Background(),
 				session: &sessions.Session{
@@ -270,9 +251,8 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &application.CartSessionCache{
-				Logger: tt.fields.Logger,
-			}
+			c := &application.CartSessionCache{}
+			c.Inject(nil, nil, flamingo.NullLogger{}, nil)
 
 			got, err := c.GetCart(tt.args.ctx, tt.args.session, tt.args.id)
 			if (err != nil) != tt.wantErr {
@@ -296,8 +276,9 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 
 func TestCartSessionCache_CacheCart(t *testing.T) {
 	type fields struct {
-		Logger   flamingo.Logger
-		Lifetime time.Duration
+		config *struct {
+			LifetimeSeconds float64 `inject:"config:cart.cacheLifetime"` // in seconds
+		}
 	}
 	type args struct {
 		ctx          context.Context
@@ -315,8 +296,11 @@ func TestCartSessionCache_CacheCart(t *testing.T) {
 		{
 			name: "no cart given",
 			fields: fields{
-				Logger:   flamingo.NullLogger{},
-				Lifetime: 300,
+				config: &struct {
+					LifetimeSeconds float64 `inject:"config:cart.cacheLifetime"` // in seconds
+				}{
+					LifetimeSeconds: 300,
+				},
 			},
 			args: args{
 				ctx:     context.Background(),
@@ -331,10 +315,8 @@ func TestCartSessionCache_CacheCart(t *testing.T) {
 			wantErr:        true,
 			wantMessageErr: "no cart given to cache",
 		}, {
-			name: "cart is cached",
-			fields: fields{
-				Logger: flamingo.NullLogger{},
-			},
+			name:   "cart is cached",
+			fields: fields{},
 			args: args{
 				ctx: context.Background(),
 				session: &sessions.Session{
@@ -355,9 +337,8 @@ func TestCartSessionCache_CacheCart(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &application.CartSessionCache{
-				Logger: tt.fields.Logger,
-			}
+			c := &application.CartSessionCache{}
+			c.Inject(nil, nil, flamingo.NullLogger{}, nil)
 
 			err := c.CacheCart(tt.args.ctx, tt.args.session, tt.args.id, tt.args.cartForCache)
 			if (err != nil) != tt.wantErr {
@@ -375,10 +356,17 @@ func TestCartSessionCache_CacheCart(t *testing.T) {
 
 func TestCartSessionCache_CartExpiry(t *testing.T) {
 	ctx := context.Background()
-	c := &application.CartSessionCache{
-		Logger:          flamingo.NullLogger{},
-		LifetimeSeconds: 1,
-	}
+	c := &application.CartSessionCache{}
+	c.Inject(
+		nil,
+		nil,
+		flamingo.NullLogger{},
+		&struct {
+			LifetimeSeconds float64 `inject:"config:cart.cacheLifetime"` // in seconds
+		}{
+			LifetimeSeconds: 1,
+		},
+	)
 
 	session := &sessions.Session{
 		ID:     "test_session",
@@ -409,7 +397,6 @@ func TestCartSessionCache_CartExpiry(t *testing.T) {
 
 func TestCartSessionCache_Invalidate(t *testing.T) {
 	type fields struct {
-		Logger flamingo.Logger
 	}
 	type args struct {
 		ctx     context.Context
@@ -425,10 +412,8 @@ func TestCartSessionCache_Invalidate(t *testing.T) {
 		wantCacheEntryInvalid bool
 	}{
 		{
-			name: "no cache entry",
-			fields: fields{
-				Logger: flamingo.NullLogger{},
-			},
+			name:   "no cache entry",
+			fields: fields{},
 			args: args{
 				ctx: context.Background(),
 				session: &sessions.Session{
@@ -445,10 +430,8 @@ func TestCartSessionCache_Invalidate(t *testing.T) {
 			wantMessageErr:        "not found for invalidate",
 			wantCacheEntryInvalid: false,
 		}, {
-			name: "invalidate cache entry",
-			fields: fields{
-				Logger: flamingo.NullLogger{},
-			},
+			name:   "invalidate cache entry",
+			fields: fields{},
 			args: args{
 				ctx: context.Background(),
 				session: &sessions.Session{
@@ -473,9 +456,8 @@ func TestCartSessionCache_Invalidate(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &application.CartSessionCache{
-				Logger: tt.fields.Logger,
-			}
+			c := &application.CartSessionCache{}
+			c.Inject(nil, nil, flamingo.NullLogger{}, nil)
 
 			err := c.Invalidate(tt.args.ctx, tt.args.session, tt.args.id)
 
@@ -504,7 +486,6 @@ func TestCartSessionCache_Invalidate(t *testing.T) {
 
 func TestCartSessionCache_Delete(t *testing.T) {
 	type fields struct {
-		Logger flamingo.Logger
 	}
 	type args struct {
 		ctx     context.Context
@@ -519,10 +500,8 @@ func TestCartSessionCache_Delete(t *testing.T) {
 		wantMessageErr string
 	}{
 		{
-			name: "cache entry not found for delete",
-			fields: fields{
-				Logger: flamingo.NullLogger{},
-			},
+			name:   "cache entry not found for delete",
+			fields: fields{},
 			args: args{
 				ctx: context.Background(),
 				session: &sessions.Session{
@@ -538,10 +517,8 @@ func TestCartSessionCache_Delete(t *testing.T) {
 			wantErr:        true,
 			wantMessageErr: "not found for delete",
 		}, {
-			name: "deleted correclty",
-			fields: fields{
-				Logger: flamingo.NullLogger{},
-			},
+			name:   "deleted correclty",
+			fields: fields{},
 			args: args{
 				ctx: context.Background(),
 				session: &sessions.Session{
@@ -565,9 +542,8 @@ func TestCartSessionCache_Delete(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &application.CartSessionCache{
-				Logger: tt.fields.Logger,
-			}
+			c := &application.CartSessionCache{}
+			c.Inject(nil, nil, flamingo.NullLogger{}, nil)
 
 			err := c.Delete(tt.args.ctx, tt.args.session, tt.args.id)
 
@@ -586,7 +562,6 @@ func TestCartSessionCache_Delete(t *testing.T) {
 
 func TestCartSessionCache_DeleteAll(t *testing.T) {
 	type fields struct {
-		Logger flamingo.Logger
 	}
 	type args struct {
 		ctx     context.Context
@@ -601,10 +576,8 @@ func TestCartSessionCache_DeleteAll(t *testing.T) {
 		wantSessionValuesEmpty bool
 	}{
 		{
-			name: "no cachekey found/nothing deleted",
-			fields: fields{
-				Logger: flamingo.NullLogger{},
-			},
+			name:   "no cachekey found/nothing deleted",
+			fields: fields{},
 			args: args{
 				ctx: context.Background(),
 				session: &sessions.Session{
@@ -617,10 +590,8 @@ func TestCartSessionCache_DeleteAll(t *testing.T) {
 			wantSessionValuesEmpty: false,
 		},
 		{
-			name: "deleted an entry",
-			fields: fields{
-				Logger: flamingo.NullLogger{},
-			},
+			name:   "deleted an entry",
+			fields: fields{},
 			args: args{
 				ctx: context.Background(),
 				session: &sessions.Session{
@@ -640,9 +611,8 @@ func TestCartSessionCache_DeleteAll(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &application.CartSessionCache{
-				Logger: tt.fields.Logger,
-			}
+			c := &application.CartSessionCache{}
+			c.Inject(nil, nil, flamingo.NullLogger{}, nil)
 
 			err := c.DeleteAll(tt.args.ctx, tt.args.session)
 
