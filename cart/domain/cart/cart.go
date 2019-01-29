@@ -72,7 +72,7 @@ type (
 		Nationality     string
 	}
 
-	//Delivery - represents the DeliveryInfo and the assigned Items
+	// Delivery - represents the DeliveryInfo and the assigned Items
 	Delivery struct {
 		DeliveryInfo DeliveryInfo
 		//Cartitems - list of cartitems
@@ -80,7 +80,7 @@ type (
 		DeliveryTotals DeliveryTotals
 	}
 
-	//DeliveryInfo - represents the Delivery
+	// DeliveryInfo - represents the Delivery
 	DeliveryInfo struct {
 		Code             string
 		Method           string
