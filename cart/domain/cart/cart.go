@@ -24,6 +24,9 @@ type (
 		//EntityID is a second identifier that may be used by some backends
 		EntityID string
 
+		// ReservedOrderID is an ID already known by the Cart of the future order ID
+		ReservedOrderID string
+
 		//CartTotals - the cart totals (contain summary costs and discounts etc)
 		CartTotals CartTotals
 		//BillingAdress - the main billing address (relevant for all payments/invoices)
