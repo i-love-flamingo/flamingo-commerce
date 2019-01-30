@@ -104,6 +104,9 @@ type (
 		DestinationCountry string
 		Terminal           string
 		AirlineName        string
+		BookingCode        string
+		LastName           string
+		FirstName          string
 		Logger             flamingo.Logger
 	}
 
