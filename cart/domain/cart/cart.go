@@ -104,6 +104,7 @@ type (
 		DestinationCountry string
 		Terminal           string
 		AirlineName        string
+		AirlineCode        string
 		BookingCode        string
 		LastName           string
 		FirstName          string

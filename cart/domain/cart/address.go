@@ -1,22 +1,26 @@
 package cart
 
 type (
+	// Address defines a cart address
 	Address struct {
-		RegionCode             string
-		CountryCode            string
-		Company                string
+		Vat                    string
+		Firstname              string
+		Lastname               string
+		MiddleName             string
+		Title                  string
+		Salutation             string
 		Street                 string
 		StreetNr               string
 		AdditionalAddressLines []string
-		Telephone              string
-		PostCode               string
+		Company                string
 		City                   string
-		Firstname              string
-		Lastname               string
-		Email                  string
-		Salutation             string
+		PostCode               string
 		State                  string
+		RegionCode             string
 		Country                string
+		CountryCode            string
+		Telephone              string
+		Email                  string
 		SameAsBilling          bool
 	}
 )
