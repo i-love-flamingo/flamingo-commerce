@@ -313,7 +313,7 @@ func (s Factory) getProductCategory(product productDomain.BasicProduct) *domain.
 
 func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.ProductInfo {
 	baseData := product.BaseData()
-	retailerName := baseData.RetailerName
+	retailerCode := baseData.RetailerCode
 	//Handle Variants if it is a Configurable
 	var parentIDRef *string
 	var variantSelectedAttributeRef *string
@@ -332,7 +332,7 @@ func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.Produ
 
 			defaultVariant, err := configurable.GetDefaultVariant()
 			if err == nil {
-				retailerName = defaultVariant.RetailerName
+				retailerCode = defaultVariant.RetailerCode
 			}
 		}
 	}
@@ -352,8 +352,8 @@ func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.Produ
 		size = baseData.Attributes["clothingSize"].Value()
 	}
 	brand := ""
-	if baseData.HasAttribute("brandName") {
-		brand = baseData.Attributes["brandName"].Value()
+	if baseData.HasAttribute("brandCode") {
+		brand = baseData.Attributes["brandCode"].Value()
 	}
 	gtin := ""
 	if baseData.HasAttribute("gtin") {
@@ -373,7 +373,7 @@ func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.Produ
 		ProductType:              product.Type(),
 		ParentID:                 parentIDRef,
 		VariantSelectedAttribute: variantSelectedAttributeRef,
-		Retailer:                 retailerName,
+		Retailer:                 retailerCode,
 		Brand:                    brand,
 		SKU:                      gtin,
 		Manufacturer:             brand,
@@ -408,7 +408,7 @@ func hashWithSHA512(value string) string {
 	newHash.Write([]byte(value))
 	//the hash is a byte array
 	result := newHash.Sum(nil)
-	//since we want to uuse it in a variable we base64 encode it (other alternative would be Hexadecimal representation "% x", h.Sum(nil)
+	//since we want to use it in a variable we base64 encode it (other alternative would be Hexadecimal representation "% x", h.Sum(nil)
 	return base64.URLEncoding.EncodeToString(result)
 }
 
