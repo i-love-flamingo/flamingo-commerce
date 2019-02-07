@@ -8,19 +8,17 @@ import (
 	"net/url"
 	"strings"
 
-	orderDomain "flamingo.me/flamingo-commerce/order/domain"
-
-	"flamingo.me/flamingo/framework/event"
-
 	cartApplication "flamingo.me/flamingo-commerce/cart/application"
 	"flamingo.me/flamingo-commerce/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/checkout/application"
 	paymentDomain "flamingo.me/flamingo-commerce/checkout/domain/payment"
 	"flamingo.me/flamingo-commerce/checkout/interfaces/controller/formDto"
 	customerApplication "flamingo.me/flamingo-commerce/customer/application"
+	orderDomain "flamingo.me/flamingo-commerce/order/domain"
 	authApplication "flamingo.me/flamingo/core/auth/application"
 	formApplicationService "flamingo.me/flamingo/core/form/application"
 	formDomain "flamingo.me/flamingo/core/form/domain"
+	"flamingo.me/flamingo/framework/event"
 	"flamingo.me/flamingo/framework/flamingo"
 	"flamingo.me/flamingo/framework/opencensus"
 	"flamingo.me/flamingo/framework/router"
@@ -32,6 +30,7 @@ import (
 )
 
 type (
+	// PaymentProviderProvider defines the map of providers for payment providers
 	PaymentProviderProvider func() map[string]paymentDomain.PaymentProvider
 
 	// CheckoutViewData represents the checkout view data
@@ -43,6 +42,7 @@ type (
 		PaymentProviders     map[string]paymentDomain.PaymentProvider
 	}
 
+	// ViewErrorInfos defines the error info struct of the checkout controller views
 	ViewErrorInfos struct {
 		//HasError  indicates that an general error happend
 		HasError bool
@@ -87,6 +87,7 @@ type (
 		PlacedCart       cart.Cart
 	}
 
+	// PlaceOrderPaymentInfo struct defines the data of payments on placed orders
 	PlaceOrderPaymentInfo struct {
 		Provider       string
 		Method         string
@@ -95,6 +96,7 @@ type (
 		CreditCardInfo *cart.CreditCardInfo
 	}
 
+	// EmptyCartInfo struct defines the data info on empty carts
 	EmptyCartInfo struct {
 		CartExpired bool
 	}
@@ -139,6 +141,7 @@ func init() {
 	opencensus.View("flamingo-commerce/orderfailed/count", rt, view.Count())
 }
 
+// Inject dependencies
 func (cc *CheckoutController) Inject(
 	renderAware responder.RenderAware,
 	redirectAware responder.RedirectAware,
@@ -300,14 +303,14 @@ func (cc *CheckoutController) SubmitUserCheckoutAction(ctx context.Context, r *w
 
 	customer, _ := cc.customerApplicationService.GetForAuthenticatedUser(ctx, r.Session().G())
 	// set the customer on the form service even if nil + err is returned here
-	cc.checkoutFormService.Customer = customer
+	cc.checkoutFormService.SetCustomer(customer)
 
 	return cc.showCheckoutFormAndHandleSubmit(ctx, r, cc.checkoutFormService, "checkout/usercheckout").Hook(web.NoCache)
 }
 
 // SubmitGuestCheckoutAction handles the guest order submit
 func (cc *CheckoutController) SubmitGuestCheckoutAction(ctx context.Context, r *web.Request) web.Response {
-	cc.checkoutFormService.Customer = nil
+	cc.checkoutFormService.SetCustomer(nil)
 	if cc.userService.IsLoggedIn(ctx, r.Session().G()) {
 		return cc.Redirect("checkout.user", nil).Hook(web.NoCache)
 	}
@@ -384,6 +387,7 @@ func (cc *CheckoutController) SuccessAction(ctx context.Context, r *web.Request)
 	return cc.Redirect("checkout.expired", nil).Hook(web.NoCache)
 }
 
+// ExpiredAction handles the expired cart action
 func (cc *CheckoutController) ExpiredAction(ctx context.Context, r *web.Request) web.Response {
 	if cc.showEmptyCartPageIfNoItems {
 		return cc.Render(ctx, "checkout/emptycart", EmptyCartInfo{
@@ -393,13 +397,13 @@ func (cc *CheckoutController) ExpiredAction(ctx context.Context, r *web.Request)
 	return cc.Render(ctx, "checkout/expired", nil).Hook(web.NoCache)
 }
 
-func (cc *CheckoutController) getPaymentReturnUrl(PaymentProvider string, PaymentMethod string) *url.URL {
-	baseUrl := cc.baseURL
-	paymentUrl := cc.router.URL("checkout.processpayment", router.P{"providercode": PaymentProvider, "methodcode": PaymentMethod})
+func (cc *CheckoutController) getPaymentReturnURL(PaymentProvider string, PaymentMethod string) *url.URL {
+	baseURL := cc.baseURL
+	paymentURL := cc.router.URL("checkout.processpayment", router.P{"providercode": PaymentProvider, "methodcode": PaymentMethod})
 
-	rawUrl := strings.TrimRight(baseUrl, "/") + paymentUrl.String()
+	rawURL := strings.TrimRight(baseURL, "/") + paymentURL.String()
 
-	urlResult, _ := url.Parse(rawUrl)
+	urlResult, _ := url.Parse(rawURL)
 
 	return urlResult
 }
@@ -419,7 +423,7 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 		cc.logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error CheckoutFormService not present!")
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
-	formservice.Cart = &decoratedCart.Cart
+	formservice.SetCart(&decoratedCart.Cart)
 
 	if !cc.hasAvailablePaymentProvider() {
 		cc.logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error No Payment set")
@@ -452,7 +456,6 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 	}
 
 	if form.IsValidAndSubmitted() {
-
 		if checkoutFormData, ok := form.Data.(formDto.CheckoutFormData); ok {
 
 			billingAddress, shippingAddress := formDto.MapAddresses(checkoutFormData)
@@ -468,15 +471,17 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 
 				return cc.processPaymentOrPlaceOrderDirectly(ctx, r, checkoutFormData.SelectedPaymentProvider, checkoutFormData.SelectedPaymentProviderMethod, template, &form)
 			}
+
 			return cc.Redirect("checkout.review", nil)
-		} else {
-			cc.logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error cannot type convert to CheckoutFormData!")
-			return cc.Render(ctx, "checkout/carterror", nil)
 		}
-	} else {
-		if form.IsSubmitted && form.HasGeneralErrors() {
-			cc.logger.WithField("category", "checkout").Warn("CheckoutForm has general error: %#v", form.ValidationInfo.GeneralErrors)
-		}
+
+		cc.logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error cannot type convert to CheckoutFormData!")
+		return cc.Render(ctx, "checkout/carterror", nil)
+
+	}
+
+	if form.IsSubmitted && form.HasGeneralErrors() {
+		cc.logger.WithField("category", "checkout").Warn("CheckoutForm has general error: %#v", form.ValidationInfo.GeneralErrors)
 	}
 
 	cc.logger.Debug("paymentProviders %#v", cc.getPaymentProviders())
@@ -500,7 +505,7 @@ func (cc *CheckoutController) showCheckoutFormWithErrors(ctx context.Context, r 
 	}
 	cc.logger.Warn("Place Order Error: %s", err.Error())
 	if form == nil {
-		cc.checkoutFormService.Cart = &decoratedCart.Cart
+		cc.checkoutFormService.SetCart(&decoratedCart.Cart)
 		newForm, _ := formApplicationService.GetUnsubmittedForm(ctx, r, cc.checkoutFormService)
 		form = &newForm
 	}
@@ -558,8 +563,8 @@ func (cc *CheckoutController) processPaymentOrPlaceOrderDirectly(ctx context.Con
 	}
 	//Payment Method requests an redirect - execute it
 	if paymentMethod.IsExternalPayment {
-		returnUrl := cc.getPaymentReturnUrl(paymentProvider.GetCode(), paymentMethod.Code)
-		hostedPaymentPageResponse, err := paymentProvider.RedirectExternalPayment(ctx, r, &decoratedCart.Cart, paymentMethod, returnUrl)
+		returnURL := cc.getPaymentReturnURL(paymentProvider.GetCode(), paymentMethod.Code)
+		hostedPaymentPageResponse, err := paymentProvider.RedirectExternalPayment(ctx, r, &decoratedCart.Cart, paymentMethod, returnURL)
 		if err != nil {
 			return cc.showCheckoutFormWithErrors(ctx, r, orderFormTemplate, *decoratedCart, checkoutForm, err)
 		}
@@ -650,7 +655,7 @@ func (cc *CheckoutController) getPaymentProviders() map[string]paymentDomain.Pay
 	return result
 }
 
-// ReviewAction
+// ReviewAction handles the cart review action
 func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) web.Response {
 	if cc.skipReviewAction {
 		return cc.Render(ctx, "checkout/carterror", nil)

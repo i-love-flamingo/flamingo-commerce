@@ -2,13 +2,10 @@ package formDto
 
 import (
 	"context"
-	"net/url"
-
 	"errors"
-
-	"strings"
-
+	"net/url"
 	"strconv"
+	"strings"
 
 	"flamingo.me/flamingo-commerce/cart/domain/cart"
 	customerDomain "flamingo.me/flamingo-commerce/customer/domain"
@@ -23,6 +20,7 @@ import (
 )
 
 type (
+	// CheckoutFormData defines the default form data provided by the checkout form
 	CheckoutFormData struct {
 		BillingAddress                     AddressFormData `form:"billingAddress"`
 		PersonalData                       PersonalData    `form:"personalData"`
@@ -32,8 +30,10 @@ type (
 		LoyaltyMemberShipNumber            string          `form:"loyaltyPointsMembershipId"`
 		SelectedPaymentProvider            string          `form:"selectedPaymentProvider" validate:"required"`
 		SelectedPaymentProviderMethod      string          `form:"selectedPaymentProviderMethod" validate:"required"`
+		NewsletterOptIn                    bool            `form:"newsletterOptIn"`
 	}
 
+	// PersonalData defines the checkout personal data provided by the checkout form
 	PersonalData struct {
 		DateOfBirth     string          `form:"dateOfBirth"`
 		PassportCountry string          `form:"passportCountry"`
@@ -66,29 +66,72 @@ type (
 		Email            string `form:"email" validate:"required,email" conform:"email"`
 	}
 
+	// CheckoutFormService defines the checkout form service
 	CheckoutFormService struct {
-		DefaultFormValues    config.Map    `inject:"config:checkout.checkoutForm.defaultValues,optional"`
-		OverrideFormValues   config.Map    `inject:"config:checkout.checkoutForm.overrideValues,optional"`
-		AdditionalFormValues config.Slice  `inject:"config:checkout.checkoutForm.additionalFormValues,optional"`
-		Decoder              *form.Decoder `inject:""`
-		//Customer  might be passed by the controller - we use it to initialize the form
-		Customer customerDomain.Customer
+		decoder *form.Decoder
+		logger  flamingo.Logger
+
 		//Cart might be passed by Controller - we use it to prefill the form in case it was not submitted
-		Cart *cart.Cart
+		cart *cart.Cart
 
-		Logger flamingo.Logger `inject:""`
+		//Customer  might be passed by the controller - we use it to initialize the form
+		customer customerDomain.Customer
 
+		defaultFormValues    config.Map
+		overrideFormValues   config.Map
+		additionalFormValues config.Slice
 		//A couple of configuration options for more flexible Validation
-		PersonalData_DateOfBirthRequired     bool    `inject:"config:checkout.checkoutForm.validation.personalData.dateOfBirthRequired,optional"`
-		PersonalData_MinAge                  float64 `inject:"config:checkout.checkoutForm.validation.personalData.minAge,optional"`
-		PersonalData_PassportCountryRequired bool    `inject:"config:checkout.checkoutForm.validation.personalData.passportCountryRequired,optional"`
-		PersonalData_PassportNumberRequired  bool    `inject:"config:checkout.checkoutForm.validation.personalData.passportNumberRequired,optional"`
-		BillingAddress_PhoneNumberRequired   bool    `inject:"config:checkout.checkoutForm.validation.billingAddress.phoneNumberRequired,optional"`
+		personalDataDateOfBirthRequired     bool
+		personalDataMinAge                  float64
+		personalDataPassportCountryRequired bool
+		personalDataPassportNumberRequired  bool
+		billingAddressPhoneNumberRequired   bool
 	}
 )
 
 var _ formDomain.FormService = new(CheckoutFormService)
 var _ formDomain.GetDefaultFormData = new(CheckoutFormService)
+
+// Inject the dependencies
+func (fs *CheckoutFormService) Inject(
+	decoder *form.Decoder,
+	logger flamingo.Logger,
+	config *struct {
+		//A couple of configuration options for more flexible Validation
+		DefaultFormValues                   config.Map   `inject:"config:checkout.checkoutForm.defaultValues,optional"`
+		OverrideFormValues                  config.Map   `inject:"config:checkout.checkoutForm.overrideValues,optional"`
+		AdditionalFormValues                config.Slice `inject:"config:checkout.checkoutForm.additionalFormValues,optional"`
+		PersonalDataDateOfBirthRequired     bool         `inject:"config:checkout.checkoutForm.validation.personalData.dateOfBirthRequired,optional"`
+		PersonalDataMinAge                  float64      `inject:"config:checkout.checkoutForm.validation.personalData.minAge,optional"`
+		PersonalDataPassportCountryRequired bool         `inject:"config:checkout.checkoutForm.validation.personalData.passportCountryRequired,optional"`
+		PersonalDataPassportNumberRequired  bool         `inject:"config:checkout.checkoutForm.validation.personalData.passportNumberRequired,optional"`
+		BillingAddressPhoneNumberRequired   bool         `inject:"config:checkout.checkoutForm.validation.billingAddress.phoneNumberRequired,optional"`
+	},
+) {
+	fs.decoder = decoder
+	fs.logger = logger
+
+	if config != nil {
+		fs.defaultFormValues = config.DefaultFormValues
+		fs.overrideFormValues = config.OverrideFormValues
+		fs.additionalFormValues = config.AdditionalFormValues
+		fs.personalDataDateOfBirthRequired = config.PersonalDataDateOfBirthRequired
+		fs.personalDataMinAge = config.PersonalDataMinAge
+		fs.personalDataPassportCountryRequired = config.PersonalDataPassportCountryRequired
+		fs.personalDataPassportNumberRequired = config.PersonalDataPassportNumberRequired
+		fs.billingAddressPhoneNumberRequired = config.BillingAddressPhoneNumberRequired
+	}
+}
+
+// SetCustomer sets the customer on the form service
+func (fs *CheckoutFormService) SetCustomer(c customerDomain.Customer) {
+	fs.customer = c
+}
+
+// SetCart set the cart on the form service
+func (fs *CheckoutFormService) SetCart(c *cart.Cart) {
+	fs.cart = c
+}
 
 // ParseFormData - from FormService interface
 // MEthod is Responsible to parse the Post Values and fill the FormData struct
@@ -105,7 +148,7 @@ func (fs *CheckoutFormService) ParseFormData(ctx context.Context, r *web.Request
 		}
 	}
 
-	fs.Logger.WithField("category", "checkout").Debug("passed formValues before modifications: %#v", formValues)
+	fs.logger.WithField("category", "checkout").Debug("passed formValues before modifications: %#v", formValues)
 
 	//Merge in configured DefaultValues that are configured
 	formValues = fs.setConfiguredDefaultFormValues(formValues)
@@ -113,10 +156,10 @@ func (fs *CheckoutFormService) ParseFormData(ctx context.Context, r *web.Request
 	//OverrideValues
 	formValues = fs.overrideConfiguredDefaultFormValues(formValues)
 
-	fs.Logger.WithField("category", "checkout").Debug("formValues after modifications: %#v", formValues)
+	fs.logger.WithField("category", "checkout").Debug("formValues after modifications: %#v", formValues)
 
 	var formData CheckoutFormData
-	fs.Decoder.Decode(&formData, formValues)
+	fs.decoder.Decode(&formData, formValues)
 
 	conform.Strings(&formData)
 
@@ -137,36 +180,36 @@ func (fs *CheckoutFormService) GetDefaultFormData(parsedData interface{}) interf
 
 func (fs *CheckoutFormService) fillFormDataFromCustomer(formData CheckoutFormData) CheckoutFormData {
 	//If customer is given - get default values for the form if not empty yet
-	if fs.Customer != nil {
-		billingAddress := fs.Customer.GetDefaultBillingAddress()
+	if fs.customer != nil {
+		billingAddress := fs.customer.GetDefaultBillingAddress()
 		if billingAddress != nil {
 			fs.mapCustomerAddressToFormAddress(*billingAddress, &formData.BillingAddress)
 		}
-		shippingAddress := fs.Customer.GetDefaultShippingAddress()
+		shippingAddress := fs.customer.GetDefaultShippingAddress()
 		if shippingAddress != nil {
 			fs.mapCustomerAddressToFormAddress(*shippingAddress, &formData.ShippingAddress)
 		}
-		if !fs.Customer.GetPersonalData().Birthday.IsZero() {
-			formData.PersonalData.DateOfBirth = fs.Customer.GetPersonalData().Birthday.Format("2006-01-02")
+		if !fs.customer.GetPersonalData().Birthday.IsZero() {
+			formData.PersonalData.DateOfBirth = fs.customer.GetPersonalData().Birthday.Format("2006-01-02")
 		}
 	}
 	return formData
 }
 
 func (fs *CheckoutFormService) fillFormDataFromCart(formData CheckoutFormData) CheckoutFormData {
-	if fs.Cart != nil {
-		fs.mapCartAddressToFormAddress(fs.Cart.BillingAdress, &formData.BillingAddress)
-		if len(fs.Cart.Deliveries) > 0 {
-			if fs.Cart.Deliveries[0].DeliveryInfo.DeliveryLocation.Address != nil {
-				fs.mapCartAddressToFormAddress(*fs.Cart.Deliveries[0].DeliveryInfo.DeliveryLocation.Address, &formData.ShippingAddress)
+	if fs.cart != nil {
+		fs.mapCartAddressToFormAddress(fs.cart.BillingAdress, &formData.BillingAddress)
+		if len(fs.cart.Deliveries) > 0 {
+			if fs.cart.Deliveries[0].DeliveryInfo.DeliveryLocation.Address != nil {
+				fs.mapCartAddressToFormAddress(*fs.cart.Deliveries[0].DeliveryInfo.DeliveryLocation.Address, &formData.ShippingAddress)
 			}
 		}
 
-		formData.PersonalData.DateOfBirth = fs.Cart.Purchaser.PersonalDetails.DateOfBirth
-		formData.PersonalData.PassportNumber = fs.Cart.Purchaser.PersonalDetails.PassportNumber
-		formData.PersonalData.PassportCountry = fs.Cart.Purchaser.PersonalDetails.PassportCountry
-		if fs.Cart.Purchaser.Address != nil {
-			fs.mapCartAddressToFormAddress(*fs.Cart.Purchaser.Address, &formData.PersonalData.Address)
+		formData.PersonalData.DateOfBirth = fs.cart.Purchaser.PersonalDetails.DateOfBirth
+		formData.PersonalData.PassportNumber = fs.cart.Purchaser.PersonalDetails.PassportNumber
+		formData.PersonalData.PassportCountry = fs.cart.Purchaser.PersonalDetails.PassportCountry
+		if fs.cart.Purchaser.Address != nil {
+			fs.mapCartAddressToFormAddress(*fs.cart.Purchaser.Address, &formData.PersonalData.Address)
 		}
 	}
 	return formData
@@ -239,8 +282,8 @@ func (fs *CheckoutFormService) mapCartAddressToFormAddress(address cart.Address,
 }
 
 func (fs *CheckoutFormService) setConfiguredDefaultFormValues(formValues url.Values) url.Values {
-	if fs.DefaultFormValues != nil {
-		for k, v := range fs.DefaultFormValues {
+	if fs.defaultFormValues != nil {
+		for k, v := range fs.defaultFormValues {
 			k = strings.Replace(k, "_", ".", -1)
 			if _, ok := formValues[k]; ok {
 				//value is passed - dont set default
@@ -260,8 +303,8 @@ func (fs *CheckoutFormService) setConfiguredDefaultFormValues(formValues url.Val
 }
 
 func (fs *CheckoutFormService) overrideConfiguredDefaultFormValues(formValues url.Values) url.Values {
-	if fs.OverrideFormValues != nil {
-		for k, v := range fs.OverrideFormValues {
+	if fs.overrideFormValues != nil {
+		for k, v := range fs.overrideFormValues {
 			k = strings.Replace(k, "_", ".", -1)
 			stringV, ok := v.(string)
 			if !ok {
@@ -276,13 +319,17 @@ func (fs *CheckoutFormService) overrideConfiguredDefaultFormValues(formValues ur
 	return formValues
 }
 
+// GetAdditionFormFields returns a map of additional form fields
 func (fs CheckoutFormService) GetAdditionFormFields(formData CheckoutFormData) map[string]string {
 	additionalFormData := make(map[string]string)
 
-	if fs.AdditionalFormValues != nil {
-		for _, key := range fs.AdditionalFormValues {
-			if key == "lp_membership_id" && formData.LoyaltyMemberShipNumber != "" {
+	if fs.additionalFormValues != nil {
+		for _, key := range fs.additionalFormValues {
+			switch {
+			case key == "lp_membership_id" && formData.LoyaltyMemberShipNumber != "":
 				additionalFormData[key.(string)] = formData.LoyaltyMemberShipNumber
+			case key == "newsletter_opt_in":
+				additionalFormData[key.(string)] = strconv.FormatBool(formData.NewsletterOptIn)
 			}
 		}
 	}
@@ -299,29 +346,29 @@ func (fs *CheckoutFormService) ValidateFormData(data interface{}) (formDomain.Va
 	validate := validator.New()
 	validationInfo := application.ValidationErrorsToValidationInfo(validate.Struct(formData))
 
-	if fs.PersonalData_DateOfBirthRequired {
+	if fs.personalDataDateOfBirthRequired {
 		if formData.PersonalData.DateOfBirth == "" {
 			validationInfo.AddFieldError("personalData.dateOfBirth", "formerror_dateOfBirth_required", "date of birth is required")
 		} else if !formDomain.ValidateDate(formData.PersonalData.DateOfBirth) {
 			validationInfo.AddFieldError("personalData.dateOfBirth", "formerror_dateOfBirth_formaterror", "date of birth has wrong format required: yyyy-mm-dd")
-		} else if fs.PersonalData_MinAge > 0 {
-			if !formDomain.ValidateAge(formData.PersonalData.DateOfBirth, int(fs.PersonalData_MinAge)) {
-				validationInfo.AddFieldError("personalData.dateOfBirth", "formerror_dateOfBirth_tooyoung", "you need to be at least "+strconv.Itoa(int(fs.PersonalData_MinAge)))
+		} else if fs.personalDataMinAge > 0 {
+			if !formDomain.ValidateAge(formData.PersonalData.DateOfBirth, int(fs.personalDataMinAge)) {
+				validationInfo.AddFieldError("personalData.dateOfBirth", "formerror_dateOfBirth_tooyoung", "you need to be at least "+strconv.Itoa(int(fs.personalDataMinAge)))
 			}
 		}
 	}
 
-	if fs.BillingAddress_PhoneNumberRequired {
+	if fs.billingAddressPhoneNumberRequired {
 		if formData.BillingAddress.PhoneNumber == "" {
 			validationInfo.AddFieldError("billingAddress.phoneNumber", "formerror_phoneNumber_required", "phone number is required")
 		}
 	}
-	if fs.PersonalData_PassportCountryRequired {
+	if fs.personalDataPassportCountryRequired {
 		if formData.PersonalData.PassportCountry == "" {
 			validationInfo.AddFieldError("personalData.passportCountry", "formerror_passportCountry_required", "passport infos are required")
 		}
 	}
-	if fs.PersonalData_PassportNumberRequired {
+	if fs.personalDataPassportNumberRequired {
 		if formData.PersonalData.PassportNumber == "" {
 			validationInfo.AddFieldError("personalData.passportNumber", "formerror_passportNumber_required", "passport infos are required")
 		}
@@ -330,6 +377,7 @@ func (fs *CheckoutFormService) ValidateFormData(data interface{}) (formDomain.Va
 	return validationInfo, nil
 }
 
+// MapAddresses maps the billing address data to the shipping address
 func MapAddresses(data CheckoutFormData) (billingAddress *cart.Address, shippingAddress *cart.Address) {
 	billingAddress = mapAddress(data.BillingAddress)
 	if data.UseBillingAddressAsShippingAddress {
@@ -340,6 +388,7 @@ func MapAddresses(data CheckoutFormData) (billingAddress *cart.Address, shipping
 	return billingAddress, shippingAddress
 }
 
+// MapPerson maps the checkout form data to the cart.Person domain struct
 func MapPerson(data CheckoutFormData) *cart.Person {
 	if data.PersonalData.IsEmpty() {
 		return nil
@@ -385,6 +434,7 @@ func mapAddress(addressData AddressFormData) *cart.Address {
 	return &address
 }
 
+// IsEmpty checks if required data on the PersonalData are empty
 func (p PersonalData) IsEmpty() bool {
 	if p.PassportNumber == "" && p.PassportCountry == "" && p.DateOfBirth == "" {
 		return true
