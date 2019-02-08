@@ -2,7 +2,7 @@ package cart
 
 type (
 
-	//CartPayment represents the all payments done for the cart and which items have been purchased by what methhod
+	//CartPayment represents all payments done for the cart and which items have been purchased by what method
 	CartPayment struct {
 		PaymentInfos       []*PaymentInfo
 		Assignments        []CartPaymentAssignment
@@ -80,7 +80,7 @@ func (cp *CartPayment) GetProviders() []string {
 
 	var providers []string
 
-	for provider, _ := range providerMap {
+	for provider := range providerMap {
 		providers = append(providers, provider)
 	}
 

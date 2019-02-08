@@ -21,7 +21,7 @@ type (
 		logger         flamingo.Logger
 	}
 
-	//CartStorage Interface - mya be implemnted by othe rpersitence types later as well
+	//CartStorage Interface - might be implemented by other persistence types later as well
 	CartStorage interface {
 		GetCart(id string) (*domaincart.Cart, error)
 		HasCart(id string) bool

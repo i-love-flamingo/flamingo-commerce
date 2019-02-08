@@ -457,6 +457,8 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 
 	if form.IsValidAndSubmitted() {
 		if checkoutFormData, ok := form.Data.(formDto.CheckoutFormData); ok {
+			decoratedCart.Cart.SetSelectedPaymentProvider(checkoutFormData.SelectedPaymentProvider)
+			decoratedCart.Cart.SetSelectedPaymenMethod(checkoutFormData.SelectedPaymentProviderMethod)
 
 			billingAddress, shippingAddress := formDto.MapAddresses(checkoutFormData)
 			person := formDto.MapPerson(checkoutFormData)
@@ -468,8 +470,7 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 			}
 
 			if cc.skipReviewAction {
-
-				return cc.processPaymentOrPlaceOrderDirectly(ctx, r, checkoutFormData.SelectedPaymentProvider, checkoutFormData.SelectedPaymentProviderMethod, template, &form)
+				return cc.processPaymentOrPlaceOrderDirectly(ctx, r, template, &form)
 			}
 
 			return cc.Redirect("checkout.review", nil)
@@ -548,8 +549,8 @@ func getViewErrorInfo(err error) ViewErrorInfos {
 	return errorInfos
 }
 
-func (cc *CheckoutController) processPaymentOrPlaceOrderDirectly(ctx context.Context, r *web.Request, selectedPaymentProvider string, selectedPaymentProviderMethod string, orderFormTemplate string, checkoutForm *formDomain.Form) web.Response {
-	//Guard Clause if Cart cannout be fetched
+func (cc *CheckoutController) processPaymentOrPlaceOrderDirectly(ctx context.Context, r *web.Request, orderFormTemplate string, checkoutForm *formDomain.Form) web.Response {
+	//Guard Clause if Cart can not be fetched
 	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session().G())
 	if e != nil {
 		cc.logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error %v", e)
@@ -557,7 +558,7 @@ func (cc *CheckoutController) processPaymentOrPlaceOrderDirectly(ctx context.Con
 	}
 
 	//procces Payment:
-	paymentProvider, paymentMethod, err := cc.getPayment(ctx, selectedPaymentProvider, selectedPaymentProviderMethod)
+	paymentProvider, paymentMethod, err := cc.getPayment(ctx, decoratedCart.Cart.SelectedPaymentProvider(), decoratedCart.Cart.SelectedPaymentMethod())
 	if err != nil {
 		return cc.showCheckoutFormWithErrors(ctx, r, orderFormTemplate, *decoratedCart, checkoutForm, err)
 	}
@@ -661,23 +662,23 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 		return cc.Render(ctx, "checkout/carterror", nil)
 	}
 
-	selectedProvider, _ := r.Form1("selectedPaymentProvider")
-	selectedMethod, _ := r.Form1("selectedPaymentProviderMethod")
-	proceed, _ := r.Form1("proceed")
-	termsAndConditions, _ := r.Form1("termsAndConditions")
-	privacyPolicy, _ := r.Form1("privacyPolicy")
-
-	cc.logger.Debug("ReviewAction: selectedProvider: %v / selectedMethod: %v / proceed: %v / termsAndConditions: %v", selectedProvider, selectedMethod, proceed, termsAndConditions, privacyPolicy)
-
 	// Invalidate cart cache
 	cc.eventRouter.Dispatch(ctx, &cart.InvalidateCartEvent{Session: r.Session().G()})
 
-	//Guard Clause if Cart cannout be fetched
+	//Guard Clause if cart can not be fetched
 	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session().G())
 	if e != nil {
 		cc.logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error %v", e)
 		return cc.Render(ctx, "checkout/carterror", nil).Hook(web.NoCache)
 	}
+
+	selectedProvider := decoratedCart.Cart.SelectedPaymentProvider()
+	selectedMethod := decoratedCart.Cart.SelectedPaymentMethod()
+	proceed, _ := r.Form1("proceed")
+	termsAndConditions, _ := r.Form1("termsAndConditions")
+	privacyPolicy, _ := r.Form1("privacyPolicy")
+
+	cc.logger.Debug("ReviewAction: selectedProvider: %v / selectedMethod: %v / proceed: %v / termsAndConditions: %v", selectedProvider, selectedMethod, proceed, termsAndConditions, privacyPolicy)
 
 	if cc.showEmptyCartPageIfNoItems && decoratedCart.Cart.ItemCount() == 0 {
 		return cc.Render(ctx, "checkout/emptycart", nil).Hook(web.NoCache)
@@ -720,7 +721,7 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 	}
 
 	if proceed == "1" && (!cc.privacyPolicyRequired || privacyPolicy == "1") && termsAndConditions == "1" && selectedProvider != "" && selectedMethod != "" {
-		return cc.processPaymentOrPlaceOrderDirectly(ctx, r, selectedProvider, selectedMethod, "", nil).Hook(web.NoCache)
+		return cc.processPaymentOrPlaceOrderDirectly(ctx, r, "", nil).Hook(web.NoCache)
 	}
 
 	return cc.Render(ctx, "checkout/review", viewData).Hook(web.NoCache)

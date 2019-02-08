@@ -46,6 +46,9 @@ type (
 		AuthenticatedUserId        string
 
 		AppliedCouponCodes []CouponCode
+
+		//selectedPayment - Information regarding the selected payment method
+		selectedPayment SelectedPayment
 	}
 
 	// CouponCode value object
@@ -210,7 +213,7 @@ type (
 	}
 
 	//ItemCartReference - value object that can be used to reference a Item in a Cart
-	//@todo - Use in ServiePort methods...
+	//@todo - Use in ServicePort methods...
 	ItemCartReference struct {
 		ItemId       string
 		DeliveryCode string
@@ -248,6 +251,12 @@ type (
 	InvalidateCartEvent struct {
 		Session *sessions.Session
 	}
+
+	// selectedPayment value object
+	SelectedPayment struct {
+		Provider string
+		Method   string
+	}
 )
 
 // Key constants
@@ -277,6 +286,7 @@ func (Cart Cart) GetMainShippingEMail() string {
 			}
 		}
 	}
+
 	return ""
 }
 
@@ -287,12 +297,14 @@ func (Cart Cart) GetDeliveryByCode(deliveryCode string) (*Delivery, bool) {
 			return &delivery, true
 		}
 	}
+
 	return nil, false
 }
 
 // HasDeliveryForCode checks if a delivery with the given code exists in the cart
 func (Cart Cart) HasDeliveryForCode(deliveryCode string) bool {
 	_, found := Cart.GetDeliveryByCode(deliveryCode)
+
 	return found == true
 }
 
@@ -321,6 +333,7 @@ func (Cart Cart) GetByItemId(itemId string, deliveryCode string) (*Item, error) 
 			return &currentItem, nil
 		}
 	}
+
 	return nil, errors.New(fmt.Sprintf("itemId %v in cart not existend", itemId))
 }
 
@@ -330,6 +343,7 @@ func inStruct(value string, list []string) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -356,6 +370,7 @@ func (Cart Cart) GetItemCartReferences() []ItemCartReference {
 			})
 		}
 	}
+
 	return ids
 }
 
@@ -396,6 +411,26 @@ func (Cart Cart) HasAppliedCouponCode() bool {
 	return len(Cart.AppliedCouponCodes) > 0
 }
 
+// GetSelectedPaymentProvider returns selected payment provider
+func (Cart Cart) SelectedPaymentProvider() string {
+	return Cart.selectedPayment.Provider
+}
+
+// GetSelectedPaymentMethod returns selected payment method
+func (Cart Cart) SelectedPaymentMethod() string {
+	return Cart.selectedPayment.Method
+}
+
+// SetSelectedPaymentProvider sets selected payment provider
+func (Cart Cart) SetSelectedPaymentProvider(paymentProvider string) {
+	Cart.selectedPayment.Provider = paymentProvider
+}
+
+// SetSelectedPaymenMethod sets selected payment method
+func (Cart Cart) SetSelectedPaymenMethod(paymentMethod string) {
+	Cart.selectedPayment.Method = paymentMethod
+}
+
 // GetTotalItemsByType gets a slice of all Totalitems by typeCode
 func (ct CartTotals) GetTotalItemsByType(typeCode string) []Totalitem {
 	var totalitems []Totalitem
@@ -404,6 +439,7 @@ func (ct CartTotals) GetTotalItemsByType(typeCode string) []Totalitem {
 			totalitems = append(totalitems, item)
 		}
 	}
+
 	return totalitems
 }
 
