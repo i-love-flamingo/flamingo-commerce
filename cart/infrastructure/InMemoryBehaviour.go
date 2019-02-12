@@ -236,7 +236,7 @@ func (cob *InMemoryBehaviour) CleanDelivery(ctx context.Context, cart *domaincar
 }
 
 // UpdatePurchaser @todo implement when needed
-func (cob *InMemoryBehaviour) UpdatePurchaser(ctx context.Context, cart *domaincart.Cart, purchaser *domaincart.Person, additionalData map[string]string) (*domaincart.Cart, error) {
+func (cob *InMemoryBehaviour) UpdatePurchaser(ctx context.Context, cart *domaincart.Cart, purchaser *domaincart.Person, additionalData *domaincart.AdditionalData) (*domaincart.Cart, error) {
 	return nil, nil
 }
 
@@ -254,7 +254,7 @@ func (cob *InMemoryBehaviour) UpdateBillingAddress(ctx context.Context, cart *do
 }
 
 // UpdateAdditionalData @todo implement when needed
-func (cob *InMemoryBehaviour) UpdateAdditionalData(ctx context.Context, cart *domaincart.Cart, additionalData map[string]string) (*domaincart.Cart, error) {
+func (cob *InMemoryBehaviour) UpdateAdditionalData(ctx context.Context, cart *domaincart.Cart, additionalData *domaincart.AdditionalData) (*domaincart.Cart, error) {
 	return nil, nil
 }
 
@@ -271,7 +271,7 @@ func (cob *InMemoryBehaviour) UpdateDeliveryInfo(ctx context.Context, cart *doma
 }
 
 // UpdateDeliveryInfoAdditionalData @todo implement when needed
-func (cob *InMemoryBehaviour) UpdateDeliveryInfoAdditionalData(ctx context.Context, cart *domaincart.Cart, deliveryCode string, additionalData map[string]string) (*domaincart.Cart, error) {
+func (cob *InMemoryBehaviour) UpdateDeliveryInfoAdditionalData(ctx context.Context, cart *domaincart.Cart, deliveryCode string, additionalData *domaincart.AdditionalData) (*domaincart.Cart, error) {
 	return nil, nil
 }
 

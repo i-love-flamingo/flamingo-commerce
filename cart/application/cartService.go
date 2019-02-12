@@ -131,7 +131,7 @@ func (cs *CartService) UpdateDeliveryInfo(ctx context.Context, session *sessions
 }
 
 // UpdatePurchaser updates the purchaser on the cart
-func (cs *CartService) UpdatePurchaser(ctx context.Context, session *sessions.Session, purchaser *cartDomain.Person, additionalData map[string]string) error {
+func (cs *CartService) UpdatePurchaser(ctx context.Context, session *sessions.Session, purchaser *cartDomain.Person, additionalData *cartDomain.AdditionalData) error {
 	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return err

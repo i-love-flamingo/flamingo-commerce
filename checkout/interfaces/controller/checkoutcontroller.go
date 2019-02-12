@@ -457,14 +457,11 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 
 	if form.IsValidAndSubmitted() {
 		if checkoutFormData, ok := form.Data.(formDto.CheckoutFormData); ok {
-			decoratedCart.Cart.SetSelectedPaymentProvider(checkoutFormData.SelectedPaymentProvider)
-			decoratedCart.Cart.SetSelectedPaymenMethod(checkoutFormData.SelectedPaymentProviderMethod)
-
 			billingAddress, shippingAddress := formDto.MapAddresses(checkoutFormData)
 			person := formDto.MapPerson(checkoutFormData)
-			additionalFormFields := formservice.GetAdditionFormFields(checkoutFormData)
+			additionalData := formservice.GetAdditionalData(checkoutFormData)
 
-			err := cc.orderService.CurrentCartSaveInfos(ctx, session, billingAddress, shippingAddress, person, additionalFormFields)
+			err := cc.orderService.CurrentCartSaveInfos(ctx, session, billingAddress, shippingAddress, person, additionalData)
 			if err != nil {
 				return cc.showCheckoutFormWithErrors(ctx, r, template, *decoratedCart, &form, err)
 			}
@@ -558,7 +555,7 @@ func (cc *CheckoutController) processPaymentOrPlaceOrderDirectly(ctx context.Con
 	}
 
 	//procces Payment:
-	paymentProvider, paymentMethod, err := cc.getPayment(ctx, decoratedCart.Cart.SelectedPaymentProvider(), decoratedCart.Cart.SelectedPaymentMethod())
+	paymentProvider, paymentMethod, err := cc.getPayment(ctx, decoratedCart.Cart.AdditionalData.SelectedPayment.Provider, decoratedCart.Cart.AdditionalData.SelectedPayment.Method)
 	if err != nil {
 		return cc.showCheckoutFormWithErrors(ctx, r, orderFormTemplate, *decoratedCart, checkoutForm, err)
 	}
@@ -672,8 +669,8 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 		return cc.Render(ctx, "checkout/carterror", nil).Hook(web.NoCache)
 	}
 
-	selectedProvider := decoratedCart.Cart.SelectedPaymentProvider()
-	selectedMethod := decoratedCart.Cart.SelectedPaymentMethod()
+	selectedProvider := decoratedCart.Cart.AdditionalData.SelectedPayment.Provider
+	selectedMethod := decoratedCart.Cart.AdditionalData.SelectedPayment.Method
 	proceed, _ := r.Form1("proceed")
 	termsAndConditions, _ := r.Form1("termsAndConditions")
 	privacyPolicy, _ := r.Form1("privacyPolicy")

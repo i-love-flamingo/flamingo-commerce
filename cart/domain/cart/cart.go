@@ -39,16 +39,13 @@ type (
 		Deliveries []Delivery
 
 		//AdditionalData   can be used for Custom attributes
-		AdditionalData map[string]string
+		AdditionalData AdditionalData
 
 		//BelongsToAuthenticatedUser - false = Guest Cart true = cart from the authenticated user
 		BelongsToAuthenticatedUser bool
 		AuthenticatedUserId        string
 
 		AppliedCouponCodes []CouponCode
-
-		//selectedPayment - Information regarding the selected payment method
-		selectedPayment SelectedPayment
 	}
 
 	// CouponCode value object
@@ -252,7 +249,13 @@ type (
 		Session *sessions.Session
 	}
 
-	// selectedPayment value object
+	// AdditionalData defines the supplementary cart data
+	AdditionalData struct {
+		CustomAttributes map[string]string
+		SelectedPayment  SelectedPayment
+	}
+
+	// SelectedPayment value object
 	SelectedPayment struct {
 		Provider string
 		Method   string
@@ -409,26 +412,6 @@ func (Cart Cart) GetSavings() float64 {
 // HasAppliedCouponCode checks if a coupon code is applied to the cart
 func (Cart Cart) HasAppliedCouponCode() bool {
 	return len(Cart.AppliedCouponCodes) > 0
-}
-
-// GetSelectedPaymentProvider returns selected payment provider
-func (Cart Cart) SelectedPaymentProvider() string {
-	return Cart.selectedPayment.Provider
-}
-
-// GetSelectedPaymentMethod returns selected payment method
-func (Cart Cart) SelectedPaymentMethod() string {
-	return Cart.selectedPayment.Method
-}
-
-// SetSelectedPaymentProvider sets selected payment provider
-func (Cart Cart) SetSelectedPaymentProvider(paymentProvider string) {
-	Cart.selectedPayment.Provider = paymentProvider
-}
-
-// SetSelectedPaymenMethod sets selected payment method
-func (Cart Cart) SetSelectedPaymenMethod(paymentMethod string) {
-	Cart.selectedPayment.Method = paymentMethod
 }
 
 // GetTotalItemsByType gets a slice of all Totalitems by typeCode

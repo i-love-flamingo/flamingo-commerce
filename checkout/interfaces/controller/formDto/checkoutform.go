@@ -16,7 +16,7 @@ import (
 	"flamingo.me/flamingo/framework/web"
 	"github.com/go-playground/form"
 	"github.com/leebenson/conform"
-	"gopkg.in/go-playground/validator.v9"
+	validator "gopkg.in/go-playground/validator.v9"
 )
 
 type (
@@ -335,6 +335,22 @@ func (fs CheckoutFormService) GetAdditionFormFields(formData CheckoutFormData) m
 	}
 
 	return additionalFormData
+}
+
+// GetSelectedPayment returns additional cart data
+func (fs CheckoutFormService) GetAdditionalData(formData CheckoutFormData) *cart.AdditionalData {
+	return &cart.AdditionalData{
+		CustomAttributes: fs.GetAdditionFormFields(formData),
+		SelectedPayment:  fs.GetSelectedPayment(formData),
+	}
+}
+
+// GetSelectedPayment returns user selected payment info
+func (fs CheckoutFormService) GetSelectedPayment(formData CheckoutFormData) cart.SelectedPayment {
+	return cart.SelectedPayment{
+		Provider: formData.SelectedPaymentProvider,
+		Method:   formData.SelectedPaymentProviderMethod,
+	}
 }
 
 //ValidateFormData - from FormService interface

@@ -73,7 +73,7 @@ func (os *OrderService) PlaceOrder(ctx context.Context, session *sessions.Sessio
 }
 
 // CurrentCartSaveInfos saves additional informations on current cart
-func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *sessions.Session, billingAddress *cart.Address, shippingAddress *cart.Address, purchaser *cart.Person, additionalCustomData map[string]string) error {
+func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *sessions.Session, billingAddress *cart.Address, shippingAddress *cart.Address, purchaser *cart.Person, additionalData *cart.AdditionalData) error {
 	os.Logger.Debug("CurrentCartSaveInfos call billingAddress:%v shippingAddress:%v payment:%v", billingAddress, shippingAddress)
 
 	if billingAddress == nil {
@@ -109,7 +109,7 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *sessi
 	}
 
 	//Update Purchaser
-	err = os.CartService.UpdatePurchaser(ctx, session, purchaser, additionalCustomData)
+	err = os.CartService.UpdatePurchaser(ctx, session, purchaser, additionalData)
 	if err != nil {
 		os.Logger.Error("OnStepCurrentCartPlaceOrder UpdatePurchaser Error %v", err)
 		return err

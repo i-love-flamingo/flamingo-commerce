@@ -34,12 +34,12 @@ type (
 		AddToCart(ctx context.Context, cart *Cart, deliveryCode string, addRequest AddRequest) (*Cart, error)
 		CleanCart(ctx context.Context, cart *Cart) (*Cart, error)
 		CleanDelivery(ctx context.Context, cart *Cart, deliveryCode string) (*Cart, error)
-		UpdatePurchaser(ctx context.Context, cart *Cart, purchaser *Person, additionalData map[string]string) (*Cart, error)
-		UpdateAdditionalData(ctx context.Context, cart *Cart, additionalData map[string]string) (*Cart, error)
+		UpdatePurchaser(ctx context.Context, cart *Cart, purchaser *Person, additionalData *AdditionalData) (*Cart, error)
+		UpdateAdditionalData(ctx context.Context, cart *Cart, additionalData *AdditionalData) (*Cart, error)
 		//UpdateDeliveryInfosAndBilling(ctx context.Context, cart *Cart, billingAddress *Address, deliveryInfoUpdates []DeliveryInfoUpdateCommand) (*Cart, error)
 		UpdateDeliveryInfo(ctx context.Context, cart *Cart, deliveryCode string, deliveryInfo DeliveryInfo) (*Cart, error)
 		UpdateBillingAddress(ctx context.Context, cart *Cart, billingAddress *Address) (*Cart, error)
-		UpdateDeliveryInfoAdditionalData(ctx context.Context, cart *Cart, deliveryCode string, additionalData map[string]string) (*Cart, error)
+		UpdateDeliveryInfoAdditionalData(ctx context.Context, cart *Cart, deliveryCode string, additionalData *AdditionalData) (*Cart, error)
 		ApplyVoucher(ctx context.Context, cart *Cart, couponCode string) (*Cart, error)
 	}
 
