@@ -675,8 +675,6 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 	termsAndConditions, _ := r.Form1("termsAndConditions")
 	privacyPolicy, _ := r.Form1("privacyPolicy")
 
-	cc.logger.Debug("ReviewAction: selectedProvider: %v / selectedMethod: %v / proceed: %v / termsAndConditions: %v", selectedProvider, selectedMethod, proceed, termsAndConditions, privacyPolicy)
-
 	if cc.showEmptyCartPageIfNoItems && decoratedCart.Cart.ItemCount() == 0 {
 		return cc.Render(ctx, "checkout/emptycart", nil).Hook(web.NoCache)
 	}
