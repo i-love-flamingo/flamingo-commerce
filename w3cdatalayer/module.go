@@ -16,5 +16,5 @@ type (
 // Configure the product URL
 func (m *Module) Configure(injector *dingo.Injector) {
 	flamingo.BindTemplateFunc(injector, "w3cDatalayerService", new(templatefunctions.W3cDatalayerService))
-	injector.BindMulti((*event.SubscriberWithContext)(nil)).To(application.EventReceiver{})
+	flamingo.BindEventSubscriber(injector).To(application.EventReceiver{})
 }
