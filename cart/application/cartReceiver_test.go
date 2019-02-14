@@ -6,13 +6,13 @@ import (
 
 	"reflect"
 
-	cartApplication "flamingo.me/flamingo-commerce/cart/application"
-	cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
-	cartInfrastructure "flamingo.me/flamingo-commerce/cart/infrastructure"
-	productDomain "flamingo.me/flamingo-commerce/product/domain"
-	authApplication "flamingo.me/flamingo/core/auth/application"
-	"flamingo.me/flamingo/core/auth/domain"
-	"flamingo.me/flamingo/framework/flamingo"
+	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
+	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	cartInfrastructure "flamingo.me/flamingo-commerce/v3/cart/infrastructure"
+	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
+	authApplication "flamingo.me/flamingo/v3/core/auth/application"
+	"flamingo.me/flamingo/v3/core/auth/domain"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/gorilla/sessions"
 	"github.com/pkg/errors"
 )

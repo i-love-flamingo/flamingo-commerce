@@ -6,10 +6,10 @@ import (
 	"net/url"
 	"testing"
 
-	"flamingo.me/flamingo-commerce/product/application"
-	"flamingo.me/flamingo-commerce/product/domain"
-	"flamingo.me/flamingo/framework/router"
-	"flamingo.me/flamingo/framework/web/responder/mocks"
+	"flamingo.me/flamingo-commerce/v3/product/application"
+	"flamingo.me/flamingo-commerce/v3/product/domain"
+	"flamingo.me/flamingo/v3/framework/web"
+	"flamingo.me/flamingo/v3/framework/web/mocks"
 )
 
 type (

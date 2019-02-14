@@ -3,22 +3,22 @@ package cart
 import (
 	"encoding/gob"
 
-	"flamingo.me/flamingo-commerce/cart/application"
-	"flamingo.me/flamingo-commerce/cart/domain/cart"
-	"flamingo.me/flamingo-commerce/cart/infrastructure"
-	"flamingo.me/flamingo-commerce/cart/interfaces/controller"
-	"flamingo.me/flamingo-commerce/cart/interfaces/templatefunctions"
-	"flamingo.me/flamingo/framework/config"
-	"flamingo.me/flamingo/framework/dingo"
-	"flamingo.me/flamingo/framework/event"
-	"flamingo.me/flamingo/framework/router"
-	"flamingo.me/flamingo/framework/template"
+	"flamingo.me/flamingo-commerce/v3/cart/application"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/cart/infrastructure"
+	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller"
+	"flamingo.me/flamingo-commerce/v3/cart/interfaces/templatefunctions"
+	"flamingo.me/flamingo/v3/framework/config"
+	"flamingo.me/dingo"
+	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/web"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 )
 
 type (
 	// CartModule registers our profiler
 	CartModule struct {
-		routerRegistry  *router.Registry
+		routerRegistry  *web.RouterRegistry
 		useInMemoryCart bool
 		enableCartCache bool
 	}
@@ -26,7 +26,7 @@ type (
 
 // Inject dependencies
 func (m *CartModule) Inject(
-	routerRegistry *router.Registry,
+	routerRegistry *web.RouterRegistry,
 	config *struct {
 		UseInMemoryCart bool `inject:"config:cart.useInMemoryCartServiceAdapters"`
 		EnableCartCache bool `inject:"config:cart.enableCartCache,optional"`
@@ -62,7 +62,7 @@ func (m *CartModule) Configure(injector *dingo.Injector) {
 		injector.Bind((*application.CartCache)(nil)).To(application.CartSessionCache{})
 	}
 
-	router.Bind(injector, new(routes))
+	web.BindRoutes(injector, new(routes))
 }
 
 // DefaultConfig enables inMemory cart service adapter
@@ -85,7 +85,7 @@ func (r *routes) Inject(viewController *controller.CartViewController, apiContro
 	r.apiController = apiController
 }
 
-func (r *routes) Routes(registry *router.Registry) {
+func (r *routes) Routes(registry *web.RouterRegistry) {
 	registry.HandleAny("cart.view", r.viewController.ViewAction)
 	registry.Route("/cart", "cart.view")
 

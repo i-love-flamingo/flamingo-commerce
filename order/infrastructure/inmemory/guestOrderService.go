@@ -3,7 +3,7 @@ package inmemory
 import (
 	"context"
 
-	"flamingo.me/flamingo-commerce/order/domain"
+	"flamingo.me/flamingo-commerce/v3/order/domain"
 )
 
 type (

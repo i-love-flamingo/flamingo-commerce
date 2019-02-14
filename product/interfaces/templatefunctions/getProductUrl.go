@@ -1,9 +1,9 @@
 package templatefunctions
 
 import (
-	"flamingo.me/flamingo-commerce/product/application"
-	"flamingo.me/flamingo-commerce/product/domain"
-	"flamingo.me/flamingo/framework/flamingo"
+	"flamingo.me/flamingo-commerce/v3/product/application"
+	"flamingo.me/flamingo-commerce/v3/product/domain"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 )
 
 type (

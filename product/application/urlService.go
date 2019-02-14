@@ -3,9 +3,8 @@ package application
 import (
 	"errors"
 
-	"flamingo.me/flamingo-commerce/product/domain"
-	"flamingo.me/flamingo/framework/router"
-	"flamingo.me/flamingo/framework/web"
+	"flamingo.me/flamingo-commerce/v3/product/domain"
+	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (

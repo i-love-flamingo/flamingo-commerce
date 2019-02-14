@@ -32,7 +32,6 @@ func TestGetActive(t *testing.T) {
 				c: CategoryData{
 					Children: []*CategoryData{
 						&inactiveCategory,
-						&inactiveCategory,
 					},
 					IsActive: false,
 				},

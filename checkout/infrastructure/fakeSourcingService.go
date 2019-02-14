@@ -1,9 +1,11 @@
 package infrastructure
 
 import (
-	cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
-	"flamingo.me/flamingo-commerce/checkout/domain"
-	"flamingo.me/flamingo/framework/web"
+	"context"
+
+	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/checkout/domain"
+	"github.com/gorilla/sessions"
 )
 
 type (
@@ -17,6 +19,6 @@ var (
 )
 
 // GetDeliveryLocations provides fake delivery locations
-func (sl *FakeSourcingService) GetSourceId(ctx web.Context, decoratedCart *cartDomain.DecoratedCart, deliveryCode string, item *cartDomain.DecoratedCartItem) (string, error) {
+func (sl *FakeSourcingService) GetSourceId(ctx context.Context, session *sessions.Session, decoratedCart *cartDomain.DecoratedCart, deliveryCode string, item *cartDomain.DecoratedCartItem) (string, error) {
 	return "mock_ispu_location1", nil
 }

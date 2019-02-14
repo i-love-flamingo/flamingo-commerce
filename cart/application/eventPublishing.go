@@ -3,10 +3,9 @@ package application
 import (
 	"context"
 
-	cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
-	productDomain "flamingo.me/flamingo-commerce/product/domain"
-	"flamingo.me/flamingo/framework/event"
-	"flamingo.me/flamingo/framework/flamingo"
+	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 )
 
 type (

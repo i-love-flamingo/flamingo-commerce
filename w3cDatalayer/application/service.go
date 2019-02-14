@@ -4,13 +4,12 @@ import (
 	"context"
 	"fmt"
 
-	"flamingo.me/flamingo-commerce/cart/domain/cart"
-	productDomain "flamingo.me/flamingo-commerce/product/domain"
-	"flamingo.me/flamingo-commerce/w3cDatalayer/domain"
-	"flamingo.me/flamingo/core/pugtemplate/pugjs"
-	"flamingo.me/flamingo/framework/flamingo"
-	"flamingo.me/flamingo/framework/session"
-	"flamingo.me/flamingo/framework/web"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
+	"flamingo.me/flamingo-commerce/v3/w3cDatalayer/domain"
+	"flamingo.me/pugtemplate/pugjs"
+	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/pkg/errors"
 )
 
@@ -100,7 +99,7 @@ func (s *Service) AddSessionEvents() error {
 
 	for _, event := range sessionEvents {
 		if event, ok := event.(domain.Event); ok {
-			s.logger.WithField("category", "w3cDatalayer").Debug("SESSION_EVENTS_KEY Event", event.EventInfo)
+			s.logger.WithField("category", "w3cDatalayer").Debug("SESSION_EVENTS_KEY Event", flamingo.EventInfo)
 			layer.Event = append(layer.Event, event)
 		}
 	}

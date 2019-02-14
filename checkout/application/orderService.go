@@ -4,14 +4,14 @@ import (
 	"context"
 	"errors"
 
-	orderApplication "flamingo.me/flamingo-commerce/order/application"
+	orderApplication "flamingo.me/flamingo-commerce/v3/order/application"
 
-	orderDomain "flamingo.me/flamingo-commerce/order/domain"
+	orderDomain "flamingo.me/flamingo-commerce/v3/order/domain"
 
-	"flamingo.me/flamingo-commerce/cart/application"
-	"flamingo.me/flamingo-commerce/cart/domain/cart"
-	"flamingo.me/flamingo-commerce/checkout/domain"
-	"flamingo.me/flamingo/framework/flamingo"
+	"flamingo.me/flamingo-commerce/v3/cart/application"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/checkout/domain"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/gorilla/sessions"
 )
 

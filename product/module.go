@@ -1,12 +1,12 @@
 package product
 
 import (
-	"flamingo.me/flamingo-commerce/product/interfaces/controller"
-	"flamingo.me/flamingo-commerce/product/interfaces/templatefunctions"
-	"flamingo.me/flamingo/framework/config"
-	"flamingo.me/flamingo/framework/dingo"
-	"flamingo.me/flamingo/framework/router"
-	"flamingo.me/flamingo/framework/template"
+	"flamingo.me/flamingo-commerce/v3/product/interfaces/controller"
+	"flamingo.me/flamingo-commerce/v3/product/interfaces/templatefunctions"
+	"flamingo.me/flamingo/v3/framework/config"
+	"flamingo.me/dingo"
+	"flamingo.me/flamingo/v3/framework/web"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 )
 
 // Module registers our profiler
@@ -18,7 +18,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	injector.BindMap(new(template.Func), "getProductUrl").To(templatefunctions.GetProductUrl{})
 	injector.BindMap(new(template.CtxFunc), "findProducts").To(templatefunctions.FindProducts{})
 
-	router.Bind(injector, new(routes))
+	web.BindRoutes(injector, new(routes))
 }
 
 // DefaultConfig for this module
@@ -41,7 +41,7 @@ func (r *routes) Inject(controller *controller.View) {
 	r.controller = controller
 }
 
-func (r *routes) Routes(registry *router.Registry) {
+func (r *routes) Routes(registry *web.RouterRegistry) {
 	registry.HandleGet("product.view", r.controller.Get)
 	registry.Route("/product/:marketplacecode/:name.html", `product.view(marketplacecode, name, backurl?="")`).Normalize("name")
 	registry.Route("/product/:marketplacecode/:variantcode/:name.html", `product.view(marketplacecode, variantcode, name, backurl?="")`).Normalize("name")

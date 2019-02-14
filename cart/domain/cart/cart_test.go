@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
+	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 )
 
 func Test_GetDeliveryCodes(t *testing.T) {

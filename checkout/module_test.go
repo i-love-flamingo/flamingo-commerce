@@ -3,8 +3,8 @@ package checkout_test
 import (
 	"testing"
 
-	"flamingo.me/flamingo-commerce/checkout"
-	"flamingo.me/flamingo/framework/dingo"
+	"flamingo.me/flamingo-commerce/v3/checkout"
+	"flamingo.me/dingo"
 )
 
 func TestModule_Configure(t *testing.T) {

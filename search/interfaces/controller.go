@@ -3,18 +3,17 @@ package interfaces
 import (
 	"context"
 
-	"flamingo.me/flamingo-commerce/search/application"
-	"flamingo.me/flamingo-commerce/search/domain"
-	"flamingo.me/flamingo-commerce/search/utils"
-	"flamingo.me/flamingo/framework/web"
-	"flamingo.me/flamingo/framework/web/responder"
+	"flamingo.me/flamingo-commerce/v3/search/application"
+	"flamingo.me/flamingo-commerce/v3/search/domain"
+	"flamingo.me/flamingo-commerce/v3/search/utils"
+	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (
 	// ViewController demonstrates a search view controller
 	ViewController struct {
-		responder.ErrorAware    `inject:""`
-		responder.RenderAware   `inject:""`
+		Responder *web.Responder    `inject:""`
+		Responder *web.Responder   `inject:""`
 		responder.RedirectAware `inject:""`
 		SearchService           *application.SearchService   `inject:""`
 		PaginationInfoFactory   *utils.PaginationInfoFactory `inject:""`
@@ -28,7 +27,7 @@ type (
 )
 
 // Get Response for search
-func (vc *ViewController) Get(c context.Context, r *web.Request) web.Response {
+func (vc *ViewController) Get(c context.Context, r *web.Request) web.Result {
 	query, _ := r.Query1("q")
 
 	vd := viewData{
@@ -47,7 +46,7 @@ func (vc *ViewController) Get(c context.Context, r *web.Request) web.Response {
 		Query:    query,
 	}
 
-	if typ, ok := r.Param1("type"); ok {
+	if typ, ok := r.Params["type"]; ok {
 		searchResult, err := vc.SearchService.FindBy(c, typ, searchRequest)
 		if err != nil {
 			if re, ok := err.(*domain.RedirectError); ok {
@@ -66,7 +65,7 @@ func (vc *ViewController) Get(c context.Context, r *web.Request) web.Response {
 			searchResult.SearchMeta.NumPages,
 			r.Request().URL,
 		)
-		return vc.Render(c, "search/"+typ, vd)
+		return vc.Responder.Render( "search/"+typ, vd)
 	}
 
 	searchResult, err := vc.SearchService.Find(c, searchRequest)
@@ -78,5 +77,5 @@ func (vc *ViewController) Get(c context.Context, r *web.Request) web.Response {
 		return vc.Error(c, err)
 	}
 	vd.SearchResult = searchResult
-	return vc.Render(c, "search/search", vd)
+	return vc.Responder.Render( "search/search", vd)
 }

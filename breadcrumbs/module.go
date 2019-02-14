@@ -1,8 +1,8 @@
 package breadcrumbs
 
 import (
-	"flamingo.me/flamingo/framework/dingo"
-	"flamingo.me/flamingo/framework/router"
+	"flamingo.me/dingo"
+	"flamingo.me/flamingo/v3/framework/web"
 )
 
 // Module for breadcrumbs
@@ -10,7 +10,7 @@ type Module struct{}
 
 // Configure module
 func (m *Module) Configure(injector *dingo.Injector) {
-	router.Bind(injector, new(routes))
+	web.BindRoutes(injector, new(routes))
 }
 
 type routes struct {
@@ -23,6 +23,6 @@ func (r *routes) Inject(controller *Controller) {
 }
 
 // Routes defining the name for the data controller
-func (r *routes) Routes(registry *router.Registry) {
+func (r *routes) Routes(registry *web.RouterRegistry) {
 	registry.HandleData("breadcrumbs", r.controller.Data)
 }

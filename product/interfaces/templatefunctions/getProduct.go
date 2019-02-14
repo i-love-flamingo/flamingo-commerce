@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"flamingo.me/flamingo-commerce/product/domain"
+	"flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
 type (

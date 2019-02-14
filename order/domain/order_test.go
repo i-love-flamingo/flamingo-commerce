@@ -3,7 +3,7 @@ package domain_test
 import (
 	"testing"
 
-	"flamingo.me/flamingo-commerce/order/domain"
+	"flamingo.me/flamingo-commerce/v3/order/domain"
 )
 
 func TestPlacedOrderInfos_GetOrderNumberForDeliveryCode(t *testing.T) {

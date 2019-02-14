@@ -3,8 +3,8 @@ package infrastructure
 import (
 	"context"
 
-	"flamingo.me/flamingo-commerce/cart/domain/cart"
-	"flamingo.me/flamingo/core/auth/domain"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo/v3/core/auth/domain"
 )
 
 type (

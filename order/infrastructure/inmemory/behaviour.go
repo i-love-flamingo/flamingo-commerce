@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"flamingo.me/flamingo-commerce/cart/domain/cart"
-	"flamingo.me/flamingo-commerce/order/domain"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/order/domain"
 )
 
 type (

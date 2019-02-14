@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	domaincart "flamingo.me/flamingo-commerce/cart/domain/cart"
-	"flamingo.me/flamingo/framework/flamingo"
+	domaincart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/go-test/deep"
 )
 

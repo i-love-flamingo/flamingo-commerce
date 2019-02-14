@@ -5,7 +5,7 @@ import (
 	"sync"
 	"testing"
 
-	"flamingo.me/flamingo/framework/web"
+	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -18,7 +18,6 @@ func TestAdd(t *testing.T) {
 	r := &web.Request{Values: new(sync.Map)}
 	ctx := web.Context_(context.Background(), r)
 
-	Add(ctx, crumb)
 	Add(ctx, crumb)
 
 	b, _ := r.Values.Load(requestKey)

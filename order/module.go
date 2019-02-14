@@ -1,14 +1,14 @@
 package order
 
 import (
-	"flamingo.me/flamingo-commerce/order/application"
-	"flamingo.me/flamingo-commerce/order/domain"
-	"flamingo.me/flamingo-commerce/order/infrastructure/fake"
-	"flamingo.me/flamingo-commerce/order/infrastructure/inmemory"
-	"flamingo.me/flamingo-commerce/order/interfaces/controller"
-	"flamingo.me/flamingo/framework/dingo"
-	"flamingo.me/flamingo/framework/flamingo"
-	"flamingo.me/flamingo/framework/router"
+	"flamingo.me/flamingo-commerce/v3/order/application"
+	"flamingo.me/flamingo-commerce/v3/order/domain"
+	"flamingo.me/flamingo-commerce/v3/order/infrastructure/fake"
+	"flamingo.me/flamingo-commerce/v3/order/infrastructure/inmemory"
+	"flamingo.me/flamingo-commerce/v3/order/interfaces/controller"
+	"flamingo.me/dingo"
+	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (
@@ -60,7 +60,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	}
 	injector.Bind((*application.EventPublisher)(nil)).To(application.DefaultEventPublisher{})
 	injector.Bind((*domain.OrderDecoratorInterface)(nil)).To(domain.OrderDecorator{})
-	router.Bind(injector, new(routes))
+	web.BindRoutes(injector, new(routes))
 }
 
 type routes struct {
@@ -71,6 +71,6 @@ func (r *routes) Inject(controller *controller.DataControllerCustomerOrders) {
 	r.controller = controller
 }
 
-func (r *routes) Routes(registry *router.Registry) {
+func (r *routes) Routes(registry *web.RouterRegistry) {
 	registry.HandleData("customerorders", r.controller.Data)
 }

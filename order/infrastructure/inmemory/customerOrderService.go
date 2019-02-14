@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"flamingo.me/flamingo-commerce/order/domain"
-	authDomain "flamingo.me/flamingo/core/auth/domain"
+	"flamingo.me/flamingo-commerce/v3/order/domain"
+	authDomain "flamingo.me/flamingo/v3/core/auth/domain"
 )
 
 type (

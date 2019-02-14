@@ -3,25 +3,22 @@ package controller
 import (
 	"context"
 	"errors"
-	breadcrumb "flamingo.me/flamingo-commerce/category/application"
+	breadcrumb "flamingo.me/flamingo-commerce/v3/category/application"
 	"net/url"
 
-	"flamingo.me/flamingo-commerce/category/domain"
-	"flamingo.me/flamingo-commerce/product/application"
-	searchApplication "flamingo.me/flamingo-commerce/search/application"
-	searchdomain "flamingo.me/flamingo-commerce/search/domain"
-	"flamingo.me/flamingo-commerce/search/utils"
-	"flamingo.me/flamingo/framework/flamingo"
-	"flamingo.me/flamingo/framework/router"
-	"flamingo.me/flamingo/framework/web"
-	"flamingo.me/flamingo/framework/web/responder"
+	"flamingo.me/flamingo-commerce/v3/category/domain"
+	"flamingo.me/flamingo-commerce/v3/product/application"
+	searchApplication "flamingo.me/flamingo-commerce/v3/search/application"
+	searchdomain "flamingo.me/flamingo-commerce/v3/search/domain"
+	"flamingo.me/flamingo-commerce/v3/search/utils"
+	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (
 	// View demonstrates a product view controller
 	View struct {
-		responder.ErrorAware
-		responder.RenderAware
+		Responder *web.Responder
 		responder.RedirectAware
 		domain.CategoryService
 		SearchService         *application.ProductSearchService
@@ -45,8 +42,8 @@ type (
 
 // Inject the View controller required dependencies
 func (vc *View) Inject(
-	errorAware responder.ErrorAware,
-	renderAware responder.RenderAware,
+	errorAware Responder *web.Responder,
+	renderAware Responder *web.Responder,
 	redirectAware responder.RedirectAware,
 	categoryService domain.CategoryService,
 	searchService *application.ProductSearchService,
@@ -74,7 +71,7 @@ func (vc *View) Inject(
 }
 
 // Get Response for Product matching sku param
-func (vc *View) Get(c context.Context, request *web.Request) web.Response {
+func (vc *View) Get(c context.Context, request *web.Request) web.Result {
 	categoryRoot, err := vc.CategoryService.Tree(c, request.MustParam1("code"))
 	if err == domain.ErrNotFound {
 		return vc.ErrorNotFound(c, err)
@@ -88,7 +85,7 @@ func (vc *View) Get(c context.Context, request *web.Request) web.Response {
 	}
 
 	expectedName := web.URLTitle(category.Name())
-	if name, _ := request.Param1("name"); expectedName != name {
+	if name, _ := request.Params["name"]; expectedName != name {
 
 		redirectParams := router.P{
 			"code": category.Code(),
@@ -128,7 +125,7 @@ func (vc *View) Get(c context.Context, request *web.Request) web.Response {
 		template = vc.template
 	}
 
-	return vc.Render(c, template, ViewData{
+	return vc.Responder.Render( template, ViewData{
 		Category:            category,
 		CategoryTree:        categoryRoot,
 		ProductSearchResult: products,

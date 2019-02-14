@@ -3,10 +3,10 @@ package application
 import (
 	"context"
 
-	cartApplication "flamingo.me/flamingo-commerce/cart/application"
-	"flamingo.me/flamingo-commerce/cart/domain/cart"
-	"flamingo.me/flamingo-commerce/order/domain"
-	"flamingo.me/flamingo/framework/flamingo"
+	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/order/domain"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/gorilla/sessions"
 )
 

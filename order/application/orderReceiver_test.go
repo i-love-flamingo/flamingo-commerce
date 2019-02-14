@@ -6,13 +6,12 @@ import (
 	"reflect"
 	"testing"
 
-
-	"flamingo.me/flamingo-commerce/order/application"
-	"flamingo.me/flamingo-commerce/order/domain"
-	domainMocks "flamingo.me/flamingo-commerce/order/domain/mocks"
-	authApplication "flamingo.me/flamingo/core/auth/application"
-	authApplicationMocks "flamingo.me/flamingo/core/auth/application/mocks"
-	"flamingo.me/flamingo/framework/flamingo"
+	"flamingo.me/flamingo-commerce/v3/order/application"
+	"flamingo.me/flamingo-commerce/v3/order/domain"
+	domainMocks "flamingo.me/flamingo-commerce/v3/order/domain/mocks"
+	authApplication "flamingo.me/flamingo/v3/core/auth/application"
+	authApplicationMocks "flamingo.me/flamingo/v3/core/auth/application/mocks"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/gorilla/sessions"
 	"github.com/stretchr/testify/mock"
 )

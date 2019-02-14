@@ -1,7 +1,7 @@
 package domain
 
 import (
-	"flamingo.me/flamingo-commerce/search/domain"
+	"flamingo.me/flamingo-commerce/v3/search/domain"
 )
 
 type (

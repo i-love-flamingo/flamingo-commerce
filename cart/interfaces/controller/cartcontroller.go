@@ -5,13 +5,11 @@ import (
 	"encoding/gob"
 	"strconv"
 
-	"flamingo.me/flamingo-commerce/cart/application"
-	cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
-	productDomain "flamingo.me/flamingo-commerce/product/domain"
-	"flamingo.me/flamingo/framework/flamingo"
-	"flamingo.me/flamingo/framework/router"
-	"flamingo.me/flamingo/framework/web"
-	"flamingo.me/flamingo/framework/web/responder"
+	"flamingo.me/flamingo-commerce/v3/cart/application"
+	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
+	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (
@@ -24,7 +22,7 @@ type (
 
 	// CartViewController for carts
 	CartViewController struct {
-		responder.RenderAware
+		Responder *web.Responder
 		responder.RedirectAware
 
 		applicationCartService         *application.CartService
@@ -47,7 +45,7 @@ func init() {
 
 // Inject dependencies
 func (cc *CartViewController) Inject(
-	renderAware responder.RenderAware,
+	renderAware Responder *web.Responder,
 	redirectAware responder.RedirectAware,
 
 	applicationCartService *application.CartService,
@@ -71,15 +69,15 @@ func (cc *CartViewController) Inject(
 }
 
 // ViewAction the DecoratedCart View ( / cart)
-func (cc *CartViewController) ViewAction(ctx context.Context, r *web.Request) web.Response {
+func (cc *CartViewController) ViewAction(ctx context.Context, r *web.Request) web.Result {
 	decoratedCart, err := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session().G())
 	if err != nil {
 		cc.logger.WithField(flamingo.LogKeyCategory, "cartcontroller").Warn("cart.cartcontroller.viewaction: Error %v", err)
-		return cc.Render(ctx, "checkout/carterror", nil)
+		return cc.Responder.Render( "checkout/carterror", nil)
 	}
 
 	if cc.showEmptyCartPageIfNoItems && decoratedCart.Cart.ItemCount() == 0 {
-		return cc.Render(ctx, "checkout/emptycart", nil)
+		return cc.Responder.Render( "checkout/emptycart", nil)
 	}
 
 	cartViewData := CartViewData{
@@ -94,20 +92,20 @@ func (cc *CartViewController) ViewAction(ctx context.Context, r *web.Request) we
 		}
 	}
 
-	return cc.Render(ctx, "checkout/cart", cartViewData)
+	return cc.Responder.Render( "checkout/cart", cartViewData)
 }
 
 // AddAndViewAction the DecoratedCart View ( / cart)
-func (cc *CartViewController) AddAndViewAction(ctx context.Context, r *web.Request) web.Response {
-	variantMarketplaceCode, _ := r.Param1("variantMarketplaceCode")
+func (cc *CartViewController) AddAndViewAction(ctx context.Context, r *web.Request) web.Result {
+	variantMarketplaceCode, _ := r.Params["variantMarketplaceCode"]
 
-	qty, ok := r.Param1("qty")
+	qty, ok := r.Params["qty"]
 	if !ok {
 		qty = "1"
 	}
 
 	qtyInt, _ := strconv.Atoi(qty)
-	deliveryCode, _ := r.Param1("deliveryCode")
+	deliveryCode, _ := r.Params["deliveryCode"]
 
 	addRequest := cc.applicationCartService.BuildAddRequest(ctx, r.MustParam1("marketplaceCode"), variantMarketplaceCode, qtyInt)
 
@@ -119,7 +117,7 @@ func (cc *CartViewController) AddAndViewAction(ctx context.Context, r *web.Reque
 	}
 	if err != nil {
 		cc.logger.WithField(flamingo.LogKeyCategory, "cartcontroller").Warn("cart.cartcontroller.addandviewaction: Error %v", err)
-		return cc.Render(ctx, "checkout/carterror", nil)
+		return cc.Responder.Render( "checkout/carterror", nil)
 	}
 
 	return cc.Redirect("cart.view", nil).With("cart.view.data", CartViewActionData{
@@ -128,15 +126,15 @@ func (cc *CartViewController) AddAndViewAction(ctx context.Context, r *web.Reque
 }
 
 // UpdateQtyAndViewAction the DecoratedCart View ( / cart)
-func (cc *CartViewController) UpdateQtyAndViewAction(ctx context.Context, r *web.Request) web.Response {
+func (cc *CartViewController) UpdateQtyAndViewAction(ctx context.Context, r *web.Request) web.Result {
 
-	id, ok := r.Param1("id")
+	id, ok := r.Params["id"]
 	if !ok {
 		cc.logger.WithField(flamingo.LogKeyCategory, "cartcontroller").Warn("cart.cartcontroller.UpdateQtyAndViewAction: param id not found")
 		return cc.Redirect("cart.view", nil)
 	}
 
-	qty, ok := r.Param1("qty")
+	qty, ok := r.Params["qty"]
 	if !ok {
 		qty = "1"
 	}
@@ -145,7 +143,7 @@ func (cc *CartViewController) UpdateQtyAndViewAction(ctx context.Context, r *web
 	if err != nil {
 		qtyInt = 1
 	}
-	deliveryCode, _ := r.Param1("deliveryCode")
+	deliveryCode, _ := r.Params["deliveryCode"]
 
 	err = cc.applicationCartService.UpdateItemQty(ctx, r.Session().G(), id, deliveryCode, qtyInt)
 	if err != nil {
@@ -156,14 +154,14 @@ func (cc *CartViewController) UpdateQtyAndViewAction(ctx context.Context, r *web
 }
 
 // DeleteAndViewAction the DecoratedCart View ( / cart)
-func (cc *CartViewController) DeleteAndViewAction(ctx context.Context, r *web.Request) web.Response {
+func (cc *CartViewController) DeleteAndViewAction(ctx context.Context, r *web.Request) web.Result {
 
-	id, ok := r.Param1("id")
+	id, ok := r.Params["id"]
 	if !ok {
 		cc.logger.WithField(flamingo.LogKeyCategory, "cartcontroller").Warn("cart.cartcontroller.deleteaction: param id not found")
 		return cc.Redirect("cart.view", nil)
 	}
-	deliveryCode, _ := r.Param1("deliveryCode")
+	deliveryCode, _ := r.Params["deliveryCode"]
 	err := cc.applicationCartService.DeleteItem(ctx, r.Session().G(), id, deliveryCode)
 	if err != nil {
 		cc.logger.WithField(flamingo.LogKeyCategory, "cartcontroller").Warn("cart.cartcontroller.deleteaction: Error %v", err)
@@ -173,7 +171,7 @@ func (cc *CartViewController) DeleteAndViewAction(ctx context.Context, r *web.Re
 }
 
 // DeleteAllAndViewAction empties the cart and shows it
-func (cc *CartViewController) DeleteAllAndViewAction(ctx context.Context, r *web.Request) web.Response {
+func (cc *CartViewController) DeleteAllAndViewAction(ctx context.Context, r *web.Request) web.Result {
 	err := cc.applicationCartService.DeleteAllItems(ctx, r.Session().G())
 	if err != nil {
 		cc.logger.WithField(flamingo.LogKeyCategory, "cartcontroller").Warn("cart.cartcontroller.deleteaction: Error %v", err)
@@ -183,7 +181,7 @@ func (cc *CartViewController) DeleteAllAndViewAction(ctx context.Context, r *web
 }
 
 // CleanAndViewAction empties the cart and shows it
-func (cc *CartViewController) CleanAndViewAction(ctx context.Context, r *web.Request) web.Response {
+func (cc *CartViewController) CleanAndViewAction(ctx context.Context, r *web.Request) web.Result {
 	err := cc.applicationCartService.Clean(ctx, r.Session().G())
 	if err != nil {
 		cc.logger.WithField(flamingo.LogKeyCategory, "cartcontroller").Warn("cart.cartcontroller.deleteaction: Error %v", err)
@@ -193,7 +191,7 @@ func (cc *CartViewController) CleanAndViewAction(ctx context.Context, r *web.Req
 }
 
 // CleanDeliveryAndViewAction empties a single delivery and shows it
-func (cc *CartViewController) CleanDeliveryAndViewAction(ctx context.Context, r *web.Request) web.Response {
+func (cc *CartViewController) CleanDeliveryAndViewAction(ctx context.Context, r *web.Request) web.Result {
 	deliveryCode := r.MustParam1("deliveryCode")
 	_, err := cc.applicationCartService.DeleteDelivery(ctx, r.Session().G(), deliveryCode)
 	if err != nil {

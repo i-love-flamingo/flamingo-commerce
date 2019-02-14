@@ -6,15 +6,15 @@ import (
 	"reflect"
 	"testing"
 
-	cartApplication "flamingo.me/flamingo-commerce/cart/application"
-	"flamingo.me/flamingo-commerce/cart/domain/cart"
-	cartInfrastructure "flamingo.me/flamingo-commerce/cart/infrastructure"
-	"flamingo.me/flamingo-commerce/order/application"
-	"flamingo.me/flamingo-commerce/order/domain"
-	domainMocks "flamingo.me/flamingo-commerce/order/domain/mocks"
-	authApplication "flamingo.me/flamingo/core/auth/application"
-	coreApplicationMocks "flamingo.me/flamingo/core/auth/application/mocks"
-	"flamingo.me/flamingo/framework/flamingo"
+	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	cartInfrastructure "flamingo.me/flamingo-commerce/v3/cart/infrastructure"
+	"flamingo.me/flamingo-commerce/v3/order/application"
+	"flamingo.me/flamingo-commerce/v3/order/domain"
+	domainMocks "flamingo.me/flamingo-commerce/v3/order/domain/mocks"
+	authApplication "flamingo.me/flamingo/v3/core/auth/application"
+	coreApplicationMocks "flamingo.me/flamingo/v3/core/auth/application/mocks"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/gorilla/sessions"
 	"github.com/stretchr/testify/mock"
 )
@@ -195,8 +195,6 @@ func TestOrderService_PlaceOrder(t *testing.T) {
 			cartReceiverService := &cartApplication.CartReceiverService{}
 			cartReceiverService.Inject(
 				guestCartServiceMock,
-				nil,
-				nil,
 				nil,
 				userServiceMock,
 				flamingo.NullLogger{},

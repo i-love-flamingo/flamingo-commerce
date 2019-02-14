@@ -3,7 +3,7 @@ package breadcrumbs
 import (
 	"context"
 
-	"flamingo.me/flamingo/framework/web"
+	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (

@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/url"
 
-	cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
-	"flamingo.me/flamingo/framework/web"
+	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (

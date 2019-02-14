@@ -40,7 +40,6 @@ func TestMedias_Has(t *testing.T) {
 			name: "Test detail only media has no list item",
 			m: Medias{
 				detailMedia,
-				detailMedia,
 			},
 			args: args{
 				usage: MediaUsageTeaser,
@@ -94,7 +93,6 @@ func TestMedias_Get(t *testing.T) {
 		{
 			name: "List without list media returns nil",
 			m: Medias{
-				detailMedia,
 				detailMedia,
 			},
 			args: args{

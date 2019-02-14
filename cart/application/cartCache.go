@@ -7,10 +7,10 @@ import (
 	"strings"
 	"time"
 
-	"flamingo.me/flamingo-commerce/cart/domain/cart"
-	authApplication "flamingo.me/flamingo/core/auth/application"
-	"flamingo.me/flamingo/core/auth/domain"
-	"flamingo.me/flamingo/framework/flamingo"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	authApplication "flamingo.me/flamingo/v3/core/auth/application"
+	"flamingo.me/flamingo/v3/core/auth/domain"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/gorilla/sessions"
 	"github.com/pkg/errors"
 )

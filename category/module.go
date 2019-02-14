@@ -1,12 +1,11 @@
 package category
 
 import (
-	"flamingo.me/flamingo-commerce/category/application"
-	"flamingo.me/flamingo-commerce/category/interfaces/controller"
-	"flamingo.me/flamingo/framework/config"
-	"flamingo.me/flamingo/framework/dingo"
-	"flamingo.me/flamingo/framework/router"
-	"flamingo.me/flamingo/framework/web"
+	"flamingo.me/flamingo-commerce/v3/category/application"
+	"flamingo.me/flamingo-commerce/v3/category/interfaces/controller"
+	"flamingo.me/flamingo/v3/framework/config"
+	"flamingo.me/dingo"
+	"flamingo.me/flamingo/v3/framework/web"
 )
 
 // Module registers our profiler
@@ -24,7 +23,7 @@ func URLWithName(code, name string) (string, map[string]string) {
 
 // Configure the product URL
 func (m *Module) Configure(injector *dingo.Injector) {
-	router.Bind(injector, new(routes))
+	web.BindRoutes(injector, new(routes))
 	injector.Bind(new(application.RouterRouter)).To(new(router.Router))
 }
 
@@ -48,7 +47,7 @@ func (r *routes) Inject(view *controller.View, entity *controller.Entity, tree *
 	r.tree = tree
 }
 
-func (r *routes) Routes(registry *router.Registry) {
+func (r *routes) Routes(registry *web.RouterRegistry) {
 	registry.HandleGet("category.view", r.view.Get)
 	registry.Route("/category/:code/:name.html", "category.view(code, name, *)").Normalize("name")
 	registry.Route("/category/:code", "category.view(code, *)")

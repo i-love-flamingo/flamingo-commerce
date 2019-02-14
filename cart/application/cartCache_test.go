@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"flamingo.me/flamingo-commerce/cart/application"
-	"flamingo.me/flamingo-commerce/cart/domain/cart"
-	"flamingo.me/flamingo/framework/flamingo"
+	"flamingo.me/flamingo-commerce/v3/cart/application"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/gorilla/sessions"
 )
 
@@ -358,7 +358,6 @@ func TestCartSessionCache_CartExpiry(t *testing.T) {
 	ctx := context.Background()
 	c := &application.CartSessionCache{}
 	c.Inject(
-		nil,
 		nil,
 		flamingo.NullLogger{},
 		&struct {

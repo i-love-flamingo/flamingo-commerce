@@ -8,11 +8,11 @@ import (
 	"context"
 	"net/url"
 
-	categoryDomain "flamingo.me/flamingo-commerce/category/domain"
-	"flamingo.me/flamingo-commerce/search/domain"
-	"flamingo.me/flamingo-commerce/search/utils"
-	"flamingo.me/flamingo/framework/flamingo"
-	"flamingo.me/flamingo/framework/web"
+	categoryDomain "flamingo.me/flamingo-commerce/v3/category/domain"
+	"flamingo.me/flamingo-commerce/v3/search/domain"
+	"flamingo.me/flamingo-commerce/v3/search/utils"
+	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (

@@ -1,16 +1,16 @@
 package checkout
 
 import (
-	"flamingo.me/flamingo-commerce/checkout/domain"
-	paymentDomain "flamingo.me/flamingo-commerce/checkout/domain/payment"
-	"flamingo.me/flamingo-commerce/checkout/infrastructure"
-	paymentInfrastructure "flamingo.me/flamingo-commerce/checkout/infrastructure/payment"
-	"flamingo.me/flamingo-commerce/checkout/interfaces/controller"
-	"flamingo.me/flamingo-commerce/checkout/interfaces/controller/formDto"
-	formDomain "flamingo.me/flamingo/core/form/domain"
-	"flamingo.me/flamingo/framework/config"
-	"flamingo.me/flamingo/framework/dingo"
-	"flamingo.me/flamingo/framework/router"
+	"flamingo.me/flamingo-commerce/v3/checkout/domain"
+	paymentDomain "flamingo.me/flamingo-commerce/v3/checkout/domain/payment"
+	"flamingo.me/flamingo-commerce/v3/checkout/infrastructure"
+	paymentInfrastructure "flamingo.me/flamingo-commerce/v3/checkout/infrastructure/payment"
+	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller"
+	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller/formDto"
+	formDomain "flamingo.me/form/domain"
+	"flamingo.me/flamingo/v3/framework/config"
+	"flamingo.me/dingo"
+	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/go-playground/form"
 )
 
@@ -32,7 +32,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 
 	injector.Bind((*formDomain.FormService)(nil)).To(formDto.CheckoutFormService{})
 
-	router.Bind(injector, new(routes))
+	web.BindRoutes(injector, new(routes))
 }
 
 // DefaultConfig for checkout module
@@ -54,7 +54,7 @@ func (r *routes) Inject(controller *controller.CheckoutController) {
 }
 
 // Routes  configuration for checkout controllers
-func (r *routes) Routes(registry *router.Registry) {
+func (r *routes) Routes(registry *web.RouterRegistry) {
 	// routes
 	registry.HandleAny("checkout.start", r.controller.StartAction)
 	registry.Route("/checkout", "checkout.start")

@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"testing"
 
-	"flamingo.me/flamingo-commerce/checkout/interfaces/controller/formDto"
-	"flamingo.me/flamingo-commerce/customer/domain"
-	"flamingo.me/flamingo/framework/flamingo"
-	"flamingo.me/flamingo/framework/web"
+	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller/formDto"
+	"flamingo.me/flamingo-commerce/v3/customer/domain"
+	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/go-playground/form"
 )
 

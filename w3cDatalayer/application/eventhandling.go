@@ -3,13 +3,11 @@ package application
 import (
 	"context"
 
-	"flamingo.me/flamingo-commerce/cart/application"
-	"flamingo.me/flamingo-commerce/cart/domain/cart"
-	"flamingo.me/flamingo-commerce/w3cDatalayer/domain"
-	authDomain "flamingo.me/flamingo/core/auth/domain"
-	"flamingo.me/flamingo/framework/event"
-	"flamingo.me/flamingo/framework/flamingo"
-	"flamingo.me/flamingo/framework/session"
+	"flamingo.me/flamingo-commerce/v3/cart/application"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/w3cDatalayer/domain"
+	authDomain "flamingo.me/flamingo/v3/core/auth/domain"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 )
 
 type (
@@ -31,7 +29,7 @@ func (e *EventReceiver) Inject(factory *Factory, cartFactory *cart.DecoratedCart
 // NotifyWithContext should get called by flamingo Eventlogic.
 // We use it to listen to Events that are relevant for the Datalayer
 // In case the events might be asycron (e.g. the origin action does a redirect to a sucess page) - we save the datalayer Event to a Session Flash - to make sure it is still available the first time the DatalayerService.Get is calles
-func (e *EventReceiver) NotifyWithContext(ctx context.Context, event event.Event) {
+func (e *EventReceiver) NotifyWithContext(ctx context.Context, event flamingo.Event) {
 	switch currentEvent := event.(type) {
 	//Handle OrderPlacedEvent and Set Transaction to current datalayer
 	case *application.AddToCartEvent:

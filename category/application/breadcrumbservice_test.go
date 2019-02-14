@@ -5,12 +5,12 @@ import (
 	"net/url"
 	"testing"
 
-	"flamingo.me/flamingo-commerce/breadcrumbs"
-	"flamingo.me/flamingo/framework/web"
+	"flamingo.me/flamingo-commerce/v3/breadcrumbs"
+	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/stretchr/testify/assert"
 
-	"flamingo.me/flamingo-commerce/category/application"
-	"flamingo.me/flamingo-commerce/category/domain"
+	"flamingo.me/flamingo-commerce/v3/category/application"
+	"flamingo.me/flamingo-commerce/v3/category/domain"
 )
 
 type (

@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
-	"flamingo.me/flamingo-commerce/order/infrastructure/inmemory"
+	"flamingo.me/flamingo-commerce/v3/order/infrastructure/inmemory"
 
-	"flamingo.me/flamingo-commerce/order/domain"
-	authDomain "flamingo.me/flamingo/core/auth/domain"
+	"flamingo.me/flamingo-commerce/v3/order/domain"
+	authDomain "flamingo.me/flamingo/v3/core/auth/domain"
 )
 
 type (

@@ -4,12 +4,12 @@ import (
 	"context"
 	"testing"
 
-	"flamingo.me/flamingo-commerce/cart/domain/cart"
-	"flamingo.me/flamingo-commerce/order/application"
-	"flamingo.me/flamingo-commerce/order/domain"
-	"flamingo.me/flamingo/framework/event"
-	"flamingo.me/flamingo/framework/event/mocks"
-	"flamingo.me/flamingo/framework/flamingo"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/order/application"
+	"flamingo.me/flamingo-commerce/v3/order/domain"
+	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/flamingo/mocks"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/go-test/deep"
 	"github.com/stretchr/testify/mock"
 )
@@ -60,7 +60,7 @@ func TestDefaultEventPublisher_PublishOrderPlacedEvent(t *testing.T) {
 				"Dispatch",
 				context.Background(),
 				mock.MatchedBy(
-					func(e event.Event) bool {
+					func(e flamingo.Event) bool {
 						if diff := deep.Equal(e, wantEvent); diff != nil {
 							t.Logf("PublishOrderPlacedEvent got!=want, diff: %#v", diff)
 							return false

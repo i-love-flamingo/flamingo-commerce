@@ -5,9 +5,9 @@ import (
 	"reflect"
 	"testing"
 
-	"flamingo.me/flamingo-commerce/cart/domain/cart"
-	"flamingo.me/flamingo-commerce/order/domain"
-	"flamingo.me/flamingo-commerce/order/infrastructure/inmemory"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/order/domain"
+	"flamingo.me/flamingo-commerce/v3/order/infrastructure/inmemory"
 )
 
 func TestBehaviour_PlaceOrder(t *testing.T) {

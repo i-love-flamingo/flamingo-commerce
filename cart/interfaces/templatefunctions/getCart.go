@@ -3,10 +3,9 @@ package templatefunctions
 import (
 	"context"
 
-	"flamingo.me/flamingo-commerce/cart/application"
-	cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
-	"flamingo.me/flamingo/framework/flamingo"
-	"flamingo.me/flamingo/framework/session"
+	"flamingo.me/flamingo-commerce/v3/cart/application"
+	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 )
 
 type (

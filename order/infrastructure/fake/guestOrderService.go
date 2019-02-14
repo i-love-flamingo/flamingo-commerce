@@ -3,8 +3,8 @@ package fake
 import (
 	"context"
 
-	"flamingo.me/flamingo-commerce/order/domain"
-	"flamingo.me/flamingo-commerce/order/infrastructure/inmemory"
+	"flamingo.me/flamingo-commerce/v3/order/domain"
+	"flamingo.me/flamingo-commerce/v3/order/infrastructure/inmemory"
 )
 
 type (

@@ -4,9 +4,9 @@ import (
 	"context"
 	"net/url"
 
-	"flamingo.me/flamingo-commerce/breadcrumbs"
-	"flamingo.me/flamingo-commerce/category/domain"
-	"flamingo.me/flamingo/framework/web"
+	"flamingo.me/flamingo-commerce/v3/breadcrumbs"
+	"flamingo.me/flamingo-commerce/v3/category/domain"
+	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (

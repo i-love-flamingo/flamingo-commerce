@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"strconv"
 
-	"flamingo.me/flamingo-commerce/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 )
 
 type (

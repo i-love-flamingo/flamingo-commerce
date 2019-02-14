@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
-	productDomain "flamingo.me/flamingo-commerce/product/domain"
-	"flamingo.me/flamingo/framework/flamingo"
+	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/gorilla/sessions"
 	"github.com/pkg/errors"
 )

@@ -5,21 +5,19 @@ import (
 	"net/url"
 	"strings"
 
-	"flamingo.me/flamingo-commerce/breadcrumbs"
-	"flamingo.me/flamingo-commerce/category"
-	"flamingo.me/flamingo-commerce/product/application"
-	"flamingo.me/flamingo-commerce/product/domain"
-	"flamingo.me/flamingo/framework/router"
-	"flamingo.me/flamingo/framework/web"
-	"flamingo.me/flamingo/framework/web/responder"
+	"flamingo.me/flamingo-commerce/v3/breadcrumbs"
+	"flamingo.me/flamingo-commerce/v3/category"
+	"flamingo.me/flamingo-commerce/v3/product/application"
+	"flamingo.me/flamingo-commerce/v3/product/domain"
+	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/pkg/errors"
 )
 
 type (
 	// View demonstrates a product view controller
 	View struct {
-		responder.ErrorAware    `inject:""`
-		responder.RenderAware   `inject:""`
+		Responder *web.Responder    `inject:""`
+		Responder *web.Responder   `inject:""`
 		responder.RedirectAware `inject:""`
 		domain.ProductService   `inject:""`
 		UrlService              *application.UrlService `inject:""`
@@ -173,9 +171,9 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 }
 
 // Get Response for Product matching sku param
-func (vc *View) Get(c context.Context, r *web.Request) web.Response {
+func (vc *View) Get(c context.Context, r *web.Request) web.Result {
 	product, err := vc.ProductService.Get(c, r.MustParam1("marketplacecode"))
-	skipnamecheck, _ := r.Param1("skipnamecheck")
+	skipnamecheck, _ := r.Params["skipnamecheck"]
 
 	// catch error
 	if err != nil {
@@ -196,7 +194,7 @@ func (vc *View) Get(c context.Context, r *web.Request) web.Response {
 		var activeVariant *domain.Variant
 
 		viewData = productViewData{}
-		variantCode, ok := r.Param1("variantcode")
+		variantCode, ok := r.Params["variantcode"]
 
 		if !ok {
 			//Redirect if url is not canonical
@@ -244,7 +242,7 @@ func (vc *View) Get(c context.Context, r *web.Request) web.Response {
 		viewData.BackUrl = backUrl
 	}
 
-	return vc.Render(c, vc.Template, viewData)
+	return vc.Responder.Render( vc.Template, viewData)
 }
 
 // addBreadCrumb

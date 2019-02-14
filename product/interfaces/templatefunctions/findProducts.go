@@ -6,9 +6,9 @@ import (
 
 	"strconv"
 
-	"flamingo.me/flamingo-commerce/product/application"
-	searchApplication "flamingo.me/flamingo-commerce/search/application"
-	"flamingo.me/flamingo/core/pugtemplate/pugjs"
+	"flamingo.me/flamingo-commerce/v3/product/application"
+	searchApplication "flamingo.me/flamingo-commerce/v3/search/application"
+	"flamingo.me/pugtemplate/pugjs"
 )
 
 type (

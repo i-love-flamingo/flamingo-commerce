@@ -3,9 +3,9 @@ package controller
 import (
 	"context"
 
-	"flamingo.me/flamingo-commerce/order/domain"
-	"flamingo.me/flamingo/core/auth/application"
-	"flamingo.me/flamingo/framework/web"
+	"flamingo.me/flamingo-commerce/v3/order/domain"
+	"flamingo.me/flamingo/v3/core/auth/application"
+	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (

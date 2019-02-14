@@ -3,10 +3,9 @@ package application
 import (
 	"context"
 
-	cartDomain "flamingo.me/flamingo-commerce/cart/domain/cart"
-	"flamingo.me/flamingo/core/auth/domain"
-	"flamingo.me/flamingo/framework/event"
-	"flamingo.me/flamingo/framework/flamingo"
+	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo/v3/core/auth/domain"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 )
 
 type (
@@ -33,7 +32,7 @@ func (e EventReceiver) Inject(
 }
 
 //NotifyWithContext should get called by flamingo Eventlogic
-func (e *EventReceiver) NotifyWithContext(ctx context.Context, event event.Event) {
+func (e *EventReceiver) NotifyWithContext(ctx context.Context, event flamingo.Event) {
 	switch currentEvent := event.(type) {
 	//Handle Logout
 	case *domain.LogoutEvent:
