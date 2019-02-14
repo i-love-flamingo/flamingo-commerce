@@ -15,7 +15,7 @@ import (
 	"flamingo.me/flamingo/v3/framework/web"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
-	"github.com/gorilla/sessions"
+	"flamingo.me/flamingo/v3/framework/web"
 	"go.opencensus.io/tag"
 )
 

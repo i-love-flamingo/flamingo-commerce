@@ -10,7 +10,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
-	"github.com/gorilla/sessions"
+	"flamingo.me/flamingo/v3/framework/web"
 )
 
 var (
