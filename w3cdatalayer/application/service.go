@@ -100,7 +100,7 @@ func (s *Service) AddSessionEvents() error {
 
 	for _, event := range sessionEvents {
 		if event, ok := event.(domain.Event); ok {
-			s.logger.WithField("category", "w3cDatalayer").Debug("SESSION_EVENTS_KEY Event", event.EventInfo)
+			s.logger.WithField("category", "w3cDatalayer").Debug("SESSION_EVENTS_KEY Event", flamingo.EventInfo)
 			layer.Event = append(layer.Event, event)
 		}
 	}

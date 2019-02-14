@@ -18,7 +18,6 @@ func TestAdd(t *testing.T) {
 	ctx := web.ContextWithRequest(context.Background(), r)
 
 	Add(ctx, crumb)
-	Add(ctx, crumb)
 
 	b, _ := r.Values.Load(requestKey)
 	assert.Len(t, b, 2)
