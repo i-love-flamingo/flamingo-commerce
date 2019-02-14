@@ -9,8 +9,8 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	customerDomain "flamingo.me/flamingo-commerce/v3/customer/domain"
-	"flamingo.me/form/application"
-	formDomain "flamingo.me/form/domain"
+	"go.aoe.com/flamingo/form/application"
+	formDomain "go.aoe.com/flamingo/form/domain"
 	"flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
@@ -142,8 +142,8 @@ func (fs *CheckoutFormService) ParseFormData(ctx context.Context, r *web.Request
 
 	// Preset eMail when email parameter is given:
 	if ctx != nil {
-		email, ok := r.Form("email")
-		if ok && len(formValues["billingAddress.email"]) == 0 {
+		email, err := r.Form("email")
+		if err == nil && len(formValues["billingAddress.email"]) == 0 {
 			formValues["billingAddress.email"] = email
 		}
 	}

@@ -2,15 +2,15 @@ package cart
 
 import (
 	"context"
+	"flamingo.me/flamingo/v3/framework/web"
 	"fmt"
 
 	"flamingo.me/flamingo-commerce/v3/product/domain"
-	"github.com/gorilla/sessions"
 )
 
 type (
 	ItemValidator interface {
-		Validate(ctx context.Context, session *sessions.Session, deliveryCode string, request AddRequest, product domain.BasicProduct) error
+		Validate(ctx context.Context, session *web.Session, deliveryCode string, request AddRequest, product domain.BasicProduct) error
 	}
 
 	AddToCartNotAllowed struct {

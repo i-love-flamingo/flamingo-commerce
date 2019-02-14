@@ -2,6 +2,7 @@ package interfaces
 
 import (
 	"context"
+	"net/url"
 
 	"flamingo.me/flamingo-commerce/v3/search/application"
 	"flamingo.me/flamingo-commerce/v3/search/domain"
@@ -13,8 +14,6 @@ type (
 	// ViewController demonstrates a search view controller
 	ViewController struct {
 		Responder *web.Responder    `inject:""`
-		Responder *web.Responder   `inject:""`
-		responder.RedirectAware `inject:""`
 		SearchService           *application.SearchService   `inject:""`
 		PaginationInfoFactory   *utils.PaginationInfoFactory `inject:""`
 	}
@@ -50,10 +49,11 @@ func (vc *ViewController) Get(c context.Context, r *web.Request) web.Result {
 		searchResult, err := vc.SearchService.FindBy(c, typ, searchRequest)
 		if err != nil {
 			if re, ok := err.(*domain.RedirectError); ok {
-				return vc.RedirectPermanentURL(re.To)
+				u, _ := url.Parse(re.To)
+				return vc.Responder.URLRedirect(u).Permanent()
 			}
 
-			return vc.Error(c, err)
+			return vc.Responder.ServerError(err)
 		}
 		vd.SearchMeta = searchResult.SearchMeta
 		vd.SearchMeta.Query = query
@@ -71,10 +71,11 @@ func (vc *ViewController) Get(c context.Context, r *web.Request) web.Result {
 	searchResult, err := vc.SearchService.Find(c, searchRequest)
 	if err != nil {
 		if re, ok := err.(*domain.RedirectError); ok {
-			return vc.RedirectPermanentURL(re.To)
+			u, _ := url.Parse(re.To)
+			return vc.Responder.URLRedirect(u).Permanent()
 		}
 
-		return vc.Error(c, err)
+		return vc.Responder.ServerError(err)
 	}
 	vd.SearchResult = searchResult
 	return vc.Responder.Render( "search/search", vd)

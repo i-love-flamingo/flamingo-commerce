@@ -26,8 +26,8 @@ func (dc *DataControllerCustomerOrders) Inject(
 }
 
 // Data controller for blocks
-func (dc *DataControllerCustomerOrders) Data(c context.Context, r *web.Request) interface{} {
-	auth, err := dc.authManager.Auth(c, r.Session().G())
+func (dc *DataControllerCustomerOrders) Data(c context.Context, r *web.Request, _ web.RequestParams) interface{} {
+	auth, err := dc.authManager.Auth(c, r.Session())
 	if err != nil {
 		return nil
 	}

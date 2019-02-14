@@ -3,16 +3,13 @@ package application
 import (
 	"context"
 	"errors"
-
+	"flamingo.me/flamingo/v3/framework/web"
 	orderApplication "flamingo.me/flamingo-commerce/v3/order/application"
-
 	orderDomain "flamingo.me/flamingo-commerce/v3/order/domain"
-
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
-	"github.com/gorilla/sessions"
 )
 
 type (
@@ -48,7 +45,7 @@ func (os *OrderService) Inject(
 }
 
 // SetSources sets sources for sessions carts items
-func (os *OrderService) SetSources(ctx context.Context, session *sessions.Session) error {
+func (os *OrderService) SetSources(ctx context.Context, session *web.Session) error {
 	decoratedCart, err := os.CartReceiverService.ViewDecoratedCart(ctx, session)
 	if err != nil {
 		os.Logger.Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
@@ -63,7 +60,7 @@ func (os *OrderService) SetSources(ctx context.Context, session *sessions.Sessio
 }
 
 // PlaceOrder places the order
-func (os *OrderService) PlaceOrder(ctx context.Context, session *sessions.Session, decoratedCart *cart.DecoratedCart, payment *cart.CartPayment) (orderDomain.PlacedOrderInfos, error) {
+func (os *OrderService) PlaceOrder(ctx context.Context, session *web.Session, decoratedCart *cart.DecoratedCart, payment *cart.CartPayment) (orderDomain.PlacedOrderInfos, error) {
 	validationResult := os.CartService.ValidateCart(ctx, session, decoratedCart)
 	if !validationResult.IsValid() {
 		os.Logger.Warn("Try to place an invalid cart")
@@ -73,7 +70,7 @@ func (os *OrderService) PlaceOrder(ctx context.Context, session *sessions.Sessio
 }
 
 // CurrentCartSaveInfos saves additional informations on current cart
-func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *sessions.Session, billingAddress *cart.Address, shippingAddress *cart.Address, purchaser *cart.Person, additionalData *cart.AdditionalData) error {
+func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.Session, billingAddress *cart.Address, shippingAddress *cart.Address, purchaser *cart.Person, additionalData *cart.AdditionalData) error {
 	os.Logger.Debug("CurrentCartSaveInfos call billingAddress:%v shippingAddress:%v payment:%v", billingAddress, shippingAddress)
 
 	if billingAddress == nil {
@@ -126,7 +123,7 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *sessi
 
 //CurrentCartPlaceOrder - probably the best choice for a simple checkout
 // Assumptions: Only one BuildDeliveryInfo is used on the cart!
-func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *sessions.Session, payment cart.CartPayment) (orderDomain.PlacedOrderInfos, error) {
+func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.Session, payment cart.CartPayment) (orderDomain.PlacedOrderInfos, error) {
 	decoratedCart, err := os.CartReceiverService.ViewDecoratedCart(ctx, session)
 	if err != nil {
 		os.Logger.Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)

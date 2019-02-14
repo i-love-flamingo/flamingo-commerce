@@ -9,7 +9,7 @@ import (
 
 type (
 	UrlService struct {
-		Router *router.Router `inject:""`
+		Router *web.Router `inject:""`
 	}
 )
 
@@ -18,8 +18,8 @@ func (s *UrlService) Get(product domain.BasicProduct, variantCode string) (strin
 		return "-", errors.New("no product given")
 	}
 	params := s.GetUrlParams(product, variantCode)
-	url := s.Router.URL("product.view", params)
-	return url.String(), nil
+	url, err := s.Router.URL("product.view", params)
+	return url.String(), err
 }
 
 func (s *UrlService) GetUrlParams(product domain.BasicProduct, variantCode string) map[string]string {

@@ -37,7 +37,7 @@ type (
 	DefaultEventPublisher struct {
 		logger         flamingo.Logger
 		productService productDomain.ProductService
-		eventRouter    event.Router
+		eventRouter    flamingo.EventRouter
 	}
 )
 
@@ -49,7 +49,7 @@ var (
 func (d *DefaultEventPublisher) Inject(
 	logger flamingo.Logger,
 	productService productDomain.ProductService,
-	eventRouter event.Router,
+	eventRouter flamingo.EventRouter,
 ) {
 	d.logger = logger
 	d.productService = productService

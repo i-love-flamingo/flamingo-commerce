@@ -2,12 +2,12 @@ package application
 
 import (
 	"context"
+	"flamingo.me/flamingo/v3/framework/web"
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/order/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
-	"github.com/gorilla/sessions"
 )
 
 type (
@@ -34,7 +34,7 @@ func (os *OrderService) Inject(
 }
 
 // PlaceOrder submits an order
-func (os *OrderService) PlaceOrder(ctx context.Context, session *sessions.Session, payment *cart.CartPayment) (domain.PlacedOrderInfos, error) {
+func (os *OrderService) PlaceOrder(ctx context.Context, session *web.Session, payment *cart.CartPayment) (domain.PlacedOrderInfos, error) {
 	cart, _, err := os.cartService.GetCartReceiverService().GetCart(ctx, session)
 	if err != nil {
 		return nil, err
@@ -60,7 +60,7 @@ func (os *OrderService) PlaceOrder(ctx context.Context, session *sessions.Sessio
 	return orderNumbers, err
 }
 
-func (os *OrderService) handleCartNotFound(session *sessions.Session, err error) {
+func (os *OrderService) handleCartNotFound(session *web.Session, err error) {
 	if err == cart.CartNotFoundError {
 		os.cartService.DeleteSavedSessionGuestCartID(session)
 	}

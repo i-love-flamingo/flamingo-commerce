@@ -2,7 +2,6 @@ package breadcrumbs
 
 import (
 	"context"
-	"sync"
 	"testing"
 
 	"flamingo.me/flamingo/v3/framework/web"
@@ -15,8 +14,8 @@ func TestAdd(t *testing.T) {
 		Url:   "http://testurl/",
 	}
 
-	r := &web.Request{Values: new(sync.Map)}
-	ctx := web.Context_(context.Background(), r)
+	r := web.CreateRequest(nil, nil)
+	ctx := web.ContextWithRequest(context.Background(), r)
 
 	Add(ctx, crumb)
 

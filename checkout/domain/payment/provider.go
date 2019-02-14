@@ -21,7 +21,7 @@ type (
 		// GetPaymentMethods returns the Payment Providers available Payment Methods
 		GetPaymentMethods() []PaymentMethod
 		// RedirectExternalPayment starts a Redirect to an external Payment Page (if applicable)
-		RedirectExternalPayment(context.Context, *web.Request, *cartDomain.Cart, *PaymentMethod, *url.URL) (web.Response, error)
+		RedirectExternalPayment(context.Context, *web.Request, *cartDomain.Cart, *PaymentMethod, *url.URL) (web.Result, error)
 		// ProcessPayment, map is for form Data, payment Data, etc - whatever the Payment Method requires
 		ProcessPayment(context.Context, *web.Request, *cartDomain.Cart, *PaymentMethod, map[string]string) (*cartDomain.CartPayment, error)
 		IsActive() bool

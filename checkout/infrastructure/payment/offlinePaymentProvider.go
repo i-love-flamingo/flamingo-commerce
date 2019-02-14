@@ -36,7 +36,7 @@ func (pa *OfflinePaymentProvider) GetPaymentMethods() []payment.PaymentMethod {
 }
 
 // RedirectExternalPayment starts a Redirect to an external Payment Page (if applicable)
-func (pa *OfflinePaymentProvider) RedirectExternalPayment(ctx context.Context, r *web.Request, currentCart *cartDomain.Cart, method *payment.PaymentMethod, returnUrl *url.URL) (web.Response, error) {
+func (pa *OfflinePaymentProvider) RedirectExternalPayment(ctx context.Context, r *web.Request, currentCart *cartDomain.Cart, method *payment.PaymentMethod, returnUrl *url.URL) (web.Result, error) {
 	return nil, errors.New("No Redirect")
 }
 

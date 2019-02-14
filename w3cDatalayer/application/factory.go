@@ -21,7 +21,7 @@ import (
 
 // Factory is used to build new datalayers
 type Factory struct {
-	router              *router.Router
+	router              *web.Router
 	datalayerProvider   domain.DatalayerProvider
 	canonicalURLService *canonicalUrlApplication.Service
 	userService         *authApplication.UserService
@@ -40,7 +40,7 @@ type Factory struct {
 
 // Inject factory dependencies
 func (s *Factory) Inject(
-	router2 *router.Router,
+	router2 *web.Router,
 	provider domain.DatalayerProvider,
 	service *canonicalUrlApplication.Service,
 	userService *authApplication.UserService,
@@ -89,7 +89,7 @@ func (s Factory) BuildForCurrentRequest(ctx context.Context, request *web.Reques
 		PageInfo: domain.PageInfo{
 			PageID:         request.Request().URL.Path,
 			PageName:       s.pageNamePrefix + request.Request().URL.Path,
-			DestinationURL: s.canonicalURLService.GetCanonicalUrlForCurrentRequest(ctx),
+			DestinationURL: s.canonicalURLService.GetCanonicalURLForCurrentRequest(ctx),
 			Language:       language,
 		},
 		Attributes: make(map[string]interface{}),
@@ -98,7 +98,7 @@ func (s Factory) BuildForCurrentRequest(ctx context.Context, request *web.Reques
 	layer.Page.Attributes["currency"] = s.defaultCurrency
 
 	//Use the handler name as PageId if available
-	if controllerHandler, ok := tag.FromContext(ctx).Value(router.ControllerKey); ok {
+	if controllerHandler, ok := tag.FromContext(ctx).Value(web.ControllerKey); ok {
 		layer.Page.PageInfo.PageID = controllerHandler
 	}
 
@@ -110,10 +110,10 @@ func (s Factory) BuildForCurrentRequest(ctx context.Context, request *web.Reques
 
 	//Handle User
 	layer.Page.Attributes["loggedIn"] = false
-	if s.userService.IsLoggedIn(ctx, request.Session().G()) {
+	if s.userService.IsLoggedIn(ctx, request.Session()) {
 		layer.Page.Attributes["loggedIn"] = true
 		layer.Page.Attributes["logintype"] = "external"
-		userData := s.getUser(ctx, request.Session().G())
+		userData := s.getUser(ctx, request.Session())
 		if userData != nil {
 			layer.User = append(layer.User, *userData)
 		}
@@ -123,7 +123,7 @@ func (s Factory) BuildForCurrentRequest(ctx context.Context, request *web.Reques
 	return *layer
 }
 
-func (s Factory) getUser(ctx context.Context, session *sessions.Session) *domain.User {
+func (s Factory) getUser(ctx context.Context, session *web.Session) *domain.User {
 
 	dataLayerProfile := s.getUserProfileForCurrentUser(ctx, session)
 	if dataLayerProfile == nil {
@@ -135,7 +135,7 @@ func (s Factory) getUser(ctx context.Context, session *sessions.Session) *domain
 	return &dataLayerUser
 }
 
-func (s Factory) getUserProfileForCurrentUser(ctx context.Context, session *sessions.Session) *domain.UserProfile {
+func (s Factory) getUserProfileForCurrentUser(ctx context.Context, session *web.Session) *domain.UserProfile {
 	user := s.userService.GetUser(ctx, session)
 	if user == nil {
 		return nil
@@ -185,9 +185,9 @@ func (s Factory) BuildCartData(cart cart.DecoratedCart) *domain.Cart {
 // BuildTransactionData builds the domain transaction data
 func (s Factory) BuildTransactionData(ctx context.Context, cartTotals cart.CartTotals, decoratedItems []cart.DecoratedCartItem, orderID string, email string) *domain.Transaction {
 	var profile *domain.UserProfile
-	session, _ := session.FromContext(ctx)
-	if s.userService.IsLoggedIn(ctx, session.G()) {
-		profile = s.getUserProfileForCurrentUser(ctx, session.G())
+	session := web.SessionFromContext(ctx)
+	if s.userService.IsLoggedIn(ctx, session) {
+		profile = s.getUserProfileForCurrentUser(ctx, session)
 	} else {
 		profile = s.getUserProfile(email, "")
 	}

@@ -90,12 +90,12 @@ func TestBreadcrumbService_AddBreadcrumb(t *testing.T) {
 			// Init context and add breadcrumb
 			bs := &application.BreadcrumbService{}
 			bs.Inject(&MockRouter{})
-			request := web.RequestFromRequest(nil, nil)
-			ctx := web.Context_(context.Background(), request)
+			request := web.CreateRequest(nil, nil)
+			ctx := web.ContextWithRequest(context.Background(), request)
 			bs.AddBreadcrumb(ctx, tt.args.category)
 
 			// get breadcrumb and validate it
-			breadcrumb := controller.Data(ctx, nil)
+			breadcrumb := controller.Data(ctx, nil, nil)
 
 			assert.Equal(t, tt.want, breadcrumb)
 

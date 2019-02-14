@@ -11,19 +11,19 @@ import (
 	authApplication "flamingo.me/flamingo/v3/core/auth/application"
 	"flamingo.me/flamingo/v3/core/auth/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
-	"github.com/gorilla/sessions"
+	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/pkg/errors"
 )
 
 type (
 	// CartCache describes a cart caches methods
 	CartCache interface {
-		GetCart(context.Context, *sessions.Session, CartCacheIdentifier) (*cart.Cart, error)
-		CacheCart(context.Context, *sessions.Session, CartCacheIdentifier, *cart.Cart) error
-		Invalidate(context.Context, *sessions.Session, CartCacheIdentifier) error
-		Delete(context.Context, *sessions.Session, CartCacheIdentifier) error
-		DeleteAll(context.Context, *sessions.Session) error
-		BuildIdentifier(context.Context, *sessions.Session) (CartCacheIdentifier, error)
+		GetCart(context.Context, *web.Session, CartCacheIdentifier) (*cart.Cart, error)
+		CacheCart(context.Context, *web.Session, CartCacheIdentifier, *cart.Cart) error
+		Invalidate(context.Context, *web.Session, CartCacheIdentifier) error
+		Delete(context.Context, *web.Session, CartCacheIdentifier) error
+		DeleteAll(context.Context, *web.Session) error
+		BuildIdentifier(context.Context, *web.Session) (CartCacheIdentifier, error)
 	}
 
 	// CartCacheIdentifier identifies Cart Caches
@@ -111,7 +111,7 @@ func (cs *CartSessionCache) Inject(
 }
 
 // auth tries to retrieve the authentication context for a active session
-func (cs *CartSessionCache) auth(c context.Context, session *sessions.Session) domain.Auth {
+func (cs *CartSessionCache) auth(c context.Context, session *web.Session) domain.Auth {
 	ts, _ := cs.authManager.TokenSource(c, session)
 	idToken, _ := cs.authManager.IDToken(c, session)
 
@@ -122,7 +122,7 @@ func (cs *CartSessionCache) auth(c context.Context, session *sessions.Session) d
 }
 
 // BuildIdentifier creates a CartCacheIdentifier based on the login state
-func (cs *CartSessionCache) BuildIdentifier(ctx context.Context, session *sessions.Session) (CartCacheIdentifier, error) {
+func (cs *CartSessionCache) BuildIdentifier(ctx context.Context, session *web.Session) (CartCacheIdentifier, error) {
 	if cs.userService.IsLoggedIn(ctx, session) {
 		return CartCacheIdentifier{
 			CustomerID:     cs.auth(ctx, session).IDToken.Subject,
@@ -130,7 +130,7 @@ func (cs *CartSessionCache) BuildIdentifier(ctx context.Context, session *sessio
 		}, nil
 	}
 
-	guestCartID, ok := session.Values[GuestCartSessionKey]
+	guestCartID, ok := session.Load(GuestCartSessionKey)
 	if !ok {
 		return CartCacheIdentifier{}, errors.New("Fatal - ShouldHaveGuestCart returned true but got no GuestCartSessionKey?")
 	}
@@ -146,8 +146,8 @@ func (cs *CartSessionCache) BuildIdentifier(ctx context.Context, session *sessio
 }
 
 // GetCart fetches a Cart from the Cache
-func (cs *CartSessionCache) GetCart(ctx context.Context, session *sessions.Session, id CartCacheIdentifier) (*cart.Cart, error) {
-	if cache, ok := session.Values[CartSessionCacheCacheKeyPrefix+id.CacheKey()]; ok {
+func (cs *CartSessionCache) GetCart(ctx context.Context, session *web.Session, id CartCacheIdentifier) (*cart.Cart, error) {
+	if cache, ok := session.Load(CartSessionCacheCacheKeyPrefix+id.CacheKey()); ok {
 		if cachedCartsEntry, ok := cache.(CachedCartEntry); ok {
 			cs.logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").Debug("Found cached cart %v", id.CacheKey())
 
@@ -176,7 +176,7 @@ func (cs *CartSessionCache) GetCart(ctx context.Context, session *sessions.Sessi
 }
 
 // CacheCart adds a Cart to the Cache
-func (cs *CartSessionCache) CacheCart(ctx context.Context, session *sessions.Session, id CartCacheIdentifier, cartForCache *cart.Cart) error {
+func (cs *CartSessionCache) CacheCart(ctx context.Context, session *web.Session, id CartCacheIdentifier, cartForCache *cart.Cart) error {
 	if cartForCache == nil {
 		return errors.New("no cart given to cache")
 	}
@@ -187,17 +187,17 @@ func (cs *CartSessionCache) CacheCart(ctx context.Context, session *sessions.Ses
 	}
 
 	cs.logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").Debug("Caching cart %v", id.CacheKey())
-	session.Values[CartSessionCacheCacheKeyPrefix+id.CacheKey()] = entry
+	session.Store(CartSessionCacheCacheKeyPrefix+id.CacheKey(), entry)
 
 	return nil
 }
 
 // Invalidate a Cache Entry
-func (cs *CartSessionCache) Invalidate(ctx context.Context, session *sessions.Session, id CartCacheIdentifier) error {
-	if cache, ok := session.Values[CartSessionCacheCacheKeyPrefix+id.CacheKey()]; ok {
+func (cs *CartSessionCache) Invalidate(ctx context.Context, session *web.Session, id CartCacheIdentifier) error {
+	if cache, ok := session.Load(CartSessionCacheCacheKeyPrefix+id.CacheKey()); ok {
 		if cachedCartsEntry, ok := cache.(CachedCartEntry); ok {
 			cachedCartsEntry.IsInvalid = true
-			session.Values[CartSessionCacheCacheKeyPrefix+id.CacheKey()] = cachedCartsEntry
+			session.Store(CartSessionCacheCacheKeyPrefix+id.CacheKey(), cachedCartsEntry)
 
 			return nil
 		}
@@ -207,9 +207,9 @@ func (cs *CartSessionCache) Invalidate(ctx context.Context, session *sessions.Se
 }
 
 // Delete a Cache entry
-func (cs *CartSessionCache) Delete(ctx context.Context, session *sessions.Session, id CartCacheIdentifier) error {
-	if _, ok := session.Values[CartSessionCacheCacheKeyPrefix+id.CacheKey()]; ok {
-		delete(session.Values, CartSessionCacheCacheKeyPrefix+id.CacheKey())
+func (cs *CartSessionCache) Delete(ctx context.Context, session *web.Session, id CartCacheIdentifier) error {
+	if _, ok := session.Load(CartSessionCacheCacheKeyPrefix+id.CacheKey()); ok {
+		session.Delete(CartSessionCacheCacheKeyPrefix+id.CacheKey())
 
 		// ok deleted something
 		return nil
@@ -219,12 +219,12 @@ func (cs *CartSessionCache) Delete(ctx context.Context, session *sessions.Sessio
 }
 
 // DeleteAll empties the Cache
-func (cs *CartSessionCache) DeleteAll(ctx context.Context, session *sessions.Session) error {
+func (cs *CartSessionCache) DeleteAll(ctx context.Context, session *web.Session) error {
 	deleted := false
-	for k := range session.Values {
+	for _, k := range session.Keys() {
 		if stringKey, ok := k.(string); ok {
 			if strings.Contains(stringKey, CartSessionCacheCacheKeyPrefix) {
-				delete(session.Values, k)
+				session.Delete(k)
 				deleted = true
 			}
 		}

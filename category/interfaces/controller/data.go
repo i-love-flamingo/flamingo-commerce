@@ -25,8 +25,8 @@ func (controller *Tree) Inject(service domain.CategoryService) {
 }
 
 // Data controller for category trees
-func (controller *Tree) Data(c context.Context, r *web.Request) interface{} {
-	code, _ := r.Params["code"] // no err check, empty code is fine if not set
+func (controller *Tree) Data(c context.Context, r *web.Request, params web.RequestParams) interface{} {
+	code, _ := params["code"] // no err check, empty code is fine if not set
 
 	categoryRoot, _ := controller.categoryService.Tree(c, code)
 
@@ -39,8 +39,8 @@ func (controller *Entity) Inject(service domain.CategoryService) {
 }
 
 // Data controller for category entities
-func (controller *Entity) Data(c context.Context, r *web.Request) interface{} {
-	code, _ := r.Params["code"] // no err check, empty code is fine if not set
+func (controller *Entity) Data(c context.Context, r *web.Request, params web.RequestParams) interface{} {
+	code, _ := params["code"] // no err check, empty code is fine if not set
 
 	category, _ := controller.categoryService.Get(c, code)
 

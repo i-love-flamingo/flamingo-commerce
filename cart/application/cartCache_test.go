@@ -9,6 +9,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/gorilla/sessions"
 )
 
@@ -132,7 +133,7 @@ func TestBuildIdentifierFromCart(t *testing.T) {
 func TestCartSessionCache_GetCart(t *testing.T) {
 	type args struct {
 		ctx     context.Context
-		session *sessions.Session
+		session *web.Session
 		id      application.CartCacheIdentifier
 	}
 	tests := []struct {
@@ -146,9 +147,7 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 			name: "error for no cart in cache",
 			args: args{
 				ctx: context.Background(),
-				session: &sessions.Session{
-					ID: "test_session",
-				},
+				session: web.EmptySession(),
 				id: application.CartCacheIdentifier{
 					GuestCartID:    "guest_cart_id",
 					IsCustomerCart: false,
@@ -162,14 +161,7 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 			name: "cached cart found/invalid cache entry",
 			args: args{
 				ctx: context.Background(),
-				session: &sessions.Session{
-					ID: "test_session",
-					Values: map[interface{}]interface{}{
-						application.CartSessionCacheCacheKeyPrefix + "cart_customer_id_guest_cart_id": application.CachedCartEntry{
-							IsInvalid: true,
-						},
-					},
-				},
+				session: web.EmptySession().Store(application.CartSessionCacheCacheKeyPrefix + "cart_customer_id_guest_cart_id", application.CachedCartEntry{IsInvalid: true}),
 				id: application.CartCacheIdentifier{
 					GuestCartID:    "guest_cart_id",
 					IsCustomerCart: false,
@@ -183,15 +175,10 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 			name: "cached cart found/valid cache entry",
 			args: args{
 				ctx: context.Background(),
-				session: &sessions.Session{
-					ID: "test_session",
-					Values: map[interface{}]interface{}{
-						application.CartSessionCacheCacheKeyPrefix + "cart_customer_id_guest_cart_id": application.CachedCartEntry{
-							IsInvalid: false,
-							ExpiresOn: time.Now().Add(5 * time.Minute),
-						},
-					},
-				},
+				session: web.EmptySession().Store(application.CartSessionCacheCacheKeyPrefix + "cart_customer_id_guest_cart_id", application.CachedCartEntry{
+					IsInvalid: false,
+					ExpiresOn: time.Now().Add(5 * time.Minute),
+				}),
 				id: application.CartCacheIdentifier{
 					GuestCartID:    "guest_cart_id",
 					IsCustomerCart: false,
@@ -205,16 +192,11 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 			name: "session contains invalid data at cache key",
 			args: args{
 				ctx: context.Background(),
-				session: &sessions.Session{
-					ID: "test_session",
-					Values: map[interface{}]interface{}{
-						application.CartSessionCacheCacheKeyPrefix + "cart_customer_id_guest_cart_id": struct {
-							invalidProperty bool
-						}{
-							invalidProperty: true,
-						},
-					},
-				},
+				session: web.EmptySession().Store(application.CartSessionCacheCacheKeyPrefix + "cart_customer_id_guest_cart_id", struct {
+					invalidProperty bool
+				}{
+					invalidProperty: true,
+				}),
 				id: application.CartCacheIdentifier{
 					GuestCartID:    "guest_cart_id",
 					IsCustomerCart: false,
@@ -228,15 +210,10 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 			name: "session contains expired cart cache",
 			args: args{
 				ctx: context.Background(),
-				session: &sessions.Session{
-					ID: "test_session",
-					Values: map[interface{}]interface{}{
-						application.CartSessionCacheCacheKeyPrefix + "cart_customer_id_guest_cart_id": application.CachedCartEntry{
-							IsInvalid: false,
-							ExpiresOn: time.Now().Add(-1 * time.Second),
-						},
-					},
-				},
+				session: web.EmptySession().Store(application.CartSessionCacheCacheKeyPrefix + "cart_customer_id_guest_cart_id", application.CachedCartEntry{
+					IsInvalid: false,
+					ExpiresOn: time.Now().Add(-1 * time.Second),
+				}),
 				id: application.CartCacheIdentifier{
 					GuestCartID:    "guest_cart_id",
 					IsCustomerCart: false,
@@ -282,7 +259,7 @@ func TestCartSessionCache_CacheCart(t *testing.T) {
 	}
 	type args struct {
 		ctx          context.Context
-		session      *sessions.Session
+		session      *web.Session
 		id           application.CartCacheIdentifier
 		cartForCache *cart.Cart
 	}
@@ -319,10 +296,7 @@ func TestCartSessionCache_CacheCart(t *testing.T) {
 			fields: fields{},
 			args: args{
 				ctx: context.Background(),
-				session: &sessions.Session{
-					ID:     "test_session",
-					Values: map[interface{}]interface{}{},
-				},
+				session: web.EmptySession(),
 				id: application.CartCacheIdentifier{
 					GuestCartID:    "guest_cart_id",
 					IsCustomerCart: false,
@@ -399,7 +373,7 @@ func TestCartSessionCache_Invalidate(t *testing.T) {
 	}
 	type args struct {
 		ctx     context.Context
-		session *sessions.Session
+		session *web.Session
 		id      application.CartCacheIdentifier
 	}
 	tests := []struct {
@@ -415,10 +389,7 @@ func TestCartSessionCache_Invalidate(t *testing.T) {
 			fields: fields{},
 			args: args{
 				ctx: context.Background(),
-				session: &sessions.Session{
-					ID:     "test_session",
-					Values: map[interface{}]interface{}{},
-				},
+				session: web.EmptySession(),
 				id: application.CartCacheIdentifier{
 					GuestCartID:    "guest_cart_id",
 					IsCustomerCart: false,
@@ -488,7 +459,7 @@ func TestCartSessionCache_Delete(t *testing.T) {
 	}
 	type args struct {
 		ctx     context.Context
-		session *sessions.Session
+		session *web.Session
 		id      application.CartCacheIdentifier
 	}
 	tests := []struct {
@@ -564,7 +535,7 @@ func TestCartSessionCache_DeleteAll(t *testing.T) {
 	}
 	type args struct {
 		ctx     context.Context
-		session *sessions.Session
+		session *web.Session
 	}
 	tests := []struct {
 		name                   string
@@ -626,7 +597,7 @@ func TestCartSessionCache_DeleteAll(t *testing.T) {
 			}
 
 			if tt.wantSessionValuesEmpty == true {
-				if len(tt.args.session.Values) > 0 {
+				if len(tt.args.session.Keys()) > 0 {
 					t.Error("Session Values should have been emptied, but aren't")
 				}
 			}

@@ -3,12 +3,12 @@ package application
 import (
 	"context"
 	"errors"
+	"flamingo.me/flamingo/v3/framework/web"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	authApplication "flamingo.me/flamingo/v3/core/auth/application"
 	"flamingo.me/flamingo/v3/core/auth/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
-	"github.com/gorilla/sessions"
 )
 
 type (
@@ -55,7 +55,7 @@ func (cs *CartReceiverService) Inject(
 }
 
 // Auth tries to retrieve the authentication context for a active session
-func (cs *CartReceiverService) Auth(c context.Context, session *sessions.Session) domain.Auth {
+func (cs *CartReceiverService) Auth(c context.Context, session *web.Session) domain.Auth {
 	ts, _ := cs.authManager.TokenSource(c, session)
 	idToken, _ := cs.authManager.IDToken(c, session)
 
@@ -66,12 +66,12 @@ func (cs *CartReceiverService) Auth(c context.Context, session *sessions.Session
 }
 
 // IsLoggedIn returns the logged in state
-func (cs *CartReceiverService) IsLoggedIn(ctx context.Context, session *sessions.Session) bool {
+func (cs *CartReceiverService) IsLoggedIn(ctx context.Context, session *web.Session) bool {
 	return cs.userService.IsLoggedIn(ctx, session)
 }
 
 // ShouldHaveCart - checks if there should be a cart. Indicated if a call to GetCart should return a real cart
-func (cs *CartReceiverService) ShouldHaveCart(ctx context.Context, session *sessions.Session) bool {
+func (cs *CartReceiverService) ShouldHaveCart(ctx context.Context, session *web.Session) bool {
 	if cs.userService.IsLoggedIn(ctx, session) {
 		return true
 	}
@@ -80,16 +80,13 @@ func (cs *CartReceiverService) ShouldHaveCart(ctx context.Context, session *sess
 }
 
 // ShouldHaveGuestCart - checks if there should be guest cart
-func (cs *CartReceiverService) ShouldHaveGuestCart(session *sessions.Session) bool {
-	if _, ok := session.Values[GuestCartSessionKey]; ok {
-		return true
-	}
-
-	return false
+func (cs *CartReceiverService) ShouldHaveGuestCart(session *web.Session) bool {
+	_, ok := session.Load(GuestCartSessionKey)
+	return ok
 }
 
 // ViewDecoratedCart  return a Cart for view
-func (cs *CartReceiverService) ViewDecoratedCart(ctx context.Context, session *sessions.Session) (*cartDomain.DecoratedCart, error) {
+func (cs *CartReceiverService) ViewDecoratedCart(ctx context.Context, session *web.Session) (*cartDomain.DecoratedCart, error) {
 	cart, err := cs.ViewCart(ctx, session)
 	if err != nil {
 		return nil, err
@@ -99,7 +96,7 @@ func (cs *CartReceiverService) ViewDecoratedCart(ctx context.Context, session *s
 }
 
 // ViewCart  return a Cart for view
-func (cs *CartReceiverService) ViewCart(ctx context.Context, session *sessions.Session) (*cartDomain.Cart, error) {
+func (cs *CartReceiverService) ViewCart(ctx context.Context, session *web.Session) (*cartDomain.Cart, error) {
 	if cs.ShouldHaveCart(ctx, session) {
 		cart, _, err := cs.GetCart(ctx, session)
 		if err != nil {
@@ -112,7 +109,7 @@ func (cs *CartReceiverService) ViewCart(ctx context.Context, session *sessions.S
 	return cs.getEmptyCart(), nil
 }
 
-func (cs *CartReceiverService) getCartFromCache(ctx context.Context, session *sessions.Session, identifier CartCacheIdentifier) (*cartDomain.Cart, error) {
+func (cs *CartReceiverService) getCartFromCache(ctx context.Context, session *web.Session, identifier CartCacheIdentifier) (*cartDomain.Cart, error) {
 	if cs.cartCache == nil {
 		cs.logger.Debug("no cache set")
 
@@ -124,7 +121,7 @@ func (cs *CartReceiverService) getCartFromCache(ctx context.Context, session *se
 	return cs.cartCache.GetCart(ctx, session, identifier)
 }
 
-func (cs *CartReceiverService) storeCartInCache(ctx context.Context, session *sessions.Session, cart *cartDomain.Cart) error {
+func (cs *CartReceiverService) storeCartInCache(ctx context.Context, session *web.Session, cart *cartDomain.Cart) error {
 	if cs.cartCache == nil {
 		return errors.New("no cache")
 	}
@@ -138,7 +135,7 @@ func (cs *CartReceiverService) storeCartInCache(ctx context.Context, session *se
 }
 
 // GetCart Get the correct Cart (either Guest or User)
-func (cs *CartReceiverService) GetCart(ctx context.Context, session *sessions.Session) (*cartDomain.Cart, cartDomain.Behaviour, error) {
+func (cs *CartReceiverService) GetCart(ctx context.Context, session *web.Session) (*cartDomain.Cart, cartDomain.Behaviour, error) {
 	if cs.userService.IsLoggedIn(ctx, session) {
 		cacheID, err := cs.cartCache.BuildIdentifier(ctx, session)
 
@@ -200,7 +197,7 @@ func (cs *CartReceiverService) GetCart(ctx context.Context, session *sessions.Se
 		}
 
 		cs.logger.WithField(flamingo.LogKeyCategory, "checkout.cartreceiver").Info("cart.application.cartservice: Requested new Guestcart %v", guestCart)
-		session.Values[GuestCartSessionKey] = guestCart.ID
+		session.Store(GuestCartSessionKey, guestCart.ID)
 		cs.storeCartInCache(ctx, session, guestCart)
 	}
 	behaviour, err := cs.guestCartService.GetBehaviour(ctx)
@@ -219,7 +216,7 @@ func (cs *CartReceiverService) GetCart(ctx context.Context, session *sessions.Se
 }
 
 //ViewGuestCart - ry to get the uest Cart - even if the user is logged in
-func (cs *CartReceiverService) ViewGuestCart(ctx context.Context, session *sessions.Session) (*cartDomain.Cart, error) {
+func (cs *CartReceiverService) ViewGuestCart(ctx context.Context, session *web.Session) (*cartDomain.Cart, error) {
 	if cs.ShouldHaveGuestCart(session) {
 		guestCart, err := cs.getSessionGuestCart(ctx, session)
 		if err != nil {
@@ -236,21 +233,21 @@ func (cs *CartReceiverService) ViewGuestCart(ctx context.Context, session *sessi
 }
 
 // DeleteSavedSessionGuestCartID deletes a guest cart Key from the Session Values
-func (cs *CartService) DeleteSavedSessionGuestCartID(session *sessions.Session) error {
-	delete(session.Values, GuestCartSessionKey)
+func (cs *CartService) DeleteSavedSessionGuestCartID(session *web.Session) error {
+	session.Delete(GuestCartSessionKey)
 
 	//TODO - trigger backend also to be able to delete the cart there ( cs.GuestCartService.DeleteCart())
 	return nil
 }
 
 // GetSessionGuestCart
-func (cs *CartReceiverService) getSessionGuestCart(ctx context.Context, session *sessions.Session) (*cartDomain.Cart, error) {
-	if guestcartid, ok := session.Values[GuestCartSessionKey]; ok {
+func (cs *CartReceiverService) getSessionGuestCart(ctx context.Context, session *web.Session) (*cartDomain.Cart, error) {
+	if guestcartid, ok := session.Load(GuestCartSessionKey); ok {
 		existingCart, err := cs.guestCartService.GetCart(ctx, guestcartid.(string))
 		if err != nil {
 			cs.logger.WithField(flamingo.LogKeyCategory, "checkout.cartreceiver").Error("cart.application.cartservice: Guestcart id in session cannot be retrieved. Id %s, Error: %s", guestcartid, err)
 			// we seem to have an erratic session cart - remove it
-			delete(session.Values, GuestCartSessionKey)
+			session.Delete(GuestCartSessionKey)
 		}
 
 		return existingCart, err
@@ -273,7 +270,7 @@ func (cs *CartReceiverService) DecorateCart(ctx context.Context, cart *cartDomai
 }
 
 // GetDecoratedCart Get the correct Cart
-func (cs *CartReceiverService) GetDecoratedCart(ctx context.Context, session *sessions.Session) (*cartDomain.DecoratedCart, cartDomain.Behaviour, error) {
+func (cs *CartReceiverService) GetDecoratedCart(ctx context.Context, session *web.Session) (*cartDomain.DecoratedCart, cartDomain.Behaviour, error) {
 	cart, behaviour, err := cs.GetCart(ctx, session)
 	if err != nil {
 		return nil, nil, err

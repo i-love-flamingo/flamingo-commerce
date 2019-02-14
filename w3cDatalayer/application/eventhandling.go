@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"flamingo.me/flamingo/v3/framework/web"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -34,8 +35,8 @@ func (e *EventReceiver) NotifyWithContext(ctx context.Context, event flamingo.Ev
 	//Handle OrderPlacedEvent and Set Transaction to current datalayer
 	case *application.AddToCartEvent:
 		e.logger.WithField("category", "w3cDatalayer").Debug("Receive Event AddToCartEvent")
-		session, ok := session.FromContext(ctx)
-		if ok {
+		session := web.SessionFromContext(ctx)
+		if session != nil {
 			// In case of Configurable: the MarketplaceCode which is interesting for the datalayer is the Variant that is selected
 			saleableProductCode := currentEvent.MarketplaceCode
 			if currentEvent.VariantMarketplaceCode != "" {
@@ -50,8 +51,8 @@ func (e *EventReceiver) NotifyWithContext(ctx context.Context, event flamingo.Ev
 	case *application.ChangedQtyInCartEvent:
 		e.logger.WithField("category", "w3cDatalayer").Debug("Receive Event ChangedQtyInCartEvent")
 
-		session, ok := session.FromContext(ctx)
-		if ok {
+		session := web.SessionFromContext(ctx)
+		if session != nil {
 			saleableProductCode := currentEvent.MarketplaceCode
 			if currentEvent.VariantMarketplaceCode != "" {
 				saleableProductCode = currentEvent.VariantMarketplaceCode
@@ -65,8 +66,8 @@ func (e *EventReceiver) NotifyWithContext(ctx context.Context, event flamingo.Ev
 		}
 	case *authDomain.LoginEvent:
 		e.logger.WithField("category", "w3cDatalayer").Debug("Receive Event LoginEvent")
-		session, ok := session.FromContext(ctx)
-		if ok {
+		session:= web.SessionFromContext(ctx)
+		if session != nil {
 
 			dataLayerEvent := domain.Event{EventInfo: make(map[string]interface{})}
 			dataLayerEvent.EventInfo["eventName"] = "login"

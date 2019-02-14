@@ -101,27 +101,27 @@ type (
 	MockCartCache struct{}
 )
 
-func (m *MockCartCache) GetCart(context.Context, *sessions.Session, cartApplication.CartCacheIdentifier) (*cartDomain.Cart, error) {
+func (m *MockCartCache) GetCart(context.Context, *web.Session, cartApplication.CartCacheIdentifier) (*cartDomain.Cart, error) {
 	return &cartDomain.Cart{}, nil
 }
 
-func (m *MockCartCache) CacheCart(context.Context, *sessions.Session, cartApplication.CartCacheIdentifier, *cartDomain.Cart) error {
+func (m *MockCartCache) CacheCart(context.Context, *web.Session, cartApplication.CartCacheIdentifier, *cartDomain.Cart) error {
 	return nil
 }
 
-func (m *MockCartCache) Invalidate(context.Context, *sessions.Session, cartApplication.CartCacheIdentifier) error {
+func (m *MockCartCache) Invalidate(context.Context, *web.Session, cartApplication.CartCacheIdentifier) error {
 	return nil
 }
 
-func (m *MockCartCache) Delete(context.Context, *sessions.Session, cartApplication.CartCacheIdentifier) error {
+func (m *MockCartCache) Delete(context.Context, *web.Session, cartApplication.CartCacheIdentifier) error {
 	return nil
 }
 
-func (m *MockCartCache) DeleteAll(context.Context, *sessions.Session) error {
+func (m *MockCartCache) DeleteAll(context.Context, *web.Session) error {
 	return nil
 }
 
-func (m *MockCartCache) BuildIdentifier(context.Context, *sessions.Session) (cartApplication.CartCacheIdentifier, error) {
+func (m *MockCartCache) BuildIdentifier(context.Context, *web.Session) (cartApplication.CartCacheIdentifier, error) {
 	return cartApplication.CartCacheIdentifier{}, nil
 }
 
@@ -146,7 +146,7 @@ type (
 	MockCartValidator struct{}
 )
 
-func (m *MockCartValidator) Validate(ctx context.Context, session *sessions.Session, cart *cartDomain.DecoratedCart) cartDomain.CartValidationResult {
+func (m *MockCartValidator) Validate(ctx context.Context, session *web.Session, cart *cartDomain.DecoratedCart) cartDomain.CartValidationResult {
 	return cartDomain.CartValidationResult{}
 }
 
@@ -156,7 +156,7 @@ type (
 	MockItemValidator struct{}
 )
 
-func (m *MockItemValidator) Validate(ctx context.Context, session *sessions.Session, deliveryCode string, request cartDomain.AddRequest, product productDomain.BasicProduct) error {
+func (m *MockItemValidator) Validate(ctx context.Context, session *web.Session, deliveryCode string, request cartDomain.AddRequest, product productDomain.BasicProduct) error {
 	return nil
 }
 
@@ -181,7 +181,7 @@ func TestCartReceiverService_ShouldHaveGuestCart(t *testing.T) {
 		CartCache            cartApplication.CartCache
 	}
 	type args struct {
-		session *sessions.Session
+		session *web.Session
 	}
 	tests := []struct {
 		name   string
@@ -280,7 +280,7 @@ func TestCartReceiverService_ViewGuestCart(t *testing.T) {
 	}
 	type args struct {
 		ctx     context.Context
-		session *sessions.Session
+		session *web.Session
 	}
 	tests := []struct {
 		name           string
@@ -433,7 +433,7 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 		CartCache           cartApplication.CartCache
 	}
 	type args struct {
-		session *sessions.Session
+		session *web.Session
 	}
 	tests := []struct {
 		name          string
@@ -662,7 +662,7 @@ func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 	}
 	type args struct {
 		ctx     context.Context
-		session *sessions.Session
+		session *web.Session
 	}
 	tests := []struct {
 		name      string

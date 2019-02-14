@@ -12,7 +12,6 @@ import (
 	"flamingo.me/dingo"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
-	"flamingo.me/flamingo/v3/framework/flamingo"
 )
 
 type (
@@ -50,11 +49,11 @@ func (m *CartModule) Configure(injector *dingo.Injector) {
 	injector.Bind((*application.EventPublisher)(nil)).To(application.DefaultEventPublisher{})
 
 	//Event
-	injector.BindMulti((*event.SubscriberWithContext)(nil)).To(application.EventReceiver{})
+	flamingo.BindEventSubscriber(injector).To(application.EventReceiver{})
 
 	// TemplateFunction
-	injector.BindMap(new(template.CtxFunc), "getCart").To(templatefunctions.GetCart{})
-	injector.BindMap(new(template.CtxFunc), "getDecoratedCart").To(templatefunctions.GetDecoratedCart{})
+	flamingo.BindTemplateFunc(injector, "getCart", new(templatefunctions.GetCart))
+	flamingo.BindTemplateFunc(injector, "getDecoratedCart", new(templatefunctions.GetDecoratedCart))
 
 	injector.Bind((*cart.DeliveryInfoBuilder)(nil)).To(cart.DefaultDeliveryInfoBuilder{})
 

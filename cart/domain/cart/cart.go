@@ -2,14 +2,10 @@ package cart
 
 import (
 	"fmt"
-
-	"github.com/gorilla/sessions"
-
 	"time"
-
 	"math"
-
 	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/pkg/errors"
 )
 
@@ -246,7 +242,7 @@ type (
 
 	// InvalidateCartEvent value object
 	InvalidateCartEvent struct {
-		Session *sessions.Session
+		Session *web.Session
 	}
 
 	// AdditionalData defines the supplementary cart data

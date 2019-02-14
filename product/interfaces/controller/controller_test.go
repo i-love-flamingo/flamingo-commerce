@@ -3,13 +3,9 @@ package controller
 import (
 	"context"
 	"errors"
-	"net/url"
 	"testing"
 
-	"flamingo.me/flamingo-commerce/v3/product/application"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
-	"flamingo.me/flamingo/v3/framework/web"
-	"flamingo.me/flamingo/v3/framework/web/mocks"
 )
 
 type (
@@ -87,24 +83,24 @@ func TestViewController_ExpectRedirect(t *testing.T) {
 	//redirectAware.AssertCalled(t, "RedirectPermanentURL", "/?marketplacecode=configurable&name=my-variant-title&variantcode=configurable_1")
 }
 
-func getController(redirectAware *mocks.RedirectAware, renderAware *mocks.RenderAware, errorAware *mocks.ErrorAware) *View {
-	u, _ := url.Parse(`http://test/`)
-	router := &router.Router{
-		RouterRegistry: router.NewRegistry(),
-	}
-	vc := &View{
-		ProductService: new(MockProductService),
-		RedirectAware:  redirectAware,
-		RenderAware:    renderAware,
-		ErrorAware:     errorAware,
-		UrlService: &application.UrlService{
-			Router: router,
-		},
-		Template: "product/product",
-		Router:   router,
-	}
-	vc.Router.SetBase(u)
-	vc.Router.RouterRegistry.Route("/", `product.view(marketplacecode?="test", name?="test", variantcode?="test")`)
-
-	return vc
-}
+//func getController(redirectAware *mocks.RedirectAware, renderAware *mocks.RenderAware, errorAware *mocks.ErrorAware) *View {
+	//u, _ := url.Parse(`http://test/`)
+	//router := &router.Router{
+	//	RouterRegistry: router.NewRegistry(),
+	//}
+	//vc := &View{
+	//	ProductService: new(MockProductService),
+	//	RedirectAware:  redirectAware,
+	//	RenderAware:    renderAware,
+	//	ErrorAware:     errorAware,
+	//	UrlService: &application.UrlService{
+	//		Router: router,
+	//	},
+	//	Template: "product/product",
+	//	Router:   router,
+	//}
+	//vc.Router.SetBase(u)
+	//vc.Router.RouterRegistry.Route("/", `product.view(marketplacecode?="test", name?="test", variantcode?="test")`)
+	//
+	//return vc
+//}

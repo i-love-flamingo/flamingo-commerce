@@ -24,7 +24,7 @@ func URLWithName(code, name string) (string, map[string]string) {
 // Configure the product URL
 func (m *Module) Configure(injector *dingo.Injector) {
 	web.BindRoutes(injector, new(routes))
-	injector.Bind(new(application.RouterRouter)).To(new(router.Router))
+	injector.Bind(new(application.RouterRouter)).To(new(web.Router))
 }
 
 // DefaultConfig for this module
@@ -49,7 +49,8 @@ func (r *routes) Inject(view *controller.View, entity *controller.Entity, tree *
 
 func (r *routes) Routes(registry *web.RouterRegistry) {
 	registry.HandleGet("category.view", r.view.Get)
-	registry.Route("/category/:code/:name.html", "category.view(code, name, *)").Normalize("name")
+	handler, _ := registry.Route("/category/:code/:name.html", "category.view(code, name, *)")
+	handler.Normalize("name")
 	registry.Route("/category/:code", "category.view(code, *)")
 
 	registry.HandleData("category.tree", r.tree.Data)

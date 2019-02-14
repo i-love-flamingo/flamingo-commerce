@@ -2,8 +2,7 @@ package cart
 
 import (
 	"context"
-
-	"github.com/gorilla/sessions"
+	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (
@@ -19,7 +18,7 @@ type (
 	}
 
 	CartValidator interface {
-		Validate(ctx context.Context, session *sessions.Session, cart *DecoratedCart) CartValidationResult
+		Validate(ctx context.Context, session *web.Session, cart *DecoratedCart) CartValidationResult
 	}
 )
 

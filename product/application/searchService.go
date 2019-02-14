@@ -34,8 +34,8 @@ type (
 // Find return SearchResult with matched products - based on given input
 func (s *ProductSearchService) Find(ctx context.Context, searchRequest *application.SearchRequest) (*SearchResult, error) {
 	var currentURL *url.URL
-	request, found := web.FromContext(ctx)
-	if !found {
+	request := web.RequestFromContext(ctx)
+	if request == nil {
 		currentURL = nil
 	} else {
 		currentURL = request.Request().URL
@@ -83,8 +83,8 @@ func (s *ProductSearchService) Find(ctx context.Context, searchRequest *applicat
 // FindBy return SearchResult with matched products filtered by the given attribute - based on given input
 func (s *ProductSearchService) FindBy(ctx context.Context, attributeCode string, values []string, searchRequest *application.SearchRequest) (*SearchResult, error) {
 	var currentURL *url.URL
-	request, found := web.FromContext(ctx)
-	if !found {
+	request:= web.RequestFromContext(ctx)
+	if request == nil {
 		currentURL = nil
 	} else {
 		currentURL = request.Request().URL

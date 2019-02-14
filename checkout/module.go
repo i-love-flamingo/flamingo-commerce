@@ -7,7 +7,7 @@ import (
 	paymentInfrastructure "flamingo.me/flamingo-commerce/v3/checkout/infrastructure/payment"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller/formDto"
-	formDomain "flamingo.me/form/domain"
+	formDomain "go.aoe.com/flamingo/form/domain"
 	"flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/dingo"
 	"flamingo.me/flamingo/v3/framework/web"

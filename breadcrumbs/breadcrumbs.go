@@ -24,7 +24,7 @@ const requestKey contextKeyTyp = "breadcrumbs"
 
 // Add a breadcrumb to the current context
 func Add(ctx context.Context, b Crumb) {
-	req, _ := web.FromContext(ctx)
+	req := web.RequestFromContext(ctx)
 
 	breadcrumbs, _ := req.Values.Load(requestKey)
 	if breadcrumbs, ok := breadcrumbs.([]Crumb); ok {
@@ -36,8 +36,8 @@ func Add(ctx context.Context, b Crumb) {
 }
 
 // Data controller
-func (bc *Controller) Data(ctx context.Context, _ *web.Request) interface{} {
-	req, _ := web.FromContext(ctx)
+func (bc *Controller) Data(ctx context.Context, _ *web.Request, _ web.RequestParams) interface{} {
+	req := web.RequestFromContext(ctx)
 
 	breadcrumbs, _ := req.Values.Load(requestKey)
 	if breadcrumbs, ok := breadcrumbs.([]Crumb); ok {

@@ -14,9 +14,9 @@ type Module struct{}
 
 // Configure the product URL
 func (m *Module) Configure(injector *dingo.Injector) {
-	injector.BindMap(new(template.CtxFunc), "getProduct").To(templatefunctions.GetProduct{})
-	injector.BindMap(new(template.Func), "getProductUrl").To(templatefunctions.GetProductUrl{})
-	injector.BindMap(new(template.CtxFunc), "findProducts").To(templatefunctions.FindProducts{})
+	flamingo.BindTemplateFunc(injector, "getProduct", new(templatefunctions.GetProduct))
+	flamingo.BindTemplateFunc(injector, "getProductUrl", new(templatefunctions.GetProductUrl))
+	flamingo.BindTemplateFunc(injector, "findProducts", new(templatefunctions.FindProducts))
 
 	web.BindRoutes(injector, new(routes))
 }
@@ -43,6 +43,8 @@ func (r *routes) Inject(controller *controller.View) {
 
 func (r *routes) Routes(registry *web.RouterRegistry) {
 	registry.HandleGet("product.view", r.controller.Get)
-	registry.Route("/product/:marketplacecode/:name.html", `product.view(marketplacecode, name, backurl?="")`).Normalize("name")
-	registry.Route("/product/:marketplacecode/:variantcode/:name.html", `product.view(marketplacecode, variantcode, name, backurl?="")`).Normalize("name")
+	h, _ := registry.Route("/product/:marketplacecode/:name.html", `product.view(marketplacecode, name, backurl?="")`)
+	h.Normalize("name")
+	h, _ = registry.Route("/product/:marketplacecode/:variantcode/:name.html", `product.view(marketplacecode, variantcode, name, backurl?="")`)
+	h.Normalize("name")
 }

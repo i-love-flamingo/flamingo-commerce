@@ -23,7 +23,7 @@ type (
 	//DefaultEventPublisher implements the event publisher of the domain and uses the framework event router
 	DefaultEventPublisher struct {
 		logger      flamingo.Logger
-		eventRouter event.Router
+		eventRouter flamingo.EventRouter
 	}
 )
 
@@ -35,7 +35,7 @@ var (
 // Inject the default event publisher dependencies
 func (dep *DefaultEventPublisher) Inject(
 	Logger flamingo.Logger,
-	EventRouter event.Router,
+	EventRouter flamingo.EventRouter,
 ) {
 	dep.logger = Logger
 	dep.eventRouter = EventRouter

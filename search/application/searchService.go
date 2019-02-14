@@ -48,8 +48,8 @@ type (
 // FindBy returns a SearchResult for the given Request
 func (s *SearchService) FindBy(ctx context.Context, documentType string, searchRequest SearchRequest) (*SearchResult, error) {
 	var currentURL *url.URL
-	request, found := web.FromContext(ctx)
-	if !found {
+	request:= web.RequestFromContext(ctx)
+	if request == nil {
 		currentURL = nil
 	} else {
 		currentURL = request.Request().URL
@@ -97,8 +97,8 @@ func (s *SearchService) FindBy(ctx context.Context, documentType string, searchR
 // Find returns a Searchresult for all document types for the given Request
 func (s *SearchService) Find(ctx context.Context, searchRequest SearchRequest) (map[string]*SearchResult, error) {
 	var currentURL *url.URL
-	request, found := web.FromContext(ctx)
-	if !found {
+	request := web.RequestFromContext(ctx)
+	if request == nil {
 		currentURL = nil
 	} else {
 		currentURL = request.Request().URL

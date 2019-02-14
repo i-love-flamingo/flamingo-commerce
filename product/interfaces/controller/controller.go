@@ -16,14 +16,12 @@ import (
 type (
 	// View demonstrates a product view controller
 	View struct {
-		Responder *web.Responder    `inject:""`
-		Responder *web.Responder   `inject:""`
-		responder.RedirectAware `inject:""`
+		responder *web.Responder    `inject:""`
 		domain.ProductService   `inject:""`
 		UrlService              *application.UrlService `inject:""`
 
 		Template string         `inject:"config:core.product.view.template"`
-		Router   *router.Router `inject:""`
+		Router   *web.Router `inject:""`
 	}
 
 	// productViewData is used for product rendering
@@ -148,7 +146,7 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 
 	for _, variant := range configurable.Variants {
 		urlName := web.URLTitle(variant.BasicProductData.Title)
-		variantUrl := vc.Router.URL("product.view", router.P{"marketplacecode": configurable.MarketPlaceCode, "variantcode": variant.MarketPlaceCode, "name": urlName}).String()
+		variantUrl, _ := vc.Router.URL("product.view", map[string]string{"marketplacecode": configurable.MarketPlaceCode, "variantcode": variant.MarketPlaceCode, "name": urlName})
 
 		attributes := make(map[string]string)
 
@@ -162,7 +160,7 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 		variants.Variants = append(variants.Variants, viewVariant{
 			Title:           variant.Title,
 			Marketplacecode: variant.MarketPlaceCode,
-			Url:             variantUrl,
+			Url:             variantUrl.String(),
 			Attributes:      attributes,
 		})
 	}
@@ -172,17 +170,17 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 
 // Get Response for Product matching sku param
 func (vc *View) Get(c context.Context, r *web.Request) web.Result {
-	product, err := vc.ProductService.Get(c, r.MustParam1("marketplacecode"))
+	product, err := vc.ProductService.Get(c, r.Params["marketplacecode"])
 	skipnamecheck, _ := r.Params["skipnamecheck"]
 
 	// catch error
 	if err != nil {
 		switch errors.Cause(err).(type) {
 		case domain.ProductNotFound:
-			return vc.ErrorNotFound(c, err)
+			return vc.responder.NotFound(err)
 
 		default:
-			return vc.Error(c, err)
+			return vc.responder.ServerError(err)
 		}
 	}
 
@@ -209,7 +207,7 @@ func (vc *View) Get(c context.Context, r *web.Request) web.Result {
 		} else {
 			configurableProductWithActiveVariant, err := configurableProduct.GetConfigurableWithActiveVariant(variantCode)
 			if err != nil {
-				return vc.ErrorNotFound(c, err)
+				return vc.responder.NotFound(err)
 			}
 			activeVariant = &configurableProductWithActiveVariant.ActiveVariant
 			//Redirect if url is not canonical
@@ -237,12 +235,12 @@ func (vc *View) Get(c context.Context, r *web.Request) web.Result {
 
 	vc.addBreadCrumb(product, c)
 
-	backUrl, ok := r.Query1("backurl")
-	if ok {
+	backUrl, err := r.Query1("backurl")
+	if err == nil {
 		viewData.BackUrl = backUrl
 	}
 
-	return vc.Responder.Render( vc.Template, viewData)
+	return vc.responder.Render( vc.Template, viewData)
 }
 
 // addBreadCrumb
@@ -261,9 +259,10 @@ func (vc *View) addBreadCrumb(product domain.BasicProduct, c context.Context) {
 		name, code := parts[0], parts[1]
 		if strings.HasPrefix(name, stringHead) {
 			name = name[len(stringHead):]
+			url, _ := vc.Router.URL(category.URLWithName(code, name))
 			breadcrumbs.Add(c, breadcrumbs.Crumb{
 				Title: name,
-				Url:   vc.Router.URL(category.URLWithName(code, name)).String(),
+				Url:   url.String(),
 				Code: code,
 			})
 			stringHead = stringHead + name + "/"
@@ -271,8 +270,8 @@ func (vc *View) addBreadCrumb(product domain.BasicProduct, c context.Context) {
 	}
 }
 
-func (vc *View) getRedirectIfRequired(product domain.BasicProduct, r *web.Request, skipnamecheck string) web.Redirect {
-	currentNameParameter := r.MustParam1("name")
+func (vc *View) getRedirectIfRequired(product domain.BasicProduct, r *web.Request, skipnamecheck string) *web.URLRedirectResponse {
+	currentNameParameter := r.Params["name"]
 	var allParams url.Values
 	if r.QueryAll() != nil {
 		allParams = url.Values(r.QueryAll())
@@ -288,7 +287,7 @@ func (vc *View) getRedirectIfRequired(product domain.BasicProduct, r *web.Reques
 			if len(allParams) > 0 {
 				newUrl.RawQuery = allParams.Encode()
 			}
-			return vc.RedirectPermanentURL(newUrl.String())
+			return vc.responder.URLRedirect(newUrl).Permanent()
 		}
 	}
 	return nil

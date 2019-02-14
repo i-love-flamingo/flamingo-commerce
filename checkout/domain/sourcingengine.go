@@ -2,18 +2,18 @@ package domain
 
 import (
 	"context"
+	"flamingo.me/flamingo/v3/framework/web"
 	"fmt"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo/v3/framework/flamingo"
-	"github.com/gorilla/sessions"
 	"github.com/pkg/errors"
 )
 
 type (
 	SourcingService interface {
-		GetSourceId(ctx context.Context, session *sessions.Session, decoratedCart *cart.DecoratedCart, deliveryCode string, item *cart.DecoratedCartItem) (string, error)
+		GetSourceId(ctx context.Context, session *web.Session, decoratedCart *cart.DecoratedCart, deliveryCode string, item *cart.DecoratedCartItem) (string, error)
 	}
 
 	SourcingEngine struct {
@@ -25,7 +25,7 @@ type (
 
 // SetSourcesForCartItems gets Sources and modifies the Cart Items
 // todo move to application layer ?
-func (se *SourcingEngine) SetSourcesForCartItems(ctx context.Context, session *sessions.Session, decoratedCart *cart.DecoratedCart) error {
+func (se *SourcingEngine) SetSourcesForCartItems(ctx context.Context, session *web.Session, decoratedCart *cart.DecoratedCart) error {
 	if se.SourcingService == nil {
 		return nil
 	}

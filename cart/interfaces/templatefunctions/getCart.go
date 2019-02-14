@@ -2,6 +2,7 @@ package templatefunctions
 
 import (
 	"context"
+	"flamingo.me/flamingo/v3/framework/web"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -34,8 +35,8 @@ func (tf *GetCart) Inject(
 // Func defines the GetCart template function
 func (tf *GetCart) Func(ctx context.Context) interface{} {
 	return func() cartDomain.Cart {
-		session, _ := session.FromContext(ctx)
-		cart, e := tf.cartReceiverService.ViewCart(ctx, session.G())
+		session := web.SessionFromContext(ctx)
+		cart, e := tf.cartReceiverService.ViewCart(ctx, session)
 		if e != nil {
 			tf.logger.Error("Error: cart.interfaces.templatefunc %v", e)
 		}
@@ -59,8 +60,8 @@ func (tf *GetDecoratedCart) Inject(
 // Func defines the GetDecoratedCrt deplate function
 func (tf *GetDecoratedCart) Func(ctx context.Context) interface{} {
 	return func() cartDomain.DecoratedCart {
-		session, _ := session.FromContext(ctx)
-		cart, e := tf.cartReceiverService.ViewDecoratedCart(ctx, session.G())
+		session := web.SessionFromContext(ctx)
+		cart, e := tf.cartReceiverService.ViewDecoratedCart(ctx, session)
 		if e != nil {
 			tf.logger.Error("Error: cart.interfaces.templatefunc %v", e)
 		}

@@ -114,7 +114,7 @@ type (
 		City          string `json:"city,omitempty"`
 		StateProvince string `json:"stateProvince,omitempty"`
 		PostalCode    string `json:"postalCode,omitempty"`
-		Country       string `json:"postalCode,omitempty"`
+		Country       string `json:"country,omitempty"`
 	}
 
 	// UserProfileInfo An extensible object for providing information about the user.

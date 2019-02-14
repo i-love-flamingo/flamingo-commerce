@@ -49,7 +49,7 @@ func TestFormService(t *testing.T) {
 	service.Inject(form.NewDecoder(), flamingo.NullLogger{}, nil)
 	service.SetCustomer(&FakeCustomer{})
 
-	r := web.RequestFromRequest(&http.Request{}, nil)
+	r := web.CreateRequest(&http.Request{}, nil)
 
 	urlValues := make(map[string][]string)
 	form, err := service.ParseFormData(context.Background(), r, urlValues)
