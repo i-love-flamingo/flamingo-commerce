@@ -49,7 +49,7 @@ func (cc *CartApiController) GetAction(ctx context.Context, r *web.Request) web.
 	if e != nil {
 		cc.logger.WithField("category", "CartApiController").Error("cart.cartapicontroller.get: %v", e.Error())
 		response := cc.responder.Data(result{Message: e.Error(), Success: false})
-		response.Status = 500
+		response.Status(500)
 		return response
 	}
 	return cc.responder.Data(cart)
@@ -75,7 +75,7 @@ func (cc *CartApiController) AddAction(ctx context.Context, r *web.Request) web.
 			msgCode = e.MessageCode()
 		}
 		response := cc.responder.Data(result{Message: err.Error(), MessageCode: msgCode, Success: false})
-		response.Status = 500
+		response.Status(500)
 		return response
 	}
 	return cc.responder.Data(result{
@@ -91,7 +91,7 @@ func (cc *CartApiController) ApplyVoucherAndGetAction(ctx context.Context, r *we
 	cart, err := cc.cartService.ApplyVoucher(ctx, r.Session(), couponCode)
 	if err != nil {
 		response := cc.responder.Data(result{Message: err.Error(), Success: false})
-		response.Status = 500
+		response.Status(500)
 		return response
 	}
 	return cc.responder.Data(cart)
@@ -102,7 +102,7 @@ func (cc *CartApiController) CleanAndGetAction(ctx context.Context, r *web.Reque
 	err := cc.cartService.DeleteAllItems(ctx, r.Session())
 	if err != nil {
 		response := cc.responder.Data(result{Message: err.Error(), Success: false})
-		response.Status = 500
+		response.Status(500)
 		return response
 	}
 
@@ -115,7 +115,7 @@ func (cc *CartApiController) CleanDeliveryAndGetAction(ctx context.Context, r *w
 	cart, err := cc.cartService.DeleteDelivery(ctx, r.Session(), deliveryCode)
 	if err != nil {
 		response := cc.responder.Data(result{Message: err.Error(), Success: false})
-		response.Status = 500
+		response.Status(500)
 		return response
 	}
 

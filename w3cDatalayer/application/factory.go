@@ -13,9 +13,6 @@ import (
 	authApplication "flamingo.me/flamingo/v3/core/auth/application"
 	canonicalUrlApplication "flamingo.me/flamingo/v3/core/canonicalurl/application"
 	"flamingo.me/flamingo/v3/framework/web"
-	"flamingo.me/flamingo/v3/framework/flamingo"
-	"flamingo.me/flamingo/v3/framework/web"
-	"flamingo.me/flamingo/v3/framework/web"
 	"go.opencensus.io/tag"
 )
 

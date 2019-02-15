@@ -5,7 +5,7 @@ replace (
 	flamingo.me/form => ../form
 	flamingo.me/pugtemplate => ../pugtemplate
 	flamingo.me/redirects => ../redirects
-	golang.org/x/oauth2 => github.com/Ompluscator/oauth2 v0.0.0-20190101010101-5dab4167f31cbd76b407f1486c86b40748bc5073
+	golang.org/x/oauth2 => github.com/Ompluscator/oauth2 v0.0.0-20190101010101-b7626857
 )
 
 require (
@@ -20,6 +20,6 @@ require (
 	github.com/stretchr/testify v1.3.0
 	go.aoe.com/flamingo/form v0.0.0-20190214145643-d0d66a148576
 	go.opencensus.io v0.19.0
-	golang.org/x/oauth2 v0.0.0
+	golang.org/x/oauth2 v0.0.0-20190212230446-3e8b2be13635
 	gopkg.in/go-playground/validator.v9 v9.27.0
 )

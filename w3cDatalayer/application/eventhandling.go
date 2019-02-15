@@ -30,7 +30,7 @@ func (e *EventReceiver) Inject(factory *Factory, cartFactory *cart.DecoratedCart
 // NotifyWithContext should get called by flamingo Eventlogic.
 // We use it to listen to Events that are relevant for the Datalayer
 // In case the events might be asycron (e.g. the origin action does a redirect to a sucess page) - we save the datalayer Event to a Session Flash - to make sure it is still available the first time the DatalayerService.Get is calles
-func (e *EventReceiver) NotifyWithContext(ctx context.Context, event flamingo.Event) {
+func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 	switch currentEvent := event.(type) {
 	//Handle OrderPlacedEvent and Set Transaction to current datalayer
 	case *application.AddToCartEvent:

@@ -16,7 +16,7 @@ import (
 type (
 	// View demonstrates a product view controller
 	View struct {
-		responder *web.Responder    `inject:""`
+		Responder *web.Responder    `inject:""`
 		domain.ProductService   `inject:""`
 		UrlService              *application.UrlService `inject:""`
 
@@ -177,10 +177,10 @@ func (vc *View) Get(c context.Context, r *web.Request) web.Result {
 	if err != nil {
 		switch errors.Cause(err).(type) {
 		case domain.ProductNotFound:
-			return vc.responder.NotFound(err)
+			return vc.Responder.NotFound(err)
 
 		default:
-			return vc.responder.ServerError(err)
+			return vc.Responder.ServerError(err)
 		}
 	}
 
@@ -207,7 +207,7 @@ func (vc *View) Get(c context.Context, r *web.Request) web.Result {
 		} else {
 			configurableProductWithActiveVariant, err := configurableProduct.GetConfigurableWithActiveVariant(variantCode)
 			if err != nil {
-				return vc.responder.NotFound(err)
+				return vc.Responder.NotFound(err)
 			}
 			activeVariant = &configurableProductWithActiveVariant.ActiveVariant
 			//Redirect if url is not canonical
@@ -240,7 +240,7 @@ func (vc *View) Get(c context.Context, r *web.Request) web.Result {
 		viewData.BackUrl = backUrl
 	}
 
-	return vc.responder.Render( vc.Template, viewData)
+	return vc.Responder.Render( vc.Template, viewData)
 }
 
 // addBreadCrumb
@@ -287,7 +287,7 @@ func (vc *View) getRedirectIfRequired(product domain.BasicProduct, r *web.Reques
 			if len(allParams) > 0 {
 				newUrl.RawQuery = allParams.Encode()
 			}
-			return vc.responder.URLRedirect(newUrl).Permanent()
+			return vc.Responder.URLRedirect(newUrl).Permanent()
 		}
 	}
 	return nil

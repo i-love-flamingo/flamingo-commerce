@@ -12,7 +12,7 @@ import (
 type (
 	// RouterRouter defines a interface for testing
 	RouterRouter interface {
-		URL(name string, params map[string]string) *url.URL
+		URL(name string, params map[string]string) (*url.URL, error)
 	}
 
 	// BreadcrumbService struct
@@ -32,9 +32,10 @@ func (bs *BreadcrumbService) AddBreadcrumb(ctx context.Context, category domain.
 		return
 	}
 	if category.Code() != "" {
+		u, _ := bs.router.URL(URLWithName(category.Code(), web.URLTitle(category.Name())))
 		breadcrumbs.Add(ctx, breadcrumbs.Crumb{
 			Title: category.Name(),
-			Url:   bs.router.URL(URLWithName(category.Code(), web.URLTitle(category.Name()))).String(),
+			Url:   u.String(),
 			Code:  category.Code(),
 		})
 	}

@@ -32,7 +32,7 @@ func (e EventReceiver) Inject(
 }
 
 //NotifyWithContext should get called by flamingo Eventlogic
-func (e *EventReceiver) NotifyWithContext(ctx context.Context, event flamingo.Event) {
+func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 	switch currentEvent := event.(type) {
 	//Handle Logout
 	case *domain.LogoutEvent:
