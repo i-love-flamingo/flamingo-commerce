@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"fmt"
 	"strconv"
 
@@ -23,7 +24,9 @@ type (
 		Message     string
 		MessageCode string
 		Success     bool
+		CartTeaser *cart.CartTeaser
 	}
+
 
 	messageCodeAvailable interface {
 		MessageCode() string
@@ -78,9 +81,15 @@ func (cc *CartApiController) AddAction(ctx context.Context, r *web.Request) web.
 		response.Status(500)
 		return response
 	}
+	cart, err := cc.cartReceiverService.ViewCart(ctx, r.Session())
+	if err != nil {
+		cc.logger.WithField("category", "CartApiController").Error("cart.cartapicontroller.add: %v", err.Error())
+		return cc.responder.Data(result{Message: err.Error(), Success: false}).Status(500)
+	}
 	return cc.responder.Data(result{
 		Success: true,
 		Message: fmt.Sprintf("added %v / %v Qty %v", addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode, addRequest.Qty),
+		CartTeaser: cart.GetCartTeaser(),
 	})
 }
 

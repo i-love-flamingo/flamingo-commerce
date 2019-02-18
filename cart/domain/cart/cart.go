@@ -44,6 +44,13 @@ type (
 		AppliedCouponCodes []CouponCode
 	}
 
+	//CartTeaser - represents some teaser infos for cart
+	CartTeaser struct {
+		ProductCount int
+		ItemCount int
+		DeliveryCodes []string
+	}
+
 	// CouponCode value object
 	CouponCode struct {
 		Code string
@@ -358,6 +365,18 @@ func (Cart Cart) ItemCount() int {
 	return count
 }
 
+
+// ProductCount - returns amount of different products
+func (Cart Cart) ProductCount() int {
+	count := 0
+	for _, delivery := range Cart.Deliveries {
+		count += len(delivery.Cartitems)
+	}
+
+	return count
+}
+
+
 // GetItemCartReferences returns a slice of all ItemCartReferences
 func (Cart Cart) GetItemCartReferences() []ItemCartReference {
 	var ids []ItemCartReference
@@ -406,8 +425,18 @@ func (Cart Cart) GetSavings() float64 {
 }
 
 // HasAppliedCouponCode checks if a coupon code is applied to the cart
-func (Cart Cart) HasAppliedCouponCode() bool {
-	return len(Cart.AppliedCouponCodes) > 0
+func (c Cart) HasAppliedCouponCode() bool {
+	return len(c.AppliedCouponCodes) > 0
+}
+
+
+// HasAppliedCouponCode checks if a coupon code is applied to the cart
+func (c Cart) GetCartTeaser() *CartTeaser {
+	return &CartTeaser{
+		DeliveryCodes: c.GetDeliveryCodes(),
+		ItemCount: c.ItemCount(),
+		ProductCount: c.ProductCount(),
+	}
 }
 
 // GetTotalItemsByType gets a slice of all Totalitems by typeCode
