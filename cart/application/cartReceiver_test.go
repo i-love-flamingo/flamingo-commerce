@@ -209,11 +209,7 @@ func TestCartReceiverService_ShouldHaveGuestCart(t *testing.T) {
 				CartCache:   new(MockCartCache),
 			},
 			args: args{
-				session: &sessions.Session{
-					Values: map[interface{}]interface{}{
-						cartApplication.GuestCartSessionKey: struct{}{},
-					},
-				},
+				session: web.EmptySession().Store(cartApplication.GuestCartSessionKey, struct{}{}),
 			},
 			want: true,
 		}, {
@@ -236,12 +232,9 @@ func TestCartReceiverService_ShouldHaveGuestCart(t *testing.T) {
 				CartCache:   new(MockCartCache),
 			},
 			args: args{
-				session: &sessions.Session{
-					Values: map[interface{}]interface{}{
-						"arbitrary_and_wrong_key": struct{}{},
-					},
-				},
+				session: web.EmptySession().Store("arbitrary_and_wrong_key", struct{}{}),
 			},
+
 			want: false,
 		},
 	}
@@ -310,12 +303,8 @@ func TestCartReceiverService_ViewGuestCart(t *testing.T) {
 				CartCache:   new(MockCartCache),
 			},
 			args: args{
-				ctx: context.Background(),
-				session: &sessions.Session{
-					Values: map[interface{}]interface{}{
-						"stuff": "some_malformed_id",
-					},
-				},
+				ctx:     context.Background(),
+				session: web.EmptySession().Store("stuff", "some_malformed_id"),
 			},
 			want:           &cartDomain.Cart{},
 			wantErr:        false,
@@ -340,12 +329,8 @@ func TestCartReceiverService_ViewGuestCart(t *testing.T) {
 				CartCache:   new(MockCartCache),
 			},
 			args: args{
-				ctx: context.Background(),
-				session: &sessions.Session{
-					Values: map[interface{}]interface{}{
-						cartApplication.GuestCartSessionKey: "some_guest_id",
-					},
-				},
+				ctx:     context.Background(),
+				session: web.EmptySession().Store(cartApplication.GuestCartSessionKey, "some_guest_id"),
 			},
 			want:           nil,
 			wantErr:        true,
@@ -370,12 +355,8 @@ func TestCartReceiverService_ViewGuestCart(t *testing.T) {
 				CartCache:   new(MockCartCache),
 			},
 			args: args{
-				ctx: context.Background(),
-				session: &sessions.Session{
-					Values: map[interface{}]interface{}{
-						cartApplication.GuestCartSessionKey: "some_guest_id",
-					},
-				},
+				ctx:     context.Background(),
+				session: web.EmptySession().Store(cartApplication.GuestCartSessionKey, "some_guest_id"),
 			},
 			want: &cartDomain.Cart{
 				ID: "mock_guest_cart",
@@ -480,11 +461,7 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 				CartCache:           new(MockCartCache),
 			},
 			args: args{
-				session: &sessions.Session{
-					Values: map[interface{}]interface{}{
-						cartApplication.GuestCartSessionKey: "some_guest_id",
-					},
-				},
+				session: web.EmptySession().Store(cartApplication.GuestCartSessionKey, "some_guest_id"),
 			},
 			wantErr:       false,
 			valuesCleared: true,
@@ -515,7 +492,7 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 			}
 
 			if tt.valuesCleared == true {
-				if len(tt.args.session.Values) > 0 {
+				if len(tt.args.session.Keys()) > 0 {
 					t.Error("Session Values should be empty, but aren't")
 				}
 			}
@@ -692,12 +669,8 @@ func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 				CartCache:   new(MockCartCache),
 			},
 			args: args{
-				ctx: context.Background(),
-				session: &sessions.Session{
-					Values: map[interface{}]interface{}{
-						"some_nonvalid_key": "some_guest_id",
-					},
-				},
+				ctx:     context.Background(),
+				session: web.EmptySession().Store("some_nonvalid_key", "some_guest_id"),
 			},
 			wantType0: nil,
 			wantType1: nil,
@@ -722,12 +695,8 @@ func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 				CartCache:   new(MockCartCache),
 			},
 			args: args{
-				ctx: context.Background(),
-				session: &sessions.Session{
-					Values: map[interface{}]interface{}{
-						"some_nonvalid_key": "some_guest_id",
-					},
-				},
+				ctx:     context.Background(),
+				session: web.EmptySession().Store("some_nonvalid_key", "some_guest_id"),
 			},
 			wantType0: &cartDomain.DecoratedCart{},
 			wantType1: &cartInfrastructure.InMemoryBehaviour{},

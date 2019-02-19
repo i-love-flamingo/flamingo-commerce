@@ -20,5 +20,5 @@ func TestAdd(t *testing.T) {
 	Add(ctx, crumb)
 
 	b, _ := r.Values.Load(requestKey)
-	assert.Len(t, b, 2)
+	assert.Len(t, b, 1)
 }

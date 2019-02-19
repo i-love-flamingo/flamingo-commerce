@@ -6,21 +6,24 @@ import (
 	"testing"
 
 	"flamingo.me/flamingo-commerce/v3/breadcrumbs"
-	"flamingo.me/flamingo/v3/framework/web"
-	"github.com/stretchr/testify/assert"
-
 	"flamingo.me/flamingo-commerce/v3/category/application"
 	"flamingo.me/flamingo-commerce/v3/category/domain"
+	"flamingo.me/flamingo/v3/framework/web"
+	"github.com/stretchr/testify/assert"
 )
 
 type (
 	MockRouter struct{}
 )
 
-func (router *MockRouter) URL(name string, params map[string]string) *url.URL {
+var (
+	_ application.RouterRouter = (*MockRouter)(nil)
+)
+
+func (r *MockRouter) URL(name string, params map[string]string) (*url.URL, error) {
 	return &url.URL{
 		Path: "/foo",
-	}
+	}, nil
 }
 
 func TestBreadcrumbService_AddBreadcrumb(t *testing.T) {

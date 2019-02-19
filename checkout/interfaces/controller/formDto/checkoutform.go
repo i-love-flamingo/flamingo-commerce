@@ -9,13 +9,13 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	customerDomain "flamingo.me/flamingo-commerce/v3/customer/domain"
-	"go.aoe.com/flamingo/form/application"
-	formDomain "go.aoe.com/flamingo/form/domain"
 	"flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/go-playground/form"
 	"github.com/leebenson/conform"
+	"go.aoe.com/flamingo/form/application"
+	formDomain "go.aoe.com/flamingo/form/domain"
 	validator "gopkg.in/go-playground/validator.v9"
 )
 
@@ -216,7 +216,7 @@ func (fs *CheckoutFormService) fillFormDataFromCart(formData CheckoutFormData) C
 }
 
 func (fs *CheckoutFormService) mapCustomerAddressToFormAddress(address customerDomain.Address, targetAddress *AddressFormData) {
-	if targetAddress.Email == "" {
+	if targetAddress.Email == "" || targetAddress.Email == "@" {
 		targetAddress.Email = address.Email
 	}
 	if targetAddress.Firstname == "" {
@@ -337,7 +337,7 @@ func (fs CheckoutFormService) GetAdditionFormFields(formData CheckoutFormData) m
 	return additionalFormData
 }
 
-// GetSelectedPayment returns additional cart data
+// GetAdditionalData returns additional cart data
 func (fs CheckoutFormService) GetAdditionalData(formData CheckoutFormData) *cart.AdditionalData {
 	return &cart.AdditionalData{
 		CustomAttributes: fs.GetAdditionFormFields(formData),

@@ -10,7 +10,6 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
-	"flamingo.me/flamingo/v3/framework/web"
 )
 
 var (
@@ -146,7 +145,7 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 		{
 			name: "error for no cart in cache",
 			args: args{
-				ctx: context.Background(),
+				ctx:     context.Background(),
 				session: web.EmptySession(),
 				id: application.CartCacheIdentifier{
 					GuestCartID:    "guest_cart_id",
@@ -157,11 +156,15 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 			want:           nil,
 			wantErr:        true,
 			wantMessageErr: "no cart in cache",
-		}, {
+		},
+		{
 			name: "cached cart found/invalid cache entry",
 			args: args{
 				ctx: context.Background(),
-				session: web.EmptySession().Store(application.CartSessionCacheCacheKeyPrefix + "cart_customer_id_guest_cart_id", application.CachedCartEntry{IsInvalid: true}),
+				session: web.EmptySession().Store(
+					application.CartSessionCacheCacheKeyPrefix+"cart_customer_id_guest_cart_id",
+					application.CachedCartEntry{IsInvalid: true},
+				),
 				id: application.CartCacheIdentifier{
 					GuestCartID:    "guest_cart_id",
 					IsCustomerCart: false,
@@ -171,14 +174,18 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 			want:           new(cart.Cart),
 			wantErr:        true,
 			wantMessageErr: "cache is invalid",
-		}, {
+		},
+		{
 			name: "cached cart found/valid cache entry",
 			args: args{
 				ctx: context.Background(),
-				session: web.EmptySession().Store(application.CartSessionCacheCacheKeyPrefix + "cart_customer_id_guest_cart_id", application.CachedCartEntry{
-					IsInvalid: false,
-					ExpiresOn: time.Now().Add(5 * time.Minute),
-				}),
+				session: web.EmptySession().Store(
+					application.CartSessionCacheCacheKeyPrefix+"cart_customer_id_guest_cart_id",
+					application.CachedCartEntry{
+						IsInvalid: false,
+						ExpiresOn: time.Now().Add(5 * time.Minute),
+					},
+				),
 				id: application.CartCacheIdentifier{
 					GuestCartID:    "guest_cart_id",
 					IsCustomerCart: false,
@@ -188,15 +195,19 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 			want:           new(cart.Cart),
 			wantErr:        false,
 			wantMessageErr: "",
-		}, {
+		},
+		{
 			name: "session contains invalid data at cache key",
 			args: args{
 				ctx: context.Background(),
-				session: web.EmptySession().Store(application.CartSessionCacheCacheKeyPrefix + "cart_customer_id_guest_cart_id", struct {
-					invalidProperty bool
-				}{
-					invalidProperty: true,
-				}),
+				session: web.EmptySession().Store(
+					application.CartSessionCacheCacheKeyPrefix+"cart_customer_id_guest_cart_id",
+					struct {
+						invalidProperty bool
+					}{
+						invalidProperty: true,
+					},
+				),
 				id: application.CartCacheIdentifier{
 					GuestCartID:    "guest_cart_id",
 					IsCustomerCart: false,
@@ -206,14 +217,17 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 			want:           nil,
 			wantErr:        true,
 			wantMessageErr: "cart cache contains invalid data at cache key",
-		}, {
+		},
+		{
 			name: "session contains expired cart cache",
 			args: args{
 				ctx: context.Background(),
-				session: web.EmptySession().Store(application.CartSessionCacheCacheKeyPrefix + "cart_customer_id_guest_cart_id", application.CachedCartEntry{
-					IsInvalid: false,
-					ExpiresOn: time.Now().Add(-1 * time.Second),
-				}),
+				session: web.EmptySession().Store(application.CartSessionCacheCacheKeyPrefix+"cart_customer_id_guest_cart_id",
+					application.CachedCartEntry{
+						IsInvalid: false,
+						ExpiresOn: time.Now().Add(-1 * time.Second),
+					},
+				),
 				id: application.CartCacheIdentifier{
 					GuestCartID:    "guest_cart_id",
 					IsCustomerCart: false,
@@ -291,11 +305,12 @@ func TestCartSessionCache_CacheCart(t *testing.T) {
 			},
 			wantErr:        true,
 			wantMessageErr: "no cart given to cache",
-		}, {
+		},
+		{
 			name:   "cart is cached",
 			fields: fields{},
 			args: args{
-				ctx: context.Background(),
+				ctx:     context.Background(),
 				session: web.EmptySession(),
 				id: application.CartCacheIdentifier{
 					GuestCartID:    "guest_cart_id",
@@ -329,9 +344,9 @@ func TestCartSessionCache_CacheCart(t *testing.T) {
 }
 
 func TestCartSessionCache_CartExpiry(t *testing.T) {
-	ctx := context.Background()
 	c := &application.CartSessionCache{}
 	c.Inject(
+		nil,
 		nil,
 		flamingo.NullLogger{},
 		&struct {
@@ -341,10 +356,8 @@ func TestCartSessionCache_CartExpiry(t *testing.T) {
 		},
 	)
 
-	session := &sessions.Session{
-		ID:     "test_session",
-		Values: map[interface{}]interface{}{},
-	}
+	ctx := context.Background()
+	session := web.EmptySession()
 
 	id := application.CartCacheIdentifier{
 		GuestCartID:    "guest_cart_id",
@@ -388,7 +401,7 @@ func TestCartSessionCache_Invalidate(t *testing.T) {
 			name:   "no cache entry",
 			fields: fields{},
 			args: args{
-				ctx: context.Background(),
+				ctx:     context.Background(),
 				session: web.EmptySession(),
 				id: application.CartCacheIdentifier{
 					GuestCartID:    "guest_cart_id",
@@ -399,19 +412,16 @@ func TestCartSessionCache_Invalidate(t *testing.T) {
 			wantErr:               true,
 			wantMessageErr:        "not found for invalidate",
 			wantCacheEntryInvalid: false,
-		}, {
+		},
+		{
 			name:   "invalidate cache entry",
 			fields: fields{},
 			args: args{
 				ctx: context.Background(),
-				session: &sessions.Session{
-					ID: "test_session",
-					Values: map[interface{}]interface{}{
-						application.CartSessionCacheCacheKeyPrefix + "cart__guest_cart_id": application.CachedCartEntry{
-							IsInvalid: false,
-						},
-					},
-				},
+				session: web.EmptySession().Store(
+					application.CartSessionCacheCacheKeyPrefix+"cart__guest_cart_id",
+					application.CachedCartEntry{IsInvalid: false},
+				),
 				id: application.CartCacheIdentifier{
 					GuestCartID:    "guest_cart_id",
 					IsCustomerCart: false,
@@ -442,10 +452,12 @@ func TestCartSessionCache_Invalidate(t *testing.T) {
 			}
 
 			if tt.wantCacheEntryInvalid == true {
-				for _, sessionValueValue := range tt.args.session.Values {
-					if cacheEntry, ok := sessionValueValue.(application.CachedCartEntry); ok {
-						if cacheEntry.IsInvalid != tt.wantCacheEntryInvalid {
-							t.Errorf("Cache validity doesnt match - got %v, wantCacheEntryInvalid %v", cacheEntry.IsInvalid, tt.wantCacheEntryInvalid)
+				for key := range tt.args.session.Keys() {
+					if cacheEntry, ok := tt.args.session.Load(key); ok {
+						if entry, ok := cacheEntry.(application.CachedCartEntry); ok {
+							if entry.IsInvalid != tt.wantCacheEntryInvalid {
+								t.Errorf("Cache validity doesnt match - got %v, wantCacheEntryInvalid %v", entry.IsInvalid, tt.wantCacheEntryInvalid)
+							}
 						}
 					}
 				}
@@ -473,11 +485,8 @@ func TestCartSessionCache_Delete(t *testing.T) {
 			name:   "cache entry not found for delete",
 			fields: fields{},
 			args: args{
-				ctx: context.Background(),
-				session: &sessions.Session{
-					ID:     "test_session",
-					Values: map[interface{}]interface{}{},
-				},
+				ctx:     context.Background(),
+				session: web.EmptySession(),
 				id: application.CartCacheIdentifier{
 					GuestCartID:    "guest_cart_id",
 					IsCustomerCart: false,
@@ -486,19 +495,16 @@ func TestCartSessionCache_Delete(t *testing.T) {
 			},
 			wantErr:        true,
 			wantMessageErr: "not found for delete",
-		}, {
+		},
+		{
 			name:   "deleted correclty",
 			fields: fields{},
 			args: args{
 				ctx: context.Background(),
-				session: &sessions.Session{
-					ID: "test_session",
-					Values: map[interface{}]interface{}{
-						application.CartSessionCacheCacheKeyPrefix + "cart__guest_cart_id": application.CachedCartEntry{
-							IsInvalid: false,
-						},
-					},
-				},
+				session: web.EmptySession().Store(
+					application.CartSessionCacheCacheKeyPrefix+"cart__guest_cart_id",
+					application.CachedCartEntry{IsInvalid: false},
+				),
 				id: application.CartCacheIdentifier{
 					GuestCartID:    "guest_cart_id",
 					IsCustomerCart: false,
@@ -549,11 +555,8 @@ func TestCartSessionCache_DeleteAll(t *testing.T) {
 			name:   "no cachekey found/nothing deleted",
 			fields: fields{},
 			args: args{
-				ctx: context.Background(),
-				session: &sessions.Session{
-					ID:     "test_session",
-					Values: map[interface{}]interface{}{},
-				},
+				ctx:     context.Background(),
+				session: web.EmptySession(),
 			},
 			wantErr:                true,
 			wantMessageErr:         "not found for delete",
@@ -564,14 +567,10 @@ func TestCartSessionCache_DeleteAll(t *testing.T) {
 			fields: fields{},
 			args: args{
 				ctx: context.Background(),
-				session: &sessions.Session{
-					ID: "test_session",
-					Values: map[interface{}]interface{}{
-						application.CartSessionCacheCacheKeyPrefix + "cart__guest_cart_id": application.CachedCartEntry{
-							IsInvalid: false,
-						},
-					},
-				},
+				session: web.EmptySession().Store(
+					application.CartSessionCacheCacheKeyPrefix+"cart__guest_cart_id",
+					application.CachedCartEntry{IsInvalid: false},
+				),
 			},
 			wantErr:                false,
 			wantMessageErr:         "",
