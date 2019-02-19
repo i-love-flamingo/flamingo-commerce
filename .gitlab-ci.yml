@@ -19,20 +19,17 @@ stages:
 cover:
   <<: *prepare
   script:
-  - dep ensure -v
   - go test -coverprofile cover.out ./...
   - go tool cover -func cover.out
 
 test:
   <<: *prepare
   script:
-  - dep ensure -v
   - go test -race ./...
 
 update:
   <<: *prepare
   script:
-  - dep ensure -v -update
   - go test -race ./...
   allow_failure: true
 
@@ -40,7 +37,6 @@ static-check flamingo:
   <<: *prepare
   allow_failure: true
   script:
-  - dep ensure -v -update
   - golint -set_exit_status $(go list ./...)
   - go vet ./...
   - gocritic check-project .
@@ -49,5 +45,4 @@ test 1.10:
   <<: *prepare
   image: iloveflamingo/buildenv:1.10
   script:
-  - dep ensure -v
   - go test -race ./...
