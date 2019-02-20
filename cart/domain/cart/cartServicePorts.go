@@ -61,8 +61,8 @@ type (
 
 	// PlaceOrderService  interface - Secondary PORT
 	PlaceOrderService interface {
-		PlaceGuestCart(ctx context.Context, cart *Cart, payment *CartPayment) (PlacedOrderInfos, error)
-		PlaceCustomerCart(ctx context.Context, auth domain.Auth, cart *Cart, payment *CartPayment) (PlacedOrderInfos, error)
+		PlaceGuestCart(ctx context.Context, cart *Cart, payment *Payment) (PlacedOrderInfos, error)
+		PlaceCustomerCart(ctx context.Context, auth domain.Auth, cart *Cart, payment *Payment) (PlacedOrderInfos, error)
 	}
 )
 

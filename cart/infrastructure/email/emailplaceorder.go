@@ -27,7 +27,7 @@ func (e *EMailAdapter) Inject(logger flamingo.Logger, config *struct {
 	e.logger = logger
 }
 
-func (e *EMailAdapter) PlaceGuestCart(ctx context.Context, cart *cartDomain.Cart, payment *cartDomain.CartPayment) (cartDomain.PlacedOrderInfos, error) {
+func (e *EMailAdapter) PlaceGuestCart(ctx context.Context, cart *cartDomain.Cart, payment *cartDomain.Payment) (cartDomain.PlacedOrderInfos, error) {
 	var placedOrders cartDomain.PlacedOrderInfos
 	placedOrders = append(placedOrders, cartDomain.PlacedOrderInfo{
 		OrderNumber: "1",
@@ -36,7 +36,7 @@ func (e *EMailAdapter) PlaceGuestCart(ctx context.Context, cart *cartDomain.Cart
 	return placedOrders, nil
 
 }
-func (e *EMailAdapter) PlaceCustomerCart(ctx context.Context, auth authDomain.Auth, cart *cartDomain.Cart, payment *cartDomain.CartPayment) (cartDomain.PlacedOrderInfos, error) {
+func (e *EMailAdapter) PlaceCustomerCart(ctx context.Context, auth authDomain.Auth, cart *cartDomain.Cart, payment *cartDomain.Payment) (cartDomain.PlacedOrderInfos, error) {
 	var placedOrders cartDomain.PlacedOrderInfos
 	placedOrders = append(placedOrders, cartDomain.PlacedOrderInfo{
 		OrderNumber: "1",

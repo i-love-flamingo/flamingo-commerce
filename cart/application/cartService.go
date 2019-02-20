@@ -531,7 +531,7 @@ func (cs *CartService) getLogger() flamingo.Logger {
 	return cs.logger.WithField("module","cart").WithField("category","application.cartService")
 }
 
-func (cs *CartService) PlaceOrder(ctx context.Context, session *web.Session, payment *cartDomain.CartPayment) (cartDomain.PlacedOrderInfos, error) {
+func (cs *CartService) PlaceOrder(ctx context.Context, session *web.Session, payment *cartDomain.Payment) (cartDomain.PlacedOrderInfos, error) {
 	cart, _, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return nil, err

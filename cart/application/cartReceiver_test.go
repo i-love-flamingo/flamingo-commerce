@@ -39,7 +39,7 @@ func (m *MockGuestCartServiceAdapter) GetNewCart(ctx context.Context) (*cartDoma
 	}, nil
 }
 
-func (m *MockGuestCartServiceAdapter) GetBehaviour(context.Context) (cartDomain.Behaviour, error) {
+func (m *MockGuestCartServiceAdapter) GetModifyBehaviour(context.Context) (cartDomain.ModifyBehaviour, error) {
 	return new(cartInfrastructure.InMemoryBehaviour), nil
 }
 
@@ -56,7 +56,7 @@ func (m *MockGuestCartServiceAdapterError) GetNewCart(ctx context.Context) (*car
 	return nil, errors.New("defective")
 }
 
-func (m *MockGuestCartServiceAdapterError) GetBehaviour(context.Context) (cartDomain.Behaviour, error) {
+func (m *MockGuestCartServiceAdapterError) GetModifyBehaviour(context.Context) (cartDomain.ModifyBehaviour, error) {
 	return new(cartInfrastructure.InMemoryBehaviour), nil
 }
 
@@ -71,7 +71,7 @@ var (
 	_ cartDomain.CustomerCartService = (*MockCustomerCartService)(nil)
 )
 
-func (m *MockCustomerCartService) GetBehaviour(context.Context, domain.Auth) (cartDomain.Behaviour, error) {
+func (m *MockCustomerCartService) GetModifyBehaviour(context.Context, domain.Auth) (cartDomain.ModifyBehaviour, error) {
 	return new(cartInfrastructure.InMemoryBehaviour), nil
 }
 
@@ -140,6 +140,10 @@ func (m *MockEventPublisher) PublishAddToCartEvent(ctx context.Context, marketPl
 
 func (m *MockEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context, item *cartDomain.Item, qtyBefore int, qtyAfter int, cartID string) {
 }
+
+func (m *MockEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos cartDomain.PlacedOrderInfos) {
+}
+
 
 // MockCartValidator
 type (
@@ -412,6 +416,7 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 		}
 		DeliveryInfoBuilder cartDomain.DeliveryInfoBuilder
 		CartCache           cartApplication.CartCache
+		PlaceOrderService cartDomain.PlaceOrderService
 	}
 	type args struct {
 		session *web.Session
@@ -481,6 +486,8 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 				tt.fields.CartValidator,
 				tt.fields.ItemValidator,
 				tt.fields.CartCache,
+				tt.fields.PlaceOrderService,
+
 			)
 
 			err := cs.DeleteSavedSessionGuestCartID(tt.args.session)
@@ -646,7 +653,7 @@ func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 		fields    fields
 		args      args
 		wantType0 *cartDomain.DecoratedCart
-		wantType1 cartDomain.Behaviour
+		wantType1 cartDomain.ModifyBehaviour
 		wantErr   bool
 	}{
 		{

@@ -55,7 +55,7 @@ func (os *OrderService) SetSources(ctx context.Context, session *web.Session) er
 }
 
 // PlaceOrder places the order
-func (os *OrderService) PlaceOrder(ctx context.Context, session *web.Session, decoratedCart *cart.DecoratedCart, payment *cart.CartPayment) (cart.PlacedOrderInfos, error) {
+func (os *OrderService) PlaceOrder(ctx context.Context, session *web.Session, decoratedCart *cart.DecoratedCart, payment *cart.Payment) (cart.PlacedOrderInfos, error) {
 	validationResult := os.cartService.ValidateCart(ctx, session, decoratedCart)
 	if !validationResult.IsValid() {
 		os.logger.Warn("Try to place an invalid cart")
@@ -118,7 +118,7 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.S
 
 //CurrentCartPlaceOrder - probably the best choice for a simple checkout
 // Assumptions: Only one BuildDeliveryInfo is used on the cart!
-func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.Session, payment cart.CartPayment) (cart.PlacedOrderInfos, error) {
+func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.Session, payment cart.Payment) (cart.PlacedOrderInfos, error) {
 	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(ctx, session)
 	if err != nil {
 		os.logger.Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)

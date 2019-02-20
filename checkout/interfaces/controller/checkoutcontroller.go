@@ -14,7 +14,6 @@ import (
 	paymentDomain "flamingo.me/flamingo-commerce/v3/checkout/domain/payment"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller/formdto"
 	customerApplication "flamingo.me/flamingo-commerce/v3/customer/application"
-	orderDomain "flamingo.me/flamingo-commerce/v3/order/domain"
 	authApplication "flamingo.me/flamingo/v3/core/auth/application"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/opencensus"
