@@ -180,7 +180,7 @@ func (s Factory) BuildCartData(cart cart.DecoratedCart) *domain.Cart {
 }
 
 // BuildTransactionData builds the domain transaction data
-func (s Factory) BuildTransactionData(ctx context.Context, cartTotals cart.CartTotals, decoratedItems []cart.DecoratedCartItem, orderID string, email string) *domain.Transaction {
+func (s Factory) BuildTransactionData(ctx context.Context, cartTotals cart.Totals, decoratedItems []cart.DecoratedCartItem, orderID string, email string) *domain.Transaction {
 	var profile *domain.UserProfile
 	session := web.SessionFromContext(ctx)
 	if s.userService.IsLoggedIn(ctx, session) {
@@ -221,7 +221,7 @@ func (s Factory) buildCartItem(item cart.DecoratedCartItem, currencyCode string)
 		},
 		Attributes: make(map[string]interface{}),
 	}
-	cartItem.Attributes["sourceId"] = item.Item.SourceId
+	cartItem.Attributes["sourceId"] = item.Item.SourceID
 	cartItem.Attributes["terminal"] = ""
 	cartItem.Attributes["leadtime"] = ""
 	return cartItem
@@ -238,7 +238,7 @@ func (s Factory) BuildProductData(product productDomain.BasicProduct) domain.Pro
 	// check for defaultVariant
 	baseData := product.BaseData()
 	saleableData := product.SaleableData()
-	if product.Type() == productDomain.TYPECONFIGURABLE {
+	if product.Type() == productDomain.TypeConfigurable {
 		if configurable, ok := product.(productDomain.ConfigurableProduct); ok {
 			defaultVariant, _ := configurable.GetDefaultVariant()
 			baseData = defaultVariant.BaseData()
@@ -314,7 +314,7 @@ func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.Produ
 	//Handle Variants if it is a Configurable
 	var parentIDRef *string
 	var variantSelectedAttributeRef *string
-	if product.Type() == productDomain.TYPECONFIGURABLE_WITH_ACTIVE_VARIANT {
+	if product.Type() == productDomain.TypeConfigurableWithActiveVariant {
 		if configurableWithActiveVariant, ok := product.(productDomain.ConfigurableProductWithActiveVariant); ok {
 			parentID := configurableWithActiveVariant.ConfigurableBaseData().MarketPlaceCode
 			parentIDRef = &parentID
@@ -322,7 +322,7 @@ func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.Produ
 			variantSelectedAttributeRef = &variantSelectedAttribute
 		}
 	}
-	if product.Type() == productDomain.TYPECONFIGURABLE {
+	if product.Type() == productDomain.TypeConfigurable {
 		if configurable, ok := product.(productDomain.ConfigurableProduct); ok {
 			parentID := configurable.BaseData().MarketPlaceCode
 			parentIDRef = &parentID

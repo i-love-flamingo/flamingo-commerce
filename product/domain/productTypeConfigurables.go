@@ -5,16 +5,14 @@ import (
 )
 
 const (
+	// TypeConfigurable denotes configurable products
+	TypeConfigurable = "configurable"
 
-	// TYPECONFIGURABLE denotes configurable products
-	TYPECONFIGURABLE = "configurable"
-
-	// TYPECONFIGURABLE denotes configurable products that has a variant selected
-	TYPECONFIGURABLE_WITH_ACTIVE_VARIANT = "configurable_with_activevariant"
+	// TypeConfigurableWithActiveVariant denotes configurable products that has a variant selected
+	TypeConfigurableWithActiveVariant = "configurable_with_activevariant"
 )
 
 type (
-
 	// ConfigurableProduct - A product that can be teasered and that has Sellable Variants Aggregated
 	ConfigurableProduct struct {
 		Identifier string
@@ -47,9 +45,10 @@ var _ BasicProduct = ConfigurableProductWithActiveVariant{}
 
 // Type interface implementation for SimpleProduct
 func (p ConfigurableProduct) Type() string {
-	return TYPECONFIGURABLE
+	return TypeConfigurable
 }
 
+// IsSaleable defaults to false
 func (p ConfigurableProduct) IsSaleable() bool {
 	return false
 }
@@ -59,16 +58,16 @@ func (p ConfigurableProduct) SaleableData() Saleable {
 	return Saleable{}
 }
 
+// GetConfigurableWithActiveVariant getter
 func (p ConfigurableProduct) GetConfigurableWithActiveVariant(variantMarketplaceCode string) (ConfigurableProductWithActiveVariant, error) {
-
 	variant, err := p.Variant(variantMarketplaceCode)
 	if err != nil {
 		return ConfigurableProductWithActiveVariant{}, err
 	}
 	return ConfigurableProductWithActiveVariant{
-		Identifier:       p.Identifier,
-		BasicProductData: p.BasicProductData,
-		Teaser:           p.Teaser,
+		Identifier:                 p.Identifier,
+		BasicProductData:           p.BasicProductData,
+		Teaser:                     p.Teaser,
 		VariantVariationAttributes: p.VariantVariationAttributes,
 		Variants:                   p.Variants,
 		ActiveVariant:              *variant,
@@ -101,15 +100,15 @@ func (p ConfigurableProduct) Variant(variantMarketplaceCode string) (*Variant, e
 	return nil, errors.New("No Variant with code " + variantMarketplaceCode + " found ")
 }
 
-// GetDefaultVariant
+// GetDefaultVariant getter
 func (p ConfigurableProduct) GetDefaultVariant() (*Variant, error) {
 	if len(p.Variants) > 0 {
 		return &p.Variants[0], nil
 	}
-	return nil, errors.New("There is no Variant")
+	return nil, errors.New("There is no Variant. ")
 }
 
-// HasMedia  for ConfigurableProduct
+// HasMedia for ConfigurableProduct
 func (p ConfigurableProduct) HasMedia(group string, usage string) bool {
 	media := findMediaInProduct(BasicProduct(p), group, usage)
 	if media == nil {
@@ -145,23 +144,27 @@ func (v Variant) SaleableData() Saleable {
 
 //********CONFIGURABLE WITH ACTIVE VARIANT
 
+// Type getter
 func (p ConfigurableProductWithActiveVariant) Type() string {
-	return TYPECONFIGURABLE_WITH_ACTIVE_VARIANT
+	return TypeConfigurableWithActiveVariant
 }
 
+// IsSaleable is true
 func (p ConfigurableProductWithActiveVariant) IsSaleable() bool {
 	return true
 }
 
+// GetIdentifier getter
 func (p ConfigurableProductWithActiveVariant) GetIdentifier() string {
 	return p.Identifier
 }
 
-// Returns only BaseData for Active Variant. If you need the BaseData of the Configurable - use ConfigurableBaseData()
+// BaseData returns only BaseData for Active Variant. If you need the BaseData of the Configurable - use ConfigurableBaseData()
 func (p ConfigurableProductWithActiveVariant) BaseData() BasicProductData {
 	return p.ActiveVariant.BasicProductData
 }
 
+// ConfigurableBaseData getter
 func (p ConfigurableProductWithActiveVariant) ConfigurableBaseData() BasicProductData {
 	return p.BasicProductData
 }
@@ -182,18 +185,16 @@ func (p ConfigurableProductWithActiveVariant) Variant(variantMarketplaceCode str
 	return nil, errors.New("No Variant with code " + variantMarketplaceCode + " found ")
 }
 
-// GetDefaultVariant
+// GetDefaultVariant getter
 func (p ConfigurableProductWithActiveVariant) GetDefaultVariant() (*Variant, error) {
 	if len(p.Variants) > 0 {
 		return &p.Variants[0], nil
 	}
-	return nil, errors.New("There is no Variant")
+	return nil, errors.New("There is no Variant. ")
 }
 
-/*
-	SaleableData getter for ConfigurableProduct
-	Gets either the first or the active variants saleableData
-*/
+// SaleableData getter for ConfigurableProduct
+// Gets either the first or the active variants saleableData
 func (p ConfigurableProductWithActiveVariant) SaleableData() Saleable {
 	return p.ActiveVariant.Saleable
 }

@@ -3,7 +3,6 @@ package templatefunctions
 import (
 	"context"
 	"log"
-
 	"strconv"
 
 	"flamingo.me/flamingo-commerce/v3/product/application"
@@ -11,12 +10,10 @@ import (
 	"flamingo.me/pugtemplate/pugjs"
 )
 
-type (
-	// FindProducts is exported as a template function
-	FindProducts struct {
-		SearchService *application.ProductSearchService `inject:""`
-	}
-)
+// FindProducts is exported as a template function
+type FindProducts struct {
+	SearchService *application.ProductSearchService `inject:""`
+}
 
 // Func defines the find products function
 func (tf *FindProducts) Func(ctx context.Context) interface{} {

@@ -14,6 +14,7 @@ type (
 	}
 )
 
+// Func factory
 func (tf *GetProduct) Func(ctx context.Context) interface{} {
 	return func(marketplaceCode string) domain.BasicProduct {
 		product, e := tf.ProductService.Get(ctx, marketplaceCode)

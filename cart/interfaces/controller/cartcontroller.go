@@ -16,7 +16,7 @@ type (
 	// CartViewData is used for cart views/templates
 	CartViewData struct {
 		DecoratedCart         cartDomain.DecoratedCart
-		CartValidationResult  cartDomain.CartValidationResult
+		CartValidationResult  cartDomain.ValidationResult
 		AddToCartProductsData []productDomain.BasicProductData
 	}
 
@@ -70,11 +70,11 @@ func (cc *CartViewController) ViewAction(ctx context.Context, r *web.Request) we
 	decoratedCart, err := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if err != nil {
 		cc.logger.WithField(flamingo.LogKeyCategory, "cartcontroller").Warn("cart.cartcontroller.viewaction: Error %v", err)
-		return cc.responder.Render( "checkout/carterror", nil)
+		return cc.responder.Render("checkout/carterror", nil)
 	}
 
 	if cc.showEmptyCartPageIfNoItems && decoratedCart.Cart.ItemCount() == 0 {
-		return cc.responder.Render( "checkout/emptycart", nil)
+		return cc.responder.Render("checkout/emptycart", nil)
 	}
 
 	cartViewData := CartViewData{
@@ -89,7 +89,7 @@ func (cc *CartViewController) ViewAction(ctx context.Context, r *web.Request) we
 		}
 	}
 
-	return cc.responder.Render( "checkout/cart", cartViewData)
+	return cc.responder.Render("checkout/cart", cartViewData)
 }
 
 // AddAndViewAction the DecoratedCart View ( / cart)
@@ -114,7 +114,7 @@ func (cc *CartViewController) AddAndViewAction(ctx context.Context, r *web.Reque
 	}
 	if err != nil {
 		cc.logger.WithField(flamingo.LogKeyCategory, "cartcontroller").Warn("cart.cartcontroller.addandviewaction: Error %v", err)
-		return cc.responder.Render( "checkout/carterror", nil)
+		return cc.responder.Render("checkout/carterror", nil)
 	}
 
 	r.Session().AddFlash(CartViewActionData{

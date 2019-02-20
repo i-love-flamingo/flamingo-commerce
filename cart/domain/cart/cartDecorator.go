@@ -91,7 +91,7 @@ func (df *DecoratedCartFactory) decorateCartItem(ctx context.Context, cartitem I
 		}
 		return decorateditem
 	}
-	if product.Type() == domain.TYPECONFIGURABLE {
+	if product.Type() == domain.TypeConfigurable {
 		if configureable, ok := product.(domain.ConfigurableProduct); ok {
 			configurableWithVariant, err := configureable.GetConfigurableWithActiveVariant(cartitem.VariantMarketPlaceCode)
 			if err != nil {
@@ -111,7 +111,7 @@ func (df *DecoratedCartFactory) decorateCartItem(ctx context.Context, cartitem I
 
 // IsConfigurable - checks if current CartItem is a Configurable Product
 func (dci DecoratedCartItem) IsConfigurable() bool {
-	return dci.Product.Type() == domain.TYPECONFIGURABLE_WITH_ACTIVE_VARIANT
+	return dci.Product.Type() == domain.TypeConfigurableWithActiveVariant
 }
 
 // GetVariant getter
@@ -143,7 +143,7 @@ func (dci DecoratedCartItem) GetDisplayMarketplaceCode() string {
 	return dci.Product.BaseData().MarketPlaceCode
 }
 
-// GetVariantsVariationAttribute getter
+// GetVariantsVariationAttributes getter
 func (dci DecoratedCartItem) GetVariantsVariationAttributes() domain.Attributes {
 	attributes := domain.Attributes{}
 	if dci.IsConfigurable() {
@@ -157,20 +157,19 @@ func (dci DecoratedCartItem) GetVariantsVariationAttributes() domain.Attributes 
 	return attributes
 }
 
-// GetVariantsVariationAttribute getter
+// GetVariantsVariationAttributeCodes getter
 func (dci DecoratedCartItem) GetVariantsVariationAttributeCodes() []string {
-	if dci.Product.Type() == domain.TYPECONFIGURABLE_WITH_ACTIVE_VARIANT {
+	if dci.Product.Type() == domain.TypeConfigurableWithActiveVariant {
 		return dci.Product.(domain.ConfigurableProductWithActiveVariant).VariantVariationAttributes
 	}
 	return nil
 }
 
-//DecoratedItems
-// @DEPRECATED - only here to support the old structure of accesing DecoratedItems in the Decorated Cart
+// DecoratedItems legacy function
+// deprecated: only here to support the old structure of accesing DecoratedItems in the Decorated Cart
 // Use instead:
 // 		Either GetAllDecoratedItems() - if you prefer a flat list of items or
 //		or iterate over DecoratedCart.DecoratedDelivery	and its DecoratedItems
-
 func (dc DecoratedCart) DecoratedItems() []DecoratedCartItem {
 	if dc.Logger != nil {
 		dc.Logger.Warn("DEPRECATED: DecoratedCart.DecoratedItems()")
@@ -178,11 +177,10 @@ func (dc DecoratedCart) DecoratedItems() []DecoratedCartItem {
 	return dc.GetAllDecoratedItems()
 }
 
-//DecoratedItems
-// @DEPRECATED - only here to support the old structure of accesing DecoratedItems in the Decorated Cart
+// GetGroupedBy legacy function
+// deprecated: only here to support the old structure of accesing DecoratedItems in the Decorated Cart
 // Use instead:
 //		or iterate over DecoratedCart.DecoratedDelivery
-
 func (dc DecoratedCart) GetGroupedBy(group string, sortGroup bool, params ...string) []*GroupedDecoratedCartItem {
 
 	if dc.Logger != nil {
@@ -194,6 +192,7 @@ func (dc DecoratedCart) GetGroupedBy(group string, sortGroup bool, params ...str
 	return dc.DecoratedDeliveries[0].GetGroupedBy(group, sortGroup, params...)
 }
 
+// GetAllDecoratedItems getter
 func (dc DecoratedCart) GetAllDecoratedItems() []DecoratedCartItem {
 	var allItems []DecoratedCartItem
 	for _, dd := range dc.DecoratedDeliveries {
@@ -202,6 +201,7 @@ func (dc DecoratedCart) GetAllDecoratedItems() []DecoratedCartItem {
 	return allItems
 }
 
+// GetDecoratedDeliveryByCode getter
 func (dc DecoratedCart) GetDecoratedDeliveryByCode(deliveryCode string) (*DecoratedDelivery, bool) {
 	for _, dd := range dc.DecoratedDeliveries {
 		if dd.Delivery.DeliveryInfo.Code == deliveryCode {

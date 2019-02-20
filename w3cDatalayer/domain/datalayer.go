@@ -6,13 +6,11 @@ import (
 )
 
 type (
-
 	// DatalayerProvider func
 	DatalayerProvider func() *Datalayer
-	/**
-	Datalayer Value object - represents the structure of the w3c Datalayer.
-	Therefore it has the json annotations and its intended to be directly converted to Json in the output
-	*/
+
+	// Datalayer Value object - represents the structure of the w3c Datalayer.
+	// Therefore it has the json annotations and its intended to be directly converted to Json in the output
 	Datalayer struct {
 		PageInstanceID string
 		Page           *Page
@@ -62,7 +60,7 @@ type (
 		DestinationURL string `json:"destinationURL,omitempty"`
 		BreadCrumbs    string `json:"breadCrumbs,omitempty"`
 		PageName       string `json:"pageName,omitempty"`
-		ReferringUrl   string `json:"referringUrl,omitempty"`
+		ReferringURL   string `json:"referringUrl,omitempty"`
 		Language       string `json:"language,omitempty"`
 		ErrorName      string `json:"errorName,omitempty"`
 	}

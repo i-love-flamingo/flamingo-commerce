@@ -78,7 +78,7 @@ func TestBuildIdentifierFromCart(t *testing.T) {
 			args: args{
 				cart: &cart.Cart{
 					BelongsToAuthenticatedUser: true,
-					AuthenticatedUserId:        "test_user_id",
+					AuthenticatedUserID:        "test_user_id",
 				},
 			},
 			want: &application.CartCacheIdentifier{
@@ -94,7 +94,7 @@ func TestBuildIdentifierFromCart(t *testing.T) {
 			args: args{
 				cart: &cart.Cart{
 					ID:                  "test_cart_id",
-					AuthenticatedUserId: "test_user_id",
+					AuthenticatedUserID: "test_user_id",
 				},
 			},
 			want: &application.CartCacheIdentifier{

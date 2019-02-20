@@ -4,20 +4,20 @@ import (
 	"encoding/gob"
 	"flamingo.me/flamingo-commerce/v3/cart/infrastructure/email"
 
+	"flamingo.me/dingo"
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/infrastructure"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/templatefunctions"
 	"flamingo.me/flamingo/v3/framework/config"
-	"flamingo.me/dingo"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (
-	// CartModule registers our profiler
-	CartModule struct {
+	// Module registers our profiler
+	Module struct {
 		routerRegistry  *web.RouterRegistry
 		useInMemoryCart bool
 		useEmailAdapter bool
@@ -26,7 +26,7 @@ type (
 )
 
 // Inject dependencies
-func (m *CartModule) Inject(
+func (m *Module) Inject(
 	routerRegistry *web.RouterRegistry,
 	config *struct {
 		UseInMemoryCart bool `inject:"config:cart.useInMemoryCartServiceAdapters"`
@@ -42,7 +42,7 @@ func (m *CartModule) Inject(
 }
 
 // Configure module
-func (m *CartModule) Configure(injector *dingo.Injector) {
+func (m *Module) Configure(injector *dingo.Injector) {
 	if m.useInMemoryCart {
 		injector.Bind((*infrastructure.CartStorage)(nil)).To(infrastructure.InMemoryCartStorage{}).AsEagerSingleton()
 		injector.Bind((*cart.GuestCartService)(nil)).To(infrastructure.InMemoryGuestCartService{})
@@ -71,7 +71,7 @@ func (m *CartModule) Configure(injector *dingo.Injector) {
 }
 
 // DefaultConfig enables inMemory cart service adapter
-func (m *CartModule) DefaultConfig() config.Map {
+func (m *Module) DefaultConfig() config.Map {
 	return config.Map{
 		"cart": config.Map{
 			"useInMemoryCartServiceAdapters": true,
@@ -84,10 +84,10 @@ func (m *CartModule) DefaultConfig() config.Map {
 
 type routes struct {
 	viewController *controller.CartViewController
-	apiController  *controller.CartApiController
+	apiController  *controller.CartAPIController
 }
 
-func (r *routes) Inject(viewController *controller.CartViewController, apiController *controller.CartApiController) {
+func (r *routes) Inject(viewController *controller.CartViewController, apiController *controller.CartAPIController) {
 	r.viewController = viewController
 	r.apiController = apiController
 }

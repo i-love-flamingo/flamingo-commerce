@@ -7,9 +7,9 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo-commerce/v3/w3cDatalayer/domain"
-	"flamingo.me/pugtemplate/pugjs"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
+	"flamingo.me/pugtemplate/pugjs"
 	"github.com/pkg/errors"
 )
 
@@ -28,9 +28,10 @@ type (
 	}
 )
 
+// constants
 const (
-	SESSION_EVENTS_KEY = "w3cdatalayer_events"
-	DATALAYER_REQ_KEY  = "w3cDatalayer"
+	SessionEventsKey = "w3cdatalayer_events"
+	DatalayerReqKey  = "w3cDatalayer"
 )
 
 // Inject method
@@ -53,13 +54,13 @@ func (s *Service) Get() domain.Datalayer {
 		return domain.Datalayer{}
 	}
 	req := web.RequestFromContext(s.currentContext)
-	if _, ok := req.Values.Load(DATALAYER_REQ_KEY); !ok {
+	if _, ok := req.Values.Load(DatalayerReqKey); !ok {
 		s.store(s.factory.BuildForCurrentRequest(s.currentContext, req))
 	}
 
 	s.AddSessionEvents()
 
-	layer, _ := req.Values.Load(DATALAYER_REQ_KEY)
+	layer, _ := req.Values.Load(DatalayerReqKey)
 	if savedDataLayer, ok := layer.(domain.Datalayer); ok {
 		return savedDataLayer
 	}
@@ -88,7 +89,7 @@ func (s *Service) AddSessionEvents() error {
 		return errors.New("Service can only be used with currentContext - call Init() first")
 	}
 	session := web.SessionFromContext(s.currentContext)
-	sessionEvents := session.Flashes(SESSION_EVENTS_KEY)
+	sessionEvents := session.Flashes(SessionEventsKey)
 
 	// early return if there are no events
 	if len(sessionEvents) == 0 {
@@ -131,7 +132,7 @@ func (s *Service) SetPageCategories(category string, subcategory1 string, subcat
 }
 
 // SetPageInfos to datalayer
-func (s *Service) SetPageInfos(pageId string, pageName string) error {
+func (s *Service) SetPageInfos(pageID string, pageName string) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
 	}
@@ -139,8 +140,8 @@ func (s *Service) SetPageInfos(pageId string, pageName string) error {
 	if layer.Page == nil {
 		layer.Page = &domain.Page{}
 	}
-	if pageId != "" {
-		layer.Page.PageInfo.PageID = pageId
+	if pageID != "" {
+		layer.Page.PageInfo.PageID = pageID
 	}
 	if pageName != "" {
 		layer.Page.PageInfo.PageName = pageName
@@ -193,13 +194,13 @@ func (s *Service) SetCartData(cart cart.DecoratedCart) error {
 }
 
 // SetTransaction information to datalayer
-func (s *Service) SetTransaction(cartTotals cart.CartTotals, decoratedItems []cart.DecoratedCartItem, orderId string, email string) error {
+func (s *Service) SetTransaction(cartTotals cart.Totals, decoratedItems []cart.DecoratedCartItem, orderID string, email string) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
 	}
-	s.logger.WithField("category", "w3cDatalayer").Debug("Set Transaction Data for order %v mail %v", orderId, email)
+	s.logger.WithField("category", "w3cDatalayer").Debug("Set Transaction Data for order %v mail %v", orderID, email)
 	layer := s.Get()
-	layer.Transaction = s.factory.BuildTransactionData(s.currentContext, cartTotals, decoratedItems, orderId, email)
+	layer.Transaction = s.factory.BuildTransactionData(s.currentContext, cartTotals, decoratedItems, orderID, email)
 	return s.store(layer)
 }
 
@@ -253,7 +254,7 @@ func (s *Service) store(layer domain.Datalayer) error {
 		return errors.New("Update called without context")
 	}
 	req := web.RequestFromContext(s.currentContext)
-	req.Values.Store(DATALAYER_REQ_KEY, layer)
+	req.Values.Store(DatalayerReqKey, layer)
 
 	return nil
 }

@@ -2,32 +2,33 @@ package cart
 
 import (
 	"context"
+
 	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (
-	// CartValidationResult represents the validation outcome
-	CartValidationResult struct {
+	// ValidationResult groups the validation result
+	ValidationResult struct {
 		HasCommonError        bool
 		CommonErrorMessageKey string
 		ItemResults           []ItemValidationError
 	}
 
-	// ItemValidationError represents a single item's error
+	// ItemValidationError applies for a single item
 	ItemValidationError struct {
-		ItemId          string
+		ItemID          string
 		UniqueItemID    string
 		ErrorMessageKey string
 	}
 
-	// CartValidator provides a validation of all items
-	CartValidator interface {
-		Validate(ctx context.Context, session *web.Session, cart *DecoratedCart) CartValidationResult
+	// Validator checks a complete decorated cart
+	Validator interface {
+		Validate(ctx context.Context, session *web.Session, cart *DecoratedCart) ValidationResult
 	}
 )
 
-// IsValid checks if there is any error in the result at all
-func (c CartValidationResult) IsValid() bool {
+// IsValid is valid is true if no errors occurred
+func (c ValidationResult) IsValid() bool {
 	if c.HasCommonError {
 		return false
 	}
@@ -37,18 +38,18 @@ func (c CartValidationResult) IsValid() bool {
 	return true
 }
 
-// HasErrorForItem checks if there is an error for the given item
-func (c CartValidationResult) HasErrorForItem(id string) bool {
+// HasErrorForItem checks if a specified item has an error
+func (c ValidationResult) HasErrorForItem(id string) bool {
 	for _, itemMessage := range c.ItemResults {
-		if itemMessage.UniqueItemID == id {
+		if itemMessage.ItemID == id {
 			return true
 		}
 	}
 	return false
 }
 
-// GetErrorMessageKeyForItem returns the error message key for the given item
-func (c CartValidationResult) GetErrorMessageKeyForItem(id string) string {
+// GetErrorMessageKeyForItem returns the specific error message for that item
+func (c ValidationResult) GetErrorMessageKeyForItem(id string) string {
 	for _, itemMessage := range c.ItemResults {
 		if itemMessage.UniqueItemID == id {
 			return itemMessage.ErrorMessageKey

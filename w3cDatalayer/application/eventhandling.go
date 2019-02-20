@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+
 	"flamingo.me/flamingo/v3/framework/web"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
@@ -27,7 +28,7 @@ func (e *EventReceiver) Inject(factory *Factory, cartFactory *cart.DecoratedCart
 	e.logger = logger
 }
 
-// NotifyWithContext should get called by flamingo Eventlogic.
+// Notify should get called by flamingo Eventlogic.
 // We use it to listen to Events that are relevant for the Datalayer
 // In case the events might be asycron (e.g. the origin action does a redirect to a sucess page) - we save the datalayer Event to a Session Flash - to make sure it is still available the first time the DatalayerService.Get is calles
 func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
@@ -45,7 +46,7 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 			dataLayerEvent := e.factory.BuildAddToBagEvent(saleableProductCode, currentEvent.ProductName, currentEvent.Qty)
 			session.AddFlash(
 				dataLayerEvent,
-				SESSION_EVENTS_KEY,
+				SessionEventsKey,
 			)
 		}
 	case *application.ChangedQtyInCartEvent:
@@ -60,23 +61,21 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 			dataLayerEvent := e.factory.BuildChangeQtyEvent(saleableProductCode, currentEvent.ProductName, currentEvent.QtyAfter, currentEvent.QtyBefore, currentEvent.CartID)
 			session.AddFlash(
 				dataLayerEvent,
-				SESSION_EVENTS_KEY,
+				SessionEventsKey,
 			)
 
 		}
 	case *authDomain.LoginEvent:
 		e.logger.WithField("category", "w3cDatalayer").Debug("Receive Event LoginEvent")
-		session:= web.SessionFromContext(ctx)
+		session := web.SessionFromContext(ctx)
 		if session != nil {
 
 			dataLayerEvent := domain.Event{EventInfo: make(map[string]interface{})}
 			dataLayerEvent.EventInfo["eventName"] = "login"
 			session.AddFlash(
 				dataLayerEvent,
-				SESSION_EVENTS_KEY,
+				SessionEventsKey,
 			)
-
 		}
 	}
-
 }

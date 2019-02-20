@@ -125,15 +125,18 @@ type (
 		UnitCode string
 	}
 
+	// Specifications of a product
 	Specifications struct {
 		Groups []SpecificationGroup
 	}
 
+	// SpecificationGroup groups specifications
 	SpecificationGroup struct {
 		Title   string
 		Entries []SpecificationEntry
 	}
 
+	// SpecificationEntry data
 	SpecificationEntry struct {
 		Label  string
 		Values []string
@@ -229,6 +232,7 @@ func (bpd BasicProductData) GetListMedia() Media {
 	return bpd.GetMedia(MediaUsageList)
 }
 
+// GetSpecifications getter
 func (bpd BasicProductData) GetSpecifications() Specifications {
 	if specs, ok := bpd.Attributes["specifications"].RawValue.(Specifications); ok {
 		return specs

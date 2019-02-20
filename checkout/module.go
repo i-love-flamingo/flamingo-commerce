@@ -1,17 +1,17 @@
 package checkout
 
 import (
+	"flamingo.me/dingo"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain"
 	paymentDomain "flamingo.me/flamingo-commerce/v3/checkout/domain/payment"
 	"flamingo.me/flamingo-commerce/v3/checkout/infrastructure"
 	paymentInfrastructure "flamingo.me/flamingo-commerce/v3/checkout/infrastructure/payment"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller/formDto"
-	formDomain "go.aoe.com/flamingo/form/domain"
 	"flamingo.me/flamingo/v3/framework/config"
-	"flamingo.me/dingo"
 	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/go-playground/form"
+	formDomain "go.aoe.com/flamingo/form/domain"
 )
 
 type (
@@ -23,7 +23,7 @@ type (
 
 // Configure module
 func (m *Module) Configure(injector *dingo.Injector) {
-	injector.BindMap((*paymentDomain.PaymentProvider)(nil), "offlinepayment").To(paymentInfrastructure.OfflinePaymentProvider{})
+	injector.BindMap((*paymentDomain.Provider)(nil), "offlinepayment").To(paymentInfrastructure.OfflinePaymentProvider{})
 
 	injector.Bind((*form.Decoder)(nil)).ToProvider(form.NewDecoder).AsEagerSingleton()
 	if m.UseFakeSourcingService {

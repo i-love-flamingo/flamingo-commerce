@@ -81,14 +81,14 @@ func BuildIdentifierFromCart(cart *cart.Cart) (*CartCacheIdentifier, error) {
 
 	if cart.BelongsToAuthenticatedUser {
 		return &CartCacheIdentifier{
-			CustomerID:     cart.AuthenticatedUserId,
+			CustomerID:     cart.AuthenticatedUserID,
 			IsCustomerCart: true,
 		}, nil
 	}
 
 	return &CartCacheIdentifier{
 		GuestCartID:    cart.ID,
-		CustomerID:     cart.AuthenticatedUserId,
+		CustomerID:     cart.AuthenticatedUserID,
 		IsCustomerCart: false,
 	}, nil
 }
@@ -147,7 +147,7 @@ func (cs *CartSessionCache) BuildIdentifier(ctx context.Context, session *web.Se
 
 // GetCart fetches a Cart from the Cache
 func (cs *CartSessionCache) GetCart(ctx context.Context, session *web.Session, id CartCacheIdentifier) (*cart.Cart, error) {
-	if cache, ok := session.Load(CartSessionCacheCacheKeyPrefix+id.CacheKey()); ok {
+	if cache, ok := session.Load(CartSessionCacheCacheKeyPrefix + id.CacheKey()); ok {
 		if cachedCartsEntry, ok := cache.(CachedCartEntry); ok {
 			cs.logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").Debug("Found cached cart %v", id.CacheKey())
 
@@ -194,7 +194,7 @@ func (cs *CartSessionCache) CacheCart(ctx context.Context, session *web.Session,
 
 // Invalidate a Cache Entry
 func (cs *CartSessionCache) Invalidate(ctx context.Context, session *web.Session, id CartCacheIdentifier) error {
-	if cache, ok := session.Load(CartSessionCacheCacheKeyPrefix+id.CacheKey()); ok {
+	if cache, ok := session.Load(CartSessionCacheCacheKeyPrefix + id.CacheKey()); ok {
 		if cachedCartsEntry, ok := cache.(CachedCartEntry); ok {
 			cachedCartsEntry.IsInvalid = true
 			session.Store(CartSessionCacheCacheKeyPrefix+id.CacheKey(), cachedCartsEntry)
@@ -208,8 +208,8 @@ func (cs *CartSessionCache) Invalidate(ctx context.Context, session *web.Session
 
 // Delete a Cache entry
 func (cs *CartSessionCache) Delete(ctx context.Context, session *web.Session, id CartCacheIdentifier) error {
-	if _, ok := session.Load(CartSessionCacheCacheKeyPrefix+id.CacheKey()); ok {
-		session.Delete(CartSessionCacheCacheKeyPrefix+id.CacheKey())
+	if _, ok := session.Load(CartSessionCacheCacheKeyPrefix + id.CacheKey()); ok {
+		session.Delete(CartSessionCacheCacheKeyPrefix + id.CacheKey())
 
 		// ok deleted something
 		return nil

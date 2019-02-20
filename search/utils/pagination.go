@@ -15,6 +15,7 @@ type (
 		ShowAroundActivePageAmount float64 `inject:"config:pagination.showAroundActivePageAmount"`
 	}
 
+	// CurrentResultInfos page information
 	CurrentResultInfos struct {
 		ActivePage int
 		TotalHits  int
@@ -22,6 +23,7 @@ type (
 		LastPage   int
 	}
 
+	// PaginationInfo meta information
 	PaginationInfo struct {
 		NextPage       Page
 		PreviousPage   Page
@@ -29,14 +31,15 @@ type (
 		PageNavigation []Page
 	}
 
+	// Page page data
 	Page struct {
 		Page     int
-		Url      string
+		URL      string
 		IsActive bool
 		IsSpacer bool
 	}
 
-	//PaginationInfoFactory - used to build a configuration based on configured defaults
+	// PaginationInfoFactory - used to build a configuration based on configured defaults
 	PaginationInfoFactory struct {
 		DefaultConfig *PaginationConfig `inject:""`
 	}
@@ -63,13 +66,13 @@ func BuildWith(currentResult CurrentResultInfos, paginationConfig PaginationConf
 	if currentResult.ActivePage > 1 {
 		paginationInfo.PreviousPage = Page{
 			Page: currentResult.ActivePage - 1,
-			Url:  makeUrl(urlBase, currentResult.ActivePage-1),
+			URL:  makeURL(urlBase, currentResult.ActivePage-1),
 		}
 	}
 	if currentResult.ActivePage < currentResult.LastPage {
 		paginationInfo.NextPage = Page{
 			Page: currentResult.ActivePage + 1,
-			Url:  makeUrl(urlBase, currentResult.ActivePage+1),
+			URL:  makeURL(urlBase, currentResult.ActivePage+1),
 		}
 	}
 
@@ -107,7 +110,7 @@ func BuildWith(currentResult CurrentResultInfos, paginationConfig PaginationConf
 			Page:     pageNr,
 			IsActive: pageNr == currentResult.ActivePage,
 			IsSpacer: false,
-			Url:      makeUrl(urlBase, pageNr),
+			URL:      makeURL(urlBase, pageNr),
 		}
 		paginationInfo.PageNavigation = append(paginationInfo.PageNavigation, page)
 		previousPageNr = pageNr
@@ -125,7 +128,7 @@ func (f *PaginationInfoFactory) Build(activePage int, totalHits int, pageSize in
 	}, *f.DefaultConfig, urlBase)
 }
 
-func makeUrl(base *url.URL, page int) string {
+func makeURL(base *url.URL, page int) string {
 	q := base.Query()
 	q.Set("page", strconv.Itoa(page))
 	return (&url.URL{RawQuery: q.Encode()}).String()

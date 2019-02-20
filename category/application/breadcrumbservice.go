@@ -35,7 +35,7 @@ func (bs *BreadcrumbService) AddBreadcrumb(ctx context.Context, category domain.
 		u, _ := bs.router.URL(URLWithName(category.Code(), web.URLTitle(category.Name())))
 		breadcrumbs.Add(ctx, breadcrumbs.Crumb{
 			Title: category.Name(),
-			Url:   u.String(),
+			URL:   u.String(),
 			Code:  category.Code(),
 		})
 	}

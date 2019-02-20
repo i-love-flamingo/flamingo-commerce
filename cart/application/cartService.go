@@ -22,7 +22,7 @@ type (
 		logger              flamingo.Logger
 		defaultDeliveryCode string
 		// optionals - these may be nil
-		cartValidator cartDomain.CartValidator
+		cartValidator cartDomain.Validator
 		itemValidator cartDomain.ItemValidator
 		cartCache     CartCache
 		placeOrderService     cartDomain.PlaceOrderService
@@ -39,7 +39,7 @@ func (cs *CartService) Inject(
 	config *struct {
 		DefaultDeliveryCode string `inject:"config:cart.defaultDeliveryCode,optional"`
 	},
-	cartValidator cartDomain.CartValidator,
+	cartValidator cartDomain.Validator,
 	itemValidator cartDomain.ItemValidator,
 	cartCache CartCache,
 	placeOrderService     cartDomain.PlaceOrderService,
@@ -64,7 +64,7 @@ func (cs *CartService) GetCartReceiverService() *CartReceiverService {
 }
 
 // ValidateCart validates a carts content
-func (cs *CartService) ValidateCart(ctx context.Context, session *web.Session, decoratedCart *cartDomain.DecoratedCart) cartDomain.CartValidationResult {
+func (cs *CartService) ValidateCart(ctx context.Context, session *web.Session, decoratedCart *cartDomain.DecoratedCart) cartDomain.ValidationResult {
 
 	if cs.cartValidator != nil {
 		result := cs.cartValidator.Validate(ctx, session, decoratedCart)
@@ -72,14 +72,14 @@ func (cs *CartService) ValidateCart(ctx context.Context, session *web.Session, d
 		return result
 	}
 
-	return cartDomain.CartValidationResult{}
+	return cartDomain.ValidationResult{}
 }
 
 // ValidateCurrentCart validates the current active cart
-func (cs *CartService) ValidateCurrentCart(ctx context.Context, session *web.Session) (cartDomain.CartValidationResult, error) {
+func (cs *CartService) ValidateCurrentCart(ctx context.Context, session *web.Session) (cartDomain.ValidationResult, error) {
 	decoratedCart, err := cs.cartReceiverService.ViewDecoratedCart(ctx, session)
 	if err != nil {
-		return cartDomain.CartValidationResult{}, err
+		return cartDomain.ValidationResult{}, err
 	}
 
 	return cs.ValidateCart(ctx, session, decoratedCart), nil
@@ -170,7 +170,7 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 		deliveryCode = cs.defaultDeliveryCode
 	}
 
-	item, err := cart.GetByItemId(itemID, deliveryCode)
+	item, err := cart.GetByItemID(itemID, deliveryCode)
 	if err != nil {
 		cs.logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemQty").Error(err)
 
@@ -212,7 +212,7 @@ func (cs *CartService) UpdateItemSourceID(ctx context.Context, session *web.Sess
 	if deliveryCode == "" {
 		deliveryCode = cs.defaultDeliveryCode
 	}
-	_, err = cart.GetByItemId(itemID, deliveryCode)
+	_, err = cart.GetByItemID(itemID, deliveryCode)
 	if err != nil {
 		cs.logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemSourceId").Error(err)
 
@@ -249,7 +249,7 @@ func (cs *CartService) DeleteItem(ctx context.Context, session *web.Session, ite
 		deliveryCode = cs.defaultDeliveryCode
 	}
 
-	item, err := cart.GetByItemId(itemID, deliveryCode)
+	item, err := cart.GetByItemID(itemID, deliveryCode)
 	if err != nil {
 		cs.logger.WithField("category", "cartService").WithField("subCategory", "DeleteItem").Error(err)
 
@@ -402,7 +402,7 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 	}
 
 	cart, err = behaviour.AddToCart(ctx, cart, deliveryCode, addRequest)
-	if err == cartDomain.DeliveryCodeNotFound {
+	if err == cartDomain.ErrDeliveryCodeNotFound {
 		//old Magento adapter will never return this
 		//Edge case...
 		// For later - todo:
@@ -460,7 +460,7 @@ func (cs *CartService) ApplyVoucher(ctx context.Context, session *web.Session, c
 }
 
 func (cs *CartService) handleCartNotFound(session *web.Session, err error) {
-	if err == cartDomain.CartNotFoundError {
+	if err == cartDomain.ErrCartNotFound {
 		cs.DeleteSavedSessionGuestCartID(session)
 	}
 }
@@ -472,7 +472,7 @@ func (cs *CartService) checkProductForAddRequest(ctx context.Context, session *w
 		return addRequest, nil, fmt.Errorf("cart.application.cartservice - AddProduct Error: %v", err)
 	}
 
-	if product.Type() == productDomain.TYPECONFIGURABLE {
+	if product.Type() == productDomain.TypeConfigurable {
 		if addRequest.VariantMarketplaceCode == "" {
 			return addRequest, nil, errors.New("cart.application.cartservice - AddProduct:No Variant given for configurable product")
 		}

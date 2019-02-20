@@ -13,11 +13,11 @@ type Behaviour struct {
 }
 
 // PlaceOrder provides a mock function with given fields: ctx, _a1, payment
-func (_m *Behaviour) PlaceOrder(ctx context.Context, _a1 *cart.Cart, payment *cart.CartPayment) (domain.PlacedOrderInfos, error) {
+func (_m *Behaviour) PlaceOrder(ctx context.Context, _a1 *cart.Cart, payment *cart.Payment) (domain.PlacedOrderInfos, error) {
 	ret := _m.Called(ctx, _a1, payment)
 
 	var r0 domain.PlacedOrderInfos
-	if rf, ok := ret.Get(0).(func(context.Context, *cart.Cart, *cart.CartPayment) domain.PlacedOrderInfos); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *cart.Cart, *cart.Payment) domain.PlacedOrderInfos); ok {
 		r0 = rf(ctx, _a1, payment)
 	} else {
 		if ret.Get(0) != nil {
@@ -26,7 +26,7 @@ func (_m *Behaviour) PlaceOrder(ctx context.Context, _a1 *cart.Cart, payment *ca
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, *cart.Cart, *cart.CartPayment) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *cart.Cart, *cart.Payment) error); ok {
 		r1 = rf(ctx, _a1, payment)
 	} else {
 		r1 = ret.Error(1)

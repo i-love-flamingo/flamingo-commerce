@@ -53,7 +53,7 @@ func TestBreadcrumbService_AddBreadcrumb(t *testing.T) {
 			want: []breadcrumbs.Crumb{
 				{
 					Title: "Root",
-					Url:   "/foo", // hardcoded value, we test only for the title to be correct
+					URL:   "/foo", // hardcoded value, we test only for the title to be correct
 					Code:  "root",
 				},
 			},
@@ -66,22 +66,22 @@ func TestBreadcrumbService_AddBreadcrumb(t *testing.T) {
 			want: []breadcrumbs.Crumb{
 				{
 					Title: "Root",
-					Url:   "/foo", // hardcoded value, we test only for the title to be correct
+					URL:   "/foo", // hardcoded value, we test only for the title to be correct
 					Code:  "root",
 				},
 				{
 					Title: "Sub1 Active",
-					Url:   "/foo", // hardcoded value, we test only for the title to be correct
+					URL:   "/foo", // hardcoded value, we test only for the title to be correct
 					Code:  "root-sub1-active",
 				},
 				{
 					Title: "Sub2 Active",
-					Url:   "/foo", // hardcoded value, we test only for the title to be correct
+					URL:   "/foo", // hardcoded value, we test only for the title to be correct
 					Code:  "root-sub2-active",
 				},
 				{
 					Title: "Sub3 Active",
-					Url:   "/foo", // hardcoded value, we test only for the title to be correct
+					URL:   "/foo", // hardcoded value, we test only for the title to be correct
 					Code:  "root-sub3-active",
 				},
 			},

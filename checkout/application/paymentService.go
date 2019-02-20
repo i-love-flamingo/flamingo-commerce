@@ -2,16 +2,14 @@ package application
 
 import cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 
-type (
+// PaymentService helper to get the default cart payment
+type PaymentService struct {
+	DefaultPaymentMethod string `inject:"config:checkout.defaultPaymentMethod"`
+}
 
-	// PaymentService
-	PaymentService struct {
-		DefaultPaymentMethod string `inject:"config:checkout.defaultPaymentMethod"`
-	}
-)
-
-func (p PaymentService) GetDefaultCartPayment(cart *cartDomain.Cart) *cartDomain.CartPayment {
-	payment := &cartDomain.CartPayment{}
+// GetDefaultCartPayment returns the payment to be used for a cart
+func (p PaymentService) GetDefaultCartPayment(cart *cartDomain.Cart) *cartDomain.Payment {
+	payment := &cartDomain.Payment{}
 	paymentInfo := cartDomain.PaymentInfo{
 		Method: p.DefaultPaymentMethod,
 	}

@@ -11,7 +11,7 @@ import (
 func TestAdd(t *testing.T) {
 	crumb := Crumb{
 		Title: "Test",
-		Url:   "http://testurl/",
+		URL:   "http://testurl/",
 	}
 
 	r := web.CreateRequest(nil, nil)

@@ -2,20 +2,22 @@ package domain
 
 import (
 	"context"
-	"flamingo.me/flamingo/v3/framework/web"
 	"fmt"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/pkg/errors"
 )
 
 type (
+	// SourcingService helps in retrieving item sources
 	SourcingService interface {
-		GetSourceId(ctx context.Context, session *web.Session, decoratedCart *cart.DecoratedCart, deliveryCode string, item *cart.DecoratedCartItem) (string, error)
+		GetSourceID(ctx context.Context, session *web.Session, decoratedCart *cart.DecoratedCart, deliveryCode string, item *cart.DecoratedCartItem) (string, error)
 	}
 
+	// SourcingEngine computes item sources
 	SourcingEngine struct {
 		SourcingService SourcingService          `inject:",optional"`
 		Logger          flamingo.Logger          `inject:""`
@@ -31,13 +33,13 @@ func (se *SourcingEngine) SetSourcesForCartItems(ctx context.Context, session *w
 	}
 	for _, decoratedDelivery := range decoratedCart.DecoratedDeliveries {
 		for _, decoratedCartItem := range decoratedDelivery.DecoratedItems {
-			sourceId, err := se.SourcingService.GetSourceId(ctx, session, decoratedCart, decoratedDelivery.Delivery.DeliveryInfo.Code, &decoratedCartItem)
+			sourceID, err := se.SourcingService.GetSourceID(ctx, session, decoratedCart, decoratedDelivery.Delivery.DeliveryInfo.Code, &decoratedCartItem)
 			if err != nil {
 				se.Logger.WithField("category", "checkout").WithField("subcategory", "SourcingEngine").Error(err)
 				return fmt.Errorf("checkout.application.sourcingengine error: %v", err)
 			}
-			se.Logger.WithField("category", "checkout").WithField("subcategory", "SourcingEngine").Debug("SourcingEngine detected source %v for item %v", sourceId, decoratedCartItem.Item.ID)
-			err = se.Cartservice.UpdateItemSourceID(ctx, session, decoratedCartItem.Item.ID, decoratedDelivery.Delivery.DeliveryInfo.Code, sourceId)
+			se.Logger.WithField("category", "checkout").WithField("subcategory", "SourcingEngine").Debug("SourcingEngine detected source %v for item %v", sourceID, decoratedCartItem.Item.ID)
+			err = se.Cartservice.UpdateItemSourceID(ctx, session, decoratedCartItem.Item.ID, decoratedDelivery.Delivery.DeliveryInfo.Code, sourceID)
 			if err != nil {
 				return errors.Wrap(err, "Could not update cart item")
 			}

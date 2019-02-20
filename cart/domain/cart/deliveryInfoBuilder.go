@@ -33,22 +33,22 @@ func (b *DefaultDeliveryInfoBuilder) BuildByDeliveryCode(deliverycode string) (D
 		b.logger.WithField("category", "cart").WithField("subcategory", "DefaultDeliveryInfoBuilder").Warn("Empty deliverycode")
 		return DeliveryInfo{
 			Code:   deliverycode,
-			Method: DELIVERY_METHOD_UNSPECIFIED,
+			Method: DeliveryMethodUnspecified,
 		}, nil
 	}
-	if deliverycode == DELIVERY_METHOD_DELIVERY {
+	if deliverycode == DeliveryMethodDelivery {
 		return DeliveryInfo{
 			Code:   deliverycode,
-			Method: DELIVERY_METHOD_DELIVERY,
+			Method: DeliveryMethodDelivery,
 		}, nil
 	}
 
 	if deliverycode == "pickup_store" {
 		return DeliveryInfo{
 			Code:   deliverycode,
-			Method: DELIVERY_METHOD_PICKUP,
+			Method: DeliveryMethodPickup,
 			DeliveryLocation: DeliveryLocation{
-				Type: DELIVERYLOCATION_TYPE_STORE,
+				Type: DeliverylocationTypeStore,
 			},
 		}, nil
 	}
@@ -58,26 +58,26 @@ func (b *DefaultDeliveryInfoBuilder) BuildByDeliveryCode(deliverycode string) (D
 		b.logger.WithField("category", "cart").WithField("subcategory", "DefaultDeliveryInfoBuilder").Warn("Unknown deliverycode", deliverycode)
 		return DeliveryInfo{
 			Code:   deliverycode,
-			Method: DELIVERY_METHOD_UNSPECIFIED,
+			Method: DeliveryMethodUnspecified,
 		}, nil
 	}
-	if intentParts[0] == DELIVERY_METHOD_PICKUP || intentParts[0] == DELIVERY_METHOD_DELIVERY {
-		if intentParts[1] == DELIVERYLOCATION_TYPE_STORE {
+	if intentParts[0] == DeliveryMethodPickup || intentParts[0] == DeliveryMethodDelivery {
+		if intentParts[1] == DeliverylocationTypeStore {
 			return DeliveryInfo{
 				Code:   deliverycode,
 				Method: intentParts[0],
 				DeliveryLocation: DeliveryLocation{
 					Code: intentParts[2],
-					Type: DELIVERYLOCATION_TYPE_STORE,
+					Type: DeliverylocationTypeStore,
 				},
 			}, nil
-		} else if intentParts[1] == DELIVERYLOCATION_TYPE_COLLECTIONPOINT {
+		} else if intentParts[1] == DeliverylocationTypeCollectionpoint {
 			return DeliveryInfo{
 				Code:   deliverycode,
 				Method: intentParts[0],
 				DeliveryLocation: DeliveryLocation{
 					Code: intentParts[2],
-					Type: DELIVERYLOCATION_TYPE_COLLECTIONPOINT,
+					Type: DeliverylocationTypeCollectionpoint,
 				},
 			}, nil
 		} else {
@@ -94,6 +94,6 @@ func (b *DefaultDeliveryInfoBuilder) BuildByDeliveryCode(deliverycode string) (D
 	b.logger.WithField("category", "cart").WithField("subcategory", "DefaultDeliveryInfoBuilder").Warn("Unknown IntentString", deliverycode)
 	return DeliveryInfo{
 		Code:   deliverycode,
-		Method: DELIVERY_METHOD_UNSPECIFIED,
+		Method: DeliveryMethodUnspecified,
 	}, nil
 }

@@ -31,7 +31,7 @@ func (e EventReceiver) Inject(
 	e.cartCache = cartCache
 }
 
-//NotifyWithContext should get called by flamingo Eventlogic
+//Notify should get called by flamingo Eventlogic
 func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 	switch currentEvent := event.(type) {
 	//Handle Logout

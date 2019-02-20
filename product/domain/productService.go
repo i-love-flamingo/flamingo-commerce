@@ -14,6 +14,7 @@ type (
 		Get(ctx context.Context, marketplaceCode string) (BasicProduct, error)
 	}
 
+	// SearchResult returns product hits
 	SearchResult struct {
 		searchDomain.Result
 		Hits []BasicProduct
@@ -23,10 +24,8 @@ type (
 	SearchService interface {
 		//Search returns Products based on given Filters
 		Search(ctx context.Context, filter ...searchDomain.Filter) (SearchResult, error)
-		/*
-			SearchBy returns Products prefiltered by the given attribute (also based on additional given Filters)
-			 e.g. SearchBy(ctx,"brandCode","apple")
-		*/
+		// SearchBy returns Products prefiltered by the given attribute (also based on additional given Filters)
+		// e.g. SearchBy(ctx,"brandCode","apple")
 		SearchBy(ctx context.Context, attribute string, values []string, filter ...searchDomain.Filter) (SearchResult, error)
 	}
 

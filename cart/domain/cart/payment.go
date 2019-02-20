@@ -1,20 +1,20 @@
 package cart
 
 type (
-
-	//CartPayment represents all payments done for the cart and which items have been purchased by what method
-	CartPayment struct {
+	// Payment represents all payments done for the cart and which items have been purchased by what method
+	Payment struct {
 		PaymentInfos       []*PaymentInfo
-		Assignments        []CartPaymentAssignment
+		Assignments        []PaymentAssignment
 		RawTransactionData interface{}
 	}
 
-	//CartPaymentAssignment - represents the infos required to reference a CartItem
-	CartPaymentAssignment struct {
+	// PaymentAssignment - represents the infos required to reference a CartItem
+	PaymentAssignment struct {
 		ItemCartReference ItemCartReference
 		PaymentInfo       *PaymentInfo
 	}
 
+	// PaymentInfo contains information about the used payment
 	PaymentInfo struct {
 		//Provider code like "paymark"
 		Provider string
@@ -22,8 +22,8 @@ type (
 		Method string
 		//Status - Method specific status e.g. Auth, Captured, Open, ...
 		Status string
-		//TransactionId - The main reference of the payment that was done
-		TransactionId string
+		//TransactionID - The main reference of the payment that was done
+		TransactionID string
 		//AdditionalData - room for AdditionalData - specific to the payment
 		AdditionalData map[string]string
 		//Amount optional the amount payed
@@ -34,6 +34,7 @@ type (
 		Title string
 	}
 
+	// CreditCardInfo contains the necessary data
 	CreditCardInfo struct {
 		AnonymizedCardNumber string
 		Type                 string
@@ -43,15 +44,18 @@ type (
 )
 
 const (
-	PAYMENT_STATUS_CAPTURED = "CAPTURED"
-	PAYMENT_STATUS_OPEN     = "OPEN"
+	// PaymentStatusCaptured a payment which has been captured
+	PaymentStatusCaptured = "CAPTURED"
+	// PaymentStatusOpen payment is still open
+	PaymentStatusOpen = "OPEN"
 )
 
-func (cp *CartPayment) AddPayment(paymentInfo PaymentInfo, cartItemReferences []ItemCartReference) {
+// AddPayment for a paymentInfo with items
+func (cp *Payment) AddPayment(paymentInfo PaymentInfo, cartItemReferences []ItemCartReference) {
 	cp.PaymentInfos = append(cp.PaymentInfos, &paymentInfo)
 
 	for _, cartItemReference := range cartItemReferences {
-		cp.Assignments = append(cp.Assignments, CartPaymentAssignment{
+		cp.Assignments = append(cp.Assignments, PaymentAssignment{
 			ItemCartReference: cartItemReference,
 			PaymentInfo:       &paymentInfo,
 		})
@@ -59,7 +63,7 @@ func (cp *CartPayment) AddPayment(paymentInfo PaymentInfo, cartItemReferences []
 }
 
 //GetAssignmentsForPaymentInfo - returns the CartItemReferences that are payed with the given paymentInfo
-func (cp *CartPayment) GetAssignmentsForPaymentInfo(paymentInfo *PaymentInfo) []ItemCartReference {
+func (cp *Payment) GetAssignmentsForPaymentInfo(paymentInfo *PaymentInfo) []ItemCartReference {
 	var ids []ItemCartReference
 	for _, v := range cp.Assignments {
 		if v.PaymentInfo == paymentInfo {
@@ -70,7 +74,7 @@ func (cp *CartPayment) GetAssignmentsForPaymentInfo(paymentInfo *PaymentInfo) []
 }
 
 //GetProviders - gets (deduplicated) list of PaymentProvider names used in the CartPayment
-func (cp *CartPayment) GetProviders() []string {
+func (cp *Payment) GetProviders() []string {
 
 	providerMap := make(map[string]bool)
 

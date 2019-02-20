@@ -10,50 +10,48 @@ import (
 	"github.com/pkg/errors"
 )
 
-type (
-	OfflinePaymentProvider struct {
-		Enabled bool `inject:"config:checkout.enableOfflinePaymentProvider,optional"`
-	}
-)
+// OfflinePaymentProvider provides an offline payment integration
+type OfflinePaymentProvider struct {
+	Enabled bool `inject:"config:checkout.enableOfflinePaymentProvider,optional"`
+}
 
-var (
-	_ payment.PaymentProvider = &OfflinePaymentProvider{}
-)
+var _ payment.Provider = &OfflinePaymentProvider{}
 
+// GetCode for payment
 func (pa *OfflinePaymentProvider) GetCode() string {
 	return "offlinepayment"
 }
 
 // GetPaymentMethods returns the Payment Providers available Payment Methods
-func (pa *OfflinePaymentProvider) GetPaymentMethods() []payment.PaymentMethod {
-	var result []payment.PaymentMethod
-	result = append(result, payment.PaymentMethod{
+func (pa *OfflinePaymentProvider) GetPaymentMethods() []payment.Method {
+	return []payment.Method{{
 		Title:             "Cash on delivery",
 		Code:              "offlinepayment_cashondelivery",
 		IsExternalPayment: false,
-	})
-	return result
+	}}
 }
 
 // RedirectExternalPayment starts a Redirect to an external Payment Page (if applicable)
-func (pa *OfflinePaymentProvider) RedirectExternalPayment(ctx context.Context, r *web.Request, currentCart *cartDomain.Cart, method *payment.PaymentMethod, returnUrl *url.URL) (web.Result, error) {
+func (pa *OfflinePaymentProvider) RedirectExternalPayment(ctx context.Context, r *web.Request, currentCart *cartDomain.Cart, method *payment.Method, returnURL *url.URL) (web.Result, error) {
 	return nil, errors.New("No Redirect")
 }
 
+// IsActive check
 func (pa *OfflinePaymentProvider) IsActive() bool {
 	return pa.Enabled
 }
 
-func (pa *OfflinePaymentProvider) ProcessPayment(ctx context.Context, r *web.Request, currentCart *cartDomain.Cart, method *payment.PaymentMethod, _ map[string]string) (*cartDomain.CartPayment, error) {
+// ProcessPayment creates an offline payment
+func (pa *OfflinePaymentProvider) ProcessPayment(ctx context.Context, r *web.Request, currentCart *cartDomain.Cart, method *payment.Method, _ map[string]string) (*cartDomain.Payment, error) {
 	paymentInfo := cartDomain.PaymentInfo{
 		Method:   method.Code,
 		Provider: pa.GetCode(),
-		Status:   cartDomain.PAYMENT_STATUS_OPEN,
+		Status:   cartDomain.PaymentStatusOpen,
 	}
 
-	var assignments []cartDomain.CartPaymentAssignment
+	var assignments []cartDomain.PaymentAssignment
 	for _, itemReference := range currentCart.GetItemCartReferences() {
-		assignments = append(assignments, cartDomain.CartPaymentAssignment{
+		assignments = append(assignments, cartDomain.PaymentAssignment{
 			ItemCartReference: itemReference,
 			PaymentInfo:       &paymentInfo,
 		})
@@ -61,7 +59,7 @@ func (pa *OfflinePaymentProvider) ProcessPayment(ctx context.Context, r *web.Req
 	var paymentInfos []*cartDomain.PaymentInfo
 	paymentInfos = append(paymentInfos, &paymentInfo)
 
-	cartPayment := cartDomain.CartPayment{
+	cartPayment := cartDomain.Payment{
 		PaymentInfos: paymentInfos,
 		Assignments:  assignments,
 	}

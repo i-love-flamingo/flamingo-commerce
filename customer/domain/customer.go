@@ -8,6 +8,7 @@ import (
 )
 
 type (
+	// Customer data interface
 	Customer interface {
 		GetId() string
 		GetPersonalData() PersonData
@@ -16,6 +17,7 @@ type (
 		GetDefaultBillingAddress() *Address
 	}
 
+	// PersonData contains personal data
 	PersonData struct {
 		//Gender male, female, other, unknown
 		Gender     string
@@ -29,6 +31,7 @@ type (
 		Nationality string
 	}
 
+	// Address data of a customer
 	Address struct {
 		RegionCode             string
 		CountryCode            string
@@ -44,6 +47,7 @@ type (
 		Email                  string
 	}
 
+	// CustomerService to retrieve customers
 	CustomerService interface {
 		//GetByAuth - returns Customer by the provided Auth infos
 		GetByAuth(ctx context.Context, auth domain.Auth) (Customer, error)
@@ -51,8 +55,12 @@ type (
 )
 
 const (
-	GENDER_MALE    = "male"
-	GENDER_FEMALE  = "female"
-	GENDER_OTHER   = "other"
-	GENDER_UNKNOWN = ""
+	// GenderMale for male customers
+	GenderMale = "male"
+	// GenderFemale for female customers
+	GenderFemale = "female"
+	// GenderOther for other customers
+	GenderOther = "other"
+	// GenderUnknown unknown
+	GenderUnknown = ""
 )

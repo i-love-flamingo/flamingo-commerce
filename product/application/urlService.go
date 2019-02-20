@@ -7,32 +7,33 @@ import (
 	"flamingo.me/flamingo/v3/framework/web"
 )
 
-type (
-	UrlService struct {
-		Router *web.Router `inject:""`
-	}
-)
+// URLService to manage product urls
+type URLService struct {
+	Router *web.Router `inject:""`
+}
 
-func (s *UrlService) Get(product domain.BasicProduct, variantCode string) (string, error) {
+// Get a product variant url
+func (s *URLService) Get(product domain.BasicProduct, variantCode string) (string, error) {
 	if product == nil {
 		return "-", errors.New("no product given")
 	}
-	params := s.GetUrlParams(product, variantCode)
+	params := s.GetURLParams(product, variantCode)
 	url, err := s.Router.URL("product.view", params)
 	return url.String(), err
 }
 
-func (s *UrlService) GetUrlParams(product domain.BasicProduct, variantCode string) map[string]string {
+// GetURLParams get product url params
+func (s *URLService) GetURLParams(product domain.BasicProduct, variantCode string) map[string]string {
 	params := make(map[string]string)
 	if product == nil {
 		return params
 	}
 
-	if product.Type() == domain.TYPESIMPLE {
+	if product.Type() == domain.TypeSimple {
 		params["marketplacecode"] = product.BaseData().MarketPlaceCode
 		params["name"] = web.URLTitle(product.BaseData().Title)
 	}
-	if product.Type() == domain.TYPECONFIGURABLE_WITH_ACTIVE_VARIANT {
+	if product.Type() == domain.TypeConfigurableWithActiveVariant {
 		if configurableProduct, ok := product.(domain.ConfigurableProductWithActiveVariant); ok {
 			params["marketplacecode"] = configurableProduct.ConfigurableBaseData().MarketPlaceCode
 			params["name"] = web.URLTitle(configurableProduct.ConfigurableBaseData().Title)
@@ -49,7 +50,7 @@ func (s *UrlService) GetUrlParams(product domain.BasicProduct, variantCode strin
 		}
 	}
 
-	if product.Type() == domain.TYPECONFIGURABLE {
+	if product.Type() == domain.TypeConfigurable {
 		if configurableProduct, ok := product.(domain.ConfigurableProduct); ok {
 			params["marketplacecode"] = configurableProduct.BaseData().MarketPlaceCode
 			params["name"] = web.URLTitle(configurableProduct.BaseData().Title)
@@ -72,8 +73,9 @@ func (s *UrlService) GetUrlParams(product domain.BasicProduct, variantCode strin
 	return params
 }
 
-func (s *UrlService) GetNameParam(product domain.BasicProduct, variantCode string) string {
-	params := s.GetUrlParams(product, variantCode)
+// GetNameParam retrieve the proper name parameter
+func (s *URLService) GetNameParam(product domain.BasicProduct, variantCode string) string {
+	params := s.GetURLParams(product, variantCode)
 	if name, ok := params["name"]; ok {
 		return name
 	}

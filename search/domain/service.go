@@ -45,8 +45,10 @@ type (
 		SelectedDesc bool
 	}
 
+	// FacetType for type facets
 	FacetType string
 
+	// FacetItem contains information about a facet item
 	FacetItem struct {
 		Label    string
 		Value    string
@@ -63,6 +65,7 @@ type (
 		Count int64
 	}
 
+	// Facet provided by the search backend
 	Facet struct {
 		Type     string
 		Name     string
@@ -71,9 +74,11 @@ type (
 		Position int
 	}
 
+	// FacetCollection for all available facets
 	FacetCollection map[string]Facet
 	facetSlice      []Facet
 
+	// Suggestion hint
 	Suggestion struct {
 		Text      string
 		Highlight string
@@ -82,6 +87,7 @@ type (
 	// Document holds a search result document
 	Document interface{}
 
+	// RedirectError suggests to redirect
 	RedirectError struct {
 		To string
 	}
@@ -108,6 +114,7 @@ func (fs facetSlice) Swap(i, j int) {
 	fs[i], fs[j] = fs[j], fs[i]
 }
 
+// Order a facet collection
 func (fc FacetCollection) Order() []string {
 	order := make(facetSlice, len(fc))
 	i := 0
@@ -126,6 +133,7 @@ func (fc FacetCollection) Order() []string {
 	return strings
 }
 
+// Facet types
 const (
 	ListFacet  FacetType = "ListFacet"
 	TreeFacet            = "TreeFacet"

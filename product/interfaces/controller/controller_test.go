@@ -84,23 +84,23 @@ func TestViewController_ExpectRedirect(t *testing.T) {
 }
 
 //func getController(redirectAware *mocks.RedirectAware, renderAware *mocks.RenderAware, errorAware *mocks.ErrorAware) *View {
-	//u, _ := url.Parse(`http://test/`)
-	//router := &router.Router{
-	//	RouterRegistry: router.NewRegistry(),
-	//}
-	//vc := &View{
-	//	ProductService: new(MockProductService),
-	//	RedirectAware:  redirectAware,
-	//	RenderAware:    renderAware,
-	//	ErrorAware:     errorAware,
-	//	UrlService: &application.UrlService{
-	//		Router: router,
-	//	},
-	//	Template: "product/product",
-	//	Router:   router,
-	//}
-	//vc.Router.SetBase(u)
-	//vc.Router.RouterRegistry.Route("/", `product.view(marketplacecode?="test", name?="test", variantcode?="test")`)
-	//
-	//return vc
+//u, _ := url.Parse(`http://test/`)
+//router := &router.Router{
+//	RouterRegistry: router.NewRegistry(),
+//}
+//vc := &View{
+//	ProductService: new(MockProductService),
+//	RedirectAware:  redirectAware,
+//	RenderAware:    renderAware,
+//	ErrorAware:     errorAware,
+//	URLService: &application.URLService{
+//		Router: router,
+//	},
+//	Template: "product/product",
+//	Router:   router,
+//}
+//vc.Router.SetBase(u)
+//vc.Router.RouterRegistry.Route("/", `product.view(marketplacecode?="test", name?="test", variantcode?="test")`)
+//
+//return vc
 //}

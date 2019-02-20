@@ -76,7 +76,7 @@ func (rd *OrderDecorator) createDecoratedItem(ctx context.Context, item *OrderIt
 		rd.Logger.Error("order.decorator - no product for item", err)
 		// fallback to return something the frontend still could use
 		product = rd.createFallbackProduct(item)
-	case product.Type() == domain.TYPECONFIGURABLE && item.VariantMarketplaceCode != "":
+	case product.Type() == domain.TypeConfigurable && item.VariantMarketplaceCode != "":
 		configurable, ok := product.(domain.ConfigurableProduct)
 		if !ok {
 			// not a usable configrable
@@ -108,7 +108,7 @@ func (rd *OrderDecorator) createFallbackProduct(item *OrderItem) *domain.SimpleP
 
 // IsConfigurable - checks if current order item is a configurable product
 func (doi DecoratedOrderItem) IsConfigurable() bool {
-	return doi.Product.Type() == domain.TYPECONFIGURABLE_WITH_ACTIVE_VARIANT
+	return doi.Product.Type() == domain.TypeConfigurableWithActiveVariant
 }
 
 // GetVariant getter
@@ -155,7 +155,7 @@ func (doi DecoratedOrderItem) GetVariantsVariationAttributes() domain.Attributes
 
 // GetVariantsVariationAttributeCodes gets the decorated order item variant variation attributes
 func (doi DecoratedOrderItem) GetVariantsVariationAttributeCodes() []string {
-	if doi.Product.Type() == domain.TYPECONFIGURABLE_WITH_ACTIVE_VARIANT {
+	if doi.Product.Type() == domain.TypeConfigurableWithActiveVariant {
 		return doi.Product.(domain.ConfigurableProductWithActiveVariant).VariantVariationAttributes
 	}
 	return nil

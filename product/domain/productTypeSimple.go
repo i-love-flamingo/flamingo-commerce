@@ -1,12 +1,11 @@
 package domain
 
 const (
-	// TYPESIMPLE denotes simple products
-	TYPESIMPLE = "simple"
+	// TypeSimple denotes simple products
+	TypeSimple = "simple"
 )
 
 type (
-
 	// SimpleProduct - A product without Variants that can be teasered and being sold
 	SimpleProduct struct {
 		Identifier string
@@ -21,9 +20,10 @@ var _ BasicProduct = SimpleProduct{}
 
 // Type interface implementation for SimpleProduct
 func (p SimpleProduct) Type() string {
-	return TYPESIMPLE
+	return TypeSimple
 }
 
+// IsSaleable is true
 func (p SimpleProduct) IsSaleable() bool {
 	return true
 }

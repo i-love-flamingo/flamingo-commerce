@@ -1,17 +1,17 @@
 package cart
 
 import (
-	"fmt"
-	"time"
 	"math"
+	"time"
+
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/pkg/errors"
 )
 
 type (
-	//CartProvider should be used to create the cart Value objects
-	CartProvider func() *Cart
+	// Provider should be used to create the cart Value objects
+	Provider func() *Cart
 
 	// Cart Value Object (immutable data - because the cartservice is responsible to return a cart).
 	Cart struct {
@@ -24,7 +24,7 @@ type (
 		ReservedOrderID string
 
 		//CartTotals - the cart totals (contain summary costs and discounts etc)
-		CartTotals CartTotals
+		CartTotals Totals
 		//BillingAdress - the main billing address (relevant for all payments/invoices)
 		BillingAdress Address
 
@@ -39,15 +39,15 @@ type (
 
 		//BelongsToAuthenticatedUser - false = Guest Cart true = cart from the authenticated user
 		BelongsToAuthenticatedUser bool
-		AuthenticatedUserId        string
+		AuthenticatedUserID        string
 
 		AppliedCouponCodes []CouponCode
 	}
 
-	//CartTeaser - represents some teaser infos for cart
-	CartTeaser struct {
-		ProductCount int
-		ItemCount int
+	// Teaser - represents some teaser infos for cart
+	Teaser struct {
+		ProductCount  int
+		ItemCount     int
 		DeliveryCodes []string
 	}
 
@@ -123,8 +123,8 @@ type (
 		Code string
 	}
 
-	// CartTotals value object
-	CartTotals struct {
+	// Totals value object
+	Totals struct {
 		Totalitems        []Totalitem
 		TotalShippingItem ShippingItem
 		//Final sum that need to be payed: GrandTotal = SubTotal + TaxAmount - DiscountAmount + SOME of Totalitems = (Sum of Items RowTotalWithDiscountInclTax) + SOME of Totalitems
@@ -172,14 +172,14 @@ type (
 		//ID of the item - need to be unique under a delivery
 		ID string
 		//
-		UniqueId        string
+		UniqueID        string
 		MarketplaceCode string
 		//VariantMarketPlaceCode is used for Configurable products
 		VariantMarketPlaceCode string
 		ProductName            string
 
 		// Source Id of where the items should be initial picked - This is set by the SourcingLogic
-		SourceId string
+		SourceID string
 
 		Qty int
 
@@ -212,10 +212,10 @@ type (
 		RowTotalWithDiscountInclTax float64
 	}
 
-	//ItemCartReference - value object that can be used to reference a Item in a Cart
+	// ItemCartReference - value object that can be used to reference a Item in a Cart
 	//@todo - Use in ServicePort methods...
 	ItemCartReference struct {
-		ItemId       string
+		ItemID       string
 		DeliveryCode string
 	}
 
@@ -276,20 +276,20 @@ type (
 
 // Key constants
 const (
-	DELIVERY_METHOD_PICKUP      = "pickup"
-	DELIVERY_METHOD_DELIVERY    = "delivery"
-	DELIVERY_METHOD_UNSPECIFIED = "unspecified"
+	DeliveryMethodPickup      = "pickup"
+	DeliveryMethodDelivery    = "delivery"
+	DeliveryMethodUnspecified = "unspecified"
 
-	DELIVERYLOCATION_TYPE_COLLECTIONPOINT = "collection-point"
-	DELIVERYLOCATION_TYPE_STORE           = "store"
-	DELIVERYLOCATION_TYPE_ADDRESS         = "address"
-	DELIVERYLOCATION_TYPE_FREIGHTSTATION  = "freight-station"
+	DeliverylocationTypeCollectionpoint = "collection-point"
+	DeliverylocationTypeStore           = "store"
+	DeliverylocationTypeAddress         = "address"
+	DeliverylocationTypeFreightstation  = "freight-station"
 
-	TOTALS_TYPE_DISCOUNT      = "totals_type_discount"
-	TOTALS_TYPE_VOUCHER       = "totals_type_voucher"
-	TOTALS_TYPE_TAX           = "totals_type_tax"
-	TOTALS_TYPE_LOYALTYPOINTS = "totals_loyaltypoints"
-	TOTALS_TYPE_SHIPPING      = "totals_type_shipping"
+	TotalsTypeDiscount      = "totals_type_discount"
+	TotalsTypeVoucher       = "totals_type_voucher"
+	TotalsTypeTax           = "totals_type_tax"
+	TotalsTypeLoyaltypoints = "totals_loyaltypoints"
+	TotalsTypeShipping      = "totals_type_shipping"
 )
 
 // GetMainShippingEMail returns the main shipping address email, empty string if not available
@@ -337,19 +337,19 @@ func (Cart Cart) GetDeliveryCodes() []string {
 	return deliveryCodes
 }
 
-// GetByItemId gets an item by its id
-func (Cart Cart) GetByItemId(itemId string, deliveryCode string) (*Item, error) {
+// GetByItemID gets an item by its id
+func (Cart Cart) GetByItemID(itemID string, deliveryCode string) (*Item, error) {
 	delivery, found := Cart.GetDeliveryByCode(deliveryCode)
 	if found != true {
-		return nil, errors.New(fmt.Sprintf("Delivery for code %v not found", deliveryCode))
+		return nil, errors.Errorf("Delivery for code %v not found", deliveryCode)
 	}
 	for _, currentItem := range delivery.Cartitems {
-		if currentItem.ID == itemId {
+		if currentItem.ID == itemID {
 			return &currentItem, nil
 		}
 	}
 
-	return nil, errors.New(fmt.Sprintf("itemId %v in cart not existend", itemId))
+	return nil, errors.Errorf("itemId %v in cart not existing", itemID)
 }
 
 func inStruct(value string, list []string) bool {
@@ -374,7 +374,6 @@ func (Cart Cart) ItemCount() int {
 	return count
 }
 
-
 // ProductCount - returns amount of different products
 func (Cart Cart) ProductCount() int {
 	count := 0
@@ -385,14 +384,13 @@ func (Cart Cart) ProductCount() int {
 	return count
 }
 
-
 // GetItemCartReferences returns a slice of all ItemCartReferences
 func (Cart Cart) GetItemCartReferences() []ItemCartReference {
 	var ids []ItemCartReference
 	for _, delivery := range Cart.Deliveries {
 		for _, item := range delivery.Cartitems {
 			ids = append(ids, ItemCartReference{
-				ItemId:       item.ID,
+				ItemID:       item.ID,
 				DeliveryCode: delivery.DeliveryInfo.Code,
 			})
 		}
@@ -405,7 +403,7 @@ func (Cart Cart) GetItemCartReferences() []ItemCartReference {
 func (Cart Cart) GetVoucherSavings() float64 {
 	totalSavings := 0.0
 	for _, item := range Cart.CartTotals.Totalitems {
-		if item.Type == TOTALS_TYPE_VOUCHER {
+		if item.Type == TotalsTypeVoucher {
 			totalSavings = totalSavings + math.Abs(item.Price)
 		}
 	}
@@ -421,7 +419,7 @@ func (Cart Cart) GetVoucherSavings() float64 {
 func (Cart Cart) GetSavings() float64 {
 	totalSavings := 0.0
 	for _, item := range Cart.CartTotals.Totalitems {
-		if item.Type == TOTALS_TYPE_DISCOUNT {
+		if item.Type == TotalsTypeDiscount {
 			totalSavings = totalSavings + math.Abs(item.Price)
 		}
 	}
@@ -434,22 +432,21 @@ func (Cart Cart) GetSavings() float64 {
 }
 
 // HasAppliedCouponCode checks if a coupon code is applied to the cart
-func (c Cart) HasAppliedCouponCode() bool {
-	return len(c.AppliedCouponCodes) > 0
+func (Cart Cart) HasAppliedCouponCode() bool {
+	return len(Cart.AppliedCouponCodes) > 0
 }
 
-
-// HasAppliedCouponCode checks if a coupon code is applied to the cart
-func (c Cart) GetCartTeaser() *CartTeaser {
-	return &CartTeaser{
-		DeliveryCodes: c.GetDeliveryCodes(),
-		ItemCount: c.ItemCount(),
-		ProductCount: c.ProductCount(),
+// GetCartTeaser returns the teaser
+func (Cart Cart) GetCartTeaser() *Teaser {
+	return &Teaser{
+		DeliveryCodes: Cart.GetDeliveryCodes(),
+		ItemCount:     Cart.ItemCount(),
+		ProductCount:  Cart.ProductCount(),
 	}
 }
 
 // GetTotalItemsByType gets a slice of all Totalitems by typeCode
-func (ct CartTotals) GetTotalItemsByType(typeCode string) []Totalitem {
+func (ct Totals) GetTotalItemsByType(typeCode string) []Totalitem {
 	var totalitems []Totalitem
 	for _, item := range ct.Totalitems {
 		if item.Type == typeCode {

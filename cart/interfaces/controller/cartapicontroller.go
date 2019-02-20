@@ -2,19 +2,19 @@ package controller
 
 import (
 	"context"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"fmt"
 	"strconv"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (
-	// CartApiController for cart api
-	CartApiController struct {
-		responder *web.Responder
+	// CartAPIController for cart api
+	CartAPIController struct {
+		responder           *web.Responder
 		cartService         *application.CartService
 		cartReceiverService *application.CartReceiverService
 		logger              flamingo.Logger
@@ -24,9 +24,8 @@ type (
 		Message     string
 		MessageCode string
 		Success     bool
-		CartTeaser *cart.CartTeaser
+		CartTeaser  *cart.Teaser
 	}
-
 
 	messageCodeAvailable interface {
 		MessageCode() string
@@ -34,20 +33,20 @@ type (
 )
 
 // Inject dependencies
-func (cc *CartApiController) Inject(
+func (cc *CartAPIController) Inject(
 	responder *web.Responder,
 	ApplicationCartService *application.CartService,
 	ApplicationCartReceiverService *application.CartReceiverService,
 	Logger flamingo.Logger,
 ) {
-	cc.responder= responder
+	cc.responder = responder
 	cc.cartService = ApplicationCartService
 	cc.cartReceiverService = ApplicationCartReceiverService
 	cc.logger = Logger
 }
 
 // GetAction Get JSON Format of API
-func (cc *CartApiController) GetAction(ctx context.Context, r *web.Request) web.Result {
+func (cc *CartAPIController) GetAction(ctx context.Context, r *web.Request) web.Result {
 	cart, e := cc.cartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if e != nil {
 		cc.logger.WithField("category", "CartApiController").Error("cart.cartapicontroller.get: %v", e.Error())
@@ -59,7 +58,7 @@ func (cc *CartApiController) GetAction(ctx context.Context, r *web.Request) web.
 }
 
 // AddAction Add Item to cart
-func (cc *CartApiController) AddAction(ctx context.Context, r *web.Request) web.Result {
+func (cc *CartAPIController) AddAction(ctx context.Context, r *web.Request) web.Result {
 	variantMarketplaceCode, _ := r.Params["variantMarketplaceCode"]
 
 	qty, ok := r.Params["qty"]
@@ -87,14 +86,14 @@ func (cc *CartApiController) AddAction(ctx context.Context, r *web.Request) web.
 		return cc.responder.Data(result{Message: err.Error(), Success: false}).Status(500)
 	}
 	return cc.responder.Data(result{
-		Success: true,
-		Message: fmt.Sprintf("added %v / %v Qty %v", addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode, addRequest.Qty),
+		Success:    true,
+		Message:    fmt.Sprintf("added %v / %v Qty %v", addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode, addRequest.Qty),
 		CartTeaser: cart.GetCartTeaser(),
 	})
 }
 
 // ApplyVoucherAndGetAction applies the given voucher and returns the cart
-func (cc *CartApiController) ApplyVoucherAndGetAction(ctx context.Context, r *web.Request) web.Result {
+func (cc *CartAPIController) ApplyVoucherAndGetAction(ctx context.Context, r *web.Request) web.Result {
 	couponCode := r.Params["couponCode"]
 
 	cart, err := cc.cartService.ApplyVoucher(ctx, r.Session(), couponCode)
@@ -107,7 +106,7 @@ func (cc *CartApiController) ApplyVoucherAndGetAction(ctx context.Context, r *we
 }
 
 // CleanAndGetAction cleans the cart and returns the cleaned cart
-func (cc *CartApiController) CleanAndGetAction(ctx context.Context, r *web.Request) web.Result {
+func (cc *CartAPIController) CleanAndGetAction(ctx context.Context, r *web.Request) web.Result {
 	err := cc.cartService.DeleteAllItems(ctx, r.Session())
 	if err != nil {
 		response := cc.responder.Data(result{Message: err.Error(), Success: false})
@@ -119,7 +118,7 @@ func (cc *CartApiController) CleanAndGetAction(ctx context.Context, r *web.Reque
 }
 
 // CleanDeliveryAndGetAction cleans the given delivery from the cart and returns the cleaned cart
-func (cc *CartApiController) CleanDeliveryAndGetAction(ctx context.Context, r *web.Request) web.Result {
+func (cc *CartAPIController) CleanDeliveryAndGetAction(ctx context.Context, r *web.Request) web.Result {
 	deliveryCode := r.Params["deliveryCode"]
 	cart, err := cc.cartService.DeleteDelivery(ctx, r.Session(), deliveryCode)
 	if err != nil {

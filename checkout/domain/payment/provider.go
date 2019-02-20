@@ -9,37 +9,43 @@ import (
 )
 
 type (
-	PaymentMethod struct {
+	// Method contains information about a general payment method
+	Method struct {
 		Title               string
 		Code                string
 		IsExternalPayment   bool
-		ExternalRedirectUri string
+		ExternalRedirectURI string
 	}
 
-	PaymentProvider interface {
+	// Provider returns the payment methods
+	Provider interface {
 		GetCode() string
 		// GetPaymentMethods returns the Payment Providers available Payment Methods
-		GetPaymentMethods() []PaymentMethod
+		GetPaymentMethods() []Method
 		// RedirectExternalPayment starts a Redirect to an external Payment Page (if applicable)
-		RedirectExternalPayment(context.Context, *web.Request, *cartDomain.Cart, *PaymentMethod, *url.URL) (web.Result, error)
+		RedirectExternalPayment(context.Context, *web.Request, *cartDomain.Cart, *Method, *url.URL) (web.Result, error)
 		// ProcessPayment, map is for form Data, payment Data, etc - whatever the Payment Method requires
-		ProcessPayment(context.Context, *web.Request, *cartDomain.Cart, *PaymentMethod, map[string]string) (*cartDomain.CartPayment, error)
+		ProcessPayment(context.Context, *web.Request, *cartDomain.Cart, *Method, map[string]string) (*cartDomain.Payment, error)
 		IsActive() bool
 	}
 
-	// PaymentError  - should be used by PaymentProviders to indicate that payment failed (so that the customer can see a speaking message)
-	PaymentError struct {
+	// Error should be used by PaymentProviders to indicate that payment failed (so that the customer can see a speaking message)
+	Error struct {
 		ErrorMessage string
 		ErrorCode    string
 	}
 )
 
 const (
-	PaymentCancelled       = "payment_cancelled"
+	// PaymentCancelled cancelled
+	PaymentCancelled = "payment_cancelled"
+	// PaymentAuthorizeFailed error
 	PaymentAuthorizeFailed = "authorization_failed"
-	PaymentCaptureFailed   = "capture_failed"
+	// PaymentCaptureFailed error
+	PaymentCaptureFailed = "capture_failed"
 )
 
-func (pe *PaymentError) Error() string {
+// Error getter
+func (pe *Error) Error() string {
 	return pe.ErrorMessage
 }

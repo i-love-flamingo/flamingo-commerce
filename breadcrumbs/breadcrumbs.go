@@ -10,7 +10,7 @@ type (
 	// Crumb defines a breadcrumb
 	Crumb struct {
 		Title string
-		Url   string
+		URL   string
 		Code  string
 	}
 

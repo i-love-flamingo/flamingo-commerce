@@ -146,8 +146,8 @@ type (
 	MockCartValidator struct{}
 )
 
-func (m *MockCartValidator) Validate(ctx context.Context, session *web.Session, cart *cartDomain.DecoratedCart) cartDomain.CartValidationResult {
-	return cartDomain.CartValidationResult{}
+func (m *MockCartValidator) Validate(ctx context.Context, session *web.Session, cart *cartDomain.DecoratedCart) cartDomain.ValidationResult {
+	return cartDomain.ValidationResult{}
 }
 
 // MockItemValidator
@@ -404,7 +404,7 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 		CartReceiverService *cartApplication.CartReceiverService
 		ProductService      productDomain.ProductService
 		Logger              flamingo.Logger
-		CartValidator       cartDomain.CartValidator
+		CartValidator       cartDomain.Validator
 		ItemValidator       cartDomain.ItemValidator
 		EventPublisher      cartApplication.EventPublisher
 		config              *struct {
