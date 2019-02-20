@@ -9,7 +9,7 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
-	"flamingo.me/flamingo-commerce/v3/w3cDatalayer/domain"
+	"flamingo.me/flamingo-commerce/v3/w3cdatalayer/domain"
 	authApplication "flamingo.me/flamingo/v3/core/auth/application"
 	canonicalUrlApplication "flamingo.me/flamingo/v3/core/canonicalurl/application"
 	"flamingo.me/flamingo/v3/framework/web"

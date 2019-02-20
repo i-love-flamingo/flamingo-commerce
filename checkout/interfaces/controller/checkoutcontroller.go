@@ -12,7 +12,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/checkout/application"
 	paymentDomain "flamingo.me/flamingo-commerce/v3/checkout/domain/payment"
-	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller/formDto"
+	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller/formdto"
 	customerApplication "flamingo.me/flamingo-commerce/v3/customer/application"
 	orderDomain "flamingo.me/flamingo-commerce/v3/order/domain"
 	authApplication "flamingo.me/flamingo/v3/core/auth/application"
@@ -102,7 +102,7 @@ type (
 		responder *web.Responder
 		router    *web.Router
 
-		checkoutFormService  *formDto.CheckoutFormService
+		checkoutFormService  *formdto.CheckoutFormService
 		orderService         *application.OrderService
 		paymentService       *application.PaymentService
 		decoratedCartFactory *cart.DecoratedCartFactory
@@ -140,7 +140,7 @@ func init() {
 func (cc *CheckoutController) Inject(
 	responder *web.Responder,
 	router *web.Router,
-	checkoutFormService *formDto.CheckoutFormService,
+	checkoutFormService *formdto.CheckoutFormService,
 	orderService *application.OrderService,
 	paymentService *application.PaymentService,
 	decoratedCartFactory *cart.DecoratedCartFactory,
@@ -401,7 +401,7 @@ func (cc *CheckoutController) getPaymentReturnURL(PaymentProvider string, Paymen
 }
 
 //showCheckoutFormAndHandleSubmit - Action that shows the form (either customer or guest)
-func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Context, r *web.Request, formservice *formDto.CheckoutFormService, template string) web.Result {
+func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Context, r *web.Request, formservice *formdto.CheckoutFormService, template string) web.Result {
 	session := r.Session()
 
 	//Guard Clause if Cart cannout be fetched
@@ -448,9 +448,9 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 	}
 
 	if form.IsValidAndSubmitted() {
-		if checkoutFormData, ok := form.Data.(formDto.CheckoutFormData); ok {
-			billingAddress, shippingAddress := formDto.MapAddresses(checkoutFormData)
-			person := formDto.MapPerson(checkoutFormData)
+		if checkoutFormData, ok := form.Data.(formdto.CheckoutFormData); ok {
+			billingAddress, shippingAddress := formdto.MapAddresses(checkoutFormData)
+			person := formdto.MapPerson(checkoutFormData)
 			additionalData := formservice.GetAdditionalData(checkoutFormData)
 
 			err := cc.orderService.CurrentCartSaveInfos(ctx, session, billingAddress, shippingAddress, person, additionalData)

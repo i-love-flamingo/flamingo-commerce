@@ -1,11 +1,11 @@
-package formDto_test
+package formdto_test
 
 import (
 	"context"
 	"net/http"
 	"testing"
 
-	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller/formDto"
+	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller/formdto"
 	"flamingo.me/flamingo-commerce/v3/customer/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
@@ -45,7 +45,7 @@ var (
 )
 
 func TestFormService(t *testing.T) {
-	service := formDto.CheckoutFormService{}
+	service := formdto.CheckoutFormService{}
 	service.Inject(form.NewDecoder(), flamingo.NullLogger{}, nil)
 	service.SetCustomer(&FakeCustomer{})
 
@@ -54,7 +54,7 @@ func TestFormService(t *testing.T) {
 	urlValues := make(map[string][]string)
 	form, err := service.ParseFormData(context.Background(), r, urlValues)
 	form = service.GetDefaultFormData(form)
-	if checkoutForm, ok := form.(formDto.CheckoutFormData); ok {
+	if checkoutForm, ok := form.(formdto.CheckoutFormData); ok {
 		if checkoutForm.BillingAddress.Email != "example@mail.dmn" {
 			t.Errorf("Wrong mail in data - expected to be initialized")
 		}

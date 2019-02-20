@@ -1,4 +1,4 @@
-package formDto
+package formdto
 
 import (
 	"context"

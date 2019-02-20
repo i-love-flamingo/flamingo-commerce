@@ -7,7 +7,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/checkout/infrastructure"
 	paymentInfrastructure "flamingo.me/flamingo-commerce/v3/checkout/infrastructure/payment"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller"
-	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller/formDto"
+	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller/formdto"
 	"flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/go-playground/form"
@@ -30,7 +30,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 		injector.Override((*domain.SourcingService)(nil), "").To(infrastructure.FakeSourcingService{})
 	}
 
-	injector.Bind((*formDomain.FormService)(nil)).To(formDto.CheckoutFormService{})
+	injector.Bind((*formDomain.FormService)(nil)).To(formdto.CheckoutFormService{})
 
 	web.BindRoutes(injector, new(routes))
 }
