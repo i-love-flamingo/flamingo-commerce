@@ -35,7 +35,7 @@ type (
 )
 
 var (
-	_ domaincart.Behaviour = (*InMemoryBehaviour)(nil)
+	_ domaincart.ModifyBehaviour = (*InMemoryBehaviour)(nil)
 )
 
 // Inject dependencies

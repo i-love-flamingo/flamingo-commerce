@@ -1,13 +1,13 @@
-package application_test
+package application
 
 import (
 	"context"
 	"testing"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	"flamingo.me/flamingo-commerce/v3/order/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 )
+
 
 func TestDefaultEventPublisher_PublishOrderPlacedEvent(t *testing.T) {
 	type fields struct {
@@ -16,7 +16,7 @@ func TestDefaultEventPublisher_PublishOrderPlacedEvent(t *testing.T) {
 	type args struct {
 		ctx              context.Context
 		cart             *cart.Cart
-		placedOrderInfos domain.PlacedOrderInfos
+		placedOrderInfos cart.PlacedOrderInfos
 	}
 	tests := []struct {
 		name   string
@@ -31,8 +31,8 @@ func TestDefaultEventPublisher_PublishOrderPlacedEvent(t *testing.T) {
 			args: args{
 				ctx:  context.Background(),
 				cart: &cart.Cart{},
-				placedOrderInfos: domain.PlacedOrderInfos{
-					domain.PlacedOrderInfo{
+				placedOrderInfos: cart.PlacedOrderInfos{
+					cart.PlacedOrderInfo{
 						OrderNumber:  "124",
 						DeliveryCode: "test_delivery",
 					},

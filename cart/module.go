@@ -2,6 +2,7 @@ package cart
 
 import (
 	"encoding/gob"
+	"flamingo.me/flamingo-commerce/v3/cart/infrastructure/email"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -19,6 +20,7 @@ type (
 	CartModule struct {
 		routerRegistry  *web.RouterRegistry
 		useInMemoryCart bool
+		useEmailAdapter bool
 		enableCartCache bool
 	}
 )
@@ -29,6 +31,7 @@ func (m *CartModule) Inject(
 	config *struct {
 		UseInMemoryCart bool `inject:"config:cart.useInMemoryCartServiceAdapters"`
 		EnableCartCache bool `inject:"config:cart.enableCartCache,optional"`
+		UseEmailAdapter bool `inject:"config:cart.useEmailPlaceOrderAdapter,optional"`
 	},
 ) {
 	m.routerRegistry = routerRegistry
@@ -44,6 +47,9 @@ func (m *CartModule) Configure(injector *dingo.Injector) {
 		injector.Bind((*infrastructure.CartStorage)(nil)).To(infrastructure.InMemoryCartStorage{}).AsEagerSingleton()
 		injector.Bind((*cart.GuestCartService)(nil)).To(infrastructure.InMemoryGuestCartService{})
 		injector.Bind((*cart.CustomerCartService)(nil)).To(infrastructure.InMemoryCustomerCartService{})
+	}
+	if m.useEmailAdapter {
+		injector.Bind((*cart.PlaceOrderService)(nil)).To(email.EMailAdapter{})
 	}
 	//Register Default EventPublisher
 	injector.Bind((*application.EventPublisher)(nil)).To(application.DefaultEventPublisher{})
@@ -69,7 +75,9 @@ func (m *CartModule) DefaultConfig() config.Map {
 	return config.Map{
 		"cart": config.Map{
 			"useInMemoryCartServiceAdapters": true,
+			"useEmailPlaceOrderAdapter": true,
 			"cacheLifetime":                  float64(1200), // in seconds
+			"enableCartCache": false,
 		},
 	}
 }

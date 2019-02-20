@@ -8,27 +8,27 @@ import (
 )
 
 type (
-	// GuestCartService interface
+	// GuestCartService interface - Secondary PORT
 	GuestCartService interface {
 		// GetBehaviour gets the behaviour for the guest cart service
-		GetBehaviour(context.Context) (Behaviour, error)
-
+		GetModifyBehaviour(context.Context) (ModifyBehaviour, error)
 		GetCart(ctx context.Context, cartID string) (*Cart, error)
 
 		//GetGuestCart - should return a new guest cart (including the id of the cart)
 		GetNewCart(ctx context.Context) (*Cart, error)
 	}
 
-	// CustomerCartService  interface
+	// CustomerCartService  interface - Secondary PORT
 	CustomerCartService interface {
 		// GetBehaviour gets the behaviour for the customer cart service
-		GetBehaviour(context.Context, domain.Auth) (Behaviour, error)
-
+		GetModifyBehaviour(context.Context, domain.Auth) (ModifyBehaviour, error)
 		GetCart(ctx context.Context, auth domain.Auth, cartID string) (*Cart, error)
 	}
 
-	// Behaviour is a Port that can be implemented by other packages to provide cart actions
-	Behaviour interface {
+
+	// ModifyBehaviour is a interface that can be implemented by other packages to provide cart actions
+	// This port can not be registered directly but is provided by the registered "GuestCartService"
+	ModifyBehaviour interface {
 		DeleteItem(ctx context.Context, cart *Cart, itemID string, deliveryCode string) (*Cart, error)
 		UpdateItem(ctx context.Context, cart *Cart, itemID string, deliveryCode string, itemUpdateCommand ItemUpdateCommand) (*Cart, error)
 		AddToCart(ctx context.Context, cart *Cart, deliveryCode string, addRequest AddRequest) (*Cart, error)
@@ -56,6 +56,13 @@ type (
 		SourceID       *string
 		Qty            *int
 		AdditionalData map[string]string
+	}
+
+
+	// PlaceOrderService  interface - Secondary PORT
+	PlaceOrderService interface {
+		PlaceGuestCart(ctx context.Context, cart *Cart, payment *CartPayment) (PlacedOrderInfos, error)
+		PlaceCustomerCart(ctx context.Context, auth domain.Auth, cart *Cart, payment *CartPayment) (PlacedOrderInfos, error)
 	}
 )
 

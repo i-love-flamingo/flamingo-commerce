@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"flamingo.me/flamingo-commerce/v3/order/domain"
-	"flamingo.me/flamingo/v3/core/auth/application"
+	authApplication "flamingo.me/flamingo/v3/core/auth/application"
 	"flamingo.me/flamingo/v3/framework/web"
 )
 
@@ -12,14 +12,14 @@ type (
 	// DataControllerCustomerOrders for `get("orders.customerorders", ...)` requests
 	DataControllerCustomerOrders struct {
 		customerOrderService domain.CustomerOrderService
-		authManager          *application.AuthManager
+		authManager          *authApplication.AuthManager
 	}
 )
 
 // Inject dependencies
 func (dc *DataControllerCustomerOrders) Inject(
 	customerOrderService domain.CustomerOrderService,
-	authManager *application.AuthManager,
+	authManager *authApplication.AuthManager,
 ) {
 	dc.customerOrderService = customerOrderService
 	dc.authManager = authManager

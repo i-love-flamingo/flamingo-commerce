@@ -9,6 +9,12 @@ import (
 )
 
 type (
+	// OrderPlacedEvent defines event properties
+	OrderPlacedEvent struct {
+		Cart             *cartDomain.Cart
+		PlacedOrderInfos cartDomain.PlacedOrderInfos
+	}
+
 	// AddToCartEvent defines event properties
 	AddToCartEvent struct {
 		MarketplaceCode        string
@@ -31,6 +37,7 @@ type (
 	EventPublisher interface {
 		PublishAddToCartEvent(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode string, qty int)
 		PublishChangedQtyInCartEvent(ctx context.Context, item *cartDomain.Item, qtyBefore int, qtyAfter int, cartID string)
+		PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos cartDomain.PlacedOrderInfos)
 	}
 
 	//DefaultEventPublisher implements the event publisher of the domain and uses the framework event router
@@ -43,6 +50,7 @@ type (
 
 var (
 	_ EventPublisher = (*DefaultEventPublisher)(nil)
+	_ flamingo.Event    = (*OrderPlacedEvent)(nil)
 )
 
 // Inject dependencies
@@ -87,4 +95,18 @@ func (d *DefaultEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context
 
 	d.logger.Info("Publish Event PublishCartChangedQtyEvent: %v", eventObject)
 	d.eventRouter.Dispatch(ctx, &eventObject)
+}
+
+
+// PublishOrderPlacedEvent publishes an event for placed orders
+func (dep *DefaultEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos cartDomain.PlacedOrderInfos) {
+	eventObject := OrderPlacedEvent{
+		Cart:             cart,
+		PlacedOrderInfos: placedOrderInfos,
+	}
+
+	dep.logger.Info("Publish Event OrderPlacedEvent for Order: %#v", placedOrderInfos)
+
+	//For now we publish only to Flamingo default Event Router
+	dep.eventRouter.Dispatch(ctx, &eventObject)
 }

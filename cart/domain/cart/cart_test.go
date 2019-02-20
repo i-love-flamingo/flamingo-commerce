@@ -3,9 +3,8 @@ package cart_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_GetDeliveryCodes(t *testing.T) {
@@ -66,3 +65,67 @@ func TestCart_HasMixedCart(t *testing.T) {
 	assert.True(t, resultMixedCart)
 }
 */
+
+func TestPlacedOrderInfos_GetOrderNumberForDeliveryCode(t *testing.T) {
+	type args struct {
+		deliveryCode string
+	}
+	tests := []struct {
+		name string
+		poi  cartDomain.PlacedOrderInfos
+		args args
+		want string
+	}{
+		{
+			name: "empty order infos, empty delivery code",
+		},
+		{
+			name: "empty order infos, with code",
+			args: args{
+				deliveryCode: "delivery",
+			},
+			want: "",
+		},
+		{
+			name: "delivery code not in placed orders",
+			poi: cartDomain.PlacedOrderInfos{
+				cartDomain.PlacedOrderInfo{
+					OrderNumber:  "1",
+					DeliveryCode: "delivery_1",
+				},
+				cartDomain.PlacedOrderInfo{
+					OrderNumber:  "2",
+					DeliveryCode: "delivery_2",
+				},
+			},
+			args: args{
+				deliveryCode: "delivery",
+			},
+			want: "",
+		},
+		{
+			name: "delivery code in placed orders",
+			poi: cartDomain.PlacedOrderInfos{
+				cartDomain.PlacedOrderInfo{
+					OrderNumber:  "1",
+					DeliveryCode: "delivery_1",
+				},
+				cartDomain.PlacedOrderInfo{
+					OrderNumber:  "2",
+					DeliveryCode: "delivery_2",
+				},
+			},
+			args: args{
+				deliveryCode: "delivery_1",
+			},
+			want: "1",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.poi.GetOrderNumberForDeliveryCode(tt.args.deliveryCode); got != tt.want {
+				t.Errorf("PlacedOrderInfos.GetOrderNumberForDeliveryCode() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

@@ -135,7 +135,7 @@ func (cs *CartReceiverService) storeCartInCache(ctx context.Context, session *we
 }
 
 // GetCart Get the correct Cart (either Guest or User)
-func (cs *CartReceiverService) GetCart(ctx context.Context, session *web.Session) (*cartDomain.Cart, cartDomain.Behaviour, error) {
+func (cs *CartReceiverService) GetCart(ctx context.Context, session *web.Session) (*cartDomain.Cart, cartDomain.ModifyBehaviour, error) {
 	if cs.userService.IsLoggedIn(ctx, session) {
 		cacheID, err := cs.cartCache.BuildIdentifier(ctx, session)
 
@@ -153,7 +153,7 @@ func (cs *CartReceiverService) GetCart(ctx context.Context, session *web.Session
 			cs.storeCartInCache(ctx, session, cart)
 		}
 
-		behaviour, err := cs.customerCartService.GetBehaviour(ctx, cs.Auth(ctx, session))
+		behaviour, err := cs.customerCartService.GetModifyBehaviour(ctx, cs.Auth(ctx, session))
 		if err != nil {
 			return nil, nil, err
 		}
@@ -200,7 +200,7 @@ func (cs *CartReceiverService) GetCart(ctx context.Context, session *web.Session
 		session.Store(GuestCartSessionKey, guestCart.ID)
 		cs.storeCartInCache(ctx, session, guestCart)
 	}
-	behaviour, err := cs.guestCartService.GetBehaviour(ctx)
+	behaviour, err := cs.guestCartService.GetModifyBehaviour(ctx)
 
 	if err != nil {
 		return guestCart, nil, err
@@ -270,7 +270,7 @@ func (cs *CartReceiverService) DecorateCart(ctx context.Context, cart *cartDomai
 }
 
 // GetDecoratedCart Get the correct Cart
-func (cs *CartReceiverService) GetDecoratedCart(ctx context.Context, session *web.Session) (*cartDomain.DecoratedCart, cartDomain.Behaviour, error) {
+func (cs *CartReceiverService) GetDecoratedCart(ctx context.Context, session *web.Session) (*cartDomain.DecoratedCart, cartDomain.ModifyBehaviour, error) {
 	cart, behaviour, err := cs.GetCart(ctx, session)
 	if err != nil {
 		return nil, nil, err

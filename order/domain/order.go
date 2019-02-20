@@ -48,22 +48,5 @@ type (
 	// Attribute interface
 	Attribute interface{}
 
-	// PlacedOrderInfos represents a slice of PlacedOrderInfo
-	PlacedOrderInfos []PlacedOrderInfo
 
-	// PlacedOrderInfo defines the additional info struct for placed orders
-	PlacedOrderInfo struct {
-		OrderNumber  string
-		DeliveryCode string
-	}
 )
-
-// GetOrderNumberForDeliveryCode returns the order number for a delivery code
-func (poi PlacedOrderInfos) GetOrderNumberForDeliveryCode(deliveryCode string) string {
-	for _, v := range poi {
-		if v.DeliveryCode == deliveryCode {
-			return v.OrderNumber
-		}
-	}
-	return ""
-}

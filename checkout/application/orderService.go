@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 	"flamingo.me/flamingo/v3/framework/web"
-	orderApplication "flamingo.me/flamingo-commerce/v3/order/application"
-	orderDomain "flamingo.me/flamingo-commerce/v3/order/domain"
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain"
@@ -15,13 +13,12 @@ import (
 type (
 	// OrderService defines the order service
 	OrderService struct {
-		SourcingEngine      *domain.SourcingEngine
-		PaymentService      *PaymentService
-		Logger              flamingo.Logger
-		CartService         *application.CartService
-		OrderService        *orderApplication.OrderService
-		CartReceiverService *application.CartReceiverService
-		DeliveryInfoBuilder cart.DeliveryInfoBuilder
+		sourcingEngine      *domain.SourcingEngine
+		paymentService      *PaymentService
+		logger              flamingo.Logger
+		cartService         *application.CartService
+		cartReceiverService *application.CartReceiverService
+		deliveryInfoBuilder cart.DeliveryInfoBuilder
 	}
 )
 
@@ -31,62 +28,60 @@ func (os *OrderService) Inject(
 	PaymentService *PaymentService,
 	Logger flamingo.Logger,
 	CartService *application.CartService,
-	OrderService *orderApplication.OrderService,
 	CartReceiverService *application.CartReceiverService,
 	DeliveryInfoBuilder cart.DeliveryInfoBuilder,
 ) {
-	os.SourcingEngine = SourcingEngine
-	os.PaymentService = PaymentService
-	os.Logger = Logger
-	os.CartService = CartService
-	os.OrderService = OrderService
-	os.CartReceiverService = CartReceiverService
-	os.DeliveryInfoBuilder = DeliveryInfoBuilder
+	os.sourcingEngine = SourcingEngine
+	os.paymentService = PaymentService
+	os.logger = Logger
+	os.cartService = CartService
+	os.cartReceiverService = CartReceiverService
+	os.deliveryInfoBuilder = DeliveryInfoBuilder
 }
 
 // SetSources sets sources for sessions carts items
 func (os *OrderService) SetSources(ctx context.Context, session *web.Session) error {
-	decoratedCart, err := os.CartReceiverService.ViewDecoratedCart(ctx, session)
+	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(ctx, session)
 	if err != nil {
-		os.Logger.Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
+		os.logger.Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
 		return err
 	}
-	err = os.SourcingEngine.SetSourcesForCartItems(ctx, session, decoratedCart)
+	err = os.sourcingEngine.SetSourcesForCartItems(ctx, session, decoratedCart)
 	if err != nil {
-		os.Logger.WithField("category", "checkout.orderService").Error("Error while getting sources: %v", err)
+		os.logger.WithField("category", "checkout.orderService").Error("Error while getting sources: %v", err)
 		return errors.New("Error while setting sources.")
 	}
 	return nil
 }
 
 // PlaceOrder places the order
-func (os *OrderService) PlaceOrder(ctx context.Context, session *web.Session, decoratedCart *cart.DecoratedCart, payment *cart.CartPayment) (orderDomain.PlacedOrderInfos, error) {
-	validationResult := os.CartService.ValidateCart(ctx, session, decoratedCart)
+func (os *OrderService) PlaceOrder(ctx context.Context, session *web.Session, decoratedCart *cart.DecoratedCart, payment *cart.CartPayment) (cart.PlacedOrderInfos, error) {
+	validationResult := os.cartService.ValidateCart(ctx, session, decoratedCart)
 	if !validationResult.IsValid() {
-		os.Logger.Warn("Try to place an invalid cart")
+		os.logger.Warn("Try to place an invalid cart")
 		return nil, errors.New("Cart is Invalid.")
 	}
-	return os.OrderService.PlaceOrder(ctx, session, payment)
+	return os.cartService.PlaceOrder(ctx, session, payment)
 }
 
 // CurrentCartSaveInfos saves additional informations on current cart
 func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.Session, billingAddress *cart.Address, shippingAddress *cart.Address, purchaser *cart.Person, additionalData *cart.AdditionalData) error {
-	os.Logger.Debug("CurrentCartSaveInfos call billingAddress:%v shippingAddress:%v payment:%v", billingAddress, shippingAddress)
+	os.logger.Debug("CurrentCartSaveInfos call billingAddress:%v shippingAddress:%v payment:%v", billingAddress, shippingAddress)
 
 	if billingAddress == nil {
-		os.Logger.Warn("CurrentCartSaveInfos called without billing address")
+		os.logger.Warn("CurrentCartSaveInfos called without billing address")
 		return errors.New("Billing Address is missing")
 	}
-	decoratedCart, err := os.CartReceiverService.ViewDecoratedCart(ctx, session)
+	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(ctx, session)
 	if err != nil {
-		os.Logger.Error("CurrentCartSaveInfos GetDecoratedCart Error %v", err)
+		os.logger.Error("CurrentCartSaveInfos GetDecoratedCart Error %v", err)
 		return err
 	}
 
 	//update Billing
-	err = os.CartService.UpdateBillingAddress(ctx, session, billingAddress)
+	err = os.cartService.UpdateBillingAddress(ctx, session, billingAddress)
 	if err != nil {
-		os.Logger.Error("OnStepCurrentCartPlaceOrder UpdateBillingAddress Error %v", err)
+		os.logger.Error("OnStepCurrentCartPlaceOrder UpdateBillingAddress Error %v", err)
 		return err
 	}
 
@@ -96,9 +91,9 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.S
 		for _, d := range decoratedCart.Cart.Deliveries {
 			newDeliveryInfo := d.DeliveryInfo
 			newDeliveryInfo.DeliveryLocation.Address = shippingAddress
-			err = os.CartService.UpdateDeliveryInfo(ctx, session, d.DeliveryInfo.Code, newDeliveryInfo)
+			err = os.cartService.UpdateDeliveryInfo(ctx, session, d.DeliveryInfo.Code, newDeliveryInfo)
 			if err != nil {
-				os.Logger.Error("OnStepCurrentCartPlaceOrder UpdateDeliveryInfosAndBilling Error %v", err)
+				os.logger.Error("OnStepCurrentCartPlaceOrder UpdateDeliveryInfosAndBilling Error %v", err)
 				return err
 			}
 		}
@@ -106,16 +101,16 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.S
 	}
 
 	//Update Purchaser
-	err = os.CartService.UpdatePurchaser(ctx, session, purchaser, additionalData)
+	err = os.cartService.UpdatePurchaser(ctx, session, purchaser, additionalData)
 	if err != nil {
-		os.Logger.Error("OnStepCurrentCartPlaceOrder UpdatePurchaser Error %v", err)
+		os.logger.Error("OnStepCurrentCartPlaceOrder UpdatePurchaser Error %v", err)
 		return err
 	}
 
 	//After setting DeliveryInfos - call SourcingEnginge (this will reload the cart and update all items!)
 	err = os.SetSources(ctx, session)
 	if err != nil {
-		os.Logger.Error("OnStepCurrentCartPlaceOrder SetSources Error %v", err)
+		os.logger.Error("OnStepCurrentCartPlaceOrder SetSources Error %v", err)
 		return err
 	}
 	return nil
@@ -123,23 +118,23 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.S
 
 //CurrentCartPlaceOrder - probably the best choice for a simple checkout
 // Assumptions: Only one BuildDeliveryInfo is used on the cart!
-func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.Session, payment cart.CartPayment) (orderDomain.PlacedOrderInfos, error) {
-	decoratedCart, err := os.CartReceiverService.ViewDecoratedCart(ctx, session)
+func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.Session, payment cart.CartPayment) (cart.PlacedOrderInfos, error) {
+	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(ctx, session)
 	if err != nil {
-		os.Logger.Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
+		os.logger.Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
 		return nil, err
 	}
 
-	validationResult := os.CartService.ValidateCart(ctx, session, decoratedCart)
+	validationResult := os.cartService.ValidateCart(ctx, session, decoratedCart)
 	if !validationResult.IsValid() {
-		os.Logger.Warn("Try to place an invalid cart")
+		os.logger.Warn("Try to place an invalid cart")
 		return nil, errors.New("Cart is Invalid.")
 	}
 
 	placedOrderInfos, err := os.PlaceOrder(ctx, session, decoratedCart, &payment)
 
 	if err != nil {
-		os.Logger.WithField("category", "checkout.orderService").Error("Error during place Order: %v", err)
+		os.logger.WithField("category", "checkout.orderService").Error("Error during place Order: %v", err)
 		return nil, errors.New("Error while placing the order. Please contact customer support.")
 	}
 	return placedOrderInfos, nil

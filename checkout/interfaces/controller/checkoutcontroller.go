@@ -51,7 +51,7 @@ type (
 	// SuccessViewData represents the success view data
 	SuccessViewData struct {
 		PaymentInfos        []PlaceOrderPaymentInfo
-		PlacedOrderInfos    orderDomain.PlacedOrderInfos
+		PlacedOrderInfos    cart.PlacedOrderInfos
 		Email               string
 		PlacedDecoratedCart cart.DecoratedCart
 
@@ -77,7 +77,7 @@ type (
 
 	// PlaceOrderFlashData represents the data passed to the success page - they need to be "glob"able
 	PlaceOrderFlashData struct {
-		PlacedOrderInfos orderDomain.PlacedOrderInfos
+		PlacedOrderInfos cart.PlacedOrderInfos
 		Email            string
 		PaymentInfos     []PlaceOrderPaymentInfo
 		PlacedCart       cart.Cart

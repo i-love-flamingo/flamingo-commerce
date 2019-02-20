@@ -25,6 +25,7 @@ type (
 		cartValidator cartDomain.CartValidator
 		itemValidator cartDomain.ItemValidator
 		cartCache     CartCache
+		placeOrderService     cartDomain.PlaceOrderService
 	}
 )
 
@@ -41,6 +42,7 @@ func (cs *CartService) Inject(
 	cartValidator cartDomain.CartValidator,
 	itemValidator cartDomain.ItemValidator,
 	cartCache CartCache,
+	placeOrderService     cartDomain.PlaceOrderService,
 ) {
 	cs.cartReceiverService = cartReceiverService
 	cs.productService = productService
@@ -53,6 +55,7 @@ func (cs *CartService) Inject(
 	cs.cartValidator = cartValidator
 	cs.itemValidator = itemValidator
 	cs.cartCache = cartCache
+	cs.placeOrderService = placeOrderService
 }
 
 // GetCartReceiverService returns the injected cart receiver service
@@ -521,4 +524,33 @@ func (cs *CartService) DeleteCartInCache(ctx context.Context, session *web.Sessi
 			cs.logger.Error("Error while deleting cart in cache: %v", err)
 		}
 	}
+}
+
+
+func (cs *CartService) getLogger() flamingo.Logger {
+	return cs.logger.WithField("module","cart").WithField("category","application.cartService")
+}
+
+func (cs *CartService) PlaceOrder(ctx context.Context, session *web.Session, payment *cartDomain.CartPayment) (cartDomain.PlacedOrderInfos, error) {
+	cart, _, err := cs.cartReceiverService.GetCart(ctx, session)
+	if err != nil {
+		return nil, err
+	}
+	var placeOrderInfos cartDomain.PlacedOrderInfos
+	if cs.cartReceiverService.IsLoggedIn(ctx,session) {
+		placeOrderInfos, err = cs.placeOrderService.PlaceCustomerCart(ctx,cs.cartReceiverService.Auth(ctx,session),cart,payment)
+	} else {
+		placeOrderInfos, err = cs.placeOrderService.PlaceGuestCart(ctx,cart,payment)
+	}
+	if err != nil {
+		cs.handleCartNotFound(session, err)
+		cs.getLogger().Error(err)
+		return nil, err
+	}
+
+	cs.eventPublisher.PublishOrderPlacedEvent(ctx, cart, placeOrderInfos)
+	cs.DeleteSavedSessionGuestCartID(session)
+	cs.DeleteCartInCache(ctx, session, cart)
+
+	return placeOrderInfos, err
 }

@@ -29,6 +29,7 @@ Also the cart module and its services will be used by the checkout module.
     useInMemoryCartServiceAdapters: true
     enableCartCache: true
     defaultDeliveryCode: "delivery"
+    useEmailPlaceOrderAdapter: true
     
 ```
 
@@ -148,26 +149,44 @@ cart->item[]
 
 ## Domain - Secondary Ports
 
-**Must Have Secondary Ports: GuestCartService, CustomerCartService and CartBehavior**
+###  Must Have Secondary Ports:
 
-GuestCartService, CustomerCartService and CartBehaviour are defined as Interfaces.
-They need to be implemented and registered.
+**GuestCartService, CustomerCartService (and ModifyBehavior)**
 
-There are several example implementations available.
+GuestCartService and CustomerCartService are the two interfaces that act as secondary ports.
+They need to be implemented and registered:
+
+```
+injector.Bind((*cart.GuestCartService)(nil)).To(infrastructure.YourAdapter{})
+injector.Bind((*cart.CustomerCartService)(nil)).To(infrastructure.YourAdapter{})
+```
+
+Most of the cart modification methods are part of the `ModifyBehaviour` interface - if you look at the seconary ports you will see, that they need to return an (initialized) implementation of the
+`ModifyBehaviour` interface - so in fact this interface need to be implemented when writing an adapter as well.
+
+There is a "InMemoryAdapter" implementation as part of the package.
+
+**PlaceOrderService**
+
+There is also a `PlaceOrderService` interface as secondary port.
+Implement an Adapter for it to define what should happen in case the cart is placed.
+
+There is a `EmailAdapter` implementation as part of the package, that sends out the content of the cart as mail.
 
 
 #### Optional Port: CartValidator
 
-The CartValidator interface defines an interface the validate the cart.
+The CartValidator interface defines an interface to validate the cart.
 
 If you want to register an implementation, it will be used to pass the validation results to the web view.
+Also the cart validator will be used by the checkout - to make sure only valid carts can be placed as order.
 
 
 #### Optional Port: ItemValidator
 
 ItemValidator defines an interface to validate an item **BEFORE** it is added to the cart.
 
-If an Item is not Valid according to the result of the registered ItemValidator it will not be added to the cart.
+If an Item is not valid according to the result of the registered *ItemValidator* it will **not** be added to the cart.
 
 
 
