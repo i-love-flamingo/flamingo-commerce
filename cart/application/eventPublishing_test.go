@@ -1,4 +1,4 @@
-package application
+package application_test
 
 import (
 	"context"
@@ -7,7 +7,6 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 )
-
 
 func TestDefaultEventPublisher_PublishOrderPlacedEvent(t *testing.T) {
 	type fields struct {

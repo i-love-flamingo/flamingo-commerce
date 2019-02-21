@@ -2,9 +2,8 @@ package application_test
 
 import (
 	"context"
-	"testing"
-
 	"reflect"
+	"testing"
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -143,7 +142,6 @@ func (m *MockEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context, i
 
 func (m *MockEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos cartDomain.PlacedOrderInfos) {
 }
-
 
 // MockCartValidator
 type (
@@ -416,7 +414,7 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 		}
 		DeliveryInfoBuilder cartDomain.DeliveryInfoBuilder
 		CartCache           cartApplication.CartCache
-		PlaceOrderService cartDomain.PlaceOrderService
+		PlaceOrderService   cartDomain.PlaceOrderService
 	}
 	type args struct {
 		session *web.Session
@@ -487,7 +485,6 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 				tt.fields.ItemValidator,
 				tt.fields.CartCache,
 				tt.fields.PlaceOrderService,
-
 			)
 
 			err := cs.DeleteSavedSessionGuestCartID(tt.args.session)

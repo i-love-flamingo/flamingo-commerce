@@ -493,7 +493,6 @@ func (fd *FlightData) GetScheduledDateTime() string {
 	return fd.ScheduledDateTime.Format(time.RFC3339)
 }
 
-
 // GetOrderNumberForDeliveryCode returns the order number for a delivery code
 func (poi PlacedOrderInfos) GetOrderNumberForDeliveryCode(deliveryCode string) string {
 	for _, v := range poi {

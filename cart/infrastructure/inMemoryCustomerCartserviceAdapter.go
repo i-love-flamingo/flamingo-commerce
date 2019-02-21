@@ -31,7 +31,7 @@ func (gcs *InMemoryCustomerCartService) GetCart(ctx context.Context, auth domain
 	return cart, err
 }
 
-// GetBehaviour gets the cart order behaviour of the service
+// GetModifyBehaviour gets the cart order behaviour of the service
 func (gcs *InMemoryCustomerCartService) GetModifyBehaviour(context.Context, domain.Auth) (cart.ModifyBehaviour, error) {
 	return gcs.inMemoryBehaviour, nil
 }

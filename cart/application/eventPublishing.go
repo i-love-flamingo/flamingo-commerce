@@ -50,7 +50,7 @@ type (
 
 var (
 	_ EventPublisher = (*DefaultEventPublisher)(nil)
-	_ flamingo.Event    = (*OrderPlacedEvent)(nil)
+	_ flamingo.Event = (*OrderPlacedEvent)(nil)
 )
 
 // Inject dependencies
@@ -97,16 +97,15 @@ func (d *DefaultEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context
 	d.eventRouter.Dispatch(ctx, &eventObject)
 }
 
-
 // PublishOrderPlacedEvent publishes an event for placed orders
-func (dep *DefaultEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos cartDomain.PlacedOrderInfos) {
+func (d *DefaultEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos cartDomain.PlacedOrderInfos) {
 	eventObject := OrderPlacedEvent{
 		Cart:             cart,
 		PlacedOrderInfos: placedOrderInfos,
 	}
 
-	dep.logger.Info("Publish Event OrderPlacedEvent for Order: %#v", placedOrderInfos)
+	d.logger.Info("Publish Event OrderPlacedEvent for Order: %#v", placedOrderInfos)
 
 	//For now we publish only to Flamingo default Event Router
-	dep.eventRouter.Dispatch(ctx, &eventObject)
+	d.eventRouter.Dispatch(ctx, &eventObject)
 }

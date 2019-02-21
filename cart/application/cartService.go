@@ -22,10 +22,10 @@ type (
 		logger              flamingo.Logger
 		defaultDeliveryCode string
 		// optionals - these may be nil
-		cartValidator cartDomain.Validator
-		itemValidator cartDomain.ItemValidator
-		cartCache     CartCache
-		placeOrderService     cartDomain.PlaceOrderService
+		cartValidator     cartDomain.Validator
+		itemValidator     cartDomain.ItemValidator
+		cartCache         CartCache
+		placeOrderService cartDomain.PlaceOrderService
 	}
 )
 
@@ -42,13 +42,13 @@ func (cs *CartService) Inject(
 	cartValidator cartDomain.Validator,
 	itemValidator cartDomain.ItemValidator,
 	cartCache CartCache,
-	placeOrderService     cartDomain.PlaceOrderService,
+	placeOrderService cartDomain.PlaceOrderService,
 ) {
 	cs.cartReceiverService = cartReceiverService
 	cs.productService = productService
 	cs.eventPublisher = eventPublisher
 	cs.deliveryInfoBuilder = deliveryInfoBuilder
-	cs.logger = logger
+	cs.logger = logger.WithField("module", "cart").WithField("category", "application.cartService")
 	if config != nil {
 		cs.defaultDeliveryCode = config.DefaultDeliveryCode
 	}
@@ -99,7 +99,7 @@ func (cs *CartService) UpdateBillingAddress(ctx context.Context, session *web.Se
 	cart, err = behaviour.UpdateBillingAddress(ctx, cart, billingAddress)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
-		cs.logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemQty").Error(err)
+		cs.logger.WithField("subCategory", "UpdateItemQty").Error(err)
 
 		return err
 	}
@@ -125,7 +125,7 @@ func (cs *CartService) UpdateDeliveryInfo(ctx context.Context, session *web.Sess
 	cart, err = behaviour.UpdateDeliveryInfo(ctx, cart, deliveryCode, deliveryInfo)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
-		cs.logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemQty").Error(err)
+		cs.logger.WithField("subCategory", "UpdateItemQty").Error(err)
 
 		return err
 	}
@@ -147,7 +147,7 @@ func (cs *CartService) UpdatePurchaser(ctx context.Context, session *web.Session
 	cart, err = behaviour.UpdatePurchaser(ctx, cart, purchaser, additionalData)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
-		cs.logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemQty").Error(err)
+		cs.logger.WithField("subCategory", "UpdateItemQty").Error(err)
 
 		return err
 	}
@@ -172,7 +172,7 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 
 	item, err := cart.GetByItemID(itemID, deliveryCode)
 	if err != nil {
-		cs.logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemQty").Error(err)
+		cs.logger.WithField("subCategory", "UpdateItemQty").Error(err)
 
 		return err
 	}
@@ -190,7 +190,7 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 	cart, err = behaviour.UpdateItem(ctx, cart, itemID, deliveryCode, itemUpdate)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
-		cs.logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemQty").Error(err)
+		cs.logger.WithField("subCategory", "UpdateItemQty").Error(err)
 
 		return err
 	}
@@ -214,7 +214,7 @@ func (cs *CartService) UpdateItemSourceID(ctx context.Context, session *web.Sess
 	}
 	_, err = cart.GetByItemID(itemID, deliveryCode)
 	if err != nil {
-		cs.logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemSourceId").Error(err)
+		cs.logger.WithField("subCategory", "UpdateItemSourceId").Error(err)
 
 		return err
 	}
@@ -226,7 +226,7 @@ func (cs *CartService) UpdateItemSourceID(ctx context.Context, session *web.Sess
 	cart, err = behaviour.UpdateItem(ctx, cart, itemID, deliveryCode, itemUpdate)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
-		cs.logger.WithField("category", "cartService").WithField("subCategory", "UpdateItemSourceId").Error(err)
+		cs.logger.WithField("subCategory", "UpdateItemSourceId").Error(err)
 
 		return err
 	}
@@ -251,7 +251,7 @@ func (cs *CartService) DeleteItem(ctx context.Context, session *web.Session, ite
 
 	item, err := cart.GetByItemID(itemID, deliveryCode)
 	if err != nil {
-		cs.logger.WithField("category", "cartService").WithField("subCategory", "DeleteItem").Error(err)
+		cs.logger.WithField("subCategory", "DeleteItem").Error(err)
 
 		return err
 	}
@@ -262,7 +262,7 @@ func (cs *CartService) DeleteItem(ctx context.Context, session *web.Session, ite
 	cart, err = behaviour.DeleteItem(ctx, cart, itemID, deliveryCode)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
-		cs.logger.WithField("category", "cartService").WithField("subCategory", "DeleteItem").Error(err)
+		cs.logger.WithField("subCategory", "DeleteItem").Error(err)
 
 		return err
 	}
@@ -289,7 +289,7 @@ func (cs *CartService) DeleteAllItems(ctx context.Context, session *web.Session)
 			cart, err = behaviour.DeleteItem(ctx, cart, item.ID, delivery.DeliveryInfo.Code)
 			if err != nil {
 				cs.handleCartNotFound(session, err)
-				cs.logger.WithField("category", "cartService").WithField("subCategory", "DeleteAllItems").Error(err)
+				cs.logger.WithField("subCategory", "DeleteAllItems").Error(err)
 
 				return err
 			}
@@ -319,7 +319,7 @@ func (cs *CartService) Clean(ctx context.Context, session *web.Session) error {
 
 	_, err = behaviour.CleanCart(ctx, cart)
 	if err != nil {
-		cs.logger.WithField("category", "cartService").WithField("subCategory", "DeleteAllItems").Error(err)
+		cs.logger.WithField("subCategory", "DeleteAllItems").Error(err)
 		return err
 	}
 
@@ -348,7 +348,7 @@ func (cs *CartService) DeleteDelivery(ctx context.Context, session *web.Session,
 
 	cart, err = behaviour.CleanDelivery(ctx, cart, deliveryCode)
 	if err != nil {
-		cs.logger.WithField("category", "cartService").WithField("subCategory", "DeleteAllItems").Error(err)
+		cs.logger.WithField("subCategory", "DeleteAllItems").Error(err)
 		return nil, err
 	}
 
@@ -376,7 +376,7 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 
 	addRequest, product, err := cs.checkProductForAddRequest(ctx, session, deliveryCode, addRequest)
 	if err != nil {
-		cs.logger.WithField("category", "cartService").WithField(flamingo.LogKeySubCategory, "AddProduct").Error(err)
+		cs.logger.WithField(flamingo.LogKeySubCategory, "AddProduct").Error(err)
 
 		return nil, err
 	}
@@ -385,7 +385,7 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 
 	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
-		cs.logger.WithField("category", "cartService").WithField(flamingo.LogKeySubCategory, "AddProduct").Error(err)
+		cs.logger.WithField(flamingo.LogKeySubCategory, "AddProduct").Error(err)
 
 		return nil, err
 	}
@@ -396,7 +396,7 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 
 	cart, err = cs.CreateInitialDeliveryIfNotPresent(ctx, session, deliveryCode)
 	if err != nil {
-		cs.logger.WithField("category", "cartService").WithField(flamingo.LogKeySubCategory, "AddProduct").Error(err)
+		cs.logger.WithField(flamingo.LogKeySubCategory, "AddProduct").Error(err)
 
 		return nil, err
 	}
@@ -412,7 +412,7 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 
 	if err != nil {
 		cs.handleCartNotFound(session, err)
-		cs.logger.WithField("category", "cartService").WithField("subCategory", "AddProduct").Error(err)
+		cs.logger.WithField("subCategory", "AddProduct").Error(err)
 
 		return nil, err
 	}
@@ -445,7 +445,7 @@ func (cs *CartService) CreateInitialDeliveryIfNotPresent(ctx context.Context, se
 func (cs *CartService) ApplyVoucher(ctx context.Context, session *web.Session, couponCode string) (*cartDomain.Cart, error) {
 	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
-		cs.logger.WithField("category", "cartService").WithField("subCategory", "ApplyVoucher").Error(err)
+		cs.logger.WithField("subCategory", "ApplyVoucher").Error(err)
 
 		return nil, err
 	}
@@ -526,25 +526,21 @@ func (cs *CartService) DeleteCartInCache(ctx context.Context, session *web.Sessi
 	}
 }
 
-
-func (cs *CartService) getLogger() flamingo.Logger {
-	return cs.logger.WithField("module","cart").WithField("category","application.cartService")
-}
-
+// PlaceOrder converts the given cart with payments into orders by calling the PlaceOrderService
 func (cs *CartService) PlaceOrder(ctx context.Context, session *web.Session, payment *cartDomain.Payment) (cartDomain.PlacedOrderInfos, error) {
 	cart, _, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return nil, err
 	}
 	var placeOrderInfos cartDomain.PlacedOrderInfos
-	if cs.cartReceiverService.IsLoggedIn(ctx,session) {
-		placeOrderInfos, err = cs.placeOrderService.PlaceCustomerCart(ctx,cs.cartReceiverService.Auth(ctx,session),cart,payment)
+	if cs.cartReceiverService.IsLoggedIn(ctx, session) {
+		placeOrderInfos, err = cs.placeOrderService.PlaceCustomerCart(ctx, cs.cartReceiverService.Auth(ctx, session), cart, payment)
 	} else {
-		placeOrderInfos, err = cs.placeOrderService.PlaceGuestCart(ctx,cart,payment)
+		placeOrderInfos, err = cs.placeOrderService.PlaceGuestCart(ctx, cart, payment)
 	}
 	if err != nil {
 		cs.handleCartNotFound(session, err)
-		cs.getLogger().Error(err)
+		cs.logger.Error(err)
 		return nil, err
 	}
 

@@ -2,6 +2,7 @@ package cart
 
 import (
 	"encoding/gob"
+
 	"flamingo.me/flamingo-commerce/v3/cart/infrastructure/email"
 
 	"flamingo.me/dingo"
@@ -49,7 +50,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 		injector.Bind((*cart.CustomerCartService)(nil)).To(infrastructure.InMemoryCustomerCartService{})
 	}
 	if m.useEmailAdapter {
-		injector.Bind((*cart.PlaceOrderService)(nil)).To(email.EMailAdapter{})
+		injector.Bind((*cart.PlaceOrderService)(nil)).To(email.PlaceOrderServiceAdapter{})
 	}
 	//Register Default EventPublisher
 	injector.Bind((*application.EventPublisher)(nil)).To(application.DefaultEventPublisher{})
@@ -75,9 +76,9 @@ func (m *Module) DefaultConfig() config.Map {
 	return config.Map{
 		"cart": config.Map{
 			"useInMemoryCartServiceAdapters": true,
-			"useEmailPlaceOrderAdapter": true,
+			"useEmailPlaceOrderAdapter":      true,
 			"cacheLifetime":                  float64(1200), // in seconds
-			"enableCartCache": false,
+			"enableCartCache":                false,
 		},
 	}
 }

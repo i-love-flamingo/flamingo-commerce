@@ -2,50 +2,50 @@ package email
 
 import (
 	"context"
+	"errors"
+
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	authDomain "flamingo.me/flamingo/v3/core/auth/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 )
 
 type (
-	//TODO - need to be implemented
-	EMailAdapter struct {
+	// PlaceOrderServiceAdapter provides an implementation of the PlaceOrderService as email adpater
+	//  TODO - need to be implemented
+	PlaceOrderServiceAdapter struct {
 		emailAddress string
-		logger flamingo.Logger
+		logger       flamingo.Logger
 	}
 )
 
 var (
-	_ cartDomain.PlaceOrderService = new(EMailAdapter)
+	_ cartDomain.PlaceOrderService = new(PlaceOrderServiceAdapter)
 )
 
-
-func (e *EMailAdapter) Inject(logger flamingo.Logger, config *struct {
+// Inject dependencies
+func (e *PlaceOrderServiceAdapter) Inject(logger flamingo.Logger, config *struct {
 	EmailAddress string `inject:"config:cart.emailAdapter.emailAddress"`
-})  {
+}) {
 	e.emailAddress = config.EmailAddress
-	e.logger = logger
+	e.logger = logger.WithField("module", "cart").WithField("category", "emailAdapter")
 }
 
-func (e *EMailAdapter) PlaceGuestCart(ctx context.Context, cart *cartDomain.Cart, payment *cartDomain.Payment) (cartDomain.PlacedOrderInfos, error) {
+// PlaceGuestCart places a guest cart as order email
+func (e *PlaceOrderServiceAdapter) PlaceGuestCart(ctx context.Context, cart *cartDomain.Cart, payment *cartDomain.Payment) (cartDomain.PlacedOrderInfos, error) {
 	var placedOrders cartDomain.PlacedOrderInfos
 	placedOrders = append(placedOrders, cartDomain.PlacedOrderInfo{
 		OrderNumber: "1",
 	})
-	e.getLogger().Warn("send mail not implemented")
-	return placedOrders, nil
 
+	return nil, errors.New("not yet implemented")
 }
-func (e *EMailAdapter) PlaceCustomerCart(ctx context.Context, auth authDomain.Auth, cart *cartDomain.Cart, payment *cartDomain.Payment) (cartDomain.PlacedOrderInfos, error) {
+
+// PlaceCustomerCart places a customer cart as order email
+func (e *PlaceOrderServiceAdapter) PlaceCustomerCart(ctx context.Context, auth authDomain.Auth, cart *cartDomain.Cart, payment *cartDomain.Payment) (cartDomain.PlacedOrderInfos, error) {
 	var placedOrders cartDomain.PlacedOrderInfos
 	placedOrders = append(placedOrders, cartDomain.PlacedOrderInfo{
 		OrderNumber: "1",
 	})
-	e.getLogger().Warn("send mail not implemented")
-	return placedOrders, nil
-}
 
-
-func (e *EMailAdapter) getLogger() flamingo.Logger {
-	return e.logger.WithField("module","cart").WithField("category","emailAdapter")
+	return nil, errors.New("not yet implemented")
 }
