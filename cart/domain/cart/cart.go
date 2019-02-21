@@ -4,7 +4,6 @@ import (
 	"math"
 	"time"
 
-	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/pkg/errors"
 )
@@ -111,7 +110,6 @@ type (
 		BookingCode        string
 		LastName           string
 		FirstName          string
-		Logger             flamingo.Logger
 	}
 
 	// DeliveryLocation value object
@@ -474,13 +472,6 @@ func (item Item) GetSavingsByItem() float64 {
 // HasRelatedFlight checks if a flight is related to the delivery
 func (d DeliveryInfo) HasRelatedFlight() bool {
 	return d.RelatedFlight != nil
-}
-
-// Inject dependencies
-func (fd *FlightData) Inject(
-	logger flamingo.Logger,
-) {
-	fd.Logger = logger
 }
 
 // GetScheduledDate returns the flights scheduled data
