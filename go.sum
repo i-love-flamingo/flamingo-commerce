@@ -252,7 +252,6 @@ github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXf
 github.com/stretchr/testify v1.3.0 h1:TivCn/peBQ7UY8ooIcPgZFpTNSz0Q2U6UrFlUfqbe0Q=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 github.com/tarm/serial v0.0.0-20180830185346-98f6abe2eb07/go.mod h1:kDXzergiv9cbyO7IOYJZWg1U88JhDg3PB6klq9Hg2pA=
-github.com/thebod/otto v0.0.0-20180101010101-83d297c4b64aeb2de4268d9a54c9a503ae2d8139 h1:qd0KJi/54GfOobLyM87g5MmZ/lzrp6mmC/GJJuIezso=
 github.com/thebod/otto v0.0.0-20180101010101-83d297c4b64aeb2de4268d9a54c9a503ae2d8139/go.mod h1:fesAFlxR1zACVxdf54IiJlGMZLnF5LuHPqp1lQbdsrg=
 github.com/zemirco/memorystore v0.0.0-20160308183530-ecd57e5134f6 h1:j+ZgVPhfLkC3WDIqNCSpU2/Y67d2FNohAjrxR3HV+KQ=
 github.com/zemirco/memorystore v0.0.0-20160308183530-ecd57e5134f6/go.mod h1:PLhuixMlky6sB4/LEnpp1//u2BcRF2pKUYXLMVyOrIc=
