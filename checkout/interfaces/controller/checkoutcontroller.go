@@ -215,7 +215,7 @@ func (cc *CheckoutController) StartAction(ctx context.Context, r *web.Request) w
 	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if e != nil {
 		cc.logger.WithField("category", "checkout").Error("cart.checkoutcontroller.viewaction: Error %v", e)
-		return cc.responder.Render("checkout/carterror", nil) // todo .Hook(web.NoCache)
+		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 	}
 	guardRedirect := cc.getCommonGuardRedirects(ctx, r.Session(), decoratedCart)
 	if guardRedirect != nil {
@@ -229,7 +229,7 @@ func (cc *CheckoutController) StartAction(ctx context.Context, r *web.Request) w
 		}
 		return cc.responder.Render("checkout/startcheckout", CheckoutViewData{
 			DecoratedCart: *decoratedCart,
-		}) // .Hook(web.NoCache)
+		}).SetNoCache()
 	}
 
 	if cc.userService.IsLoggedIn(ctx, r.Session()) {
@@ -242,7 +242,7 @@ func (cc *CheckoutController) StartAction(ctx context.Context, r *web.Request) w
 
 	return cc.responder.Render("checkout/startcheckout", CheckoutViewData{
 		DecoratedCart: *decoratedCart,
-	}) // .Hook(web.NoCache)
+	}).SetNoCache()
 }
 
 func (cc *CheckoutController) hasAvailablePaymentProvider() bool {
@@ -278,14 +278,16 @@ func (cc *CheckoutController) getPayment(ctx context.Context, paymentProviderCod
 func (cc *CheckoutController) SubmitUserCheckoutAction(ctx context.Context, r *web.Request) web.Result {
 	//Guard
 	if !cc.userService.IsLoggedIn(ctx, r.Session()) {
-		return cc.responder.RouteRedirect("checkout.start", nil) // .Hook(web.NoCache)
+		r := cc.responder.RouteRedirect("checkout.start", nil)
+		r.SetNoCache()
+		return r
 	}
 
 	//Guard Clause if Cart cannout be fetched
 	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if e != nil {
 		cc.logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error %v", e)
-		return cc.responder.Render("checkout/carterror", nil) //.Hook(web.NoCache)
+		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 	}
 	guardRedirect := cc.getCommonGuardRedirects(ctx, r.Session(), decoratedCart)
 	if guardRedirect != nil {
@@ -296,28 +298,30 @@ func (cc *CheckoutController) SubmitUserCheckoutAction(ctx context.Context, r *w
 	// set the customer on the form service even if nil + err is returned here
 	cc.checkoutFormService.SetCustomer(customer)
 
-	return cc.showCheckoutFormAndHandleSubmit(ctx, r, cc.checkoutFormService, "checkout/usercheckout") //.Hook(web.NoCache)
+	return cc.showCheckoutFormAndHandleSubmit(ctx, r, cc.checkoutFormService, "checkout/usercheckout")
 }
 
 // SubmitGuestCheckoutAction handles the guest order submit
 func (cc *CheckoutController) SubmitGuestCheckoutAction(ctx context.Context, r *web.Request) web.Result {
 	cc.checkoutFormService.SetCustomer(nil)
 	if cc.userService.IsLoggedIn(ctx, r.Session()) {
-		return cc.responder.RouteRedirect("checkout.user", nil) //.Hook(web.NoCache)
+		resp := cc.responder.RouteRedirect("checkout.user", nil)
+		resp.SetNoCache()
+		return resp
 	}
 
 	//Guard Clause if Cart cannout be fetched
 	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if e != nil {
 		cc.logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error %v", e)
-		return cc.responder.Render("checkout/carterror", nil) //.Hook(web.NoCache)
+		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 	}
 	guardRedirect := cc.getCommonGuardRedirects(ctx, r.Session(), decoratedCart)
 	if guardRedirect != nil {
 		return guardRedirect
 	}
 
-	return cc.showCheckoutFormAndHandleSubmit(ctx, r, cc.checkoutFormService, "checkout/guestcheckout") //.Hook(web.NoCache)
+	return cc.showCheckoutFormAndHandleSubmit(ctx, r, cc.checkoutFormService, "checkout/guestcheckout")
 }
 
 // ProcessPaymentAction functions as a return/notification URL for Payment Providers
@@ -327,7 +331,7 @@ func (cc *CheckoutController) ProcessPaymentAction(ctx context.Context, r *web.R
 	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if e != nil {
 		cc.logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error %v", e)
-		return cc.responder.Render("checkout/carterror", nil) //.Hook(web.NoCache)
+		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 	}
 	guardRedirect := cc.getCommonGuardRedirects(ctx, r.Session(), decoratedCart)
 	if guardRedirect != nil {
@@ -335,7 +339,7 @@ func (cc *CheckoutController) ProcessPaymentAction(ctx context.Context, r *web.R
 	}
 
 	if cc.showEmptyCartPageIfNoItems && decoratedCart.Cart.ItemCount() == 0 {
-		return cc.responder.Render("checkout/emptycart", nil) //.Hook(web.NoCache)
+		return cc.responder.Render("checkout/emptycart", nil).SetNoCache()
 	}
 
 	providercode := r.Params["providercode"]
@@ -346,14 +350,14 @@ func (cc *CheckoutController) ProcessPaymentAction(ctx context.Context, r *web.R
 	cartPayment, err := provider.ProcessPayment(ctx, r, &decoratedCart.Cart, paymentMethod, nil)
 	if err != nil {
 		if cc.showReviewStepAfterPaymentError && !cc.skipReviewAction {
-			return cc.showReviewFormWithErrors(ctx, *decoratedCart, providercode, methodcode, err) //.Hook(web.NoCache)
+			return cc.showReviewFormWithErrors(ctx, *decoratedCart, providercode, methodcode, err)
 		}
-		return cc.showCheckoutFormWithErrors(ctx, r, "", *decoratedCart, nil, err) //.Hook(web.NoCache)
+		return cc.showCheckoutFormWithErrors(ctx, r, "", *decoratedCart, nil, err)
 	}
 
 	response, err := cc.placeOrder(ctx, r.Session(), *cartPayment, *decoratedCart)
 	if err != nil {
-		return cc.showCheckoutFormWithErrors(ctx, r, "", *decoratedCart, nil, err) //.Hook(web.NoCache)
+		return cc.showCheckoutFormWithErrors(ctx, r, "", *decoratedCart, nil, err)
 	}
 	return response
 }
@@ -372,10 +376,12 @@ func (cc *CheckoutController) SuccessAction(ctx context.Context, r *web.Request)
 				PlacedOrderInfos:    placeOrderFlashData.PlacedOrderInfos,
 			}
 
-			return cc.responder.Render("checkout/success", viewData) //.Hook(web.NoCache)
+			return cc.responder.Render("checkout/success", viewData).SetNoCache()
 		}
 	}
-	return cc.responder.RouteRedirect("checkout.expired", nil) //.Hook(web.NoCache)
+	resp := cc.responder.RouteRedirect("checkout.expired", nil)
+	resp.SetNoCache()
+	return resp
 }
 
 // ExpiredAction handles the expired cart action
@@ -383,9 +389,9 @@ func (cc *CheckoutController) ExpiredAction(ctx context.Context, r *web.Request)
 	if cc.showEmptyCartPageIfNoItems {
 		return cc.responder.Render("checkout/emptycart", EmptyCartInfo{
 			CartExpired: true,
-		}) //.Hook(web.NoCache)
+		}).SetNoCache()
 	}
-	return cc.responder.Render("checkout/expired", nil) //.Hook(web.NoCache)
+	return cc.responder.Render("checkout/expired", nil).SetNoCache()
 }
 
 func (cc *CheckoutController) getPaymentReturnURL(PaymentProvider string, PaymentMethod string) *url.URL {
@@ -407,18 +413,18 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, session)
 	if e != nil {
 		cc.logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error %v", e)
-		return cc.responder.Render("checkout/carterror", nil)
+		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 	}
 
 	if formservice == nil {
 		cc.logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error CheckoutFormService not present!")
-		return cc.responder.Render("checkout/carterror", nil)
+		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 	}
 	formservice.SetCart(&decoratedCart.Cart)
 
 	if !cc.hasAvailablePaymentProvider() {
 		cc.logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error No Payment set")
-		return cc.responder.Render("checkout/carterror", nil)
+		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 	}
 
 	form, e := formApplicationService.ProcessFormRequest(ctx, r, formservice)
@@ -429,13 +435,13 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 			CartValidationResult: cc.applicationCartService.ValidateCart(ctx, session, decoratedCart),
 			Form:                 form,
 			PaymentProviders:     cc.getPaymentProviders(),
-		})
+		}).SetNoCache()
 	}
 
 	//Guard Clause if Cart is empty
 	if decoratedCart.Cart.ItemCount() == 0 {
 		if cc.showEmptyCartPageIfNoItems {
-			return cc.responder.Render("checkout/emptycart", nil)
+			return cc.responder.Render("checkout/emptycart", nil).SetNoCache()
 		}
 
 		return cc.responder.Render(template, CheckoutViewData{
@@ -443,7 +449,7 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 			CartValidationResult: cc.applicationCartService.ValidateCart(ctx, session, decoratedCart),
 			Form:                 form,
 			PaymentProviders:     cc.getPaymentProviders(),
-		})
+		}).SetNoCache()
 	}
 
 	if form.IsValidAndSubmitted() {
@@ -461,11 +467,13 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 				return cc.processPaymentOrPlaceOrderDirectly(ctx, r, template, &form)
 			}
 
-			return cc.responder.RouteRedirect("checkout.review", nil)
+			resp := cc.responder.RouteRedirect("checkout.review", nil)
+			resp.SetNoCache()
+			return resp
 		}
 
 		cc.logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error cannot type convert to CheckoutFormData!")
-		return cc.responder.Render("checkout/carterror", nil)
+		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 
 	}
 
@@ -480,7 +488,7 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 		CartValidationResult: cc.applicationCartService.ValidateCart(ctx, session, decoratedCart),
 		Form:                 form,
 		PaymentProviders:     cc.getPaymentProviders(),
-	})
+	}).SetNoCache()
 }
 
 //showCheckoutFormWithErrors - error handling that is called form many places... It will show the checkoutform and the error
@@ -505,7 +513,7 @@ func (cc *CheckoutController) showCheckoutFormWithErrors(ctx context.Context, r 
 		Form:                 *form,
 		ErrorInfos:           getViewErrorInfo(err),
 		PaymentProviders:     cc.getPaymentProviders(),
-	})
+	}).SetNoCache()
 }
 
 //showReviewFormWithErrors
@@ -519,7 +527,7 @@ func (cc *CheckoutController) showReviewFormWithErrors(ctx context.Context, deco
 			Method:   selectedMethod,
 		},
 	}
-	return cc.responder.Render("checkout/review", viewData)
+	return cc.responder.Render("checkout/review", viewData).SetNoCache()
 }
 
 func getViewErrorInfo(err error) ViewErrorInfos {
@@ -542,7 +550,7 @@ func (cc *CheckoutController) processPaymentOrPlaceOrderDirectly(ctx context.Con
 	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if e != nil {
 		cc.logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error %v", e)
-		return cc.responder.Render("checkout/carterror", nil)
+		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 	}
 
 	//procces Payment:
@@ -659,7 +667,7 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if e != nil {
 		cc.logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error %v", e)
-		return cc.responder.Render("checkout/carterror", nil) //.Hook(web.NoCache)
+		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 	}
 
 	selectedProvider := decoratedCart.Cart.AdditionalData.SelectedPayment.Provider
@@ -669,7 +677,7 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 	privacyPolicy, _ := r.Form1("privacyPolicy")
 
 	if cc.showEmptyCartPageIfNoItems && decoratedCart.Cart.ItemCount() == 0 {
-		return cc.responder.Render("checkout/emptycart", nil) //.Hook(web.NoCache)
+		return cc.responder.Render("checkout/emptycart", nil).SetNoCache()
 	}
 	guardRedirect := cc.getCommonGuardRedirects(ctx, r.Session(), decoratedCart)
 	if guardRedirect != nil {
@@ -709,10 +717,10 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 	}
 
 	if proceed == "1" && (!cc.privacyPolicyRequired || privacyPolicy == "1") && termsAndConditions == "1" && selectedProvider != "" && selectedMethod != "" {
-		return cc.processPaymentOrPlaceOrderDirectly(ctx, r, "", nil) //.Hook(web.NoCache)
+		return cc.processPaymentOrPlaceOrderDirectly(ctx, r, "", nil)
 	}
 
-	return cc.responder.Render("checkout/review", viewData) //.Hook(web.NoCache)
+	return cc.responder.Render("checkout/review", viewData).SetNoCache()
 
 }
 
@@ -722,7 +730,9 @@ func (cc *CheckoutController) getCommonGuardRedirects(ctx context.Context, sessi
 		result := cc.applicationCartService.ValidateCart(ctx, session, decoratedCart)
 		if !result.IsValid() {
 			cc.logger.WithField("category", "checkout").Info("StartAction > RedirectToCartOnInvalideCart")
-			return cc.responder.RouteRedirect("cart.view", nil) //.Hook(web.NoCache)
+			resp := cc.responder.RouteRedirect("cart.view", nil)
+			resp.SetNoCache()
+			return resp
 		}
 	}
 	return nil
