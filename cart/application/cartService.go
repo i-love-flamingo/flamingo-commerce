@@ -108,7 +108,7 @@ func (cs *CartService) UpdateBillingAddress(ctx context.Context, session *web.Se
 }
 
 // UpdateDeliveryInfo updates the delivery info on the cart
-func (cs *CartService) UpdateDeliveryInfo(ctx context.Context, session *web.Session, deliveryCode string, deliveryInfo cartDomain.DeliveryInfo) error {
+func (cs *CartService) UpdateDeliveryInfo(ctx context.Context, session *web.Session, deliveryCode string, deliveryInfo cartDomain.DeliveryInfoUpdateCommand) error {
 	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return err
@@ -438,7 +438,11 @@ func (cs *CartService) CreateInitialDeliveryIfNotPresent(ctx context.Context, se
 		return nil, err
 	}
 
-	return behaviour.UpdateDeliveryInfo(ctx, cart, deliveryCode, delInfo)
+	updateCommand := cartDomain.DeliveryInfoUpdateCommand{
+		DeliveryInfo: delInfo,
+	}
+
+	return behaviour.UpdateDeliveryInfo(ctx, cart, deliveryCode, updateCommand)
 }
 
 // ApplyVoucher applies a voucher to the cart

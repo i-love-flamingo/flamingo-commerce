@@ -36,7 +36,7 @@ type (
 		UpdatePurchaser(ctx context.Context, cart *Cart, purchaser *Person, additionalData *AdditionalData) (*Cart, error)
 		UpdateAdditionalData(ctx context.Context, cart *Cart, additionalData *AdditionalData) (*Cart, error)
 		//UpdateDeliveryInfosAndBilling(ctx context.Context, cart *Cart, billingAddress *Address, deliveryInfoUpdates []DeliveryInfoUpdateCommand) (*Cart, error)
-		UpdateDeliveryInfo(ctx context.Context, cart *Cart, deliveryCode string, deliveryInfo DeliveryInfo) (*Cart, error)
+		UpdateDeliveryInfo(ctx context.Context, cart *Cart, deliveryCode string, deliveryInfo DeliveryInfoUpdateCommand) (*Cart, error)
 		UpdateBillingAddress(ctx context.Context, cart *Cart, billingAddress *Address) (*Cart, error)
 		UpdateDeliveryInfoAdditionalData(ctx context.Context, cart *Cart, deliveryCode string, additionalData *AdditionalData) (*Cart, error)
 		ApplyVoucher(ctx context.Context, cart *Cart, couponCode string) (*Cart, error)
@@ -57,11 +57,18 @@ type (
 		AdditionalData map[string]string
 	}
 
+	// DeliveryInfoUpdateCommand defines the update item command
+	DeliveryInfoUpdateCommand struct {
+		DeliveryInfo DeliveryInfo
+		additional map[string][]byte
+	}
+
 	// PlaceOrderService  interface - Secondary PORT
 	PlaceOrderService interface {
 		PlaceGuestCart(ctx context.Context, cart *Cart, payment *Payment) (PlacedOrderInfos, error)
 		PlaceCustomerCart(ctx context.Context, auth domain.Auth, cart *Cart, payment *Payment) (PlacedOrderInfos, error)
 	}
+
 )
 
 var (
@@ -70,3 +77,12 @@ var (
 	// ErrDeliveryCodeNotFound is used if a delivery was not found
 	ErrDeliveryCodeNotFound = errors.New("Delivery not found")
 )
+
+func (d *DeliveryInfoUpdateCommand) SetAdditional(key string, val AdditionalDeliverInfo) (err error) {
+	d.additional[key], err = val.Marshal()
+	return err
+}
+
+func (d *DeliveryInfoUpdateCommand) Additional() map[string][]byte {
+	return d.additional
+}

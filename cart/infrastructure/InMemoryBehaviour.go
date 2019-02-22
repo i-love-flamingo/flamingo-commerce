@@ -259,11 +259,11 @@ func (cob *InMemoryBehaviour) UpdateAdditionalData(ctx context.Context, cart *do
 }
 
 // UpdateDeliveryInfo updates a delivery info
-func (cob *InMemoryBehaviour) UpdateDeliveryInfo(ctx context.Context, cart *domaincart.Cart, deliveryCode string, deliveryInfo domaincart.DeliveryInfo) (*domaincart.Cart, error) {
+func (cob *InMemoryBehaviour) UpdateDeliveryInfo(ctx context.Context, cart *domaincart.Cart, deliveryCode string, deliveryInfoUpdateCommand domaincart.DeliveryInfoUpdateCommand) (*domaincart.Cart, error) {
 
 	for key, delivery := range cart.Deliveries {
 		if delivery.DeliveryInfo.Code == deliveryCode {
-			cart.Deliveries[key].DeliveryInfo = deliveryInfo
+			cart.Deliveries[key].DeliveryInfo = deliveryInfoUpdateCommand.DeliveryInfo
 		}
 	}
 

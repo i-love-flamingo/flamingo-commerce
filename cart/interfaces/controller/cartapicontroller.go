@@ -57,6 +57,13 @@ func (cc *CartAPIController) GetAction(ctx context.Context, r *web.Request) web.
 	return cc.responder.Data(cart)
 }
 
+
+// AddAction Add Item to cart
+func (cc *CartAPIController) UpdateDeliveryInfo(ctx context.Context, r *web.Request) web.Result {
+	//cc.cartService.UpdateDeliveryInfo(ctx,)
+	return cc.responder.Data(result{})
+}
+
 // AddAction Add Item to cart
 func (cc *CartAPIController) AddAction(ctx context.Context, r *web.Request) web.Result {
 	variantMarketplaceCode, _ := r.Params["variantMarketplaceCode"]

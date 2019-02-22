@@ -89,9 +89,11 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.S
 	// Maybe later we need to support different shipping addresses in the Checkout
 	if shippingAddress != nil {
 		for _, d := range decoratedCart.Cart.Deliveries {
-			newDeliveryInfo := d.DeliveryInfo
-			newDeliveryInfo.DeliveryLocation.Address = shippingAddress
-			err = os.cartService.UpdateDeliveryInfo(ctx, session, d.DeliveryInfo.Code, newDeliveryInfo)
+			newDeliveryInfoUpdateCommand := cart.DeliveryInfoUpdateCommand{
+				DeliveryInfo: d.DeliveryInfo,
+			}
+			newDeliveryInfoUpdateCommand.DeliveryInfo.DeliveryLocation.Address = shippingAddress
+			err = os.cartService.UpdateDeliveryInfo(ctx, session, d.DeliveryInfo.Code, newDeliveryInfoUpdateCommand)
 			if err != nil {
 				os.logger.Error("OnStepCurrentCartPlaceOrder UpdateDeliveryInfosAndBilling Error %v", err)
 				return err

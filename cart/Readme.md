@@ -188,7 +188,50 @@ ItemValidator defines an interface to validate an item **BEFORE** it is added to
 
 If an Item is not valid according to the result of the registered *ItemValidator* it will **not** be added to the cart.
 
+### Store "any" data on the cart
 
+This package offers a flexible way to store any additional objects on the cart:
+
+See this example:
+```
+
+type (
+	// FlightData value object
+	FlightData struct {
+		Direction          string
+		FlightNumber       string
+	}
+)
+
+var (
+    //need to implement the cart interface AdditionalDeliverInfo
+	_ cart.AdditionalDeliverInfo = new(FlightData)
+)
+
+func (f *FlightData) Marshal() ([]byte, error) {
+	return json.Marshal(f)
+}
+
+func (f *FlightData) Unmarshal(data []byte) error {
+	return json.Unmarshal(data, f)
+}
+
+func exampleUsageStore() {
+    updateCommand := cart.DeliveryInfoUpdateCommand{}
+    updateCommand.SetAdditional("flight",FlightData{})
+    applicationCartService.UpdateDeliveryInfo(ctx,session, "code",updateCommand)
+
+}
+
+func exampleUsageGet() {
+    cart, _, _ := applicationCartService.GetCartReceiverService().GetCart(ctx)
+    delivery,_ := cart.GetDeliveryByCode("code")
+    newFlight:= new(FlightData)
+    err := delivery.DeliveryInfo.LoadAdditionalInfo("flight",newFlight)
+}
+
+
+```
 
 ## Application Layer
 

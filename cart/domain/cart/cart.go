@@ -83,33 +83,25 @@ type (
 		//Cartitems - list of cartitems
 		Cartitems      []Item
 		DeliveryTotals DeliveryTotals
+		ShippingItem   ShippingItem
 	}
 
 	// DeliveryInfo - represents the Delivery
 	DeliveryInfo struct {
-		Code             string
-		Method           string
-		Carrier          string
-		DeliveryLocation DeliveryLocation
-		ShippingItem     ShippingItem
-		DesiredTime      time.Time
-		AdditionalData   map[string]string
-		RelatedFlight    *FlightData
+		Code                    string
+		Method                  string
+		Carrier                 string
+		DeliveryLocation        DeliveryLocation
+		DesiredTime             time.Time
+		AdditionalData          map[string]string
+		AdditionalDeliveryInfos map[string][]byte
 	}
 
-	// FlightData value object
-	FlightData struct {
-		ScheduledDateTime  time.Time
-		Direction          string
-		FlightNumber       string
-		AirportName        string
-		DestinationCountry string
-		Terminal           string
-		AirlineName        string
-		AirlineCode        string
-		BookingCode        string
-		LastName           string
-		FirstName          string
+	//AdditionalDeliverInfo is an interface that allows to store "any" additional objects on the cart
+	// see DeliveryInfoUpdateCommand
+	AdditionalDeliverInfo interface {
+		Marshal() ([]byte, error)
+		Unmarshal([]byte) error
 	}
 
 	// DeliveryLocation value object
@@ -469,21 +461,6 @@ func (item Item) GetSavingsByItem() float64 {
 	return totalSavings
 }
 
-// HasRelatedFlight checks if a flight is related to the delivery
-func (d DeliveryInfo) HasRelatedFlight() bool {
-	return d.RelatedFlight != nil
-}
-
-// GetScheduledDate returns the flights scheduled data
-func (fd *FlightData) GetScheduledDate() string {
-	return fd.ScheduledDateTime.Format("2006-01-02")
-}
-
-// GetScheduledDateTime returns the flights scheduled datetime
-func (fd *FlightData) GetScheduledDateTime() string {
-	return fd.ScheduledDateTime.Format(time.RFC3339)
-}
-
 // GetOrderNumberForDeliveryCode returns the order number for a delivery code
 func (poi PlacedOrderInfos) GetOrderNumberForDeliveryCode(deliveryCode string) string {
 	for _, v := range poi {
@@ -492,4 +469,15 @@ func (poi PlacedOrderInfos) GetOrderNumberForDeliveryCode(deliveryCode string) s
 		}
 	}
 	return ""
+}
+
+//LoadAdditionalInfo - returns the additional Data
+func (d DeliveryInfo) LoadAdditionalInfo(key string, into AdditionalDeliverInfo) error {
+	if d.AdditionalDeliveryInfos == nil {
+		return errors.New("not found")
+	}
+	if val, ok := d.AdditionalDeliveryInfos[key]; ok {
+		return into.Unmarshal(val)
+	}
+	return errors.New("not found")
 }
