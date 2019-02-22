@@ -193,7 +193,7 @@ If an Item is not valid according to the result of the registered *ItemValidator
 This package offers a flexible way to store any additional objects on the cart:
 
 See this example:
-```
+```go
 
 type (
 	// FlightData value object
@@ -216,19 +216,26 @@ func (f *FlightData) Unmarshal(data []byte) error {
 	return json.Unmarshal(data, f)
 }
 
-func exampleUsageStore() {
-    updateCommand := cart.DeliveryInfoUpdateCommand{}
-    updateCommand.SetAdditional("flight",FlightData{})
-    applicationCartService.UpdateDeliveryInfo(ctx,session, "code",updateCommand)
 
+//Helper for storing additional data
+func StoreFlightData(duc *cart.DeliveryInfoUpdateCommand, flight *FlightData) ( error) {
+	if flight == nil {
+		return nil
+	}
+	return duc.SetAdditional("flight",flight)
 }
 
-func exampleUsageGet() {
-    cart, _, _ := applicationCartService.GetCartReceiverService().GetCart(ctx)
-    delivery,_ := cart.GetDeliveryByCode("code")
-    newFlight:= new(FlightData)
-    err := delivery.DeliveryInfo.LoadAdditionalInfo("flight",newFlight)
+//Helper for getting stored data:
+func GetStoredFlightData(d cart.DeliveryInfo) (*FlightData, error) {
+	flight := new(FlightData)
+	err := d.LoadAdditionalInfo("flight",flight)
+	if err != nil {
+		return nil,err
+	}
+	return flight, nil
 }
+
+
 
 
 ```
