@@ -1,6 +1,7 @@
 package cart
 
 import (
+	"fmt"
 	"math"
 	"time"
 
@@ -474,10 +475,10 @@ func (poi PlacedOrderInfos) GetOrderNumberForDeliveryCode(deliveryCode string) s
 //LoadAdditionalInfo - returns the additional Data
 func (d DeliveryInfo) LoadAdditionalInfo(key string, into AdditionalDeliverInfo) error {
 	if d.AdditionalDeliveryInfos == nil {
-		return errors.New("not found")
+		return errors.New("no additional info on delivery info")
 	}
 	if val, ok := d.AdditionalDeliveryInfos[key]; ok {
 		return into.Unmarshal(val)
 	}
-	return errors.New("not found")
+	return fmt.Errorf("no additional info with key %v stored", key)
 }
