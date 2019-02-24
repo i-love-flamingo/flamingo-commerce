@@ -3,11 +3,12 @@ package application
 import (
 	"context"
 	"errors"
-	"flamingo.me/flamingo/v3/framework/web"
+
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (
@@ -49,7 +50,7 @@ func (os *OrderService) SetSources(ctx context.Context, session *web.Session) er
 	err = os.sourcingEngine.SetSourcesForCartItems(ctx, session, decoratedCart)
 	if err != nil {
 		os.logger.WithField("category", "checkout.orderService").Error("Error while getting sources: %v", err)
-		return errors.New("Error while setting sources.")
+		return errors.New("error while setting sources")
 	}
 	return nil
 }
@@ -59,7 +60,7 @@ func (os *OrderService) PlaceOrder(ctx context.Context, session *web.Session, de
 	validationResult := os.cartService.ValidateCart(ctx, session, decoratedCart)
 	if !validationResult.IsValid() {
 		os.logger.Warn("Try to place an invalid cart")
-		return nil, errors.New("Cart is Invalid.")
+		return nil, errors.New("cart is invalid")
 	}
 	return os.cartService.PlaceOrder(ctx, session, payment)
 }
@@ -130,14 +131,14 @@ func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.
 	validationResult := os.cartService.ValidateCart(ctx, session, decoratedCart)
 	if !validationResult.IsValid() {
 		os.logger.Warn("Try to place an invalid cart")
-		return nil, errors.New("Cart is Invalid.")
+		return nil, errors.New("cart is invalid")
 	}
 
 	placedOrderInfos, err := os.PlaceOrder(ctx, session, decoratedCart, &payment)
 
 	if err != nil {
 		os.logger.WithField("category", "checkout.orderService").Error("Error during place Order: %v", err)
-		return nil, errors.New("Error while placing the order. Please contact customer support.")
+		return nil, errors.New("error while placing the order. please contact customer support")
 	}
 	return placedOrderInfos, nil
 }

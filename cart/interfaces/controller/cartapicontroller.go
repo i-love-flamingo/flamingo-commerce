@@ -57,9 +57,9 @@ func (cc *CartAPIController) GetAction(ctx context.Context, r *web.Request) web.
 	return cc.responder.Data(cart)
 }
 
-
-// AddAction Add Item to cart
+// UpdateDeliveryInfo updates the delivery info
 func (cc *CartAPIController) UpdateDeliveryInfo(ctx context.Context, r *web.Request) web.Result {
+	// todo: not yet implemented?
 	//cc.cartService.UpdateDeliveryInfo(ctx,)
 	return cc.responder.Data(result{})
 }

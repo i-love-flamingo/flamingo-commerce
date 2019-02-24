@@ -22,25 +22,22 @@ Also the cart module and its services will be used by the checkout module.
 
 ### Configurations
 
-```
-  
+```yml
   cart:
     # To register the in memory cart service adapter (e.g. for development mode)
     useInMemoryCartServiceAdapters: true
     enableCartCache: true
     defaultDeliveryCode: "delivery"
     useEmailPlaceOrderAdapter: true
-    
 ```
 
-## Domain Model Details:
-
+## Domain Model Details
 
 ### Cart Aggregate
+
 Represents the Cart with PaymentInfos, DeliveryInfos and its Items:
 
-![](cart-model.png)
-
+![Cart Model](cart-model.png)
 
 
 ### About Delivery
@@ -50,8 +47,6 @@ In order to support Multidelivery the cart cannot directly have Items attached, 
 That also means when adding Items to the cart you need to specify the delivery with a "code".
 
 In cases where you only need one Delivery this can be configured as default and will be added on the fly for you.
-
-
 
 #### DeliveryInfo
 
@@ -78,7 +73,6 @@ The following String representations exists:
 * delivery (default)
     * DeliveryInfo to have the item (home) delivered
 
-
 ### CartItem details
 
 There are special properties that require some explainations:
@@ -89,7 +83,6 @@ There are special properties that require some explainations:
 ### Decorated Cart
 
 If you need all the product informations at hand - use the Decorated Cart - its decorating the cart with references to the product (dependency product package)
-
 
 ```graphviz
 digraph hierarchy {
@@ -117,8 +110,10 @@ cart->item[]
 
 ```
 
-## Details about Price fields:
-### Cartitems:
+## Details about Price fields
+
+### Cartitems
+
 | Key                                    | Desc                                                                                                                                                                                                                                                                      | Math Invariants                                                                                                             |
 |----------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
 | SinglePrice                            | Single price of product (brutto)                                                                                                                                                                                                                                          |                                                                                                                             |
@@ -146,10 +141,9 @@ cart->item[]
 | NonItemRelatedDiscountAmount | The Total of Discount that are not item related.                                                  | TotalDiscountAmount = SUM of Item NonItemRelatedDiscountAmount               |
 | GrandTotal                   | The final amount that need to be payed by the customer                                            | GrandTotal = SubTotal + TaxAmount - DiscountAmount + SOME of Totalitems  / GrandTotal = (Sum of Items RowTotalWithDiscountInclTax) + SOME of Totalitems    |
 
-
 ## Domain - Secondary Ports
 
-###  Must Have Secondary Ports:
+### Must Have Secondary Ports
 
 **GuestCartService, CustomerCartService (and ModifyBehavior)**
 
@@ -173,14 +167,12 @@ Implement an Adapter for it to define what should happen in case the cart is pla
 
 There is a `EmailAdapter` implementation as part of the package, that sends out the content of the cart as mail.
 
-
 #### Optional Port: CartValidator
 
 The CartValidator interface defines an interface to validate the cart.
 
 If you want to register an implementation, it will be used to pass the validation results to the web view.
 Also the cart validator will be used by the checkout - to make sure only valid carts can be placed as order.
-
 
 #### Optional Port: ItemValidator
 
@@ -193,56 +185,53 @@ If an Item is not valid according to the result of the registered *ItemValidator
 This package offers a flexible way to store any additional objects on the cart:
 
 See this example:
-```go
 
+```go
 type (
-	// FlightData value object
-	FlightData struct {
-		Direction          string
-		FlightNumber       string
-	}
+  // FlightData value object
+  FlightData struct {
+    Direction          string
+    FlightNumber       string
+  }
 )
 
 var (
-    //need to implement the cart interface AdditionalDeliverInfo
-	_ cart.AdditionalDeliverInfo = new(FlightData)
+  //need to implement the cart interface AdditionalDeliverInfo
+  _ cart.AdditionalDeliverInfo = new(FlightData)
 )
 
 func (f *FlightData) Marshal() ([]byte, error) {
-	return json.Marshal(f)
+  return json.Marshal(f)
 }
 
 func (f *FlightData) Unmarshal(data []byte) error {
-	return json.Unmarshal(data, f)
+  return json.Unmarshal(data, f)
 }
 
 
 //Helper for storing additional data
 func StoreFlightData(duc *cart.DeliveryInfoUpdateCommand, flight *FlightData) ( error) {
-	if flight == nil {
-		return nil
-	}
-	return duc.SetAdditional("flight",flight)
+  if flight == nil {
+    return nil
+  }
+  return duc.SetAdditional("flight",flight)
 }
 
 //Helper for getting stored data:
 func GetStoredFlightData(d cart.DeliveryInfo) (*FlightData, error) {
-	flight := new(FlightData)
-	err := d.LoadAdditionalInfo("flight",flight)
-	if err != nil {
-		return nil,err
-	}
-	return flight, nil
+  flight := new(FlightData)
+  err := d.LoadAdditionalInfo("flight",flight)
+  if err != nil {
+    return nil,err
+  }
+  return flight, nil
 }
-
-
-
-
 ```
 
 ## Application Layer
 
 Offers the following services:
+
 * CartReceiverService:
     * Responsible to get the current users cart. This is either a GuestCart or a CustomerCart
     * Interacts with the local CartCache (if enabled)
@@ -250,10 +239,9 @@ Offers the following services:
     * All manipulation actions should go over this service (!)
     * Interacts with the local CartCache (if enabled)
 
-Example Sequence for AddToCart Application Services to 
+Example Sequence for AddToCart Application Services to
 
-![](cart-flow.png)
-
+![Cart Flow](cart-flow.png)
 
 ## A typical Checkout "Flow"
 
@@ -273,6 +261,7 @@ A checkout package would use the cart package for adding informations to the car
 ## Interface Layer
 
 ### Cart Controller
+
 The main Cart Controller expects the following templates by default:
 
 * checkout/cart
@@ -284,19 +273,16 @@ The templates get the following variables passed:
 * CartValidationResult
 
 ### Cart Ajax API
+
 There are also of course ajax endpoints, that can be used to interact with the cart directly from your browser and the javascript functionality of your template.
 
 #### Get Cart Content:
 
 * http://localhost:3210/en/api/cart
 
-#### Adding products:
+#### Adding products
 
 * Simple product: http://localhost:3210/en/api/cart/add/fake_simple
 * With qty: http://localhost:3210/en/api/cart/add/fake_simple?qty=10
 * Adding configurables: http://localhost:3210/en/api/cart/add/fake_configurable?variantMarketplaceCode=shirt-white-s
 * Adding configurables with a given intent: http://localhost:3210/en/api/cart/add/fake_configurable?variantMarketplaceCode=shirt-white-s&deliveryIntent=pickup_collection_arrivals
-
-
-
-

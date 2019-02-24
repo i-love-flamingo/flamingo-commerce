@@ -60,7 +60,7 @@ type (
 	// DeliveryInfoUpdateCommand defines the update item command
 	DeliveryInfoUpdateCommand struct {
 		DeliveryInfo DeliveryInfo
-		additional map[string][]byte
+		additional   map[string][]byte
 	}
 
 	// PlaceOrderService  interface - Secondary PORT
@@ -68,7 +68,6 @@ type (
 		PlaceGuestCart(ctx context.Context, cart *Cart, payment *Payment) (PlacedOrderInfos, error)
 		PlaceCustomerCart(ctx context.Context, auth domain.Auth, cart *Cart, payment *Payment) (PlacedOrderInfos, error)
 	}
-
 )
 
 var (
@@ -78,11 +77,13 @@ var (
 	ErrDeliveryCodeNotFound = errors.New("Delivery not found")
 )
 
+// SetAdditional sets the additional delivery info on the delivery update command
 func (d *DeliveryInfoUpdateCommand) SetAdditional(key string, val AdditionalDeliverInfo) (err error) {
 	d.additional[key], err = val.Marshal()
 	return err
 }
 
+// Additional gets the additional data as war map from the delivery info update command
 func (d *DeliveryInfoUpdateCommand) Additional() map[string][]byte {
 	return d.additional
 }
