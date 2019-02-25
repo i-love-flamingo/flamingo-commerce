@@ -473,12 +473,12 @@ func (poi PlacedOrderInfos) GetOrderNumberForDeliveryCode(deliveryCode string) s
 }
 
 //LoadAdditionalInfo - returns the additional Data
-func (d DeliveryInfo) LoadAdditionalInfo(key string, into AdditionalDeliverInfo) error {
+func (d DeliveryInfo) LoadAdditionalInfo(key string, info AdditionalDeliverInfo) error {
 	if d.AdditionalDeliveryInfos == nil {
 		return errors.New("no additional info on delivery info")
 	}
 	if val, ok := d.AdditionalDeliveryInfos[key]; ok {
-		return into.Unmarshal(val)
+		return info.Unmarshal(val)
 	}
 	return fmt.Errorf("no additional info with key %v stored", key)
 }
