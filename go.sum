@@ -18,6 +18,7 @@ flamingo.me/flamingo/v3 v3.0.0-alpha4/go.mod h1:HsNhmjtCgCdB/wgYJ9micoiMDLHKTmCT
 flamingo.me/flamingo/v3 v3.0.0-alpha6/go.mod h1:AdDe/XjOQxylptWZEDOeUIrWRQs3+otxYv6P8fC/ffE=
 flamingo.me/flamingo/v3 v3.0.0-alpha6.0.20190222143210-bceeaac7b71f h1:cT1nOApphw9c4//NEk2zOrAkFxJQ2dIPtt13/M9ZjjE=
 flamingo.me/flamingo/v3 v3.0.0-alpha6.0.20190222143210-bceeaac7b71f/go.mod h1:AdDe/XjOQxylptWZEDOeUIrWRQs3+otxYv6P8fC/ffE=
+flamingo.me/flamingo/v3 v3.0.0-alpha7/go.mod h1:AdDe/XjOQxylptWZEDOeUIrWRQs3+otxYv6P8fC/ffE=
 flamingo.me/pugtemplate v0.0.0-20190214131921-b2e86e90c6a5 h1:dyylWzXdKGfZZykR1B+6CCvHLGjbM77BavUPLdgjMBI=
 flamingo.me/pugtemplate v0.0.0-20190214131921-b2e86e90c6a5/go.mod h1:3Fvtk05s3MhFjhecqwBcC23/lYqxlEH4LoYusN8hiTE=
 flamingo.me/pugtemplate v0.0.0-20190222140014-7fc6fe55115f h1:SKJOcjBizoaEYbbEqXvOQ3gWtee7rG9K91+cS7jjF7g=

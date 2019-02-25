@@ -2,7 +2,7 @@ module flamingo.me/flamingo-commerce/v3
 
 require (
 	flamingo.me/dingo v0.1.3
-	flamingo.me/flamingo/v3 v3.0.0-alpha6.0.20190222143210-bceeaac7b71f
+	flamingo.me/flamingo/v3 v3.0.0-alpha7
 	flamingo.me/pugtemplate v0.0.0-20190222140014-7fc6fe55115f
 	github.com/Shopify/sarama v1.21.0 // indirect
 	github.com/corpix/uarand v0.0.0 // indirect
