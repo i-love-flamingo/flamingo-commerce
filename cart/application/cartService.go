@@ -554,3 +554,10 @@ func (cs *CartService) PlaceOrder(ctx context.Context, session *web.Session, pay
 
 	return placeOrderInfos, err
 }
+
+
+
+// GetDefaultDeliveryCode returns the configured default deliverycode
+func (cs *CartService) GetDefaultDeliveryCode() string {
+	return cs.defaultDeliveryCode
+}

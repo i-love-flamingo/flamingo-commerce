@@ -134,6 +134,8 @@ func (cs *CartReceiverService) storeCartInCache(ctx context.Context, session *we
 	return cs.cartCache.CacheCart(ctx, session, *id, cart)
 }
 
+
+
 // GetCart Get the correct Cart (either Guest or User)
 func (cs *CartReceiverService) GetCart(ctx context.Context, session *web.Session) (*cartDomain.Cart, cartDomain.ModifyBehaviour, error) {
 	if cs.userService.IsLoggedIn(ctx, session) {
