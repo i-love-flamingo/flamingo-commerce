@@ -1,7 +1,6 @@
 package cart
 
 import (
-	"fmt"
 	"math"
 	"time"
 
@@ -265,6 +264,10 @@ type (
 	}
 )
 
+var (
+	ErrorAdditionalInfosNotFound = errors.New("Additional infos not found")
+)
+
 // Key constants
 const (
 	DeliveryMethodPickup      = "pickup"
@@ -474,10 +477,10 @@ func (poi PlacedOrderInfos) GetOrderNumberForDeliveryCode(deliveryCode string) s
 //LoadAdditionalInfo - returns the additional Data
 func (d *DeliveryInfo) LoadAdditionalInfo(key string, info AdditionalDeliverInfo) error {
 	if d.AdditionalDeliveryInfos == nil {
-		return errors.New("no additional info on delivery info")
+		return ErrorAdditionalInfosNotFound
 	}
 	if val, ok := d.AdditionalDeliveryInfos[key]; ok {
 		return info.Unmarshal(val)
 	}
-	return fmt.Errorf("no additional info with key %v stored", key)
+	return ErrorAdditionalInfosNotFound
 }
