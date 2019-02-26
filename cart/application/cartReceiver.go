@@ -109,6 +109,7 @@ func (cs *CartReceiverService) ViewCart(ctx context.Context, session *web.Sessio
 	return cs.getEmptyCart(), nil
 }
 
+
 func (cs *CartReceiverService) getCartFromCache(ctx context.Context, session *web.Session, identifier CartCacheIdentifier) (*cartDomain.Cart, error) {
 	if cs.cartCache == nil {
 		cs.logger.Debug("no cache set")
@@ -215,6 +216,21 @@ func (cs *CartReceiverService) GetCart(ctx context.Context, session *web.Session
 	}
 
 	return guestCart, behaviour, nil
+}
+
+
+// GetCartWithoutCache - forces to get the cart without cache
+func (cs *CartReceiverService) GetCartWithoutCache(ctx context.Context, session *web.Session) (*cartDomain.Cart, error) {
+	if cs.userService.IsLoggedIn(ctx, session) {
+		return cs.customerCartService.GetCart(ctx, cs.Auth(ctx, session), "me")
+	}
+
+	if cs.ShouldHaveGuestCart(session) {
+			return cs.getSessionGuestCart(ctx, session)
+	}
+
+	return cs.guestCartService.GetNewCart(ctx)
+
 }
 
 //ViewGuestCart - ry to get the uest Cart - even if the user is logged in

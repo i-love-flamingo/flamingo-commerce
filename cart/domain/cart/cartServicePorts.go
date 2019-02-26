@@ -87,11 +87,20 @@ func CreateDeliveryInfoUpdateCommand(info DeliveryInfo) DeliveryInfoUpdateComman
 }
 
 func (d *DeliveryInfoUpdateCommand) AddAdditional(key string, val AdditionalDeliverInfo) (err error) {
+	d.init()
 	d.additional[key], err = val.Marshal()
 	return err
 }
 
 // Additional gets the additional data as war map from the delivery info update command
 func (d *DeliveryInfoUpdateCommand) Additional() map[string][]byte {
+	d.init()
 	return d.additional
+}
+
+
+func (d *DeliveryInfoUpdateCommand) init() () {
+	if d.additional == nil {
+		d.additional = make(map[string][]byte)
+	}
 }

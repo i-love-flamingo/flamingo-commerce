@@ -314,12 +314,11 @@ func (Cart Cart) HasDeliveryForCode(deliveryCode string) bool {
 	return found == true
 }
 
-// GetDeliveryCodes returns a slice of all delivery codes in cart
+// GetDeliveryCodes returns a slice of all delivery codes in cart that have at least one cart item
 func (Cart Cart) GetDeliveryCodes() []string {
 	var deliveryCodes []string
 
-	for deliveryIndex := range Cart.Deliveries {
-		delivery := &Cart.Deliveries[deliveryIndex]
+	for _,delivery := range Cart.Deliveries {
 		if len(delivery.Cartitems) > 0 {
 			deliveryCodes = append(deliveryCodes, delivery.DeliveryInfo.Code)
 		}
@@ -473,7 +472,7 @@ func (poi PlacedOrderInfos) GetOrderNumberForDeliveryCode(deliveryCode string) s
 }
 
 //LoadAdditionalInfo - returns the additional Data
-func (d DeliveryInfo) LoadAdditionalInfo(key string, info AdditionalDeliverInfo) error {
+func (d *DeliveryInfo) LoadAdditionalInfo(key string, info AdditionalDeliverInfo) error {
 	if d.AdditionalDeliveryInfos == nil {
 		return errors.New("no additional info on delivery info")
 	}
