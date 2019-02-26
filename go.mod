@@ -6,6 +6,7 @@ require (
 	flamingo.me/pugtemplate v0.0.0-20190222140014-7fc6fe55115f
 	github.com/corpix/uarand v0.0.0 // indirect
 	github.com/etgryphon/stringUp v0.0.0-20121020160746-31534ccd8cac // indirect
+	github.com/gliderlabs/ssh v0.1.3 // indirect
 	github.com/go-playground/form v3.1.4+incompatible
 	github.com/go-playground/locales v0.12.1 // indirect
 	github.com/go-playground/universal-translator v0.16.0 // indirect
