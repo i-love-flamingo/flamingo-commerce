@@ -265,7 +265,8 @@ type (
 )
 
 var (
-	ErrorAdditionalInfosNotFound = errors.New("Additional infos not found")
+	// ErrAdditionalInfosNotFound is returned if the additional infos are not set
+	ErrAdditionalInfosNotFound = errors.New("additional infos not found")
 )
 
 // Key constants
@@ -321,7 +322,7 @@ func (Cart Cart) HasDeliveryForCode(deliveryCode string) bool {
 func (Cart Cart) GetDeliveryCodes() []string {
 	var deliveryCodes []string
 
-	for _,delivery := range Cart.Deliveries {
+	for _, delivery := range Cart.Deliveries {
 		if len(delivery.Cartitems) > 0 {
 			deliveryCodes = append(deliveryCodes, delivery.DeliveryInfo.Code)
 		}
@@ -477,10 +478,10 @@ func (poi PlacedOrderInfos) GetOrderNumberForDeliveryCode(deliveryCode string) s
 //LoadAdditionalInfo - returns the additional Data
 func (d *DeliveryInfo) LoadAdditionalInfo(key string, info AdditionalDeliverInfo) error {
 	if d.AdditionalDeliveryInfos == nil {
-		return ErrorAdditionalInfosNotFound
+		return ErrAdditionalInfosNotFound
 	}
 	if val, ok := d.AdditionalDeliveryInfos[key]; ok {
 		return info.Unmarshal(val)
 	}
-	return ErrorAdditionalInfosNotFound
+	return ErrAdditionalInfosNotFound
 }

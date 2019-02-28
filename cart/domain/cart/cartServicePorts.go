@@ -86,6 +86,7 @@ func CreateDeliveryInfoUpdateCommand(info DeliveryInfo) DeliveryInfoUpdateComman
 	}
 }
 
+// AddAdditional adds additional delivery info data
 func (d *DeliveryInfoUpdateCommand) AddAdditional(key string, val AdditionalDeliverInfo) (err error) {
 	d.init()
 	d.additional[key], err = val.Marshal()
