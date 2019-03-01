@@ -95,7 +95,7 @@ type (
 		DeliveryLocation        DeliveryLocation
 		DesiredTime             time.Time
 		AdditionalData          map[string]string
-		AdditionalDeliveryInfos map[string][]byte
+		AdditionalDeliveryInfos map[string]json.RawMessage
 	}
 
 	//AdditionalDeliverInfo is an interface that allows to store "any" additional objects on the cart
