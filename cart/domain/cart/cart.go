@@ -1,6 +1,7 @@
 package cart
 
 import (
+	"encoding/json"
 	"math"
 	"time"
 
@@ -100,8 +101,8 @@ type (
 	//AdditionalDeliverInfo is an interface that allows to store "any" additional objects on the cart
 	// see DeliveryInfoUpdateCommand
 	AdditionalDeliverInfo interface {
-		Marshal() ([]byte, error)
-		Unmarshal([]byte) error
+		Marshal() (json.RawMessage, error)
+		Unmarshal(json.RawMessage) error
 	}
 
 	// DeliveryLocation value object
