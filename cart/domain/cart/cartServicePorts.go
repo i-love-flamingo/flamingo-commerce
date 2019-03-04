@@ -2,6 +2,7 @@ package cart
 
 import (
 	"context"
+	"encoding/json"
 
 	"flamingo.me/flamingo/v3/core/auth/domain"
 	"github.com/pkg/errors"
@@ -60,7 +61,7 @@ type (
 	// DeliveryInfoUpdateCommand defines the update item command
 	DeliveryInfoUpdateCommand struct {
 		DeliveryInfo DeliveryInfo
-		additional map[string][]byte
+		additional   map[string]json.RawMessage
 	}
 
 	// PlaceOrderService  interface - Secondary PORT
@@ -68,7 +69,6 @@ type (
 		PlaceGuestCart(ctx context.Context, cart *Cart, payment *Payment) (PlacedOrderInfos, error)
 		PlaceCustomerCart(ctx context.Context, auth domain.Auth, cart *Cart, payment *Payment) (PlacedOrderInfos, error)
 	}
-
 )
 
 var (
@@ -82,7 +82,7 @@ var (
 func CreateDeliveryInfoUpdateCommand(info DeliveryInfo) DeliveryInfoUpdateCommand {
 	return DeliveryInfoUpdateCommand{
 		DeliveryInfo: info,
-		additional:info.AdditionalDeliveryInfos,
+		additional:   info.AdditionalDeliveryInfos,
 	}
 }
 
@@ -94,14 +94,13 @@ func (d *DeliveryInfoUpdateCommand) AddAdditional(key string, val AdditionalDeli
 }
 
 // Additional gets the additional data as war map from the delivery info update command
-func (d *DeliveryInfoUpdateCommand) Additional() map[string][]byte {
+func (d *DeliveryInfoUpdateCommand) Additional() map[string]json.RawMessage {
 	d.init()
 	return d.additional
 }
 
-
-func (d *DeliveryInfoUpdateCommand) init() () {
+func (d *DeliveryInfoUpdateCommand) init() {
 	if d.additional == nil {
-		d.additional = make(map[string][]byte)
+		d.additional = make(map[string]json.RawMessage)
 	}
 }
