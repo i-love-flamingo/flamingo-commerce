@@ -15,3 +15,7 @@ unlocal:
 	git config filter.gomod-flamingo-commerce.clean ''
 	git config filter.gomod-flamingo-commerce.required false
 	go mod edit -fmt $(DROPREPLACE)
+
+test:
+	go test -race -v ./...
+	
