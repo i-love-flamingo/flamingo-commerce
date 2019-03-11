@@ -24,76 +24,40 @@ type (
 func (b *DefaultDeliveryInfoBuilder) Inject(
 	logger flamingo.Logger,
 ) {
-	b.logger = logger
+	b.logger = logger.WithField("category", "cart").WithField("subcategory", "DefaultDeliveryInfoBuilder")
 }
 
-// BuildByDeliveryCode builds a DeliveryInfo by deliveryCode
+// BuildByDeliveryCode builds a (initial) DeliveryInfo by deliveryCode
+// Convention that is used in this factory is to split infos in the build deliveryinfo by "_" like this:
+//	* workflow_locationtype_locationdetail_method_anythingelse
+//  * not all parts are required
+//	* to "skip" parts in between use "-"
 func (b *DefaultDeliveryInfoBuilder) BuildByDeliveryCode(deliverycode string) (DeliveryInfo, error) {
 	if deliverycode == "" {
-		b.logger.WithField("category", "cart").WithField("subcategory", "DefaultDeliveryInfoBuilder").Warn("Empty deliverycode")
-		return DeliveryInfo{
-			Code:   deliverycode,
-			Method: DeliveryMethodUnspecified,
-		}, nil
-	}
-	if deliverycode == DeliveryMethodDelivery {
-		return DeliveryInfo{
-			Code:   deliverycode,
-			Method: DeliveryMethodDelivery,
-		}, nil
+		b.logger.Warn("Empty deliverycode")
 	}
 
-	if deliverycode == "pickup_store" {
-		return DeliveryInfo{
-			Code:   deliverycode,
-			Method: DeliveryMethodPickup,
-			DeliveryLocation: DeliveryLocation{
-				Type: DeliverylocationTypeStore,
-			},
-		}, nil
-	}
+	intentParts := strings.SplitN(deliverycode, "_",5)
 
-	intentParts := strings.SplitN(deliverycode, "_", 3)
-	if len(intentParts) != 3 {
-		b.logger.WithField("category", "cart").WithField("subcategory", "DefaultDeliveryInfoBuilder").Warn("Unknown deliverycode", deliverycode)
-		return DeliveryInfo{
-			Code:   deliverycode,
-			Method: DeliveryMethodUnspecified,
-		}, nil
-	}
-	if intentParts[0] == DeliveryMethodPickup || intentParts[0] == DeliveryMethodDelivery {
-		if intentParts[1] == DeliverylocationTypeStore {
-			return DeliveryInfo{
-				Code:   deliverycode,
-				Method: intentParts[0],
-				DeliveryLocation: DeliveryLocation{
-					Code: intentParts[2],
-					Type: DeliverylocationTypeStore,
-				},
-			}, nil
-		} else if intentParts[1] == DeliverylocationTypeCollectionpoint {
-			return DeliveryInfo{
-				Code:   deliverycode,
-				Method: intentParts[0],
-				DeliveryLocation: DeliveryLocation{
-					Code: intentParts[2],
-					Type: DeliverylocationTypeCollectionpoint,
-				},
-			}, nil
-		} else {
-			return DeliveryInfo{
-				Code:   deliverycode,
-				Method: intentParts[0],
-				DeliveryLocation: DeliveryLocation{
-					Code: intentParts[2],
-					Type: intentParts[1],
-				},
-			}, nil
-		}
-	}
-	b.logger.WithField("category", "cart").WithField("subcategory", "DefaultDeliveryInfoBuilder").Warn("Unknown IntentString", deliverycode)
-	return DeliveryInfo{
+	deliveryInfo := DeliveryInfo{
 		Code:   deliverycode,
-		Method: DeliveryMethodUnspecified,
-	}, nil
+	}
+	if len(intentParts) > 0 && intentParts[0] != ""{
+		deliveryInfo.Workflow = intentParts[0]
+	} else {
+		deliveryInfo.Workflow = DeliveryWorkflowUnspecified
+	}
+
+	if len(intentParts) > 1 && intentParts[1] != ""  {
+		deliveryInfo.DeliveryLocation.Type = intentParts[1]
+	} else {
+		deliveryInfo.DeliveryLocation.Type = DeliverylocationTypeUnspecified
+	}
+	if len(intentParts) > 2 && intentParts[2] != ""  {
+		deliveryInfo.DeliveryLocation.Code = intentParts[2]
+	}
+	if len(intentParts) > 3 && intentParts[3] != ""  {
+		deliveryInfo.Method = intentParts[3]
+	}
+	return deliveryInfo, nil
 }

@@ -51,27 +51,31 @@ In cases where you only need one Delivery this can be configured as default and 
 #### DeliveryInfo
 
 DeliveryInfo represents the information about which deliverymethod should be used and what deliverylocation should be used.
-A deliverylocation can be a address, but also a location defined by a code (e.g. such as a collection point).
+A DeliveryInfo has:
+* a "code" that should idendify a Delivery unique under the cart. Its up to you what code you want. You may want to follow the conventions used by the Default "DeliveryInfoBuilder"
+* a "workflow" - that is used to be able to differenciate between different fullfillment workflows (e.g. pickup or delivery)
+* a "method" - used to specify details for the delivery. Its up for the project what you want to use. E.g. use it to differenciate between "standard" and "express"
+* a "deliverylocation": A deliverylocation can be a address, but also a location defined by a code (e.g. such as a collection point).
 
-A DeliveryInfo has a "code" that should idendify a Delivery unique.
-
-The DeliveryInfo object is normaly completed with all required infos during the checkout
+The DeliveryInfo object is normaly completed with all required infos during the checkout using the DeliveryInfoUpdateCommand
 
 ##### Optional Port: DeliveryInfoBuilder
-The DeliveryInfoBuilder interface defines an interface that builds DeliveryInfoUpdateCommand for a cart.
+The DeliveryInfoBuilder interface defines an interface that builds initial DeliveryInfo for a cart.
 
-The "DefaultDeliveryInfoBuilder" that is part of the package should be ok for most cases, it simply takes the code and builds an initial DeliveryInfo object.
+The "DefaultDeliveryInfoBuilder" that is part of the package should be ok for most cases, it simply takes the passed deliverycode and builds an initial DeliveryInfo object.
 The code used by the "DefaultDeliveryInfoBuilder" should be speaking for that reason and is used to initialy create the DeliveryInfo:
-The following String representations exists:
 
+The convention used by this default builder is as follow:
+`WORKFLOW_LOCATIONTYPE_LOCATIONCODE_METHOD_anythingelse`
+
+Valid codes are:
+* delivery (default)
+    * DeliveryInfo to have the item (home) delivered
 * pickup_store_LOCATIONCODE
     * DeliveryInfo to pickup the item in a (in)store pickup location
 * pickup_collection_LOCATIONCODE
     * DeliveryInfo to pickup the item in a a special pickup location (central collectionpoint)
-* pickup_autodetect
-    * DeliveryInfo to pickup the items - but leave it to the solution to figure out the pickup point
-* delivery (default)
-    * DeliveryInfo to have the item (home) delivered
+
 
 ### CartItem details
 

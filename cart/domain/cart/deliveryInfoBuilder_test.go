@@ -1,40 +1,96 @@
-package cart
+package cart_test
 
-/*
-func TestDeliveryIntent(t *testing.T) {
-	builder := DeliveryIntentBuilder{
-		Logger: flamingo.NullLogger{},
+import (
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"github.com/stretchr/testify/assert"
+
+	"testing"
+
+	"flamingo.me/flamingo/v3/framework/flamingo"
+)
+
+func TestDefaultDeliveryInfoBuilder_BuildByDeliveryCode(t *testing.T) {
+	type fields struct {
+		logger flamingo.Logger
 	}
-	intent := builder.BuildDeliveryIntent("pickup_store_location_1")
-	assert.Equal(t, "pickup_store_location_1", intent.String())
-	assert.Equal(t, "location_1", intent.DeliveryLocationCode)
-	assert.Equal(t, DELIVERYLOCATION_TYPE_STORE, intent.DeliveryLocationType)
-	assert.Equal(t, DELIVERY_METHOD_PICKUP, intent.Method)
-
-	intent = builder.BuildDeliveryIntent("")
-	assert.Equal(t, DELIVERY_METHOD_UNSPECIFIED, intent.String())
-	assert.Equal(t, "", intent.DeliveryLocationCode)
-	assert.Equal(t, DELIVERY_METHOD_UNSPECIFIED, intent.Method, "empty intent string should by unspecified")
-
-	intent = builder.BuildDeliveryIntent("lkjlkj")
-	assert.Equal(t, DELIVERY_METHOD_UNSPECIFIED, intent.String())
-	assert.Equal(t, "", intent.DeliveryLocationCode)
-	assert.Equal(t, DELIVERY_METHOD_UNSPECIFIED, intent.Method, "random unvalid intent string should by unspecified")
-
-	intent = builder.BuildDeliveryIntent("delivery")
-	assert.Equal(t, "delivery", intent.String())
-	assert.Equal(t, "", intent.DeliveryLocationCode)
-	assert.Equal(t, DELIVERY_METHOD_DELIVERY, intent.Method)
-
-	intent = builder.BuildDeliveryIntent("pickup_collection-point_locpoint_1-2_3")
-	assert.Equal(t, "pickup_collection-point_locpoint_1-2_3", intent.String())
-	assert.Equal(t, "locpoint_1-2_3", intent.DeliveryLocationCode)
-	assert.Equal(t, DELIVERY_METHOD_PICKUP, intent.Method)
-	assert.Equal(t, DELIVERYLOCATION_TYPE_COLLECTIONPOINT, intent.DeliveryLocationType)
-
-	intent = builder.BuildDeliveryIntent("pickup_autodetect")
-	assert.Equal(t, "pickup_autodetect", intent.String())
-	assert.Equal(t, "", intent.DeliveryLocationCode)
-	assert.Equal(t, DELIVERY_METHOD_PICKUP, intent.Method)
+	type args struct {
+		deliverycode string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    cart.DeliveryInfo
+		wantErr bool
+	}{
+		{
+			args: args{
+				deliverycode: "delivery",
+			},
+			wantErr: false,
+			want:cart.DeliveryInfo{
+				Code:"delivery",
+				Workflow:"delivery",
+				DeliveryLocation:cart.DeliveryLocation{
+					Type: "unspecified",
+				},
+			},
+			name: "test for delivery",
+		},
+		{
+			args: args{
+				deliverycode: "pickup_store",
+			},
+			wantErr: false,
+			want:cart.DeliveryInfo{
+				Code:"pickup_store",
+				Workflow:"pickup",
+				DeliveryLocation:cart.DeliveryLocation{
+					Type: "store",
+				},
+			},
+			name: "test for pickup_store",
+		},
+		{
+			args: args{
+				deliverycode: "workflow___method",
+			},
+			wantErr: false,
+			want:cart.DeliveryInfo{
+				Code:"workflow___method",
+				Workflow:"workflow",
+				Method: "method",
+				DeliveryLocation:cart.DeliveryLocation{
+					Type: "unspecified",
+				},
+			},
+			name: "test for empty type and locationdetail",
+		},
+		{
+			args: args{
+				deliverycode: "workflow____ignoreme",
+			},
+			wantErr: false,
+			want:cart.DeliveryInfo{
+				Code:"workflow____ignoreme",
+				Workflow:"workflow",
+				DeliveryLocation:cart.DeliveryLocation{
+					Type: "unspecified",
+				},
+			},
+			name: "test for empty type and locationdetail and method",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := &cart.DefaultDeliveryInfoBuilder{}
+			b.Inject(flamingo.NullLogger{})
+			got, err := b.BuildByDeliveryCode(tt.args.deliverycode)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("DefaultDeliveryInfoBuilder.BuildByDeliveryCode() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			assert.Equal(t,tt.want,got)
+		})
+	}
 }
-*/

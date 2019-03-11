@@ -81,21 +81,34 @@ type (
 
 	// Delivery - represents the DeliveryInfo and the assigned Items
 	Delivery struct {
+		//DeliveryInfo - The details for this delivery - normaly completed during checkout
 		DeliveryInfo DeliveryInfo
 		//Cartitems - list of cartitems
 		Cartitems      []Item
+		//DeliveryTotals - Totals with the intent to use them to display the customer summary costs for this delivery
 		DeliveryTotals DeliveryTotals
+		//ShippingItem	- The Shipping Costs that may be involved in this delivery
 		ShippingItem   ShippingItem
 	}
 
 	// DeliveryInfo - represents the Delivery
 	DeliveryInfo struct {
-		Code                    string
-		Method                  string
+		// Code - is a project specific idendifier for the Delivery - you need it for the AddToCart Request for example
+		// The code can follow the convention in the Readme: Type_Method_LocationType_LocationCode
+		Code string
+		//Type - The Type of the Delivery - e.g. delivery or pickup - this might trigger different workflows
+		Workflow string
+		//Method - The shippingmethod something that is project specific and that can mean different delivery qualities with different deliverycosts
+		Method string
+		//Carrier - Optional the name of the Carrier that should be responsible for executing the delivery
 		Carrier                 string
+		//DeliveryLocation The target Location for the delivery
 		DeliveryLocation        DeliveryLocation
+		//DesiredTime - Optional - the desired time of the delivery
 		DesiredTime             time.Time
+		//AdditionalData  - Possibility for key value based information on the delivery - can be used flexible by each project
 		AdditionalData          map[string]string
+		//AdditionalDeliveryInfos - similar to AdditionalData this can be used to store "any" other object on a delivery encoded as json.RawMessage
 		AdditionalDeliveryInfos map[string]json.RawMessage
 	}
 
@@ -273,10 +286,11 @@ var (
 
 // Key constants
 const (
-	DeliveryMethodPickup      = "pickup"
-	DeliveryMethodDelivery    = "delivery"
-	DeliveryMethodUnspecified = "unspecified"
+	DeliveryWorkflowPickup      = "pickup"
+	DeliveryWorkflowDelivery    = "delivery"
+	DeliveryWorkflowUnspecified = "unspecified"
 
+	DeliverylocationTypeUnspecified = "unspecified"
 	DeliverylocationTypeCollectionpoint = "collection-point"
 	DeliverylocationTypeStore           = "store"
 	DeliverylocationTypeAddress         = "address"
