@@ -25,6 +25,7 @@ type (
 
 		//CartTotals - the cart totals (contain summary costs and discounts etc)
 		CartTotals Totals
+
 		//BillingAdress - the main billing address (relevant for all payments/invoices)
 		BillingAdress Address
 

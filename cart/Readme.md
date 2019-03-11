@@ -61,7 +61,7 @@ The DeliveryInfo object is normaly completed with all required infos during the 
 The DeliveryInfoBuilder interface defines an interface that builds DeliveryInfoUpdateCommand for a cart.
 
 The "DefaultDeliveryInfoBuilder" that is part of the package should be ok for most cases, it simply takes the code and builds an initial DeliveryInfo object.
-The code used by the "DefaultDeliveryInfoBuilder" should be speaking and is used to initialy create the DeliveryInfo:
+The code used by the "DefaultDeliveryInfoBuilder" should be speaking for that reason and is used to initialy create the DeliveryInfo:
 The following String representations exists:
 
 * pickup_store_LOCATIONCODE
