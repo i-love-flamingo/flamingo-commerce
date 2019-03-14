@@ -3,7 +3,6 @@ package infrastructure
 import (
 	"context"
 	"fmt"
-	"math/big"
 	"math/rand"
 	"strconv"
 
@@ -175,7 +174,6 @@ func (cob *InMemoryBehaviour) buildItemForCart(ctx context.Context, addRequest d
 		Qty:                    addRequest.Qty,
 		SinglePrice:            product.SaleableData().ActivePrice.GetFinalPrice(),
 		ID:                     strconv.Itoa(rand.Int()),
-		CurrencyCode:           product.SaleableData().ActivePrice.Currency,
 	}
 
 	calculateItemPrices(&cartItem)
@@ -184,7 +182,7 @@ func (cob *InMemoryBehaviour) buildItemForCart(ctx context.Context, addRequest d
 }
 
 func calculateItemPrices(item *domaincart.Item) {
-	item.RowTotal, _ = new(big.Float).Mul(big.NewFloat(item.SinglePrice), new(big.Float).SetInt64(int64(item.Qty))).Float64()
+	item.RowTotal = item.SinglePrice.Multiply(item.Qty)
 }
 
 // CleanCart removes all deliveries and their items from the cart

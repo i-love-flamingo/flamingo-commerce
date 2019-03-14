@@ -1,5 +1,7 @@
 package cart
 
+import "flamingo.me/flamingo-commerce/v3/price/domain"
+
 type (
 	// Payment represents all payments done for the cart and which items have been purchased by what method
 	Payment struct {
@@ -26,8 +28,8 @@ type (
 		TransactionID string
 		//AdditionalData - room for AdditionalData - specific to the payment
 		AdditionalData map[string]string
-		//Amount optional the amount payed
-		Amount float64
+		//amount optional the amount payed
+		Amount domain.Price
 		//CreditCardInfo Optional
 		CreditCardInfo *CreditCardInfo
 		//Title - speaking title - optional may describe the payment and may be shown to the customer

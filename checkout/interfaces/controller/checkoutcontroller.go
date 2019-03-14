@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
+	"flamingo.me/flamingo-commerce/v3/price/domain"
 	"fmt"
 	"net/url"
 	"strings"
@@ -53,12 +54,6 @@ type (
 		PlacedOrderInfos    cart.PlacedOrderInfos
 		Email               string
 		PlacedDecoratedCart cart.DecoratedCart
-
-		//PlacedDecoratedItems - DEPRECATED!!!
-		// PlacedDecoratedItems []cart.DecoratedCartItem
-
-		//CartTotals - Depricated
-		CartTotals cart.Totals
 	}
 
 	// ReviewStepViewData represents the success view data
@@ -86,7 +81,7 @@ type (
 	PlaceOrderPaymentInfo struct {
 		Provider       string
 		Method         string
-		Amount         float64
+		Amount         domain.Price
 		Title          string
 		CreditCardInfo *cart.CreditCardInfo
 	}
@@ -369,7 +364,6 @@ func (cc *CheckoutController) SuccessAction(ctx context.Context, r *web.Request)
 		if placeOrderFlashData, ok := flashes[len(flashes)-1].(PlaceOrderFlashData); ok {
 			decoratedCart := cc.decoratedCartFactory.Create(ctx, placeOrderFlashData.PlacedCart)
 			viewData := SuccessViewData{
-				CartTotals:          placeOrderFlashData.PlacedCart.CartTotals,
 				Email:               placeOrderFlashData.Email,
 				PaymentInfos:        placeOrderFlashData.PaymentInfos,
 				PlacedDecoratedCart: *decoratedCart,
@@ -605,7 +599,7 @@ func (cc *CheckoutController) placeOrder(ctx context.Context, session *web.Sessi
 				subAmounts += ", "
 			}
 
-			subAmounts += retailer + ":" + fmt.Sprintf("%f", cartPayment.Amount)
+			subAmounts += retailer + ":" + fmt.Sprintf("%f", cartPayment.Amount.FloatAmount())
 		}
 
 		// record 5ms per call

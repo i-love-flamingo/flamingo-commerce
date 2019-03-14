@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"flamingo.me/flamingo-commerce/v3/price/domain"
 	"testing"
 	"time"
 
@@ -117,13 +118,13 @@ func TestBasicProductHasAttribute(t *testing.T) {
 func TestBasicProductGetFinalPrice(t *testing.T) {
 	p := PriceInfo{
 		IsDiscounted: false,
-		Discounted:   0.99,
-		Default:      1.99,
+		Discounted:   domain.NewFromFloat(0.99,"€"),
+		Default:      domain.NewFromFloat(1.99, "€"),
 	}
-	assert.Equal(t, 1.99, p.GetFinalPrice())
+	assert.Equal(t, 1.99, p.GetFinalPrice().FloatAmount())
 
 	p.IsDiscounted = true
-	assert.Equal(t, 0.99, p.GetFinalPrice())
+	assert.Equal(t, 0.99, p.GetFinalPrice().FloatAmount())
 }
 
 func TestBasicProductGetMedia(t *testing.T) {

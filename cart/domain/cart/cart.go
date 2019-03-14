@@ -2,7 +2,7 @@ package cart
 
 import (
 	"encoding/json"
-	"math"
+	"flamingo.me/flamingo-commerce/v3/price/domain"
 	"time"
 
 	"flamingo.me/flamingo/v3/framework/web"
@@ -133,43 +133,39 @@ type (
 		Totalitems        []Totalitem
 		TotalShippingItem ShippingItem
 		//Final sum that need to be payed: GrandTotal = SubTotal + TaxAmount - DiscountAmount + SOME of Totalitems = (Sum of Items RowTotalWithDiscountInclTax) + SOME of Totalitems
-		GrandTotal float64
+		GrandTotal domain.Price
 		//SubTotal = SUM of Item RowTotal
-		SubTotal float64
+		SubTotal domain.Price
 		//SubTotalInclTax = SUM of Item RowTotalInclTax
-		SubTotalInclTax float64
+		SubTotalInclTax domain.Price
 		//SubTotalWithDiscounts = SubTotal - Sum of Item ItemRelatedDiscountAmount
-		SubTotalWithDiscounts float64
+		SubTotalWithDiscounts domain.Price
 		//SubTotalWithDiscountsAndTax= Sum of RowTotalWithItemRelatedDiscountInclTax
-		SubTotalWithDiscountsAndTax float64
+		SubTotalWithDiscountsAndTax domain.Price
 
 		//TotalDiscountAmount = SUM of Item TotalDiscountAmount
-		TotalDiscountAmount float64
+		TotalDiscountAmount domain.Price
 		//TotalNonItemRelatedDiscountAmount= SUM of Item NonItemRelatedDiscountAmount
-		TotalNonItemRelatedDiscountAmount float64
+		TotalNonItemRelatedDiscountAmount domain.Price
 		//TaxAmount = Sum of Item TaxAmount
-		TaxAmount float64
-		//CurrencyCode of the Total positions
-		CurrencyCode string
+		TaxAmount domain.Price
 	}
 
 	// DeliveryTotals value object
 	DeliveryTotals struct {
 		//SubTotal = SUM of Item RowTotal
-		SubTotal float64
+		SubTotal domain.Price
 		//SubTotalInclTax = SUM of Item RowTotalInclTax
-		SubTotalInclTax float64
+		SubTotalInclTax domain.Price
 		//SubTotalWithDiscounts = SubTotal - Sum of Item ItemRelatedDiscountAmount
-		SubTotalWithDiscounts float64
+		SubTotalWithDiscounts domain.Price
 		//SubTotalWithDiscountsAndTax= Sum of RowTotalWithItemRelatedDiscountInclTax
-		SubTotalWithDiscountsAndTax float64
+		SubTotalWithDiscountsAndTax domain.Price
 
 		//TotalDiscountAmount = SUM of Item TotalDiscountAmount
-		TotalDiscountAmount float64
+		TotalDiscountAmount domain.Price
 		//TotalNonItemRelatedDiscountAmount= SUM of Item NonItemRelatedDiscountAmount
-		TotalNonItemRelatedDiscountAmount float64
-		//CurrencyCode of the Total positions
-		CurrencyCode string
+		TotalNonItemRelatedDiscountAmount domain.Price
 	}
 
 	// Item for Cart
@@ -188,33 +184,32 @@ type (
 
 		Qty int
 
-		CurrencyCode string
-
 		AdditionalData map[string]string
+
 		//brutto for single item
-		SinglePrice float64
+		SinglePrice domain.Price
 		//netto for single item
-		SinglePriceInclTax float64
+		SinglePriceInclTax domain.Price
 		//RowTotal = SinglePrice * Qty
-		RowTotal float64
+		RowTotal domain.Price
 		//TaxAmount=Qty * (SinglePriceInclTax-SinglePrice)
-		TaxAmount float64
+		TaxAmount domain.Price
 		//RowTotalInclTax= RowTotal + TaxAmount
-		RowTotalInclTax float64
+		RowTotalInclTax domain.Price
 		//AppliedDiscounts contains the details about the discounts applied to this item - they can be "itemrelated" or not
 		AppliedDiscounts []ItemDiscount
 		// TotalDiscountAmount = Sum of AppliedDiscounts = ItemRelatedDiscountAmount +NonItemRelatedDiscountAmount
-		TotalDiscountAmount float64
+		TotalDiscountAmount domain.Price
 		// ItemRelatedDiscountAmount = Sum of AppliedDiscounts where IsItemRelated = True
-		ItemRelatedDiscountAmount float64
+		ItemRelatedDiscountAmount domain.Price
 		//NonItemRelatedDiscountAmount = Sum of AppliedDiscounts where IsItemRelated = false
-		NonItemRelatedDiscountAmount float64
+		NonItemRelatedDiscountAmount domain.Price
 		//RowTotalWithItemRelatedDiscountInclTax=RowTotal-ItemRelatedDiscountAmount
-		RowTotalWithItemRelatedDiscount float64
+		RowTotalWithItemRelatedDiscount domain.Price
 		//RowTotalWithItemRelatedDiscountInclTax=RowTotalInclTax-ItemRelatedDiscountAmount
-		RowTotalWithItemRelatedDiscountInclTax float64
+		RowTotalWithItemRelatedDiscountInclTax domain.Price
 		//This is the price the customer finaly need to pay for this item:  RowTotalWithDiscountInclTax = RowTotalInclTax-TotalDiscountAmount
-		RowTotalWithDiscountInclTax float64
+		RowTotalWithDiscountInclTax domain.Price
 	}
 
 	// ItemCartReference - value object that can be used to reference a Item in a Cart
@@ -228,7 +223,7 @@ type (
 	ItemDiscount struct {
 		Code  string
 		Title string
-		Price float64
+		Price domain.Price
 		//IsItemRelated is a flag indicating if the discount should be displayed in the item or if it the result of a cart discount
 		IsItemRelated bool
 	}
@@ -237,19 +232,18 @@ type (
 	Totalitem struct {
 		Code  string
 		Title string
-		Price float64
+		Price domain.Price
 		Type  string
 	}
 
 	// ShippingItem value object
 	ShippingItem struct {
 		Title string
-		Price float64
+		Price domain.Price
 
-		TaxAmount      float64
-		DiscountAmount float64
+		TaxAmount      domain.Price
+		DiscountAmount domain.Price
 
-		CurrencyCode string
 	}
 
 	// InvalidateCartEvent value object
@@ -410,35 +404,38 @@ func (Cart Cart) GetItemCartReferences() []ItemCartReference {
 }
 
 // GetVoucherSavings returns the savings of all vouchers
-func (Cart Cart) GetVoucherSavings() float64 {
-	totalSavings := 0.0
+func (Cart Cart) GetVoucherSavings() domain.Price {
+	price := domain.Price{}
 	for _, item := range Cart.CartTotals.Totalitems {
 		if item.Type == TotalsTypeVoucher {
-			totalSavings = totalSavings + math.Abs(item.Price)
+			price, err := price.Add(item.Price)
+			if err != nil {
+				return price
+			}
 		}
 	}
-
-	if totalSavings < 0 {
-		return 0.0
+	if price.IsNegative() {
+		return domain.Price{}
 	}
-
-	return totalSavings
+	return price
 }
 
 // GetSavings retuns the total of all savings
-func (Cart Cart) GetSavings() float64 {
-	totalSavings := 0.0
+func (Cart Cart) GetSavings() domain.Price {
+	price := domain.Price{}
 	for _, item := range Cart.CartTotals.Totalitems {
 		if item.Type == TotalsTypeDiscount {
-			totalSavings = totalSavings + math.Abs(item.Price)
+			price, err := price.Add(item.Price)
+			if err != nil {
+				return price
+			}
 		}
 	}
 
-	if totalSavings < 0 {
-		return 0.0
+	if price.IsNegative() {
+		return domain.Price{}
 	}
-
-	return totalSavings
+	return price
 }
 
 // HasAppliedCouponCode checks if a coupon code is applied to the cart
@@ -468,17 +465,19 @@ func (ct Totals) GetTotalItemsByType(typeCode string) []Totalitem {
 }
 
 // GetSavingsByItem gets the savings by item
-func (item Item) GetSavingsByItem() float64 {
-	totalSavings := 0.0
+func (item Item) GetSavingsByItem() domain.Price {
+	price := domain.Price{}
 	for _, discount := range item.AppliedDiscounts {
-		totalSavings = totalSavings + math.Abs(discount.Price)
+		price, err := price.Add(discount.Price)
+		if err != nil {
+			return price
+		}
 	}
 
-	if totalSavings < 0 {
-		return 0.0
+	if price.IsNegative() {
+		return domain.Price{}
 	}
-
-	return totalSavings
+	return price
 }
 
 // GetOrderNumberForDeliveryCode returns the order number for a delivery code

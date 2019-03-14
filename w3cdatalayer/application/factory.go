@@ -163,17 +163,17 @@ func (s Factory) BuildCartData(cart cart.DecoratedCart) *domain.Cart {
 	cartData := domain.Cart{
 		CartID: cart.Cart.ID,
 		Price: &domain.CartPrice{
-			Currency:       cart.Cart.CartTotals.CurrencyCode,
-			BasePrice:      cart.Cart.CartTotals.SubTotal,
-			CartTotal:      cart.Cart.CartTotals.GrandTotal,
-			Shipping:       cart.Cart.CartTotals.TotalShippingItem.Price,
+			Currency:       cart.Cart.CartTotals.GrandTotal.Currency(),
+			BasePrice:      cart.Cart.CartTotals.SubTotal.FloatAmount(),
+			CartTotal:      cart.Cart.CartTotals.GrandTotal.FloatAmount(),
+			Shipping:       cart.Cart.CartTotals.TotalShippingItem.Price.FloatAmount(),
 			ShippingMethod: cart.Cart.CartTotals.TotalShippingItem.Title,
-			PriceWithTax:   cart.Cart.CartTotals.GrandTotal,
+			PriceWithTax:   cart.Cart.CartTotals.GrandTotal.FloatAmount(),
 		},
 		Attributes: make(map[string]interface{}),
 	}
 	for _, item := range cart.GetAllDecoratedItems() {
-		itemData := s.buildCartItem(item, cart.Cart.CartTotals.CurrencyCode)
+		itemData := s.buildCartItem(item, cart.Cart.CartTotals.GrandTotal.Currency())
 		cartData.Item = append(cartData.Item, itemData)
 	}
 	return &cartData
@@ -192,17 +192,17 @@ func (s Factory) BuildTransactionData(ctx context.Context, cartTotals cart.Total
 	transactionData := domain.Transaction{
 		TransactionID: orderID,
 		Price: &domain.TransactionPrice{
-			Currency:         cartTotals.CurrencyCode,
-			BasePrice:        cartTotals.SubTotal,
-			TransactionTotal: cartTotals.GrandTotal,
-			Shipping:         cartTotals.TotalShippingItem.Price,
+			Currency:         cartTotals.GrandTotal.Currency(),
+			BasePrice:        cartTotals.SubTotal.FloatAmount(),
+			TransactionTotal: cartTotals.GrandTotal.FloatAmount(),
+			Shipping:         cartTotals.TotalShippingItem.Price.FloatAmount(),
 			ShippingMethod:   cartTotals.TotalShippingItem.Title,
 		},
 		Profile:    profile,
 		Attributes: make(map[string]interface{}),
 	}
 	for _, item := range decoratedItems {
-		itemData := s.buildCartItem(item, cartTotals.CurrencyCode)
+		itemData := s.buildCartItem(item, cartTotals.GrandTotal.Currency())
 		transactionData.Item = append(transactionData.Item, itemData)
 	}
 	return &transactionData
@@ -214,9 +214,9 @@ func (s Factory) buildCartItem(item cart.DecoratedCartItem, currencyCode string)
 		Quantity:    item.Item.Qty,
 		ProductInfo: s.getProductInfo(item.Product),
 		Price: domain.CartItemPrice{
-			BasePrice:    item.Item.SinglePrice,
-			PriceWithTax: item.Item.SinglePriceInclTax,
-			TaxRate:      item.Item.TaxAmount,
+			BasePrice:    item.Item.SinglePrice.FloatAmount(),
+			PriceWithTax: item.Item.SinglePriceInclTax.FloatAmount(),
+			TaxRate:      item.Item.TaxAmount.FloatAmount(),
 			Currency:     currencyCode,
 		},
 		Attributes: make(map[string]interface{}),
@@ -247,7 +247,7 @@ func (s Factory) BuildProductData(product productDomain.BasicProduct) domain.Pro
 	}
 
 	// set prices
-	productData.Attributes["productPrice"] = strconv.FormatFloat(saleableData.ActivePrice.GetFinalPrice(), 'f', 2, 64)
+	productData.Attributes["productPrice"] = strconv.FormatFloat(saleableData.ActivePrice.GetFinalPrice().FloatAmount(), 'f', 2, 64)
 
 	// check for highstreet price
 	if baseData.HasAttribute("rrp") {
@@ -256,8 +256,8 @@ func (s Factory) BuildProductData(product productDomain.BasicProduct) domain.Pro
 
 	// if FinalPrice is discounted, add it to specialPrice
 	if saleableData.ActivePrice.IsDiscounted {
-		productData.Attributes["specialPrice"] = strconv.FormatFloat(saleableData.ActivePrice.Discounted, 'f', 2, 64)
-		productData.Attributes["productPrice"] = strconv.FormatFloat(saleableData.ActivePrice.Default, 'f', 2, 64)
+		productData.Attributes["specialPrice"] = strconv.FormatFloat(saleableData.ActivePrice.Discounted.FloatAmount(), 'f', 2, 64)
+		productData.Attributes["productPrice"] = strconv.FormatFloat(saleableData.ActivePrice.Default.FloatAmount(), 'f', 2, 64)
 	}
 
 	// set badge

@@ -1,7 +1,9 @@
 package domain
 
 import (
+	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	"fmt"
+	"math/big"
 	"strings"
 	"time"
 )
@@ -11,6 +13,7 @@ const (
 	MediaUsageList      = "list"
 	MediaUsageDetail    = "detail"
 	MediaUsageThumbnail = "thumbnail"
+
 )
 
 type (
@@ -63,22 +66,34 @@ type (
 		SaleableTo      time.Time
 		ActivePrice     PriceInfo
 		AvailablePrices []PriceInfo
+		//LoyaltyPrices - Optional infos for products that can be payed in a loyalty program
+		LoyaltyPrices []LoyaltyPriceInfo
 	}
+
+
 
 	// PriceInfo holds product price information
 	PriceInfo struct {
-		Default           float64
-		Discounted        float64
+		Default           priceDomain.Price
+		Discounted        priceDomain.Price
 		DiscountText      string
-		Currency          string
-		ActiveBase        float64
-		ActiveBaseAmount  float64
+		ActiveBase        big.Float
+		ActiveBaseAmount  big.Float
 		ActiveBaseUnit    string
 		IsDiscounted      bool
 		CampaignRules     []string
 		DenyMoreDiscounts bool
 		Context           PriceContext
 		TaxClass          string
+	}
+
+	//LoyaltyPriceInfo - contains info used for product with
+	LoyaltyPriceInfo struct {
+		//Type - Name( or Type) of the Loyalty program
+		Type             string
+		PointPrice       priceDomain.Price
+		MinPointsToSpent big.Float
+		MaxPointsToSpent big.Float
 	}
 
 	// PriceContext defines the scope in which the price was calculated
@@ -220,7 +235,7 @@ func (bpd BasicProductData) HasAttribute(key string) bool {
 }
 
 // GetFinalPrice getter for price that should be used in calculations (either discounted or default)
-func (p PriceInfo) GetFinalPrice() float64 {
+func (p PriceInfo) GetFinalPrice() priceDomain.Price {
 	if p.IsDiscounted {
 		return p.Discounted
 	}
@@ -265,6 +280,16 @@ func (p Saleable) IsSaleableNow() bool {
 	}
 
 	return false
+}
+
+// GetChargesToPay  Gets the Charges that need to be payed
+func (p Saleable) GetChargesToPay(whishedCharges []priceDomain.Charge) []priceDomain.Charge {
+	var requiredCharges []priceDomain.Charge
+	requiredCharges = append(requiredCharges, priceDomain.Charge{
+		Price: p.ActivePrice.GetFinalPrice(),
+		Type:  priceDomain.ChargeTypeMain,
+	})
+	return requiredCharges
 }
 
 func findMediaInProduct(p BasicProduct, group string, usage string) *Media {

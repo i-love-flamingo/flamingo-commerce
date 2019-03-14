@@ -109,6 +109,10 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 	registry.HandleAny("cart.clean", r.viewController.CleanAndViewAction)
 	registry.Route("/cart/clean", "cart.clean")
 
+
+	registry.HandleDelete("cart.clean", r.viewController.CleanAndViewAction)
+	registry.Route("/cart/delivery/:deliveryCode", "cart.clean")
+
 	registry.HandleAny("cart.cleanDelivery", r.viewController.CleanDeliveryAndViewAction)
 	registry.Route("/cart/delete/delivery/:deliveryCode", `cart.cleanDelivery(deliveryCode?="")`)
 
