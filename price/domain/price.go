@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"encoding"
+	"encoding/json"
 	"errors"
 	"math/big"
 )
@@ -20,17 +22,23 @@ type (
 	}
 )
 
+var (
+	_ encoding.BinaryMarshaler   = Price{}
+	_ encoding.BinaryUnmarshaler = Price{}
+)
+
 const (
+	//ChargeTypeMain used as default for a Charge
 	ChargeTypeMain = "main"
 )
 
+//NewFromFloat - factory method
 func NewFromFloat(amount float64, currency string) Price {
 	return Price{
 		amount:   *big.NewFloat(amount),
 		currency: currency,
 	}
 }
-
 
 // NewZero Zero price
 func NewZero(currency string) Price {
@@ -51,7 +59,7 @@ func NewFromInt(amount int64, precicion int, currency string) Price {
 	}
 	precicionF := new(big.Float).SetInt64(int64(precicion))
 	return Price{
-		amount:   *new(big.Float).Quo(amountF,precicionF),
+		amount:   *new(big.Float).Quo(amountF, precicionF),
 		currency: currency,
 	}
 }
@@ -68,22 +76,20 @@ func (p Price) Add(add Price) (Price, error) {
 	return newPrice, nil
 }
 
-
 //Discounted - returns new price reduced by given percent
-func (p Price) Discounted(percent float64) (Price) {
+func (p Price) Discounted(percent float64) Price {
 	newPrice := Price{
 		currency: p.currency,
-		amount: *new(big.Float).Mul(&p.amount,big.NewFloat((100-percent)/100)),
+		amount:   *new(big.Float).Mul(&p.amount, big.NewFloat((100-percent)/100)),
 	}
 	return newPrice
 }
 
-
 //Taxed - returns new price added with Tax
-func (p Price) Taxed(percent float64) (Price) {
+func (p Price) Taxed(percent float64) Price {
 	newPrice := Price{
 		currency: p.currency,
-		amount: *new(big.Float).Mul(&p.amount,big.NewFloat((100+percent)/100)),
+		amount:   *new(big.Float).Mul(&p.amount, big.NewFloat((100+percent)/100)),
 	}
 	return newPrice
 }
@@ -101,7 +107,7 @@ func (p Price) Sub(sub Price) (Price, error) {
 }
 
 //Multiply  returns a new price with the amount Multiply
-func (p Price) Multiply(qty int) (Price) {
+func (p Price) Multiply(qty int) Price {
 	newPrice := Price{
 		currency: p.currency,
 	}
@@ -109,7 +115,7 @@ func (p Price) Multiply(qty int) (Price) {
 	return newPrice
 }
 
-//Sub - Subtract the given price from the current price and returns a new price
+//Equals - compares the prices
 func (p Price) Equals(cmp Price) bool {
 	if p.currency != cmp.currency {
 		return false
@@ -117,6 +123,7 @@ func (p Price) Equals(cmp Price) bool {
 	return p.amount.Cmp(&cmp.amount) == 0
 }
 
+//IsLessThen - compares the prices
 func (p Price) IsLessThen(cmp Price) bool {
 	if p.currency != cmp.currency {
 		return false
@@ -124,6 +131,7 @@ func (p Price) IsLessThen(cmp Price) bool {
 	return p.amount.Cmp(&cmp.amount) == -1
 }
 
+//IsGreaterThen - compares the prices
 func (p Price) IsGreaterThen(cmp Price) bool {
 	if p.currency != cmp.currency {
 		return false
@@ -152,7 +160,7 @@ func (p Price) IsNegative() bool {
 	return p.IsLessThenValue(*big.NewFloat(0.0))
 }
 
-//IsNegative - returns true if the price represents a negative value
+//IsPositive - returns true if the price represents a positive value
 func (p Price) IsPositive() bool {
 	return p.IsGreaterThenValue(*big.NewFloat(0.0))
 }
@@ -172,7 +180,7 @@ func (p Price) GetPayable() Price {
 
 	amountForRound := new(big.Float).Copy(&p.amount)
 
-	offsetToCheckRounding := new(big.Float).Mul(p.payableRoundingPrecisionF(),new(big.Float).SetInt64(10))
+	offsetToCheckRounding := new(big.Float).Mul(p.payableRoundingPrecisionF(), new(big.Float).SetInt64(10))
 
 	amountTruncatedInt, _ := new(big.Float).Mul(amountForRound, p.payableRoundingPrecisionF()).Int64()
 	amountRoundingCheckInt, _ := new(big.Float).Mul(amountForRound, offsetToCheckRounding).Int64()
@@ -212,36 +220,47 @@ func (p Price) SplitInPayables(count int) ([]Price, error) {
 	splittedAmountModulo := amountToMatchInt % int64(count)
 	splittedAmount := amountToMatchInt / int64(count)
 
-	splittedAmounts := make([]int64,count)
-	for i:=0; i < count; i++ {
+	splittedAmounts := make([]int64, count)
+	for i := 0; i < count; i++ {
 		splittedAmounts[i] = splittedAmount
 	}
 
-	for i:=0; i < int(splittedAmountModulo); i++ {
-		splittedAmounts[i] = splittedAmounts[i] +1
+	for i := 0; i < int(splittedAmountModulo); i++ {
+		splittedAmounts[i] = splittedAmounts[i] + 1
 	}
 
-	prices := make([]Price,count)
-	for i:=0; i < count; i++ {
-		prices[i] = NewFromInt(splittedAmounts[i],p.payableRoundingPrecision(),p.Currency())
+	prices := make([]Price, count)
+	for i := 0; i < count; i++ {
+		prices[i] = NewFromInt(splittedAmounts[i], p.payableRoundingPrecision(), p.Currency())
 	}
-
 
 	return prices, nil
 }
 
-
+//Clone returns a copy of the price
 func (p Price) Clone() Price {
 	return Price{
-		amount:p.amount,
-		currency:p.currency,
+		amount:   p.amount,
+		currency: p.currency,
 	}
 }
 
+//Currency returns currency
 func (p Price) Currency() string {
 	return p.currency
 }
 
+//Amount - returns exact amount as bigFloat
 func (p Price) Amount() *big.Float {
 	return &p.amount
+}
+
+//MarshalBinary - implements interace required by gob
+func (p Price) MarshalBinary() (data []byte, err error) {
+	return json.Marshal(p)
+}
+
+//UnmarshalBinary - implements interace required by gob
+func (p Price) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, &p)
 }
