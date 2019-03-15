@@ -39,8 +39,7 @@ func TestInMemoryBehaviour_CleanCart(t *testing.T) {
 						DeliveryInfo: domaincart.DeliveryInfo{
 							Code: "dev-1",
 						},
-						Cartitems:      nil,
-						DeliveryTotals: domaincart.DeliveryTotals{},
+						Cartitems: nil,
 					},
 				},
 			}
@@ -83,15 +82,13 @@ func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
 							DeliveryInfo: domaincart.DeliveryInfo{
 								Code: "dev-1",
 							},
-							Cartitems:      nil,
-							DeliveryTotals: domaincart.DeliveryTotals{},
+							Cartitems: nil,
 						},
 						{
 							DeliveryInfo: domaincart.DeliveryInfo{
 								Code: "dev-2",
 							},
-							Cartitems:      nil,
-							DeliveryTotals: domaincart.DeliveryTotals{},
+							Cartitems: nil,
 						},
 					},
 				},
@@ -104,8 +101,7 @@ func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
 						DeliveryInfo: domaincart.DeliveryInfo{
 							Code: "dev-2",
 						},
-						Cartitems:      nil,
-						DeliveryTotals: domaincart.DeliveryTotals{},
+						Cartitems: nil,
 					},
 				},
 			},
@@ -121,15 +117,13 @@ func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
 							DeliveryInfo: domaincart.DeliveryInfo{
 								Code: "dev-1",
 							},
-							Cartitems:      nil,
-							DeliveryTotals: domaincart.DeliveryTotals{},
+							Cartitems: nil,
 						},
 						{
 							DeliveryInfo: domaincart.DeliveryInfo{
 								Code: "dev-2",
 							},
-							Cartitems:      nil,
-							DeliveryTotals: domaincart.DeliveryTotals{},
+							Cartitems: nil,
 						},
 					},
 				},

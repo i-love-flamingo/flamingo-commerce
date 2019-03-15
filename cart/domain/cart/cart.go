@@ -2,8 +2,9 @@ package cart
 
 import (
 	"encoding/json"
-	"flamingo.me/flamingo-commerce/v3/price/domain"
 	"time"
+
+	"flamingo.me/flamingo-commerce/v3/price/domain"
 
 	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/pkg/errors"
@@ -43,6 +44,8 @@ type (
 		AuthenticatedUserID        string
 
 		AppliedCouponCodes []CouponCode
+
+		DefaultCurrency string
 	}
 
 	// Teaser - represents some teaser infos for cart
@@ -84,11 +87,9 @@ type (
 		//DeliveryInfo - The details for this delivery - normaly completed during checkout
 		DeliveryInfo DeliveryInfo
 		//Cartitems - list of cartitems
-		Cartitems      []Item
-		//DeliveryTotals - Totals with the intent to use them to display the customer summary costs for this delivery
-		DeliveryTotals DeliveryTotals
+		Cartitems []Item
 		//ShippingItem	- The Shipping Costs that may be involved in this delivery
-		ShippingItem   ShippingItem
+		ShippingItem ShippingItem
 	}
 
 	// DeliveryInfo - represents the Delivery
@@ -101,13 +102,13 @@ type (
 		//Method - The shippingmethod something that is project specific and that can mean different delivery qualities with different deliverycosts
 		Method string
 		//Carrier - Optional the name of the Carrier that should be responsible for executing the delivery
-		Carrier                 string
+		Carrier string
 		//DeliveryLocation The target Location for the delivery
-		DeliveryLocation        DeliveryLocation
+		DeliveryLocation DeliveryLocation
 		//DesiredTime - Optional - the desired time of the delivery
-		DesiredTime             time.Time
+		DesiredTime time.Time
 		//AdditionalData  - Possibility for key value based information on the delivery - can be used flexible by each project
-		AdditionalData          map[string]string
+		AdditionalData map[string]string
 		//AdditionalDeliveryInfos - similar to AdditionalData this can be used to store "any" other object on a delivery encoded as json.RawMessage
 		AdditionalDeliveryInfos map[string]json.RawMessage
 	}
@@ -130,23 +131,11 @@ type (
 
 	// Totals value object
 	Totals struct {
+		//Additional non taxable totals
 		Totalitems        []Totalitem
 		TotalShippingItem ShippingItem
 		//Final sum that need to be payed: GrandTotal = SubTotal + TaxAmount - DiscountAmount + SOME of Totalitems = (Sum of Items RowTotalWithDiscountInclTax) + SOME of Totalitems
 		GrandTotal domain.Price
-		//SubTotal = SUM of Item RowTotal
-		SubTotal domain.Price
-		//SubTotalInclTax = SUM of Item RowTotalInclTax
-		SubTotalInclTax domain.Price
-		//SubTotalWithDiscounts = SubTotal - Sum of Item ItemRelatedDiscountAmount
-		SubTotalWithDiscounts domain.Price
-		//SubTotalWithDiscountsAndTax= Sum of RowTotalWithItemRelatedDiscountInclTax
-		SubTotalWithDiscountsAndTax domain.Price
-
-		//TotalDiscountAmount = SUM of Item TotalDiscountAmount
-		TotalDiscountAmount domain.Price
-		//TotalNonItemRelatedDiscountAmount= SUM of Item NonItemRelatedDiscountAmount
-		TotalNonItemRelatedDiscountAmount domain.Price
 		//TaxAmount = Sum of Item TaxAmount
 		TaxAmount domain.Price
 	}
@@ -186,30 +175,14 @@ type (
 
 		AdditionalData map[string]string
 
-		//brutto for single item
+		//brutto (gross) for single item
 		SinglePrice domain.Price
-		//netto for single item
-		SinglePriceInclTax domain.Price
-		//RowTotal = SinglePrice * Qty
-		RowTotal domain.Price
-		//TaxAmount=Qty * (SinglePriceInclTax-SinglePrice)
-		TaxAmount domain.Price
-		//RowTotalInclTax= RowTotal + TaxAmount
-		RowTotalInclTax domain.Price
+
 		//AppliedDiscounts contains the details about the discounts applied to this item - they can be "itemrelated" or not
 		AppliedDiscounts []ItemDiscount
-		// TotalDiscountAmount = Sum of AppliedDiscounts = ItemRelatedDiscountAmount +NonItemRelatedDiscountAmount
-		TotalDiscountAmount domain.Price
-		// ItemRelatedDiscountAmount = Sum of AppliedDiscounts where IsItemRelated = True
-		ItemRelatedDiscountAmount domain.Price
-		//NonItemRelatedDiscountAmount = Sum of AppliedDiscounts where IsItemRelated = false
-		NonItemRelatedDiscountAmount domain.Price
-		//RowTotalWithItemRelatedDiscountInclTax=RowTotal-ItemRelatedDiscountAmount
-		RowTotalWithItemRelatedDiscount domain.Price
-		//RowTotalWithItemRelatedDiscountInclTax=RowTotalInclTax-ItemRelatedDiscountAmount
-		RowTotalWithItemRelatedDiscountInclTax domain.Price
-		//This is the price the customer finaly need to pay for this item:  RowTotalWithDiscountInclTax = RowTotalInclTax-TotalDiscountAmount
-		RowTotalWithDiscountInclTax domain.Price
+
+		//TaxAmount = SinglePriceInclTax-SinglePrice - Tax is normaly applied after discounts
+		TaxAmount domain.Price
 	}
 
 	// ItemCartReference - value object that can be used to reference a Item in a Cart
@@ -238,12 +211,10 @@ type (
 
 	// ShippingItem value object
 	ShippingItem struct {
-		Title string
-		Price domain.Price
-
+		Title          string
+		Price          domain.Price
 		TaxAmount      domain.Price
 		DiscountAmount domain.Price
-
 	}
 
 	// InvalidateCartEvent value object
@@ -284,7 +255,7 @@ const (
 	DeliveryWorkflowDelivery    = "delivery"
 	DeliveryWorkflowUnspecified = "unspecified"
 
-	DeliverylocationTypeUnspecified = "unspecified"
+	DeliverylocationTypeUnspecified     = "unspecified"
 	DeliverylocationTypeCollectionpoint = "collection-point"
 	DeliverylocationTypeStore           = "store"
 	DeliverylocationTypeAddress         = "address"
@@ -298,8 +269,8 @@ const (
 )
 
 // GetMainShippingEMail returns the main shipping address email, empty string if not available
-func (Cart Cart) GetMainShippingEMail() string {
-	for _, deliveries := range Cart.Deliveries {
+func (cart Cart) GetMainShippingEMail() string {
+	for _, deliveries := range cart.Deliveries {
 		if deliveries.DeliveryInfo.DeliveryLocation.Address != nil {
 			if deliveries.DeliveryInfo.DeliveryLocation.Address.Email != "" {
 				return deliveries.DeliveryInfo.DeliveryLocation.Address.Email
@@ -311,8 +282,8 @@ func (Cart Cart) GetMainShippingEMail() string {
 }
 
 // GetDeliveryByCode gets a delivery by code
-func (Cart Cart) GetDeliveryByCode(deliveryCode string) (*Delivery, bool) {
-	for _, delivery := range Cart.Deliveries {
+func (cart Cart) GetDeliveryByCode(deliveryCode string) (*Delivery, bool) {
+	for _, delivery := range cart.Deliveries {
 		if delivery.DeliveryInfo.Code == deliveryCode {
 			return &delivery, true
 		}
@@ -322,17 +293,17 @@ func (Cart Cart) GetDeliveryByCode(deliveryCode string) (*Delivery, bool) {
 }
 
 // HasDeliveryForCode checks if a delivery with the given code exists in the cart
-func (Cart Cart) HasDeliveryForCode(deliveryCode string) bool {
-	_, found := Cart.GetDeliveryByCode(deliveryCode)
+func (cart Cart) HasDeliveryForCode(deliveryCode string) bool {
+	_, found := cart.GetDeliveryByCode(deliveryCode)
 
 	return found == true
 }
 
 // GetDeliveryCodes returns a slice of all delivery codes in cart that have at least one cart item
-func (Cart Cart) GetDeliveryCodes() []string {
+func (cart Cart) GetDeliveryCodes() []string {
 	var deliveryCodes []string
 
-	for _, delivery := range Cart.Deliveries {
+	for _, delivery := range cart.Deliveries {
 		if len(delivery.Cartitems) > 0 {
 			deliveryCodes = append(deliveryCodes, delivery.DeliveryInfo.Code)
 		}
@@ -342,8 +313,8 @@ func (Cart Cart) GetDeliveryCodes() []string {
 }
 
 // GetByItemID gets an item by its id
-func (Cart Cart) GetByItemID(itemID string, deliveryCode string) (*Item, error) {
-	delivery, found := Cart.GetDeliveryByCode(deliveryCode)
+func (cart Cart) GetByItemID(itemID string, deliveryCode string) (*Item, error) {
+	delivery, found := cart.GetDeliveryByCode(deliveryCode)
 	if found != true {
 		return nil, errors.Errorf("Delivery for code %v not found", deliveryCode)
 	}
@@ -367,9 +338,9 @@ func inStruct(value string, list []string) bool {
 }
 
 // ItemCount - returns amount of Cartitems
-func (Cart Cart) ItemCount() int {
+func (cart Cart) ItemCount() int {
 	count := 0
-	for _, delivery := range Cart.Deliveries {
+	for _, delivery := range cart.Deliveries {
 		for _, item := range delivery.Cartitems {
 			count += item.Qty
 		}
@@ -379,9 +350,9 @@ func (Cart Cart) ItemCount() int {
 }
 
 // ProductCount - returns amount of different products
-func (Cart Cart) ProductCount() int {
+func (cart Cart) ProductCount() int {
 	count := 0
-	for _, delivery := range Cart.Deliveries {
+	for _, delivery := range cart.Deliveries {
 		count += len(delivery.Cartitems)
 	}
 
@@ -389,9 +360,9 @@ func (Cart Cart) ProductCount() int {
 }
 
 // GetItemCartReferences returns a slice of all ItemCartReferences
-func (Cart Cart) GetItemCartReferences() []ItemCartReference {
+func (cart Cart) GetItemCartReferences() []ItemCartReference {
 	var ids []ItemCartReference
-	for _, delivery := range Cart.Deliveries {
+	for _, delivery := range cart.Deliveries {
 		for _, item := range delivery.Cartitems {
 			ids = append(ids, ItemCartReference{
 				ItemID:       item.ID,
@@ -404,9 +375,9 @@ func (Cart Cart) GetItemCartReferences() []ItemCartReference {
 }
 
 // GetVoucherSavings returns the savings of all vouchers
-func (Cart Cart) GetVoucherSavings() domain.Price {
+func (cart Cart) GetVoucherSavings() domain.Price {
 	price := domain.Price{}
-	for _, item := range Cart.CartTotals.Totalitems {
+	for _, item := range cart.CartTotals.Totalitems {
 		if item.Type == TotalsTypeVoucher {
 			price, err := price.Add(item.Price)
 			if err != nil {
@@ -420,10 +391,10 @@ func (Cart Cart) GetVoucherSavings() domain.Price {
 	return price
 }
 
-// GetSavings retuns the total of all savings
-func (Cart Cart) GetSavings() domain.Price {
+// GetSavings retuns the total of all discount totals
+func (cart Cart) GetSavings() domain.Price {
 	price := domain.Price{}
-	for _, item := range Cart.CartTotals.Totalitems {
+	for _, item := range cart.CartTotals.Totalitems {
 		if item.Type == TotalsTypeDiscount {
 			price, err := price.Add(item.Price)
 			if err != nil {
@@ -438,17 +409,71 @@ func (Cart Cart) GetSavings() domain.Price {
 	return price
 }
 
+//SubTotal = SUM of Item RowTotal
+func (cart Cart) SubTotal() domain.Price {
+	return cart.deliverySum(func(d *Delivery) domain.Price {
+		return d.DeliveryTotals().SubTotal
+	})
+}
+
+//SubTotalInclTax = SUM of Item RowTotalInclTax
+func (cart Cart) SubTotalInclTax() domain.Price {
+	return cart.deliverySum(func(d *Delivery) domain.Price {
+		return d.DeliveryTotals().SubTotalInclTax
+	})
+}
+
+//deliverySum - private function that returns the sum of given deliveryPriceFunc
+func (cart Cart) deliverySum(deliveryPriceFunc func(delivery *Delivery) domain.Price) domain.Price {
+	if len(cart.Deliveries) == 0 {
+		return domain.NewZero(cart.DefaultCurrency)
+	}
+	price := deliveryPriceFunc(&cart.Deliveries[0])
+	for _, delivery := range cart.Deliveries[1:] {
+		price, _ = price.Add(deliveryPriceFunc(&delivery))
+	}
+	return price
+}
+
+//SubTotalWithDiscounts = SubTotal - Sum of Item ItemRelatedDiscountAmount
+func (cart Cart) SubTotalWithDiscounts() domain.Price {
+	return cart.deliverySum(func(d *Delivery) domain.Price {
+		return d.DeliveryTotals().SubTotalWithDiscounts
+	})
+}
+
+//SubTotalWithDiscountsAndTax = Sum of RowTotalWithItemRelatedDiscountInclTax
+func (cart Cart) SubTotalWithDiscountsAndTax() domain.Price {
+	return cart.deliverySum(func(d *Delivery) domain.Price {
+		return d.DeliveryTotals().SubTotalWithDiscountsAndTax
+	})
+}
+
+//TotalDiscountAmount = SUM of Item TotalDiscountAmount
+func (cart Cart) TotalDiscountAmount() domain.Price {
+	return cart.deliverySum(func(d *Delivery) domain.Price {
+		return d.DeliveryTotals().TotalDiscountAmount
+	})
+}
+
+//TotalNonItemRelatedDiscountAmount = SUM of Item NonItemRelatedDiscountAmount
+func (cart Cart) TotalNonItemRelatedDiscountAmount() domain.Price {
+	return cart.deliverySum(func(d *Delivery) domain.Price {
+		return d.DeliveryTotals().TotalNonItemRelatedDiscountAmount
+	})
+}
+
 // HasAppliedCouponCode checks if a coupon code is applied to the cart
-func (Cart Cart) HasAppliedCouponCode() bool {
-	return len(Cart.AppliedCouponCodes) > 0
+func (cart Cart) HasAppliedCouponCode() bool {
+	return len(cart.AppliedCouponCodes) > 0
 }
 
 // GetCartTeaser returns the teaser
-func (Cart Cart) GetCartTeaser() *Teaser {
+func (cart Cart) GetCartTeaser() *Teaser {
 	return &Teaser{
-		DeliveryCodes: Cart.GetDeliveryCodes(),
-		ItemCount:     Cart.ItemCount(),
-		ProductCount:  Cart.ProductCount(),
+		DeliveryCodes: cart.GetDeliveryCodes(),
+		ItemCount:     cart.ItemCount(),
+		ProductCount:  cart.ProductCount(),
 	}
 }
 
@@ -466,8 +491,44 @@ func (ct Totals) GetTotalItemsByType(typeCode string) []Totalitem {
 
 // GetSavingsByItem gets the savings by item
 func (item Item) GetSavingsByItem() domain.Price {
+	price, _ := item.ItemRelatedDiscountAmount().Add(item.NonItemRelatedDiscountAmount())
+	return price.GetPayable()
+}
+
+// RowTotal = SinglePrice * Qty
+func (item Item) RowTotal() domain.Price {
+	return item.SinglePrice.Multiply(item.Qty).GetPayable()
+}
+
+//SinglePriceInclTax - netto (net) for single item. Normaly the Tax is applied after discounting - but that detail is up to the secondary adpater
+func (item Item) SinglePriceInclTax() domain.Price {
+	price, _ := item.SinglePrice.Add(item.TaxAmount)
+	return price.GetPayable()
+}
+
+//TotalTaxAmount =Qty * (SinglePriceInclTax-SinglePrice)
+func (item Item) TotalTaxAmount() domain.Price {
+	price, _ := item.RowTotalInclTax().Sub(item.RowTotal())
+	return price.GetPayable()
+}
+
+//RowTotalInclTax = RowTotal + TaxAmount
+func (item Item) RowTotalInclTax() domain.Price {
+	return item.SinglePriceInclTax().Multiply(item.Qty).GetPayable()
+}
+
+// TotalDiscountAmount = Sum of AppliedDiscounts = ItemRelatedDiscountAmount +NonItemRelatedDiscountAmount
+func (item Item) TotalDiscountAmount() domain.Price {
+	return item.GetSavingsByItem()
+}
+
+// ItemRelatedDiscountAmount = Sum of AppliedDiscounts where IsItemRelated = True
+func (item Item) ItemRelatedDiscountAmount() domain.Price {
 	price := domain.Price{}
 	for _, discount := range item.AppliedDiscounts {
+		if !discount.IsItemRelated {
+			continue
+		}
 		price, err := price.Add(discount.Price)
 		if err != nil {
 			return price
@@ -477,7 +538,51 @@ func (item Item) GetSavingsByItem() domain.Price {
 	if price.IsNegative() {
 		return domain.Price{}
 	}
-	return price
+	return price.GetPayable()
+}
+
+//NonItemRelatedDiscountAmount = Sum of AppliedDiscounts where IsItemRelated = false
+func (item Item) NonItemRelatedDiscountAmount() domain.Price {
+	price := domain.Price{}
+	for _, discount := range item.AppliedDiscounts {
+		if discount.IsItemRelated {
+			continue
+		}
+		price, err := price.Add(discount.Price)
+		if err != nil {
+			return price
+		}
+	}
+
+	if price.IsNegative() {
+		return domain.Price{}
+	}
+	return price.GetPayable()
+}
+
+//RowTotalWithItemRelatedDiscount =RowTotal-ItemRelatedDiscountAmount
+func (item Item) RowTotalWithItemRelatedDiscount() domain.Price {
+	price, _ := item.RowTotal().Sub(item.ItemRelatedDiscountAmount())
+	return price.GetPayable()
+}
+
+//RowTotalWithItemRelatedDiscountInclTax =RowTotalInclTax-ItemRelatedDiscountAmount
+func (item Item) RowTotalWithItemRelatedDiscountInclTax() domain.Price {
+	price, _ := item.RowTotalInclTax().Sub(item.ItemRelatedDiscountAmount())
+	return price.GetPayable()
+}
+
+//RowTotalWithDiscountInclTax This is the price the customer finaly need to pay for this item:  RowTotalWithDiscountInclTax = RowTotalInclTax-TotalDiscountAmount
+func (item Item) RowTotalWithDiscountInclTax() domain.Price {
+	price, _ := item.RowTotalInclTax().Sub(item.TotalDiscountAmount())
+	return price.GetPayable()
+}
+
+//TotalWithDiscountInclTax - the price the customer need to pay for the shipping
+func (s ShippingItem) TotalWithDiscountInclTax() domain.Price {
+	price, _ := s.Price.Add(s.TaxAmount)
+	price, _ = price.Sub(s.DiscountAmount)
+	return price.GetPayable()
 }
 
 // GetOrderNumberForDeliveryCode returns the order number for a delivery code
@@ -499,4 +604,30 @@ func (d *DeliveryInfo) LoadAdditionalInfo(key string, info AdditionalDeliverInfo
 		return info.Unmarshal(val)
 	}
 	return ErrAdditionalInfosNotFound
+}
+
+//DeliveryTotals - Totals with the intent to use them to display the customer summary costs for this delivery
+func (d Delivery) DeliveryTotals() DeliveryTotals {
+	if len(d.Cartitems) == 0 {
+		return DeliveryTotals{}
+	}
+	firstItem := d.Cartitems[0]
+	deliveryTotals := DeliveryTotals{
+		SubTotal:                          firstItem.RowTotal(),
+		SubTotalInclTax:                   firstItem.RowTotalInclTax(),
+		TotalDiscountAmount:               firstItem.TotalDiscountAmount(),
+		SubTotalWithDiscounts:             firstItem.RowTotalWithItemRelatedDiscount(),
+		SubTotalWithDiscountsAndTax:       firstItem.RowTotalWithItemRelatedDiscountInclTax(),
+		TotalNonItemRelatedDiscountAmount: firstItem.NonItemRelatedDiscountAmount(),
+	}
+
+	for _, cartItem := range d.Cartitems[1:] {
+		deliveryTotals.SubTotal, _ = deliveryTotals.SubTotal.Add(cartItem.RowTotal())
+		deliveryTotals.SubTotalInclTax, _ = deliveryTotals.SubTotalInclTax.Add(cartItem.RowTotalInclTax())
+		deliveryTotals.TotalDiscountAmount, _ = deliveryTotals.TotalDiscountAmount.Add(cartItem.TotalDiscountAmount())
+		deliveryTotals.TotalNonItemRelatedDiscountAmount, _ = deliveryTotals.TotalNonItemRelatedDiscountAmount.Add(cartItem.NonItemRelatedDiscountAmount())
+		deliveryTotals.SubTotalWithDiscounts, _ = deliveryTotals.SubTotalWithDiscounts.Add(cartItem.RowTotalWithItemRelatedDiscount())
+		deliveryTotals.SubTotalWithDiscountsAndTax, _ = deliveryTotals.SubTotalWithDiscountsAndTax.Add(cartItem.RowTotalWithItemRelatedDiscountInclTax())
+	}
+	return deliveryTotals
 }

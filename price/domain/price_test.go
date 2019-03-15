@@ -92,5 +92,10 @@ func TestPrice_Discounted(t *testing.T) {
 	originalPrice := domain.NewFromFloat(12.45, "EUR")
 	discountedPrice := originalPrice.Discounted(10).GetPayable()
 	//10% of - expected rounded value of 11.21
-	assert.Equal(t, domain.NewFromInt(1121,100,"").Amount(),discountedPrice.Amount())
+	assert.Equal(t, domain.NewFromInt(1121, 100, "").Amount(), discountedPrice.Amount())
+}
+
+func TestPrice_IsZero(t *testing.T) {
+	var price domain.Price
+	assert.Equal(t, domain.NewZero("").Amount(), price.GetPayable().Amount())
 }

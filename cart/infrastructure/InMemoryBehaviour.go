@@ -91,8 +91,6 @@ func (cob *InMemoryBehaviour) UpdateItem(ctx context.Context, cart *domaincart.C
 		for _, item := range delivery.Cartitems {
 			if itemID == item.ID {
 				item.Qty = *itemUpdateCommand.Qty
-
-				calculateItemPrices(&item)
 				for k, currentItem := range delivery.Cartitems {
 					if currentItem.ID == itemID {
 						delivery.Cartitems[k] = item
@@ -171,18 +169,12 @@ func (cob *InMemoryBehaviour) buildItemForCart(ctx context.Context, addRequest d
 	cartItem := domaincart.Item{
 		MarketplaceCode:        addRequest.MarketplaceCode,
 		VariantMarketPlaceCode: addRequest.VariantMarketplaceCode,
-		Qty:                    addRequest.Qty,
-		SinglePrice:            product.SaleableData().ActivePrice.GetFinalPrice(),
-		ID:                     strconv.Itoa(rand.Int()),
+		Qty:         addRequest.Qty,
+		SinglePrice: product.SaleableData().ActivePrice.GetFinalPrice(),
+		ID:          strconv.Itoa(rand.Int()),
 	}
 
-	calculateItemPrices(&cartItem)
-
 	return cartItem
-}
-
-func calculateItemPrices(item *domaincart.Item) {
-	item.RowTotal = item.SinglePrice.Multiply(item.Qty)
 }
 
 // CleanCart removes all deliveries and their items from the cart

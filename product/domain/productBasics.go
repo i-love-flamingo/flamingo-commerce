@@ -1,11 +1,12 @@
 package domain
 
 import (
-	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	"fmt"
 	"math/big"
 	"strings"
 	"time"
+
+	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
 // Media usage constants
@@ -13,7 +14,6 @@ const (
 	MediaUsageList      = "list"
 	MediaUsageDetail    = "detail"
 	MediaUsageThumbnail = "thumbnail"
-
 )
 
 type (
@@ -69,8 +69,6 @@ type (
 		//LoyaltyPrices - Optional infos for products that can be payed in a loyalty program
 		LoyaltyPrices []LoyaltyPriceInfo
 	}
-
-
 
 	// PriceInfo holds product price information
 	PriceInfo struct {

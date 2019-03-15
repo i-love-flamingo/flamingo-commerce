@@ -164,7 +164,7 @@ func (s Factory) BuildCartData(cart cart.DecoratedCart) *domain.Cart {
 		CartID: cart.Cart.ID,
 		Price: &domain.CartPrice{
 			Currency:       cart.Cart.CartTotals.GrandTotal.Currency(),
-			BasePrice:      cart.Cart.CartTotals.SubTotal.FloatAmount(),
+			BasePrice:      cart.Cart.SubTotal().FloatAmount(),
 			CartTotal:      cart.Cart.CartTotals.GrandTotal.FloatAmount(),
 			Shipping:       cart.Cart.CartTotals.TotalShippingItem.Price.FloatAmount(),
 			ShippingMethod: cart.Cart.CartTotals.TotalShippingItem.Title,
@@ -193,7 +193,7 @@ func (s Factory) BuildTransactionData(ctx context.Context, cartTotals cart.Total
 		TransactionID: orderID,
 		Price: &domain.TransactionPrice{
 			Currency:         cartTotals.GrandTotal.Currency(),
-			BasePrice:        cartTotals.SubTotal.FloatAmount(),
+			BasePrice:        cartTotals.GrandTotal.FloatAmount(),
 			TransactionTotal: cartTotals.GrandTotal.FloatAmount(),
 			Shipping:         cartTotals.TotalShippingItem.Price.FloatAmount(),
 			ShippingMethod:   cartTotals.TotalShippingItem.Title,
@@ -215,7 +215,7 @@ func (s Factory) buildCartItem(item cart.DecoratedCartItem, currencyCode string)
 		ProductInfo: s.getProductInfo(item.Product),
 		Price: domain.CartItemPrice{
 			BasePrice:    item.Item.SinglePrice.FloatAmount(),
-			PriceWithTax: item.Item.SinglePriceInclTax.FloatAmount(),
+			PriceWithTax: item.Item.SinglePriceInclTax().FloatAmount(),
 			TaxRate:      item.Item.TaxAmount.FloatAmount(),
 			Currency:     currencyCode,
 		},
