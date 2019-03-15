@@ -66,14 +66,34 @@ func NewFromInt(amount int64, precicion int, currency string) Price {
 
 //Add - Adds the given price to the current price and returns a new price
 func (p Price) Add(add Price) (Price, error) {
-	if p.currency != add.currency {
-		return p, errors.New("Cannot add prices in different currencies")
-	}
-	newPrice := Price{
-		currency: p.currency,
+	newPrice, err := p.currencyGuard(add)
+	if err != nil {
+		return newPrice, err
 	}
 	newPrice.amount.Add(&p.amount, &add.amount)
 	return newPrice, nil
+}
+
+//currencyGuard - common Guard that protects price calculations of prices with different currency.
+// 	Robust: if original is Zero and the currencies are different we take the given currency
+func (p Price) currencyGuard(check Price) (Price, error) {
+	if p.currency == check.currency {
+		return Price{
+			currency: check.currency,
+		}, nil
+	}
+	if p.IsZero() {
+		return Price{
+			currency: check.currency,
+		}, nil
+	}
+
+	if check.IsZero() {
+		return Price{
+			currency: p.currency,
+		}, nil
+	}
+	return NewZero(p.currency), errors.New("Cannot calculate prices in different currencies")
 }
 
 //Discounted - returns new price reduced by given percent
@@ -94,13 +114,20 @@ func (p Price) Taxed(percent float64) Price {
 	return newPrice
 }
 
-//Sub - Subtract the given price from the current price and returns a new price
-func (p Price) Sub(sub Price) (Price, error) {
-	if p.currency != sub.currency {
-		return p, errors.New("Cannot add prices in different currencies")
-	}
+//Tax- returns new price representing the taxamount
+func (p Price) Tax(percent float64) Price {
 	newPrice := Price{
 		currency: p.currency,
+		amount:   *new(big.Float).Mul(&p.amount, big.NewFloat((percent)/100)),
+	}
+	return newPrice
+}
+
+//Sub - Subtract the given price from the current price and returns a new price
+func (p Price) Sub(sub Price) (Price, error) {
+	newPrice, err := p.currencyGuard(sub)
+	if err != nil {
+		return newPrice, err
 	}
 	newPrice.amount.Sub(&p.amount, &sub.amount)
 	return newPrice, nil
@@ -115,8 +142,8 @@ func (p Price) Multiply(qty int) Price {
 	return newPrice
 }
 
-//Equals - compares the prices
-func (p Price) Equals(cmp Price) bool {
+//Equal - compares the prices
+func (p Price) Equal(cmp Price) bool {
 	if p.currency != cmp.currency {
 		return false
 	}
@@ -163,6 +190,11 @@ func (p Price) IsNegative() bool {
 //IsPositive - returns true if the price represents a positive value
 func (p Price) IsPositive() bool {
 	return p.IsGreaterThenValue(*big.NewFloat(0.0))
+}
+
+//IsZero - returns true if the price represents zero value
+func (p Price) IsZero() bool {
+	return p.Equal(NewZero(p.Currency())) || p.Equal(NewFromFloat(0, p.Currency()))
 }
 
 //FloatAmount gets the current amount as float

@@ -73,7 +73,7 @@ func TestNewFromInt(t *testing.T) {
 	price2 := domain.NewFromFloat(12.45, "EUR")
 	assert.Equal(t, price2.GetPayable().Amount(), price1.GetPayable().Amount())
 	pricePayable := price1.GetPayable()
-	assert.True(t, price2.GetPayable().Equals(pricePayable))
+	assert.True(t, price2.GetPayable().Equal(pricePayable))
 }
 
 func TestPrice_SplitInPayables(t *testing.T) {

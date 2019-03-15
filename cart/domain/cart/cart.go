@@ -377,9 +377,10 @@ func (cart Cart) GetItemCartReferences() []ItemCartReference {
 // GetVoucherSavings returns the savings of all vouchers
 func (cart Cart) GetVoucherSavings() domain.Price {
 	price := domain.Price{}
+	var err error
 	for _, item := range cart.CartTotals.Totalitems {
 		if item.Type == TotalsTypeVoucher {
-			price, err := price.Add(item.Price)
+			price, err = price.Add(item.Price)
 			if err != nil {
 				return price
 			}
@@ -394,9 +395,10 @@ func (cart Cart) GetVoucherSavings() domain.Price {
 // GetSavings retuns the total of all discount totals
 func (cart Cart) GetSavings() domain.Price {
 	price := domain.Price{}
+	var err error
 	for _, item := range cart.CartTotals.Totalitems {
 		if item.Type == TotalsTypeDiscount {
-			price, err := price.Add(item.Price)
+			price, err = price.Add(item.Price)
 			if err != nil {
 				return price
 			}
@@ -525,11 +527,12 @@ func (item Item) TotalDiscountAmount() domain.Price {
 // ItemRelatedDiscountAmount = Sum of AppliedDiscounts where IsItemRelated = True
 func (item Item) ItemRelatedDiscountAmount() domain.Price {
 	price := domain.Price{}
+	var err error
 	for _, discount := range item.AppliedDiscounts {
 		if !discount.IsItemRelated {
 			continue
 		}
-		price, err := price.Add(discount.Price)
+		price, err = price.Add(discount.Price)
 		if err != nil {
 			return price
 		}
@@ -544,11 +547,12 @@ func (item Item) ItemRelatedDiscountAmount() domain.Price {
 //NonItemRelatedDiscountAmount = Sum of AppliedDiscounts where IsItemRelated = false
 func (item Item) NonItemRelatedDiscountAmount() domain.Price {
 	price := domain.Price{}
+	var err error
 	for _, discount := range item.AppliedDiscounts {
 		if discount.IsItemRelated {
 			continue
 		}
-		price, err := price.Add(discount.Price)
+		price, err = price.Add(discount.Price)
 		if err != nil {
 			return price
 		}
