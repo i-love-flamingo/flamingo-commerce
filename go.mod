@@ -34,5 +34,3 @@ replace (
 	github.com/robertkrimen/otto => github.com/thebod/otto v0.0.0-20180101010101-83d297c4b64aeb2de4268d9a54c9a503ae2d8139
 	golang.org/x/oauth2 => github.com/Ompluscator/oauth2 v0.0.0-20190101010101-b7626857
 )
-
-replace flamingo.me/pugtemplate => ../../stuff/pugtemplate
