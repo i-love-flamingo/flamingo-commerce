@@ -42,3 +42,8 @@ price.GetPayable().Equals(price2.GetPayable()) will be true
 ## Charge Type:
 Represents a price together with a type.
 Can be used in places where you need to give the price value a certain extra semantic information.
+
+
+## Template Func - Formating a Price Object
+
+Just use the `commercePriceFormat(priceObject)` 
