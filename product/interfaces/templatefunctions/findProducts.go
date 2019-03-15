@@ -57,16 +57,16 @@ func asFilterMap(additionalFilters interface{}) map[string]interface{} {
 	filters := make(map[string]interface{})
 	// use filtersPug as KeyValueFilter
 	if filtersPug, ok := additionalFilters.(*pugjs.Map); ok {
-		for k, v := range filtersPug.Items {
-			if v, ok := v.(*pugjs.Array); ok {
+		for k, v := range filtersPug.AsStringIfaceMap() {
+			if v, ok := v.([]pugjs.Object); ok {
 				var filterList []string
-				for _, item := range v.Items() {
+				for _, item := range v {
 					filterList = append(filterList, item.String())
 				}
-				filters[k.String()] = filterList
+				filters[k] = filterList
 			}
 			if v, ok := v.(pugjs.String); ok {
-				filters[k.String()] = []string{v.String()}
+				filters[k] = []string{v.String()}
 			}
 		}
 	}

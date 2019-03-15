@@ -2,7 +2,6 @@ package application
 
 import (
 	"context"
-	"fmt"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
@@ -237,8 +236,8 @@ func (s *Service) AddEvent(eventName string, params ...*pugjs.Map) error {
 	event.EventInfo["eventName"] = eventName
 
 	if len(params) == 1 {
-		for k, v := range params[0].Items {
-			event.EventInfo[k.String()] = fmt.Sprint(v)
+		for k, v := range params[0].AsStringMap() {
+			event.EventInfo[k] = v
 		}
 	}
 
