@@ -142,7 +142,7 @@ Take the example of a cart with:
 And 19% vat:
 
 There are two ways of Taxcalculations.
-* vertikal: the final tax is calculated from the sum of all rounded item taxes: 
+* vertical: the final tax is calculated from the sum of all rounded item taxes: 
     * item1 +19% gross price rounded: 17,50 (tax 2,79)
     * item2 +19% gross price rounded: 12,11 (tax 1,93)
     * = GrantTotal= 29,61 / =totalTax: 4,72
@@ -154,9 +154,11 @@ There are two ways of Taxcalculations.
 * horizontal: The final tax is calculated from the sum of all net prices of the item and then rounded
     * => SubTotalNet: 24,89  => +19% rounded GrandTotal: 29,62 / included Tax: 4,73
     * Often prefered for B2B, since the prices are shown as net prices first.
-    * However - in order to make 
 
 * At least in germany the law don't force one algorithm over the over. In this cart module it is up to the CartService implementation what algorithm it uses to fill the tax
+
+* Flamingo cart model calculates sums of prices and taxes using the "vertical" way - its doing this by basically adding the prices in the items up on delivery and cart levels. So if you want to use "horizontal" tax calculations the cartservice implementation need to make sure that the item prices are set correct (splitted correct with cent corrections - outgoing from the horizontal sums).
+
 
 
 ### Cartitems
@@ -247,6 +249,18 @@ B2B use cases:
    * The included Total Tax in Cart (CartFees) 
    * GrandTotal (is what the customer need to pay at the end inkl all fees)
  
+### Building a Cart with its Deliveries and Items
+The domain concept is that the cart is returned and updated by the "Cartservice" - which is the main secondary port of the package that need to be implemented (see below).
+The implementations should use the provided "Builder" objects to build up Items, Deliveries and Carts. The Builder items ensure that the invariants are met and help with calculations of missing values.
+
+e.g. to build an item:
+```go
+builder := t.itemBuilderProvider()
+item, err := builder.SetSinglePriceNet(priceDomain.NewFromInt(100, 100, "EUR")).SetQty(10).SetID("22").SetUniqueID("kkk").CalculatePricesAndTaxAmountsFromSinglePriceNet().Build()
+
+``` 
+ 
+
 
 ## Domain - Secondary Ports
 
