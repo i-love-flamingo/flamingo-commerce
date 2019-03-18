@@ -8,14 +8,14 @@ import (
 )
 
 type (
-	//Price is a Type that represents a Price - it is immutable
-	// DevHint: We use Price and Charge as Value - so we do not pass pointers. (According to Go Wiki's code review comments page suggests passing by value when structs are small and likely to stay that way)
+	//Price is a Type that represents a Amount - it is immutable
+	// DevHint: We use Amount and Charge as Value - so we do not pass pointers. (According to Go Wiki's code review comments page suggests passing by value when structs are small and likely to stay that way)
 	Price struct {
 		amount   big.Float
 		currency string
 	}
 
-	//Charge is a Price of a certain Type. Charge is used to indicate that this need to be payed
+	//Charge is a Amount of a certain Type. Charge is used to indicate that this need to be payed
 	Charge struct {
 		Price Price
 		Type  string
@@ -74,6 +74,16 @@ func (p Price) Add(add Price) (Price, error) {
 	return newPrice, nil
 }
 
+//ForceAdd - tries to Adds the given price to the current price - will not return errors
+func (p Price) ForceAdd(add Price) Price {
+	newPrice, err := p.currencyGuard(add)
+	if err != nil {
+		return p
+	}
+	newPrice.amount.Add(&p.amount, &add.amount)
+	return newPrice
+}
+
 //currencyGuard - common Guard that protects price calculations of prices with different currency.
 // 	Robust: if original is Zero and the currencies are different we take the given currency
 func (p Price) currencyGuard(check Price) (Price, error) {
@@ -105,20 +115,32 @@ func (p Price) Discounted(percent float64) Price {
 	return newPrice
 }
 
-//Taxed - returns new price added with Tax
-func (p Price) Taxed(percent float64) Price {
+//Taxed - returns new price added with Tax (assuming current price is net)
+func (p Price) Taxed(percent big.Float) Price {
 	newPrice := Price{
 		currency: p.currency,
-		amount:   *new(big.Float).Mul(&p.amount, big.NewFloat((100+percent)/100)),
+		amount:   *new(big.Float).Add(&p.amount, p.TaxFromNet(percent).Amount()),
 	}
 	return newPrice
 }
 
-//Tax- returns new price representing the taxamount
-func (p Price) Tax(percent float64) Price {
+//TaxFromNet - returns new price representing the taxamount (assuming the current price is net 100%)
+func (p Price) TaxFromNet(percent big.Float) Price {
+	quo := new(big.Float).Mul(&percent, &p.amount)
 	newPrice := Price{
 		currency: p.currency,
-		amount:   *new(big.Float).Mul(&p.amount, big.NewFloat((percent)/100)),
+		amount:   *new(big.Float).Quo(quo, new(big.Float).SetInt64(100)),
+	}
+	return newPrice
+}
+
+//TaxFromGross - returns new price representing the taxamount (assuming the current price is gross 100+percent)
+func (p Price) TaxFromGross(percent big.Float) Price {
+	quo := new(big.Float).Mul(&percent, &p.amount)
+	percent100 := new(big.Float).Add(&percent, new(big.Float).SetInt64(100))
+	newPrice := Price{
+		currency: p.currency,
+		amount:   *new(big.Float).Quo(quo, percent100),
 	}
 	return newPrice
 }
@@ -142,12 +164,35 @@ func (p Price) Multiply(qty int) Price {
 	return newPrice
 }
 
-//Equal - compares the prices
+//Divided  returns a new price with the amount Divided
+func (p Price) Divided(qty int) Price {
+	newPrice := Price{
+		currency: p.currency,
+	}
+	if qty == 0 {
+		//TODO log
+		return NewZero(p.currency)
+	}
+	newPrice.amount.Quo(&p.amount, new(big.Float).SetInt64(int64(qty)))
+	return newPrice
+}
+
+//Equal - compares the prices exact
 func (p Price) Equal(cmp Price) bool {
 	if p.currency != cmp.currency {
 		return false
 	}
 	return p.amount.Cmp(&cmp.amount) == 0
+}
+
+//LikelyEqual - compares the prices with some tolerance
+func (p Price) LikelyEqual(cmp Price) bool {
+	if p.currency != cmp.currency {
+		return false
+	}
+	diff := new(big.Float).Sub(&p.amount, &cmp.amount)
+	absDiff := new(big.Float).Abs(diff)
+	return absDiff.Cmp(big.NewFloat(0.000000001)) == -1
 }
 
 //IsLessThen - compares the prices
@@ -190,6 +235,11 @@ func (p Price) IsNegative() bool {
 //IsPositive - returns true if the price represents a positive value
 func (p Price) IsPositive() bool {
 	return p.IsGreaterThenValue(*big.NewFloat(0.0))
+}
+
+//IsPayable - returns true if the price represents a payable (rounded) value
+func (p Price) IsPayable() bool {
+	return p.GetPayable().Equal(p)
 }
 
 //IsZero - returns true if the price represents zero value
@@ -269,10 +319,10 @@ func (p Price) SplitInPayables(count int) ([]Price, error) {
 	return prices, nil
 }
 
-//Clone returns a copy of the price
+//Clone returns a copy of the price - the amount gets Excat acc
 func (p Price) Clone() Price {
 	return Price{
-		amount:   p.amount,
+		amount:   *new(big.Float).Set(&p.amount),
 		currency: p.currency,
 	}
 }
@@ -285,6 +335,37 @@ func (p Price) Currency() string {
 //Amount - returns exact amount as bigFloat
 func (p Price) Amount() *big.Float {
 	return &p.amount
+}
+
+//SumAll - retruns new price with sum of all given prices
+func SumAll(prices ...Price) (Price, error) {
+	if len(prices) == 0 {
+		return NewZero(""), errors.New("no price given")
+	}
+	result := prices[0].Clone()
+	var err error
+	for _, price := range prices[1:] {
+		result, err = result.Add(price)
+		if err != nil {
+			return result, err
+		}
+	}
+	return result, nil
+}
+
+//MarshalJSON - implements interace required by json marshal
+func (p Price) MarshalJSON() (data []byte, err error) {
+	type (
+		PricePub struct {
+			Amount   float64
+			Currency string
+		}
+	)
+	pricePub := PricePub{
+		Amount:   p.FloatAmount(),
+		Currency: p.Currency(),
+	}
+	return json.Marshal(pricePub)
 }
 
 //MarshalBinary - implements interace required by gob

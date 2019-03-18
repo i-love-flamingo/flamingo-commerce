@@ -13,6 +13,7 @@ dmitri.shuralyov.com/state v0.0.0-20180228185332-28bcc343414c h1:ivON6cwHK1OH26M
 dmitri.shuralyov.com/state v0.0.0-20180228185332-28bcc343414c/go.mod h1:0PRwlb0D6DFvNNtx+9ybjezNCa8XF0xaYcETyp6rHWU=
 flamingo.me/dingo v0.1.3 h1:C9O3PHpBONfA8p7KI7VX7rGFGyDeTgaJT1EExcAscaw=
 flamingo.me/dingo v0.1.3/go.mod h1:9jDIxhkRLEW9I8axzJb0S/kJ0xv3U8gPxY92uEIHEcE=
+flamingo.me/flamingo-commerce v2.0.0+incompatible h1:taHTd1lsZ2ttkBFUnNsrFC58DbH2wi16+tkk5sd99Gg=
 flamingo.me/flamingo/v3 v3.0.0-alpha3/go.mod h1:HsNhmjtCgCdB/wgYJ9micoiMDLHKTmCToT63BiqG0jU=
 flamingo.me/flamingo/v3 v3.0.0-alpha4/go.mod h1:HsNhmjtCgCdB/wgYJ9micoiMDLHKTmCToT63BiqG0jU=
 flamingo.me/flamingo/v3 v3.0.0-alpha7 h1:rUz+d373JgCsN/zCzMPZbdCuACwMs8IZSXqV/6sBRXQ=

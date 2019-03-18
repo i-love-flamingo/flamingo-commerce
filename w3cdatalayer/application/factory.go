@@ -163,24 +163,24 @@ func (s Factory) BuildCartData(cart cart.DecoratedCart) *domain.Cart {
 	cartData := domain.Cart{
 		CartID: cart.Cart.ID,
 		Price: &domain.CartPrice{
-			Currency:       cart.Cart.CartTotals.GrandTotal.Currency(),
-			BasePrice:      cart.Cart.SubTotal().FloatAmount(),
-			CartTotal:      cart.Cart.CartTotals.GrandTotal.FloatAmount(),
-			Shipping:       cart.Cart.CartTotals.TotalShippingItem.Price.FloatAmount(),
-			ShippingMethod: cart.Cart.CartTotals.TotalShippingItem.Title,
-			PriceWithTax:   cart.Cart.CartTotals.GrandTotal.FloatAmount(),
+			Currency:       cart.Cart.GrandTotal().Currency(),
+			BasePrice:      cart.Cart.SubTotalNet().FloatAmount(),
+			CartTotal:      cart.Cart.GrandTotal().FloatAmount(),
+			Shipping:       cart.Cart.SumShipping().FloatAmount(),
+			ShippingMethod: strings.Join(cart.Cart.AllShippingTitles(), "/"),
+			PriceWithTax:   cart.Cart.GrandTotal().FloatAmount(),
 		},
 		Attributes: make(map[string]interface{}),
 	}
 	for _, item := range cart.GetAllDecoratedItems() {
-		itemData := s.buildCartItem(item, cart.Cart.CartTotals.GrandTotal.Currency())
+		itemData := s.buildCartItem(item, cart.Cart.GrandTotal().Currency())
 		cartData.Item = append(cartData.Item, itemData)
 	}
 	return &cartData
 }
 
 // BuildTransactionData builds the domain transaction data
-func (s Factory) BuildTransactionData(ctx context.Context, cartTotals cart.Totals, decoratedItems []cart.DecoratedCartItem, orderID string, email string) *domain.Transaction {
+func (s Factory) BuildTransactionData(ctx context.Context, cart cart.DecoratedCart, decoratedItems []cart.DecoratedCartItem, orderID string, email string) *domain.Transaction {
 	var profile *domain.UserProfile
 	session := web.SessionFromContext(ctx)
 	if s.userService.IsLoggedIn(ctx, session) {
@@ -192,17 +192,17 @@ func (s Factory) BuildTransactionData(ctx context.Context, cartTotals cart.Total
 	transactionData := domain.Transaction{
 		TransactionID: orderID,
 		Price: &domain.TransactionPrice{
-			Currency:         cartTotals.GrandTotal.Currency(),
-			BasePrice:        cartTotals.GrandTotal.FloatAmount(),
-			TransactionTotal: cartTotals.GrandTotal.FloatAmount(),
-			Shipping:         cartTotals.TotalShippingItem.Price.FloatAmount(),
-			ShippingMethod:   cartTotals.TotalShippingItem.Title,
+			Currency:         cart.Cart.GrandTotal().Currency(),
+			BasePrice:        cart.Cart.GrandTotal().FloatAmount(),
+			TransactionTotal: cart.Cart.GrandTotal().FloatAmount(),
+			Shipping:         cart.Cart.SumShipping().FloatAmount(),
+			ShippingMethod:   strings.Join(cart.Cart.AllShippingTitles(), "/"),
 		},
 		Profile:    profile,
 		Attributes: make(map[string]interface{}),
 	}
 	for _, item := range decoratedItems {
-		itemData := s.buildCartItem(item, cartTotals.GrandTotal.Currency())
+		itemData := s.buildCartItem(item, cart.Cart.GrandTotal().Currency())
 		transactionData.Item = append(transactionData.Item, itemData)
 	}
 	return &transactionData
@@ -214,9 +214,9 @@ func (s Factory) buildCartItem(item cart.DecoratedCartItem, currencyCode string)
 		Quantity:    item.Item.Qty,
 		ProductInfo: s.getProductInfo(item.Product),
 		Price: domain.CartItemPrice{
-			BasePrice:    item.Item.SinglePrice.FloatAmount(),
-			PriceWithTax: item.Item.SinglePriceInclTax().FloatAmount(),
-			TaxRate:      item.Item.TaxAmount.FloatAmount(),
+			BasePrice:    item.Item.SinglePriceNet.FloatAmount(),
+			PriceWithTax: item.Item.SinglePriceGross.FloatAmount(),
+			TaxRate:      item.Item.TotalTaxAmount().FloatAmount(),
 			Currency:     currencyCode,
 		},
 		Attributes: make(map[string]interface{}),

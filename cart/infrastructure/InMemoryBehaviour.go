@@ -169,9 +169,9 @@ func (cob *InMemoryBehaviour) buildItemForCart(ctx context.Context, addRequest d
 	cartItem := domaincart.Item{
 		MarketplaceCode:        addRequest.MarketplaceCode,
 		VariantMarketPlaceCode: addRequest.VariantMarketplaceCode,
-		Qty:         addRequest.Qty,
-		SinglePrice: product.SaleableData().ActivePrice.GetFinalPrice(),
-		ID:          strconv.Itoa(rand.Int()),
+		Qty:              addRequest.Qty,
+		SinglePriceGross: product.SaleableData().ActivePrice.GetFinalPrice(),
+		ID:               strconv.Itoa(rand.Int()),
 	}
 
 	return cartItem

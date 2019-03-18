@@ -193,13 +193,13 @@ func (s *Service) SetCartData(cart cart.DecoratedCart) error {
 }
 
 // SetTransaction information to datalayer
-func (s *Service) SetTransaction(cartTotals cart.Totals, decoratedItems []cart.DecoratedCartItem, orderID string, email string) error {
+func (s *Service) SetTransaction(cart cart.DecoratedCart, decoratedItems []cart.DecoratedCartItem, orderID string, email string) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
 	}
 	s.logger.WithField("category", "w3cDatalayer").Debug("Set Transaction Data for order %v mail %v", orderID, email)
 	layer := s.Get()
-	layer.Transaction = s.factory.BuildTransactionData(s.currentContext, cartTotals, decoratedItems, orderID, email)
+	layer.Transaction = s.factory.BuildTransactionData(s.currentContext, cart, decoratedItems, orderID, email)
 	return s.store(layer)
 }
 

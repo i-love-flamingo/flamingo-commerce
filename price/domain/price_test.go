@@ -48,7 +48,7 @@ func TestPrice_IsLessThen(t *testing.T) {
 			p := domain.NewFromFloat(tt.fields.Amount, tt.fields.Currency)
 
 			if got := p.IsLessThenValue(tt.args.amount); got != tt.want {
-				t.Errorf("Price.IsLessThen() = %v, want %v", got, tt.want)
+				t.Errorf("Amount.IsLessThen() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -98,4 +98,40 @@ func TestPrice_Discounted(t *testing.T) {
 func TestPrice_IsZero(t *testing.T) {
 	var price domain.Price
 	assert.Equal(t, domain.NewZero("").Amount(), price.GetPayable().Amount())
+}
+
+func TestSumAll(t *testing.T) {
+	price1 := domain.NewFromInt(1200, 100, "EUR")
+	price2 := domain.NewFromInt(1200, 100, "EUR")
+	price3 := domain.NewFromInt(1200, 100, "EUR")
+
+	result, err := domain.SumAll(price1, price2, price3)
+	assert.NoError(t, err)
+	assert.Equal(t, result, domain.NewFromInt(3600, 100, "EUR"))
+
+}
+
+func TestPrice_TaxFromGross(t *testing.T) {
+	//119 €
+	price := domain.NewFromInt(119, 1, "EUR")
+	tax := price.TaxFromGross(*new(big.Float).SetInt64(19))
+	assert.Equal(t, tax, domain.NewFromInt(19, 1, "EUR"))
+}
+
+func TestPrice_TaxFromNet(t *testing.T) {
+	//100 €
+	price := domain.NewFromInt(100, 1, "EUR")
+	tax := price.TaxFromNet(*new(big.Float).SetInt64(19))
+	assert.Equal(t, tax, domain.NewFromInt(19, 1, "EUR"), "expect 19 € tax fromm 100€")
+
+	taxedPrice := price.Taxed(*new(big.Float).SetInt64(19))
+	assert.Equal(t, taxedPrice, domain.NewFromInt(119, 1, "EUR"))
+}
+
+func TestPrice_LikelyEqual(t *testing.T) {
+	price1 := domain.NewFromFloat(100, "EUR")
+	price2 := domain.NewFromFloat(100.000000000000001, "EUR")
+	price3 := domain.NewFromFloat(100.1, "EUR")
+	assert.True(t, price1.LikelyEqual(price2))
+	assert.False(t, price1.LikelyEqual(price3))
 }

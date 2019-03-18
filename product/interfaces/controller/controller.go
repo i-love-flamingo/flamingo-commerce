@@ -20,7 +20,7 @@ type (
 		domain.ProductService `inject:""`
 		URLService            *application.URLService `inject:""`
 
-		Template string      `inject:"config:core.product.view.template"`
+		Template string      `inject:"config:commerce.product.view.template"`
 		Router   *web.Router `inject:""`
 	}
 

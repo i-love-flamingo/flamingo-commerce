@@ -17,6 +17,7 @@ Also the cart module and its services will be used by the checkout module.
 * The Cart is only **modified by Commands** send to a CartBehaviour Object
 * If you want to retrieve or change a  cart - **ONLY work with the application services**
     * This will ensure that the correct cache is used
+   
 
 ## Usage
 
@@ -116,34 +117,136 @@ cart->item[]
 
 ## Details about Price fields
 
+Make sure you read the product package details about prices.
+
+The cart need to show prices with its taxes and additional cart discounts and all different subtotals etc.
+What you want to show depends on the project, the type of shop (B2B or B2C), the discount logic and the implemented calculation details of the underlying cartservice implementation.
+
+Some of them are "calculateable" on the fly (in this cases they are offered as methods) - but some highly depends on the tax and discount logic and the need to have the correct values set by the underlying Cartservice.
+
+### Cart invariants
+
+* While the flamingo Price model (which is used) can calculate exact internal, we need Payable prices to be set in the Cart. This is to allow consistent Adding and Substracting of Prices and still always get a price that is Payable.
+
+* All sums - also the Cart GrantTotal is calculated and can be "tracked" back to 
+
+In order to get consistent SubTotals in the Cart, the Cart model need certain invariants to be matched:
+* Itemlevel: RowPriceNet + TotalTaxAmount = RowPriceGross
+* Itemlevel: TotalDiscount <= RowPriceGross
+* All prices need to have same currency (that may be extended later)
+
+### About Tax calculation
+Take the example of a cart with:
+* item1 netprice 14,71
+* item2 netprice 10,18
+And 19% vat:
+
+There are two ways of Taxcalculations.
+* vertikal: the final tax is calculated from the sum of all rounded item taxes: 
+    * item1 +19% gross price rounded: 17,50 (tax 2,79)
+    * item2 +19% gross price rounded: 12,11 (tax 1,93)
+    * = GrantTotal= 29,61 / =totalTax: 4,72
+    * => SubTotalNet = 24,89
+    * Often prefered for B2C, when the item prices are shown as gross prices first.
+    * Pro: Easier to calculate 
+    * Con: rounding errors may sum up in big orders
+    
+* horizontal: The final tax is calculated from the sum of all net prices of the item and then rounded
+    * => SubTotalNet: 24,89  => +19% rounded GrandTotal: 29,62 / included Tax: 4,73
+    * Often prefered for B2B, since the prices are shown as net prices first.
+    * However - in order to make 
+
+* At least in germany the law don't force one algorithm over the over. In this cart module it is up to the CartService implementation what algorithm it uses to fill the tax
+
+
 ### Cartitems
+
+The Key with "()" in the list are methods and it is assumed as an invariant, that all prices in an item have the same currency.
 
 | Key                                    | Desc                                                                                                                                                                                                                                                                      | Math Invariants                                                                                                             |
 |----------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
-| SinglePrice                            | Single price of product (brutto)                                                                                                                                                                                                                                          |                                                                                                                             |
-| SinglePriceInclTax                     | (netto)                                                                                                                                                                                                                                                                   |                                                                                                                             |
+| SinglePriceGross                       | Single price of product (brutto) (was SinglePrice)                                                                                                                                                                                                                        |                                                                                                                             |
+| SinglePriceNet                         | (netto)                                                                                                                                                                                                                                                                   |                                                                                                                             |
 | Qty                                    | Qty                                                                                                                                                                                                                                                                       |                                                                                                                             |
-| RowTotal                               |                                                                                                                                                                                                                                                                           | RowTotal = SinglePrice * Qty                                                                                                |
-| TaxAmount                              | Sum of all Taxes for this Row                                                                                                                                                                                                                                             | TaxAmount=Qty * (SinglePriceInclTax-SinglePrice)                                                                            |
-| RowTotalInclTax                        |                                                                                                                                                                                                                                                                           | RowTotalInclTax = RowTotal + TaxAmount                                                                                      |
+| RowPriceGross                          | (was RowTotal )                                                                                                                                                                                                                                                           | RowPriceGross ~ SinglePriceGross * Qty                                                                                      |
+| RowPriceNet                            |                                                                                                                                                                                                                                                                           | RowPriceNet ~ SinglePriceNet * Qty                                                                                          |
+| RowTaxes                                | Collection of (summed up) Taxes for that item row.                                                                                                                                                                                               |                                                                                                                             |
+| TotalTaxAmount()                            | Sum of all Taxes for this Row                                                                                                                                                                                                                                             | = RowPriceGross-RowPriceNet                                                                                                 |
 | AppliedDiscounts                       | List with the applied Discounts for this Item  (There are ItemRelated Discounts and Discounts that are not ItemRelated (Cart Related).  However it is important to know that at the end all DiscountAmounts are applied to an item (to make refunding logic easier later) |                                                                                                                             |
-| TotalDiscountAmount                    | Complete Discount for the Row                                                                                                                                                                                                                                             | TotalDiscountAmount = Sum of AppliedDiscounts TotalDiscountAmount = ItemRelatedDiscountAmount +NonItemRelatedDiscountAmount |
-| NonItemRelatedDiscountAmount           |                                                                                                                                                                                                                                                                           | NonItemRelatedDiscountAmount = Sum of AppliedDiscounts where IsItemRelated = false                                          |
-| RowTotalWithItemRelatedDiscountInclTax |                                                                                                                                                                                                                                                                           | RowTotalWithItemRelatedDiscountInclTax=RowTotalInclTax-ItemRelatedDiscountAmount                                            |
-| RowTotalWithDiscountInclTax            |                                                                                                                                                                                                                                                                           | RowTotalWithDiscountInclTax = RowTotalInclTax-TotalDiscountAmount                                                           |
+| TotalDiscountAmount()                  | Complete Discount for the Row. If the Discounts have no tax/duty (they can be considered as Gross). If they are applied from RowPriceGross or RowPriceNet depends on the calculations done in the cartservice implementation.                                             | TotalDiscountAmount = Sum of AppliedDiscounts TotalDiscountAmount = ItemRelatedDiscountAmount +NonItemRelatedDiscountAmount |
+| NonItemRelatedDiscountAmount()         |                                                                                                                                                                                                                                                                           | NonItemRelatedDiscountAmount = Sum of AppliedDiscounts where IsItemRelated = false                                          |
+| ItemRelatedDiscountAmount()            |                                                                                                                                                                                                                                                                           | ItemRelatedDiscountAmount = Sum of AppliedDiscounts where IsItemRelated = false                                             |
+| RowPriceGrossWithDiscount()            |                                                                                                                                                                                                                                                                           | RowPriceGross-TotalDiscountAmount()                                                                                         |
+| RowPriceNetWithDiscount()              |                                                                                                                                                                                                                                                                           |                                                                                                                             |
+| RowPriceGrossWithItemRelatedDiscount() |                                                                                                                                                                                                                                                                           | RowPriceGross-ItemRelatedDiscountAmount()                                                                                   |
+| RowPriceNetWithItemRelatedDiscount()   |                                                                                                                                                                                                                                                                           |                                                                                                                             |
+|                                        |                                                                                                                                                                                                                                                                           |                                                                                                                             |
+
+% use https://www.tablesgenerator.com/markdown_tables to update the table %
+
+### DeliveryTotals:
+| Key                               | Desc | Math                                       |
+|-----------------------------------|------|--------------------------------------------|
+| SubTotalGross()                   |      |  Sum of items RowPriceGross                |
+| SumRowTaxes()                     |      | List of the sum of the different RowFees   |
+| SumTotalTaxAmount()               |      | List of the sum of the TotalTaxAmount   |
+| SubTotalNet()                     |      | Sum of items RowPriceNet                   |
+| SubTotalGrossWithDiscounts()      |      | SubTotalGross() - SumTotalDiscountAmount() |
+| SubTotalNetWithDiscounts          |      | SubTotalNet() - SumTotalDiscountAmount()   |
+| SumTotalDiscountAmount()          |      | Sum of items TotalDiscountAmount           |
+| SumNonItemRelatedDiscountAmount() |      | Sum of items NonItemRelatedDiscountAmount  |
+| SumItemRelatedDiscountAmount()    |      | Sum of items ItemRelatedDiscountAmount     |
+
 
 ### Carttotals:
-| Key                          | Desc                                                                                              | Math Invariants                                                              |
-|------------------------------|---------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------|
-| SubTotal                     | A Subtotal that you can use to show the total of items without any discounts and tax              | SubTotal = SUM of Item RowTotal                                              |
-| SubTotalInclTax              | A Subtotal that you can use to show the total of items without any discounts and with tax         | SubTotalInclTax = SUM of Item RowTotalInclTax  / SubTotalInclTax = SubTotal + TaxAmount                                   |
-| SubTotalWithDiscounts        | A Subtotal that you can use to show the total of items with discounts and without tax             | SubTotalWithDiscounts = SubTotal - Sum of Item ItemRelatedDiscountAmount     |
-| SubTotalWithDiscountsAndTax  | A Subtotal that you can use to show the total of items with discounts and with tax                | SubTotalWithDiscountsAndTax= Sum of RowTotalWithItemRelatedDiscountInclTax   |
-| TaxAmount                    | The total tax                                                                                     | TaxAmount = Sum of Item TaxAmount                                            |
-| Totalitems                   | List of Totalitems. Each have a certain type - you may want to show some of them in the frontend. |                                                                              |
-| TotalDiscountAmount          | The Total Discount.                                                                               | TotalDiscountAmount = SUM of Item TotalDiscountAmount                        |
-| NonItemRelatedDiscountAmount | The Total of Discount that are not item related.                                                  | TotalDiscountAmount = SUM of Item NonItemRelatedDiscountAmount               |
-| GrandTotal                   | The final amount that need to be payed by the customer                                            | GrandTotal = SubTotal + TaxAmount - DiscountAmount + SOME of Totalitems  / GrandTotal = (Sum of Items RowTotalWithDiscountInclTax) + SOME of Totalitems    |
+
+| Key                               | Desc                                                                                                                                                | Math                                                                                                                                                     |
+|-----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| GrandTotal()                        | The final amount that need to be payed by the customer (Gross)                                                                                      | = SubTotalGross()  - SumTotalDiscountAmount() + Totalitems |
+| Totalitems                        | List of (additional) Totalitems. Each have a certain type - you may want to show some of them in the frontend.      |                                                                                                                                                          |
+| SumShipping()                     |           Sum of all shipping costs as Price                                                                                                                                           | The sum of the deliveries shipping                                                                                                                       |
+| SubTotalGross()                   |                                                                                                                                                     | Sum of deliveries SubTotalGross()                                                                                                                        |
+| SumTaxes()                        | The total taxes of the cart -   as list of Tax                                                                   |                                                                                                                                                          |
+| SumTotalTaxAmount()               |            The overall Tax of cart as Price                                                                                       |
+| SubTotalNet()                     |                                                                                                                                                     | Sum of deliveries SubTotalNet()                                                                                                                          |
+| SubTotalGrossWithDiscounts()      |                                                                                                                                                     | SubTotalGross() - SumTotalDiscountAmount()                                                                                                               |
+| SubTotalNetWithDiscounts()          |                                                                                                                                                     | SubTotalNet() - SumTotalDiscountAmount()                                                                                                                 |
+| SumTotalDiscountAmount()          | The overall applied discount                                                                                                                        | Sum of deliveries TotalDiscountAmount                                                                                                                    |
+| SumNonItemRelatedDiscountAmount() |                                                                                                                                                     | Sum of deliveries NonItemRelatedDiscountAmount                                                                                                           |
+| SumItemRelatedDiscountAmount()    |                                                                                                                                                     | Sum of deliveries ItemRelatedDiscountAmount                                                                                                              |
+| GetVoucherSavings()               | Returns the sum of Totals from type voucher
+| HasShippingCosts()                |  True if cart has in sum any shipping costs
+
+### Typical B2C vs B2B usecases
+
+B2C use cases:
+* The item price is with all fees (gros). The discount will be reduced from the price and all the fees, duty and net price will be calculated from this.
+* Typically you want to show per row:
+    * SinglePriceGross
+    * Qty
+    * RowPriceGross
+    * RowPriceGrossWithDiscount
+
+* the cart normaly shows:
+   * SubTotalGross
+   * Carttotals!!!
+   * Shipping
+   * The included Total Tax in Cart (CartFees) 
+   * GrandTotal (is what the customer need to pay at the end inkl all fees)
+
+B2B use cases:
+* The item price is without fees (net). The discount will be reduced and then the fees will be added to get the gross price. Do propably you want to show per row:
+    *  SinglePriceNet
+    *  RowPriceNet
+    *  RowPriceNetWithDiscount
+    
+* the cart normaly shows:
+   * SubTotalNet
+   * Carttotals!!!
+   * Shipping
+   * The included Total Tax in Cart (CartFees) 
+   * GrandTotal (is what the customer need to pay at the end inkl all fees)
+ 
 
 ## Domain - Secondary Ports
 

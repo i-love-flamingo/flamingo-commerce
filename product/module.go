@@ -24,7 +24,8 @@ func (m *Module) Configure(injector *dingo.Injector) {
 // DefaultConfig for this module
 func (m *Module) DefaultConfig() config.Map {
 	return config.Map{
-		"core.product.view.template": "product/product",
+		"commerce.product.view.template": "product/product",
+		"commerce.product.priceIsGross":  true,
 		"templating": config.Map{
 			"product": config.Map{
 				"attributeRenderer": config.Map{},

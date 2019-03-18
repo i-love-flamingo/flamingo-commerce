@@ -131,35 +131,48 @@ func TestPlacedOrderInfos_GetOrderNumberForDeliveryCode(t *testing.T) {
 	}
 }
 
-func TestItem_PriceCalculation(t *testing.T) {
+func TestTaxes_AddTax(t *testing.T) {
+	taxes := cartDomain.Taxes{}
+	taxes = taxes.AddTax(
+		cartDomain.Tax{
+			Amount: domain.NewFromInt(12, 1, "EUR"),
+			Type:   "gst",
+		})
+	taxes = taxes.AddTax(
+		cartDomain.Tax{
+			Amount: domain.NewFromInt(1, 1, "EUR"),
+			Type:   "duty",
+		})
+	total := taxes.TotalAmount()
+	assert.Equal(t, domain.NewFromInt(13, 1, "EUR"), total)
+}
 
-	item := cartDomain.Item{
-		SinglePrice: domain.NewFromInt(1234, 100, "EUR"),
-		AppliedDiscounts: []cartDomain.ItemDiscount{
-			cartDomain.ItemDiscount{
-				Price:         domain.NewFromInt(100, 100, "EUR"),
-				IsItemRelated: true,
-			},
-			cartDomain.ItemDiscount{
-				Price:         domain.NewFromInt(200, 100, "EUR"),
-				IsItemRelated: false,
-			},
-		},
-		TaxAmount: domain.NewFromInt(13, 100, "EUR"),
-		Qty:       10,
-	}
+func TestTaxes_AddTaxWithMerge(t *testing.T) {
+	taxes := cartDomain.Taxes{}
+	taxes = taxes.AddTax(
+		cartDomain.Tax{
+			Amount: domain.NewFromInt(12, 1, "EUR"),
+			Type:   "gst",
+		})
+	taxes = taxes.AddTaxWithMerge(
+		cartDomain.Tax{
+			Amount: domain.NewFromInt(1, 1, "EUR"),
+			Type:   "gst",
+		})
+	total := taxes.TotalAmount()
+	assert.Equal(t, domain.NewFromInt(13, 1, "EUR"), total)
 
-	assert.Equal(t, item.RowTotal(), domain.NewFromInt(12340, 100, "EUR"), "rowtotal is qty * singleprice")
-	assert.Equal(t, item.SinglePriceInclTax(), domain.NewFromInt(1247, 100, "EUR"), "SinglePriceInclTax is SinglePrice + tax")
+	assert.Equal(t, 1, len(taxes))
+}
 
-	assert.Equal(t, item.RowTotalInclTax(), domain.NewFromInt(12470, 100, "EUR"), "RowTotalInclTax")
+func TestCartBuilder_BuildAndGet(t *testing.T) {
+	b := cartDomain.Builder{}
 
-	assert.Equal(t, item.ItemRelatedDiscountAmount(), domain.NewFromInt(100, 100, "EUR"), "ItemRelatedDiscountAmount")
-	assert.Equal(t, item.NonItemRelatedDiscountAmount(), domain.NewFromInt(200, 100, "EUR"), "NonItemRelatedDiscountAmount")
-	assert.Equal(t, item.TotalDiscountAmount(), domain.NewFromInt(300, 100, "EUR"), "TotalDiscountAmount")
-
-	assert.Equal(t, item.RowTotalWithDiscountInclTax(), domain.NewFromInt(12170, 100, "EUR"), "RowTotalWithDiscountInclTax")
-	assert.Equal(t, item.RowTotalWithItemRelatedDiscount(), domain.NewFromInt(12240, 100, "EUR"), "RowTotalWithItemRelatedDiscount")
-	assert.Equal(t, item.RowTotalWithItemRelatedDiscountInclTax(), domain.NewFromInt(12370, 100, "EUR"), "RowTotalWithItemRelatedDiscountInclTax")
+	cart, err := b.AddTotalitem(cartDomain.Totalitem{
+		Title: "test",
+		Price: domain.NewFromInt(100, 100, "EUR"),
+	}).SetIds("id", "").Build()
+	assert.NoError(t, err)
+	assert.Equal(t, domain.NewFromInt(100, 100, "EUR"), cart.GrandTotal(), "gradtotal need to match given total")
 
 }

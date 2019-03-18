@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
-	"flamingo.me/flamingo-commerce/v3/price/domain"
 	"fmt"
 	"net/url"
 	"strings"
+
+	"flamingo.me/flamingo-commerce/v3/price/domain"
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -605,7 +606,7 @@ func (cc *CheckoutController) placeOrder(ctx context.Context, session *web.Sessi
 		// record 5ms per call
 		stats.Record(ctx, rt.M(1))
 
-		cc.logger.WithField("category", "checkout").WithField("subcategory", "checkoutError").WithField("errorMsg", err.Error()).Error(fmt.Sprintf("place order failed: cart id: %v / customer-name: %v / total-amount: %v / sub-amounts: %v", decoratedCart.Cart.EntityID, name, decoratedCart.Cart.CartTotals.GrandTotal, subAmounts))
+		cc.logger.WithField("category", "checkout").WithField("subcategory", "checkoutError").WithField("errorMsg", err.Error()).Error(fmt.Sprintf("place order failed: cart id: %v / customer-name: %v / total-amount: %v / sub-amounts: %v", decoratedCart.Cart.EntityID, name, decoratedCart.Cart.GrandTotal(), subAmounts))
 		return nil, err
 	}
 
