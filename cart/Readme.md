@@ -122,26 +122,27 @@ Make sure you read the product package details about prices.
 The cart need to show prices with its taxes and additional cart discounts and all different subtotals etc.
 What you want to show depends on the project, the type of shop (B2B or B2C), the discount logic and the implemented calculation details of the underlying cartservice implementation.
 
-Some of them are "calculateable" on the fly (in this cases they are offered as methods) - but some highly depends on the tax and discount logic and the need to have the correct values set by the underlying Cartservice.
+Some of the prices you may want to show are "calculateable" on the fly (in this cases they are offered as methods) - but some highly depends on the tax and discount logic and they need to have the correct values set by the underlying Cartservice implementation.
 
 ### Cart invariants
 
-* While the flamingo Price model (which is used) can calculate exact internal, we need Payable prices to be set in the Cart. This is to allow consistent Adding and Substracting of Prices and still always get a price that is Payable.
+* While the flamingo Price model (which is used) can calculate exact prices internal, we need "payable prices" to be set in the Cart. This is to allow consistent adding and substracting of prices and still always get a price that is payable.
 
-* All sums - also the Cart GrantTotal is calculated and can be "tracked" back to 
+* All sums - also the Cart GrantTotal is calculated and can be "tracked" back to the item row prices.
 
 In order to get consistent SubTotals in the Cart, the Cart model need certain invariants to be matched:
 * Itemlevel: RowPriceNet + TotalTaxAmount = RowPriceGross
 * Itemlevel: TotalDiscount <= RowPriceGross
-* All prices need to have same currency (that may be extended later)
+* All main prices need to have same currency (that may be extended later but currently is a constrain)
 
-### About Tax calculation
-Take the example of a cart with:
+### About Tax calculation in general
+
+It makes sense to understand the details of tax calculations - so please take the following example of a cart with 2 items:
 * item1 netprice 14,71
 * item2 netprice 10,18
-And 19% vat:
+* and a 19% VAT (G.S.T)
 
-There are two ways of Taxcalculations.
+There are two principal ways of tax calculations (called vertical and horizontal)
 * vertical: the final tax is calculated from the sum of all rounded item taxes: 
     * item1 +19% gross price rounded: 17,50 (tax 2,79)
     * item2 +19% gross price rounded: 12,11 (tax 1,93)
@@ -153,7 +154,11 @@ There are two ways of Taxcalculations.
     
 * horizontal: The final tax is calculated from the sum of all net prices of the item and then rounded
     * => SubTotalNet: 24,89  => +19% rounded GrandTotal: 29,62 / included Tax: 4,73
-    * Often prefered for B2B, since the prices are shown as net prices first.
+    * Often prefered for B2B or when the prices shown to the customer are as net prices at first.
+
+* In both cases the tax might be calculated from a given net price or a given gross price (see product package config "commerce.product.priceIsGross").
+
+* discounts are normaly subtracted before tax calculation
 
 * At least in germany the law don't force one algorithm over the over. In this cart module it is up to the CartService implementation what algorithm it uses to fill the tax
 
@@ -161,7 +166,7 @@ There are two ways of Taxcalculations.
 
 
 
-### Cartitems
+### Cartitems - price fields and method 
 
 The Key with "()" in the list are methods and it is assumed as an invariant, that all prices in an item have the same currency.
 
@@ -186,7 +191,7 @@ The Key with "()" in the list are methods and it is assumed as an invariant, tha
 
 % use https://www.tablesgenerator.com/markdown_tables to update the table %
 
-### DeliveryTotals:
+### DeliveryTotals - price fields and method 
 | Key                               | Desc | Math                                       |
 |-----------------------------------|------|--------------------------------------------|
 | SubTotalGross()                   |      |  Sum of items RowPriceGross                |
@@ -200,7 +205,7 @@ The Key with "()" in the list are methods and it is assumed as an invariant, tha
 | SumItemRelatedDiscountAmount()    |      | Sum of items ItemRelatedDiscountAmount     |
 
 
-### Carttotals:
+### Carttotals - price fields and method 
 
 | Key                               | Desc                                                                                                                                                | Math                                                                                                                                                     |
 |-----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -229,11 +234,11 @@ B2C use cases:
     * RowPriceGross
     * RowPriceGrossWithDiscount
 
-* the cart normaly shows:
+* The cart normaly shows:
    * SubTotalGross
-   * Carttotals!!!
+   * Carttotals (non taxable extra lines on cart level)
    * Shipping
-   * The included Total Tax in Cart (CartFees) 
+   * The included Total Tax in Cart (SumTaxes) 
    * GrandTotal (is what the customer need to pay at the end inkl all fees)
 
 B2B use cases:
@@ -242,11 +247,11 @@ B2B use cases:
     *  RowPriceNet
     *  RowPriceNetWithDiscount
     
-* the cart normaly shows:
+* The cart then normaly shows:
    * SubTotalNet
-   * Carttotals!!!
+   * Carttotals (non taxable extra lines on cart level)
    * Shipping
-   * The included Total Tax in Cart (CartFees) 
+   * The included Total Tax in Cart (SumTaxes) 
    * GrandTotal (is what the customer need to pay at the end inkl all fees)
  
 ### Building a Cart with its Deliveries and Items
