@@ -191,7 +191,7 @@ The Key with "()" in the list are methods and it is assumed as an invariant, tha
 
 % use https://www.tablesgenerator.com/markdown_tables to update the table %
 
-### DeliveryTotals - price fields and method 
+### Delivery - price fields and method 
 | Key                               | Desc | Math                                       |
 |-----------------------------------|------|--------------------------------------------|
 | SubTotalGross()                   |      |  Sum of items RowPriceGross                |
@@ -205,7 +205,7 @@ The Key with "()" in the list are methods and it is assumed as an invariant, tha
 | SumItemRelatedDiscountAmount()    |      | Sum of items ItemRelatedDiscountAmount     |
 
 
-### Carttotals - price fields and method 
+### Cart - price fields and method 
 
 | Key                               | Desc                                                                                                                                                | Math                                                                                                                                                     |
 |-----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
