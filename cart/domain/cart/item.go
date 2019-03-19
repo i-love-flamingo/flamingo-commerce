@@ -49,6 +49,7 @@ type (
 
 	// ItemCartReference - value object that can be used to reference a Item in a Cart
 	//@todo - Use in ServicePort methods...
+	//@todo - we should use the uniqieitemid
 	ItemCartReference struct {
 		ItemID       string
 		DeliveryCode string
