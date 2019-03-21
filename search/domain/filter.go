@@ -43,6 +43,24 @@ var (
 	_ Filter = NewKeyValueFilter("a", []string{"b", "c"})
 )
 
+const (
+	SORT_DIRECTION_ASCENDING  = "A"
+	SORT_DIRECTION_DESCENDING = "D"
+	SORT_DIRECTION_NONE       = ""
+)
+
+//NewKeyValueFilters - Factory method that you can use to get a list of KeyValueFilter based from url.Values
+func NewKeyValueFilters(params map[string][]string) []Filter {
+	var result []Filter
+	for k, v := range params {
+		if len(v) == 0 {
+			continue
+		}
+		result = append(result, NewKeyValueFilter(k, v))
+	}
+	return result
+}
+
 // NewKeyValueFilter factory
 func NewKeyValueFilter(k string, v []string) *KeyValueFilter {
 	return &KeyValueFilter{
@@ -58,6 +76,9 @@ func (f *KeyValueFilter) Value() (string, []string) {
 
 // NewSortFilter factory
 func NewSortFilter(label string, direction string) *SortFilter {
+	if direction != SORT_DIRECTION_NONE && direction != SORT_DIRECTION_DESCENDING && direction != SORT_DIRECTION_ASCENDING {
+		direction = SORT_DIRECTION_NONE
+	}
 	return &SortFilter{
 		label:     label,
 		direction: direction,

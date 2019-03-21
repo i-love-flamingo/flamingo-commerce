@@ -3,8 +3,9 @@ package controller
 import (
 	"context"
 	"errors"
-	breadcrumb "flamingo.me/flamingo-commerce/v3/category/application"
 	"net/url"
+
+	breadcrumb "flamingo.me/flamingo-commerce/v3/category/application"
 
 	"flamingo.me/flamingo-commerce/v3/category/domain"
 	"flamingo.me/flamingo-commerce/v3/product/application"
@@ -54,7 +55,7 @@ func (vc *View) Inject(
 		TeaserTemplate string `inject:"config:category.view.teaserTemplate"`
 	},
 ) {
-	vc.responder=responder
+	vc.responder = responder
 	vc.CategoryService = categoryService
 	vc.SearchService = searchService
 	vc.router = router
@@ -96,11 +97,9 @@ func (vc *View) Get(c context.Context, request *web.Request) web.Result {
 	for k, v := range queryAll {
 		filter[k] = v
 	}
-	filter[string(domain.CategoryKey)] = domain.NewCategoryFacet(category)
 
-	searchRequest := &searchApplication.SearchRequest{
-		FilterBy: filter,
-	}
+	searchRequest := &searchApplication.SearchRequest{}
+	searchRequest.AddAdditionalFilter(domain.NewCategoryFacet(category))
 
 	products, err := vc.SearchService.Find(c, searchRequest)
 	if err != nil {
@@ -119,7 +118,7 @@ func (vc *View) Get(c context.Context, request *web.Request) web.Result {
 		template = vc.template
 	}
 
-	return vc.responder.Render( template, ViewData{
+	return vc.responder.Render(template, ViewData{
 		Category:            category,
 		CategoryTree:        categoryRoot,
 		ProductSearchResult: products,

@@ -20,7 +20,7 @@ type (
 		Hits []BasicProduct
 	}
 
-	// SearchService is a typed search for products
+	// ProductSearchService is a typed search for products
 	SearchService interface {
 		//Search returns Products based on given Filters
 		Search(ctx context.Context, filter ...searchDomain.Filter) (SearchResult, error)

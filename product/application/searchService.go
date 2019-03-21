@@ -13,7 +13,7 @@ import (
 )
 
 type (
-	// ProductSearchService - Application service that offers a more explicit way to search for  product results - on top of the domain.SearchService
+	// ProductSearchService - Application service that offers a more explicit way to search for  product results - on top of the domain.ProductSearchService
 	ProductSearchService struct {
 		SearchService         domain.SearchService         `inject:""`
 		PaginationInfoFactory *utils.PaginationInfoFactory `inject:""`
@@ -44,7 +44,7 @@ func (s *ProductSearchService) Find(ctx context.Context, searchRequest *applicat
 	if searchRequest == nil {
 		searchRequest = &application.SearchRequest{}
 	}
-	// pageSize can either be set in the request, or we use the configured default or if nothing set we rely on the SearchService later
+	// pageSize can either be set in the request, or we use the configured default or if nothing set we rely on the ProductSearchService later
 	pageSize := searchRequest.PageSize
 	if pageSize == 0 {
 		pageSize = int(s.DefaultPageSize)
@@ -61,7 +61,7 @@ func (s *ProductSearchService) Find(ctx context.Context, searchRequest *applicat
 
 	if pageSize != 0 {
 		if err := result.SearchMeta.ValidatePageSize(pageSize); err != nil {
-			s.Logger.WithField("category", "application.SearchService").Warn("The Searchservice seems to ignore pageSize Filter")
+			s.Logger.WithField("category", "application.ProductSearchService").Warn("The Searchservice seems to ignore pageSize Filter")
 		}
 	}
 	paginationInfo := utils.BuildWith(utils.CurrentResultInfos{
@@ -83,7 +83,7 @@ func (s *ProductSearchService) Find(ctx context.Context, searchRequest *applicat
 // FindBy return SearchResult with matched products filtered by the given attribute - based on given input
 func (s *ProductSearchService) FindBy(ctx context.Context, attributeCode string, values []string, searchRequest *application.SearchRequest) (*SearchResult, error) {
 	var currentURL *url.URL
-	request:= web.RequestFromContext(ctx)
+	request := web.RequestFromContext(ctx)
 	if request == nil {
 		currentURL = nil
 	} else {
@@ -93,7 +93,7 @@ func (s *ProductSearchService) FindBy(ctx context.Context, attributeCode string,
 	if searchRequest == nil {
 		searchRequest = &application.SearchRequest{}
 	}
-	// pageSize can either be set in the request, or we use the configured default or if nothing set we rely on the SearchService later
+	// pageSize can either be set in the request, or we use the configured default or if nothing set we rely on the ProductSearchService later
 	pageSize := searchRequest.PageSize
 	if pageSize == 0 {
 		pageSize = int(s.DefaultPageSize)
@@ -110,7 +110,7 @@ func (s *ProductSearchService) FindBy(ctx context.Context, attributeCode string,
 
 	if pageSize != 0 {
 		if err := result.SearchMeta.ValidatePageSize(pageSize); err != nil {
-			s.Logger.WithField("category", "application.SearchService").Warn("The Searchservice seems to ignore pageSize Filter")
+			s.Logger.WithField("category", "application.ProductSearchService").Warn("The Searchservice seems to ignore pageSize Filter")
 		}
 	}
 	paginationInfo := utils.BuildWith(utils.CurrentResultInfos{

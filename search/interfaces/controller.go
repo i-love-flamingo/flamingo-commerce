@@ -13,9 +13,9 @@ import (
 type (
 	// ViewController demonstrates a search view controller
 	ViewController struct {
-		Responder *web.Responder    `inject:""`
-		SearchService           *application.SearchService   `inject:""`
-		PaginationInfoFactory   *utils.PaginationInfoFactory `inject:""`
+		Responder             *web.Responder               `inject:""`
+		SearchService         *application.SearchService   `inject:""`
+		PaginationInfoFactory *utils.PaginationInfoFactory `inject:""`
 	}
 
 	viewData struct {
@@ -35,15 +35,10 @@ func (vc *ViewController) Get(c context.Context, r *web.Request) web.Result {
 		},
 	}
 
-	queryAll := r.QueryAll()
-	filter := make(map[string]interface{})
-	for k, v := range queryAll {
-		filter[k] = v
-	}
 	searchRequest := application.SearchRequest{
-		FilterBy: filter,
-		Query:    query,
+		Query: query,
 	}
+	searchRequest.AddAdditionalFilters(domain.NewKeyValueFilters(r.QueryAll())...)
 
 	if typ, ok := r.Params["type"]; ok {
 		searchResult, err := vc.SearchService.FindBy(c, typ, searchRequest)
@@ -65,7 +60,7 @@ func (vc *ViewController) Get(c context.Context, r *web.Request) web.Result {
 			searchResult.SearchMeta.NumPages,
 			r.Request().URL,
 		)
-		return vc.Responder.Render( "search/"+typ, vd)
+		return vc.Responder.Render("search/"+typ, vd)
 	}
 
 	searchResult, err := vc.SearchService.Find(c, searchRequest)
@@ -78,5 +73,5 @@ func (vc *ViewController) Get(c context.Context, r *web.Request) web.Result {
 		return vc.Responder.ServerError(err)
 	}
 	vd.SearchResult = searchResult
-	return vc.Responder.Render( "search/search", vd)
+	return vc.Responder.Render("search/search", vd)
 }

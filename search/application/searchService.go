@@ -8,7 +8,6 @@ import (
 	"context"
 	"net/url"
 
-	categoryDomain "flamingo.me/flamingo-commerce/v3/category/domain"
 	"flamingo.me/flamingo-commerce/v3/search/domain"
 	"flamingo.me/flamingo-commerce/v3/search/utils"
 	"flamingo.me/flamingo/v3/framework/flamingo"
@@ -16,7 +15,7 @@ import (
 )
 
 type (
-	// SearchService - Application service that offers a more explicit way to search for results - on top of the domain.SearchService
+	// ProductSearchService - Application service that offers a more explicit way to search for results - on top of the domain.ProductSearchService
 	SearchService struct {
 		SearchService         domain.SearchService         `inject:""`
 		PaginationInfoFactory *utils.PaginationInfoFactory `inject:""`
@@ -26,7 +25,7 @@ type (
 
 	// SearchRequest is a simple DTO for the search query data
 	SearchRequest struct {
-		FilterBy         map[string]interface{}
+		AdditionalFilter []domain.Filter
 		PageSize         int
 		Page             int
 		SortBy           string
@@ -48,7 +47,7 @@ type (
 // FindBy returns a SearchResult for the given Request
 func (s *SearchService) FindBy(ctx context.Context, documentType string, searchRequest SearchRequest) (*SearchResult, error) {
 	var currentURL *url.URL
-	request:= web.RequestFromContext(ctx)
+	request := web.RequestFromContext(ctx)
 	if request == nil {
 		currentURL = nil
 	} else {
@@ -59,7 +58,7 @@ func (s *SearchService) FindBy(ctx context.Context, documentType string, searchR
 		searchRequest.PaginationConfig = s.PaginationInfoFactory.DefaultConfig
 	}
 
-	// pageSize can either be set in the request, or we use the configured default or if nothing set we rely on the SearchService later
+	// pageSize can either be set in the request, or we use the configured default or if nothing set we rely on the ProductSearchService later
 	pageSize := searchRequest.PageSize
 	if pageSize == 0 {
 		pageSize = int(s.DefaultPageSize)
@@ -74,7 +73,7 @@ func (s *SearchService) FindBy(ctx context.Context, documentType string, searchR
 	//  10 pageSize * (3 pages* -1 ) + lastPageSize = 35 results*
 	if pageSize != 0 {
 		if err := result.SearchMeta.ValidatePageSize(pageSize); err != nil {
-			s.Logger.WithField("category", "application.SearchService").Warn("The Searchservice seems to ignore pageSize Filter")
+			s.Logger.WithField("category", "application.ProductSearchService").Warn("The Searchservice seems to ignore pageSize Filter")
 		}
 	}
 
@@ -108,7 +107,7 @@ func (s *SearchService) Find(ctx context.Context, searchRequest SearchRequest) (
 		searchRequest.PaginationConfig = s.PaginationInfoFactory.DefaultConfig
 	}
 
-	// pageSize can either be set in the request, or we use the configured default or if nothing set we rely on the SearchService later
+	// pageSize can either be set in the request, or we use the configured default or if nothing set we rely on the ProductSearchService later
 	pageSize := searchRequest.PageSize
 	if pageSize == 0 {
 		pageSize = int(s.DefaultPageSize)
@@ -124,7 +123,7 @@ func (s *SearchService) Find(ctx context.Context, searchRequest SearchRequest) (
 	if pageSize != 0 {
 		for k, r := range result {
 			if err := r.SearchMeta.ValidatePageSize(pageSize); err != nil {
-				s.Logger.WithField("category", "application.SearchService").Warn("The Searchservice seems to ignore pageSize Filter for document type ", k)
+				s.Logger.WithField("category", "application.ProductSearchService").Warn("The Searchservice seems to ignore pageSize Filter for document type ", k)
 			}
 		}
 	}
@@ -172,25 +171,32 @@ func BuildFilters(request SearchRequest, defaultPageSize int) []domain.Filter {
 		filters = append(filters, domain.NewSortFilter(request.SortBy, request.SortDirection))
 	}
 
-	for k, v := range request.FilterBy {
-		switch k {
-		case string(categoryDomain.CategoryKey):
-			if _, ok := v.(categoryDomain.CategoryFacet); ok {
-				filters = append(filters, v.(categoryDomain.CategoryFacet))
-			} else {
-				filters = append(
-					filters,
-					categoryDomain.NewCategoryFacet(
-						categoryDomain.CategoryData{
-							CategoryCode: v.([]string)[0],
-						},
-					),
-				)
-			}
-		default:
-			filters = append(filters, domain.NewKeyValueFilter(k, v.([]string)))
-		}
+	for _, additionalFilter := range request.AdditionalFilter {
+		filters = append(filters, additionalFilter)
 	}
 
 	return filters
+}
+
+func (r *SearchRequest) AddAdditionalFilter(filter domain.Filter) {
+	r.AdditionalFilter = append(r.AdditionalFilter, filter)
+}
+
+//SetAdditionalFilter - adds or replaces the given filter
+func (r *SearchRequest) SetAdditionalFilter(filterToAdd domain.Filter) {
+	for k, existingFilter := range r.AdditionalFilter {
+		existingFilterKey, _ := existingFilter.Value()
+		filterToAddKey, _ := filterToAdd.Value()
+		if existingFilterKey == filterToAddKey {
+			r.AdditionalFilter[k] = filterToAdd
+			return
+		}
+	}
+	r.AddAdditionalFilter(filterToAdd)
+}
+
+func (r *SearchRequest) AddAdditionalFilters(filters ...domain.Filter) {
+	for _, filter := range filters {
+		r.AddAdditionalFilter(filter)
+	}
 }
