@@ -104,10 +104,17 @@ func newFilterProcessing(request *web.Request, namespace string, searchConfig, k
 			continue
 		}
 		splitted := strings.SplitN(k, ".", 2)
-		if len(splitted) < 2 {
+		if (namespace != "" && len(splitted) < 2) || (namespace == "" && len(splitted) > 1) {
 			continue
 		}
-		filterKey := splitted[1]
+
+		var filterKey string
+		if namespace != "" {
+			filterKey = splitted[1]
+		} else {
+			filterKey = splitted[0]
+		}
+
 		if filterProcessing.isAllowed(filterKey) {
 			searchRequest.SetAdditionalFilter(domain.NewKeyValueFilter(filterKey, v))
 		}
