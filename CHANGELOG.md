@@ -9,5 +9,9 @@
 - cart module:
     - Has a new secondary port: PlaceOrderService
     - The meaning of DeliveryInfo.Method has changed! The former meaning is now represented in the property DeliveryInfo.Workflow. See Readme of cart ackage for details
+    - The complete pricefields are changed! Check readme for details on the new price fields and methods
 - checkout: 
     - removed depricated viewdata (CartTotals)
+- category:
+    - Tree object uses a Tree Entity now which contains NOT all category properties. You have to fetch the category details seperate on demand:
+        - search for usages of the data funcs - they may need changes in rendering the data: `data('category´´..`

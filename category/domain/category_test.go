@@ -5,69 +5,11 @@ import (
 	"testing"
 )
 
-func TestGetActive(t *testing.T) {
-	type args struct {
-		c Category
-	}
-
-	var (
-		inactiveCategory = CategoryData{IsActive: false}
-		activeCategory   = CategoryData{IsActive: true}
-	)
-	tests := []struct {
-		name string
-		args args
-		want Category
-	}{
-		{
-			name: "Empty category returns nil",
-			args: args{
-				c: nil,
-			},
-			want: nil,
-		},
-		{
-			name: "Inactive tree retuns nil",
-			args: args{
-				c: CategoryData{
-					Children: []*CategoryData{
-						&inactiveCategory,
-					},
-					IsActive: false,
-				},
-			},
-			want: nil,
-		},
-		{
-			name: "Active tree returns non nil active category",
-			args: args{
-				c: CategoryData{
-					Children: []*CategoryData{
-						&inactiveCategory,
-						&activeCategory,
-					},
-					IsActive: false,
-				},
-			},
-			want: &activeCategory,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := GetActive(tt.args.c); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetActive() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestCategoryData_Attribute(t *testing.T) {
 	type fields struct {
 		CategoryCode       string
 		CategoryName       string
 		CategoryPath       string
-		Children           []*CategoryData
-		IsActive           bool
 		IsPromoted         bool
 		CategoryMedia      Medias
 		CategoryTypeCode   string
@@ -126,8 +68,6 @@ func TestCategoryData_Attribute(t *testing.T) {
 				CategoryCode:       tt.fields.CategoryCode,
 				CategoryName:       tt.fields.CategoryName,
 				CategoryPath:       tt.fields.CategoryPath,
-				Children:           tt.fields.Children,
-				IsActive:           tt.fields.IsActive,
 				IsPromoted:         tt.fields.IsPromoted,
 				CategoryMedia:      tt.fields.CategoryMedia,
 				CategoryTypeCode:   tt.fields.CategoryTypeCode,

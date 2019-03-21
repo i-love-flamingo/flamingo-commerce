@@ -27,20 +27,20 @@ func (bs *BreadcrumbService) Inject(router RouterRouter) {
 }
 
 // AddBreadcrumb - add a breadcrumb based on a root category
-func (bs *BreadcrumbService) AddBreadcrumb(ctx context.Context, category domain.Category) {
-	if !category.Active() {
+func (bs *BreadcrumbService) AddBreadcrumb(ctx context.Context, tree domain.Tree) {
+	if !tree.Active() {
 		return
 	}
-	if category.Code() != "" {
-		u, _ := bs.router.URL(URLWithName(category.Code(), web.URLTitle(category.Name())))
+	if tree.Code() != "" {
+		u, _ := bs.router.URL(URLWithName(tree.Code(), web.URLTitle(tree.Name())))
 		breadcrumbs.Add(ctx, breadcrumbs.Crumb{
-			Title: category.Name(),
+			Title: tree.Name(),
 			URL:   u.String(),
-			Code:  category.Code(),
+			Code:  tree.Code(),
 		})
 	}
 
-	for _, subcat := range category.Categories() {
+	for _, subcat := range tree.SubTrees() {
 		bs.AddBreadcrumb(ctx, subcat)
 	}
 }

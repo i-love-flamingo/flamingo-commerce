@@ -1,10 +1,10 @@
 package category
 
 import (
+	"flamingo.me/dingo"
 	"flamingo.me/flamingo-commerce/v3/category/application"
 	"flamingo.me/flamingo-commerce/v3/category/interfaces/controller"
 	"flamingo.me/flamingo/v3/framework/config"
-	"flamingo.me/dingo"
 	"flamingo.me/flamingo/v3/framework/web"
 )
 
@@ -36,12 +36,12 @@ func (m *Module) DefaultConfig() config.Map {
 }
 
 type routes struct {
-	view   *controller.View
+	view   *controller.ViewController
 	entity *controller.Entity
 	tree   *controller.Tree
 }
 
-func (r *routes) Inject(view *controller.View, entity *controller.Entity, tree *controller.Tree) {
+func (r *routes) Inject(view *controller.ViewController, entity *controller.Entity, tree *controller.Tree) {
 	r.view = view
 	r.entity = entity
 	r.tree = tree

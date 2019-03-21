@@ -14,7 +14,7 @@ type (
 	// CategoryService interface
 	CategoryService interface {
 		// Tree a category
-		Tree(ctx context.Context, categoryCode string) (Category, error)
+		Tree(ctx context.Context, activeCategoryCode string) (Tree, error)
 
 		// Get a category with more data
 		Get(ctx context.Context, categoryCode string) (Category, error)

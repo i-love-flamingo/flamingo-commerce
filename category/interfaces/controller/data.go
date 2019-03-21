@@ -28,9 +28,9 @@ func (controller *Tree) Inject(service domain.CategoryService) {
 func (controller *Tree) Data(c context.Context, r *web.Request, params web.RequestParams) interface{} {
 	code, _ := params["code"] // no err check, empty code is fine if not set
 
-	categoryRoot, _ := controller.categoryService.Tree(c, code)
+	treeRoot, _ := controller.categoryService.Tree(c, code)
 
-	return categoryRoot
+	return treeRoot
 }
 
 // Inject the Entity controller required dependencies

@@ -2,7 +2,6 @@ package controller
 
 import (
 	"context"
-	"errors"
 	"net/url"
 
 	breadcrumb "flamingo.me/flamingo-commerce/v3/category/application"
@@ -17,8 +16,8 @@ import (
 )
 
 type (
-	// View demonstrates a product view controller
-	View struct {
+	// ViewController prividing actions for category single view
+	ViewController struct {
 		responder *web.Responder
 		domain.CategoryService
 		SearchService         *application.ProductSearchService
@@ -34,14 +33,14 @@ type (
 	ViewData struct {
 		ProductSearchResult *application.SearchResult
 		Category            domain.Category
-		CategoryTree        domain.Category
+		CategoryTree        domain.Tree
 		SearchMeta          searchdomain.SearchMeta
 		PaginationInfo      utils.PaginationInfo
 	}
 )
 
-// Inject the View controller required dependencies
-func (vc *View) Inject(
+// Inject the ViewController controller required dependencies
+func (vc *ViewController) Inject(
 	responder *web.Responder,
 	categoryService domain.CategoryService,
 	searchService *application.ProductSearchService,
@@ -66,52 +65,48 @@ func (vc *View) Inject(
 	vc.breadcrumbService = breadcrumbService
 }
 
-// Get Response for Product matching sku param
-func (vc *View) Get(c context.Context, request *web.Request) web.Result {
-	categoryRoot, err := vc.CategoryService.Tree(c, request.Params["code"])
+// Get Action to display a category page
+func (vc *ViewController) Get(c context.Context, request *web.Request) web.Result {
+	treeRoot, err := vc.CategoryService.Tree(c, request.Params["code"])
+	if err == domain.ErrNotFound {
+		return vc.responder.NotFound(err)
+	} else if err != nil {
+		return vc.responder.ServerError(err)
+	}
+	currentCategory, err := vc.CategoryService.Get(c, request.Params["code"])
 	if err == domain.ErrNotFound {
 		return vc.responder.NotFound(err)
 	} else if err != nil {
 		return vc.responder.ServerError(err)
 	}
 
-	category := domain.GetActive(categoryRoot)
-	if category == nil {
-		return vc.responder.NotFound(errors.New("Active Category not found"))
-	}
-
-	expectedName := web.URLTitle(category.Name())
+	//Normalize url if required:
+	expectedName := web.URLTitle(currentCategory.Name())
 	if name, _ := request.Params["name"]; expectedName != name {
 		redirectParams := map[string]string{
-			"code": category.Code(),
+			"code": currentCategory.Code(),
 			"name": expectedName,
 		}
-
 		u, _ := vc.router.URL("category.view", redirectParams)
 		u.RawQuery = url.Values(request.QueryAll()).Encode()
 		return vc.responder.URLRedirect(u).Permanent()
 	}
 
-	queryAll := request.QueryAll()
-	filter := make(map[string]interface{}, len(queryAll)+1)
-	for k, v := range queryAll {
-		filter[k] = v
-	}
-
 	searchRequest := &searchApplication.SearchRequest{}
-	searchRequest.AddAdditionalFilter(domain.NewCategoryFacet(category))
+	searchRequest.AddAdditionalFilters(searchdomain.NewKeyValueFilters(request.QueryAll())...)
+	searchRequest.SetAdditionalFilter(domain.NewCategoryFacet(currentCategory.Code()))
 
 	products, err := vc.SearchService.Find(c, searchRequest)
 	if err != nil {
 		return vc.responder.ServerError(err)
 	}
 
-	vc.breadcrumbService.AddBreadcrumb(c, categoryRoot)
+	vc.breadcrumbService.AddBreadcrumb(c, treeRoot)
 
 	paginationInfo := vc.paginationInfoFactory.Build(products.SearchMeta.Page, products.SearchMeta.NumResults, 30, products.SearchMeta.NumPages, request.Request().URL)
 
 	var template string
-	switch category.CategoryType() {
+	switch currentCategory.CategoryType() {
 	case domain.TypeTeaser:
 		template = vc.teaserTemplate
 	default:
@@ -119,8 +114,9 @@ func (vc *View) Get(c context.Context, request *web.Request) web.Result {
 	}
 
 	return vc.responder.Render(template, ViewData{
-		Category:            category,
-		CategoryTree:        categoryRoot,
+
+		Category:            currentCategory,
+		CategoryTree:        treeRoot,
 		ProductSearchResult: products,
 		SearchMeta:          products.SearchMeta,
 		PaginationInfo:      paginationInfo,

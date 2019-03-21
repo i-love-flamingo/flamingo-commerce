@@ -28,7 +28,7 @@ func (r *MockRouter) URL(name string, params map[string]string) (*url.URL, error
 
 func TestBreadcrumbService_AddBreadcrumb(t *testing.T) {
 	type args struct {
-		category domain.Category
+		category domain.Tree
 	}
 
 	controller := new(breadcrumbs.Controller)
@@ -106,59 +106,59 @@ func TestBreadcrumbService_AddBreadcrumb(t *testing.T) {
 	}
 }
 
-func getCategoryTreeWithoutActive() domain.Category {
-	categoryRoot := domain.CategoryData{
+func getCategoryTreeWithoutActive() domain.Tree {
+	categoryRoot := domain.TreeData{
 		CategoryCode: "root",
 		CategoryName: "Root",
 		IsActive:     false,
-		Children:     nil,
+		SubTreesData: nil,
 	}
 	return categoryRoot
 }
 
-func getCategoryTreeWithSingleActive() domain.Category {
-	categoryRoot := domain.CategoryData{
+func getCategoryTreeWithSingleActive() domain.Tree {
+	categoryRoot := domain.TreeData{
 		CategoryCode: "root",
 		CategoryName: "Root",
 		IsActive:     true,
-		Children:     nil,
+		SubTreesData: nil,
 	}
 	return categoryRoot
 }
 
-func getFullCategoryTree() domain.Category {
-	categoryRoot := domain.CategoryData{
+func getFullCategoryTree() domain.Tree {
+	categoryRoot := domain.TreeData{
 		CategoryCode: "root",
 		CategoryName: "Root",
 		IsActive:     true,
-		Children: []*domain.CategoryData{
+		SubTreesData: []*domain.TreeData{
 			{
 				CategoryCode: "root-sub1-inactive",
 				CategoryName: "Sub1 Inactive",
 				IsActive:     false,
-				Children:     nil,
+				SubTreesData: nil,
 			},
 			{
 				CategoryCode: "root-sub1-active",
 				CategoryName: "Sub1 Active",
 				IsActive:     true,
-				Children: []*domain.CategoryData{
+				SubTreesData: []*domain.TreeData{
 					{
 						CategoryCode: "root-sub2-active",
 						CategoryName: "Sub2 Active",
 						IsActive:     true,
-						Children: []*domain.CategoryData{
+						SubTreesData: []*domain.TreeData{
 							{
 								CategoryCode: "root-sub3-active",
 								CategoryName: "Sub3 Active",
 								IsActive:     true,
-								Children:     nil,
+								SubTreesData: nil,
 							},
 							{
 								CategoryCode: "root-sub3-inactive",
 								CategoryName: "Sub3 Inactive",
 								IsActive:     false,
-								Children:     nil,
+								SubTreesData: nil,
 							},
 						},
 					},
@@ -166,7 +166,7 @@ func getFullCategoryTree() domain.Category {
 						CategoryCode: "root-sub2-inactive",
 						CategoryName: "Sub2 Inactive",
 						IsActive:     false,
-						Children:     nil,
+						SubTreesData: nil,
 					},
 				},
 			},
