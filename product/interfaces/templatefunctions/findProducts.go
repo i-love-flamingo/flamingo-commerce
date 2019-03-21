@@ -90,7 +90,13 @@ func newFilterProcessing(request *web.Request, namespace string, searchConfig, k
 
 	// Set blackList and whiteList
 	filterProcessing.blackList = strings.Split(filterConstrains["blackList"], ",")
+	if filterProcessing.blackList[0] == "" {
+		filterProcessing.blackList = nil
+	}
 	filterProcessing.whiteList = strings.Split(filterConstrains["whiteList"], ",")
+	if filterProcessing.whiteList[0] == "" {
+		filterProcessing.whiteList = nil
+	}
 
 	//2 - Use the url parameters to modify the filters:
 	for k, v := range request.QueryAll() {
@@ -131,7 +137,7 @@ func (f filterProcessing) isAllowed(key string) bool {
 			}
 		}
 		return false
-	} else {
+	} else if len(f.blackList) > 0 {
 		for _, wl := range f.blackList {
 			if wl == key {
 				return false
