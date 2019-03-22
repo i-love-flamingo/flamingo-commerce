@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-// Test different combinations of filter processing
+// TestFilterProcessingIsAllowed - Test different combinations of filter processing
 func TestFilterProcessingIsAllowed(t *testing.T) {
 
 	// Case 1: only blacklist filled, everything not on the blacklist should be fine
@@ -51,7 +51,7 @@ func TestFilterProcessingIsAllowed(t *testing.T) {
 	assert.False(t, filterProcessing.isAllowed("notOnAnyList"))
 }
 
-// Test modification of the searchResult
+// TestFilterProcessingModifyResultRemoveBlacklisted - Test modification of the searchResult
 func TestFilterProcessingModifyResultRemoveBlacklisted(t *testing.T) {
 	searchResult := buildSearchResult()
 	assert.Len(t, searchResult.Facets, 2)
@@ -66,7 +66,7 @@ func TestFilterProcessingModifyResultRemoveBlacklisted(t *testing.T) {
 	assert.Equal(t, newResult.Facets["allowed"].Name, "allowed")
 }
 
-// Test modification of the searchResult
+// TestFilterProcessingModifyResultOnlyKeepWhitelisted - Test modification of the searchResult
 func TestFilterProcessingModifyResultOnlyKeepWhitelisted(t *testing.T) {
 	searchResult := buildSearchResult()
 	assert.Len(t, searchResult.Facets, 2)
