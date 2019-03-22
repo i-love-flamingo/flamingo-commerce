@@ -14,12 +14,13 @@ import (
 	searchApplication "flamingo.me/flamingo-commerce/v3/search/application"
 )
 
-// FindProducts is exported as a template function
 type (
+	// FindProducts is exported as a template function
 	FindProducts struct {
 		ProductSearchService *application.ProductSearchService `inject:""`
 	}
 
+	// filterProcessing to modifiy the searchRequest and the result depending on black-/whitelist
 	filterProcessing struct {
 		buildSearchRequest searchApplication.SearchRequest
 		whiteList          []string
@@ -88,12 +89,18 @@ func newFilterProcessing(request *web.Request, namespace string, searchConfig, k
 		searchRequest.AddAdditionalFilter(domain.NewKeyValueFilter(k, []string{v}))
 	}
 
-	// Set blackList and whiteList
+	// Set blackList and whiteList, also trim spaces
 	filterProcessing.blackList = strings.Split(filterConstrains["blackList"], ",")
+	for i := range filterProcessing.blackList {
+		filterProcessing.blackList[i] = strings.TrimSpace(filterProcessing.blackList[i])
+	}
 	if filterProcessing.blackList[0] == "" {
 		filterProcessing.blackList = nil
 	}
 	filterProcessing.whiteList = strings.Split(filterConstrains["whiteList"], ",")
+	for i := range filterProcessing.whiteList {
+		filterProcessing.whiteList[i] = strings.TrimSpace(filterProcessing.whiteList[i])
+	}
 	if filterProcessing.whiteList[0] == "" {
 		filterProcessing.whiteList = nil
 	}
@@ -123,7 +130,8 @@ func newFilterProcessing(request *web.Request, namespace string, searchConfig, k
 	return filterProcessing
 }
 
-func (f filterProcessing) modifyResult(result *application.SearchResult) *application.SearchResult {
+// modifyResult - whil check the result against the blacklist/whitelist
+func (f *filterProcessing) modifyResult(result *application.SearchResult) *application.SearchResult {
 	var newFacetCollection domain.FacetCollection
 	newFacetCollection = make(map[string]domain.Facet)
 	for k, facet := range result.Facets {
@@ -144,8 +152,8 @@ func (f filterProcessing) modifyResult(result *application.SearchResult) *applic
 	return result
 }
 
-//isAllowed - checks the given key against the defined whitelist and blacklist (whitelist prefered)
-func (f filterProcessing) isAllowed(key string) bool {
+// isAllowed - checks the given key against the defined whitelist and blacklist (whitelist prefered)
+func (f *filterProcessing) isAllowed(key string) bool {
 	if len(f.whiteList) > 0 {
 		for _, wl := range f.whiteList {
 			if wl == key {
@@ -155,7 +163,8 @@ func (f filterProcessing) isAllowed(key string) bool {
 		return false
 	} else if len(f.blackList) > 0 {
 		for _, wl := range f.blackList {
-			if wl == key {
+			ert := wl == key
+			if ert {
 				return false
 			}
 		}
