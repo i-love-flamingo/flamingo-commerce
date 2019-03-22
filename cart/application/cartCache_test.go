@@ -6,6 +6,8 @@ import (
 	"testing"
 	"time"
 
+	"flamingo.me/flamingo-commerce/v3/price/domain"
+
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo/v3/framework/flamingo"
@@ -184,6 +186,7 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 					application.CachedCartEntry{
 						IsInvalid: false,
 						ExpiresOn: time.Now().Add(5 * time.Minute),
+						Entry:     *getFixtureCartForTest(t),
 					},
 				),
 				id: application.CartCacheIdentifier{
@@ -192,7 +195,7 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 					CustomerID:     "customer_id",
 				},
 			},
-			want:           new(cart.Cart),
+			want:           getFixtureCartForTest(t),
 			wantErr:        false,
 			wantMessageErr: "",
 		},
@@ -602,4 +605,27 @@ func TestCartSessionCache_DeleteAll(t *testing.T) {
 			}
 		})
 	}
+}
+
+func getFixtureCartForTest(t *testing.T) *cart.Cart {
+	t.Helper()
+	cartItemBuilder := cart.ItemBuilder{}
+	cartItemBuilder.SetSinglePriceGross(domain.NewFromInt(2050, 100, "EUR")).SetID("1").SetUniqueID("1").SetQty(2).CalculatePricesAndTaxAmountsFromSinglePriceGross()
+	item, err := cartItemBuilder.Build()
+	if err != nil {
+		t.Fatal("cannot build fixture cart for test!", err)
+	}
+	deliveryBuilder := cart.DeliveryBuilder{}
+	deliveryBuilder.AddItem(*item).SetDeliveryCode("code")
+	delivery, err := deliveryBuilder.Build()
+	if err != nil {
+		t.Fatal("cannot build delivery cart for test!", err)
+	}
+	cartBuilder := cart.Builder{}
+	cartBuilder.AddDelivery(*delivery).SetDefaultCurrency("EUR").SetIds("1", "1")
+	cart, err := cartBuilder.Build()
+	if err != nil {
+		t.Fatal("cannot build  cart for test!", err)
+	}
+	return cart
 }

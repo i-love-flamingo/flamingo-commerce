@@ -3,7 +3,6 @@ package cart
 import (
 	"encoding/json"
 	"errors"
-	"log"
 	"time"
 
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
@@ -183,7 +182,6 @@ func (f *DeliveryBuilder) Copy(d *Delivery) *DeliveryBuilder {
 func (f *DeliveryBuilder) AddItem(i Item) *DeliveryBuilder {
 	f.init()
 	f.deliveryInBuilding.Cartitems = append(f.deliveryInBuilding.Cartitems, i)
-	log.Println(len(f.deliveryInBuilding.Cartitems))
 	return f
 }
 

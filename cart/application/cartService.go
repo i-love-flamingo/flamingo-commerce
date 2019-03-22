@@ -362,8 +362,8 @@ func (cs *CartService) BuildAddRequest(ctx context.Context, marketplaceCode stri
 	}
 
 	return cartDomain.AddRequest{
-		MarketplaceCode:        marketplaceCode,
-		Qty:                    qty,
+		MarketplaceCode: marketplaceCode,
+		Qty:             qty,
 		VariantMarketplaceCode: variantMarketplaceCode,
 	}
 }
@@ -402,14 +402,6 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 	}
 
 	cart, err = behaviour.AddToCart(ctx, cart, deliveryCode, addRequest)
-	if err == cartDomain.ErrDeliveryCodeNotFound {
-		//old Magento adapter will never return this
-		//Edge case...
-		// For later - todo:
-		// call initialCreateDelivery
-		// retry AddToCart
-	}
-
 	if err != nil {
 		cs.handleCartNotFound(session, err)
 		cs.logger.WithField("subCategory", "AddProduct").Error(err)
@@ -554,8 +546,6 @@ func (cs *CartService) PlaceOrder(ctx context.Context, session *web.Session, pay
 
 	return placeOrderInfos, err
 }
-
-
 
 // GetDefaultDeliveryCode returns the configured default deliverycode
 func (cs *CartService) GetDefaultDeliveryCode() string {

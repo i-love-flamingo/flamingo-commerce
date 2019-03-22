@@ -3,6 +3,7 @@ package application
 import (
 	"context"
 	"errors"
+
 	"flamingo.me/flamingo/v3/framework/web"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -109,7 +110,6 @@ func (cs *CartReceiverService) ViewCart(ctx context.Context, session *web.Sessio
 	return cs.getEmptyCart(), nil
 }
 
-
 func (cs *CartReceiverService) getCartFromCache(ctx context.Context, session *web.Session, identifier CartCacheIdentifier) (*cartDomain.Cart, error) {
 	if cs.cartCache == nil {
 		cs.logger.Debug("no cache set")
@@ -134,8 +134,6 @@ func (cs *CartReceiverService) storeCartInCache(ctx context.Context, session *we
 
 	return cs.cartCache.CacheCart(ctx, session, *id, cart)
 }
-
-
 
 // GetCart Get the correct Cart (either Guest or User)
 func (cs *CartReceiverService) GetCart(ctx context.Context, session *web.Session) (*cartDomain.Cart, cartDomain.ModifyBehaviour, error) {
@@ -176,7 +174,6 @@ func (cs *CartReceiverService) GetCart(ctx context.Context, session *web.Session
 		}
 
 		guestCart, cacheErr = cs.getCartFromCache(ctx, session, cacheID)
-
 		if cacheErr != nil {
 			guestCart, err = cs.getSessionGuestCart(ctx, session)
 
@@ -218,7 +215,6 @@ func (cs *CartReceiverService) GetCart(ctx context.Context, session *web.Session
 	return guestCart, behaviour, nil
 }
 
-
 // GetCartWithoutCache - forces to get the cart without cache
 func (cs *CartReceiverService) GetCartWithoutCache(ctx context.Context, session *web.Session) (*cartDomain.Cart, error) {
 	if cs.userService.IsLoggedIn(ctx, session) {
@@ -226,7 +222,7 @@ func (cs *CartReceiverService) GetCartWithoutCache(ctx context.Context, session 
 	}
 
 	if cs.ShouldHaveGuestCart(session) {
-			return cs.getSessionGuestCart(ctx, session)
+		return cs.getSessionGuestCart(ctx, session)
 	}
 
 	return cs.guestCartService.GetNewCart(ctx)

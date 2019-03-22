@@ -150,7 +150,6 @@ func (cs *CartSessionCache) GetCart(ctx context.Context, session *web.Session, i
 	if cache, ok := session.Load(CartSessionCacheCacheKeyPrefix + id.CacheKey()); ok {
 		if cachedCartsEntry, ok := cache.(CachedCartEntry); ok {
 			cs.logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").Debug("Found cached cart %v", id.CacheKey())
-
 			if cachedCartsEntry.IsInvalid {
 				return &cachedCartsEntry.Entry, ErrCacheIsInvalid
 			}
@@ -180,7 +179,6 @@ func (cs *CartSessionCache) CacheCart(ctx context.Context, session *web.Session,
 	if cartForCache == nil {
 		return errors.New("no cart given to cache")
 	}
-
 	entry := CachedCartEntry{
 		Entry:     *cartForCache,
 		ExpiresOn: time.Now().Add(time.Duration(cs.lifetimeSeconds * float64(time.Second))),
@@ -188,7 +186,6 @@ func (cs *CartSessionCache) CacheCart(ctx context.Context, session *web.Session,
 
 	cs.logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").Debug("Caching cart %v", id.CacheKey())
 	session.Store(CartSessionCacheCacheKeyPrefix+id.CacheKey(), entry)
-
 	return nil
 }
 

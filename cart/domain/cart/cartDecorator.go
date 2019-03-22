@@ -2,7 +2,6 @@ package cart
 
 import (
 	"context"
-	"log"
 	"sort"
 
 	"flamingo.me/flamingo-commerce/v3/product/domain"
@@ -153,7 +152,6 @@ func (dci DecoratedCartItem) GetVariantsVariationAttributes() domain.Attributes 
 			attributes[attributeName] = variant.BaseData().Attributes[attributeName]
 		}
 	}
-	log.Println(attributes)
 	return attributes
 }
 

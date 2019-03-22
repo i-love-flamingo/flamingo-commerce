@@ -1,6 +1,8 @@
 package domain_test
 
 import (
+	"bytes"
+	"encoding/gob"
 	"math/big"
 	"testing"
 
@@ -134,4 +136,28 @@ func TestPrice_LikelyEqual(t *testing.T) {
 	price3 := domain.NewFromFloat(100.1, "EUR")
 	assert.True(t, price1.LikelyEqual(price2))
 	assert.False(t, price1.LikelyEqual(price3))
+}
+
+func TestPrice_MarshalBinaryForGob(t *testing.T) {
+	type (
+		SomeTypeWithPrice struct {
+			Price domain.Price
+		}
+	)
+	gob.Register(SomeTypeWithPrice{})
+	var network bytes.Buffer
+	enc := gob.NewEncoder(&network) // Will write to network.
+	dec := gob.NewDecoder(&network) // Will read from network.
+
+	err := enc.Encode(&SomeTypeWithPrice{Price: domain.NewFromInt(1111, 100, "EUR")})
+	if err != nil {
+		t.Fatal("encode error:", err)
+	}
+	var receivedPrice SomeTypeWithPrice
+	err = dec.Decode(&receivedPrice)
+	if err != nil {
+		t.Fatal("decode error 1:", err)
+	}
+	float, _ := receivedPrice.Price.Amount().Float64()
+	assert.Equal(t, 11.11, float)
 }

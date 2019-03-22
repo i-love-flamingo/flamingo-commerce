@@ -20,11 +20,17 @@ type (
 		Price Price
 		Type  string
 	}
+
+	//priceEncodeAble is a type that we need to allow marshalling the price values. The type itself is unexported
+	priceEncodeAble struct {
+		Amount   big.Float
+		Currency string
+	}
 )
 
 var (
 	_ encoding.BinaryMarshaler   = Price{}
-	_ encoding.BinaryUnmarshaler = Price{}
+	_ encoding.BinaryUnmarshaler = &Price{}
 )
 
 const (
@@ -355,25 +361,28 @@ func SumAll(prices ...Price) (Price, error) {
 
 //MarshalJSON - implements interace required by json marshal
 func (p Price) MarshalJSON() (data []byte, err error) {
-	type (
-		PricePub struct {
-			Amount   float64
-			Currency string
-		}
-	)
-	pricePub := PricePub{
-		Amount:   p.FloatAmount(),
-		Currency: p.Currency(),
+	pn := priceEncodeAble{
+		Amount:   p.amount,
+		Currency: p.currency,
 	}
-	return json.Marshal(pricePub)
+	r, e := json.Marshal(&pn)
+	return r, e
 }
 
-//MarshalBinary - implements interace required by gob
+//MarshalBinary - implements interface required by gob
 func (p Price) MarshalBinary() (data []byte, err error) {
 	return json.Marshal(p)
 }
 
-//UnmarshalBinary - implements interace required by gob
-func (p Price) UnmarshalBinary(data []byte) error {
-	return json.Unmarshal(data, &p)
+//UnmarshalBinary - implements interace required by gob.
+//UnmarshalBinary - modifies the receiver so it must take a pointer receiver!
+func (p *Price) UnmarshalBinary(data []byte) error {
+	var pe priceEncodeAble
+	err := json.Unmarshal(data, &pe)
+	if err != nil {
+		return err
+	}
+	p.amount = pe.Amount
+	p.currency = pe.Currency
+	return nil
 }
