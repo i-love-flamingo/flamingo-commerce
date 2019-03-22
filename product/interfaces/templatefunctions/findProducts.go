@@ -132,6 +132,15 @@ func (f filterProcessing) modifyResult(result *application.SearchResult) *applic
 		}
 	}
 	result.Facets = newFacetCollection
+
+	var newSelectedFacets []domain.Facet
+	for _, facet := range result.SearchMeta.SelectedFacets {
+		if f.isAllowed(facet.Name) {
+			newSelectedFacets = append(newSelectedFacets, facet)
+		}
+	}
+	result.SearchMeta.SelectedFacets = newSelectedFacets
+
 	return result
 }
 
