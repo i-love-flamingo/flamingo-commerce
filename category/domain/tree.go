@@ -14,6 +14,8 @@ type (
 		Active() bool
 		//Subtrees returns a list of subtrees of the current node
 		SubTrees() []Tree
+		//HasChilds returns true if the node is no leaf node
+		HasChilds() bool
 		//DocumentCount - the amount of documents (products) in the category
 		DocumentCount() int
 	}
@@ -62,4 +64,9 @@ func (c TreeData) SubTrees() []Tree {
 	}
 
 	return result
+}
+
+// HasChilds - true if subTrees exist
+func (c TreeData) HasChilds() bool {
+	return len(c.SubTreesData) > 0
 }
