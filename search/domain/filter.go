@@ -44,9 +44,14 @@ var (
 )
 
 const (
-	SORT_DIRECTION_ASCENDING  = "A"
-	SORT_DIRECTION_DESCENDING = "D"
-	SORT_DIRECTION_NONE       = ""
+	// SortDirectionAscending general asc value
+	SortDirectionAscending = "A"
+
+	// SortDirectionDescending general desc value
+	SortDirectionDescending = "D"
+
+	// SortDirectionNone general not set value
+	SortDirectionNone = ""
 )
 
 //NewKeyValueFilters - Factory method that you can use to get a list of KeyValueFilter based from url.Values
@@ -76,8 +81,8 @@ func (f *KeyValueFilter) Value() (string, []string) {
 
 // NewSortFilter factory
 func NewSortFilter(label string, direction string) *SortFilter {
-	if direction != SORT_DIRECTION_NONE && direction != SORT_DIRECTION_DESCENDING && direction != SORT_DIRECTION_ASCENDING {
-		direction = SORT_DIRECTION_NONE
+	if direction != SortDirectionNone && direction != SortDirectionDescending && direction != SortDirectionAscending {
+		direction = SortDirectionNone
 	}
 	return &SortFilter{
 		label:     label,

@@ -15,7 +15,7 @@ import (
 )
 
 type (
-	// ProductSearchService - Application service that offers a more explicit way to search for results - on top of the domain.ProductSearchService
+	// SearchService - Application service that offers a more explicit way to search for results - on top of the domain.ProductSearchService
 	SearchService struct {
 		SearchService         domain.SearchService         `inject:""`
 		PaginationInfoFactory *utils.PaginationInfoFactory `inject:""`
@@ -178,11 +178,12 @@ func BuildFilters(request SearchRequest, defaultPageSize int) []domain.Filter {
 	return filters
 }
 
+// AddAdditionalFilter adds an additional filter
 func (r *SearchRequest) AddAdditionalFilter(filter domain.Filter) {
 	r.AdditionalFilter = append(r.AdditionalFilter, filter)
 }
 
-//SetAdditionalFilter - adds or replaces the given filter
+// SetAdditionalFilter - adds or replaces the given filter
 func (r *SearchRequest) SetAdditionalFilter(filterToAdd domain.Filter) {
 	for k, existingFilter := range r.AdditionalFilter {
 		existingFilterKey, _ := existingFilter.Value()
@@ -195,6 +196,7 @@ func (r *SearchRequest) SetAdditionalFilter(filterToAdd domain.Filter) {
 	r.AddAdditionalFilter(filterToAdd)
 }
 
+// AddAdditionalFilters adds multiple additional filters
 func (r *SearchRequest) AddAdditionalFilters(filters ...domain.Filter) {
 	for _, filter := range filters {
 		r.AddAdditionalFilter(filter)

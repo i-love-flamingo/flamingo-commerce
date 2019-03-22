@@ -10,7 +10,7 @@ import (
 )
 
 type (
-	// ProductSearchService defines how to access search
+	// SearchService defines how to access search
 	SearchService interface {
 		// Types() []string
 		Search(ctx context.Context, filter ...Filter) (results map[string]Result, err error)
