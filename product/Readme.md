@@ -1,7 +1,5 @@
 # Product Module
 
-## About
-
 * Provides product domain models and the related secondary ports
 * Provides Controller for product detail view, including variant logic
 * Provides templatefuncs for:
@@ -11,27 +9,20 @@
 
 ## Domain Layer
 * A product is idendified by a "MarketplaceCode"
-* There are different product Types, each of them need to implement the "BasicProduct" interface.
+* There are different product types, each of them need to implement the "BasicProduct" interface.
 
 ## Details about Price fields
 
-Price B2B and B2C use cases:
 * The product has one main price (see PriceInfo Property) that stands for the value of that product.
 * Product has maintained price in certain currency - eventually different by channel or locale.
-* The price is either maintained as gross (B2C use cases) or net price (B2B use cases)
+* The price is either maintained as gross (B2C use cases) or net price (B2B use cases). How to interpret the price is up to the cart and view logic. 
+    * Any logic depending on the gross/net knowledge should use the configpath `commerce.product.priceIsGross`
+
 * the product might be currently discounted and has a discounted price (the discounted price is also either gros or net price like the normal price)
-* How to interpret the price is up to the cart and view logic. 
-    * If there is logic that need to know this we recommend to use the configpath `commerce.product.priceIsGross: true
 
 About Charges:
-* A Charge is a price that need to be payed for that product. This normaly equaly the Price.
+* A Charge is a price that need to be payed for that product. The is normaly the product price.
 * But this concept allows to control "in what currency and type" a customer need to pay the price of the product (See loyalty below)
-
-Fees and Taxes:
-The final fee is often depending on customer and cart properties (like shipping destination / billing address etc), the fee calculation is up for the cart package and not in the boundary of the "product" package.
-However:
-* the product has infos about the "TaxClass" that qualifies certain taxes
-* Beside "tax" there can be other "Fees" (like duty) that might be controlled by certain product attributes - but again that up for other modules to interpret this
 
 Loyaltyprices:
 * The product might also have loyaltyprices that allows to set a price in points, but also a minimum amount of points that need to be spend
@@ -73,14 +64,29 @@ Here is an example illustrating this:
 The view gets the following Data passed:
 
 ```
+    // productViewData is used for product rendering
     productViewData struct {
+        // simple / configurable / configurable_with_variant
+        RenderContext    string
         Product          domain.BasicProduct
         VariantSelected  bool
         VariantSelection variantSelection
+        BackURL          string
     }
 ``` 
 
 ## Templatefuncs
+
+### getProduct
+
+Returns the product or nil:
+`- var product = getProduct("marketplacecode")`
+
+
+### getProductUrl
+
+Returns the correct url to the product:
+`getProductUrl(product)`
 
 ### findProducts
 
@@ -133,6 +139,7 @@ Will modify the result of the two lists accordingly - while
 URL/?list2.notallowedkey=black
 
 will not.
+
 
 ## Dependencies:
 * search package: the product.SearchService uses the search Result and Filter objects

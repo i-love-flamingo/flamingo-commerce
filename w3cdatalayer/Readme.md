@@ -1,15 +1,15 @@
 # W3C Datalayer Module
 
-Simple modul that helps implementing tracking pixels and tagmanagers.
+Modul that makes it easy to add common datalayer to your website - which makes it easier to connect to analytics and to implement tracking pixels and tagmanagers
+
 The datastructure is oriented at:
 https://www.w3.org/community/custexpdata/
 
-It:
-* provides easy access to common informations relevant for tracking and datalayer
-* listens to various events and adds informations to the datalayer
+The datalayer informations provides an easy access to common informations relevant for tracking and datalayer.
+The datalayer module therefore listens to various events and adds informations to the datalayer
 
 
-Configurations:
+## Configurations:
 ```
 w3cDatalayer:
   pageInstanceIDPrefix: "mywebsite"
@@ -29,7 +29,9 @@ locale:
 ``` 
 
 
-Usage:
+## Usage example:
+
+### Templatefunc `w3cDatalayerService`
 
 The templatefunc provides you access to the current requests datalayer.
 You can get the datalayer and you can modify it:
@@ -45,7 +47,6 @@ For some values in the datalayer the template knows better than the backend what
   - var result = w3cDatalayerService().addEvent("eventName")
       
 ```
-
 
 If you want to populate the w3c datalayer to your page you can render the final digitalData object like this:
 ```

@@ -12,3 +12,4 @@ The module also offers a Pagination Util, that can be used to pass pagination da
 
 ### Secondary Ports
 * The SearchService need to be implemented
+* Please note that a `Document` is defined as an interface and can be "anything". This way the search can be used very generic and can return documents of any type (e.g. products, categories, content, brands etc).
