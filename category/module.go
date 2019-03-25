@@ -3,13 +3,17 @@ package category
 import (
 	"flamingo.me/dingo"
 	"flamingo.me/flamingo-commerce/v3/category/application"
+	"flamingo.me/flamingo-commerce/v3/category/domain"
+	"flamingo.me/flamingo-commerce/v3/category/infrastructure"
 	"flamingo.me/flamingo-commerce/v3/category/interfaces/controller"
 	"flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/web"
 )
 
 // Module registers our profiler
-type Module struct{}
+type Module struct {
+	useCategoryFixedAdapter bool
+}
 
 // URL to category
 func URL(code string) (string, map[string]string) {
@@ -21,8 +25,24 @@ func URLWithName(code, name string) (string, map[string]string) {
 	return application.URLWithName(code, web.URLTitle(name))
 }
 
+// Inject dependencies
+func (m *Module) Inject(
+	routerRegistry *web.RouterRegistry,
+	config *struct {
+		UseCategoryFixedAdapter bool `inject:"config:commerce.category.useCategoryFixedAdapter,optional"`
+	},
+) {
+	if config != nil {
+		m.useCategoryFixedAdapter = config.UseCategoryFixedAdapter
+	}
+}
+
 // Configure the product URL
 func (m *Module) Configure(injector *dingo.Injector) {
+	if m.useCategoryFixedAdapter {
+		injector.Bind((*domain.CategoryService)(nil)).To(infrastructure.CategoryServiceFixed{})
+
+	}
 	web.BindRoutes(injector, new(routes))
 	injector.Bind(new(application.RouterRouter)).To(new(web.Router))
 }
@@ -30,8 +50,8 @@ func (m *Module) Configure(injector *dingo.Injector) {
 // DefaultConfig for this module
 func (m *Module) DefaultConfig() config.Map {
 	return config.Map{
-		"category.view.template":       "category/category",
-		"category.view.teaserTemplate": "category/teaser",
+		"commerce.category.view.template":       "category/category",
+		"commerce.category.view.teaserTemplate": "category/teaser",
 	}
 }
 
