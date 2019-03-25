@@ -12,6 +12,9 @@
     - The complete pricefields are changed! Check readme for details on the new price fields and methods
 - checkout: 
     - removed depricated viewdata (CartTotals)
+- products:
+    - product category breadcrumb is not filled in controller - if you want a breadcrum you can use category data functions
+    - product category fields are changed to use a categoryTeaser
 - category:
     - Tree object uses a Tree Entity now which contains NOT all category properties. You have to fetch the category details seperate on demand:
         - search for usages of the data funcs - they may need changes in rendering the data: `data('category´´..`
