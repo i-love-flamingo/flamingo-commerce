@@ -406,8 +406,6 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 		CartReceiverService *cartApplication.CartReceiverService
 		ProductService      productDomain.ProductService
 		Logger              flamingo.Logger
-		CartValidator       cartDomain.Validator
-		ItemValidator       cartDomain.ItemValidator
 		EventPublisher      cartApplication.EventPublisher
 		config              *struct {
 			DefaultDeliveryCode string `inject:"config:cart.defaultDeliveryCode,optional"`
@@ -452,8 +450,6 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 				}(),
 				ProductService: &MockProductService{},
 				Logger:         flamingo.NullLogger{},
-				CartValidator:  new(MockCartValidator),
-				ItemValidator:  new(MockItemValidator),
 				EventPublisher: new(MockEventPublisher),
 				config: &struct {
 					DefaultDeliveryCode string `inject:"config:cart.defaultDeliveryCode,optional"`
@@ -481,10 +477,7 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 				tt.fields.DeliveryInfoBuilder,
 				tt.fields.Logger,
 				tt.fields.config,
-				tt.fields.CartValidator,
-				tt.fields.ItemValidator,
-				tt.fields.CartCache,
-				tt.fields.PlaceOrderService,
+				nil,
 			)
 
 			err := cs.DeleteSavedSessionGuestCartID(tt.args.session)

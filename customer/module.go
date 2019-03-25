@@ -13,7 +13,7 @@ type (
 	}
 )
 
-// Configure module
+// Inject  module
 func (m *Module) Inject(config *struct {
 	UseNilCustomerAdapter bool `inject:"config:commerce.customer.useNilCustomerAdapter,optional"`
 }) {

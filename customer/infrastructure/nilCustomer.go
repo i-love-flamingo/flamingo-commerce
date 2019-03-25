@@ -9,9 +9,11 @@ import (
 )
 
 type (
+	//NilCustomerServiceAdapter - a Adpater for CustomerSerive that returns always NotFound
 	NilCustomerServiceAdapter struct{}
 )
 
+//GetByAuth - implementation of required interface to get a customer based on Auth infos
 func (n *NilCustomerServiceAdapter) GetByAuth(ctx context.Context, auth domain.Auth) (customerDomain.Customer, error) {
 	return nil, customerDomain.ErrCustomerNotFoundError
 }
