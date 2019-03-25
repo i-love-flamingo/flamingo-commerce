@@ -4,8 +4,9 @@
     * (product)category with potential data a category can have (like name, media, ..)
     * and a (category) tree
     * and the related categoryService interface (=Secondary Port)
+    
 * Interface Layer:
-    * Provides controller for rendering category pages, supporting different templates baed on the category type.
+    * Provides controller for rendering category pages, supporting different templates based on the category type.
     * Provides data controller to access category and tree from inside templates
     
 * Product Search:
@@ -14,13 +15,13 @@
 
 ## Configurations
 
-Set the templates for the category single view
+You can set the templates for the category single view (if it should be different from default)
 ```
 //default template
-category.view.template = "category/category"
+commerce.category.view.template = "category/category"
 
 //template used for category type "teaser"
-category.view.teaserTemplate = "category/teaser"
+commerce.category.view.teaserTemplate = "category/teaser"
 ```
 
 ## Usage in templates
@@ -37,3 +38,41 @@ This module provides two data controller that can be used to get category and tr
 ## Dependencies:
 * product package: (for product searchservice) 
 * search package: (for pagination)
+
+
+## Categorie Tree from Config
+
+The module comes also with a Adapter for the secondary port "CategoryService" which can be activated by setting `commerce.category.useCategoryFixedAdapter: true`
+You can then configure a category tree like in the example below.
+
+(Of course this is only useful for small tests or demos)
+
+```
+commerce:
+  category:
+    useCategoryFixedAdapter: true
+    categoryServiceFixed:
+      tree:
+        electronics:
+          code: electronics
+          name: Electronics
+          sort: 1
+          childs:
+            flat-screen_tvs:
+              code: flat-screen_tvs
+              name: Flat Screens & TV
+            headphones:
+              code: headphones
+              name: Headphones
+              childs:
+                headphone_accessories:
+                  code: headphone_accessories
+                  name: Accessories
+            tablets:
+              code: tablets
+              name: Tablets
+        clothing:
+          code: clothing
+          name: Clothes & Fashion
+          sort: 2
+```

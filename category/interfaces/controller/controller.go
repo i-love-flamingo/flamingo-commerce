@@ -50,8 +50,8 @@ func (vc *ViewController) Inject(
 	breadcrumbService *breadcrumb.BreadcrumbService,
 
 	config *struct {
-		Template       string `inject:"config:category.view.template"`
-		TeaserTemplate string `inject:"config:category.view.teaserTemplate"`
+		Template       string `inject:"config:commerce.category.view.template"`
+		TeaserTemplate string `inject:"config:commerce.category.view.teaserTemplate"`
 	},
 ) {
 	vc.responder = responder

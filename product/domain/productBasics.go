@@ -49,14 +49,25 @@ type (
 		VisibleFrom time.Time
 		VisibleTo   time.Time
 
-		CategoryPath          []string
-		CategoryCodes         []string
+		Categories   []CategoryTeaser
+		MainCategory CategoryTeaser
+
 		CategoryToCodeMapping []string
 
 		StockLevel string
 
 		Keywords []string
 		IsNew    bool
+	}
+
+	//Represents some Teaser infos for Category
+	CategoryTeaser struct {
+		//Code the idendifier of the Category
+		Code string
+		//The Path (root to leaf) for this Category - seperated by "/"
+		Path string
+		//Name - speaking name of the category
+		Name string
 	}
 
 	// Saleable are properties required for being selled
