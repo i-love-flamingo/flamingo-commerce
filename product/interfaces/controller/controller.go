@@ -5,8 +5,6 @@ import (
 	"net/url"
 	"strings"
 
-	"flamingo.me/flamingo-commerce/v3/breadcrumbs"
-	"flamingo.me/flamingo-commerce/v3/category"
 	"flamingo.me/flamingo-commerce/v3/product/application"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo/v3/framework/web"
@@ -233,41 +231,12 @@ func (vc *View) Get(c context.Context, r *web.Request) web.Result {
 		viewData = productViewData{Product: simpleProduct, RenderContext: "simple"}
 	}
 
-	vc.addBreadCrumb(c, product)
-
 	backURL, err := r.Query1("backurl")
 	if err == nil {
 		viewData.BackURL = backURL
 	}
 
 	return vc.Responder.Render(vc.Template, viewData)
-}
-
-// addBreadCrumb
-func (vc *View) addBreadCrumb(c context.Context, product domain.BasicProduct) {
-	var paths []string
-	if product.Type() == domain.TypeSimple || product.Type() == domain.TypeConfigurable {
-		paths = product.BaseData().CategoryToCodeMapping
-	} else if configurableProduct, ok := product.(domain.ConfigurableProductWithActiveVariant); ok {
-		paths = configurableProduct.ConfigurableBaseData().CategoryToCodeMapping
-	}
-
-	//sort.Strings(paths)
-	var stringHead string
-	for _, p := range paths {
-		parts := strings.Split(p, ":")
-		name, code := parts[0], parts[1]
-		if strings.HasPrefix(name, stringHead) {
-			name = name[len(stringHead):]
-			url, _ := vc.Router.URL(category.URLWithName(code, name))
-			breadcrumbs.Add(c, breadcrumbs.Crumb{
-				Title: name,
-				URL:   url.String(),
-				Code:  code,
-			})
-			stringHead = stringHead + name + "/"
-		}
-	}
 }
 
 func (vc *View) getRedirectIfRequired(product domain.BasicProduct, r *web.Request, skipnamecheck string) *web.URLRedirectResponse {
