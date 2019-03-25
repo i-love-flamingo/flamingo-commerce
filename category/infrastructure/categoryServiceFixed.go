@@ -10,6 +10,7 @@ import (
 )
 
 type (
+	//CategoryServiceFixed - a secondary adapter for category service that returns simple categories based from configuration
 	CategoryServiceFixed struct {
 		mappedTree       *domain.TreeData
 		mappedCategories map[string]*domain.CategoryData
@@ -27,6 +28,7 @@ var (
 	_ domain.CategoryService = new(CategoryServiceFixed)
 )
 
+//Inject - dingo injector
 func (c *CategoryServiceFixed) Inject(config *struct {
 	Tree config.Map `inject:"config:commerce.category.categoryServiceFixed.tree"`
 }) {

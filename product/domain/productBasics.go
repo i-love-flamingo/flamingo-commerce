@@ -60,7 +60,7 @@ type (
 		IsNew    bool
 	}
 
-	//Represents some Teaser infos for Category
+	//CategoryTeaser - Represents some Teaser infos for Category
 	CategoryTeaser struct {
 		//Code the idendifier of the Category
 		Code string
