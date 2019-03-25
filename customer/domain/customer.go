@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"flamingo.me/flamingo/v3/core/auth/domain"
@@ -52,6 +53,11 @@ type (
 		//GetByAuth - returns Customer by the provided Auth infos
 		GetByAuth(ctx context.Context, auth domain.Auth) (Customer, error)
 	}
+)
+
+var (
+	//ErrCustomerNotFoundError - semantic error returned if no customer was found
+	ErrCustomerNotFoundError = errors.New("Customer not found")
 )
 
 const (
