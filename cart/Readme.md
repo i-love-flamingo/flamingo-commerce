@@ -398,17 +398,22 @@ The templates get the following variables passed:
 * DecoratedCart
 * CartValidationResult
 
+### Cart template function
+Use the `getCart` templatefunction to get the decorated cart:
+
+```
+-
+  var decoratedCart = getCart()
+  var currentCount = decoratedCart.cart.getCartTeaser.itemCount
+```
+
+
 ### Cart Ajax API
 
 There are also of course ajax endpoints, that can be used to interact with the cart directly from your browser and the javascript functionality of your template.
 
-#### Get Cart Content:
-
-* http://localhost:3210/en/api/cart
-
-#### Adding products
-
-* Simple product: http://localhost:3210/en/api/cart/add/fake_simple
-* With qty: http://localhost:3210/en/api/cart/add/fake_simple?qty=10
+* Get Cart Content: http://localhost:3210/en/api/cart
+* Add Simple product: http://localhost:3210/en/api/cart/add/fake_simple
+* Add With qty: http://localhost:3210/en/api/cart/add/fake_simple?qty=10
 * Adding configurables: http://localhost:3210/en/api/cart/add/fake_configurable?variantMarketplaceCode=shirt-white-s
-* Adding configurables with a given intent: http://localhost:3210/en/api/cart/add/fake_configurable?variantMarketplaceCode=shirt-white-s&deliveryIntent=pickup_collection_arrivals
+* Adding configurables with a given delivery: http://localhost:3210/en/api/cart/add/fake_configurable?variantMarketplaceCode=shirt-white-s&deliveryCode=pickup_store

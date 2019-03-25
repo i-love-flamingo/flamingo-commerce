@@ -39,10 +39,12 @@ func (cs *CartService) Inject(
 	config *struct {
 		DefaultDeliveryCode string `inject:"config:cart.defaultDeliveryCode,optional"`
 	},
-	cartValidator cartDomain.Validator,
-	itemValidator cartDomain.ItemValidator,
-	cartCache CartCache,
-	placeOrderService cartDomain.PlaceOrderService,
+	optionals *struct {
+		CartValidator     cartDomain.Validator         `inject:",optional"`
+		ItemValidator     cartDomain.ItemValidator     `inject:",optional"`
+		CartCache         CartCache                    `inject:",optional"`
+		PlaceOrderService cartDomain.PlaceOrderService `inject:",optional"`
+	},
 ) {
 	cs.cartReceiverService = cartReceiverService
 	cs.productService = productService
@@ -52,10 +54,12 @@ func (cs *CartService) Inject(
 	if config != nil {
 		cs.defaultDeliveryCode = config.DefaultDeliveryCode
 	}
-	cs.cartValidator = cartValidator
-	cs.itemValidator = itemValidator
-	cs.cartCache = cartCache
-	cs.placeOrderService = placeOrderService
+	if optionals != nil {
+		cs.cartValidator = optionals.CartValidator
+		cs.itemValidator = optionals.ItemValidator
+		cs.cartCache = optionals.CartCache
+		cs.placeOrderService = optionals.PlaceOrderService
+	}
 }
 
 // GetCartReceiverService returns the injected cart receiver service

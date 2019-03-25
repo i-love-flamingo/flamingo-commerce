@@ -153,7 +153,7 @@ func (cc *CheckoutController) Inject(
 		ShowEmptyCartPageIfNoItems      bool   `inject:"config:checkout.showEmptyCartPageIfNoItems,optional"`
 		RedirectToCartOnInvalideCart    bool   `inject:"config:checkout.redirectToCartOnInvalideCart,optional"`
 		PrivacyPolicyRequired           bool   `inject:"config:checkout.privacyPolicyRequired,optional"`
-		BaseURL                         string `inject:"config:canonicalurl.baseurl"`
+		BaseURL                         string `inject:"config:canonicalurl.baseurl,optional"`
 	},
 ) {
 	cc.responder = responder

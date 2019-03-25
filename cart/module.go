@@ -3,6 +3,8 @@ package cart
 import (
 	"encoding/gob"
 
+	"flamingo.me/flamingo/v3/core/auth"
+
 	"flamingo.me/flamingo-commerce/v3/cart/infrastructure/email"
 
 	"flamingo.me/dingo"
@@ -83,6 +85,13 @@ func (m *Module) DefaultConfig() config.Map {
 	}
 }
 
+// Depends on other modules
+func (m *Module) Depends() []dingo.Module {
+	return []dingo.Module{
+		new(auth.Module),
+	}
+}
+
 type routes struct {
 	viewController *controller.CartViewController
 	apiController  *controller.CartAPIController
@@ -108,7 +117,6 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 
 	registry.HandleAny("cart.clean", r.viewController.CleanAndViewAction)
 	registry.Route("/cart/clean", "cart.clean")
-
 
 	registry.HandleDelete("cart.clean", r.viewController.CleanAndViewAction)
 	registry.Route("/cart/delivery/:deliveryCode", "cart.clean")
