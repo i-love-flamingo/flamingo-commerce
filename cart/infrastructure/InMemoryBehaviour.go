@@ -15,9 +15,12 @@ import (
 type (
 	// InMemoryBehaviour defines the in memory cart order behaviour
 	InMemoryBehaviour struct {
-		cartStorage    CartStorage
-		productService domain.ProductService
-		logger         flamingo.Logger
+		cartStorage             CartStorage
+		productService          domain.ProductService
+		logger                  flamingo.Logger
+		itemBuilderProvider     domaincart.ItemBuilderProvider
+		deliveryBuilderProvider domaincart.DeliveryBuilderProvider
+		cartBuilderProvider     domaincart.BuilderProvider
 	}
 
 	//CartStorage Interface - might be implemented by other persistence types later as well
@@ -25,11 +28,6 @@ type (
 		GetCart(id string) (*domaincart.Cart, error)
 		HasCart(id string) bool
 		StoreCart(cart *domaincart.Cart) error
-	}
-
-	// InMemoryCartStorage - for now the default implementation of GuestCartStorage
-	InMemoryCartStorage struct {
-		guestCarts map[string]*domaincart.Cart
 	}
 )
 
@@ -42,10 +40,16 @@ func (cob *InMemoryBehaviour) Inject(
 	CartStorage CartStorage,
 	ProductService domain.ProductService,
 	Logger flamingo.Logger,
+	itemBuilderProvider domaincart.ItemBuilderProvider,
+	deliveryBuilderProvider domaincart.DeliveryBuilderProvider,
+	cartBuilderProvider domaincart.BuilderProvider,
 ) {
 	cob.cartStorage = CartStorage
 	cob.productService = ProductService
 	cob.logger = Logger
+	cob.itemBuilderProvider = itemBuilderProvider
+	cob.deliveryBuilderProvider = deliveryBuilderProvider
+	cob.cartBuilderProvider = cartBuilderProvider
 }
 
 // DeleteItem removes an item from the cart
@@ -85,15 +89,19 @@ func (cob *InMemoryBehaviour) UpdateItem(ctx context.Context, cart *domaincart.C
 		return nil, fmt.Errorf("cart.infrastructure.InMemoryBehaviour: Cannot add - Guestcart with id %v not existend", cart.ID)
 	}
 
+	itemBuilder := cob.itemBuilderProvider()
 	if delivery, ok := cart.GetDeliveryByCode(deliveryCode); ok {
 		cob.logger.WithField(flamingo.LogKeyCategory, "inmemorybehaviour").Info("Inmemory Service Update %v in %#v", itemID, delivery.Cartitems)
-
 		for _, item := range delivery.Cartitems {
 			if itemID == item.ID {
-				item.Qty = *itemUpdateCommand.Qty
+				itemBuilder.SetFromItem(item).SetQty(*itemUpdateCommand.Qty).CalculatePricesAndTax()
+				newItem, err := itemBuilder.Build()
+				if err != nil {
+					return nil, err
+				}
 				for k, currentItem := range delivery.Cartitems {
 					if currentItem.ID == itemID {
-						delivery.Cartitems[k] = item
+						delivery.Cartitems[k] = *newItem
 					}
 				}
 			}
@@ -105,7 +113,6 @@ func (cob *InMemoryBehaviour) UpdateItem(ctx context.Context, cart *domaincart.C
 				cart.Deliveries[j] = delivery
 			}
 		}
-
 	}
 
 	err := cob.cartStorage.StoreCart(cart)
@@ -136,17 +143,27 @@ func (cob *InMemoryBehaviour) AddToCart(ctx context.Context, cart *domaincart.Ca
 
 	// does the item already exist?
 	itemFound := false
+
 	for i, item := range delivery.Cartitems {
 		if item.MarketplaceCode == addRequest.MarketplaceCode {
-			delivery.Cartitems[i].Qty = item.Qty + addRequest.Qty
+			itemBuilder := cob.itemBuilderProvider()
+			itemBuilder.SetFromItem(item).SetQty(addRequest.Qty).CalculatePricesAndTax()
+			newItem, err := itemBuilder.Build()
+			if err != nil {
+				return nil, err
+			}
+			delivery.Cartitems[i] = *newItem
 			itemFound = true
 		}
 	}
 
 	if !itemFound {
 		// create and add new item
-		cartItem := cob.buildItemForCart(ctx, addRequest)
-		delivery.Cartitems = append(delivery.Cartitems, cartItem)
+		cartItem, err := cob.buildItemForCart(ctx, addRequest)
+		if err != nil {
+			return nil, err
+		}
+		delivery.Cartitems = append(delivery.Cartitems, *cartItem)
 	}
 
 	for k, del := range cart.Deliveries {
@@ -163,18 +180,17 @@ func (cob *InMemoryBehaviour) AddToCart(ctx context.Context, cart *domaincart.Ca
 	return cart, nil
 }
 
-func (cob *InMemoryBehaviour) buildItemForCart(ctx context.Context, addRequest domaincart.AddRequest) domaincart.Item {
-	// create and add new item
-	product, _ := cob.productService.Get(ctx, addRequest.MarketplaceCode)
-	cartItem := domaincart.Item{
-		MarketplaceCode:        addRequest.MarketplaceCode,
-		VariantMarketPlaceCode: addRequest.VariantMarketplaceCode,
-		Qty:              addRequest.Qty,
-		SinglePriceGross: product.SaleableData().ActivePrice.GetFinalPrice(),
-		ID:               strconv.Itoa(rand.Int()),
-	}
+func (cob *InMemoryBehaviour) buildItemForCart(ctx context.Context, addRequest domaincart.AddRequest) (*domaincart.Item, error) {
+	itemBuilder := cob.itemBuilderProvider()
 
-	return cartItem
+	// create and add new item
+	product, err := cob.productService.Get(ctx, addRequest.MarketplaceCode)
+	if err != nil {
+		return nil, err
+	}
+	itemBuilder.SetQty(addRequest.Qty).SetByProduct(product).SetID(strconv.Itoa(rand.Int())).SetUniqueID(strconv.Itoa(rand.Int()))
+
+	return itemBuilder.Build()
 }
 
 // CleanCart removes all deliveries and their items from the cart
@@ -294,37 +310,4 @@ func (cob *InMemoryBehaviour) ApplyVoucher(ctx context.Context, cart *domaincart
 	err := cob.cartStorage.StoreCart(cart)
 
 	return cart, err
-}
-
-/** Implementation fo the storage **/
-
-func (s *InMemoryCartStorage) init() {
-	if s.guestCarts == nil {
-		s.guestCarts = make(map[string]*domaincart.Cart)
-	}
-}
-
-// HasCart checks if the cart storage has a cart with a given id
-func (s *InMemoryCartStorage) HasCart(id string) bool {
-	s.init()
-	if _, ok := s.guestCarts[id]; ok {
-		return true
-	}
-	return false
-}
-
-// GetCart returns a cart with the given id from the cart storage
-func (s *InMemoryCartStorage) GetCart(id string) (*domaincart.Cart, error) {
-	s.init()
-	if cart, ok := s.guestCarts[id]; ok {
-		return cart, nil
-	}
-	return nil, errors.New("no cart stored")
-}
-
-// StoreCart stores a cart in the storage
-func (s *InMemoryCartStorage) StoreCart(cart *domaincart.Cart) error {
-	s.init()
-	s.guestCarts[cart.ID] = cart
-	return nil
 }
