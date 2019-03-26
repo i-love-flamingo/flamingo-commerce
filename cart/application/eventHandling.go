@@ -3,6 +3,8 @@ package application
 import (
 	"context"
 
+	"flamingo.me/flamingo/v3/framework/web"
+
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo/v3/core/auth/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
@@ -23,12 +25,16 @@ func (e EventReceiver) Inject(
 	logger flamingo.Logger,
 	cartService *CartService,
 	cartReceiverService *CartReceiverService,
-	cartCache CartCache,
+	optionals *struct {
+		CartCache CartCache `inject:",optional"`
+	},
 ) {
 	e.logger = logger
 	e.cartService = cartService
 	e.cartReceiverService = cartReceiverService
-	e.cartCache = cartCache
+	if optionals != nil {
+		e.cartCache = optionals.CartCache
+	}
 }
 
 //Notify should get called by flamingo Eventlogic
@@ -71,9 +77,10 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 		}
 
 		if e.cartCache != nil {
-			cacheID, err := BuildIdentifierFromCart(guestCart)
+			session := web.SessionFromContext(ctx)
+			cacheID, err := e.cartCache.BuildIdentifier(ctx, session)
 			if err == nil {
-				e.cartCache.Delete(ctx, currentEvent.Session, *cacheID)
+				e.cartCache.Delete(ctx, currentEvent.Session, cacheID)
 			}
 		}
 		e.cartService.DeleteSavedSessionGuestCartID(currentEvent.Session)

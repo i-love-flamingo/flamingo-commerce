@@ -251,7 +251,11 @@ func TestCartReceiverService_ShouldHaveGuestCart(t *testing.T) {
 				tt.fields.AuthManager,
 				tt.fields.UserService,
 				tt.fields.Logger,
-				tt.fields.CartCache,
+				&struct {
+					CartCache cartApplication.CartCache `inject:",optional"`
+				}{
+					CartCache: tt.fields.CartCache,
+				},
 			)
 
 			got := cs.ShouldHaveGuestCart(tt.args.session)
@@ -378,7 +382,11 @@ func TestCartReceiverService_ViewGuestCart(t *testing.T) {
 				tt.fields.AuthManager,
 				tt.fields.UserService,
 				tt.fields.Logger,
-				tt.fields.CartCache,
+				&struct {
+					CartCache cartApplication.CartCache `inject:",optional"`
+				}{
+					CartCache: tt.fields.CartCache,
+				},
 			)
 
 			got, err := cs.ViewGuestCart(tt.args.ctx, tt.args.session)
@@ -444,7 +452,11 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 						&authApplication.AuthManager{},
 						&authApplication.UserService{},
 						flamingo.NullLogger{},
-						new(MockCartCache),
+						&struct {
+							CartCache cartApplication.CartCache `inject:",optional"`
+						}{
+							CartCache: new(MockCartCache),
+						},
 					)
 					return result
 				}(),
@@ -596,7 +608,11 @@ func TestCartReceiverService_DecorateCart(t *testing.T) {
 				tt.fields.AuthManager,
 				tt.fields.UserService,
 				tt.fields.Logger,
-				tt.fields.CartCache,
+				&struct {
+					CartCache cartApplication.CartCache `inject:",optional"`
+				}{
+					CartCache: tt.fields.CartCache,
+				},
 			)
 
 			got, err := cs.DecorateCart(tt.args.ctx, tt.args.cart)
@@ -711,7 +727,11 @@ func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 				tt.fields.AuthManager,
 				tt.fields.UserService,
 				tt.fields.Logger,
-				tt.fields.CartCache,
+				&struct {
+					CartCache cartApplication.CartCache `inject:",optional"`
+				}{
+					CartCache: tt.fields.CartCache,
+				},
 			)
 
 			got, got1, err := cs.GetDecoratedCart(tt.args.ctx, tt.args.session)

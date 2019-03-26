@@ -170,6 +170,11 @@ func (cart Cart) GetMainShippingEMail() string {
 	return ""
 }
 
+// IsEmpty - returns true if cart is empty
+func (cart Cart) IsEmpty() bool {
+	return cart.GetCartTeaser().ItemCount == 0
+}
+
 // GetDeliveryByCode gets a delivery by code
 func (cart Cart) GetDeliveryByCode(deliveryCode string) (*Delivery, bool) {
 	for _, delivery := range cart.Deliveries {

@@ -20,7 +20,7 @@ type (
 		Cart                Cart
 		DecoratedDeliveries []DecoratedDelivery
 		Ctx                 context.Context `json:"-"`
-		Logger              flamingo.Logger
+		Logger              flamingo.Logger `json:"-"`
 	}
 
 	// DecoratedDelivery Decorates a CartItem with its Product
@@ -161,18 +161,6 @@ func (dci DecoratedCartItem) GetVariantsVariationAttributeCodes() []string {
 		return dci.Product.(domain.ConfigurableProductWithActiveVariant).VariantVariationAttributes
 	}
 	return nil
-}
-
-// DecoratedItems legacy function
-// deprecated: only here to support the old structure of accesing DecoratedItems in the Decorated Cart
-// Use instead:
-// 		Either GetAllDecoratedItems() - if you prefer a flat list of items or
-//		or iterate over DecoratedCart.DecoratedDelivery	and its DecoratedItems
-func (dc DecoratedCart) DecoratedItems() []DecoratedCartItem {
-	if dc.Logger != nil {
-		dc.Logger.Warn("DEPRECATED: DecoratedCart.DecoratedItems()")
-	}
-	return dc.GetAllDecoratedItems()
 }
 
 // GetGroupedBy legacy function

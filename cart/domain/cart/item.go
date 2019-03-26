@@ -66,9 +66,10 @@ type (
 
 	//ItemBuilder can be used to construct an item with a fluent interface
 	ItemBuilder struct {
-		itemCurrency   *string
-		invariantError error
-		itemInBuilding *Item
+		itemCurrency        *string
+		invariantError      error
+		itemInBuilding      *Item
+		configUseGrossPrice bool
 	}
 
 	// ItemBuilderProvider should be used to create an item
@@ -136,6 +137,15 @@ func (i Item) RowPriceNetWithItemRelatedDiscount() priceDomain.Price {
 	return result
 }
 
+//Inject - called by dingo
+func (f *ItemBuilder) Inject(config *struct {
+	UseGrosPrice bool `inject:"config:commerce.product.priceIsGross,optional"`
+}) {
+	if config != nil {
+		f.configUseGrossPrice = config.UseGrosPrice
+	}
+}
+
 //SetID - sets the id
 func (f *ItemBuilder) SetID(id string) *ItemBuilder {
 	f.init()
@@ -150,11 +160,16 @@ func (f *ItemBuilder) SetUniqueID(id string) *ItemBuilder {
 	return f
 }
 
-//SetProduct - sets name and marketplacecode from product - TODO - add more to be set from product (price...variant..)
-func (f *ItemBuilder) SetProduct(name string, mpcode string) *ItemBuilder {
+//SetFromItem - sets the data in builder from existing item - useful to get a updated item based from existing
+func (f *ItemBuilder) SetFromItem(item Item) *ItemBuilder {
 	f.init()
-	f.itemInBuilding.ProductName = name
-	f.itemInBuilding.MarketplaceCode = mpcode
+	f.SetUniqueID(item.UniqueID)
+	f.SetID(item.ID)
+	f.SetQty(item.Qty)
+	f.AddDiscounts(item.AppliedDiscounts...)
+	f.SetSinglePriceGross(item.SinglePriceGross)
+	f.SetSinglePriceNet(item.SinglePriceNet)
+
 	return f
 }
 
@@ -243,6 +258,14 @@ func (f *ItemBuilder) AddDiscount(discount ItemDiscount) *ItemBuilder {
 	return f
 }
 
+// AddDiscounts - adds a discount
+func (f *ItemBuilder) AddDiscounts(discounts ...ItemDiscount) *ItemBuilder {
+	for _, discount := range discounts {
+		f.AddDiscount(discount)
+	}
+	return f
+}
+
 //CalculatePricesAndTaxAmountsFromSinglePriceNet - Vertikal Tax Calculation - based from current SinglePriceNet, Qty and the RowTax Infos given
 // Sets RowPriceNet, missing tax.Amount and RowPriceGross
 func (f *ItemBuilder) CalculatePricesAndTaxAmountsFromSinglePriceNet() *ItemBuilder {
@@ -264,6 +287,14 @@ func (f *ItemBuilder) CalculatePricesAndTaxAmountsFromSinglePriceNet() *ItemBuil
 	}
 	f.itemInBuilding.SinglePriceGross, _ = priceNet.Add(totalTaxAmount.Divided(f.itemInBuilding.Qty))
 	return f
+}
+
+//CalculatePricesAndTax - reads the config flag and reculculates Total and Tax
+func (f *ItemBuilder) CalculatePricesAndTax() *ItemBuilder {
+	if f.configUseGrossPrice {
+		return f.CalculatePricesAndTaxAmountsFromSinglePriceGross()
+	}
+	return f.CalculatePricesAndTaxAmountsFromSinglePriceNet()
 }
 
 //CalculatePricesAndTaxAmountsFromSinglePriceGross - Vertical Tax Calculation - based from current SinglePriceNet, Qty and the RowTax Infos given
@@ -293,22 +324,22 @@ func (f *ItemBuilder) SetProductData(marketplace string, vc string, name string)
 	return f
 }
 
-//SetByProduct - gets a product and calculates also prices - TODO - merge with SetProduct features above
-func (f *ItemBuilder) SetByProduct(product domain.BasicProduct, priceIsGrossPrice bool) *ItemBuilder {
+//SetByProduct - gets a product and calculates also prices
+func (f *ItemBuilder) SetByProduct(product domain.BasicProduct) *ItemBuilder {
 	if !product.IsSaleable() {
 		f.invariantError = errors.New("Product is not saleable")
 	}
 
 	f.init()
 	f.itemInBuilding.MarketplaceCode = product.BaseData().MarketPlaceCode
-	f.itemInBuilding.MarketplaceCode = product.BaseData().Title
+	f.itemInBuilding.ProductName = product.BaseData().Title
 
 	if configurable, ok := product.(domain.ConfigurableProductWithActiveVariant); ok {
 		f.itemInBuilding.VariantMarketPlaceCode = configurable.ActiveVariant.MarketPlaceCode
 
 	}
 
-	if priceIsGrossPrice {
+	if f.configUseGrossPrice {
 		f.SetSinglePriceGross(product.SaleableData().ActivePrice.GetFinalPrice())
 		f.CalculatePricesAndTaxAmountsFromSinglePriceGross()
 	} else {

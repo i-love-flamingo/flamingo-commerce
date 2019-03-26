@@ -74,6 +74,7 @@ func (ci *CartCacheIdentifier) CacheKey() string {
 }
 
 // BuildIdentifierFromCart creates a Cache Identifier from Cart Data
+// DEPRICATED
 func BuildIdentifierFromCart(cart *cart.Cart) (*CartCacheIdentifier, error) {
 	if cart == nil {
 		return nil, errors.New("no cart")

@@ -97,7 +97,7 @@ func (cs *CartService) UpdateBillingAddress(ctx context.Context, session *web.Se
 	}
 	// cart cache must be updated - with the current value of cart
 	defer func() {
-		cs.updateCartInCache(ctx, session, cart)
+		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
 	}()
 
 	cart, err = behaviour.UpdateBillingAddress(ctx, cart, billingAddress)
@@ -119,7 +119,7 @@ func (cs *CartService) UpdateDeliveryInfo(ctx context.Context, session *web.Sess
 	}
 	// cart cache must be updated - with the current value of cart
 	defer func() {
-		cs.updateCartInCache(ctx, session, cart)
+		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
 	}()
 
 	if deliveryCode == "" {
@@ -145,7 +145,7 @@ func (cs *CartService) UpdatePurchaser(ctx context.Context, session *web.Session
 	}
 	// cart cache must be updated - with the current value of cart
 	defer func() {
-		cs.updateCartInCache(ctx, session, cart)
+		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
 	}()
 
 	cart, err = behaviour.UpdatePurchaser(ctx, cart, purchaser, additionalData)
@@ -167,7 +167,7 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 	}
 	// cart cache must be updated - with the current value of cart
 	defer func() {
-		cs.updateCartInCache(ctx, session, cart)
+		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
 	}()
 
 	if deliveryCode == "" {
@@ -210,7 +210,7 @@ func (cs *CartService) UpdateItemSourceID(ctx context.Context, session *web.Sess
 	}
 	// cart cache must be updated - with the current value of cart
 	defer func() {
-		cs.updateCartInCache(ctx, session, cart)
+		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
 	}()
 
 	if deliveryCode == "" {
@@ -246,7 +246,7 @@ func (cs *CartService) DeleteItem(ctx context.Context, session *web.Session, ite
 	}
 	// cart cache must be updated - with the current value of cart
 	defer func() {
-		cs.updateCartInCache(ctx, session, cart)
+		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
 	}()
 
 	if deliveryCode == "" {
@@ -282,7 +282,7 @@ func (cs *CartService) DeleteAllItems(ctx context.Context, session *web.Session)
 	}
 	// cart cache must be updated - with the current value of cart
 	defer func() {
-		cs.updateCartInCache(ctx, session, cart)
+		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
 	}()
 
 	for _, delivery := range cart.Deliveries {
@@ -311,7 +311,7 @@ func (cs *CartService) Clean(ctx context.Context, session *web.Session) error {
 	}
 	// cart cache must be updated - with the current value of cart
 	defer func() {
-		cs.updateCartInCache(ctx, session, cart)
+		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
 	}()
 
 	for _, delivery := range cart.Deliveries {
@@ -338,7 +338,7 @@ func (cs *CartService) DeleteDelivery(ctx context.Context, session *web.Session,
 	}
 	// cart cache must be updated - with the current value of cart
 	defer func() {
-		cs.updateCartInCache(ctx, session, cart)
+		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
 	}()
 
 	delivery, found := cart.GetDeliveryByCode(deliveryCode)
@@ -385,7 +385,7 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 		return nil, err
 	}
 
-	cs.logger.WithField(flamingo.LogKeyCategory, "cartService").WithField(flamingo.LogKeySubCategory, "AddProduct").Debug("AddRequest received %#v  / %v", addRequest, deliveryCode)
+	cs.logger.WithField(flamingo.LogKeyCategory, "cartService").WithField(flamingo.LogKeySubCategory, "AddProduct").Debug(fmt.Sprintf("AddRequest received %#v  / %v", addRequest, deliveryCode))
 
 	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
@@ -395,7 +395,7 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 	}
 	// cart cache must be updated - with the current value of cart
 	defer func() {
-		cs.updateCartInCache(ctx, session, cart)
+		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
 	}()
 
 	cart, err = cs.CreateInitialDeliveryIfNotPresent(ctx, session, deliveryCode)
@@ -451,7 +451,7 @@ func (cs *CartService) ApplyVoucher(ctx context.Context, session *web.Session, c
 	}
 	// cart cache must be updated - with the current value of cart
 	defer func() {
-		cs.updateCartInCache(ctx, session, cart)
+		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
 	}()
 
 	cart, err = behaviour.ApplyVoucher(ctx, cart, couponCode)
@@ -497,14 +497,18 @@ func (cs *CartService) publishAddtoCartEvent(ctx context.Context, currentCart ca
 	}
 }
 
-func (cs *CartService) updateCartInCache(ctx context.Context, session *web.Session, cart *cartDomain.Cart) {
+func (cs *CartService) updateCartInCacheIfCacheIsEnabled(ctx context.Context, session *web.Session, cart *cartDomain.Cart) {
 	if cs.cartCache != nil {
-		id, err := BuildIdentifierFromCart(cart)
+		id, err := cs.cartCache.BuildIdentifier(ctx, session)
 		if err != nil {
 			return
 		}
+		if cart.BelongsToAuthenticatedUser != id.IsCustomerCart {
+			cs.logger.Error("Request to cache a cart with wrong idendifier. %v / %v", cart.BelongsToAuthenticatedUser, id.IsCustomerCart)
+			return
+		}
 
-		err = cs.cartCache.CacheCart(ctx, session, *id, cart)
+		err = cs.cartCache.CacheCart(ctx, session, id, cart)
 		if err != nil {
 			cs.logger.Error("Error while caching cart: %v", err)
 		}
@@ -514,12 +518,12 @@ func (cs *CartService) updateCartInCache(ctx context.Context, session *web.Sessi
 // DeleteCartInCache removes the cart from cache
 func (cs *CartService) DeleteCartInCache(ctx context.Context, session *web.Session, cart *cartDomain.Cart) {
 	if cs.cartCache != nil {
-		id, err := BuildIdentifierFromCart(cart)
+		id, err := cs.cartCache.BuildIdentifier(ctx, session)
 		if err != nil {
 			return
 		}
 
-		err = cs.cartCache.Delete(ctx, session, *id)
+		err = cs.cartCache.Delete(ctx, session, id)
 		if err != nil {
 			cs.logger.Error("Error while deleting cart in cache: %v", err)
 		}

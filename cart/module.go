@@ -80,7 +80,7 @@ func (m *Module) DefaultConfig() config.Map {
 			"useInMemoryCartServiceAdapters": true,
 			"useEmailPlaceOrderAdapter":      true,
 			"cacheLifetime":                  float64(1200), // in seconds
-			"enableCartCache":                false,
+			"enableCartCache":                true,
 		},
 	}
 }
