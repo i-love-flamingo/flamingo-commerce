@@ -478,7 +478,7 @@ func (t Taxes) AddTaxWithMerge(taxToAddOrMerge Tax) Taxes {
 //AddTaxesWithMerge - returns new Taxes with the given Taxes all added or merged in
 func (t Taxes) AddTaxesWithMerge(taxes Taxes) Taxes {
 	newTaxes := Taxes(t)
-	for _, tax := range newTaxes {
+	for _, tax := range taxes {
 		newTaxes = newTaxes.AddTaxWithMerge(tax)
 	}
 	return newTaxes

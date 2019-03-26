@@ -160,9 +160,10 @@ func (f *ItemBuilder) SetUniqueID(id string) *ItemBuilder {
 	return f
 }
 
-//SetFromItem - sets the data in builder from existing item - useful to get a updated item based from existing
+//SetFromItem - sets the data in builder from existing item - useful to get a updated item based from existing. Its not setting Taxes (use Calculate)
 func (f *ItemBuilder) SetFromItem(item Item) *ItemBuilder {
 	f.init()
+	f.SetProductData(item.MarketplaceCode, item.VariantMarketPlaceCode, item.ProductName)
 	f.SetUniqueID(item.UniqueID)
 	f.SetID(item.ID)
 	f.SetQty(item.Qty)

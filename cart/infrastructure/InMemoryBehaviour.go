@@ -3,6 +3,7 @@ package infrastructure
 import (
 	"context"
 	"fmt"
+	"math/big"
 	"math/rand"
 	"strconv"
 
@@ -21,6 +22,7 @@ type (
 		itemBuilderProvider     domaincart.ItemBuilderProvider
 		deliveryBuilderProvider domaincart.DeliveryBuilderProvider
 		cartBuilderProvider     domaincart.BuilderProvider
+		defaultTaxRate          float64
 	}
 
 	//CartStorage Interface - might be implemented by other persistence types later as well
@@ -43,6 +45,9 @@ func (cob *InMemoryBehaviour) Inject(
 	itemBuilderProvider domaincart.ItemBuilderProvider,
 	deliveryBuilderProvider domaincart.DeliveryBuilderProvider,
 	cartBuilderProvider domaincart.BuilderProvider,
+	config *struct {
+		DefaultTaxRate float64 `inject:"config:commerce.cart.inMemoryCartServiceAdapter.defaultTaxRate,optional"`
+	},
 ) {
 	cob.cartStorage = CartStorage
 	cob.productService = ProductService
@@ -50,6 +55,9 @@ func (cob *InMemoryBehaviour) Inject(
 	cob.itemBuilderProvider = itemBuilderProvider
 	cob.deliveryBuilderProvider = deliveryBuilderProvider
 	cob.cartBuilderProvider = cartBuilderProvider
+	if config != nil {
+		cob.defaultTaxRate = config.DefaultTaxRate
+	}
 }
 
 // DeleteItem removes an item from the cart
@@ -94,7 +102,7 @@ func (cob *InMemoryBehaviour) UpdateItem(ctx context.Context, cart *domaincart.C
 		cob.logger.WithField(flamingo.LogKeyCategory, "inmemorybehaviour").Info("Inmemory Service Update %v in %#v", itemID, delivery.Cartitems)
 		for _, item := range delivery.Cartitems {
 			if itemID == item.ID {
-				itemBuilder.SetFromItem(item).SetQty(*itemUpdateCommand.Qty).CalculatePricesAndTax()
+				itemBuilder.SetFromItem(item).SetQty(*itemUpdateCommand.Qty).AddTaxInfo("default", big.NewFloat(cob.defaultTaxRate), nil).CalculatePricesAndTax()
 				newItem, err := itemBuilder.Build()
 				if err != nil {
 					return nil, err
@@ -141,28 +149,23 @@ func (cob *InMemoryBehaviour) AddToCart(ctx context.Context, cart *domaincart.Ca
 	// has cart current delivery, check if there is an item present for this delivery
 	delivery, _ := cart.GetDeliveryByCode(deliveryCode)
 
+	// create and add new item
+	cartItem, err := cob.buildItemForCart(ctx, addRequest)
+	if err != nil {
+		return nil, err
+	}
+
 	// does the item already exist?
 	itemFound := false
 
 	for i, item := range delivery.Cartitems {
 		if item.MarketplaceCode == addRequest.MarketplaceCode {
-			itemBuilder := cob.itemBuilderProvider()
-			itemBuilder.SetFromItem(item).SetQty(addRequest.Qty).CalculatePricesAndTax()
-			newItem, err := itemBuilder.Build()
-			if err != nil {
-				return nil, err
-			}
-			delivery.Cartitems[i] = *newItem
+			delivery.Cartitems[i] = *cartItem
 			itemFound = true
 		}
 	}
 
 	if !itemFound {
-		// create and add new item
-		cartItem, err := cob.buildItemForCart(ctx, addRequest)
-		if err != nil {
-			return nil, err
-		}
 		delivery.Cartitems = append(delivery.Cartitems, *cartItem)
 	}
 
@@ -172,7 +175,7 @@ func (cob *InMemoryBehaviour) AddToCart(ctx context.Context, cart *domaincart.Ca
 		}
 	}
 
-	err := cob.cartStorage.StoreCart(cart)
+	err = cob.cartStorage.StoreCart(cart)
 	if err != nil {
 		return nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
 	}
@@ -188,7 +191,7 @@ func (cob *InMemoryBehaviour) buildItemForCart(ctx context.Context, addRequest d
 	if err != nil {
 		return nil, err
 	}
-	itemBuilder.SetQty(addRequest.Qty).SetByProduct(product).SetID(strconv.Itoa(rand.Int())).SetUniqueID(strconv.Itoa(rand.Int()))
+	itemBuilder.SetQty(addRequest.Qty).AddTaxInfo("default", big.NewFloat(cob.defaultTaxRate), nil).SetByProduct(product).SetID(strconv.Itoa(rand.Int())).SetUniqueID(strconv.Itoa(rand.Int()))
 
 	return itemBuilder.Build()
 }

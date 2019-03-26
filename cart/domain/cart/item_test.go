@@ -2,6 +2,7 @@ package cart_test
 
 import (
 	"fmt"
+	"math/big"
 	"testing"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -52,6 +53,19 @@ func TestItemBuild_SimpleBuild(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "22", item.ID)
 	assert.Equal(t, priceDomain.NewFromInt(1000, 100, "EUR"), item.RowPriceGross)
+
+	// with tax from net:
+	item, err = f.SetSinglePriceNet(priceDomain.NewFromInt(100, 100, "EUR")).SetQty(10).SetID("22").SetUniqueID("kkk").AddTaxInfo("default", big.NewFloat(10), nil).CalculatePricesAndTaxAmountsFromSinglePriceNet().Build()
+	assert.NoError(t, err)
+	assert.Equal(t, "22", item.ID)
+	assert.Equal(t, priceDomain.NewFromInt(1100, 100, "EUR"), item.RowPriceGross)
+
+	// with tax from gross:
+	item, err = f.SetSinglePriceGross(priceDomain.NewFromInt(110, 100, "EUR")).SetQty(10).SetID("22").SetUniqueID("kkk").AddTaxInfo("default", big.NewFloat(10), nil).CalculatePricesAndTaxAmountsFromSinglePriceGross().Build()
+	assert.NoError(t, err)
+	assert.Equal(t, "22", item.ID)
+	assertPricesWithLikelyEqual(t, priceDomain.NewFromInt(1100, 100, "EUR"), item.RowPriceGross, "RowPriceGross wrong")
+	assert.Equal(t, priceDomain.NewFromInt(100, 100, "EUR"), item.TotalTaxAmount())
 
 }
 
