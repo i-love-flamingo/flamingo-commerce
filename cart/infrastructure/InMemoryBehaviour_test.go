@@ -31,6 +31,15 @@ func TestInMemoryBehaviour_CleanCart(t *testing.T) {
 				&InMemoryCartStorage{},
 				nil,
 				flamingo.NullLogger{},
+				func() *domaincart.ItemBuilder {
+					return &domaincart.ItemBuilder{}
+				},
+				func() *domaincart.DeliveryBuilder {
+					return &domaincart.DeliveryBuilder{}
+				},
+				func() *domaincart.Builder {
+					return &domaincart.Builder{}
+				},
 			)
 			cart := &domaincart.Cart{
 				ID: "17",
@@ -140,6 +149,15 @@ func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
 				&InMemoryCartStorage{},
 				nil,
 				flamingo.NullLogger{},
+				func() *domaincart.ItemBuilder {
+					return &domaincart.ItemBuilder{}
+				},
+				func() *domaincart.DeliveryBuilder {
+					return &domaincart.DeliveryBuilder{}
+				},
+				func() *domaincart.Builder {
+					return &domaincart.Builder{}
+				},
 			)
 			if err := cob.cartStorage.StoreCart(tt.args.cart); err != nil {
 				t.Fatalf("cart could not be initialized")
