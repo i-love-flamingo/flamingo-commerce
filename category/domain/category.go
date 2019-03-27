@@ -64,6 +64,7 @@ func (c CategoryData) Promoted() bool {
 	return c.IsPromoted
 }
 
+// Active indicator
 func (c CategoryData) Active() bool {
 	return c.IsActive
 }
