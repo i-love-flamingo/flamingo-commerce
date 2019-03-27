@@ -56,6 +56,7 @@ type (
 		Marketplacecode string
 		Title           string
 		URL             string
+		InStock         bool
 	}
 )
 
@@ -160,6 +161,7 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 			Marketplacecode: variant.MarketPlaceCode,
 			URL:             variantURL.String(),
 			Attributes:      attributes,
+			InStock:         variant.IsInStock(),
 		})
 	}
 
