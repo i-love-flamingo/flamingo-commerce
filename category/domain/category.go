@@ -8,6 +8,7 @@ type (
 		Name() string
 		Path() string
 		Promoted() bool
+		Active() bool
 		CategoryType() string
 		Media() Medias
 		Attributes() Attributes
@@ -20,6 +21,7 @@ type (
 		CategoryName       string
 		CategoryPath       string
 		IsPromoted         bool
+		IsActive           bool
 		CategoryMedia      Medias
 		CategoryTypeCode   string
 		CategoryAttributes Attributes
@@ -60,6 +62,10 @@ func (c CategoryData) Path() string {
 // Promoted gets the category promoted state
 func (c CategoryData) Promoted() bool {
 	return c.IsPromoted
+}
+
+func (c CategoryData) Active() bool {
+	return c.IsActive
 }
 
 // CategoryType gets the category type code
