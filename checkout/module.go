@@ -57,16 +57,13 @@ func (r *routes) Inject(controller *controller.CheckoutController) {
 func (r *routes) Routes(registry *web.RouterRegistry) {
 	// routes
 	registry.HandleAny("checkout.start", r.controller.StartAction)
-	registry.Route("/checkout", "checkout.start")
+	registry.Route("/checkout/start", "checkout.start")
 
 	registry.HandleAny("checkout.review", r.controller.ReviewAction)
 	registry.Route("/checkout/review", `checkout.review`)
 
-	registry.HandleAny("checkout.guest", r.controller.SubmitGuestCheckoutAction)
-	registry.Route("/checkout/guest", "checkout.guest")
-
-	registry.HandleAny("checkout.user", r.controller.SubmitUserCheckoutAction)
-	registry.Route("/checkout/user", "checkout.user")
+	registry.HandleAny("checkout", r.controller.SubmitCheckoutAction)
+	registry.Route("/checkout", "checkout")
 
 	registry.HandleAny("checkout.success", r.controller.SuccessAction)
 	registry.Route("/checkout/success", "checkout.success")

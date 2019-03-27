@@ -37,6 +37,7 @@ type (
 		CartValidationResult cart.ValidationResult
 		ErrorInfos           ViewErrorInfos
 		PaymentProviders     map[string]paymentDomain.Provider
+		CustomerLoggedIn     bool
 	}
 
 	// ViewErrorInfos defines the error info struct of the checkout controller views
@@ -189,10 +190,10 @@ func (cc *CheckoutController) Inject(
 The checkoutController implements a default process for a checkout:
  * StartAction (supposed to show a switch to go to guest or customer)
  	* can be skipped with a configuration
- * SubmitUserCheckoutAction  OR  SubmitGuestCheckoutAction
- 	* both actions are more or less the same (User checkout just populates the customer to the form and uses a different template)
+ * SubmitCheckoutAction
  	* This step is supposed to show a big form (validation and default values are configurable as well)
 	* payment can be selected in this step or in the next
+	* In cases a customer is logged in the form is prepopulated
 
  * ReviewAction
 	* this step is supposed to show the current cart status just before checkout
@@ -218,27 +219,24 @@ func (cc *CheckoutController) StartAction(ctx context.Context, r *web.Request) w
 		return guardRedirect
 	}
 
+	viewData := cc.getBasicViewData(ctx, r.Session(), *decoratedCart)
 	//Guard Clause if Cart is empty
 	if decoratedCart.Cart.ItemCount() == 0 {
 		if cc.showEmptyCartPageIfNoItems {
 			return cc.responder.Render("checkout/emptycart", nil)
 		}
-		return cc.responder.Render("checkout/startcheckout", CheckoutViewData{
-			DecoratedCart: *decoratedCart,
-		}).SetNoCache()
+		return cc.responder.Render("checkout/startcheckout", viewData).SetNoCache()
 	}
 
 	if cc.userService.IsLoggedIn(ctx, r.Session()) {
-		return cc.responder.RouteRedirect("checkout.user", nil)
+		return cc.responder.RouteRedirect("checkout", nil)
 	}
 
 	if cc.skipStartAction {
-		return cc.responder.RouteRedirect("checkout.guest", nil)
+		return cc.responder.RouteRedirect("checkout", nil)
 	}
 
-	return cc.responder.Render("checkout/startcheckout", CheckoutViewData{
-		DecoratedCart: *decoratedCart,
-	}).SetNoCache()
+	return cc.responder.Render("checkout/startcheckout", viewData).SetNoCache()
 }
 
 func (cc *CheckoutController) hasAvailablePaymentProvider() bool {
@@ -270,14 +268,8 @@ func (cc *CheckoutController) getPayment(ctx context.Context, paymentProviderCod
 	return provider, paymentMethod, nil
 }
 
-// SubmitUserCheckoutAction handles the user order submit
-func (cc *CheckoutController) SubmitUserCheckoutAction(ctx context.Context, r *web.Request) web.Result {
-	//Guard
-	if !cc.userService.IsLoggedIn(ctx, r.Session()) {
-		r := cc.responder.RouteRedirect("checkout.start", nil)
-		r.SetNoCache()
-		return r
-	}
+// SubmitCheckoutAction handles the main checkout
+func (cc *CheckoutController) SubmitCheckoutAction(ctx context.Context, r *web.Request) web.Result {
 
 	//Guard Clause if Cart cannout be fetched
 	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
@@ -290,34 +282,7 @@ func (cc *CheckoutController) SubmitUserCheckoutAction(ctx context.Context, r *w
 		return guardRedirect
 	}
 
-	customer, _ := cc.customerApplicationService.GetForAuthenticatedUser(ctx, r.Session())
-	// set the customer on the form service even if nil + err is returned here
-	cc.checkoutFormService.SetCustomer(customer)
-
-	return cc.showCheckoutFormAndHandleSubmit(ctx, r, cc.checkoutFormService, "checkout/usercheckout")
-}
-
-// SubmitGuestCheckoutAction handles the guest order submit
-func (cc *CheckoutController) SubmitGuestCheckoutAction(ctx context.Context, r *web.Request) web.Result {
-	cc.checkoutFormService.SetCustomer(nil)
-	if cc.userService.IsLoggedIn(ctx, r.Session()) {
-		resp := cc.responder.RouteRedirect("checkout.user", nil)
-		resp.SetNoCache()
-		return resp
-	}
-
-	//Guard Clause if Cart cannout be fetched
-	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
-	if e != nil {
-		cc.logger.WithField("category", "checkout").Error("cart.checkoutcontroller.submitaction: Error %v", e)
-		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
-	}
-	guardRedirect := cc.getCommonGuardRedirects(ctx, r.Session(), decoratedCart)
-	if guardRedirect != nil {
-		return guardRedirect
-	}
-
-	return cc.showCheckoutFormAndHandleSubmit(ctx, r, cc.checkoutFormService, "checkout/guestcheckout")
+	return cc.showCheckoutFormAndHandleSubmit(ctx, r, cc.checkoutFormService, "checkout/checkout")
 }
 
 // ProcessPaymentAction functions as a return/notification URL for Payment Providers
@@ -400,9 +365,24 @@ func (cc *CheckoutController) getPaymentReturnURL(PaymentProvider string, Paymen
 	return urlResult
 }
 
-//showCheckoutFormAndHandleSubmit - Action that shows the form (either customer or guest)
+func (cc *CheckoutController) getBasicViewData(ctx context.Context, session *web.Session, decoratedCart cart.DecoratedCart) CheckoutViewData {
+	return CheckoutViewData{
+		DecoratedCart:        decoratedCart,
+		CartValidationResult: cc.applicationCartService.ValidateCart(ctx, session, &decoratedCart),
+		PaymentProviders:     cc.getPaymentProviders(),
+		CustomerLoggedIn:     cc.userService.IsLoggedIn(ctx, session),
+	}
+}
+
+//showCheckoutFormAndHandleSubmit - Action that shows the form
 func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Context, r *web.Request, formservice *formdto.CheckoutFormService, template string) web.Result {
 	session := r.Session()
+
+	if cc.userService.IsLoggedIn(ctx, r.Session()) {
+		customer, _ := cc.customerApplicationService.GetForAuthenticatedUser(ctx, r.Session())
+		// set the customer on the form service even if nil + err is returned here
+		cc.checkoutFormService.SetCustomer(customer)
+	}
 
 	//Guard Clause if Cart cannout be fetched
 	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, session)
@@ -422,15 +402,12 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 	}
 
-	form, e := formApplicationService.ProcessFormRequest(ctx, r, formservice)
+	form, err := formApplicationService.ProcessFormRequest(ctx, r, formservice)
+	viewData := cc.getBasicViewData(ctx, session, *decoratedCart)
+	viewData.Form = form
 	// return on error (template need to handle error display)
-	if e != nil {
-		return cc.responder.Render(template, CheckoutViewData{
-			DecoratedCart:        *decoratedCart,
-			CartValidationResult: cc.applicationCartService.ValidateCart(ctx, session, decoratedCart),
-			Form:                 form,
-			PaymentProviders:     cc.getPaymentProviders(),
-		}).SetNoCache()
+	if err != nil {
+		return cc.responder.Render(template, viewData).SetNoCache()
 	}
 
 	//Guard Clause if Cart is empty
@@ -439,12 +416,7 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 			return cc.responder.Render("checkout/emptycart", nil).SetNoCache()
 		}
 
-		return cc.responder.Render(template, CheckoutViewData{
-			DecoratedCart:        *decoratedCart,
-			CartValidationResult: cc.applicationCartService.ValidateCart(ctx, session, decoratedCart),
-			Form:                 form,
-			PaymentProviders:     cc.getPaymentProviders(),
-		}).SetNoCache()
+		return cc.responder.Render(template, viewData).SetNoCache()
 	}
 
 	if form.IsValidAndSubmitted() {
@@ -478,22 +450,14 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 
 	cc.logger.Debug("paymentProviders %#v", cc.getPaymentProviders())
 	//Default: Form not submitted yet or submitted with validation errors:
-	return cc.responder.Render(template, CheckoutViewData{
-		DecoratedCart:        *decoratedCart,
-		CartValidationResult: cc.applicationCartService.ValidateCart(ctx, session, decoratedCart),
-		Form:                 form,
-		PaymentProviders:     cc.getPaymentProviders(),
-	}).SetNoCache()
+	return cc.responder.Render(template, viewData).SetNoCache()
 }
 
-//showCheckoutFormWithErrors - error handling that is called form many places... It will show the checkoutform and the error
+//showCheckoutFormWithErrors - error handling that is called from many places... It will show the checkoutform and the error
 // template and form is optional - if it is not goven it is autodetected and prefilled from the infos in the cart
 func (cc *CheckoutController) showCheckoutFormWithErrors(ctx context.Context, r *web.Request, template string, decoratedCart cart.DecoratedCart, form *formDomain.Form, err error) web.Result {
 	if template == "" {
-		template = "checkout/guestcheckout"
-		if cc.userService.IsLoggedIn(ctx, r.Session()) {
-			template = "checkout/usercheckout"
-		}
+		template = "checkout/checkout"
 	}
 	cc.logger.Warn("Place Order Error: %s", err.Error())
 	if form == nil {
@@ -501,14 +465,10 @@ func (cc *CheckoutController) showCheckoutFormWithErrors(ctx context.Context, r 
 		newForm, _ := formApplicationService.GetUnsubmittedForm(ctx, r, cc.checkoutFormService)
 		form = &newForm
 	}
-
-	return cc.responder.Render(template, CheckoutViewData{
-		DecoratedCart:        decoratedCart,
-		CartValidationResult: cc.applicationCartService.ValidateCart(ctx, r.Session(), &decoratedCart),
-		Form:                 *form,
-		ErrorInfos:           getViewErrorInfo(err),
-		PaymentProviders:     cc.getPaymentProviders(),
-	}).SetNoCache()
+	viewData := cc.getBasicViewData(ctx, r.Session(), decoratedCart)
+	viewData.Form = *form
+	viewData.ErrorInfos = getViewErrorInfo(err)
+	return cc.responder.Render(template, viewData).SetNoCache()
 }
 
 //showReviewFormWithErrors
