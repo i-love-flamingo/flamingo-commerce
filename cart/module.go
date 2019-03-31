@@ -3,6 +3,12 @@ package cart
 import (
 	"encoding/gob"
 
+	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
+
+	formDomain "flamingo.me/form/domain"
+
+	"flamingo.me/form"
+
 	"flamingo.me/flamingo/v3/core/auth"
 
 	"flamingo.me/flamingo-commerce/v3/cart/infrastructure/email"
@@ -70,6 +76,10 @@ func (m *Module) Configure(injector *dingo.Injector) {
 		injector.Bind((*application.CartCache)(nil)).To(application.CartSessionCache{})
 	}
 
+	//Register Form Data Provider
+	injector.BindMap(new(formDomain.FormService), "commerce.cart.deliveryFormService").To(forms.DeliveryFormService{})
+	injector.BindMap(new(formDomain.FormService), "commerce.cart.billingFormService").To(forms.BillingAddressFormService{})
+
 	web.BindRoutes(injector, new(routes))
 }
 
@@ -89,6 +99,7 @@ func (m *Module) DefaultConfig() config.Map {
 func (m *Module) Depends() []dingo.Module {
 	return []dingo.Module{
 		new(auth.Module),
+		new(form.Module),
 	}
 }
 
@@ -127,17 +138,32 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 	registry.HandleAny("cart.deleteItem", r.viewController.DeleteAndViewAction)
 	registry.Route("/cart/delete/:id", `cart.deleteItem(id,deliveryCode?="")`)
 	gob.Register(cart.Cart{})
+	r.apiRoutes(registry)
+}
 
-	// DecoratedCart API:
-
-	registry.HandleGet("cart.api.get", r.apiController.GetAction)
-	registry.HandleDelete("cart.api.get", r.apiController.CleanAndGetAction)
-	registry.HandleDelete("cart.api.delivery", r.apiController.CleanDeliveryAndGetAction)
-	registry.HandleAny("cart.api.add", r.apiController.AddAction)
-	registry.HandleAny("cart.api.applyVoucher", r.apiController.ApplyVoucherAndGetAction)
+func (r *routes) apiRoutes(registry *web.RouterRegistry) {
 
 	registry.Route("/api/cart", "cart.api.get")
-	registry.Route("/api/cart/delivery/:deliveryCode", `cart.api.get(deliveryCode?="")`)
-	registry.Route("/api/cart/add/:marketplaceCode", `cart.api.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryCode?="")`)
-	registry.Route("/api/cart/applyvoucher/:couponCode", `cart.api.applyVoucher(couponCode)`)
+	registry.HandleDelete("cart.api.get", r.apiController.DeleteCartAction)
+	registry.HandleGet("cart.api.get", r.apiController.GetAction)
+
+	//add command under the delivery:
+	registry.Route("/api/cart/delivery/:deliveryCode/additem", `cart.api.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryCode?="")`)
+	registry.HandlePost("cart.api.add", r.apiController.AddAction)
+
+	registry.Route("/api/cart/applyvoucher", `cart.api.applyVoucher(couponCode)`)
+	registry.HandlePost("cart.api.applyVoucher", r.apiController.ApplyVoucherAndGetAction)
+	registry.HandlePut("cart.api.applyVoucher", r.apiController.ApplyVoucherAndGetAction)
+
+	registry.Route("/api/cart/billing", `cart.api.billing`)
+	registry.HandlePost("cart.api.billing", r.apiController.BillingAction)
+
+	registry.Route("/api/cart/delivery/:deliveryCode", `cart.api.delivery.delete`)
+	registry.HandleDelete("cart.api.delivery.delete", r.apiController.DeleteDelivery)
+
+	registry.Route("/api/cart/delivery/:deliveryCode/deliveryinfo", `cart.api.delivery.update`)
+	registry.HandlePost("cart.api.delivery.update", r.apiController.UpdateDeliveryInfoAction)
+
+	//registry.Route("/api/cart/delivery/:shipping", `cart.api.shipping(deliveryCode?="")`)
+	//TODO registry.HandleDelete("cart.api.delivery", r.apiController.DeleteDelivery)
 }

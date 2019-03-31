@@ -6,6 +6,7 @@ import (
 
 	"flamingo.me/flamingo/v3/framework/web"
 
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	authApplication "flamingo.me/flamingo/v3/core/auth/application"
 	"flamingo.me/flamingo/v3/core/auth/domain"
@@ -20,6 +21,7 @@ type (
 		cartDecoratorFactory *cartDomain.DecoratedCartFactory
 		authManager          *authApplication.AuthManager
 		userService          authApplication.UserServiceInterface
+		eventRouter          flamingo.EventRouter
 		logger               flamingo.Logger
 		// CartCache is optional
 		cartCache CartCache
@@ -44,6 +46,7 @@ func (cs *CartReceiverService) Inject(
 	authManager *authApplication.AuthManager,
 	userService authApplication.UserServiceInterface,
 	logger flamingo.Logger,
+	eventRouter flamingo.EventRouter,
 	optionals *struct {
 		CartCache CartCache `inject:",optional"`
 	},
@@ -54,6 +57,7 @@ func (cs *CartReceiverService) Inject(
 	cs.authManager = authManager
 	cs.userService = userService
 	cs.logger = logger.WithField("module", "cart").WithField(flamingo.LogKeyCategory, "checkout.cartreceiver")
+	cs.eventRouter = eventRouter
 	if optionals != nil {
 		cs.cartCache = optionals.CartCache
 	}
@@ -93,6 +97,16 @@ func (cs *CartReceiverService) ShouldHaveGuestCart(session *web.Session) bool {
 // ViewDecoratedCart  return a Cart for view
 func (cs *CartReceiverService) ViewDecoratedCart(ctx context.Context, session *web.Session) (*cartDomain.DecoratedCart, error) {
 	cart, err := cs.ViewCart(ctx, session)
+	if err != nil {
+		return nil, err
+	}
+
+	return cs.DecorateCart(ctx, cart)
+}
+
+// ViewDecoratedCartWithoutCache  return a Cart for view
+func (cs *CartReceiverService) ViewDecoratedCartWithoutCache(ctx context.Context, session *web.Session) (*cartDomain.DecoratedCart, error) {
+	cart, err := cs.GetCartWithoutCache(ctx, session)
 	if err != nil {
 		return nil, err
 	}
@@ -245,6 +259,11 @@ func (cs *CartReceiverService) getNewGuestCart(ctx context.Context, session *web
 
 // GetCartWithoutCache - forces to get the cart without cache
 func (cs *CartReceiverService) GetCartWithoutCache(ctx context.Context, session *web.Session) (*cartDomain.Cart, error) {
+	// Invalidate cart cache
+	if cs.eventRouter != nil {
+		cs.eventRouter.Dispatch(ctx, &cart.InvalidateCartEvent{Session: session})
+	}
+
 	if cs.userService.IsLoggedIn(ctx, session) {
 		return cs.customerCartService.GetCart(ctx, cs.Auth(ctx, session), "me")
 	}

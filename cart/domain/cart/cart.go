@@ -35,6 +35,9 @@ type (
 		//AdditionalData   can be used for Custom attributes
 		AdditionalData AdditionalData
 
+		//PaymentSelection - the saved PaymentSelection
+		PaymentSelection PaymentSelection
+
 		//BelongsToAuthenticatedUser - false = Guest Cart true = cart from the authenticated user
 		BelongsToAuthenticatedUser bool
 		AuthenticatedUserID        string
@@ -107,13 +110,6 @@ type (
 	// AdditionalData defines the supplementary cart data
 	AdditionalData struct {
 		CustomAttributes map[string]string
-		SelectedPayment  SelectedPayment
-	}
-
-	// SelectedPayment value object
-	SelectedPayment struct {
-		Provider string
-		Method   string
 	}
 
 	// PlacedOrderInfos represents a slice of PlacedOrderInfo
@@ -140,16 +136,6 @@ var (
 
 // Key constants
 const (
-	DeliveryWorkflowPickup      = "pickup"
-	DeliveryWorkflowDelivery    = "delivery"
-	DeliveryWorkflowUnspecified = "unspecified"
-
-	DeliverylocationTypeUnspecified     = "unspecified"
-	DeliverylocationTypeCollectionpoint = "collection-point"
-	DeliverylocationTypeStore           = "store"
-	DeliverylocationTypeAddress         = "address"
-	DeliverylocationTypeFreightstation  = "freight-station"
-
 	TotalsTypeDiscount      = "totals_type_discount"
 	TotalsTypeVoucher       = "totals_type_voucher"
 	TotalsTypeTax           = "totals_type_tax"
@@ -286,7 +272,7 @@ func (cart Cart) GetVoucherSavings() domain.Price {
 	return price
 }
 
-//GrandTotal - Final sum that need to be payed: GrandTotal = SubTotal + TaxAmount - DiscountAmount + SOME of Totalitems = (Sum of Items RowTotalWithDiscountInclTax) + SOME of Totalitems
+//GrandTotal - Final sum (Valued price) that need to be payed: GrandTotal = SubTotal + TaxAmount - DiscountAmount + SOME of Totalitems = (Sum of Items RowTotalWithDiscountInclTax) + SOME of Totalitems
 func (cart Cart) GrandTotal() domain.Price {
 	var prices []domain.Price
 	for _, del := range cart.Deliveries {
@@ -591,4 +577,25 @@ func (b *Builder) reset(err error) (*Cart, error) {
 	cart := b.cartInBuilding
 	b.cartInBuilding = nil
 	return cart, err
+}
+
+//IsSelected - returns true if a Gateway  is selected
+func (s PaymentSelection) IsSelected() bool {
+	return s.Gateway != ""
+}
+
+//GetChargeSumByType - sum ber chargetype
+func (s PaymentSelection) GetChargeSumByType() map[string]domain.Price {
+	result := make(map[string]domain.Price)
+	for _, cs := range s.ChargeSplits {
+		if current, ok := result[cs.ChargeType]; ok {
+			added, err := current.Add(cs.Amount)
+			if err != nil {
+				result[cs.ChargeType] = added
+			}
+		} else {
+			result[cs.ChargeType] = cs.Amount
+		}
+	}
+	return result
 }

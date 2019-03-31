@@ -249,10 +249,10 @@ func (cob *InMemoryBehaviour) UpdatePurchaser(ctx context.Context, cart *domainc
 	return nil, nil
 }
 
-// UpdateBillingAddress @todo implement when needed
-func (cob *InMemoryBehaviour) UpdateBillingAddress(ctx context.Context, cart *domaincart.Cart, billingAddress *domaincart.Address) (*domaincart.Cart, error) {
+// UpdateBillingAddress
+func (cob *InMemoryBehaviour) UpdateBillingAddress(ctx context.Context, cart *domaincart.Cart, billingAddress domaincart.Address) (*domaincart.Cart, error) {
 
-	cart.BillingAdress = *billingAddress
+	cart.BillingAdress = billingAddress
 
 	err := cob.cartStorage.StoreCart(cart)
 	if err != nil {
@@ -267,14 +267,31 @@ func (cob *InMemoryBehaviour) UpdateAdditionalData(ctx context.Context, cart *do
 	return nil, nil
 }
 
+func (cob *InMemoryBehaviour) UpdatePaymentSelection(ctx context.Context, cart *domaincart.Cart, paymentSelection domaincart.PaymentSelection) (*domaincart.Cart, error) {
+	paymentSelection.GetChargeSumByType()
+	cart.GrandTotal()
+	cart.PaymentSelection = paymentSelection
+	err := cob.cartStorage.StoreCart(cart)
+	if err != nil {
+		return nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
+	}
+
+	return cart, nil
+}
+
 // UpdateDeliveryInfo updates a delivery info
 func (cob *InMemoryBehaviour) UpdateDeliveryInfo(ctx context.Context, cart *domaincart.Cart, deliveryCode string, deliveryInfoUpdateCommand domaincart.DeliveryInfoUpdateCommand) (*domaincart.Cart, error) {
 
+	deliveryInfo := deliveryInfoUpdateCommand.DeliveryInfo
+	deliveryInfo.AdditionalDeliveryInfos = deliveryInfoUpdateCommand.Additional()
+
 	for key, delivery := range cart.Deliveries {
 		if delivery.DeliveryInfo.Code == deliveryCode {
-			cart.Deliveries[key].DeliveryInfo = deliveryInfoUpdateCommand.DeliveryInfo
+			cart.Deliveries[key].DeliveryInfo = deliveryInfo
+			return cart, nil
 		}
 	}
+	cart.Deliveries = append(cart.Deliveries, domaincart.Delivery{DeliveryInfo: deliveryInfo})
 
 	return cart, nil
 }

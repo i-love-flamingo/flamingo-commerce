@@ -20,7 +20,7 @@ func TestDefaultDeliveryInfoBuilder_BuildByDeliveryCode(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    cart.DeliveryInfo
+		want    *cart.DeliveryInfo
 		wantErr bool
 	}{
 		{
@@ -28,10 +28,10 @@ func TestDefaultDeliveryInfoBuilder_BuildByDeliveryCode(t *testing.T) {
 				deliverycode: "delivery",
 			},
 			wantErr: false,
-			want:cart.DeliveryInfo{
-				Code:"delivery",
-				Workflow:"delivery",
-				DeliveryLocation:cart.DeliveryLocation{
+			want: &cart.DeliveryInfo{
+				Code:     "delivery",
+				Workflow: "delivery",
+				DeliveryLocation: cart.DeliveryLocation{
 					Type: "unspecified",
 				},
 			},
@@ -42,10 +42,10 @@ func TestDefaultDeliveryInfoBuilder_BuildByDeliveryCode(t *testing.T) {
 				deliverycode: "pickup_store",
 			},
 			wantErr: false,
-			want:cart.DeliveryInfo{
-				Code:"pickup_store",
-				Workflow:"pickup",
-				DeliveryLocation:cart.DeliveryLocation{
+			want: &cart.DeliveryInfo{
+				Code:     "pickup_store",
+				Workflow: "pickup",
+				DeliveryLocation: cart.DeliveryLocation{
 					Type: "store",
 				},
 			},
@@ -56,11 +56,11 @@ func TestDefaultDeliveryInfoBuilder_BuildByDeliveryCode(t *testing.T) {
 				deliverycode: "workflow___method",
 			},
 			wantErr: false,
-			want:cart.DeliveryInfo{
-				Code:"workflow___method",
-				Workflow:"workflow",
-				Method: "method",
-				DeliveryLocation:cart.DeliveryLocation{
+			want: &cart.DeliveryInfo{
+				Code:     "workflow___method",
+				Workflow: "workflow",
+				Method:   "method",
+				DeliveryLocation: cart.DeliveryLocation{
 					Type: "unspecified",
 				},
 			},
@@ -71,10 +71,10 @@ func TestDefaultDeliveryInfoBuilder_BuildByDeliveryCode(t *testing.T) {
 				deliverycode: "workflow____ignoreme",
 			},
 			wantErr: false,
-			want:cart.DeliveryInfo{
-				Code:"workflow____ignoreme",
-				Workflow:"workflow",
-				DeliveryLocation:cart.DeliveryLocation{
+			want: &cart.DeliveryInfo{
+				Code:     "workflow____ignoreme",
+				Workflow: "workflow",
+				DeliveryLocation: cart.DeliveryLocation{
 					Type: "unspecified",
 				},
 			},
@@ -90,7 +90,7 @@ func TestDefaultDeliveryInfoBuilder_BuildByDeliveryCode(t *testing.T) {
 				t.Errorf("DefaultDeliveryInfoBuilder.BuildByDeliveryCode() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			assert.Equal(t,tt.want,got)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }

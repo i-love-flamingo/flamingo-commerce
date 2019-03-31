@@ -168,8 +168,8 @@ type (
 	MockDeliveryInfoBuilder struct{}
 )
 
-func (m *MockDeliveryInfoBuilder) BuildByDeliveryCode(deliveryCode string) (cartDomain.DeliveryInfo, error) {
-	return cartDomain.DeliveryInfo{}, nil
+func (m *MockDeliveryInfoBuilder) BuildByDeliveryCode(deliveryCode string) (*cartDomain.DeliveryInfo, error) {
+	return &cartDomain.DeliveryInfo{}, nil
 }
 
 func TestCartReceiverService_ShouldHaveGuestCart(t *testing.T) {
@@ -251,6 +251,7 @@ func TestCartReceiverService_ShouldHaveGuestCart(t *testing.T) {
 				tt.fields.AuthManager,
 				tt.fields.UserService,
 				tt.fields.Logger,
+				nil,
 				&struct {
 					CartCache cartApplication.CartCache `inject:",optional"`
 				}{
@@ -382,6 +383,7 @@ func TestCartReceiverService_ViewGuestCart(t *testing.T) {
 				tt.fields.AuthManager,
 				tt.fields.UserService,
 				tt.fields.Logger,
+				nil,
 				&struct {
 					CartCache cartApplication.CartCache `inject:",optional"`
 				}{
@@ -452,6 +454,7 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 						&authApplication.AuthManager{},
 						&authApplication.UserService{},
 						flamingo.NullLogger{},
+						nil,
 						&struct {
 							CartCache cartApplication.CartCache `inject:",optional"`
 						}{
@@ -608,6 +611,7 @@ func TestCartReceiverService_DecorateCart(t *testing.T) {
 				tt.fields.AuthManager,
 				tt.fields.UserService,
 				tt.fields.Logger,
+				nil,
 				&struct {
 					CartCache cartApplication.CartCache `inject:",optional"`
 				}{
@@ -727,6 +731,7 @@ func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 				tt.fields.AuthManager,
 				tt.fields.UserService,
 				tt.fields.Logger,
+				nil,
 				&struct {
 					CartCache cartApplication.CartCache `inject:",optional"`
 				}{

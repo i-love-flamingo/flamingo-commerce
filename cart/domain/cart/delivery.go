@@ -58,9 +58,12 @@ type (
 
 	// DeliveryLocation value object
 	DeliveryLocation struct {
+		//Type - the type of the delivery - use some of the constant defined in the package like DeliverylocationTypeAddress
 		Type string
-		//Address - only set for type adress
+		//Address -  (only relevant for type adress)
 		Address *Address
+		//UseBillingAddress - the adress should be taken from billing (only relevant for type adress)
+		UseBillingAddress bool
 		//Code - optional idendifier of this location/destination - is used in special destination Types
 		Code string
 	}
@@ -74,8 +77,21 @@ type (
 	DeliveryBuilderProvider func() *DeliveryBuilder
 )
 
+const (
+	DeliveryWorkflowPickup      = "pickup"
+	DeliveryWorkflowDelivery    = "delivery"
+	DeliveryWorkflowUnspecified = "unspecified"
+
+	DeliverylocationTypeUnspecified     = "unspecified"
+	DeliverylocationTypeCollectionpoint = "collection-point"
+	DeliverylocationTypeStore           = "store"
+	DeliverylocationTypeAddress         = "address"
+	DeliverylocationTypeFreightstation  = "freight-station"
+)
+
 //LoadAdditionalInfo - returns the additional Data
 func (di *DeliveryInfo) LoadAdditionalInfo(key string, info AdditionalDeliverInfo) error {
+
 	if di.AdditionalDeliveryInfos == nil {
 		return ErrAdditionalInfosNotFound
 	}

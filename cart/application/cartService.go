@@ -89,8 +89,8 @@ func (cs *CartService) ValidateCurrentCart(ctx context.Context, session *web.Ses
 	return cs.ValidateCart(ctx, session, decoratedCart), nil
 }
 
-//UpdateBillingAddress updates the billing address on the cart
-func (cs *CartService) UpdateBillingAddress(ctx context.Context, session *web.Session, billingAddress *cartDomain.Address) error {
+//UpdatePaymentSelection updates the paymentselection in the cart
+func (cs *CartService) UpdatePaymentSelection(ctx context.Context, session *web.Session, paymentSelection cartDomain.PaymentSelection) error {
 	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return err
@@ -100,10 +100,35 @@ func (cs *CartService) UpdateBillingAddress(ctx context.Context, session *web.Se
 		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
 	}()
 
-	cart, err = behaviour.UpdateBillingAddress(ctx, cart, billingAddress)
+	cart, err = behaviour.UpdatePaymentSelection(ctx, cart, paymentSelection)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
-		cs.logger.WithField("subCategory", "UpdateItemQty").Error(err)
+		cs.logger.WithField("subCategory", "UpdatePaymentSelection").Error(err)
+
+		return err
+	}
+
+	return nil
+}
+
+//UpdateBillingAddress updates the billing address on the cart
+func (cs *CartService) UpdateBillingAddress(ctx context.Context, session *web.Session, billingAddress *cartDomain.Address) error {
+	if billingAddress == nil {
+		return nil
+	}
+	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
+	if err != nil {
+		return err
+	}
+	// cart cache must be updated - with the current value of cart
+	defer func() {
+		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
+	}()
+
+	cart, err = behaviour.UpdateBillingAddress(ctx, cart, *billingAddress)
+	if err != nil {
+		cs.handleCartNotFound(session, err)
+		cs.logger.WithField("subCategory", "UpdateBillingAddress").Error(err)
 
 		return err
 	}
@@ -129,7 +154,7 @@ func (cs *CartService) UpdateDeliveryInfo(ctx context.Context, session *web.Sess
 	cart, err = behaviour.UpdateDeliveryInfo(ctx, cart, deliveryCode, deliveryInfo)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
-		cs.logger.WithField("subCategory", "UpdateItemQty").Error(err)
+		cs.logger.WithField("subCategory", "UpdateDeliveryInfo").Error(err)
 
 		return err
 	}
@@ -151,7 +176,7 @@ func (cs *CartService) UpdatePurchaser(ctx context.Context, session *web.Session
 	cart, err = behaviour.UpdatePurchaser(ctx, cart, purchaser, additionalData)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
-		cs.logger.WithField("subCategory", "UpdateItemQty").Error(err)
+		cs.logger.WithField("subCategory", "UpdatePurchaser").Error(err)
 
 		return err
 	}
@@ -435,10 +460,15 @@ func (cs *CartService) CreateInitialDeliveryIfNotPresent(ctx context.Context, se
 	}
 
 	updateCommand := cartDomain.DeliveryInfoUpdateCommand{
-		DeliveryInfo: delInfo,
+		DeliveryInfo: *delInfo,
 	}
 
 	return behaviour.UpdateDeliveryInfo(ctx, cart, deliveryCode, updateCommand)
+}
+
+// GetInitialDelivery - calls the registered deliveryInfoBuilder to get the initial values for a Delivery based on the given code
+func (cs *CartService) GetInitialDelivery(deliveryCode string) (*cartDomain.DeliveryInfo, error) {
+	return cs.deliveryInfoBuilder.BuildByDeliveryCode(deliveryCode)
 }
 
 // ApplyVoucher applies a voucher to the cart
@@ -532,6 +562,9 @@ func (cs *CartService) DeleteCartInCache(ctx context.Context, session *web.Sessi
 
 // PlaceOrder converts the given cart with payments into orders by calling the PlaceOrderService
 func (cs *CartService) PlaceOrder(ctx context.Context, session *web.Session, payment *cartDomain.Payment) (cartDomain.PlacedOrderInfos, error) {
+	if cs.placeOrderService == nil {
+		return nil, errors.New("No placeOrderService registered")
+	}
 	cart, _, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return nil, err

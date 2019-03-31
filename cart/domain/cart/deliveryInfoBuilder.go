@@ -10,7 +10,7 @@ type (
 
 	//DeliveryInfoBuilder - Factory
 	DeliveryInfoBuilder interface {
-		BuildByDeliveryCode(deliveryCode string) (DeliveryInfo, error)
+		BuildByDeliveryCode(deliveryCode string) (*DeliveryInfo, error)
 		//BuildDeliveryInfoUpdateCommand(ctx web.Context, decoratedCart *DecoratedCart) ([]DeliveryInfoUpdateCommand, error)
 	}
 
@@ -32,32 +32,32 @@ func (b *DefaultDeliveryInfoBuilder) Inject(
 //	* workflow_locationtype_locationdetail_method_anythingelse
 //  * not all parts are required
 //	* to "skip" parts in between use "-"
-func (b *DefaultDeliveryInfoBuilder) BuildByDeliveryCode(deliverycode string) (DeliveryInfo, error) {
+func (b *DefaultDeliveryInfoBuilder) BuildByDeliveryCode(deliverycode string) (*DeliveryInfo, error) {
 	if deliverycode == "" {
 		b.logger.Warn("Empty deliverycode")
 	}
 
-	intentParts := strings.SplitN(deliverycode, "_",5)
+	intentParts := strings.SplitN(deliverycode, "_", 5)
 
 	deliveryInfo := DeliveryInfo{
-		Code:   deliverycode,
+		Code: deliverycode,
 	}
-	if len(intentParts) > 0 && intentParts[0] != ""{
+	if len(intentParts) > 0 && intentParts[0] != "" {
 		deliveryInfo.Workflow = intentParts[0]
 	} else {
 		deliveryInfo.Workflow = DeliveryWorkflowUnspecified
 	}
 
-	if len(intentParts) > 1 && intentParts[1] != ""  {
+	if len(intentParts) > 1 && intentParts[1] != "" {
 		deliveryInfo.DeliveryLocation.Type = intentParts[1]
 	} else {
 		deliveryInfo.DeliveryLocation.Type = DeliverylocationTypeUnspecified
 	}
-	if len(intentParts) > 2 && intentParts[2] != ""  {
+	if len(intentParts) > 2 && intentParts[2] != "" {
 		deliveryInfo.DeliveryLocation.Code = intentParts[2]
 	}
-	if len(intentParts) > 3 && intentParts[3] != ""  {
+	if len(intentParts) > 3 && intentParts[3] != "" {
 		deliveryInfo.Method = intentParts[3]
 	}
-	return deliveryInfo, nil
+	return &deliveryInfo, nil
 }

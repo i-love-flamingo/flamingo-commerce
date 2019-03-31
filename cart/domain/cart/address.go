@@ -21,6 +21,10 @@ type (
 		CountryCode            string
 		Telephone              string
 		Email                  string
-		SameAsBilling          bool
 	}
 )
+
+//FullName - return  Firstname Lastname
+func (a Address) FullName() string {
+	return a.Firstname + " " + a.Lastname
+}

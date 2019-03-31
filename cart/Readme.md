@@ -265,6 +265,29 @@ item, err := builder.SetSinglePriceNet(priceDomain.NewFromInt(100, 100, "EUR")).
 
 ``` 
  
+### About charges
+If you have read the sections above you know about the different prices that are available at item, delivery and cart level and how they are calculated.
+
+There is something else that this cart modell supports - we call it "charges". All the price amounts mentioned is the previous chapters represents the value of the items 
+in the cart default currency.
+
+However this value need to be payed - when paying the value it can be that:
+- customer wants to pay with different payment methods (e.g. 50% of the value with paypal and the rest with creditcart)
+- also the value can be payed in a different currency
+
+
+The desired split of charges is saved on the cart with the "UpdatePaymentSelection" command.
+If you dont need the full flexibility of the charges, than you will simply alway pay one charge that matches the grandtotal of your cart.
+Use the factory `NewSimplePaymentSelection` for this.
+
+
+If you want to use the feature it is important to know how the cart charge split should be generated:
+
+1. the product that is in the cart might require that his price is payed in certain charges. An example for this is products that need to be payed in miles.
+2. the customer might want to select a split by himself
+
+You can use the factory on the decorated cart to get a valid PaymentSelection based on the two facts
+
 
 
 ## Domain - Secondary Ports
