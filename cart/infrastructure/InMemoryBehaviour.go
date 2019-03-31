@@ -252,7 +252,7 @@ func (cob *InMemoryBehaviour) UpdatePurchaser(ctx context.Context, cart *domainc
 // UpdateBillingAddress
 func (cob *InMemoryBehaviour) UpdateBillingAddress(ctx context.Context, cart *domaincart.Cart, billingAddress domaincart.Address) (*domaincart.Cart, error) {
 
-	cart.BillingAdress = billingAddress
+	cart.BillingAdress = &billingAddress
 
 	err := cob.cartStorage.StoreCart(cart)
 	if err != nil {
@@ -270,7 +270,7 @@ func (cob *InMemoryBehaviour) UpdateAdditionalData(ctx context.Context, cart *do
 func (cob *InMemoryBehaviour) UpdatePaymentSelection(ctx context.Context, cart *domaincart.Cart, paymentSelection domaincart.PaymentSelection) (*domaincart.Cart, error) {
 	paymentSelection.GetChargeSumByType()
 	cart.GrandTotal()
-	cart.PaymentSelection = paymentSelection
+	cart.PaymentSelection = &paymentSelection
 	err := cob.cartStorage.StoreCart(cart)
 	if err != nil {
 		return nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
