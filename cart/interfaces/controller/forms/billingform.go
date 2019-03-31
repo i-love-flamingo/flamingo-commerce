@@ -33,7 +33,6 @@ type (
 		applicationCartReceiverService *cartApplication.CartReceiverService
 		logger                         flamingo.Logger
 		formHandlerFactory             application.FormHandlerFactory
-		billingAddressFormProvider     *BillingAddressFormService
 	}
 )
 
@@ -61,7 +60,7 @@ func (p *BillingAddressFormService) GetFormData(ctx context.Context, req *web.Re
 		}
 	}
 	cart, err := p.applicationCartReceiverService.ViewCart(ctx, req.Session())
-	if err != nil {
+	if err == nil {
 		if cart.BillingAdress != nil {
 			billingAddressForm.LoadFromCartAddress(*cart.BillingAdress)
 		}
@@ -74,13 +73,12 @@ func (c *BillingAddressFormController) Inject(responder *web.Responder,
 	applicationCartReceiverService *cartApplication.CartReceiverService,
 	logger flamingo.Logger,
 	formHandlerFactory application.FormHandlerFactory,
-	billingAddressFormProvider *BillingAddressFormService) {
+	billingAddressFormService *BillingAddressFormService) {
 	c.responder = responder
 	c.applicationCartReceiverService = applicationCartReceiverService
 	c.applicationCartService = applicationCartService
 	c.formHandlerFactory = formHandlerFactory
 	c.logger = logger
-	c.billingAddressFormProvider = billingAddressFormProvider
 }
 
 func (c *BillingAddressFormController) getFormHandler() (domain.FormHandler, error) {

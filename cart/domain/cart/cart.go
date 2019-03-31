@@ -204,7 +204,7 @@ func (cart Cart) GetByItemID(itemID string, deliveryCode string) (*Item, error) 
 		}
 	}
 
-	return nil, errors.Errorf("itemId %v in cart not existing", itemID)
+	return nil, errors.Errorf("itemId %v in cart for delivery %v not existing", itemID, deliveryCode)
 }
 
 func inStruct(value string, list []string) bool {

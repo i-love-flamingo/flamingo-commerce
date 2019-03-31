@@ -95,6 +95,10 @@ func (c *CheckoutFormController) GetUnsubmittedForm(ctx context.Context, r *web.
 		return checkoutFormBuilder.getForm(), err
 	}
 	for _, delivery := range cart.Deliveries {
+		if !delivery.HasItems() {
+			continue
+		}
+		r.Params["deliveryCode"] = delivery.DeliveryInfo.Code
 		deliveryForm, err := c.deliveryFormController.GetUnsubmittedForm(ctx, r)
 		if err != nil {
 			return checkoutFormBuilder.getForm(), err
@@ -162,6 +166,9 @@ func (c *CheckoutFormController) HandleFormAction(ctx context.Context, r *web.Re
 		return checkoutFormBuilder.getForm(), false, err
 	}
 	for _, delivery := range cart.Deliveries {
+		if !delivery.HasItems() {
+			continue
+		}
 		deliveryFormNamespace := "deliveries." + delivery.DeliveryInfo.Code
 		//Add the billing form:
 		deliverySubRequest := newRequestWithResolvedNamespace(deliveryFormNamespace, r)

@@ -184,6 +184,11 @@ func (d Delivery) SubTotalNetWithDiscounts() priceDomain.Price {
 	return price
 }
 
+//HasItems - returns true if there are items under the delivery
+func (d Delivery) HasItems() bool {
+	return len(d.Cartitems) > 0
+}
+
 //Copy - use to set the values for the new delivery from an existing delivery by copying it
 func (f *DeliveryBuilder) Copy(d *Delivery) *DeliveryBuilder {
 	f.init()

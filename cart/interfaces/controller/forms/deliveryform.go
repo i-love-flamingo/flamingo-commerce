@@ -26,7 +26,9 @@ type (
 	}
 
 	// DeliveryFormService implements Form(Data)Provider interface of form package
-	DeliveryFormService struct{}
+	DeliveryFormService struct {
+		applicationCartReceiverService *cartApplication.CartReceiverService
+	}
 
 	// DeliveryFormController - the (mini) MVC
 	DeliveryFormController struct {
@@ -49,9 +51,30 @@ func (d *DeliveryForm) MapToDeliveryInfo(currentInfo cartDomain.DeliveryInfo) ca
 	return currentInfo
 }
 
+func (p *DeliveryFormService) Inject(applicationCartReceiverService *cartApplication.CartReceiverService) {
+	p.applicationCartReceiverService = applicationCartReceiverService
+}
+
 // GetFormData from data provider
 func (p *DeliveryFormService) GetFormData(ctx context.Context, req *web.Request) (interface{}, error) {
-	return DeliveryForm{}, nil
+
+	cart, err := p.applicationCartReceiverService.ViewCart(ctx, req.Session())
+	useBilling := false
+	deliveryAddress := AddressForm{}
+	deliverycode := req.Params["deliveryCode"]
+	if deliverycode != "" && err == nil {
+		if delivery, found := cart.GetDeliveryByCode(deliverycode); found {
+			if delivery.DeliveryInfo.DeliveryLocation.Address != nil {
+				deliveryAddress.LoadFromCartAddress(*delivery.DeliveryInfo.DeliveryLocation.Address)
+			}
+			useBilling = delivery.DeliveryInfo.DeliveryLocation.UseBillingAddress
+		}
+	}
+
+	return DeliveryForm{
+		UseBillingAddress: useBilling,
+		DeliveryAddress:   deliveryAddress,
+	}, nil
 }
 
 func (c *DeliveryFormController) Inject(responder *web.Responder,

@@ -213,7 +213,7 @@ func (cs *CartReceiverService) getExistingGuestCart(ctx context.Context, session
 		}
 
 		cs.storeCartInCacheIfCacheIsEnabled(ctx, session, cart)
-		cs.logger.Info("guestcart not in cache - requested and passed to cache from service")
+		cs.logger.Debug("guestcart not in cache - requested and passed to cache")
 	}
 	behaviour, err := cs.guestCartService.GetModifyBehaviour(ctx)
 
