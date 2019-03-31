@@ -18,7 +18,17 @@ func (s *URLService) Get(product domain.BasicProduct, variantCode string) (strin
 		return "-", errors.New("no product given")
 	}
 	params := s.GetURLParams(product, variantCode)
-	url, err := s.Router.URL("product.view", params)
+	url, err := s.Router.Relative("product.view", params)
+	return url.String(), err
+}
+
+// Get a product variant url
+func (s *URLService) GetAbsolute(r *web.Request, product domain.BasicProduct, variantCode string) (string, error) {
+	if product == nil {
+		return "-", errors.New("no product given")
+	}
+	params := s.GetURLParams(product, variantCode)
+	url, err := s.Router.Absolute(r, "product.view", params)
 	return url.String(), err
 }
 

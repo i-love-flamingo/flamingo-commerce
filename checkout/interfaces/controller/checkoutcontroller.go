@@ -6,16 +6,13 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"strings"
-
-	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller/forms"
-
-	paymentDomain "flamingo.me/flamingo-commerce/v3/payment/domain"
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/checkout/application"
-	authApplication "flamingo.me/flamingo/v3/core/auth/application"
+	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller/forms"
+	paymentDomain "flamingo.me/flamingo-commerce/v3/payment/domain"
+	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 )
@@ -91,7 +88,6 @@ type (
 		logger flamingo.Logger
 
 		checkoutFormController *forms.CheckoutFormController
-		baseURL                string
 	}
 )
 
@@ -111,13 +107,12 @@ func (cc *CheckoutController) Inject(
 	logger flamingo.Logger,
 	checkoutFormController *forms.CheckoutFormController,
 	config *struct {
-		SkipStartAction                 bool   `inject:"config:checkout.skipStartAction,optional"`
-		SkipReviewAction                bool   `inject:"config:checkout.skipReviewAction,optional"`
-		ShowReviewStepAfterPaymentError bool   `inject:"config:checkout.showReviewStepAfterPaymentError,optional"`
-		ShowEmptyCartPageIfNoItems      bool   `inject:"config:checkout.showEmptyCartPageIfNoItems,optional"`
-		RedirectToCartOnInvalideCart    bool   `inject:"config:checkout.redirectToCartOnInvalideCart,optional"`
-		PrivacyPolicyRequired           bool   `inject:"config:checkout.privacyPolicyRequired,optional"`
-		BaseURL                         string `inject:"config:canonicalurl.baseurl,optional"`
+		SkipStartAction                 bool `inject:"config:checkout.skipStartAction,optional"`
+		SkipReviewAction                bool `inject:"config:checkout.skipReviewAction,optional"`
+		ShowReviewStepAfterPaymentError bool `inject:"config:checkout.showReviewStepAfterPaymentError,optional"`
+		ShowEmptyCartPageIfNoItems      bool `inject:"config:checkout.showEmptyCartPageIfNoItems,optional"`
+		RedirectToCartOnInvalideCart    bool `inject:"config:checkout.redirectToCartOnInvalideCart,optional"`
+		PrivacyPolicyRequired           bool `inject:"config:checkout.privacyPolicyRequired,optional"`
 	},
 ) {
 	cc.responder = responder
@@ -140,8 +135,6 @@ func (cc *CheckoutController) Inject(
 	cc.userService = userService
 
 	cc.logger = logger.WithField(flamingo.LogKeyModule, "checkout").WithField(flamingo.LogKeyCategory, "checkoutController")
-
-	cc.baseURL = config.BaseURL
 }
 
 /*
@@ -285,15 +278,9 @@ func (cc *CheckoutController) ExpiredAction(ctx context.Context, r *web.Request)
 	return cc.responder.Render("checkout/expired", nil).SetNoCache()
 }
 
-func (cc *CheckoutController) getPaymentReturnURL(PaymentProvider string) *url.URL {
-	baseURL := cc.baseURL
-	paymentURL, _ := cc.router.URL("checkout.placeorder", nil)
-
-	rawURL := strings.TrimRight(baseURL, "/") + paymentURL.String()
-
-	urlResult, _ := url.Parse(rawURL)
-
-	return urlResult
+func (cc *CheckoutController) getPaymentReturnURL(r *web.Request, PaymentProvider string) *url.URL {
+	paymentURL, _ := cc.router.Absolute(r, "checkout.placeorder", nil)
+	return paymentURL
 }
 
 func (cc *CheckoutController) getBasicViewData(ctx context.Context, session *web.Session, decoratedCart cart.DecoratedCart) CheckoutViewData {
@@ -422,7 +409,7 @@ func (cc *CheckoutController) processPaymentBeforePlaceOrder(ctx context.Context
 	}
 
 	//procces Payment:
-	returnURL := cc.getPaymentReturnURL(decoratedCart.Cart.PaymentSelection.Gateway)
+	returnURL := cc.getPaymentReturnURL(r, decoratedCart.Cart.PaymentSelection.Gateway)
 
 	//selected payment need to be set on cart before
 	//Handover to selected gateway flow:

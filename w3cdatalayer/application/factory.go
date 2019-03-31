@@ -11,17 +11,15 @@ import (
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo-commerce/v3/w3cdatalayer/domain"
 	authApplication "flamingo.me/flamingo/v3/core/auth/application"
-	canonicalUrlApplication "flamingo.me/flamingo/v3/core/canonicalurl/application"
 	"flamingo.me/flamingo/v3/framework/web"
 	"go.opencensus.io/tag"
 )
 
 // Factory is used to build new datalayers
 type Factory struct {
-	router              *web.Router
-	datalayerProvider   domain.DatalayerProvider
-	canonicalURLService *canonicalUrlApplication.Service
-	userService         *authApplication.UserService
+	router            *web.Router
+	datalayerProvider domain.DatalayerProvider
+	userService       *authApplication.UserService
 
 	pageInstanceIDPrefix           string
 	pageInstanceIDStage            string
@@ -39,7 +37,6 @@ type Factory struct {
 func (s *Factory) Inject(
 	router2 *web.Router,
 	provider domain.DatalayerProvider,
-	service *canonicalUrlApplication.Service,
 	userService *authApplication.UserService,
 	config *struct {
 		PageInstanceIDPrefix           string `inject:"config:w3cDatalayer.pageInstanceIDPrefix,optional"`
@@ -56,7 +53,6 @@ func (s *Factory) Inject(
 ) {
 	s.router = router2
 	s.datalayerProvider = provider
-	s.canonicalURLService = service
 	s.userService = userService
 
 	s.pageInstanceIDPrefix = config.PageInstanceIDPrefix
@@ -75,18 +71,19 @@ func (s *Factory) Inject(
 func (s Factory) BuildForCurrentRequest(ctx context.Context, request *web.Request) domain.Datalayer {
 	layer := s.datalayerProvider()
 
-	//get langiage from locale code configuration
+	// get language from locale code configuration
 	language := ""
 	localeParts := strings.Split(s.locale, "-")
 	if len(localeParts) > 0 {
 		language = localeParts[0]
 	}
 
+	baseUrl, _ := s.router.Absolute(request, request.Request().URL.Path, nil)
 	layer.Page = &domain.Page{
 		PageInfo: domain.PageInfo{
 			PageID:         request.Request().URL.Path,
 			PageName:       s.pageNamePrefix + request.Request().URL.Path,
-			DestinationURL: s.canonicalURLService.GetCanonicalURLForCurrentRequest(ctx),
+			DestinationURL: baseUrl.String(),
 			Language:       language,
 		},
 		Attributes: make(map[string]interface{}),
@@ -94,7 +91,7 @@ func (s Factory) BuildForCurrentRequest(ctx context.Context, request *web.Reques
 
 	layer.Page.Attributes["currency"] = s.defaultCurrency
 
-	//Use the handler name as PageId if available
+	// Use the handler name as PageId if available
 	if controllerHandler, ok := tag.FromContext(ctx).Value(web.ControllerKey); ok {
 		layer.Page.PageInfo.PageID = controllerHandler
 	}
