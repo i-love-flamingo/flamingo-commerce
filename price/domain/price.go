@@ -15,10 +15,14 @@ type (
 		currency string
 	}
 
-	//Charge is a Amount of a certain Type. Charge is used to indicate that this need to be payed
+	//Charge is a Amount of a certain Type. Charge is used as value object
 	Charge struct {
+		//Price - the price that is paye - can be in a certain currency
 		Price Price
-		Type  string
+		//Value - the value of the "Price" - in another (base) currency
+		Value Price
+		//The type of the charge - can be ChargeTypeMain or something else. Used to differenciate between different charges of a single thing
+		Type string
 	}
 
 	//priceEncodeAble is a type that we need to allow marshalling the price values. The type itself is unexported
@@ -42,6 +46,14 @@ const (
 func NewFromFloat(amount float64, currency string) Price {
 	return Price{
 		amount:   *big.NewFloat(amount),
+		currency: currency,
+	}
+}
+
+//NewFromBigFloat - factory method
+func NewFromBigFloat(amount big.Float, currency string) Price {
+	return Price{
+		amount:   amount,
 		currency: currency,
 	}
 }
