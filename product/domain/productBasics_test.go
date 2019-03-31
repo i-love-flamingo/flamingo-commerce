@@ -1,10 +1,12 @@
 package domain
 
 import (
-	"flamingo.me/flamingo-commerce/v3/price/domain"
+	"math/big"
 	"testing"
 	"time"
 
+	"flamingo.me/flamingo-commerce/v3/price/domain"
+	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -118,7 +120,7 @@ func TestBasicProductHasAttribute(t *testing.T) {
 func TestBasicProductGetFinalPrice(t *testing.T) {
 	p := PriceInfo{
 		IsDiscounted: false,
-		Discounted:   domain.NewFromFloat(0.99,"€"),
+		Discounted:   domain.NewFromFloat(0.99, "€"),
 		Default:      domain.NewFromFloat(1.99, "€"),
 	}
 	assert.Equal(t, 1.99, p.GetFinalPrice().FloatAmount())
@@ -164,4 +166,68 @@ func TestIsSaleableNow(t *testing.T) {
 	assert.False(t, s.IsSaleableNow(), "not saleable now if saleable to is in the past")
 	s.SaleableTo = future
 	assert.True(t, s.IsSaleableNow(), "saleable now if saleable to is in the future")
+}
+
+func TestSaleable_GetChargesToPay(t *testing.T) {
+
+	p := Saleable{
+		ActivePrice: PriceInfo{
+			//100€ value
+			Default: priceDomain.NewFromInt(100, 1, "€"),
+		},
+		LoyaltyPrices: []LoyaltyPriceInfo{
+			LoyaltyPriceInfo{
+				Type:             "miles",
+				MaxPointsToSpent: *new(big.Float).SetInt64(20),
+				//10 is the minimum to pay in miles (=20€ value)
+				MinPointsToSpent: *new(big.Float).SetInt64(10),
+				//50 miles == 100€ meaning 1Mile = 2€
+				PointPrice: priceDomain.NewFromInt(50, 1, "Miles"),
+			},
+		},
+	}
+
+	//Test default charges (the min price in points should be evaluated)
+	charges := p.GetChargesToPay(nil)
+	chargeMain, found := charges.GetByType(priceDomain.ChargeTypeMain)
+	assert.True(t, found)
+
+	assert.Equal(t, priceDomain.NewFromInt(80, 1, "€"), chargeMain.Price)
+
+	chargeLoyaltyMiles, found := charges.GetByType("loyalty.miles")
+	assert.True(t, found)
+	assert.Equal(t, priceDomain.NewFromInt(10, 1, "Miles"), chargeLoyaltyMiles.Price, "only minimum points expected")
+
+	//Test if w wish is given
+	wished := NewWishedToPay().Add("loyalty.miles", priceDomain.NewFromInt(15, 1, "Miles"))
+	charges = p.GetChargesToPay(&wished)
+	chargeMain, found = charges.GetByType(priceDomain.ChargeTypeMain)
+	assert.True(t, found)
+
+	assert.Equal(t, priceDomain.NewFromInt(70, 1, "€"), chargeMain.Price)
+
+	chargeLoyaltyMiles, found = charges.GetByType("loyalty.miles")
+	assert.True(t, found)
+	assert.Equal(t, priceDomain.NewFromInt(15, 1, "Miles"), chargeLoyaltyMiles.Price, "the whished 15 points expected")
+}
+
+func TestLoyaltyPriceInfo_GetAmountToSpend(t *testing.T) {
+
+	l := LoyaltyPriceInfo{
+		Type:             "miles",
+		MaxPointsToSpent: *new(big.Float).SetInt64(20),
+		//10 is the minimum to pay in miles (=20€ value)
+		MinPointsToSpent: *new(big.Float).SetInt64(10),
+		//50 miles == 100€ meaning 1Mile = 2€
+		PointPrice: priceDomain.NewFromInt(50, 1, "Miles"),
+	}
+	result := l.GetAmountToSpend(new(big.Float).SetInt64(15))
+	assert.Equal(t, *new(big.Float).SetInt64(15), result)
+
+	result = l.GetAmountToSpend(new(big.Float).SetInt64(5))
+	assert.Equal(t, *new(big.Float).SetInt64(10), result)
+
+	result = l.GetAmountToSpend(new(big.Float).SetInt64(50))
+	assert.Equal(t, *new(big.Float).SetInt64(20), result)
+
 }

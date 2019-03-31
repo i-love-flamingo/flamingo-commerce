@@ -165,6 +165,16 @@ type (
 		Label  string
 		Values []string
 	}
+
+	//Charges - Represents the Charges the product need to be payed with
+	Charges struct {
+		chargesByType map[string]priceDomain.Charge
+	}
+
+	//WishedToPay - list of prices by type
+	WishedToPay struct {
+		priceByType map[string]priceDomain.Price
+	}
 )
 
 // Value returns the raw value
@@ -291,14 +301,50 @@ func (p Saleable) IsSaleableNow() bool {
 	return false
 }
 
-// GetChargesToPay  Gets the Charges that need to be payed
-func (p Saleable) GetChargesToPay(whishedCharges []priceDomain.Charge) []priceDomain.Charge {
-	var requiredCharges []priceDomain.Charge
-	requiredCharges = append(requiredCharges, priceDomain.Charge{
-		Price: p.ActivePrice.GetFinalPrice(),
+// GetChargesToPay  Gets the Charges that need to be payed by type
+func (p Saleable) GetChargesToPay(wishedToPay *WishedToPay) Charges {
+	requiredCharges := make(map[string]priceDomain.Charge)
+	valuedPrice := p.ActivePrice.GetFinalPrice()
+	remainingMainChargeValue := valuedPrice.Amount()
+	for _, loyaltyPrice := range p.LoyaltyPrices {
+		chargeType := "loyalty." + loyaltyPrice.Type
+
+		if !loyaltyPrice.PointPrice.IsPositive() {
+			continue
+		}
+		if loyaltyPrice.MinPointsToSpent.Cmp(big.NewFloat(0)) < 1 {
+			continue
+		}
+		rate := loyaltyPrice.GetRate(valuedPrice)
+		loyaltyAmountToSpent := loyaltyPrice.GetAmountToSpend(nil)
+		if wishedToPay != nil {
+			wishedPrice := wishedToPay.GetByType(chargeType)
+			if wishedPrice != nil && wishedPrice.Currency() == loyaltyPrice.PointPrice.Currency() {
+				loyaltyAmountToSpent = loyaltyPrice.GetAmountToSpend(wishedPrice.Amount())
+			}
+		}
+
+		loyaltyPriceValue := new(big.Float).Mul(&rate, &loyaltyAmountToSpent)
+
+		if loyaltyPriceValue.Cmp(big.NewFloat(0)) <= 0 {
+			continue
+		}
+		remainingMainChargeValue = new(big.Float).Sub(remainingMainChargeValue, loyaltyPriceValue)
+		requiredCharges[chargeType] = priceDomain.Charge{
+			Price: priceDomain.NewFromBigFloat(loyaltyAmountToSpent, loyaltyPrice.PointPrice.Currency()),
+			Type:  chargeType,
+			Value: priceDomain.NewFromBigFloat(*loyaltyPriceValue, valuedPrice.Currency()).GetPayable(),
+		}
+	}
+
+	remainingMainChargePrice := priceDomain.NewFromBigFloat(*remainingMainChargeValue, valuedPrice.Currency()).GetPayable()
+	requiredCharges[priceDomain.ChargeTypeMain] = priceDomain.Charge{
+		Price: remainingMainChargePrice,
 		Type:  priceDomain.ChargeTypeMain,
-	})
-	return requiredCharges
+		Value: remainingMainChargePrice,
+	}
+
+	return Charges{chargesByType: requiredCharges}
 }
 
 func findMediaInProduct(p BasicProduct, group string, usage string) *Media {
@@ -332,4 +378,51 @@ func (bpd BasicProductData) IsInStock() bool {
 	}
 
 	return true
+}
+
+//NewWishedToPay - factory to get new WishedToPay struct
+func NewWishedToPay() WishedToPay {
+	return WishedToPay{
+		priceByType: make(map[string]priceDomain.Price),
+	}
+}
+
+//Add - returns new WishedToPay instance with the given whish added
+func (w WishedToPay) Add(ctype string, price priceDomain.Price) WishedToPay {
+	w.priceByType[ctype] = price
+	return w
+}
+
+//GetByType - returns the wihsed price for the given type or nil
+func (w WishedToPay) GetByType(ctype string) *priceDomain.Price {
+	if price, ok := w.priceByType[ctype]; ok {
+		return &price
+	}
+	return nil
+}
+
+func (c Charges) GetByType(ctype string) (priceDomain.Charge, bool) {
+	if charge, ok := c.chargesByType[ctype]; ok {
+		return charge, ok
+	}
+	return priceDomain.Charge{}, false
+}
+
+func (l LoyaltyPriceInfo) GetRate(valuedPrice priceDomain.Price) big.Float {
+	if !l.PointPrice.IsPositive() {
+		return *big.NewFloat(0)
+	}
+	return *new(big.Float).Quo(valuedPrice.Amount(), l.PointPrice.Amount())
+}
+
+func (l LoyaltyPriceInfo) GetAmountToSpend(wishedAmount *big.Float) big.Float {
+	//less or equal - return min
+	if wishedAmount == nil || l.MinPointsToSpent.Cmp(wishedAmount) > 0 {
+		return l.MinPointsToSpent
+	}
+	//more then max - return max
+	if l.MaxPointsToSpent.Cmp(wishedAmount) == -1 {
+		return l.MaxPointsToSpent
+	}
+	return *wishedAmount
 }
