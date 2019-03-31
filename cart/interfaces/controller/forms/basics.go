@@ -86,3 +86,45 @@ func (a *AddressForm) LoadFromCustomerAddress(address domain.Address) {
 	}
 
 }
+
+func (a *AddressForm) LoadFromCartAddress(address cart.Address) {
+	if address.Firstname != "" {
+		a.Firstname = address.Firstname
+	}
+
+	if address.Lastname != "" {
+		a.Lastname = address.Lastname
+	}
+
+	if address.Email != "" {
+		a.Email = address.Email
+	}
+
+	if address.Street != "" {
+		a.Street = address.Street
+	}
+
+	if address.StreetNr != "" {
+		a.StreetNr = address.StreetNr
+	}
+
+	if address.Salutation != "" {
+		a.Title = address.Salutation
+	}
+
+	if address.City != "" {
+		a.City = address.City
+	}
+
+	if address.Telephone != "" {
+		a.PhoneNumber = address.Telephone
+	}
+
+	if address.CountryCode != "" {
+		a.CountryCode = address.CountryCode
+	}
+
+	if address.Company != "" {
+		a.Company = address.Company
+	}
+}

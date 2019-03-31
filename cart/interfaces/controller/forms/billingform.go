@@ -21,8 +21,9 @@ type (
 
 	// BillingAddressFormService implements Form(Data)Provider interface of form package
 	BillingAddressFormService struct {
-		customerApplicationService *customerApplication.Service
-		userService                *authApplication.UserService
+		customerApplicationService     *customerApplication.Service
+		userService                    *authApplication.UserService
+		applicationCartReceiverService *cartApplication.CartReceiverService
 	}
 
 	// BillingAddressFormController - the (mini) MVC
@@ -30,18 +31,20 @@ type (
 		responder                      *web.Responder
 		applicationCartService         *cartApplication.CartService
 		applicationCartReceiverService *cartApplication.CartReceiverService
-		userService                    *authApplication.UserService
 		logger                         flamingo.Logger
-		customerApplicationService     *customerApplication.Service
 		formHandlerFactory             application.FormHandlerFactory
 		billingAddressFormProvider     *BillingAddressFormService
 	}
 )
 
 // Inject - dependencies
-func (p *BillingAddressFormService) Inject(customerApplicationService *customerApplication.Service, userService *authApplication.UserService) {
+func (p *BillingAddressFormService) Inject(
+	customerApplicationService *customerApplication.Service,
+	userService *authApplication.UserService,
+	applicationCartReceiverService *cartApplication.CartReceiverService) {
 	p.customerApplicationService = customerApplicationService
 	p.userService = userService
+	p.applicationCartReceiverService = applicationCartReceiverService
 }
 
 // GetFormData from data provider
@@ -50,11 +53,17 @@ func (p *BillingAddressFormService) GetFormData(ctx context.Context, req *web.Re
 	billingAddressForm := AddressForm{}
 	if p.userService.IsLoggedIn(ctx, session) {
 		customer, err := p.customerApplicationService.GetForAuthenticatedUser(ctx, session)
-		if err != nil {
+		if err == nil {
 			billingAddress := customer.GetDefaultBillingAddress()
 			if billingAddress != nil {
 				billingAddressForm.LoadFromCustomerAddress(*billingAddress)
 			}
+		}
+	}
+	cart, err := p.applicationCartReceiverService.ViewCart(ctx, req.Session())
+	if err != nil {
+		if cart.BillingAdress != nil {
+			billingAddressForm.LoadFromCartAddress(*cart.BillingAdress)
 		}
 	}
 	return BillingAddressForm(billingAddressForm), nil
@@ -63,16 +72,12 @@ func (p *BillingAddressFormService) GetFormData(ctx context.Context, req *web.Re
 func (c *BillingAddressFormController) Inject(responder *web.Responder,
 	applicationCartService *cartApplication.CartService,
 	applicationCartReceiverService *cartApplication.CartReceiverService,
-	userService *authApplication.UserService,
 	logger flamingo.Logger,
-	customerApplicationService *customerApplication.Service,
 	formHandlerFactory application.FormHandlerFactory,
 	billingAddressFormProvider *BillingAddressFormService) {
 	c.responder = responder
 	c.applicationCartReceiverService = applicationCartReceiverService
 	c.applicationCartService = applicationCartService
-	c.userService = userService
-	c.customerApplicationService = customerApplicationService
 	c.formHandlerFactory = formHandlerFactory
 	c.logger = logger
 	c.billingAddressFormProvider = billingAddressFormProvider
