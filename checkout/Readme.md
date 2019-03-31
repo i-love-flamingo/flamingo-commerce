@@ -1,11 +1,11 @@
 # Checkout Package
 
-This package provides a One Page standard checkout with the following features:
+This package provides a one page standard checkout with the following features:
 
 * Concept for PaymentProviders, that can be used to implement specific Payments
-* A "Offline payment" Provider is part of the module
+* An "offline payment" provider is part of the module
 
-## Standard Checkout Flow
+## Standard checkout flow
 
 This module implements controller and services for the following checkout flow (the checkout process for the end customer):
 
@@ -13,7 +13,7 @@ This module implements controller and services for the following checkout flow (
     * check if user is logged in
         * yes: next action
         * no: show start template (where the user can login)
-2. Checkout Action
+1. Checkout Action
     * this is the main step, and the template should render the big checkout form (or at least the parts that are interesting). 
     * on submit and if everything was valid:
         * Action will update the cart - specifically the following informations:
@@ -23,21 +23,21 @@ This module implements controller and services for the following checkout flow (
             * Optional Save the wished payment split for each item in the cart
             * Optional add Vouchers (may already happend before)            
         * Forward to next Action
-3. Review Action (Optional)
+1. Review Action (Optional)
     * Renderes "review" template that can be used to review the cart
     * After confirming:
         * Action will give control to the selected PaymentFlow (see payment module)
-4. Place Order Action
+1. Place Order Action
     * Get PaymentFlow Result
     * Place Order and forward to success
-5. Success Action:
+1. Success Action:
     * Renders order success template
 
 ## Configurations
 
-If your template does not want to ask for all the informations required you can also set default values for the checkoutform (strings)
+If your template does not want to ask for all the information required you can also set default values for the checkoutform (strings)
 
-```yml
+```yaml
 checkout:
   # use a faked sourcing service
   useFakeSourcingService: false
@@ -65,4 +65,14 @@ checkout:
       billingAddress_streetNr: "0"
       billingAddress_city: NoCity
       billingAddress_postCode: "99999"
+```
+
+## Registering own Payment Providers
+
+You need to implement the secondary port "PaymentProvider" and register the Payment provider in your module.go:
+
+```go
+func (pp *PaymarkProvider) Configure(injector *dingo.Injector) {
+  injector.BindMap(new(payment.PaymentProvider), pp.ProviderCode).To(new(infrastructure.MyPaymentAdapter))
+}
 ```

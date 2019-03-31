@@ -1,6 +1,6 @@
 # Cart Module
 
-The cart package offers a domain model for carts and its items - and the application services that should be used to get and modify cart(s).
+The cart package offers a domain model for carts and their items - and the application services that should be used to get and modify carts.
 
 It requires several ports to be implemented in order to have fully working cart functionality.
 (for example the *flamingo-commerce-adapter-magento* package implements Adapters for the Ports)
@@ -11,19 +11,18 @@ Also the cart module and its services will be used by the checkout module.
 
 ## Principles / Summary
 
-* The "Cart" aggregate in the Domain Model is a complex object that should be used as a pure **immutable Value object**:
+* The "Cart" aggregate in the Domain Model is a complex object that should be used as a pure **immutable value object**:
     * Never change it directly!
     * Only read from it
 * The Cart is only **modified by Commands** send to a CartBehaviour Object
 * If you want to retrieve or change a  cart - **ONLY work with the application services**
     * This will ensure that the correct cache is used
-   
 
 ## Usage
 
 ### Configurations
 
-```yml
+```yaml
   commerce.cart:
     # To register the in memory cart service adapter (e.g. for development mode)
     useInMemoryCartServiceAdapters: true
@@ -51,43 +50,45 @@ In cases where you only need one Delivery this can be configured as default and 
 
 #### DeliveryInfo
 
-DeliveryInfo represents the information about which deliverymethod should be used and what deliverylocation should be used.
-A DeliveryInfo has:
-* a "code" that should idendify a Delivery unique under the cart. Its up to you what code you want. You may want to follow the conventions used by the Default "DeliveryInfoBuilder"
-* a "workflow" - that is used to be able to differenciate between different fullfillment workflows (e.g. pickup or delivery)
-* a "method" - used to specify details for the delivery. Its up for the project what you want to use. E.g. use it to differenciate between "standard" and "express"
-* a "deliverylocation": A deliverylocation can be a address, but also a location defined by a code (e.g. such as a collection point).
+DeliveryInfo represents the information about which delivery method should be used and what delivery location should be used.
 
-The DeliveryInfo object is normaly completed with all required infos during the checkout using the DeliveryInfoUpdateCommand
+A DeliveryInfo has:
+* a `code` that should identify a Delivery unique under the cart. It's up to you what code you want. You may want to follow the conventions used by the Default `DeliveryInfoBuilder`
+* a `workflow` - that is used to be able to differentiate between different fulfillment workflows (e.g. pickup or delivery)
+* a `method` - used to specify details for the delivery. It's up for the project what you want to use. E.g. use it to differentiate between `standard` and `express`
+* a `deliverylocation` - A deliverylocation can be an address, but also a location defined by a code (e.g. such as a collection point).
+
+The DeliveryInfo object is normally completed with all required infos during the checkout using the DeliveryInfoUpdateCommand
 
 ##### Optional Port: DeliveryInfoBuilder
-The DeliveryInfoBuilder interface defines an interface that builds initial DeliveryInfo for a cart.
 
-The "DefaultDeliveryInfoBuilder" that is part of the package should be ok for most cases, it simply takes the passed deliverycode and builds an initial DeliveryInfo object.
-The code used by the "DefaultDeliveryInfoBuilder" should be speaking for that reason and is used to initialy create the DeliveryInfo:
+The DeliveryInfoBuilder interface defines an interface that builds initial `DeliveryInfo` for a cart.
 
-The convention used by this default builder is as follow:
-`WORKFLOW_LOCATIONTYPE_LOCATIONCODE_METHOD_anythingelse`
+The `DefaultDeliveryInfoBuilder` that is part of the package should be ok for most cases, it simply takes the passed `deliverycode` and builds an initial `DeliveryInfo` object.
+The code used by the `DefaultDeliveryInfoBuilder` should be speaking for that reason and is used to initially create the `DeliveryInfo`:
+
+The convention used by this default builder is as follow: `WORKFLOW_LOCATIONTYPE_LOCATIONCODE_METHOD_anythingelse`
 
 Valid codes are:
-* delivery (default)
+* `delivery` (default)
     * DeliveryInfo to have the item (home) delivered
-* pickup_store_LOCATIONCODE
+* `pickup_store_LOCATIONCODE`
     * DeliveryInfo to pickup the item in a (in)store pickup location
-* pickup_collection_LOCATIONCODE
-    * DeliveryInfo to pickup the item in a a special pickup location (central collectionpoint)
+* `pickup_collection_LOCATIONCODE`
+    * DeliveryInfo to pickup the item in a special pickup location (central collection point)
 
 
 ### CartItem details
 
-There are special properties that require some explainations:
+There are special properties that require some explanations:
 
-* SourceId: Optional represents a location that should be used to fillfill this Item. This can be the code of a certain warehouse or even the code of a retailstore (if item should be picked(sourced) from that location)
-    * There is a SourcingService interface - that allows you to register the logic of how to decide on the sourceId
+* `SourceId`: Optional represents a location that should be used to fulfill this item. 
+This can be the code of a certain warehouse or even the code of a retail store (if the item should be picked(sourced) from that location)
+    * There is a SourcingService interface - that allows you to register the logic of how to decide on the `SourceId`
 
 ### Decorated Cart
 
-If you need all the product informations at hand - use the Decorated Cart - its decorating the cart with references to the product (dependency product package)
+If you need all the product information at hand - use the Decorated Cart - its decorating the cart with references to the product (dependency product package)
 
 ```graphviz
 digraph hierarchy {
@@ -119,50 +120,50 @@ cart->item[]
 
 Make sure you read the product package details about prices.
 
-The cart need to show prices with its taxes and additional cart discounts and all different subtotals etc.
+The cart needs to show prices with their taxes and additional cart discounts and all different subtotals etc.
 What you want to show depends on the project, the type of shop (B2B or B2C), the discount logic and the implemented calculation details of the underlying cartservice implementation.
 
-Some of the prices you may want to show are "calculateable" on the fly (in this cases they are offered as methods) - but some highly depends on the tax and discount logic and they need to have the correct values set by the underlying Cartservice implementation.
+Some of the prices you may want to show are "calculable" on the fly (in this cases they are offered as methods) - but some highly depend on the tax and discount logic and they need to have the correct values set by the underlying cartservice implementation.
 
 ### Cart invariants
 
-* While the flamingo Price model (which is used) can calculate exact prices internal, we need "payable prices" to be set in the Cart. This is to allow consistent adding and substracting of prices and still always get a price that is payable.
+* While the Flamingo price model (which is used) can calculate exact prices internal, we need "payable prices" to be set in the cart. This is to allow consistent adding and subtracting of prices and still always get a price that is payable.
 
-* All sums - also the Cart GrantTotal is calculated and can be "tracked" back to the item row prices.
+* All sums - also the cart grand total is calculated and can be "tracked" back to the item row prices.
 
-In order to get consistent SubTotals in the Cart, the Cart model need certain invariants to be matched:
-* Itemlevel: RowPriceNet + TotalTaxAmount = RowPriceGross
-* Itemlevel: TotalDiscount <= RowPriceGross
-* All main prices need to have same currency (that may be extended later but currently is a constrain)
+In order to get consistent sub totals in the cart, the cart model needs certain invariants to be matched:
+* Item level: RowPriceNet + TotalTaxAmount = RowPriceGross
+* Item level: TotalDiscount <= RowPriceGross
+* All main prices need to have same currency (that may be extended later but currently it is a constraint)
 
 ### About Tax calculation in general
 
 It makes sense to understand the details of tax calculations - so please take the following example of a cart with 2 items:
-* item1 netprice 14,71
-* item2 netprice 10,18
+* item1 net price 14,71
+* item2 net price 10,18
 * and a 19% VAT (G.S.T)
 
 There are two principal ways of tax calculations (called vertical and horizontal)
 * vertical: the final tax is calculated from the sum of all rounded item taxes: 
     * item1 +19% gross price rounded: 17,50 (tax 2,79)
     * item2 +19% gross price rounded: 12,11 (tax 1,93)
-    * = GrantTotal= 29,61 / =totalTax: 4,72
+    * = GrandTotal = 29,61 / = totalTax: 4,72
     * => SubTotalNet = 24,89
-    * Often prefered for B2C, when the item prices are shown as gross prices first.
+    * Often preferred for B2C, when the item prices are shown as gross prices first.
     * Pro: Easier to calculate 
     * Con: rounding errors may sum up in big orders
     
 * horizontal: The final tax is calculated from the sum of all net prices of the item and then rounded
     * => SubTotalNet: 24,89  => +19% rounded GrandTotal: 29,62 / included Tax: 4,73
-    * Often prefered for B2B or when the prices shown to the customer are as net prices at first.
+    * Often preferred for B2B or when the prices shown to the customer are as net prices at first.
 
-* In both cases the tax might be calculated from a given net price or a given gross price (see product package config "commerce.product.priceIsGross").
+* In both cases the tax might be calculated from a given net price or a given gross price (see product package config `commerce.product.priceIsGross`).
 
-* discounts are normaly subtracted before tax calculation
+* discounts are normally subtracted before tax calculation
 
-* At least in germany the law don't force one algorithm over the over. In this cart module it is up to the CartService implementation what algorithm it uses to fill the tax
+* At least in germany the law doesn't force one algorithm over the other. In this cart module it is up to the CartService implementation what algorithm it uses to fill the tax.
 
-* Flamingo cart model calculates sums of prices and taxes using the "vertical" way - its doing this by basically adding the prices in the items up on delivery and cart levels. So if you want to use "horizontal" tax calculations the cartservice implementation need to make sure that the item prices are set correct (splitted correct with cent corrections - outgoing from the horizontal sums).
+* Flamingo cart model calculates sums of prices and taxes using the "vertical" way - its doing this by basically adding the prices in the items up on delivery and cart levels. So if you want to use "horizontal" tax calculations the cartservice implementation need to make sure that the item prices are set correct (split correct with cent corrections - outgoing from the horizontal sums).
 
 
 
@@ -172,14 +173,14 @@ The Key with "()" in the list are methods and it is assumed as an invariant, tha
 
 | Key                                    | Desc                                                                                                                                                                                                                                                                      | Math Invariants                                                                                                             |
 |----------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
-| SinglePriceGross                       | Single price of product (brutto) (was SinglePrice)                                                                                                                                                                                                                        |                                                                                                                             |
-| SinglePriceNet                         | (netto)                                                                                                                                                                                                                                                                   |                                                                                                                             |
+| SinglePriceGross                       | Single price of product (gross) (was SinglePrice)                                                                                                                                                                                                                         |                                                                                                                             |
+| SinglePriceNet                         | (net)                                                                                                                                                                                                                                                                     |                                                                                                                             |
 | Qty                                    | Qty                                                                                                                                                                                                                                                                       |                                                                                                                             |
 | RowPriceGross                          | (was RowTotal )                                                                                                                                                                                                                                                           | RowPriceGross ~ SinglePriceGross * Qty                                                                                      |
 | RowPriceNet                            |                                                                                                                                                                                                                                                                           | RowPriceNet ~ SinglePriceNet * Qty                                                                                          |
-| RowTaxes                                | Collection of (summed up) Taxes for that item row.                                                                                                                                                                                               |                                                                                                                             |
-| TotalTaxAmount()                            | Sum of all Taxes for this Row                                                                                                                                                                                                                                             | = RowPriceGross-RowPriceNet                                                                                                 |
-| AppliedDiscounts                       | List with the applied Discounts for this Item  (There are ItemRelated Discounts and Discounts that are not ItemRelated (Cart Related).  However it is important to know that at the end all DiscountAmounts are applied to an item (to make refunding logic easier later) |                                                                                                                             |
+| RowTaxes                               | Collection of (summed up) Taxes for that item row.                                                                                                                                                                                                                        |                                                                                                                             |
+| TotalTaxAmount()                       | Sum of all Taxes for this Row                                                                                                                                                                                                                                             | = RowPriceGross-RowPriceNet                                                                                                 |
+| AppliedDiscounts                       | List with the applied Discounts for this Item  (There are ItemRelated Discounts and Discounts that are not ItemRelated (CartRelated). However it is important to know that at the end all DiscountAmounts are applied to an item (to make refunding logic easier later)   |                                                                                                                             |
 | TotalDiscountAmount()                  | Complete Discount for the Row. If the Discounts have no tax/duty (they can be considered as Gross). If they are applied from RowPriceGross or RowPriceNet depends on the calculations done in the cartservice implementation.                                             | TotalDiscountAmount = Sum of AppliedDiscounts TotalDiscountAmount = ItemRelatedDiscountAmount +NonItemRelatedDiscountAmount |
 | NonItemRelatedDiscountAmount()         |                                                                                                                                                                                                                                                                           | NonItemRelatedDiscountAmount = Sum of AppliedDiscounts where IsItemRelated = false                                          |
 | ItemRelatedDiscountAmount()            |                                                                                                                                                                                                                                                                           | ItemRelatedDiscountAmount = Sum of AppliedDiscounts where IsItemRelated = false                                             |
@@ -189,14 +190,14 @@ The Key with "()" in the list are methods and it is assumed as an invariant, tha
 | RowPriceNetWithItemRelatedDiscount()   |                                                                                                                                                                                                                                                                           |                                                                                                                             |
 |                                        |                                                                                                                                                                                                                                                                           |                                                                                                                             |
 
-% use https://www.tablesgenerator.com/markdown_tables to update the table %
+[comment]: <> (use https://www.tablesgenerator.com/markdown_tables to update the table)
 
 ### Delivery - price fields and method 
 | Key                               | Desc | Math                                       |
 |-----------------------------------|------|--------------------------------------------|
-| SubTotalGross()                   |      |  Sum of items RowPriceGross                |
+| SubTotalGross()                   |      | Sum of items RowPriceGross                 |
 | SumRowTaxes()                     |      | List of the sum of the different RowFees   |
-| SumTotalTaxAmount()               |      | List of the sum of the TotalTaxAmount   |
+| SumTotalTaxAmount()               |      | List of the sum of the TotalTaxAmount      |
 | SubTotalNet()                     |      | Sum of items RowPriceNet                   |
 | SubTotalGrossWithDiscounts()      |      | SubTotalGross() - SumTotalDiscountAmount() |
 | SubTotalNetWithDiscounts          |      | SubTotalNet() - SumTotalDiscountAmount()   |
@@ -209,25 +210,25 @@ The Key with "()" in the list are methods and it is assumed as an invariant, tha
 
 | Key                               | Desc                                                                                                                                                | Math                                                                                                                                                     |
 |-----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| GrandTotal()                        | The final amount that need to be payed by the customer (Gross)                                                                                      | = SubTotalGross()  - SumTotalDiscountAmount() + Totalitems |
-| Totalitems                        | List of (additional) Totalitems. Each have a certain type - you may want to show some of them in the frontend.      |                                                                                                                                                          |
-| SumShipping()                     |           Sum of all shipping costs as Price                                                                                                                                           | The sum of the deliveries shipping                                                                                                                       |
+| GrandTotal()                      | The final amount that need to be payed by the customer (Gross)                                                                                      | = SubTotalGross()  - SumTotalDiscountAmount() + Totalitems                                                                                               |
+| Totalitems                        | List of (additional) Totalitems. Each have a certain type - you may want to show some of them in the frontend.                                      |                                                                                                                                                          |
+| SumShipping()                     | Sum of all shipping costs as Price                                                                                                                  | The sum of the deliveries shipping                                                                                                                       |
 | SubTotalGross()                   |                                                                                                                                                     | Sum of deliveries SubTotalGross()                                                                                                                        |
-| SumTaxes()                        | The total taxes of the cart -   as list of Tax                                                                   |                                                                                                                                                          |
-| SumTotalTaxAmount()               |            The overall Tax of cart as Price                                                                                       |
+| SumTaxes()                        | The total taxes of the cart - as list of Tax                                                                                                        |                                                                                                                                                          |
+| SumTotalTaxAmount()               | The overall Tax of cart as Price                                                                                                                    |                                                                                                                                                          |
 | SubTotalNet()                     |                                                                                                                                                     | Sum of deliveries SubTotalNet()                                                                                                                          |
 | SubTotalGrossWithDiscounts()      |                                                                                                                                                     | SubTotalGross() - SumTotalDiscountAmount()                                                                                                               |
-| SubTotalNetWithDiscounts()          |                                                                                                                                                     | SubTotalNet() - SumTotalDiscountAmount()                                                                                                                 |
+| SubTotalNetWithDiscounts()        |                                                                                                                                                     | SubTotalNet() - SumTotalDiscountAmount()                                                                                                                 |
 | SumTotalDiscountAmount()          | The overall applied discount                                                                                                                        | Sum of deliveries TotalDiscountAmount                                                                                                                    |
 | SumNonItemRelatedDiscountAmount() |                                                                                                                                                     | Sum of deliveries NonItemRelatedDiscountAmount                                                                                                           |
 | SumItemRelatedDiscountAmount()    |                                                                                                                                                     | Sum of deliveries ItemRelatedDiscountAmount                                                                                                              |
-| GetVoucherSavings()               | Returns the sum of Totals from type voucher
-| HasShippingCosts()                |  True if cart has in sum any shipping costs
+| GetVoucherSavings()               | Returns the sum of Totals from type voucher                                                                                                         |                                                                                                                                                          |
+| HasShippingCosts()                | True if cart has in sum any shipping costs                                                                                                          |                                                                                                                                                          |
 
 ### Typical B2C vs B2B usecases
 
 B2C use cases:
-* The item price is with all fees (gros). The discount will be reduced from the price and all the fees, duty and net price will be calculated from this.
+* The item price is with all fees (gross). The discount will be reduced from the price and all the fees, duty and net price will be calculated from this.
 * Typically you want to show per row:
     * SinglePriceGross
     * Qty
@@ -239,23 +240,24 @@ B2C use cases:
    * Carttotals (non taxable extra lines on cart level)
    * Shipping
    * The included Total Tax in Cart (SumTaxes) 
-   * GrandTotal (is what the customer need to pay at the end inkl all fees)
+   * GrandTotal (is what the customer needs to pay at the end including all fees)
 
 B2B use cases:
-* The item price is without fees (net). The discount will be reduced and then the fees will be added to get the gross price. Do propably you want to show per row:
+* The item price is without fees (net). The discount will be reduced and then the fees will be added to get the gross price. You probably do want to show per row:
     *  SinglePriceNet
     *  RowPriceNet
     *  RowPriceNetWithDiscount
     
-* The cart then normaly shows:
+* The cart then normally shows:
    * SubTotalNet
    * Carttotals (non taxable extra lines on cart level)
    * Shipping
    * The included Total Tax in Cart (SumTaxes) 
    * GrandTotal (is what the customer need to pay at the end inkl all fees)
  
-### Building a Cart with its Deliveries and Items
-The domain concept is that the cart is returned and updated by the "Cartservice" - which is the main secondary port of the package that need to be implemented (see below).
+### Building a Cart with its deliveries and items
+
+The domain concept is that the cart is returned and updated by the "Cartservice" - which is the main secondary port of the package that needs to be implemented (see below).
 The implementations should use the provided "Builder" objects to build up Items, Deliveries and Carts. The Builder items ensure that the invariants are met and help with calculations of missing values.
 
 e.g. to build an item:
@@ -296,23 +298,23 @@ You can use the factory on the decorated cart to get a valid PaymentSelection ba
 
 **GuestCartService, CustomerCartService (and ModifyBehavior)**
 
-GuestCartService and CustomerCartService are the two interfaces that act as secondary ports.
+`GuestCartService` and `CustomerCartService` are the two interfaces that act as secondary ports.
 They need to be implemented and registered:
 
-```
+```go
 injector.Bind((*cart.GuestCartService)(nil)).To(infrastructure.YourAdapter{})
 injector.Bind((*cart.CustomerCartService)(nil)).To(infrastructure.YourAdapter{})
 ```
 
-Most of the cart modification methods are part of the `ModifyBehaviour` interface - if you look at the seconary ports you will see, that they need to return an (initialized) implementation of the
-`ModifyBehaviour` interface - so in fact this interface need to be implemented when writing an adapter as well.
+Most of the cart modification methods are part of the `ModifyBehaviour` interface - if you look at the secondary ports you will see, that they need to return an (initialized) implementation of the
+`ModifyBehaviour` interface - so in fact this interface needs to be implemented when writing an adapter as well.
 
 There is a "InMemoryAdapter" implementation as part of the package.
 
 **PlaceOrderService**
 
 There is also a `PlaceOrderService` interface as secondary port.
-Implement an Adapter for it to define what should happen in case the cart is placed.
+Implement an adapter for it to define what should happen in case the cart is placed.
 
 There is a `EmailAdapter` implementation as part of the package, that sends out the content of the cart as mail.
 
@@ -345,7 +347,7 @@ type (
 )
 
 var (
-  //need to implement the cart interface AdditionalDeliverInfo
+  // need to implement the cart interface AdditionalDeliverInfo
   _ cart.AdditionalDeliverInfo = new(FlightData)
 )
 
@@ -358,7 +360,7 @@ func (f *FlightData) Unmarshal(data []byte) error {
 }
 
 
-//Helper for storing additional data
+// Helper for storing additional data
 func StoreFlightData(duc *cart.DeliveryInfoUpdateCommand, flight *FlightData) ( error) {
   if flight == nil {
     return nil
@@ -366,7 +368,7 @@ func StoreFlightData(duc *cart.DeliveryInfoUpdateCommand, flight *FlightData) ( 
   return duc.SetAdditional("flight",flight)
 }
 
-//Helper for getting stored data:
+// Helper for getting stored data:
 func GetStoredFlightData(d cart.DeliveryInfo) (*FlightData, error) {
   flight := new(FlightData)
   err := d.LoadAdditionalInfo("flight",flight)
@@ -394,18 +396,18 @@ Example Sequence for AddToCart Application Services to
 
 ## A typical Checkout "Flow"
 
-A checkout package would use the cart package for adding informations to the cart, typically that would involve:
+A checkout package would use the cart package for adding information to the cart, typically that would involve:
 
 * Checkout might want to update Items:
-    * Set sourceId (Sourcing logic) on an Item and then call CartBehaviour->UpdateItem(item,itemId)
+    * Set sourceId (Sourcing logic) on an item and then call `CartBehaviour.UpdateItem(item,itemId)`
 
-* Updating DeliveryInformations by Calling CartBehaviour->UpdateDeliveryInfo())
-    * (for updating ShippingAddress, WhishDate, ...)
+* Updating DeliveryInformation by calling `CartBehaviour.UpdateDeliveryInfo()`
+    * (for updating ShippingAddress, WishDate, ...)
 
-* Optional Updating Purchaser Infos  by Calling CartBehaviour->UpdatePurchaser()
+* Optional updating Purchaser Infos by calling `CartBehaviour.UpdatePurchaser()`
 
-* Finish by calling CartService->PlaceOrder(CartPayment)
-    * CartPayment is an object, which holds the informations which Payment is used for which item
+* Finish by calling `CartService.PlaceOrder(CartPayment)`
+    * CartPayment is an object, which holds the information which Payment is used for which item
 
 ## Interface Layer
 
@@ -422,14 +424,13 @@ The templates get the following variables passed:
 * CartValidationResult
 
 ### Cart template function
-Use the `getCart` templatefunction to get the decorated cart:
+Use the `getCart` template function to get the decorated cart:
 
-```
+```pug
 -
   var decoratedCart = getCart()
   var currentCount = decoratedCart.cart.getCartTeaser.itemCount
 ```
-
 
 ### Cart Ajax API
 
