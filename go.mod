@@ -10,26 +10,22 @@ require (
 	github.com/cockroachdb/apd v1.1.0 // indirect
 	github.com/corpix/uarand v0.0.0 // indirect
 	github.com/etgryphon/stringUp v0.0.0-20121020160746-31534ccd8cac // indirect
-	github.com/gliderlabs/ssh v0.1.3 // indirect
 	github.com/go-playground/form v3.1.4+incompatible
 	github.com/go-playground/locales v0.12.1 // indirect
 	github.com/go-test/deep v1.0.1
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/icrowley/fake v0.0.0-20180203215853-4178557ae428 // indirect
-	github.com/leebenson/conform v0.0.0-20180615210222-bc2e0311fd85
 	github.com/leekchan/accounting v0.0.0-20180703100437-18a1925d6514
 	github.com/lib/pq v1.0.0 // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/prometheus/procfs v0.0.0-20190225181712-6ed1f7e10411 // indirect
 	github.com/shopspring/decimal v0.0.0-20180709203117-cd690d0c9e24 // indirect
 	github.com/stretchr/testify v1.3.0
-	go.aoe.com/flamingo/form v0.0.0-20190214145643-d0d66a148576
 	go.opencensus.io v0.19.1
 	golang.org/x/crypto v0.0.0-20190225124518-7f87c0fbb88b // indirect
 	golang.org/x/net v0.0.0-20190226193003-66a96c8a540e // indirect
 	golang.org/x/oauth2 v0.0.0-20190226191147-529b322ea346 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
-	gopkg.in/go-playground/validator.v9 v9.27.0
 	gopkg.in/sourcemap.v1 v1.0.5 // indirect
 )
 
