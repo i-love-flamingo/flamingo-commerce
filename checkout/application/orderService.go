@@ -139,7 +139,7 @@ func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.
 	if err != nil {
 		// record failcount metric
 		stats.Record(ctx, orderFailedStat.M(1))
-		os.logger.WithField("category", "checkout.orderService").Error("Error during place Order: %v", err)
+		os.logger.WithField("category", "checkout.orderService").Error("Error during place Order:" + err.Error())
 		return nil, errors.New("error while placing the order. please contact customer support")
 	}
 	return placedOrderInfos, nil

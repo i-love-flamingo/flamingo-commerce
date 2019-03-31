@@ -509,7 +509,7 @@ func (cc *CheckoutController) getContactMail(cart cart.Cart) string {
 func (cc *CheckoutController) placeOrder(ctx context.Context, session *web.Session, cartPayment cart.Payment, decoratedCart cart.DecoratedCart) (web.Result, error) {
 	placedOrderInfos, err := cc.orderService.CurrentCartPlaceOrder(ctx, session, cartPayment)
 	if err != nil {
-		cc.logger.WithField("subcategory", "checkoutError").WithField("errorMsg", err.Error()).Error(fmt.Sprintf("place order failed: cart id: %v / customer-name: %v / total-amount: %v / cartPayment: %#v", decoratedCart.Cart.EntityID, decoratedCart.Cart.Purchaser.Address.FullName(), decoratedCart.Cart.GrandTotal(), cartPayment))
+		cc.logger.WithField("subcategory", "checkoutError").WithField("errorMsg", err.Error()).Error(fmt.Sprintf("place order failed: cart id: %v / total-amount: %v / cartPayment: %#v", decoratedCart.Cart.EntityID, decoratedCart.Cart.GrandTotal(), cartPayment))
 		return nil, err
 	}
 
