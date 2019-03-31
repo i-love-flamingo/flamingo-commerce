@@ -93,12 +93,12 @@ func (cp *Payment) AddTransaction(transaction Transaction) {
 
 //NewSimplePaymentSelection - returns a PaymentSelection that can be used to update the cart.
 // 	multiple charges to pay the cart are not used here: The complete grandtotal is selected to be payed in one charge with the given paymentgateway and paymentmethod
-func NewSimplePaymentSelection(gateway string, method string, c *Cart) PaymentSelection {
+func NewSimplePaymentSelection(gateway string, method string, grandTotal domain.Price) PaymentSelection {
 	return PaymentSelection{
 		Gateway: gateway,
 		ChargeSplits: []ChargeSplit{
 			ChargeSplit{
-				Amount:     c.GrandTotal(),
+				Amount:     grandTotal,
 				ChargeType: domain.ChargeTypeMain,
 				Method:     method,
 			},

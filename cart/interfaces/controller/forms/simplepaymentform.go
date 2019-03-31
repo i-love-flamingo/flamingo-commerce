@@ -123,5 +123,5 @@ func (c *SimplePaymentFormController) HandleFormAction(ctx context.Context, r *w
 
 //MapToPaymentSelection - mapper from form values to domain
 func (f *SimplePaymentForm) MapToPaymentSelection(currentCart *cart.Cart) cart.PaymentSelection {
-	return cart.NewSimplePaymentSelection(f.Gateway, f.Method, currentCart)
+	return cart.NewSimplePaymentSelection(f.Gateway, f.Method, currentCart.GrandTotal())
 }

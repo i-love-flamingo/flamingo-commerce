@@ -207,6 +207,19 @@ func (cart Cart) GetByItemID(itemID string, deliveryCode string) (*Item, error) 
 	return nil, errors.Errorf("itemId %v in cart for delivery %v not existing", itemID, deliveryCode)
 }
 
+// GetByUniqueItemID gets an item by its id
+func (cart Cart) GetByUniqueItemID(uitemID string) (*Item, error) {
+	for _, delivery := range cart.Deliveries {
+		for _, currentItem := range delivery.Cartitems {
+			if currentItem.UniqueID == uitemID {
+				return &currentItem, nil
+			}
+		}
+	}
+
+	return nil, errors.Errorf("uitemID %v in cart not existing", uitemID)
+}
+
 func inStruct(value string, list []string) bool {
 	for _, item := range list {
 		if item == value {
@@ -528,6 +541,13 @@ func (b *Builder) AddDelivery(d Delivery) *Builder {
 func (b *Builder) SetAdditionalData(d AdditionalData) *Builder {
 	b.init()
 	b.cartInBuilding.AdditionalData = d
+	return b
+}
+
+//SetPaymentSelection - to add additional data
+func (b *Builder) SetPaymentSelection(d PaymentSelection) *Builder {
+	b.init()
+	b.cartInBuilding.PaymentSelection = &d
 	return b
 }
 
