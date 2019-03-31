@@ -24,10 +24,10 @@ type (
 		ReservedOrderID string
 
 		//BillingAdress - the main billing address (relevant for all payments/invoices)
-		BillingAdress Address
+		BillingAdress *Address
 
 		//Purchaser - additional infos for the legal contact person in this order
-		Purchaser Person
+		Purchaser *Person
 
 		//Deliveries - list of desired Deliverys (or Shippments) involved in this cart
 		Deliveries []Delivery
@@ -36,7 +36,7 @@ type (
 		AdditionalData AdditionalData
 
 		//PaymentSelection - the saved PaymentSelection
-		PaymentSelection PaymentSelection
+		PaymentSelection *PaymentSelection
 
 		//BelongsToAuthenticatedUser - false = Guest Cart true = cart from the authenticated user
 		BelongsToAuthenticatedUser bool
@@ -506,14 +506,14 @@ func (b *Builder) SetReservedOrderID(id string) *Builder {
 //SetBillingAdress - optional
 func (b *Builder) SetBillingAdress(a Address) *Builder {
 	b.init()
-	b.cartInBuilding.BillingAdress = a
+	b.cartInBuilding.BillingAdress = &a
 	return b
 }
 
 //SetPurchaser - optional
 func (b *Builder) SetPurchaser(p Person) *Builder {
 	b.init()
-	b.cartInBuilding.Purchaser = p
+	b.cartInBuilding.Purchaser = &p
 	return b
 }
 
