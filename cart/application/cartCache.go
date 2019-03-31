@@ -100,7 +100,7 @@ func (cs *CartSessionCache) Inject(
 	userService *authApplication.UserService,
 	logger flamingo.Logger,
 	config *struct {
-		LifetimeSeconds float64 `inject:"config:cart.cacheLifetime"` // in seconds
+		LifetimeSeconds float64 `inject:"config:commerce.cart.cacheLifetime"` // in seconds
 	},
 ) {
 	cs.authManager = authManager

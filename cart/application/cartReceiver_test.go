@@ -418,7 +418,7 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 		Logger              flamingo.Logger
 		EventPublisher      cartApplication.EventPublisher
 		config              *struct {
-			DefaultDeliveryCode string `inject:"config:cart.defaultDeliveryCode,optional"`
+			DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
 		}
 		DeliveryInfoBuilder cartDomain.DeliveryInfoBuilder
 		CartCache           cartApplication.CartCache
@@ -467,7 +467,7 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 				Logger:         flamingo.NullLogger{},
 				EventPublisher: new(MockEventPublisher),
 				config: &struct {
-					DefaultDeliveryCode string `inject:"config:cart.defaultDeliveryCode,optional"`
+					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
 				}{
 					DefaultDeliveryCode: "default_delivery_code",
 				},

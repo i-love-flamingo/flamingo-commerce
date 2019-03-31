@@ -24,7 +24,7 @@ var (
 
 // Inject dependencies
 func (e *PlaceOrderServiceAdapter) Inject(logger flamingo.Logger, config *struct {
-	EmailAddress string `inject:"config:cart.emailAdapter.emailAddress"`
+	EmailAddress string `inject:"config:commerce.cart.emailAdapter.emailAddress"`
 }) {
 	e.emailAddress = config.EmailAddress
 	e.logger = logger.WithField("module", "cart").WithField("category", "emailAdapter")

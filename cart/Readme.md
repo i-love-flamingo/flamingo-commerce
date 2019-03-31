@@ -24,7 +24,7 @@ Also the cart module and its services will be used by the checkout module.
 ### Configurations
 
 ```yml
-  cart:
+  commerce.cart:
     # To register the in memory cart service adapter (e.g. for development mode)
     useInMemoryCartServiceAdapters: true
     enableCartCache: true

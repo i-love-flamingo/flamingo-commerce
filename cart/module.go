@@ -38,15 +38,16 @@ type (
 func (m *Module) Inject(
 	routerRegistry *web.RouterRegistry,
 	config *struct {
-		UseInMemoryCart bool `inject:"config:cart.useInMemoryCartServiceAdapters"`
-		EnableCartCache bool `inject:"config:cart.enableCartCache,optional"`
-		UseEmailAdapter bool `inject:"config:cart.useEmailPlaceOrderAdapter,optional"`
+		UseInMemoryCart bool `inject:"config:commerce.cart.useInMemoryCartServiceAdapters"`
+		EnableCartCache bool `inject:"config:commerce.cart.enableCartCache,optional"`
+		UseEmailAdapter bool `inject:"config:commerce.cart.useEmailPlaceOrderAdapter,optional"`
 	},
 ) {
 	m.routerRegistry = routerRegistry
 	if config != nil {
 		m.useInMemoryCart = config.UseInMemoryCart
 		m.enableCartCache = config.EnableCartCache
+		m.useEmailAdapter = config.UseEmailAdapter
 	}
 }
 
@@ -86,11 +87,13 @@ func (m *Module) Configure(injector *dingo.Injector) {
 // DefaultConfig enables inMemory cart service adapter
 func (m *Module) DefaultConfig() config.Map {
 	return config.Map{
-		"cart": config.Map{
-			"useInMemoryCartServiceAdapters": true,
-			"useEmailPlaceOrderAdapter":      true,
-			"cacheLifetime":                  float64(1200), // in seconds
-			"enableCartCache":                true,
+		"commerce": config.Map{
+			"cart": config.Map{
+				"useInMemoryCartServiceAdapters": true,
+				"useEmailPlaceOrderAdapter":      true,
+				"cacheLifetime":                  float64(1200), // in seconds
+				"enableCartCache":                true,
+			},
 		},
 	}
 }

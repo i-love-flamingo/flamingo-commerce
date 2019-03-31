@@ -37,7 +37,7 @@ func (cs *CartService) Inject(
 	deliveryInfoBuilder cartDomain.DeliveryInfoBuilder,
 	logger flamingo.Logger,
 	config *struct {
-		DefaultDeliveryCode string `inject:"config:cart.defaultDeliveryCode,optional"`
+		DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
 	},
 	optionals *struct {
 		CartValidator     cartDomain.Validator         `inject:",optional"`

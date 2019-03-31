@@ -195,7 +195,7 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 func TestCartSessionCache_CacheCart(t *testing.T) {
 	type fields struct {
 		config *struct {
-			LifetimeSeconds float64 `inject:"config:cart.cacheLifetime"` // in seconds
+			LifetimeSeconds float64 `inject:"config:commerce.cart.cacheLifetime"` // in seconds
 		}
 	}
 	type args struct {
@@ -215,7 +215,7 @@ func TestCartSessionCache_CacheCart(t *testing.T) {
 			name: "no cart given",
 			fields: fields{
 				config: &struct {
-					LifetimeSeconds float64 `inject:"config:cart.cacheLifetime"` // in seconds
+					LifetimeSeconds float64 `inject:"config:commerce.cart.cacheLifetime"` // in seconds
 				}{
 					LifetimeSeconds: 300,
 				},
@@ -277,7 +277,7 @@ func TestCartSessionCache_CartExpiry(t *testing.T) {
 		nil,
 		flamingo.NullLogger{},
 		&struct {
-			LifetimeSeconds float64 `inject:"config:cart.cacheLifetime"` // in seconds
+			LifetimeSeconds float64 `inject:"config:commerce.cart.cacheLifetime"` // in seconds
 		}{
 			LifetimeSeconds: 1,
 		},

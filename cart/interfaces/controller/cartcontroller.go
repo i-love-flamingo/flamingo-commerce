@@ -51,7 +51,7 @@ func (cc *CartViewController) Inject(
 	router *web.Router,
 	logger flamingo.Logger,
 	config *struct {
-		ShowEmptyCartPageIfNoItems bool `inject:"config:cart.showEmptyCartPageIfNoItems,optional"`
+		ShowEmptyCartPageIfNoItems bool `inject:"config:commerce.cart.showEmptyCartPageIfNoItems,optional"`
 	},
 ) {
 	cc.responder = responder
