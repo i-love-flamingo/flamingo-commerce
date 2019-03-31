@@ -1,6 +1,6 @@
 CONTEXT?=dev
-REPLACE?=-replace flamingo.me/flamingo/v3=../flamingo
-DROPREPLACE?=-dropreplace flamingo.me/flamingo/v3
+REPLACE?=-replace flamingo.me/flamingo/v3=../flamingo -replace flamingo.me/form=../form
+DROPREPLACE?=-dropreplace flamingo.me/flamingo/v3 -dropreplace flamingo.me/form
 
 .PHONY: local unlocal
 

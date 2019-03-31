@@ -89,7 +89,7 @@ type (
 	}
 )
 
-var _ formDomain.FormService = new(CheckoutFormService)
+//var _ formDomain.FormService = new(CheckoutFormService)
 var _ formDomain.GetDefaultFormData = new(CheckoutFormService)
 
 // Inject the dependencies
@@ -341,18 +341,19 @@ func (fs CheckoutFormService) GetAdditionFormFields(formData CheckoutFormData) m
 func (fs CheckoutFormService) GetAdditionalData(formData CheckoutFormData) *cart.AdditionalData {
 	return &cart.AdditionalData{
 		CustomAttributes: fs.GetAdditionFormFields(formData),
-		SelectedPayment:  fs.GetSelectedPayment(formData),
+		//	SelectedPayment:  fs.GetSelectedPayment(formData),
 	}
 }
 
+/*
 // GetSelectedPayment returns user selected payment info
 func (fs CheckoutFormService) GetSelectedPayment(formData CheckoutFormData) cart.SelectedPayment {
 	return cart.SelectedPayment{
-		Provider: formData.SelectedPaymentProvider,
-		Method:   formData.SelectedPaymentProviderMethod,
+		Gateway: formData.SelectedPaymentProvider,
+		Method:  formData.SelectedPaymentProviderMethod,
 	}
 }
-
+*/
 //ValidateFormData - from FormService interface
 func (fs *CheckoutFormService) ValidateFormData(data interface{}) (formDomain.ValidationInfo, error) {
 	formData, ok := data.(CheckoutFormData)

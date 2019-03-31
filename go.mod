@@ -2,7 +2,10 @@ module flamingo.me/flamingo-commerce/v3
 
 require (
 	flamingo.me/dingo v0.1.3
+	flamingo.me/flamingo v2.3.3+incompatible // indirect
+	flamingo.me/flamingo-commerce v2.0.0+incompatible
 	flamingo.me/flamingo/v3 v3.0.0-alpha7
+	flamingo.me/form v0.0.0-20190330232950-33d3dcf96f7f
 	flamingo.me/pugtemplate v0.0.0-20190222140014-7fc6fe55115f
 	github.com/cockroachdb/apd v1.1.0 // indirect
 	github.com/corpix/uarand v0.0.0 // indirect
@@ -10,8 +13,8 @@ require (
 	github.com/gliderlabs/ssh v0.1.3 // indirect
 	github.com/go-playground/form v3.1.4+incompatible
 	github.com/go-playground/locales v0.12.1 // indirect
-	github.com/go-playground/universal-translator v0.16.0 // indirect
 	github.com/go-test/deep v1.0.1
+	github.com/google/uuid v1.1.1 // indirect
 	github.com/icrowley/fake v0.0.0-20180203215853-4178557ae428 // indirect
 	github.com/leebenson/conform v0.0.0-20180615210222-bc2e0311fd85
 	github.com/leekchan/accounting v0.0.0-20180703100437-18a1925d6514
@@ -34,3 +37,5 @@ replace (
 	github.com/robertkrimen/otto => github.com/thebod/otto v0.0.0-20180101010101-83d297c4b64aeb2de4268d9a54c9a503ae2d8139
 	golang.org/x/oauth2 => github.com/Ompluscator/oauth2 v0.0.0-20190101010101-b7626857
 )
+
+replace flamingo.me/form => ../form

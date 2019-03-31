@@ -3,9 +3,7 @@ package checkout
 import (
 	"flamingo.me/dingo"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain"
-	paymentDomain "flamingo.me/flamingo-commerce/v3/checkout/domain/payment"
 	"flamingo.me/flamingo-commerce/v3/checkout/infrastructure"
-	paymentInfrastructure "flamingo.me/flamingo-commerce/v3/checkout/infrastructure/payment"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller/formdto"
 	"flamingo.me/flamingo/v3/framework/config"
@@ -23,7 +21,6 @@ type (
 
 // Configure module
 func (m *Module) Configure(injector *dingo.Injector) {
-	injector.BindMap((*paymentDomain.Provider)(nil), "offlinepayment").To(paymentInfrastructure.OfflinePaymentProvider{})
 
 	injector.Bind((*form.Decoder)(nil)).ToProvider(form.NewDecoder).AsEagerSingleton()
 	if m.UseFakeSourcingService {
@@ -71,6 +68,6 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 	registry.HandleAny("checkout.expired", r.controller.ExpiredAction)
 	registry.Route("/checkout/expired", "checkout.expired")
 
-	registry.HandleAny("checkout.processpayment", r.controller.ProcessPaymentAction)
-	registry.Route("/checkout/processpayment/:providercode/:methodcode", "checkout.processpayment")
+	registry.HandleAny("checkout.placeorder", r.controller.PlaceOrderAction)
+	registry.Route("/checkout/placeorder", "checkout.placeorder")
 }
