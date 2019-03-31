@@ -10,7 +10,7 @@ The module offers a data controller "customerorders" to get all orders of the cu
 `orders = data("customerorders")`
 
 ## Ports
-The module offers a port that need to be implemented to fetch the orders.
+The module offers a port that needs to be implemented to fetch the orders.
 
 The module comes with 2 possible Adapters for the port:
 * FakeAdapter: Just returns some dummy orders - useful for local testing
