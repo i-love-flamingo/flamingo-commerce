@@ -2,7 +2,6 @@ package email
 
 import (
 	"context"
-	"errors"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	authDomain "flamingo.me/flamingo/v3/core/auth/domain"
@@ -11,7 +10,7 @@ import (
 
 type (
 	// PlaceOrderServiceAdapter provides an implementation of the PlaceOrderService as email adpater
-	//  TODO - need to be implemented
+	//  TODO - this example adapter need to be implemented
 	PlaceOrderServiceAdapter struct {
 		emailAddress string
 		logger       flamingo.Logger
@@ -34,18 +33,18 @@ func (e *PlaceOrderServiceAdapter) Inject(logger flamingo.Logger, config *struct
 func (e *PlaceOrderServiceAdapter) PlaceGuestCart(ctx context.Context, cart *cartDomain.Cart, payment *cartDomain.Payment) (cartDomain.PlacedOrderInfos, error) {
 	var placedOrders cartDomain.PlacedOrderInfos
 	placedOrders = append(placedOrders, cartDomain.PlacedOrderInfo{
-		OrderNumber: "1",
+		OrderNumber: cart.ID,
 	})
 
-	return nil, errors.New("not yet implemented")
+	return placedOrders, nil
 }
 
 // PlaceCustomerCart places a customer cart as order email
 func (e *PlaceOrderServiceAdapter) PlaceCustomerCart(ctx context.Context, auth authDomain.Auth, cart *cartDomain.Cart, payment *cartDomain.Payment) (cartDomain.PlacedOrderInfos, error) {
 	var placedOrders cartDomain.PlacedOrderInfos
 	placedOrders = append(placedOrders, cartDomain.PlacedOrderInfo{
-		OrderNumber: "1",
+		OrderNumber: cart.ID,
 	})
 
-	return nil, errors.New("not yet implemented")
+	return placedOrders, nil
 }
