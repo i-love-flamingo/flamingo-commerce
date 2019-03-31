@@ -78,15 +78,23 @@ type (
 )
 
 const (
-	DeliveryWorkflowPickup      = "pickup"
-	DeliveryWorkflowDelivery    = "delivery"
+	//DeliveryWorkflowPickup - constant for common delivery workflows
+	DeliveryWorkflowPickup = "pickup"
+	//DeliveryWorkflowDelivery - workflow constant
+	DeliveryWorkflowDelivery = "delivery"
+	//DeliveryWorkflowUnspecified - workflow constant
 	DeliveryWorkflowUnspecified = "unspecified"
 
-	DeliverylocationTypeUnspecified     = "unspecified"
+	//DeliverylocationTypeUnspecified - constant
+	DeliverylocationTypeUnspecified = "unspecified"
+	//DeliverylocationTypeCollectionpoint - constant
 	DeliverylocationTypeCollectionpoint = "collection-point"
-	DeliverylocationTypeStore           = "store"
-	DeliverylocationTypeAddress         = "address"
-	DeliverylocationTypeFreightstation  = "freight-station"
+	//DeliverylocationTypeStore - constant
+	DeliverylocationTypeStore = "store"
+	//DeliverylocationTypeAddress - constant
+	DeliverylocationTypeAddress = "address"
+	//DeliverylocationTypeFreightstation - constant
+	DeliverylocationTypeFreightstation = "freight-station"
 )
 
 //LoadAdditionalInfo - returns the additional Data

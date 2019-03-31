@@ -249,7 +249,7 @@ func (cob *InMemoryBehaviour) UpdatePurchaser(ctx context.Context, cart *domainc
 	return nil, nil
 }
 
-// UpdateBillingAddress
+// UpdateBillingAddress - updates address
 func (cob *InMemoryBehaviour) UpdateBillingAddress(ctx context.Context, cart *domaincart.Cart, billingAddress domaincart.Address) (*domaincart.Cart, error) {
 
 	cart.BillingAdress = &billingAddress
@@ -267,6 +267,7 @@ func (cob *InMemoryBehaviour) UpdateAdditionalData(ctx context.Context, cart *do
 	return nil, nil
 }
 
+//UpdatePaymentSelection - update payment on cart
 func (cob *InMemoryBehaviour) UpdatePaymentSelection(ctx context.Context, cart *domaincart.Cart, paymentSelection domaincart.PaymentSelection) (*domaincart.Cart, error) {
 	paymentSelection.GetChargeSumByType()
 	cart.GrandTotal()

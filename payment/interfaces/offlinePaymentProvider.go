@@ -19,6 +19,7 @@ type OfflineWebCartPaymentGateway struct {
 }
 
 const (
+	//OfflineWebCartPaymentGatewayCode - the gateway code
 	OfflineWebCartPaymentGatewayCode = "offline"
 )
 
@@ -69,12 +70,12 @@ func (o *OfflineWebCartPaymentGateway) checkCart(currentCart *cartDomain.Cart) e
 }
 
 //StartFlow for offline payment requires not much - just redirect to the returnUrl :-)
-func (o *OfflineWebCartPaymentGateway) StartFlow(ctx context.Context, currentCart *cartDomain.Cart, correlationID string, returnUrl *url.URL) (web.Result, error) {
+func (o *OfflineWebCartPaymentGateway) StartFlow(ctx context.Context, currentCart *cartDomain.Cart, correlationID string, returnURL *url.URL) (web.Result, error) {
 	err := o.checkCart(currentCart)
 	if err != nil {
 		return nil, err
 	}
-	return o.responder.URLRedirect(returnUrl), nil
+	return o.responder.URLRedirect(returnURL), nil
 }
 
 // GetFlowResult for offline payment can always return a simple valid payment that matches the given cart

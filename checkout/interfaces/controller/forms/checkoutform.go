@@ -53,6 +53,7 @@ type (
 	}
 )
 
+//Inject - Inject
 func (c *CheckoutFormController) Inject(responder *web.Responder,
 	applicationCartService *cartApplication.CartService,
 	applicationCartReceiverService *cartApplication.CartReceiverService,
@@ -126,15 +127,15 @@ func (c *CheckoutFormController) GetUnsubmittedForm(ctx context.Context, r *web.
 //newRequestWithResolvedNamespace - creates a new request with only the namespaced form values
 func newRequestWithResolvedNamespace(namespace string, r *web.Request) *web.Request {
 	newRequest := web.CreateRequest(r.Request(), r.Session())
-	newUrlValues := make(url.Values)
+	newURLValues := make(url.Values)
 	for k, values := range newRequest.Request().Form {
 		if !strings.HasPrefix(k, namespace+".") {
 			continue
 		}
 		strippedKey := strings.Replace(k, namespace+".", "", 1)
-		newUrlValues[strippedKey] = values
+		newURLValues[strippedKey] = values
 	}
-	newRequest.Request().Form = newUrlValues
+	newRequest.Request().Form = newURLValues
 	return newRequest
 }
 

@@ -51,6 +51,7 @@ func (d *DeliveryForm) MapToDeliveryInfo(currentInfo cartDomain.DeliveryInfo) ca
 	return currentInfo
 }
 
+//Inject - Inject
 func (p *DeliveryFormService) Inject(applicationCartReceiverService *cartApplication.CartReceiverService) {
 	p.applicationCartReceiverService = applicationCartReceiverService
 }
@@ -77,6 +78,7 @@ func (p *DeliveryFormService) GetFormData(ctx context.Context, req *web.Request)
 	}, nil
 }
 
+//Inject - Inject
 func (c *DeliveryFormController) Inject(responder *web.Responder,
 	applicationCartService *cartApplication.CartService,
 	applicationCartReceiverService *cartApplication.CartReceiverService,
@@ -95,6 +97,7 @@ func (c *DeliveryFormController) Inject(responder *web.Responder,
 	c.billingAddressFormProvider = billingAddressFormProvider
 }
 
+// GetUnsubmittedForm - returns the form with deliveryform data - without validation
 func (c *DeliveryFormController) GetUnsubmittedForm(ctx context.Context, r *web.Request) (*domain.Form, error) {
 	formHandler, err := c.getFormHandler()
 	if err != nil {
@@ -113,6 +116,7 @@ func (c *DeliveryFormController) getFormHandler() (domain.FormHandler, error) {
 	return formHandlerBuilder.Build(), nil
 }
 
+//HandleFormAction - handles submitted form and saves to cart
 func (c *DeliveryFormController) HandleFormAction(ctx context.Context, r *web.Request) (form *domain.Form, actionSuccessFull bool, err error) {
 	session := web.SessionFromContext(ctx)
 

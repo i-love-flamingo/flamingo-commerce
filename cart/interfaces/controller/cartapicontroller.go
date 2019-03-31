@@ -71,7 +71,7 @@ func (cc *CartAPIController) Inject(
 func (cc *CartAPIController) GetAction(ctx context.Context, r *web.Request) web.Result {
 	decoratedCart, e := cc.cartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if e != nil {
-		result := NewResult()
+		result := newResult()
 		result.SetError(e, "get_error")
 		cc.logger.Error("cart.cartapicontroller.get: %v", e.Error())
 		return cc.responder.Data(result).Status(500)
@@ -97,7 +97,7 @@ func (cc *CartAPIController) AddAction(ctx context.Context, r *web.Request) web.
 	addRequest := cc.cartService.BuildAddRequest(ctx, r.Params["marketplaceCode"], variantMarketplaceCode, qtyInt)
 	_, err := cc.cartService.AddProduct(ctx, r.Session(), deliveryCode, addRequest)
 
-	result := NewResult()
+	result := newResult()
 	if err != nil {
 		cc.logger.Error("cart.cartapicontroller.add: %v", err.Error())
 
@@ -106,14 +106,14 @@ func (cc *CartAPIController) AddAction(ctx context.Context, r *web.Request) web.
 		response.Status(500)
 		return response
 	}
-	cc.enrichResultWithCartInfos(&result, ctx)
+	cc.enrichResultWithCartInfos(ctx, &result)
 	return cc.responder.Data(result)
 }
 
 // ApplyVoucherAndGetAction applies the given voucher and returns the cart
 func (cc *CartAPIController) ApplyVoucherAndGetAction(ctx context.Context, r *web.Request) web.Result {
 	couponCode := r.Params["couponCode"]
-	result := NewResult()
+	result := newResult()
 	_, err := cc.cartService.ApplyVoucher(ctx, r.Session(), couponCode)
 	if err != nil {
 		result.SetError(err, "voucher_error")
@@ -121,14 +121,14 @@ func (cc *CartAPIController) ApplyVoucherAndGetAction(ctx context.Context, r *we
 		response.Status(500)
 		return response
 	}
-	cc.enrichResultWithCartInfos(&result, ctx)
+	cc.enrichResultWithCartInfos(ctx, &result)
 	return cc.responder.Data(result)
 }
 
 // DeleteCartAction cleans the cart and returns the cleaned cart
 func (cc *CartAPIController) DeleteCartAction(ctx context.Context, r *web.Request) web.Result {
 	err := cc.cartService.DeleteAllItems(ctx, r.Session())
-	result := NewResult()
+	result := newResult()
 	if err != nil {
 		result.SetError(err, "delete_items_error")
 		response := cc.responder.Data(result)
@@ -140,20 +140,20 @@ func (cc *CartAPIController) DeleteCartAction(ctx context.Context, r *web.Reques
 
 // DeleteDelivery cleans the given delivery from the cart and returns the cleaned cart
 func (cc *CartAPIController) DeleteDelivery(ctx context.Context, r *web.Request) web.Result {
-	result := NewResult()
+	result := newResult()
 	deliveryCode := r.Params["deliveryCode"]
 	_, err := cc.cartService.DeleteDelivery(ctx, r.Session(), deliveryCode)
 	if err != nil {
 		result.SetError(err, "delete_delivery_error")
 		return cc.responder.Data(result).Status(500)
 	}
-	cc.enrichResultWithCartInfos(&result, ctx)
+	cc.enrichResultWithCartInfos(ctx, &result)
 	return cc.responder.Data(result)
 }
 
 // BillingAction handles the checkout start action
 func (cc *CartAPIController) BillingAction(ctx context.Context, r *web.Request) web.Result {
-	result := NewResult()
+	result := newResult()
 	form, success, err := cc.billingAddressFormController.HandleFormAction(ctx, r)
 	result.Success = success
 	if err != nil {
@@ -165,13 +165,13 @@ func (cc *CartAPIController) BillingAction(ctx context.Context, r *web.Request) 
 		result.Data = form.Data
 		result.DataValidationInfo = &form.ValidationInfo
 	}
-	cc.enrichResultWithCartInfos(&result, ctx)
+	cc.enrichResultWithCartInfos(ctx, &result)
 	return cc.responder.Data(result)
 }
 
 // UpdateDeliveryInfoAction updates the delivery info
 func (cc *CartAPIController) UpdateDeliveryInfoAction(ctx context.Context, r *web.Request) web.Result {
-	result := NewResult()
+	result := newResult()
 	form, success, err := cc.deliveryFormController.HandleFormAction(ctx, r)
 	result.Success = success
 	if err != nil {
@@ -182,11 +182,11 @@ func (cc *CartAPIController) UpdateDeliveryInfoAction(ctx context.Context, r *we
 		result.Data = form.Data
 		result.DataValidationInfo = &form.ValidationInfo
 	}
-	cc.enrichResultWithCartInfos(&result, ctx)
+	cc.enrichResultWithCartInfos(ctx, &result)
 	return cc.responder.Data(result)
 }
 
-func (cc *CartAPIController) enrichResultWithCartInfos(result *result, ctx context.Context) {
+func (cc *CartAPIController) enrichResultWithCartInfos(ctx context.Context, result *result) {
 	session := web.SessionFromContext(ctx)
 	decoratedCart, err := cc.cartReceiverService.ViewDecoratedCart(ctx, session)
 	if err != nil {
@@ -198,12 +198,14 @@ func (cc *CartAPIController) enrichResultWithCartInfos(result *result, ctx conte
 	result.CartValidationResult = &validationResult
 }
 
-func NewResult() result {
+//newResult - factory to get new result (with sucess true)
+func newResult() result {
 	return result{
 		Success: true,
 	}
 }
 
+//SetErrorByCode - sets the error on the result data and success to false
 func (r *result) SetErrorByCode(message string, code string) *result {
 	r.Success = false
 	r.Error = &resultError{

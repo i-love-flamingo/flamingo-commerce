@@ -401,6 +401,7 @@ func (w WishedToPay) GetByType(ctype string) *priceDomain.Price {
 	return nil
 }
 
+//GetByType - returns a charge of given type. If it was not found a Zero amount is returned and the second return value is false
 func (c Charges) GetByType(ctype string) (priceDomain.Charge, bool) {
 	if charge, ok := c.chargesByType[ctype]; ok {
 		return charge, ok
@@ -408,6 +409,7 @@ func (c Charges) GetByType(ctype string) (priceDomain.Charge, bool) {
 	return priceDomain.Charge{}, false
 }
 
+//GetRate - get the currency conversion rate of the current loyaltyprice in relation to the passed value
 func (l LoyaltyPriceInfo) GetRate(valuedPrice priceDomain.Price) big.Float {
 	if !l.PointPrice.IsPositive() {
 		return *big.NewFloat(0)
@@ -415,6 +417,7 @@ func (l LoyaltyPriceInfo) GetRate(valuedPrice priceDomain.Price) big.Float {
 	return *new(big.Float).Quo(valuedPrice.Amount(), l.PointPrice.Amount())
 }
 
+//GetAmountToSpend - takes the whishedamaount and evaluates min and max and returns the points that need to be payed.
 func (l LoyaltyPriceInfo) GetAmountToSpend(wishedAmount *big.Float) big.Float {
 	//less or equal - return min
 	if wishedAmount == nil || l.MinPointsToSpent.Cmp(wishedAmount) > 0 {

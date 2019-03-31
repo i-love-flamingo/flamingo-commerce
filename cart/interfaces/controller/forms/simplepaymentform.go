@@ -53,6 +53,7 @@ func (p *SimplePaymentFormService) GetFormData(ctx context.Context, req *web.Req
 	return SimplePaymentForm{}, nil
 }
 
+//Inject - Inject
 func (c *SimplePaymentFormController) Inject(responder *web.Responder,
 	applicationCartService *cartApplication.CartService,
 	applicationCartReceiverService *cartApplication.CartReceiverService,

@@ -87,6 +87,7 @@ func (a *AddressForm) LoadFromCustomerAddress(address domain.Address) {
 
 }
 
+//LoadFromCartAddress - loads the form data from cart address
 func (a *AddressForm) LoadFromCartAddress(address cart.Address) {
 	if address.Firstname != "" {
 		a.Firstname = address.Firstname

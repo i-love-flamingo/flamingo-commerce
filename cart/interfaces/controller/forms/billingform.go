@@ -68,6 +68,7 @@ func (p *BillingAddressFormService) GetFormData(ctx context.Context, req *web.Re
 	return BillingAddressForm(billingAddressForm), nil
 }
 
+//Inject - injector
 func (c *BillingAddressFormController) Inject(responder *web.Responder,
 	applicationCartService *cartApplication.CartService,
 	applicationCartReceiverService *cartApplication.CartReceiverService,
