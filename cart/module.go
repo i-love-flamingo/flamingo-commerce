@@ -9,8 +9,6 @@ import (
 
 	"flamingo.me/form"
 
-	"flamingo.me/flamingo/v3/core/oauth"
-
 	"flamingo.me/flamingo-commerce/v3/cart/infrastructure/email"
 
 	"flamingo.me/dingo"
@@ -19,6 +17,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/infrastructure"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/templatefunctions"
+	"flamingo.me/flamingo/v3/core/oauth"
 	"flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
@@ -101,7 +100,7 @@ func (m *Module) DefaultConfig() config.Map {
 // Depends on other modules
 func (m *Module) Depends() []dingo.Module {
 	return []dingo.Module{
-		new(auth.Module),
+		new(oauth.Module),
 		new(form.Module),
 	}
 }
