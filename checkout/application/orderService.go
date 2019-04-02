@@ -4,6 +4,10 @@ import (
 	"context"
 	"errors"
 
+	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
+
+	"flamingo.me/flamingo-commerce/v3/payment/interfaces"
+
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain"
@@ -17,11 +21,28 @@ import (
 type (
 	// OrderService defines the order service
 	OrderService struct {
-		sourcingEngine      *domain.SourcingEngine
-		logger              flamingo.Logger
-		cartService         *application.CartService
-		cartReceiverService *application.CartReceiverService
-		deliveryInfoBuilder cart.DeliveryInfoBuilder
+		sourcingEngine                *domain.SourcingEngine
+		logger                        flamingo.Logger
+		cartService                   *application.CartService
+		cartReceiverService           *application.CartReceiverService
+		deliveryInfoBuilder           cart.DeliveryInfoBuilder
+		webCartPaymentGatewayProvider map[string]interfaces.WebCartPaymentGateway
+	}
+
+	// PlaceOrderInfo struct defines the data of payments on placed orders
+	PlaceOrderInfo struct {
+		PaymentInfos []PlaceOrderPaymentInfo
+		PlacedOrders cart.PlacedOrderInfos
+		ContactEmail string
+	}
+	//PlaceOrderPaymentInfo holding payment infos
+	PlaceOrderPaymentInfo struct {
+		Gateway         string
+		PaymentProvider string
+		Method          string
+		CreditCardInfo  *cart.CreditCardInfo
+		Amount          priceDomain.Price
+		Title           string
 	}
 )
 
@@ -34,16 +55,18 @@ func init() {
 // Inject dependencies
 func (os *OrderService) Inject(
 	SourcingEngine *domain.SourcingEngine,
-	Logger flamingo.Logger,
+	logger flamingo.Logger,
 	CartService *application.CartService,
 	CartReceiverService *application.CartReceiverService,
 	DeliveryInfoBuilder cart.DeliveryInfoBuilder,
+	webCartPaymentGatewayProvider interfaces.WebCartPaymentGatewayProvider,
 ) {
 	os.sourcingEngine = SourcingEngine
-	os.logger = Logger
+	os.logger = logger.WithField(flamingo.LogKeyCategory, "checkout.OrderService").WithField(flamingo.LogKeyModule, "checkout")
 	os.cartService = CartService
 	os.cartReceiverService = CartReceiverService
 	os.deliveryInfoBuilder = DeliveryInfoBuilder
+	os.webCartPaymentGatewayProvider = webCartPaymentGatewayProvider()
 }
 
 // SetSources sets sources for sessions carts items
@@ -143,4 +166,89 @@ func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.
 		return nil, errors.New("error while placing the order. please contact customer support")
 	}
 	return placedOrderInfos, nil
+}
+
+func (os *OrderService) GetPaymentGateway(ctx context.Context, paymentGatewayCode string) (interfaces.WebCartPaymentGateway, error) {
+
+	gateway, ok := os.webCartPaymentGatewayProvider[paymentGatewayCode]
+	if !ok {
+		return nil, errors.New("Payment gateway " + paymentGatewayCode + " not found")
+	}
+
+	return gateway, nil
+}
+
+//GetAvailablePaymentGateways - returns the list of registered WebCartPaymentGateway
+func (os *OrderService) GetAvailablePaymentGateways(ctx context.Context) map[string]interfaces.WebCartPaymentGateway {
+	return os.webCartPaymentGatewayProvider
+}
+
+//CurrentCartPlaceOrderWithPaymentProcessing - use to place the current cart
+func (os *OrderService) CurrentCartPlaceOrderWithPaymentProcessing(ctx context.Context, session *web.Session) (*PlaceOrderInfo, error) {
+	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(ctx, session)
+	if !decoratedCart.Cart.IsPaymentSelected() {
+		stats.Record(ctx, orderFailedStat.M(1))
+		os.logger.Error("cart.checkoutcontroller.submitaction: Error Gateway not in carts PaymentSelection")
+		return nil, errors.New("no payment gateway selected")
+	}
+
+	validationResult := os.cartService.ValidateCart(ctx, session, decoratedCart)
+	if !validationResult.IsValid() {
+		// record failcount metric
+		stats.Record(ctx, orderFailedStat.M(1))
+		os.logger.Warn("Try to place an invalid cart")
+		return nil, errors.New("cart is invalid")
+	}
+
+	gateway, err := os.GetPaymentGateway(ctx, decoratedCart.Cart.PaymentSelection.Gateway)
+	if err != nil {
+		stats.Record(ctx, orderFailedStat.M(1))
+		os.logger.Error("cart.checkoutcontroller.submitaction: Error %v", err)
+		return nil, errors.New("selected gateway not available")
+	}
+
+	cartPayment, err := gateway.GetFlowResult(ctx, &decoratedCart.Cart, session.ID())
+	if err != nil {
+
+	}
+	err = gateway.ConfirmResult(ctx, &decoratedCart.Cart, cartPayment)
+	if err != nil {
+
+	}
+
+	placedOrderInfos, err := os.cartService.PlaceOrder(ctx, session, cartPayment)
+	if err != nil {
+		// record failcount metric
+		stats.Record(ctx, orderFailedStat.M(1))
+		os.logger.Error("Error during place Order:" + err.Error())
+		return nil, errors.New("error while placing the order. please contact customer support")
+	}
+
+	email := os.GetContactMail(decoratedCart.Cart)
+
+	placeOrderInfo := PlaceOrderInfo{
+		ContactEmail: email,
+		PlacedOrders: placedOrderInfos,
+	}
+
+	for _, transaction := range cartPayment.Transactions {
+		placeOrderInfo.PaymentInfos = append(placeOrderInfo.PaymentInfos, PlaceOrderPaymentInfo{
+			Gateway:         cartPayment.Gateway,
+			Method:          transaction.Method,
+			PaymentProvider: transaction.PaymentProvider,
+			Title:           transaction.Title,
+			Amount:          transaction.AmountPayed,
+			CreditCardInfo:  transaction.CreditCardInfo,
+		})
+	}
+	return &placeOrderInfo, nil
+}
+
+func (os *OrderService) GetContactMail(cart cart.Cart) string {
+	//Get Email from either the cart
+	shippingEmail := cart.GetMainShippingEMail()
+	if shippingEmail == "" {
+		shippingEmail = cart.BillingAdress.Email
+	}
+	return shippingEmail
 }

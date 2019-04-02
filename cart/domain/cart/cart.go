@@ -35,7 +35,7 @@ type (
 		//AdditionalData   can be used for Custom attributes
 		AdditionalData AdditionalData
 
-		//PaymentSelection - the saved PaymentSelection
+		//PaymentSelection - the saved PaymentSelection (saves "how" the customer want to pay)
 		PaymentSelection *PaymentSelection
 
 		//BelongsToAuthenticatedUser - false = Guest Cart true = cart from the authenticated user
@@ -250,6 +250,11 @@ func (cart Cart) ProductCount() int {
 	}
 
 	return count
+}
+
+// IsPaymentSelected - returns true if a valid payment is selected
+func (cart Cart) IsPaymentSelected() bool {
+	return cart.PaymentSelection != nil && cart.PaymentSelection.IsSelected()
 }
 
 // GetItemCartReferences returns a slice of all ItemCartReferences

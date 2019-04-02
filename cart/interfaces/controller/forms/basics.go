@@ -92,6 +92,20 @@ func (a *AddressForm) LoadFromCartAddress(address cart.Address) {
 	if address.Firstname != "" {
 		a.Firstname = address.Firstname
 	}
+	if address.PostCode != "" {
+		a.PostCode = address.PostCode
+	}
+
+	if address.State != "" {
+		a.State = address.State
+	}
+
+	if len(address.AdditionalAddressLines) > 0 {
+		a.AddressLine1 = address.AdditionalAddressLines[0]
+	}
+	if len(address.AdditionalAddressLines) > 1 {
+		a.AddressLine2 = address.AdditionalAddressLines[1]
+	}
 
 	if address.Lastname != "" {
 		a.Lastname = address.Lastname
@@ -109,6 +123,9 @@ func (a *AddressForm) LoadFromCartAddress(address cart.Address) {
 		a.StreetNr = address.StreetNr
 	}
 
+	if address.Title != "" {
+		a.Title = address.Title
+	}
 	if address.Salutation != "" {
 		a.Title = address.Salutation
 	}

@@ -78,6 +78,19 @@ func (p *DeliveryFormService) GetFormData(ctx context.Context, req *web.Request)
 	}, nil
 }
 
+func (p *DeliveryFormService) Validate(ctx context.Context, req *web.Request, validatorProvider domain.ValidatorProvider, formData interface{}) (*domain.ValidationInfo, error) {
+	deliveryForm, ok := formData.(DeliveryForm)
+	if !ok {
+		return nil, errors.New("No BillingAddressForm given")
+	}
+	validationInfo := domain.ValidationInfo{}
+	if !deliveryForm.UseBillingAddress {
+		//Validate address only if no billing should be used
+		validationInfo = validatorProvider.Validate(ctx, req, deliveryForm)
+	}
+	return &validationInfo, nil
+}
+
 //Inject - Inject
 func (c *DeliveryFormController) Inject(responder *web.Responder,
 	applicationCartService *cartApplication.CartService,
