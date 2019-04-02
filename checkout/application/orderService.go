@@ -21,12 +21,12 @@ import (
 type (
 	// OrderService defines the order service
 	OrderService struct {
-		sourcingEngine                *domain.SourcingEngine
-		logger                        flamingo.Logger
-		cartService                   *application.CartService
-		cartReceiverService           *application.CartReceiverService
-		deliveryInfoBuilder           cart.DeliveryInfoBuilder
-		webCartPaymentGatewayProvider map[string]interfaces.WebCartPaymentGateway
+		sourcingEngine         *domain.SourcingEngine
+		logger                 flamingo.Logger
+		cartService            *application.CartService
+		cartReceiverService    *application.CartReceiverService
+		deliveryInfoBuilder    cart.DeliveryInfoBuilder
+		webCartPaymentGateways map[string]interfaces.WebCartPaymentGateway
 	}
 
 	// PlaceOrderInfo struct defines the data of payments on placed orders
@@ -65,8 +65,8 @@ func (os *OrderService) Inject(
 	os.logger = logger.WithField(flamingo.LogKeyCategory, "checkout.OrderService").WithField(flamingo.LogKeyModule, "checkout")
 	os.cartService = CartService
 	os.cartReceiverService = CartReceiverService
+	os.webCartPaymentGateways = webCartPaymentGatewayProvider()
 	os.deliveryInfoBuilder = DeliveryInfoBuilder
-	os.webCartPaymentGatewayProvider = webCartPaymentGatewayProvider()
 }
 
 // SetSources sets sources for sessions carts items
@@ -170,7 +170,7 @@ func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.
 
 func (os *OrderService) GetPaymentGateway(ctx context.Context, paymentGatewayCode string) (interfaces.WebCartPaymentGateway, error) {
 
-	gateway, ok := os.webCartPaymentGatewayProvider[paymentGatewayCode]
+	gateway, ok := os.webCartPaymentGateways[paymentGatewayCode]
 	if !ok {
 		return nil, errors.New("Payment gateway " + paymentGatewayCode + " not found")
 	}
@@ -180,7 +180,7 @@ func (os *OrderService) GetPaymentGateway(ctx context.Context, paymentGatewayCod
 
 //GetAvailablePaymentGateways - returns the list of registered WebCartPaymentGateway
 func (os *OrderService) GetAvailablePaymentGateways(ctx context.Context) map[string]interfaces.WebCartPaymentGateway {
-	return os.webCartPaymentGatewayProvider
+	return os.webCartPaymentGateways
 }
 
 //CurrentCartPlaceOrderWithPaymentProcessing - use to place the current cart
