@@ -10,15 +10,15 @@ import (
 )
 
 type MockRestrictor struct {
-	Qty uint
+	Qty int
 }
 
-func (r *MockRestrictor) Restrict(ctx context.Context, product domain.BasicProduct, cart *cart.Cart) uint {
+func (r *MockRestrictor) Restrict(ctx context.Context, product domain.BasicProduct, cart *cart.Cart) int {
 	return r.Qty
 }
 
-func validateRestriction(wantedRestriction uint, wantedError error) func(*testing.T, uint, error) {
-	return func(t *testing.T, i uint, e error) {
+func validateRestriction(wantedRestriction int, wantedError error) func(*testing.T, int, error) {
+	return func(t *testing.T, i int, e error) {
 		t.Helper()
 		if i != wantedRestriction {
 			t.Errorf("expected restriction %d, got %d", wantedRestriction, i)
@@ -42,7 +42,7 @@ func TestRestrictionService_RestrictQty(t *testing.T) {
 		name      string
 		fields    fields
 		args      args
-		validator func(*testing.T, uint, error)
+		validator func(*testing.T, int, error)
 	}{
 		{
 			name: "no restrictors",
@@ -59,7 +59,7 @@ func TestRestrictionService_RestrictQty(t *testing.T) {
 		{
 			name: "no restriction",
 			fields: fields{
-				qtyRestrictors: []cart.MaxQuantityRestrictor{&MockRestrictor{Qty: ^uint(0)}},
+				qtyRestrictors: []cart.MaxQuantityRestrictor{&MockRestrictor{Qty: int(^uint(0)>>1)}},
 			},
 			args: args{
 				ctx:     context.Background(),
@@ -84,7 +84,7 @@ func TestRestrictionService_RestrictQty(t *testing.T) {
 					&MockRestrictor{Qty: 21},
 					&MockRestrictor{Qty: 17},
 					&MockRestrictor{Qty: 500},
-					&MockRestrictor{Qty: ^uint(0)},
+					&MockRestrictor{Qty: int(^uint(0)>>1)},
 				},
 			},
 			args:      args{},
