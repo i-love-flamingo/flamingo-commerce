@@ -402,6 +402,14 @@ Example Sequence for AddToCart Application Services to
 
 ![Cart Flow](cart-flow.png)
 
+### RestrictionService
+
+The Restriction Service provides a port for implementing product restrictions. By using Dingo multibinding to `cart.MaxQuantityRestrictor`,
+you can add your own restriction to the service. The `Restrict` function returns the allowed maximum quantity or `^uint(0)` for infinity.
+
+The Service itself consolidates all bound restrictors and returns the most restricting rule (this should be the smallest quantity allowed by any restrictor).
+If all restrictors return infinity or there is no restrictor bound at all, an error of type `*ErrNoRestriction` is returned.
+
 ## A typical Checkout "Flow"
 
 A checkout package would use the cart package for adding information to the cart, typically that would involve:
