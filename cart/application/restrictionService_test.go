@@ -2,6 +2,7 @@ package application_test
 
 import (
 	"context"
+	"math"
 	"testing"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
@@ -59,7 +60,7 @@ func TestRestrictionService_RestrictQty(t *testing.T) {
 		{
 			name: "no restriction",
 			fields: fields{
-				qtyRestrictors: []cart.MaxQuantityRestrictor{&MockRestrictor{Qty: int(^uint(0)>>1)}},
+				qtyRestrictors: []cart.MaxQuantityRestrictor{&MockRestrictor{Qty: math.MaxInt32}},
 			},
 			args: args{
 				ctx:     context.Background(),
@@ -84,7 +85,7 @@ func TestRestrictionService_RestrictQty(t *testing.T) {
 					&MockRestrictor{Qty: 21},
 					&MockRestrictor{Qty: 17},
 					&MockRestrictor{Qty: 500},
-					&MockRestrictor{Qty: int(^uint(0)>>1)},
+					&MockRestrictor{Qty: math.MaxInt32},
 				},
 			},
 			args:      args{},
