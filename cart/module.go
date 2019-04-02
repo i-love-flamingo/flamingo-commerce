@@ -38,7 +38,7 @@ type (
 func (m *Module) Inject(
 	routerRegistry *web.RouterRegistry,
 	config *struct {
-		UseInMemoryCart bool `inject:"config:commerce.cart.useInMemoryCartServiceAdapters"`
+		UseInMemoryCart bool `inject:"config:commerce.cart.useInMemoryCartServiceAdapters,optional"`
 		EnableCartCache bool `inject:"config:commerce.cart.enableCartCache,optional"`
 		UseEmailAdapter bool `inject:"config:commerce.cart.useEmailPlaceOrderAdapter,optional"`
 	},
