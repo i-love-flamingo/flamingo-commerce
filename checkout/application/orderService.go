@@ -168,6 +168,7 @@ func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.
 	return placedOrderInfos, nil
 }
 
+// GetPaymentGateway helper
 func (os *OrderService) GetPaymentGateway(ctx context.Context, paymentGatewayCode string) (interfaces.WebCartPaymentGateway, error) {
 
 	gateway, ok := os.webCartPaymentGateways[paymentGatewayCode]
@@ -244,6 +245,7 @@ func (os *OrderService) CurrentCartPlaceOrderWithPaymentProcessing(ctx context.C
 	return &placeOrderInfo, nil
 }
 
+// GetContactMail helper with fallback
 func (os *OrderService) GetContactMail(cart cart.Cart) string {
 	//Get Email from either the cart
 	shippingEmail := cart.GetMainShippingEMail()

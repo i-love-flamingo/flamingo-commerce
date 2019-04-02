@@ -25,7 +25,8 @@ type (
 		deliveryFormController       *forms.DeliveryFormController
 	}
 
-	CartApiResult struct {
+	// CartAPIResult view data
+	CartAPIResult struct {
 		//Contains details if success is false
 		Error                *resultError
 		Success              bool
@@ -186,7 +187,7 @@ func (cc *CartAPIController) UpdateDeliveryInfoAction(ctx context.Context, r *we
 	return cc.responder.Data(result)
 }
 
-func (cc *CartAPIController) enrichResultWithCartInfos(ctx context.Context, result *CartApiResult) {
+func (cc *CartAPIController) enrichResultWithCartInfos(ctx context.Context, result *CartAPIResult) {
 	session := web.SessionFromContext(ctx)
 	decoratedCart, err := cc.cartReceiverService.ViewDecoratedCart(ctx, session)
 	if err != nil {
@@ -199,14 +200,14 @@ func (cc *CartAPIController) enrichResultWithCartInfos(ctx context.Context, resu
 }
 
 //newResult - factory to get new CartApiResult (with sucess true)
-func newResult() CartApiResult {
-	return CartApiResult{
+func newResult() CartAPIResult {
+	return CartAPIResult{
 		Success: true,
 	}
 }
 
 //SetErrorByCode - sets the error on the CartApiResult data and success to false
-func (r *CartApiResult) SetErrorByCode(message string, code string) *CartApiResult {
+func (r *CartAPIResult) SetErrorByCode(message string, code string) *CartAPIResult {
 	r.Success = false
 	r.Error = &resultError{
 		Message: message,
@@ -215,7 +216,8 @@ func (r *CartApiResult) SetErrorByCode(message string, code string) *CartApiResu
 	return r
 }
 
-func (r *CartApiResult) SetError(err error, fallbackCode string) *CartApiResult {
+// SetError updates the cart error field
+func (r *CartAPIResult) SetError(err error, fallbackCode string) *CartAPIResult {
 	if e, ok := err.(messageCodeAvailable); ok {
 		fallbackCode = e.MessageCode()
 	}

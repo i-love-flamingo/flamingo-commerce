@@ -22,7 +22,7 @@ func (s *URLService) Get(product domain.BasicProduct, variantCode string) (strin
 	return url.String(), err
 }
 
-// Get a product variant url
+// GetAbsolute url for a product variant url
 func (s *URLService) GetAbsolute(r *web.Request, product domain.BasicProduct, variantCode string) (string, error) {
 	if product == nil {
 		return "-", errors.New("no product given")

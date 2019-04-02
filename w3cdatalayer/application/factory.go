@@ -78,12 +78,12 @@ func (s Factory) BuildForCurrentRequest(ctx context.Context, request *web.Reques
 		language = localeParts[0]
 	}
 
-	baseUrl, _ := s.router.Absolute(request, request.Request().URL.Path, nil)
+	baseURL, _ := s.router.Absolute(request, request.Request().URL.Path, nil)
 	layer.Page = &domain.Page{
 		PageInfo: domain.PageInfo{
 			PageID:         request.Request().URL.Path,
 			PageName:       s.pageNamePrefix + request.Request().URL.Path,
-			DestinationURL: baseUrl.String(),
+			DestinationURL: baseURL.String(),
 			Language:       language,
 		},
 		Attributes: make(map[string]interface{}),
