@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"flamingo.me/flamingo-commerce/v3/customer/domain"
-	"flamingo.me/flamingo/v3/core/auth/application"
+	"flamingo.me/flamingo/v3/core/oauth/application"
 	"flamingo.me/flamingo/v3/framework/web"
 )
 

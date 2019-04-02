@@ -3,19 +3,19 @@ package fake
 import (
 	"context"
 	"time"
+
 	"flamingo.me/flamingo-commerce/v3/order/domain"
-	authDomain "flamingo.me/flamingo/v3/core/auth/domain"
+	authDomain "flamingo.me/flamingo/v3/core/oauth/domain"
 )
 
 type (
 	// CustomerOrders is the fake customer orders api service
-	CustomerOrders struct{} 
+	CustomerOrders struct{}
 )
 
 var (
 	_ domain.CustomerOrderService = (*CustomerOrders)(nil)
 )
-
 
 // Get returns a CustomerOrders struct
 func (co *CustomerOrders) Get(ctx context.Context, authentication authDomain.Auth) ([]*domain.Order, error) {

@@ -5,7 +5,7 @@ import (
 
 	customerDomain "flamingo.me/flamingo-commerce/v3/customer/domain"
 
-	"flamingo.me/flamingo/v3/core/auth/domain"
+	"flamingo.me/flamingo/v3/core/oauth/domain"
 )
 
 type (

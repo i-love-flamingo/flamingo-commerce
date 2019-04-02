@@ -10,7 +10,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo-commerce/v3/w3cdatalayer/domain"
-	authApplication "flamingo.me/flamingo/v3/core/auth/application"
+	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
 	"flamingo.me/flamingo/v3/framework/web"
 	"go.opencensus.io/tag"
 )

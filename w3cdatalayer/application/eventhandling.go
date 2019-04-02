@@ -8,7 +8,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/w3cdatalayer/domain"
-	authDomain "flamingo.me/flamingo/v3/core/auth/domain"
+	authDomain "flamingo.me/flamingo/v3/core/oauth/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 )
 

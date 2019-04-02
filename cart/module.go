@@ -9,7 +9,7 @@ import (
 
 	"flamingo.me/form"
 
-	"flamingo.me/flamingo/v3/core/auth"
+	"flamingo.me/flamingo/v3/core/oauth"
 
 	"flamingo.me/flamingo-commerce/v3/cart/infrastructure/email"
 

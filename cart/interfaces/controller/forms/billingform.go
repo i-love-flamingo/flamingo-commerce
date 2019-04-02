@@ -10,7 +10,7 @@ import (
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
 	customerApplication "flamingo.me/flamingo-commerce/v3/customer/application"
-	authApplication "flamingo.me/flamingo/v3/core/auth/application"
+	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 )

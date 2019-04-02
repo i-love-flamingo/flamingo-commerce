@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"flamingo.me/flamingo/v3/core/auth/domain"
+	"flamingo.me/flamingo/v3/core/oauth/domain"
 )
 
 type (

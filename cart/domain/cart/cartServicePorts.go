@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
-	"flamingo.me/flamingo/v3/core/auth/domain"
+	"flamingo.me/flamingo/v3/core/oauth/domain"
 	"github.com/pkg/errors"
 )
 

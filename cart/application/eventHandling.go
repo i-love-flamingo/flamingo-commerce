@@ -6,7 +6,7 @@ import (
 	"flamingo.me/flamingo/v3/framework/web"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	"flamingo.me/flamingo/v3/core/auth/domain"
+	"flamingo.me/flamingo/v3/core/oauth/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 )
 
