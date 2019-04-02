@@ -2,8 +2,8 @@ package w3cdatalayer
 
 import (
 	"flamingo.me/dingo"
-	"flamingo.me/flamingo-commerce/v3/w3cDatalayer/application"
-	"flamingo.me/flamingo-commerce/v3/w3cDatalayer/interfaces/templatefunctions"
+	"flamingo.me/flamingo-commerce/v3/w3cdatalayer/application"
+	"flamingo.me/flamingo-commerce/v3/w3cdatalayer/interfaces/templatefunctions"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 )
 
