@@ -41,7 +41,7 @@ func (c ValidationResult) IsValid() bool {
 // HasErrorForItem checks if a specified item has an error
 func (c ValidationResult) HasErrorForItem(id string) bool {
 	for _, itemMessage := range c.ItemResults {
-		if itemMessage.ItemID == id {
+		if itemMessage.UniqueItemID == id {
 			return true
 		}
 	}
