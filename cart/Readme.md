@@ -1,22 +1,21 @@
 # Cart Module
 
-The cart package offers a domain model for carts and their items - and the application services that should be used to get and modify carts.
+The cart module is one of the main modules in Flamingo Commerce. It offers:
 
-It requires several ports to be implemented in order to have fully working cart functionality.
-(for example the *flamingo-commerce-adapter-magento* package implements Adapters for the Ports)
+* *domain layer*: 
+    * domain models for carts, deliveries and their items. 
+    * cartservices: the secondary ports required for modifying the cart.
+    * orderservice: the secondary port called when placing the cart as order
+    * support for multiple deliveries
+    * support for multipayment
+* *application layer* useful application services, that should be used to get and modify the carts. That also includes a transparent session based cart cache to cache carts in cases where updating and reading the cart (e.g. against an external API) is too slow.
+* *interface layer* Controllers and Actions to render the carrt pages. Also a flexible to use Ajax API that can be used to modify the cart.
+* *infrastructure layer* 
+    * Sample adapter for the secondary ports that maneges the cart in memory.
+    * Sample adapter that will send an email when placing the cart (not functional at the moment)
 
-The cart model supports multidelivery and multipayment.
-
-Also the cart module and its services will be used by the checkout module.
-
-## Principles / Summary
-
-* The "Cart" aggregate in the Domain Model is a complex object that should be used as a pure **immutable value object**:
-    * Never change it directly!
-    * Only read from it
-* The Cart is only **modified by Commands** send to a CartBehaviour Object
-* If you want to retrieve or change a  cart - **ONLY work with the application services**
-    * This will ensure that the correct cache is used
+There will be additional Flamingo modules that provide adpaters for the secondary ports against common e-commerce APIs like Magento 2.
+The cart module and its services are used by the checkout module.
 
 ## Usage
 
@@ -24,10 +23,13 @@ Also the cart module and its services will be used by the checkout module.
 
 ```yaml
   commerce.cart:
-    # To register the in memory cart service adapter (e.g. for development mode)
+    # enable the secondary adapters for the cart services.  (e.g. for testing or development mode)
     useInMemoryCartServiceAdapters: true
+    # enable the cache
     enableCartCache: true
+    # set the default delivery code that is used if no other is given
     defaultDeliveryCode: "delivery"
+    # enable the secondary adapter for the order service:
     useEmailPlaceOrderAdapter: true
 ```
 
@@ -38,6 +40,13 @@ Also the cart module and its services will be used by the checkout module.
 Represents the Cart with PaymentInfos, DeliveryInfos and its Items:
 
 ![Cart Model](cart-model.png)
+
+### Immutable cart / Updating the cart
+* The "Cart" aggregate in the Domain Model is a complex object that should be used as a pure **immutable value object**:
+    * Never change it directly!
+    * Only read from it
+* The Cart is only **modified by Commands** send to a CartBehaviour Object
+* If you want to retrieve or change a  cart - **ONLY work with the application services**. This will ensure that the correct cache is used
 
 
 ### About Delivery
@@ -270,8 +279,7 @@ item, err := builder.SetSinglePriceNet(priceDomain.NewFromInt(100, 100, "EUR")).
 ### About charges
 If you have read the sections above you know about the different prices that are available at item, delivery and cart level and how they are calculated.
 
-There is something else that this cart modell supports - we call it "charges". All the price amounts mentioned is the previous chapters represents the value of the items 
-in the cart default currency.
+There is something else that this cart model supports - we call it "charges". All the price amounts mentioned in the previous chapters represents the value of the items in the carts default currency.
 
 However this value need to be payed - when paying the value it can be that:
 - customer wants to pay with different payment methods (e.g. 50% of the value with paypal and the rest with creditcart)
@@ -333,7 +341,7 @@ If an Item is not valid according to the result of the registered *ItemValidator
 
 ### Store "any" data on the cart
 
-This package offers a flexible way to store any additional objects on the cart:
+This package offers also a flexible way to store any additional objects on the cart:
 
 See this example:
 
@@ -441,3 +449,5 @@ There are also of course ajax endpoints, that can be used to interact with the c
 * Add With qty: http://localhost:3210/en/api/cart/add/fake_simple?qty=10
 * Adding configurables: http://localhost:3210/en/api/cart/add/fake_configurable?variantMarketplaceCode=shirt-white-s
 * Adding configurables with a given delivery: http://localhost:3210/en/api/cart/add/fake_configurable?variantMarketplaceCode=shirt-white-s&deliveryCode=pickup_store
+
+
