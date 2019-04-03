@@ -40,4 +40,6 @@ Can be used in places where you need to give the price value a certain extra sem
 
 ## Template Func - Formatting a Price Object
 
-Just use the `commercePriceFormat(priceObject)` 
+Just use the template function commercePriceFormat like this: `commercePriceFormat(priceObject)` 
+
+The template functions used the configurations of the Flamingo "locale" package. For more details on the configuration options please read there.
