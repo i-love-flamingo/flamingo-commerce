@@ -51,28 +51,4 @@ checkout:
   showEmptyCartPageIfNoItems: false
   redirectToCartOnInvalideCart: false
 
-  # Also the checkout form can be configured:
-  checkoutForm:
-    defaultValues:
-      billingAddress_phoneAreaCode: "03722"
-    additionalFormValues:
-      - lp_membership_id
-      - newsletter_opt_in
-    overrideValues:
-      billingAsShipping: true
-      billingAddress_countryCode: DE
-      billingAddress_street: NoStreet
-      billingAddress_streetNr: "0"
-      billingAddress_city: NoCity
-      billingAddress_postCode: "99999"
-```
-
-## Registering own Payment Providers
-
-You need to implement the secondary port "PaymentProvider" and register the Payment provider in your module.go:
-
-```go
-func (pp *PaymarkProvider) Configure(injector *dingo.Injector) {
-  injector.BindMap(new(payment.PaymentProvider), pp.ProviderCode).To(new(infrastructure.MyPaymentAdapter))
-}
 ```
