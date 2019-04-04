@@ -18,3 +18,5 @@ git clone git@gitlab.aoe.com:shared/i-love-flamingo/flamingo-commerce.git $GOPAT
 ```
 
 ## Learn more about Flamingo-Commerce
+
+read the docs.flamingo.me

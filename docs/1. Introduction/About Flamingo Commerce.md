@@ -1,17 +1,18 @@
 # About flamingo commerce
 
-With "Flamingo Commerce" and "Flamingo Carotene" you get your toolkit for building **Blazing fast commerce experience layers**
+With "Flamingo Commerce" and "Flamingo Carotene" you get your toolkit for building fast and flexible commerce experience applications.
+Flamingo Commerce contains:
 
-* Contains flamingo modules that provide „domain“, „application“ and „interface“ logic around commerce features
-* According to „ports and adapters“ these modules can be used with your own „Adapters“ to interact with any API or microservice you want.
+* Flamingo modules for typical e-commerce domains: Each providing a seperated bounded context with its „domain“, „application“ and „interface“ logic.
+* Using „ports and adapters“ to seperate domain from technical details, all these modules can be used with your own „Adapters“ to interact with any API or microservice you want.
 
-**Flamingo Commerce is build on top of the Flamingo Framework so it makes sense that you read throughthe Flamingo docs first**
+**Flamingo Commerce is build on top of the Flamingo Framework so it makes sense that you read through the Flamingo docs first**
 
 ## A flamingo-commerce project
 
 A typical flamingo commerce based e-commerce project would have:
 
-* Its own templates (of course) . The templates should be build with the pugtemplate engine and can use the flamingo-carotene frontend build pipeline.
+* Its own templates (of course). The templates can be build with the pugtemplate engine and can use the Flamingo Carotene frontend build pipeline.
 * Has the dependency to flamingo and flamingo-commerce packages (using dep)
 * specific flamingo modules, that provide adapters (=implementation of secondary ports in flamingo-commerce modules) for the commerce modules. This can be adapters that call other microservices and external APIs for example.
 * Instead of the specific implementations of adapters, you can also select between available adapters from the open source community:
@@ -20,7 +21,7 @@ A typical flamingo commerce based e-commerce project would have:
 
 So a possible e-commerce project build with flamingo commerce may look like:
 
-![Logo](flamingo-commerce-overview.png)
+![Logo](./flamingo-commerce-overview.png)
 
 ## Possible Architectures
 
@@ -28,7 +29,7 @@ So a possible e-commerce project build with flamingo commerce may look like:
 
 Flamingo can for example be used as „Head“ for a „Headless“ Magento 2 Setup.
 
-![Logo](flamingo-magento2.png)
+![Logo](./flamingo-magento2.png)
 
 * Products are loaded in memory for better performance on start up
 * Cart and Checkout interacts with the Magento2 APIs
@@ -39,7 +40,7 @@ Flamingo can for example be used as „Head“ for a „Headless“ Magento 2 Se
 
 An improved setup will use a proper product-service (e.g. based on elasticsearch) to query and search product data:
 
-![Logo](flamingo-magento2-es.png)
+![Logo](./flamingo-magento2-es.png)
 
 * Products live in a product-service, that offers a blazing fast and feature rich API to access, search and filter for products. (E.g. based on Elasticsearch)
 * Flamingo product and search features use this Elasticsearch service
@@ -51,7 +52,7 @@ An improved setup will use a proper product-service (e.g. based on elasticsearch
 
 A typical commerce based microservice architecture could look like this:
 
-![Logo](flamingo-ms.png)
+![Logo](./flamingo-ms.png)
 
 In this example we see two different flamingo projects:
 
@@ -65,7 +66,7 @@ In this szenario also a single sign on solution such as [keycloak](https://www.a
 
 By using the *flamingo-commerce-adapter-standalone* module its also possible to run a flamingo based webshop like this.
 
-![Logo](flamingo-standalone.png)
+![Logo](./flamingo-standalone.png)
 
 * In this scenario also a SSO solution might be useful, in case you want to support login
 * This scenario is not recommended for large scale shops, but might be a possible start.
