@@ -1,25 +1,25 @@
-# About flamingo commerce
+# About Flamingo Commerce
 
-With "Flamingo Commerce" and "Flamingo Carotene" you get your toolkit for building fast and flexible commerce experience applications.
+With "Flamingo Commerce" and "FlamingoCarotene" you get your toolkit for building fast and flexible commerce experience applications.
 Flamingo Commerce contains:
 
-* Flamingo modules for typical e-commerce domains: Each providing a seperated bounded context with its „domain“, „application“ and „interface“ logic.
+* Flamingomodules for typical e-commerce domains: Each providing a seperated bounded context with its „domain“, „application“ and „interface“ logic.
 * Using „ports and adapters“ to seperate domain from technical details, all these modules can be used with your own „Adapters“ to interact with any API or microservice you want.
 
-**Flamingo Commerce is build on top of the Flamingo Framework so it makes sense that you read through the Flamingo docs first**
+**Flamingo Commerce is build on top of the FlamingoFramework so it makes sense that you read through the Flamingodocs first**
 
 ## A flamingo-commerce project
 
-A typical flamingo commerce based e-commerce project would have:
+A typical Flamingo Commerce based e-commerce project would have:
 
-* Its own templates (of course). The templates can be build with the pugtemplate engine and can use the Flamingo Carotene frontend build pipeline.
-* Has the dependency to flamingo and flamingo-commerce packages (using dep)
-* specific flamingo modules, that provide adapters (=implementation of secondary ports in flamingo-commerce modules) for the commerce modules. This can be adapters that call other microservices and external APIs for example.
+* Its own templates (of course). The templates can be build with the pugtemplate engine and can use the FlamingoCarotene frontend build pipeline.
+* Has the dependency to Flamingoand flamingo-commerce packages (using go.mod)
+* Project specific Flamingomodules, that provide adapters (=implementation of secondary ports in flamingo-commerce modules) for the commerce modules. This can be adapters that call other microservices and external APIs for example.
 * Instead of the specific implementations of adapters, you can also select between available adapters from the open source community:
     * *flamingo-commerce-adapter-standalone* Implementations that work complete without communications to any external service. It provides features to load product data from CSV and keeps cart and checkout in memory. It can be used as a quickstart
-    * *flamingo-commerce-adapter-magento* Implementations to use flamingo with Magento 2.
+    * *flamingo-commerce-adapter-magento* Implementations to use Flamingowith Magento 2.
 
-So a possible e-commerce project build with flamingo commerce may look like:
+So a possible e-commerce project build with Flamingo Commerce may look like:
 
 ![Logo](./flamingo-commerce-overview.png)
 
@@ -54,17 +54,17 @@ A typical commerce based microservice architecture could look like this:
 
 ![Logo](./flamingo-ms.png)
 
-In this example we see two different flamingo projects:
+In this example we see two different Flamingoprojects:
 
 * one for the core commerce experience - including product search, cart and checkout. This project interacts with microservices like productsearch, cartservice, stockservice and a cms service for example.
 * a second one that includes the my account features, that interacts with a order management system for example.
 
-In this szenario also a single sign on solution such as [keycloak](https://www.aoe.com/techradar/tools/keycloak.html) is suggested. Flamingo of course comes with modules supporting the openId Connect flow and OAuth2.0 out of the box.
+In this szenario also a single sign on solution such as [keycloak](https://www.aoe.com/techradar/tools/keycloak.html) is suggested. Flamingoof course comes with modules supporting the openId Connect flow and OAuth2.0 out of the box.
 
 
 ### Flamingo Commerce standalone
 
-By using the *flamingo-commerce-adapter-standalone* module its also possible to run a flamingo based webshop like this.
+By using the *flamingo-commerce-adapter-standalone* module its also possible to run a Flamingobased webshop like this.
 
 ![Logo](./flamingo-standalone.png)
 
@@ -73,4 +73,4 @@ By using the *flamingo-commerce-adapter-standalone* module its also possible to 
 
 ## Demo
 
-The deome flamingo commerce project shows some of the features, and is using  *flamingo-commerce-adapter-standalone*.
+The deome Flamingo Commerce project shows some of the features, and is using  *flamingo-commerce-adapter-standalone*.
