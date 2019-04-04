@@ -2,21 +2,46 @@
 
 Contains modules that helps building powerful and flexible ecommerce websites.
 
+Read more under [go.flamingo.me](https://docs.flamingo.me/4.%20Flamingo%20Commerce/1.%20Introduction/About%20Flamingo%20Commerce.html)
+
 
 ## Setup
 
-To use flamingo-commerce modules in your flamingo project, you just need to include them in your projects main executable and add the following spec in Gopgk.toml:
-```
-[[override]]
-  name = "flamingo.me/flamingo-commerce"
-  branch = "master"
-```
+We recommend to use go modules, so you just need to add Flamingo Commerce to your main go file as import:
 
-If you want to work on flamingo-commerce itselft, it needs to be checked out at the following location: `$GOPATH/src/flamingo.me/flamingo-commerce`
-```sh
-git clone git@gitlab.aoe.com:shared/i-love-flamingo/flamingo-commerce.git $GOPATH/src/flamingo.me/flamingo-commerce
+e.g. to use the product module add
+
+```go
+import (
+  "flamingo.me/flamingo-commerce/v3/product"
+)
 ```
 
-## Learn more about Flamingo-Commerce
+And then load the Module in your application bootstrap:
 
-read the docs.flamingo.me
+```go
+
+// main is our entry point
+func main() {
+
+	flamingo.App([]dingo.Module{
+	    ...
+		//flamingo-commerce modules
+		new(product.Module),
+		
+	}, nil)
+}
+
+
+```
+
+To update the dependency in go.mod run
+
+```
+go get flamingo.me/flamingo-commerce/v3
+```
+## Demo 
+
+There is a demo: https://demoshop.flamingo.me
+
+And the code is also published: https://github.com/i-love-flamingo/commerce-demo-carotene
