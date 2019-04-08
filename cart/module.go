@@ -140,6 +140,7 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 	registry.HandleAny("cart.deleteItem", r.viewController.DeleteAndViewAction)
 	registry.Route("/cart/delete/:id", `cart.deleteItem(id,deliveryCode?="")`)
 	gob.Register(cart.Cart{})
+	gob.Register(cart.PaymentSelection{})
 	r.apiRoutes(registry)
 }
 
