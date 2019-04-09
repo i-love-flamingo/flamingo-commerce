@@ -221,13 +221,11 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 		return err
 	}
 
-	restrictionResult := cs.restrictionService.RestrictQty(ctx, product, cart)
+	err = cs.checkProductQtyRestrictions(ctx, product, cart, qty)
+	if err != nil {
+		cs.logger.WithField("subCategory", "UpdateItemQty").Error(err)
 
-	if restrictionResult.IsRestricted {
-		if qty > restrictionResult.RemainingDifference {
-			cs.logger.WithField("subCategory", "UpdateItemQty").Error("Maximum product quantity would be exceeded: ", restrictionResult.MaxAllowed)
-			return errors.Errorf("Can't update item quantity, product max quantity would be exceeded")
-		}
+		return err
 	}
 
 	cs.eventPublisher.PublishChangedQtyInCartEvent(ctx, item, qtyBefore, qty, cart.ID)
@@ -449,13 +447,11 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 		return nil, err
 	}
 
-	restrictionResult := cs.restrictionService.RestrictQty(ctx, product, cart)
+	err = cs.checkProductQtyRestrictions(ctx, product, cart, addRequest.Qty)
+	if err != nil {
+		cs.logger.WithField(flamingo.LogKeySubCategory, "AddProduct").Error(err)
 
-	if restrictionResult.IsRestricted {
-		if addRequest.Qty > restrictionResult.RemainingDifference {
-			cs.logger.WithField("subCategory", "AddProduct").Error("Maximum product quantity would be exceeded: ", restrictionResult.MaxAllowed)
-			return product, errors.Errorf("Can't add item to cart, product max quantity would be exceeded")
-		}
+		return nil, err
 	}
 
 	cart, err = behaviour.AddToCart(ctx, cart, deliveryCode, addRequest)
@@ -547,6 +543,18 @@ func (cs *CartService) checkProductForAddRequest(ctx context.Context, session *w
 	}
 
 	return addRequest, product, nil
+}
+
+func (cs *CartService) checkProductQtyRestrictions(ctx context.Context, product productDomain.BasicProduct, cart *cartDomain.Cart, qtyToCheck int) error {
+	restrictionResult := cs.restrictionService.RestrictQty(ctx, product, cart)
+
+	if restrictionResult.IsRestricted {
+		if qtyToCheck > restrictionResult.RemainingDifference {
+			return errors.Errorf("Can't update item quantity, product max quantity would be exceeded")
+		}
+	}
+
+	return nil
 }
 
 func (cs *CartService) publishAddtoCartEvent(ctx context.Context, currentCart cartDomain.Cart, addRequest cartDomain.AddRequest) {

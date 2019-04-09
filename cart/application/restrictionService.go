@@ -13,9 +13,6 @@ type (
 	RestrictionService struct {
 		qtyRestrictors []cart.MaxQuantityRestrictor
 	}
-
-	// ErrNoRestriction is used to indicate that there is no restriction
-	ErrNoRestriction struct{}
 )
 
 // Inject dependencies
@@ -25,10 +22,6 @@ func (rs *RestrictionService) Inject(
 	rs.qtyRestrictors = qtyRestrictors
 
 	return rs
-}
-
-func (ErrNoRestriction) Error() string {
-	return "qty is not restricted"
 }
 
 // RestrictQty checks if there is an qty restriction present and returns an according result containing the max allowed
