@@ -31,20 +31,30 @@ func (ErrNoRestriction) Error() string {
 	return "qty is not restricted"
 }
 
-// RestrictQty checks if there is an allowed max qty, ErrNoRestriction is returned if there is no qta restriction at all for the  given product
-func (rs *RestrictionService) RestrictQty(ctx context.Context, product domain.BasicProduct, cart *cart.Cart) (int, error) {
-	var maximumAllowed = math.MaxInt32
+// RestrictQty checks if there is an qty restriction present and returns an according result containing the max allowed
+// quantity and the quantity difference to the current cart
+func (rs *RestrictionService) RestrictQty(ctx context.Context, product domain.BasicProduct, currentCart *cart.Cart) *cart.RestrictionResult {
+	restrictionResult := &cart.RestrictionResult{
+		IsRestricted:        false,
+		RemainingDifference: math.MaxInt32,
+		MaxAllowed:          math.MaxInt32,
+	}
+
 	for _, r := range rs.qtyRestrictors {
-		currentMax := r.Restrict(ctx, product, cart)
-		if currentMax < maximumAllowed {
-			maximumAllowed = currentMax
+		currentResult := r.Restrict(ctx, product, currentCart)
+
+		if currentResult.IsRestricted {
+			restrictionResult.IsRestricted = true
+
+			if currentResult.MaxAllowed < restrictionResult.MaxAllowed {
+				restrictionResult.MaxAllowed = currentResult.MaxAllowed
+			}
+
+			if currentResult.RemainingDifference < restrictionResult.RemainingDifference {
+				restrictionResult.RemainingDifference = currentResult.RemainingDifference
+			}
 		}
 	}
 
-	if maximumAllowed == math.MaxInt32 {
-		return 0, &ErrNoRestriction{}
-	}
-
-	return maximumAllowed, nil
-
+	return restrictionResult
 }
