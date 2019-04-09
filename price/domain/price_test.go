@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"math/big"
+
 	"testing"
 
 	"flamingo.me/flamingo-commerce/v3/price/domain"
@@ -160,4 +161,24 @@ func TestPrice_MarshalBinaryForGob(t *testing.T) {
 	}
 	float, _ := receivedPrice.Price.Amount().Float64()
 	assert.Equal(t, 11.11, float)
+}
+
+func TestPrice_GetPayableByRoundingMode(t *testing.T) {
+	price := domain.NewFromFloat(12.34567, "EUR")
+
+	payable := price.GetPayableByRoundingMode(domain.RoundingModeCeil,100)
+	assert.Equal(t, domain.NewFromInt(1235, 100,"EUR").Amount(), payable.Amount())
+
+	payable = price.GetPayableByRoundingMode(domain.RoundingModeFloor,100)
+	assert.Equal(t, domain.NewFromInt(1234, 100,"EUR").Amount(), payable.Amount())
+
+	payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfUp,100)
+	assert.Equal(t, domain.NewFromInt(1235, 100,"EUR").Amount(), payable.Amount())
+
+	payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfDown,100)
+	assert.Equal(t, domain.NewFromInt(1234, 100,"EUR").Amount(), payable.Amount())
+
+
+	payable = price.GetPayableByRoundingMode(domain.RoundingModeFloor,1)
+	assert.Equal(t, domain.NewFromInt(12, 1,"EUR").Amount(), payable.Amount())
 }

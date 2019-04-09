@@ -40,6 +40,14 @@ var (
 const (
 	//ChargeTypeMain used as default for a Charge
 	ChargeTypeMain = "main"
+	//RoundingModeFloor - use if you want to cut (round down)
+	RoundingModeFloor    = "floor"
+	//RoundingModeCeil - use if you want to round up always
+	RoundingModeCeil     = "ceil"
+	//RoundingModeHalfUp - default for GetPayable()
+	RoundingModeHalfUp   = "halfup"
+	//RoundingModeHalfDown - in cases where you want to round down on .5
+	RoundingModeHalfDown = "halfdown"
 )
 
 //NewFromFloat - factory method
@@ -274,32 +282,52 @@ func (p Price) FloatAmount() float64 {
 // GetPayable - rounds the price with the precision required by the currency in a price that can actually be payed
 // e.g. an internal amount of 1,23344 will get rounded to 1,23
 func (p Price) GetPayable() Price {
+	return p.GetPayableByRoundingMode(RoundingModeHalfUp, p.payableRoundingPrecision())
+}
+
+//GetPayableByRoundingMode - a flexible rounding method where you can pass rounding mode and precision
+func (p Price) GetPayableByRoundingMode(mode string, precision int) Price {
 	newPrice := Price{
 		currency: p.currency,
 	}
 
 	amountForRound := new(big.Float).Copy(&p.amount)
 
-	offsetToCheckRounding := new(big.Float).Mul(p.payableRoundingPrecisionF(), new(big.Float).SetInt64(10))
+	offsetToCheckRounding := new(big.Float).Mul(p.precisionF(precision), new(big.Float).SetInt64(10))
 
-	amountTruncatedInt, _ := new(big.Float).Mul(amountForRound, p.payableRoundingPrecisionF()).Int64()
+	amountTruncatedInt, _ := new(big.Float).Mul(amountForRound, p.precisionF(precision)).Int64()
 	amountRoundingCheckInt, _ := new(big.Float).Mul(amountForRound, offsetToCheckRounding).Int64()
-	if (amountRoundingCheckInt - (amountTruncatedInt * 10)) >= 5 {
-		amountTruncatedInt = amountTruncatedInt + 1
+	valueAfterPrecision := (amountRoundingCheckInt - (amountTruncatedInt * 10))
+
+	switch {
+	case mode == RoundingModeCeil:
+		if valueAfterPrecision > 0 {
+			amountTruncatedInt = amountTruncatedInt + 1
+		}
+	case mode == RoundingModeHalfUp:
+		if valueAfterPrecision >= 5 {
+			amountTruncatedInt = amountTruncatedInt + 1
+		}
+	case mode == RoundingModeHalfDown:
+		if valueAfterPrecision > 5 {
+			amountTruncatedInt = amountTruncatedInt + 1
+		}
+	case mode == RoundingModeFloor:
+	default:
+		//nothing to round
 	}
 
-	amountRounded := new(big.Float).Quo(new(big.Float).SetInt64(amountTruncatedInt), p.payableRoundingPrecisionF())
+	amountRounded := new(big.Float).Quo(new(big.Float).SetInt64(amountTruncatedInt), p.precisionF(precision))
 	newPrice.amount = *amountRounded
 	return newPrice
 }
 
-//payableRoundingPrecisionF - 10 * n - n is the amount of decimal numbers after comma
-// - can be currency specific (for now defaults to 2)
-func (p Price) payableRoundingPrecisionF() *big.Float {
-	return new(big.Float).SetInt64(int64(p.payableRoundingPrecision()))
+//precisionF - returns big.Float from int
+func (p Price) precisionF(precision int) *big.Float {
+	return new(big.Float).SetInt64(int64(precision))
 }
 
-//payableRoundingPrecisionF - 10 * n - n is the amount of decimal numbers after comma
+//precisionF - 10 * n - n is the amount of decimal numbers after comma
 // - can be currency specific (for now defaults to 2)
 func (p Price) payableRoundingPrecision() int {
 	return int(100)
@@ -315,7 +343,7 @@ func (p Price) SplitInPayables(count int) ([]Price, error) {
 		return nil, errors.New("Split must be higher than zero")
 	}
 
-	amountToMatchInt, _ := new(big.Float).Mul(p.GetPayable().Amount(), p.payableRoundingPrecisionF()).Int64()
+	amountToMatchInt, _ := new(big.Float).Mul(p.GetPayable().Amount(), p.precisionF(p.payableRoundingPrecision())).Int64()
 
 	splittedAmountModulo := amountToMatchInt % int64(count)
 	splittedAmount := amountToMatchInt / int64(count)
