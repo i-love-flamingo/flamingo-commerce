@@ -21,6 +21,7 @@ type (
 		deliveryInfoBuilder cartDomain.DeliveryInfoBuilder
 		logger              flamingo.Logger
 		defaultDeliveryCode string
+		restrictionService  *RestrictionService
 		// optionals - these may be nil
 		cartValidator     cartDomain.Validator
 		itemValidator     cartDomain.ItemValidator
@@ -35,6 +36,7 @@ func (cs *CartService) Inject(
 	productService productDomain.ProductService,
 	eventPublisher EventPublisher,
 	deliveryInfoBuilder cartDomain.DeliveryInfoBuilder,
+	restrictionService *RestrictionService,
 	logger flamingo.Logger,
 	config *struct {
 		DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
@@ -50,6 +52,7 @@ func (cs *CartService) Inject(
 	cs.productService = productService
 	cs.eventPublisher = eventPublisher
 	cs.deliveryInfoBuilder = deliveryInfoBuilder
+	cs.restrictionService = restrictionService
 	cs.logger = logger.WithField("module", "cart").WithField("category", "application.cartService")
 	if config != nil {
 		cs.defaultDeliveryCode = config.DefaultDeliveryCode
@@ -209,6 +212,22 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 	qtyBefore := item.Qty
 	if qty < 1 {
 		return cs.DeleteItem(ctx, session, itemID, deliveryCode)
+	}
+
+	product, err := cs.productService.Get(ctx, item.MarketplaceCode)
+	if err != nil {
+		cs.logger.WithField("subCategory", "UpdateItemQty").Error(err)
+
+		return err
+	}
+
+	restrictionResult := cs.restrictionService.RestrictQty(ctx, product, cart)
+
+	if restrictionResult.IsRestricted {
+		if qty > restrictionResult.RemainingDifference {
+			cs.logger.WithField("subCategory", "UpdateItemQty").Error("Maximum product quantity would be exceeded: ", restrictionResult.MaxAllowed)
+			return errors.Errorf("Can't update item quantity, product max quantity would be exceeded")
+		}
 	}
 
 	cs.eventPublisher.PublishChangedQtyInCartEvent(ctx, item, qtyBefore, qty, cart.ID)
@@ -428,6 +447,15 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 		cs.logger.WithField(flamingo.LogKeySubCategory, "AddProduct").Error(err)
 
 		return nil, err
+	}
+
+	restrictionResult := cs.restrictionService.RestrictQty(ctx, product, cart)
+
+	if restrictionResult.IsRestricted {
+		if addRequest.Qty > restrictionResult.RemainingDifference {
+			cs.logger.WithField("subCategory", "AddProduct").Error("Maximum product quantity would be exceeded: ", restrictionResult.MaxAllowed)
+			return product, errors.Errorf("Can't add item to cart, product max quantity would be exceeded")
+		}
 	}
 
 	cart, err = behaviour.AddToCart(ctx, cart, deliveryCode, addRequest)
