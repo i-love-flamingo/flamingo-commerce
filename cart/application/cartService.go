@@ -391,8 +391,8 @@ func (cs *CartService) BuildAddRequest(ctx context.Context, marketplaceCode stri
 	}
 
 	return cartDomain.AddRequest{
-		MarketplaceCode: marketplaceCode,
-		Qty:             qty,
+		MarketplaceCode:        marketplaceCode,
+		Qty:                    qty,
 		VariantMarketplaceCode: variantMarketplaceCode,
 	}
 }
@@ -528,7 +528,7 @@ func (cs *CartService) publishAddtoCartEvent(ctx context.Context, currentCart ca
 }
 
 func (cs *CartService) updateCartInCacheIfCacheIsEnabled(ctx context.Context, session *web.Session, cart *cartDomain.Cart) {
-	if cs.cartCache != nil {
+	if cs.cartCache != nil && cart != nil {
 		id, err := cs.cartCache.BuildIdentifier(ctx, session)
 		if err != nil {
 			return
