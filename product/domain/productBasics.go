@@ -131,6 +131,8 @@ type (
 		//The sku that should be used to link from Teasers
 		MarketPlaceCode       string
 		TeaserAvailablePrices []PriceInfo
+		//TeaserLoyaltyPriceInfo - optional the Loyaltyprice that can be used for teaser (e.g. on listing views)
+		TeaserLoyaltyPriceInfo *LoyaltyPriceInfo
 	}
 
 	// Media holds product media information
