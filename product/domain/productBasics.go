@@ -100,9 +100,13 @@ type (
 	LoyaltyPriceInfo struct {
 		//Type - Name( or Type) of the Loyalty program
 		Type             string
-		PointPrice       priceDomain.Price
+		Default          priceDomain.Price
+		IsDiscounted     bool
+		Discounted       priceDomain.Price
+		DiscountText     string
 		MinPointsToSpent big.Float
 		MaxPointsToSpent big.Float
+		Context          PriceContext
 	}
 
 	// PriceContext defines the scope in which the price was calculated
@@ -301,37 +305,54 @@ func (p Saleable) IsSaleableNow() bool {
 	return false
 }
 
+
+// GetLoyaltyPriceByType - returns the loyaltyentry that matches the type
+func (p Saleable) GetLoyaltyPriceByType(ltype string) (*LoyaltyPriceInfo, bool) {
+	for _, lp := range p.LoyaltyPrices {
+		if lp.Type == ltype {
+			return &lp,true
+		}
+	}
+	return nil, false
+}
+
 // GetChargesToPay  Gets the Charges that need to be payed by type
 func (p Saleable) GetChargesToPay(wishedToPay *WishedToPay) Charges {
 	requiredCharges := make(map[string]priceDomain.Charge)
 	valuedPrice := p.ActivePrice.GetFinalPrice()
 	remainingMainChargeValue := valuedPrice.Amount()
+
 	for _, loyaltyPrice := range p.LoyaltyPrices {
 		chargeType := "loyalty." + loyaltyPrice.Type
 
-		if !loyaltyPrice.PointPrice.IsPositive() {
+		if !loyaltyPrice.GetFinalPrice().IsPositive() {
 			continue
 		}
 		if loyaltyPrice.MinPointsToSpent.Cmp(big.NewFloat(0)) < 1 {
 			continue
 		}
-		rate := loyaltyPrice.GetRate(valuedPrice)
+		rateLoyaltyDefaultPrices := loyaltyPrice.GetRate(p.ActivePrice.Default)
+
+		//loyaltyAmountToSpent - set as default without potential wish
 		loyaltyAmountToSpent := loyaltyPrice.GetAmountToSpend(nil)
 		if wishedToPay != nil {
 			wishedPrice := wishedToPay.GetByType(chargeType)
-			if wishedPrice != nil && wishedPrice.Currency() == loyaltyPrice.PointPrice.Currency() {
+			if wishedPrice != nil && wishedPrice.Currency() == loyaltyPrice.GetFinalPrice().Currency() {
+				//Use the passed wishedPrice of that type
 				loyaltyAmountToSpent = loyaltyPrice.GetAmountToSpend(wishedPrice.Amount())
 			}
 		}
 
-		loyaltyPriceValue := new(big.Float).Mul(&rate, &loyaltyAmountToSpent)
+		//loyaltyPriceValue - is the value of this points in the "real" currency
+		loyaltyPriceValue := new(big.Float).Mul(&rateLoyaltyDefaultPrices, &loyaltyAmountToSpent)
 
 		if loyaltyPriceValue.Cmp(big.NewFloat(0)) <= 0 {
 			continue
 		}
+		//Add the loyalty charge and at the same time reduce the remainingValue
 		remainingMainChargeValue = new(big.Float).Sub(remainingMainChargeValue, loyaltyPriceValue)
 		requiredCharges[chargeType] = priceDomain.Charge{
-			Price: priceDomain.NewFromBigFloat(loyaltyAmountToSpent, loyaltyPrice.PointPrice.Currency()),
+			Price: priceDomain.NewFromBigFloat(loyaltyAmountToSpent, loyaltyPrice.GetFinalPrice().Currency()),
 			Type:  chargeType,
 			Value: priceDomain.NewFromBigFloat(*loyaltyPriceValue, valuedPrice.Currency()).GetPayable(),
 		}
@@ -409,13 +430,23 @@ func (c Charges) GetByType(ctype string) (priceDomain.Charge, bool) {
 	return priceDomain.Charge{}, false
 }
 
-//GetRate - get the currency conversion rate of the current loyaltyprice in relation to the passed value
+//GetRate - get the currency conversion rate of the current loyaltyprice Default price (not discounted) in relation to the passed value
 func (l LoyaltyPriceInfo) GetRate(valuedPrice priceDomain.Price) big.Float {
-	if !l.PointPrice.IsPositive() {
+	if !l.Default.IsPositive() {
 		return *big.NewFloat(0)
 	}
-	return *new(big.Float).Quo(valuedPrice.Amount(), l.PointPrice.Amount())
+	return *new(big.Float).Quo(valuedPrice.Amount(), l.Default.Amount())
 }
+
+
+//GetFinalPrice - gets either the Default or the Discounted Loyaltyprice
+func (l LoyaltyPriceInfo) GetFinalPrice() priceDomain.Price {
+	if l.IsDiscounted && l.Discounted.IsLessThen(l.Default) {
+		return l.Discounted
+	}
+	return l.Default
+}
+
 
 //GetAmountToSpend - takes the whishedamaount and evaluates min and max and returns the points that need to be payed.
 func (l LoyaltyPriceInfo) GetAmountToSpend(wishedAmount *big.Float) big.Float {

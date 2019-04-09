@@ -182,7 +182,7 @@ func TestSaleable_GetChargesToPay(t *testing.T) {
 				//10 is the minimum to pay in miles (=20€ value)
 				MinPointsToSpent: *new(big.Float).SetInt64(10),
 				//50 miles == 100€ meaning 1Mile = 2€
-				PointPrice: priceDomain.NewFromInt(50, 1, "Miles"),
+				Default: priceDomain.NewFromInt(50, 1, "Miles"),
 			},
 		},
 	}
@@ -219,7 +219,7 @@ func TestLoyaltyPriceInfo_GetAmountToSpend(t *testing.T) {
 		//10 is the minimum to pay in miles (=20€ value)
 		MinPointsToSpent: *new(big.Float).SetInt64(10),
 		//50 miles == 100€ meaning 1Mile = 2€
-		PointPrice: priceDomain.NewFromInt(50, 1, "Miles"),
+		Default: priceDomain.NewFromInt(50, 1, "Miles"),
 	}
 	result := l.GetAmountToSpend(new(big.Float).SetInt64(15))
 	assert.Equal(t, *new(big.Float).SetInt64(15), result)
