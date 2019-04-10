@@ -27,6 +27,9 @@ type (
 		// @return the web.Result need to be executed(returned) by the call to give control to the Flow
 		StartFlow(ctx context.Context, cart *cart.Cart, correlationID string, returnURL *url.URL) (web.Result, error)
 
+		// GetStartFlowResult - returns the data for a new flow
+		GetStartFlowResult(ctx context.Context, cart *cart.Cart, correlationID string, returnURL *url.URL) (*domain.FlowResult, error)
+
 		// GetFlowResult - will be used to fetch the result of the payment flow
 		// @param correlationID - is used to fetch the result of a processing request started by this correlationId
 		GetFlowResult(ctx context.Context, cart *cart.Cart, correlationID string) (*cart.Payment, error)
