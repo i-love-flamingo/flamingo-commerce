@@ -15,6 +15,7 @@ type (
 	FlowResult struct {
 		URL  *url.URL
 		Type string
+		Data interface{}
 	}
 
 	// Error should be used by PaymentGateway to indicate that payment failed (so that the customer can see a speaking message)
