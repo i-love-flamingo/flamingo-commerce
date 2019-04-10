@@ -111,8 +111,6 @@ func TestRestrictionService_RestrictQty(t *testing.T) {
 			got := rs.RestrictQty(tt.args.ctx, tt.args.product, tt.args.cart)
 			if !reflect.DeepEqual(got, tt.expectedRestrictionResult) {
 				t.Errorf("RestrictionService.RestrictQty() got = %v, expected = %v", got, tt.expectedRestrictionResult)
-
-				return
 			}
 		})
 	}

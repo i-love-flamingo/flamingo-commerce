@@ -550,7 +550,7 @@ func (cs *CartService) checkProductQtyRestrictions(ctx context.Context, product 
 
 	if restrictionResult.IsRestricted {
 		if qtyToCheck > restrictionResult.RemainingDifference {
-			return errors.Errorf("Can't update item quantity, product max quantity would be exceeded")
+			return errors.Errorf("Can't update item quantity, product max quantity of %d would be exceeded", restrictionResult.MaxAllowed)
 		}
 	}
 
