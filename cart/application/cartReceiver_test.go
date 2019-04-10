@@ -417,6 +417,7 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 		ProductService      productDomain.ProductService
 		Logger              flamingo.Logger
 		EventPublisher      cartApplication.EventPublisher
+		RestrictionService  *cartApplication.RestrictionService
 		config              *struct {
 			DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
 		}
@@ -490,6 +491,7 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 				tt.fields.ProductService,
 				tt.fields.EventPublisher,
 				tt.fields.DeliveryInfoBuilder,
+				tt.fields.RestrictionService,
 				tt.fields.Logger,
 				tt.fields.config,
 				nil,
