@@ -22,6 +22,7 @@ type (
 		logger              flamingo.Logger
 		defaultDeliveryCode string
 		restrictionService  *RestrictionService
+		deleteEmptyDelivery bool
 		// optionals - these may be nil
 		cartValidator     cartDomain.Validator
 		itemValidator     cartDomain.ItemValidator
@@ -40,6 +41,7 @@ func (cs *CartService) Inject(
 	logger flamingo.Logger,
 	config *struct {
 		DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
+		DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
 	},
 	optionals *struct {
 		CartValidator     cartDomain.Validator         `inject:",optional"`
@@ -56,6 +58,7 @@ func (cs *CartService) Inject(
 	cs.logger = logger.WithField("module", "cart").WithField("category", "application.cartService")
 	if config != nil {
 		cs.defaultDeliveryCode = config.DefaultDeliveryCode
+		cs.deleteEmptyDelivery = config.DeleteEmptyDelivery
 	}
 	if optionals != nil {
 		cs.cartValidator = optionals.CartValidator
@@ -289,6 +292,8 @@ func (cs *CartService) DeleteItem(ctx context.Context, session *web.Session, ite
 	// cart cache must be updated - with the current value of cart
 	defer func() {
 		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
+
+		cs.handleEmptyDelivery(ctx, session, cart, deliveryCode)
 	}()
 
 	if deliveryCode == "" {
@@ -420,15 +425,6 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 		deliveryCode = cs.defaultDeliveryCode
 	}
 
-	addRequest, product, err := cs.checkProductForAddRequest(ctx, session, deliveryCode, addRequest)
-	if err != nil {
-		cs.logger.WithField(flamingo.LogKeySubCategory, "AddProduct").Error(err)
-
-		return nil, err
-	}
-
-	cs.logger.WithField(flamingo.LogKeyCategory, "cartService").WithField(flamingo.LogKeySubCategory, "AddProduct").Debug(fmt.Sprintf("AddRequest received %#v  / %v", addRequest, deliveryCode))
-
 	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		cs.logger.WithField(flamingo.LogKeySubCategory, "AddProduct").Error(err)
@@ -438,7 +434,18 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 	// cart cache must be updated - with the current value of cart
 	defer func() {
 		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
+
+		cs.handleEmptyDelivery(ctx, session, cart, deliveryCode)
 	}()
+
+	addRequest, product, err := cs.checkProductForAddRequest(ctx, session, deliveryCode, addRequest)
+	if err != nil {
+		cs.logger.WithField(flamingo.LogKeySubCategory, "AddProduct").Error(err)
+
+		return nil, err
+	}
+
+	cs.logger.WithField(flamingo.LogKeyCategory, "cartService").WithField(flamingo.LogKeySubCategory, "AddProduct").Debug(fmt.Sprintf("AddRequest received %#v  / %v", addRequest, deliveryCode))
 
 	cart, err = cs.CreateInitialDeliveryIfNotPresent(ctx, session, deliveryCode)
 	if err != nil {
@@ -627,4 +634,26 @@ func (cs *CartService) PlaceOrder(ctx context.Context, session *web.Session, pay
 // GetDefaultDeliveryCode returns the configured default deliverycode
 func (cs *CartService) GetDefaultDeliveryCode() string {
 	return cs.defaultDeliveryCode
+}
+
+// handleEmptyDelivery - delete an empty delivery when found and feature flag is set
+func (cs *CartService) handleEmptyDelivery(ctx context.Context, session *web.Session, cart *cartDomain.Cart, deliveryCode string) {
+	if cs.deleteEmptyDelivery != true {
+		return
+	}
+
+	delivery, found := cart.GetDeliveryByCode(deliveryCode)
+	if !found {
+		return
+	}
+
+	if len(delivery.Cartitems) > 0 {
+		return
+	}
+
+	_, err := cs.DeleteDelivery(ctx, session, deliveryCode)
+	if err != nil {
+		cs.logger.WithField("subCategory", "handleEmptyDelivery").Error(err)
+		return
+	}
 }

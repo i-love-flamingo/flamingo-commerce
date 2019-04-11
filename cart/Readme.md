@@ -31,6 +31,8 @@ The cart module and its services are used by the checkout module.
     defaultDeliveryCode: "delivery"
     # enable the secondary adapter for the order service:
     useEmailPlaceOrderAdapter: true
+    # enable the deletion of an empty delivery when deleting an item, or adding an item failed
+    deleteEmptyDelivery: false
 ```
 
 ## Domain Model Details
