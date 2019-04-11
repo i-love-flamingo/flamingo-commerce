@@ -23,7 +23,7 @@ const (
 	OfflineWebCartPaymentGatewayCode = "offline"
 )
 
-var _ WebCartPaymentGateway = &OfflineWebCartPaymentGateway{}
+var _ WebCartPaymentGateway = (*OfflineWebCartPaymentGateway)(nil)
 
 // Inject for OfflineWebCartPaymentGateway
 func (o *OfflineWebCartPaymentGateway) Inject(responder *web.Responder, config *struct {
@@ -67,6 +67,15 @@ func (o *OfflineWebCartPaymentGateway) checkCart(currentCart *cartDomain.Cart) e
 		}
 	}
 	return nil
+}
+
+//GetStartFlowResult for offline payment
+func (o *OfflineWebCartPaymentGateway) GetStartFlowResult(ctx context.Context, currentCart *cartDomain.Cart, correlationID string, returnURL *url.URL) (*domain.FlowResult, error) {
+	err := o.checkCart(currentCart)
+	if err != nil {
+		return nil, err
+	}
+	return &domain.FlowResult{}, nil
 }
 
 //StartFlow for offline payment requires not much - just redirect to the returnUrl :-)

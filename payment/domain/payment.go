@@ -1,5 +1,7 @@
 package domain
 
+import "net/url"
+
 type (
 	// Method contains information about a general payment method
 	Method struct {
@@ -7,6 +9,13 @@ type (
 		Title string
 		//A unique Code
 		Code string
+	}
+
+	// FlowResult contains an url and a type to use to start a flow
+	FlowResult struct {
+		URL  *url.URL
+		Type string
+		Data interface{}
 	}
 
 	// Error should be used by PaymentGateway to indicate that payment failed (so that the customer can see a speaking message)
