@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"math/big"
+	"strings"
 )
 
 type (
@@ -329,7 +330,11 @@ func (p Price) precisionF(precision int) *big.Float {
 
 //precisionF - 10 * n - n is the amount of decimal numbers after comma
 // - can be currency specific (for now defaults to 2)
+// - TODO - use currency configuration or registry
 func (p Price) payableRoundingPrecision() int {
+	if strings.ToLower(p.currency) == "miles" || strings.ToLower(p.currency) == "points" {
+		return int(1)
+	}
 	return int(100)
 }
 
@@ -425,4 +430,40 @@ func (p *Price) UnmarshalBinary(data []byte) error {
 	p.amount = pe.Amount
 	p.currency = pe.Currency
 	return nil
+}
+
+
+
+//Add - Adds the given Charge to the current Charge and returns a new Charge
+func (p Charge) Add(add Charge) (Charge, error) {
+	if p.Type != add.Type {
+		return Charge{},errors.New("charge type mismatch")
+	}
+	new, err := p.Price.Add(add.Price)
+	if err != nil {
+		return Charge{},err
+	}
+	p.Price = new
+
+	new, err = p.Value.Add(add.Value)
+	if err != nil {
+		return Charge{},err
+	}
+	p.Value = new
+	return p, nil
+}
+
+
+//GetPayable - Rounds the charge
+func (p Charge) GetPayable() Charge {
+	p.Value = p.Value.GetPayable()
+	p.Price = p.Price.GetPayable()
+	return p
+}
+
+//Mul - Mul the given Charge and returns a new Charge
+func (p Charge) Mul(qty int) (Charge) {
+	p.Price = p.Price.Multiply(qty)
+	p.Value = p.Value.Multiply(qty)
+	return p
 }

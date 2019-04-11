@@ -165,6 +165,20 @@ func (dci DecoratedCartItem) GetVariantsVariationAttributeCodes() []string {
 	return nil
 }
 
+
+// GetChargesToPay getter
+func (dci DecoratedCartItem) GetChargesToPay(wishedToPaySum *domain.WishedToPay) domain.Charges {
+	if wishedToPaySum == nil {
+		return dci.Product.SaleableData().GetChargesToPay(nil).Mul(dci.Item.Qty)
+	}
+	wishedToPaySplitted := wishedToPaySum.Split(dci.Item.Qty)
+	sumCharges := domain.Charges{}
+	for _, wishedToPay := range wishedToPaySplitted {
+		sumCharges = sumCharges.Add(dci.Product.SaleableData().GetChargesToPay(&wishedToPay))
+	}
+	return sumCharges
+}
+
 // GetGroupedBy legacy function
 // deprecated: only here to support the old structure of accesing DecoratedItems in the Decorated Cart
 // Use instead:
@@ -200,7 +214,7 @@ func (dc DecoratedCart) GetDecoratedDeliveryByCode(deliveryCode string) (*Decora
 	return nil, false
 }
 
-//GrandTotalCharges - Final sum that need to be payed - splitted by the charged that need to be payed
+//GrandTotalCharges - Final sum that need to be payed - splitted by the charges that need to be payed
 func (dc DecoratedCart) GrandTotalCharges() map[string]priceDomain.Charge {
 	result := make(map[string]priceDomain.Charge)
 	//TODO - check products and cart selected payment

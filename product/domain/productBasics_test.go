@@ -177,8 +177,8 @@ func TestSaleable_GetChargesToPay(t *testing.T) {
 		},
 		LoyaltyPrices: []LoyaltyPriceInfo{
 			LoyaltyPriceInfo{
-				Type:             "miles",
-				MaxPointsToSpent: *new(big.Float).SetInt64(20),
+				Type:             "loyalty.miles",
+				MaxPointsToSpent: *new(big.Float).SetInt64(100),
 				//10 is the minimum to pay in miles (=20€ value)
 				MinPointsToSpent: *new(big.Float).SetInt64(10),
 				//50 miles == 100€ meaning 1Mile = 2€
@@ -198,7 +198,7 @@ func TestSaleable_GetChargesToPay(t *testing.T) {
 	assert.True(t, found)
 	assert.Equal(t, priceDomain.NewFromInt(10, 1, "Miles"), chargeLoyaltyMiles.Price, "only minimum points expected")
 
-	//Test if w wish is given
+	//Test when we pass 15 miles as wish
 	wished := NewWishedToPay().Add("loyalty.miles", priceDomain.NewFromInt(15, 1, "Miles"))
 	charges = p.GetChargesToPay(&wished)
 	chargeMain, found = charges.GetByType(priceDomain.ChargeTypeMain)
@@ -209,6 +209,19 @@ func TestSaleable_GetChargesToPay(t *testing.T) {
 	chargeLoyaltyMiles, found = charges.GetByType("loyalty.miles")
 	assert.True(t, found)
 	assert.Equal(t, priceDomain.NewFromInt(15, 1, "Miles"), chargeLoyaltyMiles.Price, "the whished 15 points expected")
+
+	//Test when we pass 100 miles as wish
+	wished = NewWishedToPay().Add("loyalty.miles", priceDomain.NewFromInt(100, 1, "Miles"))
+	charges = p.GetChargesToPay(&wished)
+	chargeMain, found = charges.GetByType(priceDomain.ChargeTypeMain)
+	assert.True(t, found)
+
+	assert.Equal(t, priceDomain.NewFromInt(0, 1, "€"), chargeMain.Price, "Main charge should be 0")
+
+	chargeLoyaltyMiles, found = charges.GetByType("loyalty.miles")
+	assert.True(t, found)
+	assert.Equal(t, priceDomain.NewFromInt(50, 1, "Miles"), chargeLoyaltyMiles.Price, "50 points expected as max")
+
 }
 
 func TestLoyaltyPriceInfo_GetAmountToSpend(t *testing.T) {
@@ -230,4 +243,46 @@ func TestLoyaltyPriceInfo_GetAmountToSpend(t *testing.T) {
 	result = l.GetAmountToSpend(new(big.Float).SetInt64(50))
 	assert.Equal(t, *new(big.Float).SetInt64(20), result)
 
+}
+
+
+func TestCharges_Add(t *testing.T) {
+	c1 := Charges{
+	}
+
+	c2 := Charges{
+		chargesByType: make(map[string]priceDomain.Charge),
+	}
+	c2.chargesByType["main"] = priceDomain.Charge{
+		Type:  "main",
+		Price: priceDomain.NewFromInt(100, 1, "EUR"),
+		Value: priceDomain.NewFromInt(50, 1, "EUR"),
+	}
+
+	c3 := Charges{
+		chargesByType: make(map[string]priceDomain.Charge),
+	}
+	c3.chargesByType["main"] = priceDomain.Charge{
+		Type:  "main",
+		Price: priceDomain.NewFromInt(100, 1, "EUR"),
+		Value: priceDomain.NewFromInt(100, 1, "EUR"),
+	}
+
+	c1and2 := c1.Add(c2)
+	charge, found := c1and2.GetByType("main")
+	assert.True(t, found)
+	assert.Equal(t, priceDomain.Charge{
+		Price: priceDomain.NewFromInt(100, 1, "EUR"),
+		Value: priceDomain.NewFromInt(50, 1, "EUR"),
+		Type:  "main",
+	}, charge)
+
+	c2and3 := c2.Add(c3)
+	charge, found = c2and3.GetByType("main")
+	assert.True(t, found)
+	assert.Equal(t, priceDomain.Charge{
+		Price: priceDomain.NewFromInt(200, 1, "EUR"),
+		Value: priceDomain.NewFromInt(150, 1, "EUR"),
+		Type:  "main",
+	}, charge)
 }
