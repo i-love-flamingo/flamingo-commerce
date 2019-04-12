@@ -42,10 +42,8 @@ type (
 
 	//ItemChargeAssignment holds the information what amount was assigned to a specific chargetype of a specific item in the cart
 	ItemChargeAssignment struct {
-		UniqueItemID      string
-		ChargeType        string
-		AmountPayed       domain.Price
-		ValuedAmountPayed domain.Price
+		UniqueItemID string
+		Charge       domain.Charge
 	}
 
 	// CreditCardInfo contains the necessary data
@@ -74,6 +72,10 @@ type (
 		Amount domain.Price
 		//The value in cart currency of the amount
 		ValuedAmount domain.Price
+
+		//ItemChargeAssignments - optional the assignment of this transaction to item charges- this might be required for payments that are really only done for an item
+		// List of items.UniqueID
+		ItemChargeAssignments []ItemChargeAssignment
 	}
 )
 
