@@ -317,11 +317,19 @@ func (p Saleable) GetLoyaltyPriceByType(ltype string) (*LoyaltyPriceInfo, bool) 
 	return nil, false
 }
 
-// GetChargesToPay  Gets the Charges that need to be payed by type
-func (p Saleable) GetChargesToPay(wishedToPay *WishedToPay) Charges {
+// GetLoyaltyChargeSplit  Gets the Charges that need to be payed by type:
+// Type "main" is the remaining charge in the main currency and the other charges returned are the loyalty price charges that need to be payed.
+// The method takes the min, max and the caluclated loyalty conversion rate into account
+//
+// @param valuedPriceToPay  Optional the price that need to be payed - if not given the products final price will be used
+// @param loyaltyPointsWishedToPay   Optional a list of loyaltyPrices that the (customer) wants to spend. Its used as a wish and may not be fullfilled because of min, max properties on the products loyaltyPrices
+func (p Saleable) GetLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price, loyaltyPointsWishedToPay *WishedToPay) Charges {
+	if valuedPriceToPay == nil {
+		finalPrice := p.ActivePrice.GetFinalPrice()
+		valuedPriceToPay = &finalPrice
+	}
 	requiredCharges := make(map[string]priceDomain.Charge)
-	valuedPrice := p.ActivePrice.GetFinalPrice()
-	remainingMainChargeValue := valuedPrice.Amount()
+	remainingMainChargeValue := valuedPriceToPay.Amount()
 
 	for _, loyaltyPrice := range p.LoyaltyPrices {
 		chargeType := loyaltyPrice.Type
@@ -337,19 +345,30 @@ func (p Saleable) GetChargesToPay(wishedToPay *WishedToPay) Charges {
 		}
 		rateLoyaltyFinalPriceToRealFinalPrice := loyaltyPrice.GetRate(p.ActivePrice.GetFinalPrice())
 
+		/**
+		   We need to adjust min and max evaluation according to passed valuedPriceToPay (rule of three - direct proportional)
+			activePrice -> loyaltyPrice    100€  -> 50Miles
+			valuedPriceToPay  -> x  		90€  -> 45Miles
+
+			x = ((valuedPriceToPay * loyaltyPrice)  / activePrice )
+
+			rateForMilesAdjustment = x / loyaltyPrice
+		 */
+		rateForMilesAdjustment := big.NewFloat(valuedPriceToPay.FloatAmount() / p.ActivePrice.GetFinalPrice().FloatAmount())
+
 		//loyaltyAmountToSpent - set as default without potential wish
-		loyaltyAmountToSpent := loyaltyPrice.GetAmountToSpend(nil)
-		if wishedToPay != nil {
-			wishedPrice := wishedToPay.GetByType(chargeType)
+		loyaltyAmountToSpent := loyaltyPrice.GetAmountToSpendRelative(nil, rateForMilesAdjustment)
+		if loyaltyPointsWishedToPay != nil {
+			wishedPrice := loyaltyPointsWishedToPay.GetByType(chargeType)
 			if wishedPrice != nil && wishedPrice.Currency() == loyaltyPrice.GetFinalPrice().Currency() {
 				//Use the passed wishedPrice of that type
-				loyaltyAmountToSpent = loyaltyPrice.GetAmountToSpend(wishedPrice.Amount())
+				loyaltyAmountToSpent = loyaltyPrice.GetAmountToSpendRelative(wishedPrice.Amount(), rateForMilesAdjustment)
 			}
 		}
 
 		//loyaltyPriceValue - is the value of this points in the "real" currency
-		valuedLoyalityPrice := priceDomain.NewFromBigFloat(*new(big.Float).Mul(&rateLoyaltyFinalPriceToRealFinalPrice, &loyaltyAmountToSpent),valuedPrice.Currency()).GetPayable()
-		if valuedLoyalityPrice.IsZero() ||  valuedLoyalityPrice.IsNegative() {
+		valuedLoyalityPrice := priceDomain.NewFromBigFloat(*new(big.Float).Mul(&rateLoyaltyFinalPriceToRealFinalPrice, &loyaltyAmountToSpent), valuedPriceToPay.Currency()).GetPayable()
+		if valuedLoyalityPrice.IsZero() || valuedLoyalityPrice.IsNegative() {
 			continue
 		}
 		//Add the loyalty charge and at the same time reduce the remainingValue
@@ -361,7 +380,7 @@ func (p Saleable) GetChargesToPay(wishedToPay *WishedToPay) Charges {
 		}
 	}
 
-	remainingMainChargePrice := priceDomain.NewFromBigFloat(*remainingMainChargeValue, valuedPrice.Currency()).GetPayable()
+	remainingMainChargePrice := priceDomain.NewFromBigFloat(*remainingMainChargeValue, valuedPriceToPay.Currency()).GetPayable()
 	requiredCharges[priceDomain.ChargeTypeMain] = priceDomain.Charge{
 		Price: remainingMainChargePrice,
 		Type:  priceDomain.ChargeTypeMain,
@@ -443,7 +462,7 @@ func (c Charges) Add(toadd Charges) (Charges) {
 	}
 	for addk, addCharge := range toadd.chargesByType {
 		if existingCharge, ok := c.chargesByType[addk]; ok {
-			chargeSum, _ :=  existingCharge.Add(addCharge)
+			chargeSum, _ := existingCharge.Add(addCharge)
 			c.chargesByType[addk] = chargeSum.GetPayable()
 		} else {
 			c.chargesByType[addk] = addCharge
@@ -479,16 +498,46 @@ func (l LoyaltyPriceInfo) GetFinalPrice() priceDomain.Price {
 	return l.Default
 }
 
-//GetAmountToSpend - takes the whishedamaount and evaluates min and max and returns the loyalty points amount that need to be payed.
-func (l LoyaltyPriceInfo) GetAmountToSpend(wishedAmount *big.Float) big.Float {
+//GetAmountToSpendWithQty - takes the whishedamaount and evaluates min and max and returns the loyalty points amount that need to be payed.
+func (l LoyaltyPriceInfo) GetAmountToSpendWithQty(wishedAmount *big.Float, qty int) big.Float {
 	//less or equal - return min
-	if wishedAmount == nil || l.MinPointsToSpent.Cmp(wishedAmount) > 0 {
-		return l.MinPointsToSpent
+	min := l.MinPointsToSpent
+	min = *new(big.Float).Mul(&min, big.NewFloat(float64(qty)))
+	if wishedAmount == nil || min.Cmp(wishedAmount) > 0 {
+		return min
 	}
+
 	max := l.MaxPointsToSpent
 	if max.Cmp(l.GetFinalPrice().Amount()) == 1 {
 		max = *l.GetFinalPrice().Amount()
 	}
+	max = *new(big.Float).Mul(&max, big.NewFloat(float64(qty)))
+
+	//more then max - return max
+	if max.Cmp(wishedAmount) == -1 {
+		return max
+	}
+	return *wishedAmount
+}
+
+//GetAmountToSpendRelative - takes the whishedamaount and evaluates min and max and returns the loyalty points amount that need to be payed.
+func (l LoyaltyPriceInfo) GetAmountToSpendRelative(wishedAmount *big.Float, adjustmentRate *big.Float) big.Float {
+	if adjustmentRate == nil {
+		adjustmentRate = big.NewFloat(1)
+	}
+	//less or equal - return min
+	min := l.MinPointsToSpent
+	min = *new(big.Float).Mul(&min, adjustmentRate)
+	if wishedAmount == nil || min.Cmp(wishedAmount) > 0 {
+		return min
+	}
+
+	max := l.MaxPointsToSpent
+	if max.Cmp(l.GetFinalPrice().Amount()) == 1 {
+		max = *l.GetFinalPrice().Amount()
+	}
+	max = *new(big.Float).Mul(&max, adjustmentRate)
+
 	//more then max - return max
 	if max.Cmp(wishedAmount) == -1 {
 		return max
