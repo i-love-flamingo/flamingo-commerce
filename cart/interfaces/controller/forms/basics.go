@@ -28,7 +28,7 @@ type (
 		PhoneAreaCode    string `form:"phoneAreaCode" conform:"trim"`
 		PhoneCountryCode string `form:"phoneCountryCode" conform:"trim"`
 		PhoneNumber      string `form:"phoneNumber" conform:"trim"`
-		Email            string `form:"email" validate:"required,email" conform:"email"`
+		Email            string `form:"email" validate:"required,email" conform:"trim,lowercase"`
 	}
 )
 
