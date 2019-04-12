@@ -9,26 +9,26 @@ type (
 	// AddressForm defines the checkout address form data
 	AddressForm struct {
 		Vat              string `form:"vat"`
-		Firstname        string `form:"firstname" validate:"required" conform:"name"`
-		Lastname         string `form:"lastname" validate:"required" conform:"name"`
-		MiddleName       string `form:"middlename" conform:"name"`
+		Firstname        string `form:"firstname" validate:"required" conform:"ucfirst,trim"`
+		Lastname         string `form:"lastname" validate:"required" conform:"ucfirst,trim"`
+		MiddleName       string `form:"middlename" conform:"ucfirst,trim"`
 		Title            string `form:"title" conform:"trim"`
 		Salutation       string `form:"salutation" conform:"trim"`
-		Street           string `form:"street" conform:"trim"`
+		Street           string `form:"street" conform:"ucfirst,trim"`
 		StreetNr         string `form:"streetNr" conform:"trim"`
 		AddressLine1     string `form:"addressLine1" conform:"trim"`
 		AddressLine2     string `form:"addressLine2" conform:"trim"`
 		Company          string `form:"company" conform:"trim"`
 		PostCode         string `form:"postCode" conform:"trim"`
-		City             string `form:"city" conform:"name"`
-		State            string `form:"state" conform:"trim"`
-		RegionCode       string `form:"regionCode" conform:"name"`
-		Country          string `form:"country" conform:"trim"`
-		CountryCode      string `form:"countryCode" conform:"name"`
-		PhoneAreaCode    string `form:"phoneAreaCode"`
-		PhoneCountryCode string `form:"phoneCountryCode"`
-		PhoneNumber      string `form:"phoneNumber"`
-		Email            string `form:"email" validate:"required,email"`
+		City             string `form:"city" conform:"ucfirst,trim"`
+		State            string `form:"state" conform:"ucfirst,trim"`
+		RegionCode       string `form:"regionCode" conform:"trim"`
+		Country          string `form:"country" conform:"ucfirst,trim"`
+		CountryCode      string `form:"countryCode" conform:"trim"`
+		PhoneAreaCode    string `form:"phoneAreaCode" conform:"trim"`
+		PhoneCountryCode string `form:"phoneCountryCode" conform:"trim"`
+		PhoneNumber      string `form:"phoneNumber" conform:"trim"`
+		Email            string `form:"email" validate:"required,email" conform:"email"`
 	}
 )
 
