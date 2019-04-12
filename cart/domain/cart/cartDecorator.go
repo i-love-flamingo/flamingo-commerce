@@ -168,15 +168,11 @@ func (dci DecoratedCartItem) GetVariantsVariationAttributeCodes() []string {
 
 // GetChargesToPay getter
 func (dci DecoratedCartItem) GetChargesToPay(wishedToPaySum *domain.WishedToPay) domain.Charges {
+	priceToPayForItem := dci.Item.RowPriceGrossWithDiscount()
 	if wishedToPaySum == nil {
-		return dci.Product.SaleableData().GetChargesToPay(nil).Mul(dci.Item.Qty)
+		return dci.Product.SaleableData().GetLoyaltyChargeSplit(&priceToPayForItem,nil)
 	}
-	wishedToPaySplitted := wishedToPaySum.Split(dci.Item.Qty)
-	sumCharges := domain.Charges{}
-	for _, wishedToPay := range wishedToPaySplitted {
-		sumCharges = sumCharges.Add(dci.Product.SaleableData().GetChargesToPay(&wishedToPay))
-	}
-	return sumCharges
+	return dci.Product.SaleableData().GetLoyaltyChargeSplit(&priceToPayForItem,wishedToPaySum)
 }
 
 // GetGroupedBy legacy function
