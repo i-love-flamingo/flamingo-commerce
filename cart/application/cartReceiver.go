@@ -188,6 +188,9 @@ func (cs *CartReceiverService) getCartFromCacheIfCacheIsEnabled(ctx context.Cont
 	}
 	cs.logger.Debug("query cart cache %#v", cacheID)
 	cart, cacheErr := cs.cartCache.GetCart(ctx, session, cacheID)
+	if cacheErr == ErrNoCacheEntry {
+		return nil, false, nil
+	}
 	if cacheErr != nil {
 		return nil, false, cacheErr
 	}

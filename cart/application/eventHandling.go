@@ -21,7 +21,7 @@ type (
 )
 
 // Inject dependencies
-func (e EventReceiver) Inject(
+func (e *EventReceiver) Inject(
 	logger flamingo.Logger,
 	cartService *CartService,
 	cartReceiverService *CartReceiverService,

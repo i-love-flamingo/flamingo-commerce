@@ -58,6 +58,7 @@ var (
 	_ CartCache = (*CartSessionCache)(nil)
 	// ErrCacheIsInvalid sets generalized invalid Cache Error
 	ErrCacheIsInvalid = errors.New("cache is invalid")
+	ErrNoCacheEntry = errors.New("cache entry not found")
 )
 
 func init() {
@@ -172,7 +173,7 @@ func (cs *CartSessionCache) GetCart(ctx context.Context, session *web.Session, i
 	}
 	cs.logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").Debug("Did not Found cached cart %v", id.CacheKey())
 
-	return nil, errors.New("no cart in cache")
+	return nil, ErrNoCacheEntry
 }
 
 // CacheCart adds a Cart to the Cache
