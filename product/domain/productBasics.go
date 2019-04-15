@@ -446,6 +446,16 @@ func (w WishedToPay) GetByType(ctype string) *priceDomain.Price {
 	return nil
 }
 
+
+//HasType - returns a true if charges include a charge with given type
+func (c Charges) HasType(ctype string) bool {
+	if _, ok := c.chargesByType[ctype]; ok {
+		return true
+	}
+	return false
+}
+
+
 //GetByType - returns a charge of given type. If it was not found a Zero amount is returned and the second return value is false
 func (c Charges) GetByType(ctype string) (priceDomain.Charge, bool) {
 	if charge, ok := c.chargesByType[ctype]; ok {
@@ -453,7 +463,6 @@ func (c Charges) GetByType(ctype string) (priceDomain.Charge, bool) {
 	}
 	return priceDomain.Charge{}, false
 }
-
 
 //GetAllCharges - returns all charges
 func (c Charges) GetAllCharges() map[string]priceDomain.Charge {
@@ -472,6 +481,20 @@ func (c Charges) Add(toadd Charges) (Charges) {
 		} else {
 			c.chargesByType[addk] = addCharge
 		}
+	}
+	return c
+}
+
+//AddCharge - returns new Charges with the given Charge added
+func (c Charges) AddCharge(toadd priceDomain.Charge) (Charges) {
+	if c.chargesByType == nil {
+		c.chargesByType = make(map[string]priceDomain.Charge)
+	}
+	if existingCharge, ok := c.chargesByType[toadd.Type]; ok {
+		chargeSum, _ := existingCharge.Add(toadd)
+		c.chargesByType[toadd.Type] = chargeSum.GetPayable()
+	} else {
+		c.chargesByType[toadd.Type] = toadd
 	}
 	return c
 }

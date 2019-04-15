@@ -4,8 +4,6 @@ import (
 	"context"
 	"sort"
 
-	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
-
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 )
@@ -210,12 +208,6 @@ func (dc DecoratedCart) GetDecoratedDeliveryByCode(deliveryCode string) (*Decora
 	return nil, false
 }
 
-//GrandTotalCharges - Final sum that need to be payed - splitted by the charges that need to be payed
-func (dc DecoratedCart) GrandTotalCharges() map[string]priceDomain.Charge {
-	result := make(map[string]priceDomain.Charge)
-	//TODO - check products and cart selected payment
-	return result
-}
 
 // GetGroupedBy getter
 func (dc DecoratedDelivery) GetGroupedBy(group string, sortGroup bool, params ...string) []*GroupedDecoratedCartItem {

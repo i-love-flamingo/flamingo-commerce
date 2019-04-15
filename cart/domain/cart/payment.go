@@ -1,6 +1,9 @@
 package cart
 
-import "flamingo.me/flamingo-commerce/v3/price/domain"
+import (
+	"flamingo.me/flamingo-commerce/v3/price/domain"
+	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
+)
 
 type (
 	// Payment represents all payments done for the cart and which items have been purchased by what method
@@ -64,14 +67,11 @@ type (
 
 	//ChargeSplit - amount by Method and chargetype
 	ChargeSplit struct {
-		//The type of the charge that is supposed to be payed
-		ChargeType string
+		//The Charge that need to be payed (with Amount, Value and Type in it)
+		Charge domain.Charge
+
 		//The selected payment method (code) that should be used
 		Method string
-		//The amount that is supposed to be payed
-		Amount domain.Price
-		//The value in cart currency of the amount
-		ValuedAmount domain.Price
 
 		//ItemChargeAssignments - optional the assignment of this transaction to item charges- this might be required for payments that are really only done for an item
 		// List of items.UniqueID
@@ -100,10 +100,29 @@ func NewSimplePaymentSelection(gateway string, method string, grandTotal domain.
 		Gateway: gateway,
 		ChargeSplits: []ChargeSplit{
 			ChargeSplit{
-				Amount:     grandTotal,
-				ChargeType: domain.ChargeTypeMain,
+				Charge: domain.Charge{
+					Type:domain.ChargeTypeMain,
+					Price: grandTotal,
+					Value: grandTotal,
+				},
 				Method:     method,
 			},
 		},
 	}
 }
+
+
+//IsSelected - returns true if a Gateway  is selected
+func (s PaymentSelection) IsSelected() bool {
+	return s.Gateway != ""
+}
+
+//GetCharges - sum per chargetype
+func (s PaymentSelection) GetCharges() productDomain.Charges {
+	result := productDomain.Charges{}
+	for _, cs := range s.ChargeSplits {
+		result = result.AddCharge(cs.Charge)
+	}
+	return result
+}
+

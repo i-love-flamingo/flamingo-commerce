@@ -81,7 +81,7 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 			},
 			want:           nil,
 			wantErr:        true,
-			wantMessageErr: "no cart in cache",
+			wantMessageErr: "cache entry not found",
 		},
 		{
 			name: "cached cart found/invalid cache entry",

@@ -101,8 +101,8 @@ func (o *OfflineWebCartPaymentGateway) GetFlowResult(ctx context.Context, curren
 		cartPayment.Transactions = append(cartPayment.Transactions, cartDomain.Transaction{
 			Method:            split.Method,
 			Status:            cartDomain.PaymentStatusOpen,
-			ValuedAmountPayed: split.Amount,
-			AmountPayed:       split.Amount,
+			ValuedAmountPayed: split.Charge.Value,
+			AmountPayed:       split.Charge.Price,
 		})
 	}
 

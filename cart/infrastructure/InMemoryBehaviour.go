@@ -269,7 +269,6 @@ func (cob *InMemoryBehaviour) UpdateAdditionalData(ctx context.Context, cart *do
 
 //UpdatePaymentSelection - update payment on cart
 func (cob *InMemoryBehaviour) UpdatePaymentSelection(ctx context.Context, cart *domaincart.Cart, paymentSelection domaincart.PaymentSelection) (*domaincart.Cart, error) {
-	paymentSelection.GetChargeSumByType()
 	cart.GrandTotal()
 	cart.PaymentSelection = &paymentSelection
 	err := cob.cartStorage.StoreCart(cart)

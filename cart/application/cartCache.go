@@ -58,6 +58,7 @@ var (
 	_ CartCache = (*CartSessionCache)(nil)
 	// ErrCacheIsInvalid sets generalized invalid Cache Error
 	ErrCacheIsInvalid = errors.New("cache is invalid")
+	// ErrNoCacheEntry - used if cahce is not found
 	ErrNoCacheEntry = errors.New("cache entry not found")
 )
 

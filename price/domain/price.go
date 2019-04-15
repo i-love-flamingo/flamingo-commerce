@@ -182,6 +182,13 @@ func (p Price) Sub(sub Price) (Price, error) {
 	return newPrice, nil
 }
 
+
+//Inverse - gets the price multiplied with -1
+func (p Price) Inverse() Price {
+	p.amount = *new(big.Float).Mul(&p.amount,big.NewFloat(-1))
+	return p
+}
+
 //Multiply  returns a new price with the amount Multiply
 func (p Price) Multiply(qty int) Price {
 	newPrice := Price{

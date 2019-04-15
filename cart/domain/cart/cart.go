@@ -1,6 +1,7 @@
 package cart
 
 import (
+	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	"math/big"
 
 	"flamingo.me/flamingo-commerce/v3/price/domain"
@@ -436,6 +437,24 @@ func (cart Cart) GetTotalItemsByType(typeCode string) []Totalitem {
 	return totalitems
 }
 
+
+//GrandTotalCharges - Final sum that need to be payed - splitted by the charges that need to be payed
+func (cart Cart) GrandTotalCharges() productDomain.Charges {
+	//Check if a specific split was saved:
+	if cart.PaymentSelection != nil {
+		return cart.PaymentSelection.GetCharges()
+	}
+	//else return the grandtotal as main charge
+	charges := productDomain.Charges{}
+	mainCharge := domain.Charge{
+		Value: cart.GrandTotal(),
+		Price: cart.GrandTotal(),
+		Type: domain.ChargeTypeMain,
+	}
+	charges.AddCharge(mainCharge)
+	return charges
+}
+
 //TotalWithDiscountInclTax - the price the customer need to pay for the shipping
 func (s ShippingItem) TotalWithDiscountInclTax() domain.Price {
 	price, _ := s.Price.Add(s.TaxAmount)
@@ -602,25 +621,4 @@ func (b *Builder) reset(err error) (*Cart, error) {
 	cart := b.cartInBuilding
 	b.cartInBuilding = nil
 	return cart, err
-}
-
-//IsSelected - returns true if a Gateway  is selected
-func (s PaymentSelection) IsSelected() bool {
-	return s.Gateway != ""
-}
-
-//GetChargeSumByType - sum ber chargetype
-func (s PaymentSelection) GetChargeSumByType() map[string]domain.Price {
-	result := make(map[string]domain.Price)
-	for _, cs := range s.ChargeSplits {
-		if current, ok := result[cs.ChargeType]; ok {
-			added, err := current.Add(cs.Amount)
-			if err != nil {
-				result[cs.ChargeType] = added
-			}
-		} else {
-			result[cs.ChargeType] = cs.Amount
-		}
-	}
-	return result
 }

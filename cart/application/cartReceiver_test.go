@@ -420,6 +420,7 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 		RestrictionService  *cartApplication.RestrictionService
 		config              *struct {
 			DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
+			DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
 		}
 		DeliveryInfoBuilder cartDomain.DeliveryInfoBuilder
 		CartCache           cartApplication.CartCache
@@ -469,8 +470,10 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 				EventPublisher: new(MockEventPublisher),
 				config: &struct {
 					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
+					DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
 				}{
 					DefaultDeliveryCode: "default_delivery_code",
+					DeleteEmptyDelivery: false,
 				},
 				DeliveryInfoBuilder: new(MockDeliveryInfoBuilder),
 				CartCache:           new(MockCartCache),
