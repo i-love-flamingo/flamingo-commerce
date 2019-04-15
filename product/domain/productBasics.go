@@ -386,7 +386,6 @@ func (p Saleable) GetLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price, loy
 		Type:  priceDomain.ChargeTypeMain,
 		Value: remainingMainChargePrice,
 	}
-
 	return Charges{chargesByType: requiredCharges}
 }
 
@@ -453,6 +452,12 @@ func (c Charges) GetByType(ctype string) (priceDomain.Charge, bool) {
 		return charge, ok
 	}
 	return priceDomain.Charge{}, false
+}
+
+
+//GetAllCharges - returns all charges
+func (c Charges) GetAllCharges() map[string]priceDomain.Charge {
+	return c.chargesByType
 }
 
 //Add - returns new Charges with the given added
