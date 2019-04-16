@@ -464,6 +464,15 @@ func (c Charges) GetByType(ctype string) (priceDomain.Charge, bool) {
 	return priceDomain.Charge{}, false
 }
 
+
+//GetByTypeForced - returns a charge of given type. If it was not found a Zero amount is returned. This method might be useful to call in View (template) directly where you need one return value
+func (c Charges) GetByTypeForced(ctype string) priceDomain.Charge {
+	if charge, ok := c.chargesByType[ctype]; ok {
+		return charge
+	}
+	return priceDomain.Charge{}
+}
+
 //GetAllCharges - returns all charges
 func (c Charges) GetAllCharges() map[string]priceDomain.Charge {
 	return c.chargesByType
