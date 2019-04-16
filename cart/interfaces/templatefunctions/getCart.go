@@ -57,7 +57,7 @@ func (tf *GetDecoratedCart) Inject(
 	tf.logger = logger
 }
 
-// Func defines the GetDecoratedCrt deplate function
+// Func defines the GetDecoratedCart template function
 func (tf *GetDecoratedCart) Func(ctx context.Context) interface{} {
 	return func() cartDomain.DecoratedCart {
 		session := web.SessionFromContext(ctx)
