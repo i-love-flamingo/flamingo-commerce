@@ -451,7 +451,7 @@ func (cart Cart) GrandTotalCharges() productDomain.Charges {
 		Price: cart.GrandTotal(),
 		Type: domain.ChargeTypeMain,
 	}
-	charges.AddCharge(mainCharge)
+	charges = charges.AddCharge(mainCharge)
 	return charges
 }
 
