@@ -444,11 +444,13 @@ The templates get the following variables passed:
 * CartValidationResult
 
 ### Cart template function
-Use the `getCart` template function to get the decorated cart:
+Use the `getCart` template function to get the cart.
+Use the `getDecoratedCart` template function to get the decorated cart.
 
 ```pug
 -
-  var decoratedCart = getCart()
+  var cart = getCart()
+  var decoratedCart = getDecoratedCart()
   var currentCount = decoratedCart.cart.getCartTeaser.itemCount
 ```
 
