@@ -1,13 +1,13 @@
 package cart
 
 import (
-	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	"math/big"
 
-	"flamingo.me/flamingo-commerce/v3/price/domain"
-
-	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/pkg/errors"
+
+	"flamingo.me/flamingo-commerce/v3/price/domain"
+	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
+	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (
@@ -16,30 +16,30 @@ type (
 
 	// Cart Value Object (immutable data - because the cartservice is responsible to return a cart).
 	Cart struct {
-		//ID is the main identifier of the cart
+		// ID is the main identifier of the cart
 		ID string
-		//EntityID is a second identifier that may be used by some backends
+		// EntityID is a second identifier that may be used by some backends
 		EntityID string
 
 		// ReservedOrderID is an ID already known by the Cart of the future order ID
 		ReservedOrderID string
 
-		//BillingAdress - the main billing address (relevant for all payments/invoices)
+		// BillingAdress - the main billing address (relevant for all payments/invoices)
 		BillingAdress *Address
 
-		//Purchaser - additional infos for the legal contact person in this order
+		// Purchaser - additional infos for the legal contact person in this order
 		Purchaser *Person
 
-		//Deliveries - list of desired Deliverys (or Shippments) involved in this cart
+		// Deliveries - list of desired Deliverys (or Shippments) involved in this cart
 		Deliveries []Delivery
 
-		//AdditionalData   can be used for Custom attributes
+		// AdditionalData   can be used for Custom attributes
 		AdditionalData AdditionalData
 
-		//PaymentSelection - the saved PaymentSelection (saves "how" the customer want to pay)
+		// PaymentSelection - the saved PaymentSelection (saves "how" the customer want to pay)
 		PaymentSelection *PaymentSelection
 
-		//BelongsToAuthenticatedUser - false = Guest Cart true = cart from the authenticated user
+		// BelongsToAuthenticatedUser - false = Guest Cart true = cart from the authenticated user
 		BelongsToAuthenticatedUser bool
 		AuthenticatedUserID        string
 
@@ -47,7 +47,7 @@ type (
 
 		DefaultCurrency string
 
-		//Additional non taxable totals
+		// Additional non taxable totals
 		Totalitems []Totalitem
 	}
 
@@ -67,13 +67,13 @@ type (
 	Person struct {
 		Address         *Address
 		PersonalDetails PersonalDetails
-		//ExistingCustomerData if the current purchaser is an existing customer - this contains infos about existing customer
+		// ExistingCustomerData if the current purchaser is an existing customer - this contains infos about existing customer
 		ExistingCustomerData *ExistingCustomerData
 	}
 
 	// ExistingCustomerData value object
 	ExistingCustomerData struct {
-		//ID of the customer
+		// ID of the customer
 		ID string
 	}
 
@@ -85,10 +85,10 @@ type (
 		Nationality     string
 	}
 
-	//Taxes is a list of Tax
+	// Taxes is a list of Tax
 	Taxes []Tax
 
-	//Tax - it the Tax represented by an Amount and Optional the Rate.
+	// Tax - it the Tax represented by an Amount and Optional the Rate.
 	Tax struct {
 		Amount domain.Price
 		Type   string
@@ -122,7 +122,7 @@ type (
 		DeliveryCode string
 	}
 
-	//Builder - the main builder for a cart
+	// Builder - the main builder for a cart
 	Builder struct {
 		cartInBuilding *Cart
 	}
@@ -194,41 +194,29 @@ func (cart Cart) GetDeliveryCodes() []string {
 }
 
 // GetByItemID gets an item by its id
-func (cart Cart) GetByItemID(itemID string, deliveryCode string) (*Item, error) {
-	delivery, found := cart.GetDeliveryByCode(deliveryCode)
-	if found != true {
-		return nil, errors.Errorf("Delivery for code %v not found", deliveryCode)
-	}
-	for _, currentItem := range delivery.Cartitems {
-		if currentItem.ID == itemID {
-			return &currentItem, nil
-		}
-	}
-
-	return nil, errors.Errorf("itemId %v in cart for delivery %v not existing", itemID, deliveryCode)
-}
-
-// GetByUniqueItemID gets an item by its id
-func (cart Cart) GetByUniqueItemID(uitemID string) (*Item, error) {
+func (cart Cart) GetByItemID(itemID string) (*Item, error) {
 	for _, delivery := range cart.Deliveries {
 		for _, currentItem := range delivery.Cartitems {
-			if currentItem.UniqueID == uitemID {
+			if currentItem.ID == itemID {
 				return &currentItem, nil
 			}
 		}
 	}
 
-	return nil, errors.Errorf("uitemID %v in cart not existing", uitemID)
+	return nil, errors.Errorf("itemId %q in cart does not exist", itemID)
 }
 
-func inStruct(value string, list []string) bool {
-	for _, item := range list {
-		if item == value {
-			return true
+// GetByExternalReference gets an item by its external reference
+func (cart Cart) GetByExternalReference(ref string) (*Item, error) {
+	for _, delivery := range cart.Deliveries {
+		for _, currentItem := range delivery.Cartitems {
+			if currentItem.ExternalReference == ref {
+				return &currentItem, nil
+			}
 		}
 	}
 
-	return false
+	return nil, errors.Errorf("uitemID %v in cart not existing", ref)
 }
 
 // ItemCount - returns amount of Cartitems
@@ -258,21 +246,6 @@ func (cart Cart) IsPaymentSelected() bool {
 	return cart.PaymentSelection != nil && cart.PaymentSelection.IsSelected()
 }
 
-// GetItemCartReferences returns a slice of all ItemCartReferences
-func (cart Cart) GetItemCartReferences() []ItemCartReference {
-	var ids []ItemCartReference
-	for _, delivery := range cart.Deliveries {
-		for _, item := range delivery.Cartitems {
-			ids = append(ids, ItemCartReference{
-				ItemID:       item.ID,
-				DeliveryCode: delivery.DeliveryInfo.Code,
-			})
-		}
-	}
-
-	return ids
-}
-
 // GetVoucherSavings returns the savings of all vouchers
 func (cart Cart) GetVoucherSavings() domain.Price {
 	price := domain.Price{}
@@ -291,7 +264,7 @@ func (cart Cart) GetVoucherSavings() domain.Price {
 	return price
 }
 
-//GrandTotal - Final sum (Valued price) that need to be payed: GrandTotal = SubTotal + TaxAmount - DiscountAmount + SOME of Totalitems = (Sum of Items RowTotalWithDiscountInclTax) + SOME of Totalitems
+// GrandTotal - Final sum (Valued price) that need to be payed: GrandTotal = SubTotal + TaxAmount - DiscountAmount + SOME of Totalitems = (Sum of Items RowTotalWithDiscountInclTax) + SOME of Totalitems
 func (cart Cart) GrandTotal() domain.Price {
 	var prices []domain.Price
 	for _, del := range cart.Deliveries {
@@ -437,25 +410,24 @@ func (cart Cart) GetTotalItemsByType(typeCode string) []Totalitem {
 	return totalitems
 }
 
-
-//GrandTotalCharges - Final sum that need to be payed - splitted by the charges that need to be payed
+// GrandTotalCharges - Final sum that need to be payed - splitted by the charges that need to be payed
 func (cart Cart) GrandTotalCharges() productDomain.Charges {
-	//Check if a specific split was saved:
+	// Check if a specific split was saved:
 	if cart.PaymentSelection != nil {
 		return cart.PaymentSelection.GetCharges()
 	}
-	//else return the grandtotal as main charge
+	// else return the grandtotal as main charge
 	charges := productDomain.Charges{}
 	mainCharge := domain.Charge{
 		Value: cart.GrandTotal(),
 		Price: cart.GrandTotal(),
-		Type: domain.ChargeTypeMain,
+		Type:  domain.ChargeTypeMain,
 	}
 	charges = charges.AddCharge(mainCharge)
 	return charges
 }
 
-//TotalWithDiscountInclTax - the price the customer need to pay for the shipping
+// TotalWithDiscountInclTax - the price the customer need to pay for the shipping
 func (s ShippingItem) TotalWithDiscountInclTax() domain.Price {
 	price, _ := s.Price.Add(s.TaxAmount)
 	price, _ = price.Sub(s.DiscountAmount)
@@ -472,14 +444,14 @@ func (poi PlacedOrderInfos) GetOrderNumberForDeliveryCode(deliveryCode string) s
 	return ""
 }
 
-//AddTax returns new Tax with this Tax added
+// AddTax returns new Tax with this Tax added
 func (t Taxes) AddTax(tax Tax) Taxes {
 	newTaxes := Taxes(t)
 	newTaxes = append(newTaxes, tax)
 	return newTaxes
 }
 
-//AddTaxWithMerge returns new Taxes with this Tax added
+// AddTaxWithMerge returns new Taxes with this Tax added
 func (t Taxes) AddTaxWithMerge(taxToAddOrMerge Tax) Taxes {
 	newTaxes := Taxes(t)
 	for k, tax := range newTaxes {
@@ -498,7 +470,7 @@ func (t Taxes) AddTaxWithMerge(taxToAddOrMerge Tax) Taxes {
 	return newTaxes
 }
 
-//AddTaxesWithMerge - returns new Taxes with the given Taxes all added or merged in
+// AddTaxesWithMerge - returns new Taxes with the given Taxes all added or merged in
 func (t Taxes) AddTaxesWithMerge(taxes Taxes) Taxes {
 	newTaxes := Taxes(t)
 	for _, tax := range taxes {
@@ -507,7 +479,7 @@ func (t Taxes) AddTaxesWithMerge(taxes Taxes) Taxes {
 	return newTaxes
 }
 
-//TotalAmount - returns the sum of all taxes as price
+// TotalAmount - returns the sum of all taxes as price
 func (t Taxes) TotalAmount() domain.Price {
 	var prices []domain.Price
 	for _, tax := range t {
@@ -518,64 +490,64 @@ func (t Taxes) TotalAmount() domain.Price {
 	return result
 }
 
-//###################
+// ###################
 
-//Build - main factory method
+// Build - main factory method
 func (b *Builder) Build() (*Cart, error) {
 	return b.reset(nil)
 }
 
-//SetIds - sets the cart ids
-func (b *Builder) SetIds(id string, entityid string) *Builder {
+// SetIds - sets the cart ids
+func (b *Builder) SetIds(id string, entityID string) *Builder {
 	b.init()
 	b.cartInBuilding.ID = id
-	b.cartInBuilding.EntityID = entityid
+	b.cartInBuilding.EntityID = entityID
 	return b
 }
 
-//SetReservedOrderID - optional
+// SetReservedOrderID - optional
 func (b *Builder) SetReservedOrderID(id string) *Builder {
 	b.init()
 	b.cartInBuilding.ReservedOrderID = id
 	return b
 }
 
-//SetBillingAdress - optional
+// SetBillingAdress - optional
 func (b *Builder) SetBillingAdress(a Address) *Builder {
 	b.init()
 	b.cartInBuilding.BillingAdress = &a
 	return b
 }
 
-//SetPurchaser - optional
+// SetPurchaser - optional
 func (b *Builder) SetPurchaser(p Person) *Builder {
 	b.init()
 	b.cartInBuilding.Purchaser = &p
 	return b
 }
 
-//AddDelivery - add a delivery subobject - use the DeliveryBuilder
+// AddDelivery - add a delivery subobject - use the DeliveryBuilder
 func (b *Builder) AddDelivery(d Delivery) *Builder {
 	b.init()
 	b.cartInBuilding.Deliveries = append(b.cartInBuilding.Deliveries, d)
 	return b
 }
 
-//SetAdditionalData - to add additional data
+// SetAdditionalData - to add additional data
 func (b *Builder) SetAdditionalData(d AdditionalData) *Builder {
 	b.init()
 	b.cartInBuilding.AdditionalData = d
 	return b
 }
 
-//SetPaymentSelection - to add additional data
+// SetPaymentSelection - to add additional data
 func (b *Builder) SetPaymentSelection(d PaymentSelection) *Builder {
 	b.init()
 	b.cartInBuilding.PaymentSelection = &d
 	return b
 }
 
-//SetAuthenticatedUserID - to mark the art as authenticated users cart
+// SetAuthenticatedUserID - to mark the art as authenticated users cart
 func (b *Builder) SetAuthenticatedUserID(id string) *Builder {
 	b.init()
 	b.cartInBuilding.AuthenticatedUserID = id
@@ -583,28 +555,28 @@ func (b *Builder) SetAuthenticatedUserID(id string) *Builder {
 	return b
 }
 
-//SetBelongsToAuthenticatedUser -  mark the art as authenticated users cart
+// SetBelongsToAuthenticatedUser -  mark the art as authenticated users cart
 func (b *Builder) SetBelongsToAuthenticatedUser(v bool) *Builder {
 	b.init()
 	b.cartInBuilding.BelongsToAuthenticatedUser = v
 	return b
 }
 
-//AddAppliedCouponCode - optional - add the coupon that is applied for the  cart
+// AddAppliedCouponCode - optional - add the coupon that is applied for the  cart
 func (b *Builder) AddAppliedCouponCode(code CouponCode) *Builder {
 	b.init()
 	b.cartInBuilding.AppliedCouponCodes = append(b.cartInBuilding.AppliedCouponCodes, code)
 	return b
 }
 
-//SetDefaultCurrency - sets the default currency
+// SetDefaultCurrency - sets the default currency
 func (b *Builder) SetDefaultCurrency(d string) *Builder {
 	b.init()
 	b.cartInBuilding.DefaultCurrency = d
 	return b
 }
 
-//AddTotalitem - adds nontaxable extra totals on cartlevel
+// AddTotalitem - adds nontaxable extra totals on cartlevel
 func (b *Builder) AddTotalitem(totali Totalitem) *Builder {
 	b.init()
 	b.cartInBuilding.Totalitems = append(b.cartInBuilding.Totalitems, totali)

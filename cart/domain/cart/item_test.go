@@ -5,9 +5,10 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestItem_PriceCalculation(t *testing.T) {
@@ -16,11 +17,11 @@ func TestItem_PriceCalculation(t *testing.T) {
 		SinglePriceNet:   priceDomain.NewFromInt(1234, 100, "EUR"),
 		SinglePriceGross: priceDomain.NewFromInt(1247, 100, "EUR"),
 		AppliedDiscounts: []cartDomain.ItemDiscount{
-			cartDomain.ItemDiscount{
+			{
 				Amount:        priceDomain.NewFromInt(-100, 100, "EUR"),
 				IsItemRelated: true,
 			},
-			cartDomain.ItemDiscount{
+			{
 				Amount:        priceDomain.NewFromInt(-200, 100, "EUR"),
 				IsItemRelated: false,
 			},
@@ -28,7 +29,7 @@ func TestItem_PriceCalculation(t *testing.T) {
 		RowPriceNet:   priceDomain.NewFromInt(12340, 100, "EUR"),
 		RowPriceGross: priceDomain.NewFromInt(12470, 100, "EUR"),
 		RowTaxes: cartDomain.Taxes([]cartDomain.Tax{
-			cartDomain.Tax{Amount: priceDomain.NewFromInt(130, 100, "EUR"), Type: "vat"},
+			{Amount: priceDomain.NewFromInt(130, 100, "EUR"), Type: "vat"},
 		}),
 		Qty: 10,
 	}
@@ -49,19 +50,19 @@ func TestItem_PriceCalculation(t *testing.T) {
 func TestItemBuild_SimpleBuild(t *testing.T) {
 
 	f := &cartDomain.ItemBuilder{}
-	item, err := f.SetSinglePriceNet(priceDomain.NewFromInt(100, 100, "EUR")).SetQty(10).SetID("22").SetUniqueID("kkk").CalculatePricesAndTaxAmountsFromSinglePriceNet().Build()
+	item, err := f.SetSinglePriceNet(priceDomain.NewFromInt(100, 100, "EUR")).SetQty(10).SetID("22").SetExternalReference("kkk").CalculatePricesAndTaxAmountsFromSinglePriceNet().Build()
 	assert.NoError(t, err)
 	assert.Equal(t, "22", item.ID)
 	assert.Equal(t, priceDomain.NewFromInt(1000, 100, "EUR"), item.RowPriceGross)
 
 	// with tax from net:
-	item, err = f.SetSinglePriceNet(priceDomain.NewFromInt(100, 100, "EUR")).SetQty(10).SetID("22").SetUniqueID("kkk").AddTaxInfo("default", big.NewFloat(10), nil).CalculatePricesAndTaxAmountsFromSinglePriceNet().Build()
+	item, err = f.SetSinglePriceNet(priceDomain.NewFromInt(100, 100, "EUR")).SetQty(10).SetID("22").SetExternalReference("kkk").AddTaxInfo("default", big.NewFloat(10), nil).CalculatePricesAndTaxAmountsFromSinglePriceNet().Build()
 	assert.NoError(t, err)
 	assert.Equal(t, "22", item.ID)
 	assert.Equal(t, priceDomain.NewFromInt(1100, 100, "EUR"), item.RowPriceGross)
 
 	// with tax from gross:
-	item, err = f.SetSinglePriceGross(priceDomain.NewFromInt(110, 100, "EUR")).SetQty(10).SetID("22").SetUniqueID("kkk").AddTaxInfo("default", big.NewFloat(10), nil).CalculatePricesAndTaxAmountsFromSinglePriceGross().Build()
+	item, err = f.SetSinglePriceGross(priceDomain.NewFromInt(110, 100, "EUR")).SetQty(10).SetID("22").SetExternalReference("kkk").AddTaxInfo("default", big.NewFloat(10), nil).CalculatePricesAndTaxAmountsFromSinglePriceGross().Build()
 	assert.NoError(t, err)
 	assert.Equal(t, "22", item.ID)
 	assertPricesWithLikelyEqual(t, priceDomain.NewFromInt(1100, 100, "EUR"), item.RowPriceGross, "RowPriceGross wrong")

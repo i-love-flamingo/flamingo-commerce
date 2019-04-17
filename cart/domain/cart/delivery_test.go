@@ -21,7 +21,7 @@ func TestDeliveryInfo_TotalCalculations(t *testing.T) {
 		priceDomain.NewFromInt(410, 100, "$"),
 	).SetQty(10).AddTaxInfo(
 		"gst", new(big.Float).SetInt64(7), nil,
-	).SetID("1").SetUniqueID("test_1")
+	).SetID("1")
 
 	item, err := itemf.CalculatePricesAndTaxAmountsFromSinglePriceNet().Build()
 	if err != nil {
@@ -40,7 +40,7 @@ func TestDeliveryInfo_TotalCalculations(t *testing.T) {
 		priceDomain.NewFromInt(1000, 100, "$"),
 	).SetQty(5).AddTaxInfo(
 		"gst", new(big.Float).SetInt64(7), nil,
-	).SetID("1").SetUniqueID("test_1")
+	).SetID("1")
 	itemf.AddDiscount(ItemDiscount{
 		Code:          "summercampaign",
 		Amount:        priceDomain.NewFromInt(-2500, 100, "$"),

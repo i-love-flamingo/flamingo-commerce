@@ -17,7 +17,6 @@ type (
 	// ItemValidationError applies for a single item
 	ItemValidationError struct {
 		ItemID          string
-		UniqueItemID    string
 		ErrorMessageKey string
 	}
 
@@ -41,7 +40,7 @@ func (c ValidationResult) IsValid() bool {
 // HasErrorForItem checks if a specified item has an error
 func (c ValidationResult) HasErrorForItem(id string) bool {
 	for _, itemMessage := range c.ItemResults {
-		if itemMessage.UniqueItemID == id {
+		if itemMessage.ItemID == id {
 			return true
 		}
 	}
@@ -51,7 +50,7 @@ func (c ValidationResult) HasErrorForItem(id string) bool {
 // GetErrorMessageKeyForItem returns the specific error message for that item
 func (c ValidationResult) GetErrorMessageKeyForItem(id string) string {
 	for _, itemMessage := range c.ItemResults {
-		if itemMessage.UniqueItemID == id {
+		if itemMessage.ItemID == id {
 			return itemMessage.ErrorMessageKey
 		}
 	}

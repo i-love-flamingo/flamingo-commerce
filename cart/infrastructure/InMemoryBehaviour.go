@@ -191,7 +191,7 @@ func (cob *InMemoryBehaviour) buildItemForCart(ctx context.Context, addRequest d
 	if err != nil {
 		return nil, err
 	}
-	itemBuilder.SetQty(addRequest.Qty).AddTaxInfo("default", big.NewFloat(cob.defaultTaxRate), nil).SetByProduct(product).SetID(strconv.Itoa(rand.Int())).SetUniqueID(strconv.Itoa(rand.Int()))
+	itemBuilder.SetQty(addRequest.Qty).AddTaxInfo("default", big.NewFloat(cob.defaultTaxRate), nil).SetByProduct(product).SetID(strconv.Itoa(rand.Int())).SetExternalReference(strconv.Itoa(rand.Int()))
 
 	return itemBuilder.Build()
 }

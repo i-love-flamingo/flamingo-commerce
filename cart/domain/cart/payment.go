@@ -39,14 +39,13 @@ type (
 		//RawTransactionData - place to store any additional stuff (specific for Gateway)
 		RawTransactionData interface{}
 		//ItemChargeAssignments - optional the assignment of this transaction to item charges- this might be required for payments that are really only done for an item
-		// List of items.UniqueID
 		ItemChargeAssignments []ItemChargeAssignment
 	}
 
 	//ItemChargeAssignment holds the information what amount was assigned to a specific chargetype of a specific item in the cart
 	ItemChargeAssignment struct {
-		UniqueItemID string
-		Charge       domain.Charge
+		ItemID string
+		Charge domain.Charge
 	}
 
 	// CreditCardInfo contains the necessary data
@@ -74,7 +73,6 @@ type (
 		Method string
 
 		//ItemChargeAssignments - optional the assignment of this transaction to item charges- this might be required for payments that are really only done for an item
-		// List of items.UniqueID
 		ItemChargeAssignments []ItemChargeAssignment
 	}
 )
@@ -99,18 +97,17 @@ func NewSimplePaymentSelection(gateway string, method string, grandTotal domain.
 	return PaymentSelection{
 		Gateway: gateway,
 		ChargeSplits: []ChargeSplit{
-			ChargeSplit{
+			{
 				Charge: domain.Charge{
-					Type:domain.ChargeTypeMain,
+					Type:  domain.ChargeTypeMain,
 					Price: grandTotal,
 					Value: grandTotal,
 				},
-				Method:     method,
+				Method: method,
 			},
 		},
 	}
 }
-
 
 //IsSelected - returns true if a Gateway  is selected
 func (s PaymentSelection) IsSelected() bool {
@@ -125,4 +122,3 @@ func (s PaymentSelection) GetCharges() productDomain.Charges {
 	}
 	return result
 }
-
