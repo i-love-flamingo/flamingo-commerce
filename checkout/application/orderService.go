@@ -46,6 +46,11 @@ type (
 	}
 )
 
+const (
+	//PaymentFlowStandardCorrelationId - used as correlationid for the start of the payment (session scoped)
+	PaymentFlowStandardCorrelationId = "checkout"
+)
+
 var orderFailedStat = stats.Int64("flamingo-commerce/orderfailed", "my stat records 1 occurences per error", stats.UnitDimensionless)
 
 func init() {
@@ -208,7 +213,7 @@ func (os *OrderService) CurrentCartPlaceOrderWithPaymentProcessing(ctx context.C
 		return nil, errors.New("selected gateway not available")
 	}
 
-	cartPayment, err := gateway.GetFlowResult(ctx, &decoratedCart.Cart, session.ID())
+	cartPayment, err := gateway.GetFlowResult(ctx, &decoratedCart.Cart, PaymentFlowStandardCorrelationId)
 	if err != nil {
 
 	}
