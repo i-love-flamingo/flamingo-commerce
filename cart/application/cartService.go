@@ -641,6 +641,10 @@ func (cs *CartService) handleEmptyDelivery(ctx context.Context, session *web.Ses
 	if cs.deleteEmptyDelivery != true {
 		return
 	}
+	
+	if cart == nil {
+		return
+	}
 
 	delivery, found := cart.GetDeliveryByCode(deliveryCode)
 	if !found {
