@@ -335,9 +335,7 @@ func (p Saleable) GetLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price, loy
 		if !loyaltyPrice.GetFinalPrice().IsPositive() {
 			continue
 		}
-		if loyaltyPrice.MinPointsToSpent.Cmp(big.NewFloat(0)) < 1 {
-			continue
-		}
+
 		rateLoyaltyFinalPriceToRealFinalPrice := loyaltyPrice.GetRate(p.ActivePrice.GetFinalPrice())
 
 		/**
