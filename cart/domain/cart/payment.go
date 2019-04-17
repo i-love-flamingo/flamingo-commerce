@@ -2,7 +2,6 @@ package cart
 
 import (
 	"flamingo.me/flamingo-commerce/v3/price/domain"
-	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
 type (
@@ -38,14 +37,33 @@ type (
 		Title string
 		//RawTransactionData - place to store any additional stuff (specific for Gateway)
 		RawTransactionData interface{}
-		//ItemChargeAssignments - optional the assignment of this transaction to item charges- this might be required for payments that are really only done for an item
-		ItemChargeAssignments []ItemChargeAssignment
+		// ChargeAssignments - optional the assignment of this transaction to charges - this might be required for payments that are really only done
+		ChargeAssignments *ChargeAssignments
 	}
 
-	//ItemChargeAssignment holds the information what amount was assigned to a specific chargetype of a specific item in the cart
+	// ChargeAssignments collects all assignments for item, shipment and total charges
+	ChargeAssignments struct {
+		ItemChargeAssignments     []ItemChargeAssignment
+		TotalChargeAssignments    []TotalChargeAssignment
+		ShipmentChargeAssignments []ShipmentChargeAssignment
+	}
+
+	// ItemChargeAssignment holds the information what amount was assigned to a specific chargetype of a specific item in the cart
 	ItemChargeAssignment struct {
 		ItemID string
 		Charge domain.Charge
+	}
+
+	// TotalChargeAssignment holds the information what amount was assigned to a specific chargetype of a specific total in the cart
+	TotalChargeAssignment struct {
+		Type   string
+		Charge domain.Charge
+	}
+
+	// ShipmentChargeAssignment holds the information what amount was assigned to a specific chargetype of a specific shipment in the cart
+	ShipmentChargeAssignment struct {
+		DeliveryCode string
+		Charge       domain.Charge
 	}
 
 	// CreditCardInfo contains the necessary data
@@ -71,9 +89,9 @@ type (
 
 		//The selected payment method (code) that should be used
 		Method string
-
-		//ItemChargeAssignments - optional the assignment of this transaction to item charges- this might be required for payments that are really only done for an item
-		ItemChargeAssignments []ItemChargeAssignment
+    
+		// ChargeAssignments - optional the assignment of this transaction to charges - this might be required for payments that are really only done
+		ChargeAssignments *ChargeAssignments
 	}
 )
 
@@ -115,8 +133,8 @@ func (s PaymentSelection) IsSelected() bool {
 }
 
 //GetCharges - sum per chargetype
-func (s PaymentSelection) GetCharges() productDomain.Charges {
-	result := productDomain.Charges{}
+func (s PaymentSelection) GetCharges() domain.Charges {
+	result := domain.Charges{}
 	for _, cs := range s.ChargeSplits {
 		result = result.AddCharge(cs.Charge)
 	}

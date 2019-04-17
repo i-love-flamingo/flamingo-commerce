@@ -6,7 +6,6 @@ import (
 	"github.com/pkg/errors"
 
 	"flamingo.me/flamingo-commerce/v3/price/domain"
-	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo/v3/framework/web"
 )
 
@@ -411,13 +410,13 @@ func (cart Cart) GetTotalItemsByType(typeCode string) []Totalitem {
 }
 
 // GrandTotalCharges - Final sum that need to be payed - splitted by the charges that need to be payed
-func (cart Cart) GrandTotalCharges() productDomain.Charges {
+func (cart Cart) GrandTotalCharges() domain.Charges {
 	// Check if a specific split was saved:
 	if cart.PaymentSelection != nil {
 		return cart.PaymentSelection.GetCharges()
 	}
 	// else return the grandtotal as main charge
-	charges := productDomain.Charges{}
+	charges := domain.Charges{}
 	mainCharge := domain.Charge{
 		Value: cart.GrandTotal(),
 		Price: cart.GrandTotal(),

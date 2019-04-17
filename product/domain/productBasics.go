@@ -172,11 +172,6 @@ type (
 		Values []string
 	}
 
-	//Charges - Represents the Charges the product need to be payed with
-	Charges struct {
-		chargesByType map[string]priceDomain.Charge
-	}
-
 	//WishedToPay - list of prices by type
 	WishedToPay struct {
 		priceByType map[string]priceDomain.Price
@@ -323,7 +318,7 @@ func (p Saleable) GetLoyaltyPriceByType(ltype string) (*LoyaltyPriceInfo, bool) 
 //
 // @param valuedPriceToPay  Optional the price that need to be payed - if not given the products final price will be used
 // @param loyaltyPointsWishedToPay   Optional a list of loyaltyPrices that the (customer) wants to spend. Its used as a wish and may not be fullfilled because of min, max properties on the products loyaltyPrices
-func (p Saleable) GetLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price, loyaltyPointsWishedToPay *WishedToPay) Charges {
+func (p Saleable) GetLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price, loyaltyPointsWishedToPay *WishedToPay) priceDomain.Charges {
 	if valuedPriceToPay == nil {
 		finalPrice := p.ActivePrice.GetFinalPrice()
 		valuedPriceToPay = &finalPrice
@@ -353,7 +348,7 @@ func (p Saleable) GetLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price, loy
 			x = ((valuedPriceToPay * loyaltyPrice)  / activePrice )
 
 			rateForMilesAdjustment = x / loyaltyPrice
-		 */
+		*/
 		rateForMilesAdjustment := big.NewFloat(valuedPriceToPay.FloatAmount() / p.ActivePrice.GetFinalPrice().FloatAmount())
 
 		//loyaltyAmountToSpent - set as default without potential wish
@@ -386,7 +381,7 @@ func (p Saleable) GetLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price, loy
 		Type:  priceDomain.ChargeTypeMain,
 		Value: remainingMainChargePrice,
 	}
-	return Charges{chargesByType: requiredCharges}
+	return *priceDomain.NewCharges(requiredCharges)
 }
 
 func findMediaInProduct(p BasicProduct, group string, usage string) *Media {
@@ -444,79 +439,6 @@ func (w WishedToPay) GetByType(ctype string) *priceDomain.Price {
 		return &price
 	}
 	return nil
-}
-
-
-//HasType - returns a true if charges include a charge with given type
-func (c Charges) HasType(ctype string) bool {
-	if _, ok := c.chargesByType[ctype]; ok {
-		return true
-	}
-	return false
-}
-
-
-//GetByType - returns a charge of given type. If it was not found a Zero amount is returned and the second return value is false
-func (c Charges) GetByType(ctype string) (priceDomain.Charge, bool) {
-	if charge, ok := c.chargesByType[ctype]; ok {
-		return charge, ok
-	}
-	return priceDomain.Charge{}, false
-}
-
-
-//GetByTypeForced - returns a charge of given type. If it was not found a Zero amount is returned. This method might be useful to call in View (template) directly where you need one return value
-func (c Charges) GetByTypeForced(ctype string) priceDomain.Charge {
-	if charge, ok := c.chargesByType[ctype]; ok {
-		return charge
-	}
-	return priceDomain.Charge{}
-}
-
-//GetAllCharges - returns all charges
-func (c Charges) GetAllCharges() map[string]priceDomain.Charge {
-	return c.chargesByType
-}
-
-//Add - returns new Charges with the given added
-func (c Charges) Add(toadd Charges) (Charges) {
-	if c.chargesByType == nil {
-		c.chargesByType = make(map[string]priceDomain.Charge)
-	}
-	for addk, addCharge := range toadd.chargesByType {
-		if existingCharge, ok := c.chargesByType[addk]; ok {
-			chargeSum, _ := existingCharge.Add(addCharge)
-			c.chargesByType[addk] = chargeSum.GetPayable()
-		} else {
-			c.chargesByType[addk] = addCharge
-		}
-	}
-	return c
-}
-
-//AddCharge - returns new Charges with the given Charge added
-func (c Charges) AddCharge(toadd priceDomain.Charge) (Charges) {
-	if c.chargesByType == nil {
-		c.chargesByType = make(map[string]priceDomain.Charge)
-	}
-	if existingCharge, ok := c.chargesByType[toadd.Type]; ok {
-		chargeSum, _ := existingCharge.Add(toadd)
-		c.chargesByType[toadd.Type] = chargeSum.GetPayable()
-	} else {
-		c.chargesByType[toadd.Type] = toadd
-	}
-	return c
-}
-
-//Mul - returns new Charges with the given multiplied
-func (c Charges) Mul(qty int) (Charges) {
-	if c.chargesByType == nil {
-		return c
-	}
-	for t, charge := range c.chargesByType {
-		c.chargesByType[t] = charge.Mul(qty)
-	}
-	return c
 }
 
 //GetRate - get the currency conversion rate of the current loyaltyprice final price - in relation to the passed value

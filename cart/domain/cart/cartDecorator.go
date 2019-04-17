@@ -4,6 +4,7 @@ import (
 	"context"
 	"sort"
 
+	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 )
@@ -163,14 +164,13 @@ func (dci DecoratedCartItem) GetVariantsVariationAttributeCodes() []string {
 	return nil
 }
 
-
 // GetChargesToPay getter
-func (dci DecoratedCartItem) GetChargesToPay(wishedToPaySum *domain.WishedToPay) domain.Charges {
+func (dci DecoratedCartItem) GetChargesToPay(wishedToPaySum *domain.WishedToPay) priceDomain.Charges {
 	priceToPayForItem := dci.Item.RowPriceGrossWithDiscount()
 	if wishedToPaySum == nil {
-		return dci.Product.SaleableData().GetLoyaltyChargeSplit(&priceToPayForItem,nil)
+		return dci.Product.SaleableData().GetLoyaltyChargeSplit(&priceToPayForItem, nil)
 	}
-	return dci.Product.SaleableData().GetLoyaltyChargeSplit(&priceToPayForItem,wishedToPaySum)
+	return dci.Product.SaleableData().GetLoyaltyChargeSplit(&priceToPayForItem, wishedToPaySum)
 }
 
 // GetGroupedBy legacy function
@@ -207,7 +207,6 @@ func (dc DecoratedCart) GetDecoratedDeliveryByCode(deliveryCode string) (*Decora
 	}
 	return nil, false
 }
-
 
 // GetGroupedBy getter
 func (dc DecoratedDelivery) GetGroupedBy(group string, sortGroup bool, params ...string) []*GroupedDecoratedCartItem {
