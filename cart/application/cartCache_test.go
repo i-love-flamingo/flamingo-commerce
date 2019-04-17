@@ -534,7 +534,7 @@ func TestCartSessionCache_DeleteAll(t *testing.T) {
 func getFixtureCartForTest(t *testing.T) *cart.Cart {
 	t.Helper()
 	cartItemBuilder := cart.ItemBuilder{}
-	cartItemBuilder.SetSinglePriceGross(domain.NewFromInt(2050, 100, "EUR")).SetID("1").SetUniqueID("1").SetQty(2).CalculatePricesAndTaxAmountsFromSinglePriceGross()
+	cartItemBuilder.SetSinglePriceGross(domain.NewFromInt(2050, 100, "EUR")).SetID("1").SetExternalReference("1ext").SetQty(2).CalculatePricesAndTaxAmountsFromSinglePriceGross()
 	item, err := cartItemBuilder.Build()
 	if err != nil {
 		t.Fatal("cannot build fixture cart for test!", err)
@@ -547,9 +547,9 @@ func getFixtureCartForTest(t *testing.T) *cart.Cart {
 	}
 	cartBuilder := cart.Builder{}
 	cartBuilder.AddDelivery(*delivery).SetDefaultCurrency("EUR").SetIds("1", "1")
-	cart, err := cartBuilder.Build()
+	cartResult, err := cartBuilder.Build()
 	if err != nil {
 		t.Fatal("cannot build  cart for test!", err)
 	}
-	return cart
+	return cartResult
 }

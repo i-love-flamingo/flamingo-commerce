@@ -205,7 +205,7 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 		deliveryCode = cs.defaultDeliveryCode
 	}
 
-	item, err := cart.GetByItemID(itemID, deliveryCode)
+	item, err := cart.GetByItemID(itemID)
 	if err != nil {
 		cs.logger.WithField("subCategory", "UpdateItemQty").Error(err)
 
@@ -261,7 +261,7 @@ func (cs *CartService) UpdateItemSourceID(ctx context.Context, session *web.Sess
 	if deliveryCode == "" {
 		deliveryCode = cs.defaultDeliveryCode
 	}
-	_, err = cart.GetByItemID(itemID, deliveryCode)
+	_, err = cart.GetByItemID(itemID)
 	if err != nil {
 		cs.logger.WithField("subCategory", "UpdateItemSourceId").Error(err)
 
@@ -300,7 +300,7 @@ func (cs *CartService) DeleteItem(ctx context.Context, session *web.Session, ite
 		deliveryCode = cs.defaultDeliveryCode
 	}
 
-	item, err := cart.GetByItemID(itemID, deliveryCode)
+	item, err := cart.GetByItemID(itemID)
 	if err != nil {
 		cs.logger.WithField("subCategory", "DeleteItem").Error(err)
 

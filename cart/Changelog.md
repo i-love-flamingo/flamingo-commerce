@@ -8,3 +8,10 @@
   * Carttotal:
     * Deleted: DiscountAmount
     * Now Existing: SubTotal / SubTotalInclTax / SubTotalInclTax /SubTotalWithDiscounts / SubTotalWithDiscountsAndTax / TotalDiscountAmount / TotalNonItemRelatedDiscountAmount 
+
+# 17. April 2018
+
+* Cart Item `UniqueID` is removed
+  * `Item.ID` is now supposed to be unique
+  * The combination `ID` + `DeliveryCode` is no longer required to identify a cart item
+  * For non-unique references of certain backend implementations the new field `Item.ExternalReference` can be used

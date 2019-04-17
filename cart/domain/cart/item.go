@@ -12,12 +12,13 @@ import (
 type (
 	// Item for Cart
 	Item struct {
-		//ID of the item - need to be unique under a delivery
+		// ID of the item - needs to be unique over the whole cart
 		ID string
-		//
-		UniqueID        string
-		MarketplaceCode string
-		//VariantMarketPlaceCode is used for Configurable products
+		// ExternalReference can be used by cart service implementations to separate the representation in an external
+		// cart service from the unique item ID
+		ExternalReference string
+		MarketplaceCode   string
+		// VariantMarketPlaceCode is used for Configurable products
 		VariantMarketPlaceCode string
 		ProductName            string
 
@@ -28,31 +29,23 @@ type (
 
 		AdditionalData map[string]string
 
-		//SinglePriceGross brutto (gross) for single product
+		// SinglePriceGross brutto (gross) for single product
 		SinglePriceGross priceDomain.Price
 
-		//SinglePriceNet net price for single product
+		// SinglePriceNet net price for single product
 		SinglePriceNet priceDomain.Price
 
-		//RowPriceGross
+		// RowPriceGross
 		RowPriceGross priceDomain.Price
 
-		//RowPriceNet
+		// RowPriceNet
 		RowPriceNet priceDomain.Price
 
-		//RowPriceGross
+		// RowPriceGross
 		RowTaxes Taxes
 
-		//AppliedDiscounts contains the details about the discounts applied to this item - they can be "itemrelated" or not
+		// AppliedDiscounts contains the details about the discounts applied to this item - they can be "itemrelated" or not
 		AppliedDiscounts []ItemDiscount
-	}
-
-	// ItemCartReference - value object that can be used to reference a Item in a Cart
-	//@todo - Use in ServicePort methods...
-	//@todo - we should use the uniqieitemid
-	ItemCartReference struct {
-		ItemID       string
-		DeliveryCode string
 	}
 
 	// ItemDiscount value object
@@ -60,11 +53,11 @@ type (
 		Code   string
 		Title  string
 		Amount priceDomain.Price
-		//IsItemRelated is a flag indicating if the discount should be displayed in the item or if it the result of a cart discount
+		// IsItemRelated is a flag indicating if the discount should be displayed in the item or if it the result of a cart discount
 		IsItemRelated bool
 	}
 
-	//ItemBuilder can be used to construct an item with a fluent interface
+	// ItemBuilder can be used to construct an item with a fluent interface
 	ItemBuilder struct {
 		itemCurrency        *string
 		invariantError      error
@@ -76,7 +69,7 @@ type (
 	ItemBuilderProvider func() *ItemBuilder
 )
 
-//TotalTaxAmount - returns total tax amount as price
+// TotalTaxAmount - returns total tax amount as price
 func (i Item) TotalTaxAmount() priceDomain.Price {
 	return i.RowTaxes.TotalAmount()
 }
@@ -100,7 +93,7 @@ func (i Item) ItemRelatedDiscountAmount() priceDomain.Price {
 	return result.GetPayable()
 }
 
-//NonItemRelatedDiscountAmount = Sum of AppliedDiscounts where IsItemRelated = false
+// NonItemRelatedDiscountAmount = Sum of AppliedDiscounts where IsItemRelated = false
 func (i Item) NonItemRelatedDiscountAmount() priceDomain.Price {
 	var prices []priceDomain.Price
 	for _, discount := range i.AppliedDiscounts {
@@ -113,31 +106,31 @@ func (i Item) NonItemRelatedDiscountAmount() priceDomain.Price {
 	return result.GetPayable()
 }
 
-//RowPriceGrossWithDiscount = RowPriceGross-TotalDiscountAmount()
+// RowPriceGrossWithDiscount = RowPriceGross-TotalDiscountAmount()
 func (i Item) RowPriceGrossWithDiscount() priceDomain.Price {
 	result, _ := i.RowPriceGross.Add(i.TotalDiscountAmount())
 	return result
 }
 
-//RowPriceNetWithDiscount = RowPriceNet-TotalDiscountAmount()
+// RowPriceNetWithDiscount = RowPriceNet-TotalDiscountAmount()
 func (i Item) RowPriceNetWithDiscount() priceDomain.Price {
 	result, _ := i.RowPriceNet.Add(i.TotalDiscountAmount())
 	return result
 }
 
-//RowPriceGrossWithItemRelatedDiscount = RowPriceGross-ItemRelatedDiscountAmount()
+// RowPriceGrossWithItemRelatedDiscount = RowPriceGross-ItemRelatedDiscountAmount()
 func (i Item) RowPriceGrossWithItemRelatedDiscount() priceDomain.Price {
 	result, _ := i.RowPriceGross.Add(i.ItemRelatedDiscountAmount())
 	return result
 }
 
-//RowPriceNetWithItemRelatedDiscount =RowTotal-ItemRelatedDiscountAmount
+// RowPriceNetWithItemRelatedDiscount =RowTotal-ItemRelatedDiscountAmount
 func (i Item) RowPriceNetWithItemRelatedDiscount() priceDomain.Price {
 	result, _ := i.RowPriceNet.Add(i.ItemRelatedDiscountAmount())
 	return result
 }
 
-//Inject - called by dingo
+// Inject - called by dingo
 func (f *ItemBuilder) Inject(config *struct {
 	UseGrosPrice bool `inject:"config:commerce.product.priceIsGross,optional"`
 }) {
@@ -146,25 +139,25 @@ func (f *ItemBuilder) Inject(config *struct {
 	}
 }
 
-//SetID - sets the id
+// SetID - sets the id
 func (f *ItemBuilder) SetID(id string) *ItemBuilder {
 	f.init()
 	f.itemInBuilding.ID = id
 	return f
 }
 
-//SetUniqueID - sets the uniqueid
-func (f *ItemBuilder) SetUniqueID(id string) *ItemBuilder {
+// SetExternalReference - sets the ExternalReference
+func (f *ItemBuilder) SetExternalReference(ref string) *ItemBuilder {
 	f.init()
-	f.itemInBuilding.UniqueID = id
+	f.itemInBuilding.ExternalReference = ref
 	return f
 }
 
-//SetFromItem - sets the data in builder from existing item - useful to get a updated item based from existing. Its not setting Taxes (use Calculate)
+// SetFromItem - sets the data in builder from existing item - useful to get a updated item based from existing. Its not setting Taxes (use Calculate)
 func (f *ItemBuilder) SetFromItem(item Item) *ItemBuilder {
 	f.init()
 	f.SetProductData(item.MarketplaceCode, item.VariantMarketPlaceCode, item.ProductName)
-	f.SetUniqueID(item.UniqueID)
+	f.SetExternalReference(item.ExternalReference)
 	f.SetID(item.ID)
 	f.SetQty(item.Qty)
 	f.AddDiscounts(item.AppliedDiscounts...)
@@ -174,35 +167,35 @@ func (f *ItemBuilder) SetFromItem(item Item) *ItemBuilder {
 	return f
 }
 
-//SetVariantMarketPlaceCode sets VariantMarketPlaceCode (only for configurable_with_variant relevant)
+// SetVariantMarketPlaceCode sets VariantMarketPlaceCode (only for configurable_with_variant relevant)
 func (f *ItemBuilder) SetVariantMarketPlaceCode(id string) *ItemBuilder {
 	f.init()
 	f.itemInBuilding.VariantMarketPlaceCode = id
 	return f
 }
 
-//SetSourceID - optional
+// SetSourceID - optional
 func (f *ItemBuilder) SetSourceID(id string) *ItemBuilder {
 	f.init()
 	f.itemInBuilding.SourceID = id
 	return f
 }
 
-//SetAdditionalData - optional
+// SetAdditionalData - optional
 func (f *ItemBuilder) SetAdditionalData(d map[string]string) *ItemBuilder {
 	f.init()
 	f.itemInBuilding.AdditionalData = d
 	return f
 }
 
-//SetQty - optional (default 1)
+// SetQty - optional (default 1)
 func (f *ItemBuilder) SetQty(q int) *ItemBuilder {
 	f.init()
 	f.itemInBuilding.Qty = q
 	return f
 }
 
-//SetSinglePriceGross - set by gross price
+// SetSinglePriceGross - set by gross price
 func (f *ItemBuilder) SetSinglePriceGross(grossPrice priceDomain.Price) *ItemBuilder {
 	f.init()
 	if !grossPrice.IsPayable() {
@@ -213,7 +206,7 @@ func (f *ItemBuilder) SetSinglePriceGross(grossPrice priceDomain.Price) *ItemBui
 	return f
 }
 
-//SetSinglePriceNet - set by net
+// SetSinglePriceNet - set by net
 func (f *ItemBuilder) SetSinglePriceNet(price priceDomain.Price) *ItemBuilder {
 	f.init()
 	if !price.IsPayable() {
@@ -267,15 +260,15 @@ func (f *ItemBuilder) AddDiscounts(discounts ...ItemDiscount) *ItemBuilder {
 	return f
 }
 
-//CalculatePricesAndTaxAmountsFromSinglePriceNet - Vertikal Tax Calculation - based from current SinglePriceNet, Qty and the RowTax Infos given
+// CalculatePricesAndTaxAmountsFromSinglePriceNet - Vertikal Tax Calculation - based from current SinglePriceNet, Qty and the RowTax Infos given
 // Sets RowPriceNet, missing tax.Amount and RowPriceGross
 func (f *ItemBuilder) CalculatePricesAndTaxAmountsFromSinglePriceNet() *ItemBuilder {
 	priceNet := f.itemInBuilding.SinglePriceNet
 	f.itemInBuilding.RowPriceNet = priceNet.Multiply(f.itemInBuilding.Qty)
 	for k, tax := range f.itemInBuilding.RowTaxes {
-		//Calculate tax amount from rate if required
+		// Calculate tax amount from rate if required
 		if tax.Amount.IsZero() && tax.Rate != nil {
-			//set tax amount and round it
+			// set tax amount and round it
 			tax.Amount = f.itemInBuilding.RowPriceNetWithDiscount().TaxFromNet(*tax.Rate).GetPayable()
 			f.itemInBuilding.RowTaxes[k] = tax
 		}
@@ -290,7 +283,7 @@ func (f *ItemBuilder) CalculatePricesAndTaxAmountsFromSinglePriceNet() *ItemBuil
 	return f
 }
 
-//CalculatePricesAndTax - reads the config flag and reculculates Total and Tax
+// CalculatePricesAndTax - reads the config flag and reculculates Total and Tax
 func (f *ItemBuilder) CalculatePricesAndTax() *ItemBuilder {
 	if f.configUseGrossPrice {
 		return f.CalculatePricesAndTaxAmountsFromSinglePriceGross()
@@ -298,13 +291,13 @@ func (f *ItemBuilder) CalculatePricesAndTax() *ItemBuilder {
 	return f.CalculatePricesAndTaxAmountsFromSinglePriceNet()
 }
 
-//CalculatePricesAndTaxAmountsFromSinglePriceGross - Vertical Tax Calculation - based from current SinglePriceNet, Qty and the RowTax Infos given
+// CalculatePricesAndTaxAmountsFromSinglePriceGross - Vertical Tax Calculation - based from current SinglePriceNet, Qty and the RowTax Infos given
 // Sets RowPriceNet, missing tax.Amount and RowPriceGross
 func (f *ItemBuilder) CalculatePricesAndTaxAmountsFromSinglePriceGross() *ItemBuilder {
 	priceGross := f.itemInBuilding.SinglePriceGross
 	f.itemInBuilding.RowPriceGross = priceGross.Multiply(f.itemInBuilding.Qty)
 	for k, tax := range f.itemInBuilding.RowTaxes {
-		//Calculate tax amount from rate if required
+		// Calculate tax amount from rate if required
 		if tax.Amount.IsZero() && tax.Rate != nil {
 			tax.Amount = f.itemInBuilding.RowPriceGrossWithDiscount().TaxFromGross(*tax.Rate).GetPayable()
 			f.itemInBuilding.RowTaxes[k] = tax
@@ -316,7 +309,7 @@ func (f *ItemBuilder) CalculatePricesAndTaxAmountsFromSinglePriceGross() *ItemBu
 	return f
 }
 
-//SetProductData - set product data: MarketplaceCode,VariantMarketPlaceCode,ProductName
+// SetProductData - set product data: MarketplaceCode,VariantMarketPlaceCode,ProductName
 func (f *ItemBuilder) SetProductData(marketplace string, vc string, name string) *ItemBuilder {
 	f.init()
 	f.itemInBuilding.MarketplaceCode = marketplace
@@ -325,7 +318,7 @@ func (f *ItemBuilder) SetProductData(marketplace string, vc string, name string)
 	return f
 }
 
-//SetByProduct - gets a product and calculates also prices
+// SetByProduct - gets a product and calculates also prices
 func (f *ItemBuilder) SetByProduct(product domain.BasicProduct) *ItemBuilder {
 	if !product.IsSaleable() {
 		f.invariantError = errors.New("Product is not saleable")
@@ -377,9 +370,6 @@ func (f *ItemBuilder) Build() (*Item, error) {
 
 	if f.itemInBuilding.ID == "" {
 		return f.reset(errors.New("Id Required"))
-	}
-	if f.itemInBuilding.UniqueID == "" {
-		return f.reset(errors.New("UniqueID Required"))
 	}
 
 	checkPrice, _ := f.itemInBuilding.RowPriceNet.Add(f.itemInBuilding.TotalTaxAmount())
