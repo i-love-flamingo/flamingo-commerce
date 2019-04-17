@@ -26,6 +26,11 @@ type (
 		Type string
 	}
 
+	//Charges - Represents the Charges the product need to be payed with
+	Charges struct {
+		chargesByType map[string]Charge
+	}
+
 	//priceEncodeAble is a type that we need to allow marshalling the price values. The type itself is unexported
 	priceEncodeAble struct {
 		Amount   big.Float
@@ -42,11 +47,11 @@ const (
 	//ChargeTypeMain used as default for a Charge
 	ChargeTypeMain = "main"
 	//RoundingModeFloor - use if you want to cut (round down)
-	RoundingModeFloor    = "floor"
+	RoundingModeFloor = "floor"
 	//RoundingModeCeil - use if you want to round up always
-	RoundingModeCeil     = "ceil"
+	RoundingModeCeil = "ceil"
 	//RoundingModeHalfUp - default for GetPayable()
-	RoundingModeHalfUp   = "halfup"
+	RoundingModeHalfUp = "halfup"
 	//RoundingModeHalfDown - in cases where you want to round down on .5
 	RoundingModeHalfDown = "halfdown"
 )
@@ -182,10 +187,9 @@ func (p Price) Sub(sub Price) (Price, error) {
 	return newPrice, nil
 }
 
-
 //Inverse - gets the price multiplied with -1
 func (p Price) Inverse() Price {
-	p.amount = *new(big.Float).Mul(&p.amount,big.NewFloat(-1))
+	p.amount = *new(big.Float).Mul(&p.amount, big.NewFloat(-1))
 	return p
 }
 
@@ -439,27 +443,24 @@ func (p *Price) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
-
-
 //Add - Adds the given Charge to the current Charge and returns a new Charge
 func (p Charge) Add(add Charge) (Charge, error) {
 	if p.Type != add.Type {
-		return Charge{},errors.New("charge type mismatch")
+		return Charge{}, errors.New("charge type mismatch")
 	}
-	new, err := p.Price.Add(add.Price)
+	newPrice, err := p.Price.Add(add.Price)
 	if err != nil {
-		return Charge{},err
+		return Charge{}, err
 	}
-	p.Price = new
+	p.Price = newPrice
 
-	new, err = p.Value.Add(add.Value)
+	newPrice, err = p.Value.Add(add.Value)
 	if err != nil {
-		return Charge{},err
+		return Charge{}, err
 	}
-	p.Value = new
+	p.Value = newPrice
 	return p, nil
 }
-
 
 //GetPayable - Rounds the charge
 func (p Charge) GetPayable() Charge {
@@ -469,8 +470,85 @@ func (p Charge) GetPayable() Charge {
 }
 
 //Mul - Mul the given Charge and returns a new Charge
-func (p Charge) Mul(qty int) (Charge) {
+func (p Charge) Mul(qty int) Charge {
 	p.Price = p.Price.Multiply(qty)
 	p.Value = p.Value.Multiply(qty)
 	return p
+}
+
+// NewCharges creates a new Charges object
+func NewCharges(chargesByType map[string]Charge) *Charges {
+	return &Charges{
+		chargesByType: chargesByType,
+	}
+}
+
+//HasType - returns a true if charges include a charge with given type
+func (c Charges) HasType(ctype string) bool {
+	if _, ok := c.chargesByType[ctype]; ok {
+		return true
+	}
+	return false
+}
+
+//GetByType - returns a charge of given type. If it was not found a Zero amount is returned and the second return value is false
+func (c Charges) GetByType(ctype string) (Charge, bool) {
+	if charge, ok := c.chargesByType[ctype]; ok {
+		return charge, ok
+	}
+	return Charge{}, false
+}
+
+//GetByTypeForced - returns a charge of given type. If it was not found a Zero amount is returned. This method might be useful to call in View (template) directly where you need one return value
+func (c Charges) GetByTypeForced(ctype string) Charge {
+	if charge, ok := c.chargesByType[ctype]; ok {
+		return charge
+	}
+	return Charge{}
+}
+
+//GetAllCharges - returns all charges
+func (c Charges) GetAllCharges() map[string]Charge {
+	return c.chargesByType
+}
+
+//Add - returns new Charges with the given added
+func (c Charges) Add(toadd Charges) Charges {
+	if c.chargesByType == nil {
+		c.chargesByType = make(map[string]Charge)
+	}
+	for addk, addCharge := range toadd.chargesByType {
+		if existingCharge, ok := c.chargesByType[addk]; ok {
+			chargeSum, _ := existingCharge.Add(addCharge)
+			c.chargesByType[addk] = chargeSum.GetPayable()
+		} else {
+			c.chargesByType[addk] = addCharge
+		}
+	}
+	return c
+}
+
+//AddCharge - returns new Charges with the given Charge added
+func (c Charges) AddCharge(toadd Charge) Charges {
+	if c.chargesByType == nil {
+		c.chargesByType = make(map[string]Charge)
+	}
+	if existingCharge, ok := c.chargesByType[toadd.Type]; ok {
+		chargeSum, _ := existingCharge.Add(toadd)
+		c.chargesByType[toadd.Type] = chargeSum.GetPayable()
+	} else {
+		c.chargesByType[toadd.Type] = toadd
+	}
+	return c
+}
+
+//Mul - returns new Charges with the given multiplied
+func (c Charges) Mul(qty int) Charges {
+	if c.chargesByType == nil {
+		return c
+	}
+	for t, charge := range c.chargesByType {
+		c.chargesByType[t] = charge.Mul(qty)
+	}
+	return c
 }
