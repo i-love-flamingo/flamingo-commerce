@@ -3,10 +3,10 @@ package cart
 import (
 	"math/big"
 
-	"github.com/pkg/errors"
-
 	"flamingo.me/flamingo-commerce/v3/price/domain"
+
 	"flamingo.me/flamingo/v3/framework/web"
+	"github.com/pkg/errors"
 )
 
 type (
@@ -15,30 +15,30 @@ type (
 
 	// Cart Value Object (immutable data - because the cartservice is responsible to return a cart).
 	Cart struct {
-		// ID is the main identifier of the cart
+		//ID is the main identifier of the cart
 		ID string
-		// EntityID is a second identifier that may be used by some backends
+		//EntityID is a second identifier that may be used by some backends
 		EntityID string
 
 		// ReservedOrderID is an ID already known by the Cart of the future order ID
 		ReservedOrderID string
 
-		// BillingAdress - the main billing address (relevant for all payments/invoices)
+		//BillingAdress - the main billing address (relevant for all payments/invoices)
 		BillingAdress *Address
 
-		// Purchaser - additional infos for the legal contact person in this order
+		//Purchaser - additional infos for the legal contact person in this order
 		Purchaser *Person
 
-		// Deliveries - list of desired Deliverys (or Shippments) involved in this cart
+		//Deliveries - list of desired Deliverys (or Shippments) involved in this cart
 		Deliveries []Delivery
 
-		// AdditionalData   can be used for Custom attributes
+		//AdditionalData   can be used for Custom attributes
 		AdditionalData AdditionalData
 
-		// PaymentSelection - the saved PaymentSelection (saves "how" the customer want to pay)
+		//PaymentSelection - the saved PaymentSelection (saves "how" the customer want to pay)
 		PaymentSelection *PaymentSelection
 
-		// BelongsToAuthenticatedUser - false = Guest Cart true = cart from the authenticated user
+		//BelongsToAuthenticatedUser - false = Guest Cart true = cart from the authenticated user
 		BelongsToAuthenticatedUser bool
 		AuthenticatedUserID        string
 
@@ -46,7 +46,7 @@ type (
 
 		DefaultCurrency string
 
-		// Additional non taxable totals
+		//Additional non taxable totals
 		Totalitems []Totalitem
 	}
 
@@ -66,13 +66,13 @@ type (
 	Person struct {
 		Address         *Address
 		PersonalDetails PersonalDetails
-		// ExistingCustomerData if the current purchaser is an existing customer - this contains infos about existing customer
+		//ExistingCustomerData if the current purchaser is an existing customer - this contains infos about existing customer
 		ExistingCustomerData *ExistingCustomerData
 	}
 
 	// ExistingCustomerData value object
 	ExistingCustomerData struct {
-		// ID of the customer
+		//ID of the customer
 		ID string
 	}
 
@@ -84,10 +84,10 @@ type (
 		Nationality     string
 	}
 
-	// Taxes is a list of Tax
+	//Taxes is a list of Tax
 	Taxes []Tax
 
-	// Tax - it the Tax represented by an Amount and Optional the Rate.
+	//Tax - it the Tax represented by an Amount and Optional the Rate.
 	Tax struct {
 		Amount domain.Price
 		Type   string
@@ -121,7 +121,7 @@ type (
 		DeliveryCode string
 	}
 
-	// Builder - the main builder for a cart
+	//Builder - the main builder for a cart
 	Builder struct {
 		cartInBuilding *Cart
 	}

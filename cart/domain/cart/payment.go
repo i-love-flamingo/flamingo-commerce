@@ -2,6 +2,7 @@ package cart
 
 import (
 	"flamingo.me/flamingo-commerce/v3/price/domain"
+	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
 type (
@@ -126,6 +127,7 @@ func NewSimplePaymentSelection(gateway string, method string, grandTotal domain.
 		},
 	}
 }
+
 
 //IsSelected - returns true if a Gateway  is selected
 func (s PaymentSelection) IsSelected() bool {
