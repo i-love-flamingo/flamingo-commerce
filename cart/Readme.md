@@ -300,7 +300,7 @@ If you want to use the feature it is important to know how the cart charge split
 
 You can use the factory on the decorated cart to get a valid PaymentSelection based on the two facts
 
-
+It is also important to note that changes to the shopping cart may affect an existing PaymentSelection. We therefore recommend that you validate PaymentSelection after each shopping cart transaction.
 
 ## Domain - Secondary Ports
 

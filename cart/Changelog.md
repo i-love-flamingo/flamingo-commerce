@@ -9,7 +9,7 @@
     * Deleted: DiscountAmount
     * Now Existing: SubTotal / SubTotalInclTax / SubTotalInclTax /SubTotalWithDiscounts / SubTotalWithDiscountsAndTax / TotalDiscountAmount / TotalNonItemRelatedDiscountAmount 
 
-# 17. April 2018
+# 17. April 2019
 
 * Cart Item `UniqueID` is removed
   * `Item.ID` is now supposed to be unique

@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	domaincart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	domainPrice "flamingo.me/flamingo-commerce/v3/price/domain"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/pkg/errors"
@@ -87,7 +88,11 @@ func (cob *InMemoryBehaviour) DeleteItem(ctx context.Context, cart *domaincart.C
 		}
 	}
 
-	cob.cartStorage.StoreCart(cart)
+	cob.resetPaymentSelectionIfInvalid(ctx, cart)
+	err := cob.cartStorage.StoreCart(cart)
+	if err != nil {
+		return nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
+	}
 	return cart, nil
 }
 
@@ -123,6 +128,7 @@ func (cob *InMemoryBehaviour) UpdateItem(ctx context.Context, cart *domaincart.C
 		}
 	}
 
+	cob.resetPaymentSelectionIfInvalid(ctx, cart)
 	err := cob.cartStorage.StoreCart(cart)
 	if err != nil {
 		return nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
@@ -175,6 +181,7 @@ func (cob *InMemoryBehaviour) AddToCart(ctx context.Context, cart *domaincart.Ca
 		}
 	}
 
+	cob.resetPaymentSelectionIfInvalid(ctx, cart)
 	err = cob.cartStorage.StoreCart(cart)
 	if err != nil {
 		return nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
@@ -204,6 +211,7 @@ func (cob *InMemoryBehaviour) CleanCart(ctx context.Context, cart *domaincart.Ca
 
 	cart.Deliveries = []domaincart.Delivery{}
 
+	cob.resetPaymentSelectionIfInvalid(ctx, cart)
 	err := cob.cartStorage.StoreCart(cart)
 	if err != nil {
 		return nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
@@ -236,6 +244,7 @@ func (cob *InMemoryBehaviour) CleanDelivery(ctx context.Context, cart *domaincar
 	cart.Deliveries[newLength] = domaincart.Delivery{}
 	cart.Deliveries = cart.Deliveries[:newLength]
 
+	cob.resetPaymentSelectionIfInvalid(ctx, cart)
 	err := cob.cartStorage.StoreCart(cart)
 	if err != nil {
 		return nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
@@ -253,7 +262,7 @@ func (cob *InMemoryBehaviour) UpdatePurchaser(ctx context.Context, cart *domainc
 func (cob *InMemoryBehaviour) UpdateBillingAddress(ctx context.Context, cart *domaincart.Cart, billingAddress domaincart.Address) (*domaincart.Cart, error) {
 
 	cart.BillingAdress = &billingAddress
-
+	cob.resetPaymentSelectionIfInvalid(ctx, cart)
 	err := cob.cartStorage.StoreCart(cart)
 	if err != nil {
 		return nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
@@ -268,9 +277,8 @@ func (cob *InMemoryBehaviour) UpdateAdditionalData(ctx context.Context, cart *do
 }
 
 //UpdatePaymentSelection - update payment on cart
-func (cob *InMemoryBehaviour) UpdatePaymentSelection(ctx context.Context, cart *domaincart.Cart, paymentSelection domaincart.PaymentSelection) (*domaincart.Cart, error) {
-	cart.GrandTotal()
-	cart.PaymentSelection = &paymentSelection
+func (cob *InMemoryBehaviour) UpdatePaymentSelection(ctx context.Context, cart *domaincart.Cart, paymentSelection *domaincart.PaymentSelection) (*domaincart.Cart, error) {
+	cart.PaymentSelection = paymentSelection
 	err := cob.cartStorage.StoreCart(cart)
 	if err != nil {
 		return nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
@@ -292,6 +300,12 @@ func (cob *InMemoryBehaviour) UpdateDeliveryInfo(ctx context.Context, cart *doma
 		}
 	}
 	cart.Deliveries = append(cart.Deliveries, domaincart.Delivery{DeliveryInfo: deliveryInfo})
+
+	cob.resetPaymentSelectionIfInvalid(ctx, cart)
+	err := cob.cartStorage.StoreCart(cart)
+	if err != nil {
+		return nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
+	}
 
 	return cart, nil
 }
@@ -327,7 +341,25 @@ func (cob *InMemoryBehaviour) ApplyVoucher(ctx context.Context, cart *domaincart
 		Code: couponCode,
 	}
 	cart.AppliedCouponCodes = append(cart.AppliedCouponCodes, coupon)
+	cob.resetPaymentSelectionIfInvalid(ctx, cart)
 	err := cob.cartStorage.StoreCart(cart)
 
 	return cart, err
+}
+
+// isCurrentPaymentSelectionValid checks if the grand total of the cart matches the total of the current payment selection
+func (cob *InMemoryBehaviour) isCurrentPaymentSelectionValid(ctx context.Context, cart *domaincart.Cart) bool {
+	var chargePrices []domainPrice.Price
+	for _, charge := range cart.PaymentSelection.GetCharges().GetAllCharges() {
+		chargePrices = append(chargePrices, charge.Price)
+	}
+	paymentSelectionTotal, _ := domainPrice.SumAll(chargePrices...)
+
+	return cart.GrandTotal().Equal(paymentSelectionTotal)
+}
+
+func (cob *InMemoryBehaviour) resetPaymentSelectionIfInvalid(ctx context.Context, cart *domaincart.Cart) {
+	if !cob.isCurrentPaymentSelectionValid(ctx, cart) {
+		cob.UpdatePaymentSelection(ctx, cart, nil)
+	}
 }
