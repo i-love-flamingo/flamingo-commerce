@@ -24,7 +24,43 @@ type (
 	}
 )
 
-//FullName - return  Firstname Lastname
+// FullName - return Firstname Lastname
 func (a Address) FullName() string {
 	return a.Firstname + " " + a.Lastname
+}
+
+// IsEmpty checks all fields of the address if they are empty
+func (a *Address) IsEmpty() bool {
+	if a == nil {
+		return true
+	}
+
+	for _, additionalLine := range a.AdditionalAddressLines {
+		if additionalLine != "" {
+			return false
+		}
+	}
+
+	if a.Vat != "" ||
+		a.Firstname != "" ||
+		a.Lastname != "" ||
+		a.MiddleName != "" ||
+		a.Title != "" ||
+		a.Salutation != "" ||
+		a.Street != "" ||
+		a.StreetNr != "" ||
+		a.Company != "" ||
+		a.City != "" ||
+		a.PostCode != "" ||
+		a.State != "" ||
+		a.RegionCode != "" ||
+		a.Country != "" ||
+		a.CountryCode != "" ||
+		a.Telephone != "" ||
+		a.Email != "" {
+
+		return false
+	}
+
+	return true
 }
