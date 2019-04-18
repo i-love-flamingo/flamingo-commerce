@@ -36,7 +36,7 @@ type (
 		CleanDelivery(ctx context.Context, cart *Cart, deliveryCode string) (*Cart, error)
 		UpdatePurchaser(ctx context.Context, cart *Cart, purchaser *Person, additionalData *AdditionalData) (*Cart, error)
 		UpdateAdditionalData(ctx context.Context, cart *Cart, additionalData *AdditionalData) (*Cart, error)
-		UpdatePaymentSelection(ctx context.Context, cart *Cart, paymentSelection PaymentSelection) (*Cart, error)
+		UpdatePaymentSelection(ctx context.Context, cart *Cart, paymentSelection *PaymentSelection) (*Cart, error)
 		UpdateDeliveryInfo(ctx context.Context, cart *Cart, deliveryCode string, deliveryInfo DeliveryInfoUpdateCommand) (*Cart, error)
 		UpdateBillingAddress(ctx context.Context, cart *Cart, billingAddress Address) (*Cart, error)
 		UpdateDeliveryInfoAdditionalData(ctx context.Context, cart *Cart, deliveryCode string, additionalData *AdditionalData) (*Cart, error)
