@@ -276,9 +276,16 @@ func (cob *InMemoryBehaviour) UpdateAdditionalData(ctx context.Context, cart *do
 	return nil, nil
 }
 
-//UpdatePaymentSelection - update payment on cart
+//UpdatePaymentSelection updates payment on cart
 func (cob *InMemoryBehaviour) UpdatePaymentSelection(ctx context.Context, cart *domaincart.Cart, paymentSelection *domaincart.PaymentSelection) (*domaincart.Cart, error) {
+	if paymentSelection != nil {
+		if !cob.isPaymentSelectionValid(ctx, cart, paymentSelection) {
+			return nil, errors.New("PaymentSelection invalid GrandTotal of Cart doesn't match ChargeTotal")
+		}
+	}
+
 	cart.PaymentSelection = paymentSelection
+
 	err := cob.cartStorage.StoreCart(cart)
 	if err != nil {
 		return nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
@@ -347,10 +354,14 @@ func (cob *InMemoryBehaviour) ApplyVoucher(ctx context.Context, cart *domaincart
 	return cart, err
 }
 
-// isCurrentPaymentSelectionValid checks if the grand total of the cart matches the total of the current payment selection
 func (cob *InMemoryBehaviour) isCurrentPaymentSelectionValid(ctx context.Context, cart *domaincart.Cart) bool {
+	return cob.isPaymentSelectionValid(ctx, cart, cart.PaymentSelection)
+}
+
+// isPaymentSelectionValid checks if the grand total of the cart matches the total of the supplied payment selection
+func (cob *InMemoryBehaviour) isPaymentSelectionValid(ctx context.Context, cart *domaincart.Cart, paymentSelection *domaincart.PaymentSelection) bool {
 	var chargePrices []domainPrice.Price
-	for _, charge := range cart.PaymentSelection.GetCharges().GetAllCharges() {
+	for _, charge := range paymentSelection.GetCharges().GetAllCharges() {
 		chargePrices = append(chargePrices, charge.Price)
 	}
 	paymentSelectionTotal, _ := domainPrice.SumAll(chargePrices...)
