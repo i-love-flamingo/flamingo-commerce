@@ -96,7 +96,7 @@ func (cs *CartService) ValidateCurrentCart(ctx context.Context, session *web.Ses
 }
 
 //UpdatePaymentSelection updates the paymentselection in the cart
-func (cs *CartService) UpdatePaymentSelection(ctx context.Context, session *web.Session, paymentSelection cartDomain.PaymentSelection) error {
+func (cs *CartService) UpdatePaymentSelection(ctx context.Context, session *web.Session, paymentSelection *cartDomain.PaymentSelection) error {
 	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return err

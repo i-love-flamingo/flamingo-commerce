@@ -113,7 +113,7 @@ func (c *SimplePaymentFormController) HandleFormAction(ctx context.Context, r *w
 	paymentSelection := simplePaymentForm.MapToPaymentSelection(currentCart)
 
 	//update cart
-	err = c.applicationCartService.UpdatePaymentSelection(ctx, session, paymentSelection)
+	err = c.applicationCartService.UpdatePaymentSelection(ctx, session, &paymentSelection)
 	if err != nil {
 		c.logger.Error("SimplePaymentFormController UpdatePaymentSelection Error %v", err)
 		return form, false, err
