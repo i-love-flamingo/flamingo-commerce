@@ -360,6 +360,9 @@ func (cob *InMemoryBehaviour) isCurrentPaymentSelectionValid(ctx context.Context
 
 // isPaymentSelectionValid checks if the grand total of the cart matches the total of the supplied payment selection
 func (cob *InMemoryBehaviour) isPaymentSelectionValid(ctx context.Context, cart *domaincart.Cart, paymentSelection *domaincart.PaymentSelection) bool {
+	if paymentSelection == nil {
+		return true
+	}
 	var chargePrices []domainPrice.Price
 	for _, charge := range paymentSelection.GetCharges().GetAllCharges() {
 		chargePrices = append(chargePrices, charge.Price)
