@@ -9,7 +9,6 @@ import (
 )
 
 type (
-
 	// Delivery - represents the DeliveryInfo and the assigned Items
 	Delivery struct {
 		//DeliveryInfo - The details for this delivery - normaly completed during checkout
@@ -44,7 +43,7 @@ type (
 	// ShippingItem value object
 	ShippingItem struct {
 		Title          string
-		Price          priceDomain.Price
+		PriceNet       priceDomain.Price
 		TaxAmount      priceDomain.Price
 		DiscountAmount priceDomain.Price
 	}
@@ -114,6 +113,20 @@ func (d Delivery) SubTotalGross() priceDomain.Price {
 	var prices []priceDomain.Price
 	for _, item := range d.Cartitems {
 		prices = append(prices, item.RowPriceGross)
+	}
+	result, _ := priceDomain.SumAll(prices...)
+	return result
+}
+
+//GrandTotal - returns SubTotalGross inlcuding shipping and discounts - for the Delivery
+func (d Delivery) GrandTotal() priceDomain.Price {
+	var prices []priceDomain.Price
+	for _, item := range d.Cartitems {
+		prices = append(prices, item.RowPriceGross)
+	}
+	prices = append(prices, d.SumTotalDiscountAmount())
+	if !d.ShippingItem.TotalWithDiscountInclTax().IsZero() {
+		prices = append(prices, d.ShippingItem.TotalWithDiscountInclTax())
 	}
 	result, _ := priceDomain.SumAll(prices...)
 	return result
@@ -255,4 +268,12 @@ func (f *DeliveryBuilder) init() {
 
 func (f *DeliveryBuilder) reset() {
 	f.deliveryInBuilding = nil
+}
+
+
+// TotalWithDiscountInclTax - the price the customer need to pay for the shipping
+func (s ShippingItem) TotalWithDiscountInclTax() priceDomain.Price {
+	price, _ := s.PriceNet.Add(s.TaxAmount)
+	price, _ = price.Add(s.DiscountAmount)
+	return price.GetPayable()
 }

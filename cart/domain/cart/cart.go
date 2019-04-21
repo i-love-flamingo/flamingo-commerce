@@ -267,7 +267,7 @@ func (cart Cart) GetVoucherSavings() domain.Price {
 func (cart Cart) GrandTotal() domain.Price {
 	var prices []domain.Price
 	for _, del := range cart.Deliveries {
-		prices = append(prices, del.SubTotalGross(), del.SumTotalDiscountAmount())
+		prices = append(prices, del.GrandTotal())
 	}
 	for _, total := range cart.Totalitems {
 		prices = append(prices, total.Price)
@@ -277,10 +277,10 @@ func (cart Cart) GrandTotal() domain.Price {
 }
 
 // SumShipping - returns sum price of deliveries ShippingItems
-func (cart Cart) SumShipping() domain.Price {
+func (cart Cart) SumShippingNet() domain.Price {
 	var prices []domain.Price
 	for _, del := range cart.Deliveries {
-		prices = append(prices, del.ShippingItem.Price)
+		prices = append(prices, del.ShippingItem.PriceNet)
 	}
 	price, _ := domain.SumAll(prices...)
 	return price
@@ -288,7 +288,7 @@ func (cart Cart) SumShipping() domain.Price {
 
 // HasShippingCosts - returns true if cart HasShippingCosts
 func (cart Cart) HasShippingCosts() bool {
-	return cart.SumShipping().IsPositive()
+	return cart.SumShippingNet().IsPositive()
 }
 
 // AllShippingTitles - returns all ShippingItem titles
@@ -426,12 +426,6 @@ func (cart Cart) GrandTotalCharges() domain.Charges {
 	return charges
 }
 
-// TotalWithDiscountInclTax - the price the customer need to pay for the shipping
-func (s ShippingItem) TotalWithDiscountInclTax() domain.Price {
-	price, _ := s.Price.Add(s.TaxAmount)
-	price, _ = price.Sub(s.DiscountAmount)
-	return price.GetPayable()
-}
 
 // GetOrderNumberForDeliveryCode returns the order number for a delivery code
 func (poi PlacedOrderInfos) GetOrderNumberForDeliveryCode(deliveryCode string) string {
