@@ -2,6 +2,7 @@ package email
 
 import (
 	"context"
+	"errors"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	authDomain "flamingo.me/flamingo/v3/core/oauth/domain"
@@ -31,6 +32,19 @@ func (e *PlaceOrderServiceAdapter) Inject(logger flamingo.Logger, config *struct
 
 // PlaceGuestCart places a guest cart as order email
 func (e *PlaceOrderServiceAdapter) PlaceGuestCart(ctx context.Context, cart *cartDomain.Cart, payment *cartDomain.Payment) (cartDomain.PlacedOrderInfos, error) {
+	if payment == nil && cart.GrandTotal().IsPositive() {
+		return nil, errors.New("No valid Payment given")
+	}
+	if cart.GrandTotal().IsPositive() {
+		totalPrice, err := payment.TotalValue()
+		if err != nil {
+			return nil, err
+		}
+		if !totalPrice.Equal(cart.GrandTotal()) {
+			return nil, errors.New("Payment Total does not match with Grandtotal")
+		}
+	}
+
 	var placedOrders cartDomain.PlacedOrderInfos
 	placedOrders = append(placedOrders, cartDomain.PlacedOrderInfo{
 		OrderNumber: cart.ID,
