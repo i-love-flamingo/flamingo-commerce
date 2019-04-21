@@ -109,6 +109,16 @@ func (cp *Payment) AddTransaction(transaction Transaction) {
 	cp.Transactions = append(cp.Transactions, transaction)
 }
 
+
+// TotalValue - returns the Total Valued Price
+func (cp *Payment) TotalValue() (domain.Price, error) {
+	var prices []domain.Price
+	for _, transaction := range cp.Transactions {
+		prices = append(prices,transaction.ValuedAmountPayed)
+	}
+	return domain.SumAll(prices...)
+}
+
 //NewSimplePaymentSelection - returns a PaymentSelection that can be used to update the cart.
 // 	multiple charges to pay the cart are not used here: The complete grandtotal is selected to be payed in one charge with the given paymentgateway and paymentmethod
 func NewSimplePaymentSelection(gateway string, method string, grandTotal domain.Price) PaymentSelection {
@@ -140,4 +150,14 @@ func (s PaymentSelection) GetCharges() domain.Charges {
 		result = result.AddCharge(cs.Charge)
 	}
 	return result
+}
+
+
+// TotalValue - returns the Total Valued Price
+func (s PaymentSelection) TotalValue() (domain.Price, error) {
+	var prices []domain.Price
+	for _, charge := range s.ChargeSplits {
+		prices = append(prices,charge.Charge.Value)
+	}
+	return domain.SumAll(prices...)
 }
