@@ -181,6 +181,10 @@ func TestPrice_GetPayableByRoundingMode(t *testing.T) {
 
 	payable = price.GetPayableByRoundingMode(domain.RoundingModeFloor,1)
 	assert.Equal(t, domain.NewFromInt(12, 1,"EUR").Amount(), payable.Amount())
+
+	price = domain.NewFromFloat(-0.0001, "EUR")
+	payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfUp,100)
+	assert.Equal(t, domain.NewFromInt(0, 1,"EUR").Amount(), payable.Amount())
 }
 
 
