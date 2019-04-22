@@ -14,7 +14,7 @@ type (
 	SearchService interface {
 		// Types() []string
 		Search(ctx context.Context, filter ...Filter) (results map[string]Result, err error)
-		SearchFor(ctx context.Context, typ string, filter ...Filter) (result Result, err error)
+		SearchFor(ctx context.Context, typ string, filter ...Filter) (result *Result, err error)
 	}
 
 	// Result defines a search result for one type
