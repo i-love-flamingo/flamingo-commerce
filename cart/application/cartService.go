@@ -614,6 +614,7 @@ func (cs *CartService) ReserveOrderIDAndSave(ctx context.Context, session *web.S
 	}
 	reservedOrderID, err := cs.placeOrderService.ReserveOrderID(ctx, cart)
 	if err != nil {
+		cs.logger.Debug("Reserve order id:",reservedOrderID)
 		return nil, err
 	}
 	additionalData := cart.AdditionalData
