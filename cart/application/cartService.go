@@ -603,6 +603,24 @@ func (cs *CartService) DeleteCartInCache(ctx context.Context, session *web.Sessi
 	}
 }
 
+// ReserveOrderIDAndSave - reserves order id by using the PlaceOrder Behaviour and sets saves it on the cart. You may want to use this before proceeding with payment to ensure having a useful reference in the payment processing
+func (cs *CartService) ReserveOrderIDAndSave(ctx context.Context, session *web.Session) (*cartDomain.Cart, error) {
+	if cs.placeOrderService == nil {
+		return nil, errors.New("No placeOrderService registered")
+	}
+	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
+	if err != nil {
+		return nil, err
+	}
+	reservedOrderID, err := cs.placeOrderService.ReserveOrderID(ctx, cart)
+	if err != nil {
+		return nil, err
+	}
+	additionalData := cart.AdditionalData
+	additionalData.ReservedOrderID = reservedOrderID
+	return behaviour.UpdateAdditionalData(ctx, cart, &additionalData)
+}
+
 // PlaceOrder converts the given cart with payments into orders by calling the PlaceOrderService
 func (cs *CartService) PlaceOrder(ctx context.Context, session *web.Session, payment *cartDomain.Payment) (cartDomain.PlacedOrderInfos, error) {
 	if cs.placeOrderService == nil {
@@ -641,7 +659,7 @@ func (cs *CartService) handleEmptyDelivery(ctx context.Context, session *web.Ses
 	if cs.deleteEmptyDelivery != true {
 		return
 	}
-	
+
 	if cart == nil {
 		return
 	}

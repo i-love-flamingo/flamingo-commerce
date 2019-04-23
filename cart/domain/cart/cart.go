@@ -1,6 +1,7 @@
 package cart
 
 import (
+	"fmt"
 	"math/big"
 
 	"flamingo.me/flamingo-commerce/v3/price/domain"
@@ -19,9 +20,6 @@ type (
 		ID string
 		//EntityID is a second identifier that may be used by some backends
 		EntityID string
-
-		// ReservedOrderID is an ID already known by the Cart of the future order ID
-		ReservedOrderID string
 
 		//BillingAdress - the main billing address (relevant for all payments/invoices)
 		BillingAdress *Address
@@ -109,7 +107,10 @@ type (
 
 	// AdditionalData defines the supplementary cart data
 	AdditionalData struct {
+		//CustomAttributes list of key values
 		CustomAttributes map[string]string
+		// ReservedOrderID is an ID already known by the Cart of the future order ID
+		ReservedOrderID string
 	}
 
 	// PlacedOrderInfos represents a slice of PlacedOrderInfo
@@ -398,6 +399,14 @@ func (cart Cart) GetCartTeaser() *Teaser {
 	}
 }
 
+// GetPaymentReference - Returns a string that can be used as reference to pass to payment gateway. You may want to use it. It returns either the reserved Order id or the cart id/entityid
+func (cart Cart) GetPaymentReference() string {
+	if cart.AdditionalData.ReservedOrderID != "" {
+		return cart.AdditionalData.ReservedOrderID
+	}
+	return fmt.Sprintf("%v-%v",cart.ID,cart.EntityID)
+}
+
 // GetTotalItemsByType gets a slice of all Totalitems by typeCode
 func (cart Cart) GetTotalItemsByType(typeCode string) []Totalitem {
 	var totalitems []Totalitem
@@ -501,7 +510,7 @@ func (b *Builder) SetIds(id string, entityID string) *Builder {
 // SetReservedOrderID - optional
 func (b *Builder) SetReservedOrderID(id string) *Builder {
 	b.init()
-	b.cartInBuilding.ReservedOrderID = id
+	b.cartInBuilding.AdditionalData.ReservedOrderID = id
 	return b
 }
 

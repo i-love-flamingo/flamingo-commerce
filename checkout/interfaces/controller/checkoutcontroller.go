@@ -397,10 +397,15 @@ func getViewErrorInfo(err error) ViewErrorInfos {
 
 func (cc *CheckoutController) processPaymentBeforePlaceOrder(ctx context.Context, r *web.Request) web.Result {
 	session := web.SessionFromContext(ctx)
+	_, err := cc.applicationCartService.ReserveOrderIDAndSave(ctx,session)
+	if err != nil {
+		cc.logger.Error("cart.checkoutcontroller.submitaction: Error %v", err)
+		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
+	}
 	//Guard Clause if Cart can not be fetched
-	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
-	if e != nil {
-		cc.logger.Error("cart.checkoutcontroller.submitaction: Error %v", e)
+	decoratedCart, err := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
+	if err != nil {
+		cc.logger.Error("cart.checkoutcontroller.submitaction: Error %v", err)
 		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 	}
 	gateway, err := cc.orderService.GetPaymentGateway(ctx, decoratedCart.Cart.PaymentSelection.Gateway)
@@ -410,6 +415,7 @@ func (cc *CheckoutController) processPaymentBeforePlaceOrder(ctx context.Context
 
 	//procces Payment:
 	returnURL := cc.getPaymentReturnURL(r, decoratedCart.Cart.PaymentSelection.Gateway)
+
 
 	//selected payment need to be set on cart before
 	//Handover to selected gateway flow:

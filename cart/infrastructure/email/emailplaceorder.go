@@ -62,3 +62,8 @@ func (e *PlaceOrderServiceAdapter) PlaceCustomerCart(ctx context.Context, auth a
 
 	return placedOrders, nil
 }
+
+//ReserveOrderID - returns the reserved order id
+func (e *PlaceOrderServiceAdapter) ReserveOrderID(ctx context.Context, cart *cartDomain.Cart) (string,error) {
+	return cart.ID, nil
+}
