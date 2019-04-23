@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"strconv"
 
+	"flamingo.me/flamingo-commerce/v3/cart/application"
 	domaincart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
@@ -22,6 +23,7 @@ type (
 		itemBuilderProvider     domaincart.ItemBuilderProvider
 		deliveryBuilderProvider domaincart.DeliveryBuilderProvider
 		cartBuilderProvider     domaincart.BuilderProvider
+		eventPublisher          application.EventPublisher
 		defaultTaxRate          float64
 	}
 
@@ -45,6 +47,7 @@ func (cob *InMemoryBehaviour) Inject(
 	itemBuilderProvider domaincart.ItemBuilderProvider,
 	deliveryBuilderProvider domaincart.DeliveryBuilderProvider,
 	cartBuilderProvider domaincart.BuilderProvider,
+	eventPublisher application.EventPublisher,
 	config *struct {
 		DefaultTaxRate float64 `inject:"config:commerce.cart.inMemoryCartServiceAdapter.defaultTaxRate,optional"`
 	},
@@ -55,6 +58,7 @@ func (cob *InMemoryBehaviour) Inject(
 	cob.itemBuilderProvider = itemBuilderProvider
 	cob.deliveryBuilderProvider = deliveryBuilderProvider
 	cob.cartBuilderProvider = cartBuilderProvider
+	cob.eventPublisher = eventPublisher
 	if config != nil {
 		cob.defaultTaxRate = config.DefaultTaxRate
 	}
@@ -373,8 +377,8 @@ func (cob *InMemoryBehaviour) resetPaymentSelectionIfInvalid(ctx context.Context
 	}
 	err := cob.checkPaymentSelection(ctx, cart, cart.PaymentSelection)
 	if err != nil {
+		cob.eventPublisher.PublishPaymentSelectionHasBeenResetEvent(ctx)
 		return cob.UpdatePaymentSelection(ctx, cart, nil)
 	}
 	return cart, nil
 }
-
