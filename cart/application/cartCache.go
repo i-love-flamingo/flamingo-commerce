@@ -152,7 +152,7 @@ func (cs *CartSessionCache) BuildIdentifier(ctx context.Context, session *web.Se
 func (cs *CartSessionCache) GetCart(ctx context.Context, session *web.Session, id CartCacheIdentifier) (*cart.Cart, error) {
 	if cache, ok := session.Load(CartSessionCacheCacheKeyPrefix + id.CacheKey()); ok {
 		if cachedCartsEntry, ok := cache.(CachedCartEntry); ok {
-			cs.logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").Debug("Found cached cart %v", id.CacheKey())
+			cs.logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").Debugf("Found cached cart: %v  InValid: %v", id.CacheKey(),cachedCartsEntry.IsInvalid)
 			if cachedCartsEntry.IsInvalid {
 				return &cachedCartsEntry.Entry, ErrCacheIsInvalid
 			}
