@@ -33,11 +33,16 @@ type (
 		QtyAfter               int
 	}
 
+	// PaymentSelectionHasBeenResetEvent defines event properties
+	PaymentSelectionHasBeenResetEvent struct {
+	}
+
 	//EventPublisher - technology free interface to publish events that might be interesting for outside (Publish)
 	EventPublisher interface {
 		PublishAddToCartEvent(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode string, qty int)
 		PublishChangedQtyInCartEvent(ctx context.Context, item *cartDomain.Item, qtyBefore int, qtyAfter int, cartID string)
 		PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos cartDomain.PlacedOrderInfos)
+		PublishPaymentSelectionHasBeenResetEvent(ctx context.Context)
 	}
 
 	//DefaultEventPublisher implements the event publisher of the domain and uses the framework event router
@@ -108,4 +113,11 @@ func (d *DefaultEventPublisher) PublishOrderPlacedEvent(ctx context.Context, car
 
 	//For now we publish only to Flamingo default Event Router
 	d.eventRouter.Dispatch(ctx, &eventObject)
+}
+
+// PublishPaymentSelectionHasBeenResetEvent publishes an event that is triggered if an invalid payment selection is found and a reset is done
+func (d *DefaultEventPublisher) PublishPaymentSelectionHasBeenResetEvent(ctx context.Context) {
+	d.logger.Info("Publish Event PaymentSelectionHasBeenResetEvent")
+
+	d.eventRouter.Dispatch(ctx, &PaymentSelectionHasBeenResetEvent{})
 }

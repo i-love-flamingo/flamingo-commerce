@@ -41,6 +41,7 @@ func TestInMemoryBehaviour_CleanCart(t *testing.T) {
 					return &domaincart.Builder{}
 				},
 				nil,
+				nil,
 			)
 			cart := &domaincart.Cart{
 				ID: "17",
@@ -159,6 +160,7 @@ func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
 				func() *domaincart.Builder {
 					return &domaincart.Builder{}
 				},
+				nil,
 				nil,
 			)
 			if err := cob.cartStorage.StoreCart(tt.args.cart); err != nil {

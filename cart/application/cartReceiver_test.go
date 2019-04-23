@@ -26,7 +26,7 @@ var (
 	_ cartDomain.GuestCartService = (*MockGuestCartServiceAdapter)(nil)
 )
 
-func (m *MockGuestCartServiceAdapter) GetCart(ctx context.Context, cartId string) (*cartDomain.Cart, error) {
+func (m *MockGuestCartServiceAdapter) GetCart(ctx context.Context, cartID string) (*cartDomain.Cart, error) {
 	return &cartDomain.Cart{
 		ID: "mock_guest_cart",
 	}, nil
@@ -47,7 +47,7 @@ type (
 	MockGuestCartServiceAdapterError struct{}
 )
 
-func (m *MockGuestCartServiceAdapterError) GetCart(ctx context.Context, cartId string) (*cartDomain.Cart, error) {
+func (m *MockGuestCartServiceAdapterError) GetCart(ctx context.Context, cartID string) (*cartDomain.Cart, error) {
 	return nil, errors.New("defective")
 }
 
@@ -74,7 +74,7 @@ func (m *MockCustomerCartService) GetModifyBehaviour(context.Context, domain.Aut
 	return new(cartInfrastructure.InMemoryBehaviour), nil
 }
 
-func (m *MockCustomerCartService) GetCart(ctx context.Context, auth domain.Auth, cartId string) (*cartDomain.Cart, error) {
+func (m *MockCustomerCartService) GetCart(ctx context.Context, auth domain.Auth, cartID string) (*cartDomain.Cart, error) {
 	return &cartDomain.Cart{
 		ID: "mock_customer_cart",
 	}, nil
@@ -141,6 +141,9 @@ func (m *MockEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context, i
 }
 
 func (m *MockEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos cartDomain.PlacedOrderInfos) {
+}
+
+func (m *MockEventPublisher) PublishPaymentSelectionHasBeenResetEvent(ctx context.Context) {
 }
 
 // MockCartValidator
