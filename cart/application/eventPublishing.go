@@ -35,6 +35,7 @@ type (
 
 	// PaymentSelectionHasBeenResetEvent defines event properties
 	PaymentSelectionHasBeenResetEvent struct {
+		Cart *cartDomain.Cart
 	}
 
 	//EventPublisher - technology free interface to publish events that might be interesting for outside (Publish)
@@ -42,7 +43,7 @@ type (
 		PublishAddToCartEvent(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode string, qty int)
 		PublishChangedQtyInCartEvent(ctx context.Context, item *cartDomain.Item, qtyBefore int, qtyAfter int, cartID string)
 		PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos cartDomain.PlacedOrderInfos)
-		PublishPaymentSelectionHasBeenResetEvent(ctx context.Context)
+		PublishPaymentSelectionHasBeenResetEvent(ctx context.Context, cart *cartDomain.Cart)
 	}
 
 	//DefaultEventPublisher implements the event publisher of the domain and uses the framework event router
@@ -56,6 +57,9 @@ type (
 var (
 	_ EventPublisher = (*DefaultEventPublisher)(nil)
 	_ flamingo.Event = (*OrderPlacedEvent)(nil)
+	_ flamingo.Event = (*AddToCartEvent)(nil)
+	_ flamingo.Event = (*PaymentSelectionHasBeenResetEvent)(nil)
+	_ flamingo.Event = (*ChangedQtyInCartEvent)(nil)
 )
 
 // Inject dependencies
@@ -116,8 +120,8 @@ func (d *DefaultEventPublisher) PublishOrderPlacedEvent(ctx context.Context, car
 }
 
 // PublishPaymentSelectionHasBeenResetEvent publishes an event that is triggered if an invalid payment selection is found and a reset is done
-func (d *DefaultEventPublisher) PublishPaymentSelectionHasBeenResetEvent(ctx context.Context) {
+func (d *DefaultEventPublisher) PublishPaymentSelectionHasBeenResetEvent(ctx context.Context, cart *cartDomain.Cart) {
 	d.logger.Info("Publish Event PaymentSelectionHasBeenResetEvent")
 
-	d.eventRouter.Dispatch(ctx, &PaymentSelectionHasBeenResetEvent{})
+	d.eventRouter.Dispatch(ctx, &PaymentSelectionHasBeenResetEvent{Cart: cart})
 }
