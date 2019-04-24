@@ -377,7 +377,7 @@ func (cob *InMemoryBehaviour) resetPaymentSelectionIfInvalid(ctx context.Context
 	}
 	err := cob.checkPaymentSelection(ctx, cart, cart.PaymentSelection)
 	if err != nil {
-		cob.eventPublisher.PublishPaymentSelectionHasBeenResetEvent(ctx)
+		cob.eventPublisher.PublishPaymentSelectionHasBeenResetEvent(ctx, cart)
 		return cob.UpdatePaymentSelection(ctx, cart, nil)
 	}
 	return cart, nil

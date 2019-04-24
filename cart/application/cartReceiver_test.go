@@ -143,7 +143,7 @@ func (m *MockEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context, i
 func (m *MockEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos cartDomain.PlacedOrderInfos) {
 }
 
-func (m *MockEventPublisher) PublishPaymentSelectionHasBeenResetEvent(ctx context.Context) {
+func (m *MockEventPublisher) PublishPaymentSelectionHasBeenResetEvent(ctx context.Context, cart *cartDomain.Cart) {
 }
 
 // MockCartValidator
