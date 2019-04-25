@@ -11,9 +11,10 @@ import (
 
 func TestInMemoryBehaviour_CleanCart(t *testing.T) {
 	tests := []struct {
-		name    string
-		want    *domaincart.Cart
-		wantErr bool
+		name       string
+		want       *domaincart.Cart
+		wantDefers domaincart.DeferEvents
+		wantErr    bool
 	}{
 		{
 			name: "clean cart",
@@ -21,7 +22,8 @@ func TestInMemoryBehaviour_CleanCart(t *testing.T) {
 				ID:         "17",
 				Deliveries: []domaincart.Delivery{},
 			},
-			wantErr: false,
+			wantDefers: nil,
+			wantErr:    false,
 		},
 	}
 	for _, tt := range tests {
@@ -59,13 +61,16 @@ func TestInMemoryBehaviour_CleanCart(t *testing.T) {
 				t.Fatalf("cart could not be initialized")
 			}
 
-			got, err := cob.CleanCart(context.Background(), cart)
+			got, gotDefers, err := cob.CleanCart(context.Background(), cart)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("InMemoryCartOrderBehaviour.CleanCart() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if diff := deep.Equal(got, tt.want); diff != nil {
 				t.Errorf("InMemoryCartOrderBehaviour.CleanCart() got!=want, diff: %#v", diff)
+			}
+			if diff := deep.Equal(gotDefers, tt.wantDefers); diff != nil {
+				t.Errorf("InMemoryCartOrderBehaviour.CleanCart() gotDefers!=wantDefers, diff: %#v", diff)
 			}
 		})
 	}
@@ -78,10 +83,11 @@ func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
 		deliveryCode string
 	}
 	tests := []struct {
-		name    string
-		args    args
-		want    *domaincart.Cart
-		wantErr bool
+		name       string
+		args       args
+		want       *domaincart.Cart
+		wantDefers domaincart.DeferEvents
+		wantErr    bool
 	}{
 		{
 			name: "clean dev-1",
@@ -116,7 +122,8 @@ func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
 					},
 				},
 			},
-			wantErr: false,
+			wantDefers: nil,
+			wantErr:    false,
 		},
 		{
 			name: "delivery not found",
@@ -140,8 +147,9 @@ func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
 				},
 				deliveryCode: "dev-3",
 			},
-			want:    nil,
-			wantErr: true,
+			want:       nil,
+			wantDefers: nil,
+			wantErr:    true,
 		},
 	}
 	for _, tt := range tests {
@@ -167,13 +175,16 @@ func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
 				t.Fatalf("cart could not be initialized")
 			}
 
-			got, err := cob.CleanDelivery(context.Background(), tt.args.cart, tt.args.deliveryCode)
+			got, gotDefers, err := cob.CleanDelivery(context.Background(), tt.args.cart, tt.args.deliveryCode)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("InMemoryCartOrderBehaviour.CleanDelivery() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if diff := deep.Equal(got, tt.want); diff != nil {
 				t.Errorf("InMemoryCartOrderBehaviour.CleanDelivery() got!=want, diff: %#v", diff)
+			}
+			if diff := deep.Equal(gotDefers, tt.wantDefers); diff != nil {
+				t.Errorf("InMemoryCartOrderBehaviour.CleanCart() gotDefers!=wantDefers, diff: %#v", diff)
 			}
 		})
 	}
