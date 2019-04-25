@@ -277,7 +277,7 @@ func (cart Cart) GrandTotal() domain.Price {
 	return price
 }
 
-// SumShipping - returns sum price of deliveries ShippingItems
+// SumShippingNet - returns net sum price of deliveries ShippingItems
 func (cart Cart) SumShippingNet() domain.Price {
 	var prices []domain.Price
 	for _, del := range cart.Deliveries {
@@ -404,7 +404,7 @@ func (cart Cart) GetPaymentReference() string {
 	if cart.AdditionalData.ReservedOrderID != "" {
 		return cart.AdditionalData.ReservedOrderID
 	}
-	return fmt.Sprintf("%v-%v",cart.ID,cart.EntityID)
+	return fmt.Sprintf("%v-%v", cart.ID, cart.EntityID)
 }
 
 // GetTotalItemsByType gets a slice of all Totalitems by typeCode
@@ -434,7 +434,6 @@ func (cart Cart) GrandTotalCharges() domain.Charges {
 	charges = charges.AddCharge(mainCharge)
 	return charges
 }
-
 
 // GetOrderNumberForDeliveryCode returns the order number for a delivery code
 func (poi PlacedOrderInfos) GetOrderNumberForDeliveryCode(deliveryCode string) string {
