@@ -2,7 +2,6 @@ package cart
 
 import (
 	"errors"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
@@ -126,9 +125,11 @@ func (cp *Payment) AddTransaction(transaction Transaction) {
 // TotalValue - returns the Total Valued Price
 func (cp *Payment) TotalValue() (domain.Price, error) {
 	var prices []domain.Price
+
 	for _, transaction := range cp.Transactions {
 		prices = append(prices,transaction.ValuedAmountPayed)
 	}
+
 	return domain.SumAll(prices...)
 }
 
@@ -150,7 +151,6 @@ func NewSimplePaymentSelection(gateway string, method string, grandTotal domain.
 	}
 }
 
-
 //IsSelected - returns true if a Gateway  is selected
 func (s PaymentSelection) IsSelected() bool {
 	return s.Gateway != ""
@@ -159,22 +159,23 @@ func (s PaymentSelection) IsSelected() bool {
 //GetCharges - sum per chargetype
 func (s PaymentSelection) GetCharges() domain.Charges {
 	result := domain.Charges{}
+
 	for _, cs := range s.ChargeSplits {
 		result = result.AddCharge(cs.Charge)
 	}
+
 	return result
 }
-
 
 //GetSelectedChargeAssignmentsPerMethod - returns the
 func (c Cart) GetSelectedChargeAssignmentsPerMethod() (*ChargeAssignmentsPerMethod, error) {
 	if c.PaymentSelection == nil {
-		return nil, errors.New("No payment selection")
-	}
-	if len(c.PaymentSelection.ChargeSplits) == 0 {
-		return nil, errors.New("No chargesplit on selection")
+		return nil, errors.New("no payment selection")
 	}
 
+	if len(c.PaymentSelection.ChargeSplits) == 0 {
+		return nil, errors.New("no chargesplit on selection")
+	}
 
 	chargeAssignmentsPerMethod := ChargeAssignmentsPerMethod{
 		perMethod: make(map[string]ChargeAssignments),
@@ -185,57 +186,66 @@ func (c Cart) GetSelectedChargeAssignmentsPerMethod() (*ChargeAssignmentsPerMeth
 		if chargeSplit.ChargeAssignments != nil {
 			chargeAssignmentsPerMethod.perMethod[chargeSplit.Method] = *chargeSplit.ChargeAssignments
 			return &chargeAssignmentsPerMethod, nil
-		} else {
-			return generateChargeAssignment(c)
 		}
+
+		return generateChargeAssignment(c)
 	}
 
 	for _, cs := range c.PaymentSelection.ChargeSplits {
 		if cs.ChargeAssignments == nil {
-			return nil, errors.New("No ChargeAssignments on PaymentSelection")
+			return nil, errors.New("no chargeassignments on paymentselection")
 		}
+
 		chargeAssignmentsPerMethod.perMethod[cs.Method] = *cs.ChargeAssignments
 
 	}
+
 	return &chargeAssignmentsPerMethod, nil
 }
 
 func generateChargeAssignment(c Cart) (*ChargeAssignmentsPerMethod, error) {
 	if c.PaymentSelection == nil {
-		return nil, errors.New("No payment selection")
+		return nil, errors.New("no payment selection")
 	}
+
 	if len(c.PaymentSelection.ChargeSplits) != 1 {
-		return nil, errors.New("Too ChargeSplits on PaymentSelections")
+		return nil, errors.New("too many chargesplits on paymentselections")
 	}
+
 	chargeSplit := c.PaymentSelection.ChargeSplits[0]
 
 	if chargeSplit.Charge.Price.Currency() != chargeSplit.Charge.Value.Currency() {
-		return nil, errors.New("Currencies are different in Charge - cannot generate")
+		return nil, errors.New("currencies are different in charge - cannot generate")
 	}
 
 	chargeAssigment := ChargeAssignments{}
 	for _, delivery := range c.Deliveries {
 		if delivery.ShippingItem.TotalWithDiscountInclTax().Currency() != chargeSplit.Charge.Price.Currency() {
-			return nil, errors.New("Currencies are different in shipment - cannot generate")
+			return nil, errors.New("currencies are different in shipment - cannot generate")
 		}
+
 		shipmentCharge := domain.Charge{
 			Price: delivery.ShippingItem.TotalWithDiscountInclTax(),
 			Value: delivery.ShippingItem.TotalWithDiscountInclTax(),
 			Type: domain.ChargeTypeMain,
 		}
+
 		chargeAssigment.ShipmentChargeAssignments = append(chargeAssigment.ShipmentChargeAssignments,ShipmentChargeAssignment{
 			DeliveryCode: delivery.DeliveryInfo.Code,
 			Charge:shipmentCharge,
 		})
+
 		for _, item := range delivery.Cartitems {
 			if item.RowPriceGrossWithDiscount().Currency() != chargeSplit.Charge.Price.Currency() {
-				return nil, errors.New("Currencies are different in shipment - cannot generate")
+				return nil, errors.New("currencies are different in shipment - cannot generate")
 			}
+
 			itemCharge := domain.Charge{
 				Price: item.RowPriceGrossWithDiscount(),
 				Value: item.RowPriceGrossWithDiscount(),
 				Type: domain.ChargeTypeMain,
 			}
+
 			chargeAssigment.ItemChargeAssignments = append(chargeAssigment.ItemChargeAssignments,ItemChargeAssignment{
 				ItemID:item.ID,
 				Charge:itemCharge,
@@ -246,12 +256,11 @@ func generateChargeAssignment(c Cart) (*ChargeAssignmentsPerMethod, error) {
 	chargeAssignmentsPerMethod := ChargeAssignmentsPerMethod{
 		perMethod: make(map[string]ChargeAssignments),
 	}
+
 	chargeAssignmentsPerMethod.perMethod[chargeSplit.Method] = chargeAssigment
+
 	return &chargeAssignmentsPerMethod, nil
 }
-
-
-
 
 // TotalValue - returns the Total Valued Price
 func (s PaymentSelection) TotalValue() (domain.Price, error) {
@@ -259,5 +268,6 @@ func (s PaymentSelection) TotalValue() (domain.Price, error) {
 	for _, charge := range s.ChargeSplits {
 		prices = append(prices,charge.Charge.Value)
 	}
+
 	return domain.SumAll(prices...)
 }
