@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 
 	"flamingo.me/flamingo/v3/core/oauth/domain"
+	"flamingo.me/flamingo/v3/framework/flamingo"
+
 	"github.com/pkg/errors"
 )
 
@@ -26,21 +28,24 @@ type (
 		GetCart(ctx context.Context, auth domain.Auth, cartID string) (*Cart, error)
 	}
 
+	// DeferEvents represents events that should be dispatched after a cart modify call
+	DeferEvents []flamingo.Event
+
 	// ModifyBehaviour is a interface that can be implemented by other packages to provide cart actions
 	// This port can not be registered directly but is provided by the registered "GuestCartService"
 	ModifyBehaviour interface {
-		DeleteItem(ctx context.Context, cart *Cart, itemID string, deliveryCode string) (*Cart, error)
-		UpdateItem(ctx context.Context, cart *Cart, itemID string, deliveryCode string, itemUpdateCommand ItemUpdateCommand) (*Cart, error)
-		AddToCart(ctx context.Context, cart *Cart, deliveryCode string, addRequest AddRequest) (*Cart, error)
-		CleanCart(ctx context.Context, cart *Cart) (*Cart, error)
-		CleanDelivery(ctx context.Context, cart *Cart, deliveryCode string) (*Cart, error)
-		UpdatePurchaser(ctx context.Context, cart *Cart, purchaser *Person, additionalData *AdditionalData) (*Cart, error)
-		UpdateAdditionalData(ctx context.Context, cart *Cart, additionalData *AdditionalData) (*Cart, error)
-		UpdatePaymentSelection(ctx context.Context, cart *Cart, paymentSelection *PaymentSelection) (*Cart, error)
-		UpdateDeliveryInfo(ctx context.Context, cart *Cart, deliveryCode string, deliveryInfo DeliveryInfoUpdateCommand) (*Cart, error)
-		UpdateBillingAddress(ctx context.Context, cart *Cart, billingAddress Address) (*Cart, error)
-		UpdateDeliveryInfoAdditionalData(ctx context.Context, cart *Cart, deliveryCode string, additionalData *AdditionalData) (*Cart, error)
-		ApplyVoucher(ctx context.Context, cart *Cart, couponCode string) (*Cart, error)
+		DeleteItem(ctx context.Context, cart *Cart, itemID string, deliveryCode string) (*Cart, DeferEvents, error)
+		UpdateItem(ctx context.Context, cart *Cart, itemID string, deliveryCode string, itemUpdateCommand ItemUpdateCommand) (*Cart, DeferEvents, error)
+		AddToCart(ctx context.Context, cart *Cart, deliveryCode string, addRequest AddRequest) (*Cart, DeferEvents, error)
+		CleanCart(ctx context.Context, cart *Cart) (*Cart, DeferEvents, error)
+		CleanDelivery(ctx context.Context, cart *Cart, deliveryCode string) (*Cart, DeferEvents, error)
+		UpdatePurchaser(ctx context.Context, cart *Cart, purchaser *Person, additionalData *AdditionalData) (*Cart, DeferEvents, error)
+		UpdateAdditionalData(ctx context.Context, cart *Cart, additionalData *AdditionalData) (*Cart, DeferEvents, error)
+		UpdatePaymentSelection(ctx context.Context, cart *Cart, paymentSelection *PaymentSelection) (*Cart, DeferEvents, error)
+		UpdateDeliveryInfo(ctx context.Context, cart *Cart, deliveryCode string, deliveryInfo DeliveryInfoUpdateCommand) (*Cart, DeferEvents, error)
+		UpdateBillingAddress(ctx context.Context, cart *Cart, billingAddress Address) (*Cart, DeferEvents, error)
+		UpdateDeliveryInfoAdditionalData(ctx context.Context, cart *Cart, deliveryCode string, additionalData *AdditionalData) (*Cart, DeferEvents, error)
+		ApplyVoucher(ctx context.Context, cart *Cart, couponCode string) (*Cart, DeferEvents, error)
 	}
 
 	// AddRequest defines add to cart requeset
@@ -68,7 +73,7 @@ type (
 	PlaceOrderService interface {
 		PlaceGuestCart(ctx context.Context, cart *Cart, payment *Payment) (PlacedOrderInfos, error)
 		PlaceCustomerCart(ctx context.Context, auth domain.Auth, cart *Cart, payment *Payment) (PlacedOrderInfos, error)
-		ReserveOrderID(ctx context.Context, cart *Cart) (string,error)
+		ReserveOrderID(ctx context.Context, cart *Cart) (string, error)
 	}
 )
 

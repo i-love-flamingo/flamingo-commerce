@@ -4,20 +4,22 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/pkg/errors"
+
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
-	"github.com/pkg/errors"
 )
 
 // CartService application struct
 type (
-	//CartService provides methods to modify the cart
+	// CartService provides methods to modify the cart
 	CartService struct {
 		cartReceiverService *CartReceiverService
 		productService      productDomain.ProductService
 		eventPublisher      EventPublisher
+		eventRouter         flamingo.EventRouter
 		deliveryInfoBuilder cartDomain.DeliveryInfoBuilder
 		logger              flamingo.Logger
 		defaultDeliveryCode string
@@ -36,6 +38,7 @@ func (cs *CartService) Inject(
 	cartReceiverService *CartReceiverService,
 	productService productDomain.ProductService,
 	eventPublisher EventPublisher,
+	eventRouter flamingo.EventRouter,
 	deliveryInfoBuilder cartDomain.DeliveryInfoBuilder,
 	restrictionService *RestrictionService,
 	logger flamingo.Logger,
@@ -53,6 +56,7 @@ func (cs *CartService) Inject(
 	cs.cartReceiverService = cartReceiverService
 	cs.productService = productService
 	cs.eventPublisher = eventPublisher
+	cs.eventRouter = eventRouter
 	cs.deliveryInfoBuilder = deliveryInfoBuilder
 	cs.restrictionService = restrictionService
 	cs.logger = logger.WithField("module", "cart").WithField("category", "application.cartService")
@@ -95,18 +99,20 @@ func (cs *CartService) ValidateCurrentCart(ctx context.Context, session *web.Ses
 	return cs.ValidateCart(ctx, session, decoratedCart), nil
 }
 
-//UpdatePaymentSelection updates the paymentselection in the cart
+// UpdatePaymentSelection updates the paymentselection in the cart
 func (cs *CartService) UpdatePaymentSelection(ctx context.Context, session *web.Session, paymentSelection *cartDomain.PaymentSelection) error {
 	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return err
 	}
 	// cart cache must be updated - with the current value of cart
+	var defers cartDomain.DeferEvents
 	defer func() {
 		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
+		cs.dispatchAllEvents(ctx, defers)
 	}()
 
-	cart, err = behaviour.UpdatePaymentSelection(ctx, cart, paymentSelection)
+	cart, defers, err = behaviour.UpdatePaymentSelection(ctx, cart, paymentSelection)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
 		cs.logger.WithField("subCategory", "UpdatePaymentSelection").Error(err)
@@ -117,7 +123,7 @@ func (cs *CartService) UpdatePaymentSelection(ctx context.Context, session *web.
 	return nil
 }
 
-//UpdateBillingAddress updates the billing address on the cart
+// UpdateBillingAddress updates the billing address on the cart
 func (cs *CartService) UpdateBillingAddress(ctx context.Context, session *web.Session, billingAddress *cartDomain.Address) error {
 	if billingAddress == nil {
 		return nil
@@ -127,11 +133,13 @@ func (cs *CartService) UpdateBillingAddress(ctx context.Context, session *web.Se
 		return err
 	}
 	// cart cache must be updated - with the current value of cart
+	var defers cartDomain.DeferEvents
 	defer func() {
 		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
+		cs.dispatchAllEvents(ctx, defers)
 	}()
 
-	cart, err = behaviour.UpdateBillingAddress(ctx, cart, *billingAddress)
+	cart, defers, err = behaviour.UpdateBillingAddress(ctx, cart, *billingAddress)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
 		cs.logger.WithField("subCategory", "UpdateBillingAddress").Error(err)
@@ -149,15 +157,17 @@ func (cs *CartService) UpdateDeliveryInfo(ctx context.Context, session *web.Sess
 		return err
 	}
 	// cart cache must be updated - with the current value of cart
+	var defers cartDomain.DeferEvents
 	defer func() {
 		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
+		cs.dispatchAllEvents(ctx, defers)
 	}()
 
 	if deliveryCode == "" {
 		deliveryCode = cs.defaultDeliveryCode
 	}
 
-	cart, err = behaviour.UpdateDeliveryInfo(ctx, cart, deliveryCode, deliveryInfo)
+	cart, defers, err = behaviour.UpdateDeliveryInfo(ctx, cart, deliveryCode, deliveryInfo)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
 		cs.logger.WithField("subCategory", "UpdateDeliveryInfo").Error(err)
@@ -175,11 +185,13 @@ func (cs *CartService) UpdatePurchaser(ctx context.Context, session *web.Session
 		return err
 	}
 	// cart cache must be updated - with the current value of cart
+	var defers cartDomain.DeferEvents
 	defer func() {
 		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
+		cs.dispatchAllEvents(ctx, defers)
 	}()
 
-	cart, err = behaviour.UpdatePurchaser(ctx, cart, purchaser, additionalData)
+	cart, defers, err = behaviour.UpdatePurchaser(ctx, cart, purchaser, additionalData)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
 		cs.logger.WithField("subCategory", "UpdatePurchaser").Error(err)
@@ -197,8 +209,10 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 		return err
 	}
 	// cart cache must be updated - with the current value of cart
+	var defers cartDomain.DeferEvents
 	defer func() {
 		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
+		cs.dispatchAllEvents(ctx, defers)
 	}()
 
 	if deliveryCode == "" {
@@ -236,7 +250,7 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 		Qty: &qty,
 	}
 
-	cart, err = behaviour.UpdateItem(ctx, cart, itemID, deliveryCode, itemUpdate)
+	cart, defers, err = behaviour.UpdateItem(ctx, cart, itemID, deliveryCode, itemUpdate)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
 		cs.logger.WithField("subCategory", "UpdateItemQty").Error(err)
@@ -254,8 +268,10 @@ func (cs *CartService) UpdateItemSourceID(ctx context.Context, session *web.Sess
 		return err
 	}
 	// cart cache must be updated - with the current value of cart
+	var defers cartDomain.DeferEvents
 	defer func() {
 		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
+		cs.dispatchAllEvents(ctx, defers)
 	}()
 
 	if deliveryCode == "" {
@@ -272,7 +288,7 @@ func (cs *CartService) UpdateItemSourceID(ctx context.Context, session *web.Sess
 		SourceID: &sourceID,
 	}
 
-	cart, err = behaviour.UpdateItem(ctx, cart, itemID, deliveryCode, itemUpdate)
+	cart, defers, err = behaviour.UpdateItem(ctx, cart, itemID, deliveryCode, itemUpdate)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
 		cs.logger.WithField("subCategory", "UpdateItemSourceId").Error(err)
@@ -290,10 +306,12 @@ func (cs *CartService) DeleteItem(ctx context.Context, session *web.Session, ite
 		return err
 	}
 	// cart cache must be updated - with the current value of cart
+	var defers cartDomain.DeferEvents
 	defer func() {
 		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
 
 		cs.handleEmptyDelivery(ctx, session, cart, deliveryCode)
+		cs.dispatchAllEvents(ctx, defers)
 	}()
 
 	if deliveryCode == "" {
@@ -310,7 +328,7 @@ func (cs *CartService) DeleteItem(ctx context.Context, session *web.Session, ite
 	qtyBefore := item.Qty
 	cs.eventPublisher.PublishChangedQtyInCartEvent(ctx, item, qtyBefore, 0, cart.ID)
 
-	cart, err = behaviour.DeleteItem(ctx, cart, itemID, deliveryCode)
+	cart, defers, err = behaviour.DeleteItem(ctx, cart, itemID, deliveryCode)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
 		cs.logger.WithField("subCategory", "DeleteItem").Error(err)
@@ -328,8 +346,10 @@ func (cs *CartService) DeleteAllItems(ctx context.Context, session *web.Session)
 		return err
 	}
 	// cart cache must be updated - with the current value of cart
+	var defers cartDomain.DeferEvents
 	defer func() {
 		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
+		cs.dispatchAllEvents(ctx, defers)
 	}()
 
 	for _, delivery := range cart.Deliveries {
@@ -337,7 +357,7 @@ func (cs *CartService) DeleteAllItems(ctx context.Context, session *web.Session)
 			qtyBefore := item.Qty
 			cs.eventPublisher.PublishChangedQtyInCartEvent(ctx, &item, qtyBefore, 0, cart.ID)
 
-			cart, err = behaviour.DeleteItem(ctx, cart, item.ID, delivery.DeliveryInfo.Code)
+			cart, defers, err = behaviour.DeleteItem(ctx, cart, item.ID, delivery.DeliveryInfo.Code)
 			if err != nil {
 				cs.handleCartNotFound(session, err)
 				cs.logger.WithField("subCategory", "DeleteAllItems").Error(err)
@@ -357,8 +377,10 @@ func (cs *CartService) Clean(ctx context.Context, session *web.Session) error {
 		return err
 	}
 	// cart cache must be updated - with the current value of cart
+	var defers cartDomain.DeferEvents
 	defer func() {
 		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
+		cs.dispatchAllEvents(ctx, defers)
 	}()
 
 	for _, delivery := range cart.Deliveries {
@@ -368,7 +390,7 @@ func (cs *CartService) Clean(ctx context.Context, session *web.Session) error {
 		}
 	}
 
-	_, err = behaviour.CleanCart(ctx, cart)
+	_, defers, err = behaviour.CleanCart(ctx, cart)
 	if err != nil {
 		cs.logger.WithField("subCategory", "DeleteAllItems").Error(err)
 		return err
@@ -384,8 +406,10 @@ func (cs *CartService) DeleteDelivery(ctx context.Context, session *web.Session,
 		return nil, err
 	}
 	// cart cache must be updated - with the current value of cart
+	var defers cartDomain.DeferEvents
 	defer func() {
 		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
+		cs.dispatchAllEvents(ctx, defers)
 	}()
 
 	delivery, found := cart.GetDeliveryByCode(deliveryCode)
@@ -397,7 +421,7 @@ func (cs *CartService) DeleteDelivery(ctx context.Context, session *web.Session,
 		cs.eventPublisher.PublishChangedQtyInCartEvent(ctx, &item, qtyBefore, 0, cart.ID)
 	}
 
-	cart, err = behaviour.CleanDelivery(ctx, cart, deliveryCode)
+	cart, defers, err = behaviour.CleanDelivery(ctx, cart, deliveryCode)
 	if err != nil {
 		cs.logger.WithField("subCategory", "DeleteAllItems").Error(err)
 		return nil, err
@@ -432,10 +456,12 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 		return nil, err
 	}
 	// cart cache must be updated - with the current value of cart
+	var defers cartDomain.DeferEvents
 	defer func() {
 		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
 
 		cs.handleEmptyDelivery(ctx, session, cart, deliveryCode)
+		cs.dispatchAllEvents(ctx, defers)
 	}()
 
 	addRequest, product, err := cs.checkProductForAddRequest(ctx, session, deliveryCode, addRequest)
@@ -461,7 +487,7 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 		return nil, err
 	}
 
-	cart, err = behaviour.AddToCart(ctx, cart, deliveryCode, addRequest)
+	cart, defers, err = behaviour.AddToCart(ctx, cart, deliveryCode, addRequest)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
 		cs.logger.WithField("subCategory", "AddProduct").Error(err)
@@ -494,7 +520,12 @@ func (cs *CartService) CreateInitialDeliveryIfNotPresent(ctx context.Context, se
 		DeliveryInfo: *delInfo,
 	}
 
-	return behaviour.UpdateDeliveryInfo(ctx, cart, deliveryCode, updateCommand)
+	info, defers, err := behaviour.UpdateDeliveryInfo(ctx, cart, deliveryCode, updateCommand)
+	defer func() {
+		cs.dispatchAllEvents(ctx, defers)
+	}()
+
+	return info, err
 }
 
 // GetInitialDelivery - calls the registered deliveryInfoBuilder to get the initial values for a Delivery based on the given code
@@ -511,11 +542,13 @@ func (cs *CartService) ApplyVoucher(ctx context.Context, session *web.Session, c
 		return nil, err
 	}
 	// cart cache must be updated - with the current value of cart
+	var defers cartDomain.DeferEvents
 	defer func() {
 		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
+		cs.dispatchAllEvents(ctx, defers)
 	}()
 
-	cart, err = behaviour.ApplyVoucher(ctx, cart, couponCode)
+	cart, defers, err = behaviour.ApplyVoucher(ctx, cart, couponCode)
 
 	return cart, err
 }
@@ -544,7 +577,7 @@ func (cs *CartService) checkProductForAddRequest(ctx context.Context, session *w
 		}
 	}
 
-	//Now Validate the Item with the optional registered ItemValidator
+	// Now Validate the Item with the optional registered ItemValidator
 	if cs.itemValidator != nil {
 		return addRequest, product, cs.itemValidator.Validate(ctx, session, deliveryCode, addRequest, product)
 	}
@@ -614,12 +647,16 @@ func (cs *CartService) ReserveOrderIDAndSave(ctx context.Context, session *web.S
 	}
 	reservedOrderID, err := cs.placeOrderService.ReserveOrderID(ctx, cart)
 	if err != nil {
-		cs.logger.Debug("Reserve order id:",reservedOrderID)
+		cs.logger.Debug("Reserve order id:", reservedOrderID)
 		return nil, err
 	}
 	additionalData := cart.AdditionalData
 	additionalData.ReservedOrderID = reservedOrderID
-	return behaviour.UpdateAdditionalData(ctx, cart, &additionalData)
+	data, defers, err := behaviour.UpdateAdditionalData(ctx, cart, &additionalData)
+	defer func() {
+		cs.dispatchAllEvents(ctx, defers)
+	}()
+	return data, err
 }
 
 // PlaceOrder converts the given cart with payments into orders by calling the PlaceOrderService
@@ -678,5 +715,11 @@ func (cs *CartService) handleEmptyDelivery(ctx context.Context, session *web.Ses
 	if err != nil {
 		cs.logger.WithField("subCategory", "handleEmptyDelivery").Error(err)
 		return
+	}
+}
+
+func (cs *CartService) dispatchAllEvents(ctx context.Context, events []flamingo.Event) {
+	for _, e := range events {
+		cs.eventRouter.Dispatch(ctx, e)
 	}
 }
