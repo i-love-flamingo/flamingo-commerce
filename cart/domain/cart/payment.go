@@ -219,6 +219,7 @@ func generateChargeAssignment(c Cart) (*ChargeAssignmentsPerMethod, error) {
 	}
 
 	chargeAssigment := ChargeAssignments{}
+
 	for _, delivery := range c.Deliveries {
 		if delivery.ShippingItem.TotalWithDiscountInclTax().Currency() != chargeSplit.Charge.Price.Currency() {
 			return nil, errors.New("currencies are different in shipment - cannot generate")
@@ -237,7 +238,7 @@ func generateChargeAssignment(c Cart) (*ChargeAssignmentsPerMethod, error) {
 
 		for _, item := range delivery.Cartitems {
 			if item.RowPriceGrossWithDiscount().Currency() != chargeSplit.Charge.Price.Currency() {
-				return nil, errors.New("currencies are different in shipment - cannot generate")
+				return nil, errors.New("currencies are different in cart items - cannot generate")
 			}
 
 			itemCharge := domain.Charge{
