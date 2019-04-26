@@ -455,7 +455,8 @@ func (l LoyaltyPriceInfo) GetFinalPrice() priceDomain.Price {
 	return l.Default
 }
 
-//GetAmountToSpendWithQty - takes the whishedamaount and evaluates min and max and returns the loyalty points amount that need to be payed.
+//GetAmountToSpendWithQty - takes the whishedamaount and qty and returns the Price in points that need to be payed based on this.
+// - method evaluates min and max and returns the loyalty points amount that need/Can to be payed
 func (l LoyaltyPriceInfo) GetAmountToSpendWithQty(wishedAmount *big.Float, qty int) big.Float {
 	//less or equal - return min
 	min := l.MinPointsToSpent
@@ -477,7 +478,8 @@ func (l LoyaltyPriceInfo) GetAmountToSpendWithQty(wishedAmount *big.Float, qty i
 	return *wishedAmount
 }
 
-//GetAmountToSpendRelative - takes the whishedamaount and evaluates min and max and returns the loyalty points amount that need to be payed.
+//GetAmountToSpendRelative - takes the whishedamaount and an adjustmentRate
+// evaluates min and max according to the adjustmentRate and returns the loyalty points amount that need to be payed.
 func (l LoyaltyPriceInfo) GetAmountToSpendRelative(wishedAmount *big.Float, adjustmentRate *big.Float) big.Float {
 	if adjustmentRate == nil {
 		adjustmentRate = big.NewFloat(1)
