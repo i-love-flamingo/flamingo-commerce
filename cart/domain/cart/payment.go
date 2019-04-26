@@ -1,6 +1,8 @@
 package cart
 
 import (
+	"errors"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
@@ -47,6 +49,17 @@ type (
 		TotalChargeAssignments    []TotalChargeAssignment
 		ShipmentChargeAssignments []ShipmentChargeAssignment
 	}
+	//ChargeAssignments.GetSum() Charges
+
+	ChargeAssignmentsPerMethod struct {
+		perMethod map[string] ChargeAssignments
+	}
+
+	//CartChargeAssignment.GetForCartItem(itemId) map[string]Charge
+	//CartChargeAssignment.GetForShippingItem(itemId) map[string]Charge
+	//CartChargeAssignment.GetForTotalItem(itemId) map[string]Charge
+	//CartChargeAssignment.GroupedSum() map[string]Charge
+
 
 	// ItemChargeAssignment holds the information what amount was assigned to a specific chargetype of a specific item in the cart
 	ItemChargeAssignment struct {
@@ -151,6 +164,93 @@ func (s PaymentSelection) GetCharges() domain.Charges {
 	}
 	return result
 }
+
+
+//GetSelectedChargeAssignmentsPerMethod - returns the
+func (c Cart) GetSelectedChargeAssignmentsPerMethod() (*ChargeAssignmentsPerMethod, error) {
+	if c.PaymentSelection == nil {
+		return nil, errors.New("No payment selection")
+	}
+	if len(c.PaymentSelection.ChargeSplits) == 0 {
+		return nil, errors.New("No chargesplit on selection")
+	}
+
+
+	chargeAssignmentsPerMethod := ChargeAssignmentsPerMethod{
+		perMethod: make(map[string]ChargeAssignments),
+	}
+
+	if len(c.PaymentSelection.ChargeSplits) == 1 {
+		chargeSplit := c.PaymentSelection.ChargeSplits[0]
+		if chargeSplit.ChargeAssignments != nil {
+			chargeAssignmentsPerMethod.perMethod[chargeSplit.Method] = *chargeSplit.ChargeAssignments
+			return &chargeAssignmentsPerMethod, nil
+		} else {
+			return generateChargeAssignment(c)
+		}
+	}
+
+	for _, cs := range c.PaymentSelection.ChargeSplits {
+		if cs.ChargeAssignments == nil {
+			return nil, errors.New("No ChargeAssignments on PaymentSelection")
+		}
+		chargeAssignmentsPerMethod.perMethod[cs.Method] = *cs.ChargeAssignments
+
+	}
+	return &chargeAssignmentsPerMethod, nil
+}
+
+func generateChargeAssignment(c Cart) (*ChargeAssignmentsPerMethod, error) {
+	if c.PaymentSelection == nil {
+		return nil, errors.New("No payment selection")
+	}
+	if len(c.PaymentSelection.ChargeSplits) != 1 {
+		return nil, errors.New("Too ChargeSplits on PaymentSelections")
+	}
+	chargeSplit := c.PaymentSelection.ChargeSplits[0]
+
+	if chargeSplit.Charge.Price.Currency() != chargeSplit.Charge.Value.Currency() {
+		return nil, errors.New("Currencies are different in Charge - cannot generate")
+	}
+
+	chargeAssigment := ChargeAssignments{}
+	for _, delivery := range c.Deliveries {
+		if delivery.ShippingItem.TotalWithDiscountInclTax().Currency() != chargeSplit.Charge.Price.Currency() {
+			return nil, errors.New("Currencies are different in shipment - cannot generate")
+		}
+		shipmentCharge := domain.Charge{
+			Price: delivery.ShippingItem.TotalWithDiscountInclTax(),
+			Value: delivery.ShippingItem.TotalWithDiscountInclTax(),
+			Type: domain.ChargeTypeMain,
+		}
+		chargeAssigment.ShipmentChargeAssignments = append(chargeAssigment.ShipmentChargeAssignments,ShipmentChargeAssignment{
+			DeliveryCode: delivery.DeliveryInfo.Code,
+			Charge:shipmentCharge,
+		})
+		for _, item := range delivery.Cartitems {
+			if item.RowPriceGrossWithDiscount().Currency() != chargeSplit.Charge.Price.Currency() {
+				return nil, errors.New("Currencies are different in shipment - cannot generate")
+			}
+			itemCharge := domain.Charge{
+				Price: item.RowPriceGrossWithDiscount(),
+				Value: item.RowPriceGrossWithDiscount(),
+				Type: domain.ChargeTypeMain,
+			}
+			chargeAssigment.ItemChargeAssignments = append(chargeAssigment.ItemChargeAssignments,ItemChargeAssignment{
+				ItemID:item.ID,
+				Charge:itemCharge,
+			})
+		}
+	}
+
+	chargeAssignmentsPerMethod := ChargeAssignmentsPerMethod{
+		perMethod: make(map[string]ChargeAssignments),
+	}
+	chargeAssignmentsPerMethod.perMethod[chargeSplit.Method] = chargeAssigment
+	return &chargeAssignmentsPerMethod, nil
+}
+
+
 
 
 // TotalValue - returns the Total Valued Price
