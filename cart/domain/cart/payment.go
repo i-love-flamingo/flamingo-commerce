@@ -168,7 +168,7 @@ func (s PaymentSelection) GetCharges() domain.Charges {
 	return result
 }
 
-//GetSelectedChargeAssignmentsPerMethod - returns the
+//GetSelectedChargeAssignmentsPerMethod - returns the charge assignments per method
 func (c Cart) GetSelectedChargeAssignmentsPerMethod() (*ChargeAssignmentsPerMethod, error) {
 	if c.PaymentSelection == nil {
 		return nil, errors.New("no payment selection")
