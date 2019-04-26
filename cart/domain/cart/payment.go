@@ -50,6 +50,7 @@ type (
 	}
 	//ChargeAssignments.GetSum() Charges
 
+	// ChargeAssignmentsPerMethod collect charge assignments indexed by payment method
 	ChargeAssignmentsPerMethod struct {
 		perMethod map[string] ChargeAssignments
 	}
@@ -196,13 +197,19 @@ func (c Cart) GetSelectedChargeAssignmentsPerMethod() (*ChargeAssignmentsPerMeth
 			return nil, errors.New("no chargeassignments on paymentselection")
 		}
 
-		chargeAssignmentsPerMethod.perMethod[cs.Method] = *cs.ChargeAssignments
+		chargeAssignments := chargeAssignmentsPerMethod.perMethod[cs.Method]
 
+		chargeAssignments.ItemChargeAssignments = append(chargeAssignments.ItemChargeAssignments, cs.ChargeAssignments.ItemChargeAssignments...)
+		chargeAssignments.TotalChargeAssignments = append(chargeAssignments.TotalChargeAssignments, cs.ChargeAssignments.TotalChargeAssignments...)
+		chargeAssignments.ShipmentChargeAssignments = append(chargeAssignments.ShipmentChargeAssignments, cs.ChargeAssignments.ShipmentChargeAssignments...)
+
+		chargeAssignmentsPerMethod.perMethod[cs.Method] = chargeAssignments
 	}
 
 	return &chargeAssignmentsPerMethod, nil
 }
 
+// FilterByMethod returns Chargeassignments for a specific method
 func (c *ChargeAssignmentsPerMethod) FilterByMethod(method string) ChargeAssignments {
 	return c.perMethod[method]
 }
