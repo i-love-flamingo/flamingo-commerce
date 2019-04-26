@@ -203,6 +203,10 @@ func (c Cart) GetSelectedChargeAssignmentsPerMethod() (*ChargeAssignmentsPerMeth
 	return &chargeAssignmentsPerMethod, nil
 }
 
+func (c *ChargeAssignmentsPerMethod) FilterByMethod(method string) ChargeAssignments {
+	return c.perMethod[method]
+}
+
 func generateChargeAssignment(c Cart) (*ChargeAssignmentsPerMethod, error) {
 	if c.PaymentSelection == nil {
 		return nil, errors.New("no payment selection")
