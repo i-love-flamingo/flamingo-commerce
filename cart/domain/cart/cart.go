@@ -284,7 +284,7 @@ func (c Cart) GrandTotal() domain.Price {
 	return price
 }
 
-// SumShipping - returns sum price of deliveries ShippingItems
+// SumShippingNet - returns net sum price of deliveries ShippingItems
 func (c Cart) SumShippingNet() domain.Price {
 	var prices []domain.Price
 
@@ -436,7 +436,6 @@ func (c Cart) GetPaymentReference() string {
 	if c.AdditionalData.ReservedOrderID != "" {
 		return c.AdditionalData.ReservedOrderID
 	}
-
 	return fmt.Sprintf("%v-%v", c.ID, c.EntityID)
 }
 

@@ -1,0 +1,16 @@
+language: go
+
+go:
+  - 1.x
+  - 1.11.x
+
+env:
+  - GO111MODULE=on
+
+install: true
+
+script:
+  - go get -u golang.org/x/lint/golint
+  - golint -set_exit_status $(go list ./...)
+  - go test -test.v -test.vet=all -test.count 1 ./...
+  - go test -test.v -test.race ./...
