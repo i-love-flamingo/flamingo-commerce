@@ -1,6 +1,10 @@
 package application_test
 
 import (
+	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	"testing"
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
@@ -16,16 +20,16 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 		CartReceiverService *cartApplication.CartReceiverService
 		ProductService      productDomain.ProductService
 		Logger              flamingo.Logger
-		EventPublisher      cartApplication.EventPublisher
+		EventPublisher      events.EventPublisher
 		EventRouter         flamingo.EventRouter
-		RestrictionService  *cartApplication.RestrictionService
+		RestrictionService  *validation.RestrictionService
 		config              *struct {
 			DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
 			DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
 		}
 		DeliveryInfoBuilder cartDomain.DeliveryInfoBuilder
 		CartCache           cartApplication.CartCache
-		PlaceOrderService   cartDomain.PlaceOrderService
+		PlaceOrderService   placeorder.PlaceOrderService
 	}
 	type args struct {
 		session *web.Session
@@ -45,8 +49,8 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 					result.Inject(
 						new(MockGuestCartServiceAdapter),
 						new(MockCustomerCartService),
-						func() *cartDomain.DecoratedCartFactory {
-							result := &cartDomain.DecoratedCartFactory{}
+						func() *decorator.DecoratedCartFactory {
+							result := &decorator.DecoratedCartFactory{}
 							result.Inject(
 								&MockProductService{},
 								flamingo.NullLogger{},

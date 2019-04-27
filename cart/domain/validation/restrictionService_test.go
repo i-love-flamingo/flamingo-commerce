@@ -1,12 +1,12 @@
-package application_test
+package validation_test
 
 import (
 	"context"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	"math"
 	"reflect"
 	"testing"
 
-	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 )
@@ -17,8 +17,8 @@ type MockRestrictor struct {
 	DifferenceQty int
 }
 
-func (r *MockRestrictor) Restrict(ctx context.Context, product domain.BasicProduct, currentCart *cart.Cart) *cart.RestrictionResult {
-	return &cart.RestrictionResult{
+func (r *MockRestrictor) Restrict(ctx context.Context, product domain.BasicProduct, currentCart *cart.Cart) *validation.RestrictionResult {
+	return &validation.RestrictionResult{
 		IsRestricted:        r.IsRestricted,
 		MaxAllowed:          r.MaxQty,
 		RemainingDifference: r.DifferenceQty,
@@ -27,7 +27,7 @@ func (r *MockRestrictor) Restrict(ctx context.Context, product domain.BasicProdu
 
 func TestRestrictionService_RestrictQty(t *testing.T) {
 	type fields struct {
-		qtyRestrictors []cart.MaxQuantityRestrictor
+		qtyRestrictors []validation.MaxQuantityRestrictor
 	}
 	type args struct {
 		ctx     context.Context
@@ -38,7 +38,7 @@ func TestRestrictionService_RestrictQty(t *testing.T) {
 		name                      string
 		fields                    fields
 		args                      args
-		expectedRestrictionResult *cart.RestrictionResult
+		expectedRestrictionResult *validation.RestrictionResult
 	}{
 		{
 			name: "no restrictors",
@@ -50,7 +50,7 @@ func TestRestrictionService_RestrictQty(t *testing.T) {
 				product: nil,
 				cart:    nil,
 			},
-			expectedRestrictionResult: &cart.RestrictionResult{
+			expectedRestrictionResult: &validation.RestrictionResult{
 				IsRestricted:        false,
 				MaxAllowed:          math.MaxInt32,
 				RemainingDifference: math.MaxInt32,
@@ -59,14 +59,14 @@ func TestRestrictionService_RestrictQty(t *testing.T) {
 		{
 			name: "no restricting restrictors",
 			fields: fields{
-				qtyRestrictors: []cart.MaxQuantityRestrictor{&MockRestrictor{IsRestricted: false}, &MockRestrictor{IsRestricted: false}},
+				qtyRestrictors: []validation.MaxQuantityRestrictor{&MockRestrictor{IsRestricted: false}, &MockRestrictor{IsRestricted: false}},
 			},
 			args: args{
 				ctx:     context.Background(),
 				product: nil,
 				cart:    nil,
 			},
-			expectedRestrictionResult: &cart.RestrictionResult{
+			expectedRestrictionResult: &validation.RestrictionResult{
 				IsRestricted:        false,
 				MaxAllowed:          math.MaxInt32,
 				RemainingDifference: math.MaxInt32,
@@ -75,10 +75,10 @@ func TestRestrictionService_RestrictQty(t *testing.T) {
 		{
 			name: "restrict to 5",
 			fields: fields{
-				qtyRestrictors: []cart.MaxQuantityRestrictor{&MockRestrictor{IsRestricted: true, MaxQty: 5, DifferenceQty: 5}},
+				qtyRestrictors: []validation.MaxQuantityRestrictor{&MockRestrictor{IsRestricted: true, MaxQty: 5, DifferenceQty: 5}},
 			},
 			args: args{},
-			expectedRestrictionResult: &cart.RestrictionResult{
+			expectedRestrictionResult: &validation.RestrictionResult{
 				IsRestricted:        true,
 				MaxAllowed:          5,
 				RemainingDifference: 5,
@@ -87,7 +87,7 @@ func TestRestrictionService_RestrictQty(t *testing.T) {
 		{
 			name: "multiple restrictors to 17 / -7",
 			fields: fields{
-				qtyRestrictors: []cart.MaxQuantityRestrictor{
+				qtyRestrictors: []validation.MaxQuantityRestrictor{
 					&MockRestrictor{IsRestricted: true, MaxQty: 19, DifferenceQty: 19},
 					&MockRestrictor{IsRestricted: true, MaxQty: 21, DifferenceQty: 5},
 					&MockRestrictor{IsRestricted: false, MaxQty: -42, DifferenceQty: -42},
@@ -97,7 +97,7 @@ func TestRestrictionService_RestrictQty(t *testing.T) {
 				},
 			},
 			args: args{},
-			expectedRestrictionResult: &cart.RestrictionResult{
+			expectedRestrictionResult: &validation.RestrictionResult{
 				IsRestricted:        true,
 				MaxAllowed:          17,
 				RemainingDifference: -7,
@@ -106,7 +106,7 @@ func TestRestrictionService_RestrictQty(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			rs := &application.RestrictionService{}
+			rs := &validation.RestrictionService{}
 			rs.Inject(tt.fields.qtyRestrictors)
 			got := rs.RestrictQty(tt.args.ctx, tt.args.product, tt.args.cart)
 			if !reflect.DeepEqual(got, tt.expectedRestrictionResult) {

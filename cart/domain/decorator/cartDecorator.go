@@ -1,7 +1,8 @@
-package cart
+package decorator
 
 import (
 	"context"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"sort"
 
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
@@ -18,7 +19,7 @@ type (
 
 	// DecoratedCart Decorates Access To a Cart
 	DecoratedCart struct {
-		Cart                Cart
+		Cart                cart.Cart
 		DecoratedDeliveries []DecoratedDelivery
 		Ctx                 context.Context `json:"-"`
 		Logger              flamingo.Logger `json:"-"`
@@ -26,13 +27,13 @@ type (
 
 	// DecoratedDelivery Decorates a CartItem with its Product
 	DecoratedDelivery struct {
-		Delivery       Delivery
+		Delivery       cart.Delivery
 		DecoratedItems []DecoratedCartItem
 	}
 
 	// DecoratedCartItem Decorates a CartItem with its Product
 	DecoratedCartItem struct {
-		Item    Item
+		Item    cart.Item
 		Product domain.BasicProduct
 	}
 
@@ -53,7 +54,7 @@ func (df *DecoratedCartFactory) Inject(
 }
 
 // Create Factory method to get Decorated Cart
-func (df *DecoratedCartFactory) Create(ctx context.Context, Cart Cart) *DecoratedCart {
+func (df *DecoratedCartFactory) Create(ctx context.Context, Cart cart.Cart) *DecoratedCart {
 	decoratedCart := DecoratedCart{Cart: Cart, Logger: df.logger}
 	for _, d := range Cart.Deliveries {
 		decoratedCart.DecoratedDeliveries = append(decoratedCart.DecoratedDeliveries, DecoratedDelivery{
@@ -66,7 +67,7 @@ func (df *DecoratedCartFactory) Create(ctx context.Context, Cart Cart) *Decorate
 }
 
 // CreateDecorateCartItems Factory method to get Decorated Cart
-func (df *DecoratedCartFactory) CreateDecorateCartItems(ctx context.Context, items []Item) []DecoratedCartItem {
+func (df *DecoratedCartFactory) CreateDecorateCartItems(ctx context.Context, items []cart.Item) []DecoratedCartItem {
 	var decoratedItems []DecoratedCartItem
 	for _, cartitem := range items {
 		decoratedItem := df.decorateCartItem(ctx, cartitem)
@@ -76,7 +77,7 @@ func (df *DecoratedCartFactory) CreateDecorateCartItems(ctx context.Context, ite
 }
 
 //decorateCartItem factory method
-func (df *DecoratedCartFactory) decorateCartItem(ctx context.Context, cartitem Item) DecoratedCartItem {
+func (df *DecoratedCartFactory) decorateCartItem(ctx context.Context, cartitem cart.Item) DecoratedCartItem {
 	decorateditem := DecoratedCartItem{Item: cartitem}
 	product, e := df.productService.Get(ctx, cartitem.MarketplaceCode)
 	if e != nil {

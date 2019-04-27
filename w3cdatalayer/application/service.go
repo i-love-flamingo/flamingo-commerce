@@ -2,8 +2,8 @@ package application
 
 import (
 	"context"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 
-	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo-commerce/v3/w3cdatalayer/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
@@ -182,7 +182,7 @@ func (s *Service) SetSearchData(keyword string, results interface{}) error {
 }
 
 // SetCartData to datalayer
-func (s *Service) SetCartData(cart cart.DecoratedCart) error {
+func (s *Service) SetCartData(cart decorator.DecoratedCart) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
 	}
@@ -193,7 +193,7 @@ func (s *Service) SetCartData(cart cart.DecoratedCart) error {
 }
 
 // SetTransaction information to datalayer
-func (s *Service) SetTransaction(cart cart.DecoratedCart, decoratedItems []cart.DecoratedCartItem, orderID string, email string) error {
+func (s *Service) SetTransaction(cart decorator.DecoratedCart, decoratedItems []decorator.DecoratedCartItem, orderID string, email string) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
 	}

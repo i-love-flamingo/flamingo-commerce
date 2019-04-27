@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	authDomain "flamingo.me/flamingo/v3/core/oauth/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 )
@@ -19,7 +20,7 @@ type (
 )
 
 var (
-	_ cartDomain.PlaceOrderService = new(PlaceOrderServiceAdapter)
+	_ placeorder.PlaceOrderService = new(PlaceOrderServiceAdapter)
 )
 
 // Inject dependencies
@@ -31,7 +32,7 @@ func (e *PlaceOrderServiceAdapter) Inject(logger flamingo.Logger, config *struct
 }
 
 // PlaceGuestCart places a guest cart as order email
-func (e *PlaceOrderServiceAdapter) PlaceGuestCart(ctx context.Context, cart *cartDomain.Cart, payment *cartDomain.Payment) (cartDomain.PlacedOrderInfos, error) {
+func (e *PlaceOrderServiceAdapter) PlaceGuestCart(ctx context.Context, cart *cartDomain.Cart, payment *placeorder.Payment) (placeorder.PlacedOrderInfos, error) {
 	if payment == nil && cart.GrandTotal().IsPositive() {
 		return nil, errors.New("No valid Payment given")
 	}
@@ -45,8 +46,8 @@ func (e *PlaceOrderServiceAdapter) PlaceGuestCart(ctx context.Context, cart *car
 		}
 	}
 
-	var placedOrders cartDomain.PlacedOrderInfos
-	placedOrders = append(placedOrders, cartDomain.PlacedOrderInfo{
+	var placedOrders placeorder.PlacedOrderInfos
+	placedOrders = append(placedOrders, placeorder.PlacedOrderInfo{
 		OrderNumber: cart.ID,
 	})
 
@@ -54,9 +55,9 @@ func (e *PlaceOrderServiceAdapter) PlaceGuestCart(ctx context.Context, cart *car
 }
 
 // PlaceCustomerCart places a customer cart as order email
-func (e *PlaceOrderServiceAdapter) PlaceCustomerCart(ctx context.Context, auth authDomain.Auth, cart *cartDomain.Cart, payment *cartDomain.Payment) (cartDomain.PlacedOrderInfos, error) {
-	var placedOrders cartDomain.PlacedOrderInfos
-	placedOrders = append(placedOrders, cartDomain.PlacedOrderInfo{
+func (e *PlaceOrderServiceAdapter) PlaceCustomerCart(ctx context.Context, auth authDomain.Auth, cart *cartDomain.Cart, payment *placeorder.Payment) (placeorder.PlacedOrderInfos, error) {
+	var placedOrders placeorder.PlacedOrderInfos
+	placedOrders = append(placedOrders, placeorder.PlacedOrderInfo{
 		OrderNumber: cart.ID,
 	})
 

@@ -8,6 +8,7 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
 	"flamingo.me/flamingo/v3/core/oauth/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
@@ -18,7 +19,7 @@ type (
 	CartReceiverService struct {
 		guestCartService     cartDomain.GuestCartService
 		customerCartService  cartDomain.CustomerCartService
-		cartDecoratorFactory *cartDomain.DecoratedCartFactory
+		cartDecoratorFactory *decorator.DecoratedCartFactory
 		authManager          *authApplication.AuthManager
 		userService          authApplication.UserServiceInterface
 		eventRouter          flamingo.EventRouter
@@ -42,7 +43,7 @@ const (
 func (cs *CartReceiverService) Inject(
 	guestCartService cartDomain.GuestCartService,
 	customerCartService cartDomain.CustomerCartService,
-	cartDecoratorFactory *cartDomain.DecoratedCartFactory,
+	cartDecoratorFactory *decorator.DecoratedCartFactory,
 	authManager *authApplication.AuthManager,
 	userService authApplication.UserServiceInterface,
 	logger flamingo.Logger,
@@ -95,7 +96,7 @@ func (cs *CartReceiverService) ShouldHaveGuestCart(session *web.Session) bool {
 }
 
 // ViewDecoratedCart  return a Cart for view
-func (cs *CartReceiverService) ViewDecoratedCart(ctx context.Context, session *web.Session) (*cartDomain.DecoratedCart, error) {
+func (cs *CartReceiverService) ViewDecoratedCart(ctx context.Context, session *web.Session) (*decorator.DecoratedCart, error) {
 	cart, err := cs.ViewCart(ctx, session)
 	if err != nil {
 		return nil, err
@@ -105,7 +106,7 @@ func (cs *CartReceiverService) ViewDecoratedCart(ctx context.Context, session *w
 }
 
 // ViewDecoratedCartWithoutCache  return a Cart for view
-func (cs *CartReceiverService) ViewDecoratedCartWithoutCache(ctx context.Context, session *web.Session) (*cartDomain.DecoratedCart, error) {
+func (cs *CartReceiverService) ViewDecoratedCartWithoutCache(ctx context.Context, session *web.Session) (*decorator.DecoratedCart, error) {
 	cart, err := cs.GetCartWithoutCache(ctx, session)
 	if err != nil {
 		return nil, err
@@ -323,7 +324,7 @@ func (cs *CartReceiverService) getSessionGuestCart(ctx context.Context, session 
 }
 
 // DecorateCart Get the correct Cart
-func (cs *CartReceiverService) DecorateCart(ctx context.Context, cart *cartDomain.Cart) (*cartDomain.DecoratedCart, error) {
+func (cs *CartReceiverService) DecorateCart(ctx context.Context, cart *cartDomain.Cart) (*decorator.DecoratedCart, error) {
 	if cart == nil {
 		return nil, errors.New("no cart given")
 	}
@@ -334,7 +335,7 @@ func (cs *CartReceiverService) DecorateCart(ctx context.Context, cart *cartDomai
 }
 
 // GetDecoratedCart Get the correct Cart
-func (cs *CartReceiverService) GetDecoratedCart(ctx context.Context, session *web.Session) (*cartDomain.DecoratedCart, cartDomain.ModifyBehaviour, error) {
+func (cs *CartReceiverService) GetDecoratedCart(ctx context.Context, session *web.Session) (*decorator.DecoratedCart, cartDomain.ModifyBehaviour, error) {
 	cart, behaviour, err := cs.GetCart(ctx, session)
 	if err != nil {
 		return nil, nil, err
