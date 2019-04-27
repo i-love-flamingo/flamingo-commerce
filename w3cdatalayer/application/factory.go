@@ -4,10 +4,10 @@ import (
 	"context"
 	"crypto/sha512"
 	"encoding/base64"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"strconv"
 	"strings"
 
-	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo-commerce/v3/w3cdatalayer/domain"
 	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
@@ -156,7 +156,7 @@ func (s Factory) HashValueIfConfigured(value string) string {
 }
 
 // BuildCartData builds the domain cart data
-func (s Factory) BuildCartData(cart cart.DecoratedCart) *domain.Cart {
+func (s Factory) BuildCartData(cart decorator.DecoratedCart) *domain.Cart {
 	cartData := domain.Cart{
 		CartID: cart.Cart.ID,
 		Price: &domain.CartPrice{
@@ -177,7 +177,7 @@ func (s Factory) BuildCartData(cart cart.DecoratedCart) *domain.Cart {
 }
 
 // BuildTransactionData builds the domain transaction data
-func (s Factory) BuildTransactionData(ctx context.Context, cart cart.DecoratedCart, decoratedItems []cart.DecoratedCartItem, orderID string, email string) *domain.Transaction {
+func (s Factory) BuildTransactionData(ctx context.Context, cart decorator.DecoratedCart, decoratedItems []decorator.DecoratedCartItem, orderID string, email string) *domain.Transaction {
 	var profile *domain.UserProfile
 	session := web.SessionFromContext(ctx)
 	if s.userService.IsLoggedIn(ctx, session) {
@@ -205,7 +205,7 @@ func (s Factory) BuildTransactionData(ctx context.Context, cart cart.DecoratedCa
 	return &transactionData
 }
 
-func (s Factory) buildCartItem(item cart.DecoratedCartItem, currencyCode string) domain.CartItem {
+func (s Factory) buildCartItem(item decorator.DecoratedCartItem, currencyCode string) domain.CartItem {
 	cartItem := domain.CartItem{
 		Category:    s.getProductCategory(item.Product),
 		Quantity:    item.Item.Qty,

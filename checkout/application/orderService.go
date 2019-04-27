@@ -3,6 +3,7 @@ package application
 import (
 	"context"
 	"errors"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 
@@ -32,7 +33,7 @@ type (
 	// PlaceOrderInfo struct defines the data of payments on placed orders
 	PlaceOrderInfo struct {
 		PaymentInfos []PlaceOrderPaymentInfo
-		PlacedOrders cart.PlacedOrderInfos
+		PlacedOrders placeorder.PlacedOrderInfos
 		ContactEmail string
 	}
 	//PlaceOrderPaymentInfo holding payment infos
@@ -40,7 +41,7 @@ type (
 		Gateway         string
 		PaymentProvider string
 		Method          string
-		CreditCardInfo  *cart.CreditCardInfo
+		CreditCardInfo  *placeorder.CreditCardInfo
 		Amount          priceDomain.Price
 		Title           string
 	}
@@ -144,7 +145,7 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.S
 }
 
 //CurrentCartPlaceOrder - use to place the current cart
-func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.Session, payment cart.Payment) (cart.PlacedOrderInfos, error) {
+func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.Session, payment placeorder.Payment) (placeorder.PlacedOrderInfos, error) {
 	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(ctx, session)
 
 	if err != nil {

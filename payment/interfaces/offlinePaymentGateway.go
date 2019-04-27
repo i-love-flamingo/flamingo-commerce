@@ -3,6 +3,7 @@ package interfaces
 import (
 	"context"
 	"errors"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"net/url"
 
 	"flamingo.me/flamingo-commerce/v3/payment/domain"
@@ -88,19 +89,19 @@ func (o *OfflineWebCartPaymentGateway) StartFlow(ctx context.Context, currentCar
 }
 
 // GetFlowResult for offline payment can always return a simple valid payment that matches the given cart
-func (o *OfflineWebCartPaymentGateway) GetFlowResult(ctx context.Context, currentCart *cartDomain.Cart, correlationID string) (*cartDomain.Payment, error) {
+func (o *OfflineWebCartPaymentGateway) GetFlowResult(ctx context.Context, currentCart *cartDomain.Cart, correlationID string) (*placeorder.Payment, error) {
 	err := o.checkCart(currentCart)
 	if err != nil {
 		return nil, err
 	}
-	cartPayment := cartDomain.Payment{
+	cartPayment := placeorder.Payment{
 		Gateway: OfflineWebCartPaymentGatewayCode,
 	}
 
 	for _, split := range currentCart.PaymentSelection.ChargeSplits {
-		cartPayment.Transactions = append(cartPayment.Transactions, cartDomain.Transaction{
+		cartPayment.Transactions = append(cartPayment.Transactions, placeorder.Transaction{
 			Method:            split.Method,
-			Status:            cartDomain.PaymentStatusOpen,
+			Status:            placeorder.PaymentStatusOpen,
 			ValuedAmountPayed: split.Charge.Value,
 			AmountPayed:       split.Charge.Price,
 		})
@@ -110,6 +111,6 @@ func (o *OfflineWebCartPaymentGateway) GetFlowResult(ctx context.Context, curren
 }
 
 //ConfirmResult - nothing to confirm  for offline payment
-func (o *OfflineWebCartPaymentGateway) ConfirmResult(ctx context.Context, cart *cartDomain.Cart, cartPayment *cartDomain.Payment) error {
+func (o *OfflineWebCartPaymentGateway) ConfirmResult(ctx context.Context, cart *cartDomain.Cart, cartPayment *placeorder.Payment) error {
 	return nil
 }

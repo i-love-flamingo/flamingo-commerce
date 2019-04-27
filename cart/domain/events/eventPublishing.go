@@ -1,7 +1,8 @@
-package application
+package events
 
 import (
 	"context"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
@@ -12,7 +13,7 @@ type (
 	// OrderPlacedEvent defines event properties
 	OrderPlacedEvent struct {
 		Cart             *cartDomain.Cart
-		PlacedOrderInfos cartDomain.PlacedOrderInfos
+		PlacedOrderInfos placeorder.PlacedOrderInfos
 	}
 
 	// AddToCartEvent defines event properties
@@ -42,7 +43,7 @@ type (
 	EventPublisher interface {
 		PublishAddToCartEvent(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode string, qty int)
 		PublishChangedQtyInCartEvent(ctx context.Context, item *cartDomain.Item, qtyBefore int, qtyAfter int, cartID string)
-		PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos cartDomain.PlacedOrderInfos)
+		PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos placeorder.PlacedOrderInfos)
 	}
 
 	//DefaultEventPublisher implements the event publisher of the domain and uses the framework event router
@@ -106,7 +107,7 @@ func (d *DefaultEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context
 }
 
 // PublishOrderPlacedEvent publishes an event for placed orders
-func (d *DefaultEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos cartDomain.PlacedOrderInfos) {
+func (d *DefaultEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos placeorder.PlacedOrderInfos) {
 	eventObject := OrderPlacedEvent{
 		Cart:             cart,
 		PlacedOrderInfos: placedOrderInfos,

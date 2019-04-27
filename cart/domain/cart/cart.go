@@ -113,15 +113,6 @@ type (
 		ReservedOrderID string
 	}
 
-	// PlacedOrderInfos represents a slice of PlacedOrderInfo
-	PlacedOrderInfos []PlacedOrderInfo
-
-	// PlacedOrderInfo defines the additional info struct for placed orders
-	PlacedOrderInfo struct {
-		OrderNumber  string
-		DeliveryCode string
-	}
-
 	//Builder - the main builder for a cart
 	Builder struct {
 		cartInBuilding *Cart
@@ -472,16 +463,6 @@ func (c Cart) GrandTotalCharges() domain.Charges {
 	return charges
 }
 
-// GetOrderNumberForDeliveryCode returns the order number for a delivery code
-func (poi PlacedOrderInfos) GetOrderNumberForDeliveryCode(deliveryCode string) string {
-	for _, v := range poi {
-		if v.DeliveryCode == deliveryCode {
-			return v.OrderNumber
-		}
-	}
-
-	return ""
-}
 
 // AddTax returns new Tax with this Tax added
 func (t Taxes) AddTax(tax Tax) Taxes {

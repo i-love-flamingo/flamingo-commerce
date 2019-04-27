@@ -2,10 +2,10 @@ package domain
 
 import (
 	"context"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"fmt"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/pkg/errors"
@@ -14,7 +14,7 @@ import (
 type (
 	// SourcingService helps in retrieving item sources
 	SourcingService interface {
-		GetSourceID(ctx context.Context, session *web.Session, decoratedCart *cart.DecoratedCart, deliveryCode string, item *cart.DecoratedCartItem) (string, error)
+		GetSourceID(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart, deliveryCode string, item *decorator.DecoratedCartItem) (string, error)
 	}
 
 	// SourcingEngine computes item sources
@@ -27,7 +27,7 @@ type (
 
 // SetSourcesForCartItems gets Sources and modifies the Cart Items
 // todo move to application layer ?
-func (se *SourcingEngine) SetSourcesForCartItems(ctx context.Context, session *web.Session, decoratedCart *cart.DecoratedCart) error {
+func (se *SourcingEngine) SetSourcesForCartItems(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart) error {
 	if se.SourcingService == nil {
 		return nil
 	}

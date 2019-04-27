@@ -1,7 +1,8 @@
-package application_test
+package events_test
 
 import (
 	"context"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"testing"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -15,7 +16,7 @@ func TestDefaultEventPublisher_PublishOrderPlacedEvent(t *testing.T) {
 	type args struct {
 		ctx              context.Context
 		cart             *cart.Cart
-		placedOrderInfos cart.PlacedOrderInfos
+		placedOrderInfos placeorder.PlacedOrderInfos
 	}
 	tests := []struct {
 		name   string
@@ -30,8 +31,8 @@ func TestDefaultEventPublisher_PublishOrderPlacedEvent(t *testing.T) {
 			args: args{
 				ctx:  context.Background(),
 				cart: &cart.Cart{},
-				placedOrderInfos: cart.PlacedOrderInfos{
-					cart.PlacedOrderInfo{
+				placedOrderInfos: placeorder.PlacedOrderInfos{
+					placeorder.PlacedOrderInfo{
 						OrderNumber:  "124",
 						DeliveryCode: "test_delivery",
 					},

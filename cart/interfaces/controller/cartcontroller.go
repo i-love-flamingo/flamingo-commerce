@@ -3,10 +3,11 @@ package controller
 import (
 	"context"
 	"encoding/gob"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	"strconv"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
-	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
@@ -15,8 +16,8 @@ import (
 type (
 	// CartViewData is used for cart views/templates
 	CartViewData struct {
-		DecoratedCart         cartDomain.DecoratedCart
-		CartValidationResult  cartDomain.ValidationResult
+		DecoratedCart         decorator.DecoratedCart
+		CartValidationResult  validation.ValidationResult
 		AddToCartProductsData []productDomain.BasicProductData
 	}
 
@@ -107,7 +108,7 @@ func (cc *CartViewController) AddAndViewAction(ctx context.Context, r *web.Reque
 	addRequest := cc.applicationCartService.BuildAddRequest(ctx, r.Params["marketplaceCode"], variantMarketplaceCode, qtyInt)
 
 	product, err := cc.applicationCartService.AddProduct(ctx, r.Session(), deliveryCode, addRequest)
-	if notAllowedErr, ok := err.(*cartDomain.AddToCartNotAllowed); ok {
+	if notAllowedErr, ok := err.(*validation.AddToCartNotAllowed); ok {
 		if notAllowedErr.RedirectHandlerName != "" {
 			return cc.responder.RouteRedirect(notAllowedErr.RedirectHandlerName, notAllowedErr.RedirectParams)
 		}

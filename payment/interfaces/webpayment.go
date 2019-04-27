@@ -2,6 +2,7 @@ package interfaces
 
 import (
 	"context"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"net/url"
 
 	"flamingo.me/flamingo-commerce/v3/payment/domain"
@@ -32,9 +33,9 @@ type (
 
 		// GetFlowResult - will be used to fetch the result of the payment flow
 		// @param correlationID - is used to fetch the result of a processing request started by this correlationId
-		GetFlowResult(ctx context.Context, cart *cart.Cart, correlationID string) (*cart.Payment, error)
+		GetFlowResult(ctx context.Context, cart *cart.Cart, correlationID string) (*placeorder.Payment, error)
 
 		// ConfirmResult - used to finally confirm the result
-		ConfirmResult(ctx context.Context, cart *cart.Cart, cartPayment *cart.Payment) error
+		ConfirmResult(ctx context.Context, cart *cart.Cart, cartPayment *placeorder.Payment) error
 	}
 )

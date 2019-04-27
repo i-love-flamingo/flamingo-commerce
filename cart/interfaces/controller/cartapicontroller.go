@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	"strconv"
 
 	formDomain "flamingo.me/form/domain"
@@ -33,12 +34,12 @@ type (
 		CartTeaser           *cart.Teaser
 		Data                 interface{}
 		DataValidationInfo   *formDomain.ValidationInfo
-		CartValidationResult *cart.ValidationResult
+		CartValidationResult *validation.ValidationResult
 	}
 
 	getCartResult struct {
 		Cart                 *cart.Cart
-		CartValidationResult *cart.ValidationResult
+		CartValidationResult *validation.ValidationResult
 	}
 
 	resultError struct {

@@ -1,7 +1,8 @@
-package cart
+package validation
 
 import (
 	"context"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 
 	"flamingo.me/flamingo/v3/framework/web"
 )
@@ -22,7 +23,7 @@ type (
 
 	// Validator checks a complete decorated cart
 	Validator interface {
-		Validate(ctx context.Context, session *web.Session, cart *DecoratedCart) ValidationResult
+		Validate(ctx context.Context, session *web.Session, cart *decorator.DecoratedCart) ValidationResult
 	}
 )
 

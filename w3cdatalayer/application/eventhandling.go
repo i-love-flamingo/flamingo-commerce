@@ -2,11 +2,11 @@ package application
 
 import (
 	"context"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
 
 	"flamingo.me/flamingo/v3/framework/web"
 
-	"flamingo.me/flamingo-commerce/v3/cart/application"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/w3cdatalayer/domain"
 	authDomain "flamingo.me/flamingo/v3/core/oauth/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
@@ -16,13 +16,13 @@ type (
 	// EventReceiver struct with required dependencies
 	EventReceiver struct {
 		factory              *Factory
-		cartDecoratorFactory *cart.DecoratedCartFactory
+		cartDecoratorFactory *decorator.DecoratedCartFactory
 		logger               flamingo.Logger
 	}
 )
 
 // Inject method
-func (e *EventReceiver) Inject(factory *Factory, cartFactory *cart.DecoratedCartFactory, logger flamingo.Logger) {
+func (e *EventReceiver) Inject(factory *Factory, cartFactory *decorator.DecoratedCartFactory, logger flamingo.Logger) {
 	e.factory = factory
 	e.cartDecoratorFactory = cartFactory
 	e.logger = logger
@@ -34,7 +34,7 @@ func (e *EventReceiver) Inject(factory *Factory, cartFactory *cart.DecoratedCart
 func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 	switch currentEvent := event.(type) {
 	//Handle OrderPlacedEvent and Set Transaction to current datalayer
-	case *application.AddToCartEvent:
+	case *events.AddToCartEvent:
 		e.logger.WithField("category", "w3cDatalayer").Debug("Receive Event AddToCartEvent")
 		session := web.SessionFromContext(ctx)
 		if session != nil {
@@ -49,7 +49,7 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 				SessionEventsKey,
 			)
 		}
-	case *application.ChangedQtyInCartEvent:
+	case *events.ChangedQtyInCartEvent:
 		e.logger.WithField("category", "w3cDatalayer").Debug("Receive Event ChangedQtyInCartEvent")
 
 		session := web.SessionFromContext(ctx)

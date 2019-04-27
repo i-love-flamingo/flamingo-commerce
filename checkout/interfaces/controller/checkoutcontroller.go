@@ -3,6 +3,9 @@ package controller
 import (
 	"context"
 	"encoding/gob"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -20,9 +23,9 @@ import (
 type (
 	// CheckoutViewData represents the checkout view data
 	CheckoutViewData struct {
-		DecoratedCart        cart.DecoratedCart
+		DecoratedCart        decorator.DecoratedCart
 		Form                 forms.CheckoutFormComposite
-		CartValidationResult cart.ValidationResult
+		CartValidationResult validation.ValidationResult
 		ErrorInfos           ViewErrorInfos
 		AvailablePayments    map[string][]paymentDomain.Method
 		CustomerLoggedIn     bool
@@ -41,20 +44,20 @@ type (
 	// SuccessViewData represents the success view data
 	SuccessViewData struct {
 		PaymentInfos        []application.PlaceOrderPaymentInfo
-		PlacedOrderInfos    cart.PlacedOrderInfos
+		PlacedOrderInfos    placeorder.PlacedOrderInfos
 		Email               string
-		PlacedDecoratedCart cart.DecoratedCart
+		PlacedDecoratedCart decorator.DecoratedCart
 	}
 
 	// ReviewStepViewData represents the success view data
 	ReviewStepViewData struct {
-		DecoratedCart cart.DecoratedCart
+		DecoratedCart decorator.DecoratedCart
 		ErrorInfos    ViewErrorInfos
 	}
 
 	// PlaceOrderFlashData represents the data passed to the success page - they need to be "glob"able
 	PlaceOrderFlashData struct {
-		PlacedOrderInfos cart.PlacedOrderInfos
+		PlacedOrderInfos placeorder.PlacedOrderInfos
 		Email            string
 		PaymentInfos     []application.PlaceOrderPaymentInfo
 		PlacedCart       cart.Cart
@@ -71,7 +74,7 @@ type (
 		router    *web.Router
 
 		orderService         *application.OrderService
-		decoratedCartFactory *cart.DecoratedCartFactory
+		decoratedCartFactory *decorator.DecoratedCartFactory
 
 		skipStartAction                 bool
 		skipReviewAction                bool
@@ -100,7 +103,7 @@ func (cc *CheckoutController) Inject(
 	responder *web.Responder,
 	router *web.Router,
 	orderService *application.OrderService,
-	decoratedCartFactory *cart.DecoratedCartFactory,
+	decoratedCartFactory *decorator.DecoratedCartFactory,
 	applicationCartService *cartApplication.CartService,
 	applicationCartReceiverService *cartApplication.CartReceiverService,
 	userService *authApplication.UserService,
@@ -283,7 +286,7 @@ func (cc *CheckoutController) getPaymentReturnURL(r *web.Request, PaymentProvide
 	return paymentURL
 }
 
-func (cc *CheckoutController) getBasicViewData(ctx context.Context, session *web.Session, decoratedCart cart.DecoratedCart) CheckoutViewData {
+func (cc *CheckoutController) getBasicViewData(ctx context.Context, session *web.Session, decoratedCart decorator.DecoratedCart) CheckoutViewData {
 	paymentGatewaysMethods := make(map[string][]paymentDomain.Method)
 	for gatewayCode, gateway := range cc.orderService.GetAvailablePaymentGateways(ctx) {
 		paymentGatewaysMethods[gatewayCode] = gateway.Methods()
@@ -355,7 +358,7 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 
 //showCheckoutFormWithErrors - error handling that is called from many places... It will show the checkoutform and the error
 // template and form is optional - if it is not goven it is autodetected and prefilled from the infos in the cart
-func (cc *CheckoutController) showCheckoutFormWithErrors(ctx context.Context, r *web.Request, decoratedCart cart.DecoratedCart, form *forms.CheckoutFormComposite, err error) web.Result {
+func (cc *CheckoutController) showCheckoutFormWithErrors(ctx context.Context, r *web.Request, decoratedCart decorator.DecoratedCart, form *forms.CheckoutFormComposite, err error) web.Result {
 	template := "checkout/checkout"
 
 	cc.logger.Warn("showCheckoutFormWithErrors / Error: %s", err.Error())
@@ -371,7 +374,7 @@ func (cc *CheckoutController) showCheckoutFormWithErrors(ctx context.Context, r 
 }
 
 //showReviewFormWithErrors
-func (cc *CheckoutController) showReviewFormWithErrors(ctx context.Context, decoratedCart cart.DecoratedCart, err error) web.Result {
+func (cc *CheckoutController) showReviewFormWithErrors(ctx context.Context, decoratedCart decorator.DecoratedCart, err error) web.Result {
 	cc.logger.Warn("Show Error (review step): %s", err.Error())
 	viewData := ReviewStepViewData{
 		DecoratedCart: decoratedCart,
@@ -490,7 +493,7 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 }
 
 //getCommonGuardRedirects - checks config and may return a redirect that should be executed before the common checkou actions
-func (cc *CheckoutController) getCommonGuardRedirects(ctx context.Context, session *web.Session, decoratedCart *cart.DecoratedCart) web.Result {
+func (cc *CheckoutController) getCommonGuardRedirects(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart) web.Result {
 	if cc.redirectToCartOnInvalideCart {
 		result := cc.applicationCartService.ValidateCart(ctx, session, decoratedCart)
 		if !result.IsValid() {

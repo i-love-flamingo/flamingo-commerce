@@ -1,6 +1,7 @@
 package cart_test
 
 import (
+	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"testing"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -73,7 +74,7 @@ func TestPlacedOrderInfos_GetOrderNumberForDeliveryCode(t *testing.T) {
 	}
 	tests := []struct {
 		name string
-		poi  cartDomain.PlacedOrderInfos
+		poi  placeorder.PlacedOrderInfos
 		args args
 		want string
 	}{
@@ -89,12 +90,12 @@ func TestPlacedOrderInfos_GetOrderNumberForDeliveryCode(t *testing.T) {
 		},
 		{
 			name: "delivery code not in placed orders",
-			poi: cartDomain.PlacedOrderInfos{
-				cartDomain.PlacedOrderInfo{
+			poi: placeorder.PlacedOrderInfos{
+				placeorder.PlacedOrderInfo{
 					OrderNumber:  "1",
 					DeliveryCode: "delivery_1",
 				},
-				cartDomain.PlacedOrderInfo{
+				placeorder.PlacedOrderInfo{
 					OrderNumber:  "2",
 					DeliveryCode: "delivery_2",
 				},
@@ -106,12 +107,12 @@ func TestPlacedOrderInfos_GetOrderNumberForDeliveryCode(t *testing.T) {
 		},
 		{
 			name: "delivery code in placed orders",
-			poi: cartDomain.PlacedOrderInfos{
-				cartDomain.PlacedOrderInfo{
+			poi: placeorder.PlacedOrderInfos{
+				placeorder.PlacedOrderInfo{
 					OrderNumber:  "1",
 					DeliveryCode: "delivery_1",
 				},
-				cartDomain.PlacedOrderInfo{
+				placeorder.PlacedOrderInfo{
 					OrderNumber:  "2",
 					DeliveryCode: "delivery_2",
 				},

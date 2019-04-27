@@ -1,4 +1,4 @@
-package application
+package validation
 
 import (
 	"context"
@@ -11,13 +11,27 @@ import (
 type (
 	// RestrictionService checks product restriction
 	RestrictionService struct {
-		qtyRestrictors []cart.MaxQuantityRestrictor
+		qtyRestrictors []MaxQuantityRestrictor
+	}
+	// RestrictionResult contains the result of a restriction
+	RestrictionResult struct {
+		IsRestricted        bool
+		MaxAllowed          int
+		RemainingDifference int
+	}
+
+	// MaxQuantityRestrictor returns the maximum qty allowed for a given product and cart
+	// it is possible to register many (MultiBind) MaxQuantityRestrictor implementations
+	MaxQuantityRestrictor interface {
+		// Restrict must return a `RestrictionResult` which contains information regarding if a restriction is
+		// applied and whats the max allowed quantity
+		Restrict(ctx context.Context, product domain.BasicProduct, cart *cart.Cart) *RestrictionResult
 	}
 )
 
 // Inject dependencies
 func (rs *RestrictionService) Inject(
-	qtyRestrictors []cart.MaxQuantityRestrictor,
+	qtyRestrictors []MaxQuantityRestrictor,
 ) *RestrictionService {
 	rs.qtyRestrictors = qtyRestrictors
 
@@ -26,8 +40,8 @@ func (rs *RestrictionService) Inject(
 
 // RestrictQty checks if there is an qty restriction present and returns an according result containing the max allowed
 // quantity and the quantity difference to the current cart
-func (rs *RestrictionService) RestrictQty(ctx context.Context, product domain.BasicProduct, currentCart *cart.Cart) *cart.RestrictionResult {
-	restrictionResult := &cart.RestrictionResult{
+func (rs *RestrictionService) RestrictQty(ctx context.Context, product domain.BasicProduct, currentCart *cart.Cart) *RestrictionResult {
+	restrictionResult := &RestrictionResult{
 		IsRestricted:        false,
 		RemainingDifference: math.MaxInt32,
 		MaxAllowed:          math.MaxInt32,

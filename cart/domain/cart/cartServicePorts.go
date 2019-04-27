@@ -69,12 +69,7 @@ type (
 		additional   map[string]json.RawMessage
 	}
 
-	// PlaceOrderService  interface - Secondary PORT
-	PlaceOrderService interface {
-		PlaceGuestCart(ctx context.Context, cart *Cart, payment *Payment) (PlacedOrderInfos, error)
-		PlaceCustomerCart(ctx context.Context, auth domain.Auth, cart *Cart, payment *Payment) (PlacedOrderInfos, error)
-		ReserveOrderID(ctx context.Context, cart *Cart) (string, error)
-	}
+
 )
 
 var (
