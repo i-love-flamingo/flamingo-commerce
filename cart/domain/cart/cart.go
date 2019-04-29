@@ -34,7 +34,7 @@ type (
 		AdditionalData AdditionalData
 
 		//PaymentSelection - the saved PaymentSelection (saves "how" the customer want to pay)
-		PaymentSelection *PaymentSelection
+		PaymentSelection PaymentSelection
 
 		//BelongsToAuthenticatedUser - false = Guest Cart true = cart from the authenticated user
 		BelongsToAuthenticatedUser bool
@@ -119,6 +119,13 @@ type (
 	}
 	// BuilderProvider should be used to create the cart by using the Builder
 	BuilderProvider func() *Builder
+
+	//PricedItems - value object that contains items of the different possible types, that have a price
+	PricedItems struct {
+		cartItems map[string]domain.Price
+		shippingItems map[string]domain.Price
+		totalItems map[string]domain.Price
+	}
 )
 
 var (
@@ -234,7 +241,7 @@ func (c Cart) ProductCount() int {
 
 // IsPaymentSelected - returns true if a valid payment is selected
 func (c Cart) IsPaymentSelected() bool {
-	return c.PaymentSelection != nil && c.PaymentSelection.IsSelected()
+	return c.PaymentSelection != nil
 }
 
 // GetVoucherSavings returns the savings of all vouchers
@@ -260,19 +267,29 @@ func (c Cart) GetVoucherSavings() domain.Price {
 
 // GrandTotal - Final sum (Valued price) that need to be payed: GrandTotal = SubTotal + TaxAmount - DiscountAmount + SOME of Totalitems = (Sum of Items RowTotalWithDiscountInclTax) + SOME of Totalitems
 func (c Cart) GrandTotal() domain.Price {
-	var prices []domain.Price
+	return c.GetAllPaymentRequiredItems().Sum()
+}
 
+
+// GetAllPaymentRequiredItems - returns all the Items (Cartitem, ShippingItem, TotalItems) that need to be payed with the final gross price
+func (c Cart) GetAllPaymentRequiredItems() PricedItems {
+	pricedItems := PricedItems{
+		cartItems: make(map[string]domain.Price),
+		shippingItems: make( map[string]domain.Price,len(c.Deliveries)),
+		totalItems: make( map[string]domain.Price,len(c.Totalitems)),
+	}
+	for _, ti := range c.Totalitems {
+		pricedItems.totalItems[ti.Code] = ti.Price
+	}
 	for _, del := range c.Deliveries {
-		prices = append(prices, del.GrandTotal())
+		if !del.ShippingItem.TotalWithDiscountInclTax().IsZero() {
+			pricedItems.shippingItems[del.DeliveryInfo.Code] = del.ShippingItem.TotalWithDiscountInclTax()
+		}
+		for _, ci := range del.Cartitems {
+			pricedItems.cartItems[ci.ID] = ci.RowPriceGrossWithDiscount()
+		}
 	}
-
-	for _, total := range c.Totalitems {
-		prices = append(prices, total.Price)
-	}
-
-	price, _ := domain.SumAll(prices...)
-
-	return price
+	return pricedItems
 }
 
 // SumShippingNet - returns net sum price of deliveries ShippingItems
@@ -447,7 +464,7 @@ func (c Cart) GetTotalItemsByType(typeCode string) []Totalitem {
 func (c Cart) GrandTotalCharges() domain.Charges {
 	// Check if a specific split was saved:
 	if c.PaymentSelection != nil {
-		return c.PaymentSelection.GetCharges()
+		return c.PaymentSelection.CartSplit()
 	}
 
 	// else return the grandtotal as main charge
@@ -633,4 +650,38 @@ func (b *Builder) reset(err error) (*Cart, error) {
 	b.cartInBuilding = nil
 
 	return cart, err
+}
+
+//Sum - returns Sum of all items in this struct
+func (p PricedItems) Sum() domain.Price {
+	prices := make([]domain.Price,len(p.cartItems)+len(p.shippingItems)+len(p.totalItems))
+	for _,p := range p.totalItems {
+		prices = append(prices,p)
+	}
+	for _,p := range p.shippingItems {
+		prices = append(prices,p)
+	}
+	for _,p := range p.cartItems {
+		prices = append(prices,p)
+	}
+	sum, _ := domain.SumAll(prices...)
+	return sum
+}
+
+
+//TotalItems - returns the Price per Totalitem - map key is total type
+func (p PricedItems) TotalItems() map[string]domain.Price {
+	return p.totalItems
+}
+
+
+//ShippingItems - returns the Price per ShippingItems - map key is deliverycode
+func (p PricedItems) ShippingItems() map[string]domain.Price {
+	return p.shippingItems
+}
+
+
+//CartItems - returns the Price per cartItems - map key is cartitem ID
+func (p PricedItems) CartItems() map[string]domain.Price {
+	return p.cartItems
 }

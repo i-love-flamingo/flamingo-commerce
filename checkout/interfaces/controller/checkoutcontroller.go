@@ -484,7 +484,7 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 	}
 
 	//Everything valid then return
-	if proceed == "1" && (!cc.privacyPolicyRequired || privacyPolicy == "1") && termsAndConditions == "1" && decoratedCart.Cart.PaymentSelection.IsSelected() {
+	if proceed == "1" && (!cc.privacyPolicyRequired || privacyPolicy == "1") && termsAndConditions == "1" && decoratedCart.Cart.IsPaymentSelected() {
 		return cc.processPaymentBeforePlaceOrder(ctx, r)
 	}
 
