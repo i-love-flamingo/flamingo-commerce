@@ -210,7 +210,7 @@ func (os *OrderService) CurrentCartPlaceOrderWithPaymentProcessing(ctx context.C
 	gateway, err := os.GetPaymentGateway(ctx, decoratedCart.Cart.PaymentSelection.Gateway())
 	if err != nil {
 		stats.Record(ctx, orderFailedStat.M(1))
-		os.logger.Error("cart.checkoutcontroller.submitaction: Error %v", err)
+		os.logger.Error("cart.checkoutcontroller.submitaction: Error %v  Gateway: %v", err,decoratedCart.Cart.PaymentSelection.Gateway())
 		return nil, errors.New("selected gateway not available")
 	}
 

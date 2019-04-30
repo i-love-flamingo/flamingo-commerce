@@ -1,6 +1,7 @@
 package cart
 
 import (
+	"encoding/json"
 	price "flamingo.me/flamingo-commerce/v3/price/domain"
 	"log"
 )
@@ -230,4 +231,25 @@ func (pb *PaymentSplitByItemBuilder) init() {
 		shippingItems: make(map[string]PaymentSplit),
 		totalItems:    make(map[string]PaymentSplit),
 	}
+}
+
+
+
+//MarshalBinary - implements interface required by gob
+func (d DefaultPaymentSelection) MarshalBinary() (data []byte, err error) {
+	return json.Marshal(d)
+}
+
+//UnmarshalBinary - implements interace required by gob.
+//UnmarshalBinary - modifies the receiver so it must take a pointer receiver!
+func (d *DefaultPaymentSelection) UnmarshalBinary(data []byte) error {
+	type encodeAbleDefaultPaymentSelection DefaultPaymentSelection
+	var encodeAble encodeAbleDefaultPaymentSelection
+	err := json.Unmarshal(data, &encodeAble)
+	if err != nil {
+		return err
+	}
+	newSelection := DefaultPaymentSelection(encodeAble)
+	d = &newSelection
+	return nil
 }
