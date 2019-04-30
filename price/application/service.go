@@ -22,7 +22,7 @@ func (s *Service) Inject(labelService *application.LabelService, config *struct 
 	s.config = config.Config
 }
 
-// GetConfigForCurrency
+// GetConfigForCurrency get configuration for currency
 func (s *Service) GetConfigForCurrency(currency string) config.Map {
 	if configForCurrency, ok := s.config[currency]; ok {
 		return configForCurrency.(config.Map)
@@ -31,7 +31,7 @@ func (s *Service) GetConfigForCurrency(currency string) config.Map {
 	return s.config["default"].(config.Map)
 }
 
-// FormatPrice
+// FormatPrice by price
 func (s *Service) FormatPrice(price domain.Price) string {
 	currency := s.labelService.NewLabel(price.Currency()).String()
 
