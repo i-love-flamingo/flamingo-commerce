@@ -273,7 +273,7 @@ func (cob *InMemoryBehaviour) UpdateAdditionalData(ctx context.Context, cart *do
 }
 
 //UpdatePaymentSelection updates payment on cart
-func (cob *InMemoryBehaviour) UpdatePaymentSelection(ctx context.Context, cart *domaincart.Cart, paymentSelection *domaincart.PaymentSelection) (*domaincart.Cart, domaincart.DeferEvents, error) {
+func (cob *InMemoryBehaviour) UpdatePaymentSelection(ctx context.Context, cart *domaincart.Cart, paymentSelection domaincart.PaymentSelection) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	if paymentSelection != nil {
 		err := cob.checkPaymentSelection(ctx, cart, paymentSelection)
 		if err != nil {
@@ -359,14 +359,12 @@ func (cob *InMemoryBehaviour) isCurrentPaymentSelectionValid(ctx context.Context
 }
 
 // isPaymentSelectionValid checks if the grand total of the cart matches the total of the supplied payment selection
-func (cob *InMemoryBehaviour) checkPaymentSelection(ctx context.Context, cart *domaincart.Cart, paymentSelection *domaincart.PaymentSelection) error {
+func (cob *InMemoryBehaviour) checkPaymentSelection(ctx context.Context, cart *domaincart.Cart, paymentSelection domaincart.PaymentSelection) error {
 	if paymentSelection == nil {
 		return nil
 	}
-	paymentSelectionTotal, err := paymentSelection.TotalValue()
-	if err != nil {
-		return err
-	}
+	paymentSelectionTotal := paymentSelection.TotalValue()
+
 	if !cart.GrandTotal().Equal(paymentSelectionTotal) {
 		return errors.New("Payment Total does not match with Grandtotal")
 	}

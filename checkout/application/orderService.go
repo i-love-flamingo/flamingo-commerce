@@ -207,7 +207,7 @@ func (os *OrderService) CurrentCartPlaceOrderWithPaymentProcessing(ctx context.C
 		return nil, errors.New("cart is invalid")
 	}
 
-	gateway, err := os.GetPaymentGateway(ctx, decoratedCart.Cart.PaymentSelection.Gateway)
+	gateway, err := os.GetPaymentGateway(ctx, decoratedCart.Cart.PaymentSelection.Gateway())
 	if err != nil {
 		stats.Record(ctx, orderFailedStat.M(1))
 		os.logger.Error("cart.checkoutcontroller.submitaction: Error %v", err)

@@ -464,7 +464,7 @@ func (c Cart) GetTotalItemsByType(typeCode string) []Totalitem {
 func (c Cart) GrandTotalCharges() domain.Charges {
 	// Check if a specific split was saved:
 	if c.PaymentSelection != nil {
-		return c.PaymentSelection.CartSplit()
+		return c.PaymentSelection.CartSplit().ChargesByType()
 	}
 
 	// else return the grandtotal as main charge
@@ -593,7 +593,7 @@ func (b *Builder) SetAdditionalData(d AdditionalData) *Builder {
 // SetPaymentSelection - to add additional data
 func (b *Builder) SetPaymentSelection(d PaymentSelection) *Builder {
 	b.init()
-	b.cartInBuilding.PaymentSelection = &d
+	b.cartInBuilding.PaymentSelection = d
 
 	return b
 }

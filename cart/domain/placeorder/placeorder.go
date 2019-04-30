@@ -1,6 +1,5 @@
 package placeorder
 
-
 import (
 	"context"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -47,10 +46,16 @@ type (
 		Title string
 		//RawTransactionData - place to store any additional stuff (specific for Gateway)
 		RawTransactionData interface{}
-		// ChargeAssignments - optional the assignment of this transaction to charges - this might be required for payments that are really only done
-		ChargeAssignments *cart.ChargeAssignments
+		// ChargeAssignments - optional the assignment of this transaction to charges - this might be required for payments that are really only done for a certain item
+		ChargeByItem *ChargeByItem
 	}
 
+	//ChargeByItem - the Charge that is payed for the individual items
+	ChargeByItem struct {
+		cartItems     map[string]price.Charge
+		shippingItems map[string]price.Charge
+		totalItems    map[string]price.Charge
+	}
 
 	// CreditCardInfo contains the necessary data
 	CreditCardInfo struct {
@@ -60,7 +65,6 @@ type (
 		Expire               string
 	}
 
-
 	// PlacedOrderInfos represents a slice of PlacedOrderInfo
 	PlacedOrderInfos []PlacedOrderInfo
 
@@ -69,8 +73,6 @@ type (
 		OrderNumber  string
 		DeliveryCode string
 	}
-
-
 )
 
 const (
@@ -87,19 +89,16 @@ func (cp *Payment) AddTransaction(transaction Transaction) {
 	cp.Transactions = append(cp.Transactions, transaction)
 }
 
-
 // TotalValue - returns the Total Valued Price
 func (cp *Payment) TotalValue() (price.Price, error) {
 	var prices []price.Price
 
 	for _, transaction := range cp.Transactions {
-		prices = append(prices,transaction.ValuedAmountPayed)
+		prices = append(prices, transaction.ValuedAmountPayed)
 	}
 
 	return price.SumAll(prices...)
 }
-
-
 
 // GetOrderNumberForDeliveryCode returns the order number for a delivery code
 func (poi PlacedOrderInfos) GetOrderNumberForDeliveryCode(deliveryCode string) string {
@@ -110,4 +109,23 @@ func (poi PlacedOrderInfos) GetOrderNumberForDeliveryCode(deliveryCode string) s
 	}
 
 	return ""
+}
+
+func (c ChargeByItem) CartItems() map[string]price.Charge {
+	return c.cartItems
+}
+
+func (c ChargeByItem) ChargeByCartItem(itemid string) (*price.Charge, bool) {
+	if charge, ok := c.cartItems[itemid]; ok {
+		return &charge, true
+	}
+	return nil, false
+}
+
+func (c ChargeByItem) TotalItems() map[string]price.Charge {
+	return c.totalItems
+}
+
+func (c ChargeByItem) ShippingItems() map[string]price.Charge {
+	return c.shippingItems
 }

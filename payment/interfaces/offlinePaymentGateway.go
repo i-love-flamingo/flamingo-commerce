@@ -59,11 +59,11 @@ func (o *OfflineWebCartPaymentGateway) isSupportedMethod(method string) bool {
 
 func (o *OfflineWebCartPaymentGateway) checkCart(currentCart *cartDomain.Cart) error {
 	//Read the infos in the cart and check precondition
-	if currentCart.PaymentSelection.Gateway != OfflineWebCartPaymentGatewayCode {
+	if currentCart.PaymentSelection.Gateway() != OfflineWebCartPaymentGatewayCode {
 		return errors.New("Cart is not supposed to be payed by this gateway")
 	}
-	for _, split := range currentCart.PaymentSelection.ChargeSplits {
-		if !o.isSupportedMethod(split.Method) {
+	for qualifier := range currentCart.PaymentSelection.CartSplit() {
+		if !o.isSupportedMethod(qualifier.Method()) {
 			return errors.New("Cart payment method not supported by gateway")
 		}
 	}
@@ -98,12 +98,12 @@ func (o *OfflineWebCartPaymentGateway) GetFlowResult(ctx context.Context, curren
 		Gateway: OfflineWebCartPaymentGatewayCode,
 	}
 
-	for _, split := range currentCart.PaymentSelection.ChargeSplits {
+	for qualifier, charge := range currentCart.PaymentSelection.CartSplit() {
 		cartPayment.Transactions = append(cartPayment.Transactions, placeorder.Transaction{
-			Method:            split.Method,
+			Method:            qualifier.Method(),
 			Status:            placeorder.PaymentStatusOpen,
-			ValuedAmountPayed: split.Charge.Value,
-			AmountPayed:       split.Charge.Price,
+			ValuedAmountPayed: charge.Value,
+			AmountPayed:       charge.Price,
 		})
 	}
 

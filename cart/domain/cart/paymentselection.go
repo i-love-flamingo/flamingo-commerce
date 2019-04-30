@@ -2,17 +2,17 @@ package cart
 
 import (
 	price "flamingo.me/flamingo-commerce/v3/price/domain"
+	"log"
 )
 
 type (
-
 	// PaymentSelection value object - that represents the payment selection on the cart
 	PaymentSelection interface {
 		Gateway() string
 		//ChargeSplits - the selected split per ChargeType and PaymentMethod
 		CartSplit() PaymentSplit
 		//ChargeSplits - the selected split per ChargeType and PaymentMethod
-		ItemSplit() ChargedItems
+		ItemSplit() PaymentSplitByItem
 		TotalValue() price.Price
 	}
 
@@ -25,94 +25,102 @@ type (
 	//PaymentSplit - the Charges qualified by Type and PaymentMethod
 	PaymentSplit map[SplitQualifier]price.Charge
 
-	//ChargedItems - simelar to value object that contains items of the different possible types, that have a price
-	ChargedItems struct {
-		cartItems map[string]PaymentSplit
+	//PaymentSplitByItem - simelar to value object that contains items of the different possible types, that have a price
+	PaymentSplitByItem struct {
+		cartItems     map[string]PaymentSplit
 		shippingItems map[string]PaymentSplit
-		totalItems map[string]PaymentSplit
+		totalItems    map[string]PaymentSplit
 	}
 
-	// defaultSelection value object - that implements the PaymentSelection interface
-	defaultSelection struct {
+	PaymentSplitByItemBuilder struct {
+		inBuilding *PaymentSplitByItem
+	}
+
+	// DefaultPaymentSelection value object - that implements the PaymentSelection interface
+	DefaultPaymentSelection struct {
 		//Gateway - the selected Gateway
-		gateway string
-		chargedItems ChargedItems
+		gateway      string
+		chargedItems PaymentSplitByItem
 	}
-
-
-
 
 	//CartChargeAssignment.GetForCartItem(itemId) map[string]Charge
 	//CartChargeAssignment.GetForShippingItem(itemId) map[string]Charge
 	//CartChargeAssignment.GetForTotalItem(itemId) map[string]Charge
 	//CartChargeAssignment.GroupedSum() map[string]Charge
 
-
 )
 
 //NewSimplePaymentSelection - returns a PaymentSelection that can be used to update the cart.
-// 	multiple charges to pay the cart are not used here: The complete grandtotal is selected to be payed in one charge with the given paymentgateway and paymentmethod
+// 	multiple charges by item are not used here: The complete grandtotal is selected to be payed in one charge with the given paymentgateway and paymentmethod
 func NewSimplePaymentSelection(gateway string, method string, pricedItems PricedItems) PaymentSelection {
-	selection := defaultSelection{
+	selection := DefaultPaymentSelection{
 		gateway: gateway,
-		chargedItems:ChargedItems{
-			cartItems: make(map[string]PaymentSplit),
-			shippingItems: make(map[string]PaymentSplit),
-			totalItems: make(map[string]PaymentSplit),
-		},
 	}
-
-
-	//addPrice - adds the price as Main Charge to the given Split
-	addPrice := func(items PaymentSplit,itemprice price.Price) {
-		items[SplitQualifier{
-			chargeType: price.ChargeTypeMain,
-			method:method,
-		}] = price.Charge{
-			Price: itemprice,
-			Value:itemprice,
-			Type:price.ChargeTypeMain,
-		}
-	}
+	builder := PaymentSplitByItemBuilder{}
 
 	for k, itemPrice := range pricedItems.CartItems() {
-		addPrice(selection.chargedItems.cartItems[k],itemPrice)
+		builder.AddCartItem(k, method, price.Charge{
+			Price: itemPrice,
+			Value: itemPrice,
+			Type:  price.ChargeTypeMain,
+		})
+
 	}
 	for k, itemPrice := range pricedItems.ShippingItems() {
-		addPrice(selection.chargedItems.shippingItems[k],itemPrice)
+		builder.AddShippingItem(k, method, price.Charge{
+			Price: itemPrice,
+			Value: itemPrice,
+			Type:  price.ChargeTypeMain,
+		})
 
 	}
 	for k, itemPrice := range pricedItems.TotalItems() {
-		addPrice(selection.chargedItems.totalItems[k],itemPrice)
+		builder.AddTotalItem(k, method, price.Charge{
+			Price: itemPrice,
+			Value: itemPrice,
+			Type:  price.ChargeTypeMain,
+		})
+	}
+	selection.chargedItems = builder.Build()
+	return selection
+}
+
+// NewPaymentSelection - with the passed PaymentSplitByItem
+func NewPaymentSelection(gateway string, chargedItems PaymentSplitByItem) PaymentSelection {
+	selection := DefaultPaymentSelection{
+		gateway:      gateway,
+		chargedItems: chargedItems,
 	}
 	return selection
 }
 
 //Gateway - returns the selected Gateway code
-func (d defaultSelection) Gateway() string {
+func (d DefaultPaymentSelection) Gateway() string {
 	return d.gateway
 }
+
 //CartSplit - the selected split per ChargeType and PaymentMethod
-func (d defaultSelection)  CartSplit() PaymentSplit {
+func (d DefaultPaymentSelection) CartSplit() PaymentSplit {
 	return d.chargedItems.Sum()
 }
+
 //ItemSplit - the selected split per ChargeType and PaymentMethod
-func (d defaultSelection)  ItemSplit() ChargedItems{
+func (d DefaultPaymentSelection) ItemSplit() PaymentSplitByItem {
 	return d.chargedItems
 }
 
-func (d defaultSelection) TotalValue() price.Price{
+func (d DefaultPaymentSelection) TotalValue() price.Price {
 	return d.chargedItems.Sum().TotalValue()
 }
 
 //Sum - the resulting Split after sum all the included item split
-func (c ChargedItems) Sum() PaymentSplit {
+func (c PaymentSplitByItem) Sum() PaymentSplit {
 	sum := make(PaymentSplit)
 	addToSum := func(splits PaymentSplit) {
 		for qualifier, charge := range splits {
 			_, ok := sum[qualifier]
 			if ok {
-				sum[qualifier],_ = sum[qualifier].Add(charge)
+				sum[qualifier], _ = sum[qualifier].Add(charge)
 			} else {
 				sum[qualifier] = charge
 			}
@@ -133,9 +141,93 @@ func (c ChargedItems) Sum() PaymentSplit {
 //TotalValue returns the sum of the valued Price in the included Charges in this Split
 func (s PaymentSplit) TotalValue() price.Price {
 	var prices []price.Price
-	for _,v := range s {
-		prices = append(prices,v.Value)
+	for _, v := range s {
+		prices = append(prices, v.Value)
 	}
-	sum, _ :=  price.SumAll(prices...)
+	sum, _ := price.SumAll(prices...)
 	return sum
+}
+
+//ChargesByType returns Charges (a list of Charges summed by Type)
+func (s PaymentSplit) ChargesByType() price.Charges {
+	charges := price.Charges{}
+	for _, charge := range s {
+		charges = charges.AddCharge(charge)
+	}
+	return charges
+}
+
+//ChargeType - returns the ChargeType of the Qualifier
+func (s SplitQualifier) ChargeType() string {
+	return s.chargeType
+}
+
+//Method - return Method
+func (s SplitQualifier) Method() string {
+	return s.method
+}
+
+func (p PaymentSplitByItem) ShippingItems() map[string]PaymentSplit {
+	return p.shippingItems
+}
+
+func (p PaymentSplitByItem) TotalItems() map[string]PaymentSplit {
+	return p.totalItems
+}
+
+func (p PaymentSplitByItem) CartItems() map[string]PaymentSplit {
+	return p.cartItems
+}
+
+func (pb *PaymentSplitByItemBuilder) AddCartItem(id string, method string, charge price.Charge) *PaymentSplitByItemBuilder {
+	pb.init()
+	log.Printf("%#v",pb.inBuilding)
+	if pb.inBuilding.cartItems[id] == nil {
+		pb.inBuilding.cartItems[id] = make(PaymentSplit)
+	}
+	pb.inBuilding.cartItems[id][SplitQualifier{
+		method:     method,
+		chargeType: charge.Type,
+	}] = charge
+	return pb
+}
+
+func (pb *PaymentSplitByItemBuilder) AddShippingItem(deliveryCode string, method string, charge price.Charge) *PaymentSplitByItemBuilder {
+	pb.init()
+	if pb.inBuilding.shippingItems[deliveryCode] == nil {
+		pb.inBuilding.shippingItems[deliveryCode] = make(PaymentSplit)
+	}
+	pb.inBuilding.shippingItems[deliveryCode][SplitQualifier{
+		method:     method,
+		chargeType: charge.Type,
+	}] = charge
+	return pb
+}
+
+func (pb *PaymentSplitByItemBuilder) AddTotalItem(totalType string, method string, charge price.Charge) *PaymentSplitByItemBuilder {
+	pb.init()
+	if pb.inBuilding.totalItems[totalType] == nil {
+		pb.inBuilding.totalItems[totalType] = make(PaymentSplit)
+	}
+	pb.inBuilding.totalItems[totalType][SplitQualifier{
+		method:     method,
+		chargeType: charge.Type,
+	}] = charge
+	return pb
+}
+
+func (pb *PaymentSplitByItemBuilder) Build() PaymentSplitByItem {
+	pb.init()
+	return *pb.inBuilding
+}
+
+func (pb *PaymentSplitByItemBuilder) init() {
+	if pb.inBuilding != nil {
+		return
+	}
+	pb.inBuilding = &PaymentSplitByItem{
+		cartItems:     make(map[string]PaymentSplit),
+		shippingItems: make(map[string]PaymentSplit),
+		totalItems:    make(map[string]PaymentSplit),
+	}
 }
