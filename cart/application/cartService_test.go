@@ -29,7 +29,7 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 		}
 		DeliveryInfoBuilder cartDomain.DeliveryInfoBuilder
 		CartCache           cartApplication.CartCache
-		PlaceOrderService   placeorder.PlaceOrderService
+		PlaceOrderService   placeorder.Service
 	}
 	type args struct {
 		session *web.Session

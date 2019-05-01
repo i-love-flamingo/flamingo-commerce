@@ -8,8 +8,8 @@ import (
 )
 
 type (
-	// PlaceOrderService  interface - Secondary PORT
-	PlaceOrderService interface {
+	// Service  interface - Secondary PORT
+	Service interface {
 		PlaceGuestCart(ctx context.Context, cart *cart.Cart, payment *Payment) (PlacedOrderInfos, error)
 		PlaceCustomerCart(ctx context.Context, auth oauth.Auth, cart *cart.Cart, payment *Payment) (PlacedOrderInfos, error)
 		ReserveOrderID(ctx context.Context, cart *cart.Cart) (string, error)
@@ -111,10 +111,12 @@ func (poi PlacedOrderInfos) GetOrderNumberForDeliveryCode(deliveryCode string) s
 	return ""
 }
 
+//CartItems - return CartItems
 func (c ChargeByItem) CartItems() map[string]price.Charge {
 	return c.cartItems
 }
 
+//ChargeByCartItem returns Charge for a cartitem by id
 func (c ChargeByItem) ChargeByCartItem(itemid string) (*price.Charge, bool) {
 	if charge, ok := c.cartItems[itemid]; ok {
 		return &charge, true
@@ -122,17 +124,18 @@ func (c ChargeByItem) ChargeByCartItem(itemid string) (*price.Charge, bool) {
 	return nil, false
 }
 
+//TotalItems - returns totalItems
 func (c ChargeByItem) TotalItems() map[string]price.Charge {
 	return c.totalItems
 }
-
+//ShippingItems - returns ShippingItems
 func (c ChargeByItem) ShippingItems() map[string]price.Charge {
 	return c.shippingItems
 }
 
 
-
-func (c ChargeByItem) AddCartItem(id string, charge price.Charge) {
+//AddCartItem - modifies the current instance and adds a charge for an item
+func (c *ChargeByItem) AddCartItem(id string, charge price.Charge) {
 	if c.cartItems == nil {
 		c.cartItems = make(map[string]price.Charge)
 	}

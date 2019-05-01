@@ -60,7 +60,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 		injector.Bind((*cart.CustomerCartService)(nil)).To(infrastructure.InMemoryCustomerCartService{})
 	}
 	if m.useEmailAdapter {
-		injector.Bind((*placeorder.PlaceOrderService)(nil)).To(email.PlaceOrderServiceAdapter{})
+		injector.Bind((*placeorder.Service)(nil)).To(email.PlaceOrderServiceAdapter{})
 	}
 	//Register Default EventPublisher
 	injector.Bind((*events.EventPublisher)(nil)).To(events.DefaultEventPublisher{})

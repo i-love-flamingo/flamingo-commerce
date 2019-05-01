@@ -33,7 +33,7 @@ type (
 		cartValidator     validation.Validator
 		itemValidator     validation.ItemValidator
 		cartCache         CartCache
-		placeOrderService placeorder.PlaceOrderService
+		placeOrderService placeorder.Service
 	}
 )
 
@@ -51,10 +51,10 @@ func (cs *CartService) Inject(
 		DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
 	},
 	optionals *struct {
-		CartValidator     validation.Validator         `inject:",optional"`
-		ItemValidator     validation.ItemValidator     `inject:",optional"`
-		CartCache         CartCache                    `inject:",optional"`
-		PlaceOrderService placeorder.PlaceOrderService `inject:",optional"`
+		CartValidator     validation.Validator     `inject:",optional"`
+		ItemValidator     validation.ItemValidator `inject:",optional"`
+		CartCache         CartCache                `inject:",optional"`
+		PlaceOrderService placeorder.Service       `inject:",optional"`
 	},
 ) {
 	cs.cartReceiverService = cartReceiverService
@@ -82,7 +82,7 @@ func (cs *CartService) GetCartReceiverService() *CartReceiverService {
 }
 
 // ValidateCart validates a carts content
-func (cs *CartService) ValidateCart(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart) validation.ValidationResult {
+func (cs *CartService) ValidateCart(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart) validation.Result {
 
 	if cs.cartValidator != nil {
 		result := cs.cartValidator.Validate(ctx, session, decoratedCart)
@@ -90,14 +90,14 @@ func (cs *CartService) ValidateCart(ctx context.Context, session *web.Session, d
 		return result
 	}
 
-	return validation.ValidationResult{}
+	return validation.Result{}
 }
 
 // ValidateCurrentCart validates the current active cart
-func (cs *CartService) ValidateCurrentCart(ctx context.Context, session *web.Session) (validation.ValidationResult, error) {
+func (cs *CartService) ValidateCurrentCart(ctx context.Context, session *web.Session) (validation.Result, error) {
 	decoratedCart, err := cs.cartReceiverService.ViewDecoratedCart(ctx, session)
 	if err != nil {
-		return validation.ValidationResult{}, err
+		return validation.Result{}, err
 	}
 
 	return cs.ValidateCart(ctx, session, decoratedCart), nil
@@ -663,7 +663,7 @@ func (cs *CartService) ReserveOrderIDAndSave(ctx context.Context, session *web.S
 	return data, err
 }
 
-// PlaceOrder converts the given cart with payments into orders by calling the PlaceOrderService
+// PlaceOrder converts the given cart with payments into orders by calling the Service
 func (cs *CartService) PlaceOrder(ctx context.Context, session *web.Session, payment *placeorder.Payment) (placeorder.PlacedOrderInfos, error) {
 	if cs.placeOrderService == nil {
 		return nil, errors.New("No placeOrderService registered")

@@ -8,8 +8,8 @@ import (
 )
 
 type (
-	// ValidationResult groups the validation result
-	ValidationResult struct {
+	//Result groups the validation result
+	Result struct {
 		HasCommonError        bool
 		CommonErrorMessageKey string
 		ItemResults           []ItemValidationError
@@ -23,12 +23,12 @@ type (
 
 	// Validator checks a complete decorated cart
 	Validator interface {
-		Validate(ctx context.Context, session *web.Session, cart *decorator.DecoratedCart) ValidationResult
+		Validate(ctx context.Context, session *web.Session, cart *decorator.DecoratedCart) Result
 	}
 )
 
 // IsValid is valid is true if no errors occurred
-func (c ValidationResult) IsValid() bool {
+func (c Result) IsValid() bool {
 	if c.HasCommonError {
 		return false
 	}
@@ -39,7 +39,7 @@ func (c ValidationResult) IsValid() bool {
 }
 
 // HasErrorForItem checks if a specified item has an error
-func (c ValidationResult) HasErrorForItem(id string) bool {
+func (c Result) HasErrorForItem(id string) bool {
 	for _, itemMessage := range c.ItemResults {
 		if itemMessage.ItemID == id {
 			return true
@@ -49,7 +49,7 @@ func (c ValidationResult) HasErrorForItem(id string) bool {
 }
 
 // GetErrorMessageKeyForItem returns the specific error message for that item
-func (c ValidationResult) GetErrorMessageKeyForItem(id string) string {
+func (c Result) GetErrorMessageKeyForItem(id string) string {
 	for _, itemMessage := range c.ItemResults {
 		if itemMessage.ItemID == id {
 			return itemMessage.ErrorMessageKey

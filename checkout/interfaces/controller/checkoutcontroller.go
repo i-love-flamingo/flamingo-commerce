@@ -25,7 +25,7 @@ type (
 	CheckoutViewData struct {
 		DecoratedCart        decorator.DecoratedCart
 		Form                 forms.CheckoutFormComposite
-		CartValidationResult validation.ValidationResult
+		CartValidationResult validation.Result
 		ErrorInfos           ViewErrorInfos
 		AvailablePayments    map[string][]paymentDomain.Method
 		CustomerLoggedIn     bool

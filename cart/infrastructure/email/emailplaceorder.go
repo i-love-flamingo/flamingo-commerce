@@ -11,7 +11,7 @@ import (
 )
 
 type (
-	// PlaceOrderServiceAdapter provides an implementation of the PlaceOrderService as email adpater
+	// PlaceOrderServiceAdapter provides an implementation of the Service as email adpater
 	//  TODO - this example adapter need to be implemented
 	PlaceOrderServiceAdapter struct {
 		emailAddress string
@@ -20,7 +20,7 @@ type (
 )
 
 var (
-	_ placeorder.PlaceOrderService = new(PlaceOrderServiceAdapter)
+	_ placeorder.Service = new(PlaceOrderServiceAdapter)
 )
 
 // Inject dependencies

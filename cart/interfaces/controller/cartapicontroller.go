@@ -34,12 +34,12 @@ type (
 		CartTeaser           *cart.Teaser
 		Data                 interface{}
 		DataValidationInfo   *formDomain.ValidationInfo
-		CartValidationResult *validation.ValidationResult
+		CartValidationResult *validation.Result
 	}
 
 	getCartResult struct {
 		Cart                 *cart.Cart
-		CartValidationResult *validation.ValidationResult
+		CartValidationResult *validation.Result
 	}
 
 	resultError struct {

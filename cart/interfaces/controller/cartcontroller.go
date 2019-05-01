@@ -17,7 +17,7 @@ type (
 	// CartViewData is used for cart views/templates
 	CartViewData struct {
 		DecoratedCart         decorator.DecoratedCart
-		CartValidationResult  validation.ValidationResult
+		CartValidationResult  validation.Result
 		AddToCartProductsData []productDomain.BasicProductData
 	}
 

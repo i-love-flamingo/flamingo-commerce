@@ -152,8 +152,8 @@ type (
 	MockCartValidator struct{}
 )
 
-func (m *MockCartValidator) Validate(ctx context.Context, session *web.Session, cart *decorator.DecoratedCart) validation.ValidationResult {
-	return validation.ValidationResult{}
+func (m *MockCartValidator) Validate(ctx context.Context, session *web.Session, cart *decorator.DecoratedCart) validation.Result {
+	return validation.Result{}
 }
 
 // MockItemValidator

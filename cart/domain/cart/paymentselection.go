@@ -31,6 +31,7 @@ type (
 		TotalItems    map[string]PaymentSplit
 	}
 
+	//PaymentSplitByItemBuilder - Builder to get valid PaymentSplitByItem instances
 	PaymentSplitByItemBuilder struct {
 		inBuilding *PaymentSplitByItem
 	}
@@ -104,6 +105,7 @@ func (d DefaultPaymentSelection) ItemSplit() PaymentSplitByItem {
 	return d.ChargedItemsProp
 }
 
+//TotalValue - returns Valued price sum
 func (d DefaultPaymentSelection) TotalValue() price.Price {
 	return d.ChargedItemsProp.Sum().TotalValue()
 }
@@ -152,7 +154,7 @@ func (s PaymentSplit) ChargesByType() price.Charges {
 	return charges
 }
 
-
+//AddCartItem - adds a cartitems charge to the PaymentSplitByItem
 func (pb *PaymentSplitByItemBuilder) AddCartItem(id string, method string, charge price.Charge) *PaymentSplitByItemBuilder {
 	pb.init()
 	if pb.inBuilding.CartItems[id] == nil {
@@ -165,6 +167,7 @@ func (pb *PaymentSplitByItemBuilder) AddCartItem(id string, method string, charg
 	return pb
 }
 
+//AddShippingItem - adds shipping charge
 func (pb *PaymentSplitByItemBuilder) AddShippingItem(deliveryCode string, method string, charge price.Charge) *PaymentSplitByItemBuilder {
 	pb.init()
 	if pb.inBuilding.ShippingItems[deliveryCode] == nil {
@@ -177,6 +180,7 @@ func (pb *PaymentSplitByItemBuilder) AddShippingItem(deliveryCode string, method
 	return pb
 }
 
+//AddTotalItem - adds totalitem charge
 func (pb *PaymentSplitByItemBuilder) AddTotalItem(totalType string, method string, charge price.Charge) *PaymentSplitByItemBuilder {
 	pb.init()
 	if pb.inBuilding.TotalItems[totalType] == nil {
@@ -189,6 +193,7 @@ func (pb *PaymentSplitByItemBuilder) AddTotalItem(totalType string, method strin
 	return pb
 }
 
+//Build - returns the instance of PaymentSplitByItem
 func (pb *PaymentSplitByItemBuilder) Build() PaymentSplitByItem {
 	pb.init()
 	return *pb.inBuilding
