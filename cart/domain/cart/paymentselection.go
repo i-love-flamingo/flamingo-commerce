@@ -1,9 +1,7 @@
 package cart
 
 import (
-	"encoding/json"
 	price "flamingo.me/flamingo-commerce/v3/price/domain"
-	"log"
 )
 
 type (
@@ -19,8 +17,8 @@ type (
 
 	//SplitQualifier qualifies by Type and PaymentMethod
 	SplitQualifier struct {
-		chargeType string
-		method     string
+		ChargeType string
+		Method     string
 	}
 
 	//PaymentSplit - the Charges qualified by Type and PaymentMethod
@@ -28,9 +26,9 @@ type (
 
 	//PaymentSplitByItem - simelar to value object that contains items of the different possible types, that have a price
 	PaymentSplitByItem struct {
-		cartItems     map[string]PaymentSplit
-		shippingItems map[string]PaymentSplit
-		totalItems    map[string]PaymentSplit
+		CartItems     map[string]PaymentSplit
+		ShippingItems map[string]PaymentSplit
+		TotalItems    map[string]PaymentSplit
 	}
 
 	PaymentSplitByItemBuilder struct {
@@ -39,15 +37,11 @@ type (
 
 	// DefaultPaymentSelection value object - that implements the PaymentSelection interface
 	DefaultPaymentSelection struct {
-		//Gateway - the selected Gateway
-		gateway      string
-		chargedItems PaymentSplitByItem
+		//GatewayProp - the selected Gateway
+		GatewayProp      string
+		ChargedItemsProp PaymentSplitByItem
 	}
 
-	//CartChargeAssignment.GetForCartItem(itemId) map[string]Charge
-	//CartChargeAssignment.GetForShippingItem(itemId) map[string]Charge
-	//CartChargeAssignment.GetForTotalItem(itemId) map[string]Charge
-	//CartChargeAssignment.GroupedSum() map[string]Charge
 
 )
 
@@ -55,7 +49,7 @@ type (
 // 	multiple charges by item are not used here: The complete grandtotal is selected to be payed in one charge with the given paymentgateway and paymentmethod
 func NewSimplePaymentSelection(gateway string, method string, pricedItems PricedItems) PaymentSelection {
 	selection := DefaultPaymentSelection{
-		gateway: gateway,
+		GatewayProp: gateway,
 	}
 	builder := PaymentSplitByItemBuilder{}
 
@@ -82,36 +76,36 @@ func NewSimplePaymentSelection(gateway string, method string, pricedItems Priced
 			Type:  price.ChargeTypeMain,
 		})
 	}
-	selection.chargedItems = builder.Build()
+	selection.ChargedItemsProp = builder.Build()
 	return selection
 }
 
 // NewPaymentSelection - with the passed PaymentSplitByItem
 func NewPaymentSelection(gateway string, chargedItems PaymentSplitByItem) PaymentSelection {
 	selection := DefaultPaymentSelection{
-		gateway:      gateway,
-		chargedItems: chargedItems,
+		GatewayProp:      gateway,
+		ChargedItemsProp: chargedItems,
 	}
 	return selection
 }
 
 //Gateway - returns the selected Gateway code
 func (d DefaultPaymentSelection) Gateway() string {
-	return d.gateway
+	return d.GatewayProp
 }
 
 //CartSplit - the selected split per ChargeType and PaymentMethod
 func (d DefaultPaymentSelection) CartSplit() PaymentSplit {
-	return d.chargedItems.Sum()
+	return d.ChargedItemsProp.Sum()
 }
 
 //ItemSplit - the selected split per ChargeType and PaymentMethod
 func (d DefaultPaymentSelection) ItemSplit() PaymentSplitByItem {
-	return d.chargedItems
+	return d.ChargedItemsProp
 }
 
 func (d DefaultPaymentSelection) TotalValue() price.Price {
-	return d.chargedItems.Sum().TotalValue()
+	return d.ChargedItemsProp.Sum().TotalValue()
 }
 
 //Sum - the resulting Split after sum all the included item split
@@ -127,13 +121,13 @@ func (c PaymentSplitByItem) Sum() PaymentSplit {
 			}
 		}
 	}
-	for _, itemSplit := range c.cartItems {
+	for _, itemSplit := range c.CartItems {
 		addToSum(itemSplit)
 	}
-	for _, itemSplit := range c.shippingItems {
+	for _, itemSplit := range c.ShippingItems {
 		addToSum(itemSplit)
 	}
-	for _, itemSplit := range c.totalItems {
+	for _, itemSplit := range c.TotalItems {
 		addToSum(itemSplit)
 	}
 	return sum
@@ -158,61 +152,39 @@ func (s PaymentSplit) ChargesByType() price.Charges {
 	return charges
 }
 
-//ChargeType - returns the ChargeType of the Qualifier
-func (s SplitQualifier) ChargeType() string {
-	return s.chargeType
-}
-
-//Method - return Method
-func (s SplitQualifier) Method() string {
-	return s.method
-}
-
-func (p PaymentSplitByItem) ShippingItems() map[string]PaymentSplit {
-	return p.shippingItems
-}
-
-func (p PaymentSplitByItem) TotalItems() map[string]PaymentSplit {
-	return p.totalItems
-}
-
-func (p PaymentSplitByItem) CartItems() map[string]PaymentSplit {
-	return p.cartItems
-}
 
 func (pb *PaymentSplitByItemBuilder) AddCartItem(id string, method string, charge price.Charge) *PaymentSplitByItemBuilder {
 	pb.init()
-	log.Printf("%#v",pb.inBuilding)
-	if pb.inBuilding.cartItems[id] == nil {
-		pb.inBuilding.cartItems[id] = make(PaymentSplit)
+	if pb.inBuilding.CartItems[id] == nil {
+		pb.inBuilding.CartItems[id] = make(PaymentSplit)
 	}
-	pb.inBuilding.cartItems[id][SplitQualifier{
-		method:     method,
-		chargeType: charge.Type,
+	pb.inBuilding.CartItems[id][SplitQualifier{
+		Method:     method,
+		ChargeType: charge.Type,
 	}] = charge
 	return pb
 }
 
 func (pb *PaymentSplitByItemBuilder) AddShippingItem(deliveryCode string, method string, charge price.Charge) *PaymentSplitByItemBuilder {
 	pb.init()
-	if pb.inBuilding.shippingItems[deliveryCode] == nil {
-		pb.inBuilding.shippingItems[deliveryCode] = make(PaymentSplit)
+	if pb.inBuilding.ShippingItems[deliveryCode] == nil {
+		pb.inBuilding.ShippingItems[deliveryCode] = make(PaymentSplit)
 	}
-	pb.inBuilding.shippingItems[deliveryCode][SplitQualifier{
-		method:     method,
-		chargeType: charge.Type,
+	pb.inBuilding.ShippingItems[deliveryCode][SplitQualifier{
+		Method:     method,
+		ChargeType: charge.Type,
 	}] = charge
 	return pb
 }
 
 func (pb *PaymentSplitByItemBuilder) AddTotalItem(totalType string, method string, charge price.Charge) *PaymentSplitByItemBuilder {
 	pb.init()
-	if pb.inBuilding.totalItems[totalType] == nil {
-		pb.inBuilding.totalItems[totalType] = make(PaymentSplit)
+	if pb.inBuilding.TotalItems[totalType] == nil {
+		pb.inBuilding.TotalItems[totalType] = make(PaymentSplit)
 	}
-	pb.inBuilding.totalItems[totalType][SplitQualifier{
-		method:     method,
-		chargeType: charge.Type,
+	pb.inBuilding.TotalItems[totalType][SplitQualifier{
+		Method:     method,
+		ChargeType: charge.Type,
 	}] = charge
 	return pb
 }
@@ -227,29 +199,9 @@ func (pb *PaymentSplitByItemBuilder) init() {
 		return
 	}
 	pb.inBuilding = &PaymentSplitByItem{
-		cartItems:     make(map[string]PaymentSplit),
-		shippingItems: make(map[string]PaymentSplit),
-		totalItems:    make(map[string]PaymentSplit),
+		CartItems:     make(map[string]PaymentSplit),
+		ShippingItems: make(map[string]PaymentSplit),
+		TotalItems:    make(map[string]PaymentSplit),
 	}
 }
 
-
-
-//MarshalBinary - implements interface required by gob
-func (d DefaultPaymentSelection) MarshalBinary() (data []byte, err error) {
-	return json.Marshal(d)
-}
-
-//UnmarshalBinary - implements interace required by gob.
-//UnmarshalBinary - modifies the receiver so it must take a pointer receiver!
-func (d *DefaultPaymentSelection) UnmarshalBinary(data []byte) error {
-	type encodeAbleDefaultPaymentSelection DefaultPaymentSelection
-	var encodeAble encodeAbleDefaultPaymentSelection
-	err := json.Unmarshal(data, &encodeAble)
-	if err != nil {
-		return err
-	}
-	newSelection := DefaultPaymentSelection(encodeAble)
-	d = &newSelection
-	return nil
-}

@@ -129,3 +129,12 @@ func (c ChargeByItem) TotalItems() map[string]price.Charge {
 func (c ChargeByItem) ShippingItems() map[string]price.Charge {
 	return c.shippingItems
 }
+
+
+
+func (c ChargeByItem) AddCartItem(id string, charge price.Charge) {
+	if c.cartItems == nil {
+		c.cartItems = make(map[string]price.Charge)
+	}
+	c.cartItems[id] = charge
+}

@@ -19,6 +19,7 @@ require (
 	golang.org/x/crypto v0.0.0-20190225124518-7f87c0fbb88b // indirect
 	golang.org/x/net v0.0.0-20190226193003-66a96c8a540e // indirect
 	golang.org/x/oauth2 v0.0.0-20190226191147-529b322ea346 // indirect
+	gopkg.in/go-playground/assert.v1 v1.2.1
 )
 
 replace (

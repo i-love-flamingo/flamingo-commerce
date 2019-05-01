@@ -1,6 +1,7 @@
 package cart
 
 import (
+	"encoding/gob"
 	"fmt"
 	"math/big"
 
@@ -142,6 +143,10 @@ const (
 	TotalsTypeShipping      = "totals_type_shipping"
 )
 
+func init() {
+	gob.Register(Cart{})
+	gob.Register(DefaultPaymentSelection{})
+}
 // GetMainShippingEMail returns the main shipping address email, empty string if not available
 func (c Cart) GetMainShippingEMail() string {
 	for _, deliveries := range c.Deliveries {

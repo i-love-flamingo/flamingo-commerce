@@ -1,7 +1,7 @@
 package cart
 
 import (
-	"encoding/gob"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 
@@ -141,8 +141,6 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 
 	registry.HandleAny("cart.deleteItem", r.viewController.DeleteAndViewAction)
 	registry.Route("/cart/delete/:id", `cart.deleteItem(id,deliveryCode?="")`)
-	gob.Register(cart.Cart{})
-	gob.Register(cart.DefaultPaymentSelection{})
 	r.apiRoutes(registry)
 }
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
+	"fmt"
 
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 
@@ -210,7 +211,7 @@ func (os *OrderService) CurrentCartPlaceOrderWithPaymentProcessing(ctx context.C
 	gateway, err := os.GetPaymentGateway(ctx, decoratedCart.Cart.PaymentSelection.Gateway())
 	if err != nil {
 		stats.Record(ctx, orderFailedStat.M(1))
-		os.logger.Error("cart.checkoutcontroller.submitaction: Error %v  Gateway: %v", err,decoratedCart.Cart.PaymentSelection.Gateway())
+		os.logger.Error(fmt.Sprintf("cart.checkoutcontroller.submitaction: Error %v  Gateway: %v", err,decoratedCart.Cart.PaymentSelection.Gateway()))
 		return nil, errors.New("selected gateway not available")
 	}
 
