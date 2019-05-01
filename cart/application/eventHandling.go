@@ -63,6 +63,7 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 			return
 		}
 		for _, d := range guestCart.Deliveries {
+			e.cartService.UpdateDeliveryInfo(ctx, currentEvent.Session, d.DeliveryInfo.Code, cartDomain.CreateDeliveryInfoUpdateCommand(d.DeliveryInfo))
 			for _, item := range d.Cartitems {
 				e.logger.WithField(flamingo.LogKeyCategory, "cart").Debug("Merging item from guest to user cart %v", item)
 				addRequest := e.cartService.BuildAddRequest(ctx, item.MarketplaceCode, item.VariantMarketPlaceCode, item.Qty)
@@ -75,6 +76,7 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 				e.cartService.ApplyVoucher(ctx, currentEvent.Session, code.Code)
 			}
 		}
+
 
 		if e.cartCache != nil {
 			session := web.SessionFromContext(ctx)
