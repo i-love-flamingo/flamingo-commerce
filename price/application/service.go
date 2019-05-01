@@ -23,19 +23,23 @@ func (s *Service) Inject(labelService *application.LabelService, config *struct 
 }
 
 // GetConfigForCurrency get configuration for currency
-func (s *Service) GetConfigForCurrency(currency string) config.Map {
+func (s *Service) getConfigForCurrency(currency string) config.Map {
 	if configForCurrency, ok := s.config[currency]; ok {
 		return configForCurrency.(config.Map)
 	}
 
-	return s.config["default"].(config.Map)
+
+	if defaultConfig, ok :=  s.config["default"].(config.Map); ok {
+		return defaultConfig
+	}
+	return nil
 }
 
 // FormatPrice by price
 func (s *Service) FormatPrice(price domain.Price) string {
 	currency := s.labelService.NewLabel(price.Currency()).String()
 
-	configForCurrency := s.GetConfigForCurrency(price.Currency())
+	configForCurrency := s.getConfigForCurrency(price.Currency())
 
 	ac := accounting.Accounting{
 		Symbol:    currency,
