@@ -22,6 +22,8 @@ type (
 		Transactions []Transaction
 		//RawTransactionData - place to store any additional stuff (specific for Gateway)
 		RawTransactionData interface{}
+		//PaymentID - optional a reference of the Payment (that contains the Transactions)
+		PaymentID string
 	}
 
 	// Transaction representing the transaction
@@ -135,9 +137,29 @@ func (c ChargeByItem) ShippingItems() map[string]price.Charge {
 
 
 //AddCartItem - modifies the current instance and adds a charge for an item
-func (c *ChargeByItem) AddCartItem(id string, charge price.Charge) {
+func (c ChargeByItem) AddCartItem(id string, charge price.Charge) ChargeByItem {
 	if c.cartItems == nil {
 		c.cartItems = make(map[string]price.Charge)
 	}
 	c.cartItems[id] = charge
+	return c
+}
+
+
+//AddTotalItem - modifies the current instance and adds a charge for an item
+func (c ChargeByItem) AddTotalItem(id string, charge price.Charge) ChargeByItem {
+	if c.cartItems == nil {
+		c.totalItems = make(map[string]price.Charge)
+	}
+	c.totalItems[id] = charge
+	return c
+}
+
+//AddShippingItems - modifies the current instance and adds a charge for an item
+func (c ChargeByItem) AddShippingItems(id string, charge price.Charge) ChargeByItem {
+	if c.cartItems == nil {
+		c.shippingItems = make(map[string]price.Charge)
+	}
+	c.shippingItems[id] = charge
+	return c
 }
