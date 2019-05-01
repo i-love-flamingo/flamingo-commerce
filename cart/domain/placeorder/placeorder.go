@@ -118,9 +118,25 @@ func (c ChargeByItem) CartItems() map[string]price.Charge {
 	return c.cartItems
 }
 
-//ChargeByCartItem returns Charge for a cartitem by id
-func (c ChargeByItem) ChargeByCartItem(itemid string) (*price.Charge, bool) {
+//ChargeForCartItem returns Charge for a cartitem by id
+func (c ChargeByItem) ChargeForCartItem(itemid string) (*price.Charge, bool) {
 	if charge, ok := c.cartItems[itemid]; ok {
+		return &charge, true
+	}
+	return nil, false
+}
+
+//ChargeForDeliveryCode returns Charge for a shippingitem by deliverycode
+func (c ChargeByItem) ChargeForDeliveryCode(itemid string) (*price.Charge, bool) {
+	if charge, ok := c.shippingItems[itemid]; ok {
+		return &charge, true
+	}
+	return nil, false
+}
+
+//ChargeForTotal returns Charge for a totalitem by code
+func (c ChargeByItem) ChargeForTotal(itemid string) (*price.Charge, bool) {
+	if charge, ok := c.totalItems[itemid]; ok {
 		return &charge, true
 	}
 	return nil, false
