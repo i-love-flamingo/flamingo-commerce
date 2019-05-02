@@ -217,11 +217,11 @@ func (os *OrderService) CurrentCartPlaceOrderWithPaymentProcessing(ctx context.C
 
 	cartPayment, err := gateway.GetFlowResult(ctx, &decoratedCart.Cart, PaymentFlowStandardCorrelationID)
 	if err != nil {
-
+		return nil, err
 	}
 	err = gateway.ConfirmResult(ctx, &decoratedCart.Cart, cartPayment)
 	if err != nil {
-
+		return nil, err
 	}
 
 	placedOrderInfos, err := os.cartService.PlaceOrder(ctx, session, cartPayment)

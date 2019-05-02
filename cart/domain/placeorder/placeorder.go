@@ -164,7 +164,7 @@ func (c ChargeByItem) AddCartItem(id string, charge price.Charge) ChargeByItem {
 
 //AddTotalItem - modifies the current instance and adds a charge for an item
 func (c ChargeByItem) AddTotalItem(id string, charge price.Charge) ChargeByItem {
-	if c.cartItems == nil {
+	if c.totalItems == nil {
 		c.totalItems = make(map[string]price.Charge)
 	}
 	c.totalItems[id] = charge
@@ -173,7 +173,7 @@ func (c ChargeByItem) AddTotalItem(id string, charge price.Charge) ChargeByItem 
 
 //AddShippingItems - modifies the current instance and adds a charge for an item
 func (c ChargeByItem) AddShippingItems(id string, charge price.Charge) ChargeByItem {
-	if c.cartItems == nil {
+	if c.shippingItems == nil {
 		c.shippingItems = make(map[string]price.Charge)
 	}
 	c.shippingItems[id] = charge
