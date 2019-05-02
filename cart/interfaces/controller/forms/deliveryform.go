@@ -22,7 +22,9 @@ type (
 	DeliveryForm struct {
 		DeliveryAddress AddressForm `form:"deliveryAddress"`
 		//UseBillingAddress - the adress should be taken from billing (only relevant for type adress)
-		UseBillingAddress bool `form:"useBillingAddress"`
+		UseBillingAddress bool   `form:"useBillingAddress"`
+		ShippingMethod    string `form:"shippingMethod"`
+		ShippingCarrier   string `form:"shippingCarrier"`
 	}
 
 	// DeliveryFormService implements Form(Data)Provider interface of form package
@@ -48,6 +50,8 @@ func (d *DeliveryForm) MapToDeliveryInfo(currentInfo cartDomain.DeliveryInfo) ca
 	address := d.DeliveryAddress.MapToDomainAddress()
 	currentInfo.DeliveryLocation.Address = &address
 	currentInfo.DeliveryLocation.UseBillingAddress = d.UseBillingAddress
+	currentInfo.Method = d.ShippingMethod
+	currentInfo.Carrier = d.ShippingCarrier
 	return currentInfo
 }
 
@@ -61,6 +65,8 @@ func (p *DeliveryFormService) GetFormData(ctx context.Context, req *web.Request)
 
 	cart, err := p.applicationCartReceiverService.ViewCart(ctx, req.Session())
 	useBilling := false
+	method := ""
+	carrier := ""
 	deliveryAddress := AddressForm{}
 	deliverycode := req.Params["deliveryCode"]
 	if deliverycode != "" && err == nil {
@@ -69,12 +75,16 @@ func (p *DeliveryFormService) GetFormData(ctx context.Context, req *web.Request)
 				deliveryAddress.LoadFromCartAddress(*delivery.DeliveryInfo.DeliveryLocation.Address)
 			}
 			useBilling = delivery.DeliveryInfo.DeliveryLocation.UseBillingAddress
+			method = delivery.DeliveryInfo.Method
+			carrier = delivery.DeliveryInfo.Carrier
 		}
 	}
 
 	return DeliveryForm{
-		UseBillingAddress: useBilling,
 		DeliveryAddress:   deliveryAddress,
+		UseBillingAddress: useBilling,
+		ShippingMethod:    method,
+		ShippingCarrier:   carrier,
 	}, nil
 }
 
