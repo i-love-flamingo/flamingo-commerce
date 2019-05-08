@@ -17,7 +17,7 @@ type (
 )
 
 // Func returns the JSON object
-func (tf *GetProductURL) Func(context.Context) interface{} {
+func (tf *GetProductURL) Func(ctx context.Context) interface{} {
 	return func(p domain.BasicProduct) string {
 		if p == nil {
 			tf.Logger.WithField("category", "product").Warn("Called getPrpductUrl templatefunc without a product")
@@ -25,7 +25,7 @@ func (tf *GetProductURL) Func(context.Context) interface{} {
 		}
 		url, err := tf.URLService.Get(p, "")
 		if err != nil {
-			tf.Logger.WithField("category", "product").Error(err)
+			tf.Logger.WithContext(ctx).WithField("category", "product").Error(err)
 			return ""
 		}
 		return url

@@ -80,12 +80,12 @@ func (os *OrderService) Inject(
 func (os *OrderService) SetSources(ctx context.Context, session *web.Session) error {
 	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(ctx, session)
 	if err != nil {
-		os.logger.Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
+		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
 		return err
 	}
 	err = os.sourcingEngine.SetSourcesForCartItems(ctx, session, decoratedCart)
 	if err != nil {
-		os.logger.WithField("category", "checkout.orderService").Error("Error while getting sources: %v", err)
+		os.logger.WithContext(ctx).WithField("category", "checkout.orderService").Error("Error while getting sources: %v", err)
 		return errors.New("error while setting sources")
 	}
 	return nil
@@ -93,22 +93,22 @@ func (os *OrderService) SetSources(ctx context.Context, session *web.Session) er
 
 // CurrentCartSaveInfos saves additional informations on current cart
 func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.Session, billingAddress *cart.Address, shippingAddress *cart.Address, purchaser *cart.Person, additionalData *cart.AdditionalData) error {
-	os.logger.Debug("CurrentCartSaveInfos call billingAddress:%v shippingAddress:%v payment:%v", billingAddress, shippingAddress)
+	os.logger.WithContext(ctx).Debug("CurrentCartSaveInfos call billingAddress:%v shippingAddress:%v payment:%v", billingAddress, shippingAddress)
 
 	if billingAddress == nil {
-		os.logger.Warn("CurrentCartSaveInfos called without billing address")
+		os.logger.WithContext(ctx).Warn("CurrentCartSaveInfos called without billing address")
 		return errors.New("Billing Address is missing")
 	}
 	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(ctx, session)
 	if err != nil {
-		os.logger.Error("CurrentCartSaveInfos GetDecoratedCart Error %v", err)
+		os.logger.WithContext(ctx).Error("CurrentCartSaveInfos GetDecoratedCart Error %v", err)
 		return err
 	}
 
 	//update Billing
 	err = os.cartService.UpdateBillingAddress(ctx, session, billingAddress)
 	if err != nil {
-		os.logger.Error("OnStepCurrentCartPlaceOrder UpdateBillingAddress Error %v", err)
+		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder UpdateBillingAddress Error %v", err)
 		return err
 	}
 
@@ -122,7 +122,7 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.S
 			newDeliveryInfoUpdateCommand.DeliveryInfo.DeliveryLocation.Address = shippingAddress
 			err = os.cartService.UpdateDeliveryInfo(ctx, session, d.DeliveryInfo.Code, newDeliveryInfoUpdateCommand)
 			if err != nil {
-				os.logger.Error("OnStepCurrentCartPlaceOrder UpdateDeliveryInfosAndBilling Error %v", err)
+				os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder UpdateDeliveryInfosAndBilling Error %v", err)
 				return err
 			}
 		}
@@ -132,14 +132,14 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.S
 	//Update Purchaser
 	err = os.cartService.UpdatePurchaser(ctx, session, purchaser, additionalData)
 	if err != nil {
-		os.logger.Error("OnStepCurrentCartPlaceOrder UpdatePurchaser Error %v", err)
+		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder UpdatePurchaser Error %v", err)
 		return err
 	}
 
 	//After setting DeliveryInfos - call SourcingEnginge (this will reload the cart and update all items!)
 	err = os.SetSources(ctx, session)
 	if err != nil {
-		os.logger.Error("OnStepCurrentCartPlaceOrder SetSources Error %v", err)
+		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder SetSources Error %v", err)
 		return err
 	}
 	return nil
@@ -152,7 +152,7 @@ func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.
 	if err != nil {
 		// record failcount metric
 		stats.Record(ctx, orderFailedStat.M(1))
-		os.logger.Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
+		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
 		return nil, err
 	}
 
@@ -160,7 +160,7 @@ func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.
 	if !validationResult.IsValid() {
 		// record failcount metric
 		stats.Record(ctx, orderFailedStat.M(1))
-		os.logger.Warn("Try to place an invalid cart")
+		os.logger.WithContext(ctx).Warn("Try to place an invalid cart")
 		return nil, errors.New("cart is invalid")
 	}
 
@@ -169,7 +169,7 @@ func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.
 	if err != nil {
 		// record failcount metric
 		stats.Record(ctx, orderFailedStat.M(1))
-		os.logger.WithField("category", "checkout.orderService").Error("Error during place Order:" + err.Error())
+		os.logger.WithContext(ctx).Error("Error during place Order:" + err.Error())
 		return nil, errors.New("error while placing the order. please contact customer support")
 	}
 	return placedOrderInfos, nil
@@ -196,7 +196,7 @@ func (os *OrderService) CurrentCartPlaceOrderWithPaymentProcessing(ctx context.C
 	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(ctx, session)
 	if !decoratedCart.Cart.IsPaymentSelected() {
 		stats.Record(ctx, orderFailedStat.M(1))
-		os.logger.Error("cart.checkoutcontroller.submitaction: Error Gateway not in carts PaymentSelection")
+		os.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error Gateway not in carts PaymentSelection")
 		return nil, errors.New("no payment gateway selected")
 	}
 
@@ -204,14 +204,14 @@ func (os *OrderService) CurrentCartPlaceOrderWithPaymentProcessing(ctx context.C
 	if !validationResult.IsValid() {
 		// record failcount metric
 		stats.Record(ctx, orderFailedStat.M(1))
-		os.logger.Warn("Try to place an invalid cart")
+		os.logger.WithContext(ctx).Warn("Try to place an invalid cart")
 		return nil, errors.New("cart is invalid")
 	}
 
 	gateway, err := os.GetPaymentGateway(ctx, decoratedCart.Cart.PaymentSelection.Gateway())
 	if err != nil {
 		stats.Record(ctx, orderFailedStat.M(1))
-		os.logger.Error(fmt.Sprintf("cart.checkoutcontroller.submitaction: Error %v  Gateway: %v", err,decoratedCart.Cart.PaymentSelection.Gateway()))
+		os.logger.WithContext(ctx).Error(fmt.Sprintf("cart.checkoutcontroller.submitaction: Error %v  Gateway: %v", err,decoratedCart.Cart.PaymentSelection.Gateway()))
 		return nil, errors.New("selected gateway not available")
 	}
 
@@ -228,7 +228,7 @@ func (os *OrderService) CurrentCartPlaceOrderWithPaymentProcessing(ctx context.C
 	if err != nil {
 		// record failcount metric
 		stats.Record(ctx, orderFailedStat.M(1))
-		os.logger.Error("Error during place Order:" + err.Error())
+		os.logger.WithContext(ctx).Error("Error during place Order:" + err.Error())
 		return nil, errors.New("error while placing the order. please contact customer support")
 	}
 

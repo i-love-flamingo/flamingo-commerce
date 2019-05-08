@@ -117,7 +117,7 @@ func (c *DeliveryFormController) Inject(responder *web.Responder,
 	c.userService = userService
 	c.customerApplicationService = customerApplicationService
 	c.formHandlerFactory = formHandlerFactory
-	c.logger = logger
+	c.logger = logger.WithField(flamingo.LogKeyModule,"cart").WithField(flamingo.LogKeyCategory,"deliveryform")
 	c.billingAddressFormProvider = billingAddressFormProvider
 }
 
@@ -185,7 +185,7 @@ func (c *DeliveryFormController) HandleFormAction(ctx context.Context, r *web.Re
 	//update Cart
 	err = c.applicationCartService.UpdateDeliveryInfo(ctx, session, deliverycode, cartDomain.CreateDeliveryInfoUpdateCommand(deliveryInfo))
 	if err != nil {
-		c.logger.Error("UpdateDeliveryInfo  Error %v", err)
+		c.logger.WithContext(ctx).Error("UpdateDeliveryInfo  Error %v", err)
 		return form, false, err
 	}
 	return form, true, nil

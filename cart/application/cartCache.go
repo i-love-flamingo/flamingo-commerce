@@ -107,7 +107,7 @@ func (cs *CartSessionCache) Inject(
 ) {
 	cs.authManager = authManager
 	cs.userService = userService
-	cs.logger = logger
+	cs.logger = logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").WithField(flamingo.LogKeyModule, "cart")
 	if config != nil {
 		cs.lifetimeSeconds = config.LifetimeSeconds
 	}
@@ -152,7 +152,7 @@ func (cs *CartSessionCache) BuildIdentifier(ctx context.Context, session *web.Se
 func (cs *CartSessionCache) GetCart(ctx context.Context, session *web.Session, id CartCacheIdentifier) (*cart.Cart, error) {
 	if cache, ok := session.Load(CartSessionCacheCacheKeyPrefix + id.CacheKey()); ok {
 		if cachedCartsEntry, ok := cache.(CachedCartEntry); ok {
-			cs.logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").Debugf("Found cached cart: %v  InValid: %v", id.CacheKey(),cachedCartsEntry.IsInvalid)
+			cs.logger.WithContext(ctx).Debugf("Found cached cart: %v  InValid: %v", id.CacheKey(),cachedCartsEntry.IsInvalid)
 			if cachedCartsEntry.IsInvalid {
 				return &cachedCartsEntry.Entry, ErrCacheIsInvalid
 			}
@@ -168,11 +168,11 @@ func (cs *CartSessionCache) GetCart(ctx context.Context, session *web.Session, i
 
 			return &cachedCartsEntry.Entry, nil
 		}
-		cs.logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").Error("Cannot Cast Cache Entry %v", id.CacheKey())
+		cs.logger.WithContext(ctx).Error("Cannot Cast Cache Entry %v", id.CacheKey())
 
 		return nil, errors.New("cart cache contains invalid data at cache key")
 	}
-	cs.logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").Debug("Did not Found cached cart %v", id.CacheKey())
+	cs.logger.WithContext(ctx).Debug("Did not Found cached cart %v", id.CacheKey())
 
 	return nil, ErrNoCacheEntry
 }
@@ -187,7 +187,7 @@ func (cs *CartSessionCache) CacheCart(ctx context.Context, session *web.Session,
 		ExpiresOn: time.Now().Add(time.Duration(cs.lifetimeSeconds * float64(time.Second))),
 	}
 
-	cs.logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").Debug("Caching cart %v", id.CacheKey())
+	cs.logger.WithContext(ctx).Debug("Caching cart %v", id.CacheKey())
 	session.Store(CartSessionCacheCacheKeyPrefix+id.CacheKey(), entry)
 	return nil
 }

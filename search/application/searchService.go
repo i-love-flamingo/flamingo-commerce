@@ -73,7 +73,7 @@ func (s *SearchService) FindBy(ctx context.Context, documentType string, searchR
 	//  10 pageSize * (3 pages* -1 ) + lastPageSize = 35 results*
 	if pageSize != 0 {
 		if err := result.SearchMeta.ValidatePageSize(pageSize); err != nil {
-			s.Logger.WithField("category", "application.ProductSearchService").Warn("The Searchservice seems to ignore pageSize Filter")
+			s.Logger.WithContext(ctx).WithField("category", "application.ProductSearchService").Warn("The Searchservice seems to ignore pageSize Filter")
 		}
 	}
 
@@ -123,7 +123,7 @@ func (s *SearchService) Find(ctx context.Context, searchRequest SearchRequest) (
 	if pageSize != 0 {
 		for k, r := range result {
 			if err := r.SearchMeta.ValidatePageSize(pageSize); err != nil {
-				s.Logger.WithField("category", "application.ProductSearchService").Warn("The Searchservice seems to ignore pageSize Filter for document type ", k)
+				s.Logger.WithContext(ctx).WithField("category", "application.ProductSearchService").Warn("The Searchservice seems to ignore pageSize Filter for document type ", k)
 			}
 		}
 	}

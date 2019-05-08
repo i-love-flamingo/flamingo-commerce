@@ -65,7 +65,7 @@ func (c *SimplePaymentFormController) Inject(responder *web.Responder,
 	c.applicationCartService = applicationCartService
 
 	c.formHandlerFactory = formHandlerFactory
-	c.logger = logger
+	c.logger = logger.WithField(flamingo.LogKeyModule,"cart").WithField(flamingo.LogKeyCategory,"simplepaymentform")
 	c.simplePaymentFormService = simplePaymentFormService
 }
 
@@ -115,7 +115,7 @@ func (c *SimplePaymentFormController) HandleFormAction(ctx context.Context, r *w
 	//update cart
 	err = c.applicationCartService.UpdatePaymentSelection(ctx, session, paymentSelection)
 	if err != nil {
-		c.logger.Error("SimplePaymentFormController UpdatePaymentSelection Error %v", err)
+		c.logger.WithContext(ctx).Error("SimplePaymentFormController UpdatePaymentSelection Error %v", err)
 		return form, false, err
 	}
 	return form, true, nil

@@ -48,6 +48,7 @@ type (
 // check interface implementation
 var _ OrderDecoratorInterface = (*OrderDecorator)(nil)
 
+
 // Create creates a new decorated order
 func (rd *OrderDecorator) Create(ctx context.Context, order *Order) *DecoratedOrder {
 	result := &DecoratedOrder{Order: order}
@@ -73,7 +74,7 @@ func (rd *OrderDecorator) createDecoratedItem(ctx context.Context, item *OrderIt
 	product, err := rd.ProductService.Get(ctx, item.MarketplaceCode)
 	switch {
 	case err != nil:
-		rd.Logger.Error("order.decorator - no product for item", err)
+		rd.Logger.WithContext(ctx).Error("order.decorator - no product for item", err)
 		// fallback to return something the frontend still could use
 		product = rd.createFallbackProduct(item)
 	case product.Type() == domain.TypeConfigurable && item.VariantMarketplaceCode != "":

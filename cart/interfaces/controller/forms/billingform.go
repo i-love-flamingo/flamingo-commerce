@@ -79,7 +79,7 @@ func (c *BillingAddressFormController) Inject(responder *web.Responder,
 	c.applicationCartReceiverService = applicationCartReceiverService
 	c.applicationCartService = applicationCartService
 	c.formHandlerFactory = formHandlerFactory
-	c.logger = logger
+	c.logger = logger.WithField(flamingo.LogKeyModule,"cart").WithField(flamingo.LogKeyCategory,"billingform")
 }
 
 func (c *BillingAddressFormController) getFormHandler() (domain.FormHandler, error) {
@@ -125,7 +125,7 @@ func (c *BillingAddressFormController) HandleFormAction(ctx context.Context, r *
 	//update Billing
 	err = c.applicationCartService.UpdateBillingAddress(ctx, session, &billingAddress)
 	if err != nil {
-		c.logger.Error("BillingAddressFormController UpdateBillingAddress Error %v", err)
+		c.logger.WithContext(ctx).Error("BillingAddressFormController UpdateBillingAddress Error %v", err)
 		return form, false, err
 	}
 	return form, true, nil

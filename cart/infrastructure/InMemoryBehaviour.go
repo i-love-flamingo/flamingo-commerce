@@ -53,7 +53,7 @@ func (cob *InMemoryBehaviour) Inject(
 ) {
 	cob.cartStorage = CartStorage
 	cob.productService = ProductService
-	cob.logger = Logger
+	cob.logger = Logger.WithField(flamingo.LogKeyCategory, "inmemorybehaviour")
 	cob.itemBuilderProvider = itemBuilderProvider
 	cob.deliveryBuilderProvider = deliveryBuilderProvider
 	cob.cartBuilderProvider = cartBuilderProvider
@@ -69,7 +69,7 @@ func (cob *InMemoryBehaviour) DeleteItem(ctx context.Context, cart *domaincart.C
 	}
 
 	if newDelivery, ok := cart.GetDeliveryByCode(deliveryCode); ok {
-		cob.logger.WithField(flamingo.LogKeyCategory, "inmemorybehaviour").Info("Inmemory Service Delete %v in %#v", itemID, newDelivery.Cartitems)
+		cob.logger.WithContext(ctx).Info("Inmemory Service Delete %v in %#v", itemID, newDelivery.Cartitems)
 		for k, item := range newDelivery.Cartitems {
 			if item.ID == itemID {
 				if len(newDelivery.Cartitems) > k {
@@ -104,7 +104,7 @@ func (cob *InMemoryBehaviour) UpdateItem(ctx context.Context, cart *domaincart.C
 
 	itemBuilder := cob.itemBuilderProvider()
 	if delivery, ok := cart.GetDeliveryByCode(deliveryCode); ok {
-		cob.logger.WithField(flamingo.LogKeyCategory, "inmemorybehaviour").Info("Inmemory Service Update %v in %#v", itemID, delivery.Cartitems)
+		cob.logger.WithContext(ctx).Info("Inmemory Service Update %v in %#v", itemID, delivery.Cartitems)
 		for _, item := range delivery.Cartitems {
 			if itemID == item.ID {
 				itemBuilder.SetFromItem(item).SetQty(*itemUpdateCommand.Qty).AddTaxInfo("default", big.NewFloat(cob.defaultTaxRate), nil).CalculatePricesAndTax()

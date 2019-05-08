@@ -59,7 +59,7 @@ func (cc *CartViewController) Inject(
 	cc.applicationCartService = applicationCartService
 	cc.applicationCartReceiverService = applicationCartReceiverService
 	cc.router = router
-	cc.logger = logger
+	cc.logger = logger.WithField(flamingo.LogKeyCategory, "cartcontroller").WithField(flamingo.LogKeyModule, "cart")
 
 	if config != nil {
 		cc.showEmptyCartPageIfNoItems = config.ShowEmptyCartPageIfNoItems
@@ -70,7 +70,7 @@ func (cc *CartViewController) Inject(
 func (cc *CartViewController) ViewAction(ctx context.Context, r *web.Request) web.Result {
 	decoratedCart, err := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if err != nil {
-		cc.logger.WithField(flamingo.LogKeyCategory, "cartcontroller").Warn("cart.cartcontroller.viewaction: Error %v", err)
+		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.viewaction: Error %v", err)
 		return cc.responder.Render("checkout/carterror", nil)
 	}
 
@@ -114,7 +114,7 @@ func (cc *CartViewController) AddAndViewAction(ctx context.Context, r *web.Reque
 		}
 	}
 	if err != nil {
-		cc.logger.WithField(flamingo.LogKeyCategory, "cartcontroller").Warn("cart.cartcontroller.addandviewaction: Error %v", err)
+		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.addandviewaction: Error %v", err)
 		return cc.responder.Render("checkout/carterror", nil)
 	}
 
@@ -129,7 +129,7 @@ func (cc *CartViewController) UpdateQtyAndViewAction(ctx context.Context, r *web
 
 	id, ok := r.Params["id"]
 	if !ok {
-		cc.logger.WithField(flamingo.LogKeyCategory, "cartcontroller").Warn("cart.cartcontroller.UpdateQtyAndViewAction: param id not found")
+		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.UpdateQtyAndViewAction: param id not found")
 		return cc.responder.RouteRedirect("cart.view", nil)
 	}
 
@@ -146,7 +146,7 @@ func (cc *CartViewController) UpdateQtyAndViewAction(ctx context.Context, r *web
 
 	err = cc.applicationCartService.UpdateItemQty(ctx, r.Session(), id, deliveryCode, qtyInt)
 	if err != nil {
-		cc.logger.WithField(flamingo.LogKeyCategory, "cartcontroller").Warn("cart.cartcontroller.UpdateAndViewAction: Error %v", err)
+		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.UpdateAndViewAction: Error %v", err)
 	}
 
 	return cc.responder.RouteRedirect("cart.view", nil)
@@ -157,13 +157,13 @@ func (cc *CartViewController) DeleteAndViewAction(ctx context.Context, r *web.Re
 
 	id, ok := r.Params["id"]
 	if !ok {
-		cc.logger.WithField(flamingo.LogKeyCategory, "cartcontroller").Warn("cart.cartcontroller.deleteaction: param id not found")
+		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.deleteaction: param id not found")
 		return cc.responder.RouteRedirect("cart.view", nil)
 	}
 	deliveryCode, _ := r.Params["deliveryCode"]
 	err := cc.applicationCartService.DeleteItem(ctx, r.Session(), id, deliveryCode)
 	if err != nil {
-		cc.logger.WithField(flamingo.LogKeyCategory, "cartcontroller").Warn("cart.cartcontroller.deleteaction: Error %v", err)
+		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.deleteaction: Error %v", err)
 	}
 
 	return cc.responder.RouteRedirect("cart.view", nil)
@@ -173,7 +173,7 @@ func (cc *CartViewController) DeleteAndViewAction(ctx context.Context, r *web.Re
 func (cc *CartViewController) DeleteAllAndViewAction(ctx context.Context, r *web.Request) web.Result {
 	err := cc.applicationCartService.DeleteAllItems(ctx, r.Session())
 	if err != nil {
-		cc.logger.WithField(flamingo.LogKeyCategory, "cartcontroller").Warn("cart.cartcontroller.deleteaction: Error %v", err)
+		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.deleteaction: Error %v", err)
 	}
 
 	return cc.responder.RouteRedirect("cart.view", nil)
@@ -183,7 +183,7 @@ func (cc *CartViewController) DeleteAllAndViewAction(ctx context.Context, r *web
 func (cc *CartViewController) CleanAndViewAction(ctx context.Context, r *web.Request) web.Result {
 	err := cc.applicationCartService.Clean(ctx, r.Session())
 	if err != nil {
-		cc.logger.WithField(flamingo.LogKeyCategory, "cartcontroller").Warn("cart.cartcontroller.deleteaction: Error %v", err)
+		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.deleteaction: Error %v", err)
 	}
 
 	return cc.responder.RouteRedirect("cart.view", nil)
@@ -194,7 +194,7 @@ func (cc *CartViewController) CleanDeliveryAndViewAction(ctx context.Context, r 
 	deliveryCode := r.Params["deliveryCode"]
 	_, err := cc.applicationCartService.DeleteDelivery(ctx, r.Session(), deliveryCode)
 	if err != nil {
-		cc.logger.WithField(flamingo.LogKeyCategory, "cartcontroller").Warn("cart.cartcontroller.deleteaction: Error %v", err)
+		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.deleteaction: Error %v", err)
 	}
 
 	return cc.responder.RouteRedirect("cart.view", nil)

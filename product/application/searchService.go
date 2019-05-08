@@ -61,7 +61,7 @@ func (s *ProductSearchService) Find(ctx context.Context, searchRequest *applicat
 
 	if pageSize != 0 {
 		if err := result.SearchMeta.ValidatePageSize(pageSize); err != nil {
-			s.Logger.WithField("category", "application.ProductSearchService").Warn("The Searchservice seems to ignore pageSize Filter")
+			s.Logger.WithContext(ctx).WithField("category", "application.ProductSearchService").Warn("The Searchservice seems to ignore pageSize Filter")
 		}
 	}
 	paginationInfo := utils.BuildWith(utils.CurrentResultInfos{
@@ -110,7 +110,7 @@ func (s *ProductSearchService) FindBy(ctx context.Context, attributeCode string,
 
 	if pageSize != 0 {
 		if err := result.SearchMeta.ValidatePageSize(pageSize); err != nil {
-			s.Logger.WithField("category", "application.ProductSearchService").Warn("The Searchservice seems to ignore pageSize Filter")
+			s.Logger.WithContext(ctx).WithField("category", "application.ProductSearchService").Warn("The Searchservice seems to ignore pageSize Filter")
 		}
 	}
 	paginationInfo := utils.BuildWith(utils.CurrentResultInfos{

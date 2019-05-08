@@ -159,7 +159,7 @@ func (cs *CartReceiverService) getCustomerCart(ctx context.Context, session *web
 	cart, found, err := cs.getCartFromCacheIfCacheIsEnabled(ctx, session)
 
 	if err != nil {
-		cs.logger.Error(err)
+		cs.logger.WithContext(ctx).Error(err)
 	}
 
 	if err != nil || !found {
@@ -187,7 +187,7 @@ func (cs *CartReceiverService) getCartFromCacheIfCacheIsEnabled(ctx context.Cont
 	if err != nil {
 		return nil, false, err
 	}
-	cs.logger.Debug("query cart cache %#v", cacheID)
+	cs.logger.WithContext(ctx).Debug("query cart cache %#v", cacheID)
 	cart, cacheErr := cs.cartCache.GetCart(ctx, session, cacheID)
 	if cacheErr == ErrNoCacheEntry {
 		return nil, false, nil
@@ -203,21 +203,21 @@ func (cs *CartReceiverService) getExistingGuestCart(ctx context.Context, session
 	cart, found, err := cs.getCartFromCacheIfCacheIsEnabled(ctx, session)
 
 	if err != nil {
-		cs.logger.Error(err)
+		cs.logger.WithContext(ctx).Error(err)
 	}
 	if err != nil || !found {
 		cart, err = cs.getSessionGuestCart(ctx, session)
 
 		if err != nil {
 			//TODO - decide on recoverable errors (where we should communicate "try again" / and not recoverable (where we should clean up guest cart in session and try to get a new one)
-			cs.logger.Warn("cart.application.cartservice: GetCart - No cart in session return empty")
+			cs.logger.WithContext(ctx).Warn("cart.application.cartservice: GetCart - No cart in session return empty")
 
 			//delete(ctx.Session().Values, "cart.guestid")
 			return nil, nil, ErrTemporaryCartService
 		}
 
 		cs.storeCartInCacheIfCacheIsEnabled(ctx, session, cart)
-		cs.logger.Debug("guestcart not in cache - requested and passed to cache")
+		cs.logger.WithContext(ctx).Debug("guestcart not in cache - requested and passed to cache")
 	}
 	behaviour, err := cs.guestCartService.GetModifyBehaviour(ctx)
 
@@ -226,7 +226,7 @@ func (cs *CartReceiverService) getExistingGuestCart(ctx context.Context, session
 	}
 
 	if cart == nil {
-		cs.logger.Error("Something unexpected went wrong! No guestcart!")
+		cs.logger.WithContext(ctx).Error("Something unexpected went wrong! No guestcart!")
 
 		return nil, nil, errors.New("something unexpected went wrong - no guestcart")
 	}
@@ -238,12 +238,12 @@ func (cs *CartReceiverService) getExistingGuestCart(ctx context.Context, session
 func (cs *CartReceiverService) getNewGuestCart(ctx context.Context, session *web.Session) (*cartDomain.Cart, cartDomain.ModifyBehaviour, error) {
 	guestCart, err := cs.guestCartService.GetNewCart(ctx)
 	if err != nil {
-		cs.logger.Error("cart.application.cartservice: Cannot create a new guest cart. Error %s", err)
+		cs.logger.WithContext(ctx).Error("cart.application.cartservice: Cannot create a new guest cart. Error %s", err)
 
 		return nil, nil, err
 	}
 
-	cs.logger.Info("cart.application.cartservice: Requested new Guestcart %v", guestCart)
+	cs.logger.WithContext(ctx).Info("cart.application.cartservice: Requested new Guestcart %v", guestCart)
 	session.Store(GuestCartSessionKey, guestCart.ID)
 	cs.storeCartInCacheIfCacheIsEnabled(ctx, session, guestCart)
 	behaviour, err := cs.guestCartService.GetModifyBehaviour(ctx)
@@ -253,7 +253,7 @@ func (cs *CartReceiverService) getNewGuestCart(ctx context.Context, session *web
 	}
 
 	if guestCart == nil {
-		cs.logger.Error("Something unexpected went wrong! No guestcart!")
+		cs.logger.WithContext(ctx).Error("Something unexpected went wrong! No guestcart!")
 
 		return nil, nil, errors.New("something unexpected went wrong - no guestcart")
 	}
@@ -286,7 +286,7 @@ func (cs *CartReceiverService) ViewGuestCart(ctx context.Context, session *web.S
 		guestCart, err := cs.getSessionGuestCart(ctx, session)
 		if err != nil {
 			//TODO - decide on recoverable errors (where we should communicate "try again" / and not recoverable (where we should clean up guest cart in session and try to get a new one)
-			cs.logger.Warn("cart.application.cartservice: GetCart - No cart in session return empty")
+			cs.logger.WithContext(ctx).Warn("cart.application.cartservice: GetCart - No cart in session return empty")
 
 			return nil, ErrTemporaryCartService
 		}
@@ -310,7 +310,7 @@ func (cs *CartReceiverService) getSessionGuestCart(ctx context.Context, session 
 	if guestcartid, ok := session.Load(GuestCartSessionKey); ok {
 		existingCart, err := cs.guestCartService.GetCart(ctx, guestcartid.(string))
 		if err != nil {
-			cs.logger.Error("cart.application.cartservice: Guestcart id in session cannot be retrieved. Id %s, Error: %s", guestcartid, err)
+			cs.logger.WithContext(ctx).Error("cart.application.cartservice: Guestcart id in session cannot be retrieved. Id %s, Error: %s", guestcartid, err)
 			// we seem to have an erratic session cart - remove it
 			session.Delete(GuestCartSessionKey)
 		}
@@ -318,7 +318,7 @@ func (cs *CartReceiverService) getSessionGuestCart(ctx context.Context, session 
 		return existingCart, err
 	}
 
-	cs.logger.Error("No cart in session yet - getSessionGuestCart should be called only if HasSssionGuestCart returns true")
+	cs.logger.WithContext(ctx).Error("No cart in session yet - getSessionGuestCart should be called only if HasSssionGuestCart returns true")
 
 	return nil, errors.New("no cart in session yet")
 }
@@ -329,7 +329,7 @@ func (cs *CartReceiverService) DecorateCart(ctx context.Context, cart *cartDomai
 		return nil, errors.New("no cart given")
 	}
 
-	cs.logger.Debug("cart.application.cartservice: Get decorated cart ")
+	cs.logger.WithContext(ctx).Debug("cart.application.cartservice: Get decorated cart ")
 
 	return cs.cartDecoratorFactory.Create(ctx, *cart), nil
 }

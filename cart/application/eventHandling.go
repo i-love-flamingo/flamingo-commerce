@@ -29,7 +29,7 @@ func (e *EventReceiver) Inject(
 		CartCache CartCache `inject:",optional"`
 	},
 ) {
-	e.logger = logger
+	e.logger = logger.WithField(flamingo.LogKeyCategory, "cart")
 	e.cartService = cartService
 	e.cartReceiverService = cartReceiverService
 	if optionals != nil {
@@ -55,17 +55,17 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 		}
 		guestCart, err := e.cartReceiverService.ViewGuestCart(ctx, currentEvent.Session)
 		if err != nil {
-			e.logger.WithField(flamingo.LogKeyCategory, "cart").Error("LoginEvent - Guestcart cannot be received %v", err)
+			e.logger.WithContext(ctx).Error("LoginEvent - Guestcart cannot be received %v", err)
 			return
 		}
 		if !e.cartReceiverService.IsLoggedIn(ctx, currentEvent.Session) {
-			e.logger.WithField(flamingo.LogKeyCategory, "cart").Error("Received LoginEvent but user is not logged in!!!")
+			e.logger.WithContext(ctx).Error("Received LoginEvent but user is not logged in!!!")
 			return
 		}
 		for _, d := range guestCart.Deliveries {
 			e.cartService.UpdateDeliveryInfo(ctx, currentEvent.Session, d.DeliveryInfo.Code, cartDomain.CreateDeliveryInfoUpdateCommand(d.DeliveryInfo))
 			for _, item := range d.Cartitems {
-				e.logger.WithField(flamingo.LogKeyCategory, "cart").Debug("Merging item from guest to user cart %v", item)
+				e.logger.WithContext(ctx).Debug("Merging item from guest to user cart %v", item)
 				addRequest := e.cartService.BuildAddRequest(ctx, item.MarketplaceCode, item.VariantMarketPlaceCode, item.Qty)
 				e.cartService.AddProduct(ctx, currentEvent.Session, d.DeliveryInfo.Code, addRequest)
 			}

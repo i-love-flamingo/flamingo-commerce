@@ -25,7 +25,7 @@ type (
 func (e *EventReceiver) Inject(factory *Factory, cartFactory *decorator.DecoratedCartFactory, logger flamingo.Logger) {
 	e.factory = factory
 	e.cartDecoratorFactory = cartFactory
-	e.logger = logger
+	e.logger = logger.WithField("category", "w3cDatalayer").WithField(flamingo.LogKeyModule, "w3cdatalayer")
 }
 
 // Notify should get called by flamingo Eventlogic.
@@ -35,7 +35,7 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 	switch currentEvent := event.(type) {
 	//Handle OrderPlacedEvent and Set Transaction to current datalayer
 	case *events.AddToCartEvent:
-		e.logger.WithField("category", "w3cDatalayer").Debug("Receive Event AddToCartEvent")
+		e.logger.WithContext(ctx).Debug("Receive Event AddToCartEvent")
 		session := web.SessionFromContext(ctx)
 		if session != nil {
 			// In case of Configurable: the MarketplaceCode which is interesting for the datalayer is the Variant that is selected
@@ -50,7 +50,7 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 			)
 		}
 	case *events.ChangedQtyInCartEvent:
-		e.logger.WithField("category", "w3cDatalayer").Debug("Receive Event ChangedQtyInCartEvent")
+		e.logger.WithContext(ctx).WithField("category", "w3cDatalayer").Debug("Receive Event ChangedQtyInCartEvent")
 
 		session := web.SessionFromContext(ctx)
 		if session != nil {
@@ -66,7 +66,7 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 
 		}
 	case *authDomain.LoginEvent:
-		e.logger.WithField("category", "w3cDatalayer").Debug("Receive Event LoginEvent")
+		e.logger.WithContext(ctx).WithField("category", "w3cDatalayer").Debug("Receive Event LoginEvent")
 		session := web.SessionFromContext(ctx)
 		if session != nil {
 

@@ -75,7 +75,7 @@ func (cc *CartAPIController) GetAction(ctx context.Context, r *web.Request) web.
 	if e != nil {
 		result := newResult()
 		result.SetError(e, "get_error")
-		cc.logger.Error("cart.cartapicontroller.get: %v", e.Error())
+		cc.logger.WithContext(ctx).Error("cart.cartapicontroller.get: %v", e.Error())
 		return cc.responder.Data(result).Status(500)
 	}
 	validationResult := cc.cartService.ValidateCart(ctx, web.SessionFromContext(ctx), decoratedCart)
@@ -101,7 +101,7 @@ func (cc *CartAPIController) AddAction(ctx context.Context, r *web.Request) web.
 
 	result := newResult()
 	if err != nil {
-		cc.logger.Error("cart.cartapicontroller.add: %v", err.Error())
+		cc.logger.WithContext(ctx).Error("cart.cartapicontroller.add: %v", err.Error())
 
 		result.SetError(err, "add_product_error")
 		response := cc.responder.Data(result)
