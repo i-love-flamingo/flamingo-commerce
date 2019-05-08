@@ -166,32 +166,32 @@ func TestPrice_MarshalBinaryForGob(t *testing.T) {
 func TestPrice_GetPayableByRoundingMode(t *testing.T) {
 	price := domain.NewFromFloat(12.34567, "EUR")
 
-	payable := price.GetPayableByRoundingMode(domain.RoundingModeCeil,100)
-	assert.Equal(t, domain.NewFromInt(1235, 100,"EUR").Amount(), payable.Amount())
+	payable := price.GetPayableByRoundingMode(domain.RoundingModeCeil, 100)
+	assert.Equal(t, domain.NewFromInt(1235, 100, "EUR").Amount(), payable.Amount())
 
-	payable = price.GetPayableByRoundingMode(domain.RoundingModeFloor,100)
-	assert.Equal(t, domain.NewFromInt(1234, 100,"EUR").Amount(), payable.Amount())
+	payable = price.GetPayableByRoundingMode(domain.RoundingModeFloor, 100)
+	assert.Equal(t, domain.NewFromInt(1234, 100, "EUR").Amount(), payable.Amount())
 
-	payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfUp,100)
-	assert.Equal(t, domain.NewFromInt(1235, 100,"EUR").Amount(), payable.Amount())
+	payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfUp, 100)
+	assert.Equal(t, domain.NewFromInt(1235, 100, "EUR").Amount(), payable.Amount())
 
-	payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfDown,100)
-	assert.Equal(t, domain.NewFromInt(1234, 100,"EUR").Amount(), payable.Amount())
+	payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfDown, 100)
+	assert.Equal(t, domain.NewFromInt(1234, 100, "EUR").Amount(), payable.Amount())
 
-
-	payable = price.GetPayableByRoundingMode(domain.RoundingModeFloor,1)
-	assert.Equal(t, domain.NewFromInt(12, 1,"EUR").Amount(), payable.Amount())
+	payable = price.GetPayableByRoundingMode(domain.RoundingModeFloor, 1)
+	assert.Equal(t, domain.NewFromInt(12, 1, "EUR").Amount(), payable.Amount())
 
 	price = domain.NewFromFloat(-0.0001, "EUR")
-	payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfUp,100)
-	assert.Equal(t, domain.NewFromInt(0, 1,"EUR").Amount(), payable.Amount())
+	payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfUp, 100)
+	assert.Equal(t, domain.NewFromInt(0, 1, "EUR").Amount(), payable.Amount())
+
+	price = domain.NewFromFloat(-0.12, "EUR")
+	payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfUp, 100)
+	assert.EqualValues(t, domain.NewFromFloat(-0.12, "EUR").Amount(), payable.Amount())
 }
 
-
-
 func TestCharges_Add(t *testing.T) {
-	c1 := domain.Charges{
-	}
+	c1 := domain.Charges{}
 
 	byType := make(map[string]domain.Charge)
 	byType["main"] = domain.Charge{
@@ -208,7 +208,6 @@ func TestCharges_Add(t *testing.T) {
 		Value: domain.NewFromInt(100, 1, "EUR"),
 	}
 	c3 := domain.NewCharges(byType)
-
 
 	c1and2 := c1.Add(*c2)
 	charge, found := c1and2.GetByType("main")
