@@ -298,33 +298,45 @@ func (p Price) GetPayable() Price {
 }
 
 //GetPayableByRoundingMode - a flexible rounding method where you can pass rounding mode and precision
+// 1.115 >  1.12 (RoundingModeHalfUp)  / 1.11 (RoundingModeFloor)
+// -1.115 > -1.11 (RoundingModeHalfUp) / -1.12 (RoundingModeFloor)
+//
 func (p Price) GetPayableByRoundingMode(mode string, precision int) Price {
 	newPrice := Price{
 		currency: p.currency,
 	}
 
 	amountForRound := new(big.Float).Copy(&p.amount)
-
+	negative := int64(1)
+	if p.IsNegative() {
+		negative = -1
+	}
 	offsetToCheckRounding := new(big.Float).Mul(p.precisionF(precision), new(big.Float).SetInt64(10))
 
-	amountTruncatedInt, _ := new(big.Float).Mul(amountForRound, p.precisionF(precision)).Int64()
-	amountRoundingCheckInt, _ := new(big.Float).Mul(amountForRound, offsetToCheckRounding).Int64()
-	valueAfterPrecision := (amountRoundingCheckInt - (amountTruncatedInt * 10))
+	amountTruncatedFloat,_ := new(big.Float).Mul(amountForRound, p.precisionF(precision)).Float64()
+	amountTruncatedInt := int64(amountTruncatedFloat)
+	amountRoundingCheckFloat, _ := new(big.Float).Mul(amountForRound, offsetToCheckRounding).Float64()
+	amountRoundingCheckInt := int64(amountRoundingCheckFloat)
+	valueAfterPrecision := (amountRoundingCheckInt - (amountTruncatedInt * 10)) * negative
+
 
 	switch {
 	case mode == RoundingModeCeil:
-		if valueAfterPrecision > 0 {
-			amountTruncatedInt = amountTruncatedInt + 1
+		if negative == 1 && valueAfterPrecision > 0 {
+			amountTruncatedInt = amountTruncatedInt + ( 1 * negative)
 		}
 	case mode == RoundingModeHalfUp:
-		if valueAfterPrecision >= 5 {
-			amountTruncatedInt = amountTruncatedInt + 1
+		if negative == 1 && valueAfterPrecision >= 5 {
+			amountTruncatedInt = amountTruncatedInt +  ( 1 * negative)
 		}
 	case mode == RoundingModeHalfDown:
-		if valueAfterPrecision > 5 {
-			amountTruncatedInt = amountTruncatedInt + 1
+		if negative == 1 && valueAfterPrecision > 5 {
+			amountTruncatedInt = amountTruncatedInt +  ( 1 * negative)
 		}
 	case mode == RoundingModeFloor:
+		if negative == -1 {
+			amountTruncatedInt = amountTruncatedInt + ( 1 * negative)
+		}
 	default:
 		//nothing to round
 	}
