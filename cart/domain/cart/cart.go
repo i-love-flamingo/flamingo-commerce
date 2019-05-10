@@ -345,6 +345,7 @@ func (c Cart) SumTaxes() Taxes {
 
 	for _, del := range c.Deliveries {
 		newTaxes = newTaxes.AddTaxesWithMerge(del.SumRowTaxes())
+		newTaxes = newTaxes.AddTax(del.ShippingItem.Tax())
 	}
 
 	return newTaxes

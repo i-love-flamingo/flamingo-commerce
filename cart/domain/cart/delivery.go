@@ -277,3 +277,12 @@ func (s ShippingItem) TotalWithDiscountInclTax() priceDomain.Price {
 	price, _ = price.Add(s.DiscountAmount)
 	return price.GetPayable()
 }
+
+
+// Tax - the Tax of the shipping
+func (s ShippingItem) Tax() Tax {
+	return Tax{
+		Type: "tax",
+		Amount:s.TaxAmount,
+	}
+}
