@@ -94,6 +94,11 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cs := &cartApplication.CartService{}
+			authmanager := &authApplication.AuthManager{}
+			authmanager.Inject(
+				flamingo.NullLogger{},
+				nil,nil,nil,
+				)
 			cs.Inject(
 				tt.fields.CartReceiverService,
 				tt.fields.ProductService,
@@ -101,6 +106,7 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 				tt.fields.EventRouter,
 				tt.fields.DeliveryInfoBuilder,
 				tt.fields.RestrictionService,
+				authmanager,
 				tt.fields.Logger,
 				tt.fields.config,
 				nil,

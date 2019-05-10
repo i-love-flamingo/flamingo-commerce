@@ -10,7 +10,6 @@ import (
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
-	"flamingo.me/flamingo/v3/core/oauth/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 )
 
@@ -61,17 +60,6 @@ func (cs *CartReceiverService) Inject(
 	cs.eventRouter = eventRouter
 	if optionals != nil {
 		cs.cartCache = optionals.CartCache
-	}
-}
-
-// Auth tries to retrieve the authentication context for a active session
-func (cs *CartReceiverService) Auth(c context.Context, session *web.Session) domain.Auth {
-	ts, _ := cs.authManager.TokenSource(c, session)
-	idToken, _ := cs.authManager.IDToken(c, session)
-
-	return domain.Auth{
-		TokenSource: ts,
-		IDToken:     idToken,
 	}
 }
 
@@ -167,16 +155,19 @@ func (cs *CartReceiverService) getCustomerCart(ctx context.Context, session *web
 			cs.logger.WithContext(ctx).Error(err)
 		}
 	}
-
+	auth, err := cs.authManager.Auth(ctx, session)
+	if err != nil {
+		return nil, nil, err
+	}
 	if err != nil || !found {
-		cart, err = cs.customerCartService.GetCart(ctx, cs.Auth(ctx, session), "me")
+		cart, err = cs.customerCartService.GetCart(ctx, auth, "me")
 		if err != nil {
 			return nil, nil, err
 		}
 		cs.storeCartInCacheIfCacheIsEnabled(ctx, session, cart)
 	}
 
-	behaviour, err := cs.customerCartService.GetModifyBehaviour(ctx, cs.Auth(ctx, session))
+	behaviour, err := cs.customerCartService.GetModifyBehaviour(ctx, auth)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -275,7 +266,11 @@ func (cs *CartReceiverService) GetCartWithoutCache(ctx context.Context, session 
 	}
 
 	if cs.userService.IsLoggedIn(ctx, session) {
-		return cs.customerCartService.GetCart(ctx, cs.Auth(ctx, session), "me")
+		auth, err := cs.authManager.Auth(ctx, session)
+		if err != nil {
+			return nil, err
+		}
+		return cs.customerCartService.GetCart(ctx, auth, "me")
 	}
 
 	if cs.ShouldHaveGuestCart(session) {

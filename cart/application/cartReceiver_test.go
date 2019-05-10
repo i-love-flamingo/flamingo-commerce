@@ -548,6 +548,8 @@ func TestCartReceiverService_DecorateCart(t *testing.T) {
 }
 
 func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
+	authmanager := &authApplication.AuthManager{}
+	authmanager.Inject(flamingo.NullLogger{},nil,nil,nil)
 	type fields struct {
 		GuestCartService     cartDomain.GuestCartService
 		CustomerCartService  cartDomain.CustomerCartService
@@ -583,7 +585,7 @@ func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 
 					return result
 				}(),
-				AuthManager: &authApplication.AuthManager{},
+				AuthManager: authmanager,
 				UserService: &authApplication.UserService{},
 				Logger:      flamingo.NullLogger{},
 				CartCache:   new(MockCartCache),
@@ -609,7 +611,7 @@ func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 
 					return result
 				}(),
-				AuthManager: &authApplication.AuthManager{},
+				AuthManager: authmanager,
 				UserService: &authApplication.UserService{},
 				Logger:      flamingo.NullLogger{},
 				CartCache:   new(MockCartCache),

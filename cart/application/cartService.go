@@ -6,6 +6,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
+	"flamingo.me/flamingo/v3/core/oauth/application"
 	"fmt"
 
 	"github.com/pkg/errors"
@@ -21,6 +22,7 @@ type (
 	// CartService provides methods to modify the cart
 	CartService struct {
 		cartReceiverService *CartReceiverService
+		authManager         *application.AuthManager
 		productService      productDomain.ProductService
 		eventPublisher      events.EventPublisher
 		eventRouter         flamingo.EventRouter
@@ -45,6 +47,7 @@ func (cs *CartService) Inject(
 	eventRouter flamingo.EventRouter,
 	deliveryInfoBuilder cartDomain.DeliveryInfoBuilder,
 	restrictionService *validation.RestrictionService,
+	authManager *application.AuthManager,
 	logger flamingo.Logger,
 	config *struct {
 		DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
@@ -63,6 +66,7 @@ func (cs *CartService) Inject(
 	cs.eventRouter = eventRouter
 	cs.deliveryInfoBuilder = deliveryInfoBuilder
 	cs.restrictionService = restrictionService
+	cs.authManager = authManager
 	cs.logger = logger.WithField("module", "cart").WithField("category", "application.cartService")
 	if config != nil {
 		cs.defaultDeliveryCode = config.DefaultDeliveryCode
@@ -674,7 +678,11 @@ func (cs *CartService) PlaceOrder(ctx context.Context, session *web.Session, pay
 	}
 	var placeOrderInfos placeorder.PlacedOrderInfos
 	if cs.cartReceiverService.IsLoggedIn(ctx, session) {
-		placeOrderInfos, err = cs.placeOrderService.PlaceCustomerCart(ctx, cs.cartReceiverService.Auth(ctx, session), cart, payment)
+		auth, err := cs.authManager.Auth(ctx, session)
+		if err != nil {
+			return nil, err
+		}
+		placeOrderInfos, err = cs.placeOrderService.PlaceCustomerCart(ctx, auth, cart, payment)
 	} else {
 		placeOrderInfos, err = cs.placeOrderService.PlaceGuestCart(ctx, cart, payment)
 	}

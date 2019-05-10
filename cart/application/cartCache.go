@@ -9,7 +9,6 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
-	"flamingo.me/flamingo/v3/core/oauth/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/pkg/errors"
@@ -113,22 +112,17 @@ func (cs *CartSessionCache) Inject(
 	}
 }
 
-// auth tries to retrieve the authentication context for a active session
-func (cs *CartSessionCache) auth(c context.Context, session *web.Session) domain.Auth {
-	ts, _ := cs.authManager.TokenSource(c, session)
-	idToken, _ := cs.authManager.IDToken(c, session)
-
-	return domain.Auth{
-		TokenSource: ts,
-		IDToken:     idToken,
-	}
-}
 
 // BuildIdentifier creates a CartCacheIdentifier based on the login state
 func (cs *CartSessionCache) BuildIdentifier(ctx context.Context, session *web.Session) (CartCacheIdentifier, error) {
+
 	if cs.userService.IsLoggedIn(ctx, session) {
+		auth, err := cs.authManager.Auth(ctx, session)
+		if err != nil {
+			return CartCacheIdentifier{}, err
+		}
 		return CartCacheIdentifier{
-			CustomerID:     cs.auth(ctx, session).IDToken.Subject,
+			CustomerID:     auth.IDToken.Subject,
 			IsCustomerCart: true,
 		}, nil
 	}
