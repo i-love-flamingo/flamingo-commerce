@@ -33,8 +33,9 @@ type (
 
 // Category Types
 const (
-	TypeProduct = "product"
-	TypeTeaser  = "teaser"
+	TypeProduct   = "product"
+	TypeTeaser    = "teaser"
+	TypePromotion = "promotion"
 )
 
 var _ Category = (*CategoryData)(nil)
