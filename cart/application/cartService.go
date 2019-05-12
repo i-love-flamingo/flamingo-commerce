@@ -662,6 +662,7 @@ func (cs *CartService) ReserveOrderIDAndSave(ctx context.Context, session *web.S
 	additionalData.ReservedOrderID = reservedOrderID
 	data, defers, err := behaviour.UpdateAdditionalData(ctx, cart, &additionalData)
 	defer func() {
+		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
 		cs.dispatchAllEvents(ctx, defers)
 	}()
 	return data, err
