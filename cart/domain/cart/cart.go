@@ -472,7 +472,13 @@ func (c Cart) GetTotalItemsByType(typeCode string) []Totalitem {
 func (c Cart) GrandTotalCharges() domain.Charges {
 	// Check if a specific split was saved:
 	if c.PaymentSelection != nil {
-		return c.PaymentSelection.CartSplit().ChargesByType()
+		charges :=  c.PaymentSelection.CartSplit().ChargesByType()
+		//make sure we have valid main charge currency
+		return charges.AddCharge(domain.Charge{
+			Value: domain.NewFromInt(0,1,c.DefaultCurrency),
+			Price: domain.NewFromInt(0,1,c.DefaultCurrency),
+			Type:  domain.ChargeTypeMain,
+		})
 	}
 
 	// else return the grandtotal as main charge
