@@ -2,8 +2,9 @@ package decorator
 
 import (
 	"context"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"sort"
+
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
@@ -170,11 +171,7 @@ func (dci DecoratedCartItem) GetVariantsVariationAttributeCodes() []string {
 
 // GetChargesToPay getter
 func (dci DecoratedCartItem) GetChargesToPay(wishedToPaySum *domain.WishedToPay) priceDomain.Charges {
-	priceToPayForItem := dci.Item.RowPriceGrossWithDiscount()
-	if wishedToPaySum == nil {
-		return dci.Product.SaleableData().GetLoyaltyChargeSplit(&priceToPayForItem, nil)
-	}
-	return dci.Product.SaleableData().GetLoyaltyChargeSplit(&priceToPayForItem, wishedToPaySum)
+	return dci.Product.SaleableData().GetLoyaltyChargeSplit(nil, wishedToPaySum, dci.Item.Qty)
 }
 
 // GetGroupedBy legacy function
