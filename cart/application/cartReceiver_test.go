@@ -2,10 +2,13 @@ package application_test
 
 import (
 	"context"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
+	"flamingo.me/flamingo/v3/framework/config"
+
 	"reflect"
 	"testing"
 
@@ -549,7 +552,15 @@ func TestCartReceiverService_DecorateCart(t *testing.T) {
 
 func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 	authmanager := &authApplication.AuthManager{}
-	authmanager.Inject(flamingo.NullLogger{},nil,nil,nil)
+	authmanager.Inject(flamingo.NullLogger{}, nil, nil, &struct {
+		Server              string       `inject:"config:oauth.server"`
+		Secret              string       `inject:"config:oauth.secret"`
+		ClientID            string       `inject:"config:oauth.clientid"`
+		DisableOfflineToken bool         `inject:"config:oauth.disableOfflineToken"`
+		Scopes              config.Slice `inject:"config:oauth.scopes"`
+		IDTokenMapping      config.Slice `inject:"config:oauth.claims.idToken"`
+		UserInfoMapping     config.Slice `inject:"config:oauth.claims.userInfo"`
+	}{})
 	type fields struct {
 		GuestCartService     cartDomain.GuestCartService
 		CustomerCartService  cartDomain.CustomerCartService
