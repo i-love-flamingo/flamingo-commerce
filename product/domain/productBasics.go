@@ -318,7 +318,8 @@ func (p Saleable) GetLoyaltyPriceByType(ltype string) (*LoyaltyPriceInfo, bool) 
 //
 // @param valuedPriceToPay  Optional the price that need to be payed - if not given the products final price will be used
 // @param loyaltyPointsWishedToPay   Optional a list of loyaltyPrices that the (customer) wants to spend. Its used as a wish and may not be fullfilled because of min, max properties on the products loyaltyPrices
-func (p Saleable) GetLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price, loyaltyPointsWishedToPay *WishedToPay) priceDomain.Charges {
+// @param qty the quantity of the current item affects min max loyalty charge
+func (p Saleable) GetLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price, loyaltyPointsWishedToPay *WishedToPay, qty int) priceDomain.Charges {
 	if valuedPriceToPay == nil {
 		finalPrice := p.ActivePrice.GetFinalPrice()
 		valuedPriceToPay = &finalPrice
@@ -338,24 +339,13 @@ func (p Saleable) GetLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price, loy
 
 		rateLoyaltyFinalPriceToRealFinalPrice := loyaltyPrice.GetRate(p.ActivePrice.GetFinalPrice())
 
-		/**
-		   We need to adjust min and max evaluation according to passed valuedPriceToPay (rule of three - direct proportional)
-			activePrice -> loyaltyPrice    100€  -> 50Miles
-			valuedPriceToPay  -> x  		90€  -> 45Miles
-
-			x = ((valuedPriceToPay * loyaltyPrice)  / activePrice )
-
-			rateForMilesAdjustment = x / loyaltyPrice
-		*/
-		rateForMilesAdjustment := big.NewFloat(valuedPriceToPay.FloatAmount() / p.ActivePrice.GetFinalPrice().FloatAmount())
-
 		//loyaltyAmountToSpent - set as default without potential wish
-		loyaltyAmountToSpent := loyaltyPrice.GetAmountToSpendRelative(nil, rateForMilesAdjustment)
+		loyaltyAmountToSpent := loyaltyPrice.EvaluateMinMaxRestrictions(nil, qty)
 		if loyaltyPointsWishedToPay != nil {
 			wishedPrice := loyaltyPointsWishedToPay.GetByType(chargeType)
 			if wishedPrice != nil && wishedPrice.Currency() == loyaltyPrice.GetFinalPrice().Currency() {
 				//Use the passed wishedPrice of that type
-				loyaltyAmountToSpent = loyaltyPrice.GetAmountToSpendRelative(wishedPrice.Amount(), rateForMilesAdjustment)
+				loyaltyAmountToSpent = loyaltyPrice.EvaluateMinMaxRestrictions(wishedPrice.Amount(), qty)
 			}
 		}
 
@@ -422,7 +412,7 @@ func NewWishedToPay() WishedToPay {
 	}
 }
 
-//Add - returns new WishedToPay instance with the given whish added
+//Add - returns new WishedToPay instance with the given wish added
 func (w WishedToPay) Add(ctype string, price priceDomain.Price) WishedToPay {
 	if w.priceByType == nil {
 		w.priceByType = make(map[string]priceDomain.Price)
@@ -455,9 +445,9 @@ func (l LoyaltyPriceInfo) GetFinalPrice() priceDomain.Price {
 	return l.Default
 }
 
-//GetAmountToSpendWithQty - takes the whishedamaount and qty and returns the Price in points that need to be payed based on this.
-// - method evaluates min and max and returns the loyalty points amount that need/Can to be payed
-func (l LoyaltyPriceInfo) GetAmountToSpendWithQty(wishedAmount *big.Float, qty int) big.Float {
+// EvaluateMinMaxRestrictions takes the wishedAmount and qty and returns the Price in points that need to be payed based on this.
+// method evaluates min and max and returns the loyalty points amount that need/Can to be payed
+func (l LoyaltyPriceInfo) EvaluateMinMaxRestrictions(wishedAmount *big.Float, qty int) big.Float {
 	//less or equal - return min
 	min := l.MinPointsToSpent
 	min = *new(big.Float).Mul(&min, big.NewFloat(float64(qty)))
@@ -470,32 +460,6 @@ func (l LoyaltyPriceInfo) GetAmountToSpendWithQty(wishedAmount *big.Float, qty i
 		max = *l.GetFinalPrice().Amount()
 	}
 	max = *new(big.Float).Mul(&max, big.NewFloat(float64(qty)))
-
-	//more then max - return max
-	if max.Cmp(wishedAmount) == -1 {
-		return max
-	}
-	return *wishedAmount
-}
-
-//GetAmountToSpendRelative - takes the whishedamaount and an adjustmentRate
-// evaluates min and max according to the adjustmentRate and returns the loyalty points amount that need to be payed.
-func (l LoyaltyPriceInfo) GetAmountToSpendRelative(wishedAmount *big.Float, adjustmentRate *big.Float) big.Float {
-	if adjustmentRate == nil {
-		adjustmentRate = big.NewFloat(1)
-	}
-	//less or equal - return min
-	min := l.MinPointsToSpent
-	min = *new(big.Float).Mul(&min, adjustmentRate)
-	if wishedAmount == nil || min.Cmp(wishedAmount) > 0 {
-		return min
-	}
-
-	max := l.MaxPointsToSpent
-	if max.Cmp(l.GetFinalPrice().Amount()) == 1 {
-		max = *l.GetFinalPrice().Amount()
-	}
-	max = *new(big.Float).Mul(&max, adjustmentRate)
 
 	//more then max - return max
 	if max.Cmp(wishedAmount) == -1 {
