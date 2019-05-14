@@ -1,7 +1,6 @@
 package domain
 
 import (
-	"math"
 	"math/big"
 	"testing"
 	"time"
@@ -179,7 +178,7 @@ func TestSaleable_GetLoyaltyChargeSplit(t *testing.T) {
 		LoyaltyPrices: []LoyaltyPriceInfo{
 			LoyaltyPriceInfo{
 				Type:             "loyalty.miles",
-				MaxPointsToSpent: *new(big.Float).SetInt64(50),
+				MaxPointsToSpent: new(big.Float).SetInt64(50),
 				//10 is the minimum to pay in miles (=20€ value)
 				MinPointsToSpent: *new(big.Float).SetInt64(10),
 				//50 miles == 100€ meaning 1Mile = 2€
@@ -248,7 +247,7 @@ func TestSaleable_GetLoyaltyChargeSplitWithAdjustedValue(t *testing.T) {
 		LoyaltyPrices: []LoyaltyPriceInfo{
 			LoyaltyPriceInfo{
 				Type:             "loyalty.miles",
-				MaxPointsToSpent: *new(big.Float).SetInt64(50),
+				MaxPointsToSpent: nil,
 				//10 is the minimum to pay in miles (=20€ value)
 				MinPointsToSpent: *new(big.Float).SetInt64(10),
 				//50 miles == 100€ meaning 1Mile = 2€
@@ -263,11 +262,11 @@ func TestSaleable_GetLoyaltyChargeSplitWithAdjustedValue(t *testing.T) {
 
 	chargeLoyaltyMiles, found := charges.GetByType("loyalty.miles")
 	assert.True(t, found)
-	assert.Equal(t, priceDomain.NewFromInt(15, 1, "Miles"), chargeLoyaltyMiles.Price, "only minimum points expected")
+	assert.Equal(t, priceDomain.NewFromInt(10, 1, "Miles"), chargeLoyaltyMiles.Price, "only minimum points expected")
 
 	chargeMain, found := charges.GetByType(priceDomain.ChargeTypeMain)
 	assert.True(t, found)
-	assert.Equal(t, priceDomain.NewFromInt(120, 1, "€"), chargeMain.Price)
+	assert.Equal(t, priceDomain.NewFromInt(130, 1, "€"), chargeMain.Price)
 
 	//we need to pay 50€ (e,g. because some discounts are applied)
 	newValue = priceDomain.NewFromInt(50, 1, "€")
@@ -275,11 +274,11 @@ func TestSaleable_GetLoyaltyChargeSplitWithAdjustedValue(t *testing.T) {
 
 	chargeLoyaltyMiles, found = charges.GetByType("loyalty.miles")
 	assert.True(t, found)
-	assert.Equal(t, priceDomain.NewFromInt(5, 1, "Miles"), chargeLoyaltyMiles.Price, "only minimum points expected")
+	assert.Equal(t, priceDomain.NewFromInt(10, 1, "Miles"), chargeLoyaltyMiles.Price, "only minimum points expected")
 
 	chargeMain, found = charges.GetByType(priceDomain.ChargeTypeMain)
 	assert.True(t, found)
-	assert.Equal(t, priceDomain.NewFromInt(40, 1, "€"), chargeMain.Price)
+	assert.Equal(t, priceDomain.NewFromInt(30, 1, "€"), chargeMain.Price)
 
 	//we need to pay 150€ and wish to pay everything with miles
 	newValue = priceDomain.NewFromInt(150, 1, "€")
@@ -290,39 +289,10 @@ func TestSaleable_GetLoyaltyChargeSplitWithAdjustedValue(t *testing.T) {
 
 	chargeLoyaltyMiles, found = charges.GetByType("loyalty.miles")
 	assert.True(t, found)
-	assert.Equal(t, priceDomain.NewFromInt(75, 1, "Miles"), chargeLoyaltyMiles.Price, "adjusted max points expected as charge")
+	assert.Equal(t, priceDomain.NewFromInt(75, 1, "Miles"), chargeLoyaltyMiles.Price, "adjusted  points expected as charge (not more than total value)")
 
 	chargeMain, found = charges.GetByType(priceDomain.ChargeTypeMain)
 	assert.True(t, found)
 	assert.Equal(t, priceDomain.NewFromInt(0, 1, "€"), chargeMain.Price)
 
-}
-
-func TestLoyaltyPriceInfo_GetAmountToSpendWithQty(t *testing.T) {
-
-	l := LoyaltyPriceInfo{
-		Type:             "miles",
-		MaxPointsToSpent: *new(big.Float).SetInt64(20),
-		//10 is the minimum to pay in miles (=20€ value)
-		MinPointsToSpent: *new(big.Float).SetInt64(10),
-		//50 miles == 100€ meaning 1Mile = 2€
-		Default: priceDomain.NewFromInt(50, 1, "Miles"),
-	}
-	result := l.EvaluateMinMaxRestrictions(new(big.Float).SetInt64(15), 1)
-	assert.Equal(t, *new(big.Float).SetInt64(15), result)
-
-	result = l.EvaluateMinMaxRestrictions(new(big.Float).SetInt64(5), 1)
-	assert.Equal(t, *new(big.Float).SetInt64(10), result)
-
-	result = l.EvaluateMinMaxRestrictions(new(big.Float).SetInt64(50), 1)
-	assert.Equal(t, *new(big.Float).SetInt64(20), result)
-
-	result = l.EvaluateMinMaxRestrictions(new(big.Float).SetInt64(50), 2)
-	assert.Equal(t, *new(big.Float).SetInt64(40), result)
-
-	result = l.EvaluateMinMaxRestrictions(new(big.Float).SetInt64(0), 2)
-	assert.Equal(t, *new(big.Float).SetInt64(20), result)
-
-	result = l.EvaluateMinMaxRestrictions(new(big.Float).SetInt64(math.MaxInt64), 2)
-	assert.Equal(t, *new(big.Float).SetInt64(40), result)
 }
