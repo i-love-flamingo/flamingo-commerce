@@ -1,3 +1,5 @@
+[![Build Status](https://api.travis-ci.org/i-love-flamingo/flamingo-commerce.svg?branch=master)](https://travis-ci.org/i-love-flamingo/flamingo-commerce)
+
 # Flamingo Commerce
 
 Contains modules that helps building powerful and flexible ecommerce websites.
