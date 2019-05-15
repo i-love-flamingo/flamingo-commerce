@@ -3,6 +3,7 @@ package validation_test
 import (
 	"context"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
+	"fmt"
 	"math"
 	"reflect"
 	"testing"
@@ -15,6 +16,10 @@ type MockRestrictor struct {
 	IsRestricted  bool
 	MaxQty        int
 	DifferenceQty int
+}
+
+func (r *MockRestrictor) Name() string {
+	return fmt.Sprintf("MockRestrictor")
 }
 
 func (r *MockRestrictor) Restrict(ctx context.Context, product domain.BasicProduct, currentCart *cart.Cart) *validation.RestrictionResult {
