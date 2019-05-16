@@ -3,9 +3,10 @@ package controller
 import (
 	"context"
 	"encoding/gob"
+	"strconv"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
-	"strconv"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"

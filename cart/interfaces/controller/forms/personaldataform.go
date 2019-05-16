@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"flamingo.me/form/application"
+	"flamingo.me/form/domain"
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -53,6 +54,14 @@ func (c *PersonalDataFormController) Inject(responder *web.Responder,
 
 	c.formHandlerFactory = formHandlerFactory
 	c.logger = logger
+}
+
+func (p *PersonalDataFormController) HandleFormAction(ctx context.Context, r *web.Request) (*domain.Form, bool, error) {
+	return &domain.Form{}, true, nil // todo
+}
+
+func (p *PersonalDataFormController) GetUnsubmittedForm(ctx context.Context, r *web.Request) (*domain.Form, error) {
+	return &domain.Form{}, nil // todo
 }
 
 // MapPerson maps the checkout form data to the cart.Person domain struct

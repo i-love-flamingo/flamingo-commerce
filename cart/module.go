@@ -1,7 +1,6 @@
 package cart
 
 import (
-
 	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 

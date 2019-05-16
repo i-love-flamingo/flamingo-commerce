@@ -32,7 +32,8 @@ func (m *Module) Configure(injector *dingo.Injector) {
 func (m *Module) DefaultConfig() config.Map {
 	return config.Map{
 		"checkout": config.Map{
-			"defaultPaymentMethod": "checkmo",
+			"useDeliveryForms":    true,
+			"usePersonalDataForm": false,
 		},
 	}
 }
