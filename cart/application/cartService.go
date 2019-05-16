@@ -2,12 +2,13 @@ package application
 
 import (
 	"context"
+	"fmt"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	"flamingo.me/flamingo/v3/core/oauth/application"
-	"fmt"
 
 	"github.com/pkg/errors"
 
@@ -37,7 +38,18 @@ type (
 		cartCache         CartCache
 		placeOrderService placeorder.Service
 	}
+
+	// RestrictionError error enriched with result of restrictions
+	RestrictionError struct {
+		message           string
+		RestrictionResult validation.RestrictionResult
+	}
 )
+
+// Error fetch error message
+func (e *RestrictionError) Error() string {
+	return e.message
+}
 
 // Inject dependencies
 func (cs *CartService) Inject(
@@ -598,7 +610,10 @@ func (cs *CartService) checkProductQtyRestrictions(ctx context.Context, product 
 
 	if restrictionResult.IsRestricted {
 		if qtyToCheck > restrictionResult.RemainingDifference {
-			return errors.Errorf("Can't update item quantity, product max quantity of %d would be exceeded", restrictionResult.MaxAllowed)
+			return &RestrictionError{
+				message:           fmt.Sprintf("Can't update item quantity, product max quantity of %d would be exceeded", restrictionResult.MaxAllowed),
+				RestrictionResult: *restrictionResult,
+			}
 		}
 	}
 
