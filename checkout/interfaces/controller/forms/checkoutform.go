@@ -277,10 +277,6 @@ func (b *checkoutFormBuilder) addBillingForm(billingForm *domain.Form) error {
 }
 
 func (b *checkoutFormBuilder) addPersonalDataForm(personalDataForm *domain.Form) error {
-	_, ok := personalDataForm.Data.(cartInterfaceForms.PersonalDataForm)
-	if !ok {
-		return errors.New("no personalDataFormData?")
-	}
 	b.checkoutForm.PersonalDataForm = personalDataForm
 	return nil
 }

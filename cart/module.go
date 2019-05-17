@@ -80,7 +80,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	//Register Form Data Provider
 	injector.BindMap(new(formDomain.FormService), "commerce.cart.deliveryFormService").To(forms.DeliveryFormService{})
 	injector.BindMap(new(formDomain.FormService), "commerce.cart.billingFormService").To(forms.BillingAddressFormService{})
-	injector.BindMap(new(formDomain.FormService), "commerce.cart.personaldataFormService").To(forms.PersonalDataFormService{})
+	injector.BindMap(new(formDomain.FormService), "commerce.cart.personaldataFormService").To(forms.DefaultPersonalDataFormService{})
 
 	web.BindRoutes(injector, new(routes))
 }

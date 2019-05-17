@@ -14,20 +14,26 @@ import (
 )
 
 type (
-	//PersonalDataForm - the form for Person data
-	PersonalDataForm struct {
+	//PersonalDataForm - interface for the form DTO
+	PersonalDataForm interface {
+		MapPerson() (*cart.Person)
+		MapAdditionalData() (*cart.AdditionalData)
+	}
+
+	//DefaultPersonalDataForm - the standard form dto for Person data (that implements PersonalDataForm)
+	DefaultPersonalDataForm struct {
 		DateOfBirth     string      `form:"dateOfBirth"`
 		PassportCountry string      `form:"passportCountry"`
 		PassportNumber  string      `form:"passportNumber"`
 		Address         AddressForm `form:"address" validate:"-"`
 	}
 
-	// PersonalDataFormService implements Form(Data)Provider interface of form package
-	PersonalDataFormService struct {
+	// DefaultPersonalDataFormService implements Form(Data)Provider interface of form package
+	DefaultPersonalDataFormService struct {
 		applicationCartReceiverService *cartApplication.CartReceiverService
 	}
 
-	// PersonalDataFormController - the (mini) MVC
+	// PersonalDataFormController - the (mini) MVC for handling Personal Data (Purchaser)
 	PersonalDataFormController struct {
 		responder                      *web.Responder
 		applicationCartService         *cartApplication.CartService
@@ -39,26 +45,22 @@ type (
 	}
 )
 
-var (
-	_ domain.FormService = PersonalDataFormService{}
-)
-
 
 // Inject - dependencies
-func (p *PersonalDataFormService) Inject(
+func (p *DefaultPersonalDataFormService) Inject(
 	applicationCartReceiverService *cartApplication.CartReceiverService) {
 	p.applicationCartReceiverService = applicationCartReceiverService
 }
 
 // GetFormData from data provider
-func (p *PersonalDataFormService) GetFormData(ctx context.Context, req *web.Request) (interface{}, error) {
+func (p *DefaultPersonalDataFormService) GetFormData(ctx context.Context, req *web.Request) (interface{}, error) {
 	cart, err := p.applicationCartReceiverService.ViewCart(ctx, req.Session())
 	if err == nil {
 		if cart.Purchaser != nil {
-			formData := PersonalDataForm{
-				DateOfBirth: cart.Purchaser.PersonalDetails.DateOfBirth,
-				PassportCountry:cart.Purchaser.PersonalDetails.PassportCountry,
-				PassportNumber:cart.Purchaser.PersonalDetails.PassportNumber,
+			formData := DefaultPersonalDataForm{
+				DateOfBirth:     cart.Purchaser.PersonalDetails.DateOfBirth,
+				PassportCountry: cart.Purchaser.PersonalDetails.PassportCountry,
+				PassportNumber:  cart.Purchaser.PersonalDetails.PassportNumber,
 			}
 			if cart.Purchaser.Address != nil {
 				formData.Address.LoadFromCartAddress(*cart.Purchaser.Address)
@@ -66,7 +68,7 @@ func (p *PersonalDataFormService) GetFormData(ctx context.Context, req *web.Requ
 			return formData, nil
 		}
 	}
-	return PersonalDataForm{}, nil
+	return DefaultPersonalDataForm{}, nil
 }
 
 //Inject - Inject
@@ -112,16 +114,14 @@ func (c *PersonalDataFormController) HandleFormAction(ctx context.Context, r *we
 		return form, false, nil
 	}
 
-
-	//UpdatePurchaser
-	err = c.applicationCartService.UpdatePurchaser(ctx, session, personalDataForm.MapPerson(), nil)
+	//UpdatePurchaser (and add addittional data)
+	err = c.applicationCartService.UpdatePurchaser(ctx, session, personalDataForm.MapPerson(), personalDataForm.MapAdditionalData())
 	if err != nil {
 		c.logger.WithContext(ctx).Error("PersonalDataFormController UpdatePurchaser Error %v", err)
 		return form, false, err
 	}
 	return form, true, nil
 }
-
 
 func (c *PersonalDataFormController) getFormHandler() (domain.FormHandler, error) {
 	builder := c.formHandlerFactory.GetFormHandlerBuilder()
@@ -132,9 +132,8 @@ func (c *PersonalDataFormController) getFormHandler() (domain.FormHandler, error
 	return builder.Build(), nil
 }
 
-
 // MapPerson maps the checkout form data to the cart.Person domain struct
-func (p *PersonalDataForm) MapPerson() *cart.Person {
+func (p DefaultPersonalDataForm) MapPerson() (*cart.Person) {
 	person := cart.Person{
 		PersonalDetails: cart.PersonalDetails{
 			PassportNumber:  p.PassportNumber,
@@ -143,4 +142,10 @@ func (p *PersonalDataForm) MapPerson() *cart.Person {
 		},
 	}
 	return &person
+}
+
+
+// MapAdditionalData - mapper
+func (p DefaultPersonalDataForm) MapAdditionalData() (*cart.AdditionalData) {
+	return nil
 }
