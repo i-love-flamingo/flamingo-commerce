@@ -83,18 +83,19 @@ func (c *PersonalDataFormController) Inject(responder *web.Responder,
 	c.logger = logger
 }
 
-
-func (p *PersonalDataFormController) GetUnsubmittedForm(ctx context.Context, r *web.Request) (*domain.Form, error) {
-	formHandler, err := p.getFormHandler()
+//GetUnsubmittedForm - returns a Unsubmitted form - using the registered FormService
+func (c *PersonalDataFormController) GetUnsubmittedForm(ctx context.Context, r *web.Request) (*domain.Form, error) {
+	formHandler, err := c.getFormHandler()
 	if err != nil {
 		return nil, err
 	}
 	return formHandler.HandleUnsubmittedForm(ctx, r)
 }
 
-func (p *PersonalDataFormController) HandleFormAction(ctx context.Context, r *web.Request) (form *domain.Form, actionSuccessFull bool, err error) {
+//HandleFormAction - handles post of personal data and updates cart
+func (c *PersonalDataFormController) HandleFormAction(ctx context.Context, r *web.Request) (form *domain.Form, actionSuccessFull bool, err error) {
 	session := web.SessionFromContext(ctx)
-	formHandler, err := p.getFormHandler()
+	formHandler, err := c.getFormHandler()
 	if err != nil {
 		return nil, false, err
 	}
@@ -113,9 +114,9 @@ func (p *PersonalDataFormController) HandleFormAction(ctx context.Context, r *we
 
 
 	//UpdatePurchaser
-	err = p.applicationCartService.UpdatePurchaser(ctx, session, personalDataForm.MapPerson(), nil)
+	err = c.applicationCartService.UpdatePurchaser(ctx, session, personalDataForm.MapPerson(), nil)
 	if err != nil {
-		p.logger.WithContext(ctx).Error("PersonalDataFormController UpdatePurchaser Error %v", err)
+		c.logger.WithContext(ctx).Error("PersonalDataFormController UpdatePurchaser Error %v", err)
 		return form, false, err
 	}
 	return form, true, nil
