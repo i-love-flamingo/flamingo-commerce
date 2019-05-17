@@ -69,6 +69,7 @@ func (c *CheckoutFormController) Inject(responder *web.Responder,
 	billingAddressFormController *cartInterfaceForms.BillingAddressFormController,
 	deliveryFormController *cartInterfaceForms.DeliveryFormController,
 	simplePaymentFormController *cartInterfaceForms.SimplePaymentFormController,
+	personalDataFormController     *cartInterfaceForms.PersonalDataFormController,
 	config *struct {
 		UseDeliveryForms    bool `inject:"config:checkout.useDeliveryForms"`
 		UsePersonalDataForm bool `inject:"config:checkout.usePersonalDataForm"`
@@ -84,6 +85,7 @@ func (c *CheckoutFormController) Inject(responder *web.Responder,
 	c.billingAddressFormController = billingAddressFormController
 	c.deliveryFormController = deliveryFormController
 	c.simplePaymentFormController = simplePaymentFormController
+	c.personalDataFormController  = personalDataFormController
 	if config != nil {
 		c.useDeliveryForms = config.UseDeliveryForms
 		c.usePersonalDataForm = config.UsePersonalDataForm
@@ -275,7 +277,7 @@ func (b *checkoutFormBuilder) addBillingForm(billingForm *domain.Form) error {
 }
 
 func (b *checkoutFormBuilder) addPersonalDataForm(personalDataForm *domain.Form) error {
-	_, ok := personalDataForm.Data.(cartInterfaceForms.BillingAddressForm)
+	_, ok := personalDataForm.Data.(cartInterfaceForms.PersonalDataForm)
 	if !ok {
 		return errors.New("no personalDataFormData?")
 	}
