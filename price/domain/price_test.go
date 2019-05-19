@@ -3,6 +3,7 @@ package domain_test
 import (
 	"bytes"
 	"encoding/gob"
+	"math"
 	"math/big"
 
 	"testing"
@@ -67,8 +68,10 @@ func TestPrice_GetPayable(t *testing.T) {
 	price := domain.NewFromFloat(12.34567, "EUR")
 
 	payable := price.GetPayable()
-	assert.Equal(t, domain.NewFromFloat(12.35, "EUR").GetPayable().Amount(), payable.Amount())
+	assert.Equal(t, float64(12.35), payable.FloatAmount())
 
+	price = domain.NewFromFloat(math.MaxInt64, "EUR").GetPayable()
+	assert.Equal(t, float64(math.MaxInt64), price.FloatAmount())
 }
 
 func TestNewFromInt(t *testing.T) {

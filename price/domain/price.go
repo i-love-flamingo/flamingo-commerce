@@ -4,6 +4,7 @@ import (
 	"encoding"
 	"encoding/json"
 	"errors"
+	"math"
 	"math/big"
 	"strings"
 )
@@ -294,7 +295,8 @@ func (p Price) FloatAmount() float64 {
 // GetPayable - rounds the price with the precision required by the currency in a price that can actually be payed
 // e.g. an internal amount of 1,23344 will get rounded to 1,23
 func (p Price) GetPayable() Price {
-	return p.GetPayableByRoundingMode(RoundingModeHalfUp, p.payableRoundingPrecision())
+	mode, precision := p.payableRoundingPrecision()
+	return p.GetPayableByRoundingMode(mode,precision)
 }
 
 //GetPayableByRoundingMode - a flexible rounding method where you can pass rounding mode and precision
@@ -315,10 +317,15 @@ func (p Price) GetPayableByRoundingMode(mode string, precision int) Price {
 
 	amountTruncatedFloat,_ := new(big.Float).Mul(amountForRound, p.precisionF(precision)).Float64()
 	amountTruncatedInt := int64(amountTruncatedFloat)
+
 	amountRoundingCheckFloat, _ := new(big.Float).Mul(amountForRound, offsetToCheckRounding).Float64()
 	amountRoundingCheckInt := int64(amountRoundingCheckFloat)
 	valueAfterPrecision := (amountRoundingCheckInt - (amountTruncatedInt * 10)) * negative
-
+	if amountTruncatedFloat >= float64(math.MaxInt64) {
+		// will not work if we are already above MaxInt - so we return unrounded price:
+		newPrice.amount = p.amount
+		return newPrice
+	}
 
 	switch {
 	case mode == RoundingModeCeil:
@@ -354,11 +361,11 @@ func (p Price) precisionF(precision int) *big.Float {
 //precisionF - 10 * n - n is the amount of decimal numbers after comma
 // - can be currency specific (for now defaults to 2)
 // - TODO - use currency configuration or registry
-func (p Price) payableRoundingPrecision() int {
+func (p Price) payableRoundingPrecision() (string,int) {
 	if strings.ToLower(p.currency) == "miles" || strings.ToLower(p.currency) == "points" {
-		return int(1)
+		return RoundingModeFloor, int(1)
 	}
-	return int(100)
+	return RoundingModeHalfUp,int(100)
 }
 
 // SplitInPayables - returns "count" payable prices (each rounded) that in sum matches the given price
@@ -370,8 +377,8 @@ func (p Price) SplitInPayables(count int) ([]Price, error) {
 	if count <= 0 {
 		return nil, errors.New("Split must be higher than zero")
 	}
-
-	amountToMatchInt, _ := new(big.Float).Mul(p.GetPayable().Amount(), p.precisionF(p.payableRoundingPrecision())).Int64()
+	_, precision := p.payableRoundingPrecision()
+	amountToMatchInt, _ := new(big.Float).Mul(p.GetPayable().Amount(), p.precisionF(precision)).Int64()
 
 	splittedAmountModulo := amountToMatchInt % int64(count)
 	splittedAmount := amountToMatchInt / int64(count)
@@ -387,7 +394,8 @@ func (p Price) SplitInPayables(count int) ([]Price, error) {
 
 	prices := make([]Price, count)
 	for i := 0; i < count; i++ {
-		prices[i] = NewFromInt(splittedAmounts[i], p.payableRoundingPrecision(), p.Currency())
+		_, precision := p.payableRoundingPrecision()
+		prices[i] = NewFromInt(splittedAmounts[i], precision, p.Currency())
 	}
 
 	return prices, nil
