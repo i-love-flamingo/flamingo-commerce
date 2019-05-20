@@ -705,9 +705,9 @@ func (cs *CartService) PlaceOrder(ctx context.Context, session *web.Session, pay
 	}
 
 	if errPlaceOrder != nil {
-		cs.handleCartNotFound(session, err)
-		cs.logger.WithContext(ctx).Error(err)
-		return nil, err
+		cs.handleCartNotFound(session, errPlaceOrder)
+		cs.logger.WithContext(ctx).Error(errPlaceOrder)
+		return nil, errPlaceOrder
 	}
 
 
