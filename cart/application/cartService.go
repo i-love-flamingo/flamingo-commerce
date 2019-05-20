@@ -693,20 +693,24 @@ func (cs *CartService) PlaceOrder(ctx context.Context, session *web.Session, pay
 		return nil, err
 	}
 	var placeOrderInfos placeorder.PlacedOrderInfos
+	var errPlaceOrder error
 	if cs.cartReceiverService.IsLoggedIn(ctx, session) {
 		auth, err := cs.authManager.Auth(ctx, session)
 		if err != nil {
 			return nil, err
 		}
-		placeOrderInfos, err = cs.placeOrderService.PlaceCustomerCart(ctx, auth, cart, payment)
+		placeOrderInfos, errPlaceOrder = cs.placeOrderService.PlaceCustomerCart(ctx, auth, cart, payment)
 	} else {
-		placeOrderInfos, err = cs.placeOrderService.PlaceGuestCart(ctx, cart, payment)
+		placeOrderInfos, errPlaceOrder = cs.placeOrderService.PlaceGuestCart(ctx, cart, payment)
 	}
-	if err != nil {
+
+	if errPlaceOrder != nil {
 		cs.handleCartNotFound(session, err)
 		cs.logger.WithContext(ctx).Error(err)
 		return nil, err
 	}
+
+
 
 	cs.eventPublisher.PublishOrderPlacedEvent(ctx, cart, placeOrderInfos)
 	cs.DeleteSavedSessionGuestCartID(session)
