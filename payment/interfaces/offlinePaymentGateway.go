@@ -70,8 +70,8 @@ func (o *OfflineWebCartPaymentGateway) checkCart(currentCart *cartDomain.Cart) e
 	return nil
 }
 
-//GetStartFlowResult for offline payment
-func (o *OfflineWebCartPaymentGateway) GetStartFlowResult(ctx context.Context, currentCart *cartDomain.Cart, correlationID string, returnURL *url.URL) (*domain.FlowResult, error) {
+//StartFlow for offline payment
+func (o *OfflineWebCartPaymentGateway) StartFlow(ctx context.Context, currentCart *cartDomain.Cart, correlationID string, returnURL *url.URL) (*domain.FlowResult, error) {
 	err := o.checkCart(currentCart)
 	if err != nil {
 		return nil, err
@@ -79,8 +79,8 @@ func (o *OfflineWebCartPaymentGateway) GetStartFlowResult(ctx context.Context, c
 	return &domain.FlowResult{}, nil
 }
 
-//StartFlow for offline payment requires not much - just redirect to the returnUrl :-)
-func (o *OfflineWebCartPaymentGateway) StartFlow(ctx context.Context, currentCart *cartDomain.Cart, correlationID string, returnURL *url.URL) (web.Result, error) {
+//StartWebFlow for offline payment requires not much - just redirect to the returnUrl :-)
+func (o *OfflineWebCartPaymentGateway) StartWebFlow(ctx context.Context, currentCart *cartDomain.Cart, correlationID string, returnURL *url.URL) (web.Result, error) {
 	err := o.checkCart(currentCart)
 	if err != nil {
 		return nil, err

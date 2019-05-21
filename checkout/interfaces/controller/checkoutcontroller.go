@@ -422,7 +422,7 @@ func (cc *CheckoutController) processPaymentBeforePlaceOrder(ctx context.Context
 
 	//selected payment need to be set on cart before
 	//Handover to selected gateway flow:
-	webResult, err := gateway.StartFlow(ctx, &decoratedCart.Cart, application.PaymentFlowStandardCorrelationID, returnURL)
+	webResult, err := gateway.StartWebFlow(ctx, &decoratedCart.Cart, application.PaymentFlowStandardCorrelationID, returnURL)
 	if err != nil {
 		return cc.showCheckoutFormWithErrors(ctx, r, *decoratedCart, nil, err)
 	}
