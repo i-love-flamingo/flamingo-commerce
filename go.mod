@@ -1,7 +1,7 @@
 module flamingo.me/flamingo-commerce/v3
 
 require (
-	flamingo.me/dingo v0.1.4
+	flamingo.me/dingo v0.1.5
 	flamingo.me/flamingo/v3 v3.0.0-beta.2.0.20190515120627-9cabe248cf01
 	flamingo.me/form v1.0.0-alpha.1
 	flamingo.me/pugtemplate v1.0.0-alpha.1
