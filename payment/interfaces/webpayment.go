@@ -2,12 +2,11 @@ package interfaces
 
 import (
 	"context"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"net/url"
 
-	"flamingo.me/flamingo-commerce/v3/payment/domain"
-
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
+	"flamingo.me/flamingo-commerce/v3/payment/domain"
 	"flamingo.me/flamingo/v3/framework/web"
 )
 
