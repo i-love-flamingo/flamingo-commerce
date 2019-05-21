@@ -11,12 +11,11 @@ import (
 	searchApplication "flamingo.me/flamingo-commerce/v3/search/application"
 	searchdomain "flamingo.me/flamingo-commerce/v3/search/domain"
 	"flamingo.me/flamingo-commerce/v3/search/utils"
-	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (
-	// ViewController prividing actions for category single view
+	// ViewController providing actions for category single view
 	ViewController struct {
 		responder *web.Responder
 		domain.CategoryService
@@ -24,7 +23,6 @@ type (
 		router                *web.Router
 		template              string
 		teaserTemplate        string
-		logger                flamingo.Logger
 		paginationInfoFactory *utils.PaginationInfoFactory
 		breadcrumbService     *breadcrumb.BreadcrumbService
 	}
@@ -45,7 +43,6 @@ func (vc *ViewController) Inject(
 	categoryService domain.CategoryService,
 	searchService *application.ProductSearchService,
 	router *web.Router,
-	logger flamingo.Logger,
 	paginationInfoFactory *utils.PaginationInfoFactory,
 	breadcrumbService *breadcrumb.BreadcrumbService,
 
@@ -53,16 +50,19 @@ func (vc *ViewController) Inject(
 		Template       string `inject:"config:commerce.category.view.template"`
 		TeaserTemplate string `inject:"config:commerce.category.view.teaserTemplate"`
 	},
-) {
+) *ViewController {
 	vc.responder = responder
 	vc.CategoryService = categoryService
 	vc.SearchService = searchService
 	vc.router = router
-	vc.logger = logger
 	vc.paginationInfoFactory = paginationInfoFactory
-	vc.template = config.Template
-	vc.teaserTemplate = config.TeaserTemplate
+	if config != nil {
+		vc.template = config.Template
+		vc.teaserTemplate = config.TeaserTemplate
+	}
 	vc.breadcrumbService = breadcrumbService
+
+	return vc
 }
 
 // Get Action to display a category page
@@ -87,7 +87,7 @@ func (vc *ViewController) Get(c context.Context, request *web.Request) web.Resul
 			"code": currentCategory.Code(),
 			"name": expectedName,
 		}
-		u, _ := vc.router.URL("category.view", redirectParams)
+		u, _ := vc.router.Relative("category.view", redirectParams)
 		u.RawQuery = url.Values(request.QueryAll()).Encode()
 		return vc.responder.URLRedirect(u).Permanent()
 	}
@@ -114,7 +114,6 @@ func (vc *ViewController) Get(c context.Context, request *web.Request) web.Resul
 	}
 
 	return vc.responder.Render(template, ViewData{
-
 		Category:            currentCategory,
 		CategoryTree:        treeRoot,
 		ProductSearchResult: products,
