@@ -6,7 +6,6 @@ require (
 	flamingo.me/form v1.0.0-alpha.1
 	flamingo.me/pugtemplate v1.0.0-alpha.1
 	github.com/cockroachdb/apd v1.1.0 // indirect
-	github.com/garyburd/redigo v1.6.0 // indirect
 	github.com/go-playground/form v3.1.4+incompatible
 	github.com/go-test/deep v1.0.1
 	github.com/leekchan/accounting v0.0.0-20180703100437-18a1925d6514
