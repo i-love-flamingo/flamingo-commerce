@@ -31,6 +31,8 @@ type (
 		//SimplePaymentForm - the processed Form object for the SimplePaymentForm
 		// incoming form values are expected with namespace "payment"
 		SimplePaymentForm *domain.Form
+		//PersonalDataForm - the processed Form object for personal data
+		PersonalDataForm *domain.Form
 	}
 
 	//checkoutFormBuilder - private builder for a form with CheckoutForm Data
@@ -50,6 +52,9 @@ type (
 		billingAddressFormController   *cartInterfaceForms.BillingAddressFormController
 		deliveryFormController         *cartInterfaceForms.DeliveryFormController
 		simplePaymentFormController    *cartInterfaceForms.SimplePaymentFormController
+		personalDataFormController     *cartInterfaceForms.PersonalDataFormController
+		useDeliveryForms               bool
+		usePersonalDataForm            bool
 	}
 )
 
@@ -63,7 +68,13 @@ func (c *CheckoutFormController) Inject(responder *web.Responder,
 	formHandlerFactory application.FormHandlerFactory,
 	billingAddressFormController *cartInterfaceForms.BillingAddressFormController,
 	deliveryFormController *cartInterfaceForms.DeliveryFormController,
-	simplePaymentFormController *cartInterfaceForms.SimplePaymentFormController) {
+	simplePaymentFormController *cartInterfaceForms.SimplePaymentFormController,
+	personalDataFormController     *cartInterfaceForms.PersonalDataFormController,
+	config *struct {
+		UseDeliveryForms    bool `inject:"config:checkout.useDeliveryForms"`
+		UsePersonalDataForm bool `inject:"config:checkout.usePersonalDataForm"`
+	},
+) {
 	c.responder = responder
 	c.applicationCartReceiverService = applicationCartReceiverService
 	c.applicationCartService = applicationCartService
@@ -74,6 +85,11 @@ func (c *CheckoutFormController) Inject(responder *web.Responder,
 	c.billingAddressFormController = billingAddressFormController
 	c.deliveryFormController = deliveryFormController
 	c.simplePaymentFormController = simplePaymentFormController
+	c.personalDataFormController  = personalDataFormController
+	if config != nil {
+		c.useDeliveryForms = config.UseDeliveryForms
+		c.usePersonalDataForm = config.UsePersonalDataForm
+	}
 }
 
 //GetUnsubmittedForm - Action that returns
@@ -90,27 +106,41 @@ func (c *CheckoutFormController) GetUnsubmittedForm(ctx context.Context, r *web.
 		return checkoutFormBuilder.getForm(), err
 	}
 
-	//Add a Delivery Form for every delivery:
-	cart, err := c.applicationCartReceiverService.ViewCart(ctx, r.Session())
-	if err != nil {
-		return checkoutFormBuilder.getForm(), err
-	}
-	for _, delivery := range cart.Deliveries {
-		if !delivery.HasItems() {
-			continue
-		}
-		r.Params["deliveryCode"] = delivery.DeliveryInfo.Code
-		deliveryForm, err := c.deliveryFormController.GetUnsubmittedForm(ctx, r)
+	if c.useDeliveryForms {
+		// Add a Delivery Form for every delivery:
+		cart, err := c.applicationCartReceiverService.ViewCart(ctx, r.Session())
 		if err != nil {
 			return checkoutFormBuilder.getForm(), err
 		}
-		err = checkoutFormBuilder.addDeliveryForm(delivery.DeliveryInfo.Code, deliveryForm)
+		for _, delivery := range cart.Deliveries {
+			if !delivery.HasItems() {
+				continue
+			}
+			r.Params["deliveryCode"] = delivery.DeliveryInfo.Code
+			deliveryForm, err := c.deliveryFormController.GetUnsubmittedForm(ctx, r)
+			if err != nil {
+				return checkoutFormBuilder.getForm(), err
+			}
+			err = checkoutFormBuilder.addDeliveryForm(delivery.DeliveryInfo.Code, deliveryForm)
+			if err != nil {
+				return checkoutFormBuilder.getForm(), err
+			}
+		}
+	}
+
+	if c.usePersonalDataForm {
+		// 3. Personal Data
+		personalDataForm, err := c.personalDataFormController.GetUnsubmittedForm(ctx, r)
+		if err != nil {
+			return checkoutFormBuilder.getForm(), err
+		}
+		err = checkoutFormBuilder.addPersonalDataForm(personalDataForm)
 		if err != nil {
 			return checkoutFormBuilder.getForm(), err
 		}
 	}
 
-	//3. Add the simplePaymentForm
+	//4. Add the simplePaymentForm
 	simplePaymentForm, err := c.simplePaymentFormController.GetUnsubmittedForm(ctx, r)
 	if err != nil {
 		return checkoutFormBuilder.getForm(), err
@@ -160,32 +190,47 @@ func (c *CheckoutFormController) HandleFormAction(ctx context.Context, r *web.Re
 		return checkoutFormBuilder.getForm(), false, err
 	}
 
-	//2. #### Process ALL the delivery forms:
-	//Add a Delivery Form for every delivery:
-	cart, err := c.applicationCartReceiverService.ViewCart(ctx, r.Session())
-	if err != nil {
-		return checkoutFormBuilder.getForm(), false, err
-	}
-	for _, delivery := range cart.Deliveries {
-		if !delivery.HasItems() {
-			continue
+	if c.useDeliveryForms {
+		// 2. #### Process ALL the delivery forms:
+		// Add a Delivery Form for every delivery:
+		cart, err := c.applicationCartReceiverService.ViewCart(ctx, r.Session())
+		if err != nil {
+			return checkoutFormBuilder.getForm(), false, err
 		}
-		deliveryFormNamespace := "deliveries." + delivery.DeliveryInfo.Code
-		//Add the billing form:
-		deliverySubRequest := newRequestWithResolvedNamespace(deliveryFormNamespace, r)
-		deliverySubRequest.Params["deliveryCode"] = delivery.DeliveryInfo.Code
-		deliveryForm, success, err := c.deliveryFormController.HandleFormAction(ctx, deliverySubRequest)
+		for _, delivery := range cart.Deliveries {
+			if !delivery.HasItems() {
+				continue
+			}
+			deliveryFormNamespace := "deliveries." + delivery.DeliveryInfo.Code
+			// Add the billing form:
+			deliverySubRequest := newRequestWithResolvedNamespace(deliveryFormNamespace, r)
+			deliverySubRequest.Params["deliveryCode"] = delivery.DeliveryInfo.Code
+			deliveryForm, success, err := c.deliveryFormController.HandleFormAction(ctx, deliverySubRequest)
+			overallSuccess = overallSuccess && success
+			if err != nil {
+				return checkoutFormBuilder.getForm(), false, err
+			}
+			err = checkoutFormBuilder.addDeliveryForm(delivery.DeliveryInfo.Code, deliveryForm)
+			if err != nil {
+				return checkoutFormBuilder.getForm(), false, err
+			}
+		}
+	}
+
+	if c.usePersonalDataForm {
+		// 3. ### Add the personalDataForm
+		personalDataForm, success, err := c.personalDataFormController.HandleFormAction(ctx, newRequestWithResolvedNamespace("personalData", r))
 		overallSuccess = overallSuccess && success
 		if err != nil {
 			return checkoutFormBuilder.getForm(), false, err
 		}
-		err = checkoutFormBuilder.addDeliveryForm(delivery.DeliveryInfo.Code, deliveryForm)
+		err = checkoutFormBuilder.addPersonalDataForm(personalDataForm)
 		if err != nil {
 			return checkoutFormBuilder.getForm(), false, err
 		}
 	}
 
-	//3. ### Add the simplePaymentForm
+	//4. ### Add the simplePaymentForm
 	simplePaymentForm, success, err := c.simplePaymentFormController.HandleFormAction(ctx, newRequestWithResolvedNamespace("payment", r))
 	overallSuccess = overallSuccess && success
 	if err != nil {
@@ -228,6 +273,11 @@ func (b *checkoutFormBuilder) addBillingForm(billingForm *domain.Form) error {
 		return errors.New("no billingFormData?")
 	}
 	b.checkoutForm.BillingAddressForm = billingForm
+	return nil
+}
+
+func (b *checkoutFormBuilder) addPersonalDataForm(personalDataForm *domain.Form) error {
+	b.checkoutForm.PersonalDataForm = personalDataForm
 	return nil
 }
 
