@@ -3,12 +3,13 @@ package controller
 import (
 	"context"
 	"encoding/gob"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	"fmt"
 	"net/http"
 	"net/url"
+
+	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -400,7 +401,7 @@ func getViewErrorInfo(err error) ViewErrorInfos {
 
 func (cc *CheckoutController) processPaymentBeforePlaceOrder(ctx context.Context, r *web.Request) web.Result {
 	session := web.SessionFromContext(ctx)
-	_, err := cc.applicationCartService.ReserveOrderIDAndSave(ctx,session)
+	_, err := cc.applicationCartService.ReserveOrderIDAndSave(ctx, session)
 	if err != nil {
 		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error %v", err)
 		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
@@ -419,15 +420,14 @@ func (cc *CheckoutController) processPaymentBeforePlaceOrder(ctx context.Context
 	//procces Payment:
 	returnURL := cc.getPaymentReturnURL(r, decoratedCart.Cart.PaymentSelection.Gateway())
 
-
 	//selected payment need to be set on cart before
 	//Handover to selected gateway flow:
-	flowResult, err := gateway.StartFlow(ctx, &decoratedCart.Cart, session.ID(), returnURL)
+	webResult, err := gateway.StartWebFlow(ctx, &decoratedCart.Cart, application.PaymentFlowStandardCorrelationID, returnURL)
 	if err != nil {
 		return cc.showCheckoutFormWithErrors(ctx, r, *decoratedCart, nil, err)
 	}
 
-	return flowResult
+	return webResult
 }
 
 // ReviewAction handles the cart review action
