@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"math/big"
 
-	"flamingo.me/flamingo-commerce/v3/price/domain"
+	"github.com/pkg/errors"
 
 	"flamingo.me/flamingo/v3/framework/web"
-	"github.com/pkg/errors"
+
+	"flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
 type (
