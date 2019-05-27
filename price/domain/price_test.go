@@ -83,10 +83,20 @@ func TestNewFromInt(t *testing.T) {
 }
 
 func TestPrice_SplitInPayables(t *testing.T) {
-	originalPrice := domain.NewFromFloat(12.456, "EUR")
-	payableSplitPrices, _ := originalPrice.SplitInPayables(6)
+	originalPrice := domain.NewFromFloat(32.1, "EUR") // float edge case
+	payableSplitPrices, _ := originalPrice.SplitInPayables(1)
 
 	sumPrice := domain.NewZero("EUR")
+	for _, price := range payableSplitPrices {
+		sumPrice, _ = sumPrice.Add(price)
+	}
+	//sum of the splitted payable need to match original price payable
+	assert.Equal(t, originalPrice.GetPayable().Amount(), sumPrice.GetPayable().Amount())
+
+	originalPrice = domain.NewFromFloat(12.456, "EUR")
+	payableSplitPrices, _ = originalPrice.SplitInPayables(6)
+
+	sumPrice = domain.NewZero("EUR")
 	for _, price := range payableSplitPrices {
 		sumPrice, _ = sumPrice.Add(price)
 	}

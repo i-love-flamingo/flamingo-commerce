@@ -296,7 +296,7 @@ func (p Price) FloatAmount() float64 {
 // e.g. an internal amount of 1,23344 will get rounded to 1,23
 func (p Price) GetPayable() Price {
 	mode, precision := p.payableRoundingPrecision()
-	return p.GetPayableByRoundingMode(mode,precision)
+	return p.GetPayableByRoundingMode(mode, precision)
 }
 
 //GetPayableByRoundingMode - a flexible rounding method where you can pass rounding mode and precision
@@ -315,7 +315,7 @@ func (p Price) GetPayableByRoundingMode(mode string, precision int) Price {
 	}
 	offsetToCheckRounding := new(big.Float).Mul(p.precisionF(precision), new(big.Float).SetInt64(10))
 
-	amountTruncatedFloat,_ := new(big.Float).Mul(amountForRound, p.precisionF(precision)).Float64()
+	amountTruncatedFloat, _ := new(big.Float).Mul(amountForRound, p.precisionF(precision)).Float64()
 	amountTruncatedInt := int64(amountTruncatedFloat)
 
 	amountRoundingCheckFloat, _ := new(big.Float).Mul(amountForRound, offsetToCheckRounding).Float64()
@@ -330,19 +330,19 @@ func (p Price) GetPayableByRoundingMode(mode string, precision int) Price {
 	switch {
 	case mode == RoundingModeCeil:
 		if negative == 1 && valueAfterPrecision > 0 {
-			amountTruncatedInt = amountTruncatedInt + ( 1 * negative)
+			amountTruncatedInt = amountTruncatedInt + (1 * negative)
 		}
 	case mode == RoundingModeHalfUp:
 		if negative == 1 && valueAfterPrecision >= 5 {
-			amountTruncatedInt = amountTruncatedInt +  ( 1 * negative)
+			amountTruncatedInt = amountTruncatedInt + (1 * negative)
 		}
 	case mode == RoundingModeHalfDown:
 		if negative == 1 && valueAfterPrecision > 5 {
-			amountTruncatedInt = amountTruncatedInt +  ( 1 * negative)
+			amountTruncatedInt = amountTruncatedInt + (1 * negative)
 		}
 	case mode == RoundingModeFloor:
 		if negative == -1 {
-			amountTruncatedInt = amountTruncatedInt + ( 1 * negative)
+			amountTruncatedInt = amountTruncatedInt + (1 * negative)
 		}
 	default:
 		//nothing to round
@@ -361,11 +361,11 @@ func (p Price) precisionF(precision int) *big.Float {
 //precisionF - 10 * n - n is the amount of decimal numbers after comma
 // - can be currency specific (for now defaults to 2)
 // - TODO - use currency configuration or registry
-func (p Price) payableRoundingPrecision() (string,int) {
+func (p Price) payableRoundingPrecision() (string, int) {
 	if strings.ToLower(p.currency) == "miles" || strings.ToLower(p.currency) == "points" {
 		return RoundingModeFloor, int(1)
 	}
-	return RoundingModeHalfUp,int(100)
+	return RoundingModeHalfUp, int(100)
 }
 
 // SplitInPayables - returns "count" payable prices (each rounded) that in sum matches the given price
@@ -378,7 +378,8 @@ func (p Price) SplitInPayables(count int) ([]Price, error) {
 		return nil, errors.New("Split must be higher than zero")
 	}
 	_, precision := p.payableRoundingPrecision()
-	amountToMatchInt, _ := new(big.Float).Mul(p.GetPayable().Amount(), p.precisionF(precision)).Int64()
+	amountToMatchFloat, _ := new(big.Float).Mul(p.GetPayable().Amount(), p.precisionF(precision)).Float64()
+	amountToMatchInt := int64(amountToMatchFloat)
 
 	splittedAmountModulo := amountToMatchInt % int64(count)
 	splittedAmount := amountToMatchInt / int64(count)
