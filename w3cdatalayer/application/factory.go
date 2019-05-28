@@ -312,8 +312,7 @@ func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.Produ
 	baseData := product.BaseData()
 	retailerCode := baseData.RetailerCode
 
-	productName := baseData.Title
-	productName = s.regex.ReplaceAllString(baseData.Title, "-")
+	productName := s.regex.ReplaceAllString(baseData.Title, "-")
 
 	//Handle Variants if it is a Configurable
 	var parentIDRef *string
