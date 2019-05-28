@@ -89,6 +89,16 @@ func (cc *CartViewController) ViewAction(ctx context.Context, r *web.Request) we
 		if cartViewActionData, ok := flashes[0].(CartViewActionData); ok {
 			cartViewData.AddToCartProductsData = cartViewActionData.AddToCartProductsData
 		}
+		if restrictionResult, ok := flashes[0].(validation.RestrictionResult); ok {
+			cc.logger.Error(restrictionResult)
+		}
+	}
+	restrictionFlashes := r.Session().Flashes("cart.view.error.restriction")
+	if len(restrictionFlashes) > 0 {
+		// @todo bring the error message somehow to the frontend
+		if restrictionResult, ok := restrictionFlashes[0].(validation.RestrictionResult); ok {
+			cc.logger.Error(restrictionResult)
+		}
 	}
 
 	return cc.responder.Render("checkout/cart", cartViewData)
@@ -148,6 +158,11 @@ func (cc *CartViewController) UpdateQtyAndViewAction(ctx context.Context, r *web
 	err = cc.applicationCartService.UpdateItemQty(ctx, r.Session(), id, deliveryCode, qtyInt)
 	if err != nil {
 		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.UpdateAndViewAction: Error %v", err)
+
+		if e, ok := err.(*application.RestrictionError); ok {
+			restrictionResult := e.RestrictionResult
+			r.Session().AddFlash(restrictionResult, "cart.view.data")
+		}
 	}
 
 	return cc.responder.RouteRedirect("cart.view", nil)
