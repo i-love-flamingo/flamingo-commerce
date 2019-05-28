@@ -38,8 +38,10 @@ type (
 		Price        float64
 		PriceInclTax float64
 
-		// Source Id where the item shoudl be picked
+		// Source Id where the item should be picked
 		SourceID string
+
+		Attributes Attributes
 	}
 
 	// Attributes map
@@ -47,6 +49,4 @@ type (
 
 	// Attribute interface
 	Attribute interface{}
-
-
 )
