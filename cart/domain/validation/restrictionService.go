@@ -29,7 +29,7 @@ type (
 		Name() string
 		// Restrict must return a `RestrictionResult` which contains information regarding if a restriction is
 		// applied and whats the max allowed quantity
-		Restrict(ctx context.Context, product domain.BasicProduct, cart *cart.Cart) *RestrictionResult
+		Restrict(ctx context.Context, product domain.BasicProduct, cart *cart.Cart, deliveryCode string) *RestrictionResult
 	}
 )
 
@@ -44,7 +44,7 @@ func (rs *RestrictionService) Inject(
 
 // RestrictQty checks if there is an qty restriction present and returns an according result containing the max allowed
 // quantity and the quantity difference to the current cart
-func (rs *RestrictionService) RestrictQty(ctx context.Context, product domain.BasicProduct, currentCart *cart.Cart) *RestrictionResult {
+func (rs *RestrictionService) RestrictQty(ctx context.Context, product domain.BasicProduct, currentCart *cart.Cart, deliveryCode string) *RestrictionResult {
 	restrictionResult := &RestrictionResult{
 		IsRestricted:        false,
 		MaxAllowed:          math.MaxInt32,
@@ -52,7 +52,7 @@ func (rs *RestrictionService) RestrictQty(ctx context.Context, product domain.Ba
 	}
 
 	for _, r := range rs.qtyRestrictors {
-		currentResult := r.Restrict(ctx, product, currentCart)
+		currentResult := r.Restrict(ctx, product, currentCart, deliveryCode)
 
 		if currentResult.IsRestricted {
 			restrictionResult.IsRestricted = true

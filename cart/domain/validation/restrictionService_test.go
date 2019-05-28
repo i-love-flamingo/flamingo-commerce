@@ -2,15 +2,18 @@ package validation_test
 
 import (
 	"context"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	"fmt"
 	"math"
 	"reflect"
 	"testing"
 
+	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 )
+
+var _ validation.MaxQuantityRestrictor = (*MockRestrictor)(nil)
 
 type MockRestrictor struct {
 	IsRestricted  bool
@@ -22,7 +25,7 @@ func (r *MockRestrictor) Name() string {
 	return fmt.Sprintf("MockRestrictor")
 }
 
-func (r *MockRestrictor) Restrict(ctx context.Context, product domain.BasicProduct, currentCart *cart.Cart) *validation.RestrictionResult {
+func (r *MockRestrictor) Restrict(ctx context.Context, product domain.BasicProduct, currentCart *cart.Cart, deliveryCode string) *validation.RestrictionResult {
 	return &validation.RestrictionResult{
 		IsRestricted:        r.IsRestricted,
 		MaxAllowed:          r.MaxQty,
@@ -35,9 +38,10 @@ func TestRestrictionService_RestrictQty(t *testing.T) {
 		qtyRestrictors []validation.MaxQuantityRestrictor
 	}
 	type args struct {
-		ctx     context.Context
-		product domain.BasicProduct
-		cart    *cart.Cart
+		ctx          context.Context
+		product      domain.BasicProduct
+		cart         *cart.Cart
+		deliveryCode string
 	}
 	tests := []struct {
 		name                      string
@@ -113,7 +117,7 @@ func TestRestrictionService_RestrictQty(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			rs := &validation.RestrictionService{}
 			rs.Inject(tt.fields.qtyRestrictors)
-			got := rs.RestrictQty(tt.args.ctx, tt.args.product, tt.args.cart)
+			got := rs.RestrictQty(tt.args.ctx, tt.args.product, tt.args.cart, tt.args.deliveryCode)
 			if !reflect.DeepEqual(got, tt.expectedRestrictionResult) {
 				t.Errorf("RestrictionService.RestrictQty() got = %v, expected = %v", got, tt.expectedRestrictionResult)
 			}
