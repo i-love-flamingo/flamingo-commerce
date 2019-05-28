@@ -4,18 +4,18 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/pkg/errors"
+
+	"flamingo.me/flamingo/v3/core/oauth/application"
+	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/web"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
-	"flamingo.me/flamingo/v3/core/oauth/application"
-
-	"github.com/pkg/errors"
-
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
-	"flamingo.me/flamingo/v3/framework/flamingo"
-	"flamingo.me/flamingo/v3/framework/web"
 )
 
 // CartService application struct
@@ -659,7 +659,9 @@ func (cs *CartService) DeleteCartInCache(ctx context.Context, session *web.Sessi
 	}
 }
 
-// ReserveOrderIDAndSave - reserves order id by using the PlaceOrder Behaviour and sets saves it on the cart. You may want to use this before proceeding with payment to ensure having a useful reference in the payment processing
+// ReserveOrderIDAndSave reserves order id by using the PlaceOrder behaviour, sets and saves it on the cart.
+// If the cart already holds a reserved order id no set/save is performed and the existing cart is returned.
+// You may want to use this before proceeding with payment to ensure having a useful reference in the payment processing
 func (cs *CartService) ReserveOrderIDAndSave(ctx context.Context, session *web.Session) (*cartDomain.Cart, error) {
 	if cs.placeOrderService == nil {
 		return nil, errors.New("No placeOrderService registered")
@@ -668,6 +670,12 @@ func (cs *CartService) ReserveOrderIDAndSave(ctx context.Context, session *web.S
 	if err != nil {
 		return nil, err
 	}
+
+	// the cart already has a reserved order id - no need to generate and update data
+	if cart.AdditionalData.ReservedOrderID != "" {
+		return cart, nil
+	}
+
 	reservedOrderID, err := cs.placeOrderService.ReserveOrderID(ctx, cart)
 	if err != nil {
 		cs.logger.WithContext(ctx).Debug("Reserve order id:", reservedOrderID)
@@ -709,8 +717,6 @@ func (cs *CartService) PlaceOrder(ctx context.Context, session *web.Session, pay
 		cs.logger.WithContext(ctx).Error(errPlaceOrder)
 		return nil, errPlaceOrder
 	}
-
-
 
 	cs.eventPublisher.PublishOrderPlacedEvent(ctx, cart, placeOrderInfos)
 	cs.DeleteSavedSessionGuestCartID(session)
