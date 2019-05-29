@@ -20,6 +20,7 @@ type (
 		DecoratedCart         decorator.DecoratedCart
 		CartValidationResult  validation.Result
 		AddToCartProductsData []productDomain.BasicProductData
+		RestrictionError      string
 	}
 
 	// CartViewController for carts
@@ -89,15 +90,11 @@ func (cc *CartViewController) ViewAction(ctx context.Context, r *web.Request) we
 		if cartViewActionData, ok := flashes[0].(CartViewActionData); ok {
 			cartViewData.AddToCartProductsData = cartViewActionData.AddToCartProductsData
 		}
-		if restrictionResult, ok := flashes[0].(validation.RestrictionResult); ok {
-			cc.logger.Error(restrictionResult)
-		}
 	}
 	restrictionFlashes := r.Session().Flashes("cart.view.error.restriction")
 	if len(restrictionFlashes) > 0 {
-		// @todo bring the error message somehow to the frontend
-		if restrictionResult, ok := restrictionFlashes[0].(validation.RestrictionResult); ok {
-			cc.logger.Error(restrictionResult)
+		if restrictionResult, ok := restrictionFlashes[0].(string); ok {
+			cartViewData.RestrictionError = restrictionResult
 		}
 	}
 
@@ -161,7 +158,7 @@ func (cc *CartViewController) UpdateQtyAndViewAction(ctx context.Context, r *web
 
 		if e, ok := err.(*application.RestrictionError); ok {
 			restrictionResult := e.RestrictionResult
-			r.Session().AddFlash(restrictionResult, "cart.view.data")
+			r.Session().AddFlash(restrictionResult.RestrictorName, "cart.view.error.restriction")
 		}
 	}
 
