@@ -258,7 +258,7 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 		return err
 	}
 
-	err = cs.checkProductQtyRestrictions(ctx, product, cart, qty-qtyBefore)
+	err = cs.checkProductQtyRestrictions(ctx, product, cart, qty-qtyBefore, deliveryCode)
 	if err != nil {
 		cs.logger.WithContext(ctx).WithField("subCategory", "UpdateItemQty").Error(err)
 
@@ -500,7 +500,7 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 		return nil, err
 	}
 
-	err = cs.checkProductQtyRestrictions(ctx, product, cart, addRequest.Qty)
+	err = cs.checkProductQtyRestrictions(ctx, product, cart, addRequest.Qty, deliveryCode)
 	if err != nil {
 		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "AddProduct").Error(err)
 
@@ -605,8 +605,8 @@ func (cs *CartService) checkProductForAddRequest(ctx context.Context, session *w
 	return addRequest, product, nil
 }
 
-func (cs *CartService) checkProductQtyRestrictions(ctx context.Context, product productDomain.BasicProduct, cart *cartDomain.Cart, qtyToCheck int) error {
-	restrictionResult := cs.restrictionService.RestrictQty(ctx, product, cart)
+func (cs *CartService) checkProductQtyRestrictions(ctx context.Context, product productDomain.BasicProduct, cart *cartDomain.Cart, qtyToCheck int, deliveryCode string) error {
+	restrictionResult := cs.restrictionService.RestrictQty(ctx, product, cart, deliveryCode)
 
 	if restrictionResult.IsRestricted {
 		if qtyToCheck > restrictionResult.RemainingDifference {
