@@ -40,8 +40,9 @@ type (
 		AddToCartProductsData []productDomain.BasicProductData
 	}
 
+	// CartRestrictionError to render restriction errors
 	CartRestrictionError struct {
-		ProductId        string
+		ProductID        string
 		RestrictionError *application.RestrictionError
 	}
 )
