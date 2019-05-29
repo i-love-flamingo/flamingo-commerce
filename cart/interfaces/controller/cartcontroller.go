@@ -20,7 +20,7 @@ type (
 		DecoratedCart         decorator.DecoratedCart
 		CartValidationResult  validation.Result
 		AddToCartProductsData []productDomain.BasicProductData
-		RestrictionError      string
+		CartRestrictionError  CartRestrictionError
 	}
 
 	// CartViewController for carts
@@ -39,10 +39,16 @@ type (
 	CartViewActionData struct {
 		AddToCartProductsData []productDomain.BasicProductData
 	}
+
+	CartRestrictionError struct {
+		ProductId        string
+		RestrictionError *application.RestrictionError
+	}
 )
 
 func init() {
 	gob.Register(CartViewActionData{})
+	gob.Register(CartRestrictionError{})
 }
 
 // Inject dependencies
@@ -93,8 +99,8 @@ func (cc *CartViewController) ViewAction(ctx context.Context, r *web.Request) we
 	}
 	restrictionFlashes := r.Session().Flashes("cart.view.error.restriction")
 	if len(restrictionFlashes) > 0 {
-		if restrictionResult, ok := restrictionFlashes[0].(string); ok {
-			cartViewData.RestrictionError = restrictionResult
+		if restrictionError, ok := restrictionFlashes[0].(CartRestrictionError); ok {
+			cartViewData.CartRestrictionError = restrictionError
 		}
 	}
 
@@ -157,8 +163,12 @@ func (cc *CartViewController) UpdateQtyAndViewAction(ctx context.Context, r *web
 		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.UpdateAndViewAction: Error %v", err)
 
 		if e, ok := err.(*application.RestrictionError); ok {
-			restrictionResult := e.RestrictionResult
-			r.Session().AddFlash(restrictionResult.RestrictorName, "cart.view.error.restriction")
+			cartRestrictionError := CartRestrictionError{
+				ProductId:        id,
+				RestrictionError: e,
+			}
+
+			r.Session().AddFlash(cartRestrictionError, "cart.view.error.restriction")
 		}
 	}
 
