@@ -5,6 +5,7 @@ import (
 	"crypto/sha512"
 	"encoding/base64"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -31,6 +32,7 @@ type Factory struct {
 	locale                         string
 	defaultCurrency                string
 	hashUserValues                 bool
+	regex                          *regexp.Regexp
 }
 
 // Inject factory dependencies
@@ -65,6 +67,13 @@ func (s *Factory) Inject(
 	s.locale = config.Locale
 	s.defaultCurrency = config.DefaultCurrency
 	s.hashUserValues = config.HashUserValues
+
+	regexString := "[,|;|\\|]"
+	r, err := regexp.Compile(regexString)
+	if err != nil {
+		panic(err)
+	}
+	s.regex = r
 }
 
 // BuildForCurrentRequest builds the datalayer for the current request
@@ -302,6 +311,9 @@ func (s Factory) getProductCategory(product productDomain.BasicProduct) *domain.
 func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.ProductInfo {
 	baseData := product.BaseData()
 	retailerCode := baseData.RetailerCode
+
+	productName := s.regex.ReplaceAllString(baseData.Title, "-")
+
 	//Handle Variants if it is a Configurable
 	var parentIDRef *string
 	var variantSelectedAttributeRef *string
@@ -355,7 +367,7 @@ func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.Produ
 
 	return domain.ProductInfo{
 		ProductID:                baseData.MarketPlaceCode,
-		ProductName:              baseData.Title,
+		ProductName:              productName,
 		ProductThumbnail:         s.getProductThumbnailURL(baseData),
 		ProductImage:             s.getProductImageURL(baseData),
 		ProductType:              product.Type(),
