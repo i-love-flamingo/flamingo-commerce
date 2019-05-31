@@ -165,7 +165,7 @@ func (cc *CartViewController) UpdateQtyAndViewAction(ctx context.Context, r *web
 
 		if e, ok := err.(*application.RestrictionError); ok {
 			cartRestrictionError := CartRestrictionError{
-				ProductId:        id,
+				ProductID:        id,
 				RestrictionError: e,
 			}
 
