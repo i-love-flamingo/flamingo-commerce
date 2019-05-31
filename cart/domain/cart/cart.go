@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"math/big"
 
-	"flamingo.me/flamingo-commerce/v3/price/domain"
+	"github.com/pkg/errors"
 
 	"flamingo.me/flamingo/v3/framework/web"
-	"github.com/pkg/errors"
+
+	"flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
 type (
@@ -123,9 +124,9 @@ type (
 
 	//PricedItems - value object that contains items of the different possible types, that have a price
 	PricedItems struct {
-		cartItems map[string]domain.Price
+		cartItems     map[string]domain.Price
 		shippingItems map[string]domain.Price
-		totalItems map[string]domain.Price
+		totalItems    map[string]domain.Price
 	}
 )
 
@@ -147,6 +148,7 @@ func init() {
 	gob.Register(Cart{})
 	gob.Register(DefaultPaymentSelection{})
 }
+
 // GetMainShippingEMail returns the main shipping address email, empty string if not available
 func (c Cart) GetMainShippingEMail() string {
 	for _, deliveries := range c.Deliveries {
@@ -275,13 +277,12 @@ func (c Cart) GrandTotal() domain.Price {
 	return c.GetAllPaymentRequiredItems().Sum()
 }
 
-
 // GetAllPaymentRequiredItems - returns all the Items (Cartitem, ShippingItem, TotalItems) that need to be payed with the final gross price
 func (c Cart) GetAllPaymentRequiredItems() PricedItems {
 	pricedItems := PricedItems{
-		cartItems: make(map[string]domain.Price),
-		shippingItems: make( map[string]domain.Price,len(c.Deliveries)),
-		totalItems: make( map[string]domain.Price,len(c.Totalitems)),
+		cartItems:     make(map[string]domain.Price),
+		shippingItems: make(map[string]domain.Price, len(c.Deliveries)),
+		totalItems:    make(map[string]domain.Price, len(c.Totalitems)),
 	}
 	for _, ti := range c.Totalitems {
 		pricedItems.totalItems[ti.Code] = ti.Price
@@ -472,11 +473,11 @@ func (c Cart) GetTotalItemsByType(typeCode string) []Totalitem {
 func (c Cart) GrandTotalCharges() domain.Charges {
 	// Check if a specific split was saved:
 	if c.PaymentSelection != nil {
-		charges :=  c.PaymentSelection.CartSplit().ChargesByType()
+		charges := c.PaymentSelection.CartSplit().ChargesByType()
 		//make sure we have valid main charge currency
 		return charges.AddCharge(domain.Charge{
-			Value: domain.NewFromInt(0,1,c.DefaultCurrency),
-			Price: domain.NewFromInt(0,1,c.DefaultCurrency),
+			Value: domain.NewFromInt(0, 1, c.DefaultCurrency),
+			Price: domain.NewFromInt(0, 1, c.DefaultCurrency),
 			Type:  domain.ChargeTypeMain,
 		})
 	}
@@ -493,7 +494,6 @@ func (c Cart) GrandTotalCharges() domain.Charges {
 
 	return charges
 }
-
 
 // AddTax returns new Tax with this Tax added
 func (t Taxes) AddTax(tax Tax) Taxes {
@@ -668,32 +668,29 @@ func (b *Builder) reset(err error) (*Cart, error) {
 
 //Sum - returns Sum of all items in this struct
 func (p PricedItems) Sum() domain.Price {
-	prices := make([]domain.Price,len(p.cartItems)+len(p.shippingItems)+len(p.totalItems))
-	for _,p := range p.totalItems {
-		prices = append(prices,p)
+	prices := make([]domain.Price, len(p.cartItems)+len(p.shippingItems)+len(p.totalItems))
+	for _, p := range p.totalItems {
+		prices = append(prices, p)
 	}
-	for _,p := range p.shippingItems {
-		prices = append(prices,p)
+	for _, p := range p.shippingItems {
+		prices = append(prices, p)
 	}
-	for _,p := range p.cartItems {
-		prices = append(prices,p)
+	for _, p := range p.cartItems {
+		prices = append(prices, p)
 	}
 	sum, _ := domain.SumAll(prices...)
 	return sum
 }
-
 
 //TotalItems - returns the Price per Totalitem - map key is total type
 func (p PricedItems) TotalItems() map[string]domain.Price {
 	return p.totalItems
 }
 
-
 //ShippingItems - returns the Price per ShippingItems - map key is deliverycode
 func (p PricedItems) ShippingItems() map[string]domain.Price {
 	return p.shippingItems
 }
-
 
 //CartItems - returns the Price per cartItems - map key is cartitem ID
 func (p PricedItems) CartItems() map[string]domain.Price {
