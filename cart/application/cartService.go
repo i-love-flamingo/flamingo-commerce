@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"encoding/gob"
 	"fmt"
 
 	"github.com/pkg/errors"
@@ -46,6 +47,10 @@ type (
 		RestrictionResult validation.RestrictionResult
 	}
 )
+
+func init() {
+	gob.Register(RestrictionError{})
+}
 
 // Error fetch error message
 func (e *RestrictionError) Error() string {
