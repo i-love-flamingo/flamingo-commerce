@@ -68,6 +68,8 @@ type (
 		Path string
 		//Name - speaking name of the category
 		Name string
+		//Optional link to parent teaser
+		Parent *CategoryTeaser
 	}
 
 	// Saleable are properties required for being selled

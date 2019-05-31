@@ -2,6 +2,7 @@ package checkout
 
 import (
 	"flamingo.me/dingo"
+	"flamingo.me/flamingo-commerce/v3/cart"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain"
 	"flamingo.me/flamingo-commerce/v3/checkout/infrastructure"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller"
@@ -67,4 +68,13 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 
 	registry.HandleAny("checkout.placeorder", r.controller.PlaceOrderAction)
 	registry.Route("/checkout/placeorder", "checkout.placeorder")
+}
+
+
+
+// Depends on other modules
+func (m *Module) Depends() []dingo.Module {
+	return []dingo.Module{
+		new(cart.Module),
+	}
 }
