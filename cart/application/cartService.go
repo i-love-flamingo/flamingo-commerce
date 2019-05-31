@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"encoding/gob"
 	"fmt"
 
 	"github.com/pkg/errors"
@@ -10,11 +11,11 @@ import (
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 
+	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
-	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
@@ -42,9 +43,14 @@ type (
 	// RestrictionError error enriched with result of restrictions
 	RestrictionError struct {
 		message           string
+		CartItemID        string
 		RestrictionResult validation.RestrictionResult
 	}
 )
+
+func init() {
+	gob.Register(RestrictionError{})
+}
 
 // Error fetch error message
 func (e *RestrictionError) Error() string {
@@ -258,7 +264,7 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 		return err
 	}
 
-	err = cs.checkProductQtyRestrictions(ctx, product, cart, qty-qtyBefore, deliveryCode)
+	err = cs.checkProductQtyRestrictions(ctx, product, cart, qty-qtyBefore, deliveryCode, itemID)
 	if err != nil {
 		cs.logger.WithContext(ctx).WithField("subCategory", "UpdateItemQty").Error(err)
 
@@ -500,7 +506,7 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 		return nil, err
 	}
 
-	err = cs.checkProductQtyRestrictions(ctx, product, cart, addRequest.Qty, deliveryCode)
+	err = cs.checkProductQtyRestrictions(ctx, product, cart, addRequest.Qty, deliveryCode, "")
 	if err != nil {
 		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "AddProduct").Error(err)
 
@@ -605,13 +611,14 @@ func (cs *CartService) checkProductForAddRequest(ctx context.Context, session *w
 	return addRequest, product, nil
 }
 
-func (cs *CartService) checkProductQtyRestrictions(ctx context.Context, product productDomain.BasicProduct, cart *cartDomain.Cart, qtyToCheck int, deliveryCode string) error {
+func (cs *CartService) checkProductQtyRestrictions(ctx context.Context, product productDomain.BasicProduct, cart *cartDomain.Cart, qtyToCheck int, deliveryCode string, itemID string) error {
 	restrictionResult := cs.restrictionService.RestrictQty(ctx, product, cart, deliveryCode)
 
 	if restrictionResult.IsRestricted {
 		if qtyToCheck > restrictionResult.RemainingDifference {
 			return &RestrictionError{
 				message:           fmt.Sprintf("Can't update item quantity, product max quantity of %d would be exceeded", restrictionResult.MaxAllowed),
+				CartItemID:        itemID,
 				RestrictionResult: *restrictionResult,
 			}
 		}
