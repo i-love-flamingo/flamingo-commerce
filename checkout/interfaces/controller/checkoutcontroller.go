@@ -84,6 +84,8 @@ type (
 		redirectToCartOnInvalideCart    bool
 		privacyPolicyRequired           bool
 
+		DevMode bool `inject:"config:debug.mode"`
+
 		applicationCartService         *cartApplication.CartService
 		applicationCartReceiverService *cartApplication.CartReceiverService
 
@@ -255,6 +257,12 @@ func (cc *CheckoutController) PlaceOrderAction(ctx context.Context, r *web.Reque
 func (cc *CheckoutController) SuccessAction(ctx context.Context, r *web.Request) web.Result {
 	flashes := r.Session().Flashes("checkout.success.data")
 	if len(flashes) > 0 {
+
+		// if in devmode, restore the last order in flash session.
+		if cc.DevMode {
+			r.Session().AddFlash(flashes[len(flashes)-1], "checkout.success.data")
+		}
+
 		if placeOrderFlashData, ok := flashes[len(flashes)-1].(PlaceOrderFlashData); ok {
 			decoratedCart := cc.decoratedCartFactory.Create(ctx, placeOrderFlashData.PlacedCart)
 			viewData := SuccessViewData{
