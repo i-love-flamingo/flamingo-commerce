@@ -42,7 +42,6 @@ type (
 
 	// CartRestrictionError to render restriction errors
 	CartRestrictionError struct {
-		CartItemID       string
 		RestrictionError *application.RestrictionError
 	}
 )
@@ -165,7 +164,6 @@ func (cc *CartViewController) UpdateQtyAndViewAction(ctx context.Context, r *web
 
 		if e, ok := err.(*application.RestrictionError); ok {
 			cartRestrictionError := CartRestrictionError{
-				CartItemID:       id,
 				RestrictionError: e,
 			}
 
