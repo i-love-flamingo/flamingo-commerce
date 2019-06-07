@@ -2,8 +2,9 @@ package controller
 
 import (
 	"context"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	"strconv"
+
+	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 
 	formDomain "flamingo.me/form/domain"
 
@@ -117,6 +118,21 @@ func (cc *CartAPIController) ApplyVoucherAndGetAction(ctx context.Context, r *we
 	couponCode := r.Params["couponCode"]
 	result := newResult()
 	_, err := cc.cartService.ApplyVoucher(ctx, r.Session(), couponCode)
+	if err != nil {
+		result.SetError(err, "voucher_error")
+		response := cc.responder.Data(result)
+		response.Status(500)
+		return response
+	}
+	cc.enrichResultWithCartInfos(ctx, &result)
+	return cc.responder.Data(result)
+}
+
+// RemoveVoucherAndGetAction removes the given voucher and returns the cart
+func (cc *CartAPIController) RemoveVoucherAndGetAction(ctx context.Context, r *web.Request) web.Result {
+	couponCode := r.Params["couponCode"]
+	result := newResult()
+	_, err := cc.cartService.RemoveVoucher(ctx, r.Session(), couponCode)
 	if err != nil {
 		result.SetError(err, "voucher_error")
 		response := cc.responder.Data(result)
