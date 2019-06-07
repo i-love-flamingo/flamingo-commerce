@@ -208,17 +208,17 @@ func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 				ctx: nil,
 				cart: &domaincart.Cart{
 					AppliedCouponCodes: []domaincart.CouponCode{
-						{"OFF20"},
-						{"dummy-voucher-20"},
-						{"SALE"},
+						{Code: "OFF20"},
+						{Code: "dummy-voucher-20"},
+						{Code: "SALE"},
 					},
 				},
 				couponCodeToRemove: "dummy-voucher-20",
 			},
 			want: &domaincart.Cart{
 				AppliedCouponCodes: []domaincart.CouponCode{
-					{"OFF20"},
-					{"SALE"},
+					{Code: "OFF20"},
+					{Code: "SALE"},
 				},
 			},
 		},
@@ -237,18 +237,18 @@ func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 				ctx: nil,
 				cart: &domaincart.Cart{
 					AppliedCouponCodes: []domaincart.CouponCode{
-						{"OFF20"},
-						{"dummy-voucher-20"},
-						{"SALE"},
+						{Code: "OFF20"},
+						{Code: "dummy-voucher-20"},
+						{Code: "SALE"},
 					},
 				},
 				couponCodeToRemove: "non-existing-voucher",
 			},
 			want: &domaincart.Cart{
 				AppliedCouponCodes: []domaincart.CouponCode{
-					{"OFF20"},
-					{"dummy-voucher-20"},
-					{"SALE"},
+					{Code: "OFF20"},
+					{Code: "dummy-voucher-20"},
+					{Code: "SALE"},
 				},
 			},
 		},
