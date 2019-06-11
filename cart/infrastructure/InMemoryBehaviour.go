@@ -2,11 +2,12 @@ package infrastructure
 
 import (
 	"context"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
 	"fmt"
 	"math/big"
 	"math/rand"
 	"strconv"
+
+	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
 
 	domaincart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
@@ -346,6 +347,25 @@ func (cob *InMemoryBehaviour) ApplyVoucher(ctx context.Context, cart *domaincart
 		Code: couponCode,
 	}
 	cart.AppliedCouponCodes = append(cart.AppliedCouponCodes, coupon)
+	err := cob.cartStorage.StoreCart(cart)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return cob.resetPaymentSelectionIfInvalid(ctx, cart)
+}
+
+// RemoveVoucher removes a voucher from the cart
+func (cob *InMemoryBehaviour) RemoveVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	for i, coupon := range cart.AppliedCouponCodes {
+		if coupon.Code == couponCode {
+			cart.AppliedCouponCodes[i] = cart.AppliedCouponCodes[len(cart.AppliedCouponCodes)-1]
+			cart.AppliedCouponCodes[len(cart.AppliedCouponCodes)-1] = domaincart.CouponCode{}
+			cart.AppliedCouponCodes = cart.AppliedCouponCodes[:len(cart.AppliedCouponCodes)-1]
+			break
+		}
+	}
+
 	err := cob.cartStorage.StoreCart(cart)
 	if err != nil {
 		return nil, nil, err

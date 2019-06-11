@@ -46,6 +46,7 @@ type (
 		UpdateBillingAddress(ctx context.Context, cart *Cart, billingAddress Address) (*Cart, DeferEvents, error)
 		UpdateDeliveryInfoAdditionalData(ctx context.Context, cart *Cart, deliveryCode string, additionalData *AdditionalData) (*Cart, DeferEvents, error)
 		ApplyVoucher(ctx context.Context, cart *Cart, couponCode string) (*Cart, DeferEvents, error)
+		RemoveVoucher(ctx context.Context, cart *Cart, couponCode string) (*Cart, DeferEvents, error)
 	}
 
 	// AddRequest defines add to cart requeset
@@ -68,8 +69,6 @@ type (
 		DeliveryInfo DeliveryInfo
 		additional   map[string]json.RawMessage
 	}
-
-
 )
 
 var (

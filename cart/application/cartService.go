@@ -579,6 +579,26 @@ func (cs *CartService) ApplyVoucher(ctx context.Context, session *web.Session, c
 	return cart, err
 }
 
+// RemoveVoucher removes a voucher from the cart
+func (cs *CartService) RemoveVoucher(ctx context.Context, session *web.Session, couponCode string) (*cartDomain.Cart, error) {
+	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
+	if err != nil {
+		cs.logger.WithContext(ctx).WithField("subCategory", "RemoveVoucher").Error(err)
+
+		return nil, err
+	}
+	// cart cache must be updated - with the current value of cart
+	var defers cartDomain.DeferEvents
+	defer func() {
+		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
+		cs.dispatchAllEvents(ctx, defers)
+	}()
+
+	cart, defers, err = behaviour.RemoveVoucher(ctx, cart, couponCode)
+
+	return cart, err
+}
+
 func (cs *CartService) handleCartNotFound(session *web.Session, err error) {
 	if err == cartDomain.ErrCartNotFound {
 		cs.DeleteSavedSessionGuestCartID(session)

@@ -2,6 +2,7 @@ package infrastructure
 
 import (
 	"context"
+	"reflect"
 	"testing"
 
 	domaincart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -186,6 +187,101 @@ func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
 			if diff := deep.Equal(gotDefers, tt.wantDefers); diff != nil {
 				t.Errorf("InMemoryCartOrderBehaviour.CleanCart() gotDefers!=wantDefers, diff: %#v", diff)
 			}
+		})
+	}
+}
+
+func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
+	type args struct {
+		ctx                context.Context
+		cart               *domaincart.Cart
+		couponCodeToRemove string
+	}
+	tests := []struct {
+		name string
+		args args
+		want *domaincart.Cart
+	}{
+		{
+			name: "Remove voucher from cart with vouchers",
+			args: args{
+				ctx: nil,
+				cart: &domaincart.Cart{
+					AppliedCouponCodes: []domaincart.CouponCode{
+						{Code: "OFF20"},
+						{Code: "dummy-voucher-20"},
+						{Code: "SALE"},
+					},
+				},
+				couponCodeToRemove: "dummy-voucher-20",
+			},
+			want: &domaincart.Cart{
+				AppliedCouponCodes: []domaincart.CouponCode{
+					{Code: "OFF20"},
+					{Code: "SALE"},
+				},
+			},
+		},
+		{
+			name: "Remove voucher from cart without vouchers",
+			args: args{
+				ctx:                nil,
+				cart:               &domaincart.Cart{},
+				couponCodeToRemove: "dummy-voucher-20",
+			},
+			want: &domaincart.Cart{},
+		},
+		{
+			name: "Remove voucher from cart that does not exist",
+			args: args{
+				ctx: nil,
+				cart: &domaincart.Cart{
+					AppliedCouponCodes: []domaincart.CouponCode{
+						{Code: "OFF20"},
+						{Code: "dummy-voucher-20"},
+						{Code: "SALE"},
+					},
+				},
+				couponCodeToRemove: "non-existing-voucher",
+			},
+			want: &domaincart.Cart{
+				AppliedCouponCodes: []domaincart.CouponCode{
+					{Code: "OFF20"},
+					{Code: "dummy-voucher-20"},
+					{Code: "SALE"},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cob := &InMemoryBehaviour{}
+			cob.Inject(
+				&InMemoryCartStorage{},
+				nil,
+				flamingo.NullLogger{},
+				func() *domaincart.ItemBuilder {
+					return &domaincart.ItemBuilder{}
+				},
+				func() *domaincart.DeliveryBuilder {
+					return &domaincart.DeliveryBuilder{}
+				},
+				func() *domaincart.Builder {
+					return &domaincart.Builder{}
+				},
+				nil,
+				nil,
+			)
+
+			if err := cob.cartStorage.StoreCart(tt.args.cart); err != nil {
+				t.Fatalf("cart could not be initialized")
+			}
+
+			got, _, _ := cob.RemoveVoucher(tt.args.ctx, tt.args.cart, tt.args.couponCodeToRemove)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("InMemoryBehaviour.RemoveVoucher() got = %v, want %v", got, tt.want)
+			}
+
 		})
 	}
 }
