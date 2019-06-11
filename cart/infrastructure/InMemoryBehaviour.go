@@ -362,6 +362,7 @@ func (cob *InMemoryBehaviour) RemoveVoucher(ctx context.Context, cart *domaincar
 			cart.AppliedCouponCodes[i] = cart.AppliedCouponCodes[len(cart.AppliedCouponCodes)-1]
 			cart.AppliedCouponCodes[len(cart.AppliedCouponCodes)-1] = domaincart.CouponCode{}
 			cart.AppliedCouponCodes = cart.AppliedCouponCodes[:len(cart.AppliedCouponCodes)-1]
+			break
 		}
 	}
 
