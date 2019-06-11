@@ -159,8 +159,8 @@ func (r *routes) apiRoutes(registry *web.RouterRegistry) {
 	registry.HandlePut("cart.api.applyVoucher", r.apiController.ApplyVoucherAndGetAction)
 
 	registry.Route("/api/cart/removevoucher", `cart.api.removeVoucher(couponCode)`)
-	registry.HandlePost("cart.api.removevoucher", r.apiController.RemoveVoucherAndGetAction)
-	registry.HandleDelete("cart.api.removevoucher", r.apiController.RemoveVoucherAndGetAction)
+	registry.HandlePost("cart.api.removeVoucher", r.apiController.RemoveVoucherAndGetAction)
+	registry.HandleDelete("cart.api.removeVoucher", r.apiController.RemoveVoucherAndGetAction)
 
 	registry.Route("/api/cart/billing", `cart.api.billing`)
 	registry.HandlePost("cart.api.billing", r.apiController.BillingAction)
