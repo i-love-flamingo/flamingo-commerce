@@ -90,6 +90,8 @@ func (df *DecoratedCartFactory) decorateCartItem(ctx context.Context, cartitem c
 					Title: cartitem.ProductName + "[outdated]",
 				},
 			}
+
+			decorateditem.Product = product
 		}
 		return decorateditem
 	}
