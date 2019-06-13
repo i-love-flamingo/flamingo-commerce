@@ -148,7 +148,7 @@ func (cs *CartReceiverService) getCustomerCart(ctx context.Context, session *web
 
 	if err != nil {
 		if err == ErrCacheIsInvalid {
-			cs.logger.WithContext(ctx).Warn(err)
+			cs.logger.WithContext(ctx).Info(err)
 		} else if err == ErrNoCacheEntry {
 			cs.logger.WithContext(ctx).Info(err)
 		} else {
@@ -200,8 +200,15 @@ func (cs *CartReceiverService) getExistingGuestCart(ctx context.Context, session
 	cart, found, err := cs.getCartFromCacheIfCacheIsEnabled(ctx, session)
 
 	if err != nil {
-		cs.logger.WithContext(ctx).Error(err)
+		if err == ErrCacheIsInvalid {
+			cs.logger.WithContext(ctx).Info(err)
+		} else if err == ErrNoCacheEntry {
+			cs.logger.WithContext(ctx).Info(err)
+		} else {
+			cs.logger.WithContext(ctx).Error(err)
+		}
 	}
+	
 	if err != nil || !found {
 		cart, err = cs.getSessionGuestCart(ctx, session)
 
