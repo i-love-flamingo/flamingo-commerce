@@ -3,21 +3,20 @@ package application
 import (
 	"context"
 	"errors"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"fmt"
 
-	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
-
-	"flamingo.me/flamingo-commerce/v3/payment/interfaces"
-
-	"flamingo.me/flamingo-commerce/v3/cart/application"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	"flamingo.me/flamingo-commerce/v3/checkout/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/opencensus"
 	"flamingo.me/flamingo/v3/framework/web"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
+
+	"flamingo.me/flamingo-commerce/v3/cart/application"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
+	"flamingo.me/flamingo-commerce/v3/checkout/domain"
+	"flamingo.me/flamingo-commerce/v3/payment/interfaces"
+	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
 type (
@@ -91,7 +90,7 @@ func (os *OrderService) SetSources(ctx context.Context, session *web.Session) er
 	return nil
 }
 
-// CurrentCartSaveInfos saves additional informations on current cart
+// CurrentCartSaveInfos saves additional information on current cart
 func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.Session, billingAddress *cart.Address, shippingAddress *cart.Address, purchaser *cart.Person, additionalData *cart.AdditionalData) error {
 	os.logger.WithContext(ctx).Debug("CurrentCartSaveInfos call billingAddress:%v shippingAddress:%v payment:%v", billingAddress, shippingAddress)
 
@@ -116,9 +115,7 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.S
 	// Maybe later we need to support different shipping addresses in the Checkout
 	if shippingAddress != nil {
 		for _, d := range decoratedCart.Cart.Deliveries {
-			newDeliveryInfoUpdateCommand := cart.DeliveryInfoUpdateCommand{
-				DeliveryInfo: d.DeliveryInfo,
-			}
+			newDeliveryInfoUpdateCommand := cart.CreateDeliveryInfoUpdateCommand(d.DeliveryInfo)
 			newDeliveryInfoUpdateCommand.DeliveryInfo.DeliveryLocation.Address = shippingAddress
 			err = os.cartService.UpdateDeliveryInfo(ctx, session, d.DeliveryInfo.Code, newDeliveryInfoUpdateCommand)
 			if err != nil {
