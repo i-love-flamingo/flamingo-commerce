@@ -7,18 +7,18 @@ import (
 	"net/http"
 	"net/url"
 
-	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
-
-	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	"flamingo.me/flamingo-commerce/v3/checkout/application"
-	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller/forms"
-	paymentDomain "flamingo.me/flamingo-commerce/v3/payment/domain"
 	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
+
+	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
+	"flamingo.me/flamingo-commerce/v3/checkout/application"
+	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller/forms"
+	paymentDomain "flamingo.me/flamingo-commerce/v3/payment/domain"
 )
 
 type (
@@ -227,6 +227,12 @@ func (cc *CheckoutController) PlaceOrderAction(ctx context.Context, r *web.Reque
 
 	if cc.showEmptyCartPageIfNoItems && decoratedCart.Cart.ItemCount() == 0 {
 		return cc.responder.Render("checkout/emptycart", nil).SetNoCache()
+	}
+
+	err := cc.orderService.SetSources(ctx, session)
+	if err != nil {
+		cc.logger.Error("OnStepCurrentCartPlaceOrder SetSources Error ", err)
+		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 	}
 
 	//No Payment selected:	return cc.showCheckoutFormWithErrors(ctx, r, *decoratedCart, nil, errors.New("No payment selected"))

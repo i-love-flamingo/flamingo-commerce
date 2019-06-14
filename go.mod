@@ -8,17 +8,21 @@ require (
 	github.com/cockroachdb/apd v1.1.0 // indirect
 	github.com/go-playground/form v3.1.4+incompatible
 	github.com/go-test/deep v1.0.1
+	github.com/golang/protobuf v1.3.0 // indirect
+	github.com/hashicorp/golang-lru v0.5.1 // indirect
 	github.com/leekchan/accounting v0.0.0-20180703100437-18a1925d6514
-	github.com/lib/pq v1.0.0 // indirect
+	github.com/lib/pq v1.1.1 // indirect
 	github.com/pkg/errors v0.8.1
-	github.com/prometheus/procfs v0.0.0-20190225181712-6ed1f7e10411 // indirect
+	github.com/prometheus/procfs v0.0.0-20190306233201-d0f344d83b0c // indirect
 	github.com/shopspring/decimal v0.0.0-20180709203117-cd690d0c9e24 // indirect
 	github.com/stretchr/testify v1.3.0
 	go.opencensus.io v0.19.1
-	golang.org/x/crypto v0.0.0-20190225124518-7f87c0fbb88b // indirect
-	golang.org/x/net v0.0.0-20190226193003-66a96c8a540e // indirect
-	golang.org/x/oauth2 v0.0.0-20190226191147-529b322ea346 // indirect
+	golang.org/x/net v0.0.0-20190311183353-d8887717615a // indirect
+	golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421 // indirect
+	golang.org/x/sync v0.0.0-20190227155943-e225da77a7e6 // indirect
+	google.golang.org/grpc v1.19.0 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1
+	gopkg.in/square/go-jose.v2 v2.3.0 // indirect
 )
 
 replace (
