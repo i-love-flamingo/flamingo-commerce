@@ -14,6 +14,21 @@ import (
 )
 
 type (
+	// CartReceiverServiceInterface defines the cart receiver
+	CartReceiverServiceInterface interface {
+		IsLoggedIn(ctx context.Context, session *web.Session) bool
+		ShouldHaveCart(ctx context.Context, session *web.Session) bool
+		ShouldHaveGuestCart(session *web.Session) bool
+		ViewDecoratedCart(ctx context.Context, session *web.Session) (*decorator.DecoratedCart, error)
+		ViewDecoratedCartWithoutCache(ctx context.Context, session *web.Session) (*decorator.DecoratedCart, error)
+		ViewCart(ctx context.Context, session *web.Session) (*cartDomain.Cart, error)
+		GetCart(ctx context.Context, session *web.Session) (*cartDomain.Cart, cartDomain.ModifyBehaviour, error)
+		GetCartWithoutCache(ctx context.Context, session *web.Session) (*cartDomain.Cart, error)
+		ViewGuestCart(ctx context.Context, session *web.Session) (*cartDomain.Cart, error)
+		DecorateCart(ctx context.Context, cart *cartDomain.Cart) (*decorator.DecoratedCart, error)
+		GetDecoratedCart(ctx context.Context, session *web.Session) (*decorator.DecoratedCart, cartDomain.ModifyBehaviour, error)
+	}
+
 	//CartReceiverService provides methods to get the correct cart
 	CartReceiverService struct {
 		guestCartService     cartDomain.GuestCartService
