@@ -77,56 +77,67 @@ func (i Item) TotalTaxAmount() priceDomain.Price {
 // TotalDiscountAmount gets the savings by item
 func (i Item) TotalDiscountAmount() priceDomain.Price {
 	result, _ := i.NonItemRelatedDiscountAmount().Add(i.ItemRelatedDiscountAmount())
+
 	return result
 }
 
 // ItemRelatedDiscountAmount = Sum of AppliedDiscounts where IsItemRelated = True
 func (i Item) ItemRelatedDiscountAmount() priceDomain.Price {
-	var prices []priceDomain.Price
+	prices := make([]priceDomain.Price, 0, len(i.AppliedDiscounts))
+
 	for _, discount := range i.AppliedDiscounts {
 		if !discount.IsItemRelated {
 			continue
 		}
 		prices = append(prices, discount.Amount)
 	}
+
 	result, _ := priceDomain.SumAll(prices...)
+
 	return result.GetPayable()
 }
 
 // NonItemRelatedDiscountAmount = Sum of AppliedDiscounts where IsItemRelated = false
 func (i Item) NonItemRelatedDiscountAmount() priceDomain.Price {
-	var prices []priceDomain.Price
+	prices := make([]priceDomain.Price, 0, len(i.AppliedDiscounts))
+
 	for _, discount := range i.AppliedDiscounts {
 		if discount.IsItemRelated {
 			continue
 		}
 		prices = append(prices, discount.Amount)
 	}
+
 	result, _ := priceDomain.SumAll(prices...)
+
 	return result.GetPayable()
 }
 
 // RowPriceGrossWithDiscount = RowPriceGross-TotalDiscountAmount()
 func (i Item) RowPriceGrossWithDiscount() priceDomain.Price {
 	result, _ := i.RowPriceGross.Add(i.TotalDiscountAmount())
+
 	return result
 }
 
 // RowPriceNetWithDiscount = RowPriceNet-TotalDiscountAmount()
 func (i Item) RowPriceNetWithDiscount() priceDomain.Price {
 	result, _ := i.RowPriceNet.Add(i.TotalDiscountAmount())
+
 	return result
 }
 
 // RowPriceGrossWithItemRelatedDiscount = RowPriceGross-ItemRelatedDiscountAmount()
 func (i Item) RowPriceGrossWithItemRelatedDiscount() priceDomain.Price {
 	result, _ := i.RowPriceGross.Add(i.ItemRelatedDiscountAmount())
+
 	return result
 }
 
 // RowPriceNetWithItemRelatedDiscount =RowTotal-ItemRelatedDiscountAmount
 func (i Item) RowPriceNetWithItemRelatedDiscount() priceDomain.Price {
 	result, _ := i.RowPriceNet.Add(i.ItemRelatedDiscountAmount())
+
 	return result
 }
 
