@@ -110,25 +110,33 @@ func (di *DeliveryInfo) LoadAdditionalInfo(key string, info AdditionalDeliverInf
 
 //SubTotalGross - returns SubTotalGross
 func (d Delivery) SubTotalGross() priceDomain.Price {
-	var prices []priceDomain.Price
+	prices := make([]priceDomain.Price, 0, len(d.Cartitems))
+
 	for _, item := range d.Cartitems {
 		prices = append(prices, item.RowPriceGross)
 	}
 	result, _ := priceDomain.SumAll(prices...)
+
 	return result
 }
 
 //GrandTotal - returns SubTotalGross inlcuding shipping and discounts - for the Delivery
 func (d Delivery) GrandTotal() priceDomain.Price {
-	var prices []priceDomain.Price
+	// we need a capacity of cartitems + 2
+	prices := make([]priceDomain.Price, 0, len(d.Cartitems)+2)
+
 	for _, item := range d.Cartitems {
 		prices = append(prices, item.RowPriceGross)
 	}
+
 	prices = append(prices, d.SumTotalDiscountAmount())
+
 	if !d.ShippingItem.TotalWithDiscountInclTax().IsZero() {
 		prices = append(prices, d.ShippingItem.TotalWithDiscountInclTax())
 	}
+
 	result, _ := priceDomain.SumAll(prices...)
+
 	return result
 }
 
@@ -145,63 +153,75 @@ func (d Delivery) SumRowTaxes() Taxes {
 
 //SumTotalTaxAmount - returns SumTotalTaxAmount
 func (d Delivery) SumTotalTaxAmount() priceDomain.Price {
-	var prices []priceDomain.Price
+	prices := make([]priceDomain.Price, 0, len(d.Cartitems))
+
 	for _, item := range d.Cartitems {
 		prices = append(prices, item.TotalTaxAmount())
 	}
 	result, _ := priceDomain.SumAll(prices...)
+
 	return result
 }
 
 //SubTotalNet - returns SubTotalNet
 func (d Delivery) SubTotalNet() priceDomain.Price {
-	var prices []priceDomain.Price
+	prices := make([]priceDomain.Price, 0, len(d.Cartitems))
+
 	for _, item := range d.Cartitems {
 		prices = append(prices, item.RowPriceNet)
 	}
 	result, _ := priceDomain.SumAll(prices...)
+
 	return result
 }
 
 //SumTotalDiscountAmount - returns SumTotalDiscountAmount
 func (d Delivery) SumTotalDiscountAmount() priceDomain.Price {
-	var prices []priceDomain.Price
+	prices := make([]priceDomain.Price, 0, len(d.Cartitems))
+
 	for _, item := range d.Cartitems {
 		prices = append(prices, item.TotalDiscountAmount())
 	}
 	result, _ := priceDomain.SumAll(prices...)
+
 	return result
 }
 
 //SumNonItemRelatedDiscountAmount returns SumNonItemRelatedDiscountAmount
 func (d Delivery) SumNonItemRelatedDiscountAmount() priceDomain.Price {
-	var prices []priceDomain.Price
+	prices := make([]priceDomain.Price, 0, len(d.Cartitems))
+
 	for _, item := range d.Cartitems {
 		prices = append(prices, item.NonItemRelatedDiscountAmount())
 	}
 	result, _ := priceDomain.SumAll(prices...)
+
 	return result
 }
 
 //SumItemRelatedDiscountAmount - returns SumItemRelatedDiscountAmount
 func (d Delivery) SumItemRelatedDiscountAmount() priceDomain.Price {
-	var prices []priceDomain.Price
+	prices := make([]priceDomain.Price, 0, len(d.Cartitems))
+
 	for _, item := range d.Cartitems {
 		prices = append(prices, item.ItemRelatedDiscountAmount())
 	}
 	result, _ := priceDomain.SumAll(prices...)
+
 	return result
 }
 
 //SubTotalGrossWithDiscounts returns SubTotalGrossWithDiscounts
 func (d Delivery) SubTotalGrossWithDiscounts() priceDomain.Price {
 	price, _ := d.SubTotalGross().Add(d.SumTotalDiscountAmount())
+
 	return price
 }
 
 //SubTotalNetWithDiscounts - returns SubTotalNet With Discounts
 func (d Delivery) SubTotalNetWithDiscounts() priceDomain.Price {
 	price, _ := d.SubTotalNet().Add(d.SumTotalDiscountAmount())
+
 	return price
 }
 
@@ -270,7 +290,6 @@ func (f *DeliveryBuilder) reset() {
 	f.deliveryInBuilding = nil
 }
 
-
 // TotalWithDiscountInclTax - the price the customer need to pay for the shipping
 func (s ShippingItem) TotalWithDiscountInclTax() priceDomain.Price {
 	price, _ := s.PriceNet.Add(s.TaxAmount)
@@ -278,11 +297,10 @@ func (s ShippingItem) TotalWithDiscountInclTax() priceDomain.Price {
 	return price.GetPayable()
 }
 
-
 // Tax - the Tax of the shipping
 func (s ShippingItem) Tax() Tax {
 	return Tax{
-		Type: "tax",
-		Amount:s.TaxAmount,
+		Type:   "tax",
+		Amount: s.TaxAmount,
 	}
 }

@@ -187,7 +187,7 @@ func (c Cart) HasDeliveryForCode(deliveryCode string) bool {
 
 // GetDeliveryCodes returns a slice of all delivery codes in cart that have at least one cart item
 func (c Cart) GetDeliveryCodes() []string {
-	var deliveryCodes []string
+	deliveryCodes := make([]string, 0, len(c.Deliveries))
 
 	for _, delivery := range c.Deliveries {
 		if len(delivery.Cartitems) > 0 {
@@ -300,7 +300,7 @@ func (c Cart) GetAllPaymentRequiredItems() PricedItems {
 
 // SumShippingNet - returns net sum price of deliveries ShippingItems
 func (c Cart) SumShippingNet() domain.Price {
-	var prices []domain.Price
+	prices := make([]domain.Price, 0, len(c.Deliveries))
 
 	for _, del := range c.Deliveries {
 		prices = append(prices, del.ShippingItem.PriceNet)
@@ -318,7 +318,7 @@ func (c Cart) HasShippingCosts() bool {
 
 // AllShippingTitles - returns all ShippingItem titles
 func (c Cart) AllShippingTitles() []string {
-	var label []string
+	label := make([]string, 0, len(c.Deliveries))
 
 	for _, del := range c.Deliveries {
 		label = append(label, del.ShippingItem.Title)
@@ -329,7 +329,7 @@ func (c Cart) AllShippingTitles() []string {
 
 // SubTotalGross - returns sum price of deliveries SubTotalGross
 func (c Cart) SubTotalGross() domain.Price {
-	var prices []domain.Price
+	prices := make([]domain.Price, 0, len(c.Deliveries))
 
 	for _, del := range c.Deliveries {
 		prices = append(prices, del.SubTotalGross())
@@ -361,7 +361,7 @@ func (c Cart) SumTotalTaxAmount() domain.Price {
 
 // SubTotalNet - returns sum price of deliveries SubTotalNet
 func (c Cart) SubTotalNet() domain.Price {
-	var prices []domain.Price
+	prices := make([]domain.Price, 0, len(c.Deliveries))
 
 	for _, del := range c.Deliveries {
 		prices = append(prices, del.SubTotalNet())
@@ -374,7 +374,7 @@ func (c Cart) SubTotalNet() domain.Price {
 
 // SubTotalGrossWithDiscounts - returns sum price of deliveries SubTotalGrossWithDiscounts
 func (c Cart) SubTotalGrossWithDiscounts() domain.Price {
-	var prices []domain.Price
+	prices := make([]domain.Price, 0, len(c.Deliveries))
 
 	for _, del := range c.Deliveries {
 		prices = append(prices, del.SubTotalGrossWithDiscounts())
@@ -387,17 +387,19 @@ func (c Cart) SubTotalGrossWithDiscounts() domain.Price {
 
 // SubTotalNetWithDiscounts - returns sum price of deliveries SubTotalNetWithDiscounts
 func (c Cart) SubTotalNetWithDiscounts() domain.Price {
-	var prices []domain.Price
+	prices := make([]domain.Price, 0, len(c.Deliveries))
+
 	for _, del := range c.Deliveries {
 		prices = append(prices, del.SubTotalNetWithDiscounts())
 	}
 	price, _ := domain.SumAll(prices...)
+
 	return price
 }
 
 // SumTotalDiscountAmount - returns sum price of deliveries SumTotalDiscountAmount
 func (c Cart) SumTotalDiscountAmount() domain.Price {
-	var prices []domain.Price
+	prices := make([]domain.Price, 0, len(c.Deliveries))
 
 	for _, del := range c.Deliveries {
 		prices = append(prices, del.SumTotalDiscountAmount())
@@ -410,7 +412,7 @@ func (c Cart) SumTotalDiscountAmount() domain.Price {
 
 // SumNonItemRelatedDiscountAmount - returns sum price of deliveries SumNonItemRelatedDiscountAmount
 func (c Cart) SumNonItemRelatedDiscountAmount() domain.Price {
-	var prices []domain.Price
+	prices := make([]domain.Price, 0, len(c.Deliveries))
 
 	for _, del := range c.Deliveries {
 		prices = append(prices, del.SumNonItemRelatedDiscountAmount())
@@ -423,7 +425,7 @@ func (c Cart) SumNonItemRelatedDiscountAmount() domain.Price {
 
 // SumItemRelatedDiscountAmount - returns sum price of deliveries SumItemRelatedDiscountAmount
 func (c Cart) SumItemRelatedDiscountAmount() domain.Price {
-	var prices []domain.Price
+	prices := make([]domain.Price, 0, len(c.Deliveries))
 
 	for _, del := range c.Deliveries {
 		prices = append(prices, del.SumItemRelatedDiscountAmount())
@@ -458,7 +460,7 @@ func (c Cart) GetPaymentReference() string {
 
 // GetTotalItemsByType gets a slice of all Totalitems by typeCode
 func (c Cart) GetTotalItemsByType(typeCode string) []Totalitem {
-	var totalitems []Totalitem
+	totalitems := make([]Totalitem, 0, len(c.Totalitems))
 
 	for _, item := range c.Totalitems {
 		if item.Type == typeCode {
@@ -537,7 +539,7 @@ func (t Taxes) AddTaxesWithMerge(taxes Taxes) Taxes {
 
 // TotalAmount - returns the sum of all taxes as price
 func (t Taxes) TotalAmount() domain.Price {
-	var prices []domain.Price
+	prices := make([]domain.Price, 0, len(t))
 
 	for _, tax := range t {
 		prices = append(prices, tax.Amount)
@@ -668,7 +670,8 @@ func (b *Builder) reset(err error) (*Cart, error) {
 
 //Sum - returns Sum of all items in this struct
 func (p PricedItems) Sum() domain.Price {
-	prices := make([]domain.Price, len(p.cartItems)+len(p.shippingItems)+len(p.totalItems))
+	prices := make([]domain.Price, 0, len(p.cartItems)+len(p.shippingItems)+len(p.totalItems))
+
 	for _, p := range p.totalItems {
 		prices = append(prices, p)
 	}
@@ -679,6 +682,7 @@ func (p PricedItems) Sum() domain.Price {
 		prices = append(prices, p)
 	}
 	sum, _ := domain.SumAll(prices...)
+
 	return sum
 }
 
