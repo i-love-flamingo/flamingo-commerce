@@ -211,6 +211,20 @@ func (c Cart) GetByItemID(itemID string) (*Item, error) {
 	return nil, errors.Errorf("itemId %q in cart does not exist", itemID)
 }
 
+
+// GetTotalQty for the product in the cart
+func (c Cart) GetTotalQty(marketPlaceCode string, variantCode string) int {
+	qty := int(0)
+	for _, delivery := range c.Deliveries {
+		for _, currentItem := range delivery.Cartitems {
+			if currentItem.MarketplaceCode == marketPlaceCode && currentItem.VariantMarketPlaceCode == variantCode {
+				qty = qty + currentItem.Qty
+			}
+		}
+	}
+	return qty
+}
+
 // GetByExternalReference gets an item by its external reference
 func (c Cart) GetByExternalReference(ref string) (*Item, error) {
 	for _, delivery := range c.Deliveries {
