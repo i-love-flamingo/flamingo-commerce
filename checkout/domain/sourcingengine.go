@@ -3,6 +3,7 @@ package domain
 import (
 	"context"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"fmt"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
@@ -14,7 +15,28 @@ import (
 type (
 	// SourcingService helps in retrieving item sources
 	SourcingService interface {
+		//GetSourceID  returns one source location code where the product should be sourced
+		//@todo will be Depricated in future in favor of SourcingServiceDetail interface
 		GetSourceID(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart, deliveryCode string, item *decorator.DecoratedCartItem) (string, error)
+	}
+	// SourcingServiceDetail additional interface to return
+	// @todo - the methods in the interface will replace the methods in interface above (SourcingServiceDetail will be deleted then)
+	SourcingServiceDetail interface {
+		//GetSourcesForItem returns Sources for the given item in the cart
+		GetSourcesForItem(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart, deliveryCode string, item *decorator.DecoratedCartItem) (Sources, error)
+		//GetAvailableSources returns Sources for the product - containing the maximum possible qty per source
+		GetAvailableSources(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart, deliveryCode string, product domain.BasicProduct) (Sources, error)
+	}
+
+	//Sources - result value object containing all sources (for the request item or product)
+	Sources []Source
+
+	// Source - represents the Sourceing info
+	Source struct {
+		//LocationCode - idendifies the warehouse or stocklocation
+		LocationCode string
+		//Qty - for the sources items
+		Qty int
 	}
 
 	// SourcingEngine computes item sources
@@ -24,6 +46,30 @@ type (
 		Cartservice     *application.CartService `inject:""`
 	}
 )
+
+var (
+	//ErrInsufficientSourceQty - use to indicate that the requested qty exceeds the available qty
+	ErrInsufficientSourceQty = errors.New("Available Source Qty insufficient")
+	//ErrNoSourceAvailable - use to indicate that no source for item is available at all
+	ErrNoSourceAvailable = errors.New("No Available Source Qty")
+)
+
+// MainLocation returns first sourced location (or empty string)
+func (s Sources) MainLocation() string {
+	if len(s) < 1 {
+		return ""
+	}
+	return s[0].LocationCode
+}
+
+// QtySum returns the sum of all sourced items
+func (s Sources) QtySum() int {
+	qty := int(0)
+	for _,source := range s {
+		qty = qty + source.Qty
+	}
+	return qty
+}
 
 // SetSourcesForCartItems gets Sources and modifies the Cart Items
 // todo move to application layer ?
