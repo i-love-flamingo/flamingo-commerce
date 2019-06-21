@@ -156,6 +156,38 @@ func (cc *CartAPIController) DeleteCartAction(ctx context.Context, r *web.Reques
 	return cc.responder.Data(result)
 }
 
+// ApplyGiftCardAndGetAction applies the given giftcard and returns the cart
+// the request needs a query string param "couponCode" which includes the corresponding giftcard code
+func (cc *CartAPIController) ApplyGiftCardAndGetAction(ctx context.Context, r *web.Request) web.Result {
+	couponCode := r.Params["couponCode"]
+	result := newResult()
+	_, err := cc.cartService.ApplyVoucher(ctx, r.Session(), couponCode)
+	if err != nil {
+		result.SetError(err, "giftcard_error")
+		response := cc.responder.Data(result)
+		response.Status(500)
+		return response
+	}
+	cc.enrichResultWithCartInfos(ctx, &result)
+	return cc.responder.Data(result)
+}
+
+// RemoveGiftCardAndGetAction removes the given giftcard and returns the cart
+// the request needs a query string param "couponCode" which includes the corresponding giftcard code
+func (cc *CartAPIController) RemoveGiftCardAndGetAction(ctx context.Context, r *web.Request) web.Result {
+	couponCode := r.Params["couponCode"]
+	result := newResult()
+	_, err := cc.cartService.RemoveVoucher(ctx, r.Session(), couponCode)
+	if err != nil {
+		result.SetError(err, "giftcard_error")
+		response := cc.responder.Data(result)
+		response.Status(500)
+		return response
+	}
+	cc.enrichResultWithCartInfos(ctx, &result)
+	return cc.responder.Data(result)
+}
+
 // DeleteDelivery cleans the given delivery from the cart and returns the cleaned cart
 func (cc *CartAPIController) DeleteDelivery(ctx context.Context, r *web.Request) web.Result {
 	result := newResult()
