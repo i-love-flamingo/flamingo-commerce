@@ -46,6 +46,9 @@ type (
 		CartItemID        string
 		RestrictionResult validation.RestrictionResult
 	}
+
+	// PromotionFunction type takes ctx, cart, couponCode and applies the promotion
+	promotionFunc func(context.Context, *cartDomain.Cart, string) (*cartDomain.Cart, cartDomain.DeferEvents, error)
 )
 
 func init() {
@@ -561,41 +564,61 @@ func (cs *CartService) GetInitialDelivery(deliveryCode string) (*cartDomain.Deli
 
 // ApplyVoucher applies a voucher to the cart
 func (cs *CartService) ApplyVoucher(ctx context.Context, session *web.Session, couponCode string) (*cartDomain.Cart, error) {
-	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
+	cart, behaviour, err := cs.getCartAndBehaviour(ctx, session, "ApplyVoucher")
 	if err != nil {
-		cs.logger.WithContext(ctx).WithField("subCategory", "ApplyVoucher").Error(err)
-
 		return nil, err
 	}
-	// cart cache must be updated - with the current value of cart
-	var defers cartDomain.DeferEvents
-	defer func() {
-		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
-		cs.dispatchAllEvents(ctx, defers)
-	}()
-
-	cart, defers, err = behaviour.ApplyVoucher(ctx, cart, couponCode)
-
-	return cart, err
+	return cs.executeVoucherBehaviour(ctx, session, cart, couponCode, behaviour.ApplyVoucher)
 }
 
 // RemoveVoucher removes a voucher from the cart
 func (cs *CartService) RemoveVoucher(ctx context.Context, session *web.Session, couponCode string) (*cartDomain.Cart, error) {
-	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
+	cart, behaviour, err := cs.getCartAndBehaviour(ctx, session, "RemoveVoucher")
 	if err != nil {
-		cs.logger.WithContext(ctx).WithField("subCategory", "RemoveVoucher").Error(err)
-
 		return nil, err
 	}
+	return cs.executeVoucherBehaviour(ctx, session, cart, couponCode, behaviour.RemoveVoucher)
+}
+
+// ApplyGiftCard adds a giftcard to the cart
+func (cs *CartService) ApplyGiftCard(ctx context.Context, session *web.Session, couponCode string) (*cartDomain.Cart, error) {
+	cart, behaviour, err := cs.getCartAndBehaviour(ctx, session, "ApplyGiftCard")
+	if err != nil {
+		return nil, err
+	}
+	return cs.executeVoucherBehaviour(ctx, session, cart, couponCode, behaviour.ApplyGiftCard)
+}
+
+// RemoveGiftCard removes a giftcard from the cart
+func (cs *CartService) RemoveGiftCard(ctx context.Context, session *web.Session, couponCode string) (*cartDomain.Cart, error) {
+	cart, behaviour, err := cs.getCartAndBehaviour(ctx, session, "RemoveGiftCard")
+	if err != nil {
+		return nil, err
+	}
+	return cs.executeVoucherBehaviour(ctx, session, cart, couponCode, behaviour.RemoveGiftCard)
+}
+
+// Get current cart from session and corresponding behaviour
+func (cs *CartService) getCartAndBehaviour(ctx context.Context, session *web.Session, logKey string) (*cartDomain.Cart, cartDomain.ModifyBehaviour, error) {
+	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
+	if err != nil {
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, logKey).Error(err)
+
+		return nil, nil, err
+	}
+	return cart, behaviour, nil
+}
+
+// Executes provided behaviour regarding vouchers, this function serves to reduce duplicated code
+// for voucher / giftcard behaviour as their internal logic is basically the same
+func (cs *CartService) executeVoucherBehaviour(ctx context.Context, session *web.Session, cart *cartDomain.Cart, couponCode string, fn promotionFunc) (*cartDomain.Cart, error) {
 	// cart cache must be updated - with the current value of cart
 	var defers cartDomain.DeferEvents
 	defer func() {
 		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
 		cs.dispatchAllEvents(ctx, defers)
 	}()
-
-	cart, defers, err = behaviour.RemoveVoucher(ctx, cart, couponCode)
-
+	cart, defers, err := fn(ctx, cart, couponCode)
 	return cart, err
 }
 

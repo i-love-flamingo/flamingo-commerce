@@ -51,6 +51,9 @@ type (
 	messageCodeAvailable interface {
 		MessageCode() string
 	}
+
+	// PromotionFunction type takes ctx, cart, couponCode and applies the promotion
+	promotionFunc func(ctx context.Context, session *web.Session, couponCode string) (*cart.Cart, error)
 )
 
 // Inject dependencies
@@ -115,32 +118,12 @@ func (cc *CartAPIController) AddAction(ctx context.Context, r *web.Request) web.
 
 // ApplyVoucherAndGetAction applies the given voucher and returns the cart
 func (cc *CartAPIController) ApplyVoucherAndGetAction(ctx context.Context, r *web.Request) web.Result {
-	couponCode := r.Params["couponCode"]
-	result := newResult()
-	_, err := cc.cartService.ApplyVoucher(ctx, r.Session(), couponCode)
-	if err != nil {
-		result.SetError(err, "voucher_error")
-		response := cc.responder.Data(result)
-		response.Status(500)
-		return response
-	}
-	cc.enrichResultWithCartInfos(ctx, &result)
-	return cc.responder.Data(result)
+	return cc.handlePromotionAction(ctx, r, "voucher_error", cc.cartService.ApplyVoucher)
 }
 
 // RemoveVoucherAndGetAction removes the given voucher and returns the cart
 func (cc *CartAPIController) RemoveVoucherAndGetAction(ctx context.Context, r *web.Request) web.Result {
-	couponCode := r.Params["couponCode"]
-	result := newResult()
-	_, err := cc.cartService.RemoveVoucher(ctx, r.Session(), couponCode)
-	if err != nil {
-		result.SetError(err, "voucher_error")
-		response := cc.responder.Data(result)
-		response.Status(500)
-		return response
-	}
-	cc.enrichResultWithCartInfos(ctx, &result)
-	return cc.responder.Data(result)
+	return cc.handlePromotionAction(ctx, r, "voucher_error", cc.cartService.RemoveVoucher)
 }
 
 // DeleteCartAction cleans the cart and returns the cleaned cart
@@ -153,6 +136,33 @@ func (cc *CartAPIController) DeleteCartAction(ctx context.Context, r *web.Reques
 		response.Status(500)
 		return response
 	}
+	return cc.responder.Data(result)
+}
+
+// ApplyGiftCardAndGetAction applies the given giftcard and returns the cart
+// the request needs a query string param "couponCode" which includes the corresponding giftcard code
+func (cc *CartAPIController) ApplyGiftCardAndGetAction(ctx context.Context, r *web.Request) web.Result {
+	return cc.handlePromotionAction(ctx, r, "giftcard_error", cc.cartService.ApplyGiftCard)
+}
+
+// RemoveGiftCardAndGetAction removes the given giftcard and returns the cart
+// the request needs a query string param "couponCode" which includes the corresponding giftcard code
+func (cc *CartAPIController) RemoveGiftCardAndGetAction(ctx context.Context, r *web.Request) web.Result {
+	return cc.handlePromotionAction(ctx, r, "giftcard_error", cc.cartService.RemoveGiftCard)
+}
+
+// handles promotion action
+func (cc *CartAPIController) handlePromotionAction(ctx context.Context, r *web.Request, errorCode string, fn promotionFunc) web.Result {
+	couponCode := r.Params["couponCode"]
+	result := newResult()
+	_, err := fn(ctx, r.Session(), couponCode)
+	if err != nil {
+		result.SetError(err, errorCode)
+		response := cc.responder.Data(result)
+		response.Status(500)
+		return response
+	}
+	cc.enrichResultWithCartInfos(ctx, &result)
 	return cc.responder.Data(result)
 }
 

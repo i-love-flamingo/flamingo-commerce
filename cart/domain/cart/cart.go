@@ -48,6 +48,9 @@ type (
 
 		//Additional non taxable totals
 		Totalitems []Totalitem
+
+		//List of applied gift cards
+		AppliedGiftCards []AppliedGiftCard
 	}
 
 	// Teaser - represents some teaser infos for cart
@@ -127,6 +130,12 @@ type (
 		cartItems     map[string]domain.Price
 		shippingItems map[string]domain.Price
 		totalItems    map[string]domain.Price
+	}
+
+	// AppliedGiftCard value object
+	AppliedGiftCard struct {
+		Code    string
+		Balance domain.Price
 	}
 )
 
