@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	domaincart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/go-test/deep"
 )
@@ -282,6 +283,132 @@ func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 				t.Errorf("InMemoryBehaviour.RemoveVoucher() got = %v, want %v", got, tt.want)
 			}
 
+		})
+	}
+}
+
+func TestInMemoryBehaviour_ApplyGiftCard(t *testing.T) {
+	type args struct {
+		cart         *domaincart.Cart
+		giftCardCode string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *domaincart.Cart
+		wantErr bool
+	}{
+		{
+			name: "apply valid giftcard - success",
+			args: args{
+				cart:         &domaincart.Cart{},
+				giftCardCode: "valid",
+			},
+			want: &domaincart.Cart{
+				AppliedGiftCards: []domaincart.AppliedGiftCard{
+					{
+						Code:    "valid",
+						Balance: priceDomain.NewFromInt(10, 100, "$"),
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "apply invalid giftcard - failure",
+			args: args{
+				cart:         &domaincart.Cart{},
+				giftCardCode: "invalid",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cob := &InMemoryBehaviour{}
+			cob.Inject(
+				&InMemoryCartStorage{},
+				nil,
+				flamingo.NullLogger{},
+				nil,
+				nil,
+				nil,
+				nil,
+				nil,
+			)
+			got, _, err := cob.ApplyGiftCard(context.Background(), tt.args.cart, tt.args.giftCardCode)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("InMemoryBehaviour.ApplyGiftCard() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("InMemoryBehaviour.ApplyGiftCard() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestInMemoryBehaviour_RemoveGiftCard(t *testing.T) {
+	type args struct {
+		cart         *domaincart.Cart
+		giftCardCode string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *domaincart.Cart
+		wantErr bool
+	}{
+		{
+			name: "remove giftcard successfully",
+			args: args{
+				cart: &domaincart.Cart{
+					AppliedGiftCards: []domaincart.AppliedGiftCard{
+						{
+							Code:    "to-remove",
+							Balance: priceDomain.NewFromInt(10, 100, "$"),
+						},
+						{
+							Code:    "valid",
+							Balance: priceDomain.NewFromInt(10, 100, "$"),
+						},
+					},
+				},
+				giftCardCode: "to-remove",
+			},
+			want: &domaincart.Cart{
+				AppliedGiftCards: []domaincart.AppliedGiftCard{
+					{
+						Code:    "valid",
+						Balance: priceDomain.NewFromInt(10, 100, "$"),
+					},
+				},
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cob := &InMemoryBehaviour{}
+			cob.Inject(
+				&InMemoryCartStorage{},
+				nil,
+				flamingo.NullLogger{},
+				nil,
+				nil,
+				nil,
+				nil,
+				nil,
+			)
+			got, _, err := cob.RemoveGiftCard(context.Background(), tt.args.cart, tt.args.giftCardCode)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("InMemoryBehaviour.ApplyGiftCard() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("InMemoryBehaviour.ApplyGiftCard() got = %v, want %v", got, tt.want)
+			}
 		})
 	}
 }

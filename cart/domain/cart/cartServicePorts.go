@@ -47,6 +47,8 @@ type (
 		UpdateDeliveryInfoAdditionalData(ctx context.Context, cart *Cart, deliveryCode string, additionalData *AdditionalData) (*Cart, DeferEvents, error)
 		ApplyVoucher(ctx context.Context, cart *Cart, couponCode string) (*Cart, DeferEvents, error)
 		RemoveVoucher(ctx context.Context, cart *Cart, couponCode string) (*Cart, DeferEvents, error)
+		ApplyGiftCard(ctx context.Context, cart *Cart, giftCardCode string) (*Cart, DeferEvents, error)
+		RemoveGiftCard(ctx context.Context, cart *Cart, giftCardCode string) (*Cart, DeferEvents, error)
 	}
 
 	// AddRequest defines add to cart requeset

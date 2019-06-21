@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
+	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 
 	domaincart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
@@ -362,6 +363,46 @@ func (cob *InMemoryBehaviour) RemoveVoucher(ctx context.Context, cart *domaincar
 			cart.AppliedCouponCodes[i] = cart.AppliedCouponCodes[len(cart.AppliedCouponCodes)-1]
 			cart.AppliedCouponCodes[len(cart.AppliedCouponCodes)-1] = domaincart.CouponCode{}
 			cart.AppliedCouponCodes = cart.AppliedCouponCodes[:len(cart.AppliedCouponCodes)-1]
+			break
+		}
+	}
+
+	err := cob.cartStorage.StoreCart(cart)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return cob.resetPaymentSelectionIfInvalid(ctx, cart)
+}
+
+// ApplyGiftCard applies a gift card to the cart
+// if a GiftCard is applied, it will be added to the array AppliedGiftCards on the cart
+func (cob *InMemoryBehaviour) ApplyGiftCard(ctx context.Context, cart *domaincart.Cart, giftCardCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	if giftCardCode != "valid" {
+		err := errors.New("Code invalid")
+		return nil, nil, err
+	}
+
+	giftCard := domaincart.AppliedGiftCard{
+		Code:    giftCardCode,
+		Balance: priceDomain.NewFromInt(10, 100, "$"),
+	}
+	cart.AppliedGiftCards = append(cart.AppliedGiftCards, giftCard)
+	err := cob.cartStorage.StoreCart(cart)
+	if err != nil {
+		return nil, nil, err
+	}
+	return cob.resetPaymentSelectionIfInvalid(ctx, cart)
+}
+
+// RemoveGiftCard removes a gift card from the cart
+// if a GiftCard is removed, it will be removed from the array AppliedGiftCards on the cart
+func (cob *InMemoryBehaviour) RemoveGiftCard(ctx context.Context, cart *domaincart.Cart, giftCardCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	for i, giftcard := range cart.AppliedGiftCards {
+		if giftcard.Code == giftCardCode {
+			cart.AppliedGiftCards[i] = cart.AppliedGiftCards[len(cart.AppliedGiftCards)-1]
+			cart.AppliedGiftCards[len(cart.AppliedGiftCards)-1] = domaincart.AppliedGiftCard{}
+			cart.AppliedGiftCards = cart.AppliedGiftCards[:len(cart.AppliedGiftCards)-1]
 			break
 		}
 	}
