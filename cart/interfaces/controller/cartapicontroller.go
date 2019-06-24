@@ -145,6 +145,53 @@ func (cc *CartAPIController) ApplyGiftCardAndGetAction(ctx context.Context, r *w
 	return cc.handlePromotionAction(ctx, r, "giftcard_error", cc.cartService.ApplyGiftCard)
 }
 
+// ApplyCombinedVoucherGift applies a given first to the voucher API Endpoint (if no voucher code is already set)
+// and then to to the Giftcard API Endpoint and then eventually returns the cart
+// the request needs a query string param "anyCode" which includes the corresponding code for either a promo code
+// or a gift card
+func (cc *CartAPIController) ApplyCombinedVoucherGift(ctx context.Context, r *web.Request) web.Result {
+	result := newResult()
+
+	// fetching anyCode - which might be either voucher or giftcard
+	anyCode := r.Params["anyCode"]
+
+
+	currentCart, _, err := cc.cartReceiverService.GetCart(ctx, r.Session())
+	if err != nil {
+		result.SetError(err, "combined_cart_error")
+		response := cc.responder.Data(result)
+		response.Status(500)
+
+		return response
+	}
+
+	if len(currentCart.AppliedCouponCodes) == 0 {
+		// no coupon at cart, try to apply voucher
+		_, err := cc.cartService.ApplyVoucher(ctx, r.Session(), anyCode)
+		if err == nil {
+			// successfully applied, return info
+			cc.enrichResultWithCartInfos(ctx, &result)
+
+			return cc.responder.Data(result)
+		}
+
+		// ignore errors here because we need to try a fallback by applying the code as a gift card
+	}
+
+	_, err = cc.cartService.ApplyGiftCard(ctx, r.Session(), anyCode)
+	if err != nil {
+		result.SetError(err, "combined_giftcard_error")
+		response := cc.responder.Data(result)
+		response.Status(500)
+
+		return response
+	}
+
+	cc.enrichResultWithCartInfos(ctx, &result)
+
+	return cc.responder.Data(result)
+}
+
 // RemoveGiftCardAndGetAction removes the given giftcard and returns the cart
 // the request needs a query string param "couponCode" which includes the corresponding giftcard code
 func (cc *CartAPIController) RemoveGiftCardAndGetAction(ctx context.Context, r *web.Request) web.Result {
