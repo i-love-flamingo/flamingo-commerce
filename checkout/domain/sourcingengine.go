@@ -5,6 +5,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"fmt"
+	"math"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo/v3/framework/flamingo"
@@ -66,6 +67,9 @@ func (s Sources) MainLocation() string {
 func (s Sources) QtySum() int {
 	qty := int(0)
 	for _,source := range s {
+		if source.Qty == math.MaxInt64 {
+			return  math.MaxInt64
+		}
 		qty = qty + source.Qty
 	}
 	return qty
