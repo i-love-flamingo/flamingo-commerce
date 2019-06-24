@@ -84,7 +84,7 @@ type (
 		redirectToCartOnInvalideCart    bool
 		privacyPolicyRequired           bool
 
-		DevMode bool `inject:"config:debug.mode"`
+		DevMode bool
 
 		applicationCartService         *cartApplication.CartService
 		applicationCartReceiverService *cartApplication.CartReceiverService
@@ -119,6 +119,7 @@ func (cc *CheckoutController) Inject(
 		ShowEmptyCartPageIfNoItems      bool `inject:"config:checkout.showEmptyCartPageIfNoItems,optional"`
 		RedirectToCartOnInvalideCart    bool `inject:"config:checkout.redirectToCartOnInvalideCart,optional"`
 		PrivacyPolicyRequired           bool `inject:"config:checkout.privacyPolicyRequired,optional"`
+		DevMode                         bool `inject:"config:debug.mode,optional"`
 	},
 ) {
 	cc.responder = responder
@@ -134,6 +135,8 @@ func (cc *CheckoutController) Inject(
 	cc.showEmptyCartPageIfNoItems = config.ShowEmptyCartPageIfNoItems
 	cc.redirectToCartOnInvalideCart = config.RedirectToCartOnInvalideCart
 	cc.privacyPolicyRequired = config.PrivacyPolicyRequired
+
+	cc.DevMode = config.DevMode
 
 	cc.applicationCartService = applicationCartService
 	cc.applicationCartReceiverService = applicationCartReceiverService
@@ -258,7 +261,7 @@ func (cc *CheckoutController) SuccessAction(ctx context.Context, r *web.Request)
 	flashes := r.Session().Flashes("checkout.success.data")
 	if len(flashes) > 0 {
 
-		// if in devmode, restore the last order in flash session.
+		// if in development mode, then restore the last order in flash session.
 		if cc.DevMode {
 			r.Session().AddFlash(flashes[len(flashes)-1], "checkout.success.data")
 		}
