@@ -84,7 +84,7 @@ type (
 		redirectToCartOnInvalideCart    bool
 		privacyPolicyRequired           bool
 
-		DevMode bool
+		devMode bool
 
 		applicationCartService         *cartApplication.CartService
 		applicationCartReceiverService *cartApplication.CartReceiverService
@@ -136,7 +136,7 @@ func (cc *CheckoutController) Inject(
 	cc.redirectToCartOnInvalideCart = config.RedirectToCartOnInvalideCart
 	cc.privacyPolicyRequired = config.PrivacyPolicyRequired
 
-	cc.DevMode = config.DevMode
+	cc.devMode = config.DevMode
 
 	cc.applicationCartService = applicationCartService
 	cc.applicationCartReceiverService = applicationCartReceiverService
@@ -262,7 +262,7 @@ func (cc *CheckoutController) SuccessAction(ctx context.Context, r *web.Request)
 	if len(flashes) > 0 {
 
 		// if in development mode, then restore the last order in flash session.
-		if cc.DevMode {
+		if cc.devMode {
 			r.Session().AddFlash(flashes[len(flashes)-1], "checkout.success.data")
 		}
 
