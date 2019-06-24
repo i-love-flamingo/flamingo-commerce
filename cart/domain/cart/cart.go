@@ -220,7 +220,6 @@ func (c Cart) GetByItemID(itemID string) (*Item, error) {
 	return nil, errors.Errorf("itemId %q in cart does not exist", itemID)
 }
 
-
 // GetTotalQty for the product in the cart
 func (c Cart) GetTotalQty(marketPlaceCode string, variantCode string) int {
 	qty := int(0)
@@ -658,6 +657,14 @@ func (b *Builder) SetBelongsToAuthenticatedUser(v bool) *Builder {
 func (b *Builder) AddAppliedCouponCode(code CouponCode) *Builder {
 	b.init()
 	b.cartInBuilding.AppliedCouponCodes = append(b.cartInBuilding.AppliedCouponCodes, code)
+
+	return b
+}
+
+// SetAppliedGiftCards - optional - sets the applied gift cards
+func (b *Builder) SetAppliedGiftCards(gc []AppliedGiftCard) *Builder {
+	b.init()
+	b.cartInBuilding.AppliedGiftCards = gc
 
 	return b
 }
