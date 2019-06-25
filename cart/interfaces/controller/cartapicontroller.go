@@ -145,10 +145,8 @@ func (cc *CartAPIController) ApplyGiftCardAndGetAction(ctx context.Context, r *w
 	return cc.handlePromotionAction(ctx, r, "giftcard_error", cc.cartService.ApplyGiftCard)
 }
 
-// ApplyCombinedVoucherGift applies a given first to the voucher API Endpoint (if no voucher code is already set)
-// and then to to the Giftcard API Endpoint and then eventually returns the cart
-// the request needs a query string param "anyCode" which includes the corresponding code for either a promo code
-// or a gift card
+// ApplyCombinedVoucherGift applies a given code (which might be either a voucher or a giftcard code) to the
+// cartService and returns the cart
 func (cc *CartAPIController) ApplyCombinedVoucherGift(ctx context.Context, r *web.Request) web.Result {
 	// fetching anyCode - which might be either voucher or giftcard
 	anyCode := r.Params["anyCode"]
