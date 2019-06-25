@@ -571,6 +571,15 @@ func (cs *CartService) ApplyVoucher(ctx context.Context, session *web.Session, c
 	return cs.executeVoucherBehaviour(ctx, session, cart, couponCode, behaviour.ApplyVoucher)
 }
 
+// ApplyAny applies a voucher or giftcard to the cart
+func (cs *CartService) ApplyAny(ctx context.Context, session *web.Session, anyCode string) (*cartDomain.Cart, error) {
+	cart, behaviour, err := cs.getCartAndBehaviour(ctx, session, "ApplyAny")
+	if err != nil {
+		return nil, err
+	}
+	return cs.executeVoucherBehaviour(ctx, session, cart, anyCode, behaviour.ApplyAny)
+}
+
 // RemoveVoucher removes a voucher from the cart
 func (cs *CartService) RemoveVoucher(ctx context.Context, session *web.Session, couponCode string) (*cartDomain.Cart, error) {
 	cart, behaviour, err := cs.getCartAndBehaviour(ctx, session, "RemoveVoucher")
