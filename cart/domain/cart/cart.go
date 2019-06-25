@@ -134,8 +134,9 @@ type (
 
 	// AppliedGiftCard value object
 	AppliedGiftCard struct {
-		Code    string
-		Balance domain.Price
+		Code      string
+		Applied   domain.Price // how much of the gift card has been subtracted from cart price
+		Remaining domain.Price // how much of the gift card is still available
 	}
 )
 
