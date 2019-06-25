@@ -457,11 +457,5 @@ Use the `getDecoratedCart` template function to get the decorated cart.
 ### Cart Ajax API
 
 There are also of course ajax endpoints, that can be used to interact with the cart directly from your browser and the javascript functionality of your template.
-
-* Get Cart Content: http://localhost:3210/en/api/cart
-* Add Simple product: http://localhost:3210/en/api/cart/add/fake_simple
-* Add With qty: http://localhost:3210/en/api/cart/add/fake_simple?qty=10
-* Adding configurables: http://localhost:3210/en/api/cart/add/fake_configurable?variantMarketplaceCode=shirt-white-s
-* Adding configurables with a given delivery: http://localhost:3210/en/api/cart/add/fake_configurable?variantMarketplaceCode=shirt-white-s&deliveryCode=pickup_store
-
+To get an idea of all endpoints, have a look at the module.go, especially the apiRoutes method where endpoints are handled.
 
