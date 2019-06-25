@@ -75,6 +75,19 @@ func (s Sources) QtySum() int {
 	return qty
 }
 
+
+// Reduce returns new Source
+func (s Sources) Reduce(reduceby Sources) Sources {
+	for k,source := range s {
+		for _,reducebySource := range reduceby {
+			if source.LocationCode == reducebySource.LocationCode {
+				s[k].Qty = s[k].Qty - reducebySource.Qty
+			}
+		}
+	}
+	return s
+}
+
 // SetSourcesForCartItems gets Sources and modifies the Cart Items
 // todo move to application layer ?
 func (se *SourcingEngine) SetSourcesForCartItems(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart) error {
