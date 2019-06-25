@@ -577,7 +577,10 @@ func (cs *CartService) ApplyAny(ctx context.Context, session *web.Session, anyCo
 	if err != nil {
 		return nil, err
 	}
-	return cs.executeVoucherBehaviour(ctx, session, cart, anyCode, behaviour.ApplyAny)
+	if giftCartAndVoucherBehaviour, ok := behaviour.(cartDomain.GiftCartAndVoucherBehaviour); ok {
+		return cs.executeVoucherBehaviour(ctx, session, cart, anyCode, giftCartAndVoucherBehaviour.ApplyAny)
+	}
+	return nil, errors.New("ApplyAny not supported")
 }
 
 // RemoveVoucher removes a voucher from the cart
@@ -595,7 +598,10 @@ func (cs *CartService) ApplyGiftCard(ctx context.Context, session *web.Session, 
 	if err != nil {
 		return nil, err
 	}
-	return cs.executeVoucherBehaviour(ctx, session, cart, couponCode, behaviour.ApplyGiftCard)
+	if giftCartBehaviour, ok := behaviour.(cartDomain.GiftCartBehaviour); ok {
+		return cs.executeVoucherBehaviour(ctx, session, cart, couponCode, giftCartBehaviour.ApplyGiftCard)
+	}
+	return nil, errors.New("ApplyGiftCard not supported")
 }
 
 // RemoveGiftCard removes a giftcard from the cart
@@ -604,7 +610,10 @@ func (cs *CartService) RemoveGiftCard(ctx context.Context, session *web.Session,
 	if err != nil {
 		return nil, err
 	}
-	return cs.executeVoucherBehaviour(ctx, session, cart, couponCode, behaviour.RemoveGiftCard)
+	if giftCartBehaviour, ok := behaviour.(cartDomain.GiftCartBehaviour); ok {
+		return cs.executeVoucherBehaviour(ctx, session, cart, couponCode, giftCartBehaviour.RemoveGiftCard)
+	}
+	return nil, errors.New("RemoveGiftCard not supported")
 }
 
 // Get current cart from session and corresponding behaviour
