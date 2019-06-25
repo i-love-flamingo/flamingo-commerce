@@ -356,6 +356,18 @@ func (cob *InMemoryBehaviour) ApplyVoucher(ctx context.Context, cart *domaincart
 	return cob.resetPaymentSelectionIfInvalid(ctx, cart)
 }
 
+// ApplyAny applies a voucher or giftcard to the cart
+func (cob *InMemoryBehaviour) ApplyAny (ctx context.Context, cart *domaincart.Cart, anyCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	currentCart, deferFunc, err := cob.ApplyVoucher(ctx, cart, anyCode)
+	if err == nil {
+		// successfully applied as voucher
+		return currentCart, deferFunc, nil
+	}
+
+	// some error occurred, retry as giftcard
+	return cob.ApplyGiftCard(ctx, cart, anyCode)
+}
+
 // RemoveVoucher removes a voucher from the cart
 func (cob *InMemoryBehaviour) RemoveVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	for i, coupon := range cart.AppliedCouponCodes {

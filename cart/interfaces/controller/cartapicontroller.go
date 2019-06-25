@@ -145,6 +145,28 @@ func (cc *CartAPIController) ApplyGiftCardAndGetAction(ctx context.Context, r *w
 	return cc.handlePromotionAction(ctx, r, "giftcard_error", cc.cartService.ApplyGiftCard)
 }
 
+// ApplyCombinedVoucherGift applies a given code (which might be either a voucher or a giftcard code) to the
+// cartService and returns the cart
+func (cc *CartAPIController) ApplyCombinedVoucherGift(ctx context.Context, r *web.Request) web.Result {
+	// fetching anyCode - which might be either voucher or giftcard
+	anyCode := r.Params["anyCode"]
+
+	result := newResult()
+
+	_, err := cc.cartService.ApplyAny(ctx, r.Session(), anyCode)
+
+	if err != nil {
+		result.SetError(err, "applyany_error")
+		response := cc.responder.Data(result)
+		response.Status(500)
+		return response
+	}
+
+	cc.enrichResultWithCartInfos(ctx, &result)
+
+	return cc.responder.Data(result)
+}
+
 // RemoveGiftCardAndGetAction removes the given giftcard and returns the cart
 // the request needs a query string param "couponCode" which includes the corresponding giftcard code
 func (cc *CartAPIController) RemoveGiftCardAndGetAction(ctx context.Context, r *web.Request) web.Result {
