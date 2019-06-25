@@ -307,8 +307,9 @@ func TestInMemoryBehaviour_ApplyGiftCard(t *testing.T) {
 			want: &domaincart.Cart{
 				AppliedGiftCards: []domaincart.AppliedGiftCard{
 					{
-						Code:    "valid",
-						Balance: priceDomain.NewFromInt(10, 100, "$"),
+						Code:      "valid",
+						Applied:   priceDomain.NewFromInt(10, 100, "$"),
+						Remaining: priceDomain.NewFromInt(0, 100, "$"),
 					},
 				},
 			},
@@ -366,12 +367,14 @@ func TestInMemoryBehaviour_RemoveGiftCard(t *testing.T) {
 				cart: &domaincart.Cart{
 					AppliedGiftCards: []domaincart.AppliedGiftCard{
 						{
-							Code:    "to-remove",
-							Balance: priceDomain.NewFromInt(10, 100, "$"),
+							Code:      "to-remove",
+							Applied:   priceDomain.NewFromInt(10, 100, "$"),
+							Remaining: priceDomain.NewFromInt(0, 100, "$"),
 						},
 						{
-							Code:    "valid",
-							Balance: priceDomain.NewFromInt(10, 100, "$"),
+							Code:      "valid",
+							Applied:   priceDomain.NewFromInt(10, 100, "$"),
+							Remaining: priceDomain.NewFromInt(0, 100, "$"),
 						},
 					},
 				},
@@ -380,8 +383,9 @@ func TestInMemoryBehaviour_RemoveGiftCard(t *testing.T) {
 			want: &domaincart.Cart{
 				AppliedGiftCards: []domaincart.AppliedGiftCard{
 					{
-						Code:    "valid",
-						Balance: priceDomain.NewFromInt(10, 100, "$"),
+						Code:      "valid",
+						Applied:   priceDomain.NewFromInt(10, 100, "$"),
+						Remaining: priceDomain.NewFromInt(0, 100, "$"),
 					},
 				},
 			},

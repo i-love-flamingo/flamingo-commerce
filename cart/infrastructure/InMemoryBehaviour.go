@@ -384,8 +384,9 @@ func (cob *InMemoryBehaviour) ApplyGiftCard(ctx context.Context, cart *domaincar
 	}
 
 	giftCard := domaincart.AppliedGiftCard{
-		Code:    giftCardCode,
-		Balance: priceDomain.NewFromInt(10, 100, "$"),
+		Code:      giftCardCode,
+		Applied:   priceDomain.NewFromInt(10, 100, "$"),
+		Remaining: priceDomain.NewFromInt(0, 100, "$"),
 	}
 	cart.AppliedGiftCards = append(cart.AppliedGiftCards, giftCard)
 	err := cob.cartStorage.StoreCart(cart)
