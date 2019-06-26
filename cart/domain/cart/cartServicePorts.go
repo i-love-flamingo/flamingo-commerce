@@ -49,15 +49,15 @@ type (
 		RemoveVoucher(ctx context.Context, cart *Cart, couponCode string) (*Cart, DeferEvents, error)
 	}
 
-	//GiftCartBehaviour - additional interface that can be implemented to support GiftCard features
-	GiftCartBehaviour interface {
+	//GiftCardBehaviour - additional interface that can be implemented to support GiftCard features
+	GiftCardBehaviour interface {
 		ApplyGiftCard(ctx context.Context, cart *Cart, giftCardCode string) (*Cart, DeferEvents, error)
 		RemoveGiftCard(ctx context.Context, cart *Cart, giftCardCode string) (*Cart, DeferEvents, error)
 	}
 
-	//GiftCartAndVoucherBehaviour - additional interface that can be implemented to support generic code entry (which can either be voucher or giftcard)
-	GiftCartAndVoucherBehaviour interface {
-		ApplyAny (ctx context.Context, cart *Cart, anyCode string) (*Cart, DeferEvents, error)
+	//GiftCardAndVoucherBehaviour - additional interface that can be implemented to support generic code entry (which can either be voucher or giftcard)
+	GiftCardAndVoucherBehaviour interface {
+		ApplyAny(ctx context.Context, cart *Cart, anyCode string) (*Cart, DeferEvents, error)
 	}
 
 	// AddRequest defines add to cart requeset
