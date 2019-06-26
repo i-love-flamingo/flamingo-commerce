@@ -53,8 +53,7 @@ type Commerce_BasicProductData {
 type Commerce_ProductTeaserData {
     shortTitle: String
     shortDescription: String
-    # TODO implement in price task:
-    # teaserPrice : Commerce_ProductPriceInfo
+    teaserPrice : Commerce_ProductPriceInfo
     teaserPriceIsFromPrice: Boolean
     preSelectedVariantSku: String
     media : [Commerce_ProductMedia!]
@@ -114,6 +113,22 @@ type Commerce_CategoryTeaser {
     path: String!
     name: String!
     parent: Commerce_CategoryTeaser
+}
+
+type Commerce_ProductPriceInfo {
+#        default:           Commerce_Price
+#        discounted:        Commerce_Price
+    discountText: String!
+    # TODO resolve big.Float to Float:
+#    activeBase: Float!
+#    activeBaseAmount: Float!
+    activeBaseUnit: String
+    isDiscounted: Boolean
+    campaignRules: [String!]
+    denyMoreDiscounts: Boolean
+    #    context: Commerce_PriceContext
+    taxClass: String!
+
 }
 
 extend type Query {

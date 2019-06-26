@@ -38,6 +38,7 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		"Commerce_ProductAttributes":         domain.Attributes{},
 		"Commerce_ProductAttribute":          domain.Attribute{},
 		"Commerce_CategoryTeaser":            domain.CategoryTeaser{},
+		"Commerce_ProductPriceInfo":          domain.PriceInfo{},
 	}.Models()
 }
 
