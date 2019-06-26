@@ -3,10 +3,12 @@ package product
 import (
 	"flamingo.me/dingo"
 	"flamingo.me/flamingo-commerce/v3/product/interfaces/controller"
+	productgraphql "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql"
 	"flamingo.me/flamingo-commerce/v3/product/interfaces/templatefunctions"
 	"flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
+	"flamingo.me/graphql"
 )
 
 // Module registers our profiler
@@ -19,6 +21,8 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	flamingo.BindTemplateFunc(injector, "findProducts", new(templatefunctions.FindProducts))
 
 	web.BindRoutes(injector, new(routes))
+
+	injector.BindMulti(new(graphql.Service)).To(new(productgraphql.Service))
 }
 
 // DefaultConfig for this module

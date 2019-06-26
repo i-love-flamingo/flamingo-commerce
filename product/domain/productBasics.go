@@ -546,3 +546,37 @@ func (w WishedToPay) Split(count int) []WishedToPay {
 	}
 	return result
 }
+
+// GetAttributeKeys lists all available keys
+func (a Attributes) GetAttributeKeys() []string {
+	res := make([]string, len(a))
+	i := 0
+	for k := range a {
+		res[i] = k
+		i++
+	}
+	return res
+}
+
+// GetAttributes lists all attributes
+func (a Attributes) GetAttributes() []Attribute {
+	res := make([]Attribute, len(a))
+	i := 0
+	for _, v := range a {
+		res[i] = v
+		i++
+	}
+	return res
+}
+
+// HasAttribute checks if an attribute is available
+func (a Attributes) HasAttribute(key string) bool {
+	_, exist := a[key]
+	return exist
+}
+
+// GetAttribute returns a specified attribute
+func (a Attributes) GetAttribute(key string) Attribute {
+	attribute := a[key]
+	return attribute
+}
