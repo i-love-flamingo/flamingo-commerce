@@ -3,9 +3,11 @@ package controller
 import (
 	"context"
 	"encoding/gob"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 
 	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
 	"flamingo.me/flamingo/v3/framework/flamingo"
@@ -361,12 +363,19 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 	viewData.Form = *form
 
 	if success {
-		cc.logger.WithContext(ctx).Debug("submit checkout suceeded: redirect to checkout.review")
 		if cc.skipReviewAction {
+			canProceed, err := cc.checkTermsAndPrivacyPolicy(r)
+			if !canProceed || err != nil {
+				viewData.ErrorInfos = getViewErrorInfo(err)
+
+				return cc.responder.Render(template, viewData).SetNoCache()
+			}
+
+			cc.logger.WithContext(ctx).Debug("submit checkout suceeded: redirect to checkout.review")
 			return cc.processPaymentBeforePlaceOrder(ctx, r)
 		}
-		response := cc.responder.RouteRedirect("checkout.review", nil)
-		response.SetNoCache()
+		response := cc.responder.RouteRedirect("checkout.review", nil).SetNoCache()
+
 		return response
 	}
 
@@ -402,18 +411,24 @@ func (cc *CheckoutController) showReviewFormWithErrors(ctx context.Context, deco
 }
 
 func getViewErrorInfo(err error) ViewErrorInfos {
+	if err == nil {
+		return ViewErrorInfos{
+			HasError:        true,
+			HasPaymentError: false,
+		}
+	}
+
 	hasPaymentError := false
 
 	if paymentErr, ok := err.(*paymentDomain.Error); ok {
 		hasPaymentError = paymentErr.ErrorCode != paymentDomain.PaymentErrorCodeCancelled
 	}
 
-	errorInfos := ViewErrorInfos{
+	return ViewErrorInfos{
 		HasError:        true,
 		ErrorMessage:    err.Error(),
 		HasPaymentError: hasPaymentError,
 	}
-	return errorInfos
 }
 
 func (cc *CheckoutController) processPaymentBeforePlaceOrder(ctx context.Context, r *web.Request) web.Result {
@@ -454,15 +469,11 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 	}
 
 	//Guard Clause if cart can not be fetched
-	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCartWithoutCache(ctx, r.Session())
-	if e != nil {
-		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error %v", e)
+	decoratedCart, err := cc.applicationCartReceiverService.ViewDecoratedCartWithoutCache(ctx, r.Session())
+	if err != nil {
+		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error %v", err)
 		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 	}
-
-	proceed, _ := r.Form1("proceed")
-	termsAndConditions, _ := r.Form1("termsAndConditions")
-	privacyPolicy, _ := r.Form1("privacyPolicy")
 
 	if cc.showEmptyCartPageIfNoItems && decoratedCart.Cart.ItemCount() == 0 {
 		return cc.responder.Render("checkout/emptycart", nil).SetNoCache()
@@ -476,32 +487,14 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 		DecoratedCart: *decoratedCart,
 	}
 
-	errorMessage := ""
-	// check for privacy policy if required
-	if cc.privacyPolicyRequired && privacyPolicy != "1" && proceed == "1" {
-		errorMessage = "privacy_policy_required"
-		viewData.ErrorInfos = ViewErrorInfos{
-			HasError:        true,
-			ErrorMessage:    errorMessage,
-			HasPaymentError: false,
-		}
-	}
-
-	// check for terms and conditions if required
-	if termsAndConditions != "1" && proceed == "1" {
-		if errorMessage != "" {
-			errorMessage = errorMessage + ","
-		}
-		errorMessage = errorMessage + "terms_and_conditions_required"
-		viewData.ErrorInfos = ViewErrorInfos{
-			HasError:        true,
-			ErrorMessage:    errorMessage,
-			HasPaymentError: false,
-		}
+	// check for terms and conditions and privacy policy
+	canProceed, err := cc.checkTermsAndPrivacyPolicy(r)
+	if err != nil {
+		viewData.ErrorInfos = getViewErrorInfo(err)
 	}
 
 	//Everything valid then return
-	if proceed == "1" && (!cc.privacyPolicyRequired || privacyPolicy == "1") && termsAndConditions == "1" && decoratedCart.Cart.IsPaymentSelected() {
+	if canProceed && err == nil && decoratedCart.Cart.IsPaymentSelected() {
 		return cc.processPaymentBeforePlaceOrder(ctx, r)
 	}
 
@@ -521,4 +514,33 @@ func (cc *CheckoutController) getCommonGuardRedirects(ctx context.Context, sessi
 		}
 	}
 	return nil
+}
+
+// checkTermsAndPrivacyPolicy checks if TermsAndConditions and PrivacyPolicy is set as required
+//   the returned error indicates that the check failed
+func (cc *CheckoutController) checkTermsAndPrivacyPolicy(r *web.Request) (bool, error) {
+	proceed, _ := r.Form1("proceed")
+	termsAndConditions, _ := r.Form1("termsAndConditions")
+	privacyPolicy, _ := r.Form1("privacyPolicy")
+
+	// prepare a minimal slice for error messages
+	errorMessages := make([]string, 0, 2)
+
+	// check for privacy policy if required
+	if cc.privacyPolicyRequired && privacyPolicy != "1" && proceed == "1" {
+		errorMessages = append(errorMessages, "privacy_policy_required")
+	}
+
+	// check for terms and conditions if required
+	if termsAndConditions != "1" {
+		errorMessages = append(errorMessages, "terms_and_conditions_required")
+	}
+
+	canProceed := (proceed == "1" && (!cc.privacyPolicyRequired || privacyPolicy == "1") && termsAndConditions == "1")
+
+	if 0 == len(errorMessages) {
+		return canProceed, nil
+	}
+
+	return canProceed, errors.New(strings.Join(errorMessages, ", "))
 }
