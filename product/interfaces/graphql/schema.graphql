@@ -119,9 +119,8 @@ type Commerce_ProductPriceInfo {
 #        default:           Commerce_Price
 #        discounted:        Commerce_Price
     discountText: String!
-    # TODO resolve big.Float to Float:
-#    activeBase: Float!
-#    activeBaseAmount: Float!
+    activeBase: Float!
+    activeBaseAmount: Float!
     activeBaseUnit: String
     isDiscounted: Boolean
     campaignRules: [String!]
