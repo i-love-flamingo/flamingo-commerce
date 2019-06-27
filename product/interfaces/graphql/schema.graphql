@@ -58,9 +58,19 @@ type Commerce_ProductTeaserData {
     preSelectedVariantSku: String
     media : [Commerce_ProductMedia!]
     marketPlaceCode: String
-    # TODO implement in price task:
-    #teaserAvailablePrices : [PriceInfo!]
-    #teaserLoyaltyPriceInfo *LoyaltyPriceInfo
+    teaserAvailablePrices : [Commerce_ProductPriceInfo!]
+    teaserLoyaltyPriceInfo: Commerce_ProductLoyaltyPriceInfo
+}
+
+type Commerce_ProductLoyaltyPriceInfo {
+    type: String!
+    default: Commerce_Price!
+    isDiscounted: Boolean!
+    discounted: Commerce_Price!
+    discountText: String!
+    minPointsToSpent: Float!
+    maxPointsToSpent: Float!
+#    context: Commerce_PriceContext!
 }
 
 type Commerce_ProductSpecifications {
@@ -83,8 +93,8 @@ type Commerce_ProductSaleable {
     saleableTo: Time
     # TODO implement in price task:
     #	activePrice: Commerce_ProductPriceInfo
-    #	availablePrices: [Commerce_ProductPriceInfo!]
-    #	loyaltyPrices: [Commerce_ProductLoyaltyPriceInfo!]
+    availablePrices: [Commerce_ProductPriceInfo!]
+    loyaltyPrices: [Commerce_ProductLoyaltyPriceInfo!]
 }
 
 type Commerce_ProductMedia {
@@ -116,8 +126,8 @@ type Commerce_CategoryTeaser {
 }
 
 type Commerce_ProductPriceInfo {
-#        default:           Commerce_Price
-#        discounted:        Commerce_Price
+    default: Commerce_Price
+    discounted: Commerce_Price
     discountText: String!
     activeBase: Float!
     activeBaseAmount: Float!
