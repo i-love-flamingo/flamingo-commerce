@@ -1,7 +1,15 @@
 package cart
 
 import (
+	"encoding/json"
+	"errors"
+	"strings"
+
 	price "flamingo.me/flamingo-commerce/v3/price/domain"
+)
+
+const (
+	splitQualifierSeperator = "___"
 )
 
 type (
@@ -20,6 +28,9 @@ type (
 		ChargeType string
 		Method     string
 	}
+
+	// PaymentSplitJSON - representation of complete payment split
+	PaymentSplitJSON map[string]price.Charge
 
 	//PaymentSplit - the Charges qualified by Type and PaymentMethod
 	PaymentSplit map[SplitQualifier]price.Charge
@@ -42,8 +53,6 @@ type (
 		GatewayProp      string
 		ChargedItemsProp PaymentSplitByItem
 	}
-
-
 )
 
 //NewSimplePaymentSelection - returns a PaymentSelection that can be used to update the cart.
@@ -154,6 +163,44 @@ func (s PaymentSplit) ChargesByType() price.Charges {
 	return charges
 }
 
+// MarshalJSON serialize to json
+func (s PaymentSplit) MarshalJSON() ([]byte, error) {
+	result := PaymentSplitJSON{}
+	for qualifier, charge := range s {
+		// explicit method and chargetype is necessary, otherwise keys could be overwritten
+		if qualifier.Method == "" || qualifier.ChargeType == "" {
+			return nil, errors.New("Method or ChargeType is empty")
+		}
+		// SplitQualifier is parsed to a string method___chargetype
+		result[qualifier.Method+splitQualifierSeperator+qualifier.ChargeType] = charge
+	}
+	return json.Marshal(result)
+}
+
+// UnmarshalJSON deserialize from json
+func (s *PaymentSplit) UnmarshalJSON(data []byte) error {
+	var input PaymentSplitJSON
+	if err := json.Unmarshal(data, &input); err != nil {
+		return err
+	}
+	result := PaymentSplit{}
+	// parse string method___chargetype back to splitqualifier
+	for key, charge := range input {
+		splitted := strings.Split(key, splitQualifierSeperator)
+		// guard in case cannot be splitted
+		if len(splitted) < 2 {
+			return errors.New("SplitQualifier cannot be parsed for paymentsplit")
+		}
+		qualifier := SplitQualifier{
+			Method:     splitted[0],
+			ChargeType: splitted[1],
+		}
+		result[qualifier] = charge
+	}
+	*s = result
+	return nil
+}
+
 //AddCartItem - adds a cartitems charge to the PaymentSplitByItem
 func (pb *PaymentSplitByItemBuilder) AddCartItem(id string, method string, charge price.Charge) *PaymentSplitByItemBuilder {
 	pb.init()
@@ -209,4 +256,3 @@ func (pb *PaymentSplitByItemBuilder) init() {
 		TotalItems:    make(map[string]PaymentSplit),
 	}
 }
-
