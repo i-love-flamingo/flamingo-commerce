@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	splitQualifierSeperator = "___"
+	splitQualifierSeparator = "-"
 )
 
 type (
@@ -169,7 +169,7 @@ func (s PaymentSplit) MarshalJSON() ([]byte, error) {
 			return nil, errors.New("Method or ChargeType is empty")
 		}
 		// SplitQualifier is parsed to a string method___chargetype
-		result[qualifier.Method+splitQualifierSeperator+qualifier.ChargeType] = charge
+		result[qualifier.Method+splitQualifierSeparator+qualifier.ChargeType] = charge
 	}
 	return json.Marshal(result)
 }
@@ -183,7 +183,7 @@ func (s *PaymentSplit) UnmarshalJSON(data []byte) error {
 	result := PaymentSplit{}
 	// parse string method___chargetype back to splitqualifier
 	for key, charge := range input {
-		splitted := strings.Split(key, splitQualifierSeperator)
+		splitted := strings.Split(key, splitQualifierSeparator)
 		// guard in case cannot be splitted
 		if len(splitted) < 2 {
 			return errors.New("SplitQualifier cannot be parsed for paymentsplit")

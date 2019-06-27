@@ -72,7 +72,7 @@ func TestPaymentSplit_MarshalJSON(t *testing.T) {
 				result[secondQualifier] = charge
 				return result
 			}(),
-			want:    []byte("{\"m1___t1\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"},\"m2___t1\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"}}"),
+			want:    []byte("{\"m1-t1\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"},\"m2-t1\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"}}"),
 			wantErr: false,
 		},
 		{
@@ -125,7 +125,7 @@ func TestPaymentSplit_UnmarshalJSON(t *testing.T) {
 		{
 			name: "unmarshall payment split",
 			args: args{
-				data: []byte("{\"m1___t1\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"},\"m2___t1\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"}}"),
+				data: []byte("{\"m1-t1\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"},\"m2-t1\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"}}"),
 			},
 			want: func() cart.PaymentSplit {
 				result := cart.PaymentSplit{}
@@ -149,7 +149,7 @@ func TestPaymentSplit_UnmarshalJSON(t *testing.T) {
 		{
 			name: "unmarshall payment split empty method or type - error",
 			args: args{
-				data: []byte("{\"m1_t1\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"},\"m2___t1\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"}}"),
+				data: []byte("{\"m1?t1\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"},\"m2-t1\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"}}"),
 			},
 			want:    nil,
 			wantErr: true,
