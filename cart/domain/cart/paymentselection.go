@@ -29,9 +29,6 @@ type (
 		Method     string
 	}
 
-	// PaymentSplitJSON - representation of complete payment split
-	PaymentSplitJSON map[string]price.Charge
-
 	//PaymentSplit - the Charges qualified by Type and PaymentMethod
 	PaymentSplit map[SplitQualifier]price.Charge
 
@@ -165,7 +162,7 @@ func (s PaymentSplit) ChargesByType() price.Charges {
 
 // MarshalJSON serialize to json
 func (s PaymentSplit) MarshalJSON() ([]byte, error) {
-	result := PaymentSplitJSON{}
+	result := make(map[string]price.Charge)
 	for qualifier, charge := range s {
 		// explicit method and chargetype is necessary, otherwise keys could be overwritten
 		if qualifier.Method == "" || qualifier.ChargeType == "" {
@@ -179,7 +176,7 @@ func (s PaymentSplit) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON deserialize from json
 func (s *PaymentSplit) UnmarshalJSON(data []byte) error {
-	var input PaymentSplitJSON
+	var input map[string]price.Charge
 	if err := json.Unmarshal(data, &input); err != nil {
 		return err
 	}

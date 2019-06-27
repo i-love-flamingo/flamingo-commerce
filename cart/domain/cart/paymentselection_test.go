@@ -119,6 +119,7 @@ func TestPaymentSplit_UnmarshalJSON(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
+		want    cart.PaymentSplit
 		wantErr bool
 	}{
 		{
@@ -126,6 +127,23 @@ func TestPaymentSplit_UnmarshalJSON(t *testing.T) {
 			args: args{
 				data: []byte("{\"m1___t1\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"},\"m2___t1\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"}}"),
 			},
+			want: func() cart.PaymentSplit {
+				result := cart.PaymentSplit{}
+				charge := domain.Charge{
+					Type: "t1",
+				}
+				firstQualifier := cart.SplitQualifier{
+					Method:     "m1",
+					ChargeType: charge.Type,
+				}
+				secondQualifier := cart.SplitQualifier{
+					Method:     "m2",
+					ChargeType: charge.Type,
+				}
+				result[firstQualifier] = charge
+				result[secondQualifier] = charge
+				return result
+			}(),
 			wantErr: false,
 		},
 		{
@@ -133,14 +151,20 @@ func TestPaymentSplit_UnmarshalJSON(t *testing.T) {
 			args: args{
 				data: []byte("{\"m1_t1\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"},\"m2___t1\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"}}"),
 			},
+			want:    nil,
 			wantErr: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			split := cart.PaymentSplit{}
-			if err := split.UnmarshalJSON(tt.args.data); (err != nil) != tt.wantErr {
+			err := split.UnmarshalJSON(tt.args.data)
+			if (err != nil) != tt.wantErr {
 				t.Errorf("PaymentSplit.UnmarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !tt.wantErr && !reflect.DeepEqual(split, tt.want) {
+				t.Errorf("PaymentSplit.UnmarshalJSON() = %v, want %v", split, tt.want)
 			}
 		})
 	}
