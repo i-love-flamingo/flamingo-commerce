@@ -70,7 +70,13 @@ type Commerce_ProductLoyaltyPriceInfo {
     discountText: String!
     minPointsToSpent: Float!
     maxPointsToSpent: Float!
-#    context: Commerce_PriceContext!
+    context: Commerce_PriceContext!
+}
+
+type Commerce_PriceContext {
+    customerGroup: String!
+    channelCode: String!
+    locale: String!
 }
 
 type Commerce_ProductSpecifications {
@@ -91,8 +97,7 @@ type Commerce_ProductSaleable {
     isSaleable: Boolean!
     saleableFrom: Time
     saleableTo: Time
-    # TODO implement in price task:
-    #	activePrice: Commerce_ProductPriceInfo
+    activePrice: Commerce_ProductPriceInfo
     availablePrices: [Commerce_ProductPriceInfo!]
     loyaltyPrices: [Commerce_ProductLoyaltyPriceInfo!]
 }
