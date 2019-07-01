@@ -5,11 +5,12 @@ import (
 	"errors"
 	"fmt"
 
-	"flamingo.me/flamingo/v3/framework/flamingo"
-	"flamingo.me/flamingo/v3/framework/opencensus"
-	"flamingo.me/flamingo/v3/framework/web"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
+
+	"flamingo.me/flamingo/v3/framework/flamingo"	
+	"flamingo.me/flamingo/v3/framework/opencensus"
+	"flamingo.me/flamingo/v3/framework/web"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -144,29 +145,35 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.S
 
 //CurrentCartPlaceOrder - use to place the current cart
 func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.Session, payment placeorder.Payment) (placeorder.PlacedOrderInfos, error) {
-	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(ctx, session)
+	// use a background context from here on to prevent the place order canceled by context cancel
+	placeOrderContext := web.ContextWithSession(
+		context.Background(),
+		web.SessionFromContext(ctx),
+	)
+
+	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(placeOrderContext, session)
 
 	if err != nil {
 		// record failcount metric
-		stats.Record(ctx, orderFailedStat.M(1))
-		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
+		stats.Record(placeOrderContext, orderFailedStat.M(1))
+		os.logger.WithContext(placeOrderContext).Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
 		return nil, err
 	}
 
-	validationResult := os.cartService.ValidateCart(ctx, session, decoratedCart)
+	validationResult := os.cartService.ValidateCart(placeOrderContext, session, decoratedCart)
 	if !validationResult.IsValid() {
 		// record failcount metric
-		stats.Record(ctx, orderFailedStat.M(1))
-		os.logger.WithContext(ctx).Warn("Try to place an invalid cart")
+		stats.Record(placeOrderContext, orderFailedStat.M(1))
+		os.logger.WithContext(placeOrderContext).Warn("Try to place an invalid cart")
 		return nil, errors.New("cart is invalid")
 	}
 
-	placedOrderInfos, err := os.cartService.PlaceOrder(ctx, session, &payment)
+	placedOrderInfos, err := os.cartService.PlaceOrder(placeOrderContext, session, &payment)
 
 	if err != nil {
 		// record failcount metric
-		stats.Record(ctx, orderFailedStat.M(1))
-		os.logger.WithContext(ctx).Error("Error during place Order:" + err.Error())
+		stats.Record(placeOrderContext, orderFailedStat.M(1))
+		os.logger.WithContext(placeOrderContext).Error("Error during place Order:" + err.Error())
 		return nil, errors.New("error while placing the order. please contact customer support")
 	}
 	return placedOrderInfos, nil
@@ -190,42 +197,48 @@ func (os *OrderService) GetAvailablePaymentGateways(ctx context.Context) map[str
 
 //CurrentCartPlaceOrderWithPaymentProcessing - use to place the current cart
 func (os *OrderService) CurrentCartPlaceOrderWithPaymentProcessing(ctx context.Context, session *web.Session) (*PlaceOrderInfo, error) {
-	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(ctx, session)
+	// use a background context from here on to prevent the place order canceled by context cancel
+	placeOrderContext := web.ContextWithSession(
+		context.Background(),
+		web.SessionFromContext(ctx),
+	)
+
+	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(placeOrderContext, session)
 	if !decoratedCart.Cart.IsPaymentSelected() {
-		stats.Record(ctx, orderFailedStat.M(1))
-		os.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error Gateway not in carts PaymentSelection")
+		stats.Record(placeOrderContext, orderFailedStat.M(1))
+		os.logger.WithContext(placeOrderContext).Error("cart.checkoutcontroller.submitaction: Error Gateway not in carts PaymentSelection")
 		return nil, errors.New("no payment gateway selected")
 	}
 
-	validationResult := os.cartService.ValidateCart(ctx, session, decoratedCart)
+	validationResult := os.cartService.ValidateCart(placeOrderContext, session, decoratedCart)
 	if !validationResult.IsValid() {
 		// record failcount metric
-		stats.Record(ctx, orderFailedStat.M(1))
-		os.logger.WithContext(ctx).Warn("Try to place an invalid cart")
+		stats.Record(placeOrderContext, orderFailedStat.M(1))
+		os.logger.WithContext(placeOrderContext).Warn("Try to place an invalid cart")
 		return nil, errors.New("cart is invalid")
 	}
 
-	gateway, err := os.GetPaymentGateway(ctx, decoratedCart.Cart.PaymentSelection.Gateway())
+	gateway, err := os.GetPaymentGateway(placeOrderContext, decoratedCart.Cart.PaymentSelection.Gateway())
 	if err != nil {
-		stats.Record(ctx, orderFailedStat.M(1))
-		os.logger.WithContext(ctx).Error(fmt.Sprintf("cart.checkoutcontroller.submitaction: Error %v  Gateway: %v", err,decoratedCart.Cart.PaymentSelection.Gateway()))
+		stats.Record(placeOrderContext, orderFailedStat.M(1))
+		os.logger.WithContext(placeOrderContext).Error(fmt.Sprintf("cart.checkoutcontroller.submitaction: Error %v  Gateway: %v", err,decoratedCart.Cart.PaymentSelection.Gateway()))
 		return nil, errors.New("selected gateway not available")
 	}
 
-	cartPayment, err := gateway.GetFlowResult(ctx, &decoratedCart.Cart, PaymentFlowStandardCorrelationID)
+	cartPayment, err := gateway.GetFlowResult(placeOrderContext, &decoratedCart.Cart, PaymentFlowStandardCorrelationID)
 	if err != nil {
 		return nil, err
 	}
-	err = gateway.ConfirmResult(ctx, &decoratedCart.Cart, cartPayment)
+	err = gateway.ConfirmResult(placeOrderContext, &decoratedCart.Cart, cartPayment)
 	if err != nil {
 		return nil, err
 	}
 
-	placedOrderInfos, err := os.cartService.PlaceOrder(ctx, session, cartPayment)
+	placedOrderInfos, err := os.cartService.PlaceOrder(placeOrderContext, session, cartPayment)
 	if err != nil {
 		// record failcount metric
-		stats.Record(ctx, orderFailedStat.M(1))
-		os.logger.WithContext(ctx).Error("Error during place Order:" + err.Error())
+		stats.Record(placeOrderContext, orderFailedStat.M(1))
+		os.logger.WithContext(placeOrderContext).Error("Error during place Order:" + err.Error())
 		return nil, errors.New("error while placing the order. please contact customer support")
 	}
 
