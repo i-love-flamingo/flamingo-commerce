@@ -8,7 +8,7 @@ import (
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
 
-	"flamingo.me/flamingo/v3/framework/flamingo"	
+	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/opencensus"
 	"flamingo.me/flamingo/v3/framework/web"
 
@@ -146,9 +146,12 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.S
 //CurrentCartPlaceOrder - use to place the current cart
 func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.Session, payment placeorder.Payment) (placeorder.PlacedOrderInfos, error) {
 	// use a background context from here on to prevent the place order canceled by context cancel
-	placeOrderContext := web.ContextWithSession(
-		context.Background(),
-		web.SessionFromContext(ctx),
+	placeOrderContext := web.ContextWithRequest(
+		web.ContextWithSession(
+			context.Background(),
+			web.SessionFromContext(ctx),
+		),
+		web.RequestFromContext(ctx),
 	)
 
 	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(placeOrderContext, session)
@@ -198,9 +201,12 @@ func (os *OrderService) GetAvailablePaymentGateways(ctx context.Context) map[str
 //CurrentCartPlaceOrderWithPaymentProcessing - use to place the current cart
 func (os *OrderService) CurrentCartPlaceOrderWithPaymentProcessing(ctx context.Context, session *web.Session) (*PlaceOrderInfo, error) {
 	// use a background context from here on to prevent the place order canceled by context cancel
-	placeOrderContext := web.ContextWithSession(
-		context.Background(),
-		web.SessionFromContext(ctx),
+	placeOrderContext := web.ContextWithRequest(
+		web.ContextWithSession(
+			context.Background(),
+			web.SessionFromContext(ctx),
+		),
+		web.RequestFromContext(ctx),
 	)
 
 	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(placeOrderContext, session)
@@ -221,7 +227,7 @@ func (os *OrderService) CurrentCartPlaceOrderWithPaymentProcessing(ctx context.C
 	gateway, err := os.GetPaymentGateway(placeOrderContext, decoratedCart.Cart.PaymentSelection.Gateway())
 	if err != nil {
 		stats.Record(placeOrderContext, orderFailedStat.M(1))
-		os.logger.WithContext(placeOrderContext).Error(fmt.Sprintf("cart.checkoutcontroller.submitaction: Error %v  Gateway: %v", err,decoratedCart.Cart.PaymentSelection.Gateway()))
+		os.logger.WithContext(placeOrderContext).Error(fmt.Sprintf("cart.checkoutcontroller.submitaction: Error %v  Gateway: %v", err, decoratedCart.Cart.PaymentSelection.Gateway()))
 		return nil, errors.New("selected gateway not available")
 	}
 
