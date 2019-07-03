@@ -40,12 +40,19 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		"Commerce_ProductSpecificationEntry": domain.SpecificationEntry{},
 		"Commerce_ProductSaleable":           domain.Saleable{},
 		"Commerce_ProductMedia":              domain.Media{},
-		"Commerce_ProductAttributes":         domain.Attributes{},
-		"Commerce_ProductAttribute":          domain.Attribute{},
-		"Commerce_CategoryTeaser":            domain.CategoryTeaser{},
-		"Commerce_ProductPriceInfo":          domain.PriceInfo{},
-		"Commerce_ProductLoyaltyPriceInfo":   domain.LoyaltyPriceInfo{},
-		"Commerce_PriceContext":              domain.PriceContext{},
+		"Commerce_ProductAttributes": graphql.ModelMapEntry{
+			Type: domain.Attributes{},
+			Fields: map[string]string{
+				"getAttribute":     "Attribute",
+				"getAttributes":    "Attributes",
+				"getAttributeKeys": "AttributeKeys",
+			},
+		},
+		"Commerce_ProductAttribute":        domain.Attribute{},
+		"Commerce_CategoryTeaser":          domain.CategoryTeaser{},
+		"Commerce_ProductPriceInfo":        domain.PriceInfo{},
+		"Commerce_ProductLoyaltyPriceInfo": domain.LoyaltyPriceInfo{},
+		"Commerce_PriceContext":            domain.PriceContext{},
 	}.Models()
 }
 
