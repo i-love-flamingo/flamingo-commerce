@@ -8,12 +8,17 @@ import (
 	"github.com/99designs/gqlgen/codegen/config"
 )
 
+//go:generate go run github.com/go-bindata/go-bindata/go-bindata -o fs.go -pkg graphql schema.graphql
+
+// Service is the Graphql-Service of this module
 type Service struct{}
 
+// Schema returns graphql schema of this module
 func (*Service) Schema() []byte {
 	return MustAsset("schema.graphql")
 }
 
+// Models return the 'Schema name' => 'Go model' mapping of this module
 func (*Service) Models() map[string]config.TypeMapEntry {
 	return graphql.ModelMap{
 		"Commerce_Product": graphql.ModelMapEntry{
@@ -44,14 +49,17 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 	}.Models()
 }
 
+// CommerceProductQueryResolver resolves graphql product queries
 type CommerceProductQueryResolver struct {
 	productService domain.ProductService
 }
 
+// Inject dependencies
 func (r *CommerceProductQueryResolver) Inject(productService domain.ProductService) {
 	r.productService = productService
 }
 
+// CommerceProduct returns a product with the given marketplaceCode from productService
 func (r *CommerceProductQueryResolver) CommerceProduct(ctx context.Context, marketplaceCode string) (domain.BasicProduct, error) {
 	return r.productService.Get(ctx, marketplaceCode)
 }

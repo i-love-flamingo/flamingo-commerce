@@ -1,0 +1,4 @@
+type Commerce_Price{
+    amount: Float
+    currency: String!
+}

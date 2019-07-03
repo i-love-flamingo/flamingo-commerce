@@ -547,8 +547,8 @@ func (w WishedToPay) Split(count int) []WishedToPay {
 	return result
 }
 
-// GetAttributeKeys lists all available keys
-func (a Attributes) GetAttributeKeys() []string {
+// AttributeKeys lists all available keys
+func (a Attributes) AttributeKeys() []string {
 	res := make([]string, len(a))
 	i := 0
 	for k := range a {
@@ -558,8 +558,8 @@ func (a Attributes) GetAttributeKeys() []string {
 	return res
 }
 
-// GetAttributes lists all attributes
-func (a Attributes) GetAttributes() []Attribute {
+// Attributes lists all attributes
+func (a Attributes) Attributes() []Attribute {
 	res := make([]Attribute, len(a))
 	i := 0
 	for _, v := range a {
@@ -575,8 +575,8 @@ func (a Attributes) HasAttribute(key string) bool {
 	return exist
 }
 
-// GetAttribute returns a specified attribute
-func (a Attributes) GetAttribute(key string) Attribute {
+// Attribute returns a specified attribute
+func (a Attributes) Attribute(key string) Attribute {
 	attribute := a[key]
 	return attribute
 }

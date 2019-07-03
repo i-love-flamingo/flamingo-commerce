@@ -26,6 +26,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	injector.BindMulti(new(graphql.Service)).To(new(productgraphql.Service))
 }
 
+// Depends adds our dependencies
 func (*Module) Depends() []dingo.Module {
 	return []dingo.Module{
 		price.Module{},

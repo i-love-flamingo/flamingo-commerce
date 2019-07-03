@@ -6,18 +6,17 @@ import (
 	"github.com/99designs/gqlgen/codegen/config"
 )
 
+//go:generate go run github.com/go-bindata/go-bindata/go-bindata -o fs.go -pkg graphql schema.graphql
+
+// Service is the Graphql-Service of this module
 type Service struct{}
 
+// Schema returns graphql schema of this module
 func (*Service) Schema() []byte {
-	//language=graphql
-	return []byte(`
-type Commerce_Price{
-	amount: Float
-	currency: String!
-}
-`)
+	return MustAsset("schema.graphql")
 }
 
+// Models return the 'Schema name' => 'Go model' mapping of this module
 func (*Service) Models() map[string]config.TypeMapEntry {
 	return graphql.ModelMap{
 		"Commerce_Price": graphql.ModelMapEntry{
