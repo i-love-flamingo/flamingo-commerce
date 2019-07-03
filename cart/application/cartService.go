@@ -729,6 +729,7 @@ func (cs *CartService) DeleteCartInCache(ctx context.Context, session *web.Sessi
 
 // ReserveOrderIDAndSave reserves order id by using the PlaceOrder behaviour, sets and saves it on the cart.
 // Each call of this method reserves a new order ID, even if it is already set on the cart.
+// You may want to use this before proceeding with payment to ensure having a useful reference in the payment processing
 func (cs *CartService) ReserveOrderIDAndSave(ctx context.Context, session *web.Session) (*cartDomain.Cart, error) {
 	if cs.placeOrderService == nil {
 		return nil, errors.New("No placeOrderService registered")
