@@ -55,6 +55,7 @@ type (
 		Amount priceDomain.Price
 		// IsItemRelated is a flag indicating if the discount should be displayed in the item or if it the result of a cart discount
 		IsItemRelated bool
+		Type          string
 	}
 
 	// ItemBuilder can be used to construct an item with a fluent interface
