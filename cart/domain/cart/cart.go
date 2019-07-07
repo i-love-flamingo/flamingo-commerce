@@ -140,7 +140,7 @@ var (
 
 // Key constants
 const (
-	//ChargeTypeMain used for giftcard payment
+	//ChargeTypeGiftCard used for giftcard payment
 	ChargeTypeGiftCard      = "giftcard"
 	TotalsTypeDiscount      = "totals_type_discount"
 	TotalsTypeVoucher       = "totals_type_voucher"

@@ -154,8 +154,8 @@ func NewPaymentSelectionWithGiftCard(gateway string, method string, pricedItems 
 			return nil, err
 		}
 		builder.AddShippingItem(k, method, price.Charge{
-			Price: itemPrice,
-			Value: itemPrice,
+			Price: remainingItemValue,
+			Value: remainingItemValue,
 			Type:  price.ChargeTypeMain,
 		})
 		builder.AddShippingItem(k, method, price.Charge{
@@ -170,8 +170,8 @@ func NewPaymentSelectionWithGiftCard(gateway string, method string, pricedItems 
 			return nil, err
 		}
 		builder.AddTotalItem(k, method, price.Charge{
-			Price: itemPrice,
-			Value: itemPrice,
+			Price: remainingItemValue,
+			Value: remainingItemValue,
 			Type:  price.ChargeTypeMain,
 		})
 		builder.AddTotalItem(k, method, price.Charge{
