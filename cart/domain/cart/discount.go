@@ -124,8 +124,6 @@ func mapDiscounts(result map[string]*AppliedDiscount, discountable WithDiscount)
 				return nil, err
 			}
 			collected.Applied = update
-			floaty := collected.Applied.FloatAmount()
-			floaty *= 1
 			continue
 		}
 		// discount is new, add to collection

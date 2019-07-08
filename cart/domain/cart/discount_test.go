@@ -287,10 +287,6 @@ func TestDelivery_CollectDiscounts(t *testing.T) {
 			sort.Sort(ByCode(got))
 			sort.Sort(ByCode(tt.want))
 			if !reflect.DeepEqual(got, tt.want) {
-				for _, val := range got {
-					floaty := val.Applied.FloatAmount()
-					floaty = floaty * 1
-				}
 				t.Errorf("Delivery.CollectDiscounts() = %v, want %v", got, tt.want)
 			}
 		})
