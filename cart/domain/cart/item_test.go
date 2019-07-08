@@ -16,13 +16,13 @@ func TestItem_PriceCalculation(t *testing.T) {
 	item := cartDomain.Item{
 		SinglePriceNet:   priceDomain.NewFromInt(1234, 100, "EUR"),
 		SinglePriceGross: priceDomain.NewFromInt(1247, 100, "EUR"),
-		AppliedDiscounts: []cartDomain.ItemDiscount{
+		AppliedDiscounts: []cartDomain.AppliedDiscount{
 			{
-				Amount:        priceDomain.NewFromInt(-100, 100, "EUR"),
+				Applied:       priceDomain.NewFromInt(-100, 100, "EUR"),
 				IsItemRelated: true,
 			},
 			{
-				Amount:        priceDomain.NewFromInt(-200, 100, "EUR"),
+				Applied:       priceDomain.NewFromInt(-200, 100, "EUR"),
 				IsItemRelated: false,
 			},
 		},

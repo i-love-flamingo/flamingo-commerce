@@ -7,28 +7,30 @@ import (
 type (
 	// AppliedDiscount value object - generic reference for a discount
 	AppliedDiscount struct {
-		Code    string       // unique code of discount
-		Title   string       // readable name of discount
-		Applied domain.Price // how much of the discount has been subtracted from cart price
-		Type    string       // to distinguish between discounts
+		CampaignCode  string       // unique code of the underlying campaign e.g. "summersale-2018"
+		CouponCode    string       // unique code of discount e.g. from input field
+		Label         string       // readable name of discount "Super Summer Sale 2018"
+		Applied       domain.Price // how much of the discount has been subtracted from cart price, IMPORTANT: always negative
+		Type          string       // to distinguish between discounts
+		IsItemRelated bool         // flag indicating if the discount is applied due to item
 	}
 
 	// WithDiscount interface for a cart that is able to handle discounts
 	WithDiscount interface {
 		HasAppliedDiscounts() (bool, error)
-		CollectDiscounts() ([]*AppliedDiscount, error)
+		CollectDiscounts() (AppliedDiscounts, error)
 	}
 
-	// ByCode implements sort.Interface for []AppliedDiscount based on code
-	ByCode []*AppliedDiscount
+	// AppliedDiscounts represents multiple discounts that are subtracted from total price of cart
+	AppliedDiscounts []AppliedDiscount
 )
 
 // CollectDiscounts sums up discounts of cart based on its deliveries
 // All discounts with the same type and title are aggregated and returned as one with a summed price
-func (c *Cart) CollectDiscounts() ([]*AppliedDiscount, error) {
+func (c *Cart) CollectDiscounts() (AppliedDiscounts, error) {
 	// guard if no items in delivery, no need to iterate
 	if len(c.Deliveries) <= 0 {
-		return make([]*AppliedDiscount, 0), nil
+		return make([]AppliedDiscount, 0), nil
 	}
 	// collect different discounts on item level
 	var err error
@@ -54,10 +56,10 @@ func (c *Cart) HasAppliedDiscounts() (bool, error) {
 
 // CollectDiscounts sums up discounts of a delivery based on its single item discounts
 // All discounts with the same type and title are aggregated and returned as one with a summed price
-func (d *Delivery) CollectDiscounts() ([]*AppliedDiscount, error) {
+func (d *Delivery) CollectDiscounts() (AppliedDiscounts, error) {
 	// guard if no items in delivery, no need to iterate
 	if len(d.Cartitems) <= 0 {
-		return make([]*AppliedDiscount, 0), nil
+		return make([]AppliedDiscount, 0), nil
 	}
 	// collect different discounts on item level
 	var err error
@@ -83,22 +85,8 @@ func (d *Delivery) HasAppliedDiscounts() (bool, error) {
 
 // CollectDiscounts parses discounts of a single item
 // All discounts with the same type and title are aggregated and returned as one with a summed price
-func (i *Item) CollectDiscounts() ([]*AppliedDiscount, error) {
-	// guard if no items in delivery, no need to iterate
-	if len(i.AppliedDiscounts) <= 0 {
-		return make([]*AppliedDiscount, 0), nil
-	}
-	// parse item discounts to applied discounts
-	result := make([]*AppliedDiscount, len(i.AppliedDiscounts))
-	for index, val := range i.AppliedDiscounts {
-		result[index] = &AppliedDiscount{
-			Code:    val.Code,
-			Title:   val.Title,
-			Applied: val.Amount,
-			Type:    val.Type,
-		}
-	}
-	return result, nil
+func (i *Item) CollectDiscounts() (AppliedDiscounts, error) {
+	return i.AppliedDiscounts, nil
 }
 
 // HasAppliedDiscounts check whether there are any discounts currently applied to the cart
@@ -113,10 +101,10 @@ func (i *Item) HasAppliedDiscounts() (bool, error) {
 // private helper functions
 
 // mapToSlice transform map of discounts to flat slice
-func mapToSlice(collection map[string]*AppliedDiscount) []*AppliedDiscount {
-	result := make([]*AppliedDiscount, 0, len(collection))
+func mapToSlice(collection map[string]*AppliedDiscount) []AppliedDiscount {
+	result := make([]AppliedDiscount, 0, len(collection))
 	for _, val := range collection {
-		result = append(result, val)
+		result = append(result, *val)
 	}
 	return result
 }
@@ -129,37 +117,52 @@ func mapDiscounts(result map[string]*AppliedDiscount, discountable WithDiscount)
 		return nil, err
 	}
 	for _, discount := range discounts {
-		key := discount.Type + discount.Title
 		// discount has been collected before, increase amount
-		if collected, ok := result[key]; ok {
+		if collected, ok := result[discount.CampaignCode]; ok {
 			update, err := collected.Applied.Add(discount.Applied)
 			if err != nil {
 				return nil, err
 			}
 			collected.Applied = update
+			floaty := collected.Applied.FloatAmount()
+			floaty *= 1
 			continue
 		}
 		// discount is new, add to collection
-		result[key] = &AppliedDiscount{
-			Code:    discount.Code,
-			Title:   discount.Title,
-			Applied: discount.Applied,
-			Type:    discount.Type,
+		result[discount.CampaignCode] = &AppliedDiscount{
+			CampaignCode:  discount.CampaignCode,
+			CouponCode:    discount.CouponCode,
+			Label:         discount.Label,
+			Applied:       discount.Applied,
+			Type:          discount.Type,
+			IsItemRelated: discount.IsItemRelated,
 		}
 	}
 	return result, nil
 }
 
-// implementations for sort interface
-
-func (a ByCode) Len() int {
-	return len(a)
+// ByCampaignCode filter AppliedDiscounts based on provided campaign code
+func (discounts AppliedDiscounts) ByCampaignCode(campaignCode string) AppliedDiscounts {
+	f := func(discount AppliedDiscount) bool {
+		return discount.CampaignCode == campaignCode
+	}
+	return discounts.filter(f)
 }
 
-func (a ByCode) Swap(i, j int) {
-	a[i], a[j] = a[j], a[i]
+// ByType filter AppliedDiscounts based on type
+func (discounts AppliedDiscounts) ByType(filterType string) AppliedDiscounts {
+	f := func(discount AppliedDiscount) bool {
+		return discount.Type == filterType
+	}
+	return discounts.filter(f)
 }
 
-func (a ByCode) Less(i, j int) bool {
-	return a[i].Code < a[j].Code
+func (discounts AppliedDiscounts) filter(filterFunc func(AppliedDiscount) bool) AppliedDiscounts {
+	result := make(AppliedDiscounts, 0)
+	for _, discount := range discounts {
+		if filterFunc(discount) {
+			result = append(result, discount)
+		}
+	}
+	return result
 }

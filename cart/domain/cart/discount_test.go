@@ -9,26 +9,45 @@ import (
 	"flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
+type (
+	// ByCode implements sort.Interface for []AppliedDiscount based on code
+	ByCode cart.AppliedDiscounts
+)
+
+// implementations for sort interface
+
+func (a ByCode) Len() int {
+	return len(a)
+}
+
+func (a ByCode) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
+}
+
+func (a ByCode) Less(i, j int) bool {
+	return a[i].CampaignCode < a[j].CampaignCode
+}
+
 // buildItemWithDiscounts helper for item building
 func buildItemWithDiscounts() *cart.Item {
 	builder := cart.ItemBuilder{}
-	builder.AddDiscount(cart.ItemDiscount{
-		Code:   "code-1",
-		Title:  "title-1",
-		Type:   "type-1",
-		Amount: domain.NewFromFloat(10.0, "$"),
+	builder.AddDiscount(cart.AppliedDiscount{
+		CampaignCode: "code-1",
+		Label:        "title-1",
+		Type:         "type-1",
+		Applied:      domain.NewFromFloat(10.0, "$"),
 	})
-	builder.AddDiscount(cart.ItemDiscount{
-		Code:   "code-2",
-		Title:  "title-2",
-		Type:   "type-1",
-		Amount: domain.NewFromFloat(15.0, "$"),
+	builder.AddDiscount(cart.AppliedDiscount{
+		CampaignCode: "code-2",
+		Label:        "title-2",
+		Type:         "type-1",
+		Applied:      domain.NewFromFloat(15.0, "$"),
 	})
-	builder.AddDiscount(cart.ItemDiscount{
-		Code:   "code-3",
-		Title:  "title-1",
-		Type:   "type-2",
-		Amount: domain.NewFromFloat(5.0, "$"),
+	builder.AddDiscount(cart.AppliedDiscount{
+		CampaignCode: "code-3",
+		Label:        "title-1",
+		Type:         "type-2",
+		Applied:      domain.NewFromFloat(5.0, "$"),
 	})
 	item, _ := builder.Build()
 	return item
@@ -52,12 +71,12 @@ func TestCart_CollectDiscounts(t *testing.T) {
 	tests := []struct {
 		name string
 		cart *cart.Cart
-		want []*cart.AppliedDiscount
+		want cart.AppliedDiscounts
 	}{
 		{
 			name: "empty cart",
 			cart: &cart.Cart{},
-			want: []*cart.AppliedDiscount{},
+			want: cart.AppliedDiscounts{},
 		},
 		{
 			name: "cart with deliveries but without items",
@@ -74,7 +93,7 @@ func TestCart_CollectDiscounts(t *testing.T) {
 					return result
 				}(),
 			},
-			want: []*cart.AppliedDiscount{},
+			want: cart.AppliedDiscounts{},
 		},
 		{
 			name: "cart with deliveries with items but without discounts",
@@ -93,7 +112,7 @@ func TestCart_CollectDiscounts(t *testing.T) {
 					return result
 				}(),
 			},
-			want: []*cart.AppliedDiscount{},
+			want: cart.AppliedDiscounts{},
 		},
 		{
 			name: "cart with deliveries with items with discounts",
@@ -107,24 +126,24 @@ func TestCart_CollectDiscounts(t *testing.T) {
 					return result
 				}(),
 			},
-			want: []*cart.AppliedDiscount{
+			want: cart.AppliedDiscounts{
 				{
-					Code:    "code-1",
-					Title:   "title-1",
-					Type:    "type-1",
-					Applied: domain.NewFromFloat(40.0, "$"),
+					CampaignCode: "code-1",
+					Label:        "title-1",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(40.0, "$"),
 				},
 				{
-					Code:    "code-2",
-					Title:   "title-2",
-					Type:    "type-1",
-					Applied: domain.NewFromFloat(60.0, "$"),
+					CampaignCode: "code-2",
+					Label:        "title-2",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(60.0, "$"),
 				},
 				{
-					Code:    "code-3",
-					Title:   "title-1",
-					Type:    "type-2",
-					Applied: domain.NewFromFloat(20.0, "$"),
+					CampaignCode: "code-3",
+					Label:        "title-1",
+					Type:         "type-2",
+					Applied:      domain.NewFromFloat(20.0, "$"),
 				},
 			},
 		},
@@ -133,8 +152,8 @@ func TestCart_CollectDiscounts(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, _ := tt.cart.CollectDiscounts()
 			// we need to sort result to circumvent implementation changes in order
-			sort.Sort(cart.ByCode(got))
-			sort.Sort(cart.ByCode(tt.want))
+			sort.Sort(ByCode(got))
+			sort.Sort(ByCode(tt.want))
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Cart.CollectDiscounts() = %v, want %v", got, tt.want)
 			}
@@ -217,12 +236,12 @@ func TestDelivery_CollectDiscounts(t *testing.T) {
 	tests := []struct {
 		name     string
 		delivery *cart.Delivery
-		want     []*cart.AppliedDiscount
+		want     cart.AppliedDiscounts
 	}{
 		{
 			name:     "empty delivery",
 			delivery: &cart.Delivery{},
-			want:     []*cart.AppliedDiscount{},
+			want:     cart.AppliedDiscounts{},
 		},
 		{
 			name: "delivery with items but without discounts",
@@ -234,29 +253,29 @@ func TestDelivery_CollectDiscounts(t *testing.T) {
 				delivery, _ := builder.Build()
 				return delivery
 			}(),
-			want: []*cart.AppliedDiscount{},
+			want: cart.AppliedDiscounts{},
 		},
 		{
 			name:     "delivery with items with discounts",
 			delivery: buildDeliveryWithDiscounts(),
-			want: []*cart.AppliedDiscount{
+			want: cart.AppliedDiscounts{
 				{
-					Code:    "code-1",
-					Title:   "title-1",
-					Type:    "type-1",
-					Applied: domain.NewFromFloat(20.0, "$"),
+					CampaignCode: "code-1",
+					Label:        "title-1",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(20.0, "$"),
 				},
 				{
-					Code:    "code-2",
-					Title:   "title-2",
-					Type:    "type-1",
-					Applied: domain.NewFromFloat(30.0, "$"),
+					CampaignCode: "code-2",
+					Label:        "title-2",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(30.0, "$"),
 				},
 				{
-					Code:    "code-3",
-					Title:   "title-1",
-					Type:    "type-2",
-					Applied: domain.NewFromFloat(10.0, "$"),
+					CampaignCode: "code-3",
+					Label:        "title-1",
+					Type:         "type-2",
+					Applied:      domain.NewFromFloat(10.0, "$"),
 				},
 			},
 		},
@@ -265,9 +284,13 @@ func TestDelivery_CollectDiscounts(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, _ := tt.delivery.CollectDiscounts()
 			// we need to sort result to circumvent implementation changes in order
-			sort.Sort(cart.ByCode(got))
-			sort.Sort(cart.ByCode(tt.want))
+			sort.Sort(ByCode(got))
+			sort.Sort(ByCode(tt.want))
 			if !reflect.DeepEqual(got, tt.want) {
+				for _, val := range got {
+					floaty := val.Applied.FloatAmount()
+					floaty = floaty * 1
+				}
 				t.Errorf("Delivery.CollectDiscounts() = %v, want %v", got, tt.want)
 			}
 		})
@@ -316,34 +339,36 @@ func TestItem_CollectDiscounts(t *testing.T) {
 	tests := []struct {
 		name string
 		item *cart.Item
-		want []*cart.AppliedDiscount
+		want cart.AppliedDiscounts
 	}{
 		{
 			name: "no discounts on item",
-			item: &cart.Item{},
-			want: []*cart.AppliedDiscount{},
+			item: &cart.Item{
+				AppliedDiscounts: cart.AppliedDiscounts{},
+			},
+			want: cart.AppliedDiscounts{},
 		},
 		{
 			name: "multiple different discounts on item",
 			item: buildItemWithDiscounts(),
-			want: []*cart.AppliedDiscount{
+			want: cart.AppliedDiscounts{
 				{
-					Code:    "code-1",
-					Title:   "title-1",
-					Type:    "type-1",
-					Applied: domain.NewFromFloat(10.0, "$"),
+					CampaignCode: "code-1",
+					Label:        "title-1",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(10.0, "$"),
 				},
 				{
-					Code:    "code-2",
-					Title:   "title-2",
-					Type:    "type-1",
-					Applied: domain.NewFromFloat(15.0, "$"),
+					CampaignCode: "code-2",
+					Label:        "title-2",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(15.0, "$"),
 				},
 				{
-					Code:    "code-3",
-					Title:   "title-1",
-					Type:    "type-2",
-					Applied: domain.NewFromFloat(5.0, "$"),
+					CampaignCode: "code-3",
+					Label:        "title-1",
+					Type:         "type-2",
+					Applied:      domain.NewFromFloat(5.0, "$"),
 				},
 			},
 		},
@@ -352,8 +377,8 @@ func TestItem_CollectDiscounts(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, _ := tt.item.CollectDiscounts()
 			// we need to sort result to circumvent implementation changes in order
-			sort.Sort(cart.ByCode(got))
-			sort.Sort(cart.ByCode(tt.want))
+			sort.Sort(ByCode(got))
+			sort.Sort(ByCode(tt.want))
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Item.CollectDiscounts() = %v, want %v", got, tt.want)
 			}
@@ -376,10 +401,10 @@ func TestItem_HasDiscounts(t *testing.T) {
 			name: "multiple discounts on item",
 			item: func() *cart.Item {
 				builder := cart.ItemBuilder{}
-				builder.AddDiscount(cart.ItemDiscount{
-					Code:  "code-1",
-					Title: "title-1",
-					Type:  "type-1",
+				builder.AddDiscount(cart.AppliedDiscount{
+					CampaignCode: "code-1",
+					Label:        "title-1",
+					Type:         "type-1",
 				})
 				item, _ := builder.Build()
 				return item
