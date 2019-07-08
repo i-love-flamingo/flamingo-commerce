@@ -416,3 +416,129 @@ func TestItem_HasDiscounts(t *testing.T) {
 		})
 	}
 }
+
+func TestAppliedDiscounts_ByCampaignCode(t *testing.T) {
+	type args struct {
+		campaignCode string
+	}
+	tests := []struct {
+		name      string
+		args      args
+		discounts cart.AppliedDiscounts
+		want      cart.AppliedDiscounts
+	}{
+		{
+			name: "no match for filter",
+			args: args{
+				campaignCode: "code-3",
+			},
+			discounts: cart.AppliedDiscounts{
+				{
+					CampaignCode: "code-1",
+				},
+				{
+					CampaignCode: "code-1",
+				},
+				{
+					CampaignCode: "code-2",
+				},
+			},
+			want: cart.AppliedDiscounts{},
+		},
+		{
+			name: "match for filter",
+			args: args{
+				campaignCode: "code-1",
+			},
+			discounts: cart.AppliedDiscounts{
+				{
+					CampaignCode: "code-1",
+				},
+				{
+					CampaignCode: "code-1",
+				},
+				{
+					CampaignCode: "code-2",
+				},
+			},
+			want: cart.AppliedDiscounts{
+				{
+					CampaignCode: "code-1",
+				},
+				{
+					CampaignCode: "code-1",
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.discounts.ByCampaignCode(tt.args.campaignCode); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("AppliedDiscounts.ByCampaignCode() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestAppliedDiscounts_ByType(t *testing.T) {
+	type args struct {
+		filterType string
+	}
+	tests := []struct {
+		name      string
+		args      args
+		discounts cart.AppliedDiscounts
+		want      cart.AppliedDiscounts
+	}{
+		{
+			name: "no match for filter",
+			args: args{
+				filterType: "type-3",
+			},
+			discounts: cart.AppliedDiscounts{
+				{
+					Type: "type-1",
+				},
+				{
+					Type: "type-2",
+				},
+				{
+					Type: "type-1",
+				},
+			},
+			want: cart.AppliedDiscounts{},
+		},
+		{
+			name: "match for filter",
+			args: args{
+				filterType: "type-1",
+			},
+			discounts: cart.AppliedDiscounts{
+				{
+					Type: "type-1",
+				},
+				{
+					Type: "type-2",
+				},
+				{
+					Type: "type-1",
+				},
+			},
+			want: cart.AppliedDiscounts{
+				{
+					Type: "type-1",
+				},
+				{
+					Type: "type-1",
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.discounts.ByType(tt.args.filterType); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("AppliedDiscounts.ByType() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

@@ -145,6 +145,7 @@ func (discounts AppliedDiscounts) ByCampaignCode(campaignCode string) AppliedDis
 		return discount.CampaignCode == campaignCode
 	}
 	return discounts.filter(f)
+
 }
 
 // ByType filter AppliedDiscounts based on type
