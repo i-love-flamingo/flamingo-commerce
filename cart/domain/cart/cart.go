@@ -464,7 +464,7 @@ func (c Cart) HasAppliedCouponCode() bool {
 	return len(c.AppliedCouponCodes) > 0
 }
 
-// HasAppliedGiftCards checks if a coupon code is applied to the cart
+// HasAppliedGiftCards checks if a gift card is applied to the cart
 func (c Cart) HasAppliedGiftCards() bool {
 	return len(c.AppliedGiftCards) > 0
 }
