@@ -30,12 +30,14 @@ type (
 	DecoratedDelivery struct {
 		Delivery       cart.Delivery
 		DecoratedItems []DecoratedCartItem
+		Logger         flamingo.Logger
 	}
 
 	// DecoratedCartItem Decorates a CartItem with its Product
 	DecoratedCartItem struct {
 		Item    cart.Item
 		Product domain.BasicProduct
+		Logger  flamingo.Logger
 	}
 
 	// GroupedDecoratedCartItem - value object used for grouping (generated on the fly)
@@ -52,6 +54,20 @@ func (df *DecoratedCartFactory) Inject(
 ) {
 	df.productService = productService
 	df.logger = logger
+}
+
+// Inject dependencies
+func (dci *DecoratedCartItem) Inject(
+	logger flamingo.Logger,
+) {
+	dci.Logger = logger.WithField("category", "cart").WithField("subcategory", "DecoratedCartItem")
+}
+
+// Inject dependencies
+func (dc *DecoratedDelivery) Inject(
+	logger flamingo.Logger,
+) {
+	dc.Logger = logger.WithField("category", "cart").WithField("subcategory", "DecoratedDelivery")
 }
 
 // Create Factory method to get Decorated Cart
