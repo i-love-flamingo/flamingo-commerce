@@ -25,6 +25,13 @@ type (
 	AppliedDiscounts []AppliedDiscount
 )
 
+var (
+	// interface assertions
+	_ WithDiscount = new(Item)
+	_ WithDiscount = new(Delivery)
+	_ WithDiscount = new(Cart)
+)
+
 // CollectDiscounts sums up discounts of cart based on its deliveries
 // All discounts with the same type and title are aggregated and returned as one with a summed price
 func (c *Cart) CollectDiscounts() (AppliedDiscounts, error) {
