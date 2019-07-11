@@ -41,9 +41,9 @@ func TestDeliveryInfo_TotalCalculations(t *testing.T) {
 	).SetQty(5).AddTaxInfo(
 		"gst", new(big.Float).SetInt64(7), nil,
 	).SetID("1")
-	itemf.AddDiscount(ItemDiscount{
-		Code:          "summercampaign",
-		Amount:        priceDomain.NewFromInt(-2500, 100, "$"),
+	itemf.AddDiscount(AppliedDiscount{
+		CampaignCode:  "summercampaign",
+		Applied:       priceDomain.NewFromInt(-2500, 100, "$"),
 		IsItemRelated: true,
 	})
 	item2, err := itemf.CalculatePricesAndTaxAmountsFromSinglePriceNet().Build()

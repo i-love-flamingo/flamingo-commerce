@@ -45,16 +45,7 @@ type (
 		RowTaxes Taxes
 
 		// AppliedDiscounts contains the details about the discounts applied to this item - they can be "itemrelated" or not
-		AppliedDiscounts []ItemDiscount
-	}
-
-	// ItemDiscount value object
-	ItemDiscount struct {
-		Code   string
-		Title  string
-		Amount priceDomain.Price
-		// IsItemRelated is a flag indicating if the discount should be displayed in the item or if it the result of a cart discount
-		IsItemRelated bool
+		AppliedDiscounts AppliedDiscounts
 	}
 
 	// ItemBuilder can be used to construct an item with a fluent interface
@@ -89,7 +80,7 @@ func (i Item) ItemRelatedDiscountAmount() priceDomain.Price {
 		if !discount.IsItemRelated {
 			continue
 		}
-		prices = append(prices, discount.Amount)
+		prices = append(prices, discount.Applied)
 	}
 
 	result, _ := priceDomain.SumAll(prices...)
@@ -105,7 +96,7 @@ func (i Item) NonItemRelatedDiscountAmount() priceDomain.Price {
 		if discount.IsItemRelated {
 			continue
 		}
-		prices = append(prices, discount.Amount)
+		prices = append(prices, discount.Applied)
 	}
 
 	result, _ := priceDomain.SumAll(prices...)
@@ -250,21 +241,21 @@ func (f *ItemBuilder) AddTaxInfo(taxType string, taxRate *big.Float, taxAmount *
 }
 
 // AddDiscount - adds a discount
-func (f *ItemBuilder) AddDiscount(discount ItemDiscount) *ItemBuilder {
+func (f *ItemBuilder) AddDiscount(discount AppliedDiscount) *ItemBuilder {
 	f.init()
-	if !discount.Amount.IsPayable() {
+	if !discount.Applied.IsPayable() {
 		f.invariantError = errors.New("AddDiscount need to have payable price")
 	}
-	if !discount.Amount.IsNegative() {
-		f.invariantError = fmt.Errorf("AddDiscount need to have negative price - given %f", discount.Amount.FloatAmount())
+	if !discount.Applied.IsNegative() {
+		f.invariantError = fmt.Errorf("AddDiscount need to have negative price - given %f", discount.Applied.FloatAmount())
 	}
-	f.checkCurrency(&discount.Amount)
+	f.checkCurrency(&discount.Applied)
 	f.itemInBuilding.AppliedDiscounts = append(f.itemInBuilding.AppliedDiscounts, discount)
 	return f
 }
 
 // AddDiscounts - adds a discount
-func (f *ItemBuilder) AddDiscounts(discounts ...ItemDiscount) *ItemBuilder {
+func (f *ItemBuilder) AddDiscounts(discounts ...AppliedDiscount) *ItemBuilder {
 	for _, discount := range discounts {
 		f.AddDiscount(discount)
 	}
