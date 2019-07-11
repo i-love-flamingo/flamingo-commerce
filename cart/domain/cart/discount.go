@@ -7,12 +7,12 @@ import (
 type (
 	// AppliedDiscount value object - generic reference for a discount
 	AppliedDiscount struct {
-		CampaignCode  string       // unique code of the underlying campaign e.g. "summersale-2018"
-		CouponCode    string       // unique code of discount e.g. from input field
+		CampaignCode  string       // unique code of the underlying campaign or rule e.g. "summer-campaign-2018"
+		CouponCode    string       // code of discount e.g. provided by user "summer2018"
 		Label         string       // readable name of discount "Super Summer Sale 2018"
 		Applied       domain.Price // how much of the discount has been subtracted from cart price, IMPORTANT: always negative
 		Type          string       // to distinguish between discounts
-		IsItemRelated bool         // flag indicating if the discount is applied due to item
+		IsItemRelated bool         // flag indicating if the discount is applied due to item in cart
 	}
 
 	// WithDiscount interface for a cart that is able to handle discounts
