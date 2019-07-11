@@ -30,14 +30,14 @@ type (
 	DecoratedDelivery struct {
 		Delivery       cart.Delivery
 		DecoratedItems []DecoratedCartItem
-		Logger         flamingo.Logger
+		logger         flamingo.Logger
 	}
 
 	// DecoratedCartItem Decorates a CartItem with its Product
 	DecoratedCartItem struct {
 		Item    cart.Item
 		Product domain.BasicProduct
-		Logger  flamingo.Logger
+		logger  flamingo.Logger
 	}
 
 	// GroupedDecoratedCartItem - value object used for grouping (generated on the fly)
@@ -56,20 +56,6 @@ func (df *DecoratedCartFactory) Inject(
 	df.logger = logger
 }
 
-// Inject dependencies
-func (dci *DecoratedCartItem) Inject(
-	logger flamingo.Logger,
-) {
-	dci.Logger = logger.WithField("category", "cart").WithField("subcategory", "DecoratedCartItem")
-}
-
-// Inject dependencies
-func (dc *DecoratedDelivery) Inject(
-	logger flamingo.Logger,
-) {
-	dc.Logger = logger.WithField("category", "cart").WithField("subcategory", "DecoratedDelivery")
-}
-
 // Create Factory method to get Decorated Cart
 func (df *DecoratedCartFactory) Create(ctx context.Context, Cart cart.Cart) *DecoratedCart {
 	decoratedCart := DecoratedCart{Cart: Cart, Logger: df.logger}
@@ -77,6 +63,7 @@ func (df *DecoratedCartFactory) Create(ctx context.Context, Cart cart.Cart) *Dec
 		decoratedCart.DecoratedDeliveries = append(decoratedCart.DecoratedDeliveries, DecoratedDelivery{
 			Delivery:       d,
 			DecoratedItems: df.CreateDecorateCartItems(ctx, d.Cartitems),
+			logger:         df.logger,
 		})
 	}
 	decoratedCart.Ctx = ctx
@@ -95,7 +82,7 @@ func (df *DecoratedCartFactory) CreateDecorateCartItems(ctx context.Context, ite
 
 //decorateCartItem factory method
 func (df *DecoratedCartFactory) decorateCartItem(ctx context.Context, cartitem cart.Item) DecoratedCartItem {
-	decorateditem := DecoratedCartItem{Item: cartitem}
+	decorateditem := DecoratedCartItem{Item: cartitem, logger: df.logger}
 	product, e := df.productService.Get(ctx, cartitem.MarketplaceCode)
 	if e != nil {
 		df.logger.WithContext(ctx).Error("cart.decorator - no product for item", e)

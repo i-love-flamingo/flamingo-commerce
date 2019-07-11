@@ -33,7 +33,7 @@ func (dci *DecoratedCartItem) HasAppliedDiscounts() bool {
 
 // MergeDiscounts sum up discounts applied to item
 func (dci DecoratedCartItem) MergeDiscounts() cart.AppliedDiscounts {
-	return collectDiscounts(&dci.Item, dci.Logger)
+	return collectDiscounts(&dci.Item, dci.logger)
 }
 
 // HasAppliedDiscounts checks whether decorated delivery has discounts
@@ -43,7 +43,7 @@ func (dc DecoratedDelivery) HasAppliedDiscounts() bool {
 
 // MergeDiscounts sum up discounts applied to delivery
 func (dc DecoratedDelivery) MergeDiscounts() cart.AppliedDiscounts {
-	return collectDiscounts(&dc.Delivery, dc.Logger)
+	return collectDiscounts(&dc.Delivery, dc.logger)
 }
 
 // HasAppliedDiscounts checks whether decorated cart has discounts
