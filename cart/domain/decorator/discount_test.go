@@ -11,7 +11,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
-func TestDecoratedItem_CollectDiscounts(t *testing.T) {
+func TestDecoratedItem_MergeDiscounts(t *testing.T) {
 	tests := []struct {
 		name string
 		item *decorator.DecoratedCartItem
@@ -53,12 +53,12 @@ func TestDecoratedItem_CollectDiscounts(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := tt.item.CollectDiscounts()
+			got := tt.item.MergeDiscounts()
 			// we need to sort result to circumvent implementation changes in order
 			sort.Sort(testutils.ByCode(got))
 			sort.Sort(testutils.ByCode(tt.want))
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("DecoratedItem.CollectDiscounts() = %v, want %v", got, tt.want)
+				t.Errorf("DecoratedItem.MergeDiscounts() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -104,7 +104,7 @@ func TestDecoratedItem_HasDiscounts(t *testing.T) {
 	}
 }
 
-func TestDecoratedDelivery_CollectDiscounts(t *testing.T) {
+func TestDecoratedDelivery_MergeDiscounts(t *testing.T) {
 	tests := []struct {
 		name     string
 		delivery *decorator.DecoratedDelivery
@@ -161,12 +161,12 @@ func TestDecoratedDelivery_CollectDiscounts(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := tt.delivery.CollectDiscounts()
+			got := tt.delivery.MergeDiscounts()
 			// we need to sort result to circumvent implementation changes in order
 			sort.Sort(testutils.ByCode(got))
 			sort.Sort(testutils.ByCode(tt.want))
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("DecoratedDelivery.CollectDiscounts() = %v, want %v", got, tt.want)
+				t.Errorf("DecoratedDelivery.MergeDiscounts() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -209,7 +209,7 @@ func TestDecoratedDelivery_HasDiscounts(t *testing.T) {
 	}
 }
 
-func TestDecoratedCart_CollectDiscounts(t *testing.T) {
+func TestDecoratedCart_MergeDiscounts(t *testing.T) {
 	tests := []struct {
 		name string
 		cart *decorator.DecoratedCart
@@ -300,12 +300,12 @@ func TestDecoratedCart_CollectDiscounts(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := tt.cart.CollectDiscounts()
+			got := tt.cart.MergeDiscounts()
 			// we need to sort result to circumvent implementation changes in order
 			sort.Sort(testutils.ByCode(got))
 			sort.Sort(testutils.ByCode(tt.want))
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("DecoratedCart.CollectDiscounts() = %v, want %v", got, tt.want)
+				t.Errorf("DecoratedCart.MergeDiscounts() = %v, want %v", got, tt.want)
 			}
 		})
 	}

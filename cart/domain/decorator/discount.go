@@ -15,7 +15,7 @@ type (
 	// with an error, errors are just logged
 	DecoratedWithDiscount interface {
 		HasAppliedDiscounts() bool
-		CollectDiscounts() cart.AppliedDiscounts
+		MergeDiscounts() cart.AppliedDiscounts
 	}
 )
 
@@ -31,8 +31,8 @@ func (dci *DecoratedCartItem) HasAppliedDiscounts() bool {
 	return hasAppliedDiscounts(dci)
 }
 
-// CollectDiscounts sum up discounts applied to item
-func (dci DecoratedCartItem) CollectDiscounts() cart.AppliedDiscounts {
+// MergeDiscounts sum up discounts applied to item
+func (dci DecoratedCartItem) MergeDiscounts() cart.AppliedDiscounts {
 	return collectDiscounts(&dci.Item, dci.Logger)
 }
 
@@ -41,8 +41,8 @@ func (dc DecoratedDelivery) HasAppliedDiscounts() bool {
 	return hasAppliedDiscounts(dc)
 }
 
-// CollectDiscounts sum up discounts applied to delivery
-func (dc DecoratedDelivery) CollectDiscounts() cart.AppliedDiscounts {
+// MergeDiscounts sum up discounts applied to delivery
+func (dc DecoratedDelivery) MergeDiscounts() cart.AppliedDiscounts {
 	return collectDiscounts(&dc.Delivery, dc.Logger)
 }
 
@@ -51,8 +51,8 @@ func (dc DecoratedCart) HasAppliedDiscounts() bool {
 	return hasAppliedDiscounts(dc)
 }
 
-// CollectDiscounts sum up discounts applied to cart
-func (dc DecoratedCart) CollectDiscounts() cart.AppliedDiscounts {
+// MergeDiscounts sum up discounts applied to cart
+func (dc DecoratedCart) MergeDiscounts() cart.AppliedDiscounts {
 	return collectDiscounts(&dc.Cart, dc.Logger)
 }
 
@@ -60,11 +60,11 @@ func (dc DecoratedCart) CollectDiscounts() cart.AppliedDiscounts {
 // interface cart.WithDiscount and can therefore be abstracted
 
 func hasAppliedDiscounts(discountable DecoratedWithDiscount) bool {
-	return len(discountable.CollectDiscounts()) > 0
+	return len(discountable.MergeDiscounts()) > 0
 }
 
 func collectDiscounts(discountable cart.WithDiscount, logger flamingo.Logger) cart.AppliedDiscounts {
-	discounts, err := discountable.CollectDiscounts()
+	discounts, err := discountable.MergeDiscounts()
 	if err != nil {
 		logger.Error(errorLog)
 		return make(cart.AppliedDiscounts, 0)
