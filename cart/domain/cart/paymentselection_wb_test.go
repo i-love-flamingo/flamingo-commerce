@@ -1,8 +1,9 @@
 package cart
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"flamingo.me/flamingo-commerce/v3/price/domain"
 )
@@ -32,7 +33,6 @@ func Test_CanBuildSimpleSelectionWithGiftCard_NoGc(t *testing.T) {
 	assert.Equal(t, domain.NewFromInt(1198, 100, "€").FloatAmount(), selection.TotalValue().FloatAmount())
 }
 
-
 func Test_CanBuildSimpleSelectionWithGiftCard(t *testing.T) {
 	pricedItems := PricedItems{
 		cartItems:     make(map[string]domain.Price),
@@ -45,10 +45,10 @@ func Test_CanBuildSimpleSelectionWithGiftCard(t *testing.T) {
 	//Apply 3 € GC
 	appliedGc := []AppliedGiftCard{
 		AppliedGiftCard{
-			Applied: domain.NewFromInt(100,100,"€"),
+			Applied: domain.NewFromInt(100, 100, "€"),
 		},
 		AppliedGiftCard{
-			Applied: domain.NewFromInt(200,100,"€"),
+			Applied: domain.NewFromInt(200, 100, "€"),
 		},
 	}
 
@@ -58,8 +58,6 @@ func Test_CanBuildSimpleSelectionWithGiftCard(t *testing.T) {
 	assert.Equal(t, domain.NewFromInt(300, 100, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(ChargeTypeGiftCard).Value.FloatAmount())
 	assert.Equal(t, domain.NewFromInt(898, 100, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
 }
-
-
 
 func Test_CanBuildSimpleSelectionWithGiftCard2(t *testing.T) {
 	pricedItems := PricedItems{
@@ -73,7 +71,7 @@ func Test_CanBuildSimpleSelectionWithGiftCard2(t *testing.T) {
 	//Apply 3 € GC
 	appliedGc := []AppliedGiftCard{
 		AppliedGiftCard{
-			Applied: domain.NewFromInt(1198,100,"€"),
+			Applied: domain.NewFromInt(1198, 100, "€"),
 		},
 	}
 
