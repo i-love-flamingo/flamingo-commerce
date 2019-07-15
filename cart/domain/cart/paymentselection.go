@@ -5,6 +5,7 @@ import (
 	"errors"
 	"strings"
 
+	"flamingo.me/flamingo-commerce/v3/price/domain"
 	price "flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
@@ -87,104 +88,72 @@ func NewSimplePaymentSelection(gateway string, method string, pricedItems Priced
 	return selection
 }
 
-
 //NewPaymentSelectionWithGiftCard - returns Selection with given giftcard charge type taken into account
 func NewPaymentSelectionWithGiftCard(gateway string, method string, pricedItems PricedItems, appliedGiftCards []AppliedGiftCard) (PaymentSelection, error) {
+	// guard clauses,
 	totalValue := pricedItems.Sum()
 	if len(appliedGiftCards) == 0 {
-		return NewSimplePaymentSelection(gateway,method,pricedItems), nil
+		return NewSimplePaymentSelection(gateway, method, pricedItems), nil
 	}
 	var allGcAmounts []price.Price
 	for _, gc := range appliedGiftCards {
-		allGcAmounts = append(allGcAmounts,gc.Applied)
+		allGcAmounts = append(allGcAmounts, gc.Applied)
 	}
 	totalGCValue, err := price.SumAll(allGcAmounts...)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	if totalGCValue.IsZero() {
-		return NewSimplePaymentSelection(gateway,method,pricedItems), nil
+		return NewSimplePaymentSelection(gateway, method, pricedItems), nil
 	}
 	if totalGCValue.IsGreaterThen(totalValue) {
 		return nil, errors.New("giftcard amount exceeds total priced items value")
 	}
-
-	giftCartAmountRatio := totalValue.FloatAmount() / totalGCValue.FloatAmount()
-	builder := PaymentSplitByItemBuilder{}
-
-	getRelativeAmounts := func(value price.Price, remainingGcAmount price.Price) (remainingItemValue price.Price,newRemainingGcAmount price.Price,appliedGcAmount price.Price, err error) {
-		//relativeItemGcAmount the giftcard amount that relates to the given item Value
-		relativeItemGcAmount := price.NewFromFloat(giftCartAmountRatio * value.FloatAmount(),value.Currency()).GetPayable()
-		if relativeItemGcAmount.IsGreaterThen(remainingGcAmount) {
-			relativeItemGcAmount = remainingGcAmount
-		}
-		appliedGcAmount = relativeItemGcAmount
-		newRemainingGcAmount, err = remainingGcAmount.Sub(appliedGcAmount)
-		if err != nil {
-			return
-		}
-		remainingItemValue, err = value.Sub(appliedGcAmount)
-		if err != nil {
-			return
-		}
-		return
+	// total of gift cards needs to be distributed across ALL items
+	itemAmount := len(pricedItems.cartItems) + len(pricedItems.shippingItems) + len(pricedItems.totalItems)
+	relativeGCValues, err := totalGCValue.SplitInPayables(itemAmount)
+	if err != nil {
+		return nil, err
 	}
-
-	var remainingItemValue, appliedGcAmount price.Price
-	for k, itemPrice := range pricedItems.CartItems() {
-		remainingItemValue,totalGCValue,appliedGcAmount,err = getRelativeAmounts(itemPrice,totalGCValue)
+	// build charges
+	offset := 0
+	builder := &PaymentSplitByItemBuilder{}
+	prices := []map[string]domain.Price{pricedItems.CartItems(), pricedItems.ShippingItems(), pricedItems.TotalItems()}
+	for _, price := range prices {
+		builder, offset, err = addSplittedGiftCards(builder, method, price, offset, relativeGCValues)
 		if err != nil {
 			return nil, err
 		}
-		builder.AddCartItem(k, method, price.Charge{
-			Price: remainingItemValue,
-			Value: remainingItemValue,
-			Type:  price.ChargeTypeMain,
-		})
-		builder.AddCartItem(k, method, price.Charge{
-			Price: appliedGcAmount,
-			Value: appliedGcAmount,
-			Type:  ChargeTypeGiftCard,
-		})
-
-	}
-	for k, itemPrice := range pricedItems.ShippingItems() {
-		remainingItemValue,totalGCValue,appliedGcAmount,err = getRelativeAmounts(itemPrice,totalGCValue)
-		if err != nil {
-			return nil, err
-		}
-		builder.AddShippingItem(k, method, price.Charge{
-			Price: remainingItemValue,
-			Value: remainingItemValue,
-			Type:  price.ChargeTypeMain,
-		})
-		builder.AddShippingItem(k, method, price.Charge{
-			Price: appliedGcAmount,
-			Value: appliedGcAmount,
-			Type:  ChargeTypeGiftCard,
-		})
-	}
-	for k, itemPrice := range pricedItems.TotalItems() {
-		remainingItemValue,totalGCValue,appliedGcAmount,err = getRelativeAmounts(itemPrice,totalGCValue)
-		if err != nil {
-			return nil, err
-		}
-		builder.AddTotalItem(k, method, price.Charge{
-			Price: remainingItemValue,
-			Value: remainingItemValue,
-			Type:  price.ChargeTypeMain,
-		})
-		builder.AddTotalItem(k, method, price.Charge{
-			Price: appliedGcAmount,
-			Value: appliedGcAmount,
-			Type:  ChargeTypeGiftCard,
-		})
 	}
 	selection := DefaultPaymentSelection{
 		GatewayProp: gateway,
 	}
 	selection.ChargedItemsProp = builder.Build()
 	return selection, nil
+}
+
+// addSplittedGiftCards adds gift card distribution to given prices
+func addSplittedGiftCards(builder *PaymentSplitByItemBuilder, method string, prices map[string]domain.Price, offset int,
+	giftcardPrices []price.Price) (*PaymentSplitByItemBuilder, int, error) {
+	for k, itemPrice := range prices {
+		appliedGcAmount := giftcardPrices[offset]
+		remainingItemValue, err := itemPrice.Sub(appliedGcAmount)
+		if err != nil {
+			return nil, 0, err
+		}
+		builder.AddTotalItem(k, method, price.Charge{
+			Price: remainingItemValue,
+			Value: remainingItemValue,
+			Type:  price.ChargeTypeMain,
+		})
+		builder.AddTotalItem(k, method, price.Charge{
+			Price: appliedGcAmount,
+			Value: appliedGcAmount,
+			Type:  ChargeTypeGiftCard,
+		})
+		offset++
+	}
+	return builder, offset, nil
 }
 
 // NewPaymentSelection - with the passed PaymentSplitByItem
