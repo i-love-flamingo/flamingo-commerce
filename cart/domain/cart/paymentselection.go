@@ -108,7 +108,7 @@ func NewPaymentSelectionWithGiftCard(gateway string, method string, pricedItems 
 		return nil, errors.New("giftcard amount exceeds total priced items value")
 	}
 	// distribute gift card amounts relatively across all items
-	giftCartAmountRatio := totalValue.FloatAmount() / totalGCValue.FloatAmount()
+	giftCartAmountRatio := totalGCValue.FloatAmount() / totalValue.FloatAmount()
 	builder := &PaymentSplitByItemBuilder{}
 	prices := []map[string]price.Price{pricedItems.CartItems(), pricedItems.ShippingItems(), pricedItems.TotalItems()}
 	for _, priceMap := range prices {

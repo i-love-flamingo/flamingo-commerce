@@ -131,14 +131,19 @@ func Test_CanCalculateGiftCardChargeRelativeToItemWithRest(t *testing.T) {
 	// verfiy complete cart splits
 	assert.Equal(t, domain.NewFromInt(10, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(ChargeTypeGiftCard).Value.FloatAmount())
 	assert.Equal(t, domain.NewFromInt(2, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
+	// calculation:
+	// cartotal: 12, giftcardtotal = 10
+	// ratio: giftcardtotal / cartotal = 10 / 12
+	// item 1: giftcard: 4 * ratio = 3.33, remaining: 4 - 3.33  = 0.67 (remaining giftcard: 10 - 3.33 = 6.67)
+	// item 2: giftcard: 8 * ratio = 6.67, remaining: 8 - 6.67  = 1.33 (remaining giftcard: 6.67 - 6.67 = 0)
 	// verify first product charges
 	relativeGCValue := selection.ItemSplit().TotalItems["1"].ChargesByType().GetByTypeForced(ChargeTypeGiftCard)
-	assert.Equal(t, domain.NewFromInt(4, 1, "€").FloatAmount(), relativeGCValue.Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(333, 100, "€").FloatAmount(), relativeGCValue.Value.FloatAmount())
 	relativeMainValue := selection.ItemSplit().TotalItems["1"].ChargesByType().GetByTypeForced(domain.ChargeTypeMain)
-	assert.Equal(t, domain.NewFromInt(0, 1, "€").FloatAmount(), relativeMainValue.Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(67, 100, "€").FloatAmount(), relativeMainValue.Value.FloatAmount())
 	// verfiy second product charges
 	relativeGCValue = selection.ItemSplit().TotalItems["2"].ChargesByType().GetByTypeForced(ChargeTypeGiftCard)
-	assert.Equal(t, domain.NewFromInt(6, 1, "€").FloatAmount(), relativeGCValue.Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(667, 100, "€").FloatAmount(), relativeGCValue.Value.FloatAmount())
 	relativeMainValue = selection.ItemSplit().TotalItems["2"].ChargesByType().GetByTypeForced(domain.ChargeTypeMain)
-	assert.Equal(t, domain.NewFromInt(2, 1, "€").FloatAmount(), relativeMainValue.Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(133, 100, "€").FloatAmount(), relativeMainValue.Value.FloatAmount())
 }
