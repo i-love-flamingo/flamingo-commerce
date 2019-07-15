@@ -107,8 +107,7 @@ func NewPaymentSelectionWithGiftCard(gateway string, method string, pricedItems 
 	if totalGCValue.IsGreaterThen(totalValue) {
 		return nil, errors.New("giftcard amount exceeds total priced items value")
 	}
-
-	// distribute giftcard amounts relatively across all items
+	// distribute gift card amounts relatively across all items
 	giftCartAmountRatio := totalValue.FloatAmount() / totalGCValue.FloatAmount()
 	builder := &PaymentSplitByItemBuilder{}
 	prices := []map[string]price.Price{pricedItems.CartItems(), pricedItems.ShippingItems(), pricedItems.TotalItems()}
@@ -155,8 +154,13 @@ func calcRelativeGiftcardAmount(value price.Price, remainingGcAmount price.Price
 	newRemainingGcAmount price.Price, appliedGcAmount price.Price, err error) {
 	//relativeItemGcAmount the giftcard amount that relates to the given item Value
 	relativeItemGcAmount := price.NewFromFloat(ratio*value.FloatAmount(), value.Currency()).GetPayable()
+	// if the relative amount is greater than the complete the remaining, just remove the remaining
 	if relativeItemGcAmount.IsGreaterThen(remainingGcAmount) {
 		relativeItemGcAmount = remainingGcAmount
+	}
+	// if the relative amount is greater than the item price, just use the item price
+	if relativeItemGcAmount.IsGreaterThen(value) {
+		relativeItemGcAmount = value
 	}
 	appliedGcAmount = relativeItemGcAmount
 	newRemainingGcAmount, err = remainingGcAmount.Sub(appliedGcAmount)
