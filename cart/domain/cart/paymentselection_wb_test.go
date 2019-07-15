@@ -130,7 +130,7 @@ func Test_CanCalculateGiftCardChargeRelativeToItemWithRest(t *testing.T) {
 	assert.NoError(t, err)
 	// verfiy complete cart splits
 	assert.Equal(t, domain.NewFromInt(10, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(ChargeTypeGiftCard).Value.FloatAmount())
-	assert.Equal(t, domain.NewFromInt(02, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(2, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
 	// verify first product charges
 	relativeGCValue := selection.ItemSplit().TotalItems["1"].ChargesByType().GetByTypeForced(ChargeTypeGiftCard)
 	assert.Equal(t, domain.NewFromInt(4, 1, "€").FloatAmount(), relativeGCValue.Value.FloatAmount())
