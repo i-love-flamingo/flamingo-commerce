@@ -131,13 +131,6 @@ type (
 		shippingItems map[string]domain.Price
 		totalItems    map[string]domain.Price
 	}
-
-	// AppliedGiftCard value object
-	AppliedGiftCard struct {
-		Code      string
-		Applied   domain.Price // how much of the gift card has been subtracted from cart price
-		Remaining domain.Price // how much of the gift card is still available
-	}
 )
 
 var (
@@ -462,11 +455,6 @@ func (c Cart) SumItemRelatedDiscountAmount() domain.Price {
 // HasAppliedCouponCode checks if a coupon code is applied to the cart
 func (c Cart) HasAppliedCouponCode() bool {
 	return len(c.AppliedCouponCodes) > 0
-}
-
-// HasAppliedGiftCards checks if a gift card is applied to the cart
-func (c Cart) HasAppliedGiftCards() bool {
-	return len(c.AppliedGiftCards) > 0
 }
 
 // GetCartTeaser returns the teaser
