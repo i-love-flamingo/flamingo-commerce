@@ -249,3 +249,15 @@ func TestCharges_Add(t *testing.T) {
 		Type:  "main",
 	}, charge)
 }
+
+func TestPrice_SplitInPayables_NegativeValue(t *testing.T) {
+	originalPrice := domain.NewFromFloat(-152.99, "EUR") // float edge case
+	payableSplitPrices, _ := originalPrice.SplitInPayables(3)
+
+	sumPrice := domain.NewZero("EUR")
+	for _, price := range payableSplitPrices {
+		sumPrice, _ = sumPrice.Add(price)
+	}
+	//sum of the splitted payable need to match original price payable
+	assert.Equal(t, originalPrice.GetPayable().Amount(), sumPrice.GetPayable().Amount())
+}
