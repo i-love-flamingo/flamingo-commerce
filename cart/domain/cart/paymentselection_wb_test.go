@@ -147,3 +147,65 @@ func Test_CanCalculateGiftCardChargeRelativeToItemWithRest(t *testing.T) {
 	relativeMainValue = selection.ItemSplit().TotalItems["2"].ChargesByType().GetByTypeForced(domain.ChargeTypeMain)
 	assert.Equal(t, domain.NewFromInt(133, 100, "€").FloatAmount(), relativeMainValue.Value.FloatAmount())
 }
+
+func Test_PayCompleteCartWithGiftcards(t *testing.T) {
+	pricedItems := PricedItems{
+		cartItems: make(map[string]domain.Price),
+	}
+	pricedItems.cartItems["1"] = domain.NewFromInt(4, 1, "€")
+	pricedItems.cartItems["2"] = domain.NewFromInt(8, 1, "€")
+	appliedGc := []AppliedGiftCard{
+		{
+			Applied: domain.NewFromInt(12, 1, "€"),
+		},
+	}
+	selection, err := NewPaymentSelectionWithGiftCard("gateyway", "method", pricedItems, appliedGc)
+	assert.NoError(t, err)
+	assert.Equal(t, domain.NewFromInt(12, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(ChargeTypeGiftCard).Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(0, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
+	// item 1 is completely paid for
+	relativeGCValue := selection.ItemSplit().TotalItems["1"].ChargesByType().GetByTypeForced(ChargeTypeGiftCard)
+	assert.Equal(t, domain.NewFromInt(4, 1, "€").FloatAmount(), relativeGCValue.Value.FloatAmount())
+	// item 2 is completely paid for
+	relativeGCValue = selection.ItemSplit().TotalItems["2"].ChargesByType().GetByTypeForced(ChargeTypeGiftCard)
+	assert.Equal(t, domain.NewFromInt(8, 1, "€").FloatAmount(), relativeGCValue.Value.FloatAmount())
+}
+
+func Test_CartWithExpensiveItems(t *testing.T) {
+	pricedItems := PricedItems{
+		cartItems: make(map[string]domain.Price),
+	}
+	pricedItems.cartItems["1"] = domain.NewFromInt(300099, 100, "€")
+	pricedItems.cartItems["2"] = domain.NewFromInt(1200095, 100, "€")
+	pricedItems.cartItems["3"] = domain.NewFromInt(88895, 100, "€")
+	appliedGc := []AppliedGiftCard{
+		{
+			Applied: domain.NewFromInt(50, 1, "€"),
+		},
+	}
+	selection, err := NewPaymentSelectionWithGiftCard("gateyway", "method", pricedItems, appliedGc)
+	assert.NoError(t, err)
+	assert.Equal(t, domain.NewFromInt(50, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(ChargeTypeGiftCard).Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(1584089, 100, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
+	// calculation:
+	// cartotal: 15888, giftcardtotal = 50
+	// ratio: giftcardtotal / cartotal = 50 / 15890.89
+	// item 1: giftcard: 3000.99 * ratio = 9.44, remaining: 3000.99 - 9.44  = 2991.55 (remaining giftcard: 50 - 9.44 = 40.56)
+	// item 2: giftcard: 12000.95 * ratio = 37.76, remaining: 12000.95 - 37.76  = 11962.24 (remaining giftcard: 40.56 - 37.76 = 2.8)
+	// item 3: giftcard: 888.95 * ratio = 2.8, remaining: 888.95 - 2.8  = 886.15 (remaining giftcard: 2.8 - 2.8 = 0)
+	// verify first product charges
+	relativeGCValue := selection.ItemSplit().TotalItems["1"].ChargesByType().GetByTypeForced(ChargeTypeGiftCard)
+	assert.Equal(t, domain.NewFromInt(944, 100, "€").FloatAmount(), relativeGCValue.Value.FloatAmount())
+	relativeMainValue := selection.ItemSplit().TotalItems["1"].ChargesByType().GetByTypeForced(domain.ChargeTypeMain)
+	assert.Equal(t, domain.NewFromInt(299155, 100, "€").FloatAmount(), relativeMainValue.Value.FloatAmount())
+	// verify second product charges
+	relativeGCValue = selection.ItemSplit().TotalItems["2"].ChargesByType().GetByTypeForced(ChargeTypeGiftCard)
+	assert.Equal(t, domain.NewFromInt(3776, 100, "€").FloatAmount(), relativeGCValue.Value.FloatAmount())
+	relativeMainValue = selection.ItemSplit().TotalItems["2"].ChargesByType().GetByTypeForced(domain.ChargeTypeMain)
+	assert.Equal(t, domain.NewFromInt(1196319, 100, "€").FloatAmount(), relativeMainValue.Value.FloatAmount())
+	// verify third product charges
+	relativeGCValue = selection.ItemSplit().TotalItems["3"].ChargesByType().GetByTypeForced(ChargeTypeGiftCard)
+	assert.Equal(t, domain.NewFromInt(280, 100, "€").FloatAmount(), relativeGCValue.Value.FloatAmount())
+	relativeMainValue = selection.ItemSplit().TotalItems["3"].ChargesByType().GetByTypeForced(domain.ChargeTypeMain)
+	assert.Equal(t, domain.NewFromInt(88615, 100, "€").FloatAmount(), relativeMainValue.Value.FloatAmount())
+}
