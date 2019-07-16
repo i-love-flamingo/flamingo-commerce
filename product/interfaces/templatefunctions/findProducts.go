@@ -37,16 +37,14 @@ func (tf *FindProducts) Func(ctx context.Context) interface{} {
 		config - map with certain keys - used to specify the searchRequest better
 	*/
 	return func(namespace string, configs ...pugjs.Map) *application.SearchResult {
-		var searchConfig, filterConstrains map[string]string
-		var keyValueFilters map[string][]string
+		var searchConfig = make(map[string]string)
+		var filterConstrains = make(map[string]string)
+		var keyValueFilters = make(map[string][]string)
 
 		if len(configs) > 0 {
 			searchConfig = configs[0].AsStringMap()
-		} else {
-			searchConfig = make(map[string]string)
 		}
 
-		keyValueFilters = make(map[string][]string)
 		if len(configs) > 1 {
 			for key, value := range configs[1].AsStringIfaceMap() {
 				if str, ok := value.(pugjs.String); ok { // allow string
@@ -59,8 +57,6 @@ func (tf *FindProducts) Func(ctx context.Context) interface{} {
 
 		if len(configs) > 2 {
 			filterConstrains = configs[2].AsStringMap()
-		} else {
-			filterConstrains = make(map[string]string)
 		}
 
 		filterProcessing := newFilterProcessing(web.RequestFromContext(ctx), namespace, searchConfig, keyValueFilters, filterConstrains)
