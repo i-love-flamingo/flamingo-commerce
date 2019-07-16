@@ -12,6 +12,9 @@ type (
 		PlacedOrderInfos placeorder.PlacedOrderInfos
 	}
 
+	// BeforeOrderPlaceEvent defines event properties
+	BeforeOrderPlaceEvent struct{}
+
 	// AddToCartEvent defines event properties
 	AddToCartEvent struct {
 		MarketplaceCode        string
@@ -32,7 +35,7 @@ type (
 
 	// PaymentSelectionHasBeenResetEvent defines event properties
 	PaymentSelectionHasBeenResetEvent struct {
-		Cart *cartDomain.Cart
+		Cart                     *cartDomain.Cart
 		ResettedPaymentSelection *cartDomain.PaymentSelection
 	}
 )

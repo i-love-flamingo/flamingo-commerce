@@ -8,7 +8,6 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 
-
 	"reflect"
 	"testing"
 
@@ -148,6 +147,9 @@ func (m *MockEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context, i
 }
 
 func (m *MockEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos placeorder.PlacedOrderInfos) {
+}
+
+func (m *MockEventPublisher) PublishBeforeOrderPlaceEvent(ctx context.Context) {
 }
 
 // MockCartValidator

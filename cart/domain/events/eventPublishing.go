@@ -2,6 +2,7 @@ package events
 
 import (
 	"context"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -11,12 +12,12 @@ import (
 
 type (
 
-
 	//EventPublisher - technology free interface to publish events that might be interesting for outside (Publish)
 	EventPublisher interface {
 		PublishAddToCartEvent(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode string, qty int)
 		PublishChangedQtyInCartEvent(ctx context.Context, item *cartDomain.Item, qtyBefore int, qtyAfter int, cartID string)
 		PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos placeorder.PlacedOrderInfos)
+		PublishBeforeOrderPlaceEvent(ctx context.Context)
 	}
 
 	//DefaultEventPublisher implements the event publisher of the domain and uses the framework event router
@@ -30,6 +31,7 @@ type (
 var (
 	_ EventPublisher = (*DefaultEventPublisher)(nil)
 	_ flamingo.Event = (*OrderPlacedEvent)(nil)
+	_ flamingo.Event = (*BeforeOrderPlaceEvent)(nil)
 	_ flamingo.Event = (*AddToCartEvent)(nil)
 	_ flamingo.Event = (*PaymentSelectionHasBeenResetEvent)(nil)
 	_ flamingo.Event = (*ChangedQtyInCartEvent)(nil)
@@ -89,5 +91,13 @@ func (d *DefaultEventPublisher) PublishOrderPlacedEvent(ctx context.Context, car
 	d.logger.WithContext(ctx).Info("Publish Event OrderPlacedEvent for Order: %#v", placedOrderInfos)
 
 	//For now we publish only to Flamingo default Event Router
+	d.eventRouter.Dispatch(ctx, &eventObject)
+}
+
+// PublishBeforeOrderPlaceEvent publishes an event before an order gets placed
+func (d *DefaultEventPublisher) PublishBeforeOrderPlaceEvent(ctx context.Context) {
+	eventObject := BeforeOrderPlaceEvent{}
+
+	d.logger.WithContext(ctx).Info("Publish Event BeforeOrderPlaceEvent")
 	d.eventRouter.Dispatch(ctx, &eventObject)
 }

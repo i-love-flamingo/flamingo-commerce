@@ -764,6 +764,9 @@ func (cs *CartService) PlaceOrder(ctx context.Context, session *web.Session, pay
 	if cs.placeOrderService == nil {
 		return nil, errors.New("No placeOrderService registered")
 	}
+
+	cs.eventPublisher.PublishBeforeOrderPlaceEvent(ctx)
+
 	cart, _, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return nil, err
