@@ -13,6 +13,7 @@ type (
 		Applied       domain.Price // how much of the discount has been subtracted from cart price, IMPORTANT: always negative
 		Type          string       // to distinguish between discounts
 		IsItemRelated bool         // flag indicating if the discount is applied due to item in cart
+		SortOrder     int          // sort order for discounts, from low to high
 	}
 
 	// WithDiscount interface for a cart that is able to handle discounts
@@ -141,6 +142,7 @@ func mapDiscounts(result map[string]*AppliedDiscount, discountable WithDiscount)
 			Applied:       discount.Applied,
 			Type:          discount.Type,
 			IsItemRelated: discount.IsItemRelated,
+			SortOrder:     discount.SortOrder,
 		}
 	}
 	return result, nil
