@@ -2,6 +2,7 @@ package templatefunctions
 
 import (
 	"context"
+	"flamingo.me/pugtemplate/pugjs"
 	"log"
 	"strconv"
 	"strings"
@@ -33,27 +34,29 @@ func (tf *FindProducts) Func(ctx context.Context) interface{} {
 
 	/*
 		widgetName - used to namespace widget - in case we need pagination
-		config - map with certain keys - used to specifiy th searchRequest better
+		config - map with certain keys - used to specify the searchRequest better
 	*/
-	return func(namespace string, configs ...map[string]string) *application.SearchResult {
-		var searchConfig, keyValueFilters, filterConstrains map[string]string
+	return func(namespace string, configs ...pugjs.Map) *application.SearchResult {
+		searchConfig := make(map[string]string)
+		filterConstrains := make(map[string]string)
+		keyValueFilters := make(map[string][]string)
 
 		if len(configs) > 0 {
-			searchConfig = configs[0]
-		} else {
-			searchConfig = make(map[string]string)
+			searchConfig = configs[0].AsStringMap()
 		}
 
 		if len(configs) > 1 {
-			keyValueFilters = configs[1]
-		} else {
-			keyValueFilters = make(map[string]string)
+			for key, value := range configs[1].AsStringIfaceMap() {
+				if str, ok := value.(pugjs.String); ok { // allow string
+					keyValueFilters[key] = []string{str.String()}
+				} else if arrStr, ok := value.([]string); ok { // and array of strings
+					keyValueFilters[key] = arrStr
+				}
+			}
 		}
 
 		if len(configs) > 2 {
-			filterConstrains = configs[2]
-		} else {
-			filterConstrains = make(map[string]string)
+			filterConstrains = configs[2].AsStringMap()
 		}
 
 		filterProcessing := newFilterProcessing(web.RequestFromContext(ctx), namespace, searchConfig, keyValueFilters, filterConstrains)
@@ -70,7 +73,7 @@ func (tf *FindProducts) Func(ctx context.Context) interface{} {
 	}
 }
 
-func newFilterProcessing(request *web.Request, namespace string, searchConfig, keyValueFilters, filterConstrains map[string]string) filterProcessing {
+func newFilterProcessing(request *web.Request, namespace string, searchConfig map[string]string, keyValueFilters map[string][]string, filterConstrains map[string]string) filterProcessing {
 	var filterProcessing filterProcessing
 	var searchRequest searchApplication.SearchRequest
 
@@ -85,9 +88,7 @@ func newFilterProcessing(request *web.Request, namespace string, searchConfig, k
 		searchRequest.PageSize = pageSize
 	}
 
-	for k, v := range keyValueFilters {
-		searchRequest.AddAdditionalFilter(domain.NewKeyValueFilter(k, []string{v}))
-	}
+	searchRequest.AddAdditionalFilters(domain.NewKeyValueFilters(keyValueFilters)...)
 
 	// Set blackList and whiteList, also trim spaces
 	filterProcessing.blackList = strings.Split(filterConstrains["blackList"], ",")

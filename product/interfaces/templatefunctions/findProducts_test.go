@@ -104,7 +104,7 @@ func buildSearchResult() *application.SearchResult {
 }
 
 // helper function for test cases
-func buildFilterProcessing(keyValueFilter, filterConstrains map[string]string) filterProcessing {
+func buildFilterProcessing(keyValueFilter map[string][]string, filterConstrains map[string]string) filterProcessing {
 	requestURL := url.URL{}
 	webRequest := web.CreateRequest(&http.Request{
 		URL: &requestURL,
