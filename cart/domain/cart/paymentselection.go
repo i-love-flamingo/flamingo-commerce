@@ -50,6 +50,14 @@ type (
 		GatewayProp      string
 		ChargedItemsProp PaymentSplitByItem
 	}
+
+	// helper struct to generalise item split calculation for different item types
+	// It includes the builder function that is necessary to add the corresponding charge split for the item
+	// Moreover it receives the items this function should be applied for (either cart, shipping, total)
+	giftcardSplitData struct {
+		BuilderFunction func(string, string, price.Charge) *PaymentSplitByItemBuilder
+		ItemsToPay      map[string]price.Price
+	}
 )
 
 //NewSimplePaymentSelection - returns a PaymentSelection that can be used to update the cart.
@@ -110,9 +118,28 @@ func NewPaymentSelectionWithGiftCard(gateway string, method string, pricedItems 
 	// distribute gift card amounts relatively across all items
 	giftCartAmountRatio := totalGCValue.FloatAmount() / totalValue.FloatAmount()
 	builder := &PaymentSplitByItemBuilder{}
-	prices := []map[string]price.Price{pricedItems.CartItems(), pricedItems.ShippingItems(), pricedItems.TotalItems()}
-	for _, priceMap := range prices {
-		builder, totalGCValue, err = splitWithGiftCards(builder, method, priceMap, giftCartAmountRatio, totalGCValue)
+	// add priced items with their corresponding builder function to enable evaluation
+	itemsWithBuilderFunc := []giftcardSplitData{
+		// cart items
+		{
+			ItemsToPay:      pricedItems.CartItems(),
+			BuilderFunction: builder.AddCartItem,
+		},
+		// shipping
+		{
+			ItemsToPay:      pricedItems.ShippingItems(),
+			BuilderFunction: builder.AddShippingItem,
+		},
+		// total
+		{
+			ItemsToPay:      pricedItems.TotalItems(),
+			BuilderFunction: builder.AddTotalItem,
+		},
+	}
+	// loop over helper containing the items to pay
+	// and their corresponding helper function
+	for _, helper := range itemsWithBuilderFunc {
+		builder, totalGCValue, err = splitWithGiftCards(builder, method, helper, giftCartAmountRatio, totalGCValue)
 		if err != nil {
 			return nil, err
 		}
@@ -125,25 +152,25 @@ func NewPaymentSelectionWithGiftCard(gateway string, method string, pricedItems 
 }
 
 // splitWithGiftCards distribute gift card charges across item prices
-func splitWithGiftCards(builder *PaymentSplitByItemBuilder, method string, prices map[string]price.Price,
+func splitWithGiftCards(builder *PaymentSplitByItemBuilder, method string, helper giftcardSplitData,
 	ratio float64, totalGCValue price.Price) (*PaymentSplitByItemBuilder, price.Price, error) {
 	var remainingItemValue, appliedGcAmount price.Price
 	var err error
-	// loop over given prices and calculate relative amounts
-	for k, itemPrice := range prices {
+	// loop over helper containing the items to pay
+	for k, itemPrice := range helper.ItemsToPay {
 		remainingItemValue, totalGCValue, appliedGcAmount, err = calcRelativeGiftcardAmount(itemPrice, totalGCValue, ratio)
 		if err != nil {
 			return nil, totalGCValue, err
 		}
-		builder.AddTotalItem(k, method, price.Charge{
+		builder = helper.BuilderFunction(k, method, price.Charge{
 			Price: remainingItemValue,
 			Value: remainingItemValue,
 			Type:  price.ChargeTypeMain,
 		})
-		builder.AddTotalItem(k, method, price.Charge{
+		builder = helper.BuilderFunction(k, method, price.Charge{
 			Price: appliedGcAmount,
 			Value: appliedGcAmount,
-			Type:  ChargeTypeGiftCard,
+			Type:  price.ChargeTypeGiftCard,
 		})
 	}
 	return builder, totalGCValue, nil

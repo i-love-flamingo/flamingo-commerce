@@ -141,7 +141,6 @@ var (
 // Key constants
 const (
 	//ChargeTypeGiftCard used for giftcard payment
-	ChargeTypeGiftCard      = "giftcard"
 	TotalsTypeDiscount      = "totals_type_discount"
 	TotalsTypeVoucher       = "totals_type_voucher"
 	TotalsTypeTax           = "totals_type_tax"

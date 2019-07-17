@@ -55,6 +55,8 @@ var (
 )
 
 const (
+	//ChargeTypeGiftCard  used as a charge type for gift cards
+	ChargeTypeGiftCard = "giftcard"
 	//ChargeTypeMain used as default for a Charge
 	ChargeTypeMain = "main"
 	//RoundingModeFloor - use if you want to cut (round down)
