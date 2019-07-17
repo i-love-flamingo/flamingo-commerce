@@ -102,6 +102,16 @@ func TestPrice_SplitInPayables(t *testing.T) {
 	}
 	//sum of the splitted payable need to match original price payable
 	assert.Equal(t, originalPrice.GetPayable().Amount(), sumPrice.GetPayable().Amount())
+
+	// edge case for negative input (happens when discounts are split)
+	originalPrice = domain.NewFromFloat(-152.99, "EUR")
+	payableSplitPrices, _ = originalPrice.SplitInPayables(3)
+
+	sumPrice = domain.NewZero("EUR")
+	for _, price := range payableSplitPrices {
+		sumPrice, _ = sumPrice.Add(price)
+	}
+	assert.Equal(t, originalPrice.GetPayable().Amount(), sumPrice.GetPayable().Amount())
 }
 
 func TestPrice_Discounted(t *testing.T) {
@@ -248,16 +258,4 @@ func TestCharges_Add(t *testing.T) {
 		Value: domain.NewFromInt(150, 1, "EUR"),
 		Type:  "main",
 	}, charge)
-}
-
-func TestPrice_SplitInPayables_NegativeValue(t *testing.T) {
-	originalPrice := domain.NewFromFloat(-152.99, "EUR") // float edge case
-	payableSplitPrices, _ := originalPrice.SplitInPayables(3)
-
-	sumPrice := domain.NewZero("EUR")
-	for _, price := range payableSplitPrices {
-		sumPrice, _ = sumPrice.Add(price)
-	}
-	//sum of the splitted payable need to match original price payable
-	assert.Equal(t, originalPrice.GetPayable().Amount(), sumPrice.GetPayable().Amount())
 }
