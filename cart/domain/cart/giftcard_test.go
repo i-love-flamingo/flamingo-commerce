@@ -17,7 +17,7 @@ func TestCart_SumAppliedGiftCards(t *testing.T) {
 		{
 			name: "empty cart",
 			cart: &cart.Cart{},
-			want: domain.Price{},
+			want: domain.Price{}.GetPayable(),
 		},
 		{
 			name: "cart with gift cards applied",

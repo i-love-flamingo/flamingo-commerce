@@ -44,7 +44,7 @@ func (c Cart) HasAppliedGiftCards() bool {
 func (c Cart) SumAppliedGiftCards() (domain.Price, error) {
 	// guard for no gift cards applied
 	if len(c.AppliedGiftCards) == 0 {
-		return domain.Price{}, nil
+		return domain.Price{}.GetPayable(), nil
 	}
 	prices := make([]domain.Price, 0, len(c.AppliedGiftCards))
 	// add prices to array
@@ -54,7 +54,7 @@ func (c Cart) SumAppliedGiftCards() (domain.Price, error) {
 	price, err := domain.SumAll(prices...)
 	// in case of error regarding sum, pass on error
 	if err != nil {
-		return domain.Price{}, nil
+		return domain.Price{}.GetPayable(), nil
 	}
 	return price.GetPayable(), nil
 }
@@ -63,7 +63,7 @@ func (c Cart) SumAppliedGiftCards() (domain.Price, error) {
 func (c Cart) SumGrandTotalWithGiftCards() (domain.Price, error) {
 	giftCardTotal, err := c.SumAppliedGiftCards()
 	if err != nil {
-		return domain.Price{}, err
+		return domain.Price{}.GetPayable(), err
 	}
 	// if there are no gift cards just return cart grand total
 	total := c.GrandTotal()
@@ -73,7 +73,7 @@ func (c Cart) SumGrandTotalWithGiftCards() (domain.Price, error) {
 	// subtract gift card total from total for "remaining total"
 	result, err := total.Sub(giftCardTotal)
 	if err != nil {
-		return domain.Price{}, err
+		return domain.Price{}.GetPayable(), err
 	}
 	return result.GetPayable(), nil
 }
