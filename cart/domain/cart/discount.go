@@ -2,6 +2,7 @@ package cart
 
 import (
 	"flamingo.me/flamingo-commerce/v3/price/domain"
+	"sort"
 )
 
 type (
@@ -94,6 +95,10 @@ func (d *Delivery) HasAppliedDiscounts() (bool, error) {
 // MergeDiscounts parses discounts of a single item
 // All discounts with the same type and title are aggregated and returned as one with a summed price
 func (i *Item) MergeDiscounts() (AppliedDiscounts, error) {
+	sort.SliceStable(i.AppliedDiscounts, func(x, y int) bool {
+		return i.AppliedDiscounts[x].SortOrder < i.AppliedDiscounts[y].SortOrder
+	})
+
 	return i.AppliedDiscounts, nil
 }
 
@@ -114,6 +119,11 @@ func mapToSlice(collection map[string]*AppliedDiscount) []AppliedDiscount {
 	for _, val := range collection {
 		result = append(result, *val)
 	}
+
+	sort.SliceStable(result, func(x, y int) bool {
+		return result[x].SortOrder < result[y].SortOrder
+	})
+
 	return result
 }
 
