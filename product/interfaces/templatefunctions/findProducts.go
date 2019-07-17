@@ -37,9 +37,9 @@ func (tf *FindProducts) Func(ctx context.Context) interface{} {
 		config - map with certain keys - used to specify the searchRequest better
 	*/
 	return func(namespace string, configs ...pugjs.Map) *application.SearchResult {
-		var searchConfig = make(map[string]string)
-		var filterConstrains = make(map[string]string)
-		var keyValueFilters = make(map[string][]string)
+		searchConfig := make(map[string]string)
+		filterConstrains := make(map[string]string)
+		keyValueFilters := make(map[string][]string)
 
 		if len(configs) > 0 {
 			searchConfig = configs[0].AsStringMap()
