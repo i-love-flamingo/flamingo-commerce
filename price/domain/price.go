@@ -377,8 +377,14 @@ func (p Price) SplitInPayables(count int) ([]Price, error) {
 	if count <= 0 {
 		return nil, errors.New("Split must be higher than zero")
 	}
+	// guard clause invert negative values
 	_, precision := p.payableRoundingPrecision()
-	amountToMatchFloat, _ := new(big.Float).Mul(p.GetPayable().Amount(), p.precisionF(precision)).Float64()
+	amount := p.GetPayable().Amount()
+	// we have to invert negative numbers, otherwise split is not correct
+	if p.IsNegative() {
+		amount = p.GetPayable().Inverse().Amount()
+	}
+	amountToMatchFloat, _ := new(big.Float).Mul(amount, p.precisionF(precision)).Float64()
 	amountToMatchInt := int64(amountToMatchFloat)
 
 	splittedAmountModulo := amountToMatchInt % int64(count)
@@ -396,7 +402,12 @@ func (p Price) SplitInPayables(count int) ([]Price, error) {
 	prices := make([]Price, count)
 	for i := 0; i < count; i++ {
 		_, precision := p.payableRoundingPrecision()
-		prices[i] = NewFromInt(splittedAmounts[i], precision, p.Currency())
+		splittedAmount := splittedAmounts[i]
+		// invert prices again to keep negative values
+		if p.IsNegative() {
+			splittedAmount *= -1
+		}
+		prices[i] = NewFromInt(splittedAmount, precision, p.Currency())
 	}
 
 	return prices, nil
