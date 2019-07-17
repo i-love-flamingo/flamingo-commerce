@@ -51,12 +51,13 @@ type (
 		ChargedItemsProp PaymentSplitByItem
 	}
 
-	// helper struct to generalise item split calculation for different item types
-	// It includes the builder function that is necessary to add the corresponding charge split for the item
-	// Moreover it receives the items this function should be applied for (either cart, shipping, total)
-	giftcardSplitData struct {
-		BuilderFunction func(string, string, price.Charge) *PaymentSplitByItemBuilder
-		ItemsToPay      map[string]price.Price
+	// itemsWithAdd is a helper struct which holds items with their corresponding add function
+	// from PaymentSplitByItemBuilder
+	itemsWithAdd struct {
+		// map of payable items corresponding to price.PricedItems
+		ItemsToPay map[string]price.Price
+		// function which corresponds to builder adddX function (addCartItem, addShipping, addTotal)
+		AddFunction func(string, string, price.Charge) *PaymentSplitByItemBuilder
 	}
 )
 
@@ -97,108 +98,30 @@ func NewSimplePaymentSelection(gateway string, method string, pricedItems Priced
 
 //NewPaymentSelectionWithGiftCard - returns Selection with given giftcard charge type taken into account
 func NewPaymentSelectionWithGiftCard(gateway string, method string, pricedItems PricedItems, appliedGiftCards []AppliedGiftCard) (PaymentSelection, error) {
-	totalValue := pricedItems.Sum()
-	if len(appliedGiftCards) == 0 {
-		return NewSimplePaymentSelection(gateway, method, pricedItems), nil
+	// create payment split by item with gift cards
+	split := PaymentSplitWithGiftCards{
+		Method:      method,
+		PricedItems: pricedItems,
+		GiftCards:   appliedGiftCards,
 	}
-	var allGcAmounts []price.Price
-	for _, gc := range appliedGiftCards {
-		allGcAmounts = append(allGcAmounts, gc.Applied)
-	}
-	totalGCValue, err := price.SumAll(allGcAmounts...)
+	result, err := split.Split()
+	// error handling
 	if err != nil {
-		return nil, err
-	}
-	if totalGCValue.IsZero() {
-		return NewSimplePaymentSelection(gateway, method, pricedItems), nil
-	}
-	if totalGCValue.IsGreaterThen(totalValue) {
-		return nil, errors.New("giftcard amount exceeds total priced items value")
-	}
-	// distribute gift card amounts relatively across all items
-	giftCartAmountRatio := totalGCValue.FloatAmount() / totalValue.FloatAmount()
-	builder := &PaymentSplitByItemBuilder{}
-	// add priced items with their corresponding builder function to enable evaluation
-	itemsWithBuilderFunc := []giftcardSplitData{
-		// cart items
-		{
-			ItemsToPay:      pricedItems.CartItems(),
-			BuilderFunction: builder.AddCartItem,
-		},
-		// shipping
-		{
-			ItemsToPay:      pricedItems.ShippingItems(),
-			BuilderFunction: builder.AddShippingItem,
-		},
-		// total
-		{
-			ItemsToPay:      pricedItems.TotalItems(),
-			BuilderFunction: builder.AddTotalItem,
-		},
-	}
-	// loop over helper containing the items to pay
-	// and their corresponding helper function
-	for _, helper := range itemsWithBuilderFunc {
-		builder, totalGCValue, err = splitWithGiftCards(builder, method, helper, giftCartAmountRatio, totalGCValue)
-		if err != nil {
+		switch err.(type) {
+		case *ErrSplitNoGiftCards:
+			return NewSimplePaymentSelection(gateway, method, pricedItems), nil
+		case *ErrSplitEmptyGiftCards:
+			return NewSimplePaymentSelection(gateway, method, pricedItems), nil
+		default:
 			return nil, err
 		}
 	}
+	// create selection
 	selection := DefaultPaymentSelection{
 		GatewayProp: gateway,
 	}
-	selection.ChargedItemsProp = builder.Build()
+	selection.ChargedItemsProp = *result
 	return selection, nil
-}
-
-// splitWithGiftCards distribute gift card charges across item prices
-func splitWithGiftCards(builder *PaymentSplitByItemBuilder, method string, helper giftcardSplitData,
-	ratio float64, totalGCValue price.Price) (*PaymentSplitByItemBuilder, price.Price, error) {
-	var remainingItemValue, appliedGcAmount price.Price
-	var err error
-	// loop over helper containing the items to pay
-	for k, itemPrice := range helper.ItemsToPay {
-		remainingItemValue, totalGCValue, appliedGcAmount, err = calcRelativeGiftcardAmount(itemPrice, totalGCValue, ratio)
-		if err != nil {
-			return nil, totalGCValue, err
-		}
-		builder = helper.BuilderFunction(k, method, price.Charge{
-			Price: remainingItemValue,
-			Value: remainingItemValue,
-			Type:  price.ChargeTypeMain,
-		})
-		builder = helper.BuilderFunction(k, method, price.Charge{
-			Price: appliedGcAmount,
-			Value: appliedGcAmount,
-			Type:  price.ChargeTypeGiftCard,
-		})
-	}
-	return builder, totalGCValue, nil
-}
-
-// calcRelativeGiftcardAmount calc amount of applied gift card relative to item price
-func calcRelativeGiftcardAmount(value price.Price, remainingGcAmount price.Price, ratio float64) (remainingItemValue price.Price,
-	newRemainingGcAmount price.Price, appliedGcAmount price.Price, err error) {
-	//relativeItemGcAmount the giftcard amount that relates to the given item Value
-	relativeItemGcAmount := price.NewFromFloat(ratio*value.FloatAmount(), value.Currency()).GetPayable()
-	// if the relative amount is greater than the complete the remaining, just remove the remaining
-	if relativeItemGcAmount.IsGreaterThen(remainingGcAmount) {
-		relativeItemGcAmount = remainingGcAmount
-	}
-	// if the relative amount is greater than the item price, just use the item price
-	if relativeItemGcAmount.IsGreaterThen(value) {
-		relativeItemGcAmount = value
-	}
-	appliedGcAmount = relativeItemGcAmount
-	newRemainingGcAmount, err = remainingGcAmount.Sub(appliedGcAmount)
-	if err != nil {
-		return
-	}
-	remainingItemValue, err = value.Sub(appliedGcAmount)
-	if err != nil {
-		return
-	}
-	return
 }
 
 // NewPaymentSelection - with the passed PaymentSplitByItem

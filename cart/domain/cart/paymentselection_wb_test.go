@@ -235,5 +235,20 @@ func Test_CartWithExpensiveItems(t *testing.T) {
 	assert.Equal(t, domain.NewFromInt(944, 100, "€").FloatAmount(), itemGCValue.Value.FloatAmount())
 	itemMainValue := selection.ItemSplit().CartItems["1"].ChargesByType().GetByTypeForced(domain.ChargeTypeMain)
 	assert.Equal(t, domain.NewFromInt(299155, 100, "€").FloatAmount(), itemMainValue.Value.FloatAmount())
+}
 
+func Test_CreateSimplePaymentWithoutGiftCards(t *testing.T) {
+	pricedItems := PricedItems{
+		totalItems:    make(map[string]domain.Price),
+		shippingItems: make(map[string]domain.Price),
+		cartItems:     make(map[string]domain.Price),
+	}
+	pricedItems.cartItems["1"] = domain.NewFromInt(50, 100, "€")
+	pricedItems.shippingItems["1"] = domain.NewFromInt(20, 100, "€")
+	pricedItems.totalItems["1"] = domain.NewFromInt(50, 100, "€")
+	appliedGc := []AppliedGiftCard{{}}
+	selection, err := NewPaymentSelectionWithGiftCard("gateyway", "method", pricedItems, appliedGc)
+	assert.NoError(t, err)
+	assert.Equal(t, domain.NewFromInt(0, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(120, 100, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
 }
