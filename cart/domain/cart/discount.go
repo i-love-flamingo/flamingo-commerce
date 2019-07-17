@@ -14,7 +14,7 @@ type (
 		Applied       domain.Price // how much of the discount has been subtracted from cart price, IMPORTANT: always negative
 		Type          string       // to distinguish between discounts
 		IsItemRelated bool         // flag indicating if the discount is applied due to item in cart
-		SortOrder     int          // sort order for discounts, from low to high
+		SortOrder     int          // indicates in which order discount have been applied, low value has been applied before high value
 	}
 
 	// WithDiscount interface for a cart that is able to handle discounts
