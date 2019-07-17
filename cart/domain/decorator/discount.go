@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	errorLog = "Unable to collect discounts, stopping and returning empty slice"
+	decoratedDiscountError = "Unable to collect discounts, stopping and returning empty slice"
 )
 
 type (
@@ -66,7 +66,7 @@ func hasAppliedDiscounts(discountable DecoratedWithDiscount) bool {
 func collectDiscounts(discountable cart.WithDiscount, logger flamingo.Logger) cart.AppliedDiscounts {
 	discounts, err := discountable.MergeDiscounts()
 	if err != nil {
-		logger.Error(errorLog)
+		logger.Error(decoratedDiscountError)
 		return make(cart.AppliedDiscounts, 0)
 	}
 	return discounts
