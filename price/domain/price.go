@@ -526,10 +526,42 @@ func NewCharges(chargesByType map[string]Charge) *Charges {
 	return &charges
 }
 
-//HasType - returns a true if charges include a charge with given type
+//HasType - returns a true if any charges include a charge with given type
 func (c Charges) HasType(ctype string) bool {
-	qualifier := ChargeQualifier{
+	for qualifier := range c.chargesByType {
+		if qualifier.Type == ctype {
+			return true
+		}
+	}
+	return false
+}
+
+//GetByType - returns a charge of given type. If it was not found a Zero amount
+// is returned and the second return value is false
+// sums up charges by a certain type if there are multiple
+func (c Charges) GetByType(ctype string) (Charge, bool) {
+	// guard in case type is not available
+	if !c.HasType(ctype) {
+		return Charge{}, false
+	}
+	result := Charge{
 		Type: ctype,
+	}
+	// sum up all charges with certain type to one charge
+	for qualifier, charge := range c.chargesByType {
+		if qualifier.Type == ctype {
+			result, _ = result.Add(charge)
+		}
+	}
+	return result, true
+}
+
+//HasTypeWithAdditional - returns a true if any charges include a charge with given type
+// and concrete key values provided by additional
+func (c Charges) HasTypeWithAdditional(ctype string, additional map[string]string) bool {
+	qualifier := ChargeQualifier{
+		Type:       ctype,
+		Additional: generateAdditional(additional),
 	}
 	if _, ok := c.chargesByType[qualifier]; ok {
 		return true
@@ -537,26 +569,33 @@ func (c Charges) HasType(ctype string) bool {
 	return false
 }
 
-//GetByType - returns a charge of given type. If it was not found a Zero amount is returned and the second return value is false
-func (c Charges) GetByType(ctype string) (Charge, bool) {
+//GetByTypeWithAdditional - returns a charge of given type and concrete key values provided by additional.
+// If it was not found a Zero amount is returned and the second return value is false
+// sums up charges by a certain type if there are multiple
+func (c Charges) GetByTypeWithAdditional(ctype string, additional map[string]string) (Charge, bool) {
+	// guard in case type is not available
+	if !c.HasTypeWithAdditional(ctype, additional) {
+		return Charge{}, false
+	}
 	qualifier := ChargeQualifier{
-		Type: ctype,
+		Type:       ctype,
+		Additional: generateAdditional(additional),
 	}
 	if charge, ok := c.chargesByType[qualifier]; ok {
-		return charge, ok
+		return charge, true
 	}
 	return Charge{}, false
 }
 
-//GetByTypeForced - returns a charge of given type. If it was not found a Zero amount is returned. This method might be useful to call in View (template) directly where you need one return value
+//GetByTypeForced - returns a charge of given type. If it was not found a Zero amount is returned.
+// This method might be useful to call in View (template) directly where you need one return value
+// sums up charges by a certain type if there are multiple
 func (c Charges) GetByTypeForced(ctype string) Charge {
-	qualifier := ChargeQualifier{
-		Type: ctype,
+	result, ok := c.GetByType(ctype)
+	if !ok {
+		return Charge{}
 	}
-	if charge, ok := c.chargesByType[qualifier]; ok {
-		return charge
-	}
-	return Charge{}
+	return result
 }
 
 //GetAllCharges - returns all charges
