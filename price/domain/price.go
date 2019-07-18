@@ -6,6 +6,7 @@ import (
 	"errors"
 	"math"
 	"math/big"
+	"sort"
 	"strings"
 )
 
@@ -25,11 +26,22 @@ type (
 		Value Price
 		//The type of the charge - can be ChargeTypeMain or something else. Used to differenciate between different charges of a single thing
 		Type string
+		// Additional represent arbitrary key value pairs for information that should be passed with charges
+		Additional map[string]string
 	}
 
 	//Charges - Represents the Charges the product need to be payed with
 	Charges struct {
-		chargesByType map[string]Charge
+		chargesByType map[ChargeQualifier]Charge
+	}
+
+	//ChargeQualifier - needed to distinguish charges from each other with same type using additional attributes
+	ChargeQualifier struct {
+		// Type represents charge type
+		Type string
+		// Additional additional attributes to distinguish between ChargeQualifiers, is concatenated
+		// string of map
+		Additional string
 	}
 
 	//priceEncodeAble is a type that we need to allow marshalling the price values. The type itself is unexported
@@ -510,14 +522,16 @@ func (p Charge) Mul(qty int) Charge {
 
 // NewCharges creates a new Charges object
 func NewCharges(chargesByType map[string]Charge) *Charges {
-	return &Charges{
-		chargesByType: chargesByType,
-	}
+	charges := addChargeQualifier(chargesByType)
+	return &charges
 }
 
 //HasType - returns a true if charges include a charge with given type
 func (c Charges) HasType(ctype string) bool {
-	if _, ok := c.chargesByType[ctype]; ok {
+	qualifier := ChargeQualifier{
+		Type: ctype,
+	}
+	if _, ok := c.chargesByType[qualifier]; ok {
 		return true
 	}
 	return false
@@ -525,7 +539,10 @@ func (c Charges) HasType(ctype string) bool {
 
 //GetByType - returns a charge of given type. If it was not found a Zero amount is returned and the second return value is false
 func (c Charges) GetByType(ctype string) (Charge, bool) {
-	if charge, ok := c.chargesByType[ctype]; ok {
+	qualifier := ChargeQualifier{
+		Type: ctype,
+	}
+	if charge, ok := c.chargesByType[qualifier]; ok {
 		return charge, ok
 	}
 	return Charge{}, false
@@ -533,21 +550,24 @@ func (c Charges) GetByType(ctype string) (Charge, bool) {
 
 //GetByTypeForced - returns a charge of given type. If it was not found a Zero amount is returned. This method might be useful to call in View (template) directly where you need one return value
 func (c Charges) GetByTypeForced(ctype string) Charge {
-	if charge, ok := c.chargesByType[ctype]; ok {
+	qualifier := ChargeQualifier{
+		Type: ctype,
+	}
+	if charge, ok := c.chargesByType[qualifier]; ok {
 		return charge
 	}
 	return Charge{}
 }
 
 //GetAllCharges - returns all charges
-func (c Charges) GetAllCharges() map[string]Charge {
+func (c Charges) GetAllCharges() map[ChargeQualifier]Charge {
 	return c.chargesByType
 }
 
 //Add - returns new Charges with the given added
 func (c Charges) Add(toadd Charges) Charges {
 	if c.chargesByType == nil {
-		c.chargesByType = make(map[string]Charge)
+		c.chargesByType = make(map[ChargeQualifier]Charge)
 	}
 	for addk, addCharge := range toadd.chargesByType {
 		if existingCharge, ok := c.chargesByType[addk]; ok {
@@ -563,13 +583,17 @@ func (c Charges) Add(toadd Charges) Charges {
 //AddCharge - returns new Charges with the given Charge added
 func (c Charges) AddCharge(toadd Charge) Charges {
 	if c.chargesByType == nil {
-		c.chargesByType = make(map[string]Charge)
+		c.chargesByType = make(map[ChargeQualifier]Charge)
 	}
-	if existingCharge, ok := c.chargesByType[toadd.Type]; ok {
+	qualifier := ChargeQualifier{
+		Type:       toadd.Type,
+		Additional: generateAdditional(toadd.Additional),
+	}
+	if existingCharge, ok := c.chargesByType[qualifier]; ok {
 		chargeSum, _ := existingCharge.Add(toadd)
-		c.chargesByType[toadd.Type] = chargeSum.GetPayable()
+		c.chargesByType[qualifier] = chargeSum.GetPayable()
 	} else {
-		c.chargesByType[toadd.Type] = toadd
+		c.chargesByType[qualifier] = toadd
 	}
 	return c
 }
@@ -583,4 +607,29 @@ func (c Charges) Mul(qty int) Charges {
 		c.chargesByType[t] = charge.Mul(qty)
 	}
 	return c
+}
+
+// addChargeQualifier - parse string keys to charge qualifier for backwards compatibility
+func addChargeQualifier(chargesByType map[string]Charge) Charges {
+	withQualifier := make(map[ChargeQualifier]Charge)
+	for chargeType, charge := range chargesByType {
+		qualifier := ChargeQualifier{
+			Type:       chargeType,
+			Additional: generateAdditional(charge.Additional),
+		}
+		withQualifier[qualifier] = charge
+	}
+	return Charges{chargesByType: withQualifier}
+}
+
+// generateAdditional we cant use a complex type like map as a map key
+// but we need these information to differantiate between charges (ChargeQualifier),
+// therefore we create one concatenated string out of all infos (sorted)
+func generateAdditional(attributes map[string]string) string {
+	additional := make([]string, 0, len(attributes))
+	for k, v := range attributes {
+		additional = append(additional, k+v)
+	}
+	sort.Strings(additional)
+	return strings.Join(additional, "")
 }
