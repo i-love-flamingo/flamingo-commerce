@@ -6,7 +6,6 @@ import (
 	"errors"
 	"math"
 	"math/big"
-	"sort"
 	"strings"
 )
 
@@ -20,14 +19,14 @@ type (
 
 	//Charge is a Amount of a certain Type. Charge is used as value object
 	Charge struct {
-		//Price - the price that is paye - can be in a certain currency
+		//Price that is payed, can be in a certain currency
 		Price Price
-		//Value - the value of the "Price" - in another (base) currency
+		//Value of the "Price" in another (base) currency
 		Value Price
-		//The type of the charge - can be ChargeTypeMain or something else. Used to differenciate between different charges of a single thing
+		//Type of the charge - can be ChargeTypeMain or something else. Used to differentiate between different charges of a single thing
 		Type string
-		// Additional represent arbitrary key value pairs for information that should be passed with charges
-		Additional map[string]string
+		// Reference contains further information to distinguish charges of the same type
+		Reference string
 	}
 
 	//Charges - Represents the Charges the product need to be payed with
@@ -39,9 +38,8 @@ type (
 	ChargeQualifier struct {
 		// Type represents charge type
 		Type string
-		// Additional additional attributes to distinguish between ChargeQualifiers, is concatenated
-		// string of map
-		Additional string
+		// Reference contains further information to distinguish charges of the same type
+		Reference string
 	}
 
 	//priceEncodeAble is a type that we need to allow marshalling the price values. The type itself is unexported
@@ -556,31 +554,23 @@ func (c Charges) GetByType(ctype string) (Charge, bool) {
 	return result, true
 }
 
-//HasTypeWithAdditional - returns a true if any charges include a charge with given type
+// HasChargeQualifier - returns a true if any charges include a charge with given type
 // and concrete key values provided by additional
-func (c Charges) HasTypeWithAdditional(ctype string, additional map[string]string) bool {
-	qualifier := ChargeQualifier{
-		Type:       ctype,
-		Additional: generateAdditional(additional),
-	}
+func (c Charges) HasChargeQualifier(qualifier ChargeQualifier) bool {
 	if _, ok := c.chargesByType[qualifier]; ok {
 		return true
 	}
 	return false
 }
 
-//GetByTypeWithAdditional - returns a charge of given type and concrete key values provided by additional.
+// GetByChargeQualifier returns a charge of given qualifier.
 // If it was not found a Zero amount is returned and the second return value is false
-// sums up charges by a certain type if there are multiple
-func (c Charges) GetByTypeWithAdditional(ctype string, additional map[string]string) (Charge, bool) {
+func (c Charges) GetByChargeQualifier(qualifier ChargeQualifier) (Charge, bool) {
 	// guard in case type is not available
-	if !c.HasTypeWithAdditional(ctype, additional) {
+	if !c.HasChargeQualifier(qualifier) {
 		return Charge{}, false
 	}
-	qualifier := ChargeQualifier{
-		Type:       ctype,
-		Additional: generateAdditional(additional),
-	}
+
 	if charge, ok := c.chargesByType[qualifier]; ok {
 		return charge, true
 	}
@@ -625,8 +615,8 @@ func (c Charges) AddCharge(toadd Charge) Charges {
 		c.chargesByType = make(map[ChargeQualifier]Charge)
 	}
 	qualifier := ChargeQualifier{
-		Type:       toadd.Type,
-		Additional: generateAdditional(toadd.Additional),
+		Type:      toadd.Type,
+		Reference: toadd.Reference,
 	}
 	if existingCharge, ok := c.chargesByType[qualifier]; ok {
 		chargeSum, _ := existingCharge.Add(toadd)
@@ -634,6 +624,7 @@ func (c Charges) AddCharge(toadd Charge) Charges {
 	} else {
 		c.chargesByType[qualifier] = toadd
 	}
+
 	return c
 }
 
@@ -653,22 +644,10 @@ func addChargeQualifier(chargesByType map[string]Charge) Charges {
 	withQualifier := make(map[ChargeQualifier]Charge)
 	for chargeType, charge := range chargesByType {
 		qualifier := ChargeQualifier{
-			Type:       chargeType,
-			Additional: generateAdditional(charge.Additional),
+			Type:      chargeType,
+			Reference: charge.Reference,
 		}
 		withQualifier[qualifier] = charge
 	}
 	return Charges{chargesByType: withQualifier}
-}
-
-// generateAdditional we cant use a complex type like map as a map key
-// but we need these information to differantiate between charges (ChargeQualifier),
-// therefore we create one concatenated string out of all infos (sorted)
-func generateAdditional(attributes map[string]string) string {
-	additional := make([]string, 0, len(attributes))
-	for k, v := range attributes {
-		additional = append(additional, k+v)
-	}
-	sort.Strings(additional)
-	return strings.Join(additional, "")
 }
