@@ -34,7 +34,7 @@ type (
 		chargesByType map[ChargeQualifier]Charge
 	}
 
-	//ChargeQualifier - needed to distinguish charges from each other with same type using additional attributes
+	//ChargeQualifier distinguishes charges by type and reference
 	ChargeQualifier struct {
 		// Type represents charge type
 		Type string
