@@ -291,8 +291,8 @@ func TestCharges_GetByType(t *testing.T) {
 
 	charge, found = charges.GetByType("type-a")
 	assert.True(t, found)
-	assert.Equal(t, charge, domain.Charge{Type: domain.ChargeTypeMain, Price: domain.NewFromInt(400, 1, "€")})
-
+	want := domain.Charge{Type: "type-a", Price: domain.NewFromInt(400, 1, "€")}
+	assert.Equal(t, charge.Price, want.Price)
 }
 
 func TestCharges_GetByTypeForced(t *testing.T) {
