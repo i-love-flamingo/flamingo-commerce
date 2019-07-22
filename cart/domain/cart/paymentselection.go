@@ -3,6 +3,7 @@ package cart
 import (
 	"encoding/json"
 	"errors"
+	"sort"
 	"strings"
 
 	price "flamingo.me/flamingo-commerce/v3/price/domain"
@@ -25,8 +26,9 @@ type (
 
 	//SplitQualifier qualifies by Type and PaymentMethod
 	SplitQualifier struct {
-		ChargeType string
-		Method     string
+		ChargeType      string
+		ChargeReference string
+		Method          string
 	}
 
 	//PaymentSplit - the Charges qualified by Type and PaymentMethod
@@ -252,8 +254,9 @@ func (pb *PaymentSplitByItemBuilder) AddCartItem(id string, method string, charg
 		pb.inBuilding.CartItems[id] = make(PaymentSplit)
 	}
 	pb.inBuilding.CartItems[id][SplitQualifier{
-		Method:     method,
-		ChargeType: charge.Type,
+		Method:          method,
+		ChargeType:      charge.Type,
+		ChargeReference: charge.Reference,
 	}] = charge
 	return pb
 }
@@ -265,8 +268,9 @@ func (pb *PaymentSplitByItemBuilder) AddShippingItem(deliveryCode string, method
 		pb.inBuilding.ShippingItems[deliveryCode] = make(PaymentSplit)
 	}
 	pb.inBuilding.ShippingItems[deliveryCode][SplitQualifier{
-		Method:     method,
-		ChargeType: charge.Type,
+		Method:          method,
+		ChargeType:      charge.Type,
+		ChargeReference: charge.Reference,
 	}] = charge
 	return pb
 }
@@ -278,8 +282,9 @@ func (pb *PaymentSplitByItemBuilder) AddTotalItem(totalType string, method strin
 		pb.inBuilding.TotalItems[totalType] = make(PaymentSplit)
 	}
 	pb.inBuilding.TotalItems[totalType][SplitQualifier{
-		Method:     method,
-		ChargeType: charge.Type,
+		Method:          method,
+		ChargeType:      charge.Type,
+		ChargeReference: charge.Reference,
 	}] = charge
 	return pb
 }
@@ -324,16 +329,64 @@ func (service PaymentSplitService) SplitWithGiftCards(method string, items Price
 	if totalGCValue.IsGreaterThen(totalValue) {
 		return nil, ErrSplitGiftCardsExceedTotal
 	}
-	// distribute gift card amounts relatively across all items
-	giftCartAmountRatio := totalGCValue.FloatAmount() / totalValue.FloatAmount()
+
 	builder := &PaymentSplitByItemBuilder{}
 	helpers := service.initItemsWithAdd(items, builder)
 	// loop over helper containing the items to pay
 	// and their corresponding helper function
 	for _, helper := range helpers {
-		builder, totalGCValue, err = service.splitWithGiftCards(builder, method, helper, giftCartAmountRatio, totalGCValue)
-		if err != nil {
-			return nil, err
+		var keys []string
+		for k := range helper.ItemsToPay {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for i, card := range cards {
+			// loop over helper containing the items to pay
+			for _, k := range keys {
+				var remainingItem, appliedGiftCard price.Price
+				itemPrice := helper.ItemsToPay[k]
+				if itemPrice.IsZero() {
+					continue
+				}
+
+				// gift card is less then item price
+				toApply := card.Applied
+
+				if card.Applied.IsGreaterThen(itemPrice) || card.Applied.Equal(itemPrice) {
+					// gift card is greater or equal item price
+					toApply = itemPrice
+				}
+
+				remainingItem, err = itemPrice.Sub(toApply)
+				if err != nil {
+					return nil, err
+				}
+
+				itemPrice = remainingItem
+				appliedGiftCard = toApply
+
+				card.Applied, err = card.Applied.Sub(toApply)
+				if err != nil {
+					return nil, err
+				}
+
+				builder = helper.AddFunction(k, method, price.Charge{
+					Price: remainingItem,
+					Value: remainingItem,
+					Type:  price.ChargeTypeMain,
+				})
+
+				if !appliedGiftCard.IsZero() {
+					builder = helper.AddFunction(k, method, price.Charge{
+						Price:     appliedGiftCard,
+						Value:     appliedGiftCard,
+						Type:      price.ChargeTypeGiftCard,
+						Reference: card.Code,
+					})
+				}
+				cards[i] = card
+				helper.ItemsToPay[k] = itemPrice
+			}
 		}
 	}
 	result := builder.Build()
@@ -363,56 +416,7 @@ func (service PaymentSplitService) initItemsWithAdd(items PricedItems, builder *
 
 // splitWithGiftCards distribute gift card charges across item prices
 func (service PaymentSplitService) splitWithGiftCards(builder *PaymentSplitByItemBuilder, method string,
-	helper itemsWithAdd, ratio float64, totalGCValue price.Price) (*PaymentSplitByItemBuilder, price.Price, error) {
-	var remainingItemValue, appliedGcAmount price.Price
-	var err error
-	// loop over helper containing the items to pay
-	for k, itemPrice := range helper.ItemsToPay {
-		remainingItemValue, totalGCValue, appliedGcAmount, err = service.calcRelativeGiftCardAmount(itemPrice, totalGCValue, ratio)
-		if err != nil {
-			return nil, totalGCValue, err
-		}
-		// only add values if there are not zero
-		if !remainingItemValue.IsZero() {
-			builder = helper.AddFunction(k, method, price.Charge{
-				Price: remainingItemValue,
-				Value: remainingItemValue,
-				Type:  price.ChargeTypeMain,
-			})
-		}
-		if !appliedGcAmount.IsZero() {
-			builder = helper.AddFunction(k, method, price.Charge{
-				Price: appliedGcAmount,
-				Value: appliedGcAmount,
-				Type:  price.ChargeTypeGiftCard,
-			})
-		}
-	}
-	return builder, totalGCValue, nil
-}
+	helper itemsWithAdd, cards AppliedGiftCards) (*PaymentSplitByItemBuilder, error) {
 
-// calcRelativeGiftCardAmount calc amount of applied gift card relative to item price
-func (service PaymentSplitService) calcRelativeGiftCardAmount(value price.Price, remainingGcAmount price.Price,
-	ratio float64) (remainingItemValue price.Price,
-	newRemainingGcAmount price.Price, appliedGcAmount price.Price, err error) {
-	//relativeItemGcAmount the gift card amount that relates to the given item Value
-	relativeItemGcAmount := price.NewFromFloat(ratio*value.FloatAmount(), value.Currency()).GetPayable()
-	// if the relative amount is greater than the complete the remaining, just remove the remaining
-	if relativeItemGcAmount.IsGreaterThen(remainingGcAmount) {
-		relativeItemGcAmount = remainingGcAmount
-	}
-	// if the relative amount is greater than the item price, just use the item price
-	if relativeItemGcAmount.IsGreaterThen(value) {
-		relativeItemGcAmount = value
-	}
-	appliedGcAmount = relativeItemGcAmount
-	newRemainingGcAmount, err = remainingGcAmount.Sub(appliedGcAmount)
-	if err != nil {
-		return
-	}
-	remainingItemValue, err = value.Sub(appliedGcAmount)
-	if err != nil {
-		return
-	}
-	return
+	return builder, nil
 }
