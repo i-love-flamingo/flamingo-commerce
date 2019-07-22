@@ -31,7 +31,7 @@ type (
 
 	//Charges - Represents the Charges the product need to be payed with
 	Charges struct {
-		chargesByType map[ChargeQualifier]Charge
+		chargesByQualifier map[ChargeQualifier]Charge
 	}
 
 	//ChargeQualifier distinguishes charges by type and reference
@@ -526,7 +526,7 @@ func NewCharges(chargesByType map[string]Charge) *Charges {
 
 //HasType - returns a true if any charges include a charge with given type
 func (c Charges) HasType(ctype string) bool {
-	for qualifier := range c.chargesByType {
+	for qualifier := range c.chargesByQualifier {
 		if qualifier.Type == ctype {
 			return true
 		}
@@ -546,7 +546,7 @@ func (c Charges) GetByType(ctype string) (Charge, bool) {
 		Type: ctype,
 	}
 	// sum up all charges with certain type to one charge
-	for qualifier, charge := range c.chargesByType {
+	for qualifier, charge := range c.chargesByQualifier {
 		if qualifier.Type == ctype {
 			result, _ = result.Add(charge)
 		}
@@ -557,7 +557,7 @@ func (c Charges) GetByType(ctype string) (Charge, bool) {
 // HasChargeQualifier - returns a true if any charges include a charge with given type
 // and concrete key values provided by additional
 func (c Charges) HasChargeQualifier(qualifier ChargeQualifier) bool {
-	if _, ok := c.chargesByType[qualifier]; ok {
+	if _, ok := c.chargesByQualifier[qualifier]; ok {
 		return true
 	}
 	return false
@@ -571,13 +571,23 @@ func (c Charges) GetByChargeQualifier(qualifier ChargeQualifier) (Charge, bool) 
 		return Charge{}, false
 	}
 
-	if charge, ok := c.chargesByType[qualifier]; ok {
+	if charge, ok := c.chargesByQualifier[qualifier]; ok {
 		return charge, true
 	}
 	return Charge{}, false
 }
 
-//GetByTypeForced - returns a charge of given type. If it was not found a Zero amount is returned.
+// GetByChargeQualifierForced returns a charge of given qualifier.
+// If it was not found a Zero amount is returned. This method might be useful to call in View (template) directly.
+func (c Charges) GetByChargeQualifierForced(qualifier ChargeQualifier) Charge {
+	result, ok := c.GetByChargeQualifier(qualifier)
+	if !ok {
+		return Charge{}
+	}
+	return result
+}
+
+// GetByTypeForced - returns a charge of given type. If it was not found a Zero amount is returned.
 // This method might be useful to call in View (template) directly where you need one return value
 // sums up charges by a certain type if there are multiple
 func (c Charges) GetByTypeForced(ctype string) Charge {
@@ -590,20 +600,36 @@ func (c Charges) GetByTypeForced(ctype string) Charge {
 
 //GetAllCharges - returns all charges
 func (c Charges) GetAllCharges() map[ChargeQualifier]Charge {
-	return c.chargesByType
+	return c.chargesByQualifier
+}
+
+// GetAllByType returns all charges of type
+func (c Charges) GetAllByType(ctype string) map[ChargeQualifier]Charge {
+	chargesByType := make(map[ChargeQualifier]Charge)
+
+	for qualifier, charge := range c.chargesByQualifier {
+		if qualifier.Type == ctype {
+			chargesByType[ChargeQualifier{
+				qualifier.Type,
+				qualifier.Reference,
+			}] = charge
+		}
+	}
+
+	return chargesByType
 }
 
 //Add - returns new Charges with the given added
 func (c Charges) Add(toadd Charges) Charges {
-	if c.chargesByType == nil {
-		c.chargesByType = make(map[ChargeQualifier]Charge)
+	if c.chargesByQualifier == nil {
+		c.chargesByQualifier = make(map[ChargeQualifier]Charge)
 	}
-	for addk, addCharge := range toadd.chargesByType {
-		if existingCharge, ok := c.chargesByType[addk]; ok {
+	for addk, addCharge := range toadd.chargesByQualifier {
+		if existingCharge, ok := c.chargesByQualifier[addk]; ok {
 			chargeSum, _ := existingCharge.Add(addCharge)
-			c.chargesByType[addk] = chargeSum.GetPayable()
+			c.chargesByQualifier[addk] = chargeSum.GetPayable()
 		} else {
-			c.chargesByType[addk] = addCharge
+			c.chargesByQualifier[addk] = addCharge
 		}
 	}
 	return c
@@ -611,18 +637,18 @@ func (c Charges) Add(toadd Charges) Charges {
 
 //AddCharge - returns new Charges with the given Charge added
 func (c Charges) AddCharge(toadd Charge) Charges {
-	if c.chargesByType == nil {
-		c.chargesByType = make(map[ChargeQualifier]Charge)
+	if c.chargesByQualifier == nil {
+		c.chargesByQualifier = make(map[ChargeQualifier]Charge)
 	}
 	qualifier := ChargeQualifier{
 		Type:      toadd.Type,
 		Reference: toadd.Reference,
 	}
-	if existingCharge, ok := c.chargesByType[qualifier]; ok {
+	if existingCharge, ok := c.chargesByQualifier[qualifier]; ok {
 		chargeSum, _ := existingCharge.Add(toadd)
-		c.chargesByType[qualifier] = chargeSum.GetPayable()
+		c.chargesByQualifier[qualifier] = chargeSum.GetPayable()
 	} else {
-		c.chargesByType[qualifier] = toadd
+		c.chargesByQualifier[qualifier] = toadd
 	}
 
 	return c
@@ -630,11 +656,11 @@ func (c Charges) AddCharge(toadd Charge) Charges {
 
 //Mul - returns new Charges with the given multiplied
 func (c Charges) Mul(qty int) Charges {
-	if c.chargesByType == nil {
+	if c.chargesByQualifier == nil {
 		return c
 	}
-	for t, charge := range c.chargesByType {
-		c.chargesByType[t] = charge.Mul(qty)
+	for t, charge := range c.chargesByQualifier {
+		c.chargesByQualifier[t] = charge.Mul(qty)
 	}
 	return c
 }
@@ -649,5 +675,5 @@ func addChargeQualifier(chargesByType map[string]Charge) Charges {
 		}
 		withQualifier[qualifier] = charge
 	}
-	return Charges{chargesByType: withQualifier}
+	return Charges{chargesByQualifier: withQualifier}
 }
