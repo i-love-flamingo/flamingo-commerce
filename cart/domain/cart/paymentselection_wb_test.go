@@ -9,52 +9,97 @@ import (
 )
 
 func Test_CanBuildSimpleSelectionFromCard(t *testing.T) {
-	pricedItems := PricedItems{
-		cartItems:     make(map[string]domain.Price),
-		shippingItems: make(map[string]domain.Price, 1),
+
+	cart := Cart{
+		Deliveries: []Delivery{
+			{
+				DeliveryInfo: DeliveryInfo{
+					Code: "delcode",
+				},
+				Cartitems: []Item{
+					{
+						ID:            "1",
+						RowPriceGross: domain.NewFromInt(199, 100, "€"),
+					},
+					{
+						ID:            "2",
+						RowPriceGross: domain.NewFromInt(299, 100, "€"),
+					},
+				},
+				ShippingItem: ShippingItem{
+					PriceNet: domain.NewFromInt(7, 1, "€"),
+				},
+			},
+		},
 	}
-	pricedItems.cartItems["1"] = domain.NewFromInt(199, 100, "€")
-	pricedItems.cartItems["2"] = domain.NewFromInt(299, 100, "€")
-	pricedItems.shippingItems["delcode"] = domain.NewFromInt(7, 1, "€")
-	selection := NewSimplePaymentSelection("gateyway", "method", pricedItems)
+	selection, _ := NewDefaultPaymentSelection("gateyway", "method", cart)
 	assert.Equal(t, domain.NewFromInt(1198, 100, "€").FloatAmount(), selection.TotalValue().FloatAmount())
 }
 
 func Test_CanBuildSimpleSelectionWithGiftCard_NoGc(t *testing.T) {
-	pricedItems := PricedItems{
-		cartItems:     make(map[string]domain.Price),
-		shippingItems: make(map[string]domain.Price, 1),
+	cart := Cart{
+		Deliveries: []Delivery{
+			{
+				DeliveryInfo: DeliveryInfo{
+					Code: "delcode",
+				},
+				Cartitems: []Item{
+					{
+						ID:            "1",
+						RowPriceGross: domain.NewFromInt(199, 100, "€"),
+					},
+					{
+						ID:            "2",
+						RowPriceGross: domain.NewFromInt(299, 100, "€"),
+					},
+				},
+				ShippingItem: ShippingItem{
+					PriceNet: domain.NewFromInt(7, 1, "€"),
+				},
+			},
+		},
+		AppliedGiftCards: AppliedGiftCards{},
 	}
-	pricedItems.cartItems["1"] = domain.NewFromInt(199, 100, "€")
-	pricedItems.cartItems["2"] = domain.NewFromInt(299, 100, "€")
-	pricedItems.shippingItems["delcode"] = domain.NewFromInt(7, 1, "€")
-	selection, err := NewPaymentSelectionWithGiftCard("gateyway", "method", pricedItems, nil)
+	selection, err := NewDefaultPaymentSelection("gateyway", "method", cart)
 	assert.NoError(t, err)
 	assert.Equal(t, domain.NewFromInt(1198, 100, "€").FloatAmount(), selection.TotalValue().FloatAmount())
 }
 
 func Test_CanBuildSimpleSelectionWithGiftCard(t *testing.T) {
-	pricedItems := PricedItems{
-		cartItems:     make(map[string]domain.Price),
-		shippingItems: make(map[string]domain.Price, 1),
-	}
-	pricedItems.cartItems["1"] = domain.NewFromInt(199, 100, "€")
-	pricedItems.cartItems["2"] = domain.NewFromInt(299, 100, "€")
-	pricedItems.shippingItems["delcode"] = domain.NewFromInt(7, 1, "€")
 
-	//Apply 3 € GC
-	appliedGc := []AppliedGiftCard{
-		{
-			Code:    "JHDSJGJDSHJH22",
-			Applied: domain.NewFromInt(100, 100, "€"),
+	cart := Cart{
+		Deliveries: []Delivery{
+			{
+				DeliveryInfo: DeliveryInfo{
+					Code: "delcode",
+				},
+				Cartitems: []Item{
+					{
+						ID:            "1",
+						RowPriceGross: domain.NewFromInt(199, 100, "€"),
+					},
+					{
+						ID:            "2",
+						RowPriceGross: domain.NewFromInt(299, 100, "€"),
+					},
+				},
+				ShippingItem: ShippingItem{
+					PriceNet: domain.NewFromInt(7, 1, "€"),
+				},
+			},
 		},
-		{
-			Code:    "21HJDSHJ2AS",
-			Applied: domain.NewFromInt(200, 100, "€"),
+		AppliedGiftCards: AppliedGiftCards{
+			{
+				Code:    "code-1",
+				Applied: domain.NewFromInt(100, 100, "€"),
+			},
+			{
+				Code:    "code-2",
+				Applied: domain.NewFromInt(200, 100, "€"),
+			},
 		},
 	}
-
-	selection, err := NewPaymentSelectionWithGiftCard("gateyway", "method", pricedItems, appliedGc)
+	selection, err := NewDefaultPaymentSelection("gateyway", "method", cart)
 	assert.NoError(t, err)
 	assert.Equal(t, domain.NewFromInt(1198, 100, "€").FloatAmount(), selection.TotalValue().FloatAmount())
 	want := domain.NewFromInt(199, 100, "€").FloatAmount()
@@ -76,22 +121,34 @@ func Test_CanBuildSimpleSelectionWithGiftCard(t *testing.T) {
 }
 
 func Test_CanBuildSimpleSelectionWithGiftCard2(t *testing.T) {
-	pricedItems := PricedItems{
-		cartItems:     make(map[string]domain.Price),
-		shippingItems: make(map[string]domain.Price, 1),
-	}
-	pricedItems.cartItems["1"] = domain.NewFromInt(199, 100, "€")
-	pricedItems.cartItems["2"] = domain.NewFromInt(299, 100, "€")
-	pricedItems.shippingItems["delcode"] = domain.NewFromInt(7, 1, "€")
-
-	//Apply 3 € GC
-	appliedGc := []AppliedGiftCard{
-		{
-			Applied: domain.NewFromInt(1198, 100, "€"),
+	cart := Cart{
+		Deliveries: []Delivery{
+			{
+				DeliveryInfo: DeliveryInfo{
+					Code: "delcode",
+				},
+				Cartitems: []Item{
+					{
+						ID:            "1",
+						RowPriceGross: domain.NewFromInt(199, 100, "€"),
+					},
+					{
+						ID:            "2",
+						RowPriceGross: domain.NewFromInt(299, 100, "€"),
+					},
+				},
+				ShippingItem: ShippingItem{
+					PriceNet: domain.NewFromInt(7, 1, "€"),
+				},
+			},
+		},
+		AppliedGiftCards: AppliedGiftCards{
+			{
+				Applied: domain.NewFromInt(1198, 100, "€"),
+			},
 		},
 	}
-
-	selection, err := NewPaymentSelectionWithGiftCard("gateyway", "method", pricedItems, appliedGc)
+	selection, err := NewDefaultPaymentSelection("gateyway", "method", cart)
 	assert.NoError(t, err)
 	assert.Equal(t, domain.NewFromInt(1198, 100, "€").FloatAmount(), selection.TotalValue().FloatAmount())
 	assert.Equal(t, domain.NewFromInt(1198, 100, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
@@ -99,18 +156,31 @@ func Test_CanBuildSimpleSelectionWithGiftCard2(t *testing.T) {
 }
 
 func Test_CanCalculateGiftCardChargeWithRest(t *testing.T) {
-	pricedItems := PricedItems{
-		cartItems: make(map[string]domain.Price),
-	}
-	pricedItems.cartItems["1"] = domain.NewFromInt(4, 1, "€")
-	pricedItems.cartItems["2"] = domain.NewFromInt(8, 1, "€")
-
-	appliedGc := []AppliedGiftCard{
-		{
-			Applied: domain.NewFromInt(10, 1, "€"),
+	cart := Cart{
+		Deliveries: []Delivery{
+			{
+				DeliveryInfo: DeliveryInfo{
+					Code: "delcode",
+				},
+				Cartitems: []Item{
+					{
+						ID:            "1",
+						RowPriceGross: domain.NewFromInt(4, 1, "€"),
+					},
+					{
+						ID:            "2",
+						RowPriceGross: domain.NewFromInt(8, 1, "€"),
+					},
+				},
+			},
+		},
+		AppliedGiftCards: AppliedGiftCards{
+			{
+				Applied: domain.NewFromInt(10, 1, "€"),
+			},
 		},
 	}
-	selection, err := NewPaymentSelectionWithGiftCard("gateyway", "method", pricedItems, appliedGc)
+	selection, err := NewDefaultPaymentSelection("gateyway", "method", cart)
 	assert.NoError(t, err)
 	// verfiy complete cart splits
 	assert.Equal(t, domain.NewFromInt(10, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
@@ -129,17 +199,31 @@ func Test_CanCalculateGiftCardChargeWithRest(t *testing.T) {
 }
 
 func Test_PayCompleteCartWithGiftCards(t *testing.T) {
-	pricedItems := PricedItems{
-		cartItems: make(map[string]domain.Price),
-	}
-	pricedItems.cartItems["1"] = domain.NewFromInt(4, 1, "€")
-	pricedItems.cartItems["2"] = domain.NewFromInt(8, 1, "€")
-	appliedGc := []AppliedGiftCard{
-		{
-			Applied: domain.NewFromInt(12, 1, "€"),
+	cart := Cart{
+		Deliveries: []Delivery{
+			{
+				DeliveryInfo: DeliveryInfo{
+					Code: "delcode",
+				},
+				Cartitems: []Item{
+					{
+						ID:            "1",
+						RowPriceGross: domain.NewFromInt(4, 1, "€"),
+					},
+					{
+						ID:            "2",
+						RowPriceGross: domain.NewFromInt(8, 1, "€"),
+					},
+				},
+			},
+		},
+		AppliedGiftCards: AppliedGiftCards{
+			{
+				Applied: domain.NewFromInt(12, 1, "€"),
+			},
 		},
 	}
-	selection, err := NewPaymentSelectionWithGiftCard("gateyway", "method", pricedItems, appliedGc)
+	selection, err := NewDefaultPaymentSelection("gateyway", "method", cart)
 	assert.NoError(t, err)
 	assert.Equal(t, domain.NewFromInt(12, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
 	assert.Equal(t, domain.NewFromInt(0, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
@@ -152,25 +236,43 @@ func Test_PayCompleteCartWithGiftCards(t *testing.T) {
 }
 
 func Test_CartWithExpensiveItems(t *testing.T) {
-	pricedItems := PricedItems{
-		totalItems:    make(map[string]domain.Price),
-		shippingItems: make(map[string]domain.Price),
-		cartItems:     make(map[string]domain.Price),
-	}
-	pricedItems.cartItems["1"] = domain.NewFromInt(300099, 100, "€")
-	pricedItems.shippingItems["1"] = domain.NewFromInt(88895, 100, "€")
-	pricedItems.totalItems["1"] = domain.NewFromInt(1200095, 100, "€")
-	appliedGc := []AppliedGiftCard{
-		{
-			Code:    "code-1",
-			Applied: domain.NewFromInt(50, 1, "€"),
+	cart := Cart{
+		Deliveries: []Delivery{
+			{
+				DeliveryInfo: DeliveryInfo{
+					Code: "1",
+				},
+				Cartitems: []Item{
+					{
+						ID:            "1",
+						RowPriceGross: domain.NewFromInt(300099, 100, "€"),
+					},
+				},
+				ShippingItem: ShippingItem{
+					Title:    "1",
+					PriceNet: domain.NewFromInt(88895, 100, "€"),
+				},
+			},
 		},
-		{
-			Code:    "code-2",
-			Applied: domain.NewFromInt(50, 1, "€"),
+		Totalitems: []Totalitem{
+			{
+				Code:  "1",
+				Title: "1",
+				Price: domain.NewFromInt(1200095, 100, "€"),
+			},
+		},
+		AppliedGiftCards: []AppliedGiftCard{
+			{
+				Code:    "code-1",
+				Applied: domain.NewFromInt(50, 1, "€"),
+			},
+			{
+				Code:    "code-2",
+				Applied: domain.NewFromInt(50, 1, "€"),
+			},
 		},
 	}
-	selection, err := NewPaymentSelectionWithGiftCard("gateyway", "method", pricedItems, appliedGc)
+	selection, err := NewDefaultPaymentSelection("gateyway", "method", cart)
 	assert.NoError(t, err)
 	assert.Equal(t, domain.NewFromInt(100, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
 	assert.Equal(t, domain.NewFromInt(1579089, 100, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
@@ -193,23 +295,36 @@ func Test_CartWithExpensiveItems(t *testing.T) {
 }
 
 func Test_CartWithShipping(t *testing.T) {
-	pricedItems := PricedItems{
-		shippingItems: make(map[string]domain.Price),
-		cartItems:     make(map[string]domain.Price),
-	}
-	pricedItems.cartItems["1"] = domain.NewFromInt(150, 1, "€")
-	pricedItems.shippingItems["1"] = domain.NewFromInt(99, 1, "€")
-	appliedGc := []AppliedGiftCard{
-		{
-			Code:    "code-1",
-			Applied: domain.NewFromInt(120, 1, "€"),
+	cart := Cart{
+		Deliveries: []Delivery{
+			{
+				DeliveryInfo: DeliveryInfo{
+					Code: "1",
+				},
+				Cartitems: []Item{
+					{
+						ID:            "1",
+						RowPriceGross: domain.NewFromInt(150, 1, "€"),
+					},
+				},
+				ShippingItem: ShippingItem{
+					Title:    "1",
+					PriceNet: domain.NewFromInt(99, 1, "€"),
+				},
+			},
 		},
-		{
-			Code:    "code-2",
-			Applied: domain.NewFromInt(40, 1, "€"),
+		AppliedGiftCards: []AppliedGiftCard{
+			{
+				Code:    "code-1",
+				Applied: domain.NewFromInt(120, 1, "€"),
+			},
+			{
+				Code:    "code-2",
+				Applied: domain.NewFromInt(40, 1, "€"),
+			},
 		},
 	}
-	selection, err := NewPaymentSelectionWithGiftCard("gateyway", "method", pricedItems, appliedGc)
+	selection, err := NewDefaultPaymentSelection("gateyway", "method", cart)
 	assert.NoError(t, err)
 	assert.Equal(t, domain.NewFromInt(160, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
 	assert.Equal(t, domain.NewFromInt(89, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
@@ -240,16 +355,34 @@ func Test_CartWithShipping(t *testing.T) {
 }
 
 func Test_CreateSimplePaymentWithoutGiftCards(t *testing.T) {
-	pricedItems := PricedItems{
-		totalItems:    make(map[string]domain.Price),
-		shippingItems: make(map[string]domain.Price),
-		cartItems:     make(map[string]domain.Price),
+	cart := Cart{
+		Deliveries: []Delivery{
+			{
+				DeliveryInfo: DeliveryInfo{
+					Code: "1",
+				},
+				Cartitems: []Item{
+					{
+						ID:            "1",
+						RowPriceGross: domain.NewFromInt(50, 100, "€"),
+					},
+				},
+				ShippingItem: ShippingItem{
+					Title:    "1",
+					PriceNet: domain.NewFromInt(20, 100, "€"),
+				},
+			},
+		},
+		Totalitems: []Totalitem{
+			{
+				Code:  "1",
+				Title: "1",
+				Price: domain.NewFromInt(50, 100, "€"),
+			},
+		},
+		AppliedGiftCards: AppliedGiftCards{},
 	}
-	pricedItems.cartItems["1"] = domain.NewFromInt(50, 100, "€")
-	pricedItems.shippingItems["1"] = domain.NewFromInt(20, 100, "€")
-	pricedItems.totalItems["1"] = domain.NewFromInt(50, 100, "€")
-	appliedGc := []AppliedGiftCard{{}}
-	selection, err := NewPaymentSelectionWithGiftCard("gateyway", "method", pricedItems, appliedGc)
+	selection, err := NewDefaultPaymentSelection("gateyway", "method", cart)
 	assert.NoError(t, err)
 	assert.Equal(t, domain.NewFromInt(0, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
 	assert.Equal(t, domain.NewFromInt(120, 100, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
