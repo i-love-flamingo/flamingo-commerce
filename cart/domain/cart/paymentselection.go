@@ -348,11 +348,9 @@ func (service PaymentSplitService) SplitWithGiftCards(method string, items Price
 	// and their corresponding helper function
 	for _, helper := range helpers {
 		itemKeys := service.sortItemsToPayKeys(helper.ItemsToPay)
-		// distribute gift cards across items, this tries to spend the full item price per gift card
+		// distribute gift cards across items, this tries to spend the full gift card per item
 		for i, card := range cards {
 			for _, k := range itemKeys {
-				var remainingItem, appliedGiftCard price.Price
-
 				itemPrice := helper.ItemsToPay[k]
 
 				// nothing to pay with gift card
@@ -360,27 +358,14 @@ func (service PaymentSplitService) SplitWithGiftCards(method string, items Price
 					continue
 				}
 
-				// gift card is less than item price
-				toApply := card.Applied
-
-				if card.Applied.IsGreaterThen(itemPrice) || card.Applied.Equal(itemPrice) {
-					// gift card is greater or equal item price
-					toApply = itemPrice
-				}
-
-				remainingItem, err = itemPrice.Sub(toApply)
+				// burn gift card amount on item price
+				remainingItem, appliedGiftCard, err := service.clearGiftCardWithItem(&card, &itemPrice)
 				if err != nil {
 					return nil, err
 				}
-
 				itemPrice = remainingItem
-				appliedGiftCard = toApply
 
-				card.Applied, err = card.Applied.Sub(toApply)
-				if err != nil {
-					return nil, err
-				}
-
+				// add calculated charges to builder for payment selection
 				builder = helper.AddFunction(k, method, price.Charge{
 					Price: remainingItem,
 					Value: remainingItem,
@@ -404,6 +389,29 @@ func (service PaymentSplitService) SplitWithGiftCards(method string, items Price
 
 	result := builder.Build()
 	return &result, nil
+}
+
+// clearGiftCardWithItem try to apply complete gift card on item
+// otherwise rest will still be available to spend on applied
+func (service PaymentSplitService) clearGiftCardWithItem(card *AppliedGiftCard, itemPrice *price.Price) (remaining,
+	applied price.Price, err error) {
+	// gift card is less than item price
+	toApply := card.Applied
+	if card.Applied.IsGreaterThen(*itemPrice) || card.Applied.Equal(*itemPrice) {
+		// gift card is greater or equal item price
+		toApply = *itemPrice
+	}
+	remaining, err = itemPrice.Sub(toApply)
+	if err != nil {
+		return remaining, applied, err
+	}
+	applied = toApply
+
+	card.Applied, err = card.Applied.Sub(toApply)
+	if err != nil {
+		return remaining, applied, err
+	}
+	return remaining, applied, nil
 }
 
 // initItemsWithAdd init helper struct containing priced item entry with corresponding builder method
