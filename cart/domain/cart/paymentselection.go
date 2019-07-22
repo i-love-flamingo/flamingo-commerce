@@ -335,21 +335,20 @@ func (service PaymentSplitService) SplitWithGiftCards(method string, items Price
 	// loop over helper containing the items to pay
 	// and their corresponding helper function
 	for _, helper := range helpers {
-		var keys []string
-		for k := range helper.ItemsToPay {
-			keys = append(keys, k)
-		}
-		sort.Strings(keys)
+		itemKeys := service.sortItemsToPayKeys(helper.ItemsToPay)
+		// distribute gift cards across items, this tries to spend the full item price per gift card
 		for i, card := range cards {
-			// loop over helper containing the items to pay
-			for _, k := range keys {
+			for _, k := range itemKeys {
 				var remainingItem, appliedGiftCard price.Price
+
 				itemPrice := helper.ItemsToPay[k]
+
+				// nothing to pay with gift card
 				if itemPrice.IsZero() {
 					continue
 				}
 
-				// gift card is less then item price
+				// gift card is less than item price
 				toApply := card.Applied
 
 				if card.Applied.IsGreaterThen(itemPrice) || card.Applied.Equal(itemPrice) {
@@ -384,11 +383,13 @@ func (service PaymentSplitService) SplitWithGiftCards(method string, items Price
 						Reference: card.Code,
 					})
 				}
+
 				cards[i] = card
 				helper.ItemsToPay[k] = itemPrice
 			}
 		}
 	}
+
 	result := builder.Build()
 	return &result, nil
 }
@@ -414,9 +415,12 @@ func (service PaymentSplitService) initItemsWithAdd(items PricedItems, builder *
 	}
 }
 
-// splitWithGiftCards distribute gift card charges across item prices
-func (service PaymentSplitService) splitWithGiftCards(builder *PaymentSplitByItemBuilder, method string,
-	helper itemsWithAdd, cards AppliedGiftCards) (*PaymentSplitByItemBuilder, error) {
-
-	return builder, nil
+func (service PaymentSplitService) sortItemsToPayKeys(itemsToPay map[string]price.Price) []string {
+	// sort item keys ascending, to stabilise later item access
+	var itemKeys []string
+	for k := range itemsToPay {
+		itemKeys = append(itemKeys, k)
+	}
+	sort.Strings(itemKeys)
+	return itemKeys
 }
