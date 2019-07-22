@@ -72,7 +72,7 @@ func TestPaymentSplit_MarshalJSON(t *testing.T) {
 				result[secondQualifier] = charge
 				return result
 			}(),
-			want:    []byte("{\"m1-t1\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"},\"m2-t1\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\"}}"),
+			want:    []byte("{\"m1-t1\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\",\"Reference\":\"\"},\"m2-t1\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\",\"Reference\":\"\"}}"),
 			wantErr: false,
 		},
 		{
@@ -106,7 +106,7 @@ func TestPaymentSplit_MarshalJSON(t *testing.T) {
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("PaymentSplit.MarshalJSON() = %v, want %v", got, tt.want)
+				t.Errorf("PaymentSplit.MarshalJSON() = %v, want %v", string(got), string(tt.want))
 			}
 		})
 	}
