@@ -3,6 +3,7 @@ package cart
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"sort"
 	"strings"
 
@@ -79,11 +80,13 @@ var (
 
 // NewDefaultPaymentSelection returns a PaymentSelection that can be used to update the cart
 // is able to include gift card charges if applied to cart
-func NewDefaultPaymentSelection(gateway string, method string, cart Cart) (PaymentSelection, error) {
+func NewDefaultPaymentSelection(gateway string, chargeTypeToPaymentMethod map[string]string, cart Cart) (PaymentSelection, error) {
 	pricedItems := cart.GetAllPaymentRequiredItems()
 	giftCards := cart.AppliedGiftCards
-
-	return newPaymentSelectionWithGiftCard(gateway, method, pricedItems, giftCards)
+	if _, ok := chargeTypeToPaymentMethod[price.ChargeTypeMain]; !ok {
+		return nil, fmt.Errorf("payment method for charge type %q not defined", price.ChargeTypeMain)
+	}
+	return newPaymentSelectionWithGiftCard(gateway, chargeTypeToPaymentMethod, pricedItems, giftCards)
 }
 
 // newSimplePaymentSelection returns a PaymentSelection that can be used to update the cart.
@@ -122,17 +125,17 @@ func newSimplePaymentSelection(gateway string, method string, pricedItems Priced
 }
 
 // newPaymentSelectionWithGiftCard returns Selection with given gift card charge type taken into account
-func newPaymentSelectionWithGiftCard(gateway string, method string, pricedItems PricedItems, appliedGiftCards []AppliedGiftCard) (PaymentSelection, error) {
+func newPaymentSelectionWithGiftCard(gateway string, chargeTypeToPaymentMethod map[string]string, pricedItems PricedItems, appliedGiftCards []AppliedGiftCard) (PaymentSelection, error) {
 	// create payment split by item with gift cards
 	service := PaymentSplitService{}
-	result, err := service.SplitWithGiftCards(method, pricedItems, appliedGiftCards)
+	result, err := service.SplitWithGiftCards(chargeTypeToPaymentMethod, pricedItems, appliedGiftCards)
 	// error handling
 	if err != nil {
 		switch err {
 		case ErrSplitNoGiftCards:
-			return newSimplePaymentSelection(gateway, method, pricedItems), nil
+			return newSimplePaymentSelection(gateway, chargeTypeToPaymentMethod[price.ChargeTypeMain], pricedItems), nil
 		case ErrSplitEmptyGiftCards:
-			return newSimplePaymentSelection(gateway, method, pricedItems), nil
+			return newSimplePaymentSelection(gateway, chargeTypeToPaymentMethod[price.ChargeTypeMain], pricedItems), nil
 		default:
 			return nil, err
 		}
@@ -321,7 +324,11 @@ func (pb *PaymentSplitByItemBuilder) init() {
 }
 
 // SplitWithGiftCards calculates a payment selection based on given method, priced items and applied gift cards
-func (service PaymentSplitService) SplitWithGiftCards(method string, items PricedItems, cards AppliedGiftCards) (*PaymentSplitByItem, error) {
+func (service PaymentSplitService) SplitWithGiftCards(chargeTypeToPaymentMethod map[string]string, items PricedItems, cards AppliedGiftCards) (*PaymentSplitByItem, error) {
+	// guard, gift card method is not defined
+	if _, ok := chargeTypeToPaymentMethod[price.ChargeTypeGiftCard]; !ok {
+		return nil, fmt.Errorf("payment method for charge type %q not defined", price.ChargeTypeGiftCard)
+	}
 	totalValue := items.Sum()
 	// guard clause, if no gift cards no payment split with gift cards
 	if len(cards) == 0 {
@@ -368,14 +375,14 @@ func (service PaymentSplitService) SplitWithGiftCards(method string, items Price
 				itemPrice = remainingItem
 
 				// add calculated charges to builder for payment selection
-				builder = helper.AddFunction(k, method, price.Charge{
+				builder = helper.AddFunction(k, chargeTypeToPaymentMethod[price.ChargeTypeMain], price.Charge{
 					Price: remainingItem,
 					Value: remainingItem,
 					Type:  price.ChargeTypeMain,
 				})
 
 				if !appliedGiftCard.IsZero() {
-					builder = helper.AddFunction(k, method, price.Charge{
+					builder = helper.AddFunction(k, chargeTypeToPaymentMethod[price.ChargeTypeGiftCard], price.Charge{
 						Price:     appliedGiftCard,
 						Value:     appliedGiftCard,
 						Type:      price.ChargeTypeGiftCard,

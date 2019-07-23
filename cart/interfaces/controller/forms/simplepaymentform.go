@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 
 	"flamingo.me/form/domain"
 
@@ -123,6 +124,9 @@ func (c *SimplePaymentFormController) HandleFormAction(ctx context.Context, r *w
 
 //MapToPaymentSelection - mapper from form values to domain
 func (f *SimplePaymentForm) MapToPaymentSelection(currentCart *cart.Cart) cart.PaymentSelection {
-	selection, _ := cart.NewDefaultPaymentSelection(f.Gateway, f.Method, *currentCart)
+	chargeTypeToPaymentMethod := map[string]string{
+		priceDomain.ChargeTypeMain: f.Method,
+	}
+	selection, _ := cart.NewDefaultPaymentSelection(f.Gateway, chargeTypeToPaymentMethod, *currentCart)
 	return selection
 }

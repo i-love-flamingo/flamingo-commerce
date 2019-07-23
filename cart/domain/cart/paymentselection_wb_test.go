@@ -8,6 +8,14 @@ import (
 	"flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
+func getPaymentMethodMapping(t *testing.T) map[string]string {
+	t.Helper()
+	return map[string]string{
+		domain.ChargeTypeMain:     "creditcard",
+		domain.ChargeTypeGiftCard: "giftcard",
+	}
+}
+
 func Test_CanBuildSimpleSelectionFromCard(t *testing.T) {
 
 	cart := Cart{
@@ -32,7 +40,7 @@ func Test_CanBuildSimpleSelectionFromCard(t *testing.T) {
 			},
 		},
 	}
-	selection, _ := NewDefaultPaymentSelection("gateyway", "method", cart)
+	selection, _ := NewDefaultPaymentSelection("gateyway", getPaymentMethodMapping(t), cart)
 	assert.Equal(t, domain.NewFromInt(1198, 100, "€").FloatAmount(), selection.TotalValue().FloatAmount())
 }
 
@@ -60,7 +68,7 @@ func Test_CanBuildSimpleSelectionWithGiftCard_NoGc(t *testing.T) {
 		},
 		AppliedGiftCards: AppliedGiftCards{},
 	}
-	selection, err := NewDefaultPaymentSelection("gateyway", "method", cart)
+	selection, err := NewDefaultPaymentSelection("gateyway", getPaymentMethodMapping(t), cart)
 	assert.NoError(t, err)
 	assert.Equal(t, domain.NewFromInt(1198, 100, "€").FloatAmount(), selection.TotalValue().FloatAmount())
 }
@@ -99,7 +107,7 @@ func Test_CanBuildSimpleSelectionWithGiftCard(t *testing.T) {
 			},
 		},
 	}
-	selection, err := NewDefaultPaymentSelection("gateyway", "method", cart)
+	selection, err := NewDefaultPaymentSelection("gateyway", getPaymentMethodMapping(t), cart)
 	assert.NoError(t, err)
 	assert.Equal(t, domain.NewFromInt(1198, 100, "€").FloatAmount(), selection.TotalValue().FloatAmount())
 	want := domain.NewFromInt(199, 100, "€").FloatAmount()
@@ -148,7 +156,7 @@ func Test_CanBuildSimpleSelectionWithGiftCard2(t *testing.T) {
 			},
 		},
 	}
-	selection, err := NewDefaultPaymentSelection("gateyway", "method", cart)
+	selection, err := NewDefaultPaymentSelection("gateyway", getPaymentMethodMapping(t), cart)
 	assert.NoError(t, err)
 	assert.Equal(t, domain.NewFromInt(1198, 100, "€").FloatAmount(), selection.TotalValue().FloatAmount())
 	assert.Equal(t, domain.NewFromInt(1198, 100, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
@@ -180,7 +188,7 @@ func Test_CanCalculateGiftCardChargeWithRest(t *testing.T) {
 			},
 		},
 	}
-	selection, err := NewDefaultPaymentSelection("gateyway", "method", cart)
+	selection, err := NewDefaultPaymentSelection("gateyway", getPaymentMethodMapping(t), cart)
 	assert.NoError(t, err)
 	// verfiy complete cart splits
 	assert.Equal(t, domain.NewFromInt(10, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
@@ -223,7 +231,7 @@ func Test_PayCompleteCartWithGiftCards(t *testing.T) {
 			},
 		},
 	}
-	selection, err := NewDefaultPaymentSelection("gateyway", "method", cart)
+	selection, err := NewDefaultPaymentSelection("gateyway", getPaymentMethodMapping(t), cart)
 	assert.NoError(t, err)
 	assert.Equal(t, domain.NewFromInt(12, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
 	assert.Equal(t, domain.NewFromInt(0, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
@@ -272,7 +280,7 @@ func Test_CartWithExpensiveItems(t *testing.T) {
 			},
 		},
 	}
-	selection, err := NewDefaultPaymentSelection("gateyway", "method", cart)
+	selection, err := NewDefaultPaymentSelection("gateyway", getPaymentMethodMapping(t), cart)
 	assert.NoError(t, err)
 	assert.Equal(t, domain.NewFromInt(100, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
 	assert.Equal(t, domain.NewFromInt(1579089, 100, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
@@ -324,7 +332,7 @@ func Test_CartWithShipping(t *testing.T) {
 			},
 		},
 	}
-	selection, err := NewDefaultPaymentSelection("gateyway", "method", cart)
+	selection, err := NewDefaultPaymentSelection("gateyway", getPaymentMethodMapping(t), cart)
 	assert.NoError(t, err)
 	assert.Equal(t, domain.NewFromInt(160, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
 	assert.Equal(t, domain.NewFromInt(89, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
@@ -382,7 +390,7 @@ func Test_CreateSimplePaymentWithoutGiftCards(t *testing.T) {
 		},
 		AppliedGiftCards: AppliedGiftCards{},
 	}
-	selection, err := NewDefaultPaymentSelection("gateyway", "method", cart)
+	selection, err := NewDefaultPaymentSelection("gateyway", getPaymentMethodMapping(t), cart)
 	assert.NoError(t, err)
 	assert.Equal(t, domain.NewFromInt(0, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
 	assert.Equal(t, domain.NewFromInt(120, 100, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
