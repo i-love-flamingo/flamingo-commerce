@@ -15,3 +15,14 @@
   * `Item.ID` is now supposed to be unique
   * The combination `ID` + `DeliveryCode` is no longer required to identify a cart item
   * For non-unique references of certain backend implementations the new field `Item.ExternalReference` can be used
+  
+# 23. July 2019
+* Add general gift card support
+  * `cart.AppliedGiftCards` contains a list of applied gift cards
+  * Add convenience functions for gift card like `SumGrandTotalWithGiftCards()` and `HasAppliedGiftCards()`   
+  
+* Add support for gift cards in default payment selection handling
+  * Adds new public function `NewDefaultPaymentSelection` which will generate a basic payment selection
+  * Changed visibility of `NewSimplePaymentSelection` to private, please use `NewDefaultPaymentSelection` instead
+  * Update ChargeQualifier, add additional Reference string field
+  * Add support for multiple charges of the same type (unique Reference needed)
