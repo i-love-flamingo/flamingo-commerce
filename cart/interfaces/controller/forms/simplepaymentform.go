@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 
 	"flamingo.me/form/domain"
 
@@ -65,7 +66,7 @@ func (c *SimplePaymentFormController) Inject(responder *web.Responder,
 	c.applicationCartService = applicationCartService
 
 	c.formHandlerFactory = formHandlerFactory
-	c.logger = logger.WithField(flamingo.LogKeyModule,"cart").WithField(flamingo.LogKeyCategory,"simplepaymentform")
+	c.logger = logger.WithField(flamingo.LogKeyModule, "cart").WithField(flamingo.LogKeyCategory, "simplepaymentform")
 	c.simplePaymentFormService = simplePaymentFormService
 }
 
@@ -123,5 +124,9 @@ func (c *SimplePaymentFormController) HandleFormAction(ctx context.Context, r *w
 
 //MapToPaymentSelection - mapper from form values to domain
 func (f *SimplePaymentForm) MapToPaymentSelection(currentCart *cart.Cart) cart.PaymentSelection {
-	return cart.NewSimplePaymentSelection(f.Gateway, f.Method, currentCart.GetAllPaymentRequiredItems())
+	chargeTypeToPaymentMethod := map[string]string{
+		priceDomain.ChargeTypeMain: f.Method,
+	}
+	selection, _ := cart.NewDefaultPaymentSelection(f.Gateway, chargeTypeToPaymentMethod, *currentCart)
+	return selection
 }
