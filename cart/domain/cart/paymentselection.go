@@ -77,20 +77,17 @@ var (
 	ErrSplitGiftCardsExceedTotal = errors.New("gift card amount exceeds total priced items value")
 )
 
-// NewDefaultPaymentSelection - returns a PaymentSelection that can be used to update the cart
-// is able to include giftcard charges if applied to cart
+// NewDefaultPaymentSelection returns a PaymentSelection that can be used to update the cart
+// is able to include gift card charges if applied to cart
 func NewDefaultPaymentSelection(gateway string, method string, cart Cart) (PaymentSelection, error) {
 	pricedItems := cart.GetAllPaymentRequiredItems()
 	giftCards := cart.AppliedGiftCards
-	if len(giftCards) > 0 {
-		return newPaymentSelectionWithGiftCard(gateway, method, pricedItems, giftCards)
-	}
-	selection := newSimplePaymentSelection(gateway, method, pricedItems)
-	return selection, nil
+
+	return newPaymentSelectionWithGiftCard(gateway, method, pricedItems, giftCards)
 }
 
-// newSimplePaymentSelection - returns a PaymentSelection that can be used to update the cart.
-// 	multiple charges by item are not used here: The complete grandtotal is selected to be payed in one charge with the given paymentgateway and paymentmethod
+// newSimplePaymentSelection returns a PaymentSelection that can be used to update the cart.
+// multiple charges by item are not used here: The complete grandtotal is selected to be payed in one charge with the given paymentgateway and paymentmethod
 func newSimplePaymentSelection(gateway string, method string, pricedItems PricedItems) PaymentSelection {
 	selection := DefaultPaymentSelection{
 		GatewayProp: gateway,
@@ -124,7 +121,7 @@ func newSimplePaymentSelection(gateway string, method string, pricedItems Priced
 	return selection
 }
 
-// newPaymentSelectionWithGiftCard - returns Selection with given giftcard charge type taken into account
+// newPaymentSelectionWithGiftCard returns Selection with given gift card charge type taken into account
 func newPaymentSelectionWithGiftCard(gateway string, method string, pricedItems PricedItems, appliedGiftCards []AppliedGiftCard) (PaymentSelection, error) {
 	// create payment split by item with gift cards
 	service := PaymentSplitService{}
