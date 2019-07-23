@@ -11,99 +11,14 @@ import (
 	"github.com/99designs/gqlgen/codegen/config"
 )
 
+//go:generate go run github.com/go-bindata/go-bindata/go-bindata -o schema.go -pkg graphql schema.graphql
 // Service describes the Commerce/Cart GraphQL Service
 type Service struct{}
 
 // Schema for cart, delivery and addresses
 func (*Service) Schema() []byte {
-	// language=graphql
-	return []byte(`
-type Commerce_DecoratedCart {
-	cart: Commerce_Cart!
-	decorated_deliveries: [Commerce_CartDecoratedDelivery!]
-}
+	return MustAsset("schema.graphql")
 
-type Commerce_Cart {
-	id: ID!
-	entityID: String!
-	billingAdress: Commerce_CartAddress
-	purchaser: Commerce_CartPerson
-	deliveries: [Commerce_CartDelivery!]
-#	additionalData: Commerce_CartAdditionalData!
-#	paymentSelection: Commerce_CartPaymentSelection!
-	belongsToAuthenticatedUser: Boolean!
-	authenticatedUserID: String!
-#	appliedCouponCodes: [Commerce_CartCouponCode!]
-	defaultCurrency: String!
-#	totalitems: [Commerce_CartTotalitem!]
-#	appliedGiftCards: [Commerce_CartAppliedGiftCard!]
-}
-
-type Commerce_CartDecoratedDelivery {
-	delivery: Commerce_CartDelivery!
-	decoratedItems: [Commerce_CartDecoratedItem!]
-}
-
-type Commerce_CartDelivery {
-	cartitems: [Commerce_CartItem!]
-}
-
-type Commerce_CartDecoratedItem {
-	item: Commerce_CartItem
-	product: Commerce_Product
-}
-
-type Commerce_CartItem {
-	id: ID!
-	qty: Int
-}
-
-type Commerce_CartAddress {
-	vat:                    String!
-	firstname:              String!
-	lastname:               String!
-	middleName:             String!
-	title:                  String!
-	salutation:             String!
-	street:                 String!
-	streetNr:               String!
-	additionalAddressLines: [String!]
-	company:                String!
-	city:                   String!
-	postCode:               String!
-	state:                  String!
-	regionCode:             String!
-	country:                String!
-	countryCode:            String!
-	telephone:              String!
-	email:                  String!
-}
-
-type Commerce_CartPerson {
-	address: Commerce_CartAddress
-	personalDetails: Commerce_CartPersonalDetails!
-	existingCustomerData: Commerce_CartExistingCustomerData
-}
-
-type Commerce_CartExistingCustomerData {
-	id: ID!
-}
-
-type Commerce_CartPersonalDetails {
-	dateOfBirth: String!
-	passportCountry: String!
-	passportNumber: String!
-	nationality: String!
-}
-
-extend type Query {
-	commerce_Cart: Commerce_DecoratedCart!
-}
-
-extend type Mutation {
-	commerce_AddToCart(id: ID!, qty: Int, deliveryCode: String!): Commerce_DecoratedCart!
-}
-`)
 }
 
 // Models mapping for Commerce_Cart types
