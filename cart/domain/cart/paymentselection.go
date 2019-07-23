@@ -353,12 +353,15 @@ func (service PaymentSplitService) SplitWithGiftCards(chargeTypeToPaymentMethod 
 
 	builder := &PaymentSplitByItemBuilder{}
 	helpers := service.initItemsWithAdd(items, builder)
+	// slices are passed by reference, avoid side effects on cart
+	copiedCards := make(AppliedGiftCards, len(cards))
+	copy(copiedCards, cards)
 	// loop over helper containing the items to pay
 	// and their corresponding helper function
 	for _, helper := range helpers {
 		itemKeys := service.sortItemsToPayKeys(helper.ItemsToPay)
 		// distribute gift cards across items, this tries to spend the full gift card per item
-		for i, card := range cards {
+		for i, card := range copiedCards {
 			for _, k := range itemKeys {
 				itemPrice := helper.ItemsToPay[k]
 
@@ -390,7 +393,7 @@ func (service PaymentSplitService) SplitWithGiftCards(chargeTypeToPaymentMethod 
 					})
 				}
 
-				cards[i] = card
+				copiedCards[i] = card
 				helper.ItemsToPay[k] = itemPrice
 			}
 		}

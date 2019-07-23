@@ -360,6 +360,8 @@ func Test_CartWithShipping(t *testing.T) {
 
 	cq = domain.ChargeQualifier{Type: domain.ChargeTypeGiftCard, Reference: "code-2"}
 	assert.Equal(t, 10.0, selection.ItemSplit().ShippingItems["1"].ChargesByType().GetByChargeQualifierForced(cq).Price.FloatAmount())
+	assert.Equal(t, 120.0, cart.AppliedGiftCards[0].Applied.FloatAmount())
+	assert.Equal(t, 40.0, cart.AppliedGiftCards[1].Applied.FloatAmount())
 }
 
 func Test_CreateSimplePaymentWithoutGiftCards(t *testing.T) {
