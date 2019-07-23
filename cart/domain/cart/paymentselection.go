@@ -24,17 +24,17 @@ type (
 		TotalValue() price.Price
 	}
 
-	//SplitQualifier qualifies by Type and PaymentMethod
+	//SplitQualifier qualifies by Charge Type, Charge Reference and Payment Method
 	SplitQualifier struct {
 		ChargeType      string
 		ChargeReference string
 		Method          string
 	}
 
-	//PaymentSplit - the Charges qualified by Type and PaymentMethod
+	//PaymentSplit represents the Charges qualified by Charge Type, Charge Reference and Payment Method
 	PaymentSplit map[SplitQualifier]price.Charge
 
-	//PaymentSplitByItem - simelar to value object that contains items of the different possible types, that have a price
+	//PaymentSplitByItem - similar to value object that contains items of the different possible types, that have a price
 	PaymentSplitByItem struct {
 		CartItems     map[string]PaymentSplit
 		ShippingItems map[string]PaymentSplit
@@ -225,12 +225,12 @@ func (s PaymentSplit) ChargesByType() price.Charges {
 func (s PaymentSplit) MarshalJSON() ([]byte, error) {
 	result := make(map[string]price.Charge)
 	for qualifier, charge := range s {
-		// explicit method and chargetype is necessary, otherwise keys could be overwritten
+		// explicit method and chargeType is necessary, otherwise keys could be overwritten
 		if qualifier.Method == "" || qualifier.ChargeType == "" {
 			return nil, errors.New("Method or ChargeType is empty")
 		}
-		// SplitQualifier is parsed to a string method___chargetype
-		result[qualifier.Method+splitQualifierSeparator+qualifier.ChargeType] = charge
+		// SplitQualifier is parsed to a string method-chargeType-chargeReference
+		result[qualifier.Method+splitQualifierSeparator+qualifier.ChargeType+splitQualifierSeparator+qualifier.ChargeReference] = charge
 	}
 	return json.Marshal(result)
 }
@@ -242,7 +242,7 @@ func (s *PaymentSplit) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	result := PaymentSplit{}
-	// parse string method___chargetype back to splitqualifier
+	// parse string method-chargeType-chargeReference back to split qualifier
 	for key, charge := range input {
 		splitted := strings.Split(key, splitQualifierSeparator)
 		// guard in case cannot be splitted
@@ -253,6 +253,11 @@ func (s *PaymentSplit) UnmarshalJSON(data []byte) error {
 			Method:     splitted[0],
 			ChargeType: splitted[1],
 		}
+
+		if len(splitted) == 3 {
+			qualifier.ChargeReference = splitted[2]
+		}
+
 		result[qualifier] = charge
 	}
 	*s = result
