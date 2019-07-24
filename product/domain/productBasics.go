@@ -314,14 +314,7 @@ func (p Saleable) GetLoyaltyPriceByType(ltype string) (*LoyaltyPriceInfo, bool) 
 	return nil, false
 }
 
-// GetLoyaltyChargeSplit  Gets the Charges that need to be payed by type:
-// Type "main" is the remaining charge in the main currency and the other charges returned are the loyalty price charges that need to be payed.
-// The method takes the min, max and the caluclated loyalty conversion rate into account
-//
-// @param valuedPriceToPay  Optional the price that need to be payed - if not given the products final price will be used
-// @param loyaltyPointsWishedToPay   Optional a list of loyaltyPrices that the (customer) wants to spend. Its used as a wish and may not be fullfilled because of min, max properties on the products loyaltyPrices
-// @param qty the quantity of the current item affects min max loyalty charge
-func (p Saleable) GetLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price, loyaltyPointsWishedToPay *WishedToPay, qty int) priceDomain.Charges {
+func (p Saleable) generateLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price, loyaltyPointsWishedToPay *WishedToPay, qty int, ignoreMin bool) priceDomain.Charges {
 	if valuedPriceToPay == nil {
 		finalPrice := p.ActivePrice.GetFinalPrice()
 		valuedPriceToPay = &finalPrice
@@ -364,6 +357,11 @@ func (p Saleable) GetLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price, loy
 		//loyaltyAmountToSpent - set as default without potential wish the minimum
 		loyaltyAmountToSpent := loyaltyPrice.getMin(qty)
 
+		// check if the minimum points should be ignored, if so minimum will be set to 0
+		if ignoreMin {
+			loyaltyAmountToSpent = *big.NewFloat(0.0)
+		}
+
 		if loyaltyPointsWishedToPay != nil {
 			//if a loyaltyPointsWishedToPay is passed evaluate it within min and max and update loyaltyAmountToSpent:
 			wishedPrice := loyaltyPointsWishedToPay.GetByType(chargeType)
@@ -404,6 +402,22 @@ func (p Saleable) GetLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price, loy
 		Value: remainingMainChargePrice,
 	}
 	return *priceDomain.NewCharges(requiredCharges)
+}
+
+// GetLoyaltyChargeSplit  Gets the Charges that need to be payed by type:
+// Type "main" is the remaining charge in the main currency and the other charges returned are the loyalty price charges that need to be payed.
+// The method takes the min, max and the caluclated loyalty conversion rate into account
+//
+// @param valuedPriceToPay  Optional the price that need to be payed - if not given the products final price will be used
+// @param loyaltyPointsWishedToPay   Optional a list of loyaltyPrices that the (customer) wants to spend. Its used as a wish and may not be fullfilled because of min, max properties on the products loyaltyPrices
+// @param qty the quantity of the current item affects min max loyalty charge
+func (p Saleable) GetLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price, loyaltyPointsWishedToPay *WishedToPay, qty int) priceDomain.Charges {
+	return p.generateLoyaltyChargeSplit(valuedPriceToPay, loyaltyPointsWishedToPay, qty, false)
+}
+
+// GetLoyaltyChargeSplitIgnoreMin same as GetLoyaltyChargeSplit but ignoring the min points to spend
+func (p Saleable) GetLoyaltyChargeSplitIgnoreMin(valuedPriceToPay *priceDomain.Price, loyaltyPointsWishedToPay *WishedToPay, qty int) priceDomain.Charges {
+	return p.generateLoyaltyChargeSplit(valuedPriceToPay, loyaltyPointsWishedToPay, qty, true)
 }
 
 //getMin - returns minimum points to spend - scaled by qty
