@@ -72,7 +72,7 @@ The view gets the following Data passed:
         VariantSelection variantSelection
         BackURL          string
     }
-``` 
+```
 
 ## Template functions
 
@@ -86,6 +86,11 @@ Returns the product or nil:
 
 Returns the correct url to the product:
 `getProductUrl(product)`
+
+The returned products urls slug will be
+
+* generated if the confuration `commerce.product.generateSlug` is set to true
+* use the configured attribute to fetch the utlSlug from the product data.
 
 ### findProducts
 
