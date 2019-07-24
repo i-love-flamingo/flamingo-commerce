@@ -326,7 +326,11 @@ func (p Saleable) generateLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price
 	getValidLoyaltyCharge := func(loyaltyAmountWishedToSpent big.Float, loyaltyPrice LoyaltyPriceInfo, chargeType string, currentlyRemainingMainChargeValue *big.Float) priceDomain.Charge {
 		loyaltyCurrency := loyaltyPrice.GetFinalPrice().Currency()
 		rateLoyaltyFinalPriceToRealFinalPrice := loyaltyPrice.GetRate(p.ActivePrice.GetFinalPrice())
-		maximumPossibleLoyaltyValue := new(big.Float).Quo(currentlyRemainingMainChargeValue, &rateLoyaltyFinalPriceToRealFinalPrice)
+		maximumPossibleLoyaltyValue := big.NewFloat(0.0)
+		if currentlyRemainingMainChargeValue.Cmp(big.NewFloat(0.0)) != 0 {
+			maximumPossibleLoyaltyValue = new(big.Float).Quo(currentlyRemainingMainChargeValue, &rateLoyaltyFinalPriceToRealFinalPrice)
+		}
+
 		maximumPossibleLoyaltyPrice := priceDomain.NewFromBigFloat(*maximumPossibleLoyaltyValue, loyaltyCurrency).GetPayable()
 
 		if loyaltyAmountWishedToSpent.Cmp(maximumPossibleLoyaltyValue) > 0 {
