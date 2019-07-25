@@ -81,5 +81,5 @@ extend type Query {
 }
 
 extend type Mutation {
-    commerce_AddToCart(id: ID!, qty: Int, deliveryCode: String!): Commerce_DecoratedCart!
+    commerce_AddToCart(marketplaceCode: ID!, qty: Int, deliveryCode: String!): Commerce_DecoratedCart!
 }

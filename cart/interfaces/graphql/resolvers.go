@@ -38,7 +38,7 @@ func (r *CommerceCartMutationResolver) Inject(q *CommerceCartQueryResolver, appl
 }
 
 // CommerceAddToCart mutation for adding products to the current users cart
-func (r *CommerceCartMutationResolver) CommerceAddToCart(ctx context.Context, id string, qty *int, deliveryCode string) (*decorator.DecoratedCart, error) {
+func (r *CommerceCartMutationResolver) CommerceAddToCart(ctx context.Context, marketplaceCode string, qty *int, deliveryCode string) (*decorator.DecoratedCart, error) {
 	if qty == nil {
 		one := 1
 		qty = &one
@@ -46,7 +46,7 @@ func (r *CommerceCartMutationResolver) CommerceAddToCart(ctx context.Context, id
 
 	req := web.RequestFromContext(ctx)
 
-	addRequest := r.applicationCartService.BuildAddRequest(ctx, id, "", *qty)
+	addRequest := r.applicationCartService.BuildAddRequest(ctx, marketplaceCode, "", *qty)
 
 	_, err := r.applicationCartService.AddProduct(ctx, req.Session(), deliveryCode, addRequest)
 	if err != nil {
