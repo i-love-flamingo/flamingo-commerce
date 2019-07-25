@@ -31,9 +31,10 @@ type CommerceCartMutationResolver struct {
 }
 
 // Inject dependencies
-func (r *CommerceCartMutationResolver) Inject(q *CommerceCartQueryResolver, applicationCartService *application.CartService) {
+func (r *CommerceCartMutationResolver) Inject(q *CommerceCartQueryResolver, applicationCartService *application.CartService) *CommerceCartMutationResolver {
 	r.q = q
 	r.applicationCartService = applicationCartService
+	return r
 }
 
 // CommerceAddToCart mutation for adding products to the current users cart
