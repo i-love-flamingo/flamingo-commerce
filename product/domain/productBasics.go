@@ -122,6 +122,7 @@ type (
 	TeaserData struct {
 		ShortTitle       string
 		ShortDescription string
+		URLSlug          string
 		//TeaserPrice is the price that should be shown in teasers (listview)
 		TeaserPrice PriceInfo
 		//TeaserPriceIsFromPrice - is set to true in cases where a product might have different prices (e.g. configurable)
