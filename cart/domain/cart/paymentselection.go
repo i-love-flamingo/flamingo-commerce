@@ -76,6 +76,9 @@ var (
 
 	// ErrSplitGiftCardsExceedTotal indicates that gift card sum exceeds total of prices items
 	ErrSplitGiftCardsExceedTotal = errors.New("gift card amount exceeds total priced items value")
+
+	// ErrSplitGiftCardsNoChargeTypeMapping indicates that there is no mapping from the gift card charge type to an actual payment method
+	ErrSplitGiftCardsNoChargeTypeMapping = fmt.Errorf("payment method for charge type %q not defined", price.ChargeTypeGiftCard)
 )
 
 // NewDefaultPaymentSelection returns a PaymentSelection that can be used to update the cart
@@ -135,6 +138,8 @@ func newPaymentSelectionWithGiftCard(gateway string, chargeTypeToPaymentMethod m
 		case ErrSplitNoGiftCards:
 			return newSimplePaymentSelection(gateway, chargeTypeToPaymentMethod[price.ChargeTypeMain], pricedItems), nil
 		case ErrSplitEmptyGiftCards:
+			return newSimplePaymentSelection(gateway, chargeTypeToPaymentMethod[price.ChargeTypeMain], pricedItems), nil
+		case ErrSplitGiftCardsNoChargeTypeMapping:
 			return newSimplePaymentSelection(gateway, chargeTypeToPaymentMethod[price.ChargeTypeMain], pricedItems), nil
 		default:
 			return nil, err
@@ -325,14 +330,14 @@ func (pb *PaymentSplitByItemBuilder) init() {
 
 // SplitWithGiftCards calculates a payment selection based on given method, priced items and applied gift cards
 func (service PaymentSplitService) SplitWithGiftCards(chargeTypeToPaymentMethod map[string]string, items PricedItems, cards AppliedGiftCards) (*PaymentSplitByItem, error) {
-	// guard, gift card method is not defined
-	if _, ok := chargeTypeToPaymentMethod[price.ChargeTypeGiftCard]; !ok {
-		return nil, fmt.Errorf("payment method for charge type %q not defined", price.ChargeTypeGiftCard)
-	}
 	totalValue := items.Sum()
 	// guard clause, if no gift cards no payment split with gift cards
 	if len(cards) == 0 {
 		return nil, ErrSplitNoGiftCards
+	}
+	// guard, gift card method is not defined
+	if _, ok := chargeTypeToPaymentMethod[price.ChargeTypeGiftCard]; !ok {
+		return nil, ErrSplitGiftCardsNoChargeTypeMapping
 	}
 	allGcAmounts := make([]price.Price, 0, len(cards))
 	for _, gc := range cards {
