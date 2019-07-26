@@ -2,7 +2,6 @@ package templatefunctions
 
 import (
 	"context"
-	"flamingo.me/pugtemplate/pugjs"
 	"log"
 	"strconv"
 	"strings"
@@ -61,11 +60,11 @@ func (tf *FindProducts) Func(ctx context.Context) interface{} {
 				filterConstrains = config.AsStringMap()
 				break
 			}
+		}
 
 		filterProcessing := newFilterProcessing(web.RequestFromContext(ctx), namespace, searchConfig, keyValueFilters, filterConstrains)
 
 		result, e := tf.ProductSearchService.Find(ctx, &filterProcessing.buildSearchRequest)
-
 		if e != nil {
 			log.Printf("Error: product.interfaces.templatefunc %v", e)
 			return &application.SearchResult{}
@@ -132,7 +131,7 @@ func newFilterProcessing(request *web.Request, namespace string, searchConfig ma
 	return filterProcessing
 }
 
-// modifyResult - whil check the result against the blacklist/whitelist
+// modifyResult - while check the result against the blacklist/whitelist
 func (f *filterProcessing) modifyResult(result *application.SearchResult) *application.SearchResult {
 	var newFacetCollection domain.FacetCollection
 	newFacetCollection = make(map[string]domain.Facet)
