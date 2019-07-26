@@ -25,6 +25,7 @@ type (
 		UseBillingAddress bool   `form:"useBillingAddress"`
 		ShippingMethod    string `form:"shippingMethod"`
 		ShippingCarrier   string `form:"shippingCarrier"`
+		LocationCode      string `form:"locationCode"`
 	}
 
 	// DeliveryFormService implements Form(Data)Provider interface of form package
@@ -50,6 +51,7 @@ func (d *DeliveryForm) MapToDeliveryInfo(currentInfo cartDomain.DeliveryInfo) ca
 	address := d.DeliveryAddress.MapToDomainAddress()
 	currentInfo.DeliveryLocation.Address = &address
 	currentInfo.DeliveryLocation.UseBillingAddress = d.UseBillingAddress
+	currentInfo.DeliveryLocation.Code = d.LocationCode
 	currentInfo.Method = d.ShippingMethod
 	currentInfo.Carrier = d.ShippingCarrier
 	return currentInfo
@@ -67,6 +69,7 @@ func (p *DeliveryFormService) GetFormData(ctx context.Context, req *web.Request)
 	useBilling := false
 	method := ""
 	carrier := ""
+	locationCode := ""
 	deliveryAddress := AddressForm{}
 	deliverycode := req.Params["deliveryCode"]
 	if deliverycode != "" && err == nil {
@@ -77,6 +80,7 @@ func (p *DeliveryFormService) GetFormData(ctx context.Context, req *web.Request)
 			useBilling = delivery.DeliveryInfo.DeliveryLocation.UseBillingAddress
 			method = delivery.DeliveryInfo.Method
 			carrier = delivery.DeliveryInfo.Carrier
+			locationCode = delivery.DeliveryInfo.DeliveryLocation.Code
 		}
 	}
 
@@ -85,6 +89,7 @@ func (p *DeliveryFormService) GetFormData(ctx context.Context, req *web.Request)
 		UseBillingAddress: useBilling,
 		ShippingMethod:    method,
 		ShippingCarrier:   carrier,
+		LocationCode:      locationCode,
 	}, nil
 }
 
@@ -117,7 +122,7 @@ func (c *DeliveryFormController) Inject(responder *web.Responder,
 	c.userService = userService
 	c.customerApplicationService = customerApplicationService
 	c.formHandlerFactory = formHandlerFactory
-	c.logger = logger.WithField(flamingo.LogKeyModule,"cart").WithField(flamingo.LogKeyCategory,"deliveryform")
+	c.logger = logger.WithField(flamingo.LogKeyModule, "cart").WithField(flamingo.LogKeyCategory, "deliveryform")
 	c.billingAddressFormProvider = billingAddressFormProvider
 }
 

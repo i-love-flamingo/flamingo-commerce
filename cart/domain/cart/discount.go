@@ -2,6 +2,7 @@ package cart
 
 import (
 	"flamingo.me/flamingo-commerce/v3/price/domain"
+	"sort"
 )
 
 type (
@@ -13,6 +14,7 @@ type (
 		Applied       domain.Price // how much of the discount has been subtracted from cart price, IMPORTANT: always negative
 		Type          string       // to distinguish between discounts
 		IsItemRelated bool         // flag indicating if the discount is applied due to item in cart
+		SortOrder     int          // indicates in which order discount have been applied, low value has been applied before high value
 	}
 
 	// WithDiscount interface for a cart that is able to handle discounts
@@ -93,6 +95,10 @@ func (d *Delivery) HasAppliedDiscounts() (bool, error) {
 // MergeDiscounts parses discounts of a single item
 // All discounts with the same type and title are aggregated and returned as one with a summed price
 func (i *Item) MergeDiscounts() (AppliedDiscounts, error) {
+	sort.SliceStable(i.AppliedDiscounts, func(x, y int) bool {
+		return i.AppliedDiscounts[x].SortOrder < i.AppliedDiscounts[y].SortOrder
+	})
+
 	return i.AppliedDiscounts, nil
 }
 
@@ -113,6 +119,11 @@ func mapToSlice(collection map[string]*AppliedDiscount) []AppliedDiscount {
 	for _, val := range collection {
 		result = append(result, *val)
 	}
+
+	sort.SliceStable(result, func(x, y int) bool {
+		return result[x].SortOrder < result[y].SortOrder
+	})
+
 	return result
 }
 
@@ -141,6 +152,7 @@ func mapDiscounts(result map[string]*AppliedDiscount, discountable WithDiscount)
 			Applied:       discount.Applied,
 			Type:          discount.Type,
 			IsItemRelated: discount.IsItemRelated,
+			SortOrder:     discount.SortOrder,
 		}
 	}
 	return result, nil

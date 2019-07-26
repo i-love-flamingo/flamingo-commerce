@@ -223,7 +223,7 @@ The Key with "()" in the list are methods and it is assumed as an invariant, tha
 |-----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
 | GrandTotal()                      | The final amount that need to be payed by the customer (Gross)                                                                                      | = SubTotalGross()  - SumTotalDiscountAmount() + Totalitems                                                                                               |
 | Totalitems                        | List of (additional) Totalitems. Each have a certain type - you may want to show some of them in the frontend.                                      |                                                                                                                                                          |
-| SumShippingNet()                     | Sum of all shipping costs as Price                                                                                                                  | The sum of the deliveries shipping                                                                                                                       |
+| SumShippingNet()                  | Sum of all shipping costs as Price                                                                                                               | The sum of the deliveries shipping                                                                                                                       |
 | SubTotalGross()                   |                                                                                                                                                     | Sum of deliveries SubTotalGross()                                                                                                                        |
 | SumTaxes()                        | The total taxes of the cart - as list of Tax                                                                                                        |                                                                                                                                                          |
 | SumTotalTaxAmount()               | The overall Tax of cart as Price                                                                                                                    |                                                                                                                                                          |
@@ -235,6 +235,8 @@ The Key with "()" in the list are methods and it is assumed as an invariant, tha
 | SumItemRelatedDiscountAmount()    |                                                                                                                                                     | Sum of deliveries ItemRelatedDiscountAmount                                                                                                              |
 | GetVoucherSavings()               | Returns the sum of Totals from type voucher                                                                                                         |                                                                                                                                                          |
 | HasShippingCosts()                | True if cart has in sum any shipping costs                                                                                                          |                                                                                                                                                          |
+| SumAppliedGiftCards()             |                                                                                                                                                     | Sum of all Applied GiftCard amounts                                                                                                                      |
+| SumGrandTotalWithGiftCards()      | The final amount with the applied gift cards subtracted. If there are no gift cards, equal to GrandTotal()                                    | GrandTotal() - SumAppliedGiftCards()                                                                                                                     |
 
 ### Typical B2C vs B2B usecases
 
@@ -284,13 +286,13 @@ If you have read the sections above you know about the different prices that are
 There is something else that this cart model supports - we call it "charges". All the price amounts mentioned in the previous chapters represents the value of the items in the carts default currency.
 
 However this value need to be payed - when paying the value it can be that:
-- customer wants to pay with different payment methods (e.g. 50% of the value with paypal and the rest with creditcart)
+- customer wants to pay with different payment methods (e.g. 50% of the value with PayPal and the rest with Creditcard)
 - also the value can be payed in a different currency
 
 
 The desired split of charges is saved on the cart with the "UpdatePaymentSelection" command.
-If you dont need the full flexibility of the charges, than you will simply alway pay one charge that matches the grandtotal of your cart.
-Use the factory `NewSimplePaymentSelection` for this.
+If you dont need the full flexibility of the charges, than you will simply always pay one charge that matches the grandtotal of your cart.
+Use the factory `NewDefaultPaymentSelection` for this, which also supports gift cards out of the box.
 
 
 If you want to use the feature it is important to know how the cart charge split should be generated:

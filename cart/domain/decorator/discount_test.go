@@ -2,7 +2,6 @@ package decorator_test
 
 import (
 	"reflect"
-	"sort"
 	"testing"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -31,22 +30,25 @@ func TestDecoratedItem_MergeDiscounts(t *testing.T) {
 			},
 			want: cart.AppliedDiscounts{
 				{
-					CampaignCode: "code-1",
-					Label:        "title-1",
-					Type:         "type-1",
-					Applied:      domain.NewFromFloat(-10.0, "$"),
-				},
-				{
 					CampaignCode: "code-2",
 					Label:        "title-2",
 					Type:         "type-1",
 					Applied:      domain.NewFromFloat(-15.0, "$"),
+					SortOrder:    2,
+				},
+				{
+					CampaignCode: "code-1",
+					Label:        "title-1",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-10.0, "$"),
+					SortOrder:    3,
 				},
 				{
 					CampaignCode: "code-3",
 					Label:        "title-1",
 					Type:         "type-2",
 					Applied:      domain.NewFromFloat(-5.0, "$"),
+					SortOrder:    4,
 				},
 			},
 		},
@@ -54,9 +56,6 @@ func TestDecoratedItem_MergeDiscounts(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := tt.item.MergeDiscounts()
-			// we need to sort result to circumvent implementation changes in order
-			sort.Sort(testutils.ByCode(got))
-			sort.Sort(testutils.ByCode(tt.want))
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("DecoratedItem.MergeDiscounts() = %v, want %v", got, tt.want)
 			}
@@ -139,22 +138,25 @@ func TestDecoratedDelivery_MergeDiscounts(t *testing.T) {
 			},
 			want: cart.AppliedDiscounts{
 				{
-					CampaignCode: "code-1",
-					Label:        "title-1",
-					Type:         "type-1",
-					Applied:      domain.NewFromFloat(-20.0, "$"),
-				},
-				{
 					CampaignCode: "code-2",
 					Label:        "title-2",
 					Type:         "type-1",
 					Applied:      domain.NewFromFloat(-30.0, "$"),
+					SortOrder:    2,
+				},
+				{
+					CampaignCode: "code-1",
+					Label:        "title-1",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-20.0, "$"),
+					SortOrder:    3,
 				},
 				{
 					CampaignCode: "code-3",
 					Label:        "title-1",
 					Type:         "type-2",
 					Applied:      domain.NewFromFloat(-10.0, "$"),
+					SortOrder:    4,
 				},
 			},
 		},
@@ -162,9 +164,6 @@ func TestDecoratedDelivery_MergeDiscounts(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := tt.delivery.MergeDiscounts()
-			// we need to sort result to circumvent implementation changes in order
-			sort.Sort(testutils.ByCode(got))
-			sort.Sort(testutils.ByCode(tt.want))
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("DecoratedDelivery.MergeDiscounts() = %v, want %v", got, tt.want)
 			}
@@ -278,22 +277,25 @@ func TestDecoratedCart_MergeDiscounts(t *testing.T) {
 			},
 			want: cart.AppliedDiscounts{
 				{
-					CampaignCode: "code-1",
-					Label:        "title-1",
-					Type:         "type-1",
-					Applied:      domain.NewFromFloat(-40.0, "$"),
-				},
-				{
 					CampaignCode: "code-2",
 					Label:        "title-2",
 					Type:         "type-1",
 					Applied:      domain.NewFromFloat(-60.0, "$"),
+					SortOrder:    2,
+				},
+				{
+					CampaignCode: "code-1",
+					Label:        "title-1",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-40.0, "$"),
+					SortOrder:    3,
 				},
 				{
 					CampaignCode: "code-3",
 					Label:        "title-1",
 					Type:         "type-2",
 					Applied:      domain.NewFromFloat(-20.0, "$"),
+					SortOrder:    4,
 				},
 			},
 		},
@@ -301,9 +303,6 @@ func TestDecoratedCart_MergeDiscounts(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := tt.cart.MergeDiscounts()
-			// we need to sort result to circumvent implementation changes in order
-			sort.Sort(testutils.ByCode(got))
-			sort.Sort(testutils.ByCode(tt.want))
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("DecoratedCart.MergeDiscounts() = %v, want %v", got, tt.want)
 			}

@@ -2,6 +2,7 @@ package templatefunctions
 
 import (
 	"context"
+	"flamingo.me/pugtemplate/pugjs"
 	"log"
 	"strconv"
 	"strings"
@@ -60,12 +61,9 @@ func (tf *FindProducts) Func(ctx context.Context) interface{} {
 				filterConstrains = config.AsStringMap()
 				break
 			}
-		}
 
 		filterProcessing := newFilterProcessing(web.RequestFromContext(ctx), namespace, searchConfig, keyValueFilters, filterConstrains)
 
-		//searchRequest.FilterBy = asFilterMap(keyValueFilters)
-		//fmt.Printf("%#v", searchRequest)
 		result, e := tf.ProductSearchService.Find(ctx, &filterProcessing.buildSearchRequest)
 
 		if e != nil {

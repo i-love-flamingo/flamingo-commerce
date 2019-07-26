@@ -19,17 +19,27 @@ type (
 
 	//Charge is a Amount of a certain Type. Charge is used as value object
 	Charge struct {
-		//Price - the price that is paye - can be in a certain currency
+		//Price that is payed, can be in a certain currency
 		Price Price
-		//Value - the value of the "Price" - in another (base) currency
+		//Value of the "Price" in another (base) currency
 		Value Price
-		//The type of the charge - can be ChargeTypeMain or something else. Used to differenciate between different charges of a single thing
+		//Type of the charge - can be ChargeTypeMain or something else. Used to differentiate between different charges of a single thing
 		Type string
+		// Reference contains further information to distinguish charges of the same type
+		Reference string
 	}
 
 	//Charges - Represents the Charges the product need to be payed with
 	Charges struct {
-		chargesByType map[string]Charge
+		chargesByQualifier map[ChargeQualifier]Charge
+	}
+
+	//ChargeQualifier distinguishes charges by type and reference
+	ChargeQualifier struct {
+		// Type represents charge type
+		Type string
+		// Reference contains further information to distinguish charges of the same type
+		Reference string
 	}
 
 	//priceEncodeAble is a type that we need to allow marshalling the price values. The type itself is unexported
@@ -45,6 +55,8 @@ var (
 )
 
 const (
+	//ChargeTypeGiftCard  used as a charge type for gift cards
+	ChargeTypeGiftCard = "giftcard"
 	//ChargeTypeMain used as default for a Charge
 	ChargeTypeMain = "main"
 	//RoundingModeFloor - use if you want to cut (round down)
@@ -377,8 +389,14 @@ func (p Price) SplitInPayables(count int) ([]Price, error) {
 	if count <= 0 {
 		return nil, errors.New("Split must be higher than zero")
 	}
+	// guard clause invert negative values
 	_, precision := p.payableRoundingPrecision()
-	amountToMatchFloat, _ := new(big.Float).Mul(p.GetPayable().Amount(), p.precisionF(precision)).Float64()
+	amount := p.GetPayable().Amount()
+	// we have to invert negative numbers, otherwise split is not correct
+	if p.IsNegative() {
+		amount = p.GetPayable().Inverse().Amount()
+	}
+	amountToMatchFloat, _ := new(big.Float).Mul(amount, p.precisionF(precision)).Float64()
 	amountToMatchInt := int64(amountToMatchFloat)
 
 	splittedAmountModulo := amountToMatchInt % int64(count)
@@ -396,7 +414,12 @@ func (p Price) SplitInPayables(count int) ([]Price, error) {
 	prices := make([]Price, count)
 	for i := 0; i < count; i++ {
 		_, precision := p.payableRoundingPrecision()
-		prices[i] = NewFromInt(splittedAmounts[i], precision, p.Currency())
+		splittedAmount := splittedAmounts[i]
+		// invert prices again to keep negative values
+		if p.IsNegative() {
+			splittedAmount *= -1
+		}
+		prices[i] = NewFromInt(splittedAmount, precision, p.Currency())
 	}
 
 	return prices, nil
@@ -499,51 +522,116 @@ func (p Charge) Mul(qty int) Charge {
 
 // NewCharges creates a new Charges object
 func NewCharges(chargesByType map[string]Charge) *Charges {
-	return &Charges{
-		chargesByType: chargesByType,
-	}
+	charges := addChargeQualifier(chargesByType)
+	return &charges
 }
 
-//HasType - returns a true if charges include a charge with given type
+//HasType - returns a true if any charges include a charge with given type
 func (c Charges) HasType(ctype string) bool {
-	if _, ok := c.chargesByType[ctype]; ok {
+	for qualifier := range c.chargesByQualifier {
+		if qualifier.Type == ctype {
+			return true
+		}
+	}
+	return false
+}
+
+//GetByType - returns a charge of given type. If it was not found a Zero amount
+// is returned and the second return value is false
+// sums up charges by a certain type if there are multiple
+func (c Charges) GetByType(ctype string) (Charge, bool) {
+	// guard in case type is not available
+	if !c.HasType(ctype) {
+		return Charge{}, false
+	}
+	result := Charge{
+		Type: ctype,
+	}
+	// sum up all charges with certain type to one charge
+	for qualifier, charge := range c.chargesByQualifier {
+		if qualifier.Type == ctype {
+			result, _ = result.Add(charge)
+		}
+	}
+	return result, true
+}
+
+// HasChargeQualifier - returns a true if any charges include a charge with given type
+// and concrete key values provided by additional
+func (c Charges) HasChargeQualifier(qualifier ChargeQualifier) bool {
+	if _, ok := c.chargesByQualifier[qualifier]; ok {
 		return true
 	}
 	return false
 }
 
-//GetByType - returns a charge of given type. If it was not found a Zero amount is returned and the second return value is false
-func (c Charges) GetByType(ctype string) (Charge, bool) {
-	if charge, ok := c.chargesByType[ctype]; ok {
-		return charge, ok
+// GetByChargeQualifier returns a charge of given qualifier.
+// If it was not found a Zero amount is returned and the second return value is false
+func (c Charges) GetByChargeQualifier(qualifier ChargeQualifier) (Charge, bool) {
+	// guard in case type is not available
+	if !c.HasChargeQualifier(qualifier) {
+		return Charge{}, false
+	}
+
+	if charge, ok := c.chargesByQualifier[qualifier]; ok {
+		return charge, true
 	}
 	return Charge{}, false
 }
 
-//GetByTypeForced - returns a charge of given type. If it was not found a Zero amount is returned. This method might be useful to call in View (template) directly where you need one return value
-func (c Charges) GetByTypeForced(ctype string) Charge {
-	if charge, ok := c.chargesByType[ctype]; ok {
-		return charge
+// GetByChargeQualifierForced returns a charge of given qualifier.
+// If it was not found a Zero amount is returned. This method might be useful to call in View (template) directly.
+func (c Charges) GetByChargeQualifierForced(qualifier ChargeQualifier) Charge {
+	result, ok := c.GetByChargeQualifier(qualifier)
+	if !ok {
+		return Charge{}
 	}
-	return Charge{}
+	return result
+}
+
+// GetByTypeForced - returns a charge of given type. If it was not found a Zero amount is returned.
+// This method might be useful to call in View (template) directly where you need one return value
+// sums up charges by a certain type if there are multiple
+func (c Charges) GetByTypeForced(ctype string) Charge {
+	result, ok := c.GetByType(ctype)
+	if !ok {
+		return Charge{}
+	}
+	return result
 }
 
 //GetAllCharges - returns all charges
-func (c Charges) GetAllCharges() map[string]Charge {
-	return c.chargesByType
+func (c Charges) GetAllCharges() map[ChargeQualifier]Charge {
+	return c.chargesByQualifier
+}
+
+// GetAllByType returns all charges of type
+func (c Charges) GetAllByType(ctype string) map[ChargeQualifier]Charge {
+	chargesByType := make(map[ChargeQualifier]Charge)
+
+	for qualifier, charge := range c.chargesByQualifier {
+		if qualifier.Type == ctype {
+			chargesByType[ChargeQualifier{
+				qualifier.Type,
+				qualifier.Reference,
+			}] = charge
+		}
+	}
+
+	return chargesByType
 }
 
 //Add - returns new Charges with the given added
 func (c Charges) Add(toadd Charges) Charges {
-	if c.chargesByType == nil {
-		c.chargesByType = make(map[string]Charge)
+	if c.chargesByQualifier == nil {
+		c.chargesByQualifier = make(map[ChargeQualifier]Charge)
 	}
-	for addk, addCharge := range toadd.chargesByType {
-		if existingCharge, ok := c.chargesByType[addk]; ok {
+	for addk, addCharge := range toadd.chargesByQualifier {
+		if existingCharge, ok := c.chargesByQualifier[addk]; ok {
 			chargeSum, _ := existingCharge.Add(addCharge)
-			c.chargesByType[addk] = chargeSum.GetPayable()
+			c.chargesByQualifier[addk] = chargeSum.GetPayable()
 		} else {
-			c.chargesByType[addk] = addCharge
+			c.chargesByQualifier[addk] = addCharge
 		}
 	}
 	return c
@@ -551,25 +639,43 @@ func (c Charges) Add(toadd Charges) Charges {
 
 //AddCharge - returns new Charges with the given Charge added
 func (c Charges) AddCharge(toadd Charge) Charges {
-	if c.chargesByType == nil {
-		c.chargesByType = make(map[string]Charge)
+	if c.chargesByQualifier == nil {
+		c.chargesByQualifier = make(map[ChargeQualifier]Charge)
 	}
-	if existingCharge, ok := c.chargesByType[toadd.Type]; ok {
+	qualifier := ChargeQualifier{
+		Type:      toadd.Type,
+		Reference: toadd.Reference,
+	}
+	if existingCharge, ok := c.chargesByQualifier[qualifier]; ok {
 		chargeSum, _ := existingCharge.Add(toadd)
-		c.chargesByType[toadd.Type] = chargeSum.GetPayable()
+		c.chargesByQualifier[qualifier] = chargeSum.GetPayable()
 	} else {
-		c.chargesByType[toadd.Type] = toadd
+		c.chargesByQualifier[qualifier] = toadd
 	}
+
 	return c
 }
 
 //Mul - returns new Charges with the given multiplied
 func (c Charges) Mul(qty int) Charges {
-	if c.chargesByType == nil {
+	if c.chargesByQualifier == nil {
 		return c
 	}
-	for t, charge := range c.chargesByType {
-		c.chargesByType[t] = charge.Mul(qty)
+	for t, charge := range c.chargesByQualifier {
+		c.chargesByQualifier[t] = charge.Mul(qty)
 	}
 	return c
+}
+
+// addChargeQualifier - parse string keys to charge qualifier for backwards compatibility
+func addChargeQualifier(chargesByType map[string]Charge) Charges {
+	withQualifier := make(map[ChargeQualifier]Charge)
+	for chargeType, charge := range chargesByType {
+		qualifier := ChargeQualifier{
+			Type:      chargeType,
+			Reference: charge.Reference,
+		}
+		withQualifier[qualifier] = charge
+	}
+	return Charges{chargesByQualifier: withQualifier}
 }
