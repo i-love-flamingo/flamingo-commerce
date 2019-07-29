@@ -34,10 +34,10 @@ type Commerce_BasicProductData {
     retailerSku:     String!
     retailerName:    String!
 
-    createdAt:   Time!
-    updatedAt:   Time!
-    visibleFrom: Time!
-    visibleTo:   Time!
+    createdAt:   Time
+    updatedAt:   Time
+    visibleFrom: Time
+    visibleTo:   Time
 
     Categories:   [Commerce_CategoryTeaser!]
     MainCategory: Commerce_CategoryTeaser!
