@@ -102,7 +102,7 @@ findProducts is a template function that returns a search result to show product
         * `query`: Optional - the search string that a "human" might have entered to filter the search
         * `pageSize`, `page`: Optional - set the page and the pageSize (for pagination)
         * `sortBy`, `sortDirection` (`A`/`D`): Optional - set the field that should be used to sort the search result
-    * `keyValueFilters`: A map of key values that are used as additional keyValue Filters in the searchRequest
+    * `keyValueFilters`: Optional - A map of key values that are used as additional keyValue Filters in the searchRequest
     * `filterConstrains`: Optional - A map that supports the following keys:
         * `blackList` or `whiteList` (if both given `whiteList` is preferred): This is a comma separated list of filter keys, that are evaluated during:
             * using url Parameters to set keyValueFilters - only allowed keys will be used
@@ -118,7 +118,7 @@ See the following example:
                                     {"whiteList":"brand,color,sortBy"})
 
   ul
-    each product in searchResult.products
+    each product in searchResult1.products
       li Title: #{product.baseData.title} Retailer: #{product.baseData.retailerCode} Brand: #{product.baseData.attributes["brandCode"].value}
       
     - 
@@ -128,7 +128,7 @@ See the following example:
                                       {"whiteList":"brand,color"})
   
     ul
-      each product in searchResult.products
+      each product in searchResult2.products
         li Title: #{product.baseData.title} Retailer: #{product.baseData.retailerCode} Brand: #{product.baseData.attributes["brandCode"].value}
 ```
 
