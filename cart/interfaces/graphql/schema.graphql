@@ -28,7 +28,36 @@ type Commerce_CartDecoratedDelivery {
 }
 
 type Commerce_CartDelivery {
+    deliveryInfo: Commerce_CartDeliveryInfo
     cartitems: [Commerce_CartItem!]
+    shippingItem: Commerce_CartShippingItem
+}
+
+type Commerce_CartDeliveryInfo {
+    code: String!
+    workflow: String!
+    method: String!
+    carrier: String!
+    deliveryLocation: Commerce_CartDeliveryLocation
+    desiredTime: Time
+#    additionalData: map[string]string
+#    additionalDeliveryInfos: map[string]json.RawMessage
+#    todo: write getAdditionalData Method
+}
+
+type Commerce_CartDeliveryLocation  {
+    type: String!
+    address: Commerce_CartAddress
+    useBillingAddress: Boolean!
+    code: String!
+}
+
+type Commerce_CartShippingItem {
+    title: String!
+#    pricenet: priceDomain.Price
+#    taxamount. priceDomain.Price
+#    discountamount: priceDomain.Price
+#    todo: map when price is implemented
 }
 
 type Commerce_CartDecoratedItem {
