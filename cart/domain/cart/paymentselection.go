@@ -93,6 +93,9 @@ func NewDefaultPaymentSelection(gateway string, chargeTypeToPaymentMethod map[st
 		return nil, fmt.Errorf("payment method for charge type %q not defined", price.ChargeTypeMain)
 	}
 	result, err := newPaymentSelectionWithGiftCard(gateway, chargeTypeToPaymentMethod, pricedItems, giftCards)
+	if err != nil {
+		return result, err
+	}
 	// filter out zero charges from here on out
 	result = RemoveZeroCharges(result, chargeTypeToPaymentMethod)
 	return result, err
@@ -101,6 +104,10 @@ func NewDefaultPaymentSelection(gateway string, chargeTypeToPaymentMethod map[st
 // RemoveZeroCharges removes charges which have an value of zero from selection as they are necessary
 // for our internal calculations but not for external clients, we assume zero charges are ignored
 func RemoveZeroCharges(selection PaymentSelection, chargeTypeToPaymentMethod map[string]string) PaymentSelection {
+	// guard clause for nil selection
+	if selection == nil {
+		return nil
+	}
 	result := DefaultPaymentSelection{
 		GatewayProp: selection.Gateway(),
 	}
@@ -391,7 +398,7 @@ func (service PaymentSplitService) SplitWithGiftCards(chargeTypeToPaymentMethod 
 		return nil, ErrSplitEmptyGiftCards
 	}
 	// guard clause, can't split because gift card total exceeds payable amount of items
-	if totalGCValue.IsGreaterThen(totalValue) {
+	if totalGCValue.GetPayable().IsGreaterThen(totalValue.GetPayable()) {
 		return nil, ErrSplitGiftCardsExceedTotal
 	}
 
