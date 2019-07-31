@@ -64,10 +64,9 @@ type Commerce_CartDeliveryLocation  {
 
 type Commerce_CartShippingItem {
     title: String!
-#    pricenet: priceDomain.Price
-#    taxamount. priceDomain.Price
-#    discountamount: priceDomain.Price
-#    todo: map when price is implemented
+    priceNet: Commerce_Price
+    taxAmount: Commerce_Price
+    discountAmount: Commerce_Price
 }
 
 type Commerce_CartDecoratedItem {
