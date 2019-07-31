@@ -97,8 +97,28 @@ func NewDefaultPaymentSelection(gateway string, chargeTypeToPaymentMethod map[st
 		return result, err
 	}
 	// filter out zero charges from here on out
-	result = RemoveZeroCharges(result, chargeTypeToPaymentMethod)
+	result = FinaliseChargesForPayment(result, chargeTypeToPaymentMethod)
 	return result, err
+}
+
+// FinaliseChargesForPayment transforms all charges to payable ammounts and removes zero charges
+// for our internal calculations but not for external clients, we assume zero charges are ignored
+func FinaliseChargesForPayment(selection PaymentSelection, chargeTypeToPaymentMethod map[string]string) PaymentSelection {
+	// guard clause for nil selection
+	if selection == nil {
+		return nil
+	}
+	result := DefaultPaymentSelection{
+		GatewayProp: selection.Gateway(),
+	}
+	builder := PaymentSplitByItemBuilder{}
+	// remove all zero charges from selection with helper function
+	removeZeroChargesFromSplit(&builder, selection.ItemSplit().CartItems, chargeTypeToPaymentMethod, builder.AddCartItem, true)
+	removeZeroChargesFromSplit(&builder, selection.ItemSplit().ShippingItems, chargeTypeToPaymentMethod, builder.AddShippingItem, true)
+	removeZeroChargesFromSplit(&builder, selection.ItemSplit().TotalItems, chargeTypeToPaymentMethod, builder.AddTotalItem, true)
+
+	result.ChargedItemsProp = builder.Build()
+	return result
 }
 
 // RemoveZeroCharges removes charges which have an value of zero from selection as they are necessary
@@ -113,9 +133,9 @@ func RemoveZeroCharges(selection PaymentSelection, chargeTypeToPaymentMethod map
 	}
 	builder := PaymentSplitByItemBuilder{}
 	// remove all zero charges from selection with helper function
-	removeZeroChargesFromSplit(&builder, selection.ItemSplit().CartItems, chargeTypeToPaymentMethod, builder.AddCartItem)
-	removeZeroChargesFromSplit(&builder, selection.ItemSplit().ShippingItems, chargeTypeToPaymentMethod, builder.AddShippingItem)
-	removeZeroChargesFromSplit(&builder, selection.ItemSplit().TotalItems, chargeTypeToPaymentMethod, builder.AddTotalItem)
+	removeZeroChargesFromSplit(&builder, selection.ItemSplit().CartItems, chargeTypeToPaymentMethod, builder.AddCartItem, false)
+	removeZeroChargesFromSplit(&builder, selection.ItemSplit().ShippingItems, chargeTypeToPaymentMethod, builder.AddShippingItem, false)
+	removeZeroChargesFromSplit(&builder, selection.ItemSplit().TotalItems, chargeTypeToPaymentMethod, builder.AddTotalItem, false)
 
 	result.ChargedItemsProp = builder.Build()
 	return result
@@ -124,9 +144,18 @@ func RemoveZeroCharges(selection PaymentSelection, chargeTypeToPaymentMethod map
 // removeZeroChargesFromSplit remove charges from single item splits
 // helper which overwrites passed builder instance with adjusted charges
 func removeZeroChargesFromSplit(builder *PaymentSplitByItemBuilder, paymentSplit map[string]PaymentSplit,
-	chargeTypeToPaymentMethod map[string]string, add builderAddFunc) {
+	chargeTypeToPaymentMethod map[string]string, add builderAddFunc, getPayable bool) {
 	for id, split := range paymentSplit {
 		for qualifier, charge := range split.ChargesByType().GetAllCharges() {
+			// if requested, charge should be transformed to payable
+			if getPayable {
+				charge = price.Charge{
+					Price:     charge.Price.GetPayable(),
+					Value:     charge.Value.GetPayable(),
+					Type:      charge.Type,
+					Reference: charge.Reference,
+				}
+			}
 			// skip charges with zero value
 			if charge.Value.IsZero() {
 				continue
@@ -148,24 +177,24 @@ func newSimplePaymentSelection(gateway string, method string, pricedItems Priced
 
 	for k, itemPrice := range pricedItems.CartItems() {
 		builder.AddCartItem(k, method, price.Charge{
-			Price: itemPrice.GetPayable(),
-			Value: itemPrice.GetPayable(),
+			Price: itemPrice,
+			Value: itemPrice,
 			Type:  price.ChargeTypeMain,
 		})
 
 	}
 	for k, itemPrice := range pricedItems.ShippingItems() {
 		builder.AddShippingItem(k, method, price.Charge{
-			Price: itemPrice.GetPayable(),
-			Value: itemPrice.GetPayable(),
+			Price: itemPrice,
+			Value: itemPrice,
 			Type:  price.ChargeTypeMain,
 		})
 
 	}
 	for k, itemPrice := range pricedItems.TotalItems() {
 		builder.AddTotalItem(k, method, price.Charge{
-			Price: itemPrice.GetPayable(),
-			Value: itemPrice.GetPayable(),
+			Price: itemPrice,
+			Value: itemPrice,
 			Type:  price.ChargeTypeMain,
 		})
 	}
@@ -430,15 +459,15 @@ func (service PaymentSplitService) SplitWithGiftCards(chargeTypeToPaymentMethod 
 
 				// add calculated charges to builder for payment selection
 				builder = helper.AddFunction(k, chargeTypeToPaymentMethod[price.ChargeTypeMain], price.Charge{
-					Price: remainingItem.GetPayable(),
-					Value: remainingItem.GetPayable(),
+					Price: remainingItem,
+					Value: remainingItem,
 					Type:  price.ChargeTypeMain,
 				})
 
 				if !appliedGiftCard.IsZero() {
 					builder = helper.AddFunction(k, chargeTypeToPaymentMethod[price.ChargeTypeGiftCard], price.Charge{
-						Price:     appliedGiftCard.GetPayable(),
-						Value:     appliedGiftCard.GetPayable(),
+						Price:     appliedGiftCard,
+						Value:     appliedGiftCard,
 						Type:      price.ChargeTypeGiftCard,
 						Reference: card.Code,
 					})
