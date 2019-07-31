@@ -128,7 +128,7 @@ func Test_CanBuildSimpleSelectionWithGiftCard(t *testing.T) {
 
 }
 
-func Test_CanBuildSimpleSelectionWithGiftCard2(t *testing.T) {
+func Test_CanBuildSimpleSelectionWithGiftCardFullPayment(t *testing.T) {
 	cart := Cart{
 		Deliveries: []Delivery{
 			{
@@ -160,7 +160,9 @@ func Test_CanBuildSimpleSelectionWithGiftCard2(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, domain.NewFromInt(1198, 100, "€").FloatAmount(), selection.TotalValue().FloatAmount())
 	assert.Equal(t, domain.NewFromInt(1198, 100, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
-	assert.Equal(t, domain.NewFromInt(0, 100, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
+
+	_, found := selection.CartSplit().ChargesByType().GetByType(domain.ChargeTypeMain)
+	assert.False(t, found, "cart fully payed with gift card, there should be no main charge left")
 }
 
 func Test_CanCalculateGiftCardChargeWithRest(t *testing.T) {
@@ -396,4 +398,72 @@ func Test_CreateSimplePaymentWithoutGiftCards(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, domain.NewFromInt(0, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
 	assert.Equal(t, domain.NewFromInt(120, 100, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
+}
+
+func Test_CreatePaymentWithFilteredCharges(t *testing.T) {
+	cart := Cart{
+		Deliveries: []Delivery{
+			{
+				DeliveryInfo: DeliveryInfo{
+					Code: "1",
+				},
+				Cartitems: []Item{
+					{
+						ID:            "1",
+						RowPriceGross: domain.NewFromInt(50, 1, "€"),
+					},
+					{
+						ID:            "2",
+						RowPriceGross: domain.NewFromInt(20, 1, "€"),
+					},
+				},
+				ShippingItem: ShippingItem{
+					Title:    "1",
+					PriceNet: domain.NewFromInt(20, 1, "€"),
+				},
+			},
+		},
+		Totalitems: []Totalitem{
+			{
+				Code:  "1",
+				Title: "1",
+				Price: domain.NewFromInt(10, 1, "€"),
+			},
+		},
+		AppliedGiftCards: AppliedGiftCards{
+			{
+				Code:    "giftcard-1",
+				Applied: domain.NewFromInt(90, 1, "€"),
+			},
+			{
+				Code:    "giftcard-2",
+				Applied: domain.NewFromInt(5, 1, "€"),
+			},
+		},
+	}
+	selection, err := NewDefaultPaymentSelection("gateyway", getPaymentMethodMapping(t), cart)
+	assert.NoError(t, err)
+	// force type for zero charges
+	assert.Equal(t, domain.NewFromInt(95, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(5, 1, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
+
+	// check item charges for items
+	assert.Equal(t, 2, len(selection.ItemSplit().CartItems))
+	for _, split := range selection.ItemSplit().CartItems {
+		_, found := split.ChargesByType().GetByType(domain.ChargeTypeMain)
+		assert.False(t, found)
+	}
+
+	// check item charges for shipping
+	assert.Equal(t, 1, len(selection.ItemSplit().ShippingItems))
+	for _, split := range selection.ItemSplit().ShippingItems {
+		_, found := split.ChargesByType().GetByType(domain.ChargeTypeMain)
+		assert.False(t, found)
+	}
+
+	// based on our strategy the only thing we pay with a main charge should be a total item
+	items := selection.ItemSplit().TotalItems
+	charge, found := items["1"].ChargesByType().GetByType(domain.ChargeTypeMain)
+	assert.True(t, found)
+	assert.Equal(t, domain.NewFromInt(5, 1, "€").GetPayable(), charge.Price)
 }

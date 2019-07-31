@@ -57,13 +57,16 @@ type (
 	// PaymentSplitService enables the creation of a PaymentSplitByItem following different payment methods
 	PaymentSplitService struct{}
 
+	// builderAddFunc is a function used by builder to add items
+	// function which corresponds to builder addX function (addCartItem, addShipping, addTotal)
+	builderAddFunc func(string, string, price.Charge) *PaymentSplitByItemBuilder
+
 	// itemsWithAdd is a helper struct which holds items with their corresponding add function
 	// from PaymentSplitByItemBuilder
 	itemsWithAdd struct {
 		// map of payable items corresponding to price.PricedItems
-		ItemsToPay map[string]price.Price
-		// function which corresponds to builder adddX function (addCartItem, addShipping, addTotal)
-		AddFunction func(string, string, price.Charge) *PaymentSplitByItemBuilder
+		ItemsToPay  map[string]price.Price
+		AddFunction builderAddFunc
 	}
 )
 
@@ -89,7 +92,43 @@ func NewDefaultPaymentSelection(gateway string, chargeTypeToPaymentMethod map[st
 	if _, ok := chargeTypeToPaymentMethod[price.ChargeTypeMain]; !ok {
 		return nil, fmt.Errorf("payment method for charge type %q not defined", price.ChargeTypeMain)
 	}
-	return newPaymentSelectionWithGiftCard(gateway, chargeTypeToPaymentMethod, pricedItems, giftCards)
+	result, err := newPaymentSelectionWithGiftCard(gateway, chargeTypeToPaymentMethod, pricedItems, giftCards)
+	// filter out zero charges from here on out
+	result = RemoveZeroCharges(result, chargeTypeToPaymentMethod)
+	return result, err
+}
+
+// RemoveZeroCharges removes charges which have an value of zero from selection as they are necessary
+// for our internal calculations but not for external clients, we assume zero charges are ignored
+func RemoveZeroCharges(selection PaymentSelection, chargeTypeToPaymentMethod map[string]string) PaymentSelection {
+	result := DefaultPaymentSelection{
+		GatewayProp: selection.Gateway(),
+	}
+	builder := PaymentSplitByItemBuilder{}
+	// remove all zero charges from selection with helper function
+	removeZeroChargesFromSplit(&builder, selection.ItemSplit().CartItems, chargeTypeToPaymentMethod, builder.AddCartItem)
+	removeZeroChargesFromSplit(&builder, selection.ItemSplit().ShippingItems, chargeTypeToPaymentMethod, builder.AddShippingItem)
+	removeZeroChargesFromSplit(&builder, selection.ItemSplit().TotalItems, chargeTypeToPaymentMethod, builder.AddTotalItem)
+
+	result.ChargedItemsProp = builder.Build()
+	return result
+}
+
+// removeZeroChargesFromSplit remove charges from single item splits
+// helper which overwrites passed builder instance with adjusted charges
+func removeZeroChargesFromSplit(builder *PaymentSplitByItemBuilder, paymentSplit map[string]PaymentSplit,
+	chargeTypeToPaymentMethod map[string]string, add builderAddFunc) {
+	for id, split := range paymentSplit {
+		for qualifier, charge := range split.ChargesByType().GetAllCharges() {
+			// skip charges with zero value
+			if charge.Value.IsZero() {
+				continue
+			}
+			// we assume that map of types and method matches
+			method, _ := chargeTypeToPaymentMethod[qualifier.Type]
+			builder = add(id, method, charge)
+		}
+	}
 }
 
 // newSimplePaymentSelection returns a PaymentSelection that can be used to update the cart.
