@@ -229,12 +229,10 @@ func (os *OrderService) GetContactMail(cart cart.Cart) string {
 
 // CartPlaceOrderWithPaymentProcessing - use to place the cart passed to the function
 // this function enables clients to pass a cart as is, without the usage of the cartReceiverService
-func (os *OrderService) CartPlaceOrderWithPaymentProcessing(ctx context.Context, cart cart.Cart,
+func (os *OrderService) CartPlaceOrderWithPaymentProcessing(ctx context.Context, decoratedCart *decorator.DecoratedCart,
 	session *web.Session) (*PlaceOrderInfo, error) {
 	// use a background context from here on to prevent the place order canceled by context cancel
 	placeOrderContext := os.createNewBackgroundContext(ctx)
-	// create decorated cart from existing cart via factory
-	decoratedCart := os.decoratedCartFactory.Create(placeOrderContext, cart)
 	return os.placeOrderWithPaymentProcessing(placeOrderContext, decoratedCart, session)
 }
 
