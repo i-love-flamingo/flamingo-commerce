@@ -94,13 +94,13 @@ func NewDefaultPaymentSelection(gateway string, chargeTypeToPaymentMethod map[st
 	}
 	result, err := newPaymentSelectionWithGiftCard(gateway, chargeTypeToPaymentMethod, pricedItems, giftCards)
 	// filter out zero charges from here on out
-	result = removeZeroCharges(result, chargeTypeToPaymentMethod)
+	result = RemoveZeroCharges(result, chargeTypeToPaymentMethod)
 	return result, err
 }
 
-// removeZeroCharges removes charges which have an amount of zero from selection as they are necessary
+// RemoveZeroCharges removes charges which have an value of zero from selection as they are necessary
 // for our internal calculations but not for external clients, we assume zero charges are ignored
-func removeZeroCharges(selection PaymentSelection, chargeTypeToPaymentMethod map[string]string) PaymentSelection {
+func RemoveZeroCharges(selection PaymentSelection, chargeTypeToPaymentMethod map[string]string) PaymentSelection {
 	result := DefaultPaymentSelection{
 		GatewayProp: selection.Gateway(),
 	}
@@ -121,7 +121,7 @@ func removeZeroChargesFromSplit(builder *PaymentSplitByItemBuilder, paymentSplit
 	for id, split := range paymentSplit {
 		for qualifier, charge := range split.ChargesByType().GetAllCharges() {
 			// skip charges with zero value
-			if charge.Price.IsZero() {
+			if charge.Value.IsZero() {
 				continue
 			}
 			// we assume that map of types and method matches

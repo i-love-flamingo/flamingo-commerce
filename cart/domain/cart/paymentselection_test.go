@@ -8,6 +8,7 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/price/domain"
+	price "flamingo.me/flamingo-commerce/v3/price/domain"
 	"gopkg.in/go-playground/assert.v1"
 )
 
@@ -170,4 +171,64 @@ func TestPaymentSplit_UnmarshalJSON(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestRemoveZeroCharges(t *testing.T) {
+	chargeTypeToPaymentMethod := map[string]string{
+		price.ChargeTypeMain:     "cc",
+		price.ChargeTypeGiftCard: "giftcard",
+		"loyalty":                "loyalty",
+	}
+
+	selection := cart.DefaultPaymentSelection{
+		GatewayProp:      "xy",
+		ChargedItemsProp: cart.PaymentSplitByItem{},
+	}
+
+	builder := cart.PaymentSplitByItemBuilder{}
+
+	builder.AddCartItem("item-1", "cc", domain.Charge{
+		Price: domain.NewFromInt(25, 1, "$"),
+		Value: domain.NewFromInt(25, 1, "$"),
+		Type:  domain.ChargeTypeMain,
+	})
+
+	builder.AddCartItem("item-1", "loyalty", domain.Charge{
+		Price: domain.NewFromInt(500, 1, "Points"),
+		Value: domain.NewFromInt(5, 1, "$"),
+		Type:  "loyalty",
+	})
+
+	builder.AddCartItem("item-1", "giftcard", domain.Charge{
+		Price: domain.NewFromInt(0, 1, "$"),
+		Value: domain.NewFromInt(0, 1, "$"),
+		Type:  price.ChargeTypeGiftCard,
+	})
+
+	builder.AddShippingItem("delivery-1", "loyalty", price.Charge{
+		Price: domain.NewFromInt(20, 1, "Points"),
+		Value: domain.NewFromInt(5, 1, "$"),
+		Type:  "loyalty",
+	})
+
+	builder.AddShippingItem("delivery-1", "cc", price.Charge{
+		Price: domain.NewFromInt(0, 1, "$"),
+		Value: domain.NewFromInt(0, 1, "$"),
+		Type:  domain.ChargeTypeMain,
+	})
+
+	selection.ChargedItemsProp = builder.Build()
+	filteredSelection := cart.RemoveZeroCharges(selection, chargeTypeToPaymentMethod)
+	_, found := filteredSelection.ItemSplit().CartItems["item-1"].ChargesByType().GetByType(price.ChargeTypeGiftCard)
+
+	if found == true {
+		t.Errorf("item-1 shouldn't have charge of type %q", price.ChargeTypeGiftCard)
+	}
+
+	_, found = filteredSelection.ItemSplit().ShippingItems["delivery-1"].ChargesByType().GetByType(price.ChargeTypeMain)
+
+	if found == true {
+		t.Errorf("delivery-1 shouldn't have charge of type %q", price.ChargeTypeMain)
+	}
+
 }

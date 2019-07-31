@@ -128,7 +128,7 @@ func Test_CanBuildSimpleSelectionWithGiftCard(t *testing.T) {
 
 }
 
-func Test_CanBuildSimpleSelectionWithGiftCard2(t *testing.T) {
+func Test_CanBuildSimpleSelectionWithGiftCardFullPayment(t *testing.T) {
 	cart := Cart{
 		Deliveries: []Delivery{
 			{
@@ -160,7 +160,9 @@ func Test_CanBuildSimpleSelectionWithGiftCard2(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, domain.NewFromInt(1198, 100, "€").FloatAmount(), selection.TotalValue().FloatAmount())
 	assert.Equal(t, domain.NewFromInt(1198, 100, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
-	assert.Equal(t, domain.NewFromInt(0, 100, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
+
+	_, found := selection.CartSplit().ChargesByType().GetByType(domain.ChargeTypeMain)
+	assert.False(t, found, "cart fully payed with gift card, there should be no main charge left")
 }
 
 func Test_CanCalculateGiftCardChargeWithRest(t *testing.T) {
