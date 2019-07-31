@@ -6,7 +6,7 @@ type Commerce_DecoratedCart {
 type Commerce_Cart {
     id: ID!
     entityID: String!
-    billingAdress: Commerce_CartAddress
+    billingAddress: Commerce_CartAddress
     purchaser: Commerce_CartPerson
     deliveries: [Commerce_CartDelivery!]
     #	additionalData: Commerce_CartAdditionalData!
