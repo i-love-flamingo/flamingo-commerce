@@ -40,9 +40,9 @@ type Commerce_CartDeliveryInfo {
     carrier: String!
     deliveryLocation: Commerce_CartDeliveryLocation
     desiredTime: Time
-#    additionalData: map[string]string
+    getAdditionalData(key: String!): String!
+    additionalDataKeys: [String!]
 #    additionalDeliveryInfos: map[string]json.RawMessage
-#    todo: write getAdditionalData Method
 }
 
 type Commerce_CartDeliveryLocation  {

@@ -29,7 +29,7 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		},
 		"Commerce_CartDecoratedDelivery":    decorator.DecoratedDelivery{},
 		"Commerce_CartDelivery":             cart.Delivery{},
-		"Commerce_CartDeliveryInfo":         cart.DeliveryInfo{},
+		"Commerce_CartDeliveryInfo":		 cart.DeliveryInfo{},
 		"Commerce_CartDeliveryLocation":     cart.DeliveryLocation{},
 		"Commerce_CartShippingItem":         cart.ShippingItem{},
 		"Commerce_CartDecoratedItem":        decorator.DecoratedCartItem{},
