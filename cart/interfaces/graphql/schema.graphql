@@ -31,6 +31,16 @@ type Commerce_CartDelivery {
     deliveryInfo: Commerce_CartDeliveryInfo
     cartitems: [Commerce_CartItem!]
     shippingItem: Commerce_CartShippingItem
+    subTotalGross: Commerce_Price
+    grandTotal: Commerce_Price
+    sumTotalTaxAmount: Commerce_Price
+    subTotalNet: Commerce_Price
+    sumTotalDiscountAmount: Commerce_Price
+    sumNonItemRelatedDiscountAmount: Commerce_Price
+    sumItemRelatedDiscountAmount: Commerce_Price
+    subTotalGrossWithDiscounts: Commerce_Price
+    subTotalNetWithDiscounts: Commerce_Price
+    hasItems: Boolean!
 }
 
 type Commerce_CartDeliveryInfo {
