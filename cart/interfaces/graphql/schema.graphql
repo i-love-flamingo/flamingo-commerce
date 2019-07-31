@@ -15,7 +15,10 @@ type Commerce_Cart {
     authenticatedUserID: String!
     #	appliedCouponCodes: [Commerce_CartCouponCode!]
     defaultCurrency: String!
-    #	totalitems: [Commerce_CartTotalitem!]
+#    totalitems: [Commerce_CartTotalitem!]
+    itemCount: Int!
+    productCount: Int!
+    isPaymentSelected: Boolean!
     #	appliedGiftCards: [Commerce_CartAppliedGiftCard!]
 }
 
