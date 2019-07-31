@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
 
@@ -29,6 +30,7 @@ type (
 		cartReceiverService    *application.CartReceiverService
 		deliveryInfoBuilder    cart.DeliveryInfoBuilder
 		webCartPaymentGateways map[string]interfaces.WebCartPaymentGateway
+		decoratedCartFactory   *decorator.DecoratedCartFactory
 	}
 
 	// PlaceOrderInfo struct defines the data of payments on placed orders
@@ -67,6 +69,7 @@ func (os *OrderService) Inject(
 	CartReceiverService *application.CartReceiverService,
 	DeliveryInfoBuilder cart.DeliveryInfoBuilder,
 	webCartPaymentGatewayProvider interfaces.WebCartPaymentGatewayProvider,
+	decoratedCartFactory *decorator.DecoratedCartFactory,
 ) {
 	os.sourcingEngine = SourcingEngine
 	os.logger = logger.WithField(flamingo.LogKeyCategory, "checkout.OrderService").WithField(flamingo.LogKeyModule, "checkout")
@@ -74,6 +77,7 @@ func (os *OrderService) Inject(
 	os.cartReceiverService = CartReceiverService
 	os.webCartPaymentGateways = webCartPaymentGatewayProvider()
 	os.deliveryInfoBuilder = DeliveryInfoBuilder
+	os.decoratedCartFactory = decoratedCartFactory
 }
 
 // SetSources sets sources for sessions carts items
@@ -201,50 +205,76 @@ func (os *OrderService) GetAvailablePaymentGateways(ctx context.Context) map[str
 //CurrentCartPlaceOrderWithPaymentProcessing - use to place the current cart
 func (os *OrderService) CurrentCartPlaceOrderWithPaymentProcessing(ctx context.Context, session *web.Session) (*PlaceOrderInfo, error) {
 	// use a background context from here on to prevent the place order canceled by context cancel
-	placeOrderContext := web.ContextWithRequest(
-		web.ContextWithSession(
-			context.Background(),
-			web.SessionFromContext(ctx),
-		),
-		web.RequestFromContext(ctx),
-	)
-
+	placeOrderContext := os.createNewBackgroundContext(ctx)
+	// fetch decorated cart either via cache or freshly from cart receiver service
 	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(placeOrderContext, session)
-	if !decoratedCart.Cart.IsPaymentSelected() {
+	if err != nil {
+		// record fail count metric
 		stats.Record(placeOrderContext, orderFailedStat.M(1))
-		os.logger.WithContext(placeOrderContext).Error("cart.checkoutcontroller.submitaction: Error Gateway not in carts PaymentSelection")
+		os.logger.WithContext(placeOrderContext).Warn("Cannot create decorated cart from cart")
+		return nil, errors.New("cart is invalid")
+	}
+	return os.placeOrderWithPaymentProcessing(placeOrderContext, decoratedCart, session)
+}
+
+// GetContactMail helper with fallback
+func (os *OrderService) GetContactMail(cart cart.Cart) string {
+	//Get Email from either the cart
+	shippingEmail := cart.GetMainShippingEMail()
+	if shippingEmail == "" {
+		shippingEmail = cart.BillingAdress.Email
+	}
+	return shippingEmail
+}
+
+// CartPlaceOrderWithPaymentProcessing - use to place the cart passed to the function
+// this function enables clients to pass a cart as is, without the usage of the cartReceiverService
+func (os *OrderService) CartPlaceOrderWithPaymentProcessing(ctx context.Context, decoratedCart *decorator.DecoratedCart,
+	session *web.Session) (*PlaceOrderInfo, error) {
+	// use a background context from here on to prevent the place order canceled by context cancel
+	placeOrderContext := os.createNewBackgroundContext(ctx)
+	return os.placeOrderWithPaymentProcessing(placeOrderContext, decoratedCart, session)
+}
+
+// placeOrderWithPaymentProcessing after generating the decorated cart, the place order flow
+// is the same for the interface functions, therefore the common flow is placed in this private helper function
+func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, decoratedCart *decorator.DecoratedCart,
+	session *web.Session) (*PlaceOrderInfo, error) {
+	if !decoratedCart.Cart.IsPaymentSelected() {
+		stats.Record(ctx, orderFailedStat.M(1))
+		os.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error Gateway not in carts PaymentSelection")
 		return nil, errors.New("no payment gateway selected")
 	}
 
-	validationResult := os.cartService.ValidateCart(placeOrderContext, session, decoratedCart)
+	validationResult := os.cartService.ValidateCart(ctx, session, decoratedCart)
 	if !validationResult.IsValid() {
 		// record failcount metric
-		stats.Record(placeOrderContext, orderFailedStat.M(1))
-		os.logger.WithContext(placeOrderContext).Warn("Try to place an invalid cart")
+		stats.Record(ctx, orderFailedStat.M(1))
+		os.logger.WithContext(ctx).Warn("Try to place an invalid cart")
 		return nil, errors.New("cart is invalid")
 	}
 
-	gateway, err := os.GetPaymentGateway(placeOrderContext, decoratedCart.Cart.PaymentSelection.Gateway())
+	gateway, err := os.GetPaymentGateway(ctx, decoratedCart.Cart.PaymentSelection.Gateway())
 	if err != nil {
-		stats.Record(placeOrderContext, orderFailedStat.M(1))
-		os.logger.WithContext(placeOrderContext).Error(fmt.Sprintf("cart.checkoutcontroller.submitaction: Error %v  Gateway: %v", err, decoratedCart.Cart.PaymentSelection.Gateway()))
+		stats.Record(ctx, orderFailedStat.M(1))
+		os.logger.WithContext(ctx).Error(fmt.Sprintf("cart.checkoutcontroller.submitaction: Error %v  Gateway: %v", err, decoratedCart.Cart.PaymentSelection.Gateway()))
 		return nil, errors.New("selected gateway not available")
 	}
 
-	cartPayment, err := gateway.GetFlowResult(placeOrderContext, &decoratedCart.Cart, PaymentFlowStandardCorrelationID)
+	cartPayment, err := gateway.GetFlowResult(ctx, &decoratedCart.Cart, PaymentFlowStandardCorrelationID)
 	if err != nil {
 		return nil, err
 	}
-	err = gateway.ConfirmResult(placeOrderContext, &decoratedCart.Cart, cartPayment)
+	err = gateway.ConfirmResult(ctx, &decoratedCart.Cart, cartPayment)
 	if err != nil {
 		return nil, err
 	}
 
-	placedOrderInfos, err := os.cartService.PlaceOrder(placeOrderContext, session, cartPayment)
+	placedOrderInfos, err := os.cartService.PlaceOrder(ctx, session, cartPayment)
 	if err != nil {
 		// record failcount metric
-		stats.Record(placeOrderContext, orderFailedStat.M(1))
-		os.logger.WithContext(placeOrderContext).Error("Error during place Order:" + err.Error())
+		stats.Record(ctx, orderFailedStat.M(1))
+		os.logger.WithContext(ctx).Error("Error during place Order:" + err.Error())
 		return nil, errors.New("error while placing the order. please contact customer support")
 	}
 
@@ -268,12 +298,13 @@ func (os *OrderService) CurrentCartPlaceOrderWithPaymentProcessing(ctx context.C
 	return &placeOrderInfo, nil
 }
 
-// GetContactMail helper with fallback
-func (os *OrderService) GetContactMail(cart cart.Cart) string {
-	//Get Email from either the cart
-	shippingEmail := cart.GetMainShippingEMail()
-	if shippingEmail == "" {
-		shippingEmail = cart.BillingAdress.Email
-	}
-	return shippingEmail
+// createNewBackgroundContext creates a new background context to avoid cancellation by parent context
+func (os *OrderService) createNewBackgroundContext(ctx context.Context) context.Context {
+	return web.ContextWithRequest(
+		web.ContextWithSession(
+			context.Background(),
+			web.SessionFromContext(ctx),
+		),
+		web.RequestFromContext(ctx),
+	)
 }
