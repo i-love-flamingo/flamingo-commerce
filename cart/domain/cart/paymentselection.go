@@ -58,7 +58,7 @@ type (
 	PaymentSplitService struct{}
 
 	// builderAddFunc is a function used by builder to add items
-	// function which corresponds to builder adddX function (addCartItem, addShipping, addTotal)
+	// function which corresponds to builder addX function (addCartItem, addShipping, addTotal)
 	builderAddFunc func(string, string, price.Charge) *PaymentSplitByItemBuilder
 
 	// itemsWithAdd is a helper struct which holds items with their corresponding add function
