@@ -1,6 +1,7 @@
 package cart
 
 import (
+	"log"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -466,4 +467,57 @@ func Test_CreatePaymentWithFilteredCharges(t *testing.T) {
 	charge, found := items["1"].ChargesByType().GetByType(domain.ChargeTypeMain)
 	assert.True(t, found)
 	assert.Equal(t, domain.NewFromInt(5, 1, "€").GetPayable(), charge.Price)
+}
+
+func Test_CreatePaymentWithDiscounts(t *testing.T) {
+	cart := Cart{
+		Deliveries: []Delivery{
+			{
+				DeliveryInfo: DeliveryInfo{
+					Code: "home",
+				},
+				Cartitems: []Item{
+					{
+						ID:            "1",
+						RowPriceGross: domain.NewFromInt(9995, 100, "€"),
+						AppliedDiscounts: AppliedDiscounts{
+							{
+								CampaignCode: "campaign-1",
+								CouponCode:   "coupon-1",
+								Label:        "Label",
+								Applied:      domain.NewFromInt(-4998, 100, "€"),
+							},
+						},
+					},
+				},
+				ShippingItem: ShippingItem{
+					Title:    "home",
+					PriceNet: domain.NewFromInt(28, 1, "€"),
+				},
+			},
+		},
+		AppliedGiftCards: AppliedGiftCards{
+			{
+				Code:    "giftcard-1",
+				Applied: domain.NewFromInt(7797, 100, "€"),
+			},
+		},
+	}
+	selection, err := NewDefaultPaymentSelection("gateway", getPaymentMethodMapping(t), cart)
+	assert.NoError(t, err)
+	// force type for zero charges
+	chargesByType := selection.CartSplit().ChargesByType()
+	log.Println(chargesByType.GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(7797, 100, "€").GetPayable(), chargesByType.GetByTypeForced(domain.ChargeTypeGiftCard).Value.GetPayable())
+	log.Println(chargesByType.GetByTypeForced(domain.ChargeTypeMain).Value.FloatAmount())
+	assert.Equal(t, domain.NewFromInt(0, 100, "").GetPayable(), chargesByType.GetByTypeForced(domain.ChargeTypeMain).Value.GetPayable())
+
+	// based on our strategy the only thing we pay with a main charge should be a total item
+	items := selection.ItemSplit().CartItems
+	_, found := items["1"].ChargesByType().GetByType(domain.ChargeTypeMain)
+	assert.False(t, found)
+
+	items = selection.ItemSplit().ShippingItems
+	_, found = items["home"].ChargesByType().GetByType(domain.ChargeTypeMain)
+	assert.False(t, found)
 }

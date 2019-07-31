@@ -148,24 +148,24 @@ func newSimplePaymentSelection(gateway string, method string, pricedItems Priced
 
 	for k, itemPrice := range pricedItems.CartItems() {
 		builder.AddCartItem(k, method, price.Charge{
-			Price: itemPrice,
-			Value: itemPrice,
+			Price: itemPrice.GetPayable(),
+			Value: itemPrice.GetPayable(),
 			Type:  price.ChargeTypeMain,
 		})
 
 	}
 	for k, itemPrice := range pricedItems.ShippingItems() {
 		builder.AddShippingItem(k, method, price.Charge{
-			Price: itemPrice,
-			Value: itemPrice,
+			Price: itemPrice.GetPayable(),
+			Value: itemPrice.GetPayable(),
 			Type:  price.ChargeTypeMain,
 		})
 
 	}
 	for k, itemPrice := range pricedItems.TotalItems() {
 		builder.AddTotalItem(k, method, price.Charge{
-			Price: itemPrice,
-			Value: itemPrice,
+			Price: itemPrice.GetPayable(),
+			Value: itemPrice.GetPayable(),
 			Type:  price.ChargeTypeMain,
 		})
 	}
@@ -430,15 +430,15 @@ func (service PaymentSplitService) SplitWithGiftCards(chargeTypeToPaymentMethod 
 
 				// add calculated charges to builder for payment selection
 				builder = helper.AddFunction(k, chargeTypeToPaymentMethod[price.ChargeTypeMain], price.Charge{
-					Price: remainingItem,
-					Value: remainingItem,
+					Price: remainingItem.GetPayable(),
+					Value: remainingItem.GetPayable(),
 					Type:  price.ChargeTypeMain,
 				})
 
 				if !appliedGiftCard.IsZero() {
 					builder = helper.AddFunction(k, chargeTypeToPaymentMethod[price.ChargeTypeGiftCard], price.Charge{
-						Price:     appliedGiftCard,
-						Value:     appliedGiftCard,
+						Price:     appliedGiftCard.GetPayable(),
+						Value:     appliedGiftCard.GetPayable(),
 						Type:      price.ChargeTypeGiftCard,
 						Reference: card.Code,
 					})
