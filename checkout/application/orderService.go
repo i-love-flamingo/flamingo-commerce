@@ -205,7 +205,7 @@ func (os *OrderService) GetAvailablePaymentGateways(ctx context.Context) map[str
 //CurrentCartPlaceOrderWithPaymentProcessing - use to place the current cart
 func (os *OrderService) CurrentCartPlaceOrderWithPaymentProcessing(ctx context.Context, session *web.Session) (*PlaceOrderInfo, error) {
 	// use a background context from here on to prevent the place order canceled by context cancel
-	placeOrderContext := os.createFreshContext(ctx)
+	placeOrderContext := os.createNewBackgroundContext(ctx)
 	// fetch decorated cart either via cache or freshly from cart receiver service
 	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(placeOrderContext, session)
 	if err != nil {
@@ -232,7 +232,7 @@ func (os *OrderService) GetContactMail(cart cart.Cart) string {
 func (os *OrderService) CartPlaceOrderWithPaymentProcessing(ctx context.Context, cart cart.Cart,
 	session *web.Session) (*PlaceOrderInfo, error) {
 	// use a background context from here on to prevent the place order canceled by context cancel
-	placeOrderContext := os.createFreshContext(ctx)
+	placeOrderContext := os.createNewBackgroundContext(ctx)
 	// create decorated cart from existing cart via factory
 	decoratedCart := os.decoratedCartFactory.Create(placeOrderContext, cart)
 	return os.placeOrderWithPaymentProcessing(placeOrderContext, decoratedCart, session)
@@ -300,9 +300,8 @@ func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, dec
 	return &placeOrderInfo, nil
 }
 
-// createFreshContext create a fresh context from a given context
-// that will not be canceled if original context is canceled by client
-func (os *OrderService) createFreshContext(ctx context.Context) context.Context {
+// createNewBackgroundContext creates a new background context to avoid cancellation by parent context
+func (os *OrderService) createNewBackgroundContext(ctx context.Context) context.Context {
 	return web.ContextWithRequest(
 		web.ContextWithSession(
 			context.Background(),
