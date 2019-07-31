@@ -103,6 +103,7 @@ func NewDefaultPaymentSelection(gateway string, chargeTypeToPaymentMethod map[st
 
 // RemoveZeroCharges removes charges which have an value of zero from selection as they are necessary
 // for our internal calculations but not for external clients, we assume zero charges are ignored
+// moreover charges are transformed to pay ables
 func RemoveZeroCharges(selection PaymentSelection, chargeTypeToPaymentMethod map[string]string) PaymentSelection {
 	// guard clause for nil selection
 	if selection == nil {
@@ -127,6 +128,13 @@ func removeZeroChargesFromSplit(builder *PaymentSplitByItemBuilder, paymentSplit
 	chargeTypeToPaymentMethod map[string]string, add builderAddFunc) {
 	for id, split := range paymentSplit {
 		for qualifier, charge := range split.ChargesByType().GetAllCharges() {
+			// charge should be transformed to payable
+			charge = price.Charge{
+				Price:     charge.Price.GetPayable(),
+				Value:     charge.Value.GetPayable(),
+				Type:      charge.Type,
+				Reference: charge.Reference,
+			}
 			// skip charges with zero value
 			if charge.Value.IsZero() {
 				continue
