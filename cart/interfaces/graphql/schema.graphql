@@ -76,7 +76,16 @@ type Commerce_CartDecoratedItem {
 
 type Commerce_CartItem {
     id: ID!
-    qty: Int
+    externalReference: String!
+    marketplaceCode: String!
+    variantMarketPlaceCode: String!
+    productName: String!
+    sourceID: String!
+    qty: Int!
+    additionalDataKeys: [String!]
+    additionalDataValues: [String!]
+    getAdditionalData(key: String!): String
+    hasAdditionalDataKey(key: String!): Boolean
 }
 
 type Commerce_CartAddress {

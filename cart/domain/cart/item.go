@@ -132,6 +132,41 @@ func (i Item) RowPriceNetWithItemRelatedDiscount() priceDomain.Price {
 	return result
 }
 
+// AdditionalDataKeys lists all available keys
+func (i Item) AdditionalDataKeys() []string {
+	additionalData := i.AdditionalData
+	res := make([]string, len(additionalData))
+	n := 0
+	for k := range additionalData {
+		res[n] = k
+		n++
+	}
+	return res
+}
+
+// AdditionalDataValues lists all values
+func (i Item) AdditionalDataValues() []string {
+	res := make([]string, len(i.AdditionalData))
+	n := 0
+	for _, v := range i.AdditionalData {
+		res[n] = v
+		n++
+	}
+	return res
+}
+
+// HasAdditionalDataKey checks if an attribute is available
+func (i Item) HasAdditionalDataKey(key string) bool {
+	_, exist := i.AdditionalData[key]
+	return exist
+}
+
+// GetAdditionalData returns a specified attribute
+func (i Item) GetAdditionalData(key string) string {
+	attribute := i.AdditionalData[key]
+	return attribute
+}
+
 // Inject - called by dingo
 func (f *ItemBuilder) Inject(config *struct {
 	UseGrosPrice bool `inject:"config:commerce.product.priceIsGross,optional"`
