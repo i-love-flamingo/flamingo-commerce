@@ -3,7 +3,10 @@ package graphql
 import (
 	"context"
 	"flamingo.me/flamingo-commerce/v3/cart/application"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+	"flamingo.me/flamingo-commerce/v3/product/domain"
+	productGql "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql"
 	"flamingo.me/flamingo/v3/framework/web"
 )
 
@@ -54,4 +57,20 @@ func (r *CommerceCartMutationResolver) CommerceAddToCart(ctx context.Context, ma
 	}
 
 	return r.q.CommerceCart(ctx)
+}
+
+type CommerceCartItemResolver struct {
+	productResolver *productGql.CommerceProductQueryResolver
+}
+
+// Inject dependencies
+func (c *CommerceCartItemResolver) Inject(productResolver *productGql.CommerceProductQueryResolver) {
+	c.productResolver = productResolver
+}
+
+// Product returns the product for the corresponding cart item
+func (c *CommerceCartItemResolver) Product(ctx context.Context, item *cart.Item) (domain.BasicProduct, error) {
+	marketplaceCode := item.MarketplaceCode
+
+	return c.productResolver.CommerceProduct(ctx, marketplaceCode)
 }

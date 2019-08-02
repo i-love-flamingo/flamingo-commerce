@@ -86,6 +86,13 @@ type Commerce_CartItem {
     additionalDataValues: [String!]
     getAdditionalData(key: String!): String
     hasAdditionalDataKey(key: String!): Boolean
+    singlePriceGross: Commerce_Price!
+    singlePriceNet: Commerce_Price!
+    rowPriceGross: Commerce_Price!
+    rowPriceNet: Commerce_Price!
+#    rowTaxes: Commerce_Taxes!
+    product: Commerce_Product!
+
 }
 
 type Commerce_CartAddress {
