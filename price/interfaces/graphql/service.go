@@ -25,5 +25,7 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 				"amount": "FloatAmount",
 			},
 		},
+		"Commerce_Charge":          domain.Charge{},
+		"Commerce_ChargeQualifier": domain.ChargeQualifier{},
 	}.Models()
 }

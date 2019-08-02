@@ -19,6 +19,7 @@ type Commerce_Cart {
     itemCount: Int!
     productCount: Int!
     isPaymentSelected: Boolean!
+    grandTotal: Commerce_Price!
     #	appliedGiftCards: [Commerce_CartAppliedGiftCard!]
 }
 

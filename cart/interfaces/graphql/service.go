@@ -14,7 +14,6 @@ type Service struct{}
 // Schema for cart, delivery and addresses
 func (*Service) Schema() []byte {
 	return MustAsset("schema.graphql")
-
 }
 
 // Models mapping for Commerce_Cart types
@@ -29,7 +28,7 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		},
 		"Commerce_CartDecoratedDelivery":    decorator.DecoratedDelivery{},
 		"Commerce_CartDelivery":             cart.Delivery{},
-		"Commerce_CartDeliveryInfo":		 cart.DeliveryInfo{},
+		"Commerce_CartDeliveryInfo":         cart.DeliveryInfo{},
 		"Commerce_CartDeliveryLocation":     cart.DeliveryLocation{},
 		"Commerce_CartShippingItem":         cart.ShippingItem{},
 		"Commerce_CartDecoratedItem":        decorator.DecoratedCartItem{},
