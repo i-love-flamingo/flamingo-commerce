@@ -2,10 +2,11 @@ package templatefunctions
 
 import (
 	"context"
-	"flamingo.me/pugtemplate/pugjs"
 	"log"
 	"strconv"
 	"strings"
+
+	"flamingo.me/pugtemplate/pugjs"
 
 	"flamingo.me/flamingo/v3/framework/web"
 
@@ -41,30 +42,29 @@ func (tf *FindProducts) Func(ctx context.Context) interface{} {
 		filterConstrains := make(map[string]string)
 		keyValueFilters := make(map[string][]string)
 
-		if len(configs) > 0 {
-			searchConfig = configs[0].AsStringMap()
-		}
-
-		if len(configs) > 1 {
-			for key, value := range configs[1].AsStringIfaceMap() {
-				if str, ok := value.(pugjs.String); ok { // allow string
-					keyValueFilters[key] = []string{str.String()}
-				} else if arrStr, ok := value.([]string); ok { // and array of strings
-					keyValueFilters[key] = arrStr
+		for configKey, config := range configs {
+			switch configKey {
+			case 0:
+				searchConfig = config.AsStringMap()
+				break
+			case 1:
+				for key, value := range config.AsStringIfaceMap() {
+					if str, ok := value.(pugjs.String); ok { // allow string
+						keyValueFilters[key] = []string{str.String()}
+					} else if arrStr, ok := value.([]string); ok { // and array of strings
+						keyValueFilters[key] = arrStr
+					}
 				}
+				break
+			case 2:
+				filterConstrains = config.AsStringMap()
+				break
 			}
-		}
-
-		if len(configs) > 2 {
-			filterConstrains = configs[2].AsStringMap()
 		}
 
 		filterProcessing := newFilterProcessing(web.RequestFromContext(ctx), namespace, searchConfig, keyValueFilters, filterConstrains)
 
-		//searchRequest.FilterBy = asFilterMap(keyValueFilters)
-		//fmt.Printf("%#v", searchRequest)
 		result, e := tf.ProductSearchService.Find(ctx, &filterProcessing.buildSearchRequest)
-
 		if e != nil {
 			log.Printf("Error: product.interfaces.templatefunc %v", e)
 			return &application.SearchResult{}
@@ -131,7 +131,7 @@ func newFilterProcessing(request *web.Request, namespace string, searchConfig ma
 	return filterProcessing
 }
 
-// modifyResult - whil check the result against the blacklist/whitelist
+// modifyResult - while check the result against the blacklist/whitelist
 func (f *filterProcessing) modifyResult(result *application.SearchResult) *application.SearchResult {
 	var newFacetCollection domain.FacetCollection
 	newFacetCollection = make(map[string]domain.Facet)
