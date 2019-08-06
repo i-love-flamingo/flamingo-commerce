@@ -396,7 +396,7 @@ func (cc *CheckoutController) showCheckoutFormWithErrors(ctx context.Context, r 
 	if form == nil {
 		form, _ = cc.checkoutFormController.GetUnsubmittedForm(ctx, r)
 	}
-	if form == nil {
+	if form != nil {
 		viewData.Form = *form
 	}
 	viewData.ErrorInfos = getViewErrorInfo(err)
