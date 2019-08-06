@@ -248,6 +248,9 @@ func (cc *CheckoutController) PlaceOrderAction(ctx context.Context, r *web.Reque
 	if err != nil {
 		cc.logger.WithContext(ctx).WithField("subcategory", "checkoutError").WithField("errorMsg", err.Error()).Error(fmt.Sprintf("place order failed: cart id: %v / total-amount: %v", decoratedCart.Cart.EntityID, decoratedCart.Cart.GrandTotal()))
 		if paymentError, ok := err.(*paymentDomain.Error); ok {
+			if paymentError.ErrorCode == "payment-aborted-by-customer" {
+				return cc.showCheckoutFormAndHandleSubmit(ctx, r, "checkout/checkout")
+			}
 			if cc.showReviewStepAfterPaymentError && !cc.skipReviewAction {
 				return cc.showReviewFormWithErrors(ctx, *decoratedCart, paymentError)
 			}
