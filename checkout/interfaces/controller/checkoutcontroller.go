@@ -23,6 +23,11 @@ import (
 	paymentDomain "flamingo.me/flamingo-commerce/v3/payment/domain"
 )
 
+// error messages
+const (
+	ErrorPaymentAbortedByCustomer = "payment-aborted-by-customer"
+)
+
 type (
 	// CheckoutViewData represents the checkout view data
 	CheckoutViewData struct {
@@ -248,7 +253,7 @@ func (cc *CheckoutController) PlaceOrderAction(ctx context.Context, r *web.Reque
 	if err != nil {
 		cc.logger.WithContext(ctx).WithField("subcategory", "checkoutError").WithField("errorMsg", err.Error()).Error(fmt.Sprintf("place order failed: cart id: %v / total-amount: %v", decoratedCart.Cart.EntityID, decoratedCart.Cart.GrandTotal()))
 		if paymentError, ok := err.(*paymentDomain.Error); ok {
-			if paymentError.ErrorCode == "payment-aborted-by-customer" {
+			if paymentError.ErrorCode == ErrorPaymentAbortedByCustomer {
 				return cc.showCheckoutFormAndHandleSubmit(ctx, r, "checkout/checkout")
 			}
 			if cc.showReviewStepAfterPaymentError && !cc.skipReviewAction {
