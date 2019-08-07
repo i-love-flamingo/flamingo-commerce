@@ -248,6 +248,9 @@ func (cc *CheckoutController) PlaceOrderAction(ctx context.Context, r *web.Reque
 	if err != nil {
 		cc.logger.WithContext(ctx).WithField("subcategory", "checkoutError").WithField("errorMsg", err.Error()).Error(fmt.Sprintf("place order failed: cart id: %v / total-amount: %v", decoratedCart.Cart.EntityID, decoratedCart.Cart.GrandTotal()))
 		if paymentError, ok := err.(*paymentDomain.Error); ok {
+			if paymentError.ErrorCode == paymentDomain.ErrorPaymentAbortedByCustomer {
+				return cc.showCheckoutFormAndHandleSubmit(ctx, r, "checkout/checkout")
+			}
 			if cc.showReviewStepAfterPaymentError && !cc.skipReviewAction {
 				return cc.showReviewFormWithErrors(ctx, *decoratedCart, paymentError)
 			}
@@ -393,7 +396,7 @@ func (cc *CheckoutController) showCheckoutFormWithErrors(ctx context.Context, r 
 	if form == nil {
 		form, _ = cc.checkoutFormController.GetUnsubmittedForm(ctx, r)
 	}
-	if form == nil {
+	if form != nil {
 		viewData.Form = *form
 	}
 	viewData.ErrorInfos = getViewErrorInfo(err)
