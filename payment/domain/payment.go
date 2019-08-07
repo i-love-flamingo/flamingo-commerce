@@ -32,6 +32,8 @@ const (
 	PaymentErrorCodeAuthorizeFailed = "authorization_failed"
 	// PaymentErrorCodeCaptureFailed error
 	PaymentErrorCodeCaptureFailed = "capture_failed"
+	// ErrorPaymentAbortedByCustomer error
+	ErrorPaymentAbortedByCustomer = "payment-aborted-by-customer"
 )
 
 // Error getter
