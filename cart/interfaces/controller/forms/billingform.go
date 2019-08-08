@@ -61,8 +61,8 @@ func (p *BillingAddressFormService) GetFormData(ctx context.Context, req *web.Re
 	}
 	cart, err := p.applicationCartReceiverService.ViewCart(ctx, req.Session())
 	if err == nil {
-		if cart.BillingAdress != nil {
-			billingAddressForm.LoadFromCartAddress(*cart.BillingAdress)
+		if cart.BillingAddress != nil {
+			billingAddressForm.LoadFromCartAddress(*cart.BillingAddress)
 		}
 	}
 	return BillingAddressForm(billingAddressForm), nil

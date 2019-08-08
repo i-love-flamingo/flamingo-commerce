@@ -259,7 +259,7 @@ func (cob *InMemoryBehaviour) UpdatePurchaser(ctx context.Context, cart *domainc
 // UpdateBillingAddress - updates address
 func (cob *InMemoryBehaviour) UpdateBillingAddress(ctx context.Context, cart *domaincart.Cart, billingAddress domaincart.Address) (*domaincart.Cart, domaincart.DeferEvents, error) {
 
-	cart.BillingAdress = &billingAddress
+	cart.BillingAddress = &billingAddress
 
 	err := cob.cartStorage.StoreCart(cart)
 	if err != nil {
