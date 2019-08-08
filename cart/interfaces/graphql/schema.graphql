@@ -1,6 +1,6 @@
 type Commerce_DecoratedCart {
     cart: Commerce_Cart!
-    decorated_deliveries: [Commerce_CartDecoratedDelivery!]
+    decoratedDeliveries: [Commerce_CartDecoratedDelivery!]
 }
 
 type Commerce_Cart {
