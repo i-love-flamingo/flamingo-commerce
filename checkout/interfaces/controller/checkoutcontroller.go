@@ -522,7 +522,44 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 
 // PaymentAction asks the payment adapter about the current payment status and handle it
 func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request) web.Result {
-	return cc.responder.Render("checkout/payment", &PaymentStepViewData{}).SetNoCache()
+	decoratedCart, err := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
+	if err != nil {
+		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error %v", err)
+		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
+	}
+
+	gateway, err := cc.orderService.GetPaymentGateway(ctx, decoratedCart.Cart.PaymentSelection.Gateway())
+	if err != nil {
+		return cc.showCheckoutFormWithErrors(ctx, r, *decoratedCart, nil, err)
+	}
+
+	flowStatus, err := gateway.FlowStatus(ctx, &decoratedCart.Cart, application.PaymentFlowStandardCorrelationID)
+	if err != nil {
+		return cc.showCheckoutFormWithErrors(ctx, r, *decoratedCart, nil, err)
+	}
+
+	viewData := &PaymentStepViewData{
+		FlowStatus: *flowStatus,
+	}
+
+	switch flowStatus.Status {
+	case paymentDomain.PaymentFlowStatusUnapproved:
+		return cc.responder.Render("checkout/payment", viewData).SetNoCache()
+	case paymentDomain.PaymentFlowStatusApproved:
+		err := gateway.ConfirmResult(ctx, nil, nil)
+		if err != nil {
+			// TODO
+		}
+		return cc.responder.RouteRedirect("checkout.placeorder", nil)
+	case paymentDomain.PaymentFlowStatusCompleted:
+		return cc.responder.RouteRedirect("checkout.placeorder", nil)
+	case paymentDomain.PaymentFlowStatusAborted:
+		return cc.responder.RouteRedirect("checkout", nil)
+	case paymentDomain.PaymentFlowStatusFailed:
+		return cc.responder.RouteRedirect("checkout", nil)
+	default:
+		return cc.responder.Render("checkout/payment", viewData).SetNoCache()
+	}
 }
 
 //getCommonGuardRedirects - checks config and may return a redirect that should be executed before the common checkou actions

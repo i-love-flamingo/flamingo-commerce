@@ -47,6 +47,17 @@ const (
 	PaymentErrorCodeCaptureFailed = "capture_failed"
 	// ErrorPaymentAbortedByCustomer error
 	ErrorPaymentAbortedByCustomer = "payment-aborted-by-customer"
+
+	// PaymentFlowStatusUnapproved payment started
+	PaymentFlowStatusUnapproved = "payment_unapproved"
+	// PaymentFlowStatusFailed payment failed
+	PaymentFlowStatusFailed = "payment_failed"
+	// PaymentFlowStatusAborted payment aborted by user
+	PaymentFlowStatusAborted = "payment_aborted"
+	// PaymentFlowStatusApproved payment approved by payment adapter
+	PaymentFlowStatusApproved = "payment_approved"
+	// PaymentFlowStatusCompleted payment approved and confirmed by customer
+	PaymentFlowStatusCompleted = "payment_completed"
 )
 
 // Error getter
