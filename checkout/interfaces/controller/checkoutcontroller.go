@@ -58,6 +58,12 @@ type (
 		ErrorInfos    ViewErrorInfos
 	}
 
+	// PaymentStepViewData represents the payment flow view data
+	PaymentStepViewData struct {
+		FlowStatus paymentDomain.FlowStatus
+		ErrorInfos ViewErrorInfos
+	}
+
 	// PlaceOrderFlashData represents the data passed to the success page - they need to be "glob"able
 	PlaceOrderFlashData struct {
 		PlacedOrderInfos placeorder.PlacedOrderInfos
@@ -305,7 +311,7 @@ func (cc *CheckoutController) ExpiredAction(ctx context.Context, r *web.Request)
 }
 
 func (cc *CheckoutController) getPaymentReturnURL(r *web.Request, PaymentProvider string) *url.URL {
-	paymentURL, _ := cc.router.Absolute(r, "checkout.placeorder", nil)
+	paymentURL, _ := cc.router.Absolute(r, "checkout.payment", nil)
 	return paymentURL
 }
 
@@ -457,12 +463,21 @@ func (cc *CheckoutController) processPaymentBeforePlaceOrder(ctx context.Context
 
 	//selected payment need to be set on cart before
 	//Handover to selected gateway flow:
-	webResult, err := gateway.StartWebFlow(ctx, &decoratedCart.Cart, application.PaymentFlowStandardCorrelationID, returnURL)
+	flowResult, err := gateway.StartFlow(ctx, &decoratedCart.Cart, application.PaymentFlowStandardCorrelationID, returnURL)
 	if err != nil {
 		return cc.showCheckoutFormWithErrors(ctx, r, *decoratedCart, nil, err)
 	}
 
-	return webResult
+	if flowResult.PlaceOrder {
+		// TODO: check where to get order payment from..
+		_, err = cc.orderService.CurrentCartPlaceOrder(ctx, session, placeorder.Payment{})
+
+		if err != nil {
+			return cc.showCheckoutFormWithErrors(ctx, r, *decoratedCart, nil, err)
+		}
+	}
+
+	return cc.responder.RouteRedirect("checkout.payment", nil)
 }
 
 // ReviewAction handles the cart review action
@@ -503,6 +518,11 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 
 	return cc.responder.Render("checkout/review", viewData).SetNoCache()
 
+}
+
+// PaymentAction asks the payment adapter about the current payment status and handle it
+func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request) web.Result {
+	return cc.responder.Render("checkout/payment", &PaymentStepViewData{}).SetNoCache()
 }
 
 //getCommonGuardRedirects - checks config and may return a redirect that should be executed before the common checkou actions
