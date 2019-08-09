@@ -1,7 +1,5 @@
 package domain
 
-import "net/url"
-
 type (
 	// Method contains information about a general payment method
 	Method struct {
@@ -11,10 +9,25 @@ type (
 		Code string
 	}
 
-	// FlowResult contains an url and a type to use to start a flow
+	// FlowResult contains information about a newly started flow
 	FlowResult struct {
-		URL  *url.URL
-		Type string
+		// Status of the payment flow
+		Status string
+		// PlaceOrder indicates if the order should be placed with the beginning of the payment flow
+		PlaceOrder bool
+		// Action to perform to proceed in the payment flow
+		Action string
+		// Data contains additional information related to the action / flow
+		Data interface{}
+	}
+
+	// FlowStatus contains information about the current payment status
+	FlowStatus struct {
+		// Status of the payment flow
+		Status string
+		// Action to perform to proceed in the payment flow
+		Action string
+		// Data contains additional information related to the action / flow
 		Data interface{}
 	}
 

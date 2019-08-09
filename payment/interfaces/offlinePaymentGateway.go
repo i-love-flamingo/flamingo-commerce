@@ -68,7 +68,7 @@ func (o *OfflineWebCartPaymentGateway) checkCart(currentCart *cartDomain.Cart) e
 	return nil
 }
 
-//StartFlow for offline payment
+// StartFlow for offline payment
 func (o *OfflineWebCartPaymentGateway) StartFlow(ctx context.Context, currentCart *cartDomain.Cart, correlationID string, returnURL *url.URL) (*domain.FlowResult, error) {
 	err := o.checkCart(currentCart)
 	if err != nil {
@@ -77,17 +77,16 @@ func (o *OfflineWebCartPaymentGateway) StartFlow(ctx context.Context, currentCar
 	return &domain.FlowResult{}, nil
 }
 
-//StartWebFlow for offline payment requires not much - just redirect to the returnUrl :-)
-func (o *OfflineWebCartPaymentGateway) StartWebFlow(ctx context.Context, currentCart *cartDomain.Cart, correlationID string, returnURL *url.URL) (web.Result, error) {
-	err := o.checkCart(currentCart)
-	if err != nil {
-		return nil, err
-	}
-	return o.responder.URLRedirect(returnURL), nil
+// FlowStatus for offline payment is always finished
+func (o *OfflineWebCartPaymentGateway) FlowStatus(ctx context.Context, cart *cartDomain.Cart, correlationID string) (*domain.FlowStatus, error) {
+	return &domain.FlowStatus{
+		Status: "complete",
+		Action: "SHOW_SUCCESS_PAGE",
+	}, nil
 }
 
-// GetFlowResult for offline payment can always return a simple valid payment that matches the given cart
-func (o *OfflineWebCartPaymentGateway) GetFlowResult(ctx context.Context, currentCart *cartDomain.Cart, correlationID string) (*placeorder.Payment, error) {
+// FlowResult for offline payment can always return a simple valid payment that matches the given cart
+func (o *OfflineWebCartPaymentGateway) FlowResult(ctx context.Context, currentCart *cartDomain.Cart, correlationID string) (*placeorder.Payment, error) {
 	err := o.checkCart(currentCart)
 	if err != nil {
 		return nil, err
