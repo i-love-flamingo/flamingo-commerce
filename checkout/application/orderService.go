@@ -222,7 +222,7 @@ func (os *OrderService) GetContactMail(cart cart.Cart) string {
 	//Get Email from either the cart
 	shippingEmail := cart.GetMainShippingEMail()
 	if shippingEmail == "" {
-		shippingEmail = cart.BillingAdress.Email
+		shippingEmail = cart.BillingAddress.Email
 	}
 	return shippingEmail
 }

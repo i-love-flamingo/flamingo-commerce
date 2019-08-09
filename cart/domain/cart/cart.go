@@ -23,8 +23,8 @@ type (
 		//EntityID is a second identifier that may be used by some backends
 		EntityID string
 
-		//BillingAdress - the main billing address (relevant for all payments/invoices)
-		BillingAdress *Address
+		//BillingAddress - the main billing address (relevant for all payments/invoices)
+		BillingAddress *Address
 
 		//Purchaser - additional infos for the legal contact person in this order
 		Purchaser *Person
@@ -590,10 +590,10 @@ func (b *Builder) SetReservedOrderID(id string) *Builder {
 	return b
 }
 
-// SetBillingAdress - optional
-func (b *Builder) SetBillingAdress(a Address) *Builder {
+// SetBillingAddress - optional
+func (b *Builder) SetBillingAddress(a Address) *Builder {
 	b.init()
-	b.cartInBuilding.BillingAdress = &a
+	b.cartInBuilding.BillingAddress = &a
 
 	return b
 }

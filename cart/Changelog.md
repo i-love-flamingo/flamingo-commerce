@@ -26,3 +26,6 @@
   * Changed visibility of `NewSimplePaymentSelection` to private, please use `NewDefaultPaymentSelection` instead
   * Update ChargeQualifier, add additional Reference string field
   * Add support for multiple charges of the same type (unique Reference needed)
+  
+# 8. August 2019
+* Renamed 'cart.BillingAdress' to 'cart.BillingAddress'
