@@ -24,11 +24,14 @@ type (
 		// FlowStatus returns the status of a previously started flow (see StartFlow())
 		FlowStatus(ctx context.Context, cart *cart.Cart, correlationID string) (*domain.FlowStatus, error)
 
-		// FlowResult returns the flow result of a payment
+		// FlowResult returns the flow result of a payment, should use OrderPaymentFromFlow() to generate the placeorder.Payment
 		// @param correlationID is used to fetch the result of a processing request started by this correlationId
 		FlowResult(ctx context.Context, cart *cart.Cart, correlationID string) (*placeorder.Payment, error)
 
 		// ConfirmResult used to finally confirm the result
 		ConfirmResult(ctx context.Context, cart *cart.Cart, cartPayment *placeorder.Payment) error
+
+		// OrderPaymentFromFlow generates a place order payment for a previously created flow
+		OrderPaymentFromFlow(ctx context.Context, cart *cart.Cart, flow *domain.FlowResult) (*placeorder.Payment, error)
 	}
 )

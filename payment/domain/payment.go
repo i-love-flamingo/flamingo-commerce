@@ -13,8 +13,8 @@ type (
 	FlowResult struct {
 		// Status of the payment flow
 		Status string
-		// PlaceOrder indicates if the order should be placed with the beginning of the payment flow
-		PlaceOrder bool
+		// EarlyPlaceOrder indicates if the order should be placed with the beginning of the payment flow
+		EarlyPlaceOrder bool
 		// Action to perform to proceed in the payment flow
 		Action string
 		// Data contains additional information related to the action / flow
