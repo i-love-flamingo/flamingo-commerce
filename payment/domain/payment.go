@@ -11,14 +11,10 @@ type (
 
 	// FlowResult contains information about a newly started flow
 	FlowResult struct {
-		// Status of the payment flow
-		Status string
 		// EarlyPlaceOrder indicates if the order should be placed with the beginning of the payment flow
 		EarlyPlaceOrder bool
-		// Action to perform to proceed in the payment flow
-		Action string
-		// Data contains additional information related to the action / flow
-		Data interface{}
+		// Status contains the current payment status
+		Status FlowStatus
 	}
 
 	// FlowStatus contains information about the current payment status

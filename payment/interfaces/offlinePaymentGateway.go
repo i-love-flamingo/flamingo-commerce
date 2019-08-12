@@ -85,17 +85,6 @@ func (o *OfflineWebCartPaymentGateway) FlowStatus(ctx context.Context, cart *car
 	}, nil
 }
 
-// FlowResult for offline payment can always return a simple valid payment that matches the given cart
-func (o *OfflineWebCartPaymentGateway) FlowResult(ctx context.Context, currentCart *cartDomain.Cart, correlationID string) (*placeorder.Payment, error) {
-	err := o.checkCart(currentCart)
-	if err != nil {
-		return nil, err
-	}
-
-	cartPayment, _ := o.OrderPaymentFromFlow(ctx, currentCart, correlationID)
-	return cartPayment, nil
-}
-
 //ConfirmResult - nothing to confirm  for offline payment
 func (o *OfflineWebCartPaymentGateway) ConfirmResult(ctx context.Context, cart *cartDomain.Cart, cartPayment *placeorder.Payment) error {
 	return nil
