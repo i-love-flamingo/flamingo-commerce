@@ -91,6 +91,23 @@ func (o *OfflineWebCartPaymentGateway) FlowResult(ctx context.Context, currentCa
 	if err != nil {
 		return nil, err
 	}
+
+	cartPayment, _ := o.OrderPaymentFromFlow(ctx, currentCart, correlationID)
+	return cartPayment, nil
+}
+
+//ConfirmResult - nothing to confirm  for offline payment
+func (o *OfflineWebCartPaymentGateway) ConfirmResult(ctx context.Context, cart *cartDomain.Cart, cartPayment *placeorder.Payment) error {
+	return nil
+}
+
+// OrderPaymentFromFlow create the order payment from the current cat/flow
+func (o *OfflineWebCartPaymentGateway) OrderPaymentFromFlow(ctx context.Context, currentCart *cartDomain.Cart, correlationID string) (*placeorder.Payment, error) {
+	err := o.checkCart(currentCart)
+	if err != nil {
+		return nil, err
+	}
+
 	cartPayment := placeorder.Payment{
 		Gateway: OfflineWebCartPaymentGatewayCode,
 	}
@@ -105,9 +122,4 @@ func (o *OfflineWebCartPaymentGateway) FlowResult(ctx context.Context, currentCa
 	}
 
 	return &cartPayment, nil
-}
-
-//ConfirmResult - nothing to confirm  for offline payment
-func (o *OfflineWebCartPaymentGateway) ConfirmResult(ctx context.Context, cart *cartDomain.Cart, cartPayment *placeorder.Payment) error {
-	return nil
 }

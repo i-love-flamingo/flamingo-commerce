@@ -32,6 +32,6 @@ type (
 		ConfirmResult(ctx context.Context, cart *cart.Cart, cartPayment *placeorder.Payment) error
 
 		// OrderPaymentFromFlow generates a place order payment for a previously created flow
-		OrderPaymentFromFlow(ctx context.Context, cart *cart.Cart, flow *domain.FlowResult) (*placeorder.Payment, error)
+		OrderPaymentFromFlow(ctx context.Context, cart *cart.Cart, correlationID string) (*placeorder.Payment, error)
 	}
 )

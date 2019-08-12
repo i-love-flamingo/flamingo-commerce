@@ -473,7 +473,7 @@ func (cc *CheckoutController) processPayment(ctx context.Context, r *web.Request
 
 	// payment flow requires an early place order
 	if flowResult.EarlyPlaceOrder {
-		payment, err := gateway.OrderPaymentFromFlow(ctx, &decoratedCart.Cart, flowResult)
+		payment, err := gateway.OrderPaymentFromFlow(ctx, &decoratedCart.Cart, application.PaymentFlowStandardCorrelationID)
 		if err != nil {
 			return cc.showCheckoutFormWithErrors(ctx, r, *decoratedCart, nil, err)
 		}
