@@ -261,7 +261,7 @@ func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, dec
 		return nil, errors.New("selected gateway not available")
 	}
 
-	cartPayment, err := gateway.FlowResult(ctx, &decoratedCart.Cart, PaymentFlowStandardCorrelationID)
+	cartPayment, err := gateway.OrderPaymentFromFlow(ctx, &decoratedCart.Cart, PaymentFlowStandardCorrelationID)
 	if err != nil {
 		return nil, err
 	}
