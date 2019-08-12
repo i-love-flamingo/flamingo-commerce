@@ -161,16 +161,18 @@ The checkoutController implements a default process for a checkout:
  * SubmitCheckoutAction
  	* This step is supposed to show a big form (validation and default values are configurable as well)
 	* payment can be selected in this step or in the next
-	* In cases a customer is logged in the form is prepopulated
-
- * ReviewAction
+	* In cases a customer is logged in the form is pre populated
+ * ReviewAction (can be skipped through configuration)
 	* this step is supposed to show the current cart status just before checkout
 		* optional the paymentmethod can also be selected here
-	* This step can also be skipped - then directly the placeOrder is handled
-
-*  Optional Payment Step (if the payment requires a redirect the payment page is shown and a redirect back to "ProcessPayment"
-* SuccessStep
-
+ * PaymentAction
+	* Payment gets initialized in SubmitCheckoutAction or ReviewAction
+	* Handles different payment stages and reacts to payment status provided by gateway
+ * PlaceOrderAction
+	* Place the order if not already placed
+	* Add Information about the order to the session flash messages
+ * SuccessStep
+	* Displays order success page containing the order infos from the previously set flash message
 */
 
 // StartAction handles the checkout start action
@@ -553,20 +555,30 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 
 	switch flowStatus.Status {
 	case paymentDomain.PaymentFlowStatusUnapproved:
+		// payment just started render payment page which handles actions
 		return cc.responder.Render("checkout/payment", viewData).SetNoCache()
 	case paymentDomain.PaymentFlowStatusApproved:
+		// payment is done but not confirmed by customer, confirm it and place order
 		err := gateway.ConfirmResult(ctx, nil, nil)
 		if err != nil {
-			// TODO
+			viewData.ErrorInfos = getViewErrorInfo(err)
+			return cc.responder.Render("checkout/payment", viewData).SetNoCache()
 		}
+
 		return cc.responder.RouteRedirect("checkout.placeorder", nil)
 	case paymentDomain.PaymentFlowStatusCompleted:
+		// payment is done and confirmed, place order
 		return cc.responder.RouteRedirect("checkout.placeorder", nil)
 	case paymentDomain.PaymentFlowStatusAborted:
+		// payment was aborted by user, redirect to checkout so a new payment can be started
 		return cc.responder.RouteRedirect("checkout", nil)
 	case paymentDomain.PaymentFlowStatusFailed:
+		// payment failed, redirect back to checkout
+
+		//TODO: clear last placed order from order service, reopen cart
 		return cc.responder.RouteRedirect("checkout", nil)
 	default:
+		// show payment page which can react to unknown payment status
 		return cc.responder.Render("checkout/payment", viewData).SetNoCache()
 	}
 }
