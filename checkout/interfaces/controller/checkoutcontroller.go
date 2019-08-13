@@ -229,13 +229,14 @@ func (cc *CheckoutController) SubmitCheckoutAction(ctx context.Context, r *web.R
 // PlaceOrderAction functions as a return/notification URL for Payment Providers
 func (cc *CheckoutController) PlaceOrderAction(ctx context.Context, r *web.Request) web.Result {
 	session := web.SessionFromContext(ctx)
-	//Guard Clause if Cart can not be fetched
-	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
-	if e != nil {
-		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error %v", e)
+
+	decoratedCart, err := cc.lastPlacedOrCurrentCart(ctx)
+	if err != nil {
+		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.placeorderaction: Error ", err)
 		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 	}
-	guardRedirect := cc.getCommonGuardRedirects(ctx, r.Session(), decoratedCart)
+
+	guardRedirect := cc.getCommonGuardRedirects(ctx, session, decoratedCart)
 	if guardRedirect != nil {
 		return guardRedirect
 	}
@@ -244,26 +245,30 @@ func (cc *CheckoutController) PlaceOrderAction(ctx context.Context, r *web.Reque
 		return cc.responder.Render("checkout/emptycart", nil).SetNoCache()
 	}
 
-	err := cc.orderService.SetSources(ctx, session)
+	err = cc.orderService.SetSources(ctx, session)
 	if err != nil {
 		cc.logger.Error("OnStepCurrentCartPlaceOrder SetSources Error ", err)
 		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 	}
+	var placedOrderInfo *application.PlaceOrderInfo
+	if cc.orderService.HasLastPlacedOrder(ctx) {
+		placedOrderInfo, _ = cc.lastPlaceOrderInfo(ctx)
+		cc.orderService.ClearLastPlacedOrder(ctx)
+	} else {
+		placedOrderInfo, err = cc.orderService.CurrentCartPlaceOrderWithPaymentProcessing(ctx, session)
 
-	//No Payment selected:	return cc.showCheckoutFormWithErrors(ctx, r, *decoratedCart, nil, errors.New("No payment selected"))
-	placedOrderInfo, err := cc.orderService.CurrentCartPlaceOrderWithPaymentProcessing(ctx, session)
-
-	if err != nil {
-		cc.logger.WithContext(ctx).WithField("subcategory", "checkoutError").WithField("errorMsg", err.Error()).Error(fmt.Sprintf("place order failed: cart id: %v / total-amount: %v", decoratedCart.Cart.EntityID, decoratedCart.Cart.GrandTotal()))
-		if paymentError, ok := err.(*paymentDomain.Error); ok {
-			if paymentError.ErrorCode == paymentDomain.ErrorPaymentAbortedByCustomer {
-				return cc.showCheckoutFormAndHandleSubmit(ctx, r, "checkout/checkout")
+		if err != nil {
+			cc.logger.WithContext(ctx).WithField("subcategory", "checkoutError").WithField("errorMsg", err.Error()).Error(fmt.Sprintf("place order failed: cart id: %v / total-amount: %v", decoratedCart.Cart.EntityID, decoratedCart.Cart.GrandTotal()))
+			if paymentError, ok := err.(*paymentDomain.Error); ok {
+				if paymentError.ErrorCode == paymentDomain.ErrorPaymentAbortedByCustomer {
+					return cc.showCheckoutFormAndHandleSubmit(ctx, r, "checkout/checkout")
+				}
+				if cc.showReviewStepAfterPaymentError && !cc.skipReviewAction {
+					return cc.showReviewFormWithErrors(ctx, *decoratedCart, paymentError)
+				}
 			}
-			if cc.showReviewStepAfterPaymentError && !cc.skipReviewAction {
-				return cc.showReviewFormWithErrors(ctx, *decoratedCart, paymentError)
-			}
+			return cc.showCheckoutFormWithErrors(ctx, r, *decoratedCart, nil, err)
 		}
-		return cc.showCheckoutFormWithErrors(ctx, r, *decoratedCart, nil, err)
 	}
 
 	r.Session().AddFlash(PlaceOrderFlashData{
@@ -297,9 +302,7 @@ func (cc *CheckoutController) SuccessAction(ctx context.Context, r *web.Request)
 			return cc.responder.Render("checkout/success", viewData).SetNoCache()
 		}
 	}
-	resp := cc.responder.RouteRedirect("checkout.expired", nil)
-	resp.SetNoCache()
-	return resp
+	return cc.responder.RouteRedirect("checkout.expired", nil).SetNoCache()
 }
 
 // ExpiredAction handles the expired cart action
@@ -531,12 +534,13 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 
 // PaymentAction asks the payment adapter about the current payment status and handle it
 func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request) web.Result {
-	// TODO: check if cart is already placed if so get it from the order service, if not via cart reciever
-
-	decoratedCart, err := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
+	decoratedCart, err := cc.lastPlacedOrCurrentCart(ctx)
 	if err != nil {
-		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error %v", err)
 		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
+	}
+
+	if decoratedCart.Cart.PaymentSelection == nil {
+		return cc.responder.RouteRedirect("checkout.expired", nil).SetNoCache()
 	}
 
 	gateway, err := cc.orderService.GetPaymentGateway(ctx, decoratedCart.Cart.PaymentSelection.Gateway())
@@ -559,7 +563,13 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 		return cc.responder.Render("checkout/payment", viewData).SetNoCache()
 	case paymentDomain.PaymentFlowStatusApproved:
 		// payment is done but not confirmed by customer, confirm it and place order
-		err := gateway.ConfirmResult(ctx, nil, nil)
+		orderPayment, err := gateway.OrderPaymentFromFlow(ctx, &decoratedCart.Cart, application.PaymentFlowStandardCorrelationID)
+		if err != nil {
+			viewData.ErrorInfos = getViewErrorInfo(err)
+			return cc.responder.Render("checkout/payment", viewData).SetNoCache()
+		}
+
+		err = gateway.ConfirmResult(ctx, &decoratedCart.Cart, orderPayment)
 		if err != nil {
 			viewData.ErrorInfos = getViewErrorInfo(err)
 			return cc.responder.Render("checkout/payment", viewData).SetNoCache()
@@ -571,11 +581,13 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 		return cc.responder.RouteRedirect("checkout.placeorder", nil)
 	case paymentDomain.PaymentFlowStatusAborted:
 		// payment was aborted by user, redirect to checkout so a new payment can be started
+		// TODO: reopen cart via cart service
+		cc.orderService.ClearLastPlacedOrder(ctx)
 		return cc.responder.RouteRedirect("checkout", nil)
 	case paymentDomain.PaymentFlowStatusFailed:
 		// payment failed, redirect back to checkout
-
-		//TODO: clear last placed order from order service, reopen cart
+		// TODO: reopen cart via cart service
+		cc.orderService.ClearLastPlacedOrder(ctx)
 		return cc.responder.RouteRedirect("checkout", nil)
 	default:
 		// show payment page which can react to unknown payment status
@@ -624,4 +636,37 @@ func (cc *CheckoutController) checkTermsAndPrivacyPolicy(r *web.Request) (bool, 
 	}
 
 	return canProceed, errors.New(strings.Join(errorMessages, ", "))
+}
+
+func (cc *CheckoutController) lastPlaceOrderInfo(ctx context.Context) (*application.PlaceOrderInfo, error) {
+	lastPlacedOrder, err := cc.orderService.LastPlacedOrder(ctx)
+	if err != nil {
+		cc.logger.Warn("couldn't get last placed order from orderService:", err)
+		return nil, err
+	}
+
+	return lastPlacedOrder, nil
+}
+
+// lastPlacedOrCurrentCart returns the decorated cart of the last placed order if there is one if not return the current cart
+func (cc *CheckoutController) lastPlacedOrCurrentCart(ctx context.Context) (*decorator.DecoratedCart, error) {
+	lastPlacedOrder, err := cc.lastPlaceOrderInfo(ctx)
+	if err != nil {
+		cc.logger.Warn("couldn't get last placed order from orderService:", err)
+		return nil, err
+	}
+
+	if lastPlacedOrder != nil {
+		// cart has been placed early use it
+		return cc.decoratedCartFactory.Create(ctx, lastPlacedOrder.Cart), nil
+	}
+
+	// cart wasn't placed early, fetch it from service
+	decoratedCart, err := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, web.SessionFromContext(ctx))
+	if err != nil {
+		cc.logger.WithContext(ctx).Error("lastPlacedOrCurrentCart -> ViewDecoratedCart Error:", err)
+		return nil, err
+	}
+
+	return decoratedCart, nil
 }
