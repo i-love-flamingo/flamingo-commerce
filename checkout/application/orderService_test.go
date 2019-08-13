@@ -24,7 +24,7 @@ func TestOrderService_LastPlacedOrder(t *testing.T) {
 		{
 			name: "",
 			args: args{
-				ctx: contextWithPlaceOrderInfoInSession(&application.PlaceOrderInfo{
+				ctx: contextWithPlaceOrderInfoInSession(application.PlaceOrderInfo{
 					PaymentInfos: nil,
 					PlacedOrders: nil,
 					ContactEmail: "test@test.de",
@@ -73,7 +73,7 @@ func TestOrderService_ClearLastPlacedOrder(t *testing.T) {
 		ContactEmail: "test@test.de",
 	}
 
-	ctx := contextWithPlaceOrderInfoInSession(&application.PlaceOrderInfo{
+	ctx := contextWithPlaceOrderInfoInSession(application.PlaceOrderInfo{
 		PaymentInfos: nil,
 		PlacedOrders: nil,
 		ContactEmail: "test@test.de",
@@ -101,7 +101,7 @@ func TestOrderService_ClearLastPlacedOrder(t *testing.T) {
 
 }
 
-func contextWithPlaceOrderInfoInSession(info *application.PlaceOrderInfo) context.Context {
+func contextWithPlaceOrderInfoInSession(info application.PlaceOrderInfo) context.Context {
 	session := web.EmptySession()
 	session.Store(application.LastPlacedOrderSessionKey, info)
 	return web.ContextWithSession(context.Background(), session)
