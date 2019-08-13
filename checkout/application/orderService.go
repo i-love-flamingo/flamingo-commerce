@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"encoding/gob"
 	"errors"
 	"fmt"
 
@@ -63,6 +64,7 @@ const (
 var orderFailedStat = stats.Int64("flamingo-commerce/orderfailed", "my stat records 1 occurences per error", stats.UnitDimensionless)
 
 func init() {
+	gob.Register(PlaceOrderInfo{})
 	opencensus.View("flamingo-commerce/orderfailed/count", orderFailedStat, view.Count())
 }
 
@@ -256,12 +258,17 @@ func (os *OrderService) LastPlacedOrder(ctx context.Context) (*PlaceOrderInfo, e
 		return nil, nil
 	}
 
-	placeOrderInfo, ok := lastPlacedOrder.(*PlaceOrderInfo)
+	placeOrderInfo, ok := lastPlacedOrder.(PlaceOrderInfo)
 	if ok == false {
 		return nil, errors.New("placeOrderInfo couldn't be received from session")
 	}
 
-	return placeOrderInfo, nil
+	return &placeOrderInfo, nil
+}
+
+func (os *OrderService) HasLastPlacedOrder(ctx context.Context) bool {
+	lastPlaced, err := os.LastPlacedOrder(ctx)
+	return lastPlaced != nil && err == nil
 }
 
 // ClearLastPlacedOrder clears the last placed cart, this can be useful if an cart / order is finished
