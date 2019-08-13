@@ -18,7 +18,7 @@ type OfflineWebCartPaymentGateway struct {
 }
 
 const (
-	//OfflineWebCartPaymentGatewayCode - the gateway code
+	// OfflineWebCartPaymentGatewayCode - the gateway code
 	OfflineWebCartPaymentGatewayCode = "offline"
 )
 
@@ -36,14 +36,16 @@ func (o *OfflineWebCartPaymentGateway) Inject(responder *web.Responder, config *
 
 // Methods returns the Payment Providers available Payment Methods
 func (o *OfflineWebCartPaymentGateway) Methods() []domain.Method {
-	return []domain.Method{{
-		Title: "cash on delivery",
-		Code:  "offlinepayment_cashondelivery",
-	},
+	return []domain.Method{
+		{
+			Title: "cash on delivery",
+			Code:  "offlinepayment_cashondelivery",
+		},
 		{
 			Title: "cash in advance",
 			Code:  "offlinepayment_cashinadvance",
-		}}
+		},
+	}
 }
 
 func (o *OfflineWebCartPaymentGateway) isSupportedMethod(method string) bool {
@@ -56,41 +58,44 @@ func (o *OfflineWebCartPaymentGateway) isSupportedMethod(method string) bool {
 }
 
 func (o *OfflineWebCartPaymentGateway) checkCart(currentCart *cartDomain.Cart) error {
-	//Read the infos in the cart and check precondition
+	// Read the infos in the cart and check precondition
 	if currentCart.PaymentSelection.Gateway() != OfflineWebCartPaymentGatewayCode {
-		return errors.New("Cart is not supposed to be payed by this gateway")
+		return errors.New("cart is not supposed to be payed by this gateway")
 	}
 	for qualifier := range currentCart.PaymentSelection.CartSplit() {
 		if !o.isSupportedMethod(qualifier.Method) {
-			return errors.New("Cart payment method not supported by gateway")
+			return errors.New("cart payment method not supported by gateway")
 		}
 	}
 	return nil
 }
 
-// StartFlow for offline payment
+// StartFlow for offline payment and directly mark it as completed, since there is no online payment process
 func (o *OfflineWebCartPaymentGateway) StartFlow(ctx context.Context, currentCart *cartDomain.Cart, correlationID string, returnURL *url.URL) (*domain.FlowResult, error) {
 	err := o.checkCart(currentCart)
 	if err != nil {
 		return nil, err
 	}
-	return &domain.FlowResult{}, nil
-}
-
-// FlowStatus for offline payment is always finished
-func (o *OfflineWebCartPaymentGateway) FlowStatus(ctx context.Context, cart *cartDomain.Cart, correlationID string) (*domain.FlowStatus, error) {
-	return &domain.FlowStatus{
-		Status: "complete",
-		Action: "SHOW_SUCCESS_PAGE",
+	return &domain.FlowResult{
+		Status: domain.FlowStatus{
+			Status: domain.PaymentFlowStatusCompleted,
+		},
 	}, nil
 }
 
-//ConfirmResult - nothing to confirm  for offline payment
+// FlowStatus for offline payment is always completed
+func (o *OfflineWebCartPaymentGateway) FlowStatus(ctx context.Context, cart *cartDomain.Cart, correlationID string) (*domain.FlowStatus, error) {
+	return &domain.FlowStatus{
+		Status: domain.PaymentFlowStatusCompleted,
+	}, nil
+}
+
+//ConfirmResult nothing to confirm  for offline payment
 func (o *OfflineWebCartPaymentGateway) ConfirmResult(ctx context.Context, cart *cartDomain.Cart, cartPayment *placeorder.Payment) error {
 	return nil
 }
 
-// OrderPaymentFromFlow create the order payment from the current cat/flow
+// OrderPaymentFromFlow create the order payment from the current cart/flow
 func (o *OfflineWebCartPaymentGateway) OrderPaymentFromFlow(ctx context.Context, currentCart *cartDomain.Cart, correlationID string) (*placeorder.Payment, error) {
 	err := o.checkCart(currentCart)
 	if err != nil {
