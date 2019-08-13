@@ -337,6 +337,7 @@ func (os *OrderService) preparePlaceOrderInfo(ctx context.Context, currentCart c
 	placeOrderInfo := &PlaceOrderInfo{
 		ContactEmail: email,
 		PlacedOrders: placedOrderInfos,
+		Cart:         currentCart,
 	}
 
 	for _, transaction := range cartPayment.Transactions {
