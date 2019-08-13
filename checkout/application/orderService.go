@@ -266,6 +266,7 @@ func (os *OrderService) LastPlacedOrder(ctx context.Context) (*PlaceOrderInfo, e
 	return &placeOrderInfo, nil
 }
 
+// HasLastPlacedOrder returns if a order has been previously placed
 func (os *OrderService) HasLastPlacedOrder(ctx context.Context) bool {
 	lastPlaced, err := os.LastPlacedOrder(ctx)
 	return lastPlaced != nil && err == nil
