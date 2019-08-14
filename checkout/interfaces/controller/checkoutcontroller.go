@@ -230,7 +230,7 @@ func (cc *CheckoutController) SubmitCheckoutAction(ctx context.Context, r *web.R
 func (cc *CheckoutController) PlaceOrderAction(ctx context.Context, r *web.Request) web.Result {
 	session := web.SessionFromContext(ctx)
 
-	decoratedCart, err := cc.lastPlacedOrCurrentCart(ctx)
+	decoratedCart, err := cc.orderService.LastPlacedOrCurrentCart(ctx)
 	if err != nil {
 		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.placeorderaction: Error ", err)
 		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
@@ -252,7 +252,7 @@ func (cc *CheckoutController) PlaceOrderAction(ctx context.Context, r *web.Reque
 	}
 	var placedOrderInfo *application.PlaceOrderInfo
 	if cc.orderService.HasLastPlacedOrder(ctx) {
-		placedOrderInfo, _ = cc.lastPlaceOrderInfo(ctx)
+		placedOrderInfo, _ = cc.orderService.LastPlacedOrder(ctx)
 		cc.orderService.ClearLastPlacedOrder(ctx)
 	} else {
 		placedOrderInfo, err = cc.orderService.CurrentCartPlaceOrderWithPaymentProcessing(ctx, session)
@@ -534,7 +534,7 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 
 // PaymentAction asks the payment adapter about the current payment status and handle it
 func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request) web.Result {
-	decoratedCart, err := cc.lastPlacedOrCurrentCart(ctx)
+	decoratedCart, err := cc.orderService.LastPlacedOrCurrentCart(ctx)
 	if err != nil {
 		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 	}
@@ -639,37 +639,4 @@ func (cc *CheckoutController) checkTermsAndPrivacyPolicy(r *web.Request) (bool, 
 	}
 
 	return canProceed, errors.New(strings.Join(errorMessages, ", "))
-}
-
-func (cc *CheckoutController) lastPlaceOrderInfo(ctx context.Context) (*application.PlaceOrderInfo, error) {
-	lastPlacedOrder, err := cc.orderService.LastPlacedOrder(ctx)
-	if err != nil {
-		cc.logger.Warn("couldn't get last placed order from orderService:", err)
-		return nil, err
-	}
-
-	return lastPlacedOrder, nil
-}
-
-// lastPlacedOrCurrentCart returns the decorated cart of the last placed order if there is one if not return the current cart
-func (cc *CheckoutController) lastPlacedOrCurrentCart(ctx context.Context) (*decorator.DecoratedCart, error) {
-	lastPlacedOrder, err := cc.lastPlaceOrderInfo(ctx)
-	if err != nil {
-		cc.logger.Warn("couldn't get last placed order from orderService:", err)
-		return nil, err
-	}
-
-	if lastPlacedOrder != nil {
-		// cart has been placed early use it
-		return cc.decoratedCartFactory.Create(ctx, lastPlacedOrder.Cart), nil
-	}
-
-	// cart wasn't placed early, fetch it from service
-	decoratedCart, err := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, web.SessionFromContext(ctx))
-	if err != nil {
-		cc.logger.WithContext(ctx).Error("lastPlacedOrCurrentCart -> ViewDecoratedCart Error:", err)
-		return nil, err
-	}
-
-	return decoratedCart, nil
 }

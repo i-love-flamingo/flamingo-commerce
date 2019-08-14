@@ -278,6 +278,29 @@ func (os *OrderService) ClearLastPlacedOrder(ctx context.Context) {
 	session.Delete(LastPlacedOrderSessionKey)
 }
 
+// LastPlacedOrCurrentCart returns the decorated cart of the last placed order if there is one if not return the current cart
+func (os *OrderService) LastPlacedOrCurrentCart(ctx context.Context) (*decorator.DecoratedCart, error) {
+	lastPlacedOrder, err := os.LastPlacedOrder(ctx)
+	if err != nil {
+		os.logger.Warn("couldn't get last placed order:", err)
+		return nil, err
+	}
+
+	if lastPlacedOrder != nil {
+		// cart has been placed early use it
+		return os.decoratedCartFactory.Create(ctx, lastPlacedOrder.Cart), nil
+	}
+
+	// cart wasn't placed early, fetch it from service
+	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(ctx, web.SessionFromContext(ctx))
+	if err != nil {
+		os.logger.WithContext(ctx).Error("ViewDecoratedCart Error:", err)
+		return nil, err
+	}
+
+	return decoratedCart, nil
+}
+
 // placeOrderWithPaymentProcessing after generating the decorated cart, the place order flow
 // is the same for the interface functions, therefore the common flow is placed in this private helper function
 func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, decoratedCart *decorator.DecoratedCart,
