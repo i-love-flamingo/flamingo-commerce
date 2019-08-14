@@ -589,6 +589,9 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 		// TODO: reopen cart via cart service
 		cc.orderService.ClearLastPlacedOrder(ctx)
 		return cc.responder.RouteRedirect("checkout", nil)
+	case paymentDomain.PaymentFlowWaitingForCustomer:
+		// payment pending, waiting for customer
+		return cc.responder.Render("checkout/payment", viewData).SetNoCache()
 	default:
 		// show payment page which can react to unknown payment status
 		return cc.responder.Render("checkout/payment", viewData).SetNoCache()

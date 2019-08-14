@@ -54,6 +54,8 @@ const (
 	PaymentFlowStatusApproved = "payment_approved"
 	// PaymentFlowStatusCompleted payment approved and confirmed by customer
 	PaymentFlowStatusCompleted = "payment_completed"
+	// PaymentFlowWaitingForCustomer payment waiting for customer
+	PaymentFlowWaitingForCustomer = "payment_waiting_for_customer"
 )
 
 // Error getter
