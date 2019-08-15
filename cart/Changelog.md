@@ -29,3 +29,8 @@
   
 # 8. August 2019
 * Renamed 'cart.BillingAdress' to 'cart.BillingAddress'
+
+# 15. August 2019  
+* Removed `ShippingItem.DiscountAmount` 
+  * Added `ShippingItem.AppliedDiscounts`
+    * ShippingItem now implements interface `WithDiscount`
