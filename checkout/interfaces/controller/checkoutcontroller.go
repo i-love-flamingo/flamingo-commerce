@@ -483,6 +483,11 @@ func (cc *CheckoutController) processPayment(ctx context.Context, r *web.Request
 			return cc.showCheckoutFormWithErrors(ctx, r, *decoratedCart, nil, err)
 		}
 
+		err = cc.orderService.SetSources(ctx, session)
+		if err != nil {
+			return cc.showCheckoutFormWithErrors(ctx, r, *decoratedCart, nil, err)
+		}
+
 		_, err = cc.orderService.CurrentCartPlaceOrder(ctx, session, *payment)
 		if err != nil {
 			return cc.showCheckoutFormWithErrors(ctx, r, *decoratedCart, nil, err)
