@@ -548,3 +548,76 @@ func TestAppliedDiscounts_ByType(t *testing.T) {
 		})
 	}
 }
+
+func TestAppliedDiscounts_Sum(t *testing.T) {
+	tests := []struct {
+		name      string
+		discounts cart.AppliedDiscounts
+		want      domain.Price
+		wantErr   bool
+	}{
+		{
+			name: "sum of no discounts",
+			want: domain.NewZero(""),
+		},
+		{
+			name: "sum of multiple discounts",
+			discounts: cart.AppliedDiscounts{
+				cart.AppliedDiscount{
+					CampaignCode: "code-1",
+					Label:        "title-1",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-5.0, "$"),
+					SortOrder:    2,
+				},
+				cart.AppliedDiscount{
+					CampaignCode: "code-2",
+					Label:        "title-2",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-10.0, "$"),
+					SortOrder:    3,
+				},
+				cart.AppliedDiscount{
+					CampaignCode: "code-1",
+					Label:        "title-2",
+					Type:         "type-2",
+					Applied:      domain.NewFromFloat(-12.0, "$"),
+					SortOrder:    1,
+				},
+			},
+			want: domain.NewFromFloat(-27.0, "$"),
+		},
+		{
+			name: "sum of multiple discounts with different currencies",
+			discounts: cart.AppliedDiscounts{
+				cart.AppliedDiscount{
+					CampaignCode: "code-1",
+					Label:        "title-1",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-5.0, "$"),
+					SortOrder:    0,
+				},
+				cart.AppliedDiscount{
+					CampaignCode: "code-1",
+					Label:        "title-1",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-10.0, "€"),
+					SortOrder:    0,
+				},
+			},
+			want:    domain.NewZero(""),
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, gotErr := tt.discounts.Sum()
+			if (gotErr != nil) != tt.wantErr {
+				t.Errorf("AppliedDiscounts.Sum() gotErr %v, wantErr %v", gotErr != nil, tt.wantErr)
+			}
+			if !got.Equal(tt.want) {
+				t.Errorf("AppliedDiscounts.Sum() = %v%v, want %v%v", got.Amount(), got.Currency(), tt.want.Amount(), tt.want.Currency())
+			}
+		})
+	}
+}

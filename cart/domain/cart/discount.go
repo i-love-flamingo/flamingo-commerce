@@ -184,3 +184,16 @@ func (discounts AppliedDiscounts) filter(filterFunc func(AppliedDiscount) bool) 
 	}
 	return result
 }
+
+// Sum returns the sum of the applied values of the AppliedDiscounts
+func (discounts AppliedDiscounts) Sum() (domain.Price, error) {
+	result := domain.Price{}
+	var err error
+	for _, val := range discounts {
+		result, err = result.Add(val.Applied)
+		if err != nil {
+			return domain.NewZero(""), err
+		}
+	}
+	return result, nil
+}
