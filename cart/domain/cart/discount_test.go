@@ -423,6 +423,109 @@ func TestItem_HasDiscounts(t *testing.T) {
 	}
 }
 
+func TestShippingItem_MergeDiscounts(t *testing.T) {
+	tests := []struct {
+		name     string
+		shipping *cart.ShippingItem
+		want     cart.AppliedDiscounts
+	}{
+		{
+			name: "no discounts on shipping",
+			shipping: &cart.ShippingItem{
+				AppliedDiscounts: cart.AppliedDiscounts{},
+			},
+			want: cart.AppliedDiscounts{},
+		},
+		{
+			name: "multiple discounts on shipping",
+			shipping: &cart.ShippingItem{
+				Title:     "",
+				PriceNet:  domain.Price{},
+				TaxAmount: domain.Price{},
+				AppliedDiscounts: cart.AppliedDiscounts{
+					cart.AppliedDiscount{
+						CampaignCode: "code-2",
+						Label:        "title-2",
+						Type:         "type-1",
+						Applied:      domain.NewFromFloat(-10.0, "$"),
+						SortOrder:    3,
+					},
+					cart.AppliedDiscount{
+						CampaignCode: "code-1",
+						Label:        "title-1",
+						Type:         "type-1",
+						Applied:      domain.NewFromFloat(-5.0, "$"),
+						SortOrder:    2,
+					},
+				},
+			},
+			want: cart.AppliedDiscounts{
+				cart.AppliedDiscount{
+					CampaignCode: "code-1",
+					Label:        "title-1",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-5.0, "$"),
+					SortOrder:    2,
+				},
+				cart.AppliedDiscount{
+					CampaignCode: "code-2",
+					Label:        "title-2",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-10.0, "$"),
+					SortOrder:    3,
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, _ := tt.shipping.MergeDiscounts()
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ShippingItem.MergeDiscounts() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestShippingItem_HasDiscounts(t *testing.T) {
+	tests := []struct {
+		name     string
+		shipping *cart.ShippingItem
+		want     bool
+	}{
+		{
+			name:     "no discounts on shipping",
+			shipping: &cart.ShippingItem{},
+			want:     false,
+		},
+		{
+			name: "multiple discounts on shipping",
+			shipping: &cart.ShippingItem{
+				Title:     "",
+				PriceNet:  domain.Price{},
+				TaxAmount: domain.Price{},
+				AppliedDiscounts: cart.AppliedDiscounts{
+					cart.AppliedDiscount{
+						CampaignCode: "code-2",
+						Label:        "title-2",
+						Type:         "type-1",
+						Applied:      domain.NewFromFloat(-10.0, "$"),
+						SortOrder:    3,
+					},
+				},
+			},
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got, _ := tt.shipping.HasAppliedDiscounts(); got != tt.want {
+				t.Errorf("ShippingItem.HasDiscounts() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestAppliedDiscounts_ByCampaignCode(t *testing.T) {
 	type args struct {
 		campaignCode string
