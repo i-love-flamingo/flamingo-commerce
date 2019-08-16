@@ -32,6 +32,7 @@ var (
 	_ WithDiscount = new(Item)
 	_ WithDiscount = new(Delivery)
 	_ WithDiscount = new(Cart)
+	_ WithDiscount = new(ShippingItem)
 )
 
 // MergeDiscounts sums up discounts of cart based on its deliveries
