@@ -241,7 +241,7 @@ func (c *PersonalDataFormController) HandleFormAction(ctx context.Context, r *we
 		return form, false, nil
 	}
 
-	// UpdatePurchaser (and add addittional data)
+	// UpdatePurchaser (and add additional data)
 	err = c.applicationCartService.UpdatePurchaser(ctx, session, personalDataForm.MapPerson(), personalDataForm.MapAdditionalData())
 	if err != nil {
 		c.logger.WithContext(ctx).Error("PersonalDataFormController UpdatePurchaser Error %v", err)
