@@ -294,7 +294,7 @@ func BuildDeliveryWithoutItemsButWithShippingDiscounts(t *testing.T) *cart.Deliv
 	return delivery
 }
 
-// BuildDeliveryWithoutDiscounts helper for delivery building
+// BuildDeliveryWithoutDiscountsAndShippingDiscounts helper for delivery building
 func BuildDeliveryWithoutDiscountsAndShippingDiscounts(t *testing.T) *cart.Delivery {
 	t.Helper()
 	builder := cart.DeliveryBuilder{}
@@ -309,8 +309,9 @@ func BuildDeliveryWithoutDiscountsAndShippingDiscounts(t *testing.T) *cart.Deliv
 	return delivery
 }
 
-// BuildDeliveryWithDifferentDiscounts helper for delivery building
+// BuildDeliveryWithDifferentDiscountsAndShippingDiscounts helper for delivery building
 // Adds an item with alternative discount twice
+// Adds a shipping item with discounts
 // This means when discounts are summed up (based on type + delivery)
 // The amount should be added to the previous discount
 func BuildDeliveryWithDifferentDiscountsAndShippingDiscounts(t *testing.T) *cart.Delivery {
@@ -328,8 +329,9 @@ func BuildDeliveryWithDifferentDiscountsAndShippingDiscounts(t *testing.T) *cart
 	return delivery
 }
 
-// BuildDeliveryWithDuplicateDiscounts helper for delivery building
-// Adds an item with alternative discount twice
+// BuildDeliveryWithDuplicateDiscountsAndShippingDiscounts helper for delivery building
+// Adds an item with duplicate discounts
+// Adds a shipping item with discounts
 // This means when discounts are summed up (based on type + delivery)
 // The amount should be added to the previous discount
 func BuildDeliveryWithDuplicateDiscountsAndShippingDiscounts(t *testing.T) *cart.Delivery {
