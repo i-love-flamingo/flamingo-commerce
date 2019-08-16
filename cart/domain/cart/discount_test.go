@@ -93,6 +93,28 @@ func TestCart_MergeDiscounts(t *testing.T) {
 			},
 		},
 		{
+			name: "cart with deliveries with items with duplicate discounts",
+			cart: &cart.Cart{
+				Deliveries: func() []cart.Delivery {
+					result := make([]cart.Delivery, 0)
+					delivery := testutils.BuildDeliveryWithDuplicateDiscounts(t)
+					result = append(result, *delivery)
+					delivery = testutils.BuildDeliveryWithDuplicateDiscounts(t)
+					result = append(result, *delivery)
+					return result
+				}(),
+			},
+			want: cart.AppliedDiscounts{
+				{
+					CampaignCode: "code-1",
+					Label:        "title-1",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-40.0, "$"),
+					SortOrder:    0,
+				},
+			},
+		},
+		{
 			name: "cart with different deliveries with items with discounts",
 			cart: &cart.Cart{
 				Deliveries: func() []cart.Delivery {
@@ -146,6 +168,71 @@ func TestCart_MergeDiscounts(t *testing.T) {
 					Type:         "type-1",
 					Applied:      domain.NewFromFloat(-20.0, "$"),
 					SortOrder:    5,
+				},
+			},
+		},
+		{
+			name: "cart with deliveries with items and shipping discounts",
+			cart: &cart.Cart{
+				Deliveries: func() []cart.Delivery {
+					result := make([]cart.Delivery, 0)
+					builder := cart.DeliveryBuilder{}
+					builder.SetDeliveryCode("code-1")
+					builder.AddItem(cart.Item{})
+					builder.AddItem(cart.Item{})
+					builder.SetShippingItem(*testutils.BuildShippingItemWithDiscounts(t))
+					delivery, _ := builder.Build()
+					result = append(result, *delivery)
+					builder = cart.DeliveryBuilder{}
+					builder.SetDeliveryCode("code-2")
+					builder.SetShippingItem(*testutils.BuildShippingItemWithDiscounts(t))
+					result = append(result, *delivery)
+					return result
+				}(),
+			},
+			want: cart.AppliedDiscounts{
+				cart.AppliedDiscount{
+					CampaignCode: "code-2",
+					Label:        "title-2",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-10.0, "$"),
+					SortOrder:    2,
+				},
+				cart.AppliedDiscount{
+					CampaignCode: "code-1",
+					Label:        "title-1",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-20.0, "$"),
+					SortOrder:    3,
+				},
+			},
+		},
+		{
+			name: "cart with deliveries with items with discounts and shipping discounts",
+			cart: &cart.Cart{
+				Deliveries: func() []cart.Delivery {
+					result := make([]cart.Delivery, 0)
+					delivery := testutils.BuildDeliveryWithoutDiscountsAndShippingDiscounts(t)
+					result = append(result, *delivery)
+					delivery = testutils.BuildDeliveryWithoutDiscountsAndShippingDiscounts(t)
+					result = append(result, *delivery)
+					return result
+				}(),
+			},
+			want: cart.AppliedDiscounts{
+				{
+					CampaignCode: "code-2",
+					Label:        "title-2",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-10.0, "$"),
+					SortOrder:    2,
+				},
+				{
+					CampaignCode: "code-1",
+					Label:        "title-1",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-20.0, "$"),
+					SortOrder:    3,
 				},
 			},
 		},
@@ -215,6 +302,20 @@ func TestCart_HasDiscounts(t *testing.T) {
 					delivery := testutils.BuildDeliveryWithDiscounts(t)
 					result = append(result, *delivery)
 					delivery = testutils.BuildDeliveryWithDiscounts(t)
+					result = append(result, *delivery)
+					return result
+				}(),
+			},
+			want: true,
+		},
+		{
+			name: "cart with deliveries with items with duplicate discounts and shipping discounts",
+			cart: &cart.Cart{
+				Deliveries: func() []cart.Delivery {
+					result := make([]cart.Delivery, 0)
+					delivery := testutils.BuildDeliveryWithDuplicateDiscountsAndShippingDiscounts(t)
+					result = append(result, *delivery)
+					delivery = testutils.BuildDeliveryWithDuplicateDiscountsAndShippingDiscounts(t)
 					result = append(result, *delivery)
 					return result
 				}(),
@@ -295,6 +396,107 @@ func TestDelivery_MergeDiscounts(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:     "delivery with item with duplicate discounts",
+			delivery: testutils.BuildDeliveryWithDuplicateDiscounts(t),
+			want: cart.AppliedDiscounts{
+				{
+					CampaignCode: "code-1",
+					Label:        "title-1",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-20.0, "$"),
+					SortOrder:    0,
+				},
+			},
+		},
+		{
+			name:     "delivery with items but without discounts and shipping discounts",
+			delivery: testutils.BuildDeliveryWithoutDiscountsAndShippingDiscounts(t),
+			want: cart.AppliedDiscounts{
+				cart.AppliedDiscount{
+					CampaignCode: "code-2",
+					Label:        "title-2",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-5.0, "$"),
+					SortOrder:    2,
+				},
+				cart.AppliedDiscount{
+					CampaignCode: "code-1",
+					Label:        "title-1",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-10.0, "$"),
+					SortOrder:    3,
+				},
+			},
+		},
+		{
+			name:     "delivery with items with different discounts and shipping discounts",
+			delivery: testutils.BuildDeliveryWithDifferentDiscountsAndShippingDiscounts(t),
+			want: cart.AppliedDiscounts{
+				{
+					CampaignCode: "code-5",
+					Label:        "title-5",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-15.0, "$"),
+					SortOrder:    0,
+				},
+				{
+					CampaignCode: "code-6",
+					Label:        "title-6",
+					Type:         "type-2",
+					Applied:      domain.NewFromFloat(-5.0, "$"),
+					SortOrder:    1,
+				},
+				{
+					CampaignCode: "code-2",
+					Label:        "title-2",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-20.0, "$"),
+					SortOrder:    2,
+				},
+				{
+					CampaignCode: "code-1",
+					Label:        "title-1",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-20.0, "$"),
+					SortOrder:    3,
+				},
+				{
+					CampaignCode: "code-3",
+					Label:        "title-1",
+					Type:         "type-2",
+					Applied:      domain.NewFromFloat(-5.0, "$"),
+					SortOrder:    4,
+				},
+				{
+					CampaignCode: "code-4",
+					Label:        "title-4",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-10.0, "$"),
+					SortOrder:    5,
+				},
+			},
+		},
+		{
+			name:     "delivery with item with duplicate discounts and shipping discounts",
+			delivery: testutils.BuildDeliveryWithDuplicateDiscountsAndShippingDiscounts(t),
+			want: cart.AppliedDiscounts{
+				{
+					CampaignCode: "code-1",
+					Label:        "title-1",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-30.0, "$"),
+					SortOrder:    0,
+				},
+				cart.AppliedDiscount{
+					CampaignCode: "code-2",
+					Label:        "title-2",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-5.0, "$"),
+					SortOrder:    2,
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -325,6 +527,11 @@ func TestDelivery_HasDiscounts(t *testing.T) {
 		{
 			name:     "delivery with items with discounts",
 			delivery: testutils.BuildDeliveryWithDiscounts(t),
+			want:     true,
+		},
+		{
+			name:     "delivery with items with duplicate discounts and shipping discounts",
+			delivery: testutils.BuildDeliveryWithDuplicateDiscountsAndShippingDiscounts(t),
 			want:     true,
 		},
 	}
@@ -377,6 +584,19 @@ func TestItem_MergeDiscounts(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "duplicate discounts on item",
+			item: testutils.BuildItemWithDuplicateDiscounts(t),
+			want: cart.AppliedDiscounts{
+				{
+					CampaignCode: "code-1",
+					Label:        "title-1",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-20.0, "$"),
+					SortOrder:    0,
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -413,6 +633,11 @@ func TestItem_HasDiscounts(t *testing.T) {
 			}(),
 			want: true,
 		},
+		{
+			name: "duplicate discounts on item",
+			item: testutils.BuildItemWithDuplicateDiscounts(t),
+			want: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -437,42 +662,35 @@ func TestShippingItem_MergeDiscounts(t *testing.T) {
 			want: cart.AppliedDiscounts{},
 		},
 		{
-			name: "multiple discounts on shipping",
-			shipping: &cart.ShippingItem{
-				Title:     "",
-				PriceNet:  domain.Price{},
-				TaxAmount: domain.Price{},
-				AppliedDiscounts: cart.AppliedDiscounts{
-					cart.AppliedDiscount{
-						CampaignCode: "code-2",
-						Label:        "title-2",
-						Type:         "type-1",
-						Applied:      domain.NewFromFloat(-10.0, "$"),
-						SortOrder:    3,
-					},
-					cart.AppliedDiscount{
-						CampaignCode: "code-1",
-						Label:        "title-1",
-						Type:         "type-1",
-						Applied:      domain.NewFromFloat(-5.0, "$"),
-						SortOrder:    2,
-					},
-				},
-			},
+			name:     "multiple discounts on shipping",
+			shipping: testutils.BuildShippingItemWithDiscounts(t),
 			want: cart.AppliedDiscounts{
 				cart.AppliedDiscount{
-					CampaignCode: "code-1",
-					Label:        "title-1",
+					CampaignCode: "code-2",
+					Label:        "title-2",
 					Type:         "type-1",
 					Applied:      domain.NewFromFloat(-5.0, "$"),
 					SortOrder:    2,
 				},
 				cart.AppliedDiscount{
-					CampaignCode: "code-2",
-					Label:        "title-2",
+					CampaignCode: "code-1",
+					Label:        "title-1",
 					Type:         "type-1",
 					Applied:      domain.NewFromFloat(-10.0, "$"),
 					SortOrder:    3,
+				},
+			},
+		},
+		{
+			name:     "duplicate discounts on shipping",
+			shipping: testutils.BuildShippingItemWithDuplicateDiscounts(t),
+			want: cart.AppliedDiscounts{
+				cart.AppliedDiscount{
+					CampaignCode: "code-1",
+					Label:        "title-1",
+					Type:         "type-1",
+					Applied:      domain.NewFromFloat(-30.0, "$"),
+					SortOrder:    0,
 				},
 			},
 		},
@@ -499,22 +717,14 @@ func TestShippingItem_HasDiscounts(t *testing.T) {
 			want:     false,
 		},
 		{
-			name: "multiple discounts on shipping",
-			shipping: &cart.ShippingItem{
-				Title:     "",
-				PriceNet:  domain.Price{},
-				TaxAmount: domain.Price{},
-				AppliedDiscounts: cart.AppliedDiscounts{
-					cart.AppliedDiscount{
-						CampaignCode: "code-2",
-						Label:        "title-2",
-						Type:         "type-1",
-						Applied:      domain.NewFromFloat(-10.0, "$"),
-						SortOrder:    3,
-					},
-				},
-			},
-			want: true,
+			name:     "multiple discounts on shipping",
+			shipping: testutils.BuildShippingItemWithDiscounts(t),
+			want:     true,
+		},
+		{
+			name:     "duplicate discounts on shipping",
+			shipping: testutils.BuildShippingItemWithDuplicateDiscounts(t),
+			want:     true,
 		},
 	}
 	for _, tt := range tests {

@@ -36,7 +36,7 @@ var (
 )
 
 // MergeDiscounts sums up discounts of cart based on its deliveries
-// All discounts with the same type and title are aggregated and returned as one with a summed price
+// All discounts with the same campaign code are aggregated and returned as one with a summed price
 func (c *Cart) MergeDiscounts() (AppliedDiscounts, error) {
 	// guard if no items in delivery, no need to iterate
 	if len(c.Deliveries) <= 0 {
@@ -44,9 +44,14 @@ func (c *Cart) MergeDiscounts() (AppliedDiscounts, error) {
 	}
 	// collect different discounts on item level
 	var err error
+	var discounts AppliedDiscounts
 	collection := make(map[string]*AppliedDiscount)
 	for _, delivery := range c.Deliveries {
-		collection, err = mapDiscounts(collection, &delivery)
+		discounts, err = (&delivery).MergeDiscounts()
+		if err != nil {
+			return nil, err
+		}
+		collection, err = mapDiscounts(collection, discounts)
 		if err != nil {
 			return nil, err
 		}
@@ -57,31 +62,36 @@ func (c *Cart) MergeDiscounts() (AppliedDiscounts, error) {
 
 // HasAppliedDiscounts check whether there are any discounts currently applied to the cart
 func (c *Cart) HasAppliedDiscounts() (bool, error) {
-	discounts, err := c.MergeDiscounts()
-	if err != nil {
-		return false, err
-	}
-	return len(discounts) > 0, nil
+	return hasAppliedDiscounts(c)
 }
 
 // MergeDiscounts sums up discounts of a delivery based on its single item discounts
-// All discounts with the same type and title are aggregated and returned as one with a summed price
+// All discounts with the same campaign code are aggregated and returned as one with a summed price
 func (d *Delivery) MergeDiscounts() (AppliedDiscounts, error) {
 	// guard if no items in delivery, no need to iterate
 	if len(d.Cartitems) <= 0 {
 		return make([]AppliedDiscount, 0), nil
 	}
 	var err error
+	var discounts AppliedDiscounts
 	collection := make(map[string]*AppliedDiscount)
 	// collect different discounts on item level
 	for _, item := range d.Cartitems {
-		collection, err = mapDiscounts(collection, &item)
+		discounts, err = (&item).MergeDiscounts()
+		if err != nil {
+			return nil, err
+		}
+		collection, err = mapDiscounts(collection, discounts)
 		if err != nil {
 			return nil, err
 		}
 	}
 	//collect different discounts for shipping cost
-	collection, err = mapDiscounts(collection, &d.ShippingItem)
+	discounts, err = d.ShippingItem.MergeDiscounts()
+	if err != nil {
+		return nil, err
+	}
+	collection, err = mapDiscounts(collection, discounts)
 	if err != nil {
 		return nil, err
 	}
@@ -91,52 +101,53 @@ func (d *Delivery) MergeDiscounts() (AppliedDiscounts, error) {
 
 // HasAppliedDiscounts check whether there are any discounts currently applied to the delivery
 func (d *Delivery) HasAppliedDiscounts() (bool, error) {
-	discounts, err := d.MergeDiscounts()
-	if err != nil {
-		return false, err
-	}
-	return len(discounts) > 0, nil
+	return hasAppliedDiscounts(d)
 }
 
 // MergeDiscounts parses discounts of a single item
-// All discounts with the same type and title are aggregated and returned as one with a summed price
+// All discounts with the same campaign code are aggregated and returned as one with a summed price
 func (i *Item) MergeDiscounts() (AppliedDiscounts, error) {
-	sort.SliceStable(i.AppliedDiscounts, func(x, y int) bool {
-		return i.AppliedDiscounts[x].SortOrder < i.AppliedDiscounts[y].SortOrder
-	})
-
-	return i.AppliedDiscounts, nil
+	return mergeDiscountsOnItemLevel(i.AppliedDiscounts)
 }
 
-// HasAppliedDiscounts check whether there are any discounts currently applied to the cart
+// HasAppliedDiscounts check whether there are any discounts currently applied to the item
 func (i *Item) HasAppliedDiscounts() (bool, error) {
-	discounts, err := i.MergeDiscounts()
-	if err != nil {
-		return false, err
-	}
-	return len(discounts) > 0, nil
+	return hasAppliedDiscounts(i)
 }
 
-// MergeDiscounts parses discounts of a shipping shipping
-// All discounts with the same type and title are aggregated and returned as one with a summed price
+// MergeDiscounts parses discounts of a shipping item
+// All discounts with the same campaign code are aggregated and returned as one with a summed price
 func (s *ShippingItem) MergeDiscounts() (AppliedDiscounts, error) {
-	sort.SliceStable(s.AppliedDiscounts, func(x, y int) bool {
-		return s.AppliedDiscounts[x].SortOrder < s.AppliedDiscounts[y].SortOrder
-	})
-
-	return s.AppliedDiscounts, nil
+	return mergeDiscountsOnItemLevel(s.AppliedDiscounts)
 }
 
-// HasAppliedDiscounts checks whether there are any discounts currently applied to the cart affecting shipping cost
+// HasAppliedDiscounts checks whether there are any discounts currently applied to the shipping item
 func (s *ShippingItem) HasAppliedDiscounts() (bool, error) {
-	discounts, err := s.MergeDiscounts()
-	if err != nil {
-		return false, err
-	}
-	return len(discounts) > 0, nil
+	return hasAppliedDiscounts(s)
 }
 
 // private helper functions
+
+// mergeDiscountOnItemLevel merges the discounts based on the campaign code
+func mergeDiscountsOnItemLevel(discounts AppliedDiscounts) (AppliedDiscounts, error) {
+	var err error
+	collection := make(map[string]*AppliedDiscount)
+	collection, err = mapDiscounts(collection, discounts)
+	if err != nil {
+		return nil, err
+	}
+	// transform map to flat slice
+	return mapToSlice(collection), nil
+}
+
+// hasAppliedDiscounts returns whether the discountable has discounts applied
+func hasAppliedDiscounts(discountable WithDiscount) (bool, error) {
+	discounts, err := discountable.MergeDiscounts()
+	if err != nil {
+		return false, err
+	}
+	return len(discounts) > 0, nil
+}
 
 // mapToSlice transform map of discounts to flat slice
 func mapToSlice(collection map[string]*AppliedDiscount) []AppliedDiscount {
@@ -153,12 +164,7 @@ func mapToSlice(collection map[string]*AppliedDiscount) []AppliedDiscount {
 }
 
 // mapDiscounts map type + title of discount to corresponding discount
-func mapDiscounts(result map[string]*AppliedDiscount, discountable WithDiscount) (map[string]*AppliedDiscount, error) {
-	discounts, err := discountable.MergeDiscounts()
-	// in case discounts cannot be collected, stop execution
-	if err != nil {
-		return nil, err
-	}
+func mapDiscounts(result map[string]*AppliedDiscount, discounts AppliedDiscounts) (map[string]*AppliedDiscount, error) {
 	for _, discount := range discounts {
 		// discount has been collected before, increase amount
 		if collected, ok := result[discount.CampaignCode]; ok {
