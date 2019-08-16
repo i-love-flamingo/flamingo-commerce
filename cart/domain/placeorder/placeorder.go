@@ -2,6 +2,7 @@ package placeorder
 
 import (
 	"context"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	price "flamingo.me/flamingo-commerce/v3/price/domain"
 	oauth "flamingo.me/flamingo/v3/core/oauth/domain"
@@ -13,6 +14,8 @@ type (
 		PlaceGuestCart(ctx context.Context, cart *cart.Cart, payment *Payment) (PlacedOrderInfos, error)
 		PlaceCustomerCart(ctx context.Context, auth oauth.Auth, cart *cart.Cart, payment *Payment) (PlacedOrderInfos, error)
 		ReserveOrderID(ctx context.Context, cart *cart.Cart) (string, error)
+		// CancelOrder cancels an previously placed order and returns the used cart
+		CancelOrder(ctx context.Context, orderInfos PlacedOrderInfos) error
 	}
 	// Payment represents all payments done for the cart and which items have been purchased by what method
 	Payment struct {
@@ -146,11 +149,11 @@ func (c ChargeByItem) ChargeForTotal(itemid string) (*price.Charge, bool) {
 func (c ChargeByItem) TotalItems() map[string]price.Charge {
 	return c.totalItems
 }
+
 //ShippingItems - returns ShippingItems
 func (c ChargeByItem) ShippingItems() map[string]price.Charge {
 	return c.shippingItems
 }
-
 
 //AddCartItem - modifies the current instance and adds a charge for an item
 func (c ChargeByItem) AddCartItem(id string, charge price.Charge) ChargeByItem {
@@ -160,7 +163,6 @@ func (c ChargeByItem) AddCartItem(id string, charge price.Charge) ChargeByItem {
 	c.cartItems[id] = charge
 	return c
 }
-
 
 //AddTotalItem - modifies the current instance and adds a charge for an item
 func (c ChargeByItem) AddTotalItem(id string, charge price.Charge) ChargeByItem {

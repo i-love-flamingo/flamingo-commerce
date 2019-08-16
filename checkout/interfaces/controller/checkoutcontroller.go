@@ -402,7 +402,7 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 func (cc *CheckoutController) showCheckoutFormWithErrors(ctx context.Context, r *web.Request, decoratedCart decorator.DecoratedCart, form *forms.CheckoutFormComposite, err error) web.Result {
 	template := "checkout/checkout"
 
-	cc.logger.WithContext(ctx).Warn("showCheckoutFormWithErrors / Error: %s", err.Error())
+	cc.logger.WithContext(ctx).Warn("showCheckoutFormWithErrors / Error: %s", err)
 	viewData := cc.getBasicViewData(ctx, r.Session(), decoratedCart)
 	if form == nil {
 		form, _ = cc.checkoutFormController.GetUnsubmittedForm(ctx, r)
@@ -539,6 +539,8 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 
 // PaymentAction asks the payment adapter about the current payment status and handle it
 func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request) web.Result {
+	session := web.SessionFromContext(ctx)
+
 	decoratedCart, err := cc.orderService.LastPlacedOrCurrentCart(ctx)
 	if err != nil {
 		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
@@ -586,14 +588,53 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 		return cc.responder.RouteRedirect("checkout.placeorder", nil)
 	case paymentDomain.PaymentFlowStatusAborted:
 		// payment was aborted by user, redirect to checkout so a new payment can be started
-		// TODO: reopen cart via cart service
-		cc.orderService.ClearLastPlacedOrder(ctx)
+		if cc.orderService.HasLastPlacedOrder(ctx) {
+			infos, err := cc.orderService.LastPlacedOrder(ctx)
+			if err != nil {
+				viewData.ErrorInfos = getViewErrorInfo(err)
+				return cc.responder.Render("checkout/payment", viewData).SetNoCache()
+			}
+
+			_, err = cc.orderService.CancelOrder(ctx, session, infos)
+			if err != nil {
+				viewData.ErrorInfos = getViewErrorInfo(err)
+				return cc.responder.Render("checkout/payment", viewData).SetNoCache()
+			}
+
+			cc.orderService.ClearLastPlacedOrder(ctx)
+		}
+
+		if !cc.skipReviewAction {
+			return cc.responder.RouteRedirect("checkout.review", nil)
+		}
+
 		return cc.responder.RouteRedirect("checkout", nil)
 	case paymentDomain.PaymentFlowStatusFailed:
 		// payment failed, redirect back to checkout
-		// TODO: reopen cart via cart service
-		cc.orderService.ClearLastPlacedOrder(ctx)
-		return cc.responder.RouteRedirect("checkout", nil)
+		if cc.orderService.HasLastPlacedOrder(ctx) {
+			infos, err := cc.orderService.LastPlacedOrder(ctx)
+			if err != nil {
+				viewData.ErrorInfos = getViewErrorInfo(err)
+				return cc.responder.Render("checkout/payment", viewData).SetNoCache()
+			}
+
+			_, err = cc.orderService.CancelOrder(ctx, session, infos)
+			if err != nil {
+				viewData.ErrorInfos = getViewErrorInfo(err)
+				return cc.responder.Render("checkout/payment", viewData).SetNoCache()
+			}
+
+			cc.orderService.ClearLastPlacedOrder(ctx)
+		}
+
+		// TODO: Pass actual payment error details to frontend
+		frontendErr := &paymentDomain.Error{ErrorCode: paymentDomain.PaymentErrorCodeCaptureFailed}
+
+		if cc.showReviewStepAfterPaymentError && !cc.skipReviewAction {
+			return cc.showReviewFormWithErrors(ctx, *decoratedCart, frontendErr)
+		}
+
+		return cc.showCheckoutFormWithErrors(ctx, r, *decoratedCart, nil, frontendErr)
 	case paymentDomain.PaymentFlowWaitingForCustomer:
 		// payment pending, waiting for customer
 		return cc.responder.Render("checkout/payment", viewData).SetNoCache()

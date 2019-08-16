@@ -205,6 +205,11 @@ func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.
 	return placeOrderInfo, nil
 }
 
+// CancelOrder cancels an previously placed order and returns the cart with the order content
+func (os *OrderService) CancelOrder(ctx context.Context, session *web.Session, order *PlaceOrderInfo) (*cart.Cart, error) {
+	return os.cartService.CancelOrder(ctx, session, order.PlacedOrders, &order.Cart)
+}
+
 // CurrentCartPlaceOrderWithPaymentProcessing places the current cart which is fetched from the context
 func (os *OrderService) CurrentCartPlaceOrderWithPaymentProcessing(ctx context.Context, session *web.Session) (*PlaceOrderInfo, error) {
 	// use a background context from here on to prevent the place order canceled by context cancel
