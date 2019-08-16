@@ -8,7 +8,6 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 
-
 	"reflect"
 	"testing"
 
@@ -49,6 +48,15 @@ func (m *MockGuestCartServiceAdapter) GetModifyBehaviour(context.Context) (cartD
 	return new(cartInfrastructure.InMemoryBehaviour), nil
 }
 
+func (m *MockGuestCartServiceAdapter) RestoreCart(ctx context.Context, cart *cartDomain.Cart) (*cartDomain.Cart, error) {
+	panic("implement me")
+}
+
+var (
+	// test interface implementation
+	_ cartDomain.GuestCartService = (*MockGuestCartServiceAdapterError)(nil)
+)
+
 type (
 	// MockGuestCartServiceAdapter with error on GetCart
 	MockGuestCartServiceAdapterError struct{}
@@ -64,6 +72,10 @@ func (m *MockGuestCartServiceAdapterError) GetNewCart(ctx context.Context) (*car
 
 func (m *MockGuestCartServiceAdapterError) GetModifyBehaviour(context.Context) (cartDomain.ModifyBehaviour, error) {
 	return new(cartInfrastructure.InMemoryBehaviour), nil
+}
+
+func (m *MockGuestCartServiceAdapterError) RestoreCart(ctx context.Context, cart *cartDomain.Cart) (*cartDomain.Cart, error) {
+	panic("implement me")
 }
 
 // MockCustomerCartService
@@ -85,6 +97,10 @@ func (m *MockCustomerCartService) GetCart(ctx context.Context, auth domain.Auth,
 	return &cartDomain.Cart{
 		ID: "mock_customer_cart",
 	}, nil
+}
+
+func (m *MockCustomerCartService) RestoreCart(ctx context.Context, auth domain.Auth, cart *cartDomain.Cart) (*cartDomain.Cart, error) {
+	panic("implement me")
 }
 
 // MockProductService
