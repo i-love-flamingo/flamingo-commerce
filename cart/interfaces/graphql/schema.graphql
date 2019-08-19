@@ -140,7 +140,7 @@ extend type Query {
 
 extend type Mutation {
     commerce_AddToCart(marketplaceCode: ID!, qty: Int, deliveryCode: String!): Commerce_DecoratedCart!
-    commerce_DeleteCartDelivery(deliveryCode: String): Commerce_DecoratedCart!
+    commerce_DeleteCartDelivery(deliveryCode: String!): Commerce_DecoratedCart!
     commerce_DeleteItem(itemId: ID!, deliveryCode: String!): Commerce_DecoratedCart!
     commerce_UpdateItemQty(itemID: ID!, deliveryCode: String!, qty: Int!): Commerce_DecoratedCart!
 }
