@@ -72,9 +72,9 @@ func (r *CommerceCartMutationResolver) CommerceDeleteItem(ctx context.Context, i
 }
 
 // CommerceDeleteCartDelivery mutation for removing deliveries from current users cart
-func (r *CommerceCartMutationResolver) CommerceDeleteCartDelivery(ctx context.Context, deliveryCode *string) (*decorator.DecoratedCart, error) {
+func (r *CommerceCartMutationResolver) CommerceDeleteCartDelivery(ctx context.Context, deliveryCode string) (*decorator.DecoratedCart, error) {
 	req := web.RequestFromContext(ctx)
-	_, err := r.applicationCartService.DeleteDelivery(ctx, req.Session(), *deliveryCode)
+	_, err := r.applicationCartService.DeleteDelivery(ctx, req.Session(), deliveryCode)
 	if err != nil {
 		return nil, err
 	}
