@@ -25,6 +25,8 @@ type (
 		Action string
 		// Data contains additional information related to the action / flow
 		Data interface{}
+		// Error contains additional information in case of an error (e.g. payment failed)
+		Error *Error
 	}
 
 	// Error should be used by PaymentGateway to indicate that payment failed (so that the customer can see a speaking message)
@@ -35,14 +37,14 @@ type (
 )
 
 const (
-	// PaymentErrorCodeCancelled cancelled
-	PaymentErrorCodeCancelled = "payment_cancelled"
+	// PaymentErrorCodeFailed error
+	PaymentErrorCodeFailed = "failed"
 	// PaymentErrorCodeAuthorizeFailed error
 	PaymentErrorCodeAuthorizeFailed = "authorization_failed"
 	// PaymentErrorCodeCaptureFailed error
 	PaymentErrorCodeCaptureFailed = "capture_failed"
-	// ErrorPaymentAbortedByCustomer error
-	ErrorPaymentAbortedByCustomer = "payment-aborted-by-customer"
+	// PaymentErrorAbortedByCustomer error
+	PaymentErrorAbortedByCustomer = "aborted_by_customer"
 
 	// PaymentFlowStatusUnapproved payment started
 	PaymentFlowStatusUnapproved = "payment_unapproved"

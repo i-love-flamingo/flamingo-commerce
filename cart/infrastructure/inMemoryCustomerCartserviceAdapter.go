@@ -37,9 +37,9 @@ func (gcs *InMemoryCustomerCartService) GetModifyBehaviour(context.Context, doma
 }
 
 // RestoreCart restores a previously used cart
-func (gcs *InMemoryCustomerCartService) RestoreCart(ctx context.Context, auth domain.Auth, cart *cart.Cart) (*cart.Cart, error) {
+func (gcs *InMemoryCustomerCartService) RestoreCart(ctx context.Context, auth domain.Auth, cart cart.Cart) (*cart.Cart, error) {
 	customerCart := cart
 
-	err := gcs.inMemoryBehaviour.StoreCart(customerCart)
-	return customerCart, err
+	err := gcs.inMemoryBehaviour.StoreCart(&customerCart)
+	return &customerCart, err
 }

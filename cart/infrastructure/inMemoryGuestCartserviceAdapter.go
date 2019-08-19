@@ -48,10 +48,10 @@ func (gcs *InMemoryGuestCartService) GetModifyBehaviour(context.Context) (cart.M
 }
 
 // RestoreCart restores a previously used guest cart
-func (gcs *InMemoryGuestCartService) RestoreCart(ctx context.Context, cart *cart.Cart) (*cart.Cart, error) {
+func (gcs *InMemoryGuestCartService) RestoreCart(ctx context.Context, cart cart.Cart) (*cart.Cart, error) {
 	guestCart := cart
 	guestCart.ID = strconv.Itoa(rand.Int())
 
-	err := gcs.inMemoryBehaviour.StoreCart(guestCart)
-	return guestCart, err
+	err := gcs.inMemoryBehaviour.StoreCart(&guestCart)
+	return &guestCart, err
 }

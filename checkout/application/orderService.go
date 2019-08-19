@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+	paymentDomain "flamingo.me/flamingo-commerce/v3/payment/domain"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
 
@@ -207,7 +208,7 @@ func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.
 
 // CancelOrder cancels an previously placed order and returns the cart with the order content
 func (os *OrderService) CancelOrder(ctx context.Context, session *web.Session, order *PlaceOrderInfo) (*cart.Cart, error) {
-	return os.cartService.CancelOrder(ctx, session, order.PlacedOrders, &order.Cart)
+	return os.cartService.CancelOrder(ctx, session, order.PlacedOrders, order.Cart)
 }
 
 // CurrentCartPlaceOrderWithPaymentProcessing places the current cart which is fetched from the context
@@ -332,13 +333,34 @@ func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, dec
 		return nil, errors.New("selected gateway not available")
 	}
 
+	flowStatus, err := gateway.FlowStatus(ctx, &decoratedCart.Cart, PaymentFlowStandardCorrelationID)
+	if err != nil {
+		// record fail count metric
+		stats.Record(ctx, orderFailedStat.M(1))
+		return nil, err
+	}
+
+	if flowStatus.Status == paymentDomain.PaymentFlowStatusFailed {
+		// record fail count metric
+		stats.Record(ctx, orderFailedStat.M(1))
+		return nil, flowStatus.Error
+	}
+
+	if flowStatus.Status == paymentDomain.PaymentFlowStatusAborted {
+		return nil, flowStatus.Error
+	}
+
 	cartPayment, err := gateway.OrderPaymentFromFlow(ctx, &decoratedCart.Cart, PaymentFlowStandardCorrelationID)
 	if err != nil {
+		// record fail count metric
+		stats.Record(ctx, orderFailedStat.M(1))
 		return nil, err
 	}
 
 	err = gateway.ConfirmResult(ctx, &decoratedCart.Cart, cartPayment)
 	if err != nil {
+		// record fail count metric
+		stats.Record(ctx, orderFailedStat.M(1))
 		return nil, err
 	}
 

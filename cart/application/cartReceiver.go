@@ -64,7 +64,7 @@ func (cs *CartReceiverService) Inject(
 }
 
 // RestoreCart restores a previously used guest / customer cart
-func (cs *CartReceiverService) RestoreCart(ctx context.Context, session *web.Session, cartToRestore *cart.Cart) (*cartDomain.Cart, error) {
+func (cs *CartReceiverService) RestoreCart(ctx context.Context, session *web.Session, cartToRestore cart.Cart) (*cartDomain.Cart, error) {
 	if cs.userService.IsLoggedIn(ctx, session) {
 		auth, err := cs.authManager.Auth(ctx, session)
 		if err != nil {

@@ -260,9 +260,6 @@ func (cc *CheckoutController) PlaceOrderAction(ctx context.Context, r *web.Reque
 		if err != nil {
 			cc.logger.WithContext(ctx).WithField("subcategory", "checkoutError").WithField("errorMsg", err.Error()).Error(fmt.Sprintf("place order failed: cart id: %v / total-amount: %v", decoratedCart.Cart.EntityID, decoratedCart.Cart.GrandTotal()))
 			if paymentError, ok := err.(*paymentDomain.Error); ok {
-				if paymentError.ErrorCode == paymentDomain.ErrorPaymentAbortedByCustomer {
-					return cc.showCheckoutFormAndHandleSubmit(ctx, r, "checkout/checkout")
-				}
 				if cc.showReviewStepAfterPaymentError && !cc.skipReviewAction {
 					return cc.showReviewFormWithErrors(ctx, *decoratedCart, paymentError)
 				}
@@ -397,12 +394,12 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 	return cc.responder.Render(template, viewData).SetNoCache()
 }
 
-//showCheckoutFormWithErrors - error handling that is called from many places... It will show the checkoutform and the error
-// template and form is optional - if it is not goven it is autodetected and prefilled from the infos in the cart
+// showCheckoutFormWithErrors - error handling that is called from many places... It will show the checkoutform and the error
+// template and form is optional - if it is not given it is autodetected and prefilled from the infos in the cart
 func (cc *CheckoutController) showCheckoutFormWithErrors(ctx context.Context, r *web.Request, decoratedCart decorator.DecoratedCart, form *forms.CheckoutFormComposite, err error) web.Result {
 	template := "checkout/checkout"
 
-	cc.logger.WithContext(ctx).Warn("showCheckoutFormWithErrors / Error: %s", err)
+	cc.logger.WithContext(ctx).Warn("showCheckoutFormWithErrors / Error:", err)
 	viewData := cc.getBasicViewData(ctx, r.Session(), decoratedCart)
 	if form == nil {
 		form, _ = cc.checkoutFormController.GetUnsubmittedForm(ctx, r)
@@ -414,9 +411,9 @@ func (cc *CheckoutController) showCheckoutFormWithErrors(ctx context.Context, r 
 	return cc.responder.Render(template, viewData).SetNoCache()
 }
 
-//showReviewFormWithErrors
+// showReviewFormWithErrors
 func (cc *CheckoutController) showReviewFormWithErrors(ctx context.Context, decoratedCart decorator.DecoratedCart, err error) web.Result {
-	cc.logger.WithContext(ctx).Warn("Show Error (review step): %s", err.Error())
+	cc.logger.WithContext(ctx).Warn("Show Error (review step):", err)
 	viewData := ReviewStepViewData{
 		DecoratedCart: decoratedCart,
 		ErrorInfos:    getViewErrorInfo(err),
@@ -435,7 +432,15 @@ func getViewErrorInfo(err error) ViewErrorInfos {
 	hasPaymentError := false
 
 	if paymentErr, ok := err.(*paymentDomain.Error); ok {
-		hasPaymentError = paymentErr.ErrorCode != paymentDomain.PaymentErrorCodeCancelled
+		hasPaymentError = true
+
+		if paymentErr.ErrorCode == paymentDomain.PaymentErrorAbortedByCustomer {
+			// in case of customer payment abort don't show error message in frontend
+			return ViewErrorInfos{
+				HasError:        false,
+				HasPaymentError: false,
+			}
+		}
 	}
 
 	return ViewErrorInfos{
@@ -595,6 +600,7 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 				return cc.responder.Render("checkout/payment", viewData).SetNoCache()
 			}
 
+			// ignore restored cart here since it gets fetched newly in checkout
 			_, err = cc.orderService.CancelOrder(ctx, session, infos)
 			if err != nil {
 				viewData.ErrorInfos = getViewErrorInfo(err)
@@ -604,7 +610,7 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 			cc.orderService.ClearLastPlacedOrder(ctx)
 		}
 
-		if !cc.skipReviewAction {
+		if cc.showReviewStepAfterPaymentError && !cc.skipReviewAction {
 			return cc.responder.RouteRedirect("checkout.review", nil)
 		}
 
@@ -618,23 +624,21 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 				return cc.responder.Render("checkout/payment", viewData).SetNoCache()
 			}
 
-			_, err = cc.orderService.CancelOrder(ctx, session, infos)
+			restoredCart, err := cc.orderService.CancelOrder(ctx, session, infos)
 			if err != nil {
 				viewData.ErrorInfos = getViewErrorInfo(err)
 				return cc.responder.Render("checkout/payment", viewData).SetNoCache()
 			}
 
+			decoratedCart = cc.decoratedCartFactory.Create(ctx, *restoredCart)
 			cc.orderService.ClearLastPlacedOrder(ctx)
 		}
 
-		// TODO: Pass actual payment error details to frontend
-		frontendErr := &paymentDomain.Error{ErrorCode: paymentDomain.PaymentErrorCodeCaptureFailed}
-
 		if cc.showReviewStepAfterPaymentError && !cc.skipReviewAction {
-			return cc.showReviewFormWithErrors(ctx, *decoratedCart, frontendErr)
+			return cc.showReviewFormWithErrors(ctx, *decoratedCart, flowStatus.Error)
 		}
 
-		return cc.showCheckoutFormWithErrors(ctx, r, *decoratedCart, nil, frontendErr)
+		return cc.showCheckoutFormWithErrors(ctx, r, *decoratedCart, nil, flowStatus.Error)
 	case paymentDomain.PaymentFlowWaitingForCustomer:
 		// payment pending, waiting for customer
 		return cc.responder.Render("checkout/payment", viewData).SetNoCache()
@@ -644,7 +648,7 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 	}
 }
 
-//getCommonGuardRedirects - checks config and may return a redirect that should be executed before the common checkou actions
+// getCommonGuardRedirects checks config and may return a redirect that should be executed before the common checkou actions
 func (cc *CheckoutController) getCommonGuardRedirects(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart) web.Result {
 	if cc.redirectToCartOnInvalideCart {
 		result := cc.applicationCartService.ValidateCart(ctx, session, decoratedCart)
@@ -659,7 +663,7 @@ func (cc *CheckoutController) getCommonGuardRedirects(ctx context.Context, sessi
 }
 
 // checkTermsAndPrivacyPolicy checks if TermsAndConditions and PrivacyPolicy is set as required
-//   the returned error indicates that the check failed
+// the returned error indicates that the check failed
 func (cc *CheckoutController) checkTermsAndPrivacyPolicy(r *web.Request) (bool, error) {
 	proceed, _ := r.Form1("proceed")
 	termsAndConditions, _ := r.Form1("termsAndConditions")

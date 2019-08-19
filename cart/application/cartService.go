@@ -794,7 +794,7 @@ func (cs *CartService) PlaceOrder(ctx context.Context, session *web.Session, pay
 }
 
 // CancelOrder cancels a previously placed order and restores the cart content
-func (cs *CartService) CancelOrder(ctx context.Context, session *web.Session, orderInfos placeorder.PlacedOrderInfos, cart *cartDomain.Cart) (*cartDomain.Cart, error) {
+func (cs *CartService) CancelOrder(ctx context.Context, session *web.Session, orderInfos placeorder.PlacedOrderInfos, cart cartDomain.Cart) (*cartDomain.Cart, error) {
 	err := cs.placeOrderService.CancelOrder(ctx, orderInfos)
 	if err != nil {
 		cs.logger.Error(fmt.Sprintf("couldn't cancel order %q, err: %v", orderInfos, err))

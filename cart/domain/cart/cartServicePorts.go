@@ -20,7 +20,7 @@ type (
 		GetNewCart(ctx context.Context) (*Cart, error)
 		// RestoreCart restores a previously used guest cart with all its content.
 		// Depending on the used adapter this can lead to a new Cart.ID
-		RestoreCart(ctx context.Context, cart *Cart) (*Cart, error)
+		RestoreCart(ctx context.Context, cart Cart) (*Cart, error)
 	}
 
 	// CustomerCartService interface - Secondary PORT
@@ -30,7 +30,7 @@ type (
 		GetCart(ctx context.Context, auth domain.Auth, cartID string) (*Cart, error)
 		// RestoreCart restores a previously used customer cart with all its content.
 		// Depending on the used adapter this can lead to a new Cart.ID
-		RestoreCart(ctx context.Context, auth domain.Auth, cart *Cart) (*Cart, error)
+		RestoreCart(ctx context.Context, auth domain.Auth, cart Cart) (*Cart, error)
 	}
 
 	// DeferEvents represents events that should be dispatched after a cart modify call
