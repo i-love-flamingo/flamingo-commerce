@@ -48,7 +48,7 @@ func (m *MockGuestCartServiceAdapter) GetModifyBehaviour(context.Context) (cartD
 	return new(cartInfrastructure.InMemoryBehaviour), nil
 }
 
-func (m *MockGuestCartServiceAdapter) RestoreCart(ctx context.Context, cart *cartDomain.Cart) (*cartDomain.Cart, error) {
+func (m *MockGuestCartServiceAdapter) RestoreCart(ctx context.Context, cart cartDomain.Cart) (*cartDomain.Cart, error) {
 	panic("implement me")
 }
 
@@ -74,7 +74,7 @@ func (m *MockGuestCartServiceAdapterError) GetModifyBehaviour(context.Context) (
 	return new(cartInfrastructure.InMemoryBehaviour), nil
 }
 
-func (m *MockGuestCartServiceAdapterError) RestoreCart(ctx context.Context, cart *cartDomain.Cart) (*cartDomain.Cart, error) {
+func (m *MockGuestCartServiceAdapterError) RestoreCart(ctx context.Context, cart cartDomain.Cart) (*cartDomain.Cart, error) {
 	panic("implement me")
 }
 
@@ -99,7 +99,7 @@ func (m *MockCustomerCartService) GetCart(ctx context.Context, auth domain.Auth,
 	}, nil
 }
 
-func (m *MockCustomerCartService) RestoreCart(ctx context.Context, auth domain.Auth, cart *cartDomain.Cart) (*cartDomain.Cart, error) {
+func (m *MockCustomerCartService) RestoreCart(ctx context.Context, auth domain.Auth, cart cartDomain.Cart) (*cartDomain.Cart, error) {
 	panic("implement me")
 }
 
