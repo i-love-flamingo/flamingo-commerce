@@ -42,10 +42,10 @@ type (
 
 	// ShippingItem value object
 	ShippingItem struct {
-		Title          string
-		PriceNet       priceDomain.Price
-		TaxAmount      priceDomain.Price
-		DiscountAmount priceDomain.Price
+		Title            string
+		PriceNet         priceDomain.Price
+		TaxAmount        priceDomain.Price
+		AppliedDiscounts AppliedDiscounts
 	}
 
 	//AdditionalDeliverInfo is an interface that allows to store "any" additional objects on the cart
@@ -293,7 +293,8 @@ func (f *DeliveryBuilder) reset() {
 // TotalWithDiscountInclTax - the price the customer need to pay for the shipping
 func (s ShippingItem) TotalWithDiscountInclTax() priceDomain.Price {
 	price, _ := s.PriceNet.Add(s.TaxAmount)
-	price, _ = price.Add(s.DiscountAmount)
+	discounts, _ := s.AppliedDiscounts.Sum()
+	price, _ = price.Add(discounts)
 	return price.GetPayable()
 }
 

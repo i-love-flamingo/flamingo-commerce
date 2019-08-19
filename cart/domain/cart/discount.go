@@ -32,10 +32,11 @@ var (
 	_ WithDiscount = new(Item)
 	_ WithDiscount = new(Delivery)
 	_ WithDiscount = new(Cart)
+	_ WithDiscount = new(ShippingItem)
 )
 
 // MergeDiscounts sums up discounts of cart based on its deliveries
-// All discounts with the same type and title are aggregated and returned as one with a summed price
+// All discounts with the same campaign code are aggregated and returned as one with a summed price
 func (c *Cart) MergeDiscounts() (AppliedDiscounts, error) {
 	// guard if no items in delivery, no need to iterate
 	if len(c.Deliveries) <= 0 {
@@ -56,28 +57,29 @@ func (c *Cart) MergeDiscounts() (AppliedDiscounts, error) {
 
 // HasAppliedDiscounts check whether there are any discounts currently applied to the cart
 func (c *Cart) HasAppliedDiscounts() (bool, error) {
-	discounts, err := c.MergeDiscounts()
-	if err != nil {
-		return false, err
-	}
-	return len(discounts) > 0, nil
+	return hasAppliedDiscounts(c)
 }
 
 // MergeDiscounts sums up discounts of a delivery based on its single item discounts
-// All discounts with the same type and title are aggregated and returned as one with a summed price
+// All discounts with the same campaign code are aggregated and returned as one with a summed price
 func (d *Delivery) MergeDiscounts() (AppliedDiscounts, error) {
 	// guard if no items in delivery, no need to iterate
 	if len(d.Cartitems) <= 0 {
 		return make([]AppliedDiscount, 0), nil
 	}
-	// collect different discounts on item level
 	var err error
 	collection := make(map[string]*AppliedDiscount)
+	// collect different discounts on item level
 	for _, item := range d.Cartitems {
 		collection, err = mapDiscounts(collection, &item)
 		if err != nil {
 			return nil, err
 		}
+	}
+	//collect different discounts for shipping cost
+	collection, err = mapDiscounts(collection, &d.ShippingItem)
+	if err != nil {
+		return nil, err
 	}
 	// transform map to flat slice
 	return mapToSlice(collection), nil
@@ -85,33 +87,50 @@ func (d *Delivery) MergeDiscounts() (AppliedDiscounts, error) {
 
 // HasAppliedDiscounts check whether there are any discounts currently applied to the delivery
 func (d *Delivery) HasAppliedDiscounts() (bool, error) {
-	discounts, err := d.MergeDiscounts()
-	if err != nil {
-		return false, err
-	}
-	return len(discounts) > 0, nil
+	return hasAppliedDiscounts(d)
 }
 
 // MergeDiscounts parses discounts of a single item
-// All discounts with the same type and title are aggregated and returned as one with a summed price
+// All discounts with the same campaign code are aggregated and returned as one with a summed price
 func (i *Item) MergeDiscounts() (AppliedDiscounts, error) {
-	sort.SliceStable(i.AppliedDiscounts, func(x, y int) bool {
-		return i.AppliedDiscounts[x].SortOrder < i.AppliedDiscounts[y].SortOrder
-	})
-
-	return i.AppliedDiscounts, nil
+	return mergeDiscountsOnItemLevel(i.AppliedDiscounts)
 }
 
-// HasAppliedDiscounts check whether there are any discounts currently applied to the cart
+// HasAppliedDiscounts check whether there are any discounts currently applied to the item
 func (i *Item) HasAppliedDiscounts() (bool, error) {
-	discounts, err := i.MergeDiscounts()
+	return hasAppliedDiscounts(i)
+}
+
+// MergeDiscounts parses discounts of a shipping item
+// All discounts with the same campaign code are aggregated and returned as one with a summed price
+func (s *ShippingItem) MergeDiscounts() (AppliedDiscounts, error) {
+	return mergeDiscountsOnItemLevel(s.AppliedDiscounts)
+}
+
+// HasAppliedDiscounts checks whether there are any discounts currently applied to the shipping item
+func (s *ShippingItem) HasAppliedDiscounts() (bool, error) {
+	return hasAppliedDiscounts(s)
+}
+
+// private helper functions
+
+// mergeDiscountOnItemLevel merges the discounts based on the campaign code
+func mergeDiscountsOnItemLevel(discounts AppliedDiscounts) (AppliedDiscounts, error) {
+	sort.SliceStable(discounts, func(x, y int) bool {
+		return discounts[x].SortOrder < discounts[y].SortOrder
+	})
+
+	return discounts, nil
+}
+
+// hasAppliedDiscounts returns whether the discountable has discounts applied
+func hasAppliedDiscounts(discountable WithDiscount) (bool, error) {
+	discounts, err := discountable.MergeDiscounts()
 	if err != nil {
 		return false, err
 	}
 	return len(discounts) > 0, nil
 }
-
-// private helper functions
 
 // mapToSlice transform map of discounts to flat slice
 func mapToSlice(collection map[string]*AppliedDiscount) []AppliedDiscount {
@@ -183,4 +202,17 @@ func (discounts AppliedDiscounts) filter(filterFunc func(AppliedDiscount) bool) 
 		}
 	}
 	return result
+}
+
+// Sum returns the sum of the applied values of the AppliedDiscounts
+func (discounts AppliedDiscounts) Sum() (domain.Price, error) {
+	result := domain.Price{}
+	var err error
+	for _, val := range discounts {
+		result, err = result.Add(val.Applied)
+		if err != nil {
+			return domain.NewZero(""), err
+		}
+	}
+	return result, nil
 }
