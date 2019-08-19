@@ -584,19 +584,6 @@ func TestItem_MergeDiscounts(t *testing.T) {
 				},
 			},
 		},
-		{
-			name: "duplicate discounts on item",
-			item: testutils.BuildItemWithDuplicateDiscounts(t),
-			want: cart.AppliedDiscounts{
-				{
-					CampaignCode: "code-1",
-					Label:        "title-1",
-					Type:         "type-1",
-					Applied:      domain.NewFromFloat(-20.0, "$"),
-					SortOrder:    0,
-				},
-			},
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -678,19 +665,6 @@ func TestShippingItem_MergeDiscounts(t *testing.T) {
 					Type:         "type-1",
 					Applied:      domain.NewFromFloat(-10.0, "$"),
 					SortOrder:    3,
-				},
-			},
-		},
-		{
-			name:     "duplicate discounts on shipping",
-			shipping: testutils.BuildShippingItemWithDuplicateDiscounts(t),
-			want: cart.AppliedDiscounts{
-				cart.AppliedDiscount{
-					CampaignCode: "code-1",
-					Label:        "title-1",
-					Type:         "type-1",
-					Applied:      domain.NewFromFloat(-30.0, "$"),
-					SortOrder:    0,
 				},
 			},
 		},

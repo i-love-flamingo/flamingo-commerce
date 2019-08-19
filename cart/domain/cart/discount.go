@@ -44,14 +44,9 @@ func (c *Cart) MergeDiscounts() (AppliedDiscounts, error) {
 	}
 	// collect different discounts on item level
 	var err error
-	var discounts AppliedDiscounts
 	collection := make(map[string]*AppliedDiscount)
 	for _, delivery := range c.Deliveries {
-		discounts, err = (&delivery).MergeDiscounts()
-		if err != nil {
-			return nil, err
-		}
-		collection, err = mapDiscounts(collection, discounts)
+		collection, err = mapDiscounts(collection, &delivery)
 		if err != nil {
 			return nil, err
 		}
@@ -73,25 +68,16 @@ func (d *Delivery) MergeDiscounts() (AppliedDiscounts, error) {
 		return make([]AppliedDiscount, 0), nil
 	}
 	var err error
-	var discounts AppliedDiscounts
 	collection := make(map[string]*AppliedDiscount)
 	// collect different discounts on item level
 	for _, item := range d.Cartitems {
-		discounts, err = (&item).MergeDiscounts()
-		if err != nil {
-			return nil, err
-		}
-		collection, err = mapDiscounts(collection, discounts)
+		collection, err = mapDiscounts(collection, &item)
 		if err != nil {
 			return nil, err
 		}
 	}
 	//collect different discounts for shipping cost
-	discounts, err = d.ShippingItem.MergeDiscounts()
-	if err != nil {
-		return nil, err
-	}
-	collection, err = mapDiscounts(collection, discounts)
+	collection, err = mapDiscounts(collection, &d.ShippingItem)
 	if err != nil {
 		return nil, err
 	}
@@ -130,14 +116,11 @@ func (s *ShippingItem) HasAppliedDiscounts() (bool, error) {
 
 // mergeDiscountOnItemLevel merges the discounts based on the campaign code
 func mergeDiscountsOnItemLevel(discounts AppliedDiscounts) (AppliedDiscounts, error) {
-	var err error
-	collection := make(map[string]*AppliedDiscount)
-	collection, err = mapDiscounts(collection, discounts)
-	if err != nil {
-		return nil, err
-	}
-	// transform map to flat slice
-	return mapToSlice(collection), nil
+	sort.SliceStable(discounts, func(x, y int) bool {
+		return discounts[x].SortOrder < discounts[y].SortOrder
+	})
+
+	return discounts, nil
 }
 
 // hasAppliedDiscounts returns whether the discountable has discounts applied
@@ -164,7 +147,12 @@ func mapToSlice(collection map[string]*AppliedDiscount) []AppliedDiscount {
 }
 
 // mapDiscounts map type + title of discount to corresponding discount
-func mapDiscounts(result map[string]*AppliedDiscount, discounts AppliedDiscounts) (map[string]*AppliedDiscount, error) {
+func mapDiscounts(result map[string]*AppliedDiscount, discountable WithDiscount) (map[string]*AppliedDiscount, error) {
+	discounts, err := discountable.MergeDiscounts()
+	// in case discounts cannot be collected, stop execution
+	if err != nil {
+		return nil, err
+	}
 	for _, discount := range discounts {
 		// discount has been collected before, increase amount
 		if collected, ok := result[discount.CampaignCode]; ok {

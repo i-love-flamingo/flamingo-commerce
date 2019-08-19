@@ -21,7 +21,7 @@ func TestDecoratedItem_MergeDiscounts(t *testing.T) {
 			item: &decorator.DecoratedCartItem{
 				Item: cart.Item{},
 			},
-			want: cart.AppliedDiscounts{},
+			want: nil,
 		},
 		{
 			name: "multiple discounts on item",
