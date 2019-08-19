@@ -81,6 +81,16 @@ func (r *CommerceCartMutationResolver) CommerceDeleteCartDelivery(ctx context.Co
 	return r.q.CommerceCart(ctx)
 }
 
+// CommerceUpdateItemQty mutation for updating item quantity
+func (r *CommerceCartMutationResolver) CommerceUpdateItemQty(ctx context.Context, itemID string, deliveryCode string, qty int) (*decorator.DecoratedCart, error) {
+	req := web.RequestFromContext(ctx)
+	err := r.applicationCartService.UpdateItemQty(ctx, req.Session(), itemID, deliveryCode, qty)
+	if err != nil {
+		return nil, err
+	}
+	return r.q.CommerceCart(ctx)
+}
+
 type CommerceCartItemResolver struct {
 	productResolver *graphql.CommerceProductQueryResolver
 }
