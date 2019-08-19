@@ -59,6 +59,16 @@ func (r *CommerceCartMutationResolver) CommerceAddToCart(ctx context.Context, ma
 	return r.q.CommerceCart(ctx)
 }
 
+// CommerceDeleteCartDelivery mutation for removing deliveries from current users cart
+func (r *CommerceCartMutationResolver) CommerceDeleteCartDelivery(ctx context.Context, deliveryCode *string) (*decorator.DecoratedCart, error) {
+	req := web.RequestFromContext(ctx)
+	_, err := r.applicationCartService.DeleteDelivery(ctx, req.Session(), *deliveryCode)
+	if err != nil {
+		return nil, err
+	}
+	return r.q.CommerceCart(ctx)
+}
+
 type CommerceCartItemResolver struct {
 	productResolver *graphql.CommerceProductQueryResolver
 }
