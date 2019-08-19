@@ -59,10 +59,10 @@ func (r *CommerceCartMutationResolver) CommerceAddToCart(ctx context.Context, ma
 	return r.q.CommerceCart(ctx)
 }
 
-func (r *CommerceCartMutationResolver) CommerceDeleteItem(ctx context.Context, itemId string, deliveryCode string) (*decorator.DecoratedCart, error) {
+func (r *CommerceCartMutationResolver) CommerceDeleteItem(ctx context.Context, itemID string, deliveryCode string) (*decorator.DecoratedCart, error) {
 	req := web.RequestFromContext(ctx)
 
-	err := r.applicationCartService.DeleteItem(ctx, req.Session(), itemId, deliveryCode)
+	err := r.applicationCartService.DeleteItem(ctx, req.Session(), itemID, deliveryCode)
 
 	if err != nil {
 		return nil, err
