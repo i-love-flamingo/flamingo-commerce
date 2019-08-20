@@ -16,20 +16,30 @@ This module implements controller and services for the following checkout flow (
 1. Checkout Action
     * this is the main step, and the template should render the big checkout form (or at least the parts that are interesting). 
     * on submit and if everything was valid:
-        * Action will update the cart - specifically the following informations:
+        * Action will update the cart - specifically the following information:
             * Update billing (on cart level)
             * Update deliveryinfos on (each) delivery in the cart (e.g. used to set shipping address)
-            * Select Payment Gateway and prefered Payment Method
+            * Select Payment Gateway and preferred Payment Method
             * Optional Save the wished payment split for each item in the cart
-            * Optional add Vouchers (may already happend before)            
-        * Forward to next Action
+            * Optional add Vouchers/GiftCards (may already happened before)            
+        * If Review Action is skipped:
+            * Start payment and place order if needed (EarlyPlaceOrder)
+            * Redirect to Payment Action
+        * If Review Step is not skipped:
+            * Redirect to Review Action
 1. Review Action (Optional)
-    * Renderes "review" template that can be used to review the cart
-    * After confirming:
-        * Action will give control to the selected PaymentFlow (see payment module)
+    * Renders "review" template that can be used to review the cart
+    * After confirming start the payment and place order if needed (EarlyPlaceOrder)
+1. Payment Action
+    * Ask Payment Gateway about FlowStatus and handle it
+    * FlowStatus:
+        * Error / Abort by customer: Redirect to checkout and reopen cart if needed
+        * Success / Approved: Redirect to PalceOrderAction
+        * Unapproved: Render payment template and let frontend decide how to continue in flow (e.g. redirect to payment provider)
 1. Place Order Action
-    * Get PaymentFlow Result
-    * Place Order and forward to success
+    * Check if order already placed (EarlyPlaceOrder)
+    * If order not already placed check FlowStatus and place order
+    * Put order infos in flash message and redirect to Success Action
 1. Success Action:
     * Renders order success template
 
