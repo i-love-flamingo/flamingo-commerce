@@ -1,7 +1,5 @@
 package domain
 
-import "net/url"
-
 type (
 	// Method contains information about a general payment method
 	Method struct {
@@ -11,11 +9,24 @@ type (
 		Code string
 	}
 
-	// FlowResult contains an url and a type to use to start a flow
+	// FlowResult contains information about a newly started flow
 	FlowResult struct {
-		URL  *url.URL
-		Type string
+		// EarlyPlaceOrder indicates if the order should be placed with the beginning of the payment flow
+		EarlyPlaceOrder bool
+		// Status contains the current payment status
+		Status FlowStatus
+	}
+
+	// FlowStatus contains information about the current payment status
+	FlowStatus struct {
+		// Status of the payment flow
+		Status string
+		// Action to perform to proceed in the payment flow
+		Action string
+		// Data contains additional information related to the action / flow
 		Data interface{}
+		// Error contains additional information in case of an error (e.g. payment failed)
+		Error *Error
 	}
 
 	// Error should be used by PaymentGateway to indicate that payment failed (so that the customer can see a speaking message)
@@ -26,14 +37,27 @@ type (
 )
 
 const (
-	// PaymentErrorCodeCancelled cancelled
-	PaymentErrorCodeCancelled = "payment_cancelled"
+	// PaymentErrorCodeFailed error
+	PaymentErrorCodeFailed = "failed"
 	// PaymentErrorCodeAuthorizeFailed error
 	PaymentErrorCodeAuthorizeFailed = "authorization_failed"
 	// PaymentErrorCodeCaptureFailed error
 	PaymentErrorCodeCaptureFailed = "capture_failed"
-	// ErrorPaymentAbortedByCustomer error
-	ErrorPaymentAbortedByCustomer = "payment-aborted-by-customer"
+	// PaymentErrorAbortedByCustomer error
+	PaymentErrorAbortedByCustomer = "aborted_by_customer"
+
+	// PaymentFlowStatusUnapproved payment started
+	PaymentFlowStatusUnapproved = "payment_unapproved"
+	// PaymentFlowStatusFailed payment failed
+	PaymentFlowStatusFailed = "payment_failed"
+	// PaymentFlowStatusAborted payment aborted by user
+	PaymentFlowStatusAborted = "payment_aborted"
+	// PaymentFlowStatusApproved payment approved by payment adapter
+	PaymentFlowStatusApproved = "payment_approved"
+	// PaymentFlowStatusCompleted payment approved and confirmed by customer
+	PaymentFlowStatusCompleted = "payment_completed"
+	// PaymentFlowWaitingForCustomer payment waiting for customer
+	PaymentFlowWaitingForCustomer = "payment_waiting_for_customer"
 )
 
 // Error getter

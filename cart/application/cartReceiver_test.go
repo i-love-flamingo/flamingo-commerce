@@ -2,18 +2,15 @@ package application_test
 
 import (
 	"context"
-
-	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
-
-
 	"reflect"
 	"testing"
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	cartInfrastructure "flamingo.me/flamingo-commerce/v3/cart/infrastructure"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
@@ -49,6 +46,17 @@ func (m *MockGuestCartServiceAdapter) GetModifyBehaviour(context.Context) (cartD
 	return new(cartInfrastructure.InMemoryBehaviour), nil
 }
 
+func (m *MockGuestCartServiceAdapter) RestoreCart(ctx context.Context, cart cartDomain.Cart) (*cartDomain.Cart, error) {
+	restoredCart := cart
+	restoredCart.ID = "1111"
+	return &restoredCart, nil
+}
+
+var (
+	// test interface implementation
+	_ cartDomain.GuestCartService = (*MockGuestCartServiceAdapterError)(nil)
+)
+
 type (
 	// MockGuestCartServiceAdapter with error on GetCart
 	MockGuestCartServiceAdapterError struct{}
@@ -64,6 +72,10 @@ func (m *MockGuestCartServiceAdapterError) GetNewCart(ctx context.Context) (*car
 
 func (m *MockGuestCartServiceAdapterError) GetModifyBehaviour(context.Context) (cartDomain.ModifyBehaviour, error) {
 	return new(cartInfrastructure.InMemoryBehaviour), nil
+}
+
+func (m *MockGuestCartServiceAdapterError) RestoreCart(ctx context.Context, cart cartDomain.Cart) (*cartDomain.Cart, error) {
+	return nil, errors.New("defective")
 }
 
 // MockCustomerCartService
@@ -87,6 +99,10 @@ func (m *MockCustomerCartService) GetCart(ctx context.Context, auth domain.Auth,
 	}, nil
 }
 
+func (m *MockCustomerCartService) RestoreCart(ctx context.Context, auth domain.Auth, cart cartDomain.Cart) (*cartDomain.Cart, error) {
+	panic("implement me")
+}
+
 // MockProductService
 
 type (
@@ -104,14 +120,17 @@ func (m *MockProductService) Get(ctx context.Context, marketplaceCode string) (p
 // MockCartCache
 
 type (
-	MockCartCache struct{}
+	MockCartCache struct {
+		CachedCart *cartDomain.Cart
+	}
 )
 
 func (m *MockCartCache) GetCart(context.Context, *web.Session, cartApplication.CartCacheIdentifier) (*cartDomain.Cart, error) {
-	return &cartDomain.Cart{}, nil
+	return m.CachedCart, nil
 }
 
-func (m *MockCartCache) CacheCart(context.Context, *web.Session, cartApplication.CartCacheIdentifier, *cartDomain.Cart) error {
+func (m *MockCartCache) CacheCart(ctx context.Context, s *web.Session, cci cartApplication.CartCacheIdentifier, cart *cartDomain.Cart) error {
+	m.CachedCart = cart
 	return nil
 }
 
@@ -177,6 +196,22 @@ type (
 
 func (m *MockDeliveryInfoBuilder) BuildByDeliveryCode(deliveryCode string) (*cartDomain.DeliveryInfo, error) {
 	return &cartDomain.DeliveryInfo{}, nil
+}
+
+type (
+	MockUserService struct{}
+)
+
+var _ authApplication.UserServiceInterface = (*MockUserService)(nil)
+
+func (m *MockUserService) GetUser(ctx context.Context, session *web.Session) *domain.User {
+	return &domain.User{
+		Name: "Test",
+	}
+}
+
+func (m *MockUserService) IsLoggedIn(ctx context.Context, session *web.Session) bool {
+	return true
 }
 
 func TestCartReceiverService_ShouldHaveGuestCart(t *testing.T) {
@@ -691,6 +726,196 @@ func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 				t.Errorf("CartReceiverService.GetDecoratedCart() got1 = %v, wantType0 %v", got1, tt.wantType1)
 
 				return
+			}
+		})
+	}
+}
+
+func TestCartReceiverService_RestoreCart(t *testing.T) {
+	type fields struct {
+		guestCartService     cartDomain.GuestCartService
+		customerCartService  cartDomain.CustomerCartService
+		cartDecoratorFactory *decorator.DecoratedCartFactory
+		authManager          *authApplication.AuthManager
+		userService          authApplication.UserServiceInterface
+		eventRouter          flamingo.EventRouter
+		logger               flamingo.Logger
+		cartCache            cartApplication.CartCache
+	}
+	type args struct {
+		ctx           context.Context
+		session       *web.Session
+		cartToRestore cartDomain.Cart
+	}
+	tests := []struct {
+		name                   string
+		fields                 fields
+		args                   args
+		want                   *cartDomain.Cart
+		wantErr                bool
+		wantGuestCartSessionID bool
+		wantCartStoredInCache  bool
+	}{
+		{
+			name: "restore guest cart without error",
+			fields: fields{
+				guestCartService: &MockGuestCartServiceAdapter{},
+				userService:      &authApplication.UserService{},
+				logger:           &flamingo.NullLogger{},
+				cartCache:        &MockCartCache{},
+			},
+			args: args{
+				ctx:     web.ContextWithSession(context.Background(), web.EmptySession()),
+				session: web.EmptySession(),
+				cartToRestore: cartDomain.Cart{
+					ID: "1234",
+					BillingAddress: &cartDomain.Address{
+						Firstname: "Test",
+						Lastname:  "Test",
+						Email:     "test@test.xy",
+					},
+					Deliveries: []cartDomain.Delivery{
+						{
+							DeliveryInfo: cartDomain.DeliveryInfo{
+								Code:     "pickup",
+								Workflow: "pickup",
+							},
+							Cartitems: []cartDomain.Item{
+								{
+									ID:                     "1",
+									ExternalReference:      "sku-1",
+									MarketplaceCode:        "sku-1",
+									VariantMarketPlaceCode: "",
+									ProductName:            "Product #1",
+									SourceID:               "",
+									Qty:                    2,
+								},
+							},
+							ShippingItem: cartDomain.ShippingItem{},
+						},
+					},
+				},
+			},
+			want: &cartDomain.Cart{
+				ID: "1111",
+				BillingAddress: &cartDomain.Address{
+					Firstname: "Test",
+					Lastname:  "Test",
+					Email:     "test@test.xy",
+				},
+				Deliveries: []cartDomain.Delivery{
+					{
+						DeliveryInfo: cartDomain.DeliveryInfo{
+							Code:     "pickup",
+							Workflow: "pickup",
+						},
+						Cartitems: []cartDomain.Item{
+							{
+								ID:                     "1",
+								ExternalReference:      "sku-1",
+								MarketplaceCode:        "sku-1",
+								VariantMarketPlaceCode: "",
+								ProductName:            "Product #1",
+								SourceID:               "",
+								Qty:                    2,
+							},
+						},
+						ShippingItem: cartDomain.ShippingItem{},
+					},
+				},
+			},
+			wantErr:                false,
+			wantGuestCartSessionID: true,
+			wantCartStoredInCache:  true,
+		},
+		{
+			name: "restore guest cart with error",
+			fields: fields{
+				guestCartService: &MockGuestCartServiceAdapterError{},
+				userService:      &authApplication.UserService{},
+				logger:           &flamingo.NullLogger{},
+				cartCache:        &MockCartCache{},
+			},
+			args: args{
+				ctx:     web.ContextWithSession(context.Background(), web.EmptySession()),
+				session: web.EmptySession(),
+				cartToRestore: cartDomain.Cart{
+					ID: "1234",
+					BillingAddress: &cartDomain.Address{
+						Firstname: "Test",
+						Lastname:  "Test",
+						Email:     "test@test.xy",
+					},
+					Deliveries: []cartDomain.Delivery{
+						{
+							DeliveryInfo: cartDomain.DeliveryInfo{
+								Code:     "pickup",
+								Workflow: "pickup",
+							},
+							Cartitems: []cartDomain.Item{
+								{
+									ID:                     "1",
+									ExternalReference:      "sku-1",
+									MarketplaceCode:        "sku-1",
+									VariantMarketPlaceCode: "",
+									ProductName:            "Product #1",
+									SourceID:               "",
+									Qty:                    2,
+								},
+							},
+							ShippingItem: cartDomain.ShippingItem{},
+						},
+					},
+				},
+			},
+			want:                   nil,
+			wantErr:                true,
+			wantGuestCartSessionID: false,
+			wantCartStoredInCache:  false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cs := &cartApplication.CartReceiverService{}
+			cs.Inject(
+				tt.fields.guestCartService,
+				tt.fields.customerCartService,
+				tt.fields.cartDecoratorFactory,
+				tt.fields.authManager,
+				tt.fields.userService,
+				tt.fields.logger,
+				nil,
+				&struct {
+					CartCache cartApplication.CartCache `inject:",optional"`
+				}{
+					CartCache: tt.fields.cartCache,
+				},
+			)
+			got, err := cs.RestoreCart(tt.args.ctx, tt.args.session, tt.args.cartToRestore)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("RestoreCart() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("RestoreCart() got = %v, want %v", got, tt.want)
+			}
+
+			sessionGot, found := tt.args.session.Load(cartApplication.GuestCartSessionKey)
+			if found != tt.wantGuestCartSessionID {
+				t.Error("GuestCartID not found in session")
+			}
+
+			if found == true && tt.want != nil {
+				if !reflect.DeepEqual(tt.want.ID, sessionGot) {
+					t.Errorf("GuestCartID in session does not match restored cart got = %v, want %v", got, tt.wantGuestCartSessionID)
+				}
+			}
+
+			if tt.wantCartStoredInCache && tt.fields.cartCache != nil {
+				cart, _ := tt.fields.cartCache.GetCart(nil, nil, cartApplication.CartCacheIdentifier{})
+				if cart == nil {
+					t.Error("Cart not found in cart cache")
+				}
 			}
 		})
 	}

@@ -793,6 +793,23 @@ func (cs *CartService) PlaceOrder(ctx context.Context, session *web.Session, pay
 	return placeOrderInfos, err
 }
 
+// CancelOrder cancels a previously placed order and restores the cart content
+func (cs *CartService) CancelOrder(ctx context.Context, session *web.Session, orderInfos placeorder.PlacedOrderInfos, cart cartDomain.Cart) (*cartDomain.Cart, error) {
+	err := cs.placeOrderService.CancelOrder(ctx, orderInfos)
+	if err != nil {
+		cs.logger.Error(fmt.Sprintf("couldn't cancel order %q, err: %v", orderInfos, err))
+		return nil, err
+	}
+
+	restoredCart, err := cs.cartReceiverService.RestoreCart(ctx, session, cart)
+	if err != nil {
+		cs.logger.Error(fmt.Sprintf("couldn't restore cart err: %v", err))
+		return nil, err
+	}
+
+	return restoredCart, nil
+}
+
 // GetDefaultDeliveryCode returns the configured default deliverycode
 func (cs *CartService) GetDefaultDeliveryCode() string {
 	return cs.defaultDeliveryCode

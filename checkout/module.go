@@ -60,6 +60,9 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 	registry.HandleAny("checkout", r.controller.SubmitCheckoutAction)
 	registry.Route("/checkout", "checkout")
 
+	registry.HandleAny("checkout.payment", r.controller.PaymentAction)
+	registry.Route("/checkout/payment", "checkout.payment")
+
 	registry.HandleAny("checkout.success", r.controller.SuccessAction)
 	registry.Route("/checkout/success", "checkout.success")
 
@@ -69,8 +72,6 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 	registry.HandleAny("checkout.placeorder", r.controller.PlaceOrderAction)
 	registry.Route("/checkout/placeorder", "checkout.placeorder")
 }
-
-
 
 // Depends on other modules
 func (m *Module) Depends() []dingo.Module {

@@ -63,6 +63,33 @@ func (cs *CartReceiverService) Inject(
 	}
 }
 
+// RestoreCart restores a previously used guest / customer cart
+func (cs *CartReceiverService) RestoreCart(ctx context.Context, session *web.Session, cartToRestore cart.Cart) (*cartDomain.Cart, error) {
+	if cs.userService.IsLoggedIn(ctx, session) {
+		auth, err := cs.authManager.Auth(ctx, session)
+		if err != nil {
+			return nil, err
+		}
+
+		restoredCart, err := cs.customerCartService.RestoreCart(ctx, auth, cartToRestore)
+		if err != nil {
+			return nil, err
+		}
+
+		cs.storeCartInCacheIfCacheIsEnabled(ctx, session, restoredCart)
+		return restoredCart, nil
+	}
+
+	restoredCart, err := cs.guestCartService.RestoreCart(ctx, cartToRestore)
+	if err != nil {
+		return nil, err
+	}
+
+	session.Store(GuestCartSessionKey, restoredCart.ID)
+	cs.storeCartInCacheIfCacheIsEnabled(ctx, session, restoredCart)
+	return restoredCart, nil
+}
+
 // IsLoggedIn returns the logged in state
 func (cs *CartReceiverService) IsLoggedIn(ctx context.Context, session *web.Session) bool {
 	return cs.userService.IsLoggedIn(ctx, session)
@@ -208,7 +235,7 @@ func (cs *CartReceiverService) getExistingGuestCart(ctx context.Context, session
 			cs.logger.WithContext(ctx).Error(err)
 		}
 	}
-	
+
 	if err != nil || !found {
 		cart, err = cs.getSessionGuestCart(ctx, session)
 

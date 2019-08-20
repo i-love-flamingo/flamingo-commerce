@@ -11,7 +11,7 @@ import (
 )
 
 type (
-	// PlaceOrderServiceAdapter provides an implementation of the Service as email adpater
+	// PlaceOrderServiceAdapter provides an implementation of the Service as email adapter
 	//  TODO - this example adapter need to be implemented
 	PlaceOrderServiceAdapter struct {
 		emailAddress string
@@ -64,7 +64,13 @@ func (e *PlaceOrderServiceAdapter) PlaceCustomerCart(ctx context.Context, auth a
 	return placedOrders, nil
 }
 
-//ReserveOrderID - returns the reserved order id
-func (e *PlaceOrderServiceAdapter) ReserveOrderID(ctx context.Context, cart *cartDomain.Cart) (string,error) {
+// ReserveOrderID returns the reserved order id
+func (e *PlaceOrderServiceAdapter) ReserveOrderID(ctx context.Context, cart *cartDomain.Cart) (string, error) {
 	return cart.ID, nil
+}
+
+// CancelOrder cancels a placed order
+func (e *PlaceOrderServiceAdapter) CancelOrder(ctx context.Context, orderInfos placeorder.PlacedOrderInfos) error {
+	// since we don't actual place orders we just return nil here
+	return nil
 }

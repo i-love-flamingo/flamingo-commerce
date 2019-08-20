@@ -35,3 +35,11 @@ func (gcs *InMemoryCustomerCartService) GetCart(ctx context.Context, auth domain
 func (gcs *InMemoryCustomerCartService) GetModifyBehaviour(context.Context, domain.Auth) (cart.ModifyBehaviour, error) {
 	return gcs.inMemoryBehaviour, nil
 }
+
+// RestoreCart restores a previously used cart
+func (gcs *InMemoryCustomerCartService) RestoreCart(ctx context.Context, auth domain.Auth, cart cart.Cart) (*cart.Cart, error) {
+	customerCart := cart
+
+	err := gcs.inMemoryBehaviour.StoreCart(&customerCart)
+	return &customerCart, err
+}
