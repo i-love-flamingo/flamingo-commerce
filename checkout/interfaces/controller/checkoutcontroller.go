@@ -211,8 +211,12 @@ func (cc *CheckoutController) StartAction(ctx context.Context, r *web.Request) w
 
 // SubmitCheckoutAction handles the main checkout
 func (cc *CheckoutController) SubmitCheckoutAction(ctx context.Context, r *web.Request) web.Result {
+	// payment / order already in process redirect to payment status page
+	if cc.orderService.HasLastPlacedOrder(ctx) {
+		return cc.responder.RouteRedirect("checkout.payment", nil)
+	}
 
-	//Guard Clause if Cart cannout be fetched
+	//Guard Clause if Cart can not be fetched
 	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if e != nil {
 		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error %v", e)
@@ -506,6 +510,11 @@ func (cc *CheckoutController) processPayment(ctx context.Context, r *web.Request
 func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) web.Result {
 	if cc.skipReviewAction {
 		return cc.responder.Render("checkout/carterror", nil)
+	}
+
+	// payment / order already in process redirect to payment status page
+	if cc.orderService.HasLastPlacedOrder(ctx) {
+		return cc.responder.RouteRedirect("checkout.payment", nil)
 	}
 
 	//Guard Clause if cart can not be fetched
