@@ -6,8 +6,10 @@ import (
 	"flamingo.me/flamingo-commerce/v3/category/domain"
 	"flamingo.me/flamingo-commerce/v3/category/infrastructure"
 	"flamingo.me/flamingo-commerce/v3/category/interfaces/controller"
+	categoryGraphql "flamingo.me/flamingo-commerce/v3/category/interfaces/graphql"
 	"flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/web"
+	flamingographql "flamingo.me/graphql"
 )
 
 // Module registers our profiler
@@ -45,6 +47,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	}
 	web.BindRoutes(injector, new(routes))
 	injector.Bind(new(application.RouterRouter)).To(new(web.Router))
+	injector.BindMulti(new(flamingographql.Service)).To(categoryGraphql.Service{})
 }
 
 // DefaultConfig for this module
