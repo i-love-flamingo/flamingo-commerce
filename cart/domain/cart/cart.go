@@ -327,6 +327,20 @@ func (c Cart) SumShippingNet() domain.Price {
 	return price
 }
 
+// SumShippingNetWithDiscounts - returns net sum price of deliveries ShippingItems with discounts
+func (c Cart) SumShippingNetWithDiscounts() domain.Price {
+	prices := make([]domain.Price, 0, len(c.Deliveries))
+
+	for _, del := range c.Deliveries {
+		discount, _ := del.ShippingItem.AppliedDiscounts.Sum()
+		prices = append(prices, del.ShippingItem.PriceNet.ForceAdd(discount))
+	}
+
+	price, _ := domain.SumAll(prices...)
+
+	return price
+}
+
 // HasShippingCosts - returns true if cart HasShippingCosts
 func (c Cart) HasShippingCosts() bool {
 	return c.SumShippingNet().IsPositive()
