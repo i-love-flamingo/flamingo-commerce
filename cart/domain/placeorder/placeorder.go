@@ -14,8 +14,10 @@ type (
 		PlaceGuestCart(ctx context.Context, cart *cart.Cart, payment *Payment) (PlacedOrderInfos, error)
 		PlaceCustomerCart(ctx context.Context, auth oauth.Auth, cart *cart.Cart, payment *Payment) (PlacedOrderInfos, error)
 		ReserveOrderID(ctx context.Context, cart *cart.Cart) (string, error)
-		// CancelOrder cancels an previously placed order and returns the used cart
-		CancelOrder(ctx context.Context, orderInfos PlacedOrderInfos) error
+		// CancelGuestOrder cancels a previously placed guest order and returns the used cart
+		CancelGuestOrder(ctx context.Context, orderInfos PlacedOrderInfos) error
+		// CancelCustomerOrder cancels a previously placed guest order and returns the used cart
+		CancelCustomerOrder(ctx context.Context, orderInfos PlacedOrderInfos, auth oauth.Auth) error
 	}
 	// Payment represents all payments done for the cart and which items have been purchased by what method
 	Payment struct {

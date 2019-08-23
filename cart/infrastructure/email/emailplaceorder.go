@@ -69,8 +69,14 @@ func (e *PlaceOrderServiceAdapter) ReserveOrderID(ctx context.Context, cart *car
 	return cart.ID, nil
 }
 
-// CancelOrder cancels a placed order
-func (e *PlaceOrderServiceAdapter) CancelOrder(ctx context.Context, orderInfos placeorder.PlacedOrderInfos) error {
+// CancelGuestOrder cancels a guest order
+func (e *PlaceOrderServiceAdapter) CancelGuestOrder(ctx context.Context, orderInfos placeorder.PlacedOrderInfos) error {
+	// since we don't actual place orders we just return nil here
+	return nil
+}
+
+// CancelCustomerOrder cancels a customer order
+func (e *PlaceOrderServiceAdapter) CancelCustomerOrder(ctx context.Context, orderInfos placeorder.PlacedOrderInfos, auth authDomain.Auth) error {
 	// since we don't actual place orders we just return nil here
 	return nil
 }

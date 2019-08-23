@@ -795,10 +795,25 @@ func (cs *CartService) PlaceOrder(ctx context.Context, session *web.Session, pay
 
 // CancelOrder cancels a previously placed order and restores the cart content
 func (cs *CartService) CancelOrder(ctx context.Context, session *web.Session, orderInfos placeorder.PlacedOrderInfos, cart cartDomain.Cart) (*cartDomain.Cart, error) {
-	err := cs.placeOrderService.CancelOrder(ctx, orderInfos)
-	if err != nil {
-		cs.logger.Error(fmt.Sprintf("couldn't cancel order %q, err: %v", orderInfos, err))
-		return nil, err
+	if cs.placeOrderService == nil {
+		return nil, errors.New("No placeOrderService registered")
+	}
+
+	var cancelErr error
+
+	if cs.cartReceiverService.IsLoggedIn(ctx, session) {
+		auth, err := cs.authManager.Auth(ctx, session)
+		if err != nil {
+			return nil, err
+		}
+		cancelErr = cs.placeOrderService.CancelCustomerOrder(ctx, orderInfos, auth)
+	} else {
+		cancelErr = cs.placeOrderService.CancelGuestOrder(ctx, orderInfos)
+	}
+
+	if cancelErr != nil {
+		cs.logger.Error(fmt.Sprintf("couldn't cancel order %q, err: %v", orderInfos, cancelErr))
+		return nil, cancelErr
 	}
 
 	restoredCart, err := cs.cartReceiverService.RestoreCart(ctx, session, cart)
