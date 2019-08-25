@@ -70,7 +70,7 @@ func TestBuildWith(t *testing.T) {
 				},
 				PreviousPage: &Page{
 					Page: 6,
-					URL:makeURL(&url.URL{},8),
+					URL:makeURL(&url.URL{},6),
 				},
 				//No next oage
 				PageNavigation: []Page{
