@@ -19,14 +19,23 @@ const (
 type (
 	// BasicProduct interface - Need to be implements by all Product Types!
 	BasicProduct interface {
+		//BaseData gives you basic product informations
+		// like attributes, title, media, marketplacecode etc
 		BaseData() BasicProductData
+		//TeaserData gives you basic information to typically show in list views - including a teaser prices
 		TeaserData() TeaserData
+		//GetSpecifications return grouped specifications - typically used for comparisions
 		GetSpecifications() Specifications
-		//IsSaleable - indicates if that product type can be purchased
+		//IsSaleable - indicates if that product type can be purchased in general
 		IsSaleable() bool
+		//SaleableData - returns information required to purchase - like the definite price informations.
+		//	makes only sense to call if IsSaleable() returns true
 		SaleableData() Saleable
+		//Type returns product type
 		Type() string
+		//GetIdentifier returns an idendifier for the product instance
 		GetIdentifier() string
+		//HasMedia
 		HasMedia(group string, usage string) bool
 		GetMedia(group string, usage string) Media
 	}
@@ -255,6 +264,11 @@ func (bpd BasicProductData) HasAttribute(key string) bool {
 		return true
 	}
 	return false
+}
+
+// Attribute get Attribute by key
+func (bpd BasicProductData) Attribute(key string) Attribute {
+	return bpd.Attributes[key]
 }
 
 // GetFinalPrice getter for price that should be used in calculations (either discounted or default)
