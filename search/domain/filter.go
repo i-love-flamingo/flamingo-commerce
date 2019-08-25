@@ -19,7 +19,7 @@ type (
 
 	// SortFilter - specifies the request to sort by some criteria(label) in a certain direction. Possible values for label and direction should be in SearchMeta.SortOption
 	SortFilter struct {
-		label     string
+		field     string
 		direction string
 	}
 
@@ -79,20 +79,40 @@ func (f *KeyValueFilter) Value() (string, []string) {
 	return f.k, f.v
 }
 
+// KeyValues of the current filter
+func (f *KeyValueFilter) KeyValues() []string {
+	return f.v
+}
+
+// Key of the current filter
+func (f *KeyValueFilter) Key() string {
+	return f.k
+}
+
 // NewSortFilter factory
 func NewSortFilter(label string, direction string) *SortFilter {
 	if direction != SortDirectionNone && direction != SortDirectionDescending && direction != SortDirectionAscending {
 		direction = SortDirectionNone
 	}
 	return &SortFilter{
-		label:     label,
+		field:     label,
 		direction: direction,
 	}
 }
 
 // Value of the current filter
 func (f *SortFilter) Value() (string, []string) {
-	return f.label, []string{f.direction}
+	return f.field, []string{f.direction}
+}
+
+// Field of the current filter
+func (f *SortFilter) Field() string {
+	return f.field
+}
+
+// Direction of the current filter
+func (f *SortFilter) Direction() string {
+	return f.direction
 }
 
 // NewQueryFilter factory
@@ -107,6 +127,12 @@ func (f *QueryFilter) Value() (string, []string) {
 	return "q", []string{f.query}
 }
 
+
+// Query of the current filter
+func (f *QueryFilter) Query() string {
+	return f.query
+}
+
 // NewPaginationPageFilter factory
 func NewPaginationPageFilter(page int) *PaginationPage {
 	return &PaginationPage{
@@ -117,6 +143,11 @@ func NewPaginationPageFilter(page int) *PaginationPage {
 // Value of the current filter
 func (f *PaginationPage) Value() (string, []string) {
 	return "page", []string{strconv.Itoa(f.page)}
+}
+
+// GetPage of the current filter
+func (f *PaginationPage) GetPage() int {
+	return f.page
 }
 
 // NewPaginationPageSizeFilter factory
