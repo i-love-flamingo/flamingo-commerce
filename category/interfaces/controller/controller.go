@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"net/url"
+	"strconv"
 
 	breadcrumb "flamingo.me/flamingo-commerce/v3/category/application"
 
@@ -93,7 +94,16 @@ func (vc *ViewController) Get(c context.Context, request *web.Request) web.Resul
 	}
 
 	searchRequest := &searchApplication.SearchRequest{}
-	searchRequest.AddAdditionalFilters(searchdomain.NewKeyValueFilters(request.QueryAll())...)
+	for k,v := range request.QueryAll() {
+		switch k {
+		case "page":
+			page,_ := strconv.ParseInt(v[0],10,64)
+			searchRequest.SetAdditionalFilter(searchdomain.NewPaginationPageFilter(int(page)))
+			break
+		default:
+			searchRequest.SetAdditionalFilter(searchdomain.NewKeyValueFilter(k,v))
+		}
+	}
 	searchRequest.SetAdditionalFilter(domain.NewCategoryFacet(currentCategory.Code()))
 
 	products, err := vc.SearchService.Find(c, searchRequest)
