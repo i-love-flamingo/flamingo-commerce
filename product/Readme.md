@@ -11,6 +11,9 @@
 * A product is identified by a "MarketplaceCode"
 * There are different product types, each of them need to implement the `BasicProduct` interface.
 
+### The product model
+
+
 ## Details about Price fields
 
 * The product has one main price (see PriceInfo Property) that stands for the value of that product.

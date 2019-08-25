@@ -13,6 +13,15 @@ const (
 )
 
 type (
+
+	//Configurable - interface that is implemented by ConfigurableProduct and ConfigurableProductWithActiveVariant
+	Configurable interface {
+		GetConfigurableWithActiveVariant(variantMarketplaceCode string) (ConfigurableProductWithActiveVariant, error)
+		Variant(variantMarketplaceCode string) (*Variant, error)
+		GetDefaultVariant() (*Variant, error)
+		HasVariant(variantMarketplaceCode string) bool
+	}
+
 	// ConfigurableProduct - A product that can be teasered and that has Sellable Variants Aggregated
 	ConfigurableProduct struct {
 		Identifier string
@@ -42,6 +51,8 @@ type (
 
 var _ BasicProduct = ConfigurableProduct{}
 var _ BasicProduct = ConfigurableProductWithActiveVariant{}
+var _ Configurable = ConfigurableProduct{}
+var _ Configurable = ConfigurableProductWithActiveVariant{}
 
 // Type interface implementation for SimpleProduct
 func (p ConfigurableProduct) Type() string {
@@ -221,4 +232,20 @@ func (p ConfigurableProductWithActiveVariant) HasVariant(variantMarketplaceCode 
 		}
 	}
 	return false
+}
+
+// GetConfigurableWithActiveVariant getter
+func (p ConfigurableProductWithActiveVariant) GetConfigurableWithActiveVariant(variantMarketplaceCode string) (ConfigurableProductWithActiveVariant, error) {
+	variant, err := p.Variant(variantMarketplaceCode)
+	if err != nil {
+		return ConfigurableProductWithActiveVariant{}, err
+	}
+	return ConfigurableProductWithActiveVariant{
+		Identifier:                 p.Identifier,
+		BasicProductData:           p.BasicProductData,
+		Teaser:                     p.Teaser,
+		VariantVariationAttributes: p.VariantVariationAttributes,
+		Variants:                   p.Variants,
+		ActiveVariant:              *variant,
+	}, nil
 }
