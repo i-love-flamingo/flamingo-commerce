@@ -25,8 +25,8 @@ type (
 
 	// PaginationInfo meta information
 	PaginationInfo struct {
-		NextPage       Page
-		PreviousPage   Page
+		NextPage       *Page
+		PreviousPage   *Page
 		TotalHits      int
 		PageNavigation []Page
 	}
@@ -64,13 +64,13 @@ func BuildWith(currentResult CurrentResultInfos, paginationConfig PaginationConf
 		pagesToAdd = append(pagesToAdd, currentResult.LastPage)
 	}
 	if currentResult.ActivePage > 1 {
-		paginationInfo.PreviousPage = Page{
+		paginationInfo.PreviousPage = &Page{
 			Page: currentResult.ActivePage - 1,
 			URL:  makeURL(urlBase, currentResult.ActivePage-1),
 		}
 	}
 	if currentResult.ActivePage < currentResult.LastPage {
-		paginationInfo.NextPage = Page{
+		paginationInfo.NextPage = &Page{
 			Page: currentResult.ActivePage + 1,
 			URL:  makeURL(urlBase, currentResult.ActivePage+1),
 		}
