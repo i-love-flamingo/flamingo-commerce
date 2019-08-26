@@ -419,7 +419,7 @@ func (cs *CartService) Clean(ctx context.Context, session *web.Session) error {
 		}
 	}
 
-	_, defers, err = behaviour.CleanCart(ctx, cart)
+	cart, defers, err = behaviour.CleanCart(ctx, cart)
 	if err != nil {
 		cs.logger.WithContext(ctx).WithField("subCategory", "DeleteAllItems").Error(err)
 		return err
