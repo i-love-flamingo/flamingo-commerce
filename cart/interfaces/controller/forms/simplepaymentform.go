@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 
-	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 
 	"flamingo.me/form/domain"
@@ -12,6 +11,7 @@ import (
 	"flamingo.me/form/application"
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
+	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	customerApplication "flamingo.me/flamingo-commerce/v3/customer/application"
 	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
 	"flamingo.me/flamingo/v3/framework/flamingo"
@@ -27,8 +27,9 @@ type (
 
 	// SimplePaymentFormService implements Form(Data)Provider interface of form package
 	SimplePaymentFormService struct {
-		customerApplicationService *customerApplication.Service
-		userService                *authApplication.UserService
+		customerApplicationService     *customerApplication.Service
+		userService                    *authApplication.UserService
+		applicationCartReceiverService *cartApplication.CartReceiverService
 	}
 
 	// SimplePaymentFormController - the (mini) MVC
@@ -45,12 +46,32 @@ type (
 )
 
 // Inject - dependencies
-func (p *SimplePaymentFormService) Inject() {
-
+func (p *SimplePaymentFormService) Inject(
+	customerApplicationService *customerApplication.Service,
+	userService *authApplication.UserService,
+	applicationCartReceiverService *cartApplication.CartReceiverService) {
+	p.customerApplicationService = customerApplicationService
+	p.userService = userService
+	p.applicationCartReceiverService = applicationCartReceiverService
 }
 
 // GetFormData from data provider
 func (p *SimplePaymentFormService) GetFormData(ctx context.Context, req *web.Request) (interface{}, error) {
+	session := web.SessionFromContext(ctx)
+
+	cart, err := p.applicationCartReceiverService.ViewCart(ctx, session)
+
+	if err != nil {
+		return SimplePaymentForm{}, nil
+	}
+
+	if cart.PaymentSelection != nil {
+		return SimplePaymentForm{
+			Gateway: cart.PaymentSelection.Gateway(),
+			Method:  cart.PaymentSelection.MethodByType(priceDomain.ChargeTypeMain),
+		}, nil
+	}
+
 	return SimplePaymentForm{}, nil
 }
 
@@ -123,10 +144,10 @@ func (c *SimplePaymentFormController) HandleFormAction(ctx context.Context, r *w
 }
 
 //MapToPaymentSelection - mapper from form values to domain
-func (f *SimplePaymentForm) MapToPaymentSelection(currentCart *cart.Cart) cart.PaymentSelection {
+func (f *SimplePaymentForm) MapToPaymentSelection(currentCart *cartDomain.Cart) cartDomain.PaymentSelection {
 	chargeTypeToPaymentMethod := map[string]string{
 		priceDomain.ChargeTypeMain: f.Method,
 	}
-	selection, _ := cart.NewDefaultPaymentSelection(f.Gateway, chargeTypeToPaymentMethod, *currentCart)
+	selection, _ := cartDomain.NewDefaultPaymentSelection(f.Gateway, chargeTypeToPaymentMethod, *currentCart)
 	return selection
 }
