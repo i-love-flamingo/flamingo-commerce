@@ -3,6 +3,7 @@ package templatefunctions
 import (
 	"context"
 	"flamingo.me/flamingo-commerce/v3/search/utils"
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -51,12 +52,27 @@ func (tf *FindProducts) Func(ctx context.Context) interface{} {
 				break
 			case 1:
 				for key, value := range config.AsStringIfaceMap() {
-					if str, ok := value.(pugjs.String); ok { // allow string
-						keyValueFilters[key] = []string{str.String()}
-					} else if arrStr, ok := value.([]string); ok { // and array of strings
-						keyValueFilters[key] = arrStr
+					switch value := value.(type) {
+					case pugjs.String:
+						keyValueFilters[key] = []string{value.String()}
+						break
+					case []string:
+						keyValueFilters[key] = value
+						break
+					case []interface{}:
+						var filterValues []string
+						for _, sv := range value {
+							if string, ok := sv.(string); ok {
+								filterValues = append(filterValues, string)
+							}
+						}
+						if len(filterValues) > 0 {
+							keyValueFilters[key] = filterValues
+						}
+						break
 					}
 				}
+
 				break
 			case 2:
 				filterConstrains = config.AsStringMap()
