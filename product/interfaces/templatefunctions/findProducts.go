@@ -20,8 +20,8 @@ import (
 type (
 	// FindProducts is exported as a template function
 	FindProducts struct {
-		ProductSearchService *application.ProductSearchService `inject:""`
-		DefaultPaginationConfig *utils.PaginationConfig `inject:""`
+		ProductSearchService    *application.ProductSearchService `inject:""`
+		DefaultPaginationConfig *utils.PaginationConfig           `inject:""`
 	}
 
 	// filterProcessing to modifiy the searchRequest and the result depending on black-/whitelist
@@ -64,7 +64,7 @@ func (tf *FindProducts) Func(ctx context.Context) interface{} {
 			}
 		}
 
-		filterProcessing := newFilterProcessing(web.RequestFromContext(ctx), namespace, searchConfig, keyValueFilters, filterConstrains,tf.DefaultPaginationConfig)
+		filterProcessing := newFilterProcessing(web.RequestFromContext(ctx), namespace, searchConfig, keyValueFilters, filterConstrains, tf.DefaultPaginationConfig)
 
 		result, e := tf.ProductSearchService.Find(ctx, &filterProcessing.buildSearchRequest)
 		if e != nil {
@@ -79,13 +79,12 @@ func newFilterProcessing(request *web.Request, namespace string, searchConfig ma
 	var filterProcessing filterProcessing
 	var searchRequest searchApplication.SearchRequest
 
-
 	// 1- set the originalSearchRequest from given searchConfig and keyValueFilters
 	searchRequest = searchApplication.SearchRequest{
-		SortDirection: searchConfig["sortDirection"],
-		SortBy:        searchConfig["sortBy"],
-		Query:         searchConfig["query"],
-		PaginationConfig:paginationConfig,
+		SortDirection:    searchConfig["sortDirection"],
+		SortBy:           searchConfig["sortBy"],
+		Query:            searchConfig["query"],
+		PaginationConfig: paginationConfig,
 	}
 
 	if searchRequest.PaginationConfig != nil {
@@ -133,7 +132,7 @@ func newFilterProcessing(request *web.Request, namespace string, searchConfig ma
 		}
 
 		if filterKey == "page" && len(v) == 1 {
-			page,_ := strconv.ParseInt(v[0],10,64)
+			page, _ := strconv.ParseInt(v[0], 10, 64)
 			searchRequest.AddAdditionalFilter(domain.NewPaginationPageFilter(int(page)))
 			continue
 		}
