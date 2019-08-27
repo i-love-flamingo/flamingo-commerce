@@ -3,7 +3,6 @@ package templatefunctions
 import (
 	"context"
 	"flamingo.me/flamingo-commerce/v3/search/utils"
-	"fmt"
 	"log"
 	"strconv"
 	"strings"
