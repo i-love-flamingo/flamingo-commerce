@@ -23,6 +23,7 @@ type (
 		//ChargeSplits - the selected split per ChargeType and PaymentMethod
 		ItemSplit() PaymentSplitByItem
 		TotalValue() price.Price
+		MethodByType(string) string
 	}
 
 	//SplitQualifier qualifies by Charge Type, Charge Reference and Payment Method
@@ -514,4 +515,15 @@ func (service PaymentSplitService) sortItemsToPayKeys(itemsToPay map[string]pric
 	}
 	sort.Strings(itemKeys)
 	return itemKeys
+}
+
+// MethodByType returns the payment method by charge type
+func (d DefaultPaymentSelection) MethodByType(chargeType string) string {
+	for qualifier := range d.CartSplit() {
+		if qualifier.ChargeType == chargeType {
+			return qualifier.Method
+		}
+	}
+
+	return ""
 }
