@@ -1,8 +1,11 @@
 package cart_test
 
 import (
-	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"testing"
+
+	"flamingo.me/flamingo-commerce/v3/cart/domain/testutils"
+
+	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/price/domain"
@@ -45,6 +48,56 @@ func Test_GetDeliveryCodes(t *testing.T) {
 	assert.Len(t, deliveryCodes, 2)
 	assert.Contains(t, deliveryCodes, "home")
 	assert.Contains(t, deliveryCodes, "inFlight")
+}
+
+func TestCart_SumShippingNetWithDiscounts(t *testing.T) {
+	tests := []struct {
+		name string
+		cart cartDomain.Cart
+		want domain.Price
+	}{
+		{
+			name: "empty cart",
+			cart: *new(cartDomain.Cart),
+			want: domain.NewZero(""),
+		},
+		{
+			name: "cart with items with discounts but no shipping cost",
+			cart: func() cartDomain.Cart {
+				cart := new(cartDomain.Cart)
+				cart.Deliveries = append(cart.Deliveries, *testutils.BuildDeliveryWithDifferentDiscounts(t))
+				return *cart
+			}(),
+			want: domain.NewZero(""),
+		},
+		{
+			name: "cart with items and shipping cost, both with discounts",
+			cart: func() cartDomain.Cart {
+				cart := new(cartDomain.Cart)
+				cart.Deliveries = append(cart.Deliveries, *testutils.BuildDeliveryWithDifferentDiscountsAndShippingDiscounts(t))
+				return *cart
+			}(),
+			want: domain.NewFromFloat(5.0, "$"),
+		},
+		{
+			name: "cart with multiple deliveries with items and shipping cost, some with discounts",
+			cart: func() cartDomain.Cart {
+				cart := new(cartDomain.Cart)
+				cart.Deliveries = append(cart.Deliveries, *testutils.BuildDeliveryWithDifferentDiscountsAndShippingDiscounts(t))
+				cart.Deliveries = append(cart.Deliveries, *testutils.BuildDeliveryWithoutDiscountsAndShippingDiscounts(t))
+				return *cart
+			}(),
+			want: domain.NewFromFloat(10.0, "$"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.cart.SumShippingNetWithDiscounts(); !got.Equal(tt.want) {
+				t.Errorf("Cart.SumShippingNetWithDiscount() = %v, want %v", got.Amount(), tt.want.Amount())
+			}
+		})
+	}
 }
 
 /*
