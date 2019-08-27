@@ -2,6 +2,7 @@ package templatefunctions
 
 import (
 	"context"
+	"flamingo.me/flamingo-commerce/v3/search/utils"
 	"log"
 	"strconv"
 	"strings"
@@ -20,6 +21,7 @@ type (
 	// FindProducts is exported as a template function
 	FindProducts struct {
 		ProductSearchService *application.ProductSearchService `inject:""`
+		DefaultPaginationConfig *utils.PaginationConfig `inject:""`
 	}
 
 	// filterProcessing to modifiy the searchRequest and the result depending on black-/whitelist
@@ -62,7 +64,7 @@ func (tf *FindProducts) Func(ctx context.Context) interface{} {
 			}
 		}
 
-		filterProcessing := newFilterProcessing(web.RequestFromContext(ctx), namespace, searchConfig, keyValueFilters, filterConstrains)
+		filterProcessing := newFilterProcessing(web.RequestFromContext(ctx), namespace, searchConfig, keyValueFilters, filterConstrains,tf.DefaultPaginationConfig)
 
 		result, e := tf.ProductSearchService.Find(ctx, &filterProcessing.buildSearchRequest)
 		if e != nil {
@@ -73,16 +75,23 @@ func (tf *FindProducts) Func(ctx context.Context) interface{} {
 	}
 }
 
-func newFilterProcessing(request *web.Request, namespace string, searchConfig map[string]string, keyValueFilters map[string][]string, filterConstrains map[string]string) filterProcessing {
+func newFilterProcessing(request *web.Request, namespace string, searchConfig map[string]string, keyValueFilters map[string][]string, filterConstrains map[string]string, paginationConfig *utils.PaginationConfig) filterProcessing {
 	var filterProcessing filterProcessing
 	var searchRequest searchApplication.SearchRequest
+
 
 	// 1- set the originalSearchRequest from given searchConfig and keyValueFilters
 	searchRequest = searchApplication.SearchRequest{
 		SortDirection: searchConfig["sortDirection"],
 		SortBy:        searchConfig["sortBy"],
 		Query:         searchConfig["query"],
+		PaginationConfig:paginationConfig,
 	}
+
+	if searchRequest.PaginationConfig != nil {
+		searchRequest.PaginationConfig.NameSpace = namespace
+	}
+
 	pageSize, err := strconv.Atoi(searchConfig["pageSize"])
 	if err == nil {
 		searchRequest.PageSize = pageSize
@@ -121,6 +130,12 @@ func newFilterProcessing(request *web.Request, namespace string, searchConfig ma
 			filterKey = splitted[1]
 		} else {
 			filterKey = splitted[0]
+		}
+
+		if filterKey == "page" && len(v) == 1 {
+			page,_ := strconv.ParseInt(v[0],10,64)
+			searchRequest.AddAdditionalFilter(domain.NewPaginationPageFilter(int(page)))
+			continue
 		}
 
 		if filterProcessing.isAllowed(filterKey) {
