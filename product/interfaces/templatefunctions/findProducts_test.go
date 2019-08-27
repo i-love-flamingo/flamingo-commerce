@@ -113,6 +113,6 @@ func buildFilterProcessing(keyValueFilter map[string][]string, filterConstrains 
 	// we do not yet support multiple namespaces
 	namespace := ""
 
-	filterProcessing := newFilterProcessing(webRequest, namespace, nil, keyValueFilter, filterConstrains)
+	filterProcessing := newFilterProcessing(webRequest, namespace, nil, keyValueFilter, filterConstrains, nil)
 	return filterProcessing
 }

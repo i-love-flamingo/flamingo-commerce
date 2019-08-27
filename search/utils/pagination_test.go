@@ -40,7 +40,7 @@ func TestBuildWith(t *testing.T) {
 				PageNavigation: []Page{
 					Page{
 						Page: 1,
-						URL:makeURL(&url.URL{},1),
+						URL:makeURL(&url.URL{},1,""),
 						IsActive: true,
 					},
 				},
@@ -66,11 +66,11 @@ func TestBuildWith(t *testing.T) {
 				TotalHits: 100,
 				NextPage: &Page{
 					Page: 8,
-					URL:makeURL(&url.URL{},8),
+					URL:makeURL(&url.URL{},8,""),
 				},
 				PreviousPage: &Page{
 					Page: 6,
-					URL:makeURL(&url.URL{},6),
+					URL:makeURL(&url.URL{},6,""),
 				},
 				//No next oage
 				PageNavigation: []Page{
@@ -79,28 +79,28 @@ func TestBuildWith(t *testing.T) {
 					},
 					Page{
 						Page: 4,
-						URL:makeURL(&url.URL{},4),
+						URL:makeURL(&url.URL{},4,""),
 					},
 					Page{
 						Page: 5,
-						URL:makeURL(&url.URL{},5),
+						URL:makeURL(&url.URL{},5,""),
 					},
 					Page{
 						Page: 6,
-						URL:makeURL(&url.URL{},6),
+						URL:makeURL(&url.URL{},6,""),
 					},
 					Page{
 						Page: 7,
-						URL:makeURL(&url.URL{},7),
+						URL:makeURL(&url.URL{},7,""),
 						IsActive: true,
 					},
 					Page{
 						Page: 8,
-						URL:makeURL(&url.URL{},8),
+						URL:makeURL(&url.URL{},8,""),
 					},
 					Page{
 						Page: 9,
-						URL:makeURL(&url.URL{},9),
+						URL:makeURL(&url.URL{},9,""),
 					},
 				},
 			},
