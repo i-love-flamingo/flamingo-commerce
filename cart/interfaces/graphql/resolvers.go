@@ -2,6 +2,7 @@ package graphql
 
 import (
 	"context"
+
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/product/interfaces/graphql"
@@ -52,6 +53,7 @@ func (r *CommerceCartMutationResolver) CommerceAddToCart(ctx context.Context, ma
 	return r.q.CommerceCart(ctx)
 }
 
+// CommerceDeleteItem resolver
 func (r *CommerceCartMutationResolver) CommerceDeleteItem(ctx context.Context, itemID string, deliveryCode string) (*decorator.DecoratedCart, error) {
 	req := web.RequestFromContext(ctx)
 
@@ -84,6 +86,7 @@ func (r *CommerceCartMutationResolver) CommerceUpdateItemQty(ctx context.Context
 	return r.q.CommerceCart(ctx)
 }
 
+// CommerceCartItemResolver resolver
 type CommerceCartItemResolver struct {
 	productResolver *graphql.CommerceProductQueryResolver
 }

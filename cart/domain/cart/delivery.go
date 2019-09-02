@@ -312,7 +312,7 @@ func (di DeliveryInfo) GetAdditionalData(key string) string {
 	return attribute
 }
 
-// AdditionalData lists all available keys
+// AdditionalDataKeys lists all available keys
 func (di DeliveryInfo) AdditionalDataKeys() []string {
 	res := make([]string, len(di.AdditionalData))
 	i := 0

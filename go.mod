@@ -4,7 +4,7 @@ require (
 	flamingo.me/dingo v0.1.6
 	flamingo.me/flamingo/v3 v3.0.1
 	flamingo.me/form v1.0.0
-	flamingo.me/graphql v1.0.0
+	flamingo.me/graphql v1.0.1
 	flamingo.me/pugtemplate v1.0.0
 	github.com/99designs/gqlgen v0.9.0
 	github.com/cockroachdb/apd v1.1.0 // indirect

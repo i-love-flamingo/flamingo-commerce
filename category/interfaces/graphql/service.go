@@ -7,6 +7,7 @@ import (
 )
 
 //go:generate go run github.com/go-bindata/go-bindata/go-bindata -o schema.go -pkg graphql schema.graphql
+
 // Service describes the Commerce/Category GraphQL Service
 type Service struct{}
 
@@ -18,7 +19,7 @@ func (*Service) Schema() []byte {
 // Models mapping for Commerce_Cart types
 func (*Service) Models() map[string]config.TypeMapEntry {
 	return graphql.ModelMap{
-		"Commerce_Tree":            new(domain.Tree),
-		"Commerce_CategoryTree": 	domain.TreeData{},
+		"Commerce_Tree":         new(domain.Tree),
+		"Commerce_CategoryTree": domain.TreeData{},
 	}.Models()
 }
