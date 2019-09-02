@@ -60,7 +60,6 @@ func TestSources_Reduce(t *testing.T) {
 	assert.Equal(t, 2, sources.QtySum())
 }
 
-
 func TestSources_ReduceInNeg(t *testing.T) {
 	var sources Sources
 	assert.Equal(t, "", sources.MainLocation())

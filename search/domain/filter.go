@@ -127,7 +127,6 @@ func (f *QueryFilter) Value() (string, []string) {
 	return "q", []string{f.query}
 }
 
-
 // Query of the current filter
 func (f *QueryFilter) Query() string {
 	return f.query

@@ -77,7 +77,6 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 			}
 		}
 
-
 		if e.cartCache != nil {
 			session := web.SessionFromContext(ctx)
 			cacheID, err := e.cartCache.BuildIdentifier(ctx, session)

@@ -48,7 +48,6 @@ type (
 // check interface implementation
 var _ OrderDecoratorInterface = (*OrderDecorator)(nil)
 
-
 // Create creates a new decorated order
 func (rd *OrderDecorator) Create(ctx context.Context, order *Order) *DecoratedOrder {
 	result := &DecoratedOrder{Order: order}

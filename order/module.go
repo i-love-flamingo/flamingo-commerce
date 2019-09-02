@@ -1,10 +1,10 @@
 package order
 
 import (
+	"flamingo.me/dingo"
 	"flamingo.me/flamingo-commerce/v3/order/domain"
 	"flamingo.me/flamingo-commerce/v3/order/infrastructure/fake"
 	"flamingo.me/flamingo-commerce/v3/order/interfaces/controller"
-	"flamingo.me/dingo"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 )
@@ -27,7 +27,7 @@ const (
 func (m *Module) Inject(
 	logger flamingo.Logger,
 	config *struct {
-		UseFakeAdapters    bool `inject:"config:order.useFakeAdapters,optional"`
+		UseFakeAdapters bool `inject:"config:order.useFakeAdapters,optional"`
 	},
 ) {
 	m.logger = logger
@@ -38,7 +38,6 @@ func (m *Module) Inject(
 
 // Configure DI
 func (m *Module) Configure(injector *dingo.Injector) {
-
 
 	if m.useFakeAdapters {
 		injector.Bind((*domain.CustomerOrderService)(nil)).To(fake.CustomerOrders{})

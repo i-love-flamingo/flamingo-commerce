@@ -32,7 +32,7 @@ type (
 
 	// PaymentSelectionHasBeenResetEvent defines event properties
 	PaymentSelectionHasBeenResetEvent struct {
-		Cart *cartDomain.Cart
+		Cart                     *cartDomain.Cart
 		ResettedPaymentSelection *cartDomain.PaymentSelection
 	}
 )

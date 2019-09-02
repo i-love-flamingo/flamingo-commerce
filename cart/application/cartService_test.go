@@ -6,7 +6,6 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 
-
 	"testing"
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"

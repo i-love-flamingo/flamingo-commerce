@@ -1,8 +1,8 @@
 package search
 
 import (
-	"flamingo.me/flamingo-commerce/v3/search/interfaces"
 	"flamingo.me/dingo"
+	"flamingo.me/flamingo-commerce/v3/search/interfaces"
 	"flamingo.me/flamingo/v3/framework/web"
 )
 

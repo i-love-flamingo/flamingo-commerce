@@ -30,7 +30,7 @@ func (tf *GetCart) Inject(
 
 ) {
 	tf.cartReceiverService = applicationCartReceiverService
-	tf.logger = logger.WithField(flamingo.LogKeyModule,"cart").WithField(flamingo.LogKeyCategory,"getCart")
+	tf.logger = logger.WithField(flamingo.LogKeyModule, "cart").WithField(flamingo.LogKeyCategory, "getCart")
 }
 
 // Func defines the GetCart template function
