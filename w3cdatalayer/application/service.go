@@ -156,7 +156,7 @@ func (s *Service) SetUserEmail(mail string) error {
 	s.logger.WithField("category", "w3cDatalayer").Debug("Set Usermail %v", mail)
 	layer := s.Get()
 	layer.User = append(layer.User, domain.User{
-		Profile: []domain.UserProfile{domain.UserProfile{
+		Profile: []domain.UserProfile{{
 			ProfileInfo: domain.UserProfileInfo{
 				EmailID: s.factory.HashValueIfConfigured(mail),
 			},

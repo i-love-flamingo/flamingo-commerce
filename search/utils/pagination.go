@@ -14,7 +14,7 @@ type (
 		ShowLastPage  bool `inject:"config:pagination.showLastPage"`
 		//ShowAroundActivePageAmount - amount of pages to show before and after the current page (so a value of2 would show 2 pages before and 2 pages after)
 		ShowAroundActivePageAmount float64 `inject:"config:pagination.showAroundActivePageAmount"`
-		NameSpace string
+		NameSpace                  string
 	}
 
 	// CurrentResultInfos page information
@@ -68,13 +68,13 @@ func BuildWith(currentResult CurrentResultInfos, paginationConfig PaginationConf
 	if currentResult.ActivePage > 1 {
 		paginationInfo.PreviousPage = &Page{
 			Page: currentResult.ActivePage - 1,
-			URL:  makeURL(urlBase, currentResult.ActivePage-1,paginationConfig.NameSpace),
+			URL:  makeURL(urlBase, currentResult.ActivePage-1, paginationConfig.NameSpace),
 		}
 	}
 	if currentResult.ActivePage < currentResult.LastPage {
 		paginationInfo.NextPage = &Page{
 			Page: currentResult.ActivePage + 1,
-			URL:  makeURL(urlBase, currentResult.ActivePage+1,paginationConfig.NameSpace),
+			URL:  makeURL(urlBase, currentResult.ActivePage+1, paginationConfig.NameSpace),
 		}
 	}
 
@@ -112,7 +112,7 @@ func BuildWith(currentResult CurrentResultInfos, paginationConfig PaginationConf
 			Page:     pageNr,
 			IsActive: pageNr == currentResult.ActivePage,
 			IsSpacer: false,
-			URL:      makeURL(urlBase, pageNr,paginationConfig.NameSpace),
+			URL:      makeURL(urlBase, pageNr, paginationConfig.NameSpace),
 		}
 		paginationInfo.PageNavigation = append(paginationInfo.PageNavigation, page)
 		previousPageNr = pageNr
@@ -134,7 +134,7 @@ func makeURL(base *url.URL, page int, namespace string) string {
 	q := base.Query()
 	parameterName := "page"
 	if namespace != "" {
-		parameterName = fmt.Sprintf("%v.%v",namespace,"page")
+		parameterName = fmt.Sprintf("%v.%v", namespace, "page")
 	}
 	q.Set(parameterName, strconv.Itoa(page))
 	return (&url.URL{RawQuery: q.Encode()}).String()

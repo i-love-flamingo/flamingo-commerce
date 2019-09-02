@@ -66,20 +66,19 @@ func (s Sources) MainLocation() string {
 // QtySum returns the sum of all sourced items
 func (s Sources) QtySum() int {
 	qty := int(0)
-	for _,source := range s {
+	for _, source := range s {
 		if source.Qty == math.MaxInt64 {
-			return  math.MaxInt64
+			return math.MaxInt64
 		}
 		qty = qty + source.Qty
 	}
 	return qty
 }
 
-
 // Reduce returns new Source
 func (s Sources) Reduce(reduceby Sources) Sources {
-	for k,source := range s {
-		for _,reducebySource := range reduceby {
+	for k, source := range s {
+		for _, reducebySource := range reduceby {
 			if source.LocationCode == reducebySource.LocationCode {
 				s[k].Qty = s[k].Qty - reducebySource.Qty
 			}

@@ -112,7 +112,6 @@ func (cs *CartSessionCache) Inject(
 	}
 }
 
-
 // BuildIdentifier creates a CartCacheIdentifier based on the login state
 func (cs *CartSessionCache) BuildIdentifier(ctx context.Context, session *web.Session) (CartCacheIdentifier, error) {
 
@@ -146,7 +145,7 @@ func (cs *CartSessionCache) BuildIdentifier(ctx context.Context, session *web.Se
 func (cs *CartSessionCache) GetCart(ctx context.Context, session *web.Session, id CartCacheIdentifier) (*cart.Cart, error) {
 	if cache, ok := session.Load(CartSessionCacheCacheKeyPrefix + id.CacheKey()); ok {
 		if cachedCartsEntry, ok := cache.(CachedCartEntry); ok {
-			cs.logger.WithContext(ctx).Debugf("Found cached cart: %v  InValid: %v", id.CacheKey(),cachedCartsEntry.IsInvalid)
+			cs.logger.WithContext(ctx).Debugf("Found cached cart: %v  InValid: %v", id.CacheKey(), cachedCartsEntry.IsInvalid)
 			if cachedCartsEntry.IsInvalid {
 				return &cachedCartsEntry.Entry, ErrCacheIsInvalid
 			}

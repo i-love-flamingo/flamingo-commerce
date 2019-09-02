@@ -28,8 +28,7 @@ func (s *Service) getConfigForCurrency(currency string) config.Map {
 		return configForCurrency.(config.Map)
 	}
 
-
-	if defaultConfig, ok :=  s.config["default"].(config.Map); ok {
+	if defaultConfig, ok := s.config["default"].(config.Map); ok {
 		return defaultConfig
 	}
 	return nil

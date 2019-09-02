@@ -357,7 +357,7 @@ func (cob *InMemoryBehaviour) ApplyVoucher(ctx context.Context, cart *domaincart
 }
 
 // ApplyAny applies a voucher or giftcard to the cart
-func (cob *InMemoryBehaviour) ApplyAny (ctx context.Context, cart *domaincart.Cart, anyCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
+func (cob *InMemoryBehaviour) ApplyAny(ctx context.Context, cart *domaincart.Cart, anyCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	currentCart, deferFunc, err := cob.ApplyVoucher(ctx, cart, anyCode)
 	if err == nil {
 		// successfully applied as voucher

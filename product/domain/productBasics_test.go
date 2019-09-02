@@ -113,7 +113,7 @@ func TestBasicProductHasAttribute(t *testing.T) {
 	b := BasicProductData{}
 	assert.False(t, b.HasAttribute("code"))
 
-	b.Attributes = map[string]Attribute{"code": Attribute{Code: "code"}}
+	b.Attributes = map[string]Attribute{"code": {Code: "code"}}
 	assert.True(t, b.HasAttribute("code"))
 	assert.False(t, b.HasAttribute("Code"))
 }
@@ -177,7 +177,7 @@ func TestSaleable_GetLoyaltyChargeSplit(t *testing.T) {
 			Default: priceDomain.NewFromInt(100, 1, "€"),
 		},
 		LoyaltyPrices: []LoyaltyPriceInfo{
-			LoyaltyPriceInfo{
+			{
 				Type:             "loyalty.miles",
 				MaxPointsToSpent: new(big.Float).SetInt64(50),
 				//10 is the minimum to pay in miles (=20€ value)
@@ -246,7 +246,7 @@ func TestSaleable_GetLoyaltyChargeSplitWithAdjustedValue(t *testing.T) {
 			Default: priceDomain.NewFromInt(100, 1, "€"),
 		},
 		LoyaltyPrices: []LoyaltyPriceInfo{
-			LoyaltyPriceInfo{
+			{
 				Type:             "loyalty.miles",
 				MaxPointsToSpent: nil,
 				//10 is the minimum to pay in miles (=20€ value)
@@ -320,7 +320,7 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 			Default: priceDomain.NewFromFloat(9.99, "€"),
 		},
 		LoyaltyPrices: []LoyaltyPriceInfo{
-			LoyaltyPriceInfo{
+			{
 				Type:             "loyalty.miles",
 				MaxPointsToSpent: nil,
 				//10 is the minimum to pay in miles (=20€ value)
@@ -381,7 +381,7 @@ func TestSaleable_GetLoyaltyChargeSplitIgnoreMin(t *testing.T) {
 			Default: priceDomain.NewFromInt(100, 1, "€"),
 		},
 		LoyaltyPrices: []LoyaltyPriceInfo{
-			LoyaltyPriceInfo{
+			{
 				Type:             "loyalty.miles",
 				MaxPointsToSpent: new(big.Float).SetInt64(50),
 				//10 is the minimum to pay in miles (=20€ value)

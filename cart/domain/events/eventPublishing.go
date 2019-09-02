@@ -11,7 +11,6 @@ import (
 
 type (
 
-
 	//EventPublisher - technology free interface to publish events that might be interesting for outside (Publish)
 	EventPublisher interface {
 		PublishAddToCartEvent(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode string, qty int)
