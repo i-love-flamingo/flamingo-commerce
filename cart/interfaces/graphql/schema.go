@@ -92,7 +92,7 @@ func schemaGraphql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "schema.graphql", size: 4536, mode: os.FileMode(420), modTime: time.Unix(1567432009, 0)}
+	info := bindataFileInfo{name: "schema.graphql", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -193,7 +193,7 @@ type bintree struct {
 }
 
 var _bintree = &bintree{nil, map[string]*bintree{
-	"schema.graphql": {schemaGraphql, map[string]*bintree{}},
+	"schema.graphql": &bintree{schemaGraphql, map[string]*bintree{}},
 }}
 
 // RestoreAsset restores an asset under the given directory
