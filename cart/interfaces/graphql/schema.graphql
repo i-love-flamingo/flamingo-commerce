@@ -92,8 +92,6 @@ type Commerce_CartItem {
     rowPriceGross: Commerce_Price!
     rowPriceNet: Commerce_Price!
 #    rowTaxes: Commerce_Taxes!
-    product: Commerce_Product!
-
 }
 
 type Commerce_CartAddress {
