@@ -7,7 +7,7 @@ import (
 	"github.com/99designs/gqlgen/codegen/config"
 )
 
-//go:generate go run github.com/go-bindata/go-bindata/go-bindata -o schema.go -pkg graphql schema.graphql
+//go:generate go run github.com/go-bindata/go-bindata/go-bindata -nometadata -o schema.go -pkg graphql schema.graphql
 
 // Service describes the Commerce/Cart GraphQL Service
 type Service struct{}
