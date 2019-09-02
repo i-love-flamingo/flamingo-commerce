@@ -5,7 +5,6 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
-	"flamingo.me/flamingo-commerce/v3/product/interfaces/graphql"
 	"flamingo.me/flamingo/v3/framework/web"
 )
 
@@ -84,14 +83,4 @@ func (r *CommerceCartMutationResolver) CommerceUpdateItemQty(ctx context.Context
 		return nil, err
 	}
 	return r.q.CommerceCart(ctx)
-}
-
-// CommerceCartItemResolver resolver
-type CommerceCartItemResolver struct {
-	productResolver *graphql.CommerceProductQueryResolver
-}
-
-// Inject dependencies
-func (c *CommerceCartItemResolver) Inject(productResolver *graphql.CommerceProductQueryResolver) {
-	c.productResolver = productResolver
 }

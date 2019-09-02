@@ -1,8 +1,9 @@
 package cart
 
 import (
-	"flamingo.me/flamingo-commerce/v3/price/domain"
 	"sort"
+
+	"flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
 type (
@@ -215,4 +216,9 @@ func (discounts AppliedDiscounts) Sum() (domain.Price, error) {
 		}
 	}
 	return result, nil
+}
+
+// Items getter for graphql integration
+func (discounts AppliedDiscounts) Items() []AppliedDiscount {
+	return []AppliedDiscount(discounts)
 }

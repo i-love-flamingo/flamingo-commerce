@@ -19,5 +19,5 @@ type Commerce_CategoryTree implements Commerce_Tree{
 }
 
 extend type Query {
-    Commerce_CategoryTree(activeCategoryCode: String): Commerce_Tree!
+    Commerce_CategoryTree(activeCategoryCode: String!): Commerce_Tree!
 }

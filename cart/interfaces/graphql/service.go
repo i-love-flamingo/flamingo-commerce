@@ -33,5 +33,7 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		"Commerce_CartPerson":               cart.Person{},
 		"Commerce_CartExistingCustomerData": cart.ExistingCustomerData{},
 		"Commerce_CartPersonalDetails":      cart.PersonalDetails{},
+		"Commerce_CartAppliedDiscounts":     cart.AppliedDiscounts{},
+		"Commerce_CartAppliedDiscount":      cart.AppliedDiscount{},
 	}.Models()
 }

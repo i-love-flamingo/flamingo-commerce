@@ -67,7 +67,21 @@ type Commerce_CartShippingItem {
     title: String!
     priceNet: Commerce_Price
     taxAmount: Commerce_Price
-    discountAmount: Commerce_Price
+    appliedDiscounts: Commerce_CartAppliedDiscounts!
+}
+
+type Commerce_CartAppliedDiscounts {
+    items: [Commerce_CartAppliedDiscount!]
+}
+
+type Commerce_CartAppliedDiscount {
+    campaignCode:  String!
+    couponCode:    String!
+    label:         String!
+    applied:       Commerce_Price!
+    type:          String!
+    isItemRelated: Boolean!
+    sortOrder:     Int!
 }
 
 type Commerce_CartDecoratedItem {
