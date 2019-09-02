@@ -1,0 +1,23 @@
+interface Commerce_Tree {
+    code: String!
+    name: String!
+    path: String!
+    active: Boolean!
+    subTrees: [Commerce_Tree]
+    hasChilds: Boolean!
+    documentCount: Int!
+}
+
+type Commerce_CategoryTree implements Commerce_Tree{
+    code: String!
+    name: String!
+    path: String!
+    active: Boolean!
+    subTrees: [Commerce_Tree]
+    hasChilds: Boolean!
+    documentCount: Int!
+}
+
+extend type Query {
+    Commerce_CategoryTree(activeCategoryCode: String): Commerce_Tree!
+}

@@ -1,0 +1,16 @@
+type Commerce_Price{
+    amount: Float
+    currency: String!
+}
+
+type Commerce_Charge {
+    price: Commerce_Price!
+    value: Commerce_Price!
+    type: String!
+    reference: String!
+}
+
+type Commerce_ChargeQualifier {
+    type: String!
+    reference: String!
+}

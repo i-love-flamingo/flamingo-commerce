@@ -1,0 +1,144 @@
+type Commerce_DecoratedCart {
+    cart: Commerce_Cart!
+    decoratedDeliveries: [Commerce_CartDecoratedDelivery!]
+}
+
+type Commerce_Cart {
+    id: ID!
+    entityID: String!
+    billingAddress: Commerce_CartAddress
+    purchaser: Commerce_CartPerson
+    deliveries: [Commerce_CartDelivery!]
+    #	additionalData: Commerce_CartAdditionalData!
+    #	paymentSelection: Commerce_CartPaymentSelection!
+    belongsToAuthenticatedUser: Boolean!
+    authenticatedUserID: String!
+    #	appliedCouponCodes: [Commerce_CartCouponCode!]
+    defaultCurrency: String!
+#    totalitems: [Commerce_CartTotalitem!]
+    itemCount: Int!
+    productCount: Int!
+    isPaymentSelected: Boolean!
+    grandTotal: Commerce_Price!
+    #	appliedGiftCards: [Commerce_CartAppliedGiftCard!]
+}
+
+type Commerce_CartDecoratedDelivery {
+    delivery: Commerce_CartDelivery!
+    decoratedItems: [Commerce_CartDecoratedItem!]
+}
+
+type Commerce_CartDelivery {
+    deliveryInfo: Commerce_CartDeliveryInfo
+    cartitems: [Commerce_CartItem!]
+    shippingItem: Commerce_CartShippingItem
+    subTotalGross: Commerce_Price
+    grandTotal: Commerce_Price
+    sumTotalTaxAmount: Commerce_Price
+    subTotalNet: Commerce_Price
+    sumTotalDiscountAmount: Commerce_Price
+    sumNonItemRelatedDiscountAmount: Commerce_Price
+    sumItemRelatedDiscountAmount: Commerce_Price
+    subTotalGrossWithDiscounts: Commerce_Price
+    subTotalNetWithDiscounts: Commerce_Price
+    hasItems: Boolean!
+}
+
+type Commerce_CartDeliveryInfo {
+    code: String!
+    workflow: String!
+    method: String!
+    carrier: String!
+    deliveryLocation: Commerce_CartDeliveryLocation
+    desiredTime: Time
+    getAdditionalData(key: String!): String!
+    additionalDataKeys: [String!]
+#    additionalDeliveryInfos: map[string]json.RawMessage
+}
+
+type Commerce_CartDeliveryLocation  {
+    type: String!
+    address: Commerce_CartAddress
+    useBillingAddress: Boolean!
+    code: String!
+}
+
+type Commerce_CartShippingItem {
+    title: String!
+    priceNet: Commerce_Price
+    taxAmount: Commerce_Price
+    discountAmount: Commerce_Price
+}
+
+type Commerce_CartDecoratedItem {
+    item: Commerce_CartItem
+    product: Commerce_Product
+}
+
+type Commerce_CartItem {
+    id: ID!
+    externalReference: String!
+    marketplaceCode: String!
+    variantMarketPlaceCode: String!
+    productName: String!
+    sourceID: String!
+    qty: Int!
+    additionalDataKeys: [String!]
+    additionalDataValues: [String!]
+    getAdditionalData(key: String!): String
+    hasAdditionalDataKey(key: String!): Boolean
+    singlePriceGross: Commerce_Price!
+    singlePriceNet: Commerce_Price!
+    rowPriceGross: Commerce_Price!
+    rowPriceNet: Commerce_Price!
+#    rowTaxes: Commerce_Taxes!
+}
+
+type Commerce_CartAddress {
+    vat:                    String!
+    firstname:              String!
+    lastname:               String!
+    middleName:             String!
+    title:                  String!
+    salutation:             String!
+    street:                 String!
+    streetNr:               String!
+    additionalAddressLines: [String!]
+    company:                String!
+    city:                   String!
+    postCode:               String!
+    state:                  String!
+    regionCode:             String!
+    country:                String!
+    countryCode:            String!
+    telephone:              String!
+    email:                  String!
+}
+
+type Commerce_CartPerson {
+    address: Commerce_CartAddress
+    personalDetails: Commerce_CartPersonalDetails!
+    existingCustomerData: Commerce_CartExistingCustomerData
+}
+
+type Commerce_CartExistingCustomerData {
+    id: ID!
+}
+
+type Commerce_CartPersonalDetails {
+    dateOfBirth: String!
+    passportCountry: String!
+    passportNumber: String!
+    nationality: String!
+}
+
+extend type Query {
+    commerce_Cart: Commerce_DecoratedCart!
+}
+
+extend type Mutation {
+    commerce_AddToCart(marketplaceCode: ID!, qty: Int!, deliveryCode: String!): Commerce_DecoratedCart!
+    commerce_DeleteCartDelivery(deliveryCode: String!): Commerce_DecoratedCart!
+    commerce_DeleteItem(itemID: ID!, deliveryCode: String!): Commerce_DecoratedCart!
+    commerce_UpdateItemQty(itemID: ID!, deliveryCode: String!, qty: Int!): Commerce_DecoratedCart!
+}

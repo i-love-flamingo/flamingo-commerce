@@ -2,8 +2,10 @@ package price
 
 import (
 	"flamingo.me/dingo"
+	pricegraphql "flamingo.me/flamingo-commerce/v3/price/interfaces/graphql"
 	"flamingo.me/flamingo-commerce/v3/price/interfaces/templatefunctions"
 	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/graphql"
 )
 
 type (
@@ -12,6 +14,7 @@ type (
 )
 
 // Configure the product URL
-func (m *Module) Configure(injector *dingo.Injector) {
+func (m Module) Configure(injector *dingo.Injector) {
 	flamingo.BindTemplateFunc(injector, "commercePriceFormat", new(templatefunctions.CommercePriceFormatFunc))
+	injector.BindMulti(new(graphql.Service)).To(pricegraphql.Service{})
 }

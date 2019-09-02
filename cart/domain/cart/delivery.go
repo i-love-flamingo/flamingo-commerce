@@ -305,3 +305,20 @@ func (s ShippingItem) Tax() Tax {
 		Amount: s.TaxAmount,
 	}
 }
+
+// GetAdditionalData returns additional data
+func (di DeliveryInfo) GetAdditionalData(key string) string {
+	attribute := di.AdditionalData[key]
+	return attribute
+}
+
+// AdditionalDataKeys lists all available keys
+func (di DeliveryInfo) AdditionalDataKeys() []string {
+	res := make([]string, len(di.AdditionalData))
+	i := 0
+	for k := range di.AdditionalData {
+		res[i] = k
+		i++
+	}
+	return res
+}

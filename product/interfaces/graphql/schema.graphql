@@ -1,0 +1,150 @@
+interface Commerce_Product {
+    baseData: Commerce_BasicProductData!
+    teaserData: Commerce_ProductTeaserData!
+    specifications: Commerce_ProductSpecifications!
+    isSaleable: Boolean!
+    saleableData: Commerce_ProductSaleable!
+    type: String!
+    getIdentifier: String!
+    hasMedia(group: String!, usage: String!): Boolean!
+    getMedia(group: String!, usage: String!): Commerce_ProductMedia!
+}
+
+type Commerce_SimpleProduct implements Commerce_Product {
+    baseData: Commerce_BasicProductData!
+    teaserData: Commerce_ProductTeaserData!
+    specifications: Commerce_ProductSpecifications!
+    isSaleable: Boolean!
+    saleableData: Commerce_ProductSaleable!
+    type: String!
+    getIdentifier: String!
+    hasMedia(group: String!, usage: String!): Boolean!
+    getMedia(group: String!, usage: String!): Commerce_ProductMedia!
+}
+
+type Commerce_BasicProductData {
+    title:            String!
+    attributes:       Commerce_ProductAttributes
+    shortDescription: String!
+    description:      String!
+    media:            [Commerce_ProductMedia!]
+
+    marketPlaceCode: String!
+    retailerCode:    String!
+    retailerSku:     String!
+    retailerName:    String!
+
+    createdAt:   Time
+    updatedAt:   Time
+    visibleFrom: Time
+    visibleTo:   Time
+
+    Categories:   [Commerce_CategoryTeaser!]
+    MainCategory: Commerce_CategoryTeaser!
+
+    categoryToCodeMapping: [String!]
+
+    stockLevel: String!
+
+    keywords: [String!]
+    isNew:    Boolean!
+}
+
+type Commerce_ProductTeaserData {
+    shortTitle: String
+    shortDescription: String
+    teaserPrice : Commerce_ProductPriceInfo
+    teaserPriceIsFromPrice: Boolean
+    preSelectedVariantSku: String
+    media : [Commerce_ProductMedia!]
+    marketPlaceCode: String
+    teaserAvailablePrices : [Commerce_ProductPriceInfo!]
+    teaserLoyaltyPriceInfo: Commerce_ProductLoyaltyPriceInfo
+}
+
+type Commerce_ProductLoyaltyPriceInfo {
+    type: String!
+    default: Commerce_Price!
+    isDiscounted: Boolean!
+    discounted: Commerce_Price!
+    discountText: String!
+    minPointsToSpent: Float!
+    maxPointsToSpent: Float!
+    context: Commerce_PriceContext!
+}
+
+type Commerce_PriceContext {
+    customerGroup: String!
+    channelCode: String!
+    locale: String!
+}
+
+type Commerce_ProductSpecifications {
+    groups: [Commerce_ProductSpecificationGroup!]
+}
+
+type Commerce_ProductSpecificationGroup {
+    title: String!
+    entries: [Commerce_ProductSpecificationEntry!]
+}
+
+type Commerce_ProductSpecificationEntry {
+    label: String!
+    values: [String!]
+}
+
+type Commerce_ProductSaleable {
+    isSaleable: Boolean!
+    saleableFrom: Time
+    saleableTo: Time
+    activePrice: Commerce_ProductPriceInfo
+    availablePrices: [Commerce_ProductPriceInfo!]
+    loyaltyPrices: [Commerce_ProductLoyaltyPriceInfo!]
+}
+
+type Commerce_ProductMedia {
+    type:      String!
+    mimeType:  String!
+    usage:     String!
+    title:     String!
+    reference: String!
+}
+
+type Commerce_ProductAttributes {
+    attributeKeys: [String!]
+    attributes: [Commerce_ProductAttribute!]
+    hasAttribute(key: String!): Boolean
+    getAttribute(key: String!): Commerce_ProductAttribute
+}
+
+type Commerce_ProductAttribute {
+    code: String!
+    label: String!
+    unitCode: String!
+}
+
+type Commerce_CategoryTeaser {
+    code: String!
+    path: String!
+    name: String!
+    parent: Commerce_CategoryTeaser
+}
+
+type Commerce_ProductPriceInfo {
+    default: Commerce_Price
+    discounted: Commerce_Price
+    discountText: String!
+    activeBase: Float!
+    activeBaseAmount: Float!
+    activeBaseUnit: String
+    isDiscounted: Boolean
+    campaignRules: [String!]
+    denyMoreDiscounts: Boolean
+    #    context: Commerce_PriceContext
+    taxClass: String!
+
+}
+
+extend type Query {
+    Commerce_Product(marketplaceCode: String!): Commerce_Product
+}

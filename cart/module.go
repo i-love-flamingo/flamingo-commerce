@@ -3,6 +3,8 @@ package cart
 import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
+	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql"
+	flamingographql "flamingo.me/graphql"
 
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
 
@@ -83,6 +85,8 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	injector.BindMap(new(formDomain.FormService), "commerce.cart.personaldataFormService").To(forms.DefaultPersonalDataFormService{})
 
 	web.BindRoutes(injector, new(routes))
+
+	injector.BindMulti(new(flamingographql.Service)).To(graphql.Service{})
 }
 
 // DefaultConfig enables inMemory cart service adapter
