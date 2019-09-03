@@ -12,9 +12,11 @@
 * There are different product types, each of them need to implement the `BasicProduct` interface.
 
 ### The product model
-
+![Product Model](product_model.png)
 
 ## Details about Price fields
+
+![Priceinfo Model](price_display.png)
 
 * The product has one main price (see PriceInfo Property) that stands for the value of that product.
 * The product has a maintained price in a certain currency - eventually different by channel or locale.
@@ -98,20 +100,27 @@ The returned products urls slug will be
 ### findProducts
 
 findProducts is a template function that returns a search result to show products:
+
 * it will dynamically adjust the search request based on url parameters that match the given namespace
 * the template function requires 4 parameters:
+
     * `namespace`: A name of the findProduct call - it is used to check URL parameters with that namespace
     * `searchConfig`: A map with the following keys supported:
+    
         * `query`: Optional - the search string that a "human" might have entered to filter the search
         * `pageSize`, `page`: Optional - set the page and the pageSize (for pagination)
         * `sortBy`, `sortDirection` (`A`/`D`): Optional - set the field that should be used to sort the search result
+        
     * `keyValueFilters`: Optional - A map of key values that are used as additional keyValue Filters in the searchRequest
     * `filterConstrains`: Optional - A map that supports the following keys:
+    
         * `blackList` or `whiteList` (if both given `whiteList` is preferred): This is a comma separated list of filter keys, that are evaluated during:
+        
             * using url Parameters to set keyValueFilters - only allowed keys will be used
             * modifying the searchResult `FacetCollection` and remove disallowed facets
 
 See the following example:
+
 ```pug
 
   - 
