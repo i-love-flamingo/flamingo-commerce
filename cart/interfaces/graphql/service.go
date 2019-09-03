@@ -26,6 +26,9 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		"Commerce_CartDelivery":             cart.Delivery{},
 		"Commerce_CartDeliveryInfo":         cart.DeliveryInfo{},
 		"Commerce_CartDeliveryLocation":     cart.DeliveryLocation{},
+		"Commerce_CartTotalitem": 			 cart.Totalitem{},
+		"Commerce_CartCouponCode":			 cart.CouponCode{},
+		"Commerce_CartAdditionalData":		 cart.AdditionalData{},
 		"Commerce_CartShippingItem":         cart.ShippingItem{},
 		"Commerce_CartDecoratedItem":        decorator.DecoratedCartItem{},
 		"Commerce_CartItem":                 cart.Item{},
@@ -35,5 +38,6 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		"Commerce_CartPersonalDetails":      cart.PersonalDetails{},
 		"Commerce_CartAppliedDiscounts":     cart.AppliedDiscounts{},
 		"Commerce_CartAppliedDiscount":      cart.AppliedDiscount{},
+		"Commerce_CartAppliedGiftCard":		 cart.AppliedGiftCard{},
 	}.Models()
 }
