@@ -524,6 +524,14 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 		return nil, err
 	}
 
+	err = cs.CheckAndAdjustStockInCart(ctx, session, cart)
+
+	if err != nil {
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "AddProduct").Error(err)
+
+		return nil, err
+	}
+
 	cs.publishAddtoCartEvent(ctx, *cart, addRequest)
 
 	return product, nil
@@ -860,4 +868,31 @@ func (cs *CartService) dispatchAllEvents(ctx context.Context, events []flamingo.
 	for _, e := range events {
 		cs.eventRouter.Dispatch(ctx, e)
 	}
+}
+
+// checkAndAdjustStockInCart
+func (cs *CartService) CheckAndAdjustStockInCart(ctx context.Context, session *web.Session, cart *cartDomain.Cart) error {
+	// Provide update/message to Frontend/Flash Message in Session
+	for _, d := range cart.Deliveries {
+		deliveryCode := d.DeliveryInfo.Code
+		for _, item := range d.Cartitems {
+			product, err := cs.productService.Get(ctx, item.MarketplaceCode)
+
+			if err != nil {
+				return err
+			}
+
+			restrictionResult := cs.restrictionService.RestrictQty(ctx, product, cart, deliveryCode)
+
+			if restrictionResult.RemainingDifference < 0 {
+				err = cs.UpdateItemQty(ctx, session, item.ID, deliveryCode, item.Qty+restrictionResult.RemainingDifference)
+
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+
+	return nil
 }
