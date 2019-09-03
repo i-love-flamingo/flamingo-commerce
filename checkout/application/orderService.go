@@ -362,7 +362,7 @@ func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, dec
 		// record fail count metric
 		stats.Record(ctx, orderFailedStat.M(1))
 		os.logger.WithContext(ctx).Error("Error during place Order:" + err.Error())
-		return nil, errors.New("error while placing the order. please contact customer support")
+		return nil, err
 	}
 
 	placeOrderInfo := os.preparePlaceOrderInfo(ctx, decoratedCart.Cart, placedOrderInfos, *cartPayment)
