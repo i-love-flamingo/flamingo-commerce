@@ -163,9 +163,11 @@ func (cc *CartAPIController) handlePromotionAction(ctx context.Context, r *web.R
 	result := newResult()
 	_, err := fn(ctx, r.Session(), couponCode)
 	if err != nil {
+		cc.enrichResultWithCartInfos(ctx, &result)
 		result.SetError(err, errorCode)
 		response := cc.responder.Data(result)
 		response.Status(500)
+
 		return response
 	}
 	cc.enrichResultWithCartInfos(ctx, &result)

@@ -25,10 +25,18 @@ type (
 		CategoryMedia      Medias
 		CategoryTypeCode   string
 		CategoryAttributes Attributes
+		Promotion          Promotion
 	}
 
 	// Attributes define additional category attributes
 	Attributes map[string]interface{}
+
+	// Promotion defines promotion for a category
+	Promotion struct {
+		LinkType   string
+		LinkTarget string
+		Media      Medias
+	}
 )
 
 // Category Types
