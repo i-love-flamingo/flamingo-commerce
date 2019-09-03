@@ -9,18 +9,18 @@ type Commerce_Cart {
     billingAddress: Commerce_CartAddress
     purchaser: Commerce_CartPerson
     deliveries: [Commerce_CartDelivery!]
-    #	additionalData: Commerce_CartAdditionalData!
+    additionalData: Commerce_CartAdditionalData!
     #	paymentSelection: Commerce_CartPaymentSelection!
     belongsToAuthenticatedUser: Boolean!
     authenticatedUserID: String!
-    #	appliedCouponCodes: [Commerce_CartCouponCode!]
+    appliedCouponCodes: [Commerce_CartCouponCode!]
     defaultCurrency: String!
-#    totalitems: [Commerce_CartTotalitem!]
+    totalitems: [Commerce_CartTotalitem!]
     itemCount: Int!
     productCount: Int!
     isPaymentSelected: Boolean!
     grandTotal: Commerce_Price!
-    #	appliedGiftCards: [Commerce_CartAppliedGiftCard!]
+    appliedGiftCards: [Commerce_CartAppliedGiftCard!]
 }
 
 type Commerce_CartDecoratedDelivery {
@@ -144,6 +144,28 @@ type Commerce_CartPersonalDetails {
     passportCountry: String!
     passportNumber: String!
     nationality: String!
+}
+
+type Commerce_CartAdditionalData {
+#    customAttributes: Map
+    reservedOrderID: String!
+}
+
+type Commerce_CartTotalitem {
+    code: String!
+    title: String!
+    price: Commerce_Price!
+    type: String!
+}
+
+type Commerce_CartCouponCode {
+    code: String!
+}
+
+type Commerce_CartAppliedGiftCard {
+    code: String!
+    applied: Commerce_Price!
+    remaining: Commerce_Price!
 }
 
 extend type Query {
