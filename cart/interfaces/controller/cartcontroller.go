@@ -126,6 +126,12 @@ func (cc *CartViewController) AddAndViewAction(ctx context.Context, r *web.Reque
 		return cc.responder.Render("checkout/carterror", nil)
 	}
 
+	err = cc.applicationCartService.CheckAndAdjustStockInCart(ctx, r.Session())
+	if err != nil {
+		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.addandviewaction: Error %v", err)
+		return cc.responder.Render("checkout/carterror", nil)
+	}
+
 	r.Session().AddFlash(CartViewActionData{
 		AddToCartProductsData: []productDomain.BasicProductData{product.BaseData()},
 	}, "cart.view.data")
@@ -161,6 +167,11 @@ func (cc *CartViewController) UpdateQtyAndViewAction(ctx context.Context, r *web
 		}
 	}
 
+	err = cc.applicationCartService.CheckAndAdjustStockInCart(ctx, r.Session())
+	if err != nil {
+		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.UpdateAndViewAction: Error %v", err)
+	}
+
 	return cc.responder.RouteRedirect("cart.view", nil)
 }
 
@@ -174,6 +185,11 @@ func (cc *CartViewController) DeleteAndViewAction(ctx context.Context, r *web.Re
 	}
 	deliveryCode, _ := r.Params["deliveryCode"]
 	err := cc.applicationCartService.DeleteItem(ctx, r.Session(), id, deliveryCode)
+	if err != nil {
+		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.deleteaction: Error %v", err)
+	}
+
+	err = cc.applicationCartService.CheckAndAdjustStockInCart(ctx, r.Session())
 	if err != nil {
 		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.deleteaction: Error %v", err)
 	}
