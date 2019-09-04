@@ -35,7 +35,7 @@ func (m *Module) DefaultConfig() config.Map {
 		"checkout": config.Map{
 			"useDeliveryForms":    true,
 			"usePersonalDataForm": false,
-			"skipReviewAction":	false,
+			"skipReviewAction":    false,
 		},
 	}
 }
