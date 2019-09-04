@@ -4,6 +4,8 @@ flamingo.me/dingo v0.1.6 h1:8P2t2wbJjzn1qI84ARRBkJlBxtTwGKulXc6oj+heUOw=
 flamingo.me/dingo v0.1.6/go.mod h1:jLnqSPkxqE113eKreQ4uBx1fnwluGuaK3rjRi9041wU=
 flamingo.me/flamingo/v3 v3.0.1 h1:p/jjJDa5Il1Clpg7QuYJHosR6/eX1v89lZRTBMO9PAc=
 flamingo.me/flamingo/v3 v3.0.1/go.mod h1:qxq7rnO6bKIMgyx7WOoi3QcTy9UkX9jrAEGvFDnWFlc=
+flamingo.me/flamingo/v3 v3.0.2 h1:Ky6iGO4/FMUrszHRDRaGyj/0M8z5zBj+V/O3NN6nvRk=
+flamingo.me/flamingo/v3 v3.0.2/go.mod h1:8eJclRd2+YgAVp5CRLNfy9nPcgvjQ7HSAiauv65gJac=
 flamingo.me/form v1.0.0 h1:ww/y4GEOVWiEKvtNf7ZesrjvU92fKiODQfbNoNj351k=
 flamingo.me/form v1.0.0/go.mod h1:vr043GHK3X/0W1ZIGDJBBic94piMMTm5TzXupcPvprQ=
 flamingo.me/graphql v1.0.0 h1:ghrLZci+03K2zRnDTbjEgZc/5XzvZvQPquc01X5vq6E=
@@ -17,6 +19,7 @@ github.com/99designs/gqlgen v0.9.0/go.mod h1:HrrG7ic9EgLPsULxsZh/Ti+p0HNWgR3XRuv
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/Ompluscator/oauth2 v0.0.0-20190101010101-b7626857 h1:Bf+OK2VS8KJScWjLcgrzWK+5QOFlwYZzS29kCIz0oqo=
 github.com/Ompluscator/oauth2 v0.0.0-20190101010101-b7626857/go.mod h1:gOpvHmFTYa4IltrdGE7lF6nIHvwfUNPOp7c8zoXwtLw=
+github.com/Ompluscator/oauth2 v0.0.0-20190121141151-b76268579942/go.mod h1:gOpvHmFTYa4IltrdGE7lF6nIHvwfUNPOp7c8zoXwtLw=
 github.com/Shopify/sarama v1.19.0/go.mod h1:FVkBWblsNy7DGZRfXLU0O9RCGt5g3g3yEuWXgklEdEo=
 github.com/Shopify/toxiproxy v2.1.4+incompatible/go.mod h1:OXgGpZ6Cli1/URJOF1DMxUHB2q5Ap20/P/eIdh4G0pI=
 github.com/agnivade/levenshtein v1.0.1 h1:3oJU7J3FGFmyhn8KHjmVaZCN5hxTr7GxgRue+sxIXdQ=
@@ -168,6 +171,7 @@ github.com/prometheus/procfs v0.0.0-20190209105433-f8d8b3f739bd/go.mod h1:TjEm7z
 github.com/prometheus/procfs v0.0.0-20190306233201-d0f344d83b0c h1:xAaFC6WmfeVufj49LZocAyA0S4FSB8eB/himN+phUR4=
 github.com/prometheus/procfs v0.0.0-20190306233201-d0f344d83b0c/go.mod h1:TjEm7ze935MbeOT/UhFTIMYKhuLP4wbCsTZCD3I8kEA=
 github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a/go.mod h1:bCqnVzQkZxMG4s8nGwiZ5l3QUCyqpo9Y+/ZMZ9VjZe4=
+github.com/robertkrimen/otto v0.0.0-20180617131154-15f95af6e78d/go.mod h1:xvqspoSXJTIpemEonrMDFq6XzwHYYgToXWj5eRX1OtY=
 github.com/rs/cors v1.6.0/go.mod h1:gFx+x8UowdsKA9AchylcLynDq+nNFfI8FkUZdN/jGCU=
 github.com/satori/go.uuid v1.2.0 h1:0uYX9dsZ2yD7q2RtLRtPSdGDWzjeM3TbMJP9utgA0ww=
 github.com/satori/go.uuid v1.2.0/go.mod h1:dA0hQrYB0VpLJoorglMZABFdXlWrHn1NEOzdhQKdks0=
@@ -191,6 +195,7 @@ github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXf
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 github.com/stretchr/testify v1.4.0 h1:2E4SXV/wtOkTonXsotYi4li6zVWxYlZuYNCXe9XRJyk=
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
+github.com/thebod/otto v0.0.0-20170712091932-83d297c4b64a/go.mod h1:fesAFlxR1zACVxdf54IiJlGMZLnF5LuHPqp1lQbdsrg=
 github.com/thebod/otto v0.0.0-20180101010101-83d297c4b64aeb2de4268d9a54c9a503ae2d8139 h1:qd0KJi/54GfOobLyM87g5MmZ/lzrp6mmC/GJJuIezso=
 github.com/thebod/otto v0.0.0-20180101010101-83d297c4b64aeb2de4268d9a54c9a503ae2d8139/go.mod h1:fesAFlxR1zACVxdf54IiJlGMZLnF5LuHPqp1lQbdsrg=
 github.com/urfave/cli v1.20.0/go.mod h1:70zkFmudgCuE/ngEzBv17Jvp/497gISqfk5gWijbERA=
@@ -202,8 +207,11 @@ github.com/zemirco/memorystore v0.0.0-20160308183530-ecd57e5134f6/go.mod h1:PLhu
 go.opencensus.io v0.20.1/go.mod h1:6WKK9ahsWS3RSO+PY9ZHZUfv2irvY6gN279GOPZjmmk=
 go.opencensus.io v0.20.2 h1:NAfh7zF0/3/HqtMvJNZ/RFrSlCE6ZTlHmKfhL/Dm1Jk=
 go.opencensus.io v0.20.2/go.mod h1:6WKK9ahsWS3RSO+PY9ZHZUfv2irvY6gN279GOPZjmmk=
+go.uber.org/atomic v1.3.2 h1:2Oa65PReHzfn29GpvgsYwloV9AVFHPDk8tYxt2c2tr4=
 go.uber.org/atomic v1.3.2/go.mod h1:gD2HeocX3+yG+ygLZcrzQJaqmWj9AIm7n08wl/qW/PE=
+go.uber.org/multierr v1.1.0 h1:HoEmRHQPVSqub6w2z2d2EOVs2fjyFRGyofhKuyDq0QI=
 go.uber.org/multierr v1.1.0/go.mod h1:wR5kodmAFQ0UK8QlbwjlSNy0Z68gJhDJUG5sjR94q/0=
+go.uber.org/zap v1.9.1 h1:XCJQEf3W6eZaVwhRBof6ImoYGJSITeKWsyeh3HFu/5o=
 go.uber.org/zap v1.9.1/go.mod h1:vwi/ZaCAaUcBkycHslxD9B2zi4UTXhF60s6SWpuDF0Q=
 golang.org/x/crypto v0.0.0-20180904163835-0709b304e793/go.mod h1:6SG95UA2DQfeDnfUPMdvaQW0Q7yPrPDi9nlGo2tz2b4=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2 h1:VklqNMn3ovrHsnt90PveolxSbWFaJdECFbxSq0Mqo2M=

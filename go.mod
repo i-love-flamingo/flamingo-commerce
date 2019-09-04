@@ -1,8 +1,10 @@
 module flamingo.me/flamingo-commerce/v3
 
+go 1.13
+
 require (
 	flamingo.me/dingo v0.1.6
-	flamingo.me/flamingo/v3 v3.0.1
+	flamingo.me/flamingo/v3 v3.0.2
 	flamingo.me/form v1.0.0
 	flamingo.me/graphql v1.0.1
 	flamingo.me/pugtemplate v1.0.0
@@ -24,6 +26,6 @@ require (
 )
 
 replace (
-	github.com/robertkrimen/otto => github.com/thebod/otto v0.0.0-20180101010101-83d297c4b64aeb2de4268d9a54c9a503ae2d8139
-	golang.org/x/oauth2 => github.com/Ompluscator/oauth2 v0.0.0-20190101010101-b7626857
+	github.com/robertkrimen/otto => github.com/thebod/otto v0.0.0-20170712091932-83d297c4b64a
+	golang.org/x/oauth2 => github.com/Ompluscator/oauth2 v0.0.0-20190121141151-b76268579942
 )
