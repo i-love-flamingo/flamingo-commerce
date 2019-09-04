@@ -1,5 +1,11 @@
 # Price Module
 
+The price module defines value objects to deal with prices and charges.
+The following types exist:
+* Price: Represents simply a money value. See below for more details. For example: 5€
+* Charge: Represents a Price together with its Type. This is used to describe that something need to be paid in a certain currency and represents a certain value. For example it might be you need (or want) to pay the value of 5€ in 500 Loyaltypoints. This can be described in the Charge Type.
+* Charges: Is a list of the type Charge. For example to indicate that you are paying to value of 5€ with two Charges: 2€ and 300 Loyaltypoints
+
 ## Price Type:
 The price module offers a Price Type with useful methods.
 
@@ -34,12 +40,11 @@ price2 := NewFromFloat(2.45,"EUR")
 Be aware that `price.Equals(price2)` may be false but due to float arithmetic but
 `price.GetPayable().Equals(price2.GetPayable())` will be true
 
-## Charge Type:
-Represents a price together with a type.
-Can be used in places where you need to give the price value a certain extra semantic information.
+## Charge:
+Represents a price together with a type. A charge has a values price (normaly in default currency) and a the price that is payed that might be in a different currency.
+Can be used in places where you need to give the price value a certain extra semantic information or to represent something that need to be payed (charged).
 
 ## Template Func - Formatting a Price Object
 
 Just use the template function commercePriceFormat like this: `commercePriceFormat(priceObject)` 
-
 The template functions used the configurations of the Flamingo "locale" package. For more details on the configuration options please read there.
