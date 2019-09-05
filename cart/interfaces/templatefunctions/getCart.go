@@ -64,7 +64,11 @@ func (tf *GetDecoratedCart) Func(ctx context.Context) interface{} {
 		session := web.SessionFromContext(ctx)
 		cart, e := tf.cartReceiverService.ViewDecoratedCart(ctx, session)
 		if e != nil {
-			tf.logger.WithContext(ctx).Error("Error: cart.interfaces.templatefunc %v", e)
+			if e == application.ErrTemporaryCartService {
+				tf.logger.WithContext(ctx).Warn("Error: cart.interfaces.templatefunc %v", e)
+			} else {
+				tf.logger.WithContext(ctx).Error("Error: cart.interfaces.templatefunc %v", e)
+			}
 		}
 		if cart == nil {
 			cart = &decorator.DecoratedCart{}
