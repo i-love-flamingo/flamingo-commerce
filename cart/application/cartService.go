@@ -47,6 +47,14 @@ type (
 		RestrictionResult validation.RestrictionResult
 	}
 
+	// AdjustmentResult restriction result enriched with the respective item
+	AdjustmentResult struct {
+		Item              cartDomain.Item
+		DeliveryCode      string
+		WasDeleted        bool
+		RestrictionResult *validation.RestrictionResult
+	}
+
 	// PromotionFunction type takes ctx, cart, couponCode and applies the promotion
 	promotionFunc func(context.Context, *cartDomain.Cart, string) (*cartDomain.Cart, cartDomain.DeferEvents, error)
 )
@@ -862,32 +870,42 @@ func (cs *CartService) dispatchAllEvents(ctx context.Context, events []flamingo.
 	}
 }
 
-// CheckAndAdjustStockInCart - checks if the stock of an item in the cart is lower than the quantity of it and if so updates the quantity
-func (cs *CartService) CheckAndAdjustStockInCart(ctx context.Context, session *web.Session) error {
+// AdjustItemsToRestrictedQty checks the quantity restrictions for each item of the cart and returns what quantities have been adjusted
+func (cs *CartService) AdjustItemsToRestrictedQty(ctx context.Context, session *web.Session) ([]AdjustmentResult, error) {
 	cart, _, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
-		return err
+		return nil, err
 	}
+
+	result := make([]AdjustmentResult, 0)
 
 	for _, d := range cart.Deliveries {
 		deliveryCode := d.DeliveryInfo.Code
 		for _, item := range d.Cartitems {
 			product, err := cs.productService.Get(ctx, item.MarketplaceCode)
 			if err != nil {
-				return err
+				return nil, err
 			}
 
 			restrictionResult := cs.restrictionService.RestrictQty(ctx, product, cart, deliveryCode)
 
 			if restrictionResult.RemainingDifference < 0 {
-				err = cs.UpdateItemQty(ctx, session, item.ID, deliveryCode, item.Qty+restrictionResult.RemainingDifference)
+				newQty := item.Qty + restrictionResult.RemainingDifference
 
+				err = cs.UpdateItemQty(ctx, session, item.ID, deliveryCode, newQty)
 				if err != nil {
-					return err
+					return nil, err
 				}
+
+				result = append(result, AdjustmentResult{
+					item,
+					deliveryCode,
+					newQty < 1,
+					restrictionResult,
+				})
 			}
 		}
 	}
 
-	return nil
+	return result, nil
 }

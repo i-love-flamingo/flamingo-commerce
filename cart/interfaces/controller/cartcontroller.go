@@ -33,6 +33,7 @@ type (
 		logger                         flamingo.Logger
 
 		showEmptyCartPageIfNoItems bool
+		adjustItemsToRestrictedQty bool
 	}
 
 	// CartViewActionData for rendering results
@@ -55,6 +56,7 @@ func (cc *CartViewController) Inject(
 	logger flamingo.Logger,
 	config *struct {
 		ShowEmptyCartPageIfNoItems bool `inject:"config:commerce.cart.showEmptyCartPageIfNoItems,optional"`
+		AdjustItemsToRestrictedQty bool `inject:"config.commerce.cart.adjustItemsToRestrictedQty,optional"`
 	},
 ) {
 	cc.responder = responder
@@ -65,6 +67,7 @@ func (cc *CartViewController) Inject(
 
 	if config != nil {
 		cc.showEmptyCartPageIfNoItems = config.ShowEmptyCartPageIfNoItems
+		cc.adjustItemsToRestrictedQty = config.AdjustItemsToRestrictedQty
 	}
 }
 
@@ -126,10 +129,13 @@ func (cc *CartViewController) AddAndViewAction(ctx context.Context, r *web.Reque
 		return cc.responder.Render("checkout/carterror", nil)
 	}
 
-	err = cc.applicationCartService.CheckAndAdjustStockInCart(ctx, r.Session())
-	if err != nil {
-		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.addandviewaction: Error %v", err)
-		return cc.responder.Render("checkout/carterror", nil)
+	if cc.adjustItemsToRestrictedQty {
+		adjustments, err := cc.applicationCartService.AdjustItemsToRestrictedQty(ctx, r.Session())
+		if err != nil {
+			cc.logger.WithContext(ctx).Warn("cart.cartcontroller.addandviewaction: Error %v", err)
+			return cc.responder.Render("checkout/carterror", nil)
+		}
+		cc.addAdjustmentsToFlash(adjustments, r)
 	}
 
 	r.Session().AddFlash(CartViewActionData{
@@ -167,9 +173,12 @@ func (cc *CartViewController) UpdateQtyAndViewAction(ctx context.Context, r *web
 		}
 	}
 
-	err = cc.applicationCartService.CheckAndAdjustStockInCart(ctx, r.Session())
-	if err != nil {
-		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.UpdateAndViewAction: Error %v", err)
+	if cc.adjustItemsToRestrictedQty {
+		adjustments, err := cc.applicationCartService.AdjustItemsToRestrictedQty(ctx, r.Session())
+		if err != nil {
+			cc.logger.WithContext(ctx).Warn("cart.cartcontroller.UpdateAndViewAction: Error %v", err)
+		}
+		cc.addAdjustmentsToFlash(adjustments, r)
 	}
 
 	return cc.responder.RouteRedirect("cart.view", nil)
@@ -189,9 +198,12 @@ func (cc *CartViewController) DeleteAndViewAction(ctx context.Context, r *web.Re
 		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.deleteaction: Error %v", err)
 	}
 
-	err = cc.applicationCartService.CheckAndAdjustStockInCart(ctx, r.Session())
-	if err != nil {
-		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.deleteaction: Error %v", err)
+	if cc.adjustItemsToRestrictedQty {
+		adjustments, err := cc.applicationCartService.AdjustItemsToRestrictedQty(ctx, r.Session())
+		if err != nil {
+			cc.logger.WithContext(ctx).Warn("cart.cartcontroller.deleteaction: Error %v", err)
+		}
+		cc.addAdjustmentsToFlash(adjustments, r)
 	}
 
 	return cc.responder.RouteRedirect("cart.view", nil)
@@ -226,4 +238,14 @@ func (cc *CartViewController) CleanDeliveryAndViewAction(ctx context.Context, r 
 	}
 
 	return cc.responder.RouteRedirect("cart.view", nil)
+}
+
+func (cc *CartViewController) addAdjustmentsToFlash(adjustments []application.AdjustmentResult, r *web.Request) {
+	for _, a := range adjustments {
+		if a.WasDeleted {
+			r.Session().AddFlash(a, "cart.view.adjustment.delete")
+		}
+	}
+
+	r.Session().Store(adjustments, "cart.view.adjustment.update")
 }
