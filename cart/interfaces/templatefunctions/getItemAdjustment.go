@@ -15,6 +15,7 @@ type (
 		logger flamingo.Logger
 	}
 
+	// QuantityAdjustment is returned by the template function
 	QuantityAdjustment struct {
 		item    cart.Item
 		prevQty int
