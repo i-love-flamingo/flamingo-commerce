@@ -56,7 +56,7 @@ func (cc *CartViewController) Inject(
 	logger flamingo.Logger,
 	config *struct {
 		ShowEmptyCartPageIfNoItems bool `inject:"config:commerce.cart.showEmptyCartPageIfNoItems,optional"`
-		AdjustItemsToRestrictedQty bool `inject:"config.commerce.cart.adjustItemsToRestrictedQty,optional"`
+		AdjustItemsToRestrictedQty bool `inject:"config:commerce.cart.adjustItemsToRestrictedQty,optional"`
 	},
 ) {
 	cc.responder = responder
@@ -240,12 +240,14 @@ func (cc *CartViewController) CleanDeliveryAndViewAction(ctx context.Context, r 
 	return cc.responder.RouteRedirect("cart.view", nil)
 }
 
-func (cc *CartViewController) addAdjustmentsToFlash(adjustments []application.AdjustmentResult, r *web.Request) {
+func (cc *CartViewController) addAdjustmentsToFlash(adjustments application.AdjustmentResults, r *web.Request) {
 	for _, a := range adjustments {
 		if a.WasDeleted {
 			r.Session().AddFlash(a, "cart.view.adjustment.delete")
 		}
 	}
 
-	r.Session().Store(adjustments, "cart.view.adjustment.update")
+	if len(adjustments) > 0 {
+		r.Session().Store("cart.view.adjustment.update", adjustments)
+	}
 }

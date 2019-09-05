@@ -55,12 +55,16 @@ type (
 		RestrictionResult *validation.RestrictionResult
 	}
 
+	// AdjustmentResults slice of AdjustmentResult
+	AdjustmentResults []AdjustmentResult
+
 	// PromotionFunction type takes ctx, cart, couponCode and applies the promotion
 	promotionFunc func(context.Context, *cartDomain.Cart, string) (*cartDomain.Cart, cartDomain.DeferEvents, error)
 )
 
 func init() {
 	gob.Register(RestrictionError{})
+	gob.Register(AdjustmentResults{})
 }
 
 // Error fetch error message
@@ -871,13 +875,13 @@ func (cs *CartService) dispatchAllEvents(ctx context.Context, events []flamingo.
 }
 
 // AdjustItemsToRestrictedQty checks the quantity restrictions for each item of the cart and returns what quantities have been adjusted
-func (cs *CartService) AdjustItemsToRestrictedQty(ctx context.Context, session *web.Session) ([]AdjustmentResult, error) {
+func (cs *CartService) AdjustItemsToRestrictedQty(ctx context.Context, session *web.Session) (AdjustmentResults, error) {
 	cart, _, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return nil, err
 	}
 
-	result := make([]AdjustmentResult, 0)
+	result := make(AdjustmentResults, 0)
 
 	for _, d := range cart.Deliveries {
 		deliveryCode := d.DeliveryInfo.Code
