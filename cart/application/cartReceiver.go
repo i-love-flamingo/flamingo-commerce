@@ -250,8 +250,8 @@ func (cs *CartReceiverService) getExistingGuestCart(ctx context.Context, session
 		cs.storeCartInCacheIfCacheIsEnabled(ctx, session, cart)
 		cs.logger.WithContext(ctx).Debug("guestcart not in cache - requested and passed to cache")
 	}
-	behaviour, err := cs.guestCartService.GetModifyBehaviour(ctx)
 
+	behaviour, err := cs.guestCartService.GetModifyBehaviour(ctx)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -345,7 +345,7 @@ func (cs *CartReceiverService) getSessionGuestCart(ctx context.Context, session 
 	if guestcartid, ok := session.Load(GuestCartSessionKey); ok {
 		existingCart, err := cs.guestCartService.GetCart(ctx, guestcartid.(string))
 		if err != nil {
-			cs.logger.WithContext(ctx).Error("cart.application.cartservice: Guestcart id in session cannot be retrieved. Id %s, Error: %s", guestcartid, err)
+			cs.logger.WithContext(ctx).Warn("cart.application.cartservice: Guestcart id in session cannot be retrieved. Id %s, Error: %s", guestcartid, err)
 			// we seem to have an erratic session cart - remove it
 			session.Delete(GuestCartSessionKey)
 		}
