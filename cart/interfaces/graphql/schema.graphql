@@ -169,12 +169,12 @@ type Commerce_CartAppliedGiftCard {
 }
 
 extend type Query {
-    commerce_Cart: Commerce_DecoratedCart!
+    Commerce_Cart: Commerce_DecoratedCart!
 }
 
 extend type Mutation {
-    commerce_AddToCart(marketplaceCode: ID!, qty: Int!, deliveryCode: String!): Commerce_DecoratedCart!
-    commerce_DeleteCartDelivery(deliveryCode: String!): Commerce_DecoratedCart!
-    commerce_DeleteItem(itemID: ID!, deliveryCode: String!): Commerce_DecoratedCart!
-    commerce_UpdateItemQty(itemID: ID!, deliveryCode: String!, qty: Int!): Commerce_DecoratedCart!
+    Commerce_AddToCart(marketplaceCode: ID!, qty: Int!, deliveryCode: String!): Commerce_DecoratedCart!
+    Commerce_DeleteCartDelivery(deliveryCode: String!): Commerce_DecoratedCart!
+    Commerce_DeleteItem(itemID: ID!, deliveryCode: String!): Commerce_DecoratedCart!
+    Commerce_UpdateItemQty(itemID: ID!, deliveryCode: String!, qty: Int!): Commerce_DecoratedCart!
 }
