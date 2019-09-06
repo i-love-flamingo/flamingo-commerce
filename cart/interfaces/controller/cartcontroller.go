@@ -130,12 +130,11 @@ func (cc *CartViewController) AddAndViewAction(ctx context.Context, r *web.Reque
 	}
 
 	if cc.adjustItemsToRestrictedQty {
-		adjustments, err := cc.applicationCartService.AdjustItemsToRestrictedQty(ctx, r.Session())
+		_, err := cc.AdjustItemsToRestrictedQtyAndAddToSession(ctx, r)
 		if err != nil {
 			cc.logger.WithContext(ctx).Warn("cart.cartcontroller.addandviewaction: Error %v", err)
 			return cc.responder.Render("checkout/carterror", nil)
 		}
-		cc.addAdjustmentsToFlash(adjustments, r)
 	}
 
 	r.Session().AddFlash(CartViewActionData{
@@ -174,11 +173,10 @@ func (cc *CartViewController) UpdateQtyAndViewAction(ctx context.Context, r *web
 	}
 
 	if cc.adjustItemsToRestrictedQty {
-		adjustments, err := cc.applicationCartService.AdjustItemsToRestrictedQty(ctx, r.Session())
+		_, err := cc.AdjustItemsToRestrictedQtyAndAddToSession(ctx, r)
 		if err != nil {
 			cc.logger.WithContext(ctx).Warn("cart.cartcontroller.UpdateAndViewAction: Error %v", err)
 		}
-		cc.addAdjustmentsToFlash(adjustments, r)
 	}
 
 	return cc.responder.RouteRedirect("cart.view", nil)
@@ -199,11 +197,10 @@ func (cc *CartViewController) DeleteAndViewAction(ctx context.Context, r *web.Re
 	}
 
 	if cc.adjustItemsToRestrictedQty {
-		adjustments, err := cc.applicationCartService.AdjustItemsToRestrictedQty(ctx, r.Session())
+		_, err := cc.AdjustItemsToRestrictedQtyAndAddToSession(ctx, r)
 		if err != nil {
 			cc.logger.WithContext(ctx).Warn("cart.cartcontroller.deleteaction: Error %v", err)
 		}
-		cc.addAdjustmentsToFlash(adjustments, r)
 	}
 
 	return cc.responder.RouteRedirect("cart.view", nil)
@@ -240,14 +237,24 @@ func (cc *CartViewController) CleanDeliveryAndViewAction(ctx context.Context, r 
 	return cc.responder.RouteRedirect("cart.view", nil)
 }
 
-func (cc *CartViewController) addAdjustmentsToFlash(adjustments application.AdjustmentResults, r *web.Request) {
+// AdjustItemsToRestrictedQtyAndAddToSession checks the items of the cart against their qty restrictions and adds adjustments to the session
+func (cc *CartViewController) AdjustItemsToRestrictedQtyAndAddToSession(ctx context.Context, r *web.Request) (application.AdjustmentResults, error) {
+	adjustments, err := cc.applicationCartService.AdjustItemsToRestrictedQty(ctx, r.Session())
+	if err != nil {
+		return adjustments, err
+	}
+
+	cc.addAdjustmentsToSession(adjustments, r)
+
+	return adjustments, nil
+}
+
+func (cc *CartViewController) addAdjustmentsToSession(adjustments application.AdjustmentResults, r *web.Request) {
 	for _, a := range adjustments {
 		if a.WasDeleted {
 			r.Session().AddFlash(a, "cart.view.adjustment.delete")
 		}
 	}
 
-	if len(adjustments) > 0 {
-		r.Session().Store("cart.view.adjustment.update", adjustments)
-	}
+	r.Session().Store("cart.view.adjustment.update", adjustments)
 }
