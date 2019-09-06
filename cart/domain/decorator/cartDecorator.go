@@ -262,3 +262,13 @@ func (dc DecoratedDelivery) GetGroupedBy(group string, sortGroup bool, params ..
 	}
 	return groupedItemsCollectionSorted
 }
+
+// GetDecoratedCartItemByID getter
+func (dc DecoratedDelivery) GetDecoratedCartItemByID(ID string) *DecoratedCartItem {
+	for _, decoratedItem := range dc.DecoratedItems {
+		if decoratedItem.Item.ID == ID {
+			return &decoratedItem
+		}
+	}
+	return nil
+}
