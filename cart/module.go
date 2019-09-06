@@ -72,6 +72,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	// TemplateFunction
 	flamingo.BindTemplateFunc(injector, "getCart", new(templatefunctions.GetCart))
 	flamingo.BindTemplateFunc(injector, "getDecoratedCart", new(templatefunctions.GetDecoratedCart))
+	flamingo.BindTemplateFunc(injector, "getItemAdjustment", new(templatefunctions.GetItemAdjustment))
 
 	injector.Bind((*cart.DeliveryInfoBuilder)(nil)).To(cart.DefaultDeliveryInfoBuilder{})
 
