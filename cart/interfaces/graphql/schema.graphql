@@ -28,6 +28,7 @@ type Commerce_Cart {
 type Commerce_CartDecoratedDelivery {
     delivery: Commerce_CartDelivery!
     decoratedItems: [Commerce_CartDecoratedItem!]
+    getDecoratedCartItemById(id: String!): Commerce_CartDecoratedItem
 }
 
 type Commerce_CartDelivery {
