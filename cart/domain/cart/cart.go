@@ -181,6 +181,12 @@ func (c Cart) GetDeliveryByCode(deliveryCode string) (*Delivery, bool) {
 	return nil, false
 }
 
+// GetDeliveryByCodeWithoutBool TODO: This func needs to be removed as soon as there's a solution for handling of boolean returns when gql expects an err
+func (c Cart) GetDeliveryByCodeWithoutBool(deliveryCode string) *Delivery {
+	delivery, _ := c.GetDeliveryByCode(deliveryCode)
+	return delivery
+}
+
 // HasDeliveryForCode checks if a delivery with the given code exists in the cart
 func (c Cart) HasDeliveryForCode(deliveryCode string) bool {
 	_, found := c.GetDeliveryByCode(deliveryCode)

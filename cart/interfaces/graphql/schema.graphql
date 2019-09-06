@@ -21,6 +21,8 @@ type Commerce_Cart {
     isPaymentSelected: Boolean!
     grandTotal: Commerce_Price!
     appliedGiftCards: [Commerce_CartAppliedGiftCard!]
+    getDeliveryByCode(deliveryCode: String!): Commerce_CartDelivery
+    getDeliveryCodes: [String!]
 }
 
 type Commerce_CartDecoratedDelivery {
