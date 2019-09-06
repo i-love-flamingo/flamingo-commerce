@@ -883,27 +883,26 @@ func (cs *CartService) AdjustItemsToRestrictedQty(ctx context.Context, session *
 
 	result := make(AdjustmentResults, 0)
 
-	for _, d := range cart.Deliveries {
-		deliveryCode := d.DeliveryInfo.Code
-		for _, item := range d.Cartitems {
+	for _, delivery := range cart.Deliveries {
+		for _, item := range delivery.Cartitems {
 			product, err := cs.productService.Get(ctx, item.MarketplaceCode)
 			if err != nil {
 				return nil, err
 			}
 
-			restrictionResult := cs.restrictionService.RestrictQty(ctx, product, cart, deliveryCode)
+			restrictionResult := cs.restrictionService.RestrictQty(ctx, product, cart, delivery.DeliveryInfo.Code)
 
 			if restrictionResult.RemainingDifference < 0 {
 				newQty := item.Qty + restrictionResult.RemainingDifference
 
-				err = cs.UpdateItemQty(ctx, session, item.ID, deliveryCode, newQty)
+				err = cs.UpdateItemQty(ctx, session, item.ID, delivery.DeliveryInfo.Code, newQty)
 				if err != nil {
 					return nil, err
 				}
 
 				result = append(result, AdjustmentResult{
 					item,
-					deliveryCode,
+					delivery.DeliveryInfo.Code,
 					newQty < 1,
 					restrictionResult,
 				})
