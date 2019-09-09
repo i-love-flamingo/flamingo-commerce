@@ -177,8 +177,12 @@ The checkoutController implements a default process for a checkout:
 
 // StartAction handles the checkout start action
 func (cc *CheckoutController) StartAction(ctx context.Context, r *web.Request) web.Result {
-	//Guard Clause if Cart cannout be fetched
+	// payment / order already in process redirect to payment status page
+	if cc.orderService.HasLastPlacedOrder(ctx) {
+		return cc.responder.RouteRedirect("checkout.payment", nil)
+	}
 
+	//Guard Clause if Cart cannot be fetched
 	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if e != nil {
 		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.viewaction: Error %v", e)
