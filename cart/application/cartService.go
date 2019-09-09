@@ -47,16 +47,16 @@ type (
 		RestrictionResult validation.RestrictionResult
 	}
 
-	// AdjustmentResult restriction result enriched with the respective item
-	AdjustmentResult struct {
+	// QtyAdjustmentResult restriction result enriched with the respective item
+	QtyAdjustmentResult struct {
 		Item              cartDomain.Item
 		DeliveryCode      string
 		WasDeleted        bool
 		RestrictionResult *validation.RestrictionResult
 	}
 
-	// AdjustmentResults slice of AdjustmentResult
-	AdjustmentResults []AdjustmentResult
+	// QtyAdjustmentResults slice of QtyAdjustmentResult
+	QtyAdjustmentResults []QtyAdjustmentResult
 
 	// PromotionFunction type takes ctx, cart, couponCode and applies the promotion
 	promotionFunc func(context.Context, *cartDomain.Cart, string) (*cartDomain.Cart, cartDomain.DeferEvents, error)
@@ -64,7 +64,7 @@ type (
 
 func init() {
 	gob.Register(RestrictionError{})
-	gob.Register(AdjustmentResults{})
+	gob.Register(QtyAdjustmentResults{})
 }
 
 // Error fetch error message
@@ -875,13 +875,13 @@ func (cs *CartService) dispatchAllEvents(ctx context.Context, events []flamingo.
 }
 
 // AdjustItemsToRestrictedQty checks the quantity restrictions for each item of the cart and returns what quantities have been adjusted
-func (cs *CartService) AdjustItemsToRestrictedQty(ctx context.Context, session *web.Session) (AdjustmentResults, error) {
+func (cs *CartService) AdjustItemsToRestrictedQty(ctx context.Context, session *web.Session) (QtyAdjustmentResults, error) {
 	cart, _, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return nil, err
 	}
 
-	result := make(AdjustmentResults, 0)
+	result := make(QtyAdjustmentResults, 0)
 
 	for _, delivery := range cart.Deliveries {
 		for _, item := range delivery.Cartitems {
@@ -900,7 +900,7 @@ func (cs *CartService) AdjustItemsToRestrictedQty(ctx context.Context, session *
 					return nil, err
 				}
 
-				result = append(result, AdjustmentResult{
+				result = append(result, QtyAdjustmentResult{
 					item,
 					delivery.DeliveryInfo.Code,
 					newQty < 1,

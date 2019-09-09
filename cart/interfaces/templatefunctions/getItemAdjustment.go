@@ -37,7 +37,7 @@ func (tf *GetItemAdjustment) Func(ctx context.Context) interface{} {
 		session := web.SessionFromContext(ctx)
 
 		if adjustmentsI, found := session.Load("cart.view.adjustment.update"); found {
-			if adjustments, ok := adjustmentsI.([]application.AdjustmentResult); ok {
+			if adjustments, ok := adjustmentsI.(application.QtyAdjustmentResults); ok {
 				for _, a := range adjustments {
 					if a.Item.ID == item.ID && a.DeliveryCode == deliveryCode {
 						return QuantityAdjustment{

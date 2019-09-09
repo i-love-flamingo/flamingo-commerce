@@ -161,7 +161,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 		name   string
 		fields fields
 		args   args
-		want   cartApplication.AdjustmentResults
+		want   cartApplication.QtyAdjustmentResults
 	}{
 		{
 			name: "restrictors higher than qty dont reduce qty",
@@ -218,7 +218,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 				ctx:     context.Background(),
 				session: web.EmptySession().Store(cartApplication.GuestCartSessionKey, "some_guest_id"),
 			},
-			want: cartApplication.AdjustmentResults{},
+			want: cartApplication.QtyAdjustmentResults{},
 		},
 		{
 			name: "restrictors lower than qty reduce qty",
@@ -275,8 +275,8 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 				ctx:     context.Background(),
 				session: web.EmptySession().Store(cartApplication.GuestCartSessionKey, "some_guest_id"),
 			},
-			want: cartApplication.AdjustmentResults{
-				cartApplication.AdjustmentResult{
+			want: cartApplication.QtyAdjustmentResults{
+				cartApplication.QtyAdjustmentResult{
 					Item: cartDomain.Item{
 						ID:  "mock_item",
 						Qty: 7,
@@ -347,8 +347,8 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 				ctx:     context.Background(),
 				session: web.EmptySession().Store(cartApplication.GuestCartSessionKey, "some_guest_id"),
 			},
-			want: cartApplication.AdjustmentResults{
-				cartApplication.AdjustmentResult{
+			want: cartApplication.QtyAdjustmentResults{
+				cartApplication.QtyAdjustmentResult{
 					Item: cartDomain.Item{
 						ID:  "mock_item",
 						Qty: 7,
