@@ -277,7 +277,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 			},
 			want: cartApplication.QtyAdjustmentResults{
 				cartApplication.QtyAdjustmentResult{
-					Item: cartDomain.Item{
+					OriginalItem: cartDomain.Item{
 						ID:  "mock_item",
 						Qty: 7,
 					},
@@ -289,6 +289,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 						RemainingDifference: -2,
 						RestrictorName:      "",
 					},
+					NewQty: 5,
 				},
 			},
 		},
@@ -349,7 +350,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 			},
 			want: cartApplication.QtyAdjustmentResults{
 				cartApplication.QtyAdjustmentResult{
-					Item: cartDomain.Item{
+					OriginalItem: cartDomain.Item{
 						ID:  "mock_item",
 						Qty: 7,
 					},
@@ -361,6 +362,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 						RemainingDifference: -7,
 						RestrictorName:      "",
 					},
+					NewQty: 0,
 				},
 			},
 		},

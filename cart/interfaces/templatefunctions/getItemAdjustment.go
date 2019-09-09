@@ -29,7 +29,7 @@ func (gia *GetItemAdjustment) Func(ctx context.Context) interface{} {
 		if adjustmentsI, found := session.Load("cart.view.adjustment.update"); found {
 			if adjustments, ok := adjustmentsI.(application.QtyAdjustmentResults); ok {
 				for _, a := range adjustments {
-					if a.Item.ID == item.ID && a.DeliveryCode == deliveryCode {
+					if a.OriginalItem.ID == item.ID && a.DeliveryCode == deliveryCode {
 						return &QuantityAdjustment{
 							Item:    item,
 							PrevQty: item.Qty - a.RestrictionResult.RemainingDifference,

@@ -49,10 +49,11 @@ type (
 
 	// QtyAdjustmentResult restriction result enriched with the respective item
 	QtyAdjustmentResult struct {
-		Item              cartDomain.Item
+		OriginalItem      cartDomain.Item
 		DeliveryCode      string
 		WasDeleted        bool
 		RestrictionResult *validation.RestrictionResult
+		NewQty            int
 	}
 
 	// QtyAdjustmentResults slice of QtyAdjustmentResult
@@ -908,6 +909,7 @@ func (cs *CartService) AdjustItemsToRestrictedQty(ctx context.Context, session *
 				delivery.DeliveryInfo.Code,
 				newQty < 1,
 				restrictionResult,
+				newQty,
 			})
 		}
 	}
