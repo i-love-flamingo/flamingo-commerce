@@ -1,6 +1,7 @@
 type Commerce_DecoratedCart {
     cart: Commerce_Cart!
     decoratedDeliveries: [Commerce_CartDecoratedDelivery!]
+    getDecoratedDeliveryByCode(deliveryCode: String!): Commerce_CartDecoratedDelivery
 }
 
 type Commerce_Cart {

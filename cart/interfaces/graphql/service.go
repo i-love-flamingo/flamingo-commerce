@@ -20,7 +20,12 @@ func (*Service) Schema() []byte {
 // Models mapping for Commerce_Cart types
 func (*Service) Models() map[string]config.TypeMapEntry {
 	return graphql.ModelMap{
-		"Commerce_DecoratedCart": decorator.DecoratedCart{},
+		"Commerce_DecoratedCart": graphql.ModelMapEntry{
+			Type: decorator.DecoratedCart{},
+			Fields: map[string]string{
+				"getDecoratedDeliveryByCode": "GetDecoratedDeliveryByCodeWithoutBool",
+			},
+		},
 		"Commerce_Cart": graphql.ModelMapEntry{
 			Type: cart.Cart{},
 			Fields: map[string]string{
