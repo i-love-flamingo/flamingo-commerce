@@ -47,12 +47,25 @@ type (
 		RestrictionResult validation.RestrictionResult
 	}
 
+	// QtyAdjustmentResult restriction result enriched with the respective item
+	QtyAdjustmentResult struct {
+		OriginalItem      cartDomain.Item
+		DeliveryCode      string
+		WasDeleted        bool
+		RestrictionResult *validation.RestrictionResult
+		NewQty            int
+	}
+
+	// QtyAdjustmentResults slice of QtyAdjustmentResult
+	QtyAdjustmentResults []QtyAdjustmentResult
+
 	// PromotionFunction type takes ctx, cart, couponCode and applies the promotion
 	promotionFunc func(context.Context, *cartDomain.Cart, string) (*cartDomain.Cart, cartDomain.DeferEvents, error)
 )
 
 func init() {
 	gob.Register(RestrictionError{})
+	gob.Register(QtyAdjustmentResults{})
 }
 
 // Error fetch error message
@@ -860,4 +873,50 @@ func (cs *CartService) dispatchAllEvents(ctx context.Context, events []flamingo.
 	for _, e := range events {
 		cs.eventRouter.Dispatch(ctx, e)
 	}
+}
+
+// AdjustItemsToRestrictedQty checks the quantity restrictions for each item of the cart and returns what quantities have been adjusted
+func (cs *CartService) AdjustItemsToRestrictedQty(ctx context.Context, session *web.Session) (QtyAdjustmentResults, error) {
+	cart, _, err := cs.cartReceiverService.GetCart(ctx, session)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make(QtyAdjustmentResults, 0)
+
+	for _, delivery := range cart.Deliveries {
+		for _, item := range delivery.Cartitems {
+			product, err := cs.productService.Get(ctx, item.MarketplaceCode)
+			if err != nil {
+				return nil, err
+			}
+
+			restrictionResult := cs.restrictionService.RestrictQty(ctx, product, cart, delivery.DeliveryInfo.Code)
+
+			if restrictionResult.RemainingDifference >= 0 {
+				continue
+			}
+
+			newQty := item.Qty + restrictionResult.RemainingDifference
+
+			if newQty < 1 {
+				err = cs.DeleteItem(ctx, session, item.ID, delivery.DeliveryInfo.Code)
+			} else {
+				err = cs.UpdateItemQty(ctx, session, item.ID, delivery.DeliveryInfo.Code, newQty)
+			}
+			if err != nil {
+				return nil, err
+			}
+
+			result = append(result, QtyAdjustmentResult{
+				item,
+				delivery.DeliveryInfo.Code,
+				newQty < 1,
+				restrictionResult,
+				newQty,
+			})
+		}
+	}
+
+	return result, nil
 }

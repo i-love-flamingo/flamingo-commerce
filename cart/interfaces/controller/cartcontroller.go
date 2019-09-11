@@ -33,6 +33,7 @@ type (
 		logger                         flamingo.Logger
 
 		showEmptyCartPageIfNoItems bool
+		adjustItemsToRestrictedQty bool
 	}
 
 	// CartViewActionData for rendering results
@@ -55,6 +56,7 @@ func (cc *CartViewController) Inject(
 	logger flamingo.Logger,
 	config *struct {
 		ShowEmptyCartPageIfNoItems bool `inject:"config:commerce.cart.showEmptyCartPageIfNoItems,optional"`
+		AdjustItemsToRestrictedQty bool `inject:"config:commerce.cart.adjustItemsToRestrictedQty,optional"`
 	},
 ) {
 	cc.responder = responder
@@ -65,11 +67,19 @@ func (cc *CartViewController) Inject(
 
 	if config != nil {
 		cc.showEmptyCartPageIfNoItems = config.ShowEmptyCartPageIfNoItems
+		cc.adjustItemsToRestrictedQty = config.AdjustItemsToRestrictedQty
 	}
 }
 
 // ViewAction the DecoratedCart View ( / cart)
 func (cc *CartViewController) ViewAction(ctx context.Context, r *web.Request) web.Result {
+	if cc.adjustItemsToRestrictedQty {
+		err := cc.adjustItemsToRestrictedQtyAndAddToSession(ctx, r)
+		if err != nil {
+			cc.logger.WithContext(ctx).Warn("cart.cartcontroller.viewaction: Error %v", err)
+		}
+	}
+
 	decoratedCart, err := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if err != nil {
 		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.viewaction: Error %v", err)
@@ -210,4 +220,49 @@ func (cc *CartViewController) CleanDeliveryAndViewAction(ctx context.Context, r 
 	}
 
 	return cc.responder.RouteRedirect("cart.view", nil)
+}
+
+// adjustItemsToRestrictedQtyAndAddToSession checks the items of the cart against their qty restrictions and adds adjustments to the session
+func (cc *CartViewController) adjustItemsToRestrictedQtyAndAddToSession(ctx context.Context, r *web.Request) error {
+	adjustments, err := cc.applicationCartService.AdjustItemsToRestrictedQty(ctx, r.Session())
+	if err != nil {
+		return err
+	}
+
+	cc.addAdjustmentsToSession(adjustments, r)
+
+	return nil
+}
+
+func (cc *CartViewController) addAdjustmentsToSession(adjustments application.QtyAdjustmentResults, r *web.Request) {
+	var storedAdjustments application.QtyAdjustmentResults
+	var ok bool
+
+	if sessionStoredAdjustments, found := r.Session().Load("cart.view.quantity.adjustments"); found {
+		if storedAdjustments, ok = sessionStoredAdjustments.(application.QtyAdjustmentResults); !ok {
+			storedAdjustments = application.QtyAdjustmentResults{}
+		}
+	} else {
+		storedAdjustments = application.QtyAdjustmentResults{}
+	}
+
+	for _, adjustment := range adjustments {
+		if i, contains := cc.containsAdjustment(storedAdjustments, adjustment); contains {
+			storedAdjustments[i] = adjustment
+		} else {
+			storedAdjustments = append(storedAdjustments, adjustment)
+		}
+	}
+
+	r.Session().Store("cart.view.quantity.adjustments", storedAdjustments)
+}
+
+func (cc *CartViewController) containsAdjustment(adjustments application.QtyAdjustmentResults, adjustment application.QtyAdjustmentResult) (index int, contains bool) {
+	for i, a := range adjustments {
+		if a.OriginalItem.ID == adjustment.OriginalItem.ID && a.DeliveryCode == adjustment.DeliveryCode {
+			return i, true
+		}
+	}
+
+	return -1, false
 }
