@@ -238,8 +238,8 @@ func (cc *CartViewController) addAdjustmentsToSession(adjustments application.Qt
 	var storedAdjustments application.QtyAdjustmentResults
 	var ok bool
 
-	if storedAdjustmentsI, found := r.Session().Load("cart.view.quantity.adjustments"); found {
-		if storedAdjustments, ok = storedAdjustmentsI.(application.QtyAdjustmentResults); !ok {
+	if sessionStoredAdjustments, found := r.Session().Load("cart.view.quantity.adjustments"); found {
+		if storedAdjustments, ok = sessionStoredAdjustments.(application.QtyAdjustmentResults); !ok {
 			storedAdjustments = application.QtyAdjustmentResults{}
 		}
 	} else {
