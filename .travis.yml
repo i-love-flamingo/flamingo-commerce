@@ -14,8 +14,7 @@ script:
   - set -e
   - fmt=$(gofmt -l .)
   - test -z $fmt || (echo "please run gofmt" ; echo $fmt ; exit 1)
-  - go get golang.org/x/lint/golint
-  - golint -set_exit_status $(go list ./...)
+  - go run golang.org/x/lint/golint -set_exit_status $(go list ./...)
   - go generate ./...
   - git diff --quiet || (echo 'generated go files are not up to date, check go generate, go.sum and go.mod' ; git diff ; exit 1)
   - go test -race -vet=all ./...
