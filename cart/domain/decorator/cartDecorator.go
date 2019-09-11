@@ -215,10 +215,9 @@ func (dc DecoratedCart) GetDecoratedDeliveryByCode(deliveryCode string) (*Decora
 	return nil, false
 }
 
-// Wrapper for decorated delivery getter, omits boolean for graphql compatibility
-// TODO: This func needs to be removed as soon as there's a solution for handling of boolean returns when gql expects an err
-func (c DecoratedCart) GetDecoratedDeliveryByCodeWithoutBool(deliveryCode string) *DecoratedDelivery {
-	decoratedDelivery, _ := c.GetDecoratedDeliveryByCode(deliveryCode)
+//GetDecoratedDeliveryByCodeWithoutBool TODO: This func needs to be removed as soon as there's a solution for handling of boolean returns when gql expects an err
+func (dc DecoratedCart) GetDecoratedDeliveryByCodeWithoutBool(deliveryCode string) *DecoratedDelivery {
+	decoratedDelivery, _ := dc.GetDecoratedDeliveryByCode(deliveryCode)
 	return decoratedDelivery
 }
 
