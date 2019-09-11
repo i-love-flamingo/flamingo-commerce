@@ -899,7 +899,11 @@ func (cs *CartService) AdjustItemsToRestrictedQty(ctx context.Context, session *
 
 			newQty := item.Qty + restrictionResult.RemainingDifference
 
-			err = cs.UpdateItemQty(ctx, session, item.ID, delivery.DeliveryInfo.Code, newQty)
+			if newQty < 1 {
+				err = cs.DeleteItem(ctx, session, item.ID, delivery.DeliveryInfo.Code)
+			} else {
+				err = cs.UpdateItemQty(ctx, session, item.ID, delivery.DeliveryInfo.Code, newQty)
+			}
 			if err != nil {
 				return nil, err
 			}
