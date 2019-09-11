@@ -10,40 +10,86 @@ import (
 )
 
 type (
-	// GetItemAdjustment is exported as a template function
-	GetItemAdjustment struct{}
+	// GetQuantityAdjustmentDeletedItemsMessages is exported as a template function
+	GetQuantityAdjustmentDeletedItemsMessages struct{}
+
+	// GetQuantityAdjustmentUpdatedItemsMessage is exported as a template function
+	GetQuantityAdjustmentUpdatedItemsMessage struct{}
+
+	// RemoveQuantityAdjustmentMessages is exported as a template function
+	RemoveQuantityAdjustmentMessages struct{}
 
 	// QuantityAdjustment is returned by the template function
 	QuantityAdjustment struct {
-		Item    cart.Item
-		PrevQty int
-		CurrQty int
+		Item         cart.Item
+		DeliveryCode string
+		PrevQty      int
+		CurrQty      int
 	}
 )
 
-// Func defines the GetItemAdjustment template function
-func (gia *GetItemAdjustment) Func(ctx context.Context) interface{} {
-	return func(item cart.Item, deliveryCode string) interface{} {
+// Func defines the GetQuantityAdjustmentDeletedItemsMessages template function
+func (gdm *GetQuantityAdjustmentDeletedItemsMessages) Func(ctx context.Context) interface{} {
+	return func() []QuantityAdjustment {
 		session := web.SessionFromContext(ctx)
 
-		if adjustmentsI, found := session.Load("cart.view.adjustment.update"); found {
+		deletedAdjustments := make([]QuantityAdjustment, 0)
+
+		if adjustmentsI, found := session.Load("cart.view.quantity.adjustments"); found {
+			if adjustments, ok := adjustmentsI.(application.QtyAdjustmentResults); ok {
+				for _, a := range adjustments {
+					if a.WasDeleted {
+						deletedAdjustments = append(deletedAdjustments, QuantityAdjustment{
+							Item:         a.OriginalItem,
+							DeliveryCode: a.DeliveryCode,
+							PrevQty:      a.NewQty - a.RestrictionResult.RemainingDifference,
+							CurrQty:      a.NewQty,
+						})
+					}
+				}
+			}
+		}
+
+		return deletedAdjustments
+	}
+}
+
+// Func defines the GetQuantityAdjustmentUpdatedItemsMessage template function
+func (gdm *GetQuantityAdjustmentUpdatedItemsMessage) Func(ctx context.Context) interface{} {
+	return func(item cart.Item, deliveryCode string) QuantityAdjustment {
+		session := web.SessionFromContext(ctx)
+
+		if adjustmentsI, found := session.Load("cart.view.quantity.adjustments"); found {
 			if adjustments, ok := adjustmentsI.(application.QtyAdjustmentResults); ok {
 				for _, a := range adjustments {
 					if a.OriginalItem.ID == item.ID && a.DeliveryCode == deliveryCode {
-						return &QuantityAdjustment{
-							Item:    item,
-							PrevQty: item.Qty - a.RestrictionResult.RemainingDifference,
-							CurrQty: item.Qty,
+						return QuantityAdjustment{
+							Item:         a.OriginalItem,
+							DeliveryCode: a.DeliveryCode,
+							PrevQty:      a.NewQty - a.RestrictionResult.RemainingDifference,
+							CurrQty:      a.NewQty,
 						}
 					}
 				}
 			}
 		}
 
-		return &QuantityAdjustment{
-			Item:    item,
-			PrevQty: item.Qty,
-			CurrQty: item.Qty,
+		return QuantityAdjustment{
+			Item:         item,
+			DeliveryCode: deliveryCode,
+			PrevQty:      item.Qty,
+			CurrQty:      item.Qty,
 		}
+	}
+}
+
+// Func defines the RemoveQuantityAdjustmentMessages template function
+func (gdm *RemoveQuantityAdjustmentMessages) Func(ctx context.Context) interface{} {
+	return func() bool {
+		session := web.SessionFromContext(ctx)
+
+		session.Delete("cart.view.quantity.adjustments")
+
+		return true
 	}
 }

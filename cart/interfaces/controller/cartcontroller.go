@@ -235,11 +235,34 @@ func (cc *CartViewController) adjustItemsToRestrictedQtyAndAddToSession(ctx cont
 }
 
 func (cc *CartViewController) addAdjustmentsToSession(adjustments application.QtyAdjustmentResults, r *web.Request) {
-	for _, a := range adjustments {
-		if a.WasDeleted {
-			r.Session().AddFlash(a, "cart.view.adjustment.delete")
+	var storedAdjustments application.QtyAdjustmentResults
+	var ok bool
+
+	if storedAdjustmentsI, found := r.Session().Load("cart.view.quantity.adjustments"); found {
+		if storedAdjustments, ok = storedAdjustmentsI.(application.QtyAdjustmentResults); !ok {
+			storedAdjustments = application.QtyAdjustmentResults{}
+		}
+	} else {
+		storedAdjustments = application.QtyAdjustmentResults{}
+	}
+
+	for _, adjustment := range adjustments {
+		if i, contains := cc.containsAdjustment(storedAdjustments, adjustment); contains {
+			storedAdjustments[i] = adjustment
+		} else {
+			storedAdjustments = append(storedAdjustments, adjustment)
 		}
 	}
 
-	r.Session().Store("cart.view.adjustment.update", adjustments)
+	r.Session().Store("cart.view.quantity.adjustments", storedAdjustments)
+}
+
+func (cc *CartViewController) containsAdjustment(adjustments application.QtyAdjustmentResults, adjustment application.QtyAdjustmentResult) (index int, contains bool) {
+	for i, a := range adjustments {
+		if a.OriginalItem.ID == adjustment.OriginalItem.ID && a.DeliveryCode == adjustment.DeliveryCode {
+			return i, true
+		}
+	}
+
+	return -1, false
 }
