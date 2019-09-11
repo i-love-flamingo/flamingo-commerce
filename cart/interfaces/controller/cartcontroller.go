@@ -73,6 +73,13 @@ func (cc *CartViewController) Inject(
 
 // ViewAction the DecoratedCart View ( / cart)
 func (cc *CartViewController) ViewAction(ctx context.Context, r *web.Request) web.Result {
+	if cc.adjustItemsToRestrictedQty {
+		err := cc.adjustItemsToRestrictedQtyAndAddToSession(ctx, r)
+		if err != nil {
+			cc.logger.WithContext(ctx).Warn("cart.cartcontroller.viewaction: Error %v", err)
+		}
+	}
+
 	decoratedCart, err := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if err != nil {
 		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.viewaction: Error %v", err)
@@ -129,14 +136,6 @@ func (cc *CartViewController) AddAndViewAction(ctx context.Context, r *web.Reque
 		return cc.responder.Render("checkout/carterror", nil)
 	}
 
-	if cc.adjustItemsToRestrictedQty {
-		err := cc.AdjustItemsToRestrictedQtyAndAddToSession(ctx, r)
-		if err != nil {
-			cc.logger.WithContext(ctx).Warn("cart.cartcontroller.addandviewaction: Error %v", err)
-			return cc.responder.Render("checkout/carterror", nil)
-		}
-	}
-
 	r.Session().AddFlash(CartViewActionData{
 		AddToCartProductsData: []productDomain.BasicProductData{product.BaseData()},
 	}, "cart.view.data")
@@ -172,13 +171,6 @@ func (cc *CartViewController) UpdateQtyAndViewAction(ctx context.Context, r *web
 		}
 	}
 
-	if cc.adjustItemsToRestrictedQty {
-		err := cc.AdjustItemsToRestrictedQtyAndAddToSession(ctx, r)
-		if err != nil {
-			cc.logger.WithContext(ctx).Warn("cart.cartcontroller.UpdateAndViewAction: Error %v", err)
-		}
-	}
-
 	return cc.responder.RouteRedirect("cart.view", nil)
 }
 
@@ -194,13 +186,6 @@ func (cc *CartViewController) DeleteAndViewAction(ctx context.Context, r *web.Re
 	err := cc.applicationCartService.DeleteItem(ctx, r.Session(), id, deliveryCode)
 	if err != nil {
 		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.deleteaction: Error %v", err)
-	}
-
-	if cc.adjustItemsToRestrictedQty {
-		err := cc.AdjustItemsToRestrictedQtyAndAddToSession(ctx, r)
-		if err != nil {
-			cc.logger.WithContext(ctx).Warn("cart.cartcontroller.deleteaction: Error %v", err)
-		}
 	}
 
 	return cc.responder.RouteRedirect("cart.view", nil)
@@ -237,8 +222,8 @@ func (cc *CartViewController) CleanDeliveryAndViewAction(ctx context.Context, r 
 	return cc.responder.RouteRedirect("cart.view", nil)
 }
 
-// AdjustItemsToRestrictedQtyAndAddToSession checks the items of the cart against their qty restrictions and adds adjustments to the session
-func (cc *CartViewController) AdjustItemsToRestrictedQtyAndAddToSession(ctx context.Context, r *web.Request) error {
+// adjustItemsToRestrictedQtyAndAddToSession checks the items of the cart against their qty restrictions and adds adjustments to the session
+func (cc *CartViewController) adjustItemsToRestrictedQtyAndAddToSession(ctx context.Context, r *web.Request) error {
 	adjustments, err := cc.applicationCartService.AdjustItemsToRestrictedQty(ctx, r.Session())
 	if err != nil {
 		return err
