@@ -16,15 +16,22 @@ type (
 
 	// DefaultDeliveryInfoBuilder defines the default delivery info builder used
 	DefaultDeliveryInfoBuilder struct {
-		logger flamingo.Logger
+		logger                   flamingo.Logger
+		defaultUseBillingAddress bool
 	}
 )
 
 // Inject dependencies
 func (b *DefaultDeliveryInfoBuilder) Inject(
 	logger flamingo.Logger,
+	config *struct {
+		DefaultUseBillingAddress bool `inject:"config:commerce.cart.defaultUseBillingAddress,optional"`
+	},
 ) {
 	b.logger = logger.WithField("category", "cart").WithField("subcategory", "DefaultDeliveryInfoBuilder")
+	if config != nil {
+		b.defaultUseBillingAddress = config.DefaultUseBillingAddress
+	}
 }
 
 // BuildByDeliveryCode builds a (initial) DeliveryInfo by deliveryCode
@@ -59,5 +66,8 @@ func (b *DefaultDeliveryInfoBuilder) BuildByDeliveryCode(deliverycode string) (*
 	if len(intentParts) > 3 && intentParts[3] != "" {
 		deliveryInfo.Method = intentParts[3]
 	}
+
+	deliveryInfo.DeliveryLocation.UseBillingAddress = b.defaultUseBillingAddress
+
 	return &deliveryInfo, nil
 }
