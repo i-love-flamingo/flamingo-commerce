@@ -11,7 +11,10 @@ import (
 
 func TestDefaultDeliveryInfoBuilder_BuildByDeliveryCode(t *testing.T) {
 	type fields struct {
-		logger flamingo.Logger
+		logger flamingo.NullLogger
+		config *struct {
+			DefaultUseBillingAddress bool `inject:"config:commerce.cart.defaultUseBillingAddress,optional"`
+		}
 	}
 	type args struct {
 		deliverycode string
@@ -84,7 +87,7 @@ func TestDefaultDeliveryInfoBuilder_BuildByDeliveryCode(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			b := &cart.DefaultDeliveryInfoBuilder{}
-			b.Inject(flamingo.NullLogger{})
+			b.Inject(tt.fields.logger, tt.fields.config)
 			got, err := b.BuildByDeliveryCode(tt.args.deliverycode)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("DefaultDeliveryInfoBuilder.BuildByDeliveryCode() error = %v, wantErr %v", err, tt.wantErr)
