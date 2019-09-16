@@ -82,35 +82,132 @@ func TestNewFromInt(t *testing.T) {
 }
 
 func TestPrice_SplitInPayables(t *testing.T) {
-	originalPrice := domain.NewFromFloat(32.1, "EUR") // float edge case
-	payableSplitPrices, _ := originalPrice.SplitInPayables(1)
-
-	sumPrice := domain.NewZero("EUR")
-	for _, price := range payableSplitPrices {
-		sumPrice, _ = sumPrice.Add(price)
+	type fields struct {
+		amount   float64
+		currency string
 	}
-	//sum of the splitted payable need to match original price payable
-	assert.Equal(t, originalPrice.GetPayable().Amount(), sumPrice.GetPayable().Amount())
-
-	originalPrice = domain.NewFromFloat(12.456, "EUR")
-	payableSplitPrices, _ = originalPrice.SplitInPayables(6)
-
-	sumPrice = domain.NewZero("EUR")
-	for _, price := range payableSplitPrices {
-		sumPrice, _ = sumPrice.Add(price)
+	type args struct {
+		count int
 	}
-	//sum of the splitted payable need to match original price payable
-	assert.Equal(t, originalPrice.GetPayable().Amount(), sumPrice.GetPayable().Amount())
-
-	// edge case for negative input (happens when discounts are split)
-	originalPrice = domain.NewFromFloat(-152.99, "EUR")
-	payableSplitPrices, _ = originalPrice.SplitInPayables(3)
-
-	sumPrice = domain.NewZero("EUR")
-	for _, price := range payableSplitPrices {
-		sumPrice, _ = sumPrice.Add(price)
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    []domain.Price
+		wantErr bool
+	}{
+		{
+			name: "negative split count",
+			args: args{
+				count: -1,
+			},
+			wantErr: true,
+		},
+		{
+			name: "zero split count",
+			args: args{
+				count: 0,
+			},
+			wantErr: true,
+		},
+		{
+			name: "float edge case",
+			fields: fields{
+				amount:   32.1,
+				currency: "EUR",
+			},
+			args: args{
+				count: 1,
+			},
+			want: []domain.Price{
+				domain.NewFromFloat(32.1, "EUR"),
+			},
+		},
+		{
+			name: "multiple splits",
+			fields: fields{
+				amount:   12.456,
+				currency: "EUR",
+			},
+			args: args{
+				count: 6,
+			},
+			want: []domain.Price{
+				domain.NewFromFloat(2.08, "EUR"),
+				domain.NewFromFloat(2.08, "EUR"),
+				domain.NewFromFloat(2.08, "EUR"),
+				domain.NewFromFloat(2.08, "EUR"),
+				domain.NewFromFloat(2.07, "EUR"),
+				domain.NewFromFloat(2.07, "EUR"),
+			},
+		},
+		{
+			name: "split negative values",
+			fields: fields{
+				amount:   -152.99,
+				currency: "EUR",
+			},
+			args: args{
+				count: 3,
+			},
+			want: []domain.Price{
+				domain.NewFromFloat(-51, "EUR"),
+				domain.NewFromFloat(-51, "EUR"),
+				domain.NewFromFloat(-50.99, "EUR"),
+			},
+		},
+		{
+			name: "return payables",
+			fields: fields{
+				amount:   88.39551,
+				currency: "EUR",
+			},
+			args: args{
+				count: 4,
+			},
+			want: []domain.Price{
+				domain.NewFromFloat(22.1, "EUR"),
+				domain.NewFromFloat(22.1, "EUR"),
+				domain.NewFromFloat(22.1, "EUR"),
+				domain.NewFromFloat(22.1, "EUR"),
+			},
+		},
 	}
-	assert.Equal(t, originalPrice.GetPayable().Amount(), sumPrice.GetPayable().Amount())
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := domain.NewFromFloat(tt.fields.amount, tt.fields.currency)
+			got, err := p.SplitInPayables(tt.args.count)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Price.SplitInPayables() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			// test summing up
+			if len(got) > 0 {
+				sum, e := domain.SumAll(got...)
+				if e != nil {
+					t.Errorf("error summing up: %v", e)
+				}
+				assert.Equal(t, p.GetPayable().Amount(), sum.GetPayable().Amount())
+			}
+
+			// test sliced count
+			assert.Equal(t, len(tt.want), len(got), "length of result split")
+
+			// test the payable slice items
+			if len(tt.want) == len(got) {
+				for i, p := range got {
+					assert.Equal(
+						t,
+						tt.want[i].GetPayable().Amount(),
+						p.Amount(),
+						"split index %v",
+						i,
+					)
+				}
+			}
+		})
+	}
 }
 
 func TestPrice_Discounted(t *testing.T) {

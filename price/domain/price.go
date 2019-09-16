@@ -389,6 +389,11 @@ func (p Price) SplitInPayables(count int) ([]Price, error) {
 	if count <= 0 {
 		return nil, errors.New("Split must be higher than zero")
 	}
+
+	if count == 1 {
+		return []Price{p.Clone().GetPayable()}, nil
+	}
+
 	// guard clause invert negative values
 	_, precision := p.payableRoundingPrecision()
 	amount := p.GetPayable().Amount()
@@ -419,7 +424,7 @@ func (p Price) SplitInPayables(count int) ([]Price, error) {
 		if p.IsNegative() {
 			splittedAmount *= -1
 		}
-		prices[i] = NewFromInt(splittedAmount, precision, p.Currency())
+		prices[i] = NewFromInt(splittedAmount, precision, p.Currency()).GetPayable()
 	}
 
 	return prices, nil
