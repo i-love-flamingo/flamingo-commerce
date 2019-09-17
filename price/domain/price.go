@@ -325,14 +325,14 @@ func (p Price) GetPayableByRoundingMode(mode string, precision int) Price {
 	if p.IsNegative() {
 		negative = -1
 	}
-	offsetToCheckRounding := new(big.Float).Mul(p.precisionF(precision), new(big.Float).SetInt64(10))
+	offsetToCheckRounding := new(big.Float).Mul(p.precisionF(precision), new(big.Float).SetInt64(100))
 
 	amountTruncatedFloat, _ := new(big.Float).Mul(amountForRound, p.precisionF(precision)).Float64()
 	amountTruncatedInt := int64(amountTruncatedFloat)
 
 	amountRoundingCheckFloat, _ := new(big.Float).Mul(amountForRound, offsetToCheckRounding).Float64()
 	amountRoundingCheckInt := int64(amountRoundingCheckFloat)
-	valueAfterPrecision := (amountRoundingCheckInt - (amountTruncatedInt * 10)) * negative
+	valueAfterPrecision := (amountRoundingCheckInt - (amountTruncatedInt * 100)) * negative
 	if amountTruncatedFloat >= float64(math.MaxInt64) {
 		// will not work if we are already above MaxInt - so we return unrounded price:
 		newPrice.amount = p.amount
@@ -345,11 +345,11 @@ func (p Price) GetPayableByRoundingMode(mode string, precision int) Price {
 			amountTruncatedInt = amountTruncatedInt + (1 * negative)
 		}
 	case mode == RoundingModeHalfUp:
-		if negative == 1 && valueAfterPrecision >= 5 {
+		if negative == 1 && valueAfterPrecision >= 45 {
 			amountTruncatedInt = amountTruncatedInt + (1 * negative)
 		}
 	case mode == RoundingModeHalfDown:
-		if negative == 1 && valueAfterPrecision > 5 {
+		if negative == 1 && valueAfterPrecision > 55 {
 			amountTruncatedInt = amountTruncatedInt + (1 * negative)
 		}
 	case mode == RoundingModeFloor:
@@ -424,7 +424,7 @@ func (p Price) SplitInPayables(count int) ([]Price, error) {
 		if p.IsNegative() {
 			splittedAmount *= -1
 		}
-		prices[i] = NewFromInt(splittedAmount, precision, p.Currency()).GetPayable()
+		prices[i] = NewFromInt(splittedAmount, precision, p.Currency())
 	}
 
 	return prices, nil

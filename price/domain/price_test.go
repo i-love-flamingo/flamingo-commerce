@@ -71,6 +71,9 @@ func TestPrice_GetPayable(t *testing.T) {
 
 	price = domain.NewFromFloat(math.MaxInt64, "EUR").GetPayable()
 	assert.Equal(t, float64(math.MaxInt64), price.FloatAmount())
+
+	price = domain.NewFromFloat(88.39499, "EUR")
+	assert.Equal(t, float64(88.40), price.GetPayable().FloatAmount())
 }
 
 func TestNewFromInt(t *testing.T) {
@@ -159,7 +162,7 @@ func TestPrice_SplitInPayables(t *testing.T) {
 		{
 			name: "return payables",
 			fields: fields{
-				amount:   88.39551,
+				amount:   88.39499,
 				currency: "EUR",
 			},
 			args: args{
@@ -283,7 +286,7 @@ func TestPrice_MarshalBinaryForGob(t *testing.T) {
 }
 
 func TestPrice_GetPayableByRoundingMode(t *testing.T) {
-	price := domain.NewFromFloat(12.34567, "EUR")
+	price := domain.NewFromFloat(12.34557, "EUR")
 
 	payable := price.GetPayableByRoundingMode(domain.RoundingModeCeil, 100)
 	assert.Equal(t, domain.NewFromInt(1235, 100, "EUR").Amount(), payable.Amount())
