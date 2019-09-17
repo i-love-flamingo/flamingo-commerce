@@ -391,7 +391,7 @@ func (p Price) SplitInPayables(count int) ([]Price, error) {
 	}
 
 	if count == 1 {
-		return []Price{p.Clone().GetPayable()}, nil
+		return []Price{p.GetPayable()}, nil
 	}
 
 	// guard clause invert negative values
