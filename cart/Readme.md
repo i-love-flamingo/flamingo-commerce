@@ -33,6 +33,8 @@ The cart module and its services are used by the checkout module.
     useEmailPlaceOrderAdapter: true
     # enable the deletion of an empty delivery when deleting an item, or adding an item failed
     deleteEmptyDelivery: false
+    # enables the usage of billing address as shipping address, default is set to false
+    defaultUseBillingAddress: false
 ```
 
 ## Domain Model Details

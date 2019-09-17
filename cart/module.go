@@ -101,6 +101,7 @@ func (m *Module) DefaultConfig() config.Map {
 				"useEmailPlaceOrderAdapter":      true,
 				"cacheLifetime":                  float64(1200), // in seconds
 				"enableCartCache":                true,
+				"defaultUseBillingAddress":       false,
 			},
 		},
 	}
