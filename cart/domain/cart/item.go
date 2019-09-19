@@ -439,6 +439,7 @@ func (f *ItemBuilder) reset(err error) (*Item, error) {
 	return item, err
 }
 
+//Inject of ItemSplitter
 func (s *ItemSplitter) Inject(itemBuilderProvider ItemBuilderProvider, config *struct {
 	UseGrosPrice bool `inject:"config:commerce.product.priceIsGross,optional"`
 }) {
