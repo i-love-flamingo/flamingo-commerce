@@ -63,23 +63,22 @@ func (s Sources) MainLocation() string {
 	return s[0].LocationCode
 }
 
-
 // Next - returns the next source and the remaining, or error if nothing remains
-func (s Sources) Next() (Source,Sources,error) {
+func (s Sources) Next() (Source, Sources, error) {
 	if s.QtySum() < 1 {
-		return Source{},Sources{},ErrInsufficientSourceQty
+		return Source{}, Sources{}, ErrInsufficientSourceQty
 	}
 	for _, source := range s {
 		if source.Qty > 0 {
 			usedSource := Source{
-				Qty: 1,
+				Qty:          1,
 				LocationCode: source.LocationCode,
 			}
 			usedSources := Sources{usedSource}
 			return usedSource, s.Reduce(usedSources), nil
 		}
 	}
-	return Source{},Sources{},ErrInsufficientSourceQty
+	return Source{}, Sources{}, ErrInsufficientSourceQty
 }
 
 // QtySum returns the sum of all sourced items
@@ -128,4 +127,3 @@ func (se *SourcingEngine) SetSourcesForCartItems(ctx context.Context, session *w
 	}
 	return nil
 }
-
