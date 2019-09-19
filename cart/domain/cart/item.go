@@ -489,7 +489,7 @@ func (s *ItemSplitter) Split(givenItem Item) ([]Item, error) {
 			if err != nil {
 				return nil, err
 			}
-			itemBuilder.AddTaxInfo(rt.Type, nil, &rtSplitted[x])
+			itemBuilder.AddTaxInfo(rt.Type, rt.Rate, &rtSplitted[x])
 		}
 		if s.configUseGrossPrice {
 			itemBuilder.SetSinglePriceGross(givenItem.SinglePriceGross)
