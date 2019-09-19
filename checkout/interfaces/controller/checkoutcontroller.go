@@ -575,6 +575,24 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 
 	flowStatus, err := gateway.FlowStatus(ctx, &decoratedCart.Cart, application.PaymentFlowStandardCorrelationID)
 	if err != nil {
+		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.paymentaction: Error %v", err)
+
+		// payment failed, reopen the cart to make it still usable.
+		if cc.orderService.HasLastPlacedOrder(ctx) {
+			infos, err := cc.orderService.LastPlacedOrder(ctx)
+			if err != nil {
+				return cc.showCheckoutFormWithErrors(ctx, r, *decoratedCart, nil, err)
+			}
+
+			restoredCart, err := cc.orderService.CancelOrder(ctx, session, infos)
+			if err != nil {
+				return cc.showCheckoutFormWithErrors(ctx, r, *decoratedCart, nil, err)
+			}
+
+			decoratedCart = cc.decoratedCartFactory.Create(ctx, *restoredCart)
+			cc.orderService.ClearLastPlacedOrder(ctx)
+		}
+
 		return cc.showCheckoutFormWithErrors(ctx, r, *decoratedCart, nil, err)
 	}
 
@@ -604,8 +622,8 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 	case paymentDomain.PaymentFlowStatusCompleted:
 		// payment is done and confirmed, place order
 		return cc.responder.RouteRedirect("checkout.placeorder", nil)
-	case paymentDomain.PaymentFlowStatusAborted:
-		// payment was aborted by user, redirect to checkout so a new payment can be started
+	case paymentDomain.PaymentFlowStatusAborted, paymentDomain.PaymentFlowStatusCancelled:
+		// payment was aborted or cancelled by user, redirect to checkout so a new payment can be started
 		if cc.orderService.HasLastPlacedOrder(ctx) {
 			infos, err := cc.orderService.LastPlacedOrder(ctx)
 			if err != nil {
