@@ -234,7 +234,7 @@ func (os *OrderService) CurrentCartPlaceOrderWithPaymentProcessing(ctx context.C
 			return os.placeOrderWithPaymentProcessing(placeOrderContext, decoratedCart, session)
 		}()
 	})
-	return info,err
+	return info, err
 }
 
 // CartPlaceOrderWithPaymentProcessing places the cart passed to the function

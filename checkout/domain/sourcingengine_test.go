@@ -19,7 +19,6 @@ func TestSources_MainLocation(t *testing.T) {
 
 }
 
-
 func TestSources_Next(t *testing.T) {
 	var sources Sources
 	sources = append(sources, Source{
@@ -34,22 +33,22 @@ func TestSources_Next(t *testing.T) {
 	var source Source
 	var err error
 	for i := 1; i <= 2; i++ {
-		source,sources,err = sources.Next()
-		assert.NoError(t,err)
+		source, sources, err = sources.Next()
+		assert.NoError(t, err)
 		assert.Equal(t, "loc", source.LocationCode)
 		assert.Equal(t, 1, source.Qty)
 		assert.Equal(t, 4-i, sources.QtySum())
 	}
 	for i := 1; i <= 2; i++ {
-		source,sources,err = sources.Next()
-		assert.NoError(t,err)
+		source, sources, err = sources.Next()
+		assert.NoError(t, err)
 		assert.Equal(t, "loc2", source.LocationCode)
 		assert.Equal(t, 1, source.Qty)
 		assert.Equal(t, 2-i, sources.QtySum())
 	}
 	assert.Equal(t, 0, sources.QtySum())
-	_,_,err = sources.Next()
-	assert.Error(t,err)
+	_, _, err = sources.Next()
+	assert.Error(t, err)
 }
 
 func TestSources_QtySum(t *testing.T) {

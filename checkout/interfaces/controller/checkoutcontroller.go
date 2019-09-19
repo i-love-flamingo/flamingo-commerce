@@ -255,7 +255,7 @@ func (cc *CheckoutController) PlaceOrderAction(ctx context.Context, r *web.Reque
 	var result web.Result
 	//Make sure the critical stuff done in place order is not affected from request context cancelation:
 	web.RunWithDetachedContext(ctx, func(backgroundCtx context.Context) {
-		result = cc.placeOrderAction(backgroundCtx,r,session,decoratedCart)
+		result = cc.placeOrderAction(backgroundCtx, r, session, decoratedCart)
 	})
 	return result
 }
