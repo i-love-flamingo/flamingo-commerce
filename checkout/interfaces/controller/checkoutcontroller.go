@@ -575,6 +575,24 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 
 	flowStatus, err := gateway.FlowStatus(ctx, &decoratedCart.Cart, application.PaymentFlowStandardCorrelationID)
 	if err != nil {
+		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.paymentaction: Error %v", err)
+
+		// payment failed, reopen the cart to make it still usable.
+		if cc.orderService.HasLastPlacedOrder(ctx) {
+			infos, err := cc.orderService.LastPlacedOrder(ctx)
+			if err != nil {
+				return cc.responder.RouteRedirect("checkout", nil)
+			}
+
+			restoredCart, err := cc.orderService.CancelOrder(ctx, session, infos)
+			if err != nil {
+				return cc.responder.RouteRedirect("checkout", nil)
+			}
+
+			decoratedCart = cc.decoratedCartFactory.Create(ctx, *restoredCart)
+			cc.orderService.ClearLastPlacedOrder(ctx)
+		}
+
 		return cc.showCheckoutFormWithErrors(ctx, r, *decoratedCart, nil, err)
 	}
 
@@ -628,8 +646,8 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 		}
 
 		return cc.responder.RouteRedirect("checkout", nil)
-	case paymentDomain.PaymentFlowStatusFailed:
-		// payment failed, redirect back to checkout
+	case paymentDomain.PaymentFlowStatusFailed, paymentDomain.PaymentFlowStatusCancelled:
+		// payment failed or is cancelled by payment provider, redirect back to checkout
 		if cc.orderService.HasLastPlacedOrder(ctx) {
 			infos, err := cc.orderService.LastPlacedOrder(ctx)
 			if err != nil {
