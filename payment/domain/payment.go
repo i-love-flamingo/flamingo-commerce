@@ -58,8 +58,6 @@ const (
 	PaymentFlowStatusCompleted = "payment_completed"
 	// PaymentFlowWaitingForCustomer payment waiting for customer
 	PaymentFlowWaitingForCustomer = "payment_waiting_for_customer"
-	// PaymentFlowStatusCancelled payment cancelled by user
-	PaymentFlowStatusCancelled = "payment_cancelled"
 )
 
 // Error getter

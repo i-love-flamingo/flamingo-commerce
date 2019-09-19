@@ -622,7 +622,7 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 	case paymentDomain.PaymentFlowStatusCompleted:
 		// payment is done and confirmed, place order
 		return cc.responder.RouteRedirect("checkout.placeorder", nil)
-	case paymentDomain.PaymentFlowStatusAborted, paymentDomain.PaymentFlowStatusCancelled:
+	case paymentDomain.PaymentFlowStatusAborted:
 		// payment was aborted or cancelled by user, redirect to checkout so a new payment can be started
 		if cc.orderService.HasLastPlacedOrder(ctx) {
 			infos, err := cc.orderService.LastPlacedOrder(ctx)
