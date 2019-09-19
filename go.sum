@@ -7,6 +7,7 @@ flamingo.me/flamingo/v3 v3.0.1 h1:p/jjJDa5Il1Clpg7QuYJHosR6/eX1v89lZRTBMO9PAc=
 flamingo.me/flamingo/v3 v3.0.1/go.mod h1:qxq7rnO6bKIMgyx7WOoi3QcTy9UkX9jrAEGvFDnWFlc=
 flamingo.me/flamingo/v3 v3.0.2 h1:Ky6iGO4/FMUrszHRDRaGyj/0M8z5zBj+V/O3NN6nvRk=
 flamingo.me/flamingo/v3 v3.0.2/go.mod h1:8eJclRd2+YgAVp5CRLNfy9nPcgvjQ7HSAiauv65gJac=
+flamingo.me/flamingo/v3 v3.0.3 h1:EZBJEjt2fUOgJ2MwEy0+IrlwIR0QSLlrcWxK6UO45S0=
 flamingo.me/flamingo/v3 v3.0.3/go.mod h1:afP64KSUUcB6JQgT6CJy0YNcVEp97WuzDIysHK82AIc=
 flamingo.me/form v1.0.0 h1:ww/y4GEOVWiEKvtNf7ZesrjvU92fKiODQfbNoNj351k=
 flamingo.me/form v1.0.0/go.mod h1:vr043GHK3X/0W1ZIGDJBBic94piMMTm5TzXupcPvprQ=
