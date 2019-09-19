@@ -58,6 +58,12 @@ type (
 
 	// ItemBuilderProvider should be used to create an item
 	ItemBuilderProvider func() *ItemBuilder
+
+	// ItemSplitter used to split an item
+	ItemSplitter struct {
+		itemBuilderProvider ItemBuilderProvider
+		configUseGrossPrice bool
+	}
 )
 
 // TotalTaxAmount - returns total tax amount as price
@@ -431,4 +437,72 @@ func (f *ItemBuilder) reset(err error) (*Item, error) {
 	f.invariantError = nil
 	f.itemCurrency = nil
 	return item, err
+}
+
+func (s *ItemSplitter) Inject(itemBuilderProvider ItemBuilderProvider, config *struct {
+	UseGrosPrice bool `inject:"config:commerce.product.priceIsGross,optional"`
+}) {
+	s.itemBuilderProvider = itemBuilderProvider
+	if config != nil {
+		s.configUseGrossPrice = config.UseGrosPrice
+	}
+}
+
+//Split the given item into multiple items with Qty 1 and make sure the sum of the items prices matches by using SplitInPayables
+func (s *ItemSplitter) Split(givenItem Item) ([]Item, error) {
+	var items []Item
+	//configUseGrossPrice true then:
+	// Given: SinglePriceGross / all AppliedDiscounts  / All Taxes
+	// Calculated: SinglePriceNet / RowPriceGross / RowPriceNet / SinglePriceNet
+
+	//configUseGrossPrice false then:
+	// Given: SinglePriceNez / all AppliedDiscounts  / All Taxes
+	// Calculated: SinglePriceGross / RowPriceGross / RowPriceNet / SinglePriceGross
+	for x := 0; x < givenItem.Qty; x++ {
+
+		itemBuilder := s.itemBuilderProvider()
+		itemBuilder.SetProductData(givenItem.MarketplaceCode, givenItem.VariantMarketPlaceCode, givenItem.ProductName)
+		itemBuilder.SetExternalReference(givenItem.ExternalReference)
+		itemBuilder.SetID(givenItem.ID)
+		itemBuilder.SetQty(1)
+		for _, ap := range givenItem.AppliedDiscounts {
+			apSplitted, err := ap.Applied.SplitInPayables(givenItem.Qty)
+			if err != nil {
+				return nil, err
+			}
+			newDiscount := AppliedDiscount{
+				CampaignCode:  ap.CampaignCode,
+				CouponCode:    ap.CouponCode,
+				Label:         ap.Label,
+				Applied:       apSplitted[x],
+				Type:          ap.Type,
+				IsItemRelated: ap.IsItemRelated,
+				SortOrder:     ap.SortOrder,
+			}
+			itemBuilder.AddDiscount(newDiscount)
+		}
+		for _, rt := range givenItem.RowTaxes {
+			if rt.Amount.IsZero() {
+				continue
+			}
+			rtSplitted, err := rt.Amount.SplitInPayables(givenItem.Qty)
+			if err != nil {
+				return nil, err
+			}
+			itemBuilder.AddTaxInfo(rt.Type, nil, &rtSplitted[x])
+		}
+		if s.configUseGrossPrice {
+			itemBuilder.SetSinglePriceGross(givenItem.SinglePriceGross)
+			itemBuilder.CalculatePricesAndTaxAmountsFromSinglePriceGross()
+		} else {
+			itemBuilder.SetSinglePriceNet(givenItem.SinglePriceGross)
+			itemBuilder.CalculatePricesAndTaxAmountsFromSinglePriceNet()
+		}
+		item, err := itemBuilder.Build()
+		if err != nil {
+			return nil, err
+		}
+		items = append(items, *item)
+	}
+	return items, nil
 }

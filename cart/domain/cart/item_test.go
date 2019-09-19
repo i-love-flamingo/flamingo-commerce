@@ -2,6 +2,7 @@ package cart_test
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/require"
 	"math/big"
 	"testing"
 
@@ -72,5 +73,60 @@ func TestItemBuild_SimpleBuild(t *testing.T) {
 
 func assertPricesWithLikelyEqual(t *testing.T, p1 priceDomain.Price, p2 priceDomain.Price, msg string) {
 	assert.True(t, p1.LikelyEqual(p2), fmt.Sprintf("%v (%f != %f)", msg, p1.FloatAmount(), p2.FloatAmount()))
+
+}
+
+func TestItemSplitter_SplitGrossBased(t *testing.T) {
+	provider := func() *cartDomain.ItemBuilder {
+		b := cartDomain.ItemBuilder{}
+		b.Inject(&struct {
+			UseGrosPrice bool `inject:"config:commerce.product.priceIsGross,optional"`
+		}{
+			UseGrosPrice: true,
+		})
+		return &b
+	}
+	splitter := &cartDomain.ItemSplitter{}
+	splitter.Inject(provider, &struct {
+		UseGrosPrice bool `inject:"config:commerce.product.priceIsGross,optional"`
+	}{
+		UseGrosPrice: true,
+	})
+
+	builder := provider()
+	builder.SetSinglePriceGross(priceDomain.NewFromInt(2065, 100, "€")).
+		SetQty(5).AddTaxInfo("tax", big.NewFloat(7), nil).
+		SetID("2").
+		AddDiscount(cartDomain.AppliedDiscount{Applied: priceDomain.NewFromInt(-3170, 100, "€")}).
+		CalculatePricesAndTaxAmountsFromSinglePriceGross()
+	item, err := builder.Build()
+	require.NoError(t, err)
+
+	splittedItems, err := splitter.Split(*item)
+	require.NoError(t, err)
+
+	//20.65 * 5 = 103.25
+	assert.Equal(t, 103.25, item.RowPriceGross.FloatAmount())
+	assert.Equal(t, -31.70, item.TotalDiscountAmount().FloatAmount())
+	// (98.57 - 31.70) * 0.07
+	assert.Equal(t, 4.68, item.TotalTaxAmount().FloatAmount())
+	// TotalTaxAmount + 98.57 = 103.25
+	assert.Equal(t, 98.57, item.RowPriceNet.FloatAmount())
+	assert.Equal(t, 66.87, item.RowPriceNetWithDiscount().FloatAmount())
+
+	var rowGrossTotal, rowNetTotal, totalTaxAmount, totalDiscountAmount float64
+	for _, splitItem := range splittedItems {
+		assert.Equal(t, 1, splitItem.Qty)
+		assert.Equal(t, splitItem.SinglePriceNet.FloatAmount(), splitItem.RowPriceNet.FloatAmount())
+		assert.Equal(t, splitItem.SinglePriceGross.FloatAmount(), splitItem.RowPriceGross.FloatAmount())
+		rowGrossTotal = rowGrossTotal + splitItem.RowPriceGross.FloatAmount()
+		rowNetTotal = rowNetTotal + splitItem.RowPriceNet.FloatAmount()
+		totalTaxAmount = totalTaxAmount + splitItem.TotalTaxAmount().FloatAmount()
+		totalDiscountAmount = totalDiscountAmount + splitItem.TotalDiscountAmount().FloatAmount()
+	}
+	assert.Equal(t, item.RowPriceGross.FloatAmount(), rowGrossTotal)
+	assert.Equal(t, item.RowPriceNet.FloatAmount(), rowNetTotal)
+	assert.Equal(t, item.TotalTaxAmount().FloatAmount(), totalTaxAmount)
+	assert.Equal(t, item.TotalDiscountAmount().FloatAmount(), totalDiscountAmount)
 
 }
