@@ -665,6 +665,10 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 			cc.orderService.ClearLastPlacedOrder(ctx)
 		}
 
+		if flowStatus.Error == nil {
+			flowStatus.Error = &paymentDomain.Error{}
+		}
+
 		if cc.showReviewStepAfterPaymentError && !cc.skipReviewAction {
 			return cc.showReviewFormWithErrors(ctx, *decoratedCart, flowStatus.Error)
 		}
