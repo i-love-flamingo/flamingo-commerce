@@ -123,7 +123,7 @@ func TestItemSplitter_SplitGrossBased(t *testing.T) {
 		rowNetTotal = rowNetTotal + splitItem.RowPriceNet.FloatAmount()
 		totalTaxAmount = totalTaxAmount + splitItem.TotalTaxAmount().FloatAmount()
 		rate, _ := splitItem.RowTaxes[0].Rate.Float64()
-		assert.Equal(t,7.0,rate)
+		assert.Equal(t, 7.0, rate)
 		totalDiscountAmount = totalDiscountAmount + splitItem.TotalDiscountAmount().FloatAmount()
 
 	}

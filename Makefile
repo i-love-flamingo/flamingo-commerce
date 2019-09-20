@@ -18,4 +18,8 @@ unlocal:
 
 test:
 	go test -race -v ./...
-	
+	gofmt -l -e -d .
+	golint ./...
+
+fix:
+	gofmt -l -w .
