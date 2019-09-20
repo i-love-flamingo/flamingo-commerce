@@ -102,7 +102,7 @@ func TestItemSplitter_SplitGrossBased(t *testing.T) {
 	item, err := builder.Build()
 	require.NoError(t, err)
 
-	splittedItems, err := splitter.Split(*item)
+	splittedItems, err := splitter.SplitInSingleQtyItems(*item)
 	require.NoError(t, err)
 
 	//20.65 * 5 = 103.25

@@ -449,8 +449,8 @@ func (s *ItemSplitter) Inject(itemBuilderProvider ItemBuilderProvider, config *s
 	}
 }
 
-//Split the given item into multiple items with Qty 1 and make sure the sum of the items prices matches by using SplitInPayables
-func (s *ItemSplitter) Split(givenItem Item) ([]Item, error) {
+//SplitInSingleQtyItems the given item into multiple items with Qty 1 and make sure the sum of the items prices matches by using SplitInPayables
+func (s *ItemSplitter) SplitInSingleQtyItems(givenItem Item) ([]Item, error) {
 	var items []Item
 	//configUseGrossPrice true then:
 	// Given: SinglePriceGross / all AppliedDiscounts  / All Taxes
