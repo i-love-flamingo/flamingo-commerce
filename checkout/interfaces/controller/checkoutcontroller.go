@@ -252,8 +252,17 @@ func (cc *CheckoutController) PlaceOrderAction(ctx context.Context, r *web.Reque
 	if cc.showEmptyCartPageIfNoItems && decoratedCart.Cart.ItemCount() == 0 {
 		return cc.responder.Render("checkout/emptycart", nil).SetNoCache()
 	}
+	var result web.Result
+	//Make sure the critical stuff done in place order is not affected from request context cancelation:
+	web.RunWithDetachedContext(ctx, func(backgroundCtx context.Context) {
+		result = cc.placeOrderAction(backgroundCtx, r, session, decoratedCart)
+	})
+	return result
+}
 
-	err = cc.orderService.SetSources(ctx, session)
+func (cc *CheckoutController) placeOrderAction(ctx context.Context, r *web.Request, session *web.Session, decoratedCart *decorator.DecoratedCart) web.Result {
+
+	err := cc.orderService.SetSources(ctx, session)
 	if err != nil {
 		cc.logger.Error("OnStepCurrentCartPlaceOrder SetSources Error ", err)
 		return cc.responder.Render("checkout/carterror", nil).SetNoCache()

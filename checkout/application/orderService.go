@@ -173,37 +173,41 @@ func (os *OrderService) GetAvailablePaymentGateways(ctx context.Context) map[str
 
 // CurrentCartPlaceOrder places the current cart without additional payment processing
 func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.Session, cartPayment placeorder.Payment) (*PlaceOrderInfo, error) {
-	// use a background context from here on to prevent the place order canceled by context cancel
-	placeOrderContext := os.createNewBackgroundContext(ctx)
+	var info *PlaceOrderInfo
+	var err error
+	web.RunWithDetachedContext(ctx, func(placeOrderContext context.Context) {
+		info, err = func() (*PlaceOrderInfo, error) {
+			decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(placeOrderContext, session)
+			if err != nil {
+				// record fail count metric
+				stats.Record(placeOrderContext, orderFailedStat.M(1))
+				os.logger.WithContext(placeOrderContext).Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
+				return nil, err
+			}
 
-	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(placeOrderContext, session)
-	if err != nil {
-		// record fail count metric
-		stats.Record(placeOrderContext, orderFailedStat.M(1))
-		os.logger.WithContext(placeOrderContext).Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
-		return nil, err
-	}
+			validationResult := os.cartService.ValidateCart(placeOrderContext, session, decoratedCart)
+			if !validationResult.IsValid() {
+				// record fail count metric
+				stats.Record(placeOrderContext, orderFailedStat.M(1))
+				os.logger.WithContext(placeOrderContext).Warn("Try to place an invalid cart")
+				return nil, errors.New("cart is invalid")
+			}
 
-	validationResult := os.cartService.ValidateCart(placeOrderContext, session, decoratedCart)
-	if !validationResult.IsValid() {
-		// record fail count metric
-		stats.Record(placeOrderContext, orderFailedStat.M(1))
-		os.logger.WithContext(placeOrderContext).Warn("Try to place an invalid cart")
-		return nil, errors.New("cart is invalid")
-	}
+			placedOrderInfos, err := os.cartService.PlaceOrder(placeOrderContext, session, &cartPayment)
+			if err != nil {
+				// record fail count metric
+				stats.Record(placeOrderContext, orderFailedStat.M(1))
+				os.logger.WithContext(placeOrderContext).Error("Error during place Order:" + err.Error())
+				return nil, errors.New("error while placing the order. please contact customer support")
+			}
 
-	placedOrderInfos, err := os.cartService.PlaceOrder(placeOrderContext, session, &cartPayment)
-	if err != nil {
-		// record fail count metric
-		stats.Record(placeOrderContext, orderFailedStat.M(1))
-		os.logger.WithContext(placeOrderContext).Error("Error during place Order:" + err.Error())
-		return nil, errors.New("error while placing the order. please contact customer support")
-	}
+			placeOrderInfo := os.preparePlaceOrderInfo(ctx, decoratedCart.Cart, placedOrderInfos, cartPayment)
+			os.storeLastPlacedOrder(ctx, placeOrderInfo)
 
-	placeOrderInfo := os.preparePlaceOrderInfo(ctx, decoratedCart.Cart, placedOrderInfos, cartPayment)
-	os.storeLastPlacedOrder(ctx, placeOrderInfo)
-
-	return placeOrderInfo, nil
+			return placeOrderInfo, nil
+		}()
+	})
+	return info, err
 }
 
 // CancelOrder cancels an previously placed order and returns the cart with the order content
@@ -213,29 +217,37 @@ func (os *OrderService) CancelOrder(ctx context.Context, session *web.Session, o
 
 // CurrentCartPlaceOrderWithPaymentProcessing places the current cart which is fetched from the context
 func (os *OrderService) CurrentCartPlaceOrderWithPaymentProcessing(ctx context.Context, session *web.Session) (*PlaceOrderInfo, error) {
+	var info *PlaceOrderInfo
+	var err error
 	// use a background context from here on to prevent the place order canceled by context cancel
-	placeOrderContext := os.createNewBackgroundContext(ctx)
+	web.RunWithDetachedContext(ctx, func(placeOrderContext context.Context) {
+		info, err = func() (*PlaceOrderInfo, error) {
+			// fetch decorated cart either via cache or freshly from cart receiver service
+			decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(placeOrderContext, session)
+			if err != nil {
+				// record fail count metric
+				stats.Record(placeOrderContext, orderFailedStat.M(1))
+				os.logger.WithContext(placeOrderContext).Warn("Cannot create decorated cart from cart")
+				return nil, errors.New("cart is invalid")
+			}
 
-	// fetch decorated cart either via cache or freshly from cart receiver service
-	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(placeOrderContext, session)
-	if err != nil {
-		// record fail count metric
-		stats.Record(placeOrderContext, orderFailedStat.M(1))
-		os.logger.WithContext(placeOrderContext).Warn("Cannot create decorated cart from cart")
-		return nil, errors.New("cart is invalid")
-	}
-
-	return os.placeOrderWithPaymentProcessing(placeOrderContext, decoratedCart, session)
+			return os.placeOrderWithPaymentProcessing(placeOrderContext, decoratedCart, session)
+		}()
+	})
+	return info, err
 }
 
 // CartPlaceOrderWithPaymentProcessing places the cart passed to the function
 // this function enables clients to pass a cart as is, without the usage of the cartReceiverService
 func (os *OrderService) CartPlaceOrderWithPaymentProcessing(ctx context.Context, decoratedCart *decorator.DecoratedCart,
 	session *web.Session) (*PlaceOrderInfo, error) {
+	var info *PlaceOrderInfo
+	var err error
 	// use a background context from here on to prevent the place order canceled by context cancel
-	placeOrderContext := os.createNewBackgroundContext(ctx)
-
-	return os.placeOrderWithPaymentProcessing(placeOrderContext, decoratedCart, session)
+	web.RunWithDetachedContext(ctx, func(placeOrderContext context.Context) {
+		info, err = os.placeOrderWithPaymentProcessing(placeOrderContext, decoratedCart, session)
+	})
+	return info, err
 }
 
 // GetContactMail returns the contact mail from the shipping address with fall back to the billing address
@@ -374,17 +386,6 @@ func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, dec
 	}
 
 	return placeOrderInfo, nil
-}
-
-// createNewBackgroundContext creates a new background context to avoid cancellation by parent context
-func (os *OrderService) createNewBackgroundContext(ctx context.Context) context.Context {
-	return web.ContextWithRequest(
-		web.ContextWithSession(
-			context.Background(),
-			web.SessionFromContext(ctx),
-		),
-		web.RequestFromContext(ctx),
-	)
 }
 
 func (os *OrderService) preparePlaceOrderInfo(ctx context.Context, currentCart cart.Cart, placedOrderInfos placeorder.PlacedOrderInfos, cartPayment placeorder.Payment) *PlaceOrderInfo {
