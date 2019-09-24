@@ -7,7 +7,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"flamingo.me/flamingo/v3/core/oauth/application"
+	OAuthDomain "flamingo.me/flamingo/v3/core/oauth/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 
@@ -24,7 +24,7 @@ type (
 	// CartService provides methods to modify the cart
 	CartService struct {
 		cartReceiverService *CartReceiverService
-		authManager         *application.AuthManager
+		authManager         AuthManagerInterface
 		productService      productDomain.ProductService
 		eventPublisher      events.EventPublisher
 		eventRouter         flamingo.EventRouter
@@ -38,6 +38,11 @@ type (
 		itemValidator     validation.ItemValidator
 		cartCache         CartCache
 		placeOrderService placeorder.Service
+	}
+
+	//AuthManagerInterface is the interface required to get Auth infos for CustomerCart handling
+	AuthManagerInterface interface {
+		Auth(c context.Context, session *web.Session) (OAuthDomain.Auth, error)
 	}
 
 	// RestrictionError error enriched with result of restrictions
@@ -81,7 +86,7 @@ func (cs *CartService) Inject(
 	eventRouter flamingo.EventRouter,
 	deliveryInfoBuilder cartDomain.DeliveryInfoBuilder,
 	restrictionService *validation.RestrictionService,
-	authManager *application.AuthManager,
+	authManager AuthManagerInterface,
 	logger flamingo.Logger,
 	config *struct {
 		DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
@@ -691,7 +696,7 @@ func (cs *CartService) checkProductQtyRestrictions(ctx context.Context, product 
 	if restrictionResult.IsRestricted {
 		if qtyToCheck > restrictionResult.RemainingDifference {
 			return &RestrictionError{
-				message:           fmt.Sprintf("Can't update item quantity, product max quantity of %d would be exceeded", restrictionResult.MaxAllowed),
+				message:           fmt.Sprintf("Can't update item quantity, product max quantity of %d would be exceeded. Restrictor: %v", restrictionResult.MaxAllowed, restrictionResult.RestrictorName),
 				CartItemID:        itemID,
 				RestrictionResult: *restrictionResult,
 			}
@@ -714,7 +719,7 @@ func (cs *CartService) updateCartInCacheIfCacheIsEnabled(ctx context.Context, se
 			return
 		}
 		if cart.BelongsToAuthenticatedUser != id.IsCustomerCart {
-			cs.logger.WithContext(ctx).Error("Request to cache a cart with wrong idendifier. %v / %v", cart.BelongsToAuthenticatedUser, id.IsCustomerCart)
+			cs.logger.WithContext(ctx).Error(fmt.Sprintf("Request to cache a cart with wrong idendifier. Cart BelongsToAuthenticatedUser: %v / CacheIdendifier: %v", cart.BelongsToAuthenticatedUser, id.IsCustomerCart))
 			return
 		}
 

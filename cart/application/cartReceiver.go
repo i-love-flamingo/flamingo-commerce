@@ -19,7 +19,7 @@ type (
 		guestCartService     cartDomain.GuestCartService
 		customerCartService  cartDomain.CustomerCartService
 		cartDecoratorFactory *decorator.DecoratedCartFactory
-		authManager          *authApplication.AuthManager
+		authManager          AuthManagerInterface
 		userService          authApplication.UserServiceInterface
 		eventRouter          flamingo.EventRouter
 		logger               flamingo.Logger
@@ -43,7 +43,7 @@ func (cs *CartReceiverService) Inject(
 	guestCartService cartDomain.GuestCartService,
 	customerCartService cartDomain.CustomerCartService,
 	cartDecoratorFactory *decorator.DecoratedCartFactory,
-	authManager *authApplication.AuthManager,
+	authManager AuthManagerInterface,
 	userService authApplication.UserServiceInterface,
 	logger flamingo.Logger,
 	eventRouter flamingo.EventRouter,
