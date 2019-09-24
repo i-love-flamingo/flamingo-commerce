@@ -29,7 +29,7 @@ func (e *EventReceiver) Inject(
 		CartCache CartCache `inject:",optional"`
 	},
 ) {
-	e.logger = logger.WithField(flamingo.LogKeyCategory, "cart")
+	e.logger = logger.WithField(flamingo.LogKeyCategory, "cart").WithField(flamingo.LogKeySubCategory,"cart-events")
 	e.cartService = cartService
 	e.cartReceiverService = cartReceiverService
 	if optionals != nil {
