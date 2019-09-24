@@ -47,44 +47,73 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 		}
 	//Handle LoginEvent and Merge Cart
 	case *domain.LoginEvent:
-		if currentEvent == nil {
-			return
-		}
-		if !e.cartReceiverService.ShouldHaveGuestCart(currentEvent.Session) {
-			return
-		}
-		guestCart, err := e.cartReceiverService.ViewGuestCart(ctx, currentEvent.Session)
-		if err != nil {
-			e.logger.WithContext(ctx).Error("LoginEvent - Guestcart cannot be received %v", err)
-			return
-		}
-		if !e.cartReceiverService.IsLoggedIn(ctx, currentEvent.Session) {
-			e.logger.WithContext(ctx).Error("Received LoginEvent but user is not logged in!!!")
-			return
-		}
-		for _, d := range guestCart.Deliveries {
-			e.cartService.UpdateDeliveryInfo(ctx, currentEvent.Session, d.DeliveryInfo.Code, cartDomain.CreateDeliveryInfoUpdateCommand(d.DeliveryInfo))
-			for _, item := range d.Cartitems {
-				e.logger.WithContext(ctx).Debug("Merging item from guest to user cart %v", item)
-				addRequest := e.cartService.BuildAddRequest(ctx, item.MarketplaceCode, item.VariantMarketPlaceCode, item.Qty)
-				e.cartService.AddProduct(ctx, currentEvent.Session, d.DeliveryInfo.Code, addRequest)
+		web.RunWithDetachedContext(ctx, func(ctx context.Context) {
+			if currentEvent == nil {
+				return
 			}
-		}
+			if !e.cartReceiverService.ShouldHaveGuestCart(currentEvent.Session) {
+				return
+			}
+			guestCart, err := e.cartReceiverService.ViewGuestCart(ctx, currentEvent.Session)
+			if err != nil {
+				e.logger.WithContext(ctx).Error("LoginEvent - Guestcart cannot be received %v", err)
+				return
+			}
+			if !e.cartReceiverService.IsLoggedIn(ctx, currentEvent.Session) {
+				e.logger.WithContext(ctx).Error("Received LoginEvent but user is not logged in!!!")
+				return
+			}
+			customerCart, err := e.cartReceiverService.ViewCart(ctx, currentEvent.Session)
+			if err != nil {
+				e.logger.WithContext(ctx).Error("LoginEvent - customerCart cannot be received %v", err)
+				return
+			}
+			err = e.cartService.DeleteSavedSessionGuestCartID(currentEvent.Session)
+			if err != nil {
+				e.logger.WithContext(ctx).Error("LoginEvent - DeleteSavedSessionGuestCartID Error", err)
+			}
+			if customerCart.BillingAddress == nil && guestCart.BillingAddress != nil {
+				err := e.cartService.UpdateBillingAddress(ctx, currentEvent.Session, guestCart.BillingAddress)
+				if err != nil {
+					e.logger.WithContext(ctx).Error("LoginEvent - customerCart UpdateBillingAddress error", err)
+				}
+			}
+			for _, d := range guestCart.Deliveries {
+				err := e.cartService.UpdateDeliveryInfo(ctx, currentEvent.Session, d.DeliveryInfo.Code, cartDomain.CreateDeliveryInfoUpdateCommand(d.DeliveryInfo))
+				if err != nil {
+					e.logger.WithContext(ctx).Error("LoginEvent - customerCart UpdateDeliveryInfo error", err)
+					continue
+				}
+				for _, item := range d.Cartitems {
+					e.logger.WithContext(ctx).Debugf("Merging item from guest to user cart %v", item)
+					addRequest := e.cartService.BuildAddRequest(ctx, item.MarketplaceCode, item.VariantMarketPlaceCode, item.Qty)
+					_, err := e.cartService.AddProduct(ctx, currentEvent.Session, d.DeliveryInfo.Code, addRequest)
+					if err != nil {
+						e.logger.WithContext(ctx).Error("LoginEvent - customerCart product has merge error", addRequest.MarketplaceCode, err)
+					}
+				}
+			}
 
-		if guestCart.HasAppliedCouponCode() {
-			for _, code := range guestCart.AppliedCouponCodes {
-				e.cartService.ApplyVoucher(ctx, currentEvent.Session, code.Code)
+			if guestCart.HasAppliedCouponCode() {
+				for _, code := range guestCart.AppliedCouponCodes {
+					_, err := e.cartService.ApplyVoucher(ctx, currentEvent.Session, code.Code)
+					if err != nil {
+						e.logger.WithContext(ctx).Error("LoginEvent - customerCart ApplyVoucher has error", code.Code, err)
+					}
+				}
 			}
-		}
 
-		if e.cartCache != nil {
-			session := web.SessionFromContext(ctx)
-			cacheID, err := e.cartCache.BuildIdentifier(ctx, session)
-			if err == nil {
-				e.cartCache.Delete(ctx, currentEvent.Session, cacheID)
+			if e.cartCache != nil {
+				session := web.SessionFromContext(ctx)
+				cacheID, err := e.cartCache.BuildIdentifier(ctx, session)
+				if err == nil {
+					err = e.cartCache.Delete(ctx, currentEvent.Session, cacheID)
+					if err != nil {
+						e.logger.WithContext(ctx).Error("LoginEvent - Cache Delete Error", err)
+					}
+				}
 			}
-		}
-		e.cartService.DeleteSavedSessionGuestCartID(currentEvent.Session)
+		})
 	// Handle Event to Invalidate the Cart Cache
 	case *cartDomain.InvalidateCartEvent:
 		if e.cartCache != nil {
