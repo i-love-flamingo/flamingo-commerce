@@ -83,11 +83,11 @@ func (cc *CartViewController) ViewAction(ctx context.Context, r *web.Request) we
 	decoratedCart, err := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if err != nil {
 		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.viewaction: Error %v", err)
-		return cc.responder.Render("checkout/carterror", nil)
+		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 	}
 
 	if cc.showEmptyCartPageIfNoItems && decoratedCart.Cart.ItemCount() == 0 {
-		return cc.responder.Render("checkout/emptycart", nil)
+		return cc.responder.Render("checkout/emptycart", nil).SetNoCache()
 	}
 
 	cartViewData := CartViewData{
@@ -108,7 +108,7 @@ func (cc *CartViewController) ViewAction(ctx context.Context, r *web.Request) we
 		}
 	}
 
-	return cc.responder.Render("checkout/cart", cartViewData)
+	return cc.responder.Render("checkout/cart", cartViewData).SetNoCache()
 }
 
 // AddAndViewAction the DecoratedCart View ( / cart)
