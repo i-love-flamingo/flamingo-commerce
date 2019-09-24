@@ -72,12 +72,6 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 			if err != nil {
 				e.logger.WithContext(ctx).Error("LoginEvent - DeleteSavedSessionGuestCartID Error", err)
 			}
-			if customerCart.BillingAddress == nil && guestCart.BillingAddress != nil {
-				err := e.cartService.UpdateBillingAddress(ctx, currentEvent.Session, guestCart.BillingAddress)
-				if err != nil {
-					e.logger.WithContext(ctx).Error("LoginEvent - customerCart UpdateBillingAddress error", err)
-				}
-			}
 			for _, d := range guestCart.Deliveries {
 				err := e.cartService.UpdateDeliveryInfo(ctx, currentEvent.Session, d.DeliveryInfo.Code, cartDomain.CreateDeliveryInfoUpdateCommand(d.DeliveryInfo))
 				if err != nil {
@@ -93,7 +87,24 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 					}
 				}
 			}
-
+			if customerCart.BillingAddress == nil && guestCart.BillingAddress != nil {
+				err := e.cartService.UpdateBillingAddress(ctx, currentEvent.Session, guestCart.BillingAddress)
+				if err != nil {
+					e.logger.WithContext(ctx).Error("LoginEvent - customerCart UpdateBillingAddress error", err)
+				}
+			}
+			if customerCart.Purchaser == nil && guestCart.Purchaser != nil {
+				err := e.cartService.UpdatePurchaser(ctx, currentEvent.Session, guestCart.Purchaser, &guestCart.AdditionalData)
+				if err != nil {
+					e.logger.WithContext(ctx).Error("LoginEvent - customerCart UpdatePurchaser error", err)
+				}
+			}
+			if customerCart.PaymentSelection == nil && guestCart.PaymentSelection != nil {
+				err := e.cartService.UpdatePaymentSelection(ctx, currentEvent.Session, guestCart.PaymentSelection)
+				if err != nil {
+					e.logger.WithContext(ctx).Error("LoginEvent - customerCart UpdatePaymentSelection error", err)
+				}
+			}
 			if guestCart.HasAppliedCouponCode() {
 				for _, code := range guestCart.AppliedCouponCodes {
 					_, err := e.cartService.ApplyVoucher(ctx, currentEvent.Session, code.Code)
