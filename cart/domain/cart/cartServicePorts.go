@@ -98,10 +98,12 @@ var (
 
 //CreateDeliveryInfoUpdateCommand - factory to get the update command based on the given deliveryInfos (which might come from cart)
 func CreateDeliveryInfoUpdateCommand(info DeliveryInfo) DeliveryInfoUpdateCommand {
-	return DeliveryInfoUpdateCommand{
+	uc := DeliveryInfoUpdateCommand{
 		DeliveryInfo: info,
 		additional:   info.AdditionalDeliveryInfos,
 	}
+	uc.SetAdditional(info.AdditionalDeliveryInfos)
+	return uc
 }
 
 // AddAdditional adds additional delivery info data
@@ -109,6 +111,12 @@ func (d *DeliveryInfoUpdateCommand) AddAdditional(key string, val AdditionalDeli
 	d.init()
 	d.additional[key], err = val.Marshal()
 	return err
+}
+
+// SetAdditional adds additional delivery info data
+func (d *DeliveryInfoUpdateCommand) SetAdditional(val map[string]json.RawMessage) {
+	d.init()
+	d.additional = val
 }
 
 // Additional gets the additional data as war map from the delivery info update command

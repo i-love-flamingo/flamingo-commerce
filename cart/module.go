@@ -4,6 +4,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql"
+	oauthApplication "flamingo.me/flamingo/v3/core/oauth/application"
 	flamingographql "flamingo.me/graphql"
 
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
@@ -65,6 +66,8 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	}
 	//Register Default EventPublisher
 	injector.Bind((*events.EventPublisher)(nil)).To(events.DefaultEventPublisher{})
+
+	injector.Bind((*application.AuthManagerInterface)(nil)).To(oauthApplication.AuthManager{})
 
 	//Event
 	flamingo.BindEventSubscriber(injector).To(application.EventReceiver{})
