@@ -103,18 +103,20 @@ func (p *DefaultPersonalDataFormService) GetFormData(ctx context.Context, req *w
 		return *formData, nil
 	}
 
+	if p.userService.IsLoggedIn(ctx, req.Session()) {
+		customer, err := p.customerApplicationService.GetForAuthenticatedUser(ctx, req.Session())
+		if err == nil {
+			personalData := customer.GetPersonalData()
+			formData.DateOfBirth = personalData.Birthday.String()
+		}
+	}
+
 	if cart.Purchaser != nil {
 		formData.DateOfBirth = cart.Purchaser.PersonalDetails.DateOfBirth
 		formData.PassportCountry = cart.Purchaser.PersonalDetails.PassportCountry
 		formData.PassportNumber = cart.Purchaser.PersonalDetails.PassportNumber
 		if cart.Purchaser.Address != nil {
 			formData.Address.LoadFromCartAddress(*cart.Purchaser.Address)
-		}
-	} else if p.userService.IsLoggedIn(ctx, req.Session()) {
-		customer, err := p.customerApplicationService.GetForAuthenticatedUser(ctx, req.Session())
-		if err == nil {
-			personalData := customer.GetPersonalData()
-			formData.DateOfBirth = personalData.Birthday.String()
 		}
 	}
 
