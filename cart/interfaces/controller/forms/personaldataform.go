@@ -107,7 +107,7 @@ func (p *DefaultPersonalDataFormService) GetFormData(ctx context.Context, req *w
 		customer, err := p.customerApplicationService.GetForAuthenticatedUser(ctx, req.Session())
 		if err == nil {
 			personalData := customer.GetPersonalData()
-			formData.DateOfBirth = personalData.Birthday.String()
+			formData.DateOfBirth = personalData.Birthday.Format("2006-01-02")
 		}
 	}
 
