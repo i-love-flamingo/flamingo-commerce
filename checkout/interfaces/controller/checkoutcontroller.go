@@ -177,11 +177,6 @@ The checkoutController implements a default process for a checkout:
 
 // StartAction handles the checkout start action
 func (cc *CheckoutController) StartAction(ctx context.Context, r *web.Request) web.Result {
-	// payment / order already in process redirect to payment status page
-	if cc.orderService.HasLastPlacedOrder(ctx) {
-		return cc.responder.RouteRedirect("checkout.payment", nil)
-	}
-
 	//Guard Clause if Cart cannot be fetched
 	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if e != nil {
@@ -215,11 +210,6 @@ func (cc *CheckoutController) StartAction(ctx context.Context, r *web.Request) w
 
 // SubmitCheckoutAction handles the main checkout
 func (cc *CheckoutController) SubmitCheckoutAction(ctx context.Context, r *web.Request) web.Result {
-	// payment / order already in process redirect to payment status page
-	if cc.orderService.HasLastPlacedOrder(ctx) {
-		return cc.responder.RouteRedirect("checkout.payment", nil)
-	}
-
 	//Guard Clause if Cart can not be fetched
 	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if e != nil {
@@ -252,12 +242,7 @@ func (cc *CheckoutController) PlaceOrderAction(ctx context.Context, r *web.Reque
 	if cc.showEmptyCartPageIfNoItems && decoratedCart.Cart.ItemCount() == 0 {
 		return cc.responder.Render("checkout/emptycart", nil).SetNoCache()
 	}
-	var result web.Result
-	//Make sure the critical stuff done in place order is not affected from request context cancelation:
-	web.RunWithDetachedContext(ctx, func(backgroundCtx context.Context) {
-		result = cc.placeOrderAction(backgroundCtx, r, session, decoratedCart)
-	})
-	return result
+	return cc.placeOrderAction(ctx, r, session, decoratedCart)
 }
 
 func (cc *CheckoutController) placeOrderAction(ctx context.Context, r *web.Request, session *web.Session, decoratedCart *decorator.DecoratedCart) web.Result {
