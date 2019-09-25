@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
 	"flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
@@ -16,6 +17,7 @@ import (
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	customerApplication "flamingo.me/flamingo-commerce/v3/customer/application"
 )
 
 type (
@@ -42,6 +44,8 @@ type (
 	DefaultPersonalDataFormService struct {
 		applicationCartReceiverService  *cartApplication.CartReceiverService
 		defaultPersonalDataFormProvider DefaultPersonalDataFormProvider
+		customerApplicationService      *customerApplication.Service
+		userService                     *authApplication.UserService
 		additionalFormFieldsCfg         config.Slice
 		dateOfBirthRequired             bool
 		minAge                          int
@@ -65,6 +69,8 @@ type (
 func (p *DefaultPersonalDataFormService) Inject(
 	applicationCartReceiverService *cartApplication.CartReceiverService,
 	defaultPersonalDataFormProvider DefaultPersonalDataFormProvider,
+	customerApplicationService *customerApplication.Service,
+	userService *authApplication.UserService,
 	cfg *struct {
 		AdditionalFormValues    config.Slice `inject:"config:commerce.cart.personalDataForm.additionalFormFields,optional"`
 		DateOfBirthRequired     bool         `inject:"config:commerce.cart.personalDataForm.dateOfBirthRequired,optional"`
@@ -75,6 +81,8 @@ func (p *DefaultPersonalDataFormService) Inject(
 ) *DefaultPersonalDataFormService {
 	p.applicationCartReceiverService = applicationCartReceiverService
 	p.defaultPersonalDataFormProvider = defaultPersonalDataFormProvider
+	p.customerApplicationService = customerApplicationService
+	p.userService = userService
 	if cfg != nil {
 		p.additionalFormFieldsCfg = cfg.AdditionalFormValues
 		p.dateOfBirthRequired = cfg.DateOfBirthRequired
@@ -95,6 +103,14 @@ func (p *DefaultPersonalDataFormService) GetFormData(ctx context.Context, req *w
 		return *formData, nil
 	}
 
+	if p.userService.IsLoggedIn(ctx, req.Session()) {
+		customer, err := p.customerApplicationService.GetForAuthenticatedUser(ctx, req.Session())
+		if err == nil {
+			personalData := customer.GetPersonalData()
+			formData.DateOfBirth = personalData.Birthday.String()
+		}
+	}
+
 	if cart.Purchaser != nil {
 		formData.DateOfBirth = cart.Purchaser.PersonalDetails.DateOfBirth
 		formData.PassportCountry = cart.Purchaser.PersonalDetails.PassportCountry
@@ -103,6 +119,7 @@ func (p *DefaultPersonalDataFormService) GetFormData(ctx context.Context, req *w
 			formData.Address.LoadFromCartAddress(*cart.Purchaser.Address)
 		}
 	}
+
 	if p.additionalFormFieldsCfg != nil {
 		for _, key := range p.additionalFormFieldsCfg {
 			formData.additionalFormData[key.(string)] = cart.AdditionalData.CustomAttributes[key.(string)]
