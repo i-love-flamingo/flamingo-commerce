@@ -148,7 +148,7 @@ func removeZeroChargesFromSplit(builder *PaymentSplitByItemBuilder, paymentSplit
 }
 
 // newSimplePaymentSelection returns a PaymentSelection that can be used to update the cart.
-// multiple charges by item are not used here: The complete grandtotal is selected to be payed in one charge with the given paymentgateway and paymentmethod
+// multiple charges by item are not used here: The complete grandtotal is selected to be paid in one charge with the given paymentgateway and paymentmethod
 func newSimplePaymentSelection(gateway string, method string, pricedItems PricedItems) PaymentSelection {
 	selection := DefaultPaymentSelection{
 		GatewayProp: gateway,

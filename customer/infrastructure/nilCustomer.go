@@ -9,7 +9,7 @@ import (
 )
 
 type (
-	//NilCustomerServiceAdapter - a Adpater for CustomerSerive that returns always NotFound
+	//NilCustomerServiceAdapter - a Adapter for CustomerService that returns always NotFound
 	NilCustomerServiceAdapter struct{}
 )
 

@@ -11,7 +11,7 @@ import (
 type (
 	// Delivery - represents the DeliveryInfo and the assigned Items
 	Delivery struct {
-		//DeliveryInfo - The details for this delivery - normaly completed during checkout
+		//DeliveryInfo - The details for this delivery - normally completed during checkout
 		DeliveryInfo DeliveryInfo
 		//Cartitems - list of cartitems
 		Cartitems []Item
@@ -21,7 +21,7 @@ type (
 
 	// DeliveryInfo - represents the Delivery
 	DeliveryInfo struct {
-		// Code - is a project specific idendifier for the Delivery - you need it for the AddToCart Request for example
+		// Code - is a project specific identifier for the Delivery - you need it for the AddToCart Request for example
 		// The code can follow the convention in the Readme: Type_Method_LocationType_LocationCode
 		Code string
 		//Type - The Type of the Delivery - e.g. delivery or pickup - this might trigger different workflows
@@ -59,11 +59,11 @@ type (
 	DeliveryLocation struct {
 		//Type - the type of the delivery - use some of the constant defined in the package like DeliverylocationTypeAddress
 		Type string
-		//Address -  (only relevant for type adress)
+		//Address -  (only relevant for type address)
 		Address *Address
-		//UseBillingAddress - the adress should be taken from billing (only relevant for type adress)
+		//UseBillingAddress - the address should be taken from billing (only relevant for type address)
 		UseBillingAddress bool
-		//Code - optional idendifier of this location/destination - is used in special destination Types
+		//Code - optional identifier of this location/destination - is used in special destination Types
 		Code string
 	}
 
@@ -120,7 +120,7 @@ func (d Delivery) SubTotalGross() priceDomain.Price {
 	return result
 }
 
-//GrandTotal - returns SubTotalGross inlcuding shipping and discounts - for the Delivery
+//GrandTotal - returns SubTotalGross including shipping and discounts - for the Delivery
 func (d Delivery) GrandTotal() priceDomain.Price {
 	// we need a capacity of cartitems + 2
 	prices := make([]priceDomain.Price, 0, len(d.Cartitems)+2)

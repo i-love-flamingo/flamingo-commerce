@@ -99,8 +99,8 @@ func (df *DecoratedCartFactory) decorateCartItem(ctx context.Context, cartitem c
 		return decorateditem
 	}
 	if product.Type() == domain.TypeConfigurable {
-		if configureable, ok := product.(domain.ConfigurableProduct); ok {
-			configurableWithVariant, err := configureable.GetConfigurableWithActiveVariant(cartitem.VariantMarketPlaceCode)
+		if configurable, ok := product.(domain.ConfigurableProduct); ok {
+			configurableWithVariant, err := configurable.GetConfigurableWithActiveVariant(cartitem.VariantMarketPlaceCode)
 			if err != nil {
 				product = domain.SimpleProduct{
 					BasicProductData: domain.BasicProductData{

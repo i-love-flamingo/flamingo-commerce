@@ -62,7 +62,7 @@ const (
 	LastPlacedOrderSessionKey = "orderservice_last_placed"
 )
 
-var orderFailedStat = stats.Int64("flamingo-commerce/orderfailed", "my stat records 1 occurences per error", stats.UnitDimensionless)
+var orderFailedStat = stats.Int64("flamingo-commerce/orderfailed", "my stat records 1 occurrence per error", stats.UnitDimensionless)
 
 func init() {
 	gob.Register(PlaceOrderInfo{})

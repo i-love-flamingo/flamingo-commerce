@@ -424,7 +424,7 @@ func TestCartSessionCache_Delete(t *testing.T) {
 			wantMessageErr: "not found for delete",
 		},
 		{
-			name:   "deleted correclty",
+			name:   "deleted correctly",
 			fields: fields{},
 			args: args{
 				ctx: context.Background(),

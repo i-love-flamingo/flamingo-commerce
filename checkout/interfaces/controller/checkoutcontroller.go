@@ -36,11 +36,11 @@ type (
 
 	// ViewErrorInfos defines the error info struct of the checkout controller views
 	ViewErrorInfos struct {
-		//HasError  indicates that an general error happend
+		//HasError  indicates that an general error happened
 		HasError bool
 		//If there is a general error this field is filled and can be used in the template
 		ErrorMessage string
-		//if the Error happens during processing PAyment (can be used in template to behave special in case of payment errors)
+		//if the Error happens during processing payment (can be used in template to behave special in case of payment errors)
 		HasPaymentError bool
 	}
 
@@ -77,7 +77,7 @@ type (
 		CartExpired bool
 	}
 
-	// CheckoutController represents the checkout controller with its injectsions
+	// CheckoutController represents the checkout controller with its injections
 	CheckoutController struct {
 		responder *web.Responder
 		router    *web.Router
@@ -384,7 +384,7 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 				return cc.responder.Render(template, viewData).SetNoCache()
 			}
 
-			cc.logger.WithContext(ctx).Debug("submit checkout suceeded: redirect to checkout.review")
+			cc.logger.WithContext(ctx).Debug("submit checkout succeeded: redirect to checkout.review")
 			return cc.processPayment(ctx, r)
 		}
 		response := cc.responder.RouteRedirect("checkout.review", nil).SetNoCache()

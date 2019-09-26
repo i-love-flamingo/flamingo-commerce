@@ -43,7 +43,7 @@ type (
 		TransactionID string
 		//AdditionalData - room for AdditionalData - specific to the payment
 		AdditionalData map[string]string
-		//AmountPayed the amount that have been payed - eventually in a different currency
+		//AmountPayed the amount that have been paid - eventually in a different currency
 		AmountPayed price.Price
 		//ValuedPayed the value of the AmountPayed in the cart default currency
 		ValuedAmountPayed price.Price
@@ -57,7 +57,7 @@ type (
 		ChargeByItem *ChargeByItem
 	}
 
-	//ChargeByItem - the Charge that is payed for the individual items
+	//ChargeByItem - the Charge that is paid for the individual items
 	ChargeByItem struct {
 		cartItems     map[string]price.Charge
 		shippingItems map[string]price.Charge
