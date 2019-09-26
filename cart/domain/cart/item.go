@@ -493,10 +493,10 @@ func (s *ItemSplitter) SplitInSingleQtyItems(givenItem Item) ([]Item, error) {
 			itemBuilder.AddTaxInfo(rt.Type, rt.Rate, &rtSplitted[x])
 		}
 		if s.configUseGrossPrice {
-			itemBuilder.SetSinglePriceGross(givenItem.SinglePriceGross)
+			itemBuilder.SetSinglePriceGross(givenItem.SinglePriceGross.GetPayable())
 			itemBuilder.CalculatePricesAndTaxAmountsFromSinglePriceGross()
 		} else {
-			itemBuilder.SetSinglePriceNet(givenItem.SinglePriceGross)
+			itemBuilder.SetSinglePriceNet(givenItem.SinglePriceNet.GetPayable())
 			itemBuilder.CalculatePricesAndTaxAmountsFromSinglePriceNet()
 		}
 		item, err := itemBuilder.Build()
