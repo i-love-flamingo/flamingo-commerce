@@ -113,6 +113,14 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 					}
 				}
 			}
+			if guestCart.HasAppliedGiftCards() {
+				for _, code := range guestCart.AppliedGiftCards {
+					_, err := e.cartService.ApplyGiftCard(ctx, currentEvent.Session, code.Code)
+					if err != nil {
+						e.logger.WithContext(ctx).Error("LoginEvent - customerCart ApplyGiftCard has error", code.Code, err)
+					}
+				}
+			}
 
 			if e.cartCache != nil {
 				session := web.SessionFromContext(ctx)
