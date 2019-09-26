@@ -100,8 +100,8 @@ var (
 func CreateDeliveryInfoUpdateCommand(info DeliveryInfo) DeliveryInfoUpdateCommand {
 	uc := DeliveryInfoUpdateCommand{
 		DeliveryInfo: info,
-		additional:   info.AdditionalDeliveryInfos,
 	}
+
 	uc.SetAdditional(info.AdditionalDeliveryInfos)
 	return uc
 }
@@ -116,6 +116,11 @@ func (d *DeliveryInfoUpdateCommand) AddAdditional(key string, val AdditionalDeli
 // SetAdditional adds additional delivery info data
 func (d *DeliveryInfoUpdateCommand) SetAdditional(val map[string]json.RawMessage) {
 	d.init()
+
+	if val == nil {
+		return
+	}
+
 	d.additional = val
 }
 
