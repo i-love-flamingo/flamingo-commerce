@@ -40,7 +40,7 @@ type (
 		placeOrderService placeorder.Service
 	}
 
-	//AuthManagerInterface is the interface required to get Auth infos for CustomerCart handling
+	// AuthManagerInterface is the interface required to get Auth infos for CustomerCart handling
 	AuthManagerInterface interface {
 		Auth(c context.Context, session *web.Session) (OAuthDomain.Auth, error)
 	}

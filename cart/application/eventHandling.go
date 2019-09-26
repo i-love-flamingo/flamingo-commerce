@@ -29,7 +29,7 @@ func (e *EventReceiver) Inject(
 		CartCache CartCache `inject:",optional"`
 	},
 ) {
-	e.logger = logger.WithField(flamingo.LogKeyCategory, "cart").WithField(flamingo.LogKeySubCategory,"cart-events")
+	e.logger = logger.WithField(flamingo.LogKeyCategory, "cart").WithField(flamingo.LogKeySubCategory, "cart-events")
 	e.cartService = cartService
 	e.cartReceiverService = cartReceiverService
 	if optionals != nil {
@@ -56,7 +56,7 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 			}
 			guestCart, err := e.cartReceiverService.ViewGuestCart(ctx, currentEvent.Session)
 			if err != nil {
-				e.logger.WithContext(ctx).Error("LoginEvent - Guestcart cannot be received %v", err)
+				e.logger.WithContext(ctx).Error("LoginEvent - GuestCart cannot be received %v", err)
 				return
 			}
 			if !e.cartReceiverService.IsLoggedIn(ctx, currentEvent.Session) {
