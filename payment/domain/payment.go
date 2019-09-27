@@ -45,6 +45,8 @@ const (
 	PaymentErrorCodeCaptureFailed = "capture_failed"
 	// PaymentErrorAbortedByCustomer error
 	PaymentErrorAbortedByCustomer = "aborted_by_customer"
+	// PaymentErrorCodeCancelled error
+	PaymentErrorCodeCancelled = "cancelled"
 
 	// PaymentFlowStatusUnapproved payment started
 	PaymentFlowStatusUnapproved = "payment_unapproved"
