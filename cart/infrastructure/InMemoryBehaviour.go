@@ -101,7 +101,7 @@ func (cob *InMemoryBehaviour) DeleteItem(ctx context.Context, cart *domaincart.C
 // UpdateItem updates a cart item
 func (cob *InMemoryBehaviour) UpdateItem(ctx context.Context, cart *domaincart.Cart, itemID string, deliveryCode string, itemUpdateCommand domaincart.ItemUpdateCommand) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	if !cob.cartStorage.HasCart(cart.ID) {
-		return nil, nil, fmt.Errorf("cart.infrastructure.InMemoryBehaviour: Cannot add - Guestcart with id %v not existend", cart.ID)
+		return nil, nil, fmt.Errorf("cart.infrastructure.InMemoryBehaviour: Cannot add - Guestcart with id %v not existent", cart.ID)
 	}
 
 	itemBuilder := cob.itemBuilderProvider()
@@ -142,7 +142,7 @@ func (cob *InMemoryBehaviour) UpdateItem(ctx context.Context, cart *domaincart.C
 func (cob *InMemoryBehaviour) AddToCart(ctx context.Context, cart *domaincart.Cart, deliveryCode string, addRequest domaincart.AddRequest) (*domaincart.Cart, domaincart.DeferEvents, error) {
 
 	if cart != nil && !cob.cartStorage.HasCart(cart.ID) {
-		return nil, nil, fmt.Errorf("cart.infrastructure.InMemoryBehaviour: Cannot add - Guestcart with id %v not existend", cart.ID)
+		return nil, nil, fmt.Errorf("cart.infrastructure.InMemoryBehaviour: Cannot add - Guestcart with id %v not existent", cart.ID)
 	}
 
 	// create delivery if it does not yet exist
@@ -206,7 +206,7 @@ func (cob *InMemoryBehaviour) buildItemForCart(ctx context.Context, addRequest d
 // CleanCart removes all deliveries and their items from the cart
 func (cob *InMemoryBehaviour) CleanCart(ctx context.Context, cart *domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	if !cob.cartStorage.HasCart(cart.ID) {
-		return nil, nil, fmt.Errorf("cart.infrastructure.InMemoryBehaviour: Cannot delete - Guestcart with id %v not existend", cart.ID)
+		return nil, nil, fmt.Errorf("cart.infrastructure.InMemoryBehaviour: Cannot delete - Guestcart with id %v not existent", cart.ID)
 	}
 
 	cart.Deliveries = []domaincart.Delivery{}
@@ -222,7 +222,7 @@ func (cob *InMemoryBehaviour) CleanCart(ctx context.Context, cart *domaincart.Ca
 // CleanDelivery removes a complete delivery with its items from the cart
 func (cob *InMemoryBehaviour) CleanDelivery(ctx context.Context, cart *domaincart.Cart, deliveryCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	if !cob.cartStorage.HasCart(cart.ID) {
-		return nil, nil, fmt.Errorf("cart.infrastructure.InMemoryBehaviour: Cannot delete - Guestcart with id %v not existend", cart.ID)
+		return nil, nil, fmt.Errorf("cart.infrastructure.InMemoryBehaviour: Cannot delete - Guestcart with id %v not existent", cart.ID)
 	}
 
 	// create delivery if it does not yet exist

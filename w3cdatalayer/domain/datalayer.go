@@ -105,7 +105,7 @@ type (
 		ShippingAddress *Address        `json:"shippingAddress,omitempty"`
 	}
 
-	// Address basic address infromation
+	// Address basic address information
 	Address struct {
 		Line1         string `json:"line1,omitempty"`
 		Line2         string `json:"line2,omitempty"`

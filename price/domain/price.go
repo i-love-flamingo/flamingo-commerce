@@ -19,7 +19,7 @@ type (
 
 	//Charge is a Amount of a certain Type. Charge is used as value object
 	Charge struct {
-		//Price that is payed, can be in a certain currency
+		//Price that is paid, can be in a certain currency
 		Price Price
 		//Value of the "Price" in another (base) currency
 		Value Price
@@ -29,7 +29,7 @@ type (
 		Reference string
 	}
 
-	//Charges - Represents the Charges the product need to be payed with
+	//Charges - Represents the Charges the product need to be paid with
 	Charges struct {
 		chargesByQualifier map[ChargeQualifier]Charge
 	}
@@ -304,7 +304,7 @@ func (p Price) FloatAmount() float64 {
 	return a
 }
 
-// GetPayable - rounds the price with the precision required by the currency in a price that can actually be payed
+// GetPayable - rounds the price with the precision required by the currency in a price that can actually be paid
 // e.g. an internal amount of 1,23344 will get rounded to 1,23
 func (p Price) GetPayable() Price {
 	mode, precision := p.payableRoundingPrecision()
@@ -459,7 +459,7 @@ func SumAll(prices ...Price) (Price, error) {
 	return result, nil
 }
 
-//MarshalJSON - implements interace required by json marshal
+//MarshalJSON - implements interface required by json marshal
 func (p Price) MarshalJSON() (data []byte, err error) {
 	pn := priceEncodeAble{
 		Amount:   p.amount,
@@ -474,7 +474,7 @@ func (p Price) MarshalBinary() (data []byte, err error) {
 	return json.Marshal(p)
 }
 
-//UnmarshalBinary - implements interace required by gob.
+//UnmarshalBinary - implements interface required by gob.
 //UnmarshalBinary - modifies the receiver so it must take a pointer receiver!
 func (p *Price) UnmarshalBinary(data []byte) error {
 	var pe priceEncodeAble

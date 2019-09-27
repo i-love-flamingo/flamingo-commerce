@@ -7,7 +7,7 @@ import (
 type (
 	// Filter interface for search queries
 	Filter interface {
-		// Value very generic method for filters - returning typical Parmeter Name and its setted values
+		// Value very generic method for filters - returning typical Parameter Name and its setted values
 		Value() (string, []string)
 	}
 
@@ -23,17 +23,17 @@ type (
 		direction string
 	}
 
-	// QueryFilter - represents a query string, normaly given by a user in the search result
+	// QueryFilter - represents a query string, normally given by a user in the search result
 	QueryFilter struct {
 		query string
 	}
 
-	// PaginationPage - if serach supports pagination this filter tells which page to return
+	// PaginationPage - if search supports pagination this filter tells which page to return
 	PaginationPage struct {
 		page int
 	}
 
-	// PaginationPageSize  - if serach supports setting the amount (limit) per page
+	// PaginationPageSize  - if search supports setting the amount (limit) per page
 	PaginationPageSize struct {
 		pageSize int
 	}

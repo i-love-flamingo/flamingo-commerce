@@ -234,7 +234,7 @@ func (cc *CartAPIController) enrichResultWithCartInfos(ctx context.Context, resu
 	result.CartValidationResult = &validationResult
 }
 
-//newResult - factory to get new CartApiResult (with sucess true)
+//newResult - factory to get new CartApiResult (with success true)
 func newResult() CartAPIResult {
 	return CartAPIResult{
 		Success: true,

@@ -29,7 +29,7 @@ type (
 		//Purchaser - additional infos for the legal contact person in this order
 		Purchaser *Person
 
-		//Deliveries - list of desired Deliverys (or Shippments) involved in this cart
+		//Deliveries - list of desired Deliveries (or Shipments) involved in this cart
 		Deliveries []Delivery
 
 		//AdditionalData   can be used for Custom attributes
@@ -294,12 +294,12 @@ func (c Cart) GetVoucherSavings() domain.Price {
 	return price
 }
 
-// GrandTotal - Final sum (Valued price) that need to be payed: GrandTotal = SubTotal + TaxAmount - DiscountAmount + SOME of Totalitems = (Sum of Items RowTotalWithDiscountInclTax) + SOME of Totalitems
+// GrandTotal - Final sum (Valued price) that need to be paid: GrandTotal = SubTotal + TaxAmount - DiscountAmount + SOME of Totalitems = (Sum of Items RowTotalWithDiscountInclTax) + SOME of Totalitems
 func (c Cart) GrandTotal() domain.Price {
 	return c.GetAllPaymentRequiredItems().Sum()
 }
 
-// GetAllPaymentRequiredItems - returns all the Items (Cartitem, ShippingItem, TotalItems) that need to be payed with the final gross price
+// GetAllPaymentRequiredItems - returns all the Items (Cartitem, ShippingItem, TotalItems) that need to be paid with the final gross price
 func (c Cart) GetAllPaymentRequiredItems() PricedItems {
 	pricedItems := PricedItems{
 		cartItems:     make(map[string]domain.Price),
@@ -507,7 +507,7 @@ func (c Cart) GetTotalItemsByType(typeCode string) []Totalitem {
 	return totalitems
 }
 
-// GrandTotalCharges - Final sum that need to be payed - splitted by the charges that need to be payed
+// GrandTotalCharges - Final sum that need to be paid - splitted by the charges that need to be paid
 func (c Cart) GrandTotalCharges() domain.Charges {
 	// Check if a specific split was saved:
 	if c.PaymentSelection != nil {

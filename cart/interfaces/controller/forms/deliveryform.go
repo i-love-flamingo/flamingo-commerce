@@ -21,7 +21,7 @@ type (
 	//DeliveryForm - the form for billing address
 	DeliveryForm struct {
 		DeliveryAddress AddressForm `form:"deliveryAddress"`
-		//UseBillingAddress - the adress should be taken from billing (only relevant for type adress)
+		//UseBillingAddress - the address should be taken from billing (only relevant for type address)
 		UseBillingAddress bool   `form:"useBillingAddress"`
 		ShippingMethod    string `form:"shippingMethod"`
 		ShippingCarrier   string `form:"shippingCarrier"`

@@ -182,7 +182,7 @@ func (f *filterProcessing) modifyResult(result *application.SearchResult) *appli
 	return result
 }
 
-// isAllowed - checks the given key against the defined whitelist and blacklist (whitelist prefered)
+// isAllowed - checks the given key against the defined whitelist and blacklist (whitelist preferred)
 func (f *filterProcessing) isAllowed(key string) bool {
 	if len(f.whiteList) > 0 {
 		for _, wl := range f.whiteList {
