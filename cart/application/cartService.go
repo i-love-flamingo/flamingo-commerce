@@ -285,6 +285,16 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 		return err
 	}
 
+	if product.Type() == productDomain.TypeConfigurable {
+		if configurableProduct, ok := product.(productDomain.ConfigurableProduct); ok {
+			product, err = configurableProduct.GetConfigurableWithActiveVariant(item.VariantMarketPlaceCode)
+
+			if err != nil {
+				return err
+			}
+		}
+	}
+
 	err = cs.checkProductQtyRestrictions(ctx, product, cart, qty-qtyBefore, deliveryCode, itemID)
 	if err != nil {
 		cs.logger.WithContext(ctx).WithField("subCategory", "UpdateItemQty").Error(err)
@@ -680,6 +690,11 @@ func (cs *CartService) checkProductForAddRequest(ctx context.Context, session *w
 		if !configurableProduct.HasVariant(addRequest.VariantMarketplaceCode) {
 			return addRequest, nil, errors.New("cart.application.cartservice - AddProduct:Product has not the given variant")
 		}
+
+		product, err = configurableProduct.GetConfigurableWithActiveVariant(addRequest.VariantMarketplaceCode)
+		if err != nil {
+			return addRequest, nil, fmt.Errorf("cart.application.cartservice - AddProduct: Get active variant error: %v", err)
+		}
 	}
 
 	// Now Validate the Item with the optional registered ItemValidator
@@ -891,9 +906,21 @@ func (cs *CartService) AdjustItemsToRestrictedQty(ctx context.Context, session *
 
 	for _, delivery := range cart.Deliveries {
 		for _, item := range delivery.Cartitems {
+			// TODO Configurable
+
 			product, err := cs.productService.Get(ctx, item.MarketplaceCode)
 			if err != nil {
 				return nil, err
+			}
+
+			if product.Type() == productDomain.TypeConfigurable {
+				if configurableProduct, ok := product.(productDomain.ConfigurableProduct); ok {
+					product, err = configurableProduct.GetConfigurableWithActiveVariant(item.VariantMarketPlaceCode)
+
+					if err != nil {
+						return nil, err
+					}
+				}
 			}
 
 			restrictionResult := cs.restrictionService.RestrictQty(ctx, product, cart, delivery.DeliveryInfo.Code)
