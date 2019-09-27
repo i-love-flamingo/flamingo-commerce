@@ -285,6 +285,11 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 		return err
 	}
 
+	product, err = cs.getProductWithActiveVariantIfProductIsConfigurable(ctx, product, item.VariantMarketPlaceCode)
+	if err != nil {
+		return err
+	}
+
 	err = cs.checkProductQtyRestrictions(ctx, product, cart, qty-qtyBefore, deliveryCode, itemID)
 	if err != nil {
 		cs.logger.WithContext(ctx).WithField("subCategory", "UpdateItemQty").Error(err)
@@ -680,6 +685,11 @@ func (cs *CartService) checkProductForAddRequest(ctx context.Context, session *w
 		if !configurableProduct.HasVariant(addRequest.VariantMarketplaceCode) {
 			return addRequest, nil, errors.New("cart.application.cartservice - AddProduct:Product has not the given variant")
 		}
+
+		product, err = configurableProduct.GetConfigurableWithActiveVariant(addRequest.VariantMarketplaceCode)
+		if err != nil {
+			return addRequest, nil, fmt.Errorf("cart.application.cartservice - AddProduct: Get active variant error: %v", err)
+		}
 	}
 
 	// Now Validate the Item with the optional registered ItemValidator
@@ -896,8 +906,12 @@ func (cs *CartService) AdjustItemsToRestrictedQty(ctx context.Context, session *
 				return nil, err
 			}
 
-			restrictionResult := cs.restrictionService.RestrictQty(ctx, product, cart, delivery.DeliveryInfo.Code)
+			product, err = cs.getProductWithActiveVariantIfProductIsConfigurable(ctx, product, item.VariantMarketPlaceCode)
+			if err != nil {
+				return nil, err
+			}
 
+			restrictionResult := cs.restrictionService.RestrictQty(ctx, product, cart, delivery.DeliveryInfo.Code)
 			if restrictionResult.RemainingDifference >= 0 {
 				continue
 			}
@@ -924,4 +938,25 @@ func (cs *CartService) AdjustItemsToRestrictedQty(ctx context.Context, session *
 	}
 
 	return result, nil
+}
+
+func (cs *CartService) getProductWithActiveVariantIfProductIsConfigurable(ctx context.Context, product productDomain.BasicProduct, variantMarketplaceCode string) (productDomain.BasicProduct, error) {
+	var err error
+	if product.Type() != productDomain.TypeConfigurable {
+		return product, nil
+	}
+
+	if variantMarketplaceCode == "" {
+		return product, nil
+	}
+
+	if configurableProduct, ok := product.(productDomain.ConfigurableProduct); ok {
+		product, err = configurableProduct.GetConfigurableWithActiveVariant(variantMarketplaceCode)
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return product, nil
 }
