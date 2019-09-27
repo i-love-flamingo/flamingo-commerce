@@ -906,8 +906,6 @@ func (cs *CartService) AdjustItemsToRestrictedQty(ctx context.Context, session *
 
 	for _, delivery := range cart.Deliveries {
 		for _, item := range delivery.Cartitems {
-			// TODO Configurable
-
 			product, err := cs.productService.Get(ctx, item.MarketplaceCode)
 			if err != nil {
 				return nil, err
