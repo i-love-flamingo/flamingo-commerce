@@ -117,3 +117,8 @@ func (o *OfflineWebCartPaymentGateway) OrderPaymentFromFlow(ctx context.Context,
 
 	return &cartPayment, nil
 }
+
+// CancelOrderPayment cancels an place order payment
+func (o *OfflineWebCartPaymentGateway) CancelOrderPayment(ctx context.Context, cartPayment *placeorder.Payment) error {
+	return nil
+}

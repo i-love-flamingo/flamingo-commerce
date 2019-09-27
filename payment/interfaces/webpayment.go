@@ -29,5 +29,8 @@ type (
 
 		// OrderPaymentFromFlow generates a place order payment for a previously created flow
 		OrderPaymentFromFlow(ctx context.Context, cart *cart.Cart, correlationID string) (*placeorder.Payment, error)
+
+		// CancelOrderPayment cancels the place order payment
+		CancelOrderPayment(ctx context.Context, cartPayment *placeorder.Payment) error
 	}
 )
