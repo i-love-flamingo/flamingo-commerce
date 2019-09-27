@@ -285,14 +285,9 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 		return err
 	}
 
-	if product.Type() == productDomain.TypeConfigurable {
-		if configurableProduct, ok := product.(productDomain.ConfigurableProduct); ok {
-			product, err = configurableProduct.GetConfigurableWithActiveVariant(item.VariantMarketPlaceCode)
-
-			if err != nil {
-				return err
-			}
-		}
+	product, err = cs.getProductWithActiveVariantIfProductIsConfigurable(ctx, product, item.VariantMarketPlaceCode)
+	if err != nil {
+		return err
 	}
 
 	err = cs.checkProductQtyRestrictions(ctx, product, cart, qty-qtyBefore, deliveryCode, itemID)
@@ -911,18 +906,12 @@ func (cs *CartService) AdjustItemsToRestrictedQty(ctx context.Context, session *
 				return nil, err
 			}
 
-			if product.Type() == productDomain.TypeConfigurable {
-				if configurableProduct, ok := product.(productDomain.ConfigurableProduct); ok {
-					product, err = configurableProduct.GetConfigurableWithActiveVariant(item.VariantMarketPlaceCode)
-
-					if err != nil {
-						return nil, err
-					}
-				}
+			product, err = cs.getProductWithActiveVariantIfProductIsConfigurable(ctx, product, item.VariantMarketPlaceCode)
+			if err != nil {
+				return nil, err
 			}
 
 			restrictionResult := cs.restrictionService.RestrictQty(ctx, product, cart, delivery.DeliveryInfo.Code)
-
 			if restrictionResult.RemainingDifference >= 0 {
 				continue
 			}
@@ -949,4 +938,25 @@ func (cs *CartService) AdjustItemsToRestrictedQty(ctx context.Context, session *
 	}
 
 	return result, nil
+}
+
+func (cs *CartService) getProductWithActiveVariantIfProductIsConfigurable(ctx context.Context, product productDomain.BasicProduct, variantMarketplaceCode string) (productDomain.BasicProduct, error) {
+	var err error
+	if product.Type() != productDomain.TypeConfigurable {
+		return product, nil
+	}
+
+	if variantMarketplaceCode == "" {
+		return product, nil
+	}
+
+	if configurableProduct, ok := product.(productDomain.ConfigurableProduct); ok {
+		product, err = configurableProduct.GetConfigurableWithActiveVariant(variantMarketplaceCode)
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return product, nil
 }
