@@ -44,7 +44,7 @@ There the checkout will ask the Gateway implementation again to get the current 
  	case paymentDomain.PaymentFlowStatusAborted:
  		// payment was aborted by user, redirect to checkout so a new payment can be started
  		return cc.responder.RouteRedirect("checkout", nil)
- 	case paymentDomain.PaymentFlowStatusFailed:
+ 	case paymentDomain.PaymentFlowStatusFailed, paymentDomain.PaymentFlowStatusCancelled:
  		// payment failed, redirect back to checkout
  		return cc.responder.RouteRedirect("checkout", nil)
  	case paymentDomain.PaymentFlowWaitingForCustomer:

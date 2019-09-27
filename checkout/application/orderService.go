@@ -352,7 +352,7 @@ func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, dec
 		return nil, err
 	}
 
-	if flowStatus.Status == paymentDomain.PaymentFlowStatusFailed {
+	if flowStatus.Status == paymentDomain.PaymentFlowStatusFailed || flowStatus.Status == paymentDomain.PaymentFlowStatusCancelled {
 		// record fail count metric
 		stats.Record(ctx, orderFailedStat.M(1))
 		return nil, flowStatus.Error
