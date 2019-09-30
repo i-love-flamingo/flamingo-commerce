@@ -1,3 +1,6 @@
+# 30. September 2019
+* Enhance WebCartPaymentGateway with CancelOrderPayment
+
 # 20. August 2019
 * Reworked WebCartPaymentGateway Interface
     * Removed StartWebFlow func
