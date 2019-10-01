@@ -369,6 +369,13 @@ func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, dec
 		return nil, err
 	}
 
+	err = gateway.ConfirmResult(ctx, &decoratedCart.Cart, cartPayment)
+	if err != nil {
+		// record fail count metric
+		stats.Record(ctx, orderFailedStat.M(1))
+		return nil, err
+	}
+
 	placedOrderInfos, err := os.cartService.PlaceOrder(ctx, session, cartPayment)
 	if err != nil {
 		// record fail count metric
@@ -379,11 +386,6 @@ func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, dec
 
 	placeOrderInfo := os.preparePlaceOrderInfo(ctx, decoratedCart.Cart, placedOrderInfos, *cartPayment)
 	os.storeLastPlacedOrder(ctx, placeOrderInfo)
-
-	err = gateway.ConfirmResult(ctx, &decoratedCart.Cart, cartPayment)
-	if err != nil {
-		os.logger.WithContext(ctx).Error("Error during gateway.ConfirmResult:" + err.Error())
-	}
 
 	return placeOrderInfo, nil
 }
