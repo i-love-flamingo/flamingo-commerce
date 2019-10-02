@@ -71,6 +71,7 @@ type CommerceProductListByCategoryQueryResolver struct {
 	searchService   domain.SearchService
 }
 
+// CommerceCategoryProductList holds structure for graphql products by category endpoint
 type CommerceCategoryProductList struct {
 	Category categoryDomain.Category
 	Products []domain.BasicProduct
@@ -81,6 +82,7 @@ func (r *CommerceProductQueryResolver) Inject(productService domain.ProductServi
 	r.productService = productService
 }
 
+// Inject dependencies
 func (r *CommerceProductListByCategoryQueryResolver) Inject(categoryService categoryDomain.CategoryService, searchService domain.SearchService) {
 	r.categoryService = categoryService
 	r.searchService = searchService
@@ -91,7 +93,7 @@ func (r *CommerceProductQueryResolver) CommerceProduct(ctx context.Context, mark
 	return r.productService.Get(ctx, marketplaceCode)
 }
 
-// CommerceCategoryProducts returns products with the given categoryCode from searchService
+// CommerceProductListByCategory returns products with the given categoryCode from searchService
 func (r *CommerceProductListByCategoryQueryResolver) CommerceProductListByCategory(ctx context.Context, categoryCode string) (*CommerceCategoryProductList, error) {
 	category, err := r.categoryService.Get(ctx, categoryCode)
 
