@@ -2,7 +2,7 @@ package graphql
 
 import (
 	"context"
-
+	categoryDomain "flamingo.me/flamingo-commerce/v3/category/domain"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/graphql"
 	"github.com/99designs/gqlgen/codegen/config"
@@ -53,6 +53,10 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		"Commerce_ProductPriceInfo":        domain.PriceInfo{},
 		"Commerce_ProductLoyaltyPriceInfo": domain.LoyaltyPriceInfo{},
 		"Commerce_PriceContext":            domain.PriceContext{},
+
+		"Commerce_CategoryProductList": CommerceCategoryProductList{},
+		"Commerce_Category":            new(categoryDomain.Category),
+		"Commerce_CategoryData":        categoryDomain.CategoryData{},
 	}.Models()
 }
 
@@ -61,12 +65,46 @@ type CommerceProductQueryResolver struct {
 	productService domain.ProductService
 }
 
+// CommerceProductListByCategoryQueryResolver resolves graphql product queries
+type CommerceProductListByCategoryQueryResolver struct {
+	categoryService categoryDomain.CategoryService
+	searchService   domain.SearchService
+}
+
+type CommerceCategoryProductList struct {
+	Category categoryDomain.Category
+	Products []domain.BasicProduct
+}
+
 // Inject dependencies
 func (r *CommerceProductQueryResolver) Inject(productService domain.ProductService) {
 	r.productService = productService
 }
 
+func (r *CommerceProductListByCategoryQueryResolver) Inject(categoryService categoryDomain.CategoryService, searchService domain.SearchService) {
+	r.categoryService = categoryService
+	r.searchService = searchService
+}
+
 // CommerceProduct returns a product with the given marketplaceCode from productService
 func (r *CommerceProductQueryResolver) CommerceProduct(ctx context.Context, marketplaceCode string) (domain.BasicProduct, error) {
 	return r.productService.Get(ctx, marketplaceCode)
+}
+
+// CommerceCategoryProducts returns products with the given categoryCode from searchService
+func (r *CommerceProductListByCategoryQueryResolver) CommerceProductListByCategory(ctx context.Context, categoryCode string) (*CommerceCategoryProductList, error) {
+	category, err := r.categoryService.Get(ctx, categoryCode)
+
+	if err != nil {
+		return &CommerceCategoryProductList{Category: category, Products: nil}, err
+	}
+
+	// - use categoryDomain.NewCategoryFacet as filter to use product/category endpoint from searchperience
+	result, err := r.searchService.Search(ctx, categoryDomain.NewCategoryFacet(categoryCode))
+	// result.SearchMeta includes pagination info, use implementation of usage of paginationInfoFactory in category controller as reference
+	if err != nil {
+		return &CommerceCategoryProductList{Category: category, Products: nil}, err
+	}
+
+	return &CommerceCategoryProductList{Category: category, Products: result.Hits}, err
 }

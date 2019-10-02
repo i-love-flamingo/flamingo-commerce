@@ -1,3 +1,20 @@
+interface Commerce_Category {
+    code: String!
+    name: String!
+    path: String!
+    active: Boolean!
+    promoted: Boolean!
+}
+
+
+type Commerce_CategoryData implements Commerce_Category {
+    code: String!
+    name: String!
+    path: String!
+    active: Boolean!
+    promoted: Boolean!
+}
+
 interface Commerce_Tree {
     code: String!
     name: String!

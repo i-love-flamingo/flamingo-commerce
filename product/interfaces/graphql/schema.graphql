@@ -145,6 +145,12 @@ type Commerce_ProductPriceInfo {
 
 }
 
+type Commerce_CategoryProductList {
+    category: Commerce_Category!
+    products: [Commerce_Product!]
+}
+
 extend type Query {
     Commerce_Product(marketplaceCode: String!): Commerce_Product
+    Commerce_ProductListByCategory(categoryCode: String!): Commerce_CategoryProductList
 }
