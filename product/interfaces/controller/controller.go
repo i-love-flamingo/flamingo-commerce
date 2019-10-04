@@ -5,10 +5,11 @@ import (
 	"net/url"
 	"strings"
 
-	"flamingo.me/flamingo-commerce/v3/product/application"
-	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/pkg/errors"
+
+	"flamingo.me/flamingo-commerce/v3/product/application"
+	"flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
 type (
@@ -39,9 +40,10 @@ type (
 	}
 
 	viewVariantAttribute struct {
-		Key     string
-		Title   string
-		Options []viewVariantOption
+		Key       string
+		Title     string
+		CodeLabel string
+		Options   []viewVariantOption
 	}
 
 	viewVariantOption struct {
@@ -100,9 +102,15 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 	for _, code := range configurable.VariantVariationAttributes {
 		attribute := combinations[code]
 
+		codeLabel := ""
+		if len(configurable.Variants) > 0 {
+			codeLabel = configurable.Variants[0].BaseData().Attributes.Attribute(code).CodeLabel
+		}
+
 		viewVariantAttribute := viewVariantAttribute{
-			Key:   code,
-			Title: strings.Title(code),
+			Key:       code,
+			Title:     strings.Title(code),
+			CodeLabel: codeLabel,
 		}
 
 		options := append([]string{}, configurable.VariantVariationAttributesSorting[viewVariantAttribute.Key]...)

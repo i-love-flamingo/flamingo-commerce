@@ -161,10 +161,11 @@ type (
 
 	// Attribute for product attributes
 	Attribute struct {
-		Code     string
-		Label    string
-		RawValue interface{}
-		UnitCode string
+		Code      string
+		CodeLabel string
+		Label     string
+		RawValue  interface{}
+		UnitCode  string
 	}
 
 	// Specifications of a product
