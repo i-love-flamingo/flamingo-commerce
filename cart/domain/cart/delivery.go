@@ -322,3 +322,20 @@ func (di DeliveryInfo) AdditionalDataKeys() []string {
 	}
 	return res
 }
+
+// GetAdditionalDeliveryInfo returns additional delivery info
+func (di DeliveryInfo) GetAdditionalDeliveryInfo(key string) json.RawMessage {
+	attribute := di.AdditionalDeliveryInfos[key]
+	return attribute
+}
+
+// AdditionalDeliveryInfoKeys lists all available keys
+func (di DeliveryInfo) AdditionalDeliveryInfoKeys() []string {
+	res := make([]string, len(di.AdditionalDeliveryInfos))
+	i := 0
+	for k := range di.AdditionalDeliveryInfos {
+		res[i] = k
+		i++
+	}
+	return res
+}
