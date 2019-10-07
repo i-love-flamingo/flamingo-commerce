@@ -6,8 +6,10 @@ import (
 	"flamingo.me/flamingo-commerce/v3/checkout/domain"
 	"flamingo.me/flamingo-commerce/v3/checkout/infrastructure"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller"
+	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql"
 	"flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/web"
+	flamingographql "flamingo.me/graphql"
 	"github.com/go-playground/form"
 )
 
@@ -27,6 +29,8 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	}
 
 	web.BindRoutes(injector, new(routes))
+
+	injector.BindMulti(new(flamingographql.Service)).To(graphql.Service{})
 }
 
 // DefaultConfig for checkout module

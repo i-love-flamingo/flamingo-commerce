@@ -60,6 +60,9 @@ type Commerce_CartDeliveryInfo {
     getAdditionalData(key: String!): String!
     additionalDataKeys: [String!]
 #    additionalDeliveryInfos: map[string]json.RawMessage
+#    additionalDeliveryInfos: Map
+#    getAdditionalDeliveryInfo(key: String!): Map!
+    additionalDeliveryInfoKeys: [String!]
 }
 
 type Commerce_CartDeliveryLocation  {
