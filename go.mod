@@ -13,6 +13,7 @@ require (
 	github.com/go-playground/form v3.1.4+incompatible
 	github.com/go-test/deep v1.0.1
 	github.com/golang/protobuf v1.3.0 // indirect
+	github.com/gorilla/sessions v1.1.3
 	github.com/hashicorp/golang-lru v0.5.1 // indirect
 	github.com/leekchan/accounting v0.0.0-20180703100437-18a1925d6514
 	github.com/lib/pq v1.1.1 // indirect
