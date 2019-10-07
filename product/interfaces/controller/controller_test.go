@@ -107,7 +107,7 @@ func TestViewController_Get(t *testing.T) {
 	renderResponse := result.(*web.RenderResponse)
 	assert.Equal(t, "product/product", renderResponse.Template)
 	require.IsType(t, productViewData{}, renderResponse.DataResponse.Data)
-	p, _ := new(MockProductService).Get(nil, "simple")
+	p, _ := new(MockProductService).Get(context.Background(), "simple")
 	assert.Equal(t, p, renderResponse.DataResponse.Data.(productViewData).Product)
 }
 
