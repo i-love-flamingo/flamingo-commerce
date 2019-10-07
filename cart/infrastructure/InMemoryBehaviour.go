@@ -198,6 +198,16 @@ func (cob *InMemoryBehaviour) buildItemForCart(ctx context.Context, addRequest d
 	if err != nil {
 		return nil, err
 	}
+
+	// Get variant of configurable product
+	if configurableProduct, ok := product.(domain.ConfigurableProduct); ok && addRequest.VariantMarketplaceCode != "" {
+		productWithActiveVariant, err := configurableProduct.GetConfigurableWithActiveVariant(addRequest.VariantMarketplaceCode)
+		if err != nil {
+			return nil, err
+		}
+		product = productWithActiveVariant
+	}
+
 	itemBuilder.SetQty(addRequest.Qty).AddTaxInfo("default", big.NewFloat(cob.defaultTaxRate), nil).SetByProduct(product).SetID(strconv.Itoa(rand.Int())).SetExternalReference(strconv.Itoa(rand.Int()))
 
 	return itemBuilder.Build()
