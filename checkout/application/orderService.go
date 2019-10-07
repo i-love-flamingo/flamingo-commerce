@@ -210,6 +210,47 @@ func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.
 	return info, err
 }
 
+// PlaceOrder places the current cart
+func (os *OrderService) PlaceOrder(ctx context.Context, session *web.Session) (*PlaceOrderInfo, error) {
+	var info *PlaceOrderInfo
+	var err error
+	web.RunWithDetachedContext(ctx, func(placeOrderContext context.Context) {
+		info, err = func() (*PlaceOrderInfo, error) {
+			decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(placeOrderContext, session)
+			if err != nil {
+				// record fail count metric
+				stats.Record(placeOrderContext, orderFailedStat.M(1))
+				os.logger.WithContext(placeOrderContext).Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
+				return nil, err
+			}
+
+			validationResult := os.cartService.ValidateCart(placeOrderContext, session, decoratedCart)
+			if !validationResult.IsValid() {
+				// record fail count metric
+				stats.Record(placeOrderContext, orderFailedStat.M(1))
+				os.logger.WithContext(placeOrderContext).Warn("Try to place an invalid cart")
+				return nil, errors.New("cart is invalid")
+			}
+
+			cartEmptyPayment := placeorder.Payment{}
+
+			placedOrderInfos, err := os.cartService.PlaceOrder(placeOrderContext, session, &cartEmptyPayment)
+			if err != nil {
+				// record fail count metric
+				stats.Record(placeOrderContext, orderFailedStat.M(1))
+				os.logger.WithContext(placeOrderContext).Error("Error during place Order:" + err.Error())
+				return nil, errors.New("error while placing the order. please contact customer support")
+			}
+
+			placeOrderInfo := os.preparePlaceOrderInfo(ctx, decoratedCart.Cart, placedOrderInfos, cartEmptyPayment)
+			os.storeLastPlacedOrder(ctx, placeOrderInfo)
+
+			return placeOrderInfo, nil
+		}()
+	})
+	return info, err
+}
+
 // CancelOrder cancels an previously placed order and returns the cart with the order content
 func (os *OrderService) CancelOrder(ctx context.Context, session *web.Session, order *PlaceOrderInfo) (*cart.Cart, error) {
 	return os.cartService.CancelOrder(ctx, session, order.PlacedOrders, order.Cart)
