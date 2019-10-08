@@ -160,12 +160,25 @@ type (
 	Attributes map[string]Attribute
 
 	// Attribute for product attributes
+	// Example:
+	// Attribute{
+	//		Code:      "my-attribute",
+	//		CodeLabel: "My Attribute",
+	//		Label:     "My attribute value",
+	//		RawValue:  2,
+	//		UnitCode:  "PCS",
+	//	}
 	Attribute struct {
-		Code      string
+		// Code is the internal attribute identifier
+		Code string
+		// CodeLabel is the human readable (perhaps localized) attribute name
 		CodeLabel string
-		Label     string
-		RawValue  interface{}
-		UnitCode  string
+		// Label is the human readable (perhaps localized) attribute value
+		Label string
+		// RawValue is the untouched original value of the attribute
+		RawValue interface{}
+		// UnitCode is the internal code of the attribute values measuring unit
+		UnitCode string
 	}
 
 	// Specifications of a product
