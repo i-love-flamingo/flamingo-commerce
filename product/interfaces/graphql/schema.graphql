@@ -145,12 +145,19 @@ type Commerce_ProductPriceInfo {
 
 }
 
-type Commerce_CategoryProductList {
-    category: Commerce_Category!
+type Commerce_SearchMeta {
+    query:          String
+    originalQuery:  String
+    page:           Int
+    numPages:       Int
+    numResults:     Int
+}
+
+type Commerce_Product_SearchResult {
     products: [Commerce_Product!]
+    searchMeta: Commerce_SearchMeta
 }
 
 extend type Query {
     Commerce_Product(marketplaceCode: String!): Commerce_Product
-    Commerce_ProductListByCategory(categoryCode: String!): Commerce_CategoryProductList
 }
