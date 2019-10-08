@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	cartForms "flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
+	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
+	formApplication "flamingo.me/form/application"
 	"flamingo.me/form/domain"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
@@ -13,18 +15,21 @@ import (
 
 // CommerceCartMutationResolver resolves cart mutations
 type CommerceCartMutationResolver struct {
-	q                      *CommerceCartQueryResolver
-	applicationCartService *application.CartService
+	q                            *CommerceCartQueryResolver
+	applicationCartService       *application.CartService
 	billingAddressFormController *cartForms.BillingAddressFormController
+	formDataEncoderFactory       formApplication.FormDataEncoderFactory
 }
 
 // Inject dependencies
 func (r *CommerceCartMutationResolver) Inject(q *CommerceCartQueryResolver,
 	applicationCartService *application.CartService,
-	billingAddressFormController *cartForms.BillingAddressFormController) *CommerceCartMutationResolver {
+	billingAddressFormController *cartForms.BillingAddressFormController,
+	formDataEncoderFactory       formApplication.FormDataEncoderFactory) *CommerceCartMutationResolver {
 	r.q = q
 	r.applicationCartService = applicationCartService
 	r.billingAddressFormController = billingAddressFormController
+	r.formDataEncoderFactory = formDataEncoderFactory
 	return r
 }
 
@@ -74,46 +79,44 @@ func (r *CommerceCartMutationResolver) CommerceUpdateItemQty(ctx context.Context
 	}
 	return r.q.CommerceCart(ctx)
 }
-
-
-
-// CommerceUpdateBillingAddress
-// CommerceCartUpdateBillingAddress(ctx context.Context, addressForm *CommerceBillingAddressFormInput) (*graphql1.Commerce_Cart_BillingAddressForm, error)
-//
-func (r *CommerceCartMutationResolver) CommerceCartUpdateBillingAddress(ctx context.Context, address *cartForms.BillingAddressForm) (*Commerce_Cart_BillingAddressForm, error) {
-	newRequest := web.CreateRequest(web.RequestFromContext(ctx).Request(),web.SessionFromContext(ctx))
-	basicAddress := cartForms.AddressForm(*address)
-	newRequest.Request().Form = basicAddress.UrlValues()
-
-	form, success, err := r.billingAddressFormController.HandleFormAction(ctx,newRequest)
+//CommerceCartUpdateBillingAddress resolver method
+func (r *CommerceCartMutationResolver) CommerceCartUpdateBillingAddress(ctx context.Context, address *cartForms.BillingAddressForm) (*dto.BillingAddressForm, error) {
+	newRequest := web.CreateRequest(web.RequestFromContext(ctx).Request(), web.SessionFromContext(ctx))
+	v, err := r.formDataEncoderFactory.CreateByNamedEncoder("commerce.cart.billingFormService").Encode(ctx,address)
 	if err != nil {
 		return nil, err
 	}
-	return mapCommerce_Cart_BillingAddressForm(form,success)
+	newRequest.Request().Form = v
+
+	form, success, err := r.billingAddressFormController.HandleFormAction(ctx, newRequest)
+	if err != nil {
+		return nil, err
+	}
+	return mapCommerceBillingAddressForm(form, success)
 
 }
 
 //mapCommerce_Cart_BillingAddressForm - helper to map the graphql type Commerce_Cart_BillingAddressForm from common form
-func mapCommerce_Cart_BillingAddressForm(form *domain.Form, success bool) (*Commerce_Cart_BillingAddressForm, error) {
+func mapCommerceBillingAddressForm(form *domain.Form, success bool) (*dto.BillingAddressForm, error) {
 	billingFormData, ok := form.Data.(cartForms.BillingAddressForm)
 	if !ok {
 		return nil, errors.New("unexpected form data")
 	}
 
-	var fieldErrors []Commerce_Cart_FieldError
-	for fieldName,currentFieldErrors := range form.ValidationInfo.GetErrorsForAllFields() {
+	var fieldErrors []dto.FieldError
+	for fieldName, currentFieldErrors := range form.ValidationInfo.GetErrorsForAllFields() {
 		for _, currentFieldError := range currentFieldErrors {
-			fieldErrors = append(fieldErrors,Commerce_Cart_FieldError{
+			fieldErrors = append(fieldErrors, dto.FieldError{
 				MessageKey:   currentFieldError.MessageKey,
 				DefaultLabel: currentFieldError.DefaultLabel,
 				FieldName:    fieldName,
 			})
 		}
 	}
-	return &Commerce_Cart_BillingAddressForm{
-		FormData:billingFormData,
-		Processed:success,
-		ValidationInfo: Commerce_Cart_ValidationInfo{
+	return &dto.BillingAddressForm{
+		FormData:  billingFormData,
+		Processed: success,
+		ValidationInfo: dto.ValidationInfo{
 			GeneralErrors: form.ValidationInfo.GetGeneralErrors(),
 			FieldErrors:   fieldErrors,
 		},
