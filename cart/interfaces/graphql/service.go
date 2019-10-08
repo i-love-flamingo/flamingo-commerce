@@ -3,6 +3,8 @@ package graphql
 import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
+	formDomain "flamingo.me/form/domain"
 	"flamingo.me/graphql"
 	"github.com/99designs/gqlgen/codegen/config"
 )
@@ -49,5 +51,13 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		"Commerce_CartAppliedDiscounts":     cart.AppliedDiscounts{},
 		"Commerce_CartAppliedDiscount":      cart.AppliedDiscount{},
 		"Commerce_CartAppliedGiftCard":      cart.AppliedGiftCard{},
+		"Commerce_Cart_BillingAddressForm": Commerce_Cart_BillingAddressForm{},
+		"Commerce_Cart_BillingAddressFormData": forms.BillingAddressForm{},
+		"Commerce_BillingAddressFormInput": forms.BillingAddressForm{},
+		"Commerce_Cart_Form_ValidationInfo": Commerce_Cart_ValidationInfo{},
+		"Commerce_Cart_Form_Error": formDomain.Error{},
+		"Commerce_Cart_Form_FieldError": Commerce_Cart_FieldError{},
+
+
 	}.Models()
 }
