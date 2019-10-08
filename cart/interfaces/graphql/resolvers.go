@@ -2,85 +2,63 @@ package graphql
 
 import (
 	"context"
+	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
+	formDomain "flamingo.me/form/domain"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo/v3/framework/web"
 )
 
+type (
+	Commerce_Cart_BillingAddressForm struct {
+		FormData forms.BillingAddressForm
+		Processed bool
+		ValidationInfo Commerce_Cart_ValidationInfo
+	}
+
+	Commerce_Cart_ValidationInfo struct {
+		GeneralErrors []formDomain.Error
+		FieldErrors []Commerce_Cart_FieldError
+	}
+
+	Commerce_Cart_FieldError struct {
+		// MessageKey - a key of the error message. Often used to pass to translation func in the template
+		MessageKey string
+		// DefaultLabel - a speaking error label. OFten used to show to end user - in case no translation exists
+		DefaultLabel string
+		FieldName string
+	}
+
+)
 // CommerceCartQueryResolver resolver for carts
 type CommerceCartQueryResolver struct {
 	applicationCartReceiverService *application.CartReceiverService
+	billingAddressFormController *forms.BillingAddressFormController
 }
 
 // Inject dependencies
-func (r *CommerceCartQueryResolver) Inject(applicationCartReceiverService *application.CartReceiverService) {
+func (r *CommerceCartQueryResolver) Inject(applicationCartReceiverService *application.CartReceiverService, billingAddressFormController *forms.BillingAddressFormController) {
 	r.applicationCartReceiverService = applicationCartReceiverService
+	r.billingAddressFormController = billingAddressFormController
 }
 
 // CommerceCart getter for queries
 func (r *CommerceCartQueryResolver) CommerceCart(ctx context.Context) (*decorator.DecoratedCart, error) {
 	req := web.RequestFromContext(ctx)
-
 	return r.applicationCartReceiverService.ViewDecoratedCart(ctx, req.Session())
 }
 
-// CommerceCartMutationResolver resolves cart mutations
-type CommerceCartMutationResolver struct {
-	q                      *CommerceCartQueryResolver
-	applicationCartService *application.CartService
-}
-
-// Inject dependencies
-func (r *CommerceCartMutationResolver) Inject(q *CommerceCartQueryResolver, applicationCartService *application.CartService) *CommerceCartMutationResolver {
-	r.q = q
-	r.applicationCartService = applicationCartService
-	return r
-}
-
-// CommerceAddToCart mutation for adding products to the current users cart
-func (r *CommerceCartMutationResolver) CommerceAddToCart(ctx context.Context, marketplaceCode string, qty int, deliveryCode string) (*decorator.DecoratedCart, error) {
+//Commerce_Cart_BillingAddressForm getter
+func (r *CommerceCartQueryResolver) CommerceCartGetBillingAddressForm(ctx context.Context) (*Commerce_Cart_BillingAddressForm, error) {
 	req := web.RequestFromContext(ctx)
-
-	addRequest := r.applicationCartService.BuildAddRequest(ctx, marketplaceCode, "", qty)
-
-	_, err := r.applicationCartService.AddProduct(ctx, req.Session(), deliveryCode, addRequest)
+	billingForm, err :=  r.billingAddressFormController.GetUnsubmittedForm(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	return r.q.CommerceCart(ctx)
+	return mapCommerce_Cart_BillingAddressForm(billingForm,false)
+
 }
 
-// CommerceDeleteItem resolver
-func (r *CommerceCartMutationResolver) CommerceDeleteItem(ctx context.Context, itemID string, deliveryCode string) (*decorator.DecoratedCart, error) {
-	req := web.RequestFromContext(ctx)
 
-	err := r.applicationCartService.DeleteItem(ctx, req.Session(), itemID, deliveryCode)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return r.q.CommerceCart(ctx)
-}
-
-// CommerceDeleteCartDelivery mutation for removing deliveries from current users cart
-func (r *CommerceCartMutationResolver) CommerceDeleteCartDelivery(ctx context.Context, deliveryCode string) (*decorator.DecoratedCart, error) {
-	req := web.RequestFromContext(ctx)
-	_, err := r.applicationCartService.DeleteDelivery(ctx, req.Session(), deliveryCode)
-	if err != nil {
-		return nil, err
-	}
-	return r.q.CommerceCart(ctx)
-}
-
-// CommerceUpdateItemQty mutation for updating item quantity
-func (r *CommerceCartMutationResolver) CommerceUpdateItemQty(ctx context.Context, itemID string, deliveryCode string, qty int) (*decorator.DecoratedCart, error) {
-	req := web.RequestFromContext(ctx)
-	err := r.applicationCartService.UpdateItemQty(ctx, req.Session(), itemID, deliveryCode, qty)
-	if err != nil {
-		return nil, err
-	}
-	return r.q.CommerceCart(ctx)
-}

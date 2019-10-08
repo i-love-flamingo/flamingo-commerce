@@ -59,9 +59,9 @@ type Commerce_CartDeliveryInfo {
     desiredTime: Time
     getAdditionalData(key: String!): String!
     additionalDataKeys: [String!]
-#    additionalDeliveryInfos: map[string]json.RawMessage
-#    additionalDeliveryInfos: Map
-#    getAdditionalDeliveryInfo(key: String!): Map!
+    #    additionalDeliveryInfos: map[string]json.RawMessage
+    #    additionalDeliveryInfos: Map
+    #    getAdditionalDeliveryInfo(key: String!): Map!
     additionalDeliveryInfoKeys: [String!]
 }
 
@@ -114,7 +114,7 @@ type Commerce_CartItem {
     singlePriceNet: Commerce_Price!
     rowPriceGross: Commerce_Price!
     rowPriceNet: Commerce_Price!
-#    rowTaxes: Commerce_Taxes!
+    #    rowTaxes: Commerce_Taxes!
 }
 
 type Commerce_CartAddress {
@@ -156,7 +156,7 @@ type Commerce_CartPersonalDetails {
 }
 
 type Commerce_CartAdditionalData {
-#    customAttributes: Map
+    #    customAttributes: Map
     reservedOrderID: String!
 }
 
@@ -179,6 +179,7 @@ type Commerce_CartAppliedGiftCard {
 
 extend type Query {
     Commerce_Cart: Commerce_DecoratedCart!
+    Commerce_Cart_GetBillingAddressForm: Commerce_Cart_BillingAddressForm!
 }
 
 extend type Mutation {
@@ -186,4 +187,73 @@ extend type Mutation {
     Commerce_DeleteCartDelivery(deliveryCode: String!): Commerce_DecoratedCart!
     Commerce_DeleteItem(itemID: ID!, deliveryCode: String!): Commerce_DecoratedCart!
     Commerce_UpdateItemQty(itemID: ID!, deliveryCode: String!, qty: Int!): Commerce_DecoratedCart!
+    Commerce_Cart_UpdateBillingAddress(addressForm: Commerce_BillingAddressFormInput): Commerce_Cart_BillingAddressForm!
+}
+
+
+type Commerce_Cart_BillingAddressForm {
+    formData:       Commerce_Cart_BillingAddressFormData
+    validationInfo: Commerce_Cart_Form_ValidationInfo
+    processed: Boolean
+}
+
+type Commerce_Cart_Form_ValidationInfo {
+    fieldErrors: [Commerce_Cart_Form_FieldError!]
+    generalErrors: [Commerce_Cart_Form_Error!]
+}
+
+type Commerce_Cart_Form_Error {
+    messageKey: String!
+    defaultLabel: String!
+}
+
+type Commerce_Cart_Form_FieldError {
+    messageKey: String!
+    defaultLabel: String!
+    fieldName: String!
+}
+
+type Commerce_Cart_BillingAddressFormData {
+    vat:                    String!
+    firstname:              String!
+    lastname:               String!
+    middleName:             String!
+    title:                  String!
+    salutation:             String!
+    street:                 String!
+    streetNr:               String!
+    addressLine1:           String!
+    addressLine2:           String!
+    company:                String!
+    city:                   String!
+    postCode:               String!
+    state:                  String!
+    regionCode:             String!
+    country:                String!
+    countryCode:            String!
+    phoneNumber:            String!
+    email:                  String!
+}
+
+
+input Commerce_BillingAddressFormInput {
+    vat:                    String
+    firstname:              String!
+    lastname:               String!
+    middleName:             String
+    title:                  String
+    salutation:             String
+    street:                 String
+    streetNr:               String
+    addressLine1:           String
+    addressLine2:           String
+    company:                String
+    city:                   String
+    postCode:               String
+    state:                  String
+    regionCode:             String
+    country:                String
+    countryCode:            String
+    phoneNumber:            String
+    email:                  String!
 }

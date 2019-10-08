@@ -3,6 +3,7 @@ package forms
 import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/customer/domain"
+	"net/url"
 )
 
 type (
@@ -145,4 +146,13 @@ func (a *AddressForm) LoadFromCartAddress(address cart.Address) {
 	if address.Company != "" {
 		a.Company = address.Company
 	}
+}
+
+
+func (a *AddressForm) UrlValues() url.Values {
+	values := make(url.Values)
+	values["firstname"] = []string{a.Firstname}
+	values["lastname"] = []string{a.Lastname}
+	values["email"] = []string{a.Email}
+	return values
 }
