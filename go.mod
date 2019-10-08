@@ -5,13 +5,14 @@ go 1.13
 require (
 	flamingo.me/dingo v0.1.6
 	flamingo.me/flamingo/v3 v3.0.3
-	flamingo.me/form v1.0.0
+	flamingo.me/form v1.0.1-0.20191008191024-ff6f3a9330d6
 	flamingo.me/graphql v1.0.1
 	flamingo.me/pugtemplate v1.0.0
 	github.com/99designs/gqlgen v0.9.0
 	github.com/cockroachdb/apd v1.1.0 // indirect
 	github.com/go-playground/form v3.1.4+incompatible
 	github.com/go-test/deep v1.0.1
+	github.com/golang/mock v1.2.0 // indirect
 	github.com/golang/protobuf v1.3.0 // indirect
 	github.com/gorilla/sessions v1.1.3
 	github.com/hashicorp/golang-lru v0.5.1 // indirect

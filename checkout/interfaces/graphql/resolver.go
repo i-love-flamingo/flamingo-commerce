@@ -2,7 +2,6 @@ package graphql
 
 import (
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
-
 )
 
 // CommerceCheckoutMutationResolver resolves graphql checkout mutations
