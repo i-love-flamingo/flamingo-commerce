@@ -145,17 +145,9 @@ type Commerce_ProductPriceInfo {
 
 }
 
-type Commerce_SearchMeta {
-    query:          String
-    originalQuery:  String
-    page:           Int
-    numPages:       Int
-    numResults:     Int
-}
-
 type Commerce_Product_SearchResult {
     products: [Commerce_Product!]
-    searchMeta: Commerce_SearchMeta
+    searchMeta: Commerce_Search_Meta
 }
 
 extend type Query {

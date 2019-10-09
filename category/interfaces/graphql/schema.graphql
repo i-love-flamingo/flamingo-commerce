@@ -35,19 +35,6 @@ type Commerce_CategoryTree implements Commerce_Tree{
     documentCount: Int!
 }
 
-input Commerce_SearchKeyValueFilter {
-    k: String!
-    v: [String!]
-}
-
-input Commerce_SearchRequest {
-    pageSize:           Int
-    page:               Int
-    sortBy:             String
-    sortDirection:      String
-    keyValueFilters:    [Commerce_SearchKeyValueFilter!]
-}
-
 type Commerce_Category_SearchResult {
     category:               Commerce_Category!
     productSearchResult:    Commerce_Product_SearchResult
@@ -55,5 +42,5 @@ type Commerce_Category_SearchResult {
 
 extend type Query {
     Commerce_CategoryTree(activeCategoryCode: String!): Commerce_Tree!
-    Commerce_Category(categoryCode: String!, categorySearchRequest: Commerce_SearchRequest): Commerce_Category_SearchResult
+    Commerce_Category(categoryCode: String!, categorySearchRequest: Commerce_Search_Request): Commerce_Category_SearchResult
 }
