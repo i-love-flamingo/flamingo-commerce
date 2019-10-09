@@ -97,7 +97,7 @@ func (os *OrderService) SetSources(ctx context.Context, session *web.Session) er
 	}
 	err = os.sourcingEngine.SetSourcesForCartItems(ctx, session, decoratedCart)
 	if err != nil {
-		os.logger.WithContext(ctx).WithField("category", "checkout.orderService").Error("Error while getting sources: ", err)
+		os.logger.WithContext(ctx).Error("Error while getting sources: ", err)
 		return errors.New("error while setting sources")
 	}
 	return nil
