@@ -92,12 +92,12 @@ func (os *OrderService) Inject(
 func (os *OrderService) SetSources(ctx context.Context, session *web.Session) error {
 	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(ctx, session)
 	if err != nil {
-		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
+		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error ", err)
 		return err
 	}
 	err = os.sourcingEngine.SetSourcesForCartItems(ctx, session, decoratedCart)
 	if err != nil {
-		os.logger.WithContext(ctx).WithField("category", "checkout.orderService").Error("Error while getting sources: %v", err)
+		os.logger.WithContext(ctx).Error("Error while getting sources: ", err)
 		return errors.New("error while setting sources")
 	}
 	return nil
@@ -114,14 +114,14 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.S
 
 	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(ctx, session)
 	if err != nil {
-		os.logger.WithContext(ctx).Error("CurrentCartSaveInfos GetDecoratedCart Error %v", err)
+		os.logger.WithContext(ctx).Error("CurrentCartSaveInfos GetDecoratedCart Error ", err)
 		return err
 	}
 
 	// update Billing
 	err = os.cartService.UpdateBillingAddress(ctx, session, billingAddress)
 	if err != nil {
-		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder UpdateBillingAddress Error %v", err)
+		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder UpdateBillingAddress Error ", err)
 		return err
 	}
 
@@ -133,7 +133,7 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.S
 			newDeliveryInfoUpdateCommand.DeliveryInfo.DeliveryLocation.Address = shippingAddress
 			err = os.cartService.UpdateDeliveryInfo(ctx, session, d.DeliveryInfo.Code, newDeliveryInfoUpdateCommand)
 			if err != nil {
-				os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder UpdateDeliveryInfosAndBilling Error %v", err)
+				os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder UpdateDeliveryInfosAndBilling Error ", err)
 				return err
 			}
 		}
@@ -143,14 +143,14 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.S
 	// Update Purchaser
 	err = os.cartService.UpdatePurchaser(ctx, session, purchaser, additionalData)
 	if err != nil {
-		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder UpdatePurchaser Error %v", err)
+		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder UpdatePurchaser Error ", err)
 		return err
 	}
 
 	// After setting DeliveryInfos - call SourcingEnginge (this will reload the cart and update all items!)
 	err = os.SetSources(ctx, session)
 	if err != nil {
-		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder SetSources Error %v", err)
+		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder SetSources Error ", err)
 		return err
 	}
 	return nil
@@ -181,7 +181,7 @@ func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.
 			if err != nil {
 				// record fail count metric
 				stats.Record(placeOrderContext, orderFailedStat.M(1))
-				os.logger.WithContext(placeOrderContext).Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error %v", err)
+				os.logger.WithContext(placeOrderContext).Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error ", err)
 				return nil, err
 			}
 
@@ -355,10 +355,12 @@ func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, dec
 	if flowStatus.Status == paymentDomain.PaymentFlowStatusFailed || flowStatus.Status == paymentDomain.PaymentFlowStatusCancelled {
 		// record fail count metric
 		stats.Record(ctx, orderFailedStat.M(1))
+		os.logger.WithContext(ctx).Info("cart.checkoutcontroller.submitaction: PaymentFlowStatusFailed or PaymentFlowStatusCancelled: Error ", flowStatus.Error)
 		return nil, flowStatus.Error
 	}
 
 	if flowStatus.Status == paymentDomain.PaymentFlowStatusAborted {
+		os.logger.WithContext(ctx).Info("cart.checkoutcontroller.submitaction: PaymentFlowStatusAborted: Error ", flowStatus.Error)
 		return nil, flowStatus.Error
 	}
 
@@ -383,6 +385,7 @@ func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, dec
 		os.logger.WithContext(ctx).Error("Error during place Order:" + err.Error())
 		return nil, err
 	}
+	os.logger.WithContext(ctx).Info("Placed Order: ", placedOrderInfos)
 
 	placeOrderInfo := os.preparePlaceOrderInfo(ctx, decoratedCart.Cart, placedOrderInfos, *cartPayment)
 	os.storeLastPlacedOrder(ctx, placeOrderInfo)

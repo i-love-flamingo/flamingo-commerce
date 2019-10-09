@@ -180,7 +180,7 @@ func (cc *CheckoutController) StartAction(ctx context.Context, r *web.Request) w
 	//Guard Clause if Cart cannot be fetched
 	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if e != nil {
-		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.viewaction: Error %v", e)
+		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.viewaction: Error ", e)
 		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 	}
 	guardRedirect := cc.getCommonGuardRedirects(ctx, r.Session(), decoratedCart)
@@ -213,7 +213,7 @@ func (cc *CheckoutController) SubmitCheckoutAction(ctx context.Context, r *web.R
 	//Guard Clause if Cart can not be fetched
 	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if e != nil {
-		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error %v", e)
+		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error ", e)
 		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 	}
 	guardRedirect := cc.getCommonGuardRedirects(ctx, r.Session(), decoratedCart)
@@ -339,7 +339,7 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 	//Guard Clause if Cart cannout be fetched
 	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, session)
 	if e != nil {
-		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error %v", e)
+		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error ", e)
 		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 	}
 
@@ -458,14 +458,14 @@ func (cc *CheckoutController) processPayment(ctx context.Context, r *web.Request
 	// reserve an unique order id for later order placing
 	_, err := cc.applicationCartService.ReserveOrderIDAndSave(ctx, session)
 	if err != nil {
-		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error %v", err)
+		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error ", err)
 		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 	}
 
 	// guard clause if cart can not be fetched
 	decoratedCart, err := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if err != nil {
-		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error %v", err)
+		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error ", err)
 		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 	}
 
@@ -518,7 +518,7 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 	//Guard Clause if cart can not be fetched
 	decoratedCart, err := cc.applicationCartReceiverService.ViewDecoratedCartWithoutCache(ctx, r.Session())
 	if err != nil {
-		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error %v", err)
+		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error ", err)
 		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 	}
 
@@ -555,10 +555,12 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 
 	decoratedCart, err := cc.orderService.LastPlacedOrCurrentCart(ctx)
 	if err != nil {
+		cc.logger.WithContext(ctx).Error(err)
 		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
 	}
 
 	if decoratedCart.Cart.PaymentSelection == nil {
+		cc.logger.WithContext(ctx).Info("No PaymentSelection for cart with ID ", decoratedCart.Cart.ID)
 		return cc.responder.RouteRedirect("checkout.expired", nil).SetNoCache()
 	}
 
@@ -569,17 +571,19 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 
 	flowStatus, err := gateway.FlowStatus(ctx, &decoratedCart.Cart, application.PaymentFlowStandardCorrelationID)
 	if err != nil {
-		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.paymentaction: Error %v", err)
+		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.paymentaction: Error ", err)
 
 		// payment failed, reopen the cart to make it still usable.
 		if cc.orderService.HasLastPlacedOrder(ctx) {
 			infos, err := cc.orderService.LastPlacedOrder(ctx)
 			if err != nil {
+				cc.logger.WithContext(ctx).Error(err)
 				return cc.responder.RouteRedirect("checkout", nil)
 			}
 
 			restoredCart, err := cc.orderService.CancelOrder(ctx, session, infos)
 			if err != nil {
+				cc.logger.WithContext(ctx).Error(err)
 				return cc.responder.RouteRedirect("checkout", nil)
 			}
 
@@ -603,12 +607,14 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 		orderPayment, err := gateway.OrderPaymentFromFlow(ctx, &decoratedCart.Cart, application.PaymentFlowStandardCorrelationID)
 		if err != nil {
 			viewData.ErrorInfos = getViewErrorInfo(err)
+			cc.logger.WithContext(ctx).Error(err)
 			return cc.responder.Render("checkout/payment", viewData).SetNoCache()
 		}
 
 		err = gateway.ConfirmResult(ctx, &decoratedCart.Cart, orderPayment)
 		if err != nil {
 			viewData.ErrorInfos = getViewErrorInfo(err)
+			cc.logger.WithContext(ctx).Error(err)
 			return cc.responder.Render("checkout/payment", viewData).SetNoCache()
 		}
 
@@ -622,6 +628,7 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 			infos, err := cc.orderService.LastPlacedOrder(ctx)
 			if err != nil {
 				viewData.ErrorInfos = getViewErrorInfo(err)
+				cc.logger.WithContext(ctx).Error(err)
 				return cc.responder.Render("checkout/payment", viewData).SetNoCache()
 			}
 
@@ -629,6 +636,7 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 			_, err = cc.orderService.CancelOrder(ctx, session, infos)
 			if err != nil {
 				viewData.ErrorInfos = getViewErrorInfo(err)
+				cc.logger.WithContext(ctx).Error(err)
 				return cc.responder.Render("checkout/payment", viewData).SetNoCache()
 			}
 
@@ -646,12 +654,14 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 			infos, err := cc.orderService.LastPlacedOrder(ctx)
 			if err != nil {
 				viewData.ErrorInfos = getViewErrorInfo(err)
+				cc.logger.WithContext(ctx).Error(err)
 				return cc.responder.Render("checkout/payment", viewData).SetNoCache()
 			}
 
 			restoredCart, err := cc.orderService.CancelOrder(ctx, session, infos)
 			if err != nil {
 				viewData.ErrorInfos = getViewErrorInfo(err)
+				cc.logger.WithContext(ctx).Error(err)
 				return cc.responder.Render("checkout/payment", viewData).SetNoCache()
 			}
 

@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"fmt"
 
 	"flamingo.me/flamingo/v3/framework/web"
 
@@ -73,6 +74,7 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 				e.logger.WithContext(ctx).Error("LoginEvent - DeleteSavedSessionGuestCartID Error", err)
 			}
 			for _, d := range guestCart.Deliveries {
+				e.logger.WithContext(ctx).Info(fmt.Sprintf("Merging delivery with code %v of guestCart with ID %v into customerCart with ID %v", d.DeliveryInfo.Code, guestCart.ID, customerCart.ID))
 				err := e.cartService.UpdateDeliveryInfo(ctx, currentEvent.Session, d.DeliveryInfo.Code, cartDomain.CreateDeliveryInfoUpdateCommand(d.DeliveryInfo))
 				if err != nil {
 					e.logger.WithContext(ctx).Error("LoginEvent - customerCart UpdateDeliveryInfo error", err)
