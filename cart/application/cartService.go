@@ -383,7 +383,7 @@ func (cs *CartService) DeleteItem(ctx context.Context, session *web.Session, ite
 	cart, defers, err = behaviour.DeleteItem(ctx, cart, itemID, deliveryCode)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
-		cs.logger.WithContext(ctx).WithField("subCategory", "DeleteItem").Error(err)
+		cs.logger.WithContext(ctx).WithField("subCategory", "DeleteItem").Error(errors.Wrap(err, "Trying to delete SKU :"+item.MarketplaceCode))
 
 		return err
 	}
