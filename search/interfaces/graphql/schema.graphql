@@ -1,0 +1,20 @@
+input Commerce_Search_KeyValueFilter {
+    k: String!
+    v: [String!]
+}
+
+input Commerce_Search_Request {
+    pageSize:           Int
+    page:               Int
+    sortBy:             String
+    sortDirection:      String
+    keyValueFilters:    [Commerce_Search_KeyValueFilter!]
+}
+
+type Commerce_Search_Meta {
+    query:          String
+    originalQuery:  String
+    page:           Int
+    numPages:       Int
+    numResults:     Int
+}

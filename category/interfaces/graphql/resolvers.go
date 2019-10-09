@@ -7,6 +7,7 @@ import (
 	productApplication "flamingo.me/flamingo-commerce/v3/product/application"
 	searchApplication "flamingo.me/flamingo-commerce/v3/search/application"
 	searchDomain "flamingo.me/flamingo-commerce/v3/search/domain"
+	searchGraphQlDto "flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/dto"
 )
 
 // CommerceCategoryQueryResolver resolves graphql category queries
@@ -27,7 +28,11 @@ func (r *CommerceCategoryQueryResolver) CommerceCategoryTree(ctx context.Context
 }
 
 // CommerceCategory returns product search result with the given categoryCode from searchService
-func (r *CommerceCategoryQueryResolver) CommerceCategory(ctx context.Context, categoryCode string, categorySearchRequest *CommerceSearchRequest) (*controller.ViewData, error) {
+func (r *CommerceCategoryQueryResolver) CommerceCategory(
+	ctx context.Context,
+	categoryCode string,
+	categorySearchRequest *searchGraphQlDto.CommerceSearchRequest) (*controller.ViewData, error) {
+
 	category, err := r.categoryService.Get(ctx, categoryCode)
 
 	if err != nil {

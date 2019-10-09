@@ -17,21 +17,6 @@ func (*Service) Schema() []byte {
 	return MustAsset("schema.graphql")
 }
 
-// CommerceSearchRequest - search request structure for graphQl
-type CommerceSearchRequest struct {
-	PageSize        int
-	Page            int
-	SortBy          string
-	SortDirection   string
-	KeyValueFilters []CommerceSearchKeyValueFilter
-}
-
-// CommerceSearchKeyValueFilter - key value filter for CommerceSearchRequest
-type CommerceSearchKeyValueFilter struct {
-	K string
-	V []string
-}
-
 // Models mapping for Commerce_Category types
 func (*Service) Models() map[string]config.TypeMapEntry {
 	return graphql.ModelMap{
@@ -40,7 +25,5 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		"Commerce_Category":              new(domain.Category),
 		"Commerce_CategoryData":          domain.CategoryData{},
 		"Commerce_Category_SearchResult": controller.ViewData{},
-		"Commerce_SearchRequest":         CommerceSearchRequest{},
-		"Commerce_SearchKeyValueFilter":  CommerceSearchKeyValueFilter{},
 	}.Models()
 }

@@ -3,7 +3,9 @@ package search
 import (
 	"flamingo.me/dingo"
 	"flamingo.me/flamingo-commerce/v3/search/interfaces"
+	searchgraphql "flamingo.me/flamingo-commerce/v3/search/interfaces/graphql"
 	"flamingo.me/flamingo/v3/framework/web"
+	"flamingo.me/graphql"
 )
 
 // Module registers our search package
@@ -12,6 +14,8 @@ type Module struct{}
 // Configure the search URL
 func (m *Module) Configure(injector *dingo.Injector) {
 	web.BindRoutes(injector, new(routes))
+
+	injector.BindMulti(new(graphql.Service)).To(new(searchgraphql.Service))
 }
 
 type routes struct {
