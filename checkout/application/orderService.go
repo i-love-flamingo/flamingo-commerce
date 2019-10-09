@@ -210,7 +210,7 @@ func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.
 	return info, err
 }
 
-// PlaceOrder places the current cart
+// PlaceOrder places the current cart - TODO WORK IN PROGRESS
 func (os *OrderService) PlaceOrder(ctx context.Context, session *web.Session) (*PlaceOrderInfo, error) {
 	var info *PlaceOrderInfo
 	var err error
