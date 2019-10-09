@@ -787,8 +787,8 @@ func (cs *CartService) ReserveOrderIDAndSave(ctx context.Context, session *web.S
 	return data, err
 }
 
-// PlaceOrderFromCart converts the given cart with payments into orders by calling the Service
-func (cs *CartService) PlaceOrderFromCart(ctx context.Context, session *web.Session, cart *cartDomain.Cart, payment *placeorder.Payment) (placeorder.PlacedOrderInfos, error) {
+// PlaceOrderWithCart converts the given cart with payments into orders by calling the Service
+func (cs *CartService) PlaceOrderWithCart(ctx context.Context, session *web.Session, cart *cartDomain.Cart, payment *placeorder.Payment) (placeorder.PlacedOrderInfos, error) {
 	return cs.placeOrder(ctx, session, cart, payment)
 }
 
@@ -806,7 +806,6 @@ func (cs *CartService) placeOrder(ctx context.Context, session *web.Session, car
 		return nil, errors.New("No placeOrderService registered")
 	}
 	var placeOrderInfos placeorder.PlacedOrderInfos
-	var err error
 	var errPlaceOrder error
 	if cs.cartReceiverService.IsLoggedIn(ctx, session) {
 		auth, err := cs.authManager.Auth(ctx, session)
@@ -828,7 +827,7 @@ func (cs *CartService) placeOrder(ctx context.Context, session *web.Session, car
 	cs.DeleteSavedSessionGuestCartID(session)
 	cs.DeleteCartInCache(ctx, session, cart)
 
-	return placeOrderInfos, err
+	return placeOrderInfos, nil
 }
 
 // CancelOrder cancels a previously placed order and restores the cart content

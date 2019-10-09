@@ -376,7 +376,7 @@ func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, dec
 		return nil, err
 	}
 
-	placedOrderInfos, err := os.cartService.PlaceOrderFromCart(ctx, session, &decoratedCart.Cart, cartPayment)
+	placedOrderInfos, err := os.cartService.PlaceOrderWithCart(ctx, session, &decoratedCart.Cart, cartPayment)
 	if err != nil {
 		// record fail count metric
 		stats.Record(ctx, orderFailedStat.M(1))
