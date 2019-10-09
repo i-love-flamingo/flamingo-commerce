@@ -34,3 +34,6 @@
 * Removed `ShippingItem.DiscountAmount` 
   * Added `ShippingItem.AppliedDiscounts`
     * ShippingItem now implements interface `WithDiscount`
+    
+# 9. October 2019
+* Add `PlaceOrderWithCart` to `CartService` to be able to place an already fetched cart instead of triggering an additional call to the `CartReceiverService`
