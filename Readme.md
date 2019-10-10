@@ -1,6 +1,7 @@
-[![Build Status](https://api.travis-ci.org/i-love-flamingo/flamingo-commerce.svg?branch=master)](https://travis-ci.org/i-love-flamingo/flamingo-commerce)
+
 
 # Flamingo Commerce
+[![Go Report Card](https://goreportcard.com/badge/github.com/i-love-flamingo/flamingo-commerce)](https://goreportcard.com/report/github.com/i-love-flamingo/flamingo-commerce) [![GoDoc](https://godoc.org/github.com/i-love-flamingo/flamingo-commerce?status.svg)](https://godoc.org/github.com/i-love-flamingo/flamingo-commerce) [![Build Status](https://travis-ci.org/i-love-flamingo/flamingo-commerce.svg)](https://travis-ci.org/i-love-flamingo/flamingo-commerce)
 
 Contains modules that helps building powerful and flexible ecommerce websites.
 
