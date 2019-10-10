@@ -16,8 +16,7 @@ type (
 		Page           *Page
 		SiteInfo       *SiteInfo
 		Version        string `inject:"config:w3cDatalayer.version,optional"` // todo: version should not be injected here (domain layer)
-		//User List of user(s) interacting with the page. (Although typically web data has a single user per recorded interaction, this object is an array and can capture multiple users.)
-		User []User
+		User           User
 		//The Cart object carries details about a shopping cart or basket and the products that have been added to it.
 		Cart *Cart
 		// The Event object collects information about an interaction event by the user. An event might be a button click, the addition of a portal widget, playing a video, adding a product to the shopping cart, etc. Any action on the page could be captured by an Event object.

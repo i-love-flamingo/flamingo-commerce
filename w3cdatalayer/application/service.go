@@ -2,6 +2,8 @@ package application
 
 import (
 	"context"
+	"strings"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
@@ -54,10 +56,10 @@ func (s *Service) Get() domain.Datalayer {
 	}
 	req := web.RequestFromContext(s.currentContext)
 	if _, ok := req.Values.Load(DatalayerReqKey); !ok {
-		s.store(s.factory.BuildForCurrentRequest(s.currentContext, req))
+		_ = s.store(s.factory.BuildForCurrentRequest(s.currentContext, req))
 	}
 
-	s.AddSessionEvents()
+	_ = s.AddSessionEvents()
 
 	layer, _ := req.Values.Load(DatalayerReqKey)
 	if savedDataLayer, ok := layer.(domain.Datalayer); ok {
@@ -153,15 +155,45 @@ func (s *Service) SetUserEmail(mail string) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
 	}
+
+	// guard: if mail is not set, no need to set anything here
+	if mail == "" {
+		return nil
+	}
+
 	s.logger.WithField("category", "w3cDatalayer").Debug("Set Usermail %v", mail)
 	layer := s.Get()
-	layer.User = append(layer.User, domain.User{
+	layer.User = domain.User{
 		Profile: []domain.UserProfile{{
 			ProfileInfo: domain.UserProfileInfo{
 				EmailID: s.factory.HashValueIfConfigured(mail),
 			},
 		}},
-	})
+	}
+	return s.store(layer)
+}
+
+// SetPageInfoLanguage to the datalayer
+func (s *Service) SetPageInfoLanguage(language string) error {
+	if s.currentContext == nil {
+		return errors.New("Service can only be used with currentContext - call Init() first")
+	}
+	s.logger.WithField("language", "w3cDatalayer").Debug("Set page language %v", language)
+	layer := s.Get()
+
+	// return empty and store nothing
+	if layer.Page == nil {
+		return nil
+	}
+
+	// check pageId to make sure this can only be used on lhr contactform
+	if language != "" && layer.Page.PageInfo.PageID == "lhr.contactform" {
+		localeParts := strings.Split(language, "_")
+		if len(localeParts) > 0 {
+			language = localeParts[0]
+		}
+		layer.Page.PageInfo.Language = language
+	}
 	return s.store(layer)
 }
 

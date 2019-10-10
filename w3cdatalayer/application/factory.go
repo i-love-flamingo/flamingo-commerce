@@ -4,10 +4,11 @@ import (
 	"context"
 	"crypto/sha512"
 	"encoding/base64"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo-commerce/v3/w3cdatalayer/domain"
@@ -118,7 +119,7 @@ func (s Factory) BuildForCurrentRequest(ctx context.Context, request *web.Reques
 		layer.Page.Attributes["logintype"] = "external"
 		userData := s.getUser(ctx, request.Session())
 		if userData != nil {
-			layer.User = append(layer.User, *userData)
+			layer.User = *userData
 		}
 	} else {
 		layer.Page.Attributes["logintype"] = "guest"
