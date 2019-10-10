@@ -227,8 +227,7 @@ func (d Datalayer) MarshalJSON() ([]byte, error) {
 		Page           *Page     `json:"page,omitempty"`
 		SiteInfo       *SiteInfo `json:"siteInfo,omitempty"`
 		Version        string    `json:"version"`
-		//User List of user(s) interacting with the page. (Although typically web data has a single user per recorded interaction, this object is an array and can capture multiple users.)
-		User []User `json:"user"`
+		User           User      `json:"user"`
 		//The Cart object carries details about a shopping cart or basket and the products that have been added to it.
 		Cart *Cart `json:"cart,omitempty"`
 		// The Event object collects information about an interaction event by the user. An event might be a button click, the addition of a portal widget, playing a video, adding a product to the shopping cart, etc. Any action on the page could be captured by an Event object.
