@@ -5,7 +5,7 @@
 
 Contains modules that helps building powerful and flexible ecommerce websites.
 
-Read more under [go.flamingo.me](https://docs.flamingo.me/4.%20Flamingo%20Commerce/1.%20Introduction/About%20Flamingo%20Commerce.html)
+Read more under [docs.flamingo.me](https://docs.flamingo.me/4.%20Flamingo%20Commerce/1.%20Introduction/About%20Flamingo%20Commerce.html)
 
 # Flamingo Commerce in Beta
 
