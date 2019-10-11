@@ -7,6 +7,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
 	formApplication "flamingo.me/form/application"
 	"flamingo.me/form/domain"
+	"net/url"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
@@ -18,6 +19,7 @@ type CommerceCartMutationResolver struct {
 	q                            *CommerceCartQueryResolver
 	applicationCartService       *application.CartService
 	billingAddressFormController *cartForms.BillingAddressFormController
+	simplePaymentFormController  *cartForms.SimplePaymentFormController
 	formDataEncoderFactory       formApplication.FormDataEncoderFactory
 }
 
@@ -25,11 +27,13 @@ type CommerceCartMutationResolver struct {
 func (r *CommerceCartMutationResolver) Inject(q *CommerceCartQueryResolver,
 	applicationCartService *application.CartService,
 	billingAddressFormController *cartForms.BillingAddressFormController,
-	formDataEncoderFactory       formApplication.FormDataEncoderFactory) *CommerceCartMutationResolver {
+	formDataEncoderFactory formApplication.FormDataEncoderFactory,
+	simplePaymentFormController *cartForms.SimplePaymentFormController) *CommerceCartMutationResolver {
 	r.q = q
 	r.applicationCartService = applicationCartService
 	r.billingAddressFormController = billingAddressFormController
 	r.formDataEncoderFactory = formDataEncoderFactory
+	r.simplePaymentFormController = simplePaymentFormController
 	return r
 }
 
@@ -79,10 +83,11 @@ func (r *CommerceCartMutationResolver) CommerceUpdateItemQty(ctx context.Context
 	}
 	return r.q.CommerceCart(ctx)
 }
+
 //CommerceCartUpdateBillingAddress resolver method
 func (r *CommerceCartMutationResolver) CommerceCartUpdateBillingAddress(ctx context.Context, address *cartForms.BillingAddressForm) (*dto.BillingAddressForm, error) {
 	newRequest := web.CreateRequest(web.RequestFromContext(ctx).Request(), web.SessionFromContext(ctx))
-	v, err := r.formDataEncoderFactory.CreateByNamedEncoder("commerce.cart.billingFormService").Encode(ctx,address)
+	v, err := r.formDataEncoderFactory.CreateByNamedEncoder("commerce.cart.billingFormService").Encode(ctx, address)
 	if err != nil {
 		return nil, err
 	}
@@ -96,6 +101,29 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateBillingAddress(ctx cont
 
 }
 
+//CommerceCartUpdateSelectedPayment resolver method
+func (r *CommerceCartMutationResolver) CommerceCartUpdateSelectedPayment(ctx context.Context, gateway string, method string) (*dto.SelectedPaymentResult, error) {
+	newRequest := web.CreateRequest(web.RequestFromContext(ctx).Request(), web.SessionFromContext(ctx))
+	urlValues := make(url.Values)
+	urlValues["gateway"] = []string{gateway}
+	urlValues["method"] = []string{method}
+	newRequest.Request().Form = urlValues
+
+	form, success, err := r.simplePaymentFormController.HandleFormAction(ctx, newRequest)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.SelectedPaymentResult{
+		Processed: success,
+		ValidationInfo: dto.ValidationInfo{
+			GeneralErrors: form.ValidationInfo.GetGeneralErrors(),
+			FieldErrors:   mapFieldErrors(form.ValidationInfo),
+		},
+	}, nil
+
+}
+
 //mapCommerce_Cart_BillingAddressForm - helper to map the graphql type Commerce_Cart_BillingAddressForm from common form
 func mapCommerceBillingAddressForm(form *domain.Form, success bool) (*dto.BillingAddressForm, error) {
 	billingFormData, ok := form.Data.(cartForms.BillingAddressForm)
@@ -103,8 +131,19 @@ func mapCommerceBillingAddressForm(form *domain.Form, success bool) (*dto.Billin
 		return nil, errors.New("unexpected form data")
 	}
 
+	return &dto.BillingAddressForm{
+		FormData:  billingFormData,
+		Processed: success,
+		ValidationInfo: dto.ValidationInfo{
+			GeneralErrors: form.ValidationInfo.GetGeneralErrors(),
+			FieldErrors:   mapFieldErrors(form.ValidationInfo),
+		},
+	}, nil
+}
+
+func mapFieldErrors(validationInfo domain.ValidationInfo) []dto.FieldError {
 	var fieldErrors []dto.FieldError
-	for fieldName, currentFieldErrors := range form.ValidationInfo.GetErrorsForAllFields() {
+	for fieldName, currentFieldErrors := range validationInfo.GetErrorsForAllFields() {
 		for _, currentFieldError := range currentFieldErrors {
 			fieldErrors = append(fieldErrors, dto.FieldError{
 				MessageKey:   currentFieldError.MessageKey,
@@ -113,12 +152,5 @@ func mapCommerceBillingAddressForm(form *domain.Form, success bool) (*dto.Billin
 			})
 		}
 	}
-	return &dto.BillingAddressForm{
-		FormData:  billingFormData,
-		Processed: success,
-		ValidationInfo: dto.ValidationInfo{
-			GeneralErrors: form.ValidationInfo.GetGeneralErrors(),
-			FieldErrors:   fieldErrors,
-		},
-	}, nil
+	return fieldErrors
 }
