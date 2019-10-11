@@ -7,6 +7,8 @@ import (
 	"flamingo.me/flamingo-commerce/v3/category/infrastructure"
 	"flamingo.me/flamingo-commerce/v3/category/interfaces/controller"
 	categoryGraphql "flamingo.me/flamingo-commerce/v3/category/interfaces/graphql"
+	"flamingo.me/flamingo-commerce/v3/product"
+	"flamingo.me/flamingo-commerce/v3/search"
 	"flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/web"
 	flamingographql "flamingo.me/graphql"
@@ -57,6 +59,17 @@ func (m *Module) DefaultConfig() config.Map {
 		"commerce.category.view.teaserTemplate": "category/teaser",
 	}
 }
+
+
+
+// Depends on other modules
+func (m *Module) Depends() []dingo.Module {
+	return []dingo.Module{
+		new(product.Module),
+		new(search.Module),
+	}
+}
+
 
 type routes struct {
 	view   *controller.ViewController
