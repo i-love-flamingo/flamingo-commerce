@@ -60,8 +60,6 @@ func (m *Module) DefaultConfig() config.Map {
 	}
 }
 
-
-
 // Depends on other modules
 func (m *Module) Depends() []dingo.Module {
 	return []dingo.Module{
@@ -69,7 +67,6 @@ func (m *Module) Depends() []dingo.Module {
 		new(search.Module),
 	}
 }
-
 
 type routes struct {
 	view   *controller.ViewController
