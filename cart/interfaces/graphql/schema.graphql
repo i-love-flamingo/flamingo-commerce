@@ -11,7 +11,7 @@ type Commerce_Cart {
     purchaser: Commerce_CartPerson
     deliveries: [Commerce_CartDelivery!]
     additionalData: Commerce_CartAdditionalData!
-    #	paymentSelection: Commerce_CartPaymentSelection!
+    paymentSelection: Commerce_Cart_PaymentSelection
     belongsToAuthenticatedUser: Boolean!
     authenticatedUserID: String!
     appliedCouponCodes: [Commerce_CartCouponCode!]
@@ -26,6 +26,16 @@ type Commerce_Cart {
     appliedGiftCards: [Commerce_CartAppliedGiftCard!]
     getDeliveryByCode(deliveryCode: String!): Commerce_CartDelivery
     getDeliveryCodes: [String!]
+}
+
+interface Commerce_Cart_PaymentSelection {
+    gateway: String!
+    totalValue: Commerce_Price!
+}
+
+type Commerce_Cart_DefaultPaymentSelection implements Commerce_Cart_PaymentSelection {
+    gateway: String!
+    totalValue: Commerce_Price!
 }
 
 type Commerce_CartDecoratedDelivery {
@@ -177,6 +187,22 @@ type Commerce_CartAppliedGiftCard {
     remaining: Commerce_Price!
 }
 
+type Commerce_Cart_ValidationResult {
+    hasCommonError:        Boolean!
+    commonErrorMessageKey: String!
+    #itemResults:          [Commerce_Cart_ItemValidationError!]
+}
+
+#type Commerce_Cart_ItemValidationError {
+#    itemID:          String!
+#    errorMessageKey: String!
+#}
+
+type Commerce_Cart_PlacedOrderInfo {
+    orderNumber:    String!
+    deliveryCode:   String!
+}
+
 extend type Query {
     Commerce_Cart: Commerce_DecoratedCart!
     Commerce_Cart_GetBillingAddressForm: Commerce_Cart_BillingAddressForm!
@@ -188,11 +214,17 @@ extend type Mutation {
     Commerce_DeleteItem(itemID: ID!, deliveryCode: String!): Commerce_DecoratedCart!
     Commerce_UpdateItemQty(itemID: ID!, deliveryCode: String!, qty: Int!): Commerce_DecoratedCart!
     Commerce_Cart_UpdateBillingAddress(addressForm: Commerce_BillingAddressFormInput): Commerce_Cart_BillingAddressForm!
+    Commerce_Cart_UpdateSelectedPayment(gateway: String!, method: String!): Commerce_Cart_SelectedPaymentResult!
 }
 
 
 type Commerce_Cart_BillingAddressForm {
     formData:       Commerce_Cart_BillingAddressFormData
+    validationInfo: Commerce_Cart_Form_ValidationInfo
+    processed: Boolean
+}
+
+type Commerce_Cart_SelectedPaymentResult {
     validationInfo: Commerce_Cart_Form_ValidationInfo
     processed: Boolean
 }

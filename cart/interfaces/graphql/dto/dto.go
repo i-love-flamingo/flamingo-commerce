@@ -25,6 +25,15 @@ type (
 		MessageKey string
 		// DefaultLabel - a speaking error label. OFten used to show to end user - in case no translation exists
 		DefaultLabel string
+		//FieldName
 		FieldName    string
+	}
+
+	//SelectedPaymentResult represents the selected payment
+	SelectedPaymentResult struct {
+		//Processed
+		Processed      bool
+		//ValidationInfo
+		ValidationInfo ValidationInfo
 	}
 )

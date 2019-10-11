@@ -1,7 +1,8 @@
 package graphql
 
 import (
-	cartModel "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/checkout/application"
+	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql/dto"
 	"flamingo.me/graphql"
 	"github.com/99designs/gqlgen/codegen/config"
 )
@@ -19,6 +20,10 @@ func (*Service) Schema() []byte {
 // Models return the 'Schema name' => 'Go model' mapping of this module
 func (*Service) Models() map[string]config.TypeMapEntry {
 	return graphql.ModelMap{
-		"Commerce_AddressInput": cartModel.Address{},
+		"Commerce_Checkout_PlaceOrderResult":       dto.PlaceOrderResult{},
+		"Commerce_Checkout_OrderSuccessData":       dto.OrderSuccessData{},
+		"Commerce_Checkout_PlaceOrderPaymentInfo":  application.PlaceOrderPaymentInfo{},
+		"Commerce_Checkout_StartPlaceOrder_Status": new(dto.Status),
+		"Commerce_Checkout_Error":                  dto.Error{},
 	}.Models()
 }

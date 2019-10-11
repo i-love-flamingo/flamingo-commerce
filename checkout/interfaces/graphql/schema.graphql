@@ -1,0 +1,43 @@
+type Commerce_Checkout_PlaceOrderResult {
+    # Result can be one on the possible status
+    status: Commerce_Checkout_StartPlaceOrder_Status!
+    # If status == INVALID cartValidationResult contains the details
+    cartValidationResult: Commerce_Cart_ValidationResult
+    # if status == ORDERSUCCESS
+    orderSuccessData: Commerce_Checkout_OrderSuccessData
+    #paymentFlow:
+    error: Commerce_Checkout_Error
+}
+
+enum Commerce_Checkout_StartPlaceOrder_Status {
+    INVALID
+    ERROR
+    ORDERSUCCESS
+    PAYMENTPENDING
+}
+
+type Commerce_Checkout_OrderSuccessData {
+    paymentInfos:        [Commerce_Checkout_PlaceOrderPaymentInfo!]
+    placedOrderInfos:    [Commerce_Cart_PlacedOrderInfo!]
+    email:               String!
+    placedDecoratedCart: Commerce_DecoratedCart!
+}
+
+type Commerce_Checkout_Error {
+    isPaymentError: Boolean!
+    errorKey:       String!
+}
+
+type  Commerce_Checkout_PlaceOrderPaymentInfo {
+    gateway:         String!
+    paymentProvider: String!
+    method:          String!
+    #creditCardInfo  *placeorder.CreditCardInfo
+    amount:          Commerce_Price
+    title:           String!
+}
+
+
+extend type Mutation {
+    Commerce_Checkout_PlaceOrder(returnUrl: String!): Commerce_Checkout_PlaceOrderResult
+}
