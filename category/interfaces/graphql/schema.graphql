@@ -1,11 +1,18 @@
+type Commerce_Category_AdditionalAttributes {
+    title: String!
+    marketingTitle: String!
+    shortDescription: String!
+    content: String!
+}
+
 interface Commerce_Category {
     code: String!
     name: String!
     path: String!
     active: Boolean!
     promoted: Boolean!
+    additionalAttributes: Commerce_Category_AdditionalAttributes!
 }
-
 
 type Commerce_CategoryData implements Commerce_Category {
     code: String!
@@ -13,6 +20,7 @@ type Commerce_CategoryData implements Commerce_Category {
     path: String!
     active: Boolean!
     promoted: Boolean!
+    additionalAttributes: Commerce_Category_AdditionalAttributes!
 }
 
 interface Commerce_Tree {
