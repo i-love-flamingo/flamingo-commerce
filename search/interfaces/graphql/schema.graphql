@@ -12,9 +12,9 @@ input Commerce_Search_Request {
 }
 
 type Commerce_Search_Meta {
-    query:          String
-    originalQuery:  String
-    page:           Int
-    numPages:       Int
-    numResults:     Int
+    query:          String!
+    originalQuery:  String!
+    page:           Int!
+    numPages:       Int!
+    numResults:     Int!
 }

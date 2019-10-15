@@ -2,6 +2,7 @@ package graphql
 
 import (
 	"context"
+	"errors"
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/checkout/application"
@@ -41,6 +42,21 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutPlaceOrder(ctx contex
 	if err != nil {
 		return nil, err
 	}
+
+	if decoratedCart.Cart.IsEmpty() {
+		return &dto.PlaceOrderResult{
+			Status: dto.ERROR,
+			Error:  &dto.Error{ErrorKey: errors.New("cart is empty").Error(), IsPaymentError: false},
+		}, nil
+	}
+
+	if !decoratedCart.Cart.IsPaymentSelected() {
+		return &dto.PlaceOrderResult{
+			Status: dto.ERROR,
+			Error:  &dto.Error{ErrorKey: errors.New("payment selection is not set").Error(), IsPaymentError: false},
+		}, nil
+	}
+
 	validationResult := r.cartService.ValidateCart(ctx, web.SessionFromContext(ctx), decoratedCart)
 	if !validationResult.IsValid() {
 		return &dto.PlaceOrderResult{
