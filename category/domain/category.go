@@ -1,5 +1,10 @@
 package domain
 
+import (
+	"reflect"
+	"strings"
+)
+
 type (
 
 	// Category domain model
@@ -36,6 +41,14 @@ type (
 		LinkType   string
 		LinkTarget string
 		Media      Medias
+	}
+
+	// AdditionalAttributes - concrete additional category attributes
+	AdditionalAttributes struct {
+		Title            string
+		MarketingTitle   string
+		ShortDescription string
+		Content          string
 	}
 )
 
@@ -95,4 +108,46 @@ func (c CategoryData) Attribute(code string) interface{} {
 	}
 
 	return nil
+}
+
+// GetAdditionalAttributes - returns additional attributes
+func (c CategoryData) GetAdditionalAttributes() AdditionalAttributes {
+	if c.CategoryAttributes != nil {
+		return c.CategoryAttributes.mapToAdditionalAttributes()
+	}
+	return AdditionalAttributes{}
+}
+
+// attributeKeys - lists all available keys
+func (a Attributes) attributeKeys() []string {
+	res := make([]string, len(a))
+	i := 0
+	for k := range a {
+		res[i] = k
+		i++
+	}
+	return res
+}
+
+// mapToAdditionalAttributes - maps attributes to AdditionalAttributes struct
+func (a Attributes) mapToAdditionalAttributes() AdditionalAttributes {
+	additionalAttributes := AdditionalAttributes{}
+
+	attributeKeys := a.attributeKeys()
+	val := reflect.Indirect(reflect.ValueOf(&additionalAttributes))
+	for i := 0; i < val.NumField(); i++ {
+		structField := val.Field(i)
+		if structField.CanSet() {
+			fieldName := val.Type().Field(i).Name
+			for _, key := range attributeKeys {
+				if strings.ToLower(key) == strings.ToLower(fieldName) {
+					switch structField.Kind() {
+					case reflect.String:
+						structField.SetString(a[key].(string))
+					}
+				}
+			}
+		}
+	}
+	return additionalAttributes
 }
