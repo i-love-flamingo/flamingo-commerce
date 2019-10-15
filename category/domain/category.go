@@ -140,7 +140,7 @@ func (a Attributes) mapToAdditionalAttributes() AdditionalAttributes {
 		if structField.CanSet() {
 			fieldName := val.Type().Field(i).Name
 			for _, key := range attributeKeys {
-				if strings.ToLower(key) == strings.ToLower(fieldName) {
+				if strings.EqualFold(strings.ToLower(key), strings.ToLower(fieldName)) {
 					switch structField.Kind() {
 					case reflect.String:
 						structField.SetString(a[key].(string))
