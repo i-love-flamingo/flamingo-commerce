@@ -37,7 +37,7 @@ type Commerce_CategoryTree implements Commerce_Tree{
 
 type Commerce_Category_SearchResult {
     category:               Commerce_Category!
-    productSearchResult:    Commerce_Product_SearchResult
+    productSearchResult:    Commerce_Product_SearchResult!
 }
 
 extend type Query {

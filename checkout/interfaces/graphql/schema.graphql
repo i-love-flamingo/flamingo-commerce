@@ -33,7 +33,7 @@ type  Commerce_Checkout_PlaceOrderPaymentInfo {
     paymentProvider: String!
     method:          String!
     #creditCardInfo  *placeorder.CreditCardInfo
-    amount:          Commerce_Price
+    amount:          Commerce_Price!
     title:           String!
 }
 
