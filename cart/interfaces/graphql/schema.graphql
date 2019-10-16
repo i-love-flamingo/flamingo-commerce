@@ -277,7 +277,6 @@ input Commerce_BillingAddressFormInput {
 
 extend type Query {
     Commerce_Cart: Commerce_DecoratedCart!
-    Commerce_Cart_GetBillingAddressForm: Commerce_Cart_BillingAddressForm!
 }
 
 extend type Mutation {
