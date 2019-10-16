@@ -46,14 +46,14 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutPlaceOrder(ctx contex
 	if decoratedCart.Cart.IsEmpty() {
 		return &dto.PlaceOrderResult{
 			Status: dto.ERROR,
-			Error:  &dto.Error{ErrorKey: errors.New("cart is empty").Error(), IsPaymentError: false},
+			Error:  &dto.Error{ErrorKey: errors.New("place-order_cart-is-empty").Error(), IsPaymentError: false},
 		}, nil
 	}
 
 	if !decoratedCart.Cart.IsPaymentSelected() {
 		return &dto.PlaceOrderResult{
 			Status: dto.ERROR,
-			Error:  &dto.Error{ErrorKey: errors.New("payment selection is not set").Error(), IsPaymentError: false},
+			Error:  &dto.Error{ErrorKey: errors.New("place-order_payment-selection-not-set").Error(), IsPaymentError: false},
 		}, nil
 	}
 
