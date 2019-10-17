@@ -13,9 +13,9 @@ import (
 type (
 	// ViewController demonstrates a search view controller
 	ViewController struct {
-		Responder             *web.Responder               `inject:""`
-		SearchService         *application.SearchService   `inject:""`
-		PaginationInfoFactory *utils.PaginationInfoFactory `inject:""`
+		responder             *web.Responder
+		searchService         *application.SearchService
+		paginationInfoFactory *utils.PaginationInfoFactory
 	}
 
 	viewData struct {
@@ -24,6 +24,18 @@ type (
 		PaginationInfo utils.PaginationInfo
 	}
 )
+
+// Inject dependencies
+func (vc *ViewController) Inject(responder *web.Responder,
+	paginationInfoFactory *utils.PaginationInfoFactory,
+	searchService *application.SearchService,
+) *ViewController {
+	vc.responder = responder
+	vc.paginationInfoFactory = paginationInfoFactory
+	vc.searchService = searchService
+
+	return vc
+}
 
 // Get Response for search
 func (vc *ViewController) Get(c context.Context, r *web.Request) web.Result {
@@ -41,37 +53,37 @@ func (vc *ViewController) Get(c context.Context, r *web.Request) web.Result {
 	searchRequest.AddAdditionalFilters(domain.NewKeyValueFilters(r.QueryAll())...)
 
 	if typ, ok := r.Params["type"]; ok {
-		searchResult, err := vc.SearchService.FindBy(c, typ, searchRequest)
+		searchResult, err := vc.searchService.FindBy(c, typ, searchRequest)
 		if err != nil {
 			if re, ok := err.(*domain.RedirectError); ok {
 				u, _ := url.Parse(re.To)
-				return vc.Responder.URLRedirect(u).Permanent()
+				return vc.responder.URLRedirect(u).Permanent()
 			}
 
-			return vc.Responder.ServerError(err)
+			return vc.responder.ServerError(err)
 		}
 		vd.SearchMeta = searchResult.SearchMeta
 		vd.SearchMeta.Query = query
 		vd.SearchResult = map[string]*application.SearchResult{typ: searchResult}
-		vd.PaginationInfo = vc.PaginationInfoFactory.Build(
+		vd.PaginationInfo = vc.paginationInfoFactory.Build(
 			searchResult.SearchMeta.Page,
 			searchResult.SearchMeta.NumResults,
 			searchRequest.PageSize,
 			searchResult.SearchMeta.NumPages,
 			r.Request().URL,
 		)
-		return vc.Responder.Render("search/"+typ, vd)
+		return vc.responder.Render("search/"+typ, vd)
 	}
 
-	searchResult, err := vc.SearchService.Find(c, searchRequest)
+	searchResult, err := vc.searchService.Find(c, searchRequest)
 	if err != nil {
 		if re, ok := err.(*domain.RedirectError); ok {
 			u, _ := url.Parse(re.To)
-			return vc.Responder.URLRedirect(u).Permanent()
+			return vc.responder.URLRedirect(u).Permanent()
 		}
 
-		return vc.Responder.ServerError(err)
+		return vc.responder.ServerError(err)
 	}
 	vd.SearchResult = searchResult
-	return vc.Responder.Render("search/search", vd)
+	return vc.responder.Render("search/search", vd)
 }
