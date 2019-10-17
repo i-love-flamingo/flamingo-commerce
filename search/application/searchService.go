@@ -17,10 +17,10 @@ import (
 type (
 	// SearchService - Application service that offers a more explicit way to search for results - on top of the domain.ProductSearchService
 	SearchService struct {
-		SearchService         domain.SearchService         `inject:""`
-		PaginationInfoFactory *utils.PaginationInfoFactory `inject:""`
-		DefaultPageSize       float64                      `inject:"config:pagination.defaultPageSize,optional"`
-		Logger                flamingo.Logger              `inject:""`
+		searchService         domain.SearchService
+		paginationInfoFactory *utils.PaginationInfoFactory
+		defaultPageSize       float64
+		logger                flamingo.Logger
 	}
 
 	// SearchRequest is a simple DTO for the search query data
@@ -44,6 +44,23 @@ type (
 	}
 )
 
+//Inject dependencies
+func (s *SearchService) Inject(
+	paginationInfoFactory *utils.PaginationInfoFactory,
+	logger flamingo.Logger,
+	optionals *struct {
+		SearchService   domain.SearchService `inject:",optional"`
+		DefaultPageSize float64              `inject:"config:pagination.defaultPageSize,optional"`
+	}) *SearchService {
+	s.paginationInfoFactory = paginationInfoFactory
+	s.logger = logger
+	if optionals != nil {
+		s.searchService = optionals.SearchService
+		s.defaultPageSize = optionals.DefaultPageSize
+	}
+	return s
+}
+
 // FindBy returns a SearchResult for the given Request
 func (s *SearchService) FindBy(ctx context.Context, documentType string, searchRequest SearchRequest) (*SearchResult, error) {
 	var currentURL *url.URL
@@ -55,16 +72,16 @@ func (s *SearchService) FindBy(ctx context.Context, documentType string, searchR
 	}
 
 	if searchRequest.PaginationConfig == nil {
-		searchRequest.PaginationConfig = s.PaginationInfoFactory.DefaultConfig
+		searchRequest.PaginationConfig = s.paginationInfoFactory.DefaultConfig
 	}
 
 	// pageSize can either be set in the request, or we use the configured default or if nothing set we rely on the ProductSearchService later
 	pageSize := searchRequest.PageSize
 	if pageSize == 0 {
-		pageSize = int(s.DefaultPageSize)
+		pageSize = int(s.defaultPageSize)
 	}
 
-	result, err := s.SearchService.SearchFor(ctx, documentType, BuildFilters(searchRequest, pageSize)...)
+	result, err := s.searchService.SearchFor(ctx, documentType, BuildFilters(searchRequest, pageSize)...)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +90,7 @@ func (s *SearchService) FindBy(ctx context.Context, documentType string, searchR
 	//  10 pageSize * (3 pages* -1 ) + lastPageSize = 35 results*
 	if pageSize != 0 {
 		if err := result.SearchMeta.ValidatePageSize(pageSize); err != nil {
-			s.Logger.WithContext(ctx).WithField("category", "application.ProductSearchService").Warn("The Searchservice seems to ignore pageSize Filter")
+			s.logger.WithContext(ctx).WithField("category", "application.ProductSearchService").Warn("The Searchservice seems to ignore pageSize Filter")
 		}
 	}
 
@@ -104,16 +121,16 @@ func (s *SearchService) Find(ctx context.Context, searchRequest SearchRequest) (
 	}
 
 	if searchRequest.PaginationConfig == nil {
-		searchRequest.PaginationConfig = s.PaginationInfoFactory.DefaultConfig
+		searchRequest.PaginationConfig = s.paginationInfoFactory.DefaultConfig
 	}
 
 	// pageSize can either be set in the request, or we use the configured default or if nothing set we rely on the ProductSearchService later
 	pageSize := searchRequest.PageSize
 	if pageSize == 0 {
-		pageSize = int(s.DefaultPageSize)
+		pageSize = int(s.defaultPageSize)
 	}
 
-	result, err := s.SearchService.Search(ctx, BuildFilters(searchRequest, pageSize)...)
+	result, err := s.searchService.Search(ctx, BuildFilters(searchRequest, pageSize)...)
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +140,7 @@ func (s *SearchService) Find(ctx context.Context, searchRequest SearchRequest) (
 	if pageSize != 0 {
 		for k, r := range result {
 			if err := r.SearchMeta.ValidatePageSize(pageSize); err != nil {
-				s.Logger.WithContext(ctx).WithField("category", "application.ProductSearchService").Warn("The Searchservice seems to ignore pageSize Filter for document type ", k)
+				s.logger.WithContext(ctx).WithField("category", "application.ProductSearchService").Warn("The Searchservice seems to ignore pageSize Filter for document type ", k)
 			}
 		}
 	}
