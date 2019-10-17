@@ -79,3 +79,53 @@ func TestCategoryData_Attribute(t *testing.T) {
 		})
 	}
 }
+
+func TestAttributes_mapToAdditionalAttributes(t *testing.T) {
+	tests := []struct {
+		name  string
+		field Attributes
+		want  interface{}
+	}{
+		{
+			name: "empty attributes",
+			want: AdditionalAttributes{},
+		},
+		{
+			name: "no matching attributes",
+			field: Attributes{
+				"test": "ok",
+			},
+			want: AdditionalAttributes{},
+		},
+		{
+			name: "match title",
+			field: Attributes{
+				"title": "Title",
+			},
+			want: AdditionalAttributes{Title: "Title"},
+		},
+		{
+			name: "match all",
+			field: Attributes{
+				"title":            "Title",
+				"marketingTitle":   "MarketingTitle",
+				"shortDescription": "ShortDescription",
+				"content":          "Content",
+			},
+			want: AdditionalAttributes{
+				Title:            "Title",
+				MarketingTitle:   "MarketingTitle",
+				ShortDescription: "ShortDescription",
+				Content:          "Content",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a := tt.field
+			if got := a.mapToAdditionalAttributes(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Attributes.mapToAdditionalAttributes() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
