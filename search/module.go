@@ -13,7 +13,7 @@ type Module struct{}
 
 // Configure the search URL
 func (m *Module) Configure(injector *dingo.Injector) {
-	web.BindRoutes(injector, new(routes))
+	//web.BindRoutes(injector, new(routes))
 
 	injector.BindMulti(new(graphql.Service)).To(new(searchgraphql.Service))
 }
@@ -22,7 +22,7 @@ type routes struct {
 	controller *interfaces.ViewController
 }
 
-func (r *routes) Inject(controller *interfaces.ViewController) {
+func (r *routes) Innject(controller *interfaces.ViewController) {
 	r.controller = controller
 }
 

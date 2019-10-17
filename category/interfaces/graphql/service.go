@@ -20,16 +20,13 @@ func (*Service) Schema() []byte {
 // Models mapping for Commerce_Category types
 func (*Service) Models() map[string]config.TypeMapEntry {
 	return graphql.ModelMap{
-		"Commerce_Tree":         new(domain.Tree),
-		"Commerce_CategoryTree": domain.TreeData{},
-		"Commerce_Category":     new(domain.Category),
-		"Commerce_CategoryData": graphql.ModelMapEntry{
-			Type: domain.CategoryData{},
-			Fields: map[string]string{
-				"additionalAttributes": "GetAdditionalAttributes",
-			},
-		},
-		"Commerce_Category_SearchResult":         controller.ViewData{},
-		"Commerce_Category_AdditionalAttributes": domain.AdditionalAttributes{},
+		"Commerce_Tree":                    new(domain.Tree),
+		"Commerce_CategoryTree":            domain.TreeData{},
+		"Commerce_Category":                new(domain.Category),
+		"Commerce_CategoryData":            domain.CategoryData{},
+		"Commerce_Category_SearchResult":   controller.ViewData{},
+		"Commerce_Category_Attributes":     domain.Attributes{},
+		"Commerce_Category_Attribute":      domain.Attribute{},
+		"Commerce_Category_AttributeValue": domain.Attributevalue{},
 	}.Models()
 }

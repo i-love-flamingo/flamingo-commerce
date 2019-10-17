@@ -1,8 +1,17 @@
-type Commerce_Category_AdditionalAttributes {
-    title: String!
-    marketingTitle: String!
-    shortDescription: String!
-    content: String!
+type Commerce_Category_Attributes {
+    getAttribute(key: String!): Commerce_Category_Attribute!
+    allAttributes: [Commerce_Category_Attribute!]
+}
+
+type Commerce_Category_Attribute {
+    code: String!
+    label: String!
+    values: [Commerce_Category_AttributeValue!]
+}
+
+type Commerce_Category_AttributeValue {
+    asString: String!
+    label: String!
 }
 
 interface Commerce_Category {
@@ -11,7 +20,7 @@ interface Commerce_Category {
     path: String!
     active: Boolean!
     promoted: Boolean!
-    additionalAttributes: Commerce_Category_AdditionalAttributes!
+    attributes: Commerce_Category_Attributes!
 }
 
 type Commerce_CategoryData implements Commerce_Category {
@@ -20,7 +29,7 @@ type Commerce_CategoryData implements Commerce_Category {
     path: String!
     active: Boolean!
     promoted: Boolean!
-    additionalAttributes: Commerce_Category_AdditionalAttributes!
+    attributes: Commerce_Category_Attributes!
 }
 
 interface Commerce_Tree {
