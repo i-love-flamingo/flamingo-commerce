@@ -1,7 +1,6 @@
 package domain
 
 import (
-	"reflect"
 	"strings"
 )
 
@@ -43,7 +42,7 @@ type (
 		Media      Medias
 	}
 
-	// AdditionalAttributes - concrete additional category attributes
+	// AdditionalAttributes - concrete additional category attributes (see searchperience category)
 	AdditionalAttributes struct {
 		Title            string
 		MarketingTitle   string
@@ -132,22 +131,28 @@ func (a Attributes) attributeKeys() []string {
 // mapToAdditionalAttributes - maps attributes to AdditionalAttributes struct
 func (a Attributes) mapToAdditionalAttributes() AdditionalAttributes {
 	additionalAttributes := AdditionalAttributes{}
-
 	attributeKeys := a.attributeKeys()
-	val := reflect.Indirect(reflect.ValueOf(&additionalAttributes))
-	for i := 0; i < val.NumField(); i++ {
-		structField := val.Field(i)
-		if structField.CanSet() {
-			fieldName := val.Type().Field(i).Name
-			for _, key := range attributeKeys {
-				if strings.EqualFold(strings.ToLower(key), strings.ToLower(fieldName)) {
-					switch structField.Kind() {
-					case reflect.String:
-						structField.SetString(a[key].(string))
-					}
-				}
+
+	for _, key := range attributeKeys {
+		switch strings.ToLower(key) {
+		case "title":
+			if value, ok := a[key].(string); ok {
+				additionalAttributes.Title = value
+			}
+		case "marketingtitle":
+			if value, ok := a[key].(string); ok {
+				additionalAttributes.MarketingTitle = value
+			}
+		case "shortdescription":
+			if value, ok := a[key].(string); ok {
+				additionalAttributes.ShortDescription = value
+			}
+		case "content":
+			if value, ok := a[key].(string); ok {
+				additionalAttributes.Content = value
 			}
 		}
 	}
+
 	return additionalAttributes
 }
