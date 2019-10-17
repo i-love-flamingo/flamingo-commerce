@@ -1,8 +1,6 @@
 package domain
 
-import (
-	"strings"
-)
+import "fmt"
 
 type (
 
@@ -33,21 +31,26 @@ type (
 	}
 
 	// Attributes define additional category attributes
-	Attributes map[string]interface{}
+	Attributes map[string]Attribute
+
+	// Attribute instance representation
+	Attribute struct {
+		Code   string
+		Label  string
+		Values []Attributevalue
+	}
+
+	//Attributevalue represents the value that a Attribute can have
+	Attributevalue struct {
+		Value interface{}
+		Label string
+	}
 
 	// Promotion defines promotion for a category
 	Promotion struct {
 		LinkType   string
 		LinkTarget string
 		Media      Medias
-	}
-
-	// AdditionalAttributes - concrete additional category attributes (see searchperience category)
-	AdditionalAttributes struct {
-		Title            string
-		MarketingTitle   string
-		ShortDescription string
-		Content          string
 	}
 )
 
@@ -109,50 +112,24 @@ func (c CategoryData) Attribute(code string) interface{} {
 	return nil
 }
 
-// GetAdditionalAttributes - returns additional attributes
-func (c CategoryData) GetAdditionalAttributes() AdditionalAttributes {
-	if c.CategoryAttributes != nil {
-		return c.CategoryAttributes.mapToAdditionalAttributes()
-	}
-	return AdditionalAttributes{}
+// GetAttribute by key
+func (a Attributes) GetAttribute(key string) Attribute {
+	return a[key]
 }
 
-// attributeKeys - lists all available keys
-func (a Attributes) attributeKeys() []string {
-	res := make([]string, len(a))
-	i := 0
-	for k := range a {
-		res[i] = k
-		i++
+// AllAttributes returns all Attributes as slice
+func (a Attributes) AllAttributes() []Attribute {
+	var att []Attribute
+	for _, v := range a {
+		att = append(att, v)
 	}
-	return res
+	return att
 }
 
-// mapToAdditionalAttributes - maps attributes to AdditionalAttributes struct
-func (a Attributes) mapToAdditionalAttributes() AdditionalAttributes {
-	additionalAttributes := AdditionalAttributes{}
-	attributeKeys := a.attributeKeys()
-
-	for _, key := range attributeKeys {
-		switch strings.ToLower(key) {
-		case "title":
-			if value, ok := a[key].(string); ok {
-				additionalAttributes.Title = value
-			}
-		case "marketingtitle":
-			if value, ok := a[key].(string); ok {
-				additionalAttributes.MarketingTitle = value
-			}
-		case "shortdescription":
-			if value, ok := a[key].(string); ok {
-				additionalAttributes.ShortDescription = value
-			}
-		case "content":
-			if value, ok := a[key].(string); ok {
-				additionalAttributes.Content = value
-			}
-		}
+// AsString returns String representation of the Value
+func (av Attributevalue) AsString() string {
+	if stringer, ok := av.Value.(fmt.Stringer); ok {
+		return stringer.String()
 	}
-
-	return additionalAttributes
+	return av.Value.(string)
 }
