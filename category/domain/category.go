@@ -3,7 +3,6 @@ package domain
 import "fmt"
 
 type (
-
 	// Category domain model
 	Category interface {
 		Code() string
@@ -37,13 +36,13 @@ type (
 	Attribute struct {
 		Code   string
 		Label  string
-		Values []Attributevalue
+		Values []AttributeValue
 	}
 
-	//Attributevalue represents the value that a Attribute can have
-	Attributevalue struct {
-		Value interface{}
+	//AttributeValue represents the value that a Attribute can have
+	AttributeValue struct {
 		Label string
+		Value interface{}
 	}
 
 	// Promotion defines promotion for a category
