@@ -14,7 +14,7 @@ type (
 		CategoryType() string
 		Media() Medias
 		Attributes() Attributes
-		Attribute(string) interface{}
+		Attribute(string) *Attribute
 	}
 
 	// CategoryData defines the default domain category data model
@@ -104,11 +104,10 @@ func (c CategoryData) Attributes() Attributes {
 }
 
 // Attribute gets an additional category attribute, returns nil if not available
-func (c CategoryData) Attribute(code string) interface{} {
-	if v, ok := c.CategoryAttributes[code]; ok {
-		return v
+func (c CategoryData) Attribute(code string) *Attribute {
+	if att, ok := c.CategoryAttributes[code]; ok {
+		return &att
 	}
-
 	return nil
 }
 

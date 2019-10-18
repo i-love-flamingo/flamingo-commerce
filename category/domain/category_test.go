@@ -6,6 +6,7 @@ import (
 )
 
 func TestCategoryData_Attribute(t *testing.T) {
+	var nilAtt *Attribute
 	type fields struct {
 		CategoryCode       string
 		CategoryName       string
@@ -29,7 +30,7 @@ func TestCategoryData_Attribute(t *testing.T) {
 			args: args{
 				code: "test",
 			},
-			want: nil,
+			want: nilAtt,
 		},
 		{
 			name: "not found",
@@ -38,16 +39,16 @@ func TestCategoryData_Attribute(t *testing.T) {
 			},
 			fields: fields{
 				CategoryAttributes: Attributes{
-					"test": "ok",
+					"test": Attribute{Values: []Attributevalue{{Value: "ok"}}},
 				},
 			},
-			want: nil,
+			want: nilAtt,
 		},
 		{
 			args: args{
 				code: "test",
 			},
-			want: nil,
+			want: nilAtt,
 		},
 		{
 			name: "found",
@@ -56,10 +57,10 @@ func TestCategoryData_Attribute(t *testing.T) {
 			},
 			fields: fields{
 				CategoryAttributes: Attributes{
-					"test": "ok",
+					"test": Attribute{Values: []Attributevalue{{Value: "ok"}}},
 				},
 			},
-			want: "ok",
+			want: &Attribute{Values: []Attributevalue{{Value: "ok"}}},
 		},
 	}
 	for _, tt := range tests {
@@ -75,56 +76,6 @@ func TestCategoryData_Attribute(t *testing.T) {
 			}
 			if got := c.Attribute(tt.args.code); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("CategoryData.Attribute() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestAttributes_mapToAdditionalAttributes(t *testing.T) {
-	tests := []struct {
-		name  string
-		field Attributes
-		want  interface{}
-	}{
-		{
-			name: "empty attributes",
-			want: AdditionalAttributes{},
-		},
-		{
-			name: "no matching attributes",
-			field: Attributes{
-				"test": "ok",
-			},
-			want: AdditionalAttributes{},
-		},
-		{
-			name: "match title",
-			field: Attributes{
-				"title": "Title",
-			},
-			want: AdditionalAttributes{Title: "Title"},
-		},
-		{
-			name: "match all",
-			field: Attributes{
-				"title":            "Title",
-				"marketingTitle":   "MarketingTitle",
-				"shortDescription": "ShortDescription",
-				"content":          "Content",
-			},
-			want: AdditionalAttributes{
-				Title:            "Title",
-				MarketingTitle:   "MarketingTitle",
-				ShortDescription: "ShortDescription",
-				Content:          "Content",
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			a := tt.field
-			if got := a.mapToAdditionalAttributes(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Attributes.mapToAdditionalAttributes() = %v, want %v", got, tt.want)
 			}
 		})
 	}
