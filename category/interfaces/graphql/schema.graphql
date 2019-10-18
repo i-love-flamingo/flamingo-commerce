@@ -1,5 +1,5 @@
 type Commerce_Category_Attributes {
-    getAttribute(key: String!): Commerce_Category_Attribute!
+    getAttribute(code: String!): Commerce_Category_Attribute!
     allAttributes: [Commerce_Category_Attribute!]
 }
 
