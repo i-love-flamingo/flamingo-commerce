@@ -27,6 +27,6 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		"Commerce_Category_SearchResult":   controller.ViewData{},
 		"Commerce_Category_Attributes":     domain.Attributes{},
 		"Commerce_Category_Attribute":      domain.Attribute{},
-		"Commerce_Category_AttributeValue": domain.Attributevalue{},
+		"Commerce_Category_AttributeValue": domain.AttributeValue{},
 	}.Models()
 }

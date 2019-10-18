@@ -1,6 +1,8 @@
 package domain
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type (
 	// Category domain model
@@ -41,8 +43,8 @@ type (
 
 	//AttributeValue represents the value that a Attribute can have
 	AttributeValue struct {
-		Label string
-		Value interface{}
+		Label    string
+		RawValue interface{}
 	}
 
 	// Promotion defines promotion for a category
@@ -111,8 +113,8 @@ func (c CategoryData) Attribute(code string) *Attribute {
 }
 
 // GetAttribute by key
-func (a Attributes) GetAttribute(key string) Attribute {
-	return a[key]
+func (a Attributes) GetAttribute(code string) Attribute {
+	return a[code]
 }
 
 // AllAttributes returns all Attributes as slice
@@ -124,10 +126,10 @@ func (a Attributes) AllAttributes() []Attribute {
 	return att
 }
 
-// AsString returns String representation of the Value
-func (av Attributevalue) AsString() string {
-	if stringer, ok := av.Value.(fmt.Stringer); ok {
+// Value returns string representation of the RawValue
+func (av AttributeValue) Value() string {
+	if stringer, ok := av.RawValue.(fmt.Stringer); ok {
 		return stringer.String()
 	}
-	return av.Value.(string)
+	return av.RawValue.(string)
 }
