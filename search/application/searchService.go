@@ -6,6 +6,7 @@ package application
 
 import (
 	"context"
+	"errors"
 	"net/url"
 
 	"flamingo.me/flamingo-commerce/v3/search/domain"
@@ -63,6 +64,9 @@ func (s *SearchService) Inject(
 
 // FindBy returns a SearchResult for the given Request
 func (s *SearchService) FindBy(ctx context.Context, documentType string, searchRequest SearchRequest) (*SearchResult, error) {
+	if s.searchService == nil {
+		return nil, errors.New("No searchservice available")
+	}
 	var currentURL *url.URL
 	request := web.RequestFromContext(ctx)
 	if request == nil {
@@ -112,6 +116,9 @@ func (s *SearchService) FindBy(ctx context.Context, documentType string, searchR
 
 // Find returns a Searchresult for all document types for the given Request
 func (s *SearchService) Find(ctx context.Context, searchRequest SearchRequest) (map[string]*SearchResult, error) {
+	if s.searchService == nil {
+		return nil, errors.New("No searchservice available")
+	}
 	var currentURL *url.URL
 	request := web.RequestFromContext(ctx)
 	if request == nil {
