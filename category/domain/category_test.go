@@ -39,7 +39,7 @@ func TestCategoryData_Attribute(t *testing.T) {
 			},
 			fields: fields{
 				CategoryAttributes: Attributes{
-					"test": Attribute{Values: []Attributevalue{{Value: "ok"}}},
+					"test": Attribute{Values: []AttributeValue{{RawValue: "ok"}}},
 				},
 			},
 			want: nilAtt,
@@ -57,10 +57,10 @@ func TestCategoryData_Attribute(t *testing.T) {
 			},
 			fields: fields{
 				CategoryAttributes: Attributes{
-					"test": Attribute{Values: []Attributevalue{{Value: "ok"}}},
+					"test": Attribute{Values: []AttributeValue{{RawValue: "ok"}}},
 				},
 			},
-			want: &Attribute{Values: []Attributevalue{{Value: "ok"}}},
+			want: &Attribute{Values: []AttributeValue{{RawValue: "ok"}}},
 		},
 	}
 	for _, tt := range tests {
