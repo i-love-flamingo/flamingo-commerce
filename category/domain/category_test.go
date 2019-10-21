@@ -74,7 +74,7 @@ func TestCategoryData_Attribute(t *testing.T) {
 				CategoryTypeCode:   tt.fields.CategoryTypeCode,
 				CategoryAttributes: tt.fields.CategoryAttributes,
 			}
-			if got := c.Attribute(tt.args.code); !reflect.DeepEqual(got, tt.want) {
+			if got := c.Attributes().Get(tt.args.code); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("CategoryData.Attribute() = %v, want %v", got, tt.want)
 			}
 		})

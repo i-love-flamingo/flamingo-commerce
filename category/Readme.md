@@ -38,6 +38,34 @@ This module provides two data controller that can be used to get category and tr
 * product package: (for product searchservice) 
 * search package: (for pagination)
 
+
+## GraphQL
+
+This module offers GraphQL Shema and Resolver to get Categories.
+
+Example:
+
+```graphql
+query category {
+  Commerce_Category(categoryCode:"flat-screen_tvs") {
+    	category {
+        code
+        attributes {
+          all {code}
+          metaKeywords:get(code:"meta_keywords") {values{value}}
+          hasMetaKeywords: has(code:"meta_keywords")
+        }
+      }
+    productSearchResult {
+      products {
+        baseData {title}
+      }
+    }
+  }
+}
+```
+
+
 ## Category tree from config
 
 The module comes also with a Adapter for the secondary port "CategoryService" which can be activated by setting `commerce.category.useCategoryFixedAdapter: true`
@@ -74,3 +102,6 @@ commerce:
           name: Clothes & Fashion
           sort: 2
 ```
+
+
+
