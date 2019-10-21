@@ -1,6 +1,7 @@
 type Commerce_Category_Attributes {
-    getAttribute(code: String!): Commerce_Category_Attribute!
-    allAttributes: [Commerce_Category_Attribute!]
+    get(code: String!): Commerce_Category_Attribute
+    has(code: String!): Boolean
+    all: [Commerce_Category_Attribute!]
 }
 
 type Commerce_Category_Attribute {

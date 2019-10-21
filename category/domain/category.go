@@ -15,7 +15,6 @@ type (
 		CategoryType() string
 		Media() Medias
 		Attributes() Attributes
-		Attribute(string) *Attribute
 	}
 
 	// CategoryData defines the default domain category data model
@@ -104,21 +103,24 @@ func (c CategoryData) Attributes() Attributes {
 	return c.CategoryAttributes
 }
 
-// Attribute gets an additional category attribute, returns nil if not available
-func (c CategoryData) Attribute(code string) *Attribute {
-	if att, ok := c.CategoryAttributes[code]; ok {
+// Get by key
+func (a Attributes) Get(code string) *Attribute {
+	if att, ok := a[code]; ok {
 		return &att
 	}
 	return nil
 }
 
-// GetAttribute by key
-func (a Attributes) GetAttribute(code string) Attribute {
-	return a[code]
+// Has by key
+func (a Attributes) Has(code string) bool {
+	if _, ok := a[code]; ok {
+		return true
+	}
+	return false
 }
 
-// AllAttributes returns all Attributes as slice
-func (a Attributes) AllAttributes() []Attribute {
+// All returns all Attributes as slice
+func (a Attributes) All() []Attribute {
 	var att []Attribute
 	for _, v := range a {
 		att = append(att, v)
