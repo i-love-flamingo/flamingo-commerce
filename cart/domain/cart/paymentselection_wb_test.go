@@ -163,7 +163,7 @@ func Test_CanBuildSimpleSelectionWithGiftCardFullPayment(t *testing.T) {
 	assert.Equal(t, domain.NewFromInt(1198, 100, "€").FloatAmount(), selection.CartSplit().ChargesByType().GetByTypeForced(domain.ChargeTypeGiftCard).Value.FloatAmount())
 
 	_, found := selection.CartSplit().ChargesByType().GetByType(domain.ChargeTypeMain)
-	assert.False(t, found, "cart fully payed with gift card, there should be no main charge left")
+	assert.False(t, found, "cart fully paid with gift card, there should be no main charge left")
 }
 
 func Test_CanCalculateGiftCardChargeWithRest(t *testing.T) {

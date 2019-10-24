@@ -113,11 +113,11 @@ func RemoveZeroCharges(selection PaymentSelection, chargeTypeToPaymentMethod map
 	result := DefaultPaymentSelection{
 		GatewayProp: selection.Gateway(),
 	}
-	builder := PaymentSplitByItemBuilder{}
+	builder := &PaymentSplitByItemBuilder{}
 	// remove all zero charges from selection with helper function
-	removeZeroChargesFromSplit(&builder, selection.ItemSplit().CartItems, chargeTypeToPaymentMethod, builder.AddCartItem)
-	removeZeroChargesFromSplit(&builder, selection.ItemSplit().ShippingItems, chargeTypeToPaymentMethod, builder.AddShippingItem)
-	removeZeroChargesFromSplit(&builder, selection.ItemSplit().TotalItems, chargeTypeToPaymentMethod, builder.AddTotalItem)
+	removeZeroChargesFromSplit(selection.ItemSplit().CartItems, chargeTypeToPaymentMethod, builder.AddCartItem)
+	removeZeroChargesFromSplit(selection.ItemSplit().ShippingItems, chargeTypeToPaymentMethod, builder.AddShippingItem)
+	removeZeroChargesFromSplit(selection.ItemSplit().TotalItems, chargeTypeToPaymentMethod, builder.AddTotalItem)
 
 	result.ChargedItemsProp = builder.Build()
 	return result
@@ -125,8 +125,11 @@ func RemoveZeroCharges(selection PaymentSelection, chargeTypeToPaymentMethod map
 
 // removeZeroChargesFromSplit remove charges from single item splits
 // helper which overwrites passed builder instance with adjusted charges
-func removeZeroChargesFromSplit(builder *PaymentSplitByItemBuilder, paymentSplit map[string]PaymentSplit,
-	chargeTypeToPaymentMethod map[string]string, add builderAddFunc) {
+func removeZeroChargesFromSplit(
+	paymentSplit map[string]PaymentSplit,
+	chargeTypeToPaymentMethod map[string]string,
+	add builderAddFunc,
+) {
 	for id, split := range paymentSplit {
 		for qualifier, charge := range split.ChargesByType().GetAllCharges() {
 			// charge should be transformed to payable
@@ -142,7 +145,7 @@ func removeZeroChargesFromSplit(builder *PaymentSplitByItemBuilder, paymentSplit
 			}
 			// we assume that map of types and method matches
 			method, _ := chargeTypeToPaymentMethod[qualifier.Type]
-			builder = add(id, method, charge)
+			add(id, method, charge)
 		}
 	}
 }

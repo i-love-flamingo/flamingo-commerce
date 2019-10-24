@@ -13,7 +13,7 @@ Price calculation is not a trivial topic and multiple solutions exist.
 The implementation details of the price object is:
 
 * internally we use big.Float to hold the amount, this is to be able to calculate exactly
-* however a float like representation of an amount cannot be payed, that is why the price has a method "GetPayablePrice" that returns a Price that can be payed in the given currency, using correct rounding and amount representation
+* however a float like representation of an amount cannot be paid, that is why the price has a method "GetPayablePrice" that returns a Price that can be paid in the given currency, using correct rounding and amount representation
 
 
 ### Example:
@@ -27,10 +27,10 @@ rowPrice := price.Multiply(10)
 // 10% discount
 discountedRowPrice := rowPrice.Discounted(10.0)
 
-// What needs to be payed:
+// What needs to be paid:
 priceToPay := discountedRowPrice.GetPayable()
 
-// what needs to be payed by item()
+// what needs to be paid by item()
 singleItemsPrices := discountedRowPrice.SplitInPayables(10)
 
 // you can also set price from float:
@@ -41,8 +41,8 @@ Be aware that `price.Equals(price2)` may be false but due to float arithmetic bu
 `price.GetPayable().Equals(price2.GetPayable())` will be true
 
 ## Charge:
-Represents a price together with a type. A charge has a values price (normaly in default currency) and a the price that is payed that might be in a different currency.
-Can be used in places where you need to give the price value a certain extra semantic information or to represent something that need to be payed (charged).
+Represents a price together with a type. A charge has a values price (normally in default currency) and a the price that is paid that might be in a different currency.
+Can be used in places where you need to give the price value a certain extra semantic information or to represent something that need to be paid (charged).
 
 ## Template Func - Formatting a Price Object
 

@@ -14,7 +14,7 @@ The cart module is one of the main modules in Flamingo Commerce. It offers:
     * Sample adapter for the secondary ports that maneges the cart in memory.
     * Sample adapter that will send an email when placing the cart (not functional at the moment)
 
-There will be additional Flamingo modules that provide adpaters for the secondary ports against common e-commerce APIs like Magento 2.
+There will be additional Flamingo modules that provide adapters for the secondary ports against common e-commerce APIs like Magento 2.
 The cart module and its services are used by the checkout module.
 
 ## Usage
@@ -223,7 +223,7 @@ The Key with "()" in the list are methods and it is assumed as an invariant, tha
 
 | Key                               | Desc                                                                                                                                                | Math                                                                                                                                                     |
 |-----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| GrandTotal()                      | The final amount that need to be payed by the customer (Gross)                                                                                      | = SubTotalGross()  - SumTotalDiscountAmount() + Totalitems                                                                                               |
+| GrandTotal()                      | The final amount that need to be paid by the customer (Gross)                                                                                      | = SubTotalGross()  - SumTotalDiscountAmount() + Totalitems                                                                                               |
 | Totalitems                        | List of (additional) Totalitems. Each have a certain type - you may want to show some of them in the frontend.                                      |                                                                                                                                                          |
 | SumShippingNet()                  | Sum of all shipping costs as Price                                                                                                               | The sum of the deliveries shipping                                                                                                                       |
 | SubTotalGross()                   |                                                                                                                                                     | Sum of deliveries SubTotalGross()                                                                                                                        |
@@ -250,7 +250,7 @@ B2C use cases:
     * RowPriceGross
     * RowPriceGrossWithDiscount
 
-* The cart normaly shows:
+* The cart normally shows:
    * SubTotalGross
    * Carttotals (non taxable extra lines on cart level)
    * Shipping
@@ -287,9 +287,9 @@ If you have read the sections above you know about the different prices that are
 
 There is something else that this cart model supports - we call it "charges". All the price amounts mentioned in the previous chapters represents the value of the items in the carts default currency.
 
-However this value need to be payed - when paying the value it can be that:
+However this value need to be paid - when paying the value it can be that:
 - customer wants to pay with different payment methods (e.g. 50% of the value with PayPal and the rest with Creditcard)
-- also the value can be payed in a different currency
+- also the value can be paid in a different currency
 
 
 The desired split of charges is saved on the cart with the "UpdatePaymentSelection" command.
@@ -299,7 +299,7 @@ Use the factory `NewDefaultPaymentSelection` for this, which also supports gift 
 
 If you want to use the feature it is important to know how the cart charge split should be generated:
 
-1. the product that is in the cart might require that his price is payed in certain charges. An example for this is products that need to be payed in miles.
+1. the product that is in the cart might require that his price is paid in certain charges. An example for this is products that need to be paid in miles.
 2. the customer might want to select a split by himself
 
 You can use the factory on the decorated cart to get a valid PaymentSelection based on the two facts

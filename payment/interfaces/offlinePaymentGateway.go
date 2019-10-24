@@ -60,7 +60,7 @@ func (o *OfflineWebCartPaymentGateway) isSupportedMethod(method string) bool {
 func (o *OfflineWebCartPaymentGateway) checkCart(currentCart *cartDomain.Cart) error {
 	// Read the infos in the cart and check precondition
 	if currentCart.PaymentSelection.Gateway() != OfflineWebCartPaymentGatewayCode {
-		return errors.New("cart is not supposed to be payed by this gateway")
+		return errors.New("cart is not supposed to be paid by this gateway")
 	}
 	for qualifier := range currentCart.PaymentSelection.CartSplit() {
 		if !o.isSupportedMethod(qualifier.Method) {

@@ -26,7 +26,7 @@
 * the product might be currently discounted and has a discounted price (the discounted price is also either gross or net like the normal price)
 
 About Charges:
-* A Charge is a price that needs to be payed for that product. This is normally the product price.
+* A Charge is a price that needs to be paid for that product. This is normally the product price.
 * But this concept allows to control "in what currency and type" a customer needs to pay the price of the product (See loyalty below)
 
 Loyalty prices:

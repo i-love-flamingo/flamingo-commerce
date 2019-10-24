@@ -66,6 +66,6 @@ checkout:
 
 ## Sourcing Service Secondary Ports
 There is the an optional secondary port provided, that we call "Sourcing Service".
-The Sourcing service is responsible for assigning an Item in the cart the correct source location. The source location is the location where the item should be fullfilled from. Typically a warehouse.
+The Sourcing service is responsible for assigning an Item in the cart the correct source location. The source location is the location where the item should be fulfilled from. Typically a warehouse.
 
 By providing an adapter for this port you can control the source locations for the items in your cart.
