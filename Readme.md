@@ -6,48 +6,50 @@ Contains modules that helps building powerful and flexible ecommerce websites.
 
 Read more under [docs.flamingo.me](https://docs.flamingo.me/4.%20Flamingo%20Commerce/1.%20Introduction/About%20Flamingo%20Commerce.html)
 
+A demoshop is online here https://demoshop.flamingo.me with the graphQL console available also: https://demoshop.flamingo.me/en/graphql-console
+
 ## Commerce Modules:
 
 * **price**: 
     * Offers value objects for prices and charges - supporting calculations, rounding and splitting
     * [![GoDoc](https://godoc.org/github.com/i-love-flamingo/flamingo-commerce/price?status.svg)](https://godoc.org/github.com/i-love-flamingo/flamingo-commerce/price)
-    * [Readme](docs/2.%20Flamingo%20Commerce%20Modules/10.%20Price.md)
+    * [Readme](price/Readme.md)
 * **product**: 
     * Offers domain models and interface logic for handling different product types
     * [![GoDoc](https://godoc.org/github.com/i-love-flamingo/flamingo-commerce/product?status.svg)](https://godoc.org/github.com/i-love-flamingo/flamingo-commerce/product) 
-    * [Readme](docs/2.%20Flamingo%20Commerce%20Modules/01.%20Product%20Module.md)
+    * [Readme](product/Readme.md)
 * **category**: 
     * Offers domain models and interface logic for category tree and category views
     * [![GoDoc](https://godoc.org/github.com/i-love-flamingo/flamingo-commerce/category?status.svg)](https://godoc.org/github.com/i-love-flamingo/flamingo-commerce/category) 
-    * [Readme](docs/2.%20Flamingo%20Commerce%20Modules/02.%20Category%20Module.md)
+    * [Readme](category/Readme.md)
 * **cart**: 
     * The cart module is one of the main modules in Flamingo Commerce. It offers domain models and logic for multi delivery, multi payment carts.
     * [![GoDoc](https://godoc.org/github.com/i-love-flamingo/flamingo-commerce/cart/domain/cart?status.svg)](https://godoc.org/github.com/i-love-flamingo/flamingo-commerce/domain/cart) 
-    * [Readme](docs/2.%20Flamingo%20Commerce%20Modules/03.%20Cart%20Module.md)
+    * [Readme](cart/Readme.md)
 * **payment**: 
     * Offers a generic payment value objects as well as a generic web payment interface and comes with the "offlinepayment" gateway.
     * [![GoDoc](https://godoc.org/github.com/i-love-flamingo/flamingo-commerce/payment/domain?status.svg)](https://godoc.org/github.com/i-love-flamingo/flamingo-commerce/payment/domain) 
-    * [Readme](docs/2.%20Flamingo%20Commerce%20Modules/11.%20Payment.md)
+    * [Readme](payment/Readme.md)
 * **search**: 
     * Offers domain models and interface logic for generic search and search filters.
     * [![GoDoc](https://godoc.org/github.com/i-love-flamingo/flamingo-commerce/search/domain?status.svg)](https://godoc.org/github.com/i-love-flamingo/flamingo-commerce/search/domain) 
-    * [Readme](docs/2.%20Flamingo%20Commerce%20Modules/07.%20Search%20Module.md)
+    * [Readme](search/Readme.md)
 * **checkout**: 
     * Offers a default checkout implementation that can be used.
     * [![GoDoc](https://godoc.org/github.com/i-love-flamingo/flamingo-commerce/checkout?status.svg)](https://godoc.org/github.com/i-love-flamingo/flamingo-commerce/checkout) 
-    * [Readme](docs/2.%20Flamingo%20Commerce%20Modules/04.%20Checkout%20Module.md)
+    * [Readme](checkout/Readme.md)
 * **customer**: 
     * Offers domain models for customer
     * [![GoDoc](https://godoc.org/github.com/i-love-flamingo/flamingo-commerce/customer/domain?status.svg)](https://godoc.org/github.com/i-love-flamingo/flamingo-commerce/customer/domain) 
-    * [Readme](docs/2.%20Flamingo%20Commerce%20Modules/06.%20Customer%20Module.md)
+    * [Readme](customer/Readme.md)
 * **order**: 
     * Offers domain models for orders. For example to use it on a "My Orders" page.
     * [![GoDoc](https://godoc.org/github.com/i-love-flamingo/flamingo-commerce/order/domain?status.svg)](https://godoc.org/github.com/i-love-flamingo/flamingo-commerce/order/domain) 
-    * [Readme](docs/2.%20Flamingo%20Commerce%20Modules/05.%20Order%20Module)
+    * [Readme](order/Readme.md)
 
 * **w3cdatalayer**: 
     * Offers interface logic to render a Datalayer that can be used for e-commerce tracking
-    * [Readme](docs/2.%20Flamingo%20Commerce%20Modules/08.%20W3C%20Datalayer.md)
+    * [Readme](w3cdatalayer/Readme.md)
     
 # Flamingo Commerce in Beta
 
