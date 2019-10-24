@@ -20,3 +20,4 @@ script:
   - go test -race -vet=all ./...
   - go run github.com/fzipp/gocyclo -top 20 .
   - go run github.com/client9/misspell/cmd/misspell -error .
+  - go run github.com/gordonklaus/ineffassign .
