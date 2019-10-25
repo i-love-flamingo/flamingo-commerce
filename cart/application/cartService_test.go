@@ -453,7 +453,7 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 						&struct {
 							CartCache cartApplication.CartCache `inject:",optional"`
 						}{
-							CartCache: new(MockCartWithItemCache),
+							CartCache: new(MockCartWithItemCacheWithAdditionalData),
 						},
 					)
 					return result
@@ -469,19 +469,18 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 					DeleteEmptyDelivery: false,
 				},
 				DeliveryInfoBuilder: new(MockDeliveryInfoBuilder),
-				CartCache:           new(MockCartWithItemCache),
+				CartCache:           new(MockCartWithItemCacheWithAdditionalData),
 				RestrictionService:  nil,
 				PlaceOrderService:   &MockPlaceOrderService{},
 			},
 			args: args{
 				ctx:     context.Background(),
 				session: web.EmptySession().Store(cartApplication.GuestCartSessionKey, "some_guest_id"),
-				force:   false,
 			},
 			want: "201910251128792ZM",
 		},
 		{
-			name: "force reserved order id, reserved before",
+			name: "reserved order id, not reserved before",
 			fields: fields{
 				CartReceiverService: func() *cartApplication.CartReceiverService {
 					result := &cartApplication.CartReceiverService{}
@@ -527,7 +526,6 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 			args: args{
 				ctx:     context.Background(),
 				session: web.EmptySession().Store(cartApplication.GuestCartSessionKey, "some_guest_id"),
-				force:   true,
 			},
 			want: "201910251128788TD",
 		},
@@ -561,18 +559,181 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 				},
 			)
 
-			var got *cartDomain.Cart
-			if tt.args.force == true {
-				got, _ = cs.ForceReserveOrderIDAndSave(tt.args.ctx, tt.args.session)
-			} else {
-				got, _ = cs.ReserveOrderIDAndSave(tt.args.ctx, tt.args.session)
-			}
+			got, _ := cs.ReserveOrderIDAndSave(tt.args.ctx, tt.args.session)
 
 			reservedOrderIDFromGot := got.AdditionalData.ReservedOrderID
 			if reservedOrderIDFromGot != tt.want {
 				t.Errorf("CartService.ReserveOrderIDAndSave() got!=want, got: %s, want: %s", reservedOrderIDFromGot, tt.want)
 			}
+		})
+	}
+}
 
+func TestCartService_ForceReserveOrderIDAndSave(t *testing.T) {
+	type fields struct {
+		CartReceiverService *cartApplication.CartReceiverService
+		ProductService      productDomain.ProductService
+		Logger              flamingo.Logger
+		EventPublisher      events.EventPublisher
+		EventRouter         flamingo.EventRouter
+		RestrictionService  *validation.RestrictionService
+		config              *struct {
+			DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
+			DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
+		}
+		DeliveryInfoBuilder cartDomain.DeliveryInfoBuilder
+		CartCache           cartApplication.CartCache
+		PlaceOrderService   placeorder.Service
+	}
+
+	type args struct {
+		ctx     context.Context
+		session *web.Session
+		force   bool
+	}
+
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+		want   string
+	}{
+		{
+			name: "force reserved order id, reserved before",
+			fields: fields{
+				CartReceiverService: func() *cartApplication.CartReceiverService {
+					result := &cartApplication.CartReceiverService{}
+					result.Inject(
+						new(MockGuestCartServiceWithModifyBehaviour),
+						new(MockCustomerCartService),
+						func() *decorator.DecoratedCartFactory {
+							result := &decorator.DecoratedCartFactory{}
+							result.Inject(
+								&MockProductService{},
+								flamingo.NullLogger{},
+							)
+
+							return result
+						}(),
+						&authApplication.AuthManager{},
+						&authApplication.UserService{},
+						flamingo.NullLogger{},
+						nil,
+						&struct {
+							CartCache cartApplication.CartCache `inject:",optional"`
+						}{
+							CartCache: new(MockCartWithItemCacheWithAdditionalData),
+						},
+					)
+					return result
+				}(),
+				ProductService: &MockProductService{},
+				Logger:         flamingo.NullLogger{},
+				EventPublisher: new(MockEventPublisher),
+				config: &struct {
+					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
+					DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
+				}{
+					DefaultDeliveryCode: "default_delivery_code",
+					DeleteEmptyDelivery: false,
+				},
+				DeliveryInfoBuilder: new(MockDeliveryInfoBuilder),
+				CartCache:           new(MockCartWithItemCacheWithAdditionalData),
+				RestrictionService:  nil,
+				PlaceOrderService:   &MockPlaceOrderService{},
+			},
+			args: args{
+				ctx:     context.Background(),
+				session: web.EmptySession().Store(cartApplication.GuestCartSessionKey, "some_guest_id"),
+			},
+			want: "201910251128788TD",
+		},
+		{
+			name: "force reserved order id, not reserved before",
+			fields: fields{
+				CartReceiverService: func() *cartApplication.CartReceiverService {
+					result := &cartApplication.CartReceiverService{}
+					result.Inject(
+						new(MockGuestCartServiceWithModifyBehaviour),
+						new(MockCustomerCartService),
+						func() *decorator.DecoratedCartFactory {
+							result := &decorator.DecoratedCartFactory{}
+							result.Inject(
+								&MockProductService{},
+								flamingo.NullLogger{},
+							)
+
+							return result
+						}(),
+						&authApplication.AuthManager{},
+						&authApplication.UserService{},
+						flamingo.NullLogger{},
+						nil,
+						&struct {
+							CartCache cartApplication.CartCache `inject:",optional"`
+						}{
+							CartCache: new(MockCartWithItemCache),
+						},
+					)
+					return result
+				}(),
+				ProductService: &MockProductService{},
+				Logger:         flamingo.NullLogger{},
+				EventPublisher: new(MockEventPublisher),
+				config: &struct {
+					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
+					DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
+				}{
+					DefaultDeliveryCode: "default_delivery_code",
+					DeleteEmptyDelivery: false,
+				},
+				DeliveryInfoBuilder: new(MockDeliveryInfoBuilder),
+				CartCache:           new(MockCartWithItemCache),
+				RestrictionService:  nil,
+				PlaceOrderService:   &MockPlaceOrderService{},
+			},
+			args: args{
+				ctx:     context.Background(),
+				session: web.EmptySession().Store(cartApplication.GuestCartSessionKey, "some_guest_id"),
+			},
+			want: "201910251128788TD",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cs := &cartApplication.CartService{}
+			authmanager := &authApplication.AuthManager{}
+			authmanager.Inject(
+				flamingo.NullLogger{},
+				nil, nil, nil,
+			)
+			cs.Inject(
+				tt.fields.CartReceiverService,
+				tt.fields.ProductService,
+				tt.fields.EventPublisher,
+				tt.fields.EventRouter,
+				tt.fields.DeliveryInfoBuilder,
+				tt.fields.RestrictionService,
+				authmanager,
+				tt.fields.Logger,
+				tt.fields.config,
+				&struct {
+					CartValidator     validation.Validator      `inject:",optional"`
+					ItemValidator     validation.ItemValidator  `inject:",optional"`
+					CartCache         cartApplication.CartCache `inject:",optional"`
+					PlaceOrderService placeorder.Service        `inject:",optional"`
+				}{
+					PlaceOrderService: tt.fields.PlaceOrderService,
+				},
+			)
+
+			got, _ := cs.ForceReserveOrderIDAndSave(tt.args.ctx, tt.args.session)
+
+			reservedOrderIDFromGot := got.AdditionalData.ReservedOrderID
+			if reservedOrderIDFromGot != tt.want {
+				t.Errorf("CartService.ReserveOrderIDAndSave() got!=want, got: %s, want: %s", reservedOrderIDFromGot, tt.want)
+			}
 		})
 	}
 }
@@ -658,10 +819,6 @@ func (m *MockCartWithItemCache) GetCart(context.Context, *web.Session, cartAppli
 				},
 			},
 		},
-		AdditionalData: struct {
-			CustomAttributes map[string]string
-			ReservedOrderID  string
-		}{CustomAttributes: nil, ReservedOrderID: "201910251128792ZM"},
 	}
 
 	return &m.CachedCart, nil
@@ -685,6 +842,56 @@ func (m *MockCartWithItemCache) DeleteAll(context.Context, *web.Session) error {
 }
 
 func (m *MockCartWithItemCache) BuildIdentifier(context.Context, *web.Session) (cartApplication.CartCacheIdentifier, error) {
+	return cartApplication.CartCacheIdentifier{}, nil
+}
+
+type (
+	MockCartWithItemCacheWithAdditionalData struct {
+		CachedCart cartDomain.Cart
+	}
+)
+
+func (m *MockCartWithItemCacheWithAdditionalData) GetCart(context.Context, *web.Session, cartApplication.CartCacheIdentifier) (*cartDomain.Cart, error) {
+	m.CachedCart = cartDomain.Cart{
+		ID: "mock_guest_cart",
+		Deliveries: []cartDomain.Delivery{
+			cartDomain.Delivery{
+				DeliveryInfo: cartDomain.DeliveryInfo{Code: "default_delivery_code"},
+				Cartitems: []cartDomain.Item{
+					cartDomain.Item{
+						ID:  "mock_item",
+						Qty: 7,
+					},
+				},
+			},
+		},
+		AdditionalData: struct {
+			CustomAttributes map[string]string
+			ReservedOrderID  string
+		}{CustomAttributes: nil, ReservedOrderID: "201910251128792ZM"},
+	}
+
+	return &m.CachedCart, nil
+}
+
+func (m *MockCartWithItemCacheWithAdditionalData) CacheCart(ctx context.Context, s *web.Session, cci cartApplication.CartCacheIdentifier, cart *cartDomain.Cart) error {
+	m.CachedCart = *cart
+	return nil
+}
+
+func (m *MockCartWithItemCacheWithAdditionalData) Invalidate(context.Context, *web.Session, cartApplication.CartCacheIdentifier) error {
+	return nil
+}
+
+func (m *MockCartWithItemCacheWithAdditionalData) Delete(context.Context, *web.Session, cartApplication.CartCacheIdentifier) error {
+	return nil
+}
+
+func (m *MockCartWithItemCacheWithAdditionalData) DeleteAll(context.Context, *web.Session) error {
+	return nil
+}
+
+func (m *MockCartWithItemCacheWithAdditionalData) BuildIdentifier(context.Context, *web.Session) (cartApplication.CartCacheIdentifier, error) {
 	return cartApplication.CartCacheIdentifier{}, nil
 }
 
