@@ -915,8 +915,6 @@ type (
 	MockPlaceOrderService struct{}
 )
 
-//CancelCustomerOrder(ctx context.Context, orderInfos PlacedOrderInfos, auth oauth.Auth) error
-
 func (mpos *MockPlaceOrderService) PlaceGuestCart(ctx context.Context, cart *cartDomain.Cart, payment *placeorder.Payment) (placeorder.PlacedOrderInfos, error) {
 	return nil, nil
 }
