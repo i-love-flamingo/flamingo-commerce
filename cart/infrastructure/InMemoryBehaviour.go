@@ -279,8 +279,15 @@ func (cob *InMemoryBehaviour) UpdateBillingAddress(ctx context.Context, cart *do
 	return cart, nil, nil
 }
 
-// UpdateAdditionalData @todo implement when needed
+// UpdateAdditionalData updates additional data
 func (cob *InMemoryBehaviour) UpdateAdditionalData(ctx context.Context, cart *domaincart.Cart, additionalData *domaincart.AdditionalData) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	cart.AdditionalData = *additionalData
+	err := cob.cartStorage.StoreCart(cart)
+
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on updating additional data")
+	}
+
 	return cart, nil, nil
 }
 

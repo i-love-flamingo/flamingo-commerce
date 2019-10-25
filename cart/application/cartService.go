@@ -759,6 +759,17 @@ func (cs *CartService) DeleteCartInCache(ctx context.Context, session *web.Sessi
 // If the cart already holds a reserved order id no set/save is performed and the existing cart is returned.
 // You may want to use this before proceeding with payment to ensure having a useful reference in the payment processing
 func (cs *CartService) ReserveOrderIDAndSave(ctx context.Context, session *web.Session) (*cartDomain.Cart, error) {
+	return cs.reserveOrderIDAndSave(ctx, session, false)
+}
+
+// ForceReserveOrderIDAndSave reserves order id by using the PlaceOrder behaviour, sets and saves it on the cart.
+// Each call of this method reserves a new order ID, even if it is already set on the cart.
+// You may want to use this before proceeding with payment to ensure having a useful reference in the payment processing
+func (cs *CartService) ForceReserveOrderIDAndSave(ctx context.Context, session *web.Session) (*cartDomain.Cart, error) {
+	return cs.reserveOrderIDAndSave(ctx, session, true)
+}
+
+func (cs *CartService) reserveOrderIDAndSave(ctx context.Context, session *web.Session, force bool) (*cartDomain.Cart, error) {
 	if cs.placeOrderService == nil {
 		return nil, errors.New("No placeOrderService registered")
 	}
@@ -767,8 +778,9 @@ func (cs *CartService) ReserveOrderIDAndSave(ctx context.Context, session *web.S
 		return nil, err
 	}
 
-	// the cart already has a reserved order id - no need to generate and update data
-	if cart.AdditionalData.ReservedOrderID != "" {
+	// the cart already has a reserved order id - no need to generate and update data, if force parameter is true
+	// a new reserved order id will always be generated
+	if !force && cart.AdditionalData.ReservedOrderID != "" {
 		return cart, nil
 	}
 
