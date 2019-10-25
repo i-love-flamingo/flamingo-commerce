@@ -420,7 +420,6 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 	type args struct {
 		ctx     context.Context
 		session *web.Session
-		force   bool
 	}
 
 	tests := []struct {
@@ -589,7 +588,6 @@ func TestCartService_ForceReserveOrderIDAndSave(t *testing.T) {
 	type args struct {
 		ctx     context.Context
 		session *web.Session
-		force   bool
 	}
 
 	tests := []struct {
