@@ -38,7 +38,7 @@ func (gcs *InMemoryGuestCartService) GetNewCart(ctx context.Context) (*cart.Cart
 		ID: strconv.Itoa(rand.Int()),
 	}
 
-	err := gcs.inMemoryBehaviour.StoreCart(guestCart)
+	err := gcs.inMemoryBehaviour.storeCart(guestCart)
 	return guestCart, err
 }
 
@@ -52,6 +52,6 @@ func (gcs *InMemoryGuestCartService) RestoreCart(ctx context.Context, cart cart.
 	guestCart := cart
 	guestCart.ID = strconv.Itoa(rand.Int())
 
-	err := gcs.inMemoryBehaviour.StoreCart(&guestCart)
+	err := gcs.inMemoryBehaviour.storeCart(&guestCart)
 	return &guestCart, err
 }

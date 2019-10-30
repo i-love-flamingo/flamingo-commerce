@@ -40,6 +40,6 @@ func (gcs *InMemoryCustomerCartService) GetModifyBehaviour(context.Context, doma
 func (gcs *InMemoryCustomerCartService) RestoreCart(ctx context.Context, auth domain.Auth, cart cart.Cart) (*cart.Cart, error) {
 	customerCart := cart
 
-	err := gcs.inMemoryBehaviour.StoreCart(&customerCart)
+	err := gcs.inMemoryBehaviour.storeCart(&customerCart)
 	return &customerCart, err
 }

@@ -318,6 +318,10 @@ func (cob *InMemoryBehaviour) UpdateDeliveryInfo(ctx context.Context, cart *doma
 	for key, delivery := range cart.Deliveries {
 		if delivery.DeliveryInfo.Code == deliveryCode {
 			cart.Deliveries[key].DeliveryInfo = deliveryInfo
+			err := cob.cartStorage.StoreCart(cart)
+			if err != nil {
+				return nil, nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
+			}
 			return cart, nil, nil
 		}
 	}
@@ -349,8 +353,8 @@ func (cob *InMemoryBehaviour) GetCart(ctx context.Context, cartID string) (*doma
 	return nil, fmt.Errorf("cart.infrastructure.InMemoryBehaviour: Cannot get - Guestcart with id %v not existent", cartID)
 }
 
-// StoreCart in the memory
-func (cob *InMemoryBehaviour) StoreCart(cart *domaincart.Cart) error {
+// storeCart in the memory
+func (cob *InMemoryBehaviour) storeCart(cart *domaincart.Cart) error {
 	return cob.cartStorage.StoreCart(cart)
 }
 
