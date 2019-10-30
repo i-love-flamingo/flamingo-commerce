@@ -791,12 +791,12 @@ func (cs *CartService) reserveOrderIDAndSave(ctx context.Context, session *web.S
 	}
 	additionalData := cart.AdditionalData
 	additionalData.ReservedOrderID = reservedOrderID
-	data, defers, err := behaviour.UpdateAdditionalData(ctx, cart, &additionalData)
+	cart, defers, err := behaviour.UpdateAdditionalData(ctx, cart, &additionalData)
 	defer func() {
 		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
 		cs.dispatchAllEvents(ctx, defers)
 	}()
-	return data, err
+	return cart, err
 }
 
 // PlaceOrderWithCart converts the given cart with payments into orders by calling the Service
