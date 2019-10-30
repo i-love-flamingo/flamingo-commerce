@@ -2,11 +2,44 @@
 # Flamingo Commerce
 [![Go Report Card](https://goreportcard.com/badge/github.com/i-love-flamingo/flamingo-commerce)](https://goreportcard.com/report/github.com/i-love-flamingo/flamingo-commerce) [![Build Status](https://travis-ci.org/i-love-flamingo/flamingo-commerce.svg)](https://travis-ci.org/i-love-flamingo/flamingo-commerce)
 
-Contains modules that helps building powerful and flexible ecommerce websites.
+With "Flamingo Commerce" you get your toolkit for building fast and flexible commerce experience applications.
+
+A demoshop using the standalone adapters is online here https://demoshop.flamingo.me - you can also try the [GraphQL](https://demoshop.flamingo.me/en/graphql-console) support
+ 
+## What problems does Flamingo Commerce solve?
+
+* Modern Architecture: Break monolithic e-commerce architeture to allow scaling and maintainability. 
+* Modern Architecture: Use it to build commerce for headless commerce solutions
+* Real time commerce: Build personalized experiences - without the need to cache rendered pages
+
+## What are the main design goals of Flamingo Commerce?
+
+
+* **Performance**: We do not want to rely on any frontend caching. Instead it is no problem to show every customer an individual experience.
+* **Clean architecture**: We use "domaind driven design" and "ports and adapters" to build a maintainable and clean application. 
+* **Suiteable for Microservice architectures**: Adapters concept and various resilience concepts makes it easy to connect to other (micro) services.
+* **Decoupled and flexible frontend development**: Frontend development is decoupled from the "Backend for Frontend" - so that it is possible to use "any" frontend technology.
+* **Testability**: By providing "Fake Adapters" that provide test data, it is possible to test your application without external dependencies.
+* **Great Developer Experience**: :-)
+* **Open Source**: Flamingo Commerce and Flamingo is Open Source and will be.
+
+
+## Whats does Flamingo Commerce provide?
+
+* Different e-commerce Flamingo Modules for typical e-commerce domains: Each providing a separated bounded context with its „domain“, „application“ and „interface“ logic.
+* Using „ports and adapters“ to separate domain from technical details, all these modules can be used with your own „Adapters“ to interact with any API or microservice you want.
+* Some of the major Flamingo Commerce modules (bounded contexts) are:
+    * product: Offering domain models for different product types. Supporting multiple prices (including loyalty prices) etc..
+    * cart: Powerful cart domain model. Supporting multi delivery, multiple payment transactions, and a lot more. 
+    * search: Generic search service and features
+    * checkout: Offering logic and interfaces for an example (default) checkout.
+    
+* Each of the modules provide graphql support that you can use.
+    
+
+**Flamingo Commerce is build on top of the Flamingo Framework so it makes sense that you read through the Flamingo docs also**
 
 Read more under [docs.flamingo.me](https://docs.flamingo.me/4.%20Flamingo%20Commerce/1.%20Introduction/About%20Flamingo%20Commerce.html)
-
-A demoshop is online here https://demoshop.flamingo.me with the graphQL console available also: https://demoshop.flamingo.me/en/graphql-console
 
 ## Commerce Modules:
 
@@ -51,10 +84,10 @@ A demoshop is online here https://demoshop.flamingo.me with the graphQL console 
     * Offers interface logic to render a Datalayer that can be used for e-commerce tracking
     * [Readme](w3cdatalayer/Readme.md)
     
-# Flamingo Commerce in Beta
+# Flamingo Commerce Release Status
 
-Flamingo Commerce is Beta because we will still change the API (models and methods).
-You are encourages to use it but if you update you might need to adjust your code to the latest changes. 
+Flamingo Commerce API is Beta because we will still change the API (models and methods).
+You are encourages to use it but if you update you might need to adjust your code to the latest changes.
 
 
 ## Setup
