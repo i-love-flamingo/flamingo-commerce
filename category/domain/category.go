@@ -129,13 +129,23 @@ func (a Attributes) All() []Attribute {
 	return att
 }
 
+// ToString returns a concatenated string of all the values of all attributes
+func (a Attributes) ToString() string {
+	var attValue []string
+	for _, v := range a {
+		attValue = append(attValue, v.ToString())
+	}
+
+	return strings.Join(attValue[:], ",")
+}
+
 // ToString returns a concatenated string of all the values of an attribute
 func (a Attribute) ToString() string {
 	var attValue []string
 	for _, v := range a.Values {
 		attValue = append(attValue, v.Value())
 	}
-	return strings.Join(attValue, ",")
+	return strings.Join(attValue[:], ",")
 }
 
 // Value returns string representation of the RawValue
