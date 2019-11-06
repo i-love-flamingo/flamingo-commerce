@@ -143,5 +143,6 @@ func (av AttributeValue) Value() string {
 	if stringer, ok := av.RawValue.(fmt.Stringer); ok {
 		return stringer.String()
 	}
-	return av.RawValue.(string)
+	string, _ := av.RawValue.(string)
+	return string
 }
