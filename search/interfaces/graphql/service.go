@@ -1,6 +1,7 @@
 package graphql
 
 import (
+	"flamingo.me/flamingo-commerce/v3/search/application"
 	"flamingo.me/flamingo-commerce/v3/search/domain"
 	"flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/dto"
 	"flamingo.me/graphql"
@@ -23,5 +24,8 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		"Commerce_Search_Meta":           domain.SearchMeta{},
 		"Commerce_Search_Request":        dto.CommerceSearchRequest{},
 		"Commerce_Search_KeyValueFilter": dto.CommerceSearchKeyValueFilter{},
+		"Commerce_Search_Suggestion":     domain.Suggestion{},
+		"Commerce_Search_Result":         application.SearchResult{},
+		"Commerce_Search_SortOption":     domain.SortOption{},
 	}.Models()
 }

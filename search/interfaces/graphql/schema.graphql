@@ -17,4 +17,25 @@ type Commerce_Search_Meta {
     page:           Int!
     numPages:       Int!
     numResults:     Int!
+    sortOptions:    [Commerce_Search_SortOption!]
+}
+
+type Commerce_Search_SortOption {
+    label: String!
+    asc: String!
+    desc: String!
+    selectedAsc: Boolean!
+    selectedDesc: Boolean!
+}
+
+type Commerce_Search_Suggestion {
+    text:      String!
+    highlight: String!
+}
+
+type Commerce_Search_Result {
+    # Hits: []Document
+    searchMeta:     Commerce_Search_Meta!
+    # Facets: domain.FacetCollection
+    suggestions:    [Commerce_Search_Suggestion]
 }
