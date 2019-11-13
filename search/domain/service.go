@@ -36,13 +36,20 @@ type (
 		SortOptions    []SortOption
 	}
 
-	// SortOption defines how sorting is possible, with both an asc and desc option
+	// SortOption defines how sorting is possible, and which og them are activated with both an asc and desc option
 	SortOption struct {
-		Label        string
-		Asc          string
-		Desc         string
-		SelectedAsc  bool
+		//Label that you normaly want to show in the frontend (e.g. "Price")
+		Label string
+		//Field that you need to use in SearchRequest>SortFilter
+		Field string
+		//SelectedAsc true if sorting by this field is active
+		SelectedAsc bool
+		//SelectedDesc true if sorting by this field is active
 		SelectedDesc bool
+		//Asc - DEPRICATED - used to give the "Field" that is used to trigger Ascending search
+		Asc string
+		//Desc - DEPRICATED - used to give the "Field" that is used to trigger Ascending search
+		Desc string
 	}
 
 	// FacetType for type facets

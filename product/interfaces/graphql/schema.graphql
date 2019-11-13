@@ -154,4 +154,5 @@ type Commerce_Product_SearchResult {
 
 extend type Query {
     Commerce_Product(marketplaceCode: String!): Commerce_Product
+    Commerce_Product_Search(searchRequest: Commerce_Search_Request): Commerce_Product_SearchResult!
 }

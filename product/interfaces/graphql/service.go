@@ -1,7 +1,6 @@
 package graphql
 
 import (
-	"context"
 	"flamingo.me/flamingo-commerce/v3/product/application"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/graphql"
@@ -55,19 +54,4 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		"Commerce_PriceContext":            domain.PriceContext{},
 		"Commerce_Product_SearchResult":    application.SearchResult{},
 	}.Models()
-}
-
-// CommerceProductQueryResolver resolves graphql product queries
-type CommerceProductQueryResolver struct {
-	productService domain.ProductService
-}
-
-// Inject dependencies
-func (r *CommerceProductQueryResolver) Inject(productService domain.ProductService) {
-	r.productService = productService
-}
-
-// CommerceProduct returns a product with the given marketplaceCode from productService
-func (r *CommerceProductQueryResolver) CommerceProduct(ctx context.Context, marketplaceCode string) (domain.BasicProduct, error) {
-	return r.productService.Get(ctx, marketplaceCode)
 }
