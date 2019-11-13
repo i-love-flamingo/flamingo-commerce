@@ -37,7 +37,7 @@ func (r *CommerceProductQueryResolver) CommerceProduct(ctx context.Context, mark
 	return r.productService.Get(ctx, marketplaceCode)
 }
 
-// CommerceProduct returns a product with the given marketplaceCode from productService
+// CommerceProductSearch returns a search result of products based on the given search request
 func (r *CommerceProductQueryResolver) CommerceProductSearch(ctx context.Context, request *dto.CommerceSearchRequest) (*application.SearchResult, error) {
 	var filters = r.searchRequestToFilters(request)
 
@@ -55,6 +55,7 @@ func (r *CommerceProductQueryResolver) CommerceProductSearch(ctx context.Context
 	}, nil
 }
 
+// searchRequestToFilters maps CommerceSearchRequest to Filter
 func (r *CommerceProductQueryResolver) searchRequestToFilters(searchRequest *dto.CommerceSearchRequest) []searchDomain.Filter {
 	var filters []searchDomain.Filter
 
