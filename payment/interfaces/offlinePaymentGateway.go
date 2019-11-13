@@ -3,6 +3,7 @@ package interfaces
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/url"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -106,12 +107,14 @@ func (o *OfflineWebCartPaymentGateway) OrderPaymentFromFlow(ctx context.Context,
 		Gateway: OfflineWebCartPaymentGatewayCode,
 	}
 
+	var i int
 	for qualifier, charge := range currentCart.PaymentSelection.CartSplit() {
 		cartPayment.Transactions = append(cartPayment.Transactions, placeorder.Transaction{
 			Method:            qualifier.Method,
 			Status:            placeorder.PaymentStatusOpen,
 			ValuedAmountPayed: charge.Value,
 			AmountPayed:       charge.Price,
+			TransactionID:     fmt.Sprintf("%v-%v", qualifier.Method, (i + 1)),
 		})
 	}
 

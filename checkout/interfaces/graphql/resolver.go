@@ -7,6 +7,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/checkout/application"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql/dto"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 	"net/url"
 )
@@ -16,16 +17,19 @@ type CommerceCheckoutMutationResolver struct {
 	orderService         *application.OrderService
 	decoratedCartFactory *decorator.DecoratedCartFactory
 	cartService          *cartApplication.CartService
+	logger               flamingo.Logger
 }
 
 // Inject dependencies
 func (r *CommerceCheckoutMutationResolver) Inject(
 	orderService *application.OrderService,
 	decoratedCartFactory *decorator.DecoratedCartFactory,
-	cartService *cartApplication.CartService) {
+	cartService *cartApplication.CartService,
+	logger flamingo.Logger) {
 	r.orderService = orderService
 	r.decoratedCartFactory = decoratedCartFactory
 	r.cartService = cartService
+	r.logger = logger.WithField(flamingo.LogKeyModule, "om3oms").WithField(flamingo.LogKeyCategory, "graphql")
 
 }
 
@@ -36,6 +40,16 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutPlaceOrder(ctx contex
 	returnURL, err := url.Parse(returnURLRaw)
 	if err != nil {
 		return nil, err
+	}
+
+	// reserve an unique order id for later order placing
+	_, err = r.cartService.ReserveOrderIDAndSave(ctx, web.SessionFromContext(ctx))
+	if err != nil {
+		r.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error ", err)
+		return &dto.PlaceOrderResult{
+			Status: dto.INVALID,
+			Error:  &dto.Error{ErrorKey: errors.New("reserve-order-id-failed").Error(), IsPaymentError: false},
+		}, nil
 	}
 
 	decoratedCart, err := r.cartService.GetCartReceiverService().ViewDecoratedCart(ctx, web.SessionFromContext(ctx))
