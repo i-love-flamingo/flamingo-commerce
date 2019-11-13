@@ -53,8 +53,6 @@ func (r *CommerceProductQueryResolver) CommerceProductSearch(ctx context.Context
 		SearchMeta:  result.SearchMeta,
 		Facets:      result.Facets,
 	}, nil
-
-	return nil, nil
 }
 
 func (r *CommerceProductQueryResolver) searchRequestToFilters(searchRequest *dto.CommerceSearchRequest) []searchDomain.Filter {
