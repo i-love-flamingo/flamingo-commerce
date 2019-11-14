@@ -38,7 +38,7 @@ type (
 
 	// SortOption defines how sorting is possible, and which og them are activated with both an asc and desc option
 	SortOption struct {
-		// Label that you normaly want to show in the frontend (e.g. "Price")
+		// Label that you normally want to show in the frontend (e.g. "Price")
 		Label string
 		// Field that you need to use in SearchRequest>SortFilter
 		Field string
@@ -152,7 +152,7 @@ var (
 	ErrNotFound = errors.New("search not found")
 )
 
-// ValidatePageSize checks if the pageSize is logical for current reult
+// ValidatePageSize checks if the pageSize is logical for current result
 func (sm *SearchMeta) ValidatePageSize(pageSize int) error {
 	if pageSize == 0 {
 		return errors.New("cannot validate - no expected pageSize given")
