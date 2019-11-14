@@ -36,7 +36,7 @@ type (
 		SortOptions    []SortOption
 	}
 
-	// SortOption defines how sorting is possible, and which og them are activated with both an asc and desc option
+	// SortOption defines how sorting is possible, and which of them are activated with both an asc and desc option
 	SortOption struct {
 		// Label that you normally want to show in the frontend (e.g. "Price")
 		Label string
@@ -46,9 +46,9 @@ type (
 		SelectedAsc bool
 		// SelectedDesc true if sorting by this field is active
 		SelectedDesc bool
-		// Asc - DEPRECATED - used to give the "Field" that is used to trigger Ascending search
+		// Asc - DEPRECATED - used to give the "Field" that is used to trigger ascending search
 		Asc string
-		// Desc - DEPRECATED - used to give the "Field" that is used to trigger Ascending search
+		// Desc - DEPRECATED - used to give the "Field" that is used to trigger descending search
 		Desc string
 	}
 

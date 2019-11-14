@@ -59,10 +59,6 @@ func (r *CommerceProductQueryResolver) CommerceProductSearch(ctx context.Context
 func (r *CommerceProductQueryResolver) searchRequestToFilters(searchRequest *dto.CommerceSearchRequest) []searchDomain.Filter {
 	var filters []searchDomain.Filter
 
-	query := ""
-	if searchRequest.Query != nil {
-		query = *searchRequest.Query
-	}
 	if searchRequest != nil {
 		filters = applicationSearchService.BuildFilters(applicationSearchService.SearchRequest{
 			AdditionalFilter: nil,
@@ -70,7 +66,7 @@ func (r *CommerceProductQueryResolver) searchRequestToFilters(searchRequest *dto
 			Page:             searchRequest.Page,
 			SortBy:           searchRequest.SortBy,
 			SortDirection:    searchRequest.SortDirection,
-			Query:            query,
+			Query:            searchRequest.Query,
 			PaginationConfig: nil,
 		}, int(r.defaultPageSize))
 

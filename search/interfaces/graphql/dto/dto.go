@@ -7,7 +7,7 @@ type CommerceSearchRequest struct {
 	SortBy          string
 	SortDirection   string
 	KeyValueFilters []CommerceSearchKeyValueFilter
-	Query           *string
+	Query           string
 }
 
 // CommerceSearchKeyValueFilter - key value filter for CommerceSearchRequest
