@@ -3,6 +3,8 @@ package graphql
 import (
 	"context"
 	"errors"
+	"strings"
+
 	cartForms "flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
 	formApplication "flamingo.me/form/application"
@@ -95,6 +97,10 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateBillingAddress(ctx cont
 
 	form, success, err := r.billingAddressFormController.HandleFormAction(ctx, newRequest)
 	if err != nil {
+		if form != nil && strings.Contains(err.Error(), "Invalid email format") {
+			form.ValidationInfo.AddFieldError("email", "formError.email", "Invalid email format")
+			return mapCommerceBillingAddressForm(form, success)
+		}
 		return nil, err
 	}
 	return mapCommerceBillingAddressForm(form, success)
