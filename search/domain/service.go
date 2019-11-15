@@ -36,13 +36,22 @@ type (
 		SortOptions    []SortOption
 	}
 
-	// SortOption defines how sorting is possible, with both an asc and desc option
+	// SortOption defines how sorting is possible, and which of them are activated with both an asc and desc option
 	SortOption struct {
-		Label        string
-		Asc          string
-		Desc         string
-		SelectedAsc  bool
+		// Label that you normally want to show in the frontend (e.g. "Price")
+		Label string
+		// Field that you need to use in SearchRequest>SortFilter
+		Field string
+		// SelectedAsc true if sorting by this field is active
+		SelectedAsc bool
+		// SelectedDesc true if sorting by this field is active
 		SelectedDesc bool
+		// Asc - represents the field that is used to trigger ascending search.
+		// Deprecated: use "Field" and "SelectedAsc" instead to set which field should be sortable
+		Asc string
+		// Desc - represents the field that is used to trigger descending search.
+		// Deprecated: use "Field" and "SelectedDesc" instead to set which field should be sortable
+		Desc string
 	}
 
 	// FacetType for type facets
@@ -145,7 +154,7 @@ var (
 	ErrNotFound = errors.New("search not found")
 )
 
-// ValidatePageSize checks if the pageSize is logical for current reult
+// ValidatePageSize checks if the pageSize is logical for current result
 func (sm *SearchMeta) ValidatePageSize(pageSize int) error {
 	if pageSize == 0 {
 		return errors.New("cannot validate - no expected pageSize given")

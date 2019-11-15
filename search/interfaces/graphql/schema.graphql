@@ -9,7 +9,12 @@ input Commerce_Search_Request {
     sortBy:             String
     sortDirection:      String
     keyValueFilters:    [Commerce_Search_KeyValueFilter!]
+    query:              String
 }
+
+#input Commerce_Search_LiveSearchRequest {
+#    query:              String
+#}
 
 type Commerce_Search_Meta {
     query:          String!
@@ -17,4 +22,30 @@ type Commerce_Search_Meta {
     page:           Int!
     numPages:       Int!
     numResults:     Int!
+    sortOptions:    [Commerce_Search_SortOption!]
 }
+
+type Commerce_Search_SortOption {
+    label: String!
+    field: String!
+    selectedAsc: Boolean!
+    selectedDesc: Boolean!
+}
+
+type Commerce_Search_Suggestion {
+    text:      String!
+    highlight: String!
+}
+
+#type Commerce_Search_Result {
+#    hits: []Commerce_Search_Document  / Or maybe we dont need hits and the modules need to add a edge to this object... we will see
+#    searchMeta:     Commerce_Search_Meta!
+    # Facets: domain.FacetCollection
+#    suggestions:    [Commerce_Search_Suggestion]
+#}
+
+
+#extend type Query {
+#    Commerce_Search(searchRequest: Commerce_Search_Request): Commerce_Search_Result
+#    Commerce_Search_LiveSearch(searchRequest: Commerce_Search_LiveSearchRequest): Commerce_Search_ResultCommerce_Search_LiveSearchRequest!
+#}
