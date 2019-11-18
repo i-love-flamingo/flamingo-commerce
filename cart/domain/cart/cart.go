@@ -63,6 +63,8 @@ type (
 	// CouponCode value object
 	CouponCode struct {
 		Code string
+		// CustomAttributes can hold additional data for coupon code - keys and values are project specific
+		CustomAttributes map[string]interface{}
 	}
 
 	// Person value object
