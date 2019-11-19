@@ -14,7 +14,7 @@ Call the data function. For example, in the pug template engine a usage can look
 ```pug
 var breadCrumbData = data('breadcrumbs')
 ul
-  each item, index in items    
+  each item, index in breadCrumbData    
     li
       if item.url === ""
         span.breadcrumbNoLink=item.title
