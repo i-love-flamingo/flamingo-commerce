@@ -108,6 +108,9 @@ func (vc *ViewController) Get(c context.Context, request *web.Request) web.Resul
 
 	products, err := vc.SearchService.Find(c, searchRequest)
 	if err != nil {
+		if err == searchdomain.ErrNotFound {
+			return vc.responder.NotFound(err)
+		}
 		return vc.responder.ServerError(err)
 	}
 
