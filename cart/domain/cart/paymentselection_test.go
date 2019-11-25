@@ -74,7 +74,7 @@ func TestPaymentSplit_MarshalJSON(t *testing.T) {
 				result[secondQualifier] = charge
 				return result
 			}(),
-			want:    []byte("{\"m1-t1-\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\",\"Reference\":\"\"},\"m2-t1-r2\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\",\"Reference\":\"\"}}"),
+			want:    []byte("{\"m1-t1-\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\",\"Reference\":\"\",\"CustomAttributes\":null},\"m2-t1-r2\":{\"Price\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Value\":{\"Amount\":\"0\",\"Currency\":\"\"},\"Type\":\"t1\",\"Reference\":\"\",\"CustomAttributes\":null}}"),
 			wantErr: false,
 		},
 		{
