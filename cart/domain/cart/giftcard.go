@@ -7,9 +7,10 @@ import (
 type (
 	// AppliedGiftCard value object represents a gift card (partial payment) on the cart
 	AppliedGiftCard struct {
-		Code      string
-		Applied   domain.Price // how much of the gift card has been subtracted from cart price
-		Remaining domain.Price // how much of the gift card is still available
+		Code             string
+		Applied          domain.Price           // how much of the gift card has been subtracted from cart price
+		Remaining        domain.Price           // how much of the gift card is still available
+		CustomAttributes map[string]interface{} // additional custom attributes
 	}
 
 	// AppliedGiftCards convenience wrapper for array of applied gift cards
