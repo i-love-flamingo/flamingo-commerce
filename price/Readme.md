@@ -41,8 +41,9 @@ Be aware that `price.Equals(price2)` may be false but due to float arithmetic bu
 `price.GetPayable().Equals(price2.GetPayable())` will be true
 
 ## Charge:
-Represents a price together with a type. A charge has a values price (normally in default currency) and a the price that is paid that might be in a different currency.
+Represents a price together with a type. A charge has a values price (normally in default currency) and a price that is paid that might be in a different currency.
 Can be used in places where you need to give the price value a certain extra semantic information or to represent something that need to be paid (charged).
+A charge can have custom attributes. To receive a charge with custom attributes a unique qualifier is required.
 
 ## Template Func - Formatting a Price Object
 
