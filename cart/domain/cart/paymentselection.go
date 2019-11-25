@@ -134,10 +134,11 @@ func removeZeroChargesFromSplit(
 		for qualifier, charge := range split.ChargesByType().GetAllCharges() {
 			// charge should be transformed to payable
 			charge = price.Charge{
-				Price:     charge.Price.GetPayable(),
-				Value:     charge.Value.GetPayable(),
-				Type:      charge.Type,
-				Reference: charge.Reference,
+				Price:            charge.Price.GetPayable(),
+				Value:            charge.Value.GetPayable(),
+				Type:             charge.Type,
+				Reference:        charge.Reference,
+				CustomAttributes: charge.CustomAttributes,
 			}
 			// skip charges with zero value
 			if charge.Value.IsZero() {
@@ -449,10 +450,11 @@ func (service PaymentSplitService) SplitWithGiftCards(chargeTypeToPaymentMethod 
 
 				if !appliedGiftCard.IsZero() {
 					builder = helper.AddFunction(k, chargeTypeToPaymentMethod[price.ChargeTypeGiftCard], price.Charge{
-						Price:     appliedGiftCard,
-						Value:     appliedGiftCard,
-						Type:      price.ChargeTypeGiftCard,
-						Reference: card.Code,
+						Price:            appliedGiftCard,
+						Value:            appliedGiftCard,
+						Type:             price.ChargeTypeGiftCard,
+						Reference:        card.Code,
+						CustomAttributes: card.CustomAttributes,
 					})
 				}
 
