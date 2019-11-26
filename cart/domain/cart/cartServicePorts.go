@@ -91,7 +91,7 @@ var (
 	// ErrCartNotFound is used if a cart was not found
 	ErrCartNotFound = errors.New("Cart not found")
 	// ErrItemNotFound is used if a item on cart was not found
-	ErrItemNotFound = errors.New("Cart not found")
+	ErrItemNotFound = errors.New("Item not found")
 	// ErrDeliveryCodeNotFound is used if a delivery was not found
 	ErrDeliveryCodeNotFound = errors.New("Delivery not found")
 )
