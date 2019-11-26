@@ -27,6 +27,8 @@ type (
 		Type string
 		// Reference contains further information to distinguish charges of the same type
 		Reference string
+		// CustomAttributes contain additional generic information about the charge
+		CustomAttributes map[string]interface{}
 	}
 
 	//Charges - Represents the Charges the product need to be paid with
