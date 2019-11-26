@@ -43,6 +43,8 @@ func (m *Module) Inject(
 
 // Configure the product URL
 func (m *Module) Configure(injector *dingo.Injector) {
+	injector.Bind(new(controller.BaseViewController)).To(controller.DefaultBaseViewController{})
+
 	if m.useCategoryFixedAdapter {
 		injector.Bind((*domain.CategoryService)(nil)).To(infrastructure.CategoryServiceFixed{})
 
