@@ -206,9 +206,9 @@ func (vc *ViewController) Get(c context.Context, request *web.Request) web.Resul
 	if viewError != nil {
 		if viewError.NotFound != nil {
 			return vc.responder.NotFound(viewError.NotFound)
-		} else {
-			return vc.responder.ServerError(viewError.Other)
 		}
+
+		return vc.responder.ServerError(viewError.Other)
 	}
 
 	if viewRedirect != nil {
