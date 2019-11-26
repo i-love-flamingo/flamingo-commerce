@@ -3,23 +3,33 @@ package graphql
 import (
 	"context"
 	"flamingo.me/flamingo-commerce/v3/category/domain"
-	"flamingo.me/flamingo-commerce/v3/category/interfaces/controller"
+	graphqlDto "flamingo.me/flamingo-commerce/v3/category/interfaces/graphql/dto"
 	productApplication "flamingo.me/flamingo-commerce/v3/product/application"
-	searchApplication "flamingo.me/flamingo-commerce/v3/search/application"
-	searchDomain "flamingo.me/flamingo-commerce/v3/search/domain"
-	searchGraphQlDto "flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/dto"
+	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
+	"flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/dto"
 )
 
 // CommerceCategoryQueryResolver resolves graphql category queries
 type CommerceCategoryQueryResolver struct {
 	categoryService      domain.CategoryService
-	productSearchService *productApplication.ProductSearchService
+	productSearchService productDomain.SearchService
+	defaultPageSize      float64
 }
 
 // Inject dependencies
-func (r *CommerceCategoryQueryResolver) Inject(service domain.CategoryService, productSearchService *productApplication.ProductSearchService) {
+func (r *CommerceCategoryQueryResolver) Inject(
+	service domain.CategoryService,
+	productSearchService productDomain.SearchService,
+	optionals *struct {
+		DefaultPageSize float64 `inject:"config:pagination.defaultPageSize,optional"`
+	},
+) *CommerceCategoryQueryResolver {
 	r.categoryService = service
 	r.productSearchService = productSearchService
+	if optionals != nil {
+		r.defaultPageSize = optionals.DefaultPageSize
+	}
+	return r
 }
 
 // CommerceCategoryTree returns a Tree with the given activeCategoryCode from categoryService
@@ -31,29 +41,29 @@ func (r *CommerceCategoryQueryResolver) CommerceCategoryTree(ctx context.Context
 func (r *CommerceCategoryQueryResolver) CommerceCategory(
 	ctx context.Context,
 	categoryCode string,
-	categorySearchRequest *searchGraphQlDto.CommerceSearchRequest) (*controller.ViewData, error) {
-
+	request *dto.CommerceSearchRequest) (*graphqlDto.CategorySearchResult, error) {
 	category, err := r.categoryService.Get(ctx, categoryCode)
 
 	if err != nil {
-		return &controller.ViewData{Category: category, ProductSearchResult: nil}, err
+		return nil, err
 	}
 
-	searchRequest := new(searchApplication.SearchRequest)
+	var filters = dto.SearchRequestToFilters(request, int(r.defaultPageSize))
 
-	if categorySearchRequest != nil {
-		for _, filter := range categorySearchRequest.KeyValueFilters {
-			searchRequest.AdditionalFilter = append(searchRequest.AdditionalFilter, searchDomain.NewKeyValueFilter(filter.K, filter.V))
-		}
-	}
+	filters = append(filters, domain.NewCategoryFacet(categoryCode))
 
-	// - use categoryDomain.NewCategoryFacet as filter to use product/category endpoint from searchperience
-	searchRequest.SetAdditionalFilter(domain.NewCategoryFacet(categoryCode))
-	result, err := r.productSearchService.Find(ctx, searchRequest)
+	result, err := r.productSearchService.Search(ctx, filters...)
 
 	if err != nil {
-		return &controller.ViewData{Category: category, ProductSearchResult: nil}, err
+		return nil, err
 	}
 
-	return &controller.ViewData{Category: category, ProductSearchResult: result}, err
+	productSearchResult := &productApplication.SearchResult{
+		Suggestions: result.Suggestion,
+		Products:    result.Hits,
+		SearchMeta:  result.SearchMeta,
+		Facets:      result.Facets,
+	}
+
+	return &graphqlDto.CategorySearchResult{Category: category, ProductSearchResult: productSearchResult}, nil
 }

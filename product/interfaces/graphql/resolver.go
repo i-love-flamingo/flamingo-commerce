@@ -4,8 +4,6 @@ import (
 	"context"
 	"flamingo.me/flamingo-commerce/v3/product/application"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
-	applicationSearchService "flamingo.me/flamingo-commerce/v3/search/application"
-	searchDomain "flamingo.me/flamingo-commerce/v3/search/domain"
 	"flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/dto"
 )
 
@@ -39,8 +37,7 @@ func (r *CommerceProductQueryResolver) CommerceProduct(ctx context.Context, mark
 
 // CommerceProductSearch returns a search result of products based on the given search request
 func (r *CommerceProductQueryResolver) CommerceProductSearch(ctx context.Context, request *dto.CommerceSearchRequest) (*application.SearchResult, error) {
-	var filters = r.searchRequestToFilters(request)
-
+	var filters = dto.SearchRequestToFilters(request, int(r.defaultPageSize))
 	result, err := r.productSearchService.Search(ctx, filters...)
 
 	if err != nil {
@@ -53,27 +50,4 @@ func (r *CommerceProductQueryResolver) CommerceProductSearch(ctx context.Context
 		SearchMeta:  result.SearchMeta,
 		Facets:      result.Facets,
 	}, nil
-}
-
-// searchRequestToFilters maps CommerceSearchRequest to Filter
-func (r *CommerceProductQueryResolver) searchRequestToFilters(searchRequest *dto.CommerceSearchRequest) []searchDomain.Filter {
-	var filters []searchDomain.Filter
-
-	if searchRequest != nil {
-		filters = applicationSearchService.BuildFilters(applicationSearchService.SearchRequest{
-			AdditionalFilter: nil,
-			PageSize:         searchRequest.PageSize,
-			Page:             searchRequest.Page,
-			SortBy:           searchRequest.SortBy,
-			SortDirection:    searchRequest.SortDirection,
-			Query:            searchRequest.Query,
-			PaginationConfig: nil,
-		}, int(r.defaultPageSize))
-
-		for _, filter := range searchRequest.KeyValueFilters {
-			filters = append(filters, searchDomain.NewKeyValueFilter(filter.K, filter.V))
-		}
-	}
-
-	return filters
 }
