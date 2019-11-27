@@ -37,7 +37,3 @@
     
 # 9. October 2019
 * Add `PlaceOrderWithCart` to `CartService` to be able to place an already fetched cart instead of triggering an additional call to the `CartReceiverService`
-
-# 25. October 2019
-* Add custom attributes to `price.Charge` and updated `PaymentSelection` accordingly
-  * Getting a charge with custom attributes requires a unique reference

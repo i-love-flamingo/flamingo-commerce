@@ -129,65 +129,6 @@ func Test_CanBuildSimpleSelectionWithGiftCard(t *testing.T) {
 
 }
 
-func Test_CanBuildSimpleSelectionWithGiftCardWithCustomAttributes(t *testing.T) {
-
-	cart := Cart{
-		Deliveries: []Delivery{
-			{
-				DeliveryInfo: DeliveryInfo{
-					Code: "delcode",
-				},
-				Cartitems: []Item{
-					{
-						ID:            "1",
-						RowPriceGross: domain.NewFromInt(400, 100, "€"),
-					},
-				},
-				ShippingItem: ShippingItem{
-					PriceNet: domain.NewFromInt(7, 1, "€"),
-				},
-			},
-		},
-		AppliedGiftCards: AppliedGiftCards{
-			{
-				Code:    "code-1",
-				Applied: domain.NewFromInt(100, 100, "€"),
-				CustomAttributes: map[string]interface{}{
-					"some-string":  "some-value",
-					"some-boolean": true,
-				},
-			},
-			{
-				Code:    "code-2",
-				Applied: domain.NewFromInt(200, 100, "€"),
-				CustomAttributes: map[string]interface{}{
-					"some-string":  "some-other-value",
-					"some-boolean": false,
-					"some-nil":     nil,
-				},
-			},
-		},
-	}
-	selection, err := NewDefaultPaymentSelection("gateyway", getPaymentMethodMapping(t), cart)
-	assert.NoError(t, err)
-
-	want := map[string]interface{}{
-		"some-string":  "some-value",
-		"some-boolean": true,
-	}
-	got := selection.ItemSplit().CartItems["1"].ChargesByType().GetByChargeQualifierForced(domain.ChargeQualifier{Type: domain.ChargeTypeGiftCard, Reference: "code-1"}).CustomAttributes
-	assert.Equal(t, want, got)
-
-	want = map[string]interface{}{
-		"some-string":  "some-other-value",
-		"some-boolean": false,
-		"some-nil":     nil,
-	}
-	got = selection.ItemSplit().CartItems["1"].ChargesByType().GetByChargeQualifierForced(domain.ChargeQualifier{Type: domain.ChargeTypeGiftCard, Reference: "code-2"}).CustomAttributes
-	assert.Equal(t, want, got)
-
-}
-
 func Test_CanBuildSimpleSelectionWithGiftCardFullPayment(t *testing.T) {
 	cart := Cart{
 		Deliveries: []Delivery{
