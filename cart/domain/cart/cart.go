@@ -50,7 +50,7 @@ type (
 		Totalitems []Totalitem
 
 		//List of applied gift cards
-		AppliedGiftCards AppliedGiftCards
+		AppliedGiftCards []AppliedGiftCard
 	}
 
 	// Teaser - represents some teaser infos for cart
