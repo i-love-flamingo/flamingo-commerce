@@ -254,3 +254,83 @@ func TestAppliedGiftCards_ByRemaining(t *testing.T) {
 		})
 	}
 }
+
+func TestAppliedGiftCards_GiftCardByCode(t *testing.T) {
+	type args struct {
+		code string
+	}
+	tests := []struct {
+		name      string
+		cards     cart.AppliedGiftCards
+		args      args
+		wantCard  cart.AppliedGiftCard
+		wantFound bool
+	}{
+		{
+			name:  "no gift cards so none is found",
+			cards: cart.AppliedGiftCards{},
+			args: args{
+				"some-code",
+			},
+			wantCard:  cart.AppliedGiftCard{},
+			wantFound: false,
+		},
+		{
+			name: "same code so gift card is found",
+			cards: cart.AppliedGiftCards{
+				{
+					Code: "some-code",
+				},
+			},
+			args: args{
+				"some-code",
+			},
+			wantCard: cart.AppliedGiftCard{
+				Code: "some-code",
+			},
+			wantFound: true,
+		},
+		{
+			name: "different code so no gift card is found",
+			cards: cart.AppliedGiftCards{
+				{
+					Code: "some-code",
+				},
+			},
+			args: args{
+				"some-other-code",
+			},
+			wantCard:  cart.AppliedGiftCard{},
+			wantFound: false,
+		},
+		{
+			name: "multiple gift cards and one code is found",
+			cards: cart.AppliedGiftCards{
+				{
+					Code: "some-code",
+				},
+				{
+					Code: "some-other-code",
+				},
+			},
+			args: args{
+				"some-code",
+			},
+			wantCard: cart.AppliedGiftCard{
+				Code: "some-code",
+			},
+			wantFound: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotCard, gotFound := tt.cards.GiftCardByCode(tt.args.code)
+			if !reflect.DeepEqual(gotCard, tt.wantCard) {
+				t.Errorf("GiftCardByCode() gotCard = %v, want %v", gotCard, tt.wantCard)
+			}
+			if gotFound != tt.wantFound {
+				t.Errorf("GiftCardByCode() gotFound = %v, want %v", gotFound, tt.wantFound)
+			}
+		})
+	}
+}
