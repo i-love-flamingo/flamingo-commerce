@@ -102,9 +102,9 @@ func (cards *AppliedGiftCards) ByRemaining() AppliedGiftCards {
 
 // GiftCardByCode returns a single gift card if the given code matches its code.
 func (cards *AppliedGiftCards) GiftCardByCode(code string) (card *AppliedGiftCard, found bool) {
-	for _, card = range *cards {
+	for _, card := range *cards {
 		if card.Code == code {
-			return card, true
+			return &card, true
 		}
 	}
 	return nil, false
