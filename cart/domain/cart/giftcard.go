@@ -101,7 +101,7 @@ func (cards *AppliedGiftCards) ByRemaining() AppliedGiftCards {
 }
 
 // GiftCardByCode returns a single gift card if the given code matches its code.
-// First return parameter is the gift card if found and the second return parameter is a boolean
+// First return parameter is the gift card if found and the second return parameter is a boolean depicting if a gift card was found
 func (cards *AppliedGiftCards) GiftCardByCode(code string) (*AppliedGiftCard, bool) {
 	for _, card := range *cards {
 		if card.Code == code {
