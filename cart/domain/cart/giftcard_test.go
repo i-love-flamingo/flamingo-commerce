@@ -263,7 +263,7 @@ func TestAppliedGiftCards_GiftCardByCode(t *testing.T) {
 		name      string
 		cards     cart.AppliedGiftCards
 		args      args
-		wantCard  cart.AppliedGiftCard
+		wantCard  *cart.AppliedGiftCard
 		wantFound bool
 	}{
 		{
@@ -272,7 +272,7 @@ func TestAppliedGiftCards_GiftCardByCode(t *testing.T) {
 			args: args{
 				"some-code",
 			},
-			wantCard:  cart.AppliedGiftCard{},
+			wantCard:  nil,
 			wantFound: false,
 		},
 		{
@@ -285,7 +285,7 @@ func TestAppliedGiftCards_GiftCardByCode(t *testing.T) {
 			args: args{
 				"some-code",
 			},
-			wantCard: cart.AppliedGiftCard{
+			wantCard: &cart.AppliedGiftCard{
 				Code: "some-code",
 			},
 			wantFound: true,
@@ -300,7 +300,7 @@ func TestAppliedGiftCards_GiftCardByCode(t *testing.T) {
 			args: args{
 				"some-other-code",
 			},
-			wantCard:  cart.AppliedGiftCard{},
+			wantCard:  nil,
 			wantFound: false,
 		},
 		{
@@ -316,7 +316,7 @@ func TestAppliedGiftCards_GiftCardByCode(t *testing.T) {
 			args: args{
 				"some-code",
 			},
-			wantCard: cart.AppliedGiftCard{
+			wantCard: &cart.AppliedGiftCard{
 				Code: "some-code",
 			},
 			wantFound: true,
