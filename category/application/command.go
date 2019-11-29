@@ -135,7 +135,7 @@ func (c *DefaultCommandHandler) Execute(ctx context.Context, req CategoryRequest
 		case "page":
 			page, _ := strconv.ParseInt(v[0], 10, 64)
 			searchRequest.SetAdditionalFilter(searchDomain.NewPaginationPageFilter(int(page)))
-			break
+
 		default:
 			searchRequest.SetAdditionalFilter(searchDomain.NewKeyValueFilter(k, v))
 		}
