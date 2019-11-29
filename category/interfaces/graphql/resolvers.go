@@ -5,30 +5,25 @@ import (
 	"flamingo.me/flamingo-commerce/v3/category/domain"
 	graphqlDto "flamingo.me/flamingo-commerce/v3/category/interfaces/graphql/dto"
 	productApplication "flamingo.me/flamingo-commerce/v3/product/application"
-	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
+	"flamingo.me/flamingo-commerce/v3/search/application"
+	searchDomain "flamingo.me/flamingo-commerce/v3/search/domain"
 	"flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/dto"
 )
 
 // CommerceCategoryQueryResolver resolves graphql category queries
 type CommerceCategoryQueryResolver struct {
-	categoryService      domain.CategoryService
-	productSearchService productDomain.SearchService
-	defaultPageSize      float64
+	categoryService domain.CategoryService
+	searchService   productApplication.ProductSearchService
+	defaultPageSize float64
 }
 
 // Inject dependencies
 func (r *CommerceCategoryQueryResolver) Inject(
 	service domain.CategoryService,
-	productSearchService productDomain.SearchService,
-	optionals *struct {
-		DefaultPageSize float64 `inject:"config:pagination.defaultPageSize,optional"`
-	},
+	searchService productApplication.ProductSearchService,
 ) *CommerceCategoryQueryResolver {
 	r.categoryService = service
-	r.productSearchService = productSearchService
-	if optionals != nil {
-		r.defaultPageSize = optionals.DefaultPageSize
-	}
+	r.searchService = searchService
 	return r
 }
 
@@ -48,22 +43,26 @@ func (r *CommerceCategoryQueryResolver) CommerceCategory(
 		return nil, err
 	}
 
-	var filters = dto.SearchRequestToFilters(request, int(r.defaultPageSize))
+	var filters []searchDomain.Filter
+	for _, filter := range request.KeyValueFilters {
+		filters = append(filters, searchDomain.NewKeyValueFilter(filter.K, filter.V))
+	}
 
 	filters = append(filters, domain.NewCategoryFacet(categoryCode))
 
-	result, err := r.productSearchService.Search(ctx, filters...)
+	result, err := r.searchService.Find(ctx, &application.SearchRequest{
+		AdditionalFilter: filters,
+		PageSize:         request.PageSize,
+		Page:             request.Page,
+		SortBy:           request.SortBy,
+		SortDirection:    request.SortDirection,
+		Query:            request.Query,
+		PaginationConfig: nil,
+	})
 
 	if err != nil {
 		return nil, err
 	}
 
-	productSearchResult := &productApplication.SearchResult{
-		Suggestions: result.Suggestion,
-		Products:    result.Hits,
-		SearchMeta:  result.SearchMeta,
-		Facets:      result.Facets,
-	}
-
-	return &graphqlDto.CategorySearchResult{Category: category, ProductSearchResult: productSearchResult}, nil
+	return &graphqlDto.CategorySearchResult{Category: category, ProductSearchResult: result}, nil
 }
