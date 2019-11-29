@@ -11,9 +11,8 @@ import (
 
 // CommerceProductQueryResolver resolves graphql product queries
 type CommerceProductQueryResolver struct {
-	productService  domain.ProductService
-	searchService   *productApplication.ProductSearchService
-	defaultPageSize float64
+	productService domain.ProductService
+	searchService  *productApplication.ProductSearchService
 }
 
 // Inject dependencies

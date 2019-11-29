@@ -14,7 +14,6 @@ import (
 type CommerceCategoryQueryResolver struct {
 	categoryService domain.CategoryService
 	searchService   *productApplication.ProductSearchService
-	defaultPageSize float64
 }
 
 // Inject dependencies
