@@ -55,7 +55,7 @@ func (c Cart) SumAppliedGiftCards() (domain.Price, error) {
 	price, err := domain.SumAll(prices...)
 	// in case of error regarding sum, pass on error
 	if err != nil {
-		return domain.Price{}.GetPayable(), nil
+		return domain.Price{}.GetPayable(), err
 	}
 	return price.GetPayable(), nil
 }
