@@ -1,4 +1,4 @@
-package controller_test
+package application_test
 
 import (
 	"context"
@@ -9,11 +9,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
+	"flamingo.me/flamingo-commerce/v3/category/application"
 	"flamingo.me/flamingo-commerce/v3/category/domain"
-	"flamingo.me/flamingo-commerce/v3/category/interfaces/controller"
-	"flamingo.me/flamingo-commerce/v3/product/application"
+	productApplication "flamingo.me/flamingo-commerce/v3/product/application"
 	searchApplication "flamingo.me/flamingo-commerce/v3/search/application"
-	searchdomain "flamingo.me/flamingo-commerce/v3/search/domain"
+	searchDomain "flamingo.me/flamingo-commerce/v3/search/domain"
 	"flamingo.me/flamingo-commerce/v3/search/utils"
 )
 
@@ -31,12 +31,12 @@ func (m *mockCategoryService) Get(ctx context.Context, categoryCode string) (dom
 	return called.Get(0).(domain.Category), called.Error(1)
 }
 
-func TestDefaultBaseViewController_Get_SearchService(t *testing.T) {
+func TestDefaultCommandHandler_Execute_SearchService(t *testing.T) {
 	type args struct {
 		categoryService                domain.CategoryService
-		searchServiceFind              controller.SearchServiceFindFunc
-		breadcrumbServiceAddBreadcrumb controller.BreadcrumbServiceAddBreadcrumbFunc
-		paginationInfoFactoryBuild     controller.PaginationInfoFactoryBuildFunc
+		searchServiceFind              application.SearchServiceFindFunc
+		breadcrumbServiceAddBreadcrumb application.BreadcrumbServiceAddBreadcrumbFunc
+		paginationInfoFactoryBuild     application.PaginationInfoFactoryBuildFunc
 	}
 
 	catService := mockCategoryService{}
@@ -51,30 +51,30 @@ func TestDefaultBaseViewController_Get_SearchService(t *testing.T) {
 	tests := []struct {
 		name             string
 		args             args
-		request          controller.ViewRequest
-		wantViewData     *controller.ViewData
-		wantViewRedirect *controller.ViewRedirect
-		wantViewError    *controller.ViewError
+		request          application.CategoryRequest
+		wantViewData     *application.CommandResult
+		wantViewRedirect *application.CommandRedirect
+		wantViewError    *application.CommandError
 	}{
 		{
 			name: "successful product search results in success response",
 			args: args{
 				categoryService: &catService,
-				searchServiceFind: func(ctx context.Context, searchRequest *searchApplication.SearchRequest) (*application.SearchResult, error) {
-					return &application.SearchResult{}, nil
+				searchServiceFind: func(ctx context.Context, searchRequest *searchApplication.SearchRequest) (*productApplication.SearchResult, error) {
+					return &productApplication.SearchResult{}, nil
 				},
 				breadcrumbServiceAddBreadcrumb: emptyBreadcrumbServiceAddBreadcrumb,
 				paginationInfoFactoryBuild:     emptyPaginationInfoFactoryBuild,
 			},
-			request: controller.ViewRequest{
+			request: application.CategoryRequest{
 				Code: "test",
 				Name: "test",
 			},
-			wantViewData: &controller.ViewData{
-				ProductSearchResult: &application.SearchResult{},
+			wantViewData: &application.CommandResult{
+				ProductSearchResult: &productApplication.SearchResult{},
 				Category:            &domain.CategoryData{CategoryName: "test"},
 				CategoryTree:        &domain.TreeData{},
-				SearchMeta:          searchdomain.SearchMeta{},
+				SearchMeta:          searchDomain.SearchMeta{},
 				PaginationInfo:      utils.PaginationInfo{},
 			},
 		},
@@ -82,35 +82,35 @@ func TestDefaultBaseViewController_Get_SearchService(t *testing.T) {
 			name: "not found error results in not found error response",
 			args: args{
 				categoryService: &catService,
-				searchServiceFind: func(ctx context.Context, searchRequest *searchApplication.SearchRequest) (*application.SearchResult, error) {
-					return nil, searchdomain.ErrNotFound
+				searchServiceFind: func(ctx context.Context, searchRequest *searchApplication.SearchRequest) (*productApplication.SearchResult, error) {
+					return nil, searchDomain.ErrNotFound
 				},
 				breadcrumbServiceAddBreadcrumb: emptyBreadcrumbServiceAddBreadcrumb,
 				paginationInfoFactoryBuild:     emptyPaginationInfoFactoryBuild,
 			},
-			request: controller.ViewRequest{
+			request: application.CategoryRequest{
 				Code: "test",
 				Name: "test",
 			},
-			wantViewError: &controller.ViewError{
-				NotFound: searchdomain.ErrNotFound,
+			wantViewError: &application.CommandError{
+				NotFound: searchDomain.ErrNotFound,
 			},
 		},
 		{
 			name: "error results in internal server error response",
 			args: args{
 				categoryService: &catService,
-				searchServiceFind: func(ctx context.Context, searchRequest *searchApplication.SearchRequest) (*application.SearchResult, error) {
+				searchServiceFind: func(ctx context.Context, searchRequest *searchApplication.SearchRequest) (*productApplication.SearchResult, error) {
 					return nil, errors.New("other")
 				},
 				breadcrumbServiceAddBreadcrumb: emptyBreadcrumbServiceAddBreadcrumb,
 				paginationInfoFactoryBuild:     emptyPaginationInfoFactoryBuild,
 			},
-			request: controller.ViewRequest{
+			request: application.CategoryRequest{
 				Code: "test",
 				Name: "test",
 			},
-			wantViewError: &controller.ViewError{
+			wantViewError: &application.CommandError{
 				Other: errors.New("other"),
 			},
 		},
@@ -118,14 +118,14 @@ func TestDefaultBaseViewController_Get_SearchService(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			vc := controller.NewDefaultBaseViewController(
+			vc := application.NewDefaultCommandHandler(
 				tt.args.categoryService,
 				tt.args.searchServiceFind,
 				tt.args.breadcrumbServiceAddBreadcrumb,
 				tt.args.paginationInfoFactoryBuild,
 			)
 
-			gotViewData, gotRedirect, gotError := vc.Get(context.Background(), tt.request)
+			gotViewData, gotRedirect, gotError := vc.Execute(context.Background(), tt.request)
 
 			a := assert.New(t)
 
