@@ -2,7 +2,6 @@ package application
 
 import (
 	"context"
-	"errors"
 	"net/url"
 	"strconv"
 
@@ -109,7 +108,7 @@ func (c *DefaultCommandHandler) Inject(
 func (c *DefaultCommandHandler) Execute(ctx context.Context, req CategoryRequest) (*CommandResult, *CommandRedirect, *CommandError) {
 	treeRoot, err := c.categoryService.Tree(ctx, req.Code)
 	if err != nil {
-		if errors.Is(err, domain.ErrNotFound) {
+		if err == domain.ErrNotFound {
 			return nil, nil, &CommandError{NotFound: err}
 		}
 		return nil, nil, &CommandError{Other: err}
@@ -117,7 +116,7 @@ func (c *DefaultCommandHandler) Execute(ctx context.Context, req CategoryRequest
 
 	currentCategory, err := c.categoryService.Get(ctx, req.Code)
 	if err != nil {
-		if errors.Is(err, domain.ErrNotFound) {
+		if err == domain.ErrNotFound {
 			return nil, nil, &CommandError{NotFound: err}
 		}
 		return nil, nil, &CommandError{Other: err}
@@ -144,7 +143,7 @@ func (c *DefaultCommandHandler) Execute(ctx context.Context, req CategoryRequest
 
 	products, err := c.searchServiceFind(ctx, searchRequest)
 	if err != nil {
-		if errors.Is(err, searchDomain.ErrNotFound) {
+		if err == searchDomain.ErrNotFound {
 			return nil, nil, &CommandError{NotFound: err}
 		}
 		return nil, nil, &CommandError{Other: err}
