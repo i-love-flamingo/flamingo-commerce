@@ -13,14 +13,14 @@ import (
 // CommerceCategoryQueryResolver resolves graphql category queries
 type CommerceCategoryQueryResolver struct {
 	categoryService domain.CategoryService
-	searchService   productApplication.ProductSearchService
+	searchService   *productApplication.ProductSearchService
 	defaultPageSize float64
 }
 
 // Inject dependencies
 func (r *CommerceCategoryQueryResolver) Inject(
 	service domain.CategoryService,
-	searchService productApplication.ProductSearchService,
+	searchService *productApplication.ProductSearchService,
 ) *CommerceCategoryQueryResolver {
 	r.categoryService = service
 	r.searchService = searchService
