@@ -2,7 +2,7 @@ package graphql
 
 import (
 	"flamingo.me/flamingo-commerce/v3/category/domain"
-	"flamingo.me/flamingo-commerce/v3/category/interfaces/controller"
+	"flamingo.me/flamingo-commerce/v3/category/interfaces/graphql/dto"
 	"flamingo.me/graphql"
 	"github.com/99designs/gqlgen/codegen/config"
 )
@@ -24,7 +24,7 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		"Commerce_CategoryTree":            domain.TreeData{},
 		"Commerce_Category":                new(domain.Category),
 		"Commerce_CategoryData":            domain.CategoryData{},
-		"Commerce_Category_SearchResult":   controller.ViewData{},
+		"Commerce_Category_SearchResult":   dto.CategorySearchResult{},
 		"Commerce_Category_Attributes":     domain.Attributes{},
 		"Commerce_Category_Attribute":      domain.Attribute{},
 		"Commerce_Category_AttributeValue": domain.AttributeValue{},
