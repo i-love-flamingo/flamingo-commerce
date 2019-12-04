@@ -2,7 +2,6 @@ package controller
 
 import (
 	"context"
-	"flamingo.me/flamingo-commerce/v3/category/application"
 	"net/url"
 	"strconv"
 
@@ -31,7 +30,6 @@ type (
 	QueryHandlerImpl struct {
 		categoryService      domain.CategoryService
 		productSearchService ProductSearchService
-		breadcrumbService    application.BreadcrumbService
 	}
 
 	// CategoryRequest is a request for a category view
