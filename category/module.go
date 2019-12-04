@@ -45,7 +45,7 @@ func (m *Module) Inject(
 
 // Configure the product URL
 func (m *Module) Configure(injector *dingo.Injector) {
-	injector.Bind(new(controller.QueryCommandHandler)).To(controller.QueryCommandHandlerImpl{})
+	injector.Bind(new(controller.QueryHandler)).To(controller.QueryHandlerImpl{})
 	injector.Bind(new(controller.ProductSearchService)).To(productApplication.ProductSearchService{})
 
 	if m.useCategoryFixedAdapter {

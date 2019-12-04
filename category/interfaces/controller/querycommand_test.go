@@ -127,7 +127,7 @@ func TestDefaultCommandHandler_Execute_SearchService(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			commandHandler := controller.QueryCommandHandlerImpl{}
+			commandHandler := controller.QueryHandlerImpl{}
 			commandHandler.Inject(tt.args.categoryService, &mockProductSearchService{
 				mockFunc: tt.args.searchServiceFind,
 			})

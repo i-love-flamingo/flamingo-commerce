@@ -17,8 +17,8 @@ import (
 )
 
 type (
-	// QueryCommandHandler provides the base command logic that is agnostic to the actual view type
-	QueryCommandHandler interface {
+	// QueryHandler provides the base command logic that is agnostic to the actual view type
+	QueryHandler interface {
 		Execute(ctx context.Context, req Request) (*Result, *RedirectResult, error)
 	}
 
@@ -27,8 +27,8 @@ type (
 		Find(ctx context.Context, searchRequest *searchApplication.SearchRequest) (*productApplication.SearchResult, error)
 	}
 
-	// QueryCommandHandlerImpl is the default implementation of QueryCommandHandler
-	QueryCommandHandlerImpl struct {
+	// QueryHandlerImpl is the default implementation of QueryHandler
+	QueryHandlerImpl struct {
 		categoryService      domain.CategoryService
 		productSearchService ProductSearchService
 		breadcrumbService    application.BreadcrumbService
@@ -58,10 +58,10 @@ type (
 	}
 )
 
-var _ QueryCommandHandler = (*QueryCommandHandlerImpl)(nil)
+var _ QueryHandler = (*QueryHandlerImpl)(nil)
 
 // Inject injects dependencies
-func (c *QueryCommandHandlerImpl) Inject(
+func (c *QueryHandlerImpl) Inject(
 	categoryService domain.CategoryService,
 	searchService ProductSearchService,
 ) {
@@ -71,7 +71,7 @@ func (c *QueryCommandHandlerImpl) Inject(
 
 // Execute Action to display a category page for any view
 // error might be domain.ErrNotFound to indicate that the category was not found
-func (c *QueryCommandHandlerImpl) Execute(ctx context.Context, req Request) (*Result, *RedirectResult, error) {
+func (c *QueryHandlerImpl) Execute(ctx context.Context, req Request) (*Result, *RedirectResult, error) {
 	treeRoot, err := c.categoryService.Tree(ctx, req.Code)
 	if err != nil {
 		return nil, nil, err
