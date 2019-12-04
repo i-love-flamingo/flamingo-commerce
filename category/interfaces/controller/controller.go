@@ -15,11 +15,12 @@ import (
 type (
 	// ViewController provides web-specific actions for category single view
 	ViewController struct {
-		commandHandler application.CommandHandler
-		responder      *web.Responder
-		router         *web.Router
-		template       string
-		teaserTemplate string
+		commandHandler    QueryCommandHandler
+		breadcrumbService application.BreadcrumbService
+		responder         *web.Responder
+		router            *web.Router
+		template          string
+		teaserTemplate    string
 	}
 
 	// ViewData for rendering context
@@ -34,7 +35,8 @@ type (
 
 // Inject the ViewController controller required dependencies
 func (vc *ViewController) Inject(
-	base application.CommandHandler,
+	queryCommandHandler QueryCommandHandler,
+	breadcrumbService application.BreadcrumbService,
 	responder *web.Responder,
 	router *web.Router,
 	config *struct {
@@ -42,9 +44,10 @@ func (vc *ViewController) Inject(
 		TeaserTemplate string `inject:"config:commerce.category.view.teaserTemplate"`
 	},
 ) *ViewController {
-	vc.commandHandler = base
+	vc.commandHandler = queryCommandHandler
 	vc.responder = responder
 	vc.router = router
+	vc.breadcrumbService = breadcrumbService
 
 	if config != nil {
 		vc.template = config.Template
@@ -57,19 +60,18 @@ func (vc *ViewController) Inject(
 // Get Action to display a category page for the web
 func (vc *ViewController) Get(c context.Context, request *web.Request) web.Result {
 
-	result, redirect, err := vc.commandHandler.Execute(c, application.CategoryRequest{
+	result, redirect, err := vc.commandHandler.Execute(c, Request{
 		Code:     request.Params["code"],
 		Name:     request.Params["name"],
 		URL:      *request.Request().URL,
 		QueryAll: request.QueryAll(),
 	})
 
+	if err == domain.ErrNotFound || err == searchDomain.ErrNotFound {
+		return vc.responder.NotFound(err)
+	}
 	if err != nil {
-		if err.NotFound != nil {
-			return vc.responder.NotFound(err.NotFound)
-		}
-
-		return vc.responder.ServerError(err.Other)
+		return vc.responder.ServerError(err)
 	}
 
 	if redirect != nil {
@@ -77,11 +79,13 @@ func (vc *ViewController) Get(c context.Context, request *web.Request) web.Resul
 			"code": redirect.Code,
 			"name": redirect.Name,
 		}
-
 		u, _ := vc.router.Relative("category.view", redirectParams)
 		u.RawQuery = request.QueryAll().Encode()
 		return vc.responder.URLRedirect(u).Permanent()
 	}
+
+	//Deprecated
+	vc.breadcrumbService.AddBreadcrumb(c, result.CategoryTree)
 
 	var template string
 	switch result.Category.CategoryType() {
