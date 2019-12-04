@@ -2,17 +2,18 @@ package category
 
 import (
 	"flamingo.me/dingo"
+	"flamingo.me/flamingo/v3/framework/config"
+	"flamingo.me/flamingo/v3/framework/web"
+	flamingographql "flamingo.me/graphql"
+
 	"flamingo.me/flamingo-commerce/v3/category/application"
 	"flamingo.me/flamingo-commerce/v3/category/domain"
 	"flamingo.me/flamingo-commerce/v3/category/infrastructure"
 	"flamingo.me/flamingo-commerce/v3/category/interfaces/controller"
 	categoryGraphql "flamingo.me/flamingo-commerce/v3/category/interfaces/graphql"
 	"flamingo.me/flamingo-commerce/v3/product"
-	application2 "flamingo.me/flamingo-commerce/v3/product/application"
+	productApplication "flamingo.me/flamingo-commerce/v3/product/application"
 	"flamingo.me/flamingo-commerce/v3/search"
-	"flamingo.me/flamingo/v3/framework/config"
-	"flamingo.me/flamingo/v3/framework/web"
-	flamingographql "flamingo.me/graphql"
 )
 
 // Module registers our profiler
@@ -45,7 +46,7 @@ func (m *Module) Inject(
 // Configure the product URL
 func (m *Module) Configure(injector *dingo.Injector) {
 	injector.Bind(new(controller.QueryCommandHandler)).To(controller.QueryCommandHandlerImpl{})
-	injector.Bind(new(controller.ProductSearchService)).To(application2.ProductSearchService{})
+	injector.Bind(new(controller.ProductSearchService)).To(productApplication.ProductSearchService{})
 
 	if m.useCategoryFixedAdapter {
 		injector.Bind((*domain.CategoryService)(nil)).To(infrastructure.CategoryServiceFixed{})

@@ -22,7 +22,7 @@ type (
 		Execute(ctx context.Context, req Request) (*Result, *RedirectResult, error)
 	}
 
-	//ProductSearchService interface that describes the expected dependency. (Is fullfilled by the product package)
+	// ProductSearchService interface that describes the expected dependency. (Is fulfilled by the product package)
 	ProductSearchService interface {
 		Find(ctx context.Context, searchRequest *searchApplication.SearchRequest) (*productApplication.SearchResult, error)
 	}

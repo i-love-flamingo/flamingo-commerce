@@ -84,7 +84,7 @@ func (vc *ViewController) Get(c context.Context, request *web.Request) web.Resul
 		return vc.responder.URLRedirect(u).Permanent()
 	}
 
-	//Deprecated
+	// Deprecated
 	vc.breadcrumbService.AddBreadcrumb(c, result.CategoryTree)
 
 	var template string
