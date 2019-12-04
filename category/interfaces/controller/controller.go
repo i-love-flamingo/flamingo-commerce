@@ -2,121 +2,93 @@ package controller
 
 import (
 	"context"
-	"net/url"
-	"strconv"
 
-	breadcrumb "flamingo.me/flamingo-commerce/v3/category/application"
-
-	"flamingo.me/flamingo-commerce/v3/category/domain"
-	"flamingo.me/flamingo-commerce/v3/product/application"
-	searchApplication "flamingo.me/flamingo-commerce/v3/search/application"
-	searchdomain "flamingo.me/flamingo-commerce/v3/search/domain"
-	"flamingo.me/flamingo-commerce/v3/search/utils"
 	"flamingo.me/flamingo/v3/framework/web"
+
+	"flamingo.me/flamingo-commerce/v3/category/application"
+	"flamingo.me/flamingo-commerce/v3/category/domain"
+	productApplication "flamingo.me/flamingo-commerce/v3/product/application"
+	searchDomain "flamingo.me/flamingo-commerce/v3/search/domain"
+	"flamingo.me/flamingo-commerce/v3/search/utils"
 )
 
 type (
-	// ViewController providing actions for category single view
+	// ViewController provides web-specific actions for category single view
 	ViewController struct {
-		responder *web.Responder
-		domain.CategoryService
-		SearchService         *application.ProductSearchService
-		router                *web.Router
-		template              string
-		teaserTemplate        string
-		paginationInfoFactory *utils.PaginationInfoFactory
-		breadcrumbService     *breadcrumb.BreadcrumbService
+		commandHandler    QueryHandler
+		breadcrumbService application.BreadcrumbService
+		responder         *web.Responder
+		router            *web.Router
+		template          string
+		teaserTemplate    string
 	}
 
 	// ViewData for rendering context
 	ViewData struct {
-		ProductSearchResult *application.SearchResult
+		ProductSearchResult *productApplication.SearchResult
 		Category            domain.Category
 		CategoryTree        domain.Tree
-		SearchMeta          searchdomain.SearchMeta
+		SearchMeta          searchDomain.SearchMeta
 		PaginationInfo      utils.PaginationInfo
 	}
 )
 
 // Inject the ViewController controller required dependencies
 func (vc *ViewController) Inject(
+	queryCommandHandler QueryHandler,
+	breadcrumbService application.BreadcrumbService,
 	responder *web.Responder,
-	categoryService domain.CategoryService,
-	searchService *application.ProductSearchService,
 	router *web.Router,
-	paginationInfoFactory *utils.PaginationInfoFactory,
-	breadcrumbService *breadcrumb.BreadcrumbService,
-
 	config *struct {
 		Template       string `inject:"config:commerce.category.view.template"`
 		TeaserTemplate string `inject:"config:commerce.category.view.teaserTemplate"`
 	},
 ) *ViewController {
+	vc.commandHandler = queryCommandHandler
 	vc.responder = responder
-	vc.CategoryService = categoryService
-	vc.SearchService = searchService
 	vc.router = router
-	vc.paginationInfoFactory = paginationInfoFactory
+	vc.breadcrumbService = breadcrumbService
+
 	if config != nil {
 		vc.template = config.Template
 		vc.teaserTemplate = config.TeaserTemplate
 	}
-	vc.breadcrumbService = breadcrumbService
 
 	return vc
 }
 
-// Get Action to display a category page
+// Get Action to display a category page for the web
 func (vc *ViewController) Get(c context.Context, request *web.Request) web.Result {
-	treeRoot, err := vc.CategoryService.Tree(c, request.Params["code"])
-	if err == domain.ErrNotFound {
+
+	result, redirect, err := vc.commandHandler.Execute(c, Request{
+		Code:     request.Params["code"],
+		Name:     request.Params["name"],
+		URL:      *request.Request().URL,
+		QueryAll: request.QueryAll(),
+	})
+
+	if err == domain.ErrNotFound || err == searchDomain.ErrNotFound {
 		return vc.responder.NotFound(err)
-	} else if err != nil {
-		return vc.responder.ServerError(err)
 	}
-	currentCategory, err := vc.CategoryService.Get(c, request.Params["code"])
-	if err == domain.ErrNotFound {
-		return vc.responder.NotFound(err)
-	} else if err != nil {
-		return vc.responder.ServerError(err)
-	}
-
-	//Normalize url if required:
-	expectedName := web.URLTitle(currentCategory.Name())
-	if name, _ := request.Params["name"]; expectedName != name {
-		redirectParams := map[string]string{
-			"code": currentCategory.Code(),
-			"name": expectedName,
-		}
-		u, _ := vc.router.Relative("category.view", redirectParams)
-		u.RawQuery = url.Values(request.QueryAll()).Encode()
-		return vc.responder.URLRedirect(u).Permanent()
-	}
-
-	searchRequest := &searchApplication.SearchRequest{}
-	for k, v := range request.QueryAll() {
-		switch k {
-		case "page":
-			page, _ := strconv.ParseInt(v[0], 10, 64)
-			searchRequest.SetAdditionalFilter(searchdomain.NewPaginationPageFilter(int(page)))
-			break
-		default:
-			searchRequest.SetAdditionalFilter(searchdomain.NewKeyValueFilter(k, v))
-		}
-	}
-	searchRequest.SetAdditionalFilter(domain.NewCategoryFacet(currentCategory.Code()))
-
-	products, err := vc.SearchService.Find(c, searchRequest)
 	if err != nil {
 		return vc.responder.ServerError(err)
 	}
 
-	vc.breadcrumbService.AddBreadcrumb(c, treeRoot)
+	if redirect != nil {
+		redirectParams := map[string]string{
+			"code": redirect.Code,
+			"name": redirect.Name,
+		}
+		u, _ := vc.router.Relative("category.view", redirectParams)
+		u.RawQuery = request.QueryAll().Encode()
+		return vc.responder.URLRedirect(u).Permanent()
+	}
 
-	paginationInfo := vc.paginationInfoFactory.Build(products.SearchMeta.Page, products.SearchMeta.NumResults, 30, products.SearchMeta.NumPages, request.Request().URL)
+	// Deprecated
+	vc.breadcrumbService.AddBreadcrumb(c, result.CategoryTree)
 
 	var template string
-	switch currentCategory.CategoryType() {
+	switch result.Category.CategoryType() {
 	case domain.TypeTeaser:
 		template = vc.teaserTemplate
 	default:
@@ -124,10 +96,10 @@ func (vc *ViewController) Get(c context.Context, request *web.Request) web.Resul
 	}
 
 	return vc.responder.Render(template, ViewData{
-		Category:            currentCategory,
-		CategoryTree:        treeRoot,
-		ProductSearchResult: products,
-		SearchMeta:          products.SearchMeta,
-		PaginationInfo:      paginationInfo,
+		ProductSearchResult: result.ProductSearchResult,
+		Category:            result.Category,
+		CategoryTree:        result.CategoryTree,
+		SearchMeta:          result.SearchMeta,
+		PaginationInfo:      result.PaginationInfo,
 	})
 }
