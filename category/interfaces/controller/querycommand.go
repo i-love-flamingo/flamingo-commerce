@@ -32,7 +32,7 @@ type (
 		productSearchService ProductSearchService
 	}
 
-	// CategoryRequest is a request for a category view
+	// Request is a request for a category view
 	Request struct {
 		Code     string
 		Name     string
