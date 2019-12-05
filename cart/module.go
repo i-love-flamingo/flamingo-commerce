@@ -4,6 +4,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql"
+	"flamingo.me/flamingo-commerce/v3/customer"
 	oauthApplication "flamingo.me/flamingo/v3/core/oauth/application"
 	flamingographql "flamingo.me/graphql"
 
@@ -115,6 +116,7 @@ func (m *Module) Depends() []dingo.Module {
 	return []dingo.Module{
 		new(oauth.Module),
 		new(form.Module),
+		new(customer.Module),
 	}
 }
 

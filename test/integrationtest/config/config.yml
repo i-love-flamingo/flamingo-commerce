@@ -1,0 +1,88 @@
+# Flamingo core related configurations:
+debug.mode: false
+
+zap.loglevel: Info
+
+flamingo:
+  router:
+    path: /en
+
+prefixrouter:
+  rootRedirectHandler:
+    enabled: true
+    redirectTarget: "/en/"
+
+
+pagination:
+  showFirstPage: false
+  showLastPage: false
+  defaultPageSize: 8
+  showAroundActivePageAmount: 2
+
+oauth:
+  server: 'https://accounts.google.com'
+  secret: '%%ENV:OAUTH_SECRET%%'
+  clientid: flamingo
+  myhost: '%%ENV:FLAMINGO_HOSTNAME%%'
+  disableOfflineToken: true
+  enabled: false
+
+# in prod you will use something like redis
+session:
+  cookie:
+    secure: false
+    #path: /tmp/ #use for persisted session in file
+  backend: memory
+
+# Configs for flamingo-commerce modules
+checkout:
+  showEmptyCartPageIfNoItems: true
+
+commerce.payment.enableOfflinePaymentGateway: true
+
+
+commerce:
+  cart:
+    defaultDeliveryCode: delivery
+    enableCartCache: false
+    useInMemoryCartServiceAdapters: true
+    emailAdapter:
+      emailAddress: test@test.de
+    useEmailPlaceOrderAdapter: true
+    inMemoryCartServiceAdapter:
+      defaultTaxRate: 19
+  product:
+    fakeservice:
+      enabled: true
+    priceIsGross: true
+  customer:
+    useNilCustomerAdapter: true
+  category:
+    useCategoryFixedAdapter: true
+    categoryServiceFixed:
+      tree:
+        electronics:
+          code: pc_laptops
+          name: Electronics
+          sort: 1
+          childs:
+            flat-screen_tvs:
+              code: flat-screen_tvs
+              name: Flat Screens & TV
+            headphones:
+              code: headphones
+              name: Headphones
+              childs:
+                headphone_accessories:
+                  code: headphone_accessories
+                  name: Accessories
+            tablets:
+              code: tablets
+              name: Tablets
+        clothing:
+          code: clothing
+          name: Clothes & Fashion
+          sort: 2
+
+
+

@@ -69,8 +69,8 @@ type (
 func (p *DefaultPersonalDataFormService) Inject(
 	applicationCartReceiverService *cartApplication.CartReceiverService,
 	defaultPersonalDataFormProvider DefaultPersonalDataFormProvider,
-	customerApplicationService *customerApplication.Service,
 	userService *authApplication.UserService,
+	customerApplicationService *customerApplication.Service,
 	cfg *struct {
 		AdditionalFormValues    config.Slice `inject:"config:commerce.cart.personalDataForm.additionalFormFields,optional"`
 		DateOfBirthRequired     bool         `inject:"config:commerce.cart.personalDataForm.dateOfBirthRequired,optional"`

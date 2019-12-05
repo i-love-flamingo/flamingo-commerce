@@ -204,6 +204,12 @@ type (
 	}
 )
 
+const (
+	StockLevelOutOfStock = "out"
+	StockLevelInStock    = "in"
+	StockLevelLowStock   = "low"
+)
+
 // Value returns the raw value
 func (at Attribute) Value() string {
 	return strings.Trim(fmt.Sprintf("%v", at.RawValue), " ")
@@ -492,7 +498,7 @@ func (bpd BasicProductData) IsInStock() bool {
 		return true
 	}
 
-	if bpd.StockLevel == "" || bpd.StockLevel == "out" {
+	if bpd.StockLevel == "" || bpd.StockLevel == StockLevelOutOfStock {
 		return false
 	}
 

@@ -13,7 +13,6 @@ import (
 	"flamingo.me/form/application"
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
-	customerApplication "flamingo.me/flamingo-commerce/v3/customer/application"
 	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
@@ -47,7 +46,6 @@ type (
 		applicationCartReceiverService *cartApplication.CartReceiverService
 		userService                    *authApplication.UserService
 		logger                         flamingo.Logger
-		customerApplicationService     *customerApplication.Service
 		formHandlerFactory             application.FormHandlerFactory
 		billingAddressFormController   *cartInterfaceForms.BillingAddressFormController
 		deliveryFormController         *cartInterfaceForms.DeliveryFormController
@@ -64,7 +62,6 @@ func (c *CheckoutFormController) Inject(responder *web.Responder,
 	applicationCartReceiverService *cartApplication.CartReceiverService,
 	userService *authApplication.UserService,
 	logger flamingo.Logger,
-	customerApplicationService *customerApplication.Service,
 	formHandlerFactory application.FormHandlerFactory,
 	billingAddressFormController *cartInterfaceForms.BillingAddressFormController,
 	deliveryFormController *cartInterfaceForms.DeliveryFormController,
@@ -79,7 +76,6 @@ func (c *CheckoutFormController) Inject(responder *web.Responder,
 	c.applicationCartReceiverService = applicationCartReceiverService
 	c.applicationCartService = applicationCartService
 	c.userService = userService
-	c.customerApplicationService = customerApplicationService
 	c.formHandlerFactory = formHandlerFactory
 	c.logger = logger
 	c.billingAddressFormController = billingAddressFormController
