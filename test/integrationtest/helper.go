@@ -10,7 +10,7 @@ import (
 	"log"
 	"os"
 
-	//"flamingo.me/flamingo-commerce/v3/order"
+	"flamingo.me/flamingo-commerce/v3/order"
 	"flamingo.me/flamingo-commerce/v3/payment"
 	"flamingo.me/flamingo-commerce/v3/price"
 	"flamingo.me/flamingo-commerce/v3/product"
@@ -40,21 +40,39 @@ type (
 	testmodule    struct{}
 )
 
+//ready channel used to receive the ServerStartEvent event (to block until app is started)
+var ready chan bool
+
+func init() {
+	ready = make(chan bool)
+}
+
+//Configure for your testmodule in the app
 func (t *testmodule) Configure(i *dingo.Injector) {
 	flamingoFramework.BindEventSubscriber(i).To(eventReceiver{})
 }
 
-//RootArea to return the KSO config areas - with configurations loaded from the given folder
-func rootArea(configBaseDir string) *config.Area {
+//Notify gets notified by event router
+func (e *eventReceiver) Notify(ctx context.Context, event flamingoFramework.Event) {
+	switch event.(type) {
+	case *flamingoFramework.ServerStartEvent:
+		log.Printf("ServerStartEvent event received...")
+		ready <- true
+	}
+}
 
+/*
+//rootArea to return the config areas - with configurations loaded from the given folder
+func rootArea(configBaseDir string) *config.Area {
 	rootContext := config.NewArea(
 		"root",
 		modules())
 	config.Load(rootContext, configBaseDir)
-
 	return rootContext
 }
+*/
 
+//modules return slice of modules that we want to have in our example app for testing
 func modules() []dingo.Module {
 	return []dingo.Module{
 		new(framework.InitModule),
@@ -73,7 +91,7 @@ func modules() []dingo.Module {
 		new(filter.DefaultCacheStrategyModule),
 		new(auth.Module),
 		new(breadcrumbs.Module),
-		//new(order.Module),
+		new(order.Module),
 		new(healthcheck.Module),
 		new(w3cdatalayer.Module),
 		new(robotstxt.Module),
@@ -82,20 +100,6 @@ func modules() []dingo.Module {
 		new(price.Module),
 		new(payment.Module),
 		new(testmodule),
-	}
-}
-
-var ready chan bool
-
-func init() {
-	ready = make(chan bool)
-}
-
-func (e *eventReceiver) Notify(ctx context.Context, event flamingoFramework.Event) {
-	switch event.(type) {
-	case *flamingoFramework.ServerStartEvent:
-		log.Printf("ServerStartEvent event received...")
-		ready <- true
 	}
 }
 
