@@ -21,3 +21,12 @@ script:
   - go run github.com/fzipp/gocyclo -top 20 .
   - go run github.com/client9/misspell/cmd/misspell -error .
   - go run github.com/gordonklaus/ineffassign .
+
+
+
+jobs:
+  include:
+    - stage: integrationtest
+      go: 1.12.x
+      script:
+        - go test -v ./test/integrationtest/... -tags=integration

@@ -3,6 +3,8 @@ package product
 import (
 	"flamingo.me/dingo"
 	"flamingo.me/flamingo-commerce/v3/price"
+	"flamingo.me/flamingo-commerce/v3/product/domain"
+	"flamingo.me/flamingo-commerce/v3/product/infrastructure/fake"
 	"flamingo.me/flamingo-commerce/v3/product/interfaces/controller"
 	productgraphql "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql"
 	"flamingo.me/flamingo-commerce/v3/product/interfaces/templatefunctions"
@@ -14,7 +16,9 @@ import (
 )
 
 // Module registers our profiler
-type Module struct{}
+type Module struct {
+	FakeService bool `inject:"config:commerce.product.fakeservice.enabled,optional"`
+}
 
 // Configure the product URL
 func (m *Module) Configure(injector *dingo.Injector) {
@@ -25,6 +29,11 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	web.BindRoutes(injector, new(routes))
 
 	injector.BindMulti(new(graphql.Service)).To(new(productgraphql.Service))
+	if m.FakeService {
+		injector.Bind((*domain.ProductService)(nil)).To(fake.ProductService{})
+		injector.Bind((*domain.SearchService)(nil)).To(fake.SearchService{})
+	}
+
 }
 
 // Depends adds our dependencies

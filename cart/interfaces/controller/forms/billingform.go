@@ -38,9 +38,9 @@ type (
 
 // Inject - dependencies
 func (p *BillingAddressFormService) Inject(
-	customerApplicationService *customerApplication.Service,
 	userService *authApplication.UserService,
-	applicationCartReceiverService *cartApplication.CartReceiverService) {
+	applicationCartReceiverService *cartApplication.CartReceiverService,
+	customerApplicationService *customerApplication.Service) {
 	p.customerApplicationService = customerApplicationService
 	p.userService = userService
 	p.applicationCartReceiverService = applicationCartReceiverService
@@ -50,7 +50,7 @@ func (p *BillingAddressFormService) Inject(
 func (p *BillingAddressFormService) GetFormData(ctx context.Context, req *web.Request) (interface{}, error) {
 	session := web.SessionFromContext(ctx)
 	billingAddressForm := AddressForm{}
-	if p.userService.IsLoggedIn(ctx, session) {
+	if p.userService.IsLoggedIn(ctx, session) && p.customerApplicationService != nil {
 		customer, err := p.customerApplicationService.GetForAuthenticatedUser(ctx, session)
 		if err == nil {
 			billingAddress := customer.GetDefaultBillingAddress()

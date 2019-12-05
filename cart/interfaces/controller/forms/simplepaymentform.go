@@ -12,7 +12,6 @@ import (
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	customerApplication "flamingo.me/flamingo-commerce/v3/customer/application"
 	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
@@ -27,7 +26,6 @@ type (
 
 	// SimplePaymentFormService implements Form(Data)Provider interface of form package
 	SimplePaymentFormService struct {
-		customerApplicationService     *customerApplication.Service
 		userService                    *authApplication.UserService
 		applicationCartReceiverService *cartApplication.CartReceiverService
 	}
@@ -47,10 +45,8 @@ type (
 
 // Inject - dependencies
 func (p *SimplePaymentFormService) Inject(
-	customerApplicationService *customerApplication.Service,
 	userService *authApplication.UserService,
 	applicationCartReceiverService *cartApplication.CartReceiverService) {
-	p.customerApplicationService = customerApplicationService
 	p.userService = userService
 	p.applicationCartReceiverService = applicationCartReceiverService
 }
