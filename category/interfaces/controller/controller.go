@@ -16,7 +16,7 @@ type (
 	// ViewController provides web-specific actions for category single view
 	ViewController struct {
 		commandHandler    QueryHandler
-		breadcrumbService application.BreadcrumbService
+		breadcrumbService *application.BreadcrumbService
 		responder         *web.Responder
 		router            *web.Router
 		template          string
@@ -36,7 +36,7 @@ type (
 // Inject the ViewController controller required dependencies
 func (vc *ViewController) Inject(
 	queryCommandHandler QueryHandler,
-	breadcrumbService application.BreadcrumbService,
+	breadcrumbService *application.BreadcrumbService,
 	responder *web.Responder,
 	router *web.Router,
 	config *struct {
