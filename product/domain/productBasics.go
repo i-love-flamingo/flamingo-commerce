@@ -204,6 +204,7 @@ type (
 	}
 )
 
+//Stock Level Values
 const (
 	StockLevelOutOfStock = "out"
 	StockLevelInStock    = "in"

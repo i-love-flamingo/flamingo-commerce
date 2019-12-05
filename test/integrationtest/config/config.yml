@@ -41,6 +41,9 @@ checkout:
 commerce.payment.enableOfflinePaymentGateway: true
 
 
+order:
+  useFakeAdapters: true
+
 commerce:
   cart:
     defaultDeliveryCode: delivery
