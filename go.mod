@@ -13,6 +13,7 @@ require (
 	github.com/go-test/deep v1.0.1
 	github.com/golang/mock v1.2.0 // indirect
 	github.com/golang/protobuf v1.3.0 // indirect
+	github.com/google/uuid v1.1.1
 	github.com/gorilla/sessions v1.1.3
 	github.com/hashicorp/golang-lru v0.5.1 // indirect
 	github.com/leekchan/accounting v0.0.0-20191104051123-0b9b0bd19c36

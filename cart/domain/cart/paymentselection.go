@@ -7,6 +7,8 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/google/uuid"
+
 	price "flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
@@ -24,6 +26,8 @@ type (
 		ItemSplit() PaymentSplitByItem
 		TotalValue() price.Price
 		MethodByType(string) string
+		IdempotencyKey() string
+		GenerateNewIdempotencyKey()
 	}
 
 	//SplitQualifier qualifies by Charge Type, Charge Reference and Payment Method
@@ -53,6 +57,7 @@ type (
 		//GatewayProp - the selected Gateway
 		GatewayProp      string
 		ChargedItemsProp PaymentSplitByItem
+		idempotencyKey   string
 	}
 
 	// PaymentSplitService enables the creation of a PaymentSplitByItem following different payment methods
@@ -72,6 +77,8 @@ type (
 )
 
 var (
+	_ PaymentSelection = new(DefaultPaymentSelection)
+
 	// ErrSplitNoGiftCards indicates that there are no gift cards given to PaymentSplitWithGiftCards
 	ErrSplitNoGiftCards = errors.New("no gift cards applied")
 
@@ -99,6 +106,8 @@ func NewDefaultPaymentSelection(gateway string, chargeTypeToPaymentMethod map[st
 	}
 	// filter out zero charges from here on out
 	result = RemoveZeroCharges(result, chargeTypeToPaymentMethod)
+	// add an new Idempotency-Key to the payment selection
+	result.GenerateNewIdempotencyKey()
 	return result, err
 }
 
@@ -238,6 +247,17 @@ func (d DefaultPaymentSelection) ItemSplit() PaymentSplitByItem {
 //TotalValue - returns Valued price sum
 func (d DefaultPaymentSelection) TotalValue() price.Price {
 	return d.ChargedItemsProp.Sum().TotalValue()
+}
+
+//IdempotencyKey returns the Idempotency-Key for this payment selection
+func (d DefaultPaymentSelection) IdempotencyKey() string {
+	return d.idempotencyKey
+}
+
+//GenerateNewIdempotencyKey updates the Idempotency-Key to a new value
+func (d DefaultPaymentSelection) GenerateNewIdempotencyKey() {
+	key, _ := uuid.NewRandom()
+	d.idempotencyKey = key.String()
 }
 
 //Sum - the resulting Split after sum all the included item split
