@@ -2,10 +2,11 @@ package domain
 
 import (
 	"context"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
-	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"fmt"
 	"math"
+
+	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+	"flamingo.me/flamingo-commerce/v3/product/domain"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo/v3/framework/flamingo"
@@ -112,6 +113,7 @@ func (se *SourcingEngine) SetSourcesForCartItems(ctx context.Context, session *w
 		return nil
 	}
 	for _, decoratedDelivery := range decoratedCart.DecoratedDeliveries {
+		itemSources := make(map[string]string)
 		for _, decoratedCartItem := range decoratedDelivery.DecoratedItems {
 			sourceID, err := se.SourcingService.GetSourceID(ctx, session, decoratedCart, decoratedDelivery.Delivery.DeliveryInfo.Code, &decoratedCartItem)
 			if err != nil {
@@ -119,11 +121,15 @@ func (se *SourcingEngine) SetSourcesForCartItems(ctx context.Context, session *w
 				return fmt.Errorf("checkout.application.sourcingengine error: %v", err)
 			}
 			se.Logger.WithContext(ctx).WithField("category", "checkout").WithField("subcategory", "SourcingEngine").Debug("SourcingEngine detected source %v for item %v", sourceID, decoratedCartItem.Item.ID)
-			err = se.Cartservice.UpdateItemSourceID(ctx, session, decoratedCartItem.Item.ID, decoratedDelivery.Delivery.DeliveryInfo.Code, sourceID)
-			if err != nil {
-				return errors.Wrap(err, "Could not update cart item")
-			}
+
+			itemSources[decoratedCartItem.Item.ID] = sourceID
+		}
+
+		err := se.Cartservice.UpdateItemsSourceID(ctx, session, decoratedDelivery.Delivery.DeliveryInfo.Code, itemSources)
+		if err != nil {
+			return errors.Wrap(err, "Could not update cart items")
 		}
 	}
+
 	return nil
 }

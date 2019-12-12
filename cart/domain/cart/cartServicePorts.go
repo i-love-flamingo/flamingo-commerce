@@ -41,6 +41,7 @@ type (
 	ModifyBehaviour interface {
 		DeleteItem(ctx context.Context, cart *Cart, itemID string, deliveryCode string) (*Cart, DeferEvents, error)
 		UpdateItem(ctx context.Context, cart *Cart, itemID string, deliveryCode string, itemUpdateCommand ItemUpdateCommand) (*Cart, DeferEvents, error)
+		UpdateItems(ctx context.Context, cart *Cart, deliveryCode string, itemUpdateCommands ItemUpdateCommands) (*Cart, DeferEvents, error)
 		AddToCart(ctx context.Context, cart *Cart, deliveryCode string, addRequest AddRequest) (*Cart, DeferEvents, error)
 		CleanCart(ctx context.Context, cart *Cart) (*Cart, DeferEvents, error)
 		CleanDelivery(ctx context.Context, cart *Cart, deliveryCode string) (*Cart, DeferEvents, error)
@@ -78,6 +79,11 @@ type (
 		SourceID       *string
 		Qty            *int
 		AdditionalData map[string]string
+	}
+
+	// ItemUpdateCommands defines the update item command
+	ItemUpdateCommands struct {
+		ItemUpdateCommands map[string]ItemUpdateCommand
 	}
 
 	// DeliveryInfoUpdateCommand defines the update item command

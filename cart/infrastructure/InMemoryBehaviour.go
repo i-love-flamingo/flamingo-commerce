@@ -138,6 +138,10 @@ func (cob *InMemoryBehaviour) UpdateItem(ctx context.Context, cart *domaincart.C
 	return cob.resetPaymentSelectionIfInvalid(ctx, cart)
 }
 
+func (cob *InMemoryBehaviour) UpdateItems(ctx context.Context, cart *domaincart.Cart, deliveryCode string, itemUpdateCommands domaincart.ItemUpdateCommands) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	panic("implement me")
+}
+
 // AddToCart add an item to the cart
 func (cob *InMemoryBehaviour) AddToCart(ctx context.Context, cart *domaincart.Cart, deliveryCode string, addRequest domaincart.AddRequest) (*domaincart.Cart, domaincart.DeferEvents, error) {
 
