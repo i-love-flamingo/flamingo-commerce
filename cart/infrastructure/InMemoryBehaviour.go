@@ -138,8 +138,54 @@ func (cob *InMemoryBehaviour) UpdateItem(ctx context.Context, cart *domaincart.C
 	return cob.resetPaymentSelectionIfInvalid(ctx, cart)
 }
 
+// UpdateItems updates multiple cart items
 func (cob *InMemoryBehaviour) UpdateItems(ctx context.Context, cart *domaincart.Cart, deliveryCode string, itemUpdateCommands domaincart.ItemUpdateCommands) (*domaincart.Cart, domaincart.DeferEvents, error) {
-	panic("implement me")
+	if !cob.cartStorage.HasCart(cart.ID) {
+		return nil, nil, fmt.Errorf("cart.infrastructure.InMemoryBehaviour: Cannot update - Guestcart with id %v not existent", cart.ID)
+	}
+	if delivery, ok := cart.GetDeliveryByCode(deliveryCode); ok {
+		for itemID, itemUpdateCommand := range itemUpdateCommands.ItemUpdateCommands {
+			itemBuilder := cob.itemBuilderProvider()
+
+			cob.logger.WithContext(ctx).Info("Inmemory Service Update %v in %#v", itemID, delivery.Cartitems)
+			for _, item := range delivery.Cartitems {
+				if itemID == item.ID {
+					itemBuilder.SetFromItem(item)
+					if itemUpdateCommand.Qty != nil {
+						itemBuilder.SetQty(*itemUpdateCommand.Qty)
+					}
+
+					if itemUpdateCommand.SourceID != nil {
+						itemBuilder.SetSourceID(*itemUpdateCommand.SourceID)
+					}
+					itemBuilder.AddTaxInfo("default", big.NewFloat(cob.defaultTaxRate), nil).CalculatePricesAndTax()
+					newItem, err := itemBuilder.Build()
+					if err != nil {
+						return nil, nil, err
+					}
+					for k, currentItem := range delivery.Cartitems {
+						if currentItem.ID == itemID {
+							delivery.Cartitems[k] = *newItem
+						}
+					}
+				}
+			}
+
+			// update the delivery with the new info
+			for j, delivery := range cart.Deliveries {
+				if deliveryCode == delivery.DeliveryInfo.Code {
+					cart.Deliveries[j] = delivery
+				}
+			}
+		}
+	}
+
+	err := cob.cartStorage.StoreCart(cart)
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
+	}
+
+	return cob.resetPaymentSelectionIfInvalid(ctx, cart)
 }
 
 // AddToCart add an item to the cart
