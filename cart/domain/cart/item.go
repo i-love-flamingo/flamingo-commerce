@@ -372,8 +372,8 @@ func (f *ItemBuilder) SetByProduct(product domain.BasicProduct) *ItemBuilder {
 	f.itemInBuilding.ProductName = product.BaseData().Title
 
 	if configurable, ok := product.(domain.ConfigurableProductWithActiveVariant); ok {
+		f.itemInBuilding.MarketplaceCode = configurable.ConfigurableBaseData().MarketPlaceCode
 		f.itemInBuilding.VariantMarketPlaceCode = configurable.ActiveVariant.MarketPlaceCode
-
 	}
 
 	if f.configUseGrossPrice {
