@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func Tes_ProductPage(t *testing.T) {
+func Test_ProductPage(t *testing.T) {
 	e := httpexpect.New(t, "http://localhost:3210")
 	e.GET("/en/product/fake_configurable/typeconfigurable-product.html").
 		Expect().
