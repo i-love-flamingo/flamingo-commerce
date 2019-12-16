@@ -49,7 +49,6 @@ func (ps *ProductService) Get(ctx context.Context, marketplaceCode string) (doma
 	if marketplaceCode == "fake_configurable" {
 		product := ps.getFakeConfigurable(marketplaceCode)
 		product.RetailerCode = "retailer"
-		product.Title = "TypeConfigurable product"
 
 		product.VariantVariationAttributes = []string{"color", "size", "manufacturerColor", "manufacturerColorCode"}
 
@@ -179,7 +178,7 @@ func (ps *ProductService) FakeSimple(marketplaceCode string, isNew bool, isExclu
 
 func (ps *ProductService) getFakeConfigurable(marketplaceCode string) domain.ConfigurableProduct {
 	product := domain.ConfigurableProduct{}
-	product.Title = "TypeSimple product"
+	product.Title = "TypeConfigurable product"
 	ps.addBasicData(&product.BasicProductData)
 	product.MarketPlaceCode = marketplaceCode
 

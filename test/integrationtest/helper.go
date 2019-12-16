@@ -1,3 +1,5 @@
+// +build integration
+
 package integrationtest
 
 import (
@@ -72,8 +74,8 @@ func rootArea(configBaseDir string) *config.Area {
 }
 */
 
-//modules return slice of modules that we want to have in our example app for testing
-func modules() []dingo.Module {
+//modulesDemoProject return slice of modules that we want to have in our example app for testing
+func modulesDemoProject() []dingo.Module {
 	return []dingo.Module{
 		new(framework.InitModule),
 		new(config.Flags),
@@ -103,9 +105,15 @@ func modules() []dingo.Module {
 	}
 }
 
-func bootup() {
+//bootupDemoProject - boots up a complete demo project
+func bootupDemoProject() {
+	bootup(modulesDemoProject())
+}
+
+//bootup flamingo app with the given modules (and the config in folder "config" )
+func bootup(modules []dingo.Module) {
 	//rootArea := rootArea("config")
 	os.Args[1] = "serve"
-	go flamingo.App(modules())
+	go flamingo.App(modules)
 	<-ready
 }

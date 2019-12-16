@@ -23,5 +23,8 @@ test:
 	misspell -error .
 	ineffassign .
 
+integrationtest:
+	go test -v ./test/integrationtest/... -tags=integration
+
 fix:
 	gofmt -l -w .
