@@ -1,7 +1,7 @@
 # Flamingo core related configurations:
 debug.mode: false
 
-zap.loglevel: Info
+zap.loglevel: Warn
 
 flamingo:
   router:

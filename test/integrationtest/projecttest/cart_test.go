@@ -1,6 +1,6 @@
 // +build integration
 
-package integrationtest
+package projecttest
 
 import (
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest/testhelper"
