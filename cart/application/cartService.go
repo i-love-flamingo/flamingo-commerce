@@ -363,7 +363,7 @@ func (cs *CartService) UpdateItems(ctx context.Context, session *web.Session, up
 
 	for _, command := range updateCommands {
 		_, err := cart.GetByItemID(command.ItemID)
-		if err == nil {
+		if err != nil {
 			return err
 		}
 	}
