@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"math"
 
+	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 
@@ -112,8 +114,9 @@ func (se *SourcingEngine) SetSourcesForCartItems(ctx context.Context, session *w
 	if se.SourcingService == nil {
 		return nil
 	}
+
+	itemUpdateCommands := make([]cartDomain.ItemUpdateCommand, 0)
 	for _, decoratedDelivery := range decoratedCart.DecoratedDeliveries {
-		itemSources := make(map[string]string)
 		for _, decoratedCartItem := range decoratedDelivery.DecoratedItems {
 			sourceID, err := se.SourcingService.GetSourceID(ctx, session, decoratedCart, decoratedDelivery.Delivery.DeliveryInfo.Code, &decoratedCartItem)
 			if err != nil {
@@ -122,13 +125,23 @@ func (se *SourcingEngine) SetSourcesForCartItems(ctx context.Context, session *w
 			}
 			se.Logger.WithContext(ctx).WithField("category", "checkout").WithField("subcategory", "SourcingEngine").Debug("SourcingEngine detected source %v for item %v", sourceID, decoratedCartItem.Item.ID)
 
-			itemSources[decoratedCartItem.Item.ID] = sourceID
-		}
+			itemUpdate := cartDomain.ItemUpdateCommand{
+				SourceID:     &sourceID,
+				ItemID:       decoratedCartItem.Item.ID,
+				DeliveryCode: decoratedDelivery.Delivery.DeliveryInfo.Code,
+			}
 
-		err := se.Cartservice.UpdateItemsSourceID(ctx, session, decoratedDelivery.Delivery.DeliveryInfo.Code, itemSources)
-		if err != nil {
-			return errors.Wrap(err, "Could not update cart items")
+			itemUpdateCommands = append(itemUpdateCommands, itemUpdate)
 		}
+	}
+
+	updateCommands := cartDomain.ItemUpdateCommands{
+		ItemUpdateCommands: itemUpdateCommands,
+	}
+
+	err := se.Cartservice.UpdateItemsSourceID(ctx, session, updateCommands)
+	if err != nil {
+		return errors.Wrap(err, "Could not update cart items")
 	}
 
 	return nil

@@ -99,34 +99,34 @@ func (cob *InMemoryBehaviour) DeleteItem(ctx context.Context, cart *domaincart.C
 }
 
 // UpdateItem updates a cart item
-func (cob *InMemoryBehaviour) UpdateItem(ctx context.Context, cart *domaincart.Cart, itemID string, deliveryCode string, itemUpdateCommand domaincart.ItemUpdateCommand) (*domaincart.Cart, domaincart.DeferEvents, error) {
+func (cob *InMemoryBehaviour) UpdateItem(ctx context.Context, cart *domaincart.Cart, itemUpdateCommand domaincart.ItemUpdateCommand) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	if !cob.cartStorage.HasCart(cart.ID) {
 		return nil, nil, fmt.Errorf("cart.infrastructure.InMemoryBehaviour: Cannot add - Guestcart with id %v not existent", cart.ID)
 	}
 
-	itemBuilder := cob.itemBuilderProvider()
-	if delivery, ok := cart.GetDeliveryByCode(deliveryCode); ok {
-		cob.logger.WithContext(ctx).Info("Inmemory Service Update %v in %#v", itemID, delivery.Cartitems)
-		for _, item := range delivery.Cartitems {
-			if itemID == item.ID {
-				itemBuilder.SetFromItem(item).SetQty(*itemUpdateCommand.Qty).AddTaxInfo("default", big.NewFloat(cob.defaultTaxRate), nil).CalculatePricesAndTax()
-				newItem, err := itemBuilder.Build()
-				if err != nil {
-					return nil, nil, err
-				}
-				for k, currentItem := range delivery.Cartitems {
-					if currentItem.ID == itemID {
-						delivery.Cartitems[k] = *newItem
-					}
-				}
-			}
-		}
+	err := cob.updateItem(ctx, cart, itemUpdateCommand)
+	if err != nil {
+		return nil, nil, err
+	}
 
-		// update the delivery with the new info
-		for j, delivery := range cart.Deliveries {
-			if deliveryCode == delivery.DeliveryInfo.Code {
-				cart.Deliveries[j] = delivery
-			}
+	err = cob.cartStorage.StoreCart(cart)
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
+	}
+
+	return cob.resetPaymentSelectionIfInvalid(ctx, cart)
+}
+
+// UpdateItems updates multiple cart items
+func (cob *InMemoryBehaviour) UpdateItems(ctx context.Context, cart *domaincart.Cart, itemUpdateCommands domaincart.ItemUpdateCommands) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	if !cob.cartStorage.HasCart(cart.ID) {
+		return nil, nil, fmt.Errorf("cart.infrastructure.InMemoryBehaviour: Cannot update - Guestcart with id %v not existent", cart.ID)
+	}
+
+	for _, itemUpdateCommand := range itemUpdateCommands.ItemUpdateCommands {
+		err := cob.updateItem(ctx, cart, itemUpdateCommand)
+		if err != nil {
+			return nil, nil, err
 		}
 	}
 
@@ -138,54 +138,42 @@ func (cob *InMemoryBehaviour) UpdateItem(ctx context.Context, cart *domaincart.C
 	return cob.resetPaymentSelectionIfInvalid(ctx, cart)
 }
 
-// UpdateItems updates multiple cart items
-func (cob *InMemoryBehaviour) UpdateItems(ctx context.Context, cart *domaincart.Cart, deliveryCode string, itemUpdateCommands domaincart.ItemUpdateCommands) (*domaincart.Cart, domaincart.DeferEvents, error) {
-	if !cob.cartStorage.HasCart(cart.ID) {
-		return nil, nil, fmt.Errorf("cart.infrastructure.InMemoryBehaviour: Cannot update - Guestcart with id %v not existent", cart.ID)
-	}
-	if delivery, ok := cart.GetDeliveryByCode(deliveryCode); ok {
-		for itemID, itemUpdateCommand := range itemUpdateCommands.ItemUpdateCommands {
-			itemBuilder := cob.itemBuilderProvider()
+func (cob *InMemoryBehaviour) updateItem(ctx context.Context, cart *domaincart.Cart, itemUpdateCommand domaincart.ItemUpdateCommand) error {
+	itemBuilder := cob.itemBuilderProvider()
+	if delivery, ok := cart.GetDeliveryByCode(itemUpdateCommand.DeliveryCode); ok {
+		cob.logger.WithContext(ctx).Info("Inmemory Service Update %v in %#v", itemUpdateCommand.ItemID, delivery.Cartitems)
+		for _, item := range delivery.Cartitems {
+			if itemUpdateCommand.ItemID == item.ID {
+				itemBuilder.SetFromItem(item)
+				if itemUpdateCommand.Qty != nil {
+					itemBuilder.SetQty(*itemUpdateCommand.Qty)
+				}
 
-			cob.logger.WithContext(ctx).Info("Inmemory Service Update %v in %#v", itemID, delivery.Cartitems)
-			for _, item := range delivery.Cartitems {
-				if itemID == item.ID {
-					itemBuilder.SetFromItem(item)
-					if itemUpdateCommand.Qty != nil {
-						itemBuilder.SetQty(*itemUpdateCommand.Qty)
-					}
-
-					if itemUpdateCommand.SourceID != nil {
-						itemBuilder.SetSourceID(*itemUpdateCommand.SourceID)
-					}
-					itemBuilder.AddTaxInfo("default", big.NewFloat(cob.defaultTaxRate), nil).CalculatePricesAndTax()
-					newItem, err := itemBuilder.Build()
-					if err != nil {
-						return nil, nil, err
-					}
-					for k, currentItem := range delivery.Cartitems {
-						if currentItem.ID == itemID {
-							delivery.Cartitems[k] = *newItem
-						}
+				if itemUpdateCommand.SourceID != nil {
+					itemBuilder.SetSourceID(*itemUpdateCommand.SourceID)
+				}
+				itemBuilder.AddTaxInfo("default", big.NewFloat(cob.defaultTaxRate), nil).CalculatePricesAndTax()
+				newItem, err := itemBuilder.Build()
+				if err != nil {
+					return err
+				}
+				for k, currentItem := range delivery.Cartitems {
+					if currentItem.ID == itemUpdateCommand.ItemID {
+						delivery.Cartitems[k] = *newItem
 					}
 				}
 			}
+		}
 
-			// update the delivery with the new info
-			for j, delivery := range cart.Deliveries {
-				if deliveryCode == delivery.DeliveryInfo.Code {
-					cart.Deliveries[j] = delivery
-				}
+		// update the delivery with the new info
+		for j, delivery := range cart.Deliveries {
+			if itemUpdateCommand.DeliveryCode == delivery.DeliveryInfo.Code {
+				cart.Deliveries[j] = delivery
 			}
 		}
 	}
 
-	err := cob.cartStorage.StoreCart(cart)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
-	}
-
-	return cob.resetPaymentSelectionIfInvalid(ctx, cart)
+	return nil
 }
 
 // AddToCart add an item to the cart

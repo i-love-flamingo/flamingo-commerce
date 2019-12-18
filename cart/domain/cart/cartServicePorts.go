@@ -40,8 +40,8 @@ type (
 	// This port can not be registered directly but is provided by the registered "GuestCartService"
 	ModifyBehaviour interface {
 		DeleteItem(ctx context.Context, cart *Cart, itemID string, deliveryCode string) (*Cart, DeferEvents, error)
-		UpdateItem(ctx context.Context, cart *Cart, itemID string, deliveryCode string, itemUpdateCommand ItemUpdateCommand) (*Cart, DeferEvents, error)
-		UpdateItems(ctx context.Context, cart *Cart, deliveryCode string, itemUpdateCommands ItemUpdateCommands) (*Cart, DeferEvents, error)
+		UpdateItem(ctx context.Context, cart *Cart, itemUpdateCommand ItemUpdateCommand) (*Cart, DeferEvents, error)
+		UpdateItems(ctx context.Context, cart *Cart, itemUpdateCommands ItemUpdateCommands) (*Cart, DeferEvents, error)
 		AddToCart(ctx context.Context, cart *Cart, deliveryCode string, addRequest AddRequest) (*Cart, DeferEvents, error)
 		CleanCart(ctx context.Context, cart *Cart) (*Cart, DeferEvents, error)
 		CleanDelivery(ctx context.Context, cart *Cart, deliveryCode string) (*Cart, DeferEvents, error)
@@ -78,12 +78,14 @@ type (
 		// Source Id of where the items should be initial picked - This is set by the SourcingLogic
 		SourceID       *string
 		Qty            *int
+		ItemID         string
+		DeliveryCode   string
 		AdditionalData map[string]string
 	}
 
 	// ItemUpdateCommands defines the update item command
 	ItemUpdateCommands struct {
-		ItemUpdateCommands map[string]ItemUpdateCommand
+		ItemUpdateCommands []ItemUpdateCommand
 	}
 
 	// DeliveryInfoUpdateCommand defines the update item command
