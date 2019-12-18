@@ -316,7 +316,7 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 }
 
 // UpdateItemSourceID updates an item source id
-func (cs *CartService) UpdateItemSourceID(ctx context.Context, session *web.Session, itemID string, deliveryCode string, sourceID string) error {
+func (cs *CartService) UpdateItemSourceID(ctx context.Context, session *web.Session, itemID string, sourceID string) error {
 	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return err
@@ -328,9 +328,6 @@ func (cs *CartService) UpdateItemSourceID(ctx context.Context, session *web.Sess
 		cs.dispatchAllEvents(ctx, defers)
 	}()
 
-	if deliveryCode == "" {
-		deliveryCode = cs.defaultDeliveryCode
-	}
 	_, err = cart.GetByItemID(itemID)
 	if err != nil {
 		cs.logger.WithContext(ctx).WithField("subCategory", "UpdateItemSourceId").Error(err)
