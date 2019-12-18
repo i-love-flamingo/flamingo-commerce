@@ -8,14 +8,17 @@ import (
 )
 
 type (
+	//CartItems list of CartItem
 	CartItems []CartItem
-	CartItem  struct {
+	//CartItem used as simple CartItem representation during test
+	CartItem struct {
 		ProductName     string
 		MarketplaceCode string
 		Qty             int
 	}
 )
 
+//CartAddProduct helper
 func CartAddProduct(e *httpexpect.Expect, marketplaceCode string, qty int, variantMarketplaceCode string, deliveryCode string) {
 	request := e.GET("/en/cart/add/"+marketplaceCode).WithQuery("qty", qty)
 	if deliveryCode != "" {
@@ -28,6 +31,7 @@ func CartAddProduct(e *httpexpect.Expect, marketplaceCode string, qty int, varia
 		Status(http.StatusOK)
 }
 
+//CartGetItems testhelper
 func CartGetItems(e *httpexpect.Expect) CartItems {
 	var items CartItems
 
@@ -48,6 +52,7 @@ func CartGetItems(e *httpexpect.Expect) CartItems {
 	return items
 }
 
+//MustContain checks and returns CartItem by marketplaceCode
 func (c CartItems) MustContain(t *testing.T, marketplaceCode string) *CartItem {
 	for _, v := range c {
 		if v.MarketplaceCode == marketplaceCode {
