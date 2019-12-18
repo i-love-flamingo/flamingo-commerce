@@ -40,7 +40,8 @@ type (
 	// This port can not be registered directly but is provided by the registered "GuestCartService"
 	ModifyBehaviour interface {
 		DeleteItem(ctx context.Context, cart *Cart, itemID string, deliveryCode string) (*Cart, DeferEvents, error)
-		UpdateItem(ctx context.Context, cart *Cart, itemID string, deliveryCode string, itemUpdateCommand ItemUpdateCommand) (*Cart, DeferEvents, error)
+		UpdateItem(ctx context.Context, cart *Cart, itemUpdateCommand ItemUpdateCommand) (*Cart, DeferEvents, error)
+		UpdateItems(ctx context.Context, cart *Cart, itemUpdateCommands []ItemUpdateCommand) (*Cart, DeferEvents, error)
 		AddToCart(ctx context.Context, cart *Cart, deliveryCode string, addRequest AddRequest) (*Cart, DeferEvents, error)
 		CleanCart(ctx context.Context, cart *Cart) (*Cart, DeferEvents, error)
 		CleanDelivery(ctx context.Context, cart *Cart, deliveryCode string) (*Cart, DeferEvents, error)
@@ -65,7 +66,7 @@ type (
 		ApplyAny(ctx context.Context, cart *Cart, anyCode string) (*Cart, DeferEvents, error)
 	}
 
-	// AddRequest defines add to cart requeset
+	// AddRequest defines add to cart request
 	AddRequest struct {
 		MarketplaceCode        string
 		Qty                    int
@@ -78,6 +79,8 @@ type (
 		SourceID       *string
 		Qty            *int
 		AdditionalData map[string]string
+		// Mandatory field: ItemID is only for identifying the item.
+		ItemID string
 	}
 
 	// DeliveryInfoUpdateCommand defines the update item command

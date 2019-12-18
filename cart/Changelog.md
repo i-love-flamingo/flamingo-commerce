@@ -37,3 +37,8 @@
     
 # 9. October 2019
 * Add `PlaceOrderWithCart` to `CartService` to be able to place an already fetched cart instead of triggering an additional call to the `CartReceiverService`
+
+# 18. December 2019
+* Introduce `UpdateItems` to `ModifyBehaviour`interface to reduce calls for updating items one by one
+* Add helper function `GetDeliveryByItemID`
+* Remove `itemID` and `deliveryCode` as parameters for `UpdateItem` as this information is part of the update command, respectively from the new helper

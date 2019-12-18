@@ -299,10 +299,12 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 
 	cs.eventPublisher.PublishChangedQtyInCartEvent(ctx, item, qtyBefore, qty, cart.ID)
 	itemUpdate := cartDomain.ItemUpdateCommand{
-		Qty: &qty,
+		Qty:            &qty,
+		ItemID:         itemID,
+		AdditionalData: nil,
 	}
 
-	cart, defers, err = behaviour.UpdateItem(ctx, cart, itemID, deliveryCode, itemUpdate)
+	cart, defers, err = behaviour.UpdateItem(ctx, cart, itemUpdate)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
 		cs.logger.WithContext(ctx).WithField("subCategory", "UpdateItemQty").Error(err)
@@ -314,7 +316,7 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 }
 
 // UpdateItemSourceID updates an item source id
-func (cs *CartService) UpdateItemSourceID(ctx context.Context, session *web.Session, itemID string, deliveryCode string, sourceID string) error {
+func (cs *CartService) UpdateItemSourceID(ctx context.Context, session *web.Session, itemID string, sourceID string) error {
 	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return err
@@ -326,9 +328,6 @@ func (cs *CartService) UpdateItemSourceID(ctx context.Context, session *web.Sess
 		cs.dispatchAllEvents(ctx, defers)
 	}()
 
-	if deliveryCode == "" {
-		deliveryCode = cs.defaultDeliveryCode
-	}
 	_, err = cart.GetByItemID(itemID)
 	if err != nil {
 		cs.logger.WithContext(ctx).WithField("subCategory", "UpdateItemSourceId").Error(err)
@@ -338,9 +337,42 @@ func (cs *CartService) UpdateItemSourceID(ctx context.Context, session *web.Sess
 
 	itemUpdate := cartDomain.ItemUpdateCommand{
 		SourceID: &sourceID,
+		ItemID:   itemID,
 	}
 
-	cart, defers, err = behaviour.UpdateItem(ctx, cart, itemID, deliveryCode, itemUpdate)
+	cart, defers, err = behaviour.UpdateItem(ctx, cart, itemUpdate)
+	if err != nil {
+		cs.handleCartNotFound(session, err)
+		cs.logger.WithContext(ctx).WithField("subCategory", "UpdateItemSourceId").Error(err)
+
+		return err
+	}
+
+	return nil
+}
+
+// UpdateItems updates multiple items
+func (cs *CartService) UpdateItems(ctx context.Context, session *web.Session, updateCommands []cartDomain.ItemUpdateCommand) error {
+	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
+	if err != nil {
+		return err
+	}
+
+	for _, command := range updateCommands {
+		_, err := cart.GetByItemID(command.ItemID)
+		if err != nil {
+			return err
+		}
+	}
+
+	// cart cache must be updated - with the current value of cart
+	var defers cartDomain.DeferEvents
+	defer func() {
+		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
+		cs.dispatchAllEvents(ctx, defers)
+	}()
+
+	cart, defers, err = behaviour.UpdateItems(ctx, cart, updateCommands)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
 		cs.logger.WithContext(ctx).WithField("subCategory", "UpdateItemSourceId").Error(err)
