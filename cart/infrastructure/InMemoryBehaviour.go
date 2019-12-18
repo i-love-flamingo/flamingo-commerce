@@ -118,12 +118,12 @@ func (cob *InMemoryBehaviour) UpdateItem(ctx context.Context, cart *domaincart.C
 }
 
 // UpdateItems updates multiple cart items
-func (cob *InMemoryBehaviour) UpdateItems(ctx context.Context, cart *domaincart.Cart, itemUpdateCommands domaincart.ItemUpdateCommands) (*domaincart.Cart, domaincart.DeferEvents, error) {
+func (cob *InMemoryBehaviour) UpdateItems(ctx context.Context, cart *domaincart.Cart, itemUpdateCommands []domaincart.ItemUpdateCommand) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	if !cob.cartStorage.HasCart(cart.ID) {
 		return nil, nil, fmt.Errorf("cart.infrastructure.InMemoryBehaviour: Cannot update - Guestcart with id %v not existent", cart.ID)
 	}
 
-	for _, itemUpdateCommand := range itemUpdateCommands.ItemUpdateCommands {
+	for _, itemUpdateCommand := range itemUpdateCommands {
 		err := cob.updateItem(ctx, cart, itemUpdateCommand)
 		if err != nil {
 			return nil, nil, err
@@ -140,36 +140,39 @@ func (cob *InMemoryBehaviour) UpdateItems(ctx context.Context, cart *domaincart.
 
 func (cob *InMemoryBehaviour) updateItem(ctx context.Context, cart *domaincart.Cart, itemUpdateCommand domaincart.ItemUpdateCommand) error {
 	itemBuilder := cob.itemBuilderProvider()
-	if delivery, ok := cart.GetDeliveryByCode(itemUpdateCommand.DeliveryCode); ok {
-		cob.logger.WithContext(ctx).Info("Inmemory Service Update %v in %#v", itemUpdateCommand.ItemID, delivery.Cartitems)
-		for _, item := range delivery.Cartitems {
-			if itemUpdateCommand.ItemID == item.ID {
-				itemBuilder.SetFromItem(item)
-				if itemUpdateCommand.Qty != nil {
-					itemBuilder.SetQty(*itemUpdateCommand.Qty)
-				}
+	itemDelivery, err := cart.GetDeliveryByItemID(itemUpdateCommand.ItemID)
+	if err != nil {
+		return err
+	}
 
-				if itemUpdateCommand.SourceID != nil {
-					itemBuilder.SetSourceID(*itemUpdateCommand.SourceID)
-				}
-				itemBuilder.AddTaxInfo("default", big.NewFloat(cob.defaultTaxRate), nil).CalculatePricesAndTax()
-				newItem, err := itemBuilder.Build()
-				if err != nil {
-					return err
-				}
-				for k, currentItem := range delivery.Cartitems {
-					if currentItem.ID == itemUpdateCommand.ItemID {
-						delivery.Cartitems[k] = *newItem
-					}
+	cob.logger.WithContext(ctx).Info("Inmemory Service Update %v in %#v", itemUpdateCommand.ItemID, itemDelivery.Cartitems)
+	for _, item := range itemDelivery.Cartitems {
+		if itemUpdateCommand.ItemID == item.ID {
+			itemBuilder.SetFromItem(item)
+			if itemUpdateCommand.Qty != nil {
+				itemBuilder.SetQty(*itemUpdateCommand.Qty)
+			}
+
+			if itemUpdateCommand.SourceID != nil {
+				itemBuilder.SetSourceID(*itemUpdateCommand.SourceID)
+			}
+			itemBuilder.AddTaxInfo("default", big.NewFloat(cob.defaultTaxRate), nil).CalculatePricesAndTax()
+			newItem, err := itemBuilder.Build()
+			if err != nil {
+				return err
+			}
+			for k, currentItem := range itemDelivery.Cartitems {
+				if currentItem.ID == itemUpdateCommand.ItemID {
+					itemDelivery.Cartitems[k] = *newItem
 				}
 			}
 		}
+	}
 
-		// update the delivery with the new info
-		for j, delivery := range cart.Deliveries {
-			if itemUpdateCommand.DeliveryCode == delivery.DeliveryInfo.Code {
-				cart.Deliveries[j] = delivery
-			}
+	// update the delivery with the new info
+	for j, delivery := range cart.Deliveries {
+		if itemDelivery.DeliveryInfo.Code == delivery.DeliveryInfo.Code {
+			cart.Deliveries[j] = delivery
 		}
 	}
 

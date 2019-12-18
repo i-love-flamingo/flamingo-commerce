@@ -209,6 +209,19 @@ func (c Cart) GetDeliveryCodes() []string {
 	return deliveryCodes
 }
 
+// GetDeliveryByItemID returns a delivery by a given itemID
+func (c Cart) GetDeliveryByItemID(itemID string) (*Delivery, error) {
+	for _, delivery := range c.Deliveries {
+		for _, cartItem := range delivery.Cartitems {
+			if cartItem.ID == itemID {
+				return &delivery, nil
+			}
+		}
+	}
+
+	return nil, errors.Errorf("delivery not found for %q", itemID)
+}
+
 // GetByItemID gets an item by its id
 func (c Cart) GetByItemID(itemID string) (*Item, error) {
 	for _, delivery := range c.Deliveries {

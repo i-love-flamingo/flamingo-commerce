@@ -126,20 +126,15 @@ func (se *SourcingEngine) SetSourcesForCartItems(ctx context.Context, session *w
 			se.Logger.WithContext(ctx).WithField("category", "checkout").WithField("subcategory", "SourcingEngine").Debug("SourcingEngine detected source %v for item %v", sourceID, decoratedCartItem.Item.ID)
 
 			itemUpdate := cartDomain.ItemUpdateCommand{
-				SourceID:     &sourceID,
-				ItemID:       decoratedCartItem.Item.ID,
-				DeliveryCode: decoratedDelivery.Delivery.DeliveryInfo.Code,
+				SourceID: &sourceID,
+				ItemID:   decoratedCartItem.Item.ID,
 			}
 
 			itemUpdateCommands = append(itemUpdateCommands, itemUpdate)
 		}
 	}
 
-	updateCommands := cartDomain.ItemUpdateCommands{
-		ItemUpdateCommands: itemUpdateCommands,
-	}
-
-	err := se.Cartservice.UpdateItemsSourceID(ctx, session, updateCommands)
+	err := se.Cartservice.UpdateItems(ctx, session, itemUpdateCommands)
 	if err != nil {
 		return errors.Wrap(err, "Could not update cart items")
 	}

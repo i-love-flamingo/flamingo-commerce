@@ -301,7 +301,6 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 	itemUpdate := cartDomain.ItemUpdateCommand{
 		Qty:            &qty,
 		ItemID:         itemID,
-		DeliveryCode:   deliveryCode,
 		AdditionalData: nil,
 	}
 
@@ -340,9 +339,8 @@ func (cs *CartService) UpdateItemSourceID(ctx context.Context, session *web.Sess
 	}
 
 	itemUpdate := cartDomain.ItemUpdateCommand{
-		SourceID:     &sourceID,
-		ItemID:       itemID,
-		DeliveryCode: deliveryCode,
+		SourceID: &sourceID,
+		ItemID:   itemID,
 	}
 
 	cart, defers, err = behaviour.UpdateItem(ctx, cart, itemUpdate)
@@ -356,12 +354,20 @@ func (cs *CartService) UpdateItemSourceID(ctx context.Context, session *web.Sess
 	return nil
 }
 
-// UpdateItemsSourceID updates multiple item source ids
-func (cs *CartService) UpdateItemsSourceID(ctx context.Context, session *web.Session, updateCommands cartDomain.ItemUpdateCommands) error {
+// UpdateItems updates multiple items
+func (cs *CartService) UpdateItems(ctx context.Context, session *web.Session, updateCommands []cartDomain.ItemUpdateCommand) error {
 	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return err
 	}
+
+	for _, command := range updateCommands {
+		_, err := cart.GetByItemID(command.ItemID)
+		if err == nil {
+			return err
+		}
+	}
+
 	// cart cache must be updated - with the current value of cart
 	var defers cartDomain.DeferEvents
 	defer func() {
