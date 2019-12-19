@@ -106,7 +106,7 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 			authmanager := &authApplication.AuthManager{}
 			authmanager.Inject(
 				flamingo.NullLogger{},
-				nil, nil, nil,
+				nil, nil,
 			)
 			cs.Inject(
 				tt.fields.CartReceiverService,
@@ -139,6 +139,10 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 }
 
 func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
+	authmanager := &authApplication.AuthManager{}
+	authmanager.Inject(&flamingo.NullLogger{}, nil, nil)
+	userservice := &authApplication.UserService{}
+	userservice.Inject(authmanager, nil)
 	type fields struct {
 		CartReceiverService *cartApplication.CartReceiverService
 		ProductService      productDomain.ProductService
@@ -181,8 +185,8 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 
 							return result
 						}(),
-						&authApplication.AuthManager{},
-						&authApplication.UserService{},
+						authmanager,
+						userservice,
 						flamingo.NullLogger{},
 						nil,
 						&struct {
@@ -238,8 +242,8 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 
 							return result
 						}(),
-						&authApplication.AuthManager{},
-						&authApplication.UserService{},
+						authmanager,
+						userservice,
 						flamingo.NullLogger{},
 						nil,
 						&struct {
@@ -311,8 +315,8 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 
 							return result
 						}(),
-						&authApplication.AuthManager{},
-						&authApplication.UserService{},
+						authmanager,
+						userservice,
 						flamingo.NullLogger{},
 						nil,
 						&struct {
@@ -372,11 +376,6 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cs := &cartApplication.CartService{}
-			authmanager := &authApplication.AuthManager{}
-			authmanager.Inject(
-				flamingo.NullLogger{},
-				nil, nil, nil,
-			)
 			cs.Inject(
 				tt.fields.CartReceiverService,
 				tt.fields.ProductService,
@@ -401,6 +400,10 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 }
 
 func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
+	authmanager := &authApplication.AuthManager{}
+	authmanager.Inject(&flamingo.NullLogger{}, nil, nil)
+	userservice := &authApplication.UserService{}
+	userservice.Inject(authmanager, nil)
 	type fields struct {
 		CartReceiverService *cartApplication.CartReceiverService
 		ProductService      productDomain.ProductService
@@ -445,8 +448,8 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 
 							return result
 						}(),
-						&authApplication.AuthManager{},
-						&authApplication.UserService{},
+						authmanager,
+						userservice,
 						flamingo.NullLogger{},
 						nil,
 						&struct {
@@ -495,8 +498,8 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 
 							return result
 						}(),
-						&authApplication.AuthManager{},
-						&authApplication.UserService{},
+						authmanager,
+						userservice,
 						flamingo.NullLogger{},
 						nil,
 						&struct {
@@ -533,11 +536,6 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cs := &cartApplication.CartService{}
-			authmanager := &authApplication.AuthManager{}
-			authmanager.Inject(
-				flamingo.NullLogger{},
-				nil, nil, nil,
-			)
 			cs.Inject(
 				tt.fields.CartReceiverService,
 				tt.fields.ProductService,
@@ -569,6 +567,10 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 }
 
 func TestCartService_ForceReserveOrderIDAndSave(t *testing.T) {
+	authmanager := &authApplication.AuthManager{}
+	authmanager.Inject(&flamingo.NullLogger{}, nil, nil)
+	userservice := &authApplication.UserService{}
+	userservice.Inject(authmanager, nil)
 	type fields struct {
 		CartReceiverService *cartApplication.CartReceiverService
 		ProductService      productDomain.ProductService
@@ -613,8 +615,8 @@ func TestCartService_ForceReserveOrderIDAndSave(t *testing.T) {
 
 							return result
 						}(),
-						&authApplication.AuthManager{},
-						&authApplication.UserService{},
+						authmanager,
+						userservice,
 						flamingo.NullLogger{},
 						nil,
 						&struct {
@@ -663,8 +665,8 @@ func TestCartService_ForceReserveOrderIDAndSave(t *testing.T) {
 
 							return result
 						}(),
-						&authApplication.AuthManager{},
-						&authApplication.UserService{},
+						authmanager,
+						userservice,
 						flamingo.NullLogger{},
 						nil,
 						&struct {
@@ -701,11 +703,6 @@ func TestCartService_ForceReserveOrderIDAndSave(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cs := &cartApplication.CartService{}
-			authmanager := &authApplication.AuthManager{}
-			authmanager.Inject(
-				flamingo.NullLogger{},
-				nil, nil, nil,
-			)
 			cs.Inject(
 				tt.fields.CartReceiverService,
 				tt.fields.ProductService,
