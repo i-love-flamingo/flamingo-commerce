@@ -28,7 +28,6 @@ import (
 	"flamingo.me/flamingo/v3/core/robotstxt"
 	"flamingo.me/flamingo/v3/core/zap"
 	"flamingo.me/flamingo/v3/framework"
-	"flamingo.me/flamingo/v3/framework/config"
 	flamingoFramework "flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/opencensus"
 	"flamingo.me/flamingo/v3/framework/prefixrouter"
@@ -38,7 +37,6 @@ import (
 func modulesDemoProject() []dingo.Module {
 	return []dingo.Module{
 		new(framework.InitModule),
-		new(config.Flags),
 		new(cmd.Module),
 		new(zap.Module),
 		new(flamingoFramework.SessionModule),

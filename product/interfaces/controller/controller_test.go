@@ -38,7 +38,7 @@ func getController() *View {
 			Path         string         `inject:"config:flamingo.router.path,optional"`
 			External     string         `inject:"config:flamingo.router.external,optional"`
 			SessionStore sessions.Store `inject:",optional"`
-			SessionName  string         `inject:"config:session.name,optional"`
+			SessionName  string         `inject:"config:flamingo.session.name,optional"`
 		}{
 			Scheme: "http://",
 			Host:   "test",

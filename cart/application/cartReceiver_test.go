@@ -587,7 +587,9 @@ func TestCartReceiverService_DecorateCart(t *testing.T) {
 
 func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 	authmanager := &authApplication.AuthManager{}
-	authmanager.Inject(flamingo.NullLogger{}, nil, nil, nil)
+	authmanager.Inject(flamingo.NullLogger{}, nil, nil)
+	userservice := &authApplication.UserService{}
+	userservice.Inject(authmanager, nil)
 	type fields struct {
 		GuestCartService     cartDomain.GuestCartService
 		CustomerCartService  cartDomain.CustomerCartService
@@ -624,7 +626,7 @@ func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 					return result
 				}(),
 				AuthManager: authmanager,
-				UserService: &authApplication.UserService{},
+				UserService: userservice,
 				Logger:      flamingo.NullLogger{},
 				CartCache:   new(MockCartCache),
 			},
@@ -650,7 +652,7 @@ func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 					return result
 				}(),
 				AuthManager: authmanager,
-				UserService: &authApplication.UserService{},
+				UserService: userservice,
 				Logger:      flamingo.NullLogger{},
 				CartCache:   new(MockCartCache),
 			},
@@ -732,6 +734,10 @@ func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 }
 
 func TestCartReceiverService_RestoreCart(t *testing.T) {
+	authmanager := &authApplication.AuthManager{}
+	authmanager.Inject(flamingo.NullLogger{}, nil, nil)
+	userservice := &authApplication.UserService{}
+	userservice.Inject(authmanager, nil)
 	type fields struct {
 		guestCartService     cartDomain.GuestCartService
 		customerCartService  cartDomain.CustomerCartService
@@ -760,9 +766,10 @@ func TestCartReceiverService_RestoreCart(t *testing.T) {
 			name: "restore guest cart without error",
 			fields: fields{
 				guestCartService: &MockGuestCartServiceAdapter{},
-				userService:      &authApplication.UserService{},
+				userService:      userservice,
 				logger:           &flamingo.NullLogger{},
 				cartCache:        &MockCartCache{},
+				authManager:      authmanager,
 			},
 			args: args{
 				ctx:     web.ContextWithSession(context.Background(), web.EmptySession()),
@@ -832,9 +839,10 @@ func TestCartReceiverService_RestoreCart(t *testing.T) {
 			name: "restore guest cart with error",
 			fields: fields{
 				guestCartService: &MockGuestCartServiceAdapterError{},
-				userService:      &authApplication.UserService{},
+				userService:      userservice,
 				logger:           &flamingo.NullLogger{},
 				cartCache:        &MockCartCache{},
+				authManager:      authmanager,
 			},
 			args: args{
 				ctx:     web.ContextWithSession(context.Background(), web.EmptySession()),

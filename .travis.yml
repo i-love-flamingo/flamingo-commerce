@@ -3,7 +3,6 @@ language: go
 go:
   - 1.x
   - 1.12.x
-  - 1.11.x
 
 env:
   - GO111MODULE=on
@@ -15,18 +14,21 @@ script:
   - fmt=$(gofmt -l .)
   - test -z $fmt || (echo "please run gofmt" ; echo $fmt ; exit 1)
   - go run golang.org/x/lint/golint -set_exit_status $(go list ./...)
-  - go generate ./...
-  - git diff --quiet || (echo 'generated go files are not up to date, check go generate, go.sum and go.mod' ; git diff ; exit 1)
   - go test -race -vet=all ./...
   - go run github.com/fzipp/gocyclo -top 20 .
   - go run github.com/client9/misspell/cmd/misspell -error .
   - go run github.com/gordonklaus/ineffassign .
 
-
-
 jobs:
   include:
+    - stage: testrecent
+      go: 1.x
+      script:
+        # test is done only for recent version.
+        # Older versions might include other files during compilation and may therefore generate different go.mod files
+        - go generate ./...
+        - git diff --quiet || (echo 'generated go files are not up to date, check go generate, go.sum and go.mod' ; git diff ; exit 1)
     - stage: integrationtest
-      go: 1.12.x
+      go: 1.x
       script:
         - go test -v ./test/integrationtest/... -tags=integration
