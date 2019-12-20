@@ -4,12 +4,14 @@ package integrationtest
 
 import (
 	"context"
-	"flamingo.me/flamingo/v3/framework/config"
 	"sync"
 
-	"flamingo.me/flamingo/v3"
+	"flamingo.me/flamingo/v3/framework/config"
+
 	"log"
 	"os"
+
+	"flamingo.me/flamingo/v3"
 
 	// "flamingo.me/redirects"
 	"flamingo.me/dingo"
@@ -77,7 +79,10 @@ func Bootup(modules []dingo.Module, configDir string, config config.Map) (func()
 	os.Args[1] = "serve"
 	additionalConfig = config
 	go flamingo.App(modules, flamingo.ConfigDir(configDir))
-	<-bootupReady
+	if _, ok := <-bootupReady; !ok {
+		panic("unable to bootup flamingo")
+	}
+
 	tm := testmoduleInstanceInApp
 	//TODO - use new port on every bootup
 	return func() { tm.SendShutdown() }, "localhost:3210"
