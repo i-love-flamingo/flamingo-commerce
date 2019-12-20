@@ -79,7 +79,7 @@ func Bootup(modules []dingo.Module, configDir string, config config.Map) (func()
 	os.Args[1] = "serve"
 	additionalConfig = config
 	go flamingo.App(modules, flamingo.ConfigDir(configDir))
-	if ok := <-bootupReady; !ok {
+	if _, ok := <-bootupReady; !ok {
 		panic("unable to bootup flamingo")
 	}
 
