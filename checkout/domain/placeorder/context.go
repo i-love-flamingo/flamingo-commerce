@@ -12,7 +12,7 @@ type (
 )
 
 func (c *Context) CurrentState() states.State {
-	return r.state
+	return c.state
 }
 
 func (c *Context) UpdateState(s states.State) {
