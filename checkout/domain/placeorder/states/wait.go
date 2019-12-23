@@ -17,7 +17,14 @@ func (n Wait) SetContext(ctx *placeorder.Context) {
 }
 
 func (n Wait) Run() (Rollback, error) {
-	// n.ctx.UpdateState()
+	/* Todo: maybe split in multiple states
+	1. Reserve Order id
+	2. Start Payment
+	3. Reserve Order if EarlyPlace
+	4. Get Payment Status
+	// n.ctx.UpdateState(WaitingForPaymentInformation)
+	*/
+
 	return nil, nil
 }
 
