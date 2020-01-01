@@ -20,10 +20,28 @@ func (*Service) Schema() []byte {
 // Models return the 'Schema name' => 'Go model' mapping of this module
 func (*Service) Models() map[string]config.TypeMapEntry {
 	return graphql.ModelMap{
-		"Commerce_Checkout_PlaceOrderResult":       dto.PlaceOrderResult{},
-		"Commerce_Checkout_OrderSuccessData":       dto.OrderSuccessData{},
-		"Commerce_Checkout_PlaceOrderPaymentInfo":  application.PlaceOrderPaymentInfo{},
-		"Commerce_Checkout_StartPlaceOrder_Status": new(dto.Status),
-		"Commerce_Checkout_Error":                  dto.Error{},
+		"Commerce_Checkout_PlaceOrderContext":                                        dto.PlaceOrderContext{},
+		"Commerce_Checkout_PlacedOrderInfos":                                         dto.PlacedOrderInfos{},
+		"Commerce_Checkout_PlaceOrderPaymentInfo":                                    application.PlaceOrderPaymentInfo{},
+		"Commerce_Checkout_PlaceOrderState_State":                                    new(dto.State),
+		"Commerce_Checkout_PlaceOrderState_State_Wait":                               dto.StateWait{},
+		"Commerce_Checkout_PlaceOrderState_State_Success":                            dto.StateSuccess{},
+		"Commerce_Checkout_PlaceOrderState_State_FatalError":                         dto.StateFatalError{},
+		"Commerce_Checkout_PlaceOrderState_State_ShowIframe":                         dto.StateShowIframe{},
+		"Commerce_Checkout_PlaceOrderState_State_ShowHtml":                           dto.StateShowHtml{},
+		"Commerce_Checkout_PlaceOrderState_State_Redirect":                           dto.StateRedirect{},
+		"Commerce_Checkout_PlaceOrderState_State_Cancelled":                          dto.StateCancelled{},
+		"Commerce_Checkout_PlaceOrderState_State_CancellationReason":                 new(dto.CancellationReason),
+		"Commerce_Checkout_PlaceOrderState_State_CancellationReason_PaymentError":    dto.CancellationReasonPaymentError{},
+		"Commerce_Checkout_PlaceOrderState_State_CancellationReason_ValidationError": dto.CancellationReasonValidationError{},
 	}.Models()
 }
+
+/*
+Commerce_Checkout_PlaceOrderState
+Commerce_Checkout_PlacedOrderInfos
+Commerce_Checkout_PlaceOrderPaymentInfo
+Commerce_Checkout_PlaceOrderState_State (if)
+Commerce_Checkout_PlaceOrderState_State_CancellationReason (if)
+Commerce_Checkout_PlaceOrderPaymentInfo
+*/
