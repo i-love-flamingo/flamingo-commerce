@@ -1,31 +1,19 @@
-type Commerce_Checkout_PlaceOrderResult {
-    # Result can be one on the possible status
-    status: Commerce_Checkout_StartPlaceOrder_Status!
-    # If status == INVALID cartValidationResult contains the details
-    cartValidationResult: Commerce_Cart_ValidationResult
-    # if status == ORDERSUCCESS
-    orderSuccessData: Commerce_Checkout_OrderSuccessData
-    #paymentFlow:
-    error: Commerce_Checkout_Error
+# Commerce_Checkout_PlaceOrderContext represents the result of the current (running) place order mutation
+type Commerce_Checkout_PlaceOrderContext {
+    # The Cart that is going to be placed
+    cart: Commerce_DecoratedCart
+    # The placed order in case order is already placed
+    orderInfos: Commerce_Checkout_PlacedOrderInfos
+    # State depending on the state of payment and place order - state may contain additional infos
+    state: Commerce_Checkout_PlaceOrderState_State
 }
 
-enum Commerce_Checkout_StartPlaceOrder_Status {
-    INVALID
-    ERROR
-    ORDERSUCCESS
-    PAYMENTPENDING
-}
 
-type Commerce_Checkout_OrderSuccessData {
+# Commerce_Checkout_PlacedOrderInfos - infos about the placed orders - typically shown on a suceess page
+type Commerce_Checkout_PlacedOrderInfos {
     paymentInfos:        [Commerce_Checkout_PlaceOrderPaymentInfo!]
     placedOrderInfos:    [Commerce_Cart_PlacedOrderInfo!]
     email:               String!
-    placedDecoratedCart: Commerce_DecoratedCart!
-}
-
-type Commerce_Checkout_Error {
-    isPaymentError: Boolean!
-    errorKey:       String!
 }
 
 type  Commerce_Checkout_PlaceOrderPaymentInfo {
@@ -37,7 +25,68 @@ type  Commerce_Checkout_PlaceOrderPaymentInfo {
     title:           String!
 }
 
+interface Commerce_Checkout_PlaceOrderState_State {
+    final: Boolean
+}
+
+
+type Commerce_Checkout_PlaceOrderState_State_Wait implements Commerce_Checkout_PlaceOrderState_State {
+    final: Boolean
+}
+
+type Commerce_Checkout_PlaceOrderState_State_Success implements Commerce_Checkout_PlaceOrderState_State {
+    final: Boolean
+}
+
+type Commerce_Checkout_PlaceOrderState_State_FatalError implements Commerce_Checkout_PlaceOrderState_State {
+    final: Boolean
+    error: String
+}
+
+type Commerce_Checkout_PlaceOrderState_State_ShowIframe implements Commerce_Checkout_PlaceOrderState_State {
+    final: Boolean
+    url: String
+}
+
+type Commerce_Checkout_PlaceOrderState_State_ShowHtml implements Commerce_Checkout_PlaceOrderState_State {
+    final: Boolean
+    html: String
+}
+
+type Commerce_Checkout_PlaceOrderState_State_Redirect implements Commerce_Checkout_PlaceOrderState_State {
+    final: Boolean
+    url: String
+}
+
+
+type Commerce_Checkout_PlaceOrderState_State_Cancelled implements Commerce_Checkout_PlaceOrderState_State {
+    final: Boolean
+    cancellationReason: Commerce_Checkout_PlaceOrderState_State_CancellationReason
+}
+
+interface Commerce_Checkout_PlaceOrderState_State_CancellationReason {
+    reason: String
+}
+
+type Commerce_Checkout_PlaceOrderState_State_CancellationReason_PaymentError implements Commerce_Checkout_PlaceOrderState_State_CancellationReason {
+    reason: String
+}
+
+type Commerce_Checkout_PlaceOrderState_State_CancellationReason_ValidationError implements Commerce_Checkout_PlaceOrderState_State_CancellationReason {
+    reason: String
+    validationResult: Commerce_Cart_ValidationResult
+}
+
+
+extend type Query {
+    # Gets the last place order context with its state infos
+    Commerce_Checkout_PlaceOrderContext: Commerce_Checkout_PlaceOrderContext!
+}
+
 
 extend type Mutation {
-    Commerce_Checkout_PlaceOrder(returnUrl: String!): Commerce_Checkout_PlaceOrderResult
+    #Only possible if Statemaschine not active or in a final state
+    Commerce_Checkout_StartPlaceOrder(returnUrl: String!): Boolean!
+    # Possible if state is not final
+    Commerce_Checkout_CancelPlaceOrder: Boolean!
 }
