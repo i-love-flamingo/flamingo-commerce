@@ -1,23 +1,23 @@
 package states
 
 import (
-	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder"
+	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/context"
 )
 
 type (
 	Canceled struct {
-		ctx          *placeorder.Context
-		runFunctions []func(Rollback, error) //
+		ctx          *context.Context
+		runFunctions []func(context.Rollback, error) //
 	}
 )
 
-var _ State = Canceled{}
+var _ context.State = Canceled{}
 
-func (c Canceled) SetContext(ctx *placeorder.Context) {
+func (c Canceled) SetContext(ctx *context.Context) {
 	c.ctx = ctx
 }
 
-func (c Canceled) Run() (Rollback, error) {
+func (c Canceled) Run() (context.Rollback, error) {
 	// todo
 	return nil, nil
 }
