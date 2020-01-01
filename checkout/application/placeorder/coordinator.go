@@ -5,7 +5,7 @@ import (
 	"time"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder"
+	placeorderContext "flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/context"
 )
 
 type (
@@ -22,7 +22,7 @@ type (
 
 // New acquires lock if possible and creates new process with first run call blocking
 // returns error if already locked or error during run
-func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart) (placeorder.Context, error) {
+func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart) (placeorderContext.Context, error) {
 	/* Todo:
 	1. determine lock key based on session/cart
 	2. check if place order process already in running if
@@ -32,21 +32,21 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart) (placeorder
 	6. store rollback callback
 	*/
 
-	return placeorder.Context{}, nil
+	return placeorderContext.Context{}, nil
 }
 
 // Current State of the process if it exists
-func (c *Coordinator) Current(ctx context.Context, cart cartDomain.Cart) (placeorder.Context, error) {
+func (c *Coordinator) Current(ctx context.Context, cart cartDomain.Cart) (placeorderContext.Context, error) {
 	/* Todo:
 	1. Check if there is a previous place order context/result
 	2. Return if available, not available -> error
 	*/
-	return placeorder.Context{}, nil
+	return placeorderContext.Context{}, nil
 }
 
 // Cancel the process if it exists (blocking)
 // be aware that all rollback callbacks are executed
-func (c *Coordinator) Cancel(ctx context.Context, cart cartDomain.Cart) (placeorder.Context, error) {
+func (c *Coordinator) Cancel(ctx context.Context, cart cartDomain.Cart) (placeorderContext.Context, error) {
 	/* Todo:
 	1. Check if there is a place order process running
 	2. Check if place order is in final state
@@ -55,7 +55,7 @@ func (c *Coordinator) Cancel(ctx context.Context, cart cartDomain.Cart) (placeor
 	5. Set state to canceled
 	6. Return result
 	*/
-	return placeorder.Context{}, nil
+	return placeorderContext.Context{}, nil
 }
 
 // Run starts the next processing if not already running
@@ -72,14 +72,14 @@ func (c *Coordinator) Run(ctx context.Context, cart cartDomain.Cart) {
 
 // RunBlocking waits for the lock and starts the next processing
 // RunBlocking waits until the process is finished and returns its result
-func (c *Coordinator) RunBlocking(ctx context.Context, cart cartDomain.Cart) (placeorder.Context, error) {
+func (c *Coordinator) RunBlocking(ctx context.Context, cart cartDomain.Cart) (placeorderContext.Context, error) {
 	/* Todo:
 	1. check if process is there
 	2. get lock
 	3. State->run()
 	4. Return result
 	*/
-	return placeorder.Context{}, nil
+	return placeorderContext.Context{}, nil
 }
 
 func determineLockKey(ctx context.Context, cart cartDomain.Cart) string {

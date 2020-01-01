@@ -2,8 +2,9 @@ package placeorder
 
 import (
 	"errors"
-
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder"
+
+	placeorderContext "flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/context"
 )
 
 type Handler struct {
@@ -19,7 +20,7 @@ func (h *Handler) Inject(
 	return h
 }
 
-func (h *Handler) Handle(command interface{}) (placeorder.Context, error) {
+func (h *Handler) Handle(command interface{}) (placeorderContext.Context, error) {
 	switch c := command.(type) {
 	case placeorder.StartPlaceOrder:
 		return h.coordinator.New(c.Ctx, c.Cart)
@@ -31,6 +32,6 @@ func (h *Handler) Handle(command interface{}) (placeorder.Context, error) {
 	case placeorder.CancelPlaceOrder:
 		return h.coordinator.Cancel(c.Ctx, c.Cart)
 	default:
-		return placeorder.Context{}, errors.New("invalid command")
+		return placeorderContext.Context{}, errors.New("invalid command")
 	}
 }

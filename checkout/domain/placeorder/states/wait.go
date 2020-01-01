@@ -1,22 +1,22 @@
 package states
 
 import (
-	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder"
+	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/context"
 )
 
 type (
 	Wait struct {
-		ctx *placeorder.Context
+		ctx *context.Context
 	}
 )
 
-var _ State = Wait{}
+var _ context.State = Wait{}
 
-func (n Wait) SetContext(ctx *placeorder.Context) {
+func (n Wait) SetContext(ctx *context.Context) {
 	n.ctx = ctx
 }
 
-func (n Wait) Run() (Rollback, error) {
+func (n Wait) Run() (context.Rollback, error) {
 	/* Todo: maybe split in multiple states
 	1. Reserve Order id
 	2. Start Payment
