@@ -230,3 +230,109 @@ func TestCartBuilder_BuildAndGet(t *testing.T) {
 	assert.Equal(t, domain.NewFromInt(100, 100, "EUR"), cart.GrandTotal(), "gradtotal need to match given total")
 
 }
+
+func TestAppliedCouponCodes_ContainSameCouponCodes(t *testing.T) {
+	type args struct {
+		couponCodesToCompare cartDomain.AppliedCouponCodes
+	}
+	tests := []struct {
+		name string
+		acc  cartDomain.AppliedCouponCodes
+		args args
+		want bool
+	}{
+		{
+			name: "empty coupon codes are equal",
+			acc:  cartDomain.AppliedCouponCodes{},
+			args: args{
+				couponCodesToCompare: cartDomain.AppliedCouponCodes{},
+			},
+			want: true,
+		},
+		{
+			name: "same coupon codes are equal",
+			acc: cartDomain.AppliedCouponCodes{
+				cartDomain.CouponCode{
+					Code:             "some-code",
+					CustomAttributes: nil,
+				},
+				cartDomain.CouponCode{
+					Code:             "some-other-code",
+					CustomAttributes: nil,
+				},
+			},
+			args: args{
+				couponCodesToCompare: cartDomain.AppliedCouponCodes{
+					cartDomain.CouponCode{
+						Code:             "some-code",
+						CustomAttributes: nil,
+					},
+					cartDomain.CouponCode{
+						Code:             "some-other-code",
+						CustomAttributes: nil,
+					},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "same but inverted coupon codes are equal",
+			acc: cartDomain.AppliedCouponCodes{
+				cartDomain.CouponCode{
+					Code:             "some-code",
+					CustomAttributes: nil,
+				},
+				cartDomain.CouponCode{
+					Code:             "some-other-code",
+					CustomAttributes: nil,
+				},
+			},
+			args: args{
+				couponCodesToCompare: cartDomain.AppliedCouponCodes{
+					cartDomain.CouponCode{
+						Code:             "some-other-code",
+						CustomAttributes: nil,
+					},
+					cartDomain.CouponCode{
+						Code:             "some-code",
+						CustomAttributes: nil,
+					},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "different coupon codes are not equal",
+			acc: cartDomain.AppliedCouponCodes{
+				cartDomain.CouponCode{
+					Code:             "some-code",
+					CustomAttributes: nil,
+				},
+				cartDomain.CouponCode{
+					Code:             "some-other-code",
+					CustomAttributes: nil,
+				},
+			},
+			args: args{
+				couponCodesToCompare: cartDomain.AppliedCouponCodes{
+					cartDomain.CouponCode{
+						Code:             "some-code",
+						CustomAttributes: nil,
+					},
+					cartDomain.CouponCode{
+						Code:             "some-different-code",
+						CustomAttributes: nil,
+					},
+				},
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.acc.ContainSameCouponCodes(tt.args.couponCodesToCompare); got != tt.want {
+				t.Errorf("ContainSameCouponCodes() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

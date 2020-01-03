@@ -166,7 +166,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 		name   string
 		fields fields
 		args   args
-		want   cartApplication.QtyAdjustmentResults
+		want   *cartApplication.QtyAdjustmentResults
 	}{
 		{
 			name: "restrictors higher than qty dont reduce qty",
@@ -223,7 +223,9 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 				ctx:     context.Background(),
 				session: web.EmptySession().Store(cartApplication.GuestCartSessionKey, "some_guest_id"),
 			},
-			want: cartApplication.QtyAdjustmentResults{},
+			want: &cartApplication.QtyAdjustmentResults{
+				QtyAdjustmentResults: []cartApplication.QtyAdjustmentResult{},
+			},
 		},
 		{
 			name: "restrictors lower than qty reduce qty",
@@ -280,21 +282,23 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 				ctx:     context.Background(),
 				session: web.EmptySession().Store(cartApplication.GuestCartSessionKey, "some_guest_id"),
 			},
-			want: cartApplication.QtyAdjustmentResults{
-				cartApplication.QtyAdjustmentResult{
-					OriginalItem: cartDomain.Item{
-						ID:  "mock_item",
-						Qty: 7,
+			want: &cartApplication.QtyAdjustmentResults{
+				QtyAdjustmentResults: []cartApplication.QtyAdjustmentResult{
+					{
+						OriginalItem: cartDomain.Item{
+							ID:  "mock_item",
+							Qty: 7,
+						},
+						DeliveryCode: "default_delivery_code",
+						WasDeleted:   false,
+						RestrictionResult: &validation.RestrictionResult{
+							IsRestricted:        true,
+							MaxAllowed:          5,
+							RemainingDifference: -2,
+							RestrictorName:      "",
+						},
+						NewQty: 5,
 					},
-					DeliveryCode: "default_delivery_code",
-					WasDeleted:   false,
-					RestrictionResult: &validation.RestrictionResult{
-						IsRestricted:        true,
-						MaxAllowed:          5,
-						RemainingDifference: -2,
-						RestrictorName:      "",
-					},
-					NewQty: 5,
 				},
 			},
 		},
@@ -353,21 +357,23 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 				ctx:     context.Background(),
 				session: web.EmptySession().Store(cartApplication.GuestCartSessionKey, "some_guest_id"),
 			},
-			want: cartApplication.QtyAdjustmentResults{
-				cartApplication.QtyAdjustmentResult{
-					OriginalItem: cartDomain.Item{
-						ID:  "mock_item",
-						Qty: 7,
+			want: &cartApplication.QtyAdjustmentResults{
+				QtyAdjustmentResults: []cartApplication.QtyAdjustmentResult{
+					{
+						OriginalItem: cartDomain.Item{
+							ID:  "mock_item",
+							Qty: 7,
+						},
+						DeliveryCode: "default_delivery_code",
+						WasDeleted:   true,
+						RestrictionResult: &validation.RestrictionResult{
+							IsRestricted:        true,
+							MaxAllowed:          0,
+							RemainingDifference: -7,
+							RestrictorName:      "",
+						},
+						NewQty: 0,
 					},
-					DeliveryCode: "default_delivery_code",
-					WasDeleted:   true,
-					RestrictionResult: &validation.RestrictionResult{
-						IsRestricted:        true,
-						MaxAllowed:          0,
-						RemainingDifference: -7,
-						RestrictorName:      "",
-					},
-					NewQty: 0,
 				},
 			},
 		},
@@ -394,7 +400,6 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 			if diff := deep.Equal(got, tt.want); diff != nil {
 				t.Errorf("CartService.AdjustItemsToRestrictedQty() got!=want, diff: %#v", diff)
 			}
-
 		})
 	}
 }

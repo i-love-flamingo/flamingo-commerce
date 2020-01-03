@@ -61,8 +61,12 @@ type (
 		NewQty            int
 	}
 
-	// QtyAdjustmentResults slice of QtyAdjustmentResult
-	QtyAdjustmentResults []QtyAdjustmentResult
+	// QtyAdjustmentResults contains a slice of QtyAdjustmentResult
+	// as well as an info if the adjustments caused the applied coupon codes to differentiate
+	QtyAdjustmentResults struct {
+		CouponCodesDifferentiate bool
+		QtyAdjustmentResults     []QtyAdjustmentResult
+	}
 
 	// PromotionFunction type takes ctx, cart, couponCode and applies the promotion
 	promotionFunc func(context.Context, *cartDomain.Cart, string) (*cartDomain.Cart, cartDomain.DeferEvents, error)
@@ -944,14 +948,50 @@ func (cs *CartService) dispatchAllEvents(ctx context.Context, events []flamingo.
 }
 
 // AdjustItemsToRestrictedQty checks the quantity restrictions for each item of the cart and returns what quantities have been adjusted
-func (cs *CartService) AdjustItemsToRestrictedQty(ctx context.Context, session *web.Session) (QtyAdjustmentResults, error) {
+func (cs *CartService) AdjustItemsToRestrictedQty(ctx context.Context, session *web.Session) (*QtyAdjustmentResults, error) {
+	qtyAdjustmentResults, err := cs.ShouldItemsBeAdjustedToRestrictedQty(ctx, session)
+	if err != nil {
+		return nil, err
+	}
+
 	cart, _, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return nil, err
 	}
 
-	result := make(QtyAdjustmentResults, 0)
+	couponCodes := cart.AppliedCouponCodes
+	for _, qtyAdjustmentResult := range qtyAdjustmentResults {
+		if qtyAdjustmentResult.NewQty < 1 {
+			err = cs.DeleteItem(ctx, session, qtyAdjustmentResult.OriginalItem.ID, qtyAdjustmentResult.DeliveryCode)
+		} else {
+			err = cs.UpdateItemQty(ctx, session, qtyAdjustmentResult.OriginalItem.ID, qtyAdjustmentResult.DeliveryCode, qtyAdjustmentResult.NewQty)
+		}
+		if err != nil {
+			return nil, err
+		}
+	}
 
+	cart, _, err = cs.cartReceiverService.GetCart(ctx, session)
+	if err != nil {
+		return nil, err
+	}
+
+	result := &QtyAdjustmentResults{
+		CouponCodesDifferentiate: !couponCodes.ContainSameCouponCodes(cart.AppliedCouponCodes),
+		QtyAdjustmentResults:     qtyAdjustmentResults,
+	}
+
+	return result, nil
+}
+
+// ShouldItemsBeAdjustedToRestrictedQty checks the quantity restrictions for each item of the cart and returns which items should be adjusted and how
+func (cs *CartService) ShouldItemsBeAdjustedToRestrictedQty(ctx context.Context, session *web.Session) ([]QtyAdjustmentResult, error) {
+	cart, _, err := cs.cartReceiverService.GetCart(ctx, session)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]QtyAdjustmentResult, 0)
 	for _, delivery := range cart.Deliveries {
 		for _, item := range delivery.Cartitems {
 			product, err := cs.productService.Get(ctx, item.MarketplaceCode)
@@ -965,28 +1005,17 @@ func (cs *CartService) AdjustItemsToRestrictedQty(ctx context.Context, session *
 			}
 
 			restrictionResult := cs.restrictionService.RestrictQty(ctx, product, cart, delivery.DeliveryInfo.Code)
-			if restrictionResult.RemainingDifference >= 0 {
-				continue
-			}
+			if restrictionResult.RemainingDifference < 0 {
+				newQty := item.Qty + restrictionResult.RemainingDifference
 
-			newQty := item.Qty + restrictionResult.RemainingDifference
-
-			if newQty < 1 {
-				err = cs.DeleteItem(ctx, session, item.ID, delivery.DeliveryInfo.Code)
-			} else {
-				err = cs.UpdateItemQty(ctx, session, item.ID, delivery.DeliveryInfo.Code, newQty)
+				result = append(result, QtyAdjustmentResult{
+					item,
+					delivery.DeliveryInfo.Code,
+					newQty < 1,
+					restrictionResult,
+					newQty,
+				})
 			}
-			if err != nil {
-				return nil, err
-			}
-
-			result = append(result, QtyAdjustmentResult{
-				item,
-				delivery.DeliveryInfo.Code,
-				newQty < 1,
-				restrictionResult,
-				newQty,
-			})
 		}
 	}
 

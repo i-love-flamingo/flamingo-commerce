@@ -36,7 +36,7 @@ func (gdm *GetQuantityAdjustmentDeletedItemsMessages) Func(ctx context.Context) 
 		deletedAdjustments := make([]QuantityAdjustment, 0)
 
 		if sessionAdjustments, found := session.Load("cart.view.quantity.adjustments"); found {
-			if adjustments, ok := sessionAdjustments.(application.QtyAdjustmentResults); ok {
+			if adjustments, ok := sessionAdjustments.([]application.QtyAdjustmentResult); ok {
 				for _, a := range adjustments {
 					if a.WasDeleted {
 						deletedAdjustments = append(deletedAdjustments, QuantityAdjustment{
@@ -60,7 +60,7 @@ func (gdm *GetQuantityAdjustmentUpdatedItemsMessage) Func(ctx context.Context) i
 		session := web.SessionFromContext(ctx)
 
 		if sessionAdjustments, found := session.Load("cart.view.quantity.adjustments"); found {
-			if adjustments, ok := sessionAdjustments.(application.QtyAdjustmentResults); ok {
+			if adjustments, ok := sessionAdjustments.([]application.QtyAdjustmentResult); ok {
 				for _, a := range adjustments {
 					if a.OriginalItem.ID == item.ID && a.DeliveryCode == deliveryCode {
 						return QuantityAdjustment{
