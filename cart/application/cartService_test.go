@@ -394,6 +394,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 			if diff := deep.Equal(got, tt.want); diff != nil {
 				t.Errorf("CartService.AdjustItemsToRestrictedQty() got!=want, diff: %#v", diff)
 			}
+
 		})
 	}
 }
