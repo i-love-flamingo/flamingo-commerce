@@ -22,9 +22,9 @@ type Commerce_Cart {
     getDeliveryByCode(deliveryCode: String!): Commerce_CartDelivery
     getDeliveryCodes: [String!]
 
-    getMainShippingEMail: String
-    isEmpty: Boolean
-    hasDeliveryForCode(deliveryCode: String!): Boolean
+    getMainShippingEMail: String!
+    isEmpty: Boolean!
+    hasDeliveryForCode(deliveryCode: String!): Boolean!
 
     getDeliveryByItemID(itemID: String!): Commerce_CartDelivery!
     getByItemID(itemID: String!): Commerce_CartItem!
@@ -34,44 +34,65 @@ type Commerce_Cart {
     itemCount: Int!
     productCount: Int!
 
-    getVoucherSavings: Commerce_Price
+    getVoucherSavings: Commerce_Price!
     grandTotal: Commerce_Price!
 
-    #// GetAllPaymentRequiredItems - returns all the Items (Cartitem, ShippingItem, TotalItems) that need to be paid with the final gross price
-    #func (c Cart) GetAllPaymentRequiredItems() PricedItems {}
-
-    sumTaxes: Commerce_Cart_Taxes
+    sumTaxes: Commerce_Cart_Taxes!
     getCartTeaser: Commerce_Cart_Teaser!
 
-    sumShippingNet: Commerce_Price
-    sumShippingNetWithDiscounts: Commerce_Price
-    hasShippingCosts: Boolean
+    sumShippingNet: Commerce_Price!
+    sumShippingNetWithDiscounts: Commerce_Price!
+    hasShippingCosts: Boolean!
     allShippingTitles: [String!]
 
-    subTotalGross: Commerce_Price
-    sumTotalTaxAmount: Commerce_Price
-    subTotalNet: Commerce_Price
+    subTotalGross: Commerce_Price!
+    sumTotalTaxAmount: Commerce_Price!
+    subTotalNet: Commerce_Price!
 
-    subTotalGrossWithDiscounts: Commerce_Price
-    subTotalNetWithDiscounts: Commerce_Price
-    sumTotalDiscountAmount: Commerce_Price
-    sumNonItemRelatedDiscountAmount: Commerce_Price
-    sumItemRelatedDiscountAmount: Commerce_Price
-    hasAppliedCouponCode: Boolean
+    subTotalGrossWithDiscounts: Commerce_Price!
+    subTotalNetWithDiscounts: Commerce_Price!
+    sumTotalDiscountAmount: Commerce_Price!
+    sumNonItemRelatedDiscountAmount: Commerce_Price!
+    sumItemRelatedDiscountAmount: Commerce_Price!
+    hasAppliedCouponCode: Boolean!
 
-    getPaymentReference: String
+    getPaymentReference: String!
     getTotalItemsByType(typeCode: String!): [Commerce_CartTotalitem!]
-    grandTotalCharges: Commerce_Price_Charges
+    grandTotalCharges: Commerce_Price_Charges!
 
-    hasAppliedGiftCards: Boolean
-    hasRemainingGiftCards: Boolean
-    sumAppliedGiftCardsForced: Commerce_Price
+    hasAppliedGiftCards: Boolean!
+    hasRemainingGiftCards: Boolean!
+    sumAppliedGiftCardsForced: Commerce_Price!
+    sumGrandTotalWithGiftCardsForced: Commerce_Price!
+
+    getAllPaymentRequiredItems: Commerce_Cart_PricedItems!
+}
+
+type Commerce_Cart_PricedItems {
+    getAllCartItems:  [Commerce_Cart_PricedCartItem!]
+    getAllShippingItems:  [Commerce_Cart_PricedShippingItem!]
+    getAllTotalItems: [Commerce_Cart_PricedTotalItem!]
+}
+
+type Commerce_Cart_PricedCartItem {
+    amount: Commerce_Price!
+    itemID: String!
+}
+
+type Commerce_Cart_PricedShippingItem {
+    amount: Commerce_Price!
+    deliveryInfoCode: String!
+}
+
+type Commerce_Cart_PricedTotalItem {
+    amount: Commerce_Price!
+    code: String!
 }
 
 type Commerce_Cart_Tax {
-    amount: Commerce_Price
-    type: String
-    rate: Float!
+    amount: Commerce_Price!
+    type: String!
+    rate: Float
 }
 
 type Commerce_Cart_Taxes {
@@ -114,8 +135,8 @@ type Commerce_CartDelivery {
     sumNonItemRelatedDiscountAmount: Commerce_Price
     sumItemRelatedDiscountAmount: Commerce_Price
     subTotalGrossWithDiscounts: Commerce_Price
-    subTotalNetWithDiscounts: Commerce_Price
-    sumRowTaxes: Commerce_Cart_Taxes
+    subTotalNetWithDiscounts: Commerce_Price!
+    sumRowTaxes: Commerce_Cart_Taxes!
     hasItems: Boolean!
 }
 
@@ -146,14 +167,14 @@ type Commerce_CartShippingItem {
     priceNet: Commerce_Price
     taxAmount: Commerce_Price
     appliedDiscounts: Commerce_CartAppliedDiscounts!
-    totalWithDiscountInclTax: Commerce_Price
-    tax: Commerce_Cart_Tax
+    totalWithDiscountInclTax: Commerce_Price!
+    tax: Commerce_Cart_Tax!
 }
 
 type Commerce_CartAppliedDiscounts {
     items: [Commerce_CartAppliedDiscount!]
-    byCampaignCode(campaignCode: String):  Commerce_CartAppliedDiscounts
-    byType(filterType: String): Commerce_CartAppliedDiscounts
+    byCampaignCode(campaignCode: String):  Commerce_CartAppliedDiscounts!
+    byType(filterType: String): Commerce_CartAppliedDiscounts!
     sumForced: Commerce_Price!
 }
 
@@ -188,6 +209,8 @@ type Commerce_CartItem {
     singlePriceNet: Commerce_Price!
     rowPriceGross: Commerce_Price!
     rowPriceNet: Commerce_Price!
+    rowTaxes: Commerce_Cart_Taxes
+    appliedDiscounts: Commerce_CartAppliedDiscounts
     #    rowTaxes: Commerce_Taxes!
 }
 
@@ -249,7 +272,7 @@ type Commerce_CartAppliedGiftCard {
     code: String!
     applied: Commerce_Price!
     remaining: Commerce_Price!
-    hasRemaining: Boolean
+    hasRemaining: Boolean!
 }
 
 type Commerce_Cart_ValidationResult {

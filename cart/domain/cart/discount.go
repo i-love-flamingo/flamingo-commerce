@@ -220,11 +220,7 @@ func (discounts AppliedDiscounts) Sum() (domain.Price, error) {
 
 // SumForced – returns the sum of the applied values of the AppliedDiscounts
 func (discounts AppliedDiscounts) SumForced() domain.Price {
-	result, err := discounts.Sum()
-	if err != nil {
-		return domain.Price{}
-	}
-
+	result, _ := discounts.Sum()
 	return result
 }
 
