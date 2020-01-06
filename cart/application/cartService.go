@@ -1005,17 +1005,19 @@ func (cs *CartService) ShouldItemsBeAdjustedToRestrictedQty(ctx context.Context,
 			}
 
 			restrictionResult := cs.restrictionService.RestrictQty(ctx, product, cart, delivery.DeliveryInfo.Code)
-			if restrictionResult.RemainingDifference < 0 {
-				newQty := item.Qty + restrictionResult.RemainingDifference
-
-				result = append(result, QtyAdjustmentResult{
-					item,
-					delivery.DeliveryInfo.Code,
-					newQty < 1,
-					restrictionResult,
-					newQty,
-				})
+			if restrictionResult.RemainingDifference >= 0 {
+				continue
 			}
+
+			newQty := item.Qty + restrictionResult.RemainingDifference
+
+			result = append(result, QtyAdjustmentResult{
+				item,
+				delivery.DeliveryInfo.Code,
+				newQty < 1,
+				restrictionResult,
+				newQty,
+			})
 		}
 	}
 
