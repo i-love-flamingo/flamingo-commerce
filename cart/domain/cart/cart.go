@@ -67,6 +67,7 @@ type (
 		CustomAttributes map[string]interface{}
 	}
 
+	// AppliedCouponCodes slice of applied coupon codes
 	AppliedCouponCodes []CouponCode
 
 	// Person value object
@@ -762,6 +763,7 @@ func (p PricedItems) CartItems() map[string]domain.Price {
 	return p.cartItems
 }
 
+//ContainSameCouponCodes - returns if two AppliedCouponCodes slices contain the same coupon codes in any order
 func (acc AppliedCouponCodes) ContainSameCouponCodes(couponCodesToCompare AppliedCouponCodes) bool {
 	if len(acc) != len(couponCodesToCompare) {
 		return false
