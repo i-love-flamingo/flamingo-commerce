@@ -601,6 +601,30 @@ func (t Taxes) TotalAmount() domain.Price {
 	return result
 }
 
+// All – returns all Taxes as slice
+func (t Taxes) GetAllTaxes() []Tax {
+	taxes := make([]Tax, 0, len(t))
+	for _, tax := range t {
+		taxes = append(taxes, tax)
+	}
+
+	if len(taxes) > 0 {
+		return taxes
+	}
+
+	return nil
+}
+
+// GetByType - returns tax by given type
+func (t Taxes) GetByType(taxType string) *Tax {
+	for _, tax := range t {
+		if tax.Type == taxType {
+			return &tax
+		}
+	}
+	return nil
+}
+
 // ###################
 
 // Build - main factory method

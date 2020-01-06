@@ -218,6 +218,16 @@ func (discounts AppliedDiscounts) Sum() (domain.Price, error) {
 	return result, nil
 }
 
+// SumForced – returns the sum of the applied values of the AppliedDiscounts
+func (discounts AppliedDiscounts) SumForced() domain.Price {
+	result, err := discounts.Sum()
+	if err != nil {
+		return domain.Price{}
+	}
+
+	return result
+}
+
 // Items getter for graphql integration
 func (discounts AppliedDiscounts) Items() []AppliedDiscount {
 	return []AppliedDiscount(discounts)
