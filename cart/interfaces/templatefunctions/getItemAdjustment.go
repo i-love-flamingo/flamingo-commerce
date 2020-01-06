@@ -16,8 +16,8 @@ type (
 	// GetQuantityAdjustmentUpdatedItemsMessage is exported as a template function
 	GetQuantityAdjustmentUpdatedItemsMessage struct{}
 
-	// GetQuantityAdjustmentCouponCodesDifferentiate is exported as a template function
-	GetQuantityAdjustmentCouponCodesDifferentiate struct{}
+	// GetQuantityAdjustmentCouponCodesRemoved is exported as a template function
+	GetQuantityAdjustmentCouponCodesRemoved struct{}
 
 	// RemoveQuantityAdjustmentMessages is exported as a template function
 	RemoveQuantityAdjustmentMessages struct{}
@@ -39,7 +39,7 @@ func (gdm *GetQuantityAdjustmentDeletedItemsMessages) Func(ctx context.Context) 
 		deletedAdjustments := make([]QuantityAdjustment, 0)
 
 		if sessionAdjustments, found := session.Load("cart.view.quantity.adjustments"); found {
-			if adjustments, ok := sessionAdjustments.([]application.QtyAdjustmentResult); ok {
+			if adjustments, ok := sessionAdjustments.(application.QtyAdjustmentResults); ok {
 				for _, a := range adjustments {
 					if a.WasDeleted {
 						deletedAdjustments = append(deletedAdjustments, QuantityAdjustment{
@@ -63,7 +63,7 @@ func (gum *GetQuantityAdjustmentUpdatedItemsMessage) Func(ctx context.Context) i
 		session := web.SessionFromContext(ctx)
 
 		if sessionAdjustments, found := session.Load("cart.view.quantity.adjustments"); found {
-			if adjustments, ok := sessionAdjustments.([]application.QtyAdjustmentResult); ok {
+			if adjustments, ok := sessionAdjustments.(application.QtyAdjustmentResults); ok {
 				for _, a := range adjustments {
 					if a.OriginalItem.ID == item.ID && a.DeliveryCode == deliveryCode {
 						return QuantityAdjustment{
@@ -86,14 +86,14 @@ func (gum *GetQuantityAdjustmentUpdatedItemsMessage) Func(ctx context.Context) i
 	}
 }
 
-// Func defines the GetQuantityAdjustmentCouponCodesDifferentiate template function
-func (gcd *GetQuantityAdjustmentCouponCodesDifferentiate) Func(ctx context.Context) interface{} {
+// Func defines the GetQuantityAdjustmentCouponCodesRemoved template function
+func (gcd *GetQuantityAdjustmentCouponCodesRemoved) Func(ctx context.Context) interface{} {
 	return func() bool {
 		session := web.SessionFromContext(ctx)
 
-		if sessionCouponCodesDifferentiate, found := session.Load("cart.view.quantity.adjustments.coupon.codes.differentiate"); found {
-			if couponCodesDifferentiate, ok := sessionCouponCodesDifferentiate.(bool); ok {
-				return couponCodesDifferentiate
+		if sessionAdjustments, found := session.Load("cart.view.quantity.adjustments"); found {
+			if adjustments, ok := sessionAdjustments.(application.QtyAdjustmentResults); ok {
+				return adjustments.HasRemovedCouponCodes()
 			}
 		}
 
@@ -107,7 +107,6 @@ func (rm *RemoveQuantityAdjustmentMessages) Func(ctx context.Context) interface{
 		session := web.SessionFromContext(ctx)
 
 		session.Delete("cart.view.quantity.adjustments")
-		session.Delete("cart.view.quantity.adjustments.coupon.codes.differentiate")
 
 		return true
 	}

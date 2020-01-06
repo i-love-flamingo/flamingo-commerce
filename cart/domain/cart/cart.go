@@ -763,19 +763,16 @@ func (p PricedItems) CartItems() map[string]domain.Price {
 	return p.cartItems
 }
 
-//ContainSameCouponCodes - returns if two AppliedCouponCodes slices contain the same coupon codes in any order
-func (acc AppliedCouponCodes) ContainSameCouponCodes(couponCodesToCompare AppliedCouponCodes) bool {
-	if len(acc) != len(couponCodesToCompare) {
-		return false
-	}
+//ContainedIn - returns if the coupon codes are contained in couponCodesToCompare
+func (acc AppliedCouponCodes) ContainedIn(couponCodesToCompare AppliedCouponCodes) bool {
 	for _, couponCode := range acc {
-		equal := false
+		contained := false
 		for _, couponCodeToCompare := range couponCodesToCompare {
 			if couponCode.Code == couponCodeToCompare.Code {
-				equal = true
+				contained = true
 			}
 		}
-		if !equal {
+		if !contained {
 			return false
 		}
 	}

@@ -229,25 +229,21 @@ func (cc *CartViewController) adjustItemsToRestrictedQtyAndAddToSession(ctx cont
 		return err
 	}
 
-	cc.addAdjustmentsToSession(adjustments.QtyAdjustmentResults, r)
-
-	if adjustments.CouponCodesDifferentiate {
-		r.Session().Store("cart.view.quantity.adjustments.coupon.codes.differentiate", true)
-	}
+	cc.addAdjustmentsToSession(adjustments, r)
 
 	return nil
 }
 
-func (cc *CartViewController) addAdjustmentsToSession(adjustments []application.QtyAdjustmentResult, r *web.Request) {
-	var storedAdjustments []application.QtyAdjustmentResult
+func (cc *CartViewController) addAdjustmentsToSession(adjustments application.QtyAdjustmentResults, r *web.Request) {
+	var storedAdjustments application.QtyAdjustmentResults
 	var ok bool
 
 	if sessionStoredAdjustments, found := r.Session().Load("cart.view.quantity.adjustments"); found {
-		if storedAdjustments, ok = sessionStoredAdjustments.([]application.QtyAdjustmentResult); !ok {
-			storedAdjustments = make([]application.QtyAdjustmentResult, 0)
+		if storedAdjustments, ok = sessionStoredAdjustments.(application.QtyAdjustmentResults); !ok {
+			storedAdjustments = application.QtyAdjustmentResults{}
 		}
 	} else {
-		storedAdjustments = make([]application.QtyAdjustmentResult, 0)
+		storedAdjustments = application.QtyAdjustmentResults{}
 	}
 
 	for _, adjustment := range adjustments {
@@ -261,7 +257,7 @@ func (cc *CartViewController) addAdjustmentsToSession(adjustments []application.
 	r.Session().Store("cart.view.quantity.adjustments", storedAdjustments)
 }
 
-func (cc *CartViewController) containsAdjustment(adjustments []application.QtyAdjustmentResult, adjustment application.QtyAdjustmentResult) (index int, contains bool) {
+func (cc *CartViewController) containsAdjustment(adjustments application.QtyAdjustmentResults, adjustment application.QtyAdjustmentResult) (index int, contains bool) {
 	for i, a := range adjustments {
 		if a.OriginalItem.ID == adjustment.OriginalItem.ID && a.DeliveryCode == adjustment.DeliveryCode {
 			return i, true
