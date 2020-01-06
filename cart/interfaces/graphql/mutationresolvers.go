@@ -21,6 +21,7 @@ type CommerceCartMutationResolver struct {
 	billingAddressFormController *cartForms.BillingAddressFormController
 	simplePaymentFormController  *cartForms.SimplePaymentFormController
 	formDataEncoderFactory       formApplication.FormDataEncoderFactory
+	cartService                  *application.CartService
 }
 
 // Inject dependencies
@@ -28,12 +29,14 @@ func (r *CommerceCartMutationResolver) Inject(q *CommerceCartQueryResolver,
 	applicationCartService *application.CartService,
 	billingAddressFormController *cartForms.BillingAddressFormController,
 	formDataEncoderFactory formApplication.FormDataEncoderFactory,
-	simplePaymentFormController *cartForms.SimplePaymentFormController) *CommerceCartMutationResolver {
+	simplePaymentFormController *cartForms.SimplePaymentFormController,
+	cartService *application.CartService) *CommerceCartMutationResolver {
 	r.q = q
 	r.applicationCartService = applicationCartService
 	r.billingAddressFormController = billingAddressFormController
 	r.formDataEncoderFactory = formDataEncoderFactory
 	r.simplePaymentFormController = simplePaymentFormController
+	r.cartService = cartService
 	return r
 }
 
@@ -122,6 +125,18 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateSelectedPayment(ctx con
 		},
 	}, nil
 
+}
+
+func (r *CommerceCartMutationResolver) CommerceCartAddCouponCode(ctx context.Context, couponCode string) (*decorator.DecoratedCart, error) {
+	req := web.RequestFromContext(ctx)
+
+	_, err := r.cartService.ApplyAny(ctx, req.Session(), couponCode)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return r.q.CommerceCart(ctx)
 }
 
 //mapCommerce_Cart_BillingAddressForm - helper to map the graphql type Commerce_Cart_BillingAddressForm from common form
