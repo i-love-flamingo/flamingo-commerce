@@ -127,7 +127,7 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateSelectedPayment(ctx con
 
 }
 
-// CommerceCartApplyCouponCodeOrGiftCard
+// CommerceCartApplyCouponCodeOrGiftCard – apply coupon code or gift card
 func (r *CommerceCartMutationResolver) CommerceCartApplyCouponCodeOrGiftCard(ctx context.Context, code string) (*decorator.DecoratedCart, error) {
 	req := web.RequestFromContext(ctx)
 
@@ -140,7 +140,7 @@ func (r *CommerceCartMutationResolver) CommerceCartApplyCouponCodeOrGiftCard(ctx
 	return r.q.CommerceCart(ctx)
 }
 
-// CommerceCartRemoveCouponCode
+// CommerceCartRemoveCouponCode - remove coupon code
 func (r *CommerceCartMutationResolver) CommerceCartRemoveCouponCode(ctx context.Context, couponCode string) (*decorator.DecoratedCart, error) {
 	req := web.RequestFromContext(ctx)
 
@@ -153,7 +153,7 @@ func (r *CommerceCartMutationResolver) CommerceCartRemoveCouponCode(ctx context.
 	return r.q.CommerceCart(ctx)
 }
 
-// CommerceCartRemoveGiftCard
+// CommerceCartRemoveGiftCard - remove gift card
 func (r *CommerceCartMutationResolver) CommerceCartRemoveGiftCard(ctx context.Context, giftCardCode string) (*decorator.DecoratedCart, error) {
 	req := web.RequestFromContext(ctx)
 
