@@ -667,6 +667,17 @@ func (c Charges) Mul(qty int) Charges {
 	return c
 }
 
+// Items – returns all charges items
+func (c Charges) Items() []Charge {
+	var charges []Charge
+
+	for _, charge := range c.chargesByQualifier {
+		charges = append(charges, charge)
+	}
+
+	return charges
+}
+
 // addChargeQualifier - parse string keys to charge qualifier for backwards compatibility
 func addChargeQualifier(chargesByType map[string]Charge) Charges {
 	withQualifier := make(map[ChargeQualifier]Charge)

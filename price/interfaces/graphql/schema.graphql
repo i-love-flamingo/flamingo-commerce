@@ -21,6 +21,7 @@ input Commerce_ChargeQualifierInput {
 }
 
 type Commerce_Price_Charges {
+    items: [Commerce_Charge!]
     hasType(ctype: String): Boolean
     hasChargeQualifier(qualifier: Commerce_ChargeQualifierInput!): Boolean
     getByChargeQualifierForced(qualifier: Commerce_ChargeQualifierInput!): Commerce_Charge
