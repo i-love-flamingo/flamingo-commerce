@@ -9,7 +9,8 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/price/domain"
 	price "flamingo.me/flamingo-commerce/v3/price/domain"
-	"gopkg.in/go-playground/assert.v1"
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPrice_MarshalBinaryForGob(t *testing.T) {
@@ -231,4 +232,18 @@ func TestRemoveZeroCharges(t *testing.T) {
 		t.Errorf("delivery-1 shouldn't have charge of type %q", price.ChargeTypeMain)
 	}
 
+}
+
+func Test_DefaultPaymentSelectionIdempotencyKey(t *testing.T) {
+	// NewDefaultPaymentSelection should generate a new idempotency key
+	selection, _ := cart.NewDefaultPaymentSelection("gateyway", map[string]string{price.ChargeTypeMain: "main"}, cart.Cart{})
+	assert.Regexp(t, "(?i)^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$", selection.IdempotencyKey(), "IdempotencyKey looks not like a valid UUID v4")
+	assert.NotEqual(t, uuid.Nil.String(), selection.IdempotencyKey())
+
+	// GenerateNewIdempotencyKey should return a payment selection with a different key
+	newPaymentSelection := selection.GenerateNewIdempotencyKey()
+	assert.NotEqual(t, newPaymentSelection.IdempotencyKey(), selection.IdempotencyKey(), "IdempotencyKey should be not matching")
+	assert.Equal(t, newPaymentSelection.CartSplit(), selection.CartSplit())
+	assert.Equal(t, newPaymentSelection.Gateway(), selection.Gateway())
+	assert.Equal(t, newPaymentSelection.TotalValue(), selection.TotalValue())
 }
