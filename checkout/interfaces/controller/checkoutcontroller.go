@@ -625,7 +625,10 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 	case paymentDomain.PaymentFlowStatusAborted:
 		// mark payment selection as new payment to allow the user to retry
 		newPaymentSelection := decoratedCart.Cart.PaymentSelection.GenerateNewIdempotencyKey()
-		cc.applicationCartService.UpdatePaymentSelection(ctx, session, newPaymentSelection)
+		err := cc.applicationCartService.UpdatePaymentSelection(ctx, session, newPaymentSelection)
+		if err != nil {
+			cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.paymentaction: Error during UpdatePaymentSelection:", err)
+		}
 
 		// payment was aborted by user, redirect to checkout so a new payment can be started
 		if cc.orderService.HasLastPlacedOrder(ctx) {
@@ -655,7 +658,10 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 	case paymentDomain.PaymentFlowStatusFailed, paymentDomain.PaymentFlowStatusCancelled:
 		// mark payment selection as new payment to allow the user to retry
 		newPaymentSelection := decoratedCart.Cart.PaymentSelection.GenerateNewIdempotencyKey()
-		cc.applicationCartService.UpdatePaymentSelection(ctx, session, newPaymentSelection)
+		err := cc.applicationCartService.UpdatePaymentSelection(ctx, session, newPaymentSelection)
+		if err != nil {
+			cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.paymentaction: Error during UpdatePaymentSelection:", err)
+		}
 
 		// payment failed or is cancelled by payment provider, redirect back to checkout
 		if cc.orderService.HasLastPlacedOrder(ctx) {
