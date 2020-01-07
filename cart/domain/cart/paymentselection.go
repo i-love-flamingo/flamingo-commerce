@@ -261,6 +261,19 @@ func (d DefaultPaymentSelection) GenerateNewIdempotencyKey() PaymentSelection {
 	return d
 }
 
+//MarshalJSON adds the Idempotency-Key to the payment selection json
+func (d DefaultPaymentSelection) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct {
+		GatewayProp      string             `json:"GatewayProp"`
+		ChargedItemsProp PaymentSplitByItem `json:"ChargedItemsProp"`
+		IdempotencyKey   string             `json:"IdempotencyKey"`
+	}{
+		GatewayProp:      d.GatewayProp,
+		ChargedItemsProp: d.ChargedItemsProp,
+		IdempotencyKey:   d.IdempotencyKey(),
+	})
+}
+
 //Sum - the resulting Split after sum all the included item split
 func (c PaymentSplitByItem) Sum() PaymentSplit {
 	sum := make(PaymentSplit)
