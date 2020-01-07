@@ -107,8 +107,7 @@ func NewDefaultPaymentSelection(gateway string, chargeTypeToPaymentMethod map[st
 	// filter out zero charges from here on out
 	result = RemoveZeroCharges(result, chargeTypeToPaymentMethod)
 	// add an new Idempotency-Key to the payment selection
-	result = result.GenerateNewIdempotencyKey()
-	return result, err
+	return result.GenerateNewIdempotencyKey(), err
 }
 
 // RemoveZeroCharges removes charges which have an value of zero from selection as they are necessary
@@ -226,7 +225,7 @@ func NewPaymentSelection(gateway string, chargedItems PaymentSplitByItem) Paymen
 		GatewayProp:      gateway,
 		ChargedItemsProp: chargedItems,
 	}
-	return selection
+	return selection.GenerateNewIdempotencyKey()
 }
 
 //Gateway - returns the selected Gateway code

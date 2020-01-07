@@ -236,7 +236,7 @@ func TestRemoveZeroCharges(t *testing.T) {
 
 }
 
-func Test_DefaultPaymentSelectionIdempotencyKey(t *testing.T) {
+func Test_NewDefaultPaymentSelection_IdempotencyKey(t *testing.T) {
 	// NewDefaultPaymentSelection should generate a new idempotency key
 	selection, _ := cart.NewDefaultPaymentSelection("", map[string]string{price.ChargeTypeMain: "main"}, cart.Cart{})
 	assert.Regexp(t, "(?i)^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$", selection.IdempotencyKey(), "IdempotencyKey looks not like a valid UUID v4")
@@ -248,6 +248,13 @@ func Test_DefaultPaymentSelectionIdempotencyKey(t *testing.T) {
 	assert.Equal(t, newPaymentSelection.CartSplit(), selection.CartSplit())
 	assert.Equal(t, newPaymentSelection.Gateway(), selection.Gateway())
 	assert.Equal(t, newPaymentSelection.TotalValue(), selection.TotalValue())
+}
+
+func Test_NewPaymentSelection_IdempotencyKey(t *testing.T) {
+	// NewPaymentSelection should generate a new idempotency key
+	selection := cart.NewPaymentSelection("", cart.PaymentSplitByItem{})
+	assert.Regexp(t, "(?i)^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$", selection.IdempotencyKey(), "IdempotencyKey looks not like a valid UUID v4")
+	assert.NotEqual(t, uuid.Nil.String(), selection.IdempotencyKey())
 }
 
 func TestDefaultPaymentSelection_MarshalJSON(t *testing.T) {
