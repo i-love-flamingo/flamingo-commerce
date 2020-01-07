@@ -27,7 +27,7 @@ type (
 		TotalValue() price.Price
 		MethodByType(string) string
 		IdempotencyKey() string
-		GenerateNewIdempotencyKey()
+		GenerateNewIdempotencyKey() PaymentSelection
 	}
 
 	//SplitQualifier qualifies by Charge Type, Charge Reference and Payment Method
@@ -107,7 +107,7 @@ func NewDefaultPaymentSelection(gateway string, chargeTypeToPaymentMethod map[st
 	// filter out zero charges from here on out
 	result = RemoveZeroCharges(result, chargeTypeToPaymentMethod)
 	// add an new Idempotency-Key to the payment selection
-	result.GenerateNewIdempotencyKey()
+	result = result.GenerateNewIdempotencyKey()
 	return result, err
 }
 
@@ -255,9 +255,10 @@ func (d DefaultPaymentSelection) IdempotencyKey() string {
 }
 
 //GenerateNewIdempotencyKey updates the Idempotency-Key to a new value
-func (d DefaultPaymentSelection) GenerateNewIdempotencyKey() {
+func (d DefaultPaymentSelection) GenerateNewIdempotencyKey() PaymentSelection {
 	key, _ := uuid.NewRandom()
 	d.idempotencyKey = key.String()
+	return d
 }
 
 //Sum - the resulting Split after sum all the included item split
