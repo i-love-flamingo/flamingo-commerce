@@ -66,6 +66,10 @@ type Commerce_Cart {
     sumGrandTotalWithGiftCardsForced: Commerce_Price!
 
     getAllPaymentRequiredItems: Commerce_Cart_PricedItems!
+
+    mergeDiscountsForced: Commerce_CartAppliedDiscounts!
+    hasAppliedDiscountsForced: Boolean!
+    sumTotalDiscountWithGiftCardsAmount: Commerce_Price!
 }
 
 type Commerce_Cart_PricedItems {

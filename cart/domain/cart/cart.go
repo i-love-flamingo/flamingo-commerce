@@ -134,19 +134,19 @@ type (
 		totalItems    map[string]domain.Price
 	}
 
-	// PricedShippingItem – shipping items with price
+	// PricedShippingItem – shipping item with price
 	PricedShippingItem struct {
 		Amount           domain.Price
 		DeliveryInfoCode string
 	}
 
-	// PricedTotalItem – total items with price
+	// PricedTotalItem – total item with price
 	PricedTotalItem struct {
 		Amount domain.Price
 		Code   string
 	}
 
-	// PricedCartItem – car items with price
+	// PricedCartItem – cart item with price
 	PricedCartItem struct {
 		Amount domain.Price
 		ItemID string
@@ -476,6 +476,15 @@ func (c Cart) SumTotalDiscountAmount() domain.Price {
 
 	price, _ := domain.SumAll(prices...)
 
+	return price
+}
+
+// SumTotalDiscountWithGiftCardsAmount – returns sum price of total discounts with applied gift cards
+func (c Cart) SumTotalDiscountWithGiftCardsAmount() domain.Price {
+	totalDiscount := c.SumTotalDiscountAmount()
+	appliedGiftCardsAmount, _ := c.SumAppliedGiftCards()
+
+	price, _ := totalDiscount.Sub(appliedGiftCardsAmount)
 	return price
 }
 

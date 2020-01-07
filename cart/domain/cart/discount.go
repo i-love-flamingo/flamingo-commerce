@@ -56,9 +56,22 @@ func (c *Cart) MergeDiscounts() (AppliedDiscounts, error) {
 	return mapToSlice(collection), nil
 }
 
+// MergeDiscounts sums up discounts of cart based on its deliveries
+// All discounts with the same campaign code are aggregated and returned as one with a summed price
+func (c *Cart) MergeDiscountsForced() AppliedDiscounts {
+	result, _ := c.MergeDiscounts()
+	return result
+}
+
 // HasAppliedDiscounts check whether there are any discounts currently applied to the cart
 func (c *Cart) HasAppliedDiscounts() (bool, error) {
 	return hasAppliedDiscounts(c)
+}
+
+// HasAppliedDiscountsForced check whether there are any discounts currently applied to the cart
+func (c *Cart) HasAppliedDiscountsForced() bool {
+	result, _ := c.HasAppliedDiscounts()
+	return result
 }
 
 // MergeDiscounts sums up discounts of a delivery based on its single item discounts
@@ -219,6 +232,7 @@ func (discounts AppliedDiscounts) Sum() (domain.Price, error) {
 }
 
 // SumForced – returns the sum of the applied values of the AppliedDiscounts
+// If it was not found a Zero amount is returned.
 func (discounts AppliedDiscounts) SumForced() domain.Price {
 	result, _ := discounts.Sum()
 	return result
