@@ -160,7 +160,7 @@ func (p *DefaultPersonalDataFormService) Validate(ctx context.Context, req *web.
 		validationInfo.AddFieldError("personalData.dateOfBirth", "formerror_dateOfBirth_required", "date of birth is required")
 	}
 
-	if !validateDOB(personalDataForm.DateOfBirth) {
+	if personalDataForm.DateOfBirth != "" && !validateDOB(personalDataForm.DateOfBirth) {
 		validationInfo.AddFieldError("personalData.dateOfBirth", "formerror_dateOfBirth_formaterror", "date of birth has wrong format required: yyyy-mm-dd")
 	}
 
