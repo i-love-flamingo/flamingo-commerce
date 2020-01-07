@@ -127,10 +127,37 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateSelectedPayment(ctx con
 
 }
 
-func (r *CommerceCartMutationResolver) CommerceCartAddCouponCode(ctx context.Context, couponCode string) (*decorator.DecoratedCart, error) {
+// CommerceCartApplyCouponCodeOrGiftCard
+func (r *CommerceCartMutationResolver) CommerceCartApplyCouponCodeOrGiftCard(ctx context.Context, code string) (*decorator.DecoratedCart, error) {
 	req := web.RequestFromContext(ctx)
 
-	_, err := r.cartService.ApplyAny(ctx, req.Session(), couponCode)
+	_, err := r.cartService.ApplyAny(ctx, req.Session(), code)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return r.q.CommerceCart(ctx)
+}
+
+// CommerceCartRemoveCouponCode
+func (r *CommerceCartMutationResolver) CommerceCartRemoveCouponCode(ctx context.Context, couponCode string) (*decorator.DecoratedCart, error) {
+	req := web.RequestFromContext(ctx)
+
+	_, err := r.cartService.RemoveVoucher(ctx, req.Session(), couponCode)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return r.q.CommerceCart(ctx)
+}
+
+// CommerceCartRemoveCoupon
+func (r *CommerceCartMutationResolver) CommerceCartRemoveGiftCard(ctx context.Context, giftCardCode string) (*decorator.DecoratedCart, error) {
+	req := web.RequestFromContext(ctx)
+
+	_, err := r.cartService.RemoveGiftCard(ctx, req.Session(), giftCardCode)
 
 	if err != nil {
 		return nil, err
