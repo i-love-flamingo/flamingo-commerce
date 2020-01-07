@@ -153,7 +153,7 @@ func (r *CommerceCartMutationResolver) CommerceCartRemoveCouponCode(ctx context.
 	return r.q.CommerceCart(ctx)
 }
 
-// CommerceCartRemoveCoupon
+// CommerceCartRemoveGiftCard
 func (r *CommerceCartMutationResolver) CommerceCartRemoveGiftCard(ctx context.Context, giftCardCode string) (*decorator.DecoratedCart, error) {
 	req := web.RequestFromContext(ctx)
 

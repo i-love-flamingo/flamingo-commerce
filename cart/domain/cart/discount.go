@@ -56,7 +56,7 @@ func (c *Cart) MergeDiscounts() (AppliedDiscounts, error) {
 	return mapToSlice(collection), nil
 }
 
-// MergeDiscounts sums up discounts of cart based on its deliveries
+// MergeDiscountsForced sums up discounts of cart based on its deliveries
 // All discounts with the same campaign code are aggregated and returned as one with a summed price
 func (c *Cart) MergeDiscountsForced() AppliedDiscounts {
 	result, _ := c.MergeDiscounts()
