@@ -36,12 +36,3 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		"Commerce_Checkout_PlaceOrderState_State_CancellationReason_ValidationError": dto.CancellationReasonValidationError{},
 	}.Models()
 }
-
-/*
-Commerce_Checkout_PlaceOrderState
-Commerce_Checkout_PlacedOrderInfos
-Commerce_Checkout_PlaceOrderPaymentInfo
-Commerce_Checkout_PlaceOrderState_State (if)
-Commerce_Checkout_PlaceOrderState_State_CancellationReason (if)
-Commerce_Checkout_PlaceOrderPaymentInfo
-*/
