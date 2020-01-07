@@ -156,17 +156,15 @@ func (p *DefaultPersonalDataFormService) Validate(ctx context.Context, req *web.
 	validationInfo := domain.ValidationInfo{}
 	validationInfo = validatorProvider.Validate(ctx, req, personalDataForm)
 
-	if p.dateOfBirthRequired && personalDataForm.DateOfBirth == "" {
-		validationInfo.AddFieldError("personalData.dateOfBirth", "formerror_dateOfBirth_required", "date of birth is required")
-	}
-
-	if !validateDOB(personalDataForm.DateOfBirth) {
-		validationInfo.AddFieldError("personalData.dateOfBirth", "formerror_dateOfBirth_formaterror", "date of birth has wrong format required: yyyy-mm-dd")
-	}
-
-	if p.minAge > 0 {
-		if !validateMinimumAge(personalDataForm.DateOfBirth, p.minAge) {
-			validationInfo.AddFieldError("personalData.dateOfBirth", "formerror_dateOfBirth_tooyoung", "you need to be at least "+strconv.Itoa(p.minAge))
+	if p.dateOfBirthRequired {
+		if personalDataForm.DateOfBirth == "" {
+			validationInfo.AddFieldError("personalData.dateOfBirth", "formerror_dateOfBirth_required", "date of birth is required")
+		} else if !validateDOB(personalDataForm.DateOfBirth) {
+			validationInfo.AddFieldError("personalData.dateOfBirth", "formerror_dateOfBirth_formaterror", "date of birth has wrong format required: yyyy-mm-dd")
+		} else if p.minAge > 0 {
+			if !validateMinimumAge(personalDataForm.DateOfBirth, p.minAge) {
+				validationInfo.AddFieldError("personalData.dateOfBirth", "formerror_dateOfBirth_tooyoung", "you need to be at least "+strconv.Itoa(p.minAge))
+			}
 		}
 	}
 
