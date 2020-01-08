@@ -234,6 +234,8 @@ func TestRemoveZeroCharges(t *testing.T) {
 		t.Errorf("delivery-1 shouldn't have charge of type %q", price.ChargeTypeMain)
 	}
 
+	assert.Regexp(t, "(?i)^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$", filteredSelection.IdempotencyKey(), "IdempotencyKey looks not like a valid UUID v4")
+	assert.NotEqual(t, uuid.Nil.String(), filteredSelection.IdempotencyKey())
 }
 
 func Test_NewDefaultPaymentSelection_IdempotencyKey(t *testing.T) {

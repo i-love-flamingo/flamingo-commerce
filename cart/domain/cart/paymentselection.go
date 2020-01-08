@@ -55,9 +55,9 @@ type (
 	// DefaultPaymentSelection value object - that implements the PaymentSelection interface
 	DefaultPaymentSelection struct {
 		//GatewayProp - the selected Gateway
-		GatewayProp      string
-		ChargedItemsProp PaymentSplitByItem
-		idempotencyKey   string
+		GatewayProp        string
+		ChargedItemsProp   PaymentSplitByItem
+		IdempotencyKeyUUID string
 	}
 
 	// PaymentSplitService enables the creation of a PaymentSplitByItem following different payment methods
@@ -128,7 +128,7 @@ func RemoveZeroCharges(selection PaymentSelection, chargeTypeToPaymentMethod map
 	removeZeroChargesFromSplit(selection.ItemSplit().TotalItems, chargeTypeToPaymentMethod, builder.AddTotalItem)
 
 	result.ChargedItemsProp = builder.Build()
-	return result
+	return result.GenerateNewIdempotencyKey()
 }
 
 // removeZeroChargesFromSplit remove charges from single item splits
@@ -250,13 +250,13 @@ func (d DefaultPaymentSelection) TotalValue() price.Price {
 
 //IdempotencyKey returns the Idempotency-Key for this payment selection
 func (d DefaultPaymentSelection) IdempotencyKey() string {
-	return d.idempotencyKey
+	return d.IdempotencyKeyUUID
 }
 
 //GenerateNewIdempotencyKey updates the Idempotency-Key to a new value
 func (d DefaultPaymentSelection) GenerateNewIdempotencyKey() PaymentSelection {
 	key, _ := uuid.NewRandom()
-	d.idempotencyKey = key.String()
+	d.IdempotencyKeyUUID = key.String()
 	return d
 }
 
