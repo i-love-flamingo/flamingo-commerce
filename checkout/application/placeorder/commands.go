@@ -6,8 +6,8 @@ import (
 
 type (
 
-	//StartPlaceOrder Command triggers new place order
-	StartPlaceOrder struct {
+	//StartPlaceOrderCommand Command triggers new place order
+	StartPlaceOrderCommand struct {
 		Cart cartDomain.Cart
 	}
 

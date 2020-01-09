@@ -19,8 +19,8 @@ func (h *Handler) Inject(
 	return h
 }
 
-//StartPlaceOrder handles start place order command
-func (h *Handler) StartPlaceOrder(ctx context.Context, command StartPlaceOrder) (*process.Context, error) {
+//StartPlaceOrderCommand handles start place order command
+func (h *Handler) StartPlaceOrder(ctx context.Context, command StartPlaceOrderCommand) (*process.Context, error) {
 	return h.coordinator.New(ctx, command.Cart)
 }
 

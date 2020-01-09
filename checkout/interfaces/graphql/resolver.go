@@ -27,7 +27,7 @@ func (r *CommerceCheckoutQueryResolver) Inject(
 	r.orderService = orderService
 	r.decoratedCartFactory = decoratedCartFactory
 	r.cartService = cartService
-	r.logger = logger.WithField(flamingo.LogKeyModule, "om3oms").WithField(flamingo.LogKeyCategory, "graphql")
+	r.logger = logger.WithField(flamingo.LogKeyModule, "checkout").WithField(flamingo.LogKeyCategory, "graphql")
 
 }
 

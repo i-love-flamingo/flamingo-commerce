@@ -21,7 +21,7 @@ type (
 func (f *Factory) New(ctx *Context) Process {
 	if ctx == nil {
 		ctx = &Context{
-			state: f.startState,
+			State: f.startState,
 		}
 	}
 	return Process{context: *ctx}
@@ -39,5 +39,5 @@ func (p *Process) Context() Context {
 
 //UpdateState updates
 func (p *Process) UpdateState(s State) {
-	p.context.state = s
+	p.context.State = s
 }
