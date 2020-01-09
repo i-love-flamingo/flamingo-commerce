@@ -14,7 +14,7 @@ var FlamingoUrl string
 //TestMain - golang TestMain - used for setup and teardown
 func TestMain(m *testing.M) {
 	info := helper.BootupDemoProject()
-	FlamingoUrl = info.BaseUrl
+	FlamingoUrl = info.BaseURL
 	result := m.Run()
 	info.ShutdownFunc()
 	//time.Sleep(100*time.Second)

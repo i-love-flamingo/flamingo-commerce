@@ -32,7 +32,7 @@ func Test_CheckoutStartPage(t *testing.T) {
 	)
 	defer info.ShutdownFunc()
 
-	e := httpexpect.New(t, "http://"+info.BaseUrl)
+	e := httpexpect.New(t, "http://"+info.BaseURL)
 	e.GET("/checkout/start").
 		Expect().
 		Status(http.StatusOK).JSON().Object().Value("CustomerLoggedIn").Equal(false)

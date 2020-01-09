@@ -25,7 +25,7 @@ func Test_ProductPage2(t *testing.T) {
 	)
 	defer info.ShutdownFunc()
 
-	e := httpexpect.New(t, "http://"+info.BaseUrl)
+	e := httpexpect.New(t, "http://"+info.BaseURL)
 	e.GET("/product/fake_configurable/typeconfigurable-product.html").
 		Expect().
 		Status(http.StatusOK).JSON().Object().Value("RenderContext").Equal("configurable")

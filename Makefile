@@ -2,7 +2,7 @@ CONTEXT?=dev
 REPLACE?=-replace flamingo.me/flamingo/v3=../flamingo -replace flamingo.me/form=../form
 DROPREPLACE?=-dropreplace flamingo.me/flamingo/v3 -dropreplace flamingo.me/form
 
-.PHONY: local unlocal
+.PHONY: local unlocal test
 
 local:
 	git config filter.gomod-flamingo-commerce.smudge 'go mod edit -fmt -print $(REPLACE) /dev/stdin'

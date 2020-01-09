@@ -30,10 +30,11 @@ type (
 		server      *http.Server
 	}
 
+	//BootupInfo about the booted app
 	BootupInfo struct {
 		ShutdownFunc func()
 		Application  *flamingo.Application
-		BaseUrl      string
+		BaseURL      string
 	}
 )
 
