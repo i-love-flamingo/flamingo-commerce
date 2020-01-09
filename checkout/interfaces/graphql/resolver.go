@@ -5,6 +5,7 @@ import (
 	"errors"
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+	dto2 "flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
 	"flamingo.me/flamingo-commerce/v3/checkout/application"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql/dto"
 	"flamingo.me/flamingo/v3/framework/flamingo"
@@ -109,7 +110,7 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutPlaceOrder(ctx contex
 			PaymentInfos:        info.PaymentInfos,
 			PlacedOrderInfos:    info.PlacedOrders,
 			Email:               info.ContactEmail,
-			PlacedDecoratedCart: *r.decoratedCartFactory.Create(ctx, info.Cart),
+			PlacedDecoratedCart: dto2.NewDecoratedCart(r.decoratedCartFactory.Create(ctx, info.Cart)),
 		},
 	}, nil
 }

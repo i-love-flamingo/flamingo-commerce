@@ -401,7 +401,7 @@ func (cob *InMemoryBehaviour) storeCart(cart *domaincart.Cart) error {
 
 // ApplyVoucher applies a voucher to the cart
 func (cob *InMemoryBehaviour) ApplyVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
-	if couponCode != "valid" {
+	if couponCode != "valid_voucher" && couponCode != "valid" {
 		err := errors.New("Code invalid")
 		return nil, nil, err
 	}
@@ -452,7 +452,7 @@ func (cob *InMemoryBehaviour) RemoveVoucher(ctx context.Context, cart *domaincar
 // ApplyGiftCard applies a gift card to the cart
 // if a GiftCard is applied, it will be added to the array AppliedGiftCards on the cart
 func (cob *InMemoryBehaviour) ApplyGiftCard(ctx context.Context, cart *domaincart.Cart, giftCardCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
-	if giftCardCode != "valid" {
+	if giftCardCode != "valid_giftcard" && giftCardCode != "valid" {
 		err := errors.New("Code invalid")
 		return nil, nil, err
 	}

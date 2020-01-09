@@ -750,12 +750,12 @@ func (p PricedItems) TotalItems() map[string]domain.Price {
 	return p.totalItems
 }
 
-//ShippingItems - returns the Price per ShippingItems - map key is deliverycode
+// ShippingItems - returns the Price per ShippingItems - map key is deliverycode
 func (p PricedItems) ShippingItems() map[string]domain.Price {
 	return p.shippingItems
 }
 
-//CartItems - returns the Price per cartItems - map key is cartitem ID
+// CartItems - returns the Price per cartItems - map key is cartitem ID
 func (p PricedItems) CartItems() map[string]domain.Price {
 	return p.cartItems
 }

@@ -1,9 +1,9 @@
 package dto
 
 import (
-	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
+	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
 	"flamingo.me/flamingo-commerce/v3/checkout/application"
 )
 
@@ -31,7 +31,7 @@ type (
 		PaymentInfos        []application.PlaceOrderPaymentInfo
 		PlacedOrderInfos    []placeorder.PlacedOrderInfo
 		Email               string
-		PlacedDecoratedCart decorator.DecoratedCart
+		PlacedDecoratedCart *dto.DecoratedCart
 	}
 )
 

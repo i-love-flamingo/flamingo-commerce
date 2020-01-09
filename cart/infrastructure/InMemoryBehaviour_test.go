@@ -192,6 +192,67 @@ func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
 	}
 }
 
+func TestInMemoryBehaviour_ApplyVoucher(t *testing.T) {
+	type args struct {
+		cart        *domaincart.Cart
+		voucherCode string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *domaincart.Cart
+		wantErr bool
+	}{
+		{
+			name: "apply valid voucher - success",
+			args: args{
+				cart:        &domaincart.Cart{},
+				voucherCode: "valid_voucher",
+			},
+			want: &domaincart.Cart{
+				AppliedCouponCodes: []domaincart.CouponCode{
+					{
+						Code: "valid_voucher",
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "apply invalid giftcard - failure",
+			args: args{
+				cart:        &domaincart.Cart{},
+				voucherCode: "invalid",
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cob := &InMemoryBehaviour{}
+			cob.Inject(
+				&InMemoryCartStorage{},
+				nil,
+				flamingo.NullLogger{},
+				nil,
+				nil,
+				nil,
+				nil,
+				nil,
+			)
+			got, _, err := cob.ApplyVoucher(context.Background(), tt.args.cart, tt.args.voucherCode)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("InMemoryBehaviour.ApplyVoucher() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("InMemoryBehaviour.ApplyVoucher() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 	type args struct {
 		ctx                context.Context
@@ -302,12 +363,12 @@ func TestInMemoryBehaviour_ApplyGiftCard(t *testing.T) {
 			name: "apply valid giftcard - success",
 			args: args{
 				cart:         &domaincart.Cart{},
-				giftCardCode: "valid",
+				giftCardCode: "valid_giftcard",
 			},
 			want: &domaincart.Cart{
 				AppliedGiftCards: []domaincart.AppliedGiftCard{
 					{
-						Code:      "valid",
+						Code:      "valid_giftcard",
 						Applied:   priceDomain.NewFromInt(10, 100, "$"),
 						Remaining: priceDomain.NewFromInt(0, 100, "$"),
 					},

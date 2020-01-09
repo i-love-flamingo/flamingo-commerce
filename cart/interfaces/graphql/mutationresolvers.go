@@ -10,7 +10,6 @@ import (
 	"net/url"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo/v3/framework/web"
 )
 
@@ -21,6 +20,7 @@ type CommerceCartMutationResolver struct {
 	billingAddressFormController *cartForms.BillingAddressFormController
 	simplePaymentFormController  *cartForms.SimplePaymentFormController
 	formDataEncoderFactory       formApplication.FormDataEncoderFactory
+	cartService                  *application.CartService
 }
 
 // Inject dependencies
@@ -28,17 +28,19 @@ func (r *CommerceCartMutationResolver) Inject(q *CommerceCartQueryResolver,
 	applicationCartService *application.CartService,
 	billingAddressFormController *cartForms.BillingAddressFormController,
 	formDataEncoderFactory formApplication.FormDataEncoderFactory,
-	simplePaymentFormController *cartForms.SimplePaymentFormController) *CommerceCartMutationResolver {
+	simplePaymentFormController *cartForms.SimplePaymentFormController,
+	cartService *application.CartService) *CommerceCartMutationResolver {
 	r.q = q
 	r.applicationCartService = applicationCartService
 	r.billingAddressFormController = billingAddressFormController
 	r.formDataEncoderFactory = formDataEncoderFactory
 	r.simplePaymentFormController = simplePaymentFormController
+	r.cartService = cartService
 	return r
 }
 
 // CommerceAddToCart mutation for adding products to the current users cart
-func (r *CommerceCartMutationResolver) CommerceAddToCart(ctx context.Context, marketplaceCode string, qty int, deliveryCode string) (*decorator.DecoratedCart, error) {
+func (r *CommerceCartMutationResolver) CommerceAddToCart(ctx context.Context, marketplaceCode string, qty int, deliveryCode string) (*dto.DecoratedCart, error) {
 	req := web.RequestFromContext(ctx)
 
 	addRequest := r.applicationCartService.BuildAddRequest(ctx, marketplaceCode, "", qty)
@@ -52,7 +54,7 @@ func (r *CommerceCartMutationResolver) CommerceAddToCart(ctx context.Context, ma
 }
 
 // CommerceDeleteItem resolver
-func (r *CommerceCartMutationResolver) CommerceDeleteItem(ctx context.Context, itemID string, deliveryCode string) (*decorator.DecoratedCart, error) {
+func (r *CommerceCartMutationResolver) CommerceDeleteItem(ctx context.Context, itemID string, deliveryCode string) (*dto.DecoratedCart, error) {
 	req := web.RequestFromContext(ctx)
 
 	err := r.applicationCartService.DeleteItem(ctx, req.Session(), itemID, deliveryCode)
@@ -65,7 +67,7 @@ func (r *CommerceCartMutationResolver) CommerceDeleteItem(ctx context.Context, i
 }
 
 // CommerceDeleteCartDelivery mutation for removing deliveries from current users cart
-func (r *CommerceCartMutationResolver) CommerceDeleteCartDelivery(ctx context.Context, deliveryCode string) (*decorator.DecoratedCart, error) {
+func (r *CommerceCartMutationResolver) CommerceDeleteCartDelivery(ctx context.Context, deliveryCode string) (*dto.DecoratedCart, error) {
 	req := web.RequestFromContext(ctx)
 	_, err := r.applicationCartService.DeleteDelivery(ctx, req.Session(), deliveryCode)
 	if err != nil {
@@ -75,7 +77,7 @@ func (r *CommerceCartMutationResolver) CommerceDeleteCartDelivery(ctx context.Co
 }
 
 // CommerceUpdateItemQty mutation for updating item quantity
-func (r *CommerceCartMutationResolver) CommerceUpdateItemQty(ctx context.Context, itemID string, deliveryCode string, qty int) (*decorator.DecoratedCart, error) {
+func (r *CommerceCartMutationResolver) CommerceUpdateItemQty(ctx context.Context, itemID string, deliveryCode string, qty int) (*dto.DecoratedCart, error) {
 	req := web.RequestFromContext(ctx)
 	err := r.applicationCartService.UpdateItemQty(ctx, req.Session(), itemID, deliveryCode, qty)
 	if err != nil {
@@ -122,6 +124,45 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateSelectedPayment(ctx con
 		},
 	}, nil
 
+}
+
+// CommerceCartApplyCouponCodeOrGiftCard – apply coupon code or gift card
+func (r *CommerceCartMutationResolver) CommerceCartApplyCouponCodeOrGiftCard(ctx context.Context, code string) (*dto.DecoratedCart, error) {
+	req := web.RequestFromContext(ctx)
+
+	_, err := r.cartService.ApplyAny(ctx, req.Session(), code)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return r.q.CommerceCart(ctx)
+}
+
+// CommerceCartRemoveCouponCode - remove coupon code
+func (r *CommerceCartMutationResolver) CommerceCartRemoveCouponCode(ctx context.Context, couponCode string) (*dto.DecoratedCart, error) {
+	req := web.RequestFromContext(ctx)
+
+	_, err := r.cartService.RemoveVoucher(ctx, req.Session(), couponCode)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return r.q.CommerceCart(ctx)
+}
+
+// CommerceCartRemoveGiftCard - remove gift card
+func (r *CommerceCartMutationResolver) CommerceCartRemoveGiftCard(ctx context.Context, giftCardCode string) (*dto.DecoratedCart, error) {
+	req := web.RequestFromContext(ctx)
+
+	_, err := r.cartService.RemoveGiftCard(ctx, req.Session(), giftCardCode)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return r.q.CommerceCart(ctx)
 }
 
 //mapCommerce_Cart_BillingAddressForm - helper to map the graphql type Commerce_Cart_BillingAddressForm from common form

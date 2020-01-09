@@ -25,23 +25,22 @@ func (*Service) Schema() []byte {
 // Models mapping for Commerce_Cart types
 func (*Service) Models() map[string]config.TypeMapEntry {
 	return graphql.ModelMap{
-		"Commerce_DecoratedCart": graphql.ModelMapEntry{
-			Type: decorator.DecoratedCart{},
-			Fields: map[string]string{
-				"getDecoratedDeliveryByCode": "GetDecoratedDeliveryByCodeWithoutBool",
-			},
-		},
+		"Commerce_DecoratedCart": dto.DecoratedCart{},
 		"Commerce_Cart": graphql.ModelMapEntry{
 			Type: cart.Cart{},
 			Fields: map[string]string{
 				"getDeliveryByCode": "GetDeliveryByCodeWithoutBool",
 			},
 		},
+		"Commerce_Cart_Summary":                 dto.CartSummary{},
 		"Commerce_CartDecoratedDelivery":        decorator.DecoratedDelivery{},
 		"Commerce_CartDelivery":                 cart.Delivery{},
 		"Commerce_CartDeliveryInfo":             cart.DeliveryInfo{},
 		"Commerce_CartDeliveryLocation":         cart.DeliveryLocation{},
 		"Commerce_CartTotalitem":                cart.Totalitem{},
+		"Commerce_Cart_Tax":                     cart.Tax{},
+		"Commerce_Cart_Taxes":                   dto.Taxes{},
+		"Commerce_Cart_Teaser":                  cart.Teaser{},
 		"Commerce_CartCouponCode":               cart.CouponCode{},
 		"Commerce_CartAdditionalData":           cart.AdditionalData{},
 		"Commerce_CartShippingItem":             cart.ShippingItem{},
@@ -54,6 +53,10 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		"Commerce_CartAppliedDiscounts":         cart.AppliedDiscounts{},
 		"Commerce_CartAppliedDiscount":          cart.AppliedDiscount{},
 		"Commerce_CartAppliedGiftCard":          cart.AppliedGiftCard{},
+		"Commerce_Cart_PricedItems":             dto.PricedItems{},
+		"Commerce_Cart_PricedCartItem":          dto.PricedCartItem{},
+		"Commerce_Cart_PricedShippingItem":      dto.PricedShippingItem{},
+		"Commerce_Cart_PricedTotalItem":         dto.PricedTotalItem{},
 		"Commerce_Cart_BillingAddressForm":      dto.BillingAddressForm{},
 		"Commerce_Cart_BillingAddressFormData":  forms.BillingAddressForm{},
 		"Commerce_BillingAddressFormInput":      forms.BillingAddressForm{},
