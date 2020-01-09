@@ -1,5 +1,3 @@
-// +build integration
-
 package main
 
 import (
@@ -9,11 +7,12 @@ import (
 )
 
 func main() {
-	fmt.Println("Generating GraphQl")
-	helper.GenerateGraphQL()
 	if os.Getenv("RUN") == "1" {
 		info := helper.BootupDemoProject()
 		<-info.Running
 		fmt.Println("Server existed")
+	} else {
+		fmt.Println("Generating GraphQl")
+		helper.GenerateGraphQL()
 	}
 }

@@ -31,6 +31,6 @@ jobs:
     - stage: integrationtest
       go: 1.x
       script:
-        - cd test/integrationtest/projecttest && go run -tags graphql main.go graphql
+        - cd test/integrationtest/projecttest && go run -tags graphql main.go
         - git diff --quiet || (echo 'generated go files for graphql are not up to date, check go generate, go.sum and go.mod' ; git diff ; exit 1)
         - go test -v ./test/integrationtest/... -tags=integration
