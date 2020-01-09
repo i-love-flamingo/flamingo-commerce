@@ -25,6 +25,6 @@ func (h *Handler) StartPlaceOrder(ctx context.Context, command StartPlaceOrderCo
 }
 
 //RefreshPlaceOrder handles start RefreshPlaceOrder command
-func (h *Handler) RefreshPlaceOrder(ctx context.Context, command RefreshPlaceOrder) (*process.Context, error) {
+func (h *Handler) RefreshPlaceOrder(ctx context.Context, command RefreshPlaceOrderCommand) (*process.Context, error) {
 	return h.coordinator.Last(ctx)
 }

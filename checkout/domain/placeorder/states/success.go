@@ -1,6 +1,7 @@
 package states
 
 import (
+	"encoding/gob"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 )
 
@@ -12,15 +13,19 @@ type (
 
 var _ process.State = Success{}
 
-//SetProcess set process reference
-func (s Success) SetProcess(ctx *process.Process) {
+func init() {
+	gob.Register(Success{})
+}
 
+//Name get state name
+func (c Success) Name() string {
+	return "Success"
 }
 
 //Run run state
-func (s Success) Run() (*process.RollbackReference, error) {
+func (s Success) Run(process *process.Process) *process.RollbackReference {
 	// todo
-	return nil, nil
+	return nil
 }
 
 //IsFinal if state is a final state

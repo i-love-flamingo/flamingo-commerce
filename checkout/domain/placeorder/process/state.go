@@ -3,8 +3,8 @@ package process
 type (
 	//State interface
 	State interface {
-		SetProcess(ctx *Process)
-		Run() (*RollbackReference, error)
+		Run(*Process) *RollbackReference
 		IsFinal() bool
+		Name() string
 	}
 )

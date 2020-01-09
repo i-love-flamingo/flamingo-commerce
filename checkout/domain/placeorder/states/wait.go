@@ -1,6 +1,7 @@
 package states
 
 import (
+	"encoding/gob"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 )
 
@@ -12,13 +13,18 @@ type (
 
 var _ process.State = Wait{}
 
-//SetProcess set process reference
-func (n Wait) SetProcess(ctx *process.Process) {
+func init() {
+	gob.Register(Wait{})
+}
 
+//Name get state name
+func (s Wait) Name() string {
+	return "Wait"
 }
 
 //Run run state
-func (n Wait) Run() (*process.RollbackReference, error) {
+func (s Wait) Run(process *process.Process) *process.RollbackReference {
+
 	/* Todo: maybe split in multiple states
 	1. Reserve Order id
 	2. Start Payment
@@ -27,10 +33,10 @@ func (n Wait) Run() (*process.RollbackReference, error) {
 	// n.ctx.UpdateState(WaitingForPaymentInformation)
 	*/
 
-	return nil, nil
+	return nil
 }
 
 //IsFinal if state is a final state
-func (n Wait) IsFinal() bool {
+func (s Wait) IsFinal() bool {
 	return false
 }

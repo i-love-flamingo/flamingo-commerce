@@ -5,6 +5,8 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart"
 	"flamingo.me/flamingo-commerce/v3/checkout/application/placeorder"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain"
+	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
+	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/states"
 	"flamingo.me/flamingo-commerce/v3/checkout/infrastructure"
 	"flamingo.me/flamingo-commerce/v3/checkout/infrastructure/locker"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller"
@@ -37,6 +39,8 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	} else {
 		injector.Bind(new(placeorder.TryLock)).To(locker.Simple{})
 	}
+
+	injector.Bind(new(process.State)).AnnotatedWith("startState").To(states.New{})
 
 	web.BindRoutes(injector, new(routes))
 

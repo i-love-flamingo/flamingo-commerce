@@ -26,42 +26,54 @@ type  Commerce_Checkout_PlaceOrderPaymentInfo {
 }
 
 interface Commerce_Checkout_PlaceOrderState_State {
-    final: Boolean
+    isFinal: Boolean
+    name: String!
 }
 
+type Commerce_Checkout_PlaceOrderState_State_New implements Commerce_Checkout_PlaceOrderState_State {
+    isFinal: Boolean
+    name: String!
+}
 
 type Commerce_Checkout_PlaceOrderState_State_Wait implements Commerce_Checkout_PlaceOrderState_State {
-    final: Boolean
+    isFinal: Boolean
+    name: String!
 }
 
 type Commerce_Checkout_PlaceOrderState_State_Success implements Commerce_Checkout_PlaceOrderState_State {
-    final: Boolean
+    isFinal: Boolean
+    name: String!
 }
 
 type Commerce_Checkout_PlaceOrderState_State_FatalError implements Commerce_Checkout_PlaceOrderState_State {
-    final: Boolean
-    error: String
+    isFinal: Boolean
+    name: String!
+    #error: String
 }
 
-type Commerce_Checkout_PlaceOrderState_State_ShowIframe implements Commerce_Checkout_PlaceOrderState_State {
-    final: Boolean
-    URL: String
-}
+#type Commerce_Checkout_PlaceOrderState_State_ShowIframe implements Commerce_Checkout_PlaceOrderState_State {
+#    isFinal: Boolean
+#    name: String!
+#    #URL: String
+#}
 
-type Commerce_Checkout_PlaceOrderState_State_ShowHtml implements Commerce_Checkout_PlaceOrderState_State {
-    final: Boolean
-    HTML: String
-}
+#type Commerce_Checkout_PlaceOrderState_State_ShowHtml implements Commerce_Checkout_PlaceOrderState_State {
+#    isFinal: Boolean
+#    name: String!
+#    #HTML: String
+#}
 
-type Commerce_Checkout_PlaceOrderState_State_Redirect implements Commerce_Checkout_PlaceOrderState_State {
-    final: Boolean
-    URL: String
-}
+#type Commerce_Checkout_PlaceOrderState_State_Redirect implements Commerce_Checkout_PlaceOrderState_State {
+#    isFinal: Boolean
+#    name: String!
+#    #URL: String
+#}
 
 
 type Commerce_Checkout_PlaceOrderState_State_Cancelled implements Commerce_Checkout_PlaceOrderState_State {
-    final: Boolean
-    cancellationReason: Commerce_Checkout_PlaceOrderState_State_CancellationReason
+    isFinal: Boolean
+    name: String!
+    #cancellationReason: Commerce_Checkout_PlaceOrderState_State_CancellationReason
 }
 
 interface Commerce_Checkout_PlaceOrderState_State_CancellationReason {
