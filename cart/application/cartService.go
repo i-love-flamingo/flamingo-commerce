@@ -946,7 +946,7 @@ func (cs *CartService) dispatchAllEvents(ctx context.Context, events []flamingo.
 
 // AdjustItemsToRestrictedQty checks the quantity restrictions for each item of the cart and returns what quantities have been adjusted
 func (cs *CartService) AdjustItemsToRestrictedQty(ctx context.Context, session *web.Session) (QtyAdjustmentResults, error) {
-	qtyAdjustmentResults, err := cs.GenerateRestrictedQtyAdjustments(ctx, session)
+	qtyAdjustmentResults, err := cs.generateRestrictedQtyAdjustments(ctx, session)
 	if err != nil {
 		return nil, err
 	}
@@ -976,8 +976,8 @@ func (cs *CartService) AdjustItemsToRestrictedQty(ctx context.Context, session *
 	return qtyAdjustmentResults, nil
 }
 
-// GenerateRestrictedQtyAdjustments checks the quantity restrictions for each item of the cart and returns which items should be adjusted and how
-func (cs *CartService) GenerateRestrictedQtyAdjustments(ctx context.Context, session *web.Session) (QtyAdjustmentResults, error) {
+// generateRestrictedQtyAdjustments checks the quantity restrictions for each item of the cart and returns which items should be adjusted and how
+func (cs *CartService) generateRestrictedQtyAdjustments(ctx context.Context, session *web.Session) (QtyAdjustmentResults, error) {
 	cart, _, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return nil, err
