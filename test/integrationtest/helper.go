@@ -1,5 +1,3 @@
-// +buil integration
-
 package integrationtest
 
 import (
@@ -110,7 +108,9 @@ func Bootup(modules []dingo.Module, configDir string, config config.Map) BootupI
 	//add testmodul that listens
 	modules = append(modules, new(testmodule))
 	//rootArea := rootArea("config")
-	os.Args[1] = "serve"
+	if len(os.Args) > 1 {
+		os.Args[1] = "serve"
+	}
 	additionalConfig = config
 
 	application, err := flamingo.NewApplication(modules, flamingo.ConfigDir(configDir))

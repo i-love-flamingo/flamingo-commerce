@@ -28,7 +28,10 @@ integrationtest:
 
 generateprojecttestgraphql:
 	rm -f test/integrationtest/projecttest/graphql/generated.go
-	cd test/integrationtest/projecttest && go run -tags graphql main.go graphql
+	cd test/integrationtest/projecttest && go run -tags graphql main.go
 
 fix:
 	gofmt -l -w .
+
+rundemoprojecttest:
+	export RUN="1" && cd test/integrationtest/projecttest/tests && go run ../main.go
