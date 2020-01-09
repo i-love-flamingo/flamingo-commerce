@@ -82,7 +82,12 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart) (*process.C
 			return
 		}
 
-		newProcess := c.processFactory.New(nil)
+		newProcess, err := c.processFactory.New(nil)
+		if err != nil {
+			runerr = err
+			c.logger.Error(err)
+			return
+		}
 		newProcess.Run()
 		pctx := newProcess.Context()
 		runpctx = &pctx

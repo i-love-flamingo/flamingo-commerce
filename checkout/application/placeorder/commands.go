@@ -11,8 +11,8 @@ type (
 		Cart cartDomain.Cart
 	}
 
-	//RefreshPlaceOrder Command
-	RefreshPlaceOrder struct {
+	//RefreshPlaceOrderCommand Command
+	RefreshPlaceOrderCommand struct {
 	}
 
 /*
