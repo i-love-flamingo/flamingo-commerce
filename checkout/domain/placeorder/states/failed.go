@@ -18,7 +18,7 @@ func init() {
 }
 
 //Name get state name
-func (c Failed) Name() string {
+func (f Failed) Name() string {
 	return "Failed"
 }
 

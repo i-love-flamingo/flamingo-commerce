@@ -19,7 +19,7 @@ type (
 	}
 )
 
-//New returns new process - optional with given Context
+//Inject dependencies
 func (f *Factory) Inject(dep *struct {
 	StartState State `inject:"startState"`
 }) {

@@ -18,7 +18,7 @@ func init() {
 }
 
 //Name get state name
-func (c Success) Name() string {
+func (s Success) Name() string {
 	return "Success"
 }
 

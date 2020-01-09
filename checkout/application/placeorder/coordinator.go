@@ -119,7 +119,7 @@ func (c *Coordinator) hasUnfinishedProcess(ctx context.Context) (bool, error) {
 	}
 	currentState := last.CurrentState()
 	if currentState == nil {
-		return true, errors.New("No current state!")
+		return true, errors.New("No current state")
 	}
 	return !currentState.IsFinal(), nil
 }
