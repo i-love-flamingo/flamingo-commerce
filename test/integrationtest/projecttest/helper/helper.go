@@ -76,7 +76,7 @@ func BootupDemoProject() integrationtest.BootupInfo {
 //GenerateGraphQL - generates the graphql interfaces for the demo project and saves to filesystem.
 // use via makefile - each time you modify the schema
 func GenerateGraphQL() {
-	application, err := flamingo.NewApplication(modulesDemoProject(), flamingo.ConfigDir("../config"))
+	application, err := flamingo.NewApplication(modulesDemoProject(), flamingo.ConfigDir("config"))
 	if err != nil {
 		panic(err)
 	}
