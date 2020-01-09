@@ -2,27 +2,81 @@ package placeorder
 
 import (
 	"context"
+	"errors"
+	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
+	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/web"
 	"time"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	placeorderContext "flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/context"
 )
 
 type (
-	// todo use/compare w/ domain interface
-	locker interface {
-		Lock(string, time.Duration) (func(), error)
+
+	//TryLock interface
+	TryLock interface {
+		TryLock(string, time.Duration) (Unlock, error)
 	}
 
 	// Coordinator ensures that certain parts of the place order process are only done once at a time
 	Coordinator struct {
-		Locker locker
+		locker         TryLock
+		logger         flamingo.Logger
+		processFactory process.Factory
 	}
+
+	//Unlock func
+	Unlock func() error
+)
+
+var (
+	//ErrLockTaken to indicate the lock is taken (by another running process)
+	ErrLockTaken = errors.New("Lock already taken")
+	//ErrNoPlaceOrderProcess if a requested process not running
+	ErrNoPlaceOrderProcess = errors.New("ErrNoPlaceOrderProcess")
+	//ErrAnotherPlaceOrderProcessRunning if a process runs
+	ErrAnotherPlaceOrderProcessRunning = errors.New("ErrAnotherPlaceOrderProcessRunning")
+
+	maxLockDuration = 2 * time.Minute
+)
+
+const (
+	contextSessionStorageKey = "checkout_placeorder_context"
 )
 
 // New acquires lock if possible and creates new process with first run call blocking
 // returns error if already locked or error during run
-func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart) (placeorderContext.Context, error) {
+func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart) (*process.Context, error) {
+	unlock, err := c.locker.TryLock(determineLockKey(cart), maxLockDuration)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		_ = unlock()
+	}()
+
+	var runerr error
+	var runpctx *process.Context
+	web.RunWithDetachedContext(ctx, func(ctx context.Context) {
+		has, err := c.hasUnfinishedProcess(ctx)
+		if err != nil {
+			runerr = err
+			return
+		}
+		if has {
+			runerr = ErrAnotherPlaceOrderProcessRunning
+			return
+		}
+
+		newProcess := c.processFactory.New(nil)
+		newProcess.Run()
+		pctx := newProcess.Context()
+		runpctx = &pctx
+		runerr = c.storeProcessContext(ctx, pctx)
+	})
+
+	return runpctx, runerr
+
 	/* Todo:
 	1. determine lock key based on session/cart
 	2. check if place order process already in running if
@@ -31,22 +85,47 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart) (placeorder
 	5. run first state transition by State->Run()
 	6. store rollback callback
 	*/
-
-	return placeorderContext.Context{}, nil
 }
 
-// Current State of the process if it exists
-func (c *Coordinator) Current(ctx context.Context, cart cartDomain.Cart) (placeorderContext.Context, error) {
-	/* Todo:
-	1. Check if there is a previous place order context/result
-	2. Return if available, not available -> error
-	*/
-	return placeorderContext.Context{}, nil
+func (c *Coordinator) hasUnfinishedProcess(ctx context.Context) (bool, error) {
+	last, err := c.Last(ctx)
+	if err != nil && err != ErrNoPlaceOrderProcess {
+		return true, err
+	}
+	return !last.CurrentState().IsFinal(), nil
+}
+
+func (c *Coordinator) storeProcessContext(ctx context.Context, pctx process.Context) error {
+	session := web.SessionFromContext(ctx)
+	if session == nil {
+		return errors.New("Session not available to check for last placeorder context")
+	}
+	session.Store(contextSessionStorageKey, pctx)
+	return nil
+}
+
+// Last Context of current place order process
+func (c *Coordinator) Last(ctx context.Context) (*process.Context, error) {
+	session := web.SessionFromContext(ctx)
+	if session == nil {
+		return nil, errors.New("Session not available to check for last placeorder context")
+	}
+	data, found := session.Load(contextSessionStorageKey)
+	if !found {
+		return nil, ErrNoPlaceOrderProcess
+	}
+	pocontext, ok := data.(process.Context)
+	if !ok {
+		err := errors.New("Context could not be read from session")
+		c.logger.Error(err)
+		return nil, err
+	}
+	return &pocontext, nil
 }
 
 // Cancel the process if it exists (blocking)
 // be aware that all rollback callbacks are executed
-func (c *Coordinator) Cancel(ctx context.Context, cart cartDomain.Cart) (placeorderContext.Context, error) {
+func (c *Coordinator) Cancel(ctx context.Context, cart cartDomain.Cart) error {
 	/* Todo:
 	1. Check if there is a place order process running
 	2. Check if place order is in final state
@@ -55,7 +134,7 @@ func (c *Coordinator) Cancel(ctx context.Context, cart cartDomain.Cart) (placeor
 	5. Set state to canceled
 	6. Return result
 	*/
-	return placeorderContext.Context{}, nil
+	return nil
 }
 
 // Run starts the next processing if not already running
@@ -72,16 +151,16 @@ func (c *Coordinator) Run(ctx context.Context, cart cartDomain.Cart) {
 
 // RunBlocking waits for the lock and starts the next processing
 // RunBlocking waits until the process is finished and returns its result
-func (c *Coordinator) RunBlocking(ctx context.Context, cart cartDomain.Cart) (placeorderContext.Context, error) {
+func (c *Coordinator) RunBlocking(ctx context.Context, cart cartDomain.Cart) (*process.Context, error) {
 	/* Todo:
 	1. check if process is there
 	2. get lock
 	3. State->run()
 	4. Return result
 	*/
-	return placeorderContext.Context{}, nil
+	return &process.Context{}, nil
 }
 
-func determineLockKey(ctx context.Context, cart cartDomain.Cart) string {
-	return "myKey"
+func determineLockKey(cart cartDomain.Cart) string {
+	return "checkout_placeorder_lock_" + cart.ID
 }

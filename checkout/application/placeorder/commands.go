@@ -1,30 +1,28 @@
 package placeorder
 
 import (
-	context "context"
-
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 )
 
 type (
-	placeOrder struct {
-		Cart cartDomain.Cart
-		Ctx  context.Context
-	}
 
+	//StartPlaceOrder Command triggers new place order
 	StartPlaceOrder struct {
-		placeOrder
+		Cart cartDomain.Cart
 	}
 
+	//RefreshPlaceOrder Command
 	RefreshPlaceOrder struct {
-		placeOrder
 	}
 
+/*
 	RefreshBlockingPlaceOrder struct {
-		placeOrder
+
 	}
 
 	CancelPlaceOrder struct {
-		placeOrder
+
 	}
+*/
+
 )

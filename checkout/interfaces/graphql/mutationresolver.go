@@ -34,7 +34,7 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutStartPlaceOrder(ctx c
 	return true, nil
 }
 
-//CommerceCheckoutStartPlaceOrder starts a new process (if not running)
+//CommerceCheckoutCancelPlaceOrder starts a new process (if not running)
 func (r *CommerceCheckoutMutationResolver) CommerceCheckoutCancelPlaceOrder(ctx context.Context) (bool, error) {
 	return true, nil
 }

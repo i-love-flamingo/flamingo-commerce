@@ -411,17 +411,17 @@ type ComplexityRoot struct {
 
 	CommerceCheckoutPlaceOrderStateStateRedirect struct {
 		Final func(childComplexity int) int
-		Url   func(childComplexity int) int
+		URL   func(childComplexity int) int
 	}
 
 	CommerceCheckoutPlaceOrderStateStateShowHTML struct {
 		Final func(childComplexity int) int
-		Html  func(childComplexity int) int
+		HTML  func(childComplexity int) int
 	}
 
 	CommerceCheckoutPlaceOrderStateStateShowIframe struct {
 		Final func(childComplexity int) int
-		Url   func(childComplexity int) int
+		URL   func(childComplexity int) int
 	}
 
 	CommerceCheckoutPlaceOrderStateStateSuccess struct {
@@ -2202,11 +2202,11 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		return e.complexity.CommerceCheckoutPlaceOrderStateStateRedirect.Final(childComplexity), true
 
 	case "Commerce_Checkout_PlaceOrderState_State_Redirect.url":
-		if e.complexity.CommerceCheckoutPlaceOrderStateStateRedirect.Url == nil {
+		if e.complexity.CommerceCheckoutPlaceOrderStateStateRedirect.URL == nil {
 			break
 		}
 
-		return e.complexity.CommerceCheckoutPlaceOrderStateStateRedirect.Url(childComplexity), true
+		return e.complexity.CommerceCheckoutPlaceOrderStateStateRedirect.URL(childComplexity), true
 
 	case "Commerce_Checkout_PlaceOrderState_State_ShowHtml.final":
 		if e.complexity.CommerceCheckoutPlaceOrderStateStateShowHTML.Final == nil {
@@ -2216,11 +2216,11 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		return e.complexity.CommerceCheckoutPlaceOrderStateStateShowHTML.Final(childComplexity), true
 
 	case "Commerce_Checkout_PlaceOrderState_State_ShowHtml.html":
-		if e.complexity.CommerceCheckoutPlaceOrderStateStateShowHTML.Html == nil {
+		if e.complexity.CommerceCheckoutPlaceOrderStateStateShowHTML.HTML == nil {
 			break
 		}
 
-		return e.complexity.CommerceCheckoutPlaceOrderStateStateShowHTML.Html(childComplexity), true
+		return e.complexity.CommerceCheckoutPlaceOrderStateStateShowHTML.HTML(childComplexity), true
 
 	case "Commerce_Checkout_PlaceOrderState_State_ShowIframe.final":
 		if e.complexity.CommerceCheckoutPlaceOrderStateStateShowIframe.Final == nil {
@@ -2230,11 +2230,11 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		return e.complexity.CommerceCheckoutPlaceOrderStateStateShowIframe.Final(childComplexity), true
 
 	case "Commerce_Checkout_PlaceOrderState_State_ShowIframe.url":
-		if e.complexity.CommerceCheckoutPlaceOrderStateStateShowIframe.Url == nil {
+		if e.complexity.CommerceCheckoutPlaceOrderStateStateShowIframe.URL == nil {
 			break
 		}
 
-		return e.complexity.CommerceCheckoutPlaceOrderStateStateShowIframe.Url(childComplexity), true
+		return e.complexity.CommerceCheckoutPlaceOrderStateStateShowIframe.URL(childComplexity), true
 
 	case "Commerce_Checkout_PlaceOrderState_State_Success.final":
 		if e.complexity.CommerceCheckoutPlaceOrderStateStateSuccess.Final == nil {
@@ -9993,7 +9993,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect_ur
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Url, nil
+		return obj.URL, nil
 	})
 	if resTmp == nil {
 		return graphql.Null
@@ -10004,7 +10004,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect_ur
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHtml_final(ctx context.Context, field graphql.CollectedField, obj *dto2.StateShowHtml) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHtml_final(ctx context.Context, field graphql.CollectedField, obj *dto2.StateShowHTML) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -10028,7 +10028,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHtml_fi
 	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHtml_html(ctx context.Context, field graphql.CollectedField, obj *dto2.StateShowHtml) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHtml_html(ctx context.Context, field graphql.CollectedField, obj *dto2.StateShowHTML) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -10041,7 +10041,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHtml_ht
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Html, nil
+		return obj.HTML, nil
 	})
 	if resTmp == nil {
 		return graphql.Null
@@ -10089,7 +10089,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe_
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Url, nil
+		return obj.URL, nil
 	})
 	if resTmp == nil {
 		return graphql.Null
@@ -13996,7 +13996,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State(ctx context
 		return ec._Commerce_Checkout_PlaceOrderState_State_FatalError(ctx, sel, obj)
 	case *dto2.StateShowIframe:
 		return ec._Commerce_Checkout_PlaceOrderState_State_ShowIframe(ctx, sel, obj)
-	case *dto2.StateShowHtml:
+	case *dto2.StateShowHTML:
 		return ec._Commerce_Checkout_PlaceOrderState_State_ShowHtml(ctx, sel, obj)
 	case *dto2.StateRedirect:
 		return ec._Commerce_Checkout_PlaceOrderState_State_Redirect(ctx, sel, obj)
@@ -15898,7 +15898,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect(ct
 
 var commerce_Checkout_PlaceOrderState_State_ShowHtmlImplementors = []string{"Commerce_Checkout_PlaceOrderState_State_ShowHtml", "Commerce_Checkout_PlaceOrderState_State"}
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHtml(ctx context.Context, sel ast.SelectionSet, obj *dto2.StateShowHtml) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHtml(ctx context.Context, sel ast.SelectionSet, obj *dto2.StateShowHTML) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_PlaceOrderState_State_ShowHtmlImplementors)
 
 	out := graphql.NewFieldSet(fields)

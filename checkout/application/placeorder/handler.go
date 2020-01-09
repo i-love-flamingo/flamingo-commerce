@@ -1,12 +1,11 @@
 package placeorder
 
 import (
-	"errors"
-	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder"
-
-	placeorderContext "flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/context"
+	"context"
+	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 )
 
+//Handler for handling PlaceOrder related commands
 type Handler struct {
 	coordinator *Coordinator
 }
@@ -20,18 +19,12 @@ func (h *Handler) Inject(
 	return h
 }
 
-func (h *Handler) Handle(command interface{}) (placeorderContext.Context, error) {
-	switch c := command.(type) {
-	case placeorder.StartPlaceOrder:
-		return h.coordinator.New(c.Ctx, c.Cart)
-	case placeorder.RefreshPlaceOrder:
-		h.coordinator.Run(c.Ctx, c.Cart)
-		return h.coordinator.Current(c.Ctx, c.Cart)
-	case placeorder.RefreshBlockingPlaceOrder:
-		return h.coordinator.RunBlocking(c.Ctx, c.Cart)
-	case placeorder.CancelPlaceOrder:
-		return h.coordinator.Cancel(c.Ctx, c.Cart)
-	default:
-		return placeorderContext.Context{}, errors.New("invalid command")
-	}
+//StartPlaceOrder handles start place order command
+func (h *Handler) StartPlaceOrder(ctx context.Context, command StartPlaceOrder) (*process.Context, error) {
+	return h.coordinator.New(ctx, command.Cart)
+}
+
+//RefreshPlaceOrder handles start RefreshPlaceOrder command
+func (h *Handler) RefreshPlaceOrder(ctx context.Context, command RefreshPlaceOrder) (*process.Context, error) {
+	return h.coordinator.Last(ctx)
 }
