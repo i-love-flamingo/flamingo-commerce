@@ -2,6 +2,8 @@ package application
 
 import (
 	"context"
+	"fmt"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
@@ -45,7 +47,7 @@ func (s *Service) Init(ctx context.Context) {
 	s.currentContext = ctx
 }
 
-// Get gets the datalayer value object stored in the current context - or a freshly new build one if its the first call
+// Get gets the data layer value object stored in the current context - or a freshly new build one if its the first call
 func (s *Service) Get() domain.Datalayer {
 	if s.currentContext == nil {
 		s.logger.WithField("category", "w3cDatalayer").Error("Get called without context!")
@@ -54,10 +56,10 @@ func (s *Service) Get() domain.Datalayer {
 	}
 	req := web.RequestFromContext(s.currentContext)
 	if _, ok := req.Values.Load(DatalayerReqKey); !ok {
-		s.store(s.factory.BuildForCurrentRequest(s.currentContext, req))
+		_ = s.store(s.factory.BuildForCurrentRequest(s.currentContext, req))
 	}
 
-	s.AddSessionEvents()
+	_ = s.AddSessionEvents()
 
 	layer, _ := req.Values.Load(DatalayerReqKey)
 	if savedDataLayer, ok := layer.(domain.Datalayer); ok {
@@ -65,11 +67,11 @@ func (s *Service) Get() domain.Datalayer {
 	}
 
 	//error
-	s.logger.WithField("category", "w3cDatalayer").Warn("Receiving datalayer from context failed %v")
+	s.logger.WithField("category", "w3cDatalayer").Warn("Receiving datalayer from context failed")
 	return domain.Datalayer{}
 }
 
-// SetBreadCrumb to datalayer
+// SetBreadCrumb to data layer
 func (s *Service) SetBreadCrumb(breadcrumb string) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
@@ -82,7 +84,7 @@ func (s *Service) SetBreadCrumb(breadcrumb string) error {
 	return s.store(layer)
 }
 
-// AddSessionEvents to datalayer
+// AddSessionEvents to data layer
 func (s *Service) AddSessionEvents() error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
@@ -112,7 +114,7 @@ func (s *Service) AddSessionEvents() error {
 	return nil
 }
 
-// SetPageCategories to datalayer
+// SetPageCategories to data layer
 func (s *Service) SetPageCategories(category string, subcategory1 string, subcategory2 string) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
@@ -130,7 +132,7 @@ func (s *Service) SetPageCategories(category string, subcategory1 string, subcat
 	return s.store(layer)
 }
 
-// SetPageInfos to datalayer
+// SetPageInfos to data layer
 func (s *Service) SetPageInfos(pageID string, pageName string) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
@@ -153,7 +155,7 @@ func (s *Service) SetUserEmail(mail string) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
 	}
-	s.logger.WithField("category", "w3cDatalayer").Debug("Set Usermail %v", mail)
+	s.logger.WithField("category", "w3cDatalayer").Debug(fmt.Sprintf("Set Usermail %v", mail))
 	layer := s.Get()
 	layer.User = append(layer.User, domain.User{
 		Profile: []domain.UserProfile{{
@@ -165,12 +167,27 @@ func (s *Service) SetUserEmail(mail string) error {
 	return s.store(layer)
 }
 
-// SetSearchData to datalayer
+// SetPageInfoLanguage to the layer
+func (s *Service) SetPageInfoLanguage(language string) error {
+	if s.currentContext == nil {
+		return errors.New("Service can only be used with currentContext - call Init() first")
+	}
+	s.logger.WithField("language", "w3cDatalayer").Debug(fmt.Sprintf("Set page language %v", language))
+	layer := s.Get()
+
+	if layer.Page == nil {
+		return nil
+	}
+	layer.Page.PageInfo.Language = language
+	return s.store(layer)
+}
+
+// SetSearchData to data layer
 func (s *Service) SetSearchData(keyword string, results interface{}) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
 	}
-	s.logger.WithField("category", "w3cDatalayer").Debug("SetSearchData Keyword %v Result: %#v", keyword, results)
+	s.logger.WithField("category", "w3cDatalayer").Debug(fmt.Sprintf("SetSearchData Keyword %v Result: %#v", keyword, results))
 	layer := s.Get()
 	if layer.Page != nil {
 		layer.Page.Search = domain.SearchInfo{
@@ -181,29 +198,29 @@ func (s *Service) SetSearchData(keyword string, results interface{}) error {
 	return s.store(layer)
 }
 
-// SetCartData to datalayer
+// SetCartData to data layer
 func (s *Service) SetCartData(cart decorator.DecoratedCart) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
 	}
-	s.logger.WithField("category", "w3cDatalayer").Debug("Set Cart Data for cart %v", cart.Cart.ID)
+	s.logger.WithField("category", "w3cDatalayer").Debug(fmt.Sprintf("Set Cart Data for cart %v", cart.Cart.ID))
 	layer := s.Get()
 	layer.Cart = s.factory.BuildCartData(cart)
 	return s.store(layer)
 }
 
-// SetTransaction information to datalayer
+// SetTransaction information to data layer
 func (s *Service) SetTransaction(cart decorator.DecoratedCart, decoratedItems []decorator.DecoratedCartItem, orderID string, email string) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
 	}
-	s.logger.WithField("category", "w3cDatalayer").Debug("Set Transaction Data for order %v mail %v", orderID, email)
+	s.logger.WithField("category", "w3cDatalayer").Debug(fmt.Sprintf("Set Transaction Data for order %v mail %v", orderID, email))
 	layer := s.Get()
 	layer.Transaction = s.factory.BuildTransactionData(s.currentContext, cart, decoratedItems, orderID, email)
 	return s.store(layer)
 }
 
-// AddTransactionAttribute to datalayer
+// AddTransactionAttribute to data layer
 func (s *Service) AddTransactionAttribute(key string, value string) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
@@ -215,7 +232,7 @@ func (s *Service) AddTransactionAttribute(key string, value string) error {
 	return s.store(layer)
 }
 
-// AddProduct - appends the productData to the datalayer
+// AddProduct - appends the productData to the data layer
 func (s *Service) AddProduct(product productDomain.BasicProduct) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
@@ -225,7 +242,7 @@ func (s *Service) AddProduct(product productDomain.BasicProduct) error {
 	return s.store(layer)
 }
 
-// AddEvent - adds an event with the given eventName to the datalayer
+// AddEvent - adds an event with the given eventName to the data layer
 func (s *Service) AddEvent(eventName string, params ...*pugjs.Map) error {
 	if s.currentContext == nil {
 		return errors.New("Service can only be used with currentContext - call Init() first")
@@ -245,9 +262,9 @@ func (s *Service) AddEvent(eventName string, params ...*pugjs.Map) error {
 	return s.store(layer)
 }
 
-// store datalayer in current context
+// store data layer in current context
 func (s *Service) store(layer domain.Datalayer) error {
-	s.logger.Debug("Update %#v", layer)
+	s.logger.Debug(fmt.Sprintf("Update %#v", layer))
 	if s.currentContext == nil {
 		s.logger.WithField("category", "w3cDatalayer").Error("Update called without context!")
 		return errors.New("Update called without context")
