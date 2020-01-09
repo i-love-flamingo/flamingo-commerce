@@ -7,7 +7,6 @@ import (
 	"flamingo.me/flamingo-commerce/v3/product"
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest"
 	"flamingo.me/flamingo/v3/framework/config"
-	"flamingo.me/flamingo/v3/framework/prefixrouter"
 	"github.com/gavv/httpexpect"
 	"net/http"
 
@@ -15,21 +14,19 @@ import (
 )
 
 func Test_ProductPage2(t *testing.T) {
-	deferfunc, _ := integrationtest.Bootup(
+	info := integrationtest.Bootup(
 		[]dingo.Module{
 			new(product.Module),
-			new(prefixrouter.Module),
 		},
 		"",
 		config.Map{
 			"commerce.product.fakeservice.enabled": true,
-			"flamingo.router.path":                 "/en",
 		},
 	)
-	defer deferfunc()
+	defer info.ShutdownFunc()
 
-	e := httpexpect.New(t, "http://localhost:3210")
-	e.GET("/en/product/fake_configurable/typeconfigurable-product.html").
+	e := httpexpect.New(t, "http://"+info.BaseUrl)
+	e.GET("/product/fake_configurable/typeconfigurable-product.html").
 		Expect().
 		Status(http.StatusOK).JSON().Object().Value("RenderContext").Equal("configurable")
 }

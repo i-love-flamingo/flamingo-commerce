@@ -5,6 +5,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql"
 	"flamingo.me/flamingo-commerce/v3/customer"
+	"flamingo.me/flamingo-commerce/v3/product"
 	oauthApplication "flamingo.me/flamingo/v3/core/oauth/application"
 	flamingographql "flamingo.me/graphql"
 
@@ -116,6 +117,7 @@ func (m *Module) DefaultConfig() config.Map {
 func (m *Module) Depends() []dingo.Module {
 	return []dingo.Module{
 		new(oauth.Module),
+		new(product.Module),
 		new(form.Module),
 		new(customer.Module),
 	}
