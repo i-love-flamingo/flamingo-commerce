@@ -3,8 +3,10 @@ package checkout
 import (
 	"flamingo.me/dingo"
 	"flamingo.me/flamingo-commerce/v3/cart"
+	"flamingo.me/flamingo-commerce/v3/checkout/application/placeorder"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain"
 	"flamingo.me/flamingo-commerce/v3/checkout/infrastructure"
+	"flamingo.me/flamingo-commerce/v3/checkout/infrastructure/locker"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql"
 	"flamingo.me/flamingo/v3/framework/config"
@@ -16,7 +18,8 @@ import (
 type (
 	// Module registers our profiler
 	Module struct {
-		UseFakeSourcingService bool `inject:"config:checkout.useFakeSourcingService,optional"`
+		UseFakeSourcingService bool   `inject:"config:checkout.useFakeSourcingService,optional"`
+		PlaceOrderLockType     string `inject:"config:checkout.placeorder.lockType,optional"`
 	}
 )
 
@@ -26,6 +29,13 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	injector.Bind((*form.Decoder)(nil)).ToProvider(form.NewDecoder).AsEagerSingleton()
 	if m.UseFakeSourcingService {
 		injector.Override((*domain.SourcingService)(nil), "").To(infrastructure.FakeSourcingService{})
+	}
+
+	if m.PlaceOrderLockType == "clusterlock" {
+		//TODO provide cluster imple
+		injector.Bind(new(placeorder.TryLock)).To(locker.Simple{})
+	} else {
+		injector.Bind(new(placeorder.TryLock)).To(locker.Simple{})
 	}
 
 	web.BindRoutes(injector, new(routes))

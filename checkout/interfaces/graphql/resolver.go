@@ -10,7 +10,7 @@ import (
 	"flamingo.me/flamingo/v3/framework/flamingo"
 )
 
-// CommerceCheckoutMutationResolver resolves graphql checkout mutations
+// CommerceCheckoutQueryResolver resolves graphql checkout mutations
 type CommerceCheckoutQueryResolver struct {
 	orderService         *application.OrderService
 	decoratedCartFactory *decorator.DecoratedCartFactory
@@ -31,6 +31,7 @@ func (r *CommerceCheckoutQueryResolver) Inject(
 
 }
 
+//CommerceCheckoutPlaceOrderContext query
 func (r *CommerceCheckoutQueryResolver) CommerceCheckoutPlaceOrderContext(ctx context.Context) (*dto.PlaceOrderContext, error) {
 	return &dto.PlaceOrderContext{
 		Cart:       nil,

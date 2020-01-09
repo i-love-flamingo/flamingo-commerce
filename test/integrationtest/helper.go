@@ -35,13 +35,13 @@ type (
 		ShutdownFunc func()
 		Application  *flamingo.Application
 		BaseURL      string
+		Running      chan struct{}
 	}
 )
 
 //Side effect vars to get status and exchange stuff with the testmodule
 var rw sync.Mutex
 
-var testmoduleInstanceInApp *testmodule
 var additionalConfig config.Map
 var lastPort = 9999
 
@@ -50,7 +50,6 @@ func (t *testmodule) Inject(eventRouter flamingoFramework.EventRouter,
 	router *web.Router) {
 	t.eventRouter = eventRouter
 	t.router = router
-	testmoduleInstanceInApp = t
 }
 
 //Configure for your testmodule in the app
@@ -75,7 +74,7 @@ func (t *testmodule) DefaultConfig() config.Map {
 func (t *testmodule) shutdownServer() {
 	log.Printf("Trigger ServerShutdownEvent...")
 	t.eventRouter.Dispatch(context.Background(), &flamingoFramework.ServerShutdownEvent{})
-	t.server.Shutdown(context.Background())
+	_ = t.server.Shutdown(context.Background())
 }
 
 func (t *testmodule) nextServerPort() string {
@@ -84,7 +83,7 @@ func (t *testmodule) nextServerPort() string {
 }
 
 //returns the port or error
-func (t *testmodule) startServer() (string, error) {
+func (t *testmodule) startServer(listenAndServeQuited chan struct{}) (string, error) {
 
 	t.eventRouter.Dispatch(context.Background(), &flamingoFramework.ServerStartEvent{})
 	t.server = &http.Server{
@@ -92,7 +91,10 @@ func (t *testmodule) startServer() (string, error) {
 	}
 	log.Printf("startServer on port %v", t.server.Addr)
 	t.server.Handler = t.router.Handler()
-	go t.server.ListenAndServe()
+	go func() {
+		_ = t.server.ListenAndServe()
+		listenAndServeQuited <- struct{}{}
+	}()
 	return t.server.Addr, nil
 }
 
@@ -121,8 +123,8 @@ func Bootup(modules []dingo.Module, configDir string, config config.Map) BootupI
 	if err != nil {
 		panic("unable to get testmodul in flamingo execution area")
 	}
-
-	port, err := testmodul.startServer()
+	listenAndServeQuited := make(chan struct{})
+	port, err := testmodul.startServer(listenAndServeQuited)
 	if err != nil {
 		panic(err)
 	}
@@ -135,5 +137,6 @@ func Bootup(modules []dingo.Module, configDir string, config config.Map) BootupI
 		},
 		application,
 		"localhost" + port,
+		listenAndServeQuited,
 	}
 }

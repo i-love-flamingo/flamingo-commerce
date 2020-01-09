@@ -1,22 +1,24 @@
 package states
 
 import (
-	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/context"
+	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 )
 
 type (
+	//Wait state
 	Wait struct {
-		ctx *context.Context
 	}
 )
 
-var _ context.State = Wait{}
+var _ process.State = Wait{}
 
-func (n Wait) SetContext(ctx *context.Context) {
-	n.ctx = ctx
+//SetProcess set process reference
+func (n Wait) SetProcess(ctx *process.Process) {
+
 }
 
-func (n Wait) Run() (context.Rollback, error) {
+//Run run state
+func (n Wait) Run() (*process.RollbackReference, error) {
 	/* Todo: maybe split in multiple states
 	1. Reserve Order id
 	2. Start Payment
@@ -28,6 +30,7 @@ func (n Wait) Run() (context.Rollback, error) {
 	return nil, nil
 }
 
+//IsFinal if state is a final state
 func (n Wait) IsFinal() bool {
 	return false
 }

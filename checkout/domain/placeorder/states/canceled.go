@@ -1,27 +1,29 @@
 package states
 
 import (
-	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/context"
+	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 )
 
 type (
+	//Canceled state
 	Canceled struct {
-		ctx          *context.Context
-		runFunctions []func(context.Rollback, error) //
 	}
 )
 
-var _ context.State = Canceled{}
+var _ process.State = Canceled{}
 
-func (c Canceled) SetContext(ctx *context.Context) {
-	c.ctx = ctx
+//SetProcess set process reference
+func (c Canceled) SetProcess(ctx *process.Process) {
+
 }
 
-func (c Canceled) Run() (context.Rollback, error) {
+//Run run state
+func (c Canceled) Run() (*process.RollbackReference, error) {
 	// todo
 	return nil, nil
 }
 
+//IsFinal if state is a final state
 func (c Canceled) IsFinal() bool {
 	return true
 }
