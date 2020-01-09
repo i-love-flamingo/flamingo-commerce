@@ -18,7 +18,7 @@ func init() {
 }
 
 //Name get state name
-func (c New) Name() string {
+func (n New) Name() string {
 	return "New"
 }
 
