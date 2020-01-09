@@ -5,13 +5,13 @@ import "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 type (
 	//Context contains information (state etc) about a placeorder process
 	Context struct {
-		state              State
-		cart               cart.Cart
-		rollbackReferences []RollbackReference
+		State              State
+		Cart               cart.Cart
+		RollbackReferences []RollbackReference
 	}
 )
 
 //CurrentState returns current state
 func (c *Context) CurrentState() State {
-	return c.state
+	return c.State
 }

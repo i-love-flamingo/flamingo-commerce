@@ -2,6 +2,7 @@ package placeorder
 
 import (
 	"context"
+	"encoding/gob"
 	"errors"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo/v3/framework/flamingo"
@@ -22,7 +23,7 @@ type (
 	Coordinator struct {
 		locker         TryLock
 		logger         flamingo.Logger
-		processFactory process.Factory
+		processFactory *process.Factory
 	}
 
 	//Unlock func
@@ -44,6 +45,17 @@ const (
 	contextSessionStorageKey = "checkout_placeorder_context"
 )
 
+func init() {
+	gob.Register(process.Context{})
+}
+
+//Inject dependencies
+func (c *Coordinator) Inject(locker TryLock, logger flamingo.Logger, processFactory *process.Factory) {
+	c.locker = locker
+	c.logger = logger.WithField(flamingo.LogKeyModule, "checkout").WithField(flamingo.LogKeyCategory, "placeorder")
+	c.processFactory = processFactory
+}
+
 // New acquires lock if possible and creates new process with first run call blocking
 // returns error if already locked or error during run
 func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart) (*process.Context, error) {
@@ -61,9 +73,11 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart) (*process.C
 		has, err := c.hasUnfinishedProcess(ctx)
 		if err != nil {
 			runerr = err
+			c.logger.Error(err)
 			return
 		}
 		if has {
+			c.logger.Error(err)
 			runerr = ErrAnotherPlaceOrderProcessRunning
 			return
 		}
@@ -75,6 +89,9 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart) (*process.C
 		runerr = c.storeProcessContext(ctx, pctx)
 	})
 
+	if runerr != nil {
+		c.logger.Error(runerr)
+	}
 	return runpctx, runerr
 
 	/* Todo:
@@ -89,10 +106,17 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart) (*process.C
 
 func (c *Coordinator) hasUnfinishedProcess(ctx context.Context) (bool, error) {
 	last, err := c.Last(ctx)
-	if err != nil && err != ErrNoPlaceOrderProcess {
+	if err == ErrNoPlaceOrderProcess {
+		return false, nil
+	}
+	if err != nil {
 		return true, err
 	}
-	return !last.CurrentState().IsFinal(), nil
+	currentState := last.CurrentState()
+	if currentState == nil {
+		return true, errors.New("No current state!")
+	}
+	return !currentState.IsFinal(), nil
 }
 
 func (c *Coordinator) storeProcessContext(ctx context.Context, pctx process.Context) error {

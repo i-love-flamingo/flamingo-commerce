@@ -3,34 +3,44 @@ package graphql
 import (
 	"context"
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
-	"flamingo.me/flamingo-commerce/v3/checkout/application"
+	"flamingo.me/flamingo-commerce/v3/checkout/application/placeorder"
 	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/web"
 )
 
 // CommerceCheckoutMutationResolver resolves graphql checkout mutations
 type CommerceCheckoutMutationResolver struct {
-	orderService         *application.OrderService
-	decoratedCartFactory *decorator.DecoratedCartFactory
-	cartService          *cartApplication.CartService
-	logger               flamingo.Logger
+	placeorderHandler *placeorder.Handler
+	cartService       *cartApplication.CartService
+	logger            flamingo.Logger
 }
 
 // Inject dependencies
 func (r *CommerceCheckoutMutationResolver) Inject(
-	orderService *application.OrderService,
-	decoratedCartFactory *decorator.DecoratedCartFactory,
+	placeorderHandler *placeorder.Handler,
 	cartService *cartApplication.CartService,
 	logger flamingo.Logger) {
-	r.orderService = orderService
-	r.decoratedCartFactory = decoratedCartFactory
+	r.placeorderHandler = placeorderHandler
 	r.cartService = cartService
-	r.logger = logger.WithField(flamingo.LogKeyModule, "om3oms").WithField(flamingo.LogKeyCategory, "graphql")
+	r.logger = logger.WithField(flamingo.LogKeyModule, "checkout").WithField(flamingo.LogKeyCategory, "graphql")
 
 }
 
 //CommerceCheckoutStartPlaceOrder starts a new process (if not running)
 func (r *CommerceCheckoutMutationResolver) CommerceCheckoutStartPlaceOrder(ctx context.Context, returnURLRaw string) (bool, error) {
+	session := web.SessionFromContext(ctx)
+	cart, err := r.cartService.GetCartReceiverService().ViewCart(ctx, session)
+	if err != nil {
+		return false, err
+	}
+	startPlaceOrderCommand := placeorder.StartPlaceOrderCommand{Cart: *cart}
+	_, err = r.placeorderHandler.StartPlaceOrder(ctx, startPlaceOrderCommand)
+	if err == placeorder.ErrAnotherPlaceOrderProcessRunning {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
 	return true, nil
 }
 
