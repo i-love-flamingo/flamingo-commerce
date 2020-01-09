@@ -1,0 +1,64 @@
+type Commerce_Category_Attributes {
+    get(code: String!): Commerce_Category_Attribute
+    has(code: String!): Boolean
+    all: [Commerce_Category_Attribute!]
+}
+
+type Commerce_Category_Attribute {
+    code: String!
+    label: String!
+    values: [Commerce_Category_AttributeValue!]
+}
+
+type Commerce_Category_AttributeValue {
+    value: String!
+    label: String!
+}
+
+interface Commerce_Category {
+    code: String!
+    name: String!
+    path: String!
+    active: Boolean!
+    promoted: Boolean!
+    attributes: Commerce_Category_Attributes!
+}
+
+type Commerce_CategoryData implements Commerce_Category {
+    code: String!
+    name: String!
+    path: String!
+    active: Boolean!
+    promoted: Boolean!
+    attributes: Commerce_Category_Attributes!
+}
+
+interface Commerce_Tree {
+    code: String!
+    name: String!
+    path: String!
+    active: Boolean!
+    subTrees: [Commerce_Tree]
+    hasChilds: Boolean!
+    documentCount: Int!
+}
+
+type Commerce_CategoryTree implements Commerce_Tree{
+    code: String!
+    name: String!
+    path: String!
+    active: Boolean!
+    subTrees: [Commerce_Tree]
+    hasChilds: Boolean!
+    documentCount: Int!
+}
+
+type Commerce_Category_SearchResult {
+    category:               Commerce_Category!
+    productSearchResult:    Commerce_Product_SearchResult!
+}
+
+extend type Query {
+    Commerce_CategoryTree(activeCategoryCode: String!): Commerce_Tree!
+    Commerce_Category(categoryCode: String!, categorySearchRequest: Commerce_Search_Request): Commerce_Category_SearchResult
+}

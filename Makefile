@@ -26,5 +26,8 @@ test:
 integrationtest:
 	go test -v ./test/integrationtest/... -tags=integration
 
+generateprojecttestgraphql:
+	cd test/integrationtest/projecttest && go run -tags graphql main.go graphql
+
 fix:
 	gofmt -l -w .

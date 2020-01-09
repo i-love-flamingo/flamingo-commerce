@@ -3,6 +3,8 @@ package product
 import (
 	"flamingo.me/dingo"
 	"flamingo.me/flamingo-commerce/v3/price"
+
+	//"flamingo.me/flamingo-commerce/v3/price"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo-commerce/v3/product/infrastructure/fake"
 	"flamingo.me/flamingo-commerce/v3/product/interfaces/controller"
@@ -39,7 +41,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 // Depends adds our dependencies
 func (*Module) Depends() []dingo.Module {
 	return []dingo.Module{
-		price.Module{},
+		new(price.Module),
 		new(search.Module),
 	}
 }

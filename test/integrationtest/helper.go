@@ -1,12 +1,15 @@
-// +build integration
+// +buil integration
 
 package integrationtest
 
 import (
 	"context"
-	"sync"
-
 	"flamingo.me/flamingo/v3/framework/config"
+	"flamingo.me/flamingo/v3/framework/web"
+	"fmt"
+	"net/http"
+	"sync"
+	"time"
 
 	"log"
 	"os"
@@ -23,22 +26,29 @@ type (
 	eventReceiver struct{}
 	testmodule    struct {
 		eventRouter flamingoFramework.EventRouter
+		router      *web.Router
+		server      *http.Server
+	}
+
+	BootupInfo struct {
+		ShutdownFunc func()
+		Application  *flamingo.Application
+		BaseUrl      string
 	}
 )
 
 //Side effect vars to get status and exchange stuff with the testmodule
 var rw sync.Mutex
-var bootupReady chan struct{}
+
 var testmoduleInstanceInApp *testmodule
 var additionalConfig config.Map
-
-func init() {
-	bootupReady = make(chan struct{})
-}
+var lastPort = 9999
 
 //Configure for your testmodule in the app
-func (t *testmodule) Inject(eventRouter flamingoFramework.EventRouter) {
+func (t *testmodule) Inject(eventRouter flamingoFramework.EventRouter,
+	router *web.Router) {
 	t.eventRouter = eventRouter
+	t.router = router
 	testmoduleInstanceInApp = t
 }
 
@@ -50,11 +60,8 @@ func (t *testmodule) Configure(i *dingo.Injector) {
 //Notify gets notified by event router
 func (t *testmodule) Notify(ctx context.Context, event flamingoFramework.Event) {
 	switch event.(type) {
-	case *flamingoFramework.ServerStartEvent:
-		log.Printf("ServerStartEvent event received...")
-		bootupReady <- struct{}{}
 	case *flamingoFramework.ShutdownEvent:
-		log.Printf("ServerShutdownEvent event received...")
+		log.Printf("ShutdownEvent event received...")
 	}
 }
 
@@ -63,14 +70,38 @@ func (t *testmodule) DefaultConfig() config.Map {
 	return additionalConfig
 }
 
-//WaitForStart until
-func (t *testmodule) SendShutdown() {
+//shutdown until
+func (t *testmodule) shutdownServer() {
 	log.Printf("Trigger ServerShutdownEvent...")
-	t.eventRouter.Dispatch(context.Background(), flamingoFramework.ShutdownEvent{})
+	t.eventRouter.Dispatch(context.Background(), &flamingoFramework.ServerShutdownEvent{})
+	t.server.Shutdown(context.Background())
+}
+
+func (t *testmodule) nextServerPort() string {
+	lastPort++
+	return fmt.Sprintf("%v", lastPort)
+}
+
+//returns the port or error
+func (t *testmodule) startServer() (string, error) {
+
+	t.eventRouter.Dispatch(context.Background(), &flamingoFramework.ServerStartEvent{})
+	t.server = &http.Server{
+		Addr: ":" + t.nextServerPort(),
+	}
+	log.Printf("startServer on port %v", t.server.Addr)
+	t.server.Handler = t.router.Handler()
+	go t.server.ListenAndServe()
+	return t.server.Addr, nil
 }
 
 //Bootup flamingo app with the given modules (and the config in folder given )
-func Bootup(modules []dingo.Module, configDir string, config config.Map) (func(), string) {
+func Bootup(modules []dingo.Module, configDir string, config config.Map) BootupInfo {
+	if configDir != "" {
+		if _, err := os.Stat(configDir); os.IsNotExist(err) {
+			panic("configdir: " + configDir + " does not exist")
+		}
+	}
 	rw.Lock()
 	defer rw.Unlock()
 	//add testmodul that listens
@@ -78,12 +109,30 @@ func Bootup(modules []dingo.Module, configDir string, config config.Map) (func()
 	//rootArea := rootArea("config")
 	os.Args[1] = "serve"
 	additionalConfig = config
-	go flamingo.App(modules, flamingo.ConfigDir(configDir))
-	if _, ok := <-bootupReady; !ok {
-		panic("unable to bootup flamingo")
+
+	application, err := flamingo.NewApplication(modules, flamingo.ConfigDir(configDir))
+	if err != nil {
+		panic(fmt.Sprintf("unable to get flamingo application: %v", err))
 	}
 
-	tm := testmoduleInstanceInApp
-	//TODO - use new port on every bootup
-	return func() { tm.SendShutdown() }, "localhost:3210"
+	testmoduli, err := application.ConfigArea().Injector.GetInstance(new(testmodule))
+	testmodul := testmoduli.(*testmodule)
+	if err != nil {
+		panic("unable to get testmodul in flamingo execution area")
+	}
+
+	port, err := testmodul.startServer()
+	if err != nil {
+		panic(err)
+	}
+
+	time.Sleep(1 * time.Second)
+
+	return BootupInfo{
+		func() {
+			testmodul.shutdownServer()
+		},
+		application,
+		"localhost" + port,
+	}
 }
