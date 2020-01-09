@@ -133,24 +133,6 @@ type (
 		shippingItems map[string]domain.Price
 		totalItems    map[string]domain.Price
 	}
-
-	// PricedShippingItem – shipping item with price
-	PricedShippingItem struct {
-		Amount           domain.Price
-		DeliveryInfoCode string
-	}
-
-	// PricedTotalItem – total item with price
-	PricedTotalItem struct {
-		Amount domain.Price
-		Code   string
-	}
-
-	// PricedCartItem – cart item with price
-	PricedCartItem struct {
-		Amount domain.Price
-		ItemID string
-	}
 )
 
 var (
@@ -479,15 +461,6 @@ func (c Cart) SumTotalDiscountAmount() domain.Price {
 	return price
 }
 
-// SumTotalDiscountWithGiftCardsAmount – returns sum price of total discounts with applied gift cards
-func (c Cart) SumTotalDiscountWithGiftCardsAmount() domain.Price {
-	totalDiscount := c.SumTotalDiscountAmount()
-	appliedGiftCardsAmount, _ := c.SumAppliedGiftCards()
-
-	price, _ := totalDiscount.Sub(appliedGiftCardsAmount)
-	return price
-}
-
 // SumNonItemRelatedDiscountAmount - returns sum price of deliveries SumNonItemRelatedDiscountAmount
 func (c Cart) SumNonItemRelatedDiscountAmount() domain.Price {
 	prices := make([]domain.Price, 0, len(c.Deliveries))
@@ -626,30 +599,6 @@ func (t Taxes) TotalAmount() domain.Price {
 	result, _ := domain.SumAll(prices...)
 
 	return result
-}
-
-// GetAllTaxes – returns all Taxes as slice
-func (t Taxes) GetAllTaxes() []Tax {
-	taxes := make([]Tax, 0, len(t))
-	for _, tax := range t {
-		taxes = append(taxes, tax)
-	}
-
-	if len(taxes) > 0 {
-		return taxes
-	}
-
-	return nil
-}
-
-// GetByType - returns tax by given type
-func (t Taxes) GetByType(taxType string) Tax {
-	for _, tax := range t {
-		if tax.Type == taxType {
-			return tax
-		}
-	}
-	return Tax{}
 }
 
 // ###################
@@ -801,54 +750,12 @@ func (p PricedItems) TotalItems() map[string]domain.Price {
 	return p.totalItems
 }
 
-// GetAllTotalItems – return all total items
-func (p PricedItems) GetAllTotalItems() []PricedTotalItem {
-	var items []PricedTotalItem
-
-	for totalItemCode, price := range p.totalItems {
-		items = append(items, PricedTotalItem{
-			Amount: price,
-			Code:   totalItemCode,
-		})
-	}
-
-	return items
-}
-
 // ShippingItems - returns the Price per ShippingItems - map key is deliverycode
 func (p PricedItems) ShippingItems() map[string]domain.Price {
 	return p.shippingItems
 }
 
-// GetAllShippingItems – return all shipping items
-func (p PricedItems) GetAllShippingItems() []PricedShippingItem {
-	var items []PricedShippingItem
-
-	for deliveryInfoCode, price := range p.shippingItems {
-		items = append(items, PricedShippingItem{
-			Amount:           price,
-			DeliveryInfoCode: deliveryInfoCode,
-		})
-	}
-
-	return items
-}
-
 // CartItems - returns the Price per cartItems - map key is cartitem ID
 func (p PricedItems) CartItems() map[string]domain.Price {
 	return p.cartItems
-}
-
-// GetAllCartItems – return all cart items
-func (p PricedItems) GetAllCartItems() []PricedCartItem {
-	var items []PricedCartItem
-
-	for CartItemID, price := range p.shippingItems {
-		items = append(items, PricedCartItem{
-			Amount: price,
-			ItemID: CartItemID,
-		})
-	}
-
-	return items
 }

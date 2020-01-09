@@ -3,7 +3,7 @@ package graphql
 import (
 	"context"
 	"flamingo.me/flamingo-commerce/v3/cart/application"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
 	"flamingo.me/flamingo/v3/framework/web"
 )
 
@@ -20,7 +20,12 @@ func (r *CommerceCartQueryResolver) Inject(
 }
 
 // CommerceCart getter for queries
-func (r *CommerceCartQueryResolver) CommerceCart(ctx context.Context) (*decorator.DecoratedCart, error) {
+func (r *CommerceCartQueryResolver) CommerceCart(ctx context.Context) (*dto.DecoratedCart, error) {
 	req := web.RequestFromContext(ctx)
-	return r.applicationCartReceiverService.ViewDecoratedCart(ctx, req.Session())
+	dc, err := r.applicationCartReceiverService.ViewDecoratedCart(ctx, req.Session())
+	if err != nil {
+		return nil, err
+	}
+
+	return dto.NewDecoratedCart(dc), nil
 }
