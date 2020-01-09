@@ -45,17 +45,17 @@ type Commerce_Checkout_PlaceOrderState_State_FatalError implements Commerce_Chec
 
 type Commerce_Checkout_PlaceOrderState_State_ShowIframe implements Commerce_Checkout_PlaceOrderState_State {
     final: Boolean
-    url: String
+    URL: String
 }
 
 type Commerce_Checkout_PlaceOrderState_State_ShowHtml implements Commerce_Checkout_PlaceOrderState_State {
     final: Boolean
-    html: String
+    HTML: String
 }
 
 type Commerce_Checkout_PlaceOrderState_State_Redirect implements Commerce_Checkout_PlaceOrderState_State {
     final: Boolean
-    url: String
+    URL: String
 }
 
 

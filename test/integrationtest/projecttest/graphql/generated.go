@@ -2201,7 +2201,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCheckoutPlaceOrderStateStateRedirect.Final(childComplexity), true
 
-	case "Commerce_Checkout_PlaceOrderState_State_Redirect.url":
+	case "Commerce_Checkout_PlaceOrderState_State_Redirect.URL":
 		if e.complexity.CommerceCheckoutPlaceOrderStateStateRedirect.URL == nil {
 			break
 		}
@@ -2215,7 +2215,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCheckoutPlaceOrderStateStateShowHTML.Final(childComplexity), true
 
-	case "Commerce_Checkout_PlaceOrderState_State_ShowHtml.html":
+	case "Commerce_Checkout_PlaceOrderState_State_ShowHtml.HTML":
 		if e.complexity.CommerceCheckoutPlaceOrderStateStateShowHTML.HTML == nil {
 			break
 		}
@@ -2229,7 +2229,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCheckoutPlaceOrderStateStateShowIframe.Final(childComplexity), true
 
-	case "Commerce_Checkout_PlaceOrderState_State_ShowIframe.url":
+	case "Commerce_Checkout_PlaceOrderState_State_ShowIframe.URL":
 		if e.complexity.CommerceCheckoutPlaceOrderStateStateShowIframe.URL == nil {
 			break
 		}
@@ -3515,17 +3515,17 @@ type Commerce_Checkout_PlaceOrderState_State_FatalError implements Commerce_Chec
 
 type Commerce_Checkout_PlaceOrderState_State_ShowIframe implements Commerce_Checkout_PlaceOrderState_State {
     final: Boolean
-    url: String
+    URL: String
 }
 
 type Commerce_Checkout_PlaceOrderState_State_ShowHtml implements Commerce_Checkout_PlaceOrderState_State {
     final: Boolean
-    html: String
+    HTML: String
 }
 
 type Commerce_Checkout_PlaceOrderState_State_Redirect implements Commerce_Checkout_PlaceOrderState_State {
     final: Boolean
-    url: String
+    URL: String
 }
 
 
@@ -9980,7 +9980,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect_fi
 	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect_url(ctx context.Context, field graphql.CollectedField, obj *dto2.StateRedirect) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect_URL(ctx context.Context, field graphql.CollectedField, obj *dto2.StateRedirect) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -10028,7 +10028,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHtml_fi
 	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHtml_html(ctx context.Context, field graphql.CollectedField, obj *dto2.StateShowHTML) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHtml_HTML(ctx context.Context, field graphql.CollectedField, obj *dto2.StateShowHTML) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -10076,7 +10076,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe_
 	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe_url(ctx context.Context, field graphql.CollectedField, obj *dto2.StateShowIframe) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe_URL(ctx context.Context, field graphql.CollectedField, obj *dto2.StateShowIframe) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -15883,8 +15883,8 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect(ct
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_Redirect")
 		case "final":
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_Redirect_final(ctx, field, obj)
-		case "url":
-			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_Redirect_url(ctx, field, obj)
+		case "URL":
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_Redirect_URL(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -15909,8 +15909,8 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHtml(ct
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_ShowHtml")
 		case "final":
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_ShowHtml_final(ctx, field, obj)
-		case "html":
-			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_ShowHtml_html(ctx, field, obj)
+		case "HTML":
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_ShowHtml_HTML(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -15935,8 +15935,8 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe(
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_ShowIframe")
 		case "final":
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_ShowIframe_final(ctx, field, obj)
-		case "url":
-			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_ShowIframe_url(ctx, field, obj)
+		case "URL":
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_ShowIframe_URL(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
