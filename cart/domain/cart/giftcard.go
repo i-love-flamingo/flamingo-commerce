@@ -60,13 +60,6 @@ func (c Cart) SumAppliedGiftCards() (domain.Price, error) {
 	return price.GetPayable(), nil
 }
 
-// SumAppliedGiftCardsForced - sum up all applied amounts of giftcads
-// If it was not found a Zero amount is returned.
-func (c Cart) SumAppliedGiftCardsForced() domain.Price {
-	result, _ := c.SumAppliedGiftCards()
-	return result
-}
-
 // SumGrandTotalWithGiftCards calculate the grand total of the cart minus gift cards
 func (c Cart) SumGrandTotalWithGiftCards() (domain.Price, error) {
 	giftCardTotal, err := c.SumAppliedGiftCards()

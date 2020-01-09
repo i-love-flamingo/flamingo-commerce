@@ -7,7 +7,7 @@ type Commerce_DecoratedCart {
 }
 
 type Commerce_Cart_Summary {
-    mergeDiscounts: Commerce_CartAppliedDiscounts
+    discounts: Commerce_CartAppliedDiscounts
     sumAppliedDiscounts: Commerce_Price
     sumAppliedGiftCards: Commerce_Price
     sumGrandTotalWithGiftCards: Commerce_Price

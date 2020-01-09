@@ -12,9 +12,9 @@ type (
 	}
 )
 
-// MergeDiscounts sums up discounts of cart based on its deliveries
+// Discounts collects up discounts of cart based on its deliveries
 // All discounts with the same campaign code are aggregated and returned as one with a summed price
-func (cs *CartSummary) MergeDiscounts() *cart.AppliedDiscounts {
+func (cs *CartSummary) Discounts() *cart.AppliedDiscounts {
 	result, err := cs.cart.MergeDiscounts()
 
 	if err != nil {
