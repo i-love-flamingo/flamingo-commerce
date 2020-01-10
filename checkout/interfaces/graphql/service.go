@@ -33,7 +33,6 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		//"Commerce_Checkout_PlaceOrderState_State_ShowIframe":                         states.Wait{},
 		//"Commerce_Checkout_PlaceOrderState_State_ShowHtml":                           states.Wait{},
 		//"Commerce_Checkout_PlaceOrderState_State_Redirect":                           states.Wait{},
-		"Commerce_Checkout_PlaceOrderState_State_Cancelled":                          states.Canceled{},
 		"Commerce_Checkout_PlaceOrderState_State_CancellationReason":                 new(dto.CancellationReason),
 		"Commerce_Checkout_PlaceOrderState_State_CancellationReason_PaymentError":    dto.CancellationReasonPaymentError{},
 		"Commerce_Checkout_PlaceOrderState_State_CancellationReason_ValidationError": dto.CancellationReasonValidationError{},
