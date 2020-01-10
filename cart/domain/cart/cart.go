@@ -42,7 +42,7 @@ type (
 		BelongsToAuthenticatedUser bool
 		AuthenticatedUserID        string
 
-		AppliedCouponCodes []CouponCode
+		AppliedCouponCodes AppliedCouponCodes
 
 		DefaultCurrency string
 
@@ -66,6 +66,9 @@ type (
 		// CustomAttributes can hold additional data for coupon code - keys and values are project specific
 		CustomAttributes map[string]interface{}
 	}
+
+	// AppliedCouponCodes slice of applied coupon codes
+	AppliedCouponCodes []CouponCode
 
 	// Person value object
 	Person struct {
@@ -758,4 +761,20 @@ func (p PricedItems) ShippingItems() map[string]domain.Price {
 // CartItems - returns the Price per cartItems - map key is cartitem ID
 func (p PricedItems) CartItems() map[string]domain.Price {
 	return p.cartItems
+}
+
+//ContainedIn - returns if the coupon codes are contained in couponCodesToCompare
+func (acc AppliedCouponCodes) ContainedIn(couponCodesToCompare AppliedCouponCodes) bool {
+	for _, couponCode := range acc {
+		contained := false
+		for _, couponCodeToCompare := range couponCodesToCompare {
+			if couponCode.Code == couponCodeToCompare.Code {
+				contained = true
+			}
+		}
+		if !contained {
+			return false
+		}
+	}
+	return true
 }

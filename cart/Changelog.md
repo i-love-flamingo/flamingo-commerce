@@ -42,3 +42,8 @@
 * Introduce `UpdateItems` to `ModifyBehaviour`interface to reduce calls for updating items one by one
 * Add helper function `GetDeliveryByItemID`
 * Remove `itemID` and `deliveryCode` as parameters for `UpdateItem` as this information is part of the update command, respectively from the new helper
+
+# 10. January 2020
+* Changes AppliedCouponCodes in the cart to an own struct to be able to add some functions to it
+* Quantity item adjustments know also contain a bool that indicates if the respective adjustment caused a change to the AppliedCouponCodes slice of the cart
+  * New template function to get if any of the currently stored adjustments caused a coupon code to be removed

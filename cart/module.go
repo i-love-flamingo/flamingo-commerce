@@ -78,6 +78,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	flamingo.BindTemplateFunc(injector, "getDecoratedCart", new(templatefunctions.GetDecoratedCart))
 	flamingo.BindTemplateFunc(injector, "getQuantityAdjustmentDeletedItemsMessages", new(templatefunctions.GetQuantityAdjustmentDeletedItemsMessages))
 	flamingo.BindTemplateFunc(injector, "getQuantityAdjustmentUpdatedItemsMessages", new(templatefunctions.GetQuantityAdjustmentUpdatedItemsMessage))
+	flamingo.BindTemplateFunc(injector, "getQuantityAdjustmentCouponCodesRemoved", new(templatefunctions.GetQuantityAdjustmentCouponCodesRemoved))
 	flamingo.BindTemplateFunc(injector, "removeQuantityAdjustmentMessages", new(templatefunctions.RemoveQuantityAdjustmentMessages))
 
 	injector.Bind((*cart.DeliveryInfoBuilder)(nil)).To(cart.DefaultDeliveryInfoBuilder{})

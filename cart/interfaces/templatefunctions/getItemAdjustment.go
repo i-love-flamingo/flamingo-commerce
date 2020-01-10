@@ -16,6 +16,9 @@ type (
 	// GetQuantityAdjustmentUpdatedItemsMessage is exported as a template function
 	GetQuantityAdjustmentUpdatedItemsMessage struct{}
 
+	// GetQuantityAdjustmentCouponCodesRemoved is exported as a template function
+	GetQuantityAdjustmentCouponCodesRemoved struct{}
+
 	// RemoveQuantityAdjustmentMessages is exported as a template function
 	RemoveQuantityAdjustmentMessages struct{}
 
@@ -55,7 +58,7 @@ func (gdm *GetQuantityAdjustmentDeletedItemsMessages) Func(ctx context.Context) 
 }
 
 // Func defines the GetQuantityAdjustmentUpdatedItemsMessage template function
-func (gdm *GetQuantityAdjustmentUpdatedItemsMessage) Func(ctx context.Context) interface{} {
+func (gum *GetQuantityAdjustmentUpdatedItemsMessage) Func(ctx context.Context) interface{} {
 	return func(item cart.Item, deliveryCode string) QuantityAdjustment {
 		session := web.SessionFromContext(ctx)
 
@@ -83,8 +86,23 @@ func (gdm *GetQuantityAdjustmentUpdatedItemsMessage) Func(ctx context.Context) i
 	}
 }
 
+// Func defines the GetQuantityAdjustmentCouponCodesRemoved template function
+func (gcd *GetQuantityAdjustmentCouponCodesRemoved) Func(ctx context.Context) interface{} {
+	return func() bool {
+		session := web.SessionFromContext(ctx)
+
+		if sessionAdjustments, found := session.Load("cart.view.quantity.adjustments"); found {
+			if adjustments, ok := sessionAdjustments.(application.QtyAdjustmentResults); ok {
+				return adjustments.HasRemovedCouponCodes()
+			}
+		}
+
+		return false
+	}
+}
+
 // Func defines the RemoveQuantityAdjustmentMessages template function
-func (gdm *RemoveQuantityAdjustmentMessages) Func(ctx context.Context) interface{} {
+func (rm *RemoveQuantityAdjustmentMessages) Func(ctx context.Context) interface{} {
 	return func() bool {
 		session := web.SessionFromContext(ctx)
 
