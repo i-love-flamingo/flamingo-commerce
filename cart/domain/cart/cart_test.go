@@ -114,10 +114,10 @@ func TestCart_GetDeliveryByCode(t *testing.T) {
 	assert.Equal(t, expectedDelivery, delivery, "delivery should be nil")
 }
 
-func Test_GetDeliveryCodes(t *testing.T) {
+func TestGetDeliveryCodes(t *testing.T) {
 	t.Parallel()
 
-	cart := new(cartDomain.Cart)
+	cart := &cartDomain.Cart{}
 
 	dummyItem := cartDomain.Item{}
 
@@ -152,6 +152,115 @@ func Test_GetDeliveryCodes(t *testing.T) {
 	assert.Len(t, deliveryCodes, 2)
 	assert.Contains(t, deliveryCodes, "home")
 	assert.Contains(t, deliveryCodes, "inFlight")
+}
+
+func TestCart_GetTotalQty(t *testing.T) {
+	t.Parallel()
+
+	marketplaceCode := "marketplacecode"
+	variantCode := "variantcode"
+	expected := 1
+
+	cart := cartDomain.Cart{
+		Deliveries: []cartDomain.Delivery{
+			{
+				Cartitems: []cartDomain.Item{
+					{
+						MarketplaceCode:        marketplaceCode,
+						VariantMarketPlaceCode: variantCode,
+						Qty:                    1,
+					},
+				},
+			},
+		},
+	}
+
+	got := cart.GetTotalQty(marketplaceCode, variantCode)
+
+	assert.Equal(t, expected, got)
+
+	expected = 2
+
+	cart = cartDomain.Cart{
+		Deliveries: []cartDomain.Delivery{
+			{
+				Cartitems: []cartDomain.Item{
+					{
+						MarketplaceCode:        marketplaceCode,
+						VariantMarketPlaceCode: variantCode,
+						Qty:                    1,
+					},
+					{
+						MarketplaceCode:        marketplaceCode,
+						VariantMarketPlaceCode: variantCode,
+						Qty:                    1,
+					},
+				},
+			},
+		},
+	}
+
+	got = cart.GetTotalQty(marketplaceCode, variantCode)
+
+	assert.Equal(t, expected, got)
+
+	expected = 0
+
+	cart = cartDomain.Cart{
+		Deliveries: []cartDomain.Delivery{
+			{
+				Cartitems: []cartDomain.Item{
+					{
+						MarketplaceCode:        marketplaceCode,
+						VariantMarketPlaceCode: variantCode,
+					},
+				},
+			},
+		},
+	}
+
+	got = cart.GetTotalQty(marketplaceCode, variantCode)
+
+	assert.Equal(t, expected, got)
+}
+
+func TestCart_GetByExternalReference(t *testing.T) {
+	t.Parallel()
+
+	externalReference := "reference"
+	expected := &cartDomain.Item{
+		ExternalReference: externalReference,
+	}
+
+	cart := cartDomain.Cart{
+		Deliveries: []cartDomain.Delivery{
+			{
+				Cartitems: []cartDomain.Item{
+					*expected,
+				},
+			},
+		},
+	}
+
+	got, err := cart.GetByExternalReference(externalReference)
+
+	assert.Equal(t, expected, got)
+	assert.NoError(t, err)
+
+	expected = nil
+
+	cart = cartDomain.Cart{
+		Deliveries: []cartDomain.Delivery{
+			{
+				Cartitems: []cartDomain.Item{},
+			},
+		},
+	}
+
+	got, err = cart.GetByExternalReference(externalReference)
+
+	assert.Equal(t, expected, got)
+	assert.Error(t, err)
 }
 
 func TestCart_SumShippingNetWithDiscounts(t *testing.T) {
