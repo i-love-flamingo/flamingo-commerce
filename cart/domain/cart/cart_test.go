@@ -7,10 +7,112 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 
+	"github.com/stretchr/testify/assert"
+
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/price/domain"
-	"github.com/stretchr/testify/assert"
 )
+
+func TestCart_GetMainShippingEMail(t *testing.T) {
+	t.Parallel()
+
+	expected := "given_email"
+	cart := &cartDomain.Cart{
+		Deliveries: []cartDomain.Delivery{
+			{
+				DeliveryInfo: cartDomain.DeliveryInfo{
+					DeliveryLocation: cartDomain.DeliveryLocation{
+						Address: &cartDomain.Address{
+							Email: expected,
+						},
+					},
+				},
+			},
+		},
+	}
+
+	got := cart.GetMainShippingEMail()
+
+	assert.Equal(t, expected, got, "email should be found")
+
+	expected = ""
+	cart = &cartDomain.Cart{}
+
+	got = cart.GetMainShippingEMail()
+
+	assert.Equal(t, expected, got, "email should be empty")
+}
+
+func TestCart_IsEmpty(t *testing.T) {
+	t.Parallel()
+
+	cart := &cartDomain.Cart{
+		Deliveries: []cartDomain.Delivery{},
+	}
+	assert.Equal(t, true, cart.IsEmpty())
+
+	cart = &cartDomain.Cart{
+		Deliveries: []cartDomain.Delivery{
+			{
+				Cartitems: []cartDomain.Item{
+					{
+						Qty: 1,
+					},
+				},
+			},
+		},
+	}
+	assert.Equal(t, false, cart.IsEmpty())
+}
+
+func TestCart_GetDeliveryByCode(t *testing.T) {
+	t.Parallel()
+
+	cart := cartDomain.Cart{
+		Deliveries: []cartDomain.Delivery{
+			{
+				DeliveryInfo: cartDomain.DeliveryInfo{
+					Code: "delivery_code",
+				},
+			},
+		},
+	}
+	delivery, found := cart.GetDeliveryByCode("delivery_code")
+
+	assert.True(t, found, "delivery should be found")
+	assert.NotNil(t, delivery, "delivery should not be nil")
+
+	cart = cartDomain.Cart{
+		Deliveries: []cartDomain.Delivery{
+			{
+				DeliveryInfo: cartDomain.DeliveryInfo{
+					Code: "delivery_code",
+				},
+			},
+		},
+	}
+
+	delivery, found = cart.GetDeliveryByCode("code")
+
+	assert.False(t, found, "delivery should not be found")
+	assert.Nil(t, delivery, "delivery should be nil")
+
+	expectedDelivery := &cartDomain.Delivery{
+		DeliveryInfo: cartDomain.DeliveryInfo{
+			Code: "delivery_code",
+		},
+	}
+	cart = cartDomain.Cart{
+		Deliveries: []cartDomain.Delivery{
+			*expectedDelivery,
+		},
+	}
+
+	delivery, found = cart.GetDeliveryByCode("delivery_code")
+
+	assert.True(t, found, "delivery code should not be found")
+	assert.Equal(t, expectedDelivery, delivery, "delivery should be nil")
+}
 
 func Test_GetDeliveryCodes(t *testing.T) {
 	cart := new(cartDomain.Cart)
