@@ -115,6 +115,8 @@ func TestCart_GetDeliveryByCode(t *testing.T) {
 }
 
 func Test_GetDeliveryCodes(t *testing.T) {
+	t.Parallel()
+
 	cart := new(cartDomain.Cart)
 
 	dummyItem := cartDomain.Item{}
@@ -153,6 +155,8 @@ func Test_GetDeliveryCodes(t *testing.T) {
 }
 
 func TestCart_SumShippingNetWithDiscounts(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		name string
 		cart cartDomain.Cart
@@ -160,13 +164,13 @@ func TestCart_SumShippingNetWithDiscounts(t *testing.T) {
 	}{
 		{
 			name: "empty cart",
-			cart: *new(cartDomain.Cart),
+			cart: cartDomain.Cart{},
 			want: domain.NewZero(""),
 		},
 		{
 			name: "cart with items with discounts but no shipping cost",
 			cart: func() cartDomain.Cart {
-				cart := new(cartDomain.Cart)
+				cart := &cartDomain.Cart{}
 				cart.Deliveries = append(cart.Deliveries, *testutils.BuildDeliveryWithDifferentDiscounts(t))
 				return *cart
 			}(),
@@ -175,7 +179,7 @@ func TestCart_SumShippingNetWithDiscounts(t *testing.T) {
 		{
 			name: "cart with items and shipping cost, both with discounts",
 			cart: func() cartDomain.Cart {
-				cart := new(cartDomain.Cart)
+				cart := &cartDomain.Cart{}
 				cart.Deliveries = append(cart.Deliveries, *testutils.BuildDeliveryWithDifferentDiscountsAndShippingDiscounts(t))
 				return *cart
 			}(),
@@ -184,7 +188,7 @@ func TestCart_SumShippingNetWithDiscounts(t *testing.T) {
 		{
 			name: "cart with multiple deliveries with items and shipping cost, some with discounts",
 			cart: func() cartDomain.Cart {
-				cart := new(cartDomain.Cart)
+				cart := &cartDomain.Cart{}
 				cart.Deliveries = append(cart.Deliveries, *testutils.BuildDeliveryWithDifferentDiscountsAndShippingDiscounts(t))
 				cart.Deliveries = append(cart.Deliveries, *testutils.BuildDeliveryWithoutDiscountsAndShippingDiscounts(t))
 				return *cart
@@ -224,6 +228,8 @@ func TestCart_HasMixedCart(t *testing.T) {
 */
 
 func TestPlacedOrderInfos_GetOrderNumberForDeliveryCode(t *testing.T) {
+	t.Parallel()
+
 	type args struct {
 		deliveryCode string
 	}
@@ -288,6 +294,8 @@ func TestPlacedOrderInfos_GetOrderNumberForDeliveryCode(t *testing.T) {
 }
 
 func TestTaxes_AddTax(t *testing.T) {
+	t.Parallel()
+
 	taxes := cartDomain.Taxes{}
 	taxes = taxes.AddTax(
 		cartDomain.Tax{
@@ -304,6 +312,8 @@ func TestTaxes_AddTax(t *testing.T) {
 }
 
 func TestTaxes_AddTaxWithMerge(t *testing.T) {
+	t.Parallel()
+
 	taxes := cartDomain.Taxes{}
 	taxes = taxes.AddTax(
 		cartDomain.Tax{
@@ -322,6 +332,8 @@ func TestTaxes_AddTaxWithMerge(t *testing.T) {
 }
 
 func TestCartBuilder_BuildAndGet(t *testing.T) {
+	t.Parallel()
+
 	b := cartDomain.Builder{}
 
 	cart, err := b.AddTotalitem(cartDomain.Totalitem{
