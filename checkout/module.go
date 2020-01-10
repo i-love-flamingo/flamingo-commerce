@@ -2,6 +2,11 @@ package checkout
 
 import (
 	"flamingo.me/dingo"
+	"flamingo.me/flamingo/v3/framework/config"
+	"flamingo.me/flamingo/v3/framework/web"
+	flamingographql "flamingo.me/graphql"
+	"github.com/go-playground/form"
+
 	"flamingo.me/flamingo-commerce/v3/cart"
 	"flamingo.me/flamingo-commerce/v3/checkout/application/placeorder"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain"
@@ -11,10 +16,6 @@ import (
 	"flamingo.me/flamingo-commerce/v3/checkout/infrastructure/locker"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql"
-	"flamingo.me/flamingo/v3/framework/config"
-	"flamingo.me/flamingo/v3/framework/web"
-	flamingographql "flamingo.me/graphql"
-	"github.com/go-playground/form"
 )
 
 type (
@@ -34,13 +35,18 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	}
 
 	if m.PlaceOrderLockType == "clusterlock" {
-		//TODO provide cluster imple
+		// TODO provide cluster imple
 		injector.Bind(new(placeorder.TryLock)).To(locker.Simple{})
 	} else {
 		injector.Bind(new(placeorder.TryLock)).To(locker.Simple{})
 	}
 
 	injector.Bind(new(process.State)).AnnotatedWith("startState").To(states.New{})
+	injector.Bind(new(process.FailedState)).To(states.Failed{})
+	injector.BindMap(new(process.State), new(states.New).Name()).To(states.New{})
+	injector.BindMap(new(process.State), new(states.Wait).Name()).To(states.Wait{})
+	injector.BindMap(new(process.State), new(states.Success).Name()).To(states.Success{})
+	injector.BindMap(new(process.State), new(states.Failed).Name()).To(states.Failed{})
 
 	web.BindRoutes(injector, new(routes))
 

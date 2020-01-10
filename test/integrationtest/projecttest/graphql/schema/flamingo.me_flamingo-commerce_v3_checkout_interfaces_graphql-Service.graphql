@@ -69,13 +69,6 @@ type Commerce_Checkout_PlaceOrderState_State_FatalError implements Commerce_Chec
 #    #URL: String
 #}
 
-
-type Commerce_Checkout_PlaceOrderState_State_Cancelled implements Commerce_Checkout_PlaceOrderState_State {
-    isFinal: Boolean
-    name: String!
-    #cancellationReason: Commerce_Checkout_PlaceOrderState_State_CancellationReason
-}
-
 interface Commerce_Checkout_PlaceOrderState_State_CancellationReason {
     reason: String
 }

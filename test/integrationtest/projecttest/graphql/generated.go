@@ -401,11 +401,6 @@ type ComplexityRoot struct {
 		ValidationResult func(childComplexity int) int
 	}
 
-	CommerceCheckoutPlaceOrderStateStateCancelled struct {
-		IsFinal func(childComplexity int) int
-		Name    func(childComplexity int) int
-	}
-
 	CommerceCheckoutPlaceOrderStateStateFatalError struct {
 		IsFinal func(childComplexity int) int
 		Name    func(childComplexity int) int
@@ -2160,20 +2155,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCheckoutPlaceOrderStateStateCancellationReasonValidationError.ValidationResult(childComplexity), true
 
-	case "Commerce_Checkout_PlaceOrderState_State_Cancelled.isFinal":
-		if e.complexity.CommerceCheckoutPlaceOrderStateStateCancelled.IsFinal == nil {
-			break
-		}
-
-		return e.complexity.CommerceCheckoutPlaceOrderStateStateCancelled.IsFinal(childComplexity), true
-
-	case "Commerce_Checkout_PlaceOrderState_State_Cancelled.name":
-		if e.complexity.CommerceCheckoutPlaceOrderStateStateCancelled.Name == nil {
-			break
-		}
-
-		return e.complexity.CommerceCheckoutPlaceOrderStateStateCancelled.Name(childComplexity), true
-
 	case "Commerce_Checkout_PlaceOrderState_State_FatalError.isFinal":
 		if e.complexity.CommerceCheckoutPlaceOrderStateStateFatalError.IsFinal == nil {
 			break
@@ -3518,13 +3499,6 @@ type Commerce_Checkout_PlaceOrderState_State_FatalError implements Commerce_Chec
 #    name: String!
 #    #URL: String
 #}
-
-
-type Commerce_Checkout_PlaceOrderState_State_Cancelled implements Commerce_Checkout_PlaceOrderState_State {
-    isFinal: Boolean
-    name: String!
-    #cancellationReason: Commerce_Checkout_PlaceOrderState_State_CancellationReason
-}
 
 interface Commerce_Checkout_PlaceOrderState_State_CancellationReason {
     reason: String
@@ -9852,57 +9826,6 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Cancellatio
 	return ec.marshalOCommerce_Cart_ValidationResult2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐResult(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Cancelled_isFinal(ctx context.Context, field graphql.CollectedField, obj *states.Canceled) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_Cancelled",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.IsFinal(), nil
-	})
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Cancelled_name(ctx context.Context, field graphql.CollectedField, obj *states.Canceled) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_Cancelled",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Name(), nil
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FatalError_isFinal(ctx context.Context, field graphql.CollectedField, obj *states.Failed) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -13963,10 +13886,6 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State(ctx context
 		return ec._Commerce_Checkout_PlaceOrderState_State_FatalError(ctx, sel, &obj)
 	case *states.Failed:
 		return ec._Commerce_Checkout_PlaceOrderState_State_FatalError(ctx, sel, obj)
-	case states.Canceled:
-		return ec._Commerce_Checkout_PlaceOrderState_State_Cancelled(ctx, sel, &obj)
-	case *states.Canceled:
-		return ec._Commerce_Checkout_PlaceOrderState_State_Cancelled(ctx, sel, obj)
 	default:
 		panic(fmt.Errorf("unexpected type %T", obj))
 	}
@@ -15772,35 +15691,6 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Cancellatio
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_CancellationReason_ValidationError_reason(ctx, field, obj)
 		case "validationResult":
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_CancellationReason_ValidationError_validationResult(ctx, field, obj)
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var commerce_Checkout_PlaceOrderState_State_CancelledImplementors = []string{"Commerce_Checkout_PlaceOrderState_State_Cancelled", "Commerce_Checkout_PlaceOrderState_State"}
-
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Cancelled(ctx context.Context, sel ast.SelectionSet, obj *states.Canceled) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_PlaceOrderState_State_CancelledImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_Cancelled")
-		case "isFinal":
-			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_Cancelled_isFinal(ctx, field, obj)
-		case "name":
-			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_Cancelled_name(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

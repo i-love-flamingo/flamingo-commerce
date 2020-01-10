@@ -1,12 +1,14 @@
 package states
 
 import (
+	"context"
 	"encoding/gob"
+
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 )
 
 type (
-	//Wait state
+	// Wait state
 	Wait struct {
 	}
 )
@@ -17,13 +19,13 @@ func init() {
 	gob.Register(Wait{})
 }
 
-//Name get state name
-func (s Wait) Name() string {
+// Name get state name
+func (w Wait) Name() string {
 	return "Wait"
 }
 
-//Run run state
-func (s Wait) Run(process *process.Process) *process.RollbackReference {
+// Run the state operations
+func (w Wait) Run(context.Context, *process.Process) process.RunResult {
 
 	/* Todo: maybe split in multiple states
 	1. Reserve Order id
@@ -33,10 +35,15 @@ func (s Wait) Run(process *process.Process) *process.RollbackReference {
 	// n.ctx.UpdateState(WaitingForPaymentInformation)
 	*/
 
-	return nil
+	panic("implement me")
 }
 
-//IsFinal if state is a final state
-func (s Wait) IsFinal() bool {
+// Rollback the state operations
+func (w Wait) Rollback(process.RollbackData) error {
+	panic("implement me")
+}
+
+// IsFinal if state is a final state
+func (w Wait) IsFinal() bool {
 	return false
 }

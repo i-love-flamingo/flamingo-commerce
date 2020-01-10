@@ -1,10 +1,27 @@
 package process
 
+import (
+	"context"
+)
+
 type (
-	//State interface
+	// State interface
 	State interface {
-		Run(*Process) *RollbackReference
+		Run(context.Context, *Process) RunResult
+		Rollback(RollbackData) error
 		IsFinal() bool
 		Name() string
+	}
+
+	// RunResult of a state
+	RunResult struct {
+		RollbackData RollbackData
+		Failed       FailedReason
+	}
+
+	// FailedState interfaces
+	FailedState interface {
+		State
+		SetFailedReason(reason FailedReason) FailedState
 	}
 )

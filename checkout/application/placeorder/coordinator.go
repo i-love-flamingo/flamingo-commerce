@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
+	"time"
+
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
-	"time"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 )
@@ -82,13 +83,13 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart) (*process.C
 			return
 		}
 
-		newProcess, err := c.processFactory.New(nil)
+		newProcess, err := c.processFactory.New()
 		if err != nil {
 			runerr = err
 			c.logger.Error(err)
 			return
 		}
-		newProcess.Run()
+		newProcess.Run(ctx)
 		pctx := newProcess.Context()
 		runpctx = &pctx
 		runerr = c.storeProcessContext(ctx, pctx)
