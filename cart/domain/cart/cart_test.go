@@ -16,14 +16,14 @@ import (
 func TestCart_GetMainShippingEMail(t *testing.T) {
 	t.Parallel()
 
-	expected := "given_email"
+	email := "given_email"
 	cart := &cartDomain.Cart{
 		Deliveries: []cartDomain.Delivery{
 			{
 				DeliveryInfo: cartDomain.DeliveryInfo{
 					DeliveryLocation: cartDomain.DeliveryLocation{
 						Address: &cartDomain.Address{
-							Email: expected,
+							Email: email,
 						},
 					},
 				},
@@ -33,14 +33,14 @@ func TestCart_GetMainShippingEMail(t *testing.T) {
 
 	got := cart.GetMainShippingEMail()
 
-	assert.Equal(t, expected, got, "email should be found")
+	assert.Equal(t, email, got, "email should be found")
 
-	expected = ""
+	email = ""
 	cart = &cartDomain.Cart{}
 
 	got = cart.GetMainShippingEMail()
 
-	assert.Equal(t, expected, got, "email should be empty")
+	assert.Equal(t, email, got, "email should be empty")
 }
 
 func TestCart_IsEmpty(t *testing.T) {
@@ -68,50 +68,62 @@ func TestCart_IsEmpty(t *testing.T) {
 func TestCart_GetDeliveryByCode(t *testing.T) {
 	t.Parallel()
 
+	code := "delivery_code"
+	delivery := &cartDomain.Delivery{
+		DeliveryInfo: cartDomain.DeliveryInfo{
+			Code: code,
+		},
+	}
 	cart := cartDomain.Cart{
 		Deliveries: []cartDomain.Delivery{
-			{
-				DeliveryInfo: cartDomain.DeliveryInfo{
-					Code: "delivery_code",
-				},
-			},
+			*delivery,
 		},
 	}
-	delivery, found := cart.GetDeliveryByCode("delivery_code")
+
+	got, found := cart.GetDeliveryByCode(code)
 
 	assert.True(t, found, "delivery should be found")
-	assert.NotNil(t, delivery, "delivery should not be nil")
+	assert.Equal(t, delivery, got, "delivery should not be nil")
 
 	cart = cartDomain.Cart{
 		Deliveries: []cartDomain.Delivery{
-			{
-				DeliveryInfo: cartDomain.DeliveryInfo{
-					Code: "delivery_code",
-				},
-			},
+			*delivery,
 		},
 	}
 
-	delivery, found = cart.GetDeliveryByCode("code")
+	got, found = cart.GetDeliveryByCode("not_existing")
 
 	assert.False(t, found, "delivery should not be found")
-	assert.Nil(t, delivery, "delivery should be nil")
+	assert.Equal(t, (*cartDomain.Delivery)(nil), got, "delivery should be nil")
+}
 
-	expectedDelivery := &cartDomain.Delivery{
+func TestHasDeliveryForCode(t *testing.T) {
+	t.Parallel()
+
+	code := "delivery_code"
+	delivery := cartDomain.Delivery{
 		DeliveryInfo: cartDomain.DeliveryInfo{
-			Code: "delivery_code",
+			Code: code,
 		},
 	}
+
+	cart := cartDomain.Cart{
+		Deliveries: []cartDomain.Delivery{
+			delivery,
+		},
+	}
+
+	found := cart.HasDeliveryForCode(code)
+	assert.True(t, found, "delivery should be found")
+
 	cart = cartDomain.Cart{
 		Deliveries: []cartDomain.Delivery{
-			*expectedDelivery,
+			delivery,
 		},
 	}
 
-	delivery, found = cart.GetDeliveryByCode("delivery_code")
-
-	assert.True(t, found, "delivery code should not be found")
-	assert.Equal(t, expectedDelivery, delivery, "delivery should be nil")
+	found = cart.HasDeliveryForCode("not_existing")
+	assert.False(t, found, "delivery should not be found")
 }
 
 func TestGetDeliveryCodes(t *testing.T) {
@@ -152,6 +164,38 @@ func TestGetDeliveryCodes(t *testing.T) {
 	assert.Len(t, deliveryCodes, 2)
 	assert.Contains(t, deliveryCodes, "home")
 	assert.Contains(t, deliveryCodes, "inFlight")
+}
+
+func TestCart_GetDeliveryByItemID(t *testing.T) {
+	t.Parallel()
+
+	id := "item_id"
+	delivery := &cartDomain.Delivery{
+		Cartitems: []cartDomain.Item{
+			{
+				ID: id,
+			},
+		},
+	}
+	cart := cartDomain.Cart{
+		Deliveries: []cartDomain.Delivery{
+			*delivery,
+		},
+	}
+
+	got, err := cart.GetDeliveryByItemID(id)
+
+	assert.Equal(t, delivery, got)
+	assert.NoError(t, err)
+
+	cart = cartDomain.Cart{
+		Deliveries: []cartDomain.Delivery{},
+	}
+
+	got, err = cart.GetDeliveryByItemID(id)
+
+	assert.Equal(t, (*cartDomain.Delivery)(nil), got)
+	assert.Error(t, err)
 }
 
 func TestCart_GetTotalQty(t *testing.T) {
