@@ -1,6 +1,7 @@
 package cart_test
 
 import (
+	"math/big"
 	"testing"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/testutils"
@@ -305,6 +306,64 @@ func TestCart_GetByExternalReference(t *testing.T) {
 
 	assert.Equal(t, expected, got)
 	assert.Error(t, err)
+}
+
+func TestCart_GetVoucherSavings(t *testing.T) {
+	t.Parallel()
+
+	price := domain.NewFromBigFloat(*big.NewFloat(1.0), "")
+	cart := cartDomain.Cart{
+		Totalitems: []cartDomain.Totalitem{
+			{
+				Price: price,
+				Type:  cartDomain.TotalsTypeVoucher,
+			},
+		},
+	}
+
+	got := cart.GetVoucherSavings()
+	assert.Equal(t, got, price)
+
+	price = domain.NewFromBigFloat(*big.NewFloat(2.0), "")
+	cart = cartDomain.Cart{
+		Totalitems: []cartDomain.Totalitem{
+			{
+				Price: price,
+				Type:  cartDomain.TotalsTypeVoucher,
+			},
+		},
+	}
+
+	got = cart.GetVoucherSavings()
+	assert.Equal(t, got, price)
+
+	cart = cartDomain.Cart{
+		Totalitems: []cartDomain.Totalitem{
+			{
+				Price: domain.NewFromBigFloat(*big.NewFloat(2.0), "c1"),
+				Type:  cartDomain.TotalsTypeVoucher,
+			},
+			{
+				Price: domain.NewFromBigFloat(*big.NewFloat(2.0), "c2"),
+				Type:  cartDomain.TotalsTypeVoucher,
+			},
+		},
+	}
+
+	got = cart.GetVoucherSavings()
+	assert.Equal(t, got, domain.NewZero("c1"))
+
+	cart = cartDomain.Cart{
+		Totalitems: []cartDomain.Totalitem{
+			{
+				Price: domain.NewFromBigFloat(*big.NewFloat(-2.0), ""),
+				Type:  cartDomain.TotalsTypeVoucher,
+			},
+		},
+	}
+
+	got = cart.GetVoucherSavings()
+	assert.Equal(t, got, domain.Price{})
 }
 
 func TestCart_SumShippingNetWithDiscounts(t *testing.T) {
