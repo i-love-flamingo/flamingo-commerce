@@ -245,7 +245,8 @@ func Test_NewDefaultPaymentSelection_IdempotencyKey(t *testing.T) {
 	assert.NotEqual(t, uuid.Nil.String(), selection.IdempotencyKey())
 
 	// GenerateNewIdempotencyKey should return a payment selection with a different key
-	newPaymentSelection := selection.GenerateNewIdempotencyKey()
+	newPaymentSelection, err := selection.GenerateNewIdempotencyKey()
+	assert.NoError(t, err)
 	assert.NotEqual(t, newPaymentSelection.IdempotencyKey(), selection.IdempotencyKey(), "IdempotencyKey should be not matching")
 	assert.Equal(t, newPaymentSelection.CartSplit(), selection.CartSplit())
 	assert.Equal(t, newPaymentSelection.Gateway(), selection.Gateway())

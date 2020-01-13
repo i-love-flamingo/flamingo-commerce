@@ -27,7 +27,7 @@ type (
 		TotalValue() price.Price
 		MethodByType(string) string
 		IdempotencyKey() string
-		GenerateNewIdempotencyKey() PaymentSelection
+		GenerateNewIdempotencyKey() (PaymentSelection, error)
 	}
 
 	//SplitQualifier qualifies by Charge Type, Charge Reference and Payment Method
@@ -107,7 +107,7 @@ func NewDefaultPaymentSelection(gateway string, chargeTypeToPaymentMethod map[st
 	// filter out zero charges from here on out
 	result = RemoveZeroCharges(result, chargeTypeToPaymentMethod)
 	// add an new Idempotency-Key to the payment selection
-	return result.GenerateNewIdempotencyKey(), err
+	return result.GenerateNewIdempotencyKey()
 }
 
 // RemoveZeroCharges removes charges which have an value of zero from selection as they are necessary
@@ -128,7 +128,9 @@ func RemoveZeroCharges(selection PaymentSelection, chargeTypeToPaymentMethod map
 	removeZeroChargesFromSplit(selection.ItemSplit().TotalItems, chargeTypeToPaymentMethod, builder.AddTotalItem)
 
 	result.ChargedItemsProp = builder.Build()
-	return result.GenerateNewIdempotencyKey()
+
+	resultWithIdempotencyKey, _ := result.GenerateNewIdempotencyKey()
+	return resultWithIdempotencyKey
 }
 
 // removeZeroChargesFromSplit remove charges from single item splits
@@ -221,11 +223,14 @@ func newPaymentSelectionWithGiftCard(gateway string, chargeTypeToPaymentMethod m
 
 // NewPaymentSelection - with the passed PaymentSplitByItem
 func NewPaymentSelection(gateway string, chargedItems PaymentSplitByItem) PaymentSelection {
-	selection := DefaultPaymentSelection{
+	var selection PaymentSelection
+	selection = DefaultPaymentSelection{
 		GatewayProp:      gateway,
 		ChargedItemsProp: chargedItems,
 	}
-	return selection.GenerateNewIdempotencyKey()
+	selection, _ = selection.GenerateNewIdempotencyKey()
+
+	return selection
 }
 
 //Gateway - returns the selected Gateway code
@@ -254,10 +259,13 @@ func (d DefaultPaymentSelection) IdempotencyKey() string {
 }
 
 //GenerateNewIdempotencyKey updates the Idempotency-Key to a new value
-func (d DefaultPaymentSelection) GenerateNewIdempotencyKey() PaymentSelection {
-	key, _ := uuid.NewRandom()
+func (d DefaultPaymentSelection) GenerateNewIdempotencyKey() (PaymentSelection, error) {
+	key, err := uuid.NewRandom()
+	if err != nil {
+		return DefaultPaymentSelection{}, err
+	}
 	d.IdempotencyKeyUUID = key.String()
-	return d
+	return d, nil
 }
 
 //MarshalJSON adds the Idempotency-Key to the payment selection json

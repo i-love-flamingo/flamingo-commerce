@@ -624,10 +624,14 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 		return cc.responder.RouteRedirect("checkout.placeorder", nil)
 	case paymentDomain.PaymentFlowStatusAborted:
 		// mark payment selection as new payment to allow the user to retry
-		newPaymentSelection := decoratedCart.Cart.PaymentSelection.GenerateNewIdempotencyKey()
-		err := cc.applicationCartService.UpdatePaymentSelection(ctx, session, newPaymentSelection)
+		newPaymentSelection, err := decoratedCart.Cart.PaymentSelection.GenerateNewIdempotencyKey()
 		if err != nil {
-			cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.paymentaction: Error during UpdatePaymentSelection:", err)
+			cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.paymentaction: Error during GenerateNewIdempotencyKey:", err)
+		} else {
+			err = cc.applicationCartService.UpdatePaymentSelection(ctx, session, newPaymentSelection)
+			if err != nil {
+				cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.paymentaction: Error during UpdatePaymentSelection:", err)
+			}
 		}
 
 		// payment was aborted by user, redirect to checkout so a new payment can be started
@@ -657,10 +661,14 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 		return cc.responder.RouteRedirect("checkout", nil)
 	case paymentDomain.PaymentFlowStatusFailed, paymentDomain.PaymentFlowStatusCancelled:
 		// mark payment selection as new payment to allow the user to retry
-		newPaymentSelection := decoratedCart.Cart.PaymentSelection.GenerateNewIdempotencyKey()
-		err := cc.applicationCartService.UpdatePaymentSelection(ctx, session, newPaymentSelection)
+		newPaymentSelection, err := decoratedCart.Cart.PaymentSelection.GenerateNewIdempotencyKey()
 		if err != nil {
-			cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.paymentaction: Error during UpdatePaymentSelection:", err)
+			cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.paymentaction: Error during GenerateNewIdempotencyKey:", err)
+		} else {
+			err = cc.applicationCartService.UpdatePaymentSelection(ctx, session, newPaymentSelection)
+			if err != nil {
+				cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.paymentaction: Error during UpdatePaymentSelection:", err)
+			}
 		}
 
 		// payment failed or is cancelled by payment provider, redirect back to checkout
