@@ -10,11 +10,16 @@ import (
 )
 
 type (
+	StartPlaceOrderResult struct {
+		UUID string
+	}
+
 	//PlaceOrderContext infos
 	PlaceOrderContext struct {
 		Cart       *decorator.DecoratedCart
 		OrderInfos *PlacedOrderInfos
 		State      process.State
+		UUID       string
 	}
 
 	//PlacedOrderInfos infos
@@ -24,29 +29,4 @@ type (
 		Email            string
 		PlacedDecoratedCart *dto.DecoratedCart
 	}
-
-	//CancellationReason iface
-	CancellationReason interface {
-		Reason() string
-	}
-
-	//CancellationReasonPaymentError error
-	CancellationReasonPaymentError struct {
-		PaymentError error
-	}
-
-	//CancellationReasonValidationError error
-	CancellationReasonValidationError struct {
-		ValidationResult validation.Result
-	}
 )
-
-//Reason returns reason
-func (c *CancellationReasonPaymentError) Reason() string {
-	return c.PaymentError.Error()
-}
-
-//Reason returns reason
-func (c *CancellationReasonValidationError) Reason() string {
-	return "cart-invalid"
-}

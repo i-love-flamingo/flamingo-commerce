@@ -22,19 +22,21 @@ func (*Service) Schema() []byte {
 // Models return the 'Schema name' => 'Go model' mapping of this module
 func (*Service) Models() map[string]config.TypeMapEntry {
 	return graphql.ModelMap{
-		"Commerce_Checkout_PlaceOrderContext":                dto.PlaceOrderContext{},
-		"Commerce_Checkout_PlacedOrderInfos":                 dto.PlacedOrderInfos{},
-		"Commerce_Checkout_PlaceOrderPaymentInfo":            application.PlaceOrderPaymentInfo{},
-		"Commerce_Checkout_PlaceOrderState_State":            new(process.State),
-		"Commerce_Checkout_PlaceOrderState_State_New":        states.New{},
-		"Commerce_Checkout_PlaceOrderState_State_Wait":       states.Wait{},
-		"Commerce_Checkout_PlaceOrderState_State_Success":    states.Success{},
-		"Commerce_Checkout_PlaceOrderState_State_FatalError": states.Failed{},
+		"Commerce_Checkout_PlaceOrderContext":             dto.PlaceOrderContext{},
+		"Commerce_Checkout_StartPlaceOrder_Result":        dto.StartPlaceOrderResult{},
+		"Commerce_Checkout_PlacedOrderInfos":              dto.PlacedOrderInfos{},
+		"Commerce_Checkout_PlaceOrderPaymentInfo":         application.PlaceOrderPaymentInfo{},
+		"Commerce_Checkout_PlaceOrderState_State":         new(process.State),
+		"Commerce_Checkout_PlaceOrderState_State_New":     states.New{},
+		"Commerce_Checkout_PlaceOrderState_State_Wait":    states.Wait{},
+		"Commerce_Checkout_PlaceOrderState_State_Success": states.Success{},
+		"Commerce_Checkout_PlaceOrderState_State_Failed":  states.Failed{},
 		//"Commerce_Checkout_PlaceOrderState_State_ShowIframe":                         states.Wait{},
 		//"Commerce_Checkout_PlaceOrderState_State_ShowHtml":                           states.Wait{},
 		//"Commerce_Checkout_PlaceOrderState_State_Redirect":                           states.Wait{},
-		"Commerce_Checkout_PlaceOrderState_State_CancellationReason":                 new(dto.CancellationReason),
-		"Commerce_Checkout_PlaceOrderState_State_CancellationReason_PaymentError":    dto.CancellationReasonPaymentError{},
-		"Commerce_Checkout_PlaceOrderState_State_CancellationReason_ValidationError": dto.CancellationReasonValidationError{},
+		"Commerce_Checkout_PlaceOrderState_State_FailedReason":                     new(process.FailedReason),
+		"Commerce_Checkout_PlaceOrderState_State_FailedReason_Error":               process.ErrorOccurredReason{},
+		"Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError":        process.PaymentErrorOccurredReason{},
+		"Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError": process.CartValidationErrorReason{},
 	}.Models()
 }

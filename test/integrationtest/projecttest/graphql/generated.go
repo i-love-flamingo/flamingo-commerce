@@ -382,6 +382,7 @@ type ComplexityRoot struct {
 		Cart       func(childComplexity int) int
 		OrderInfos func(childComplexity int) int
 		State      func(childComplexity int) int
+		UUID       func(childComplexity int) int
 	}
 
 	CommerceCheckoutPlaceOrderPaymentInfo struct {
@@ -392,18 +393,23 @@ type ComplexityRoot struct {
 		Title           func(childComplexity int) int
 	}
 
-	CommerceCheckoutPlaceOrderStateStateCancellationReasonPaymentError struct {
-		Reason func(childComplexity int) int
+	CommerceCheckoutPlaceOrderStateStateFailed struct {
+		IsFinal func(childComplexity int) int
+		Name    func(childComplexity int) int
+		Reason  func(childComplexity int) int
 	}
 
-	CommerceCheckoutPlaceOrderStateStateCancellationReasonValidationError struct {
+	CommerceCheckoutPlaceOrderStateStateFailedReasonCartValidationError struct {
 		Reason           func(childComplexity int) int
 		ValidationResult func(childComplexity int) int
 	}
 
-	CommerceCheckoutPlaceOrderStateStateFatalError struct {
-		IsFinal func(childComplexity int) int
-		Name    func(childComplexity int) int
+	CommerceCheckoutPlaceOrderStateStateFailedReasonError struct {
+		Reason func(childComplexity int) int
+	}
+
+	CommerceCheckoutPlaceOrderStateStateFailedReasonPaymentError struct {
+		Reason func(childComplexity int) int
 	}
 
 	CommerceCheckoutPlaceOrderStateStateNew struct {
@@ -425,6 +431,10 @@ type ComplexityRoot struct {
 		Email            func(childComplexity int) int
 		PaymentInfos     func(childComplexity int) int
 		PlacedOrderInfos func(childComplexity int) int
+	}
+
+	CommerceCheckoutStartPlaceOrderResult struct {
+		UUID func(childComplexity int) int
 	}
 
 	CommerceDecoratedCart struct {
@@ -568,6 +578,7 @@ type ComplexityRoot struct {
 		CommerceCartUpdateBillingAddress  func(childComplexity int, addressForm *forms.BillingAddressForm) int
 		CommerceCartUpdateSelectedPayment func(childComplexity int, gateway string, method string) int
 		CommerceCheckoutCancelPlaceOrder  func(childComplexity int) int
+		CommerceCheckoutRefreshPlaceOrder func(childComplexity int) int
 		CommerceCheckoutStartPlaceOrder   func(childComplexity int, returnURL string) int
 		CommerceDeleteCartDelivery        func(childComplexity int, deliveryCode string) int
 		CommerceDeleteItem                func(childComplexity int, itemID string, deliveryCode string) int
@@ -576,13 +587,13 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		CommerceCart                      func(childComplexity int) int
-		CommerceCategory                  func(childComplexity int, categoryCode string, categorySearchRequest *dto.CommerceSearchRequest) int
-		CommerceCategoryTree              func(childComplexity int, activeCategoryCode string) int
-		CommerceCheckoutPlaceOrderContext func(childComplexity int) int
-		CommerceProduct                   func(childComplexity int, marketplaceCode string) int
-		CommerceProductSearch             func(childComplexity int, searchRequest *dto.CommerceSearchRequest) int
-		Flamingo                          func(childComplexity int) int
+		CommerceCart                     func(childComplexity int) int
+		CommerceCategory                 func(childComplexity int, categoryCode string, categorySearchRequest *dto.CommerceSearchRequest) int
+		CommerceCategoryTree             func(childComplexity int, activeCategoryCode string) int
+		CommerceCheckoutActivePlaceOrder func(childComplexity int) int
+		CommerceProduct                  func(childComplexity int, marketplaceCode string) int
+		CommerceProductSearch            func(childComplexity int, searchRequest *dto.CommerceSearchRequest) int
+		Flamingo                         func(childComplexity int) int
 	}
 }
 
@@ -594,15 +605,16 @@ type MutationResolver interface {
 	CommerceUpdateItemQty(ctx context.Context, itemID string, deliveryCode string, qty int) (*decorator.DecoratedCart, error)
 	CommerceCartUpdateBillingAddress(ctx context.Context, addressForm *forms.BillingAddressForm) (*dto1.BillingAddressForm, error)
 	CommerceCartUpdateSelectedPayment(ctx context.Context, gateway string, method string) (*dto1.SelectedPaymentResult, error)
-	CommerceCheckoutStartPlaceOrder(ctx context.Context, returnURL string) (bool, error)
+	CommerceCheckoutStartPlaceOrder(ctx context.Context, returnURL string) (*dto2.StartPlaceOrderResult, error)
 	CommerceCheckoutCancelPlaceOrder(ctx context.Context) (bool, error)
+	CommerceCheckoutRefreshPlaceOrder(ctx context.Context) (*dto2.PlaceOrderContext, error)
 }
 type QueryResolver interface {
 	Flamingo(ctx context.Context) (*string, error)
 	CommerceProduct(ctx context.Context, marketplaceCode string) (domain.BasicProduct, error)
 	CommerceProductSearch(ctx context.Context, searchRequest *dto.CommerceSearchRequest) (*application.SearchResult, error)
 	CommerceCart(ctx context.Context) (*decorator.DecoratedCart, error)
-	CommerceCheckoutPlaceOrderContext(ctx context.Context) (*dto2.PlaceOrderContext, error)
+	CommerceCheckoutActivePlaceOrder(ctx context.Context) (bool, error)
 	CommerceCategoryTree(ctx context.Context, activeCategoryCode string) (domain1.Tree, error)
 	CommerceCategory(ctx context.Context, categoryCode string, categorySearchRequest *dto.CommerceSearchRequest) (*dto3.CategorySearchResult, error)
 }
@@ -2099,6 +2111,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCheckoutPlaceOrderContext.State(childComplexity), true
 
+	case "Commerce_Checkout_PlaceOrderContext.uuid":
+		if e.complexity.CommerceCheckoutPlaceOrderContext.UUID == nil {
+			break
+		}
+
+		return e.complexity.CommerceCheckoutPlaceOrderContext.UUID(childComplexity), true
+
 	case "Commerce_Checkout_PlaceOrderPaymentInfo.amount":
 		if e.complexity.CommerceCheckoutPlaceOrderPaymentInfo.Amount == nil {
 			break
@@ -2134,40 +2153,54 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCheckoutPlaceOrderPaymentInfo.Title(childComplexity), true
 
-	case "Commerce_Checkout_PlaceOrderState_State_CancellationReason_PaymentError.reason":
-		if e.complexity.CommerceCheckoutPlaceOrderStateStateCancellationReasonPaymentError.Reason == nil {
+	case "Commerce_Checkout_PlaceOrderState_State_Failed.isFinal":
+		if e.complexity.CommerceCheckoutPlaceOrderStateStateFailed.IsFinal == nil {
 			break
 		}
 
-		return e.complexity.CommerceCheckoutPlaceOrderStateStateCancellationReasonPaymentError.Reason(childComplexity), true
+		return e.complexity.CommerceCheckoutPlaceOrderStateStateFailed.IsFinal(childComplexity), true
 
-	case "Commerce_Checkout_PlaceOrderState_State_CancellationReason_ValidationError.reason":
-		if e.complexity.CommerceCheckoutPlaceOrderStateStateCancellationReasonValidationError.Reason == nil {
+	case "Commerce_Checkout_PlaceOrderState_State_Failed.name":
+		if e.complexity.CommerceCheckoutPlaceOrderStateStateFailed.Name == nil {
 			break
 		}
 
-		return e.complexity.CommerceCheckoutPlaceOrderStateStateCancellationReasonValidationError.Reason(childComplexity), true
+		return e.complexity.CommerceCheckoutPlaceOrderStateStateFailed.Name(childComplexity), true
 
-	case "Commerce_Checkout_PlaceOrderState_State_CancellationReason_ValidationError.validationResult":
-		if e.complexity.CommerceCheckoutPlaceOrderStateStateCancellationReasonValidationError.ValidationResult == nil {
+	case "Commerce_Checkout_PlaceOrderState_State_Failed.reason":
+		if e.complexity.CommerceCheckoutPlaceOrderStateStateFailed.Reason == nil {
 			break
 		}
 
-		return e.complexity.CommerceCheckoutPlaceOrderStateStateCancellationReasonValidationError.ValidationResult(childComplexity), true
+		return e.complexity.CommerceCheckoutPlaceOrderStateStateFailed.Reason(childComplexity), true
 
-	case "Commerce_Checkout_PlaceOrderState_State_FatalError.isFinal":
-		if e.complexity.CommerceCheckoutPlaceOrderStateStateFatalError.IsFinal == nil {
+	case "Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError.reason":
+		if e.complexity.CommerceCheckoutPlaceOrderStateStateFailedReasonCartValidationError.Reason == nil {
 			break
 		}
 
-		return e.complexity.CommerceCheckoutPlaceOrderStateStateFatalError.IsFinal(childComplexity), true
+		return e.complexity.CommerceCheckoutPlaceOrderStateStateFailedReasonCartValidationError.Reason(childComplexity), true
 
-	case "Commerce_Checkout_PlaceOrderState_State_FatalError.name":
-		if e.complexity.CommerceCheckoutPlaceOrderStateStateFatalError.Name == nil {
+	case "Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError.validationResult":
+		if e.complexity.CommerceCheckoutPlaceOrderStateStateFailedReasonCartValidationError.ValidationResult == nil {
 			break
 		}
 
-		return e.complexity.CommerceCheckoutPlaceOrderStateStateFatalError.Name(childComplexity), true
+		return e.complexity.CommerceCheckoutPlaceOrderStateStateFailedReasonCartValidationError.ValidationResult(childComplexity), true
+
+	case "Commerce_Checkout_PlaceOrderState_State_FailedReason_Error.reason":
+		if e.complexity.CommerceCheckoutPlaceOrderStateStateFailedReasonError.Reason == nil {
+			break
+		}
+
+		return e.complexity.CommerceCheckoutPlaceOrderStateStateFailedReasonError.Reason(childComplexity), true
+
+	case "Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError.reason":
+		if e.complexity.CommerceCheckoutPlaceOrderStateStateFailedReasonPaymentError.Reason == nil {
+			break
+		}
+
+		return e.complexity.CommerceCheckoutPlaceOrderStateStateFailedReasonPaymentError.Reason(childComplexity), true
 
 	case "Commerce_Checkout_PlaceOrderState_State_New.isFinal":
 		if e.complexity.CommerceCheckoutPlaceOrderStateStateNew.IsFinal == nil {
@@ -2231,6 +2264,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceCheckoutPlacedOrderInfos.PlacedOrderInfos(childComplexity), true
+
+	case "Commerce_Checkout_StartPlaceOrder_Result.uuid":
+		if e.complexity.CommerceCheckoutStartPlaceOrderResult.UUID == nil {
+			break
+		}
+
+		return e.complexity.CommerceCheckoutStartPlaceOrderResult.UUID(childComplexity), true
 
 	case "Commerce_DecoratedCart.cart":
 		if e.complexity.CommerceDecoratedCart.Cart == nil {
@@ -2874,6 +2914,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CommerceCheckoutCancelPlaceOrder(childComplexity), true
 
+	case "Mutation.Commerce_Checkout_RefreshPlaceOrder":
+		if e.complexity.Mutation.CommerceCheckoutRefreshPlaceOrder == nil {
+			break
+		}
+
+		return e.complexity.Mutation.CommerceCheckoutRefreshPlaceOrder(childComplexity), true
+
 	case "Mutation.Commerce_Checkout_StartPlaceOrder":
 		if e.complexity.Mutation.CommerceCheckoutStartPlaceOrder == nil {
 			break
@@ -2960,12 +3007,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.CommerceCategoryTree(childComplexity, args["activeCategoryCode"].(string)), true
 
-	case "Query.Commerce_Checkout_PlaceOrderContext":
-		if e.complexity.Query.CommerceCheckoutPlaceOrderContext == nil {
+	case "Query.Commerce_Checkout_ActivePlaceOrder":
+		if e.complexity.Query.CommerceCheckoutActivePlaceOrder == nil {
 			break
 		}
 
-		return e.complexity.Query.CommerceCheckoutPlaceOrderContext(childComplexity), true
+		return e.complexity.Query.CommerceCheckoutActivePlaceOrder(childComplexity), true
 
 	case "Query.Commerce_Product":
 		if e.complexity.Query.CommerceProduct == nil {
@@ -3429,7 +3476,10 @@ extend type Query {
     Commerce_Category(categoryCode: String!, categorySearchRequest: Commerce_Search_Request): Commerce_Category_SearchResult
 }
 `},
-	&ast.Source{Name: "graphql/schema/flamingo.me_flamingo-commerce_v3_checkout_interfaces_graphql-Service.graphql", Input: `# Commerce_Checkout_PlaceOrderContext represents the result of the current (running) place order mutation
+	&ast.Source{Name: "graphql/schema/flamingo.me_flamingo-commerce_v3_checkout_interfaces_graphql-Service.graphql", Input: `type Commerce_Checkout_StartPlaceOrder_Result {
+    uuid: String!
+}
+# Commerce_Checkout_PlaceOrderContext represents the result of the current (running) place order mutation
 type Commerce_Checkout_PlaceOrderContext {
     # The Cart that is going to be placed
     cart: Commerce_DecoratedCart
@@ -3437,6 +3487,8 @@ type Commerce_Checkout_PlaceOrderContext {
     orderInfos: Commerce_Checkout_PlacedOrderInfos
     # State depending on the state of payment and place order - state may contain additional infos
     state: Commerce_Checkout_PlaceOrderState_State
+    # A unique id for the process
+    uuid: String!
 }
 
 
@@ -3476,10 +3528,10 @@ type Commerce_Checkout_PlaceOrderState_State_Success implements Commerce_Checkou
     name: String!
 }
 
-type Commerce_Checkout_PlaceOrderState_State_FatalError implements Commerce_Checkout_PlaceOrderState_State {
+type Commerce_Checkout_PlaceOrderState_State_Failed implements Commerce_Checkout_PlaceOrderState_State {
     isFinal: Boolean
     name: String!
-    #error: String
+    reason: Commerce_Checkout_PlaceOrderState_State_FailedReason
 }
 
 #type Commerce_Checkout_PlaceOrderState_State_ShowIframe implements Commerce_Checkout_PlaceOrderState_State {
@@ -3500,31 +3552,36 @@ type Commerce_Checkout_PlaceOrderState_State_FatalError implements Commerce_Chec
 #    #URL: String
 #}
 
-interface Commerce_Checkout_PlaceOrderState_State_CancellationReason {
+interface Commerce_Checkout_PlaceOrderState_State_FailedReason {
     reason: String
 }
 
-type Commerce_Checkout_PlaceOrderState_State_CancellationReason_PaymentError implements Commerce_Checkout_PlaceOrderState_State_CancellationReason {
+
+type Commerce_Checkout_PlaceOrderState_State_FailedReason_Error implements Commerce_Checkout_PlaceOrderState_State_FailedReason {
     reason: String
 }
 
-type Commerce_Checkout_PlaceOrderState_State_CancellationReason_ValidationError implements Commerce_Checkout_PlaceOrderState_State_CancellationReason {
+type Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError implements Commerce_Checkout_PlaceOrderState_State_FailedReason {
     reason: String
-    validationResult: Commerce_Cart_ValidationResult
+}
+
+type Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError implements Commerce_Checkout_PlaceOrderState_State_FailedReason {
+    reason: String
+    validationResult: Commerce_Cart_ValidationResult!
 }
 
 
 extend type Query {
-    # Gets the last place order context with its state infos
-    Commerce_Checkout_PlaceOrderContext: Commerce_Checkout_PlaceOrderContext!
+    Commerce_Checkout_ActivePlaceOrder: Boolean!
 }
 
 
 extend type Mutation {
     #Only possible if Statemaschine not active or in a final state
-    Commerce_Checkout_StartPlaceOrder(returnUrl: String!): Boolean!
+    Commerce_Checkout_StartPlaceOrder(returnUrl: String!): Commerce_Checkout_StartPlaceOrder_Result!
     # Possible if state is not final
     Commerce_Checkout_CancelPlaceOrder: Boolean!
+    Commerce_Checkout_RefreshPlaceOrder: Commerce_Checkout_PlaceOrderContext!
 }
 `},
 	&ast.Source{Name: "graphql/schema/flamingo.me_flamingo-commerce_v3_price_interfaces_graphql-Service.graphql", Input: `type Commerce_Price{
@@ -9619,6 +9676,33 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_state(ctx conte
 	return ec.marshalOCommerce_Checkout_PlaceOrderState_State2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋdomainᚋplaceorderᚋprocessᚐState(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_uuid(ctx context.Context, field graphql.CollectedField, obj *dto2.PlaceOrderContext) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Checkout_PlaceOrderContext",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UUID, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_gateway(ctx context.Context, field graphql.CollectedField, obj *application1.PlaceOrderPaymentInfo) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -9754,83 +9838,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_title(ctx c
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_CancellationReason_PaymentError_reason(ctx context.Context, field graphql.CollectedField, obj *dto2.CancellationReasonPaymentError) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed_isFinal(ctx context.Context, field graphql.CollectedField, obj *states.Failed) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_CancellationReason_PaymentError",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Reason(), nil
-	})
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_CancellationReason_ValidationError_reason(ctx context.Context, field graphql.CollectedField, obj *dto2.CancellationReasonValidationError) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_CancellationReason_ValidationError",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Reason(), nil
-	})
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_CancellationReason_ValidationError_validationResult(ctx context.Context, field graphql.CollectedField, obj *dto2.CancellationReasonValidationError) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_CancellationReason_ValidationError",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ValidationResult, nil
-	})
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(validation.Result)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOCommerce_Cart_ValidationResult2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐResult(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FatalError_isFinal(ctx context.Context, field graphql.CollectedField, obj *states.Failed) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_FatalError",
+		Object:   "Commerce_Checkout_PlaceOrderState_State_Failed",
 		Field:    field,
 		Args:     nil,
 		IsMethod: true,
@@ -9850,11 +9862,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FatalError_
 	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FatalError_name(ctx context.Context, field graphql.CollectedField, obj *states.Failed) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed_name(ctx context.Context, field graphql.CollectedField, obj *states.Failed) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_FatalError",
+		Object:   "Commerce_Checkout_PlaceOrderState_State_Failed",
 		Field:    field,
 		Args:     nil,
 		IsMethod: true,
@@ -9875,6 +9887,129 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FatalError_
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed_reason(ctx context.Context, field graphql.CollectedField, obj *states.Failed) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Checkout_PlaceOrderState_State_Failed",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Reason, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(process.FailedReason)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOCommerce_Checkout_PlaceOrderState_State_FailedReason2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋdomainᚋplaceorderᚋprocessᚐFailedReason(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError_reason(ctx context.Context, field graphql.CollectedField, obj *process.CartValidationErrorReason) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Reason(), nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError_validationResult(ctx context.Context, field graphql.CollectedField, obj *process.CartValidationErrorReason) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ValidationResult, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(validation.Result)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNCommerce_Cart_ValidationResult2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReason_Error_reason(ctx context.Context, field graphql.CollectedField, obj *process.ErrorOccurredReason) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Checkout_PlaceOrderState_State_FailedReason_Error",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Reason(), nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError_reason(ctx context.Context, field graphql.CollectedField, obj *process.PaymentErrorOccurredReason) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Reason(), nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_New_isFinal(ctx context.Context, field graphql.CollectedField, obj *states.New) graphql.Marshaler {
@@ -10092,6 +10227,33 @@ func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos_email(ctx contex
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Email, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Checkout_StartPlaceOrder_Result_uuid(ctx context.Context, field graphql.CollectedField, obj *dto2.StartPlaceOrderResult) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Checkout_StartPlaceOrder_Result",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UUID, nil
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -12511,10 +12673,10 @@ func (ec *executionContext) _Mutation_Commerce_Checkout_StartPlaceOrder(ctx cont
 		}
 		return graphql.Null
 	}
-	res := resTmp.(bool)
+	res := resTmp.(*dto2.StartPlaceOrderResult)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Checkout_StartPlaceOrder_Result2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐStartPlaceOrderResult(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_Commerce_Checkout_CancelPlaceOrder(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
@@ -12542,6 +12704,33 @@ func (ec *executionContext) _Mutation_Commerce_Checkout_CancelPlaceOrder(ctx con
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_Commerce_Checkout_RefreshPlaceOrder(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CommerceCheckoutRefreshPlaceOrder(rctx)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*dto2.PlaceOrderContext)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNCommerce_Checkout_PlaceOrderContext2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPlaceOrderContext(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_flamingo(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
@@ -12660,7 +12849,7 @@ func (ec *executionContext) _Query_Commerce_Cart(ctx context.Context, field grap
 	return ec.marshalNCommerce_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋdecoratorᚐDecoratedCart(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_Commerce_Checkout_PlaceOrderContext(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+func (ec *executionContext) _Query_Commerce_Checkout_ActivePlaceOrder(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -12673,7 +12862,7 @@ func (ec *executionContext) _Query_Commerce_Checkout_PlaceOrderContext(ctx conte
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().CommerceCheckoutPlaceOrderContext(rctx)
+		return ec.resolvers.Query().CommerceCheckoutActivePlaceOrder(rctx)
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -12681,10 +12870,10 @@ func (ec *executionContext) _Query_Commerce_Checkout_PlaceOrderContext(ctx conte
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*dto2.PlaceOrderContext)
+	res := resTmp.(bool)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNCommerce_Checkout_PlaceOrderContext2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPlaceOrderContext(ctx, field.Selections, res)
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_Commerce_CategoryTree(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
@@ -13883,22 +14072,30 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State(ctx context
 	case *states.Success:
 		return ec._Commerce_Checkout_PlaceOrderState_State_Success(ctx, sel, obj)
 	case states.Failed:
-		return ec._Commerce_Checkout_PlaceOrderState_State_FatalError(ctx, sel, &obj)
+		return ec._Commerce_Checkout_PlaceOrderState_State_Failed(ctx, sel, &obj)
 	case *states.Failed:
-		return ec._Commerce_Checkout_PlaceOrderState_State_FatalError(ctx, sel, obj)
+		return ec._Commerce_Checkout_PlaceOrderState_State_Failed(ctx, sel, obj)
 	default:
 		panic(fmt.Errorf("unexpected type %T", obj))
 	}
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_CancellationReason(ctx context.Context, sel ast.SelectionSet, obj *dto2.CancellationReason) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReason(ctx context.Context, sel ast.SelectionSet, obj *process.FailedReason) graphql.Marshaler {
 	switch obj := (*obj).(type) {
 	case nil:
 		return graphql.Null
-	case *dto2.CancellationReasonPaymentError:
-		return ec._Commerce_Checkout_PlaceOrderState_State_CancellationReason_PaymentError(ctx, sel, obj)
-	case *dto2.CancellationReasonValidationError:
-		return ec._Commerce_Checkout_PlaceOrderState_State_CancellationReason_ValidationError(ctx, sel, obj)
+	case process.ErrorOccurredReason:
+		return ec._Commerce_Checkout_PlaceOrderState_State_FailedReason_Error(ctx, sel, &obj)
+	case *process.ErrorOccurredReason:
+		return ec._Commerce_Checkout_PlaceOrderState_State_FailedReason_Error(ctx, sel, obj)
+	case process.PaymentErrorOccurredReason:
+		return ec._Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError(ctx, sel, &obj)
+	case *process.PaymentErrorOccurredReason:
+		return ec._Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError(ctx, sel, obj)
+	case process.CartValidationErrorReason:
+		return ec._Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError(ctx, sel, &obj)
+	case *process.CartValidationErrorReason:
+		return ec._Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError(ctx, sel, obj)
 	default:
 		panic(fmt.Errorf("unexpected type %T", obj))
 	}
@@ -15594,6 +15791,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext(ctx context.Con
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderContext_orderInfos(ctx, field, obj)
 		case "state":
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderContext_state(ctx, field, obj)
+		case "uuid":
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderContext_uuid(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -15652,74 +15854,103 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo(ctx context
 	return out
 }
 
-var commerce_Checkout_PlaceOrderState_State_CancellationReason_PaymentErrorImplementors = []string{"Commerce_Checkout_PlaceOrderState_State_CancellationReason_PaymentError", "Commerce_Checkout_PlaceOrderState_State_CancellationReason"}
+var commerce_Checkout_PlaceOrderState_State_FailedImplementors = []string{"Commerce_Checkout_PlaceOrderState_State_Failed", "Commerce_Checkout_PlaceOrderState_State"}
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_CancellationReason_PaymentError(ctx context.Context, sel ast.SelectionSet, obj *dto2.CancellationReasonPaymentError) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_PlaceOrderState_State_CancellationReason_PaymentErrorImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_CancellationReason_PaymentError")
-		case "reason":
-			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_CancellationReason_PaymentError_reason(ctx, field, obj)
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var commerce_Checkout_PlaceOrderState_State_CancellationReason_ValidationErrorImplementors = []string{"Commerce_Checkout_PlaceOrderState_State_CancellationReason_ValidationError", "Commerce_Checkout_PlaceOrderState_State_CancellationReason"}
-
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_CancellationReason_ValidationError(ctx context.Context, sel ast.SelectionSet, obj *dto2.CancellationReasonValidationError) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_PlaceOrderState_State_CancellationReason_ValidationErrorImplementors)
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed(ctx context.Context, sel ast.SelectionSet, obj *states.Failed) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_PlaceOrderState_State_FailedImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_CancellationReason_ValidationError")
-		case "reason":
-			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_CancellationReason_ValidationError_reason(ctx, field, obj)
-		case "validationResult":
-			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_CancellationReason_ValidationError_validationResult(ctx, field, obj)
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var commerce_Checkout_PlaceOrderState_State_FatalErrorImplementors = []string{"Commerce_Checkout_PlaceOrderState_State_FatalError", "Commerce_Checkout_PlaceOrderState_State"}
-
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FatalError(ctx context.Context, sel ast.SelectionSet, obj *states.Failed) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_PlaceOrderState_State_FatalErrorImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_FatalError")
+			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_Failed")
 		case "isFinal":
-			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_FatalError_isFinal(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_Failed_isFinal(ctx, field, obj)
 		case "name":
-			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_FatalError_name(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_Failed_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "reason":
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_Failed_reason(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationErrorImplementors = []string{"Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError", "Commerce_Checkout_PlaceOrderState_State_FailedReason"}
+
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError(ctx context.Context, sel ast.SelectionSet, obj *process.CartValidationErrorReason) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError")
+		case "reason":
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError_reason(ctx, field, obj)
+		case "validationResult":
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError_validationResult(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Checkout_PlaceOrderState_State_FailedReason_ErrorImplementors = []string{"Commerce_Checkout_PlaceOrderState_State_FailedReason_Error", "Commerce_Checkout_PlaceOrderState_State_FailedReason"}
+
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReason_Error(ctx context.Context, sel ast.SelectionSet, obj *process.ErrorOccurredReason) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_PlaceOrderState_State_FailedReason_ErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_FailedReason_Error")
+		case "reason":
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_FailedReason_Error_reason(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentErrorImplementors = []string{"Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError", "Commerce_Checkout_PlaceOrderState_State_FailedReason"}
+
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError(ctx context.Context, sel ast.SelectionSet, obj *process.PaymentErrorOccurredReason) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError")
+		case "reason":
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError_reason(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -15835,6 +16066,33 @@ func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos(ctx context.Cont
 			out.Values[i] = ec._Commerce_Checkout_PlacedOrderInfos_placedOrderInfos(ctx, field, obj)
 		case "email":
 			out.Values[i] = ec._Commerce_Checkout_PlacedOrderInfos_email(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Checkout_StartPlaceOrder_ResultImplementors = []string{"Commerce_Checkout_StartPlaceOrder_Result"}
+
+func (ec *executionContext) _Commerce_Checkout_StartPlaceOrder_Result(ctx context.Context, sel ast.SelectionSet, obj *dto2.StartPlaceOrderResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_StartPlaceOrder_ResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Checkout_StartPlaceOrder_Result")
+		case "uuid":
+			out.Values[i] = ec._Commerce_Checkout_StartPlaceOrder_Result_uuid(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -16613,6 +16871,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "Commerce_Checkout_RefreshPlaceOrder":
+			out.Values[i] = ec._Mutation_Commerce_Checkout_RefreshPlaceOrder(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -16689,7 +16952,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}
 				return res
 			})
-		case "Commerce_Checkout_PlaceOrderContext":
+		case "Commerce_Checkout_ActivePlaceOrder":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -16697,7 +16960,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_Commerce_Checkout_PlaceOrderContext(ctx, field)
+				res = ec._Query_Commerce_Checkout_ActivePlaceOrder(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -17094,6 +17357,10 @@ func (ec *executionContext) marshalNCommerce_Cart_SelectedPaymentResult2ᚖflami
 	return ec._Commerce_Cart_SelectedPaymentResult(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNCommerce_Cart_ValidationResult2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐResult(ctx context.Context, sel ast.SelectionSet, v validation.Result) graphql.Marshaler {
+	return ec._Commerce_Cart_ValidationResult(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalNCommerce_Category2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcategoryᚋdomainᚐCategory(ctx context.Context, sel ast.SelectionSet, v domain1.Category) graphql.Marshaler {
 	return ec._Commerce_Category(ctx, sel, &v)
 }
@@ -17130,6 +17397,20 @@ func (ec *executionContext) marshalNCommerce_Checkout_PlaceOrderContext2ᚖflami
 
 func (ec *executionContext) marshalNCommerce_Checkout_PlaceOrderPaymentInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋapplicationᚐPlaceOrderPaymentInfo(ctx context.Context, sel ast.SelectionSet, v application1.PlaceOrderPaymentInfo) graphql.Marshaler {
 	return ec._Commerce_Checkout_PlaceOrderPaymentInfo(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Checkout_StartPlaceOrder_Result2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐStartPlaceOrderResult(ctx context.Context, sel ast.SelectionSet, v dto2.StartPlaceOrderResult) graphql.Marshaler {
+	return ec._Commerce_Checkout_StartPlaceOrder_Result(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Checkout_StartPlaceOrder_Result2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐStartPlaceOrderResult(ctx context.Context, sel ast.SelectionSet, v *dto2.StartPlaceOrderResult) graphql.Marshaler {
+	if v == nil {
+		if !ec.HasError(graphql.GetResolverContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Commerce_Checkout_StartPlaceOrder_Result(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNCommerce_DecoratedCart2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋdecoratorᚐDecoratedCart(ctx context.Context, sel ast.SelectionSet, v decorator.DecoratedCart) graphql.Marshaler {
@@ -18097,10 +18378,6 @@ func (ec *executionContext) marshalOCommerce_Cart_PlacedOrderInfo2ᚕflamingoᚗ
 	return ret
 }
 
-func (ec *executionContext) marshalOCommerce_Cart_ValidationResult2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐResult(ctx context.Context, sel ast.SelectionSet, v validation.Result) graphql.Marshaler {
-	return ec._Commerce_Cart_ValidationResult(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalOCommerce_CategoryTeaser2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐCategoryTeaser(ctx context.Context, sel ast.SelectionSet, v domain.CategoryTeaser) graphql.Marshaler {
 	return ec._Commerce_CategoryTeaser(ctx, sel, &v)
 }
@@ -18296,6 +18573,10 @@ func (ec *executionContext) marshalOCommerce_Checkout_PlaceOrderPaymentInfo2ᚕf
 
 func (ec *executionContext) marshalOCommerce_Checkout_PlaceOrderState_State2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋdomainᚋplaceorderᚋprocessᚐState(ctx context.Context, sel ast.SelectionSet, v process.State) graphql.Marshaler {
 	return ec._Commerce_Checkout_PlaceOrderState_State(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOCommerce_Checkout_PlaceOrderState_State_FailedReason2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋdomainᚋplaceorderᚋprocessᚐFailedReason(ctx context.Context, sel ast.SelectionSet, v process.FailedReason) graphql.Marshaler {
+	return ec._Commerce_Checkout_PlaceOrderState_State_FailedReason(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalOCommerce_Checkout_PlacedOrderInfos2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPlacedOrderInfos(ctx context.Context, sel ast.SelectionSet, v dto2.PlacedOrderInfos) graphql.Marshaler {

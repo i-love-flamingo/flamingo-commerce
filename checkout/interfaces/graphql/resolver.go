@@ -3,51 +3,36 @@ package graphql
 import (
 	"context"
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
-	dto2 "flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
 	"flamingo.me/flamingo-commerce/v3/checkout/application"
 	"flamingo.me/flamingo-commerce/v3/checkout/application/placeorder"
-	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql/dto"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 )
 
 // CommerceCheckoutQueryResolver resolves graphql checkout mutations
 type CommerceCheckoutQueryResolver struct {
-	placeorderHandler    *placeorder.Handler
-	orderService         *application.OrderService
-	decoratedCartFactory *decorator.DecoratedCartFactory
-	cartService          *cartApplication.CartService
-	logger               flamingo.Logger
+	placeorderHandler *placeorder.Handler
+	orderService      *application.OrderService
+	cartService       *cartApplication.CartService
+	logger            flamingo.Logger
 }
 
 // Inject dependencies
 func (r *CommerceCheckoutQueryResolver) Inject(
 	placeorderHandler *placeorder.Handler,
 	orderService *application.OrderService,
-	decoratedCartFactory *decorator.DecoratedCartFactory,
 	cartService *cartApplication.CartService,
 	logger flamingo.Logger) {
 	r.placeorderHandler = placeorderHandler
 	r.orderService = orderService
-	r.decoratedCartFactory = decoratedCartFactory
 	r.cartService = cartService
 	r.logger = logger.WithField(flamingo.LogKeyModule, "checkout").WithField(flamingo.LogKeyCategory, "graphql")
 
 }
 
 //CommerceCheckoutPlaceOrderContext query
-func (r *CommerceCheckoutQueryResolver) CommerceCheckoutPlaceOrderContext(ctx context.Context) (*dto.PlaceOrderContext, error) {
+func (r *CommerceCheckoutQueryResolver) CommerceCheckoutActivePlaceOrder(ctx context.Context) (bool, error) {
 
-	poctx, err := r.placeorderHandler.RefreshPlaceOrder(ctx, placeorder.RefreshPlaceOrderCommand{})
-	if err != nil {
-		return nil, err
-	}
-	dc := r.decoratedCartFactory.Create(ctx, poctx.Cart)
-	return &dto.PlaceOrderContext{
-		Cart:       dc,
-		OrderInfos: nil,
-		State:      poctx.State,
-	}, nil
+	return r.placeorderHandler.HasUnfinishedProcess(ctx)
 }
 
 /*
