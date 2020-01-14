@@ -1,3 +1,6 @@
+type Commerce_Checkout_StartPlaceOrder_Result {
+    uuid: String!
+}
 # Commerce_Checkout_PlaceOrderContext represents the result of the current (running) place order mutation
 type Commerce_Checkout_PlaceOrderContext {
     # The Cart that is going to be placed
@@ -6,6 +9,8 @@ type Commerce_Checkout_PlaceOrderContext {
     orderInfos: Commerce_Checkout_PlacedOrderInfos
     # State depending on the state of payment and place order - state may contain additional infos
     state: Commerce_Checkout_PlaceOrderState_State
+    # A unique id for the process
+    uuid: String!
 }
 
 
@@ -45,10 +50,10 @@ type Commerce_Checkout_PlaceOrderState_State_Success implements Commerce_Checkou
     name: String!
 }
 
-type Commerce_Checkout_PlaceOrderState_State_FatalError implements Commerce_Checkout_PlaceOrderState_State {
+type Commerce_Checkout_PlaceOrderState_State_Failed implements Commerce_Checkout_PlaceOrderState_State {
     isFinal: Boolean
     name: String!
-    #error: String
+    reason: Commerce_Checkout_PlaceOrderState_State_FailedReason
 }
 
 #type Commerce_Checkout_PlaceOrderState_State_ShowIframe implements Commerce_Checkout_PlaceOrderState_State {
@@ -69,29 +74,34 @@ type Commerce_Checkout_PlaceOrderState_State_FatalError implements Commerce_Chec
 #    #URL: String
 #}
 
-interface Commerce_Checkout_PlaceOrderState_State_CancellationReason {
+interface Commerce_Checkout_PlaceOrderState_State_FailedReason {
     reason: String
 }
 
-type Commerce_Checkout_PlaceOrderState_State_CancellationReason_PaymentError implements Commerce_Checkout_PlaceOrderState_State_CancellationReason {
+
+type Commerce_Checkout_PlaceOrderState_State_FailedReason_Error implements Commerce_Checkout_PlaceOrderState_State_FailedReason {
     reason: String
 }
 
-type Commerce_Checkout_PlaceOrderState_State_CancellationReason_ValidationError implements Commerce_Checkout_PlaceOrderState_State_CancellationReason {
+type Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError implements Commerce_Checkout_PlaceOrderState_State_FailedReason {
     reason: String
-    validationResult: Commerce_Cart_ValidationResult
+}
+
+type Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError implements Commerce_Checkout_PlaceOrderState_State_FailedReason {
+    reason: String
+    validationResult: Commerce_Cart_ValidationResult!
 }
 
 
 extend type Query {
-    # Gets the last place order context with its state infos
-    Commerce_Checkout_PlaceOrderContext: Commerce_Checkout_PlaceOrderContext!
+    Commerce_Checkout_ActivePlaceOrder: Boolean!
 }
 
 
 extend type Mutation {
     #Only possible if Statemaschine not active or in a final state
-    Commerce_Checkout_StartPlaceOrder(returnUrl: String!): Boolean!
+    Commerce_Checkout_StartPlaceOrder(returnUrl: String!): Commerce_Checkout_StartPlaceOrder_Result!
     # Possible if state is not final
     Commerce_Checkout_CancelPlaceOrder: Boolean!
+    Commerce_Checkout_RefreshPlaceOrder: Commerce_Checkout_PlaceOrderContext!
 }

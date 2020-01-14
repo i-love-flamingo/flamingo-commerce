@@ -71,7 +71,7 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart) (*process.C
 	var runerr error
 	var runpctx *process.Context
 	web.RunWithDetachedContext(ctx, func(ctx context.Context) {
-		has, err := c.hasUnfinishedProcess(ctx)
+		has, err := c.HasUnfinishedProcess(ctx)
 		if err != nil {
 			runerr = err
 			c.logger.Error(err)
@@ -110,7 +110,7 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart) (*process.C
 	*/
 }
 
-func (c *Coordinator) hasUnfinishedProcess(ctx context.Context) (bool, error) {
+func (c *Coordinator) HasUnfinishedProcess(ctx context.Context) (bool, error) {
 	last, err := c.Last(ctx)
 	if err == ErrNoPlaceOrderProcess {
 		return false, nil

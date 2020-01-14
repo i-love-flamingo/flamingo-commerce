@@ -28,3 +28,8 @@ func (h *Handler) StartPlaceOrder(ctx context.Context, command StartPlaceOrderCo
 func (h *Handler) RefreshPlaceOrder(ctx context.Context, command RefreshPlaceOrderCommand) (*process.Context, error) {
 	return h.coordinator.Last(ctx)
 }
+
+//HasUnfinishedProcess
+func (h *Handler) HasUnfinishedProcess(ctx context.Context) (bool, error) {
+	return h.coordinator.HasUnfinishedProcess(ctx)
+}

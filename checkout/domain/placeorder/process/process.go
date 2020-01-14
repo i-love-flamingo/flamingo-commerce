@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
-	"fmt"
-
+	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	"flamingo.me/flamingo/v3/framework/flamingo"
+	"fmt"
+	"github.com/google/uuid"
 )
 
 type (
@@ -46,15 +47,36 @@ type (
 	ErrorOccurredReason struct {
 		Error string
 	}
+
+	// PaymentErrorOccurredReason is used for errors during payment
+	PaymentErrorOccurredReason struct {
+		Error string
+	}
+
+	CartValidationErrorReason struct {
+		ValidationResult validation.Result
+	}
 )
 
 func init() {
 	gob.Register(ErrorOccurredReason{})
+	gob.Register(PaymentErrorOccurredReason{})
+	gob.Register(CartValidationErrorReason{})
 }
 
 // Reason for the error occurred
 func (e ErrorOccurredReason) Reason() string {
 	return e.Error
+}
+
+// Reason for the error occurred
+func (e PaymentErrorOccurredReason) Reason() string {
+	return e.Error
+}
+
+// Reason for failing
+func (e CartValidationErrorReason) Reason() string {
+	return "Cart invalid"
 }
 
 // Inject dependencies
@@ -80,6 +102,7 @@ func (f *Factory) New() (*Process, error) {
 	p := f.provider()
 	p.failedState = f.failedState
 	p.context = Context{
+		UUID:  uuid.New().String(),
 		State: f.startState,
 	}
 

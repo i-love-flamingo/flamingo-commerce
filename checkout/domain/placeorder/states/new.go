@@ -42,7 +42,7 @@ func (n New) Run(context.Context, *process.Process) process.RunResult {
 
 // Rollback the state operations
 func (n New) Rollback(data process.RollbackData) error {
-	fmt.Println(data)
+	fmt.Println(data.(*Test))
 
 	return nil
 }
