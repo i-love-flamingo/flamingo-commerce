@@ -7,6 +7,8 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/google/uuid"
+
 	price "flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
@@ -24,6 +26,8 @@ type (
 		ItemSplit() PaymentSplitByItem
 		TotalValue() price.Price
 		MethodByType(string) string
+		IdempotencyKey() string
+		GenerateNewIdempotencyKey() (PaymentSelection, error)
 	}
 
 	//SplitQualifier qualifies by Charge Type, Charge Reference and Payment Method
@@ -51,8 +55,9 @@ type (
 	// DefaultPaymentSelection value object - that implements the PaymentSelection interface
 	DefaultPaymentSelection struct {
 		//GatewayProp - the selected Gateway
-		GatewayProp      string
-		ChargedItemsProp PaymentSplitByItem
+		GatewayProp        string
+		ChargedItemsProp   PaymentSplitByItem
+		IdempotencyKeyUUID string
 	}
 
 	// PaymentSplitService enables the creation of a PaymentSplitByItem following different payment methods
@@ -72,6 +77,8 @@ type (
 )
 
 var (
+	_ PaymentSelection = new(DefaultPaymentSelection)
+
 	// ErrSplitNoGiftCards indicates that there are no gift cards given to PaymentSplitWithGiftCards
 	ErrSplitNoGiftCards = errors.New("no gift cards applied")
 
@@ -99,7 +106,8 @@ func NewDefaultPaymentSelection(gateway string, chargeTypeToPaymentMethod map[st
 	}
 	// filter out zero charges from here on out
 	result = RemoveZeroCharges(result, chargeTypeToPaymentMethod)
-	return result, err
+	// add an new Idempotency-Key to the payment selection
+	return result.GenerateNewIdempotencyKey()
 }
 
 // RemoveZeroCharges removes charges which have an value of zero from selection as they are necessary
@@ -120,7 +128,9 @@ func RemoveZeroCharges(selection PaymentSelection, chargeTypeToPaymentMethod map
 	removeZeroChargesFromSplit(selection.ItemSplit().TotalItems, chargeTypeToPaymentMethod, builder.AddTotalItem)
 
 	result.ChargedItemsProp = builder.Build()
-	return result
+
+	resultWithIdempotencyKey, _ := result.GenerateNewIdempotencyKey()
+	return resultWithIdempotencyKey
 }
 
 // removeZeroChargesFromSplit remove charges from single item splits
@@ -213,10 +223,13 @@ func newPaymentSelectionWithGiftCard(gateway string, chargeTypeToPaymentMethod m
 
 // NewPaymentSelection - with the passed PaymentSplitByItem
 func NewPaymentSelection(gateway string, chargedItems PaymentSplitByItem) PaymentSelection {
-	selection := DefaultPaymentSelection{
+	var selection PaymentSelection
+	selection = DefaultPaymentSelection{
 		GatewayProp:      gateway,
 		ChargedItemsProp: chargedItems,
 	}
+	selection, _ = selection.GenerateNewIdempotencyKey()
+
 	return selection
 }
 
@@ -238,6 +251,34 @@ func (d DefaultPaymentSelection) ItemSplit() PaymentSplitByItem {
 //TotalValue - returns Valued price sum
 func (d DefaultPaymentSelection) TotalValue() price.Price {
 	return d.ChargedItemsProp.Sum().TotalValue()
+}
+
+//IdempotencyKey returns the Idempotency-Key for this payment selection
+func (d DefaultPaymentSelection) IdempotencyKey() string {
+	return d.IdempotencyKeyUUID
+}
+
+//GenerateNewIdempotencyKey updates the Idempotency-Key to a new value
+func (d DefaultPaymentSelection) GenerateNewIdempotencyKey() (PaymentSelection, error) {
+	key, err := uuid.NewRandom()
+	if err != nil {
+		return DefaultPaymentSelection{}, err
+	}
+	d.IdempotencyKeyUUID = key.String()
+	return d, nil
+}
+
+//MarshalJSON adds the Idempotency-Key to the payment selection json
+func (d DefaultPaymentSelection) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct {
+		GatewayProp      string             `json:"GatewayProp"`
+		ChargedItemsProp PaymentSplitByItem `json:"ChargedItemsProp"`
+		IdempotencyKey   string             `json:"IdempotencyKey"`
+	}{
+		GatewayProp:      d.GatewayProp,
+		ChargedItemsProp: d.ChargedItemsProp,
+		IdempotencyKey:   d.IdempotencyKey(),
+	})
 }
 
 //Sum - the resulting Split after sum all the included item split

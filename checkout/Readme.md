@@ -33,7 +33,7 @@ This module implements controller and services for the following checkout flow (
 1. Payment Action
     * Ask Payment Gateway about FlowStatus and handle it
     * FlowStatus:
-        * Error / Abort by customer: Redirect to checkout and reopen cart if needed
+        * Error / Abort by customer: Regenerate Idempotency Key of PaymentSelection, redirect to checkout and reopen cart if needed
         * Success / Approved: Redirect to PalceOrderAction
         * Unapproved: Render payment template and let frontend decide how to continue in flow (e.g. redirect to payment provider)
 1. Place Order Action

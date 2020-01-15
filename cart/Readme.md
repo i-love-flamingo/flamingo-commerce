@@ -288,14 +288,17 @@ If you have read the sections above you know about the different prices that are
 There is something else that this cart model supports - we call it "charges". All the price amounts mentioned in the previous chapters represents the value of the items in the carts default currency.
 
 However this value need to be paid - when paying the value it can be that:
-- customer wants to pay with different payment methods (e.g. 50% of the value with PayPal and the rest with Creditcard)
+- customer wants to pay with different payment methods (e.g. 50% of the value with PayPal and the rest with credit card)
 - also the value can be paid in a different currency
 
 
 The desired split of charges is saved on the cart with the "UpdatePaymentSelection" command.
-If you dont need the full flexibility of the charges, than you will simply always pay one charge that matches the grandtotal of your cart.
+If you dont need the full flexibility of the charges, than you will simply always pay one charge that matches the grand total of your cart.
 Use the factory `NewDefaultPaymentSelection` for this, which also supports gift cards out of the box.
 
+The PaymentSelection supports the [Idempotency Key pattern](https://stripe.com/blog/idempotency), the `DefaultPaymentSelection` will generate a new random UUID v4 during creation.
+In cases of a payment error (e.g. aborted by customer / general error) the Idempotency Key needs to be regenerated to avoid a loop and enable the customer to retry the payment.
+The PaymentSelection therefore offers a `GenerateNewIdempotencyKey()` function, which should also called during generation of the PaymentSelection.
 
 If you want to use the feature it is important to know how the cart charge split should be generated:
 
