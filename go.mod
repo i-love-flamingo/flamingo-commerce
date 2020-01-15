@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	flamingo.me/dingo v0.2.6
-	flamingo.me/flamingo/v3 v3.1.1
+	flamingo.me/flamingo/v3 v3.1.6
 	flamingo.me/form v1.0.1-0.20191008191024-ff6f3a9330d6
 	flamingo.me/graphql v1.0.1
 	flamingo.me/pugtemplate v1.0.0
@@ -15,6 +15,7 @@ require (
 	github.com/gavv/httpexpect v2.0.0+incompatible
 	github.com/go-playground/form v3.1.4+incompatible
 	github.com/go-test/deep v1.0.1
+	github.com/google/go-cmp v0.3.1
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/sessions v1.1.3
