@@ -956,7 +956,7 @@ func (cs *CartService) AdjustItemsToRestrictedQty(ctx context.Context, session *
 		return nil, err
 	}
 
-	for _, qtyAdjustmentResult := range qtyAdjustmentResults {
+	for index, qtyAdjustmentResult := range qtyAdjustmentResults {
 		couponCodes := cart.AppliedCouponCodes
 		if qtyAdjustmentResult.NewQty < 1 {
 			err = cs.DeleteItem(ctx, session, qtyAdjustmentResult.OriginalItem.ID, qtyAdjustmentResult.DeliveryCode)
@@ -971,6 +971,7 @@ func (cs *CartService) AdjustItemsToRestrictedQty(ctx context.Context, session *
 			return nil, err
 		}
 		qtyAdjustmentResult.HasRemovedCouponCodes = !couponCodes.ContainedIn(cart.AppliedCouponCodes)
+		qtyAdjustmentResults[index] = qtyAdjustmentResult
 	}
 
 	return qtyAdjustmentResults, nil
