@@ -4,6 +4,8 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/price/domain"
 )
@@ -198,6 +200,40 @@ func TestCart_HasRemainingGiftCards(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestAppliedGiftCard_Total(t *testing.T) {
+	giftCard := cart.AppliedGiftCard{
+		Applied:   domain.NewFromFloat(10.5, "$"),
+		Remaining: domain.NewFromFloat(4.5, "$"),
+	}
+	total, err := giftCard.Total()
+	assert.Nil(t, err)
+	assert.Equal(t, true, domain.NewFromFloat(15, "$").Equal(total))
+
+	giftCard = cart.AppliedGiftCard{
+		Applied:   domain.NewZero("$"),
+		Remaining: domain.NewFromFloat(10, "$"),
+	}
+	total, err = giftCard.Total()
+	assert.Nil(t, err)
+	assert.Equal(t, true, domain.NewFromFloat(10, "$").Equal(total))
+
+	giftCard = cart.AppliedGiftCard{
+		Applied:   domain.NewFromFloat(5, "$"),
+		Remaining: domain.NewZero("$"),
+	}
+	total, err = giftCard.Total()
+	assert.Nil(t, err)
+	assert.Equal(t, true, domain.NewFromFloat(5, "$").Equal(total))
+
+	giftCard = cart.AppliedGiftCard{
+		Applied:   domain.NewFromFloat(10.5, "$"),
+		Remaining: domain.NewFromFloat(4.5, "€"),
+	}
+	total, err = giftCard.Total()
+	assert.NotNil(t, err)
+	assert.Equal(t, true, domain.NewFromFloat(4.5, "€").Equal(total))
 }
 
 func TestAppliedGiftCards_ByRemaining(t *testing.T) {

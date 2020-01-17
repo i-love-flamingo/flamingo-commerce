@@ -51,3 +51,6 @@
 * Changes AppliedCouponCodes in the cart to an own struct to be able to add some functions to it
 * Quantity item adjustments know also contain a bool that indicates if the respective adjustment caused a change to the AppliedCouponCodes slice of the cart
   * New template function to get if any of the currently stored adjustments caused a coupon code to be removed
+
+# 17. January 2020
+* Add `AppliedGiftCard` convenience function `Total()`
