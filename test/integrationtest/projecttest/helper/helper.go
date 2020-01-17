@@ -1,6 +1,10 @@
 package helper
 
 import (
+	"fmt"
+	"strings"
+	"testing"
+
 	"flamingo.me/flamingo-commerce/v3/breadcrumbs"
 	"flamingo.me/flamingo-commerce/v3/cart"
 	"flamingo.me/flamingo-commerce/v3/category"
@@ -21,10 +25,7 @@ import (
 	"flamingo.me/flamingo/v3/framework/cmd"
 	"flamingo.me/flamingo/v3/framework/web/filter"
 	"flamingo.me/graphql"
-	"fmt"
 	"github.com/gavv/httpexpect"
-	"strings"
-	"testing"
 
 	// "flamingo.me/redirects"
 	"flamingo.me/dingo"
