@@ -3,15 +3,26 @@ package states
 import (
 	"context"
 	"encoding/gob"
+	"fmt"
 
+	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
+	"flamingo.me/flamingo-commerce/v3/checkout/application"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo-commerce/v3/payment/interfaces"
+	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (
 	// PlaceOrder state
 	PlaceOrder struct {
 		paymentGateway interfaces.WebCartPaymentGateway
+		orderService   *application.OrderService
+		cartService    *cartApplication.CartService
+	}
+
+	// PlaceOrderRollbackData needed for rollbacks
+	PlaceOrderRollbackData struct {
+		order application.PlaceOrderInfo
 	}
 )
 
@@ -24,24 +35,52 @@ func init() {
 // Inject dependencies
 func (po *PlaceOrder) Inject(
 	paymentGateway interfaces.WebCartPaymentGateway,
+	orderService *application.OrderService,
+	cartService *cartApplication.CartService,
 ) *PlaceOrder {
 	po.paymentGateway = paymentGateway
+	po.orderService = orderService
+	po.cartService = cartService
 
 	return po
 }
 
 // Name get state name
 func (PlaceOrder) Name() string {
-	return "CreatePayment"
+	return "PlaceOrder"
 }
 
 // Run the state operations
 func (po PlaceOrder) Run(ctx context.Context, p *process.Process) process.RunResult {
+	cart := p.Context().Cart
+
+	payment, err := po.paymentGateway.OrderPaymentFromFlow(ctx, &cart, p.Context().UUID)
+	if err != nil {
+		return process.RunResult{
+			Failed: process.ErrorOccurredReason{Error: err.Error()},
+		}
+	}
+
+	// Todo: need new function in orderService to place a provided cart similiar to:
+	// po.orderService.CurrentCartPlaceOrder(ctx, web.SessionFromContext(ctx), *payment)
+
+	// todo: next state depeding on early place.. success / validate payment
 	return process.RunResult{}
 }
 
 // Rollback the state operations
 func (po PlaceOrder) Rollback(data process.RollbackData) error {
+	rollbackData, ok := data.(PlaceOrderRollbackData)
+	if !ok {
+		return fmt.Errorf("rollback data not of expected type 'PlaceOrderRollbackData', but %T", rollbackData)
+	}
+
+	// todo: check if ctx/session needed.. cart restore needs also be done or?
+	_, err := po.orderService.CancelOrder(context.Background(), web.SessionFromContext(context.Background()), &rollbackData.order)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
