@@ -8,6 +8,7 @@ import (
 )
 
 type (
+	// StartPlaceOrderResult result of start place order
 	StartPlaceOrderResult struct {
 		UUID string
 	}
