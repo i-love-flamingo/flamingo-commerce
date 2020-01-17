@@ -1,6 +1,10 @@
 package process
 
-import "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+import (
+	"net/url"
+
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+)
 
 type (
 	// Context contains information (state etc) about a placeorder process
@@ -8,6 +12,7 @@ type (
 		UUID               string
 		State              State
 		Cart               cart.Cart
+		ReturnURL          *url.URL
 		RollbackReferences []RollbackReference
 	}
 )

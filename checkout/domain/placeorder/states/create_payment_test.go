@@ -1,0 +1,209 @@
+package states_test
+
+import (
+	"context"
+	"errors"
+	"net/url"
+	"testing"
+
+	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
+	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
+	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/states"
+	"flamingo.me/flamingo-commerce/v3/payment/domain"
+	"flamingo.me/flamingo-commerce/v3/payment/interfaces/mocks"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+)
+
+func TestCreatePayment_Run(t *testing.T) {
+	t.Run("happy path non early place", func(t *testing.T) {
+		factory := &process.Factory{}
+		factory.Inject(
+			func() *process.Process {
+				return &process.Process{}
+			},
+			nil,
+			&struct {
+				StartState process.State `inject:"startState"`
+			}{
+				StartState: &states.Wait{},
+			},
+		)
+
+		p, _ := factory.New(&url.URL{})
+
+		state := states.CreatePayment{}
+
+		expectedPayment := &placeorder.Payment{Gateway: "test"}
+
+		gateway := &mocks.WebCartPaymentGateway{}
+		gateway.On("StartFlow", mock.Anything, mock.Anything, p.Context().UUID, p.Context().ReturnURL).Return(&domain.FlowResult{}, nil).Once()
+		gateway.On("OrderPaymentFromFlow", mock.Anything, mock.Anything, p.Context().UUID).Return(expectedPayment, nil).Once()
+		state.Inject(gateway)
+
+		expectedResult := process.RunResult{
+			RollbackData: states.CreatePaymentRollbackData{Payment: expectedPayment},
+		}
+		result := state.Run(context.Background(), p)
+		assert.Equal(t, result, expectedResult)
+		assert.Equal(t, p.Context().State, states.ValidatePayment{})
+		gateway.AssertExpectations(t)
+	})
+
+	t.Run("happy path early place order", func(t *testing.T) {
+		factory := &process.Factory{}
+		factory.Inject(
+			func() *process.Process {
+				return &process.Process{}
+			},
+			nil,
+			&struct {
+				StartState process.State `inject:"startState"`
+			}{
+				StartState: &states.Wait{},
+			},
+		)
+
+		p, _ := factory.New(&url.URL{})
+
+		state := states.CreatePayment{}
+
+		expectedPayment := &placeorder.Payment{Gateway: "test"}
+
+		gateway := &mocks.WebCartPaymentGateway{}
+		gateway.On("StartFlow", mock.Anything, mock.Anything, p.Context().UUID, p.Context().ReturnURL).Return(&domain.FlowResult{EarlyPlaceOrder: true}, nil).Once()
+		gateway.On("OrderPaymentFromFlow", mock.Anything, mock.Anything, p.Context().UUID).Return(expectedPayment, nil).Once()
+		state.Inject(gateway)
+
+		expectedResult := process.RunResult{
+			RollbackData: states.CreatePaymentRollbackData{Payment: expectedPayment},
+		}
+		result := state.Run(context.Background(), p)
+		assert.Equal(t, result, expectedResult)
+		assert.Equal(t, p.Context().State, states.PlaceOrder{})
+		gateway.AssertExpectations(t)
+	})
+
+	t.Run("error during gateway.StartFlow", func(t *testing.T) {
+		factory := &process.Factory{}
+		factory.Inject(
+			func() *process.Process {
+				return &process.Process{}
+			},
+			nil,
+			&struct {
+				StartState process.State `inject:"startState"`
+			}{
+				StartState: &states.Wait{},
+			},
+		)
+
+		p, _ := factory.New(&url.URL{})
+
+		state := states.CreatePayment{}
+
+		expectedError := errors.New("StartFlow payment error")
+
+		gateway := &mocks.WebCartPaymentGateway{}
+		gateway.On("StartFlow", mock.Anything, mock.Anything, p.Context().UUID, p.Context().ReturnURL).Return(nil, expectedError).Once()
+		state.Inject(gateway)
+
+		expectedResult := process.RunResult{
+			Failed: process.ErrorOccurredReason{Error: expectedError.Error()},
+		}
+		assert.Equal(t, state.Run(context.Background(), p), expectedResult)
+		gateway.AssertExpectations(t)
+	})
+
+	t.Run("error during gateway.OrderPaymentFromFlow", func(t *testing.T) {
+		factory := &process.Factory{}
+		factory.Inject(
+			func() *process.Process {
+				return &process.Process{}
+			},
+			nil,
+			&struct {
+				StartState process.State `inject:"startState"`
+			}{
+				StartState: &states.Wait{},
+			},
+		)
+
+		p, _ := factory.New(&url.URL{})
+
+		state := states.CreatePayment{}
+
+		expectedError := errors.New("OrderPaymentFromFlow payment error")
+
+		gateway := &mocks.WebCartPaymentGateway{}
+		gateway.On("StartFlow", mock.Anything, mock.Anything, p.Context().UUID, p.Context().ReturnURL).Return(&domain.FlowResult{}, nil).Once()
+		gateway.On("OrderPaymentFromFlow", mock.Anything, mock.Anything, p.Context().UUID).Return(nil, expectedError).Once()
+
+		state.Inject(gateway)
+
+		expectedResult := process.RunResult{
+			Failed: process.ErrorOccurredReason{Error: expectedError.Error()},
+		}
+		assert.Equal(t, state.Run(context.Background(), p), expectedResult)
+		gateway.AssertExpectations(t)
+	})
+}
+
+func TestCreatePayment_IsFinal(t *testing.T) {
+	state := states.CreatePayment{}
+	assert.False(t, state.IsFinal())
+}
+
+func TestCreatePayment_Rollback(t *testing.T) {
+	t.Run("happy path", func(t *testing.T) {
+		state := states.CreatePayment{}
+
+		var data interface{}
+
+		payment := &placeorder.Payment{
+			Gateway:            "test",
+			Transactions:       nil,
+			RawTransactionData: nil,
+			PaymentID:          "1234",
+		}
+
+		data = states.CreatePaymentRollbackData{Payment: payment}
+
+		gateway := &mocks.WebCartPaymentGateway{}
+		gateway.On("CancelOrderPayment", mock.Anything, payment).Return(nil).Once()
+		state.Inject(gateway)
+
+		result := state.Rollback(data)
+		assert.Nil(t, result)
+		gateway.AssertExpectations(t)
+	})
+
+	t.Run("RollbackData not of type", func(t *testing.T) {
+		state := states.CreatePayment{}
+
+		assert.Error(t, state.Rollback("lalala"))
+	})
+
+	t.Run("Error during CancelOrderPayment", func(t *testing.T) {
+		state := states.CreatePayment{}
+
+		var data interface{}
+
+		payment := &placeorder.Payment{
+			Gateway:            "test",
+			Transactions:       nil,
+			RawTransactionData: nil,
+			PaymentID:          "1234",
+		}
+
+		data = states.CreatePaymentRollbackData{Payment: payment}
+
+		gateway := &mocks.WebCartPaymentGateway{}
+		expectedError := errors.New("generic payment error")
+		gateway.On("CancelOrderPayment", mock.Anything, payment).Return(expectedError).Once()
+		state.Inject(gateway)
+		assert.EqualError(t, state.Rollback(data), expectedError.Error())
+		gateway.AssertExpectations(t)
+	})
+
+}

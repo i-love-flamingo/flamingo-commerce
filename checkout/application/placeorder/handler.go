@@ -2,6 +2,7 @@ package placeorder
 
 import (
 	"context"
+
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 )
 
@@ -21,7 +22,7 @@ func (h *Handler) Inject(
 
 //StartPlaceOrder handles start place order command
 func (h *Handler) StartPlaceOrder(ctx context.Context, command StartPlaceOrderCommand) (*process.Context, error) {
-	return h.coordinator.New(ctx, command.Cart)
+	return h.coordinator.New(ctx, command.Cart, command.ReturnURL)
 }
 
 //RefreshPlaceOrder handles start RefreshPlaceOrder command
@@ -29,7 +30,7 @@ func (h *Handler) RefreshPlaceOrder(ctx context.Context, command RefreshPlaceOrd
 	return h.coordinator.Last(ctx)
 }
 
-//HasUnfinishedProcess
+// HasUnfinishedProcess checks for processes not in final state
 func (h *Handler) HasUnfinishedProcess(ctx context.Context) (bool, error) {
 	return h.coordinator.HasUnfinishedProcess(ctx)
 }
