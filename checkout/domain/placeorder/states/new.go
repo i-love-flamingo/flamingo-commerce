@@ -3,7 +3,6 @@ package states
 import (
 	"context"
 	"encoding/gob"
-	"fmt"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 )
@@ -12,17 +11,12 @@ type (
 	// New state
 	New struct {
 	}
-
-	Test struct {
-		A string
-	}
 )
 
 var _ process.State = New{}
 
 func init() {
 	gob.Register(New{})
-	gob.Register(Test{})
 }
 
 // Name get state name
@@ -31,19 +25,14 @@ func (New) Name() string {
 }
 
 // Run the state operations
-func (n New) Run(context.Context, *process.Process) process.RunResult {
-	return process.RunResult{
-		RollbackData: &Test{
-			A: "A",
-		},
-		Failed: process.ErrorOccurredReason{Error: "not implemented"},
-	}
+func (n New) Run(_ context.Context, p *process.Process) process.RunResult {
+	p.UpdateState(CreatePayment{})
+
+	return process.RunResult{}
 }
 
 // Rollback the state operations
-func (n New) Rollback(data process.RollbackData) error {
-	fmt.Println(data.(*Test))
-
+func (n New) Rollback(process.RollbackData) error {
 	return nil
 }
 
