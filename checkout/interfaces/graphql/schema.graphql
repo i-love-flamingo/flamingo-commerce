@@ -25,7 +25,6 @@ type  Commerce_Checkout_PlaceOrderPaymentInfo {
     gateway:         String!
     paymentProvider: String!
     method:          String!
-    #creditCardInfo  *placeorder.CreditCardInfo
     amount:          Commerce_Price!
     title:           String!
 }
@@ -56,23 +55,30 @@ type Commerce_Checkout_PlaceOrderState_State_Failed implements Commerce_Checkout
     reason: Commerce_Checkout_PlaceOrderState_State_FailedReason
 }
 
-#type Commerce_Checkout_PlaceOrderState_State_ShowIframe implements Commerce_Checkout_PlaceOrderState_State {
-#    isFinal: Boolean
-#    name: String!
-#    #URL: String
-#}
+type Commerce_Checkout_PlaceOrderState_State_ShowIframe implements Commerce_Checkout_PlaceOrderState_State {
+    isFinal: Boolean
+    name: String!
+    URL: String!
+}
 
-#type Commerce_Checkout_PlaceOrderState_State_ShowHtml implements Commerce_Checkout_PlaceOrderState_State {
-#    isFinal: Boolean
-#    name: String!
-#    #HTML: String
-#}
+type Commerce_Checkout_PlaceOrderState_State_ShowHtml implements Commerce_Checkout_PlaceOrderState_State {
+    isFinal: Boolean
+    name: String!
+    HTML: String!
+}
 
-#type Commerce_Checkout_PlaceOrderState_State_Redirect implements Commerce_Checkout_PlaceOrderState_State {
-#    isFinal: Boolean
-#    name: String!
-#    #URL: String
-#}
+type Commerce_Checkout_PlaceOrderState_State_Redirect implements Commerce_Checkout_PlaceOrderState_State {
+    isFinal: Boolean
+    name: String!
+    URL: String!
+}
+
+type Commerce_Checkout_PlaceOrderState_State_PostRedirect implements Commerce_Checkout_PlaceOrderState_State {
+    isFinal: Boolean
+    name: String!
+    URL: String!
+    Parameters: [Commerce_Checkout_Form_Parameter!]
+}
 
 interface Commerce_Checkout_PlaceOrderState_State_FailedReason {
     reason: String
@@ -92,6 +98,11 @@ type Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError im
     validationResult: Commerce_Cart_ValidationResult!
 }
 
+type Commerce_Checkout_Form_Parameter {
+    key: String!
+    value: [String!]
+}
+
 
 extend type Query {
     Commerce_Checkout_ActivePlaceOrder: Boolean!
@@ -99,7 +110,7 @@ extend type Query {
 
 
 extend type Mutation {
-    #Only possible if Statemaschine not active or in a final state
+    # Only possible if Statemaschine not active or in a final state
     Commerce_Checkout_StartPlaceOrder(returnUrl: String!): Commerce_Checkout_StartPlaceOrder_Result!
     # Possible if state is not final
     Commerce_Checkout_CancelPlaceOrder: Boolean!
