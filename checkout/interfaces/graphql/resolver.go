@@ -2,6 +2,7 @@ package graphql
 
 import (
 	"context"
+
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/checkout/application"
 	"flamingo.me/flamingo-commerce/v3/checkout/application/placeorder"
