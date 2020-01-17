@@ -215,6 +215,12 @@ func (dc DecoratedCart) GetDecoratedDeliveryByCode(deliveryCode string) (*Decora
 	return nil, false
 }
 
+// GetDecoratedDeliveryByCodeWithoutBool - used inside a template, therefor we need the method with a single return param
+func (dc DecoratedCart) GetDecoratedDeliveryByCodeWithoutBool(deliveryCode string) *DecoratedDelivery {
+	decoratedDelivery, _ := dc.GetDecoratedDeliveryByCode(deliveryCode)
+	return decoratedDelivery
+}
+
 // GetGroupedBy getter
 func (dc DecoratedDelivery) GetGroupedBy(group string, sortGroup bool, params ...string) []*GroupedDecoratedCartItem {
 	groupedItemsCollection := make(map[string]*GroupedDecoratedCartItem)
