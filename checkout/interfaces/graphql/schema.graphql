@@ -103,11 +103,9 @@ type Commerce_Checkout_Form_Parameter {
     value: [String!]
 }
 
-
 extend type Query {
     Commerce_Checkout_ActivePlaceOrder: Boolean!
 }
-
 
 extend type Mutation {
     # Only possible if Statemaschine not active or in a final state
