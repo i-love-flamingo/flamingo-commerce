@@ -4,9 +4,12 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
+	"fmt"
+	"net/url"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	"flamingo.me/flamingo/v3/framework/flamingo"
-	"fmt"
+
 	"github.com/google/uuid"
 )
 
@@ -53,6 +56,7 @@ type (
 		Error string
 	}
 
+	// CartValidationErrorReason contains the ValidationResult
 	CartValidationErrorReason struct {
 		ValidationResult validation.Result
 	}
@@ -95,15 +99,16 @@ func (f *Factory) Inject(
 }
 
 // New process with initial state
-func (f *Factory) New() (*Process, error) {
+func (f *Factory) New(returnURL *url.URL) (*Process, error) {
 	if f.startState == nil {
 		return nil, errors.New("no start state given")
 	}
 	p := f.provider()
 	p.failedState = f.failedState
 	p.context = Context{
-		UUID:  uuid.New().String(),
-		State: f.startState,
+		UUID:      uuid.New().String(),
+		State:     f.startState,
+		ReturnURL: returnURL,
 	}
 
 	return p, nil

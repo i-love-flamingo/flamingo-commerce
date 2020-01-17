@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
+	"net/url"
 	"time"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
@@ -59,7 +60,7 @@ func (c *Coordinator) Inject(locker TryLock, logger flamingo.Logger, processFact
 
 // New acquires lock if possible and creates new process with first run call blocking
 // returns error if already locked or error during run
-func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart) (*process.Context, error) {
+func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *url.URL) (*process.Context, error) {
 	unlock, err := c.locker.TryLock(determineLockKey(cart), maxLockDuration)
 	if err != nil {
 		return nil, err
@@ -83,7 +84,7 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart) (*process.C
 			return
 		}
 
-		newProcess, err := c.processFactory.New()
+		newProcess, err := c.processFactory.New(returnURL)
 		if err != nil {
 			runerr = err
 			c.logger.Error(err)
@@ -110,6 +111,7 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart) (*process.C
 	*/
 }
 
+// HasUnfinishedProcess checks for processes not in final state
 func (c *Coordinator) HasUnfinishedProcess(ctx context.Context) (bool, error) {
 	last, err := c.Last(ctx)
 	if err == ErrNoPlaceOrderProcess {

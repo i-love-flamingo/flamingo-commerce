@@ -2,6 +2,7 @@ package graphql
 
 import (
 	"context"
+	"net/url"
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
@@ -57,7 +58,14 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutStartPlaceOrder(ctx c
 	if err != nil {
 		return nil, err
 	}
-	startPlaceOrderCommand := placeorder.StartPlaceOrderCommand{Cart: *cart}
+	var returnURL *url.URL
+	if returnURLRaw != "" {
+		returnURL, err = url.Parse(returnURLRaw)
+		if err != nil {
+			return nil, err
+		}
+	}
+	startPlaceOrderCommand := placeorder.StartPlaceOrderCommand{Cart: *cart, ReturnURL: returnURL}
 	pctx, err := r.placeorderHandler.StartPlaceOrder(ctx, startPlaceOrderCommand)
 	if err == placeorder.ErrAnotherPlaceOrderProcessRunning {
 		dtopctx, err := r.CommerceCheckoutRefreshPlaceOrder(ctx)
