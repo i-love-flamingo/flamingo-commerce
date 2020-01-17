@@ -6,7 +6,7 @@ require (
 	flamingo.me/dingo v0.2.7
 	flamingo.me/flamingo/v3 v3.1.7-0.20200116110819-91a8ad6069e8
 	flamingo.me/form v1.0.1
-	flamingo.me/graphql v1.0.1
+	flamingo.me/graphql v1.0.2-0.20200109090653-271ced2b302c
 	flamingo.me/pugtemplate v1.0.0
 	github.com/99designs/gqlgen v0.9.0
 	github.com/ajg/form v1.5.1 // indirect
@@ -28,6 +28,7 @@ require (
 	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/stretchr/testify v1.4.0
 	github.com/valyala/fasthttp v1.6.0 // indirect
+	github.com/vektah/gqlparser v1.1.2
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
 	github.com/yalp/jsonpath v0.0.0-20180802001716-5cc68e5049a0 // indirect
 	github.com/yudai/gojsondiff v1.0.0 // indirect

@@ -2,8 +2,10 @@ package graphql
 
 import (
 	"context"
+
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+	graphqlDto "flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
 	"flamingo.me/flamingo-commerce/v3/checkout/application/placeorder"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql/dto"
 	"flamingo.me/flamingo/v3/framework/flamingo"
@@ -31,14 +33,15 @@ func (r *CommerceCheckoutMutationResolver) Inject(
 
 }
 
-//CommerceCheckoutPlaceOrderContext query
+// CommerceCheckoutRefreshPlaceOrder refreshes the current place order
 func (r *CommerceCheckoutMutationResolver) CommerceCheckoutRefreshPlaceOrder(ctx context.Context) (*dto.PlaceOrderContext, error) {
 
 	poctx, err := r.placeorderHandler.RefreshPlaceOrder(ctx, placeorder.RefreshPlaceOrderCommand{})
 	if err != nil {
 		return nil, err
 	}
-	dc := r.decoratedCartFactory.Create(ctx, poctx.Cart)
+	dc := graphqlDto.NewDecoratedCart(r.decoratedCartFactory.Create(ctx, poctx.Cart))
+
 	return &dto.PlaceOrderContext{
 		Cart:       dc,
 		OrderInfos: nil,
@@ -47,7 +50,7 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutRefreshPlaceOrder(ctx
 	}, nil
 }
 
-//CommerceCheckoutStartPlaceOrder starts a new process (if not running)
+// CommerceCheckoutStartPlaceOrder starts a new process (if not running)
 func (r *CommerceCheckoutMutationResolver) CommerceCheckoutStartPlaceOrder(ctx context.Context, returnURLRaw string) (*dto.StartPlaceOrderResult, error) {
 	session := web.SessionFromContext(ctx)
 	cart, err := r.cartService.GetCartReceiverService().ViewCart(ctx, session)
@@ -73,7 +76,7 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutStartPlaceOrder(ctx c
 	}, nil
 }
 
-//CommerceCheckoutCancelPlaceOrder starts a new process (if not running)
+// CommerceCheckoutCancelPlaceOrder cancels a running place order
 func (r *CommerceCheckoutMutationResolver) CommerceCheckoutCancelPlaceOrder(ctx context.Context) (bool, error) {
 	return true, nil
 }

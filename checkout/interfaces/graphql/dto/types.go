@@ -1,7 +1,6 @@
 package dto
 
 import (
-	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
 	"flamingo.me/flamingo-commerce/v3/checkout/application"
@@ -15,7 +14,7 @@ type (
 
 	//PlaceOrderContext infos
 	PlaceOrderContext struct {
-		Cart       *decorator.DecoratedCart
+		Cart       *dto.DecoratedCart
 		OrderInfos *PlacedOrderInfos
 		State      process.State
 		UUID       string
