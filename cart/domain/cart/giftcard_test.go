@@ -203,6 +203,7 @@ func TestCart_HasRemainingGiftCards(t *testing.T) {
 }
 
 func TestAppliedGiftCard_Total(t *testing.T) {
+	// Applied and Remaining with different values but same currency returns a correct total
 	giftCard := cart.AppliedGiftCard{
 		Applied:   domain.NewFromFloat(10.5, "$"),
 		Remaining: domain.NewFromFloat(4.5, "$"),
@@ -211,6 +212,7 @@ func TestAppliedGiftCard_Total(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, true, domain.NewFromFloat(15, "$").Equal(total))
 
+	// Applied of Zero and Remaining with a value and currency returns a correct total
 	giftCard = cart.AppliedGiftCard{
 		Applied:   domain.NewZero("$"),
 		Remaining: domain.NewFromFloat(10, "$"),
@@ -219,6 +221,7 @@ func TestAppliedGiftCard_Total(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, true, domain.NewFromFloat(10, "$").Equal(total))
 
+	// Applied with a value and currency and Remaining of Zero returns a correct total
 	giftCard = cart.AppliedGiftCard{
 		Applied:   domain.NewFromFloat(5, "$"),
 		Remaining: domain.NewZero("$"),
@@ -227,6 +230,7 @@ func TestAppliedGiftCard_Total(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, true, domain.NewFromFloat(5, "$").Equal(total))
 
+	// Applied and Remaining with different values and different currencies returns an error and the price of Remaining
 	giftCard = cart.AppliedGiftCard{
 		Applied:   domain.NewFromFloat(10.5, "$"),
 		Remaining: domain.NewFromFloat(4.5, "€"),
