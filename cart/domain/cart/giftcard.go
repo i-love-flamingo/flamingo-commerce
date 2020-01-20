@@ -36,6 +36,7 @@ func (card AppliedGiftCard) HasRemaining() bool {
 }
 
 // Total returns the total value of the gift card by adding what is applied and remaining
+// In case the values cannot be added the function returns the remaining amount of the giftcard and an error
 func (card AppliedGiftCard) Total() (domain.Price, error) {
 	total, err := card.Applied.Add(card.Remaining)
 	if err != nil {
