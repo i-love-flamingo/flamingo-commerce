@@ -2,6 +2,7 @@ package states
 
 import (
 	"context"
+	"encoding/gob"
 	"fmt"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
@@ -17,11 +18,16 @@ type (
 
 	// CreatePaymentRollbackData needed for rollback
 	CreatePaymentRollbackData struct {
-		Payment *placeorder.Payment
+		PaymentID string
+		Gateway   string
 	}
 )
 
 var _ process.State = CreatePayment{}
+
+func init() {
+	gob.Register(CreatePaymentRollbackData{})
+}
 
 // Inject dependencies
 func (c *CreatePayment) Inject(
@@ -63,7 +69,7 @@ func (c CreatePayment) Run(ctx context.Context, p *process.Process) process.RunR
 
 	p.UpdateState(CompleteCart{}.Name())
 	return process.RunResult{
-		RollbackData: CreatePaymentRollbackData{Payment: payment},
+		RollbackData: CreatePaymentRollbackData{PaymentID: payment.PaymentID, Gateway: payment.Gateway},
 	}
 }
 
@@ -74,12 +80,12 @@ func (c CreatePayment) Rollback(data process.RollbackData) error {
 		return fmt.Errorf("rollback data not of expected type 'CreatePaymentRollbackData', but %T", rollbackData)
 	}
 
-	paymentGateway, err := c.paymentService.PaymentGateway(rollbackData.Payment.Gateway)
+	paymentGateway, err := c.paymentService.PaymentGateway(rollbackData.Gateway)
 	if err != nil {
 		return err
 	}
 
-	err = paymentGateway.CancelOrderPayment(context.Background(), rollbackData.Payment)
+	err = paymentGateway.CancelOrderPayment(context.Background(), &placeorder.Payment{Gateway: rollbackData.Gateway, PaymentID: rollbackData.PaymentID})
 	if err != nil {
 		return err
 	}

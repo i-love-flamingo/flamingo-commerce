@@ -46,6 +46,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	injector.Bind(new(process.State)).AnnotatedWith("failedState").To(states.Failed{})
 	injector.BindMap(new(process.State), new(states.New).Name()).To(states.New{})
 	injector.BindMap(new(process.State), new(states.CreatePayment).Name()).To(states.CreatePayment{})
+	injector.BindMap(new(process.State), new(states.CompleteCart).Name()).To(states.CompleteCart{})
 	injector.BindMap(new(process.State), new(states.PlaceOrder).Name()).To(states.PlaceOrder{})
 	injector.BindMap(new(process.State), new(states.ValidatePayment).Name()).To(states.ValidatePayment{})
 	injector.BindMap(new(process.State), new(states.Wait).Name()).To(states.Wait{})

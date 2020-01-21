@@ -2,6 +2,7 @@ package states
 
 import (
 	"context"
+	"encoding/gob"
 	"fmt"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
@@ -17,9 +18,13 @@ type (
 	}
 	// CompleteCartRollbackData for later rollbacks
 	CompleteCartRollbackData struct {
-		completedCart *cart.Cart
+		CompletedCart *cart.Cart
 	}
 )
+
+func init() {
+	gob.Register(CompleteCartRollbackData{})
+}
 
 var _ process.State = CompleteCart{}
 
@@ -65,7 +70,7 @@ func (c CompleteCart) Run(ctx context.Context, p *process.Process) process.RunRe
 	p.UpdateState(PlaceOrder{}.Name())
 	return process.RunResult{
 		RollbackData: &CompleteCartRollbackData{
-			completedCart: completedCart,
+			CompletedCart: completedCart,
 		},
 	}
 }
@@ -78,7 +83,7 @@ func (c CompleteCart) Rollback(data process.RollbackData) error {
 	}
 
 	// todo: context is missing but needed here to restore cart cache..
-	_, err := c.cartService.RestoreCart(context.Background(), rollbackData.completedCart)
+	_, err := c.cartService.RestoreCart(context.Background(), rollbackData.CompletedCart)
 	if err != nil {
 		return err
 	}

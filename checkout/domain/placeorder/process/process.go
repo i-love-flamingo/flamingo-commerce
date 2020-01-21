@@ -150,7 +150,7 @@ func (p *Process) Run(ctx context.Context) {
 	runResult := currentState.Run(ctx, p)
 	if runResult.RollbackData != nil {
 		p.context.RollbackReferences = append(p.context.RollbackReferences, RollbackReference{
-			StateName: p.context.State,
+			StateName: currentState.Name(),
 			Data:      runResult.RollbackData,
 		})
 	}
