@@ -84,7 +84,7 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *
 			return
 		}
 
-		newProcess, err := c.processFactory.New(returnURL)
+		newProcess, err := c.processFactory.New(returnURL, cart)
 		if err != nil {
 			runerr = err
 			c.logger.Error(err)
