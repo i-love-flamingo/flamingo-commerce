@@ -20,6 +20,7 @@ type (
 		GetNewCart(ctx context.Context) (*Cart, error)
 		// RestoreCart restores a previously used guest cart with all its content.
 		// Depending on the used adapter this can lead to a new Cart.ID
+		// Deprecated: Implement CompleteBehaviour instead
 		RestoreCart(ctx context.Context, cart Cart) (*Cart, error)
 	}
 
@@ -30,6 +31,7 @@ type (
 		GetCart(ctx context.Context, auth domain.Auth, cartID string) (*Cart, error)
 		// RestoreCart restores a previously used customer cart with all its content.
 		// Depending on the used adapter this can lead to a new Cart.ID
+		// Deprecated: Implement CompleteBehaviour instead
 		RestoreCart(ctx context.Context, auth domain.Auth, cart Cart) (*Cart, error)
 	}
 
@@ -53,6 +55,14 @@ type (
 		UpdateDeliveryInfoAdditionalData(ctx context.Context, cart *Cart, deliveryCode string, additionalData *AdditionalData) (*Cart, DeferEvents, error)
 		ApplyVoucher(ctx context.Context, cart *Cart, couponCode string) (*Cart, DeferEvents, error)
 		RemoveVoucher(ctx context.Context, cart *Cart, couponCode string) (*Cart, DeferEvents, error)
+	}
+
+	// CompleteBehaviour can be implemented by a cart service.
+	// Complete is normally called before the cart is placed
+	// This can for example be used to invalidate gift cards
+	CompleteBehaviour interface {
+		Complete(context.Context) (*Cart, DeferEvents, error)
+		Restore(context.Context, Cart) (*Cart, DeferEvents, error)
 	}
 
 	//GiftCardBehaviour - additional interface that can be implemented to support GiftCard features

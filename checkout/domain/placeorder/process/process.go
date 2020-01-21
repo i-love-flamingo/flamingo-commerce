@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/url"
 
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 
@@ -100,7 +101,7 @@ func (f *Factory) Inject(
 }
 
 // New process with initial state
-func (f *Factory) New(returnURL *url.URL) (*Process, error) {
+func (f *Factory) New(returnURL *url.URL, cart cart.Cart) (*Process, error) {
 	if f.startState == nil {
 		return nil, errors.New("no start state given")
 	}
@@ -109,6 +110,7 @@ func (f *Factory) New(returnURL *url.URL) (*Process, error) {
 	p.context = Context{
 		UUID:      uuid.New().String(),
 		State:     f.startState.Name(),
+		Cart:      cart,
 		ReturnURL: returnURL,
 	}
 

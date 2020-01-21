@@ -6,13 +6,13 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
-	"flamingo.me/flamingo-commerce/v3/payment/interfaces"
+	"flamingo.me/flamingo-commerce/v3/payment/application"
 )
 
 type (
 	// CreatePayment state
 	CreatePayment struct {
-		paymentGateway map[string]interfaces.WebCartPaymentGateway
+		paymentService *application.PaymentService
 	}
 
 	// CreatePaymentRollbackData needed for rollback
@@ -25,9 +25,9 @@ var _ process.State = CreatePayment{}
 
 // Inject dependencies
 func (c *CreatePayment) Inject(
-	paymentGateway map[string]interfaces.WebCartPaymentGateway,
+	paymentService *application.PaymentService,
 ) *CreatePayment {
-	c.paymentGateway = paymentGateway
+	c.paymentService = paymentService
 
 	return c
 }
@@ -40,29 +40,31 @@ func (CreatePayment) Name() string {
 // Run the state operations
 func (c CreatePayment) Run(ctx context.Context, p *process.Process) process.RunResult {
 	cart := p.Context().Cart
-	flowResult, err := c.paymentGateway[interfaces.OfflineWebCartPaymentGatewayCode].StartFlow(ctx, &cart, p.Context().UUID, p.Context().ReturnURL)
+	paymentGateway, err := c.paymentService.PaymentGatewayByCart(cart)
 	if err != nil {
 		return process.RunResult{
 			Failed: process.ErrorOccurredReason{Error: err.Error()},
 		}
 	}
-	payment, err := c.paymentGateway[interfaces.OfflineWebCartPaymentGatewayCode].OrderPaymentFromFlow(ctx, &cart, p.Context().UUID)
+
+	_, err = paymentGateway.StartFlow(ctx, &cart, p.Context().UUID, p.Context().ReturnURL)
 	if err != nil {
 		return process.RunResult{
 			Failed: process.ErrorOccurredReason{Error: err.Error()},
 		}
 	}
-	result := process.RunResult{
+
+	payment, err := paymentGateway.OrderPaymentFromFlow(ctx, &cart, p.Context().UUID)
+	if err != nil {
+		return process.RunResult{
+			Failed: process.ErrorOccurredReason{Error: err.Error()},
+		}
+	}
+
+	p.UpdateState(CloseCart{}.Name())
+	return process.RunResult{
 		RollbackData: CreatePaymentRollbackData{Payment: payment},
 	}
-
-	if flowResult.EarlyPlaceOrder {
-		p.UpdateState(PlaceOrder{}.Name())
-		return result
-	}
-
-	p.UpdateState(ValidatePayment{}.Name())
-	return result
 }
 
 // Rollback the state operations
@@ -71,7 +73,13 @@ func (c CreatePayment) Rollback(data process.RollbackData) error {
 	if !ok {
 		return fmt.Errorf("rollback data not of expected type 'CreatePaymentRollbackData', but %T", rollbackData)
 	}
-	err := c.paymentGateway[interfaces.OfflineWebCartPaymentGatewayCode].CancelOrderPayment(context.Background(), rollbackData.Payment)
+
+	paymentGateway, err := c.paymentService.PaymentGateway(rollbackData.Payment.Gateway)
+	if err != nil {
+		return err
+	}
+
+	err = paymentGateway.CancelOrderPayment(context.Background(), rollbackData.Payment)
 	if err != nil {
 		return err
 	}
