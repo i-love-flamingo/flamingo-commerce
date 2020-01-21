@@ -61,7 +61,7 @@ func (c *Coordinator) Inject(locker TryLock, logger flamingo.Logger, processFact
 // New acquires lock if possible and creates new process with first run call blocking
 // returns error if already locked or error during run
 func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *url.URL) (*process.Context, error) {
-	unlock, err := c.locker.TryLock(determineLockKey(cart), maxLockDuration)
+	unlock, err := c.locker.TryLock(determineLockKeyForCart(cart), maxLockDuration)
 	if err != nil {
 		return nil, err
 	}
@@ -180,7 +180,31 @@ func (c *Coordinator) Cancel(ctx context.Context, cart cartDomain.Cart) error {
 // Run starts the next processing if not already running
 // Run is NOP if the process is locked
 // Run returns immediately
-func (c *Coordinator) Run(ctx context.Context, cart cartDomain.Cart) {
+func (c *Coordinator) Run(ctx context.Context) {
+	// todo move to go routine
+	web.RunWithDetachedContext(ctx, func(ctx context.Context) {
+		has, err := c.HasUnfinishedProcess(ctx)
+		if err != nil || has == false {
+			return
+		}
+
+		p, err := c.LastProcess(ctx)
+		if err != nil {
+			return
+		}
+
+		unlock, err := c.locker.TryLock(determineLockKeyForProcess(p), maxLockDuration)
+		if err != nil {
+			return
+		}
+		defer func() {
+			_ = unlock()
+		}()
+
+		p.Run(ctx)
+		c.storeProcessContext(ctx, p.Context())
+	})
+
 	/* Todo: Do stuff in a go routine to be non blocking
 	1. check if process is there
 	2. check if lock can acquired
@@ -191,7 +215,7 @@ func (c *Coordinator) Run(ctx context.Context, cart cartDomain.Cart) {
 
 // RunBlocking waits for the lock and starts the next processing
 // RunBlocking waits until the process is finished and returns its result
-func (c *Coordinator) RunBlocking(ctx context.Context, cart cartDomain.Cart) (*process.Context, error) {
+func (c *Coordinator) RunBlocking(ctx context.Context) (*process.Context, error) {
 	/* Todo:
 	1. check if process is there
 	2. get lock
@@ -201,6 +225,10 @@ func (c *Coordinator) RunBlocking(ctx context.Context, cart cartDomain.Cart) (*p
 	return &process.Context{}, nil
 }
 
-func determineLockKey(cart cartDomain.Cart) string {
+func determineLockKeyForCart(cart cartDomain.Cart) string {
 	return "checkout_placeorder_lock_" + cart.ID
+}
+
+func determineLockKeyForProcess(p *process.Process) string {
+	return "checkout_placeorder_lock_" + p.Context().UUID
 }

@@ -462,10 +462,11 @@ type ComplexityRoot struct {
 	}
 
 	CommerceCheckoutPlaceOrderContext struct {
-		Cart       func(childComplexity int) int
-		OrderInfos func(childComplexity int) int
-		State      func(childComplexity int) int
-		UUID       func(childComplexity int) int
+		Cart         func(childComplexity int) int
+		FailedReason func(childComplexity int) int
+		OrderInfos   func(childComplexity int) int
+		State        func(childComplexity int) int
+		UUID         func(childComplexity int) int
 	}
 
 	CommerceCheckoutPlaceOrderPaymentInfo struct {
@@ -646,19 +647,20 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CommerceAddToCart                     func(childComplexity int, marketplaceCode string, qty int, deliveryCode string) int
-		CommerceCartApplyCouponCodeOrGiftCard func(childComplexity int, code string) int
-		CommerceCartRemoveCouponCode          func(childComplexity int, couponCode string) int
-		CommerceCartRemoveGiftCard            func(childComplexity int, giftCardCode string) int
-		CommerceCartUpdateBillingAddress      func(childComplexity int, addressForm *forms.BillingAddressForm) int
-		CommerceCartUpdateSelectedPayment     func(childComplexity int, gateway string, method string) int
-		CommerceCheckoutCancelPlaceOrder      func(childComplexity int) int
-		CommerceCheckoutRefreshPlaceOrder     func(childComplexity int) int
-		CommerceCheckoutStartPlaceOrder       func(childComplexity int, returnURL string) int
-		CommerceDeleteCartDelivery            func(childComplexity int, deliveryCode string) int
-		CommerceDeleteItem                    func(childComplexity int, itemID string, deliveryCode string) int
-		CommerceUpdateItemQty                 func(childComplexity int, itemID string, deliveryCode string, qty int) int
-		Flamingo                              func(childComplexity int) int
+		CommerceAddToCart                         func(childComplexity int, marketplaceCode string, qty int, deliveryCode string) int
+		CommerceCartApplyCouponCodeOrGiftCard     func(childComplexity int, code string) int
+		CommerceCartRemoveCouponCode              func(childComplexity int, couponCode string) int
+		CommerceCartRemoveGiftCard                func(childComplexity int, giftCardCode string) int
+		CommerceCartUpdateBillingAddress          func(childComplexity int, addressForm *forms.BillingAddressForm) int
+		CommerceCartUpdateSelectedPayment         func(childComplexity int, gateway string, method string) int
+		CommerceCheckoutCancelPlaceOrder          func(childComplexity int) int
+		CommerceCheckoutRefreshPlaceOrder         func(childComplexity int) int
+		CommerceCheckoutRefreshPlaceOrderBlocking func(childComplexity int) int
+		CommerceCheckoutStartPlaceOrder           func(childComplexity int, returnURL string) int
+		CommerceDeleteCartDelivery                func(childComplexity int, deliveryCode string) int
+		CommerceDeleteItem                        func(childComplexity int, itemID string, deliveryCode string) int
+		CommerceUpdateItemQty                     func(childComplexity int, itemID string, deliveryCode string, qty int) int
+		Flamingo                                  func(childComplexity int) int
 	}
 
 	Query struct {
@@ -686,6 +688,7 @@ type MutationResolver interface {
 	CommerceCheckoutStartPlaceOrder(ctx context.Context, returnURL string) (*dto2.StartPlaceOrderResult, error)
 	CommerceCheckoutCancelPlaceOrder(ctx context.Context) (bool, error)
 	CommerceCheckoutRefreshPlaceOrder(ctx context.Context) (*dto2.PlaceOrderContext, error)
+	CommerceCheckoutRefreshPlaceOrderBlocking(ctx context.Context) (*dto2.PlaceOrderContext, error)
 }
 type QueryResolver interface {
 	Flamingo(ctx context.Context) (*string, error)
@@ -2619,6 +2622,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCheckoutPlaceOrderContext.Cart(childComplexity), true
 
+	case "Commerce_Checkout_PlaceOrderContext.failedReason":
+		if e.complexity.CommerceCheckoutPlaceOrderContext.FailedReason == nil {
+			break
+		}
+
+		return e.complexity.CommerceCheckoutPlaceOrderContext.FailedReason(childComplexity), true
+
 	case "Commerce_Checkout_PlaceOrderContext.orderInfos":
 		if e.complexity.CommerceCheckoutPlaceOrderContext.OrderInfos == nil {
 			break
@@ -3485,6 +3495,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CommerceCheckoutRefreshPlaceOrder(childComplexity), true
 
+	case "Mutation.Commerce_Checkout_RefreshPlaceOrderBlocking":
+		if e.complexity.Mutation.CommerceCheckoutRefreshPlaceOrderBlocking == nil {
+			break
+		}
+
+		return e.complexity.Mutation.CommerceCheckoutRefreshPlaceOrderBlocking(childComplexity), true
+
 	case "Mutation.Commerce_Checkout_StartPlaceOrder":
 		if e.complexity.Mutation.CommerceCheckoutStartPlaceOrder == nil {
 			break
@@ -4145,6 +4162,7 @@ type Commerce_Checkout_PlaceOrderContext {
     state: String! # todo: use correct GraphQL states..
     # A unique id for the process
     uuid: String!
+    failedReason: String
 }
 
 
@@ -4248,6 +4266,7 @@ extend type Mutation {
     # Possible if state is not final
     Commerce_Checkout_CancelPlaceOrder: Boolean!
     Commerce_Checkout_RefreshPlaceOrder: Commerce_Checkout_PlaceOrderContext!
+    Commerce_Checkout_RefreshPlaceOrderBlocking: Commerce_Checkout_PlaceOrderContext!
 }
 `},
 	&ast.Source{Name: "graphql/schema/flamingo.me_flamingo-commerce_v3_price_interfaces_graphql-Service.graphql", Input: `type Commerce_Price{
@@ -12169,6 +12188,30 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_uuid(ctx contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_failedReason(ctx context.Context, field graphql.CollectedField, obj *dto2.PlaceOrderContext) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Checkout_PlaceOrderContext",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FailedReason, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_gateway(ctx context.Context, field graphql.CollectedField, obj *application1.PlaceOrderPaymentInfo) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -15253,6 +15296,33 @@ func (ec *executionContext) _Mutation_Commerce_Checkout_RefreshPlaceOrder(ctx co
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CommerceCheckoutRefreshPlaceOrder(rctx)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*dto2.PlaceOrderContext)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNCommerce_Checkout_PlaceOrderContext2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPlaceOrderContext(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_Commerce_Checkout_RefreshPlaceOrderBlocking(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CommerceCheckoutRefreshPlaceOrderBlocking(rctx)
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -18763,6 +18833,8 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext(ctx context.Con
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "failedReason":
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderContext_failedReason(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -19770,6 +19842,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "Commerce_Checkout_RefreshPlaceOrder":
 			out.Values[i] = ec._Mutation_Commerce_Checkout_RefreshPlaceOrder(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "Commerce_Checkout_RefreshPlaceOrderBlocking":
+			out.Values[i] = ec._Mutation_Commerce_Checkout_RefreshPlaceOrderBlocking(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

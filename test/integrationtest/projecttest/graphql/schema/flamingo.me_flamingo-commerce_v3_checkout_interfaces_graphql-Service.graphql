@@ -11,6 +11,7 @@ type Commerce_Checkout_PlaceOrderContext {
     state: String! # todo: use correct GraphQL states..
     # A unique id for the process
     uuid: String!
+    failedReason: String
 }
 
 
@@ -114,4 +115,5 @@ extend type Mutation {
     # Possible if state is not final
     Commerce_Checkout_CancelPlaceOrder: Boolean!
     Commerce_Checkout_RefreshPlaceOrder: Commerce_Checkout_PlaceOrderContext!
+    Commerce_Checkout_RefreshPlaceOrderBlocking: Commerce_Checkout_PlaceOrderContext!
 }

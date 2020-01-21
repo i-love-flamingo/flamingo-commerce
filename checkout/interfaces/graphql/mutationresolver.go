@@ -34,21 +34,39 @@ func (r *CommerceCheckoutMutationResolver) Inject(
 
 }
 
-// CommerceCheckoutRefreshPlaceOrder refreshes the current place order
+// CommerceCheckoutRefreshPlaceOrder refreshes the current place order and proceeds the process
 func (r *CommerceCheckoutMutationResolver) CommerceCheckoutRefreshPlaceOrder(ctx context.Context) (*dto.PlaceOrderContext, error) {
 
 	poctx, err := r.placeorderHandler.RefreshPlaceOrder(ctx, placeorder.RefreshPlaceOrderCommand{})
 	if err != nil {
 		return nil, err
 	}
+
 	dc := graphqlDto.NewDecoratedCart(r.decoratedCartFactory.Create(ctx, poctx.Cart))
 
+	failedReason := ""
+	if poctx.FailedReason != nil {
+		failedReason = poctx.FailedReason.Reason()
+	}
+
 	return &dto.PlaceOrderContext{
-		Cart:       dc,
-		OrderInfos: nil,
-		State:      poctx.State, // todo: map internal state to GraphQL state..
-		UUID:       poctx.UUID,
+		Cart:         dc,
+		OrderInfos:   nil,
+		State:        poctx.State, // todo: map internal state to GraphQL state..
+		UUID:         poctx.UUID,
+		FailedReason: failedReason,
 	}, nil
+}
+
+// CommerceCheckoutRefreshPlaceOrderBlocking refreshes the current place order blocking
+func (r *CommerceCheckoutMutationResolver) CommerceCheckoutRefreshPlaceOrderBlocking(ctx context.Context) (*dto.PlaceOrderContext, error) {
+	// TODO
+	_, err := r.placeorderHandler.RefreshPlaceOrderBlocking(ctx, placeorder.RefreshPlaceOrderCommand{})
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.PlaceOrderContext{}, nil
 }
 
 // CommerceCheckoutStartPlaceOrder starts a new process (if not running)
