@@ -61,7 +61,7 @@ func (c CreatePayment) Run(ctx context.Context, p *process.Process) process.RunR
 		}
 	}
 
-	p.UpdateState(CloseCart{}.Name())
+	p.UpdateState(CompleteCart{}.Name())
 	return process.RunResult{
 		RollbackData: CreatePaymentRollbackData{Payment: payment},
 	}
