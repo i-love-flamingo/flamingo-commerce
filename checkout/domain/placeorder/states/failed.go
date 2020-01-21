@@ -2,7 +2,6 @@ package states
 
 import (
 	"context"
-	"encoding/gob"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 )
@@ -14,11 +13,7 @@ type (
 	}
 )
 
-var _ process.FailedState = Failed{}
-
-func init() {
-	gob.Register(Failed{})
-}
+var _ process.State = Failed{}
 
 // Name get state name
 func (f Failed) Name() string {
@@ -38,11 +33,4 @@ func (f Failed) Rollback(process.RollbackData) error {
 // IsFinal if state is a final state
 func (f Failed) IsFinal() bool {
 	return true
-}
-
-// SetFailedReason for the state
-func (f Failed) SetFailedReason(reason process.FailedReason) process.FailedState {
-	f.Reason = reason
-
-	return f
 }

@@ -22,9 +22,9 @@ func TestCreatePayment_Run(t *testing.T) {
 			func() *process.Process {
 				return &process.Process{}
 			},
-			nil,
 			&struct {
-				StartState process.State `inject:"startState"`
+				StartState  process.State `inject:"startState"`
+				FailedState process.State `inject:"failedState"`
 			}{
 				StartState: &states.Wait{},
 			},
@@ -46,7 +46,7 @@ func TestCreatePayment_Run(t *testing.T) {
 		}
 		result := state.Run(context.Background(), p)
 		assert.Equal(t, result, expectedResult)
-		assert.Equal(t, p.Context().State, states.ValidatePayment{})
+		assert.Equal(t, p.Context().State, states.ValidatePayment{}.Name())
 		gateway.AssertExpectations(t)
 	})
 
@@ -56,9 +56,9 @@ func TestCreatePayment_Run(t *testing.T) {
 			func() *process.Process {
 				return &process.Process{}
 			},
-			nil,
 			&struct {
-				StartState process.State `inject:"startState"`
+				StartState  process.State `inject:"startState"`
+				FailedState process.State `inject:"failedState"`
 			}{
 				StartState: &states.Wait{},
 			},
@@ -80,7 +80,7 @@ func TestCreatePayment_Run(t *testing.T) {
 		}
 		result := state.Run(context.Background(), p)
 		assert.Equal(t, result, expectedResult)
-		assert.Equal(t, p.Context().State, states.PlaceOrder{})
+		assert.Equal(t, p.Context().State, states.PlaceOrder{}.Name())
 		gateway.AssertExpectations(t)
 	})
 
@@ -90,9 +90,9 @@ func TestCreatePayment_Run(t *testing.T) {
 			func() *process.Process {
 				return &process.Process{}
 			},
-			nil,
 			&struct {
-				StartState process.State `inject:"startState"`
+				StartState  process.State `inject:"startState"`
+				FailedState process.State `inject:"failedState"`
 			}{
 				StartState: &states.Wait{},
 			},
@@ -121,9 +121,9 @@ func TestCreatePayment_Run(t *testing.T) {
 			func() *process.Process {
 				return &process.Process{}
 			},
-			nil,
 			&struct {
-				StartState process.State `inject:"startState"`
+				StartState  process.State `inject:"startState"`
+				FailedState process.State `inject:"failedState"`
 			}{
 				StartState: &states.Wait{},
 			},

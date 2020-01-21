@@ -21,7 +21,7 @@ type (
 	Process struct {
 		context     Context
 		allStates   map[string]State
-		failedState FailedState
+		failedState State
 		logger      flamingo.Logger
 	}
 
@@ -29,7 +29,7 @@ type (
 	Factory struct {
 		provider    Provider
 		startState  State
-		failedState FailedState
+		failedState State
 	}
 
 	// RollbackReference a reference that can be used to trigger a rollback
@@ -86,14 +86,15 @@ func (e CartValidationErrorReason) Reason() string {
 // Inject dependencies
 func (f *Factory) Inject(
 	provider Provider,
-	failedState FailedState,
 	dep *struct {
-		StartState State `inject:"startState"`
+		StartState  State `inject:"startState"`
+		FailedState State `inject:"failedState"`
 	},
 ) {
 	f.provider = provider
-	f.failedState = failedState
+
 	if dep != nil {
+		f.failedState = dep.FailedState
 		f.startState = dep.StartState
 	}
 }
@@ -107,7 +108,7 @@ func (f *Factory) New(returnURL *url.URL) (*Process, error) {
 	p.failedState = f.failedState
 	p.context = Context{
 		UUID:      uuid.New().String(),
-		State:     f.startState,
+		State:     f.startState.Name(),
 		ReturnURL: returnURL,
 	}
 
@@ -138,16 +139,31 @@ func (p *Process) Inject(
 
 // Run triggers run on current state
 func (p *Process) Run(ctx context.Context) {
-	runResult := p.context.State.Run(ctx, p)
+	currentState, err := p.CurrentState()
+	if err != nil {
+		p.Failed(ctx, ErrorOccurredReason{Error: err.Error()})
+		return
+	}
+
+	runResult := currentState.Run(ctx, p)
 	if runResult.RollbackData != nil {
 		p.context.RollbackReferences = append(p.context.RollbackReferences, RollbackReference{
-			StateName: p.context.State.Name(),
+			StateName: p.context.State,
 			Data:      runResult.RollbackData,
 		})
 	}
 	if runResult.Failed != nil {
 		p.Failed(ctx, runResult.Failed)
 	}
+}
+
+// CurrentState of the process context
+func (p *Process) CurrentState() (State, error) {
+	state, found := p.allStates[p.Context().State]
+	if !found {
+		return nil, fmt.Errorf("current process context state %q not found", p.Context().State)
+	}
+	return state, nil
 }
 
 func (p *Process) rollback() error {
@@ -171,7 +187,7 @@ func (p *Process) Context() Context {
 }
 
 // UpdateState updates
-func (p *Process) UpdateState(s State) {
+func (p *Process) UpdateState(s string) {
 	p.context.State = s
 }
 
@@ -181,5 +197,7 @@ func (p *Process) Failed(ctx context.Context, reason FailedReason) {
 	if err != nil {
 		p.logger.WithContext(ctx).Error("rollback failed: ", err)
 	}
-	p.UpdateState(p.failedState.SetFailedReason(reason))
+
+	p.context.FailedReason = reason
+	p.UpdateState(p.failedState.Name())
 }

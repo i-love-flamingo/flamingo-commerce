@@ -2,7 +2,6 @@ package states
 
 import (
 	"context"
-	"encoding/gob"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 )
@@ -15,10 +14,6 @@ type (
 
 var _ process.State = New{}
 
-func init() {
-	gob.Register(New{})
-}
-
 // Name get state name
 func (New) Name() string {
 	return "New"
@@ -26,7 +21,7 @@ func (New) Name() string {
 
 // Run the state operations
 func (n New) Run(_ context.Context, p *process.Process) process.RunResult {
-	p.UpdateState(CreatePayment{})
+	p.UpdateState(CreatePayment{}.Name())
 
 	return process.RunResult{}
 }

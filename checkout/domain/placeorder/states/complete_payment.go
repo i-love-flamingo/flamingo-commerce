@@ -2,7 +2,6 @@ package states
 
 import (
 	"context"
-	"encoding/gob"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo-commerce/v3/payment/interfaces"
@@ -16,10 +15,6 @@ type (
 )
 
 var _ process.State = CompletePayment{}
-
-func init() {
-	gob.Register(CompletePayment{})
-}
 
 // Inject dependencies
 func (c *CompletePayment) Inject(
@@ -53,7 +48,7 @@ func (c CompletePayment) Run(ctx context.Context, p *process.Process) process.Ru
 		}
 	}
 
-	p.UpdateState(ValidatePayment{})
+	p.UpdateState(ValidatePayment{}.Name())
 	return process.RunResult{}
 }
 

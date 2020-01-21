@@ -2,6 +2,7 @@ package checkout
 
 import (
 	"flamingo.me/dingo"
+	"flamingo.me/flamingo-commerce/v3/payment"
 	"flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/web"
 	flamingographql "flamingo.me/graphql"
@@ -42,7 +43,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	}
 
 	injector.Bind(new(process.State)).AnnotatedWith("startState").To(states.New{})
-	injector.Bind(new(process.FailedState)).To(states.Failed{})
+	injector.Bind(new(process.State)).AnnotatedWith("failedState").To(states.Failed{})
 	injector.BindMap(new(process.State), new(states.New).Name()).To(states.New{})
 	injector.BindMap(new(process.State), new(states.CreatePayment).Name()).To(states.CreatePayment{})
 	injector.BindMap(new(process.State), new(states.PlaceOrder).Name()).To(states.PlaceOrder{})
@@ -105,5 +106,6 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 func (m *Module) Depends() []dingo.Module {
 	return []dingo.Module{
 		new(cart.Module),
+		new(payment.Module),
 	}
 }

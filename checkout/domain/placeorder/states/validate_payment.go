@@ -2,7 +2,6 @@ package states
 
 import (
 	"context"
-	"encoding/gob"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	paymentDomain "flamingo.me/flamingo-commerce/v3/payment/domain"
@@ -12,20 +11,16 @@ import (
 type (
 	// ValidatePayment state
 	ValidatePayment struct {
-		paymentGateway  interfaces.WebCartPaymentGateway
+		paymentGateway  map[string]interfaces.WebCartPaymentGateway
 		EarlyPlaceOrder bool
 	}
 )
 
 var _ process.State = ValidatePayment{}
 
-func init() {
-	gob.Register(ValidatePayment{})
-}
-
 // Inject dependencies
 func (v *ValidatePayment) Inject(
-	paymentGateway interfaces.WebCartPaymentGateway,
+	paymentGateway map[string]interfaces.WebCartPaymentGateway,
 ) *ValidatePayment {
 	v.paymentGateway = paymentGateway
 
@@ -40,7 +35,7 @@ func (ValidatePayment) Name() string {
 // Run the state operations
 func (v ValidatePayment) Run(ctx context.Context, p *process.Process) process.RunResult {
 	cart := p.Context().Cart
-	flowStatus, err := v.paymentGateway.FlowStatus(ctx, &cart, p.Context().UUID)
+	flowStatus, err := v.paymentGateway[interfaces.OfflineWebCartPaymentGatewayCode].FlowStatus(ctx, &cart, p.Context().UUID)
 	if err != nil {
 		return process.RunResult{
 			Failed: process.ErrorOccurredReason{Error: err.Error()},
@@ -50,16 +45,16 @@ func (v ValidatePayment) Run(ctx context.Context, p *process.Process) process.Ru
 	switch flowStatus.Status {
 	case paymentDomain.PaymentFlowStatusUnapproved:
 		// payment just started, frontend needs to do actions
-		p.UpdateState(Wait{})
+		p.UpdateState(Wait{}.Name())
 	case paymentDomain.PaymentFlowStatusApproved:
 		// payment is done but needs confirmation
-		p.UpdateState(CompletePayment{})
+		p.UpdateState(CompletePayment{}.Name())
 	case paymentDomain.PaymentFlowStatusCompleted:
 		// payment is done and confirmed, place order if not already placed
 		if v.EarlyPlaceOrder {
-			p.UpdateState(Success{})
+			p.UpdateState(Success{}.Name())
 		} else {
-			p.UpdateState(PlaceOrder{})
+			p.UpdateState(PlaceOrder{}.Name())
 		}
 	case paymentDomain.PaymentFlowStatusAborted, paymentDomain.PaymentFlowStatusFailed, paymentDomain.PaymentFlowStatusCancelled:
 		return process.RunResult{
@@ -67,10 +62,10 @@ func (v ValidatePayment) Run(ctx context.Context, p *process.Process) process.Ru
 		}
 	case paymentDomain.PaymentFlowWaitingForCustomer:
 		// payment pending, waiting for customer doing async stuff
-		p.UpdateState(Wait{})
+		p.UpdateState(Wait{}.Name())
 	default:
 		// unknown payment flowStatus, let frontend handle it
-		p.UpdateState(Wait{})
+		p.UpdateState(Wait{}.Name())
 	}
 
 	return process.RunResult{}
