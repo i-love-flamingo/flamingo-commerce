@@ -49,7 +49,7 @@ func TestCreatePayment_Run(t *testing.T) {
 		state.Inject(paymentService)
 
 		expectedResult := process.RunResult{
-			RollbackData: states.CreatePaymentRollbackData{Payment: expectedPayment},
+			RollbackData: states.CreatePaymentRollbackData{Gateway: expectedPayment.Gateway, PaymentID: expectedPayment.PaymentID},
 		}
 		result := state.Run(context.Background(), p)
 		assert.Equal(t, result, expectedResult)
@@ -195,7 +195,7 @@ func TestCreatePayment_Rollback(t *testing.T) {
 			PaymentID:          "1234",
 		}
 
-		data = states.CreatePaymentRollbackData{Payment: payment}
+		data = states.CreatePaymentRollbackData{Gateway: payment.Gateway, PaymentID: payment.PaymentID}
 
 		gateway := &mocks.WebCartPaymentGateway{}
 		gateway.On("CancelOrderPayment", mock.Anything, payment).Return(nil).Once()
@@ -222,7 +222,7 @@ func TestCreatePayment_Rollback(t *testing.T) {
 			Gateway: "non-existing",
 		}
 
-		data = states.CreatePaymentRollbackData{Payment: payment}
+		data = states.CreatePaymentRollbackData{Gateway: payment.Gateway, PaymentID: payment.PaymentID}
 
 		paymentService := paymentServiceHelper(t, nil)
 		state.Inject(paymentService)
@@ -241,7 +241,7 @@ func TestCreatePayment_Rollback(t *testing.T) {
 			PaymentID:          "1234",
 		}
 
-		data = states.CreatePaymentRollbackData{Payment: payment}
+		data = states.CreatePaymentRollbackData{Gateway: payment.Gateway, PaymentID: payment.PaymentID}
 
 		gateway := &mocks.WebCartPaymentGateway{}
 		expectedError := errors.New("generic payment error")
