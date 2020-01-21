@@ -23,7 +23,7 @@ type (
 
 	// PlaceOrderRollbackData needed for rollbacks
 	PlaceOrderRollbackData struct {
-		infos application.PlaceOrderInfo
+		OrderInfos application.PlaceOrderInfo
 	}
 )
 
@@ -79,7 +79,7 @@ func (po PlaceOrder) Run(ctx context.Context, p *process.Process) process.RunRes
 
 	p.UpdateState(ValidatePayment{}.Name())
 	return process.RunResult{
-		RollbackData: PlaceOrderRollbackData{infos: *infos},
+		RollbackData: PlaceOrderRollbackData{OrderInfos: *infos},
 	}
 }
 
@@ -91,7 +91,7 @@ func (po PlaceOrder) Rollback(data process.RollbackData) error {
 	}
 
 	// todo: check if ctx/session needed.. cart restore needs also be done or?
-	_, err := po.orderService.CancelOrder(context.Background(), web.SessionFromContext(context.Background()), &rollbackData.infos)
+	_, err := po.orderService.CancelOrder(context.Background(), web.SessionFromContext(context.Background()), &rollbackData.OrderInfos)
 	if err != nil {
 		return err
 	}
