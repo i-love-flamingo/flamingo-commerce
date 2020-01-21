@@ -168,6 +168,7 @@ func (cs *CartReceiverService) GetCart(ctx context.Context, session *web.Session
 	return cs.getNewGuestCart(ctx, session)
 }
 
+// ModifyBehaviour returns the correct behaviour to modify the cart for the current user (guest/customer)
 func (cs *CartReceiverService) ModifyBehaviour(ctx context.Context) (cartDomain.ModifyBehaviour, error) {
 	session := web.SessionFromContext(ctx)
 	if cs.userService.IsLoggedIn(ctx, session) {
@@ -327,7 +328,7 @@ func (cs *CartReceiverService) GetCartWithoutCache(ctx context.Context, session 
 
 }
 
-//ViewGuestCart - ry to get the uest Cart - even if the user is logged in
+// ViewGuestCart try to get the guest Cart - even if the user is logged in
 func (cs *CartReceiverService) ViewGuestCart(ctx context.Context, session *web.Session) (*cartDomain.Cart, error) {
 	if cs.ShouldHaveGuestCart(session) {
 		guestCart, err := cs.getSessionGuestCart(ctx, session)
