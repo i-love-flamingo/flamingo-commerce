@@ -200,7 +200,7 @@ func (os *OrderService) placeOrder(ctx context.Context, session *web.Session, de
 		return nil, errors.New("cart is invalid")
 	}
 
-	placedOrderInfos, err := os.cartService.PlaceOrder(ctx, session, &payment)
+	placedOrderInfos, err := os.cartService.PlaceOrderWithCart(ctx, session, &decoratedCart.Cart, &payment)
 	if err != nil {
 		// record fail count metric
 		stats.Record(ctx, orderFailedStat.M(1))
