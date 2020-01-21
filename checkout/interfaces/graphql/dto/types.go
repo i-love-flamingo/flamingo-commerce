@@ -14,10 +14,11 @@ type (
 
 	//PlaceOrderContext infos
 	PlaceOrderContext struct {
-		Cart       *dto.DecoratedCart
-		OrderInfos *PlacedOrderInfos
-		State      string
-		UUID       string
+		Cart         *dto.DecoratedCart
+		OrderInfos   *PlacedOrderInfos
+		State        string
+		UUID         string
+		FailedReason string
 	}
 
 	//PlacedOrderInfos infos
