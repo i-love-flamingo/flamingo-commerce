@@ -490,25 +490,27 @@ func (cs *CartService) DeleteAllItems(ctx context.Context, session *web.Session)
 
 // CompleteCurrentCart and remove from cache
 func (cs *CartService) CompleteCurrentCart(ctx context.Context) (*cartDomain.Cart, error) {
-	_, behaviour, err := cs.cartReceiverService.GetCart(ctx, web.SessionFromContext(ctx))
+	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, web.SessionFromContext(ctx))
 	if err != nil {
 		return nil, err
 	}
-	// cart cache must be updated - with the current value of cart
+
+	// dispatch potential events
 	var defers cartDomain.DeferEvents
 	defer func() {
 		cs.dispatchAllEvents(ctx, defers)
 	}()
+
 	completeBehaviour, ok := behaviour.(cartDomain.CompleteBehaviour)
 	if !ok {
 		return nil, fmt.Errorf("not supported by used cart behaviour: %T", behaviour)
 	}
 
 	var completedCart *cartDomain.Cart
-	completedCart, defers, err = completeBehaviour.Complete(ctx)
+	completedCart, defers, err = completeBehaviour.Complete(ctx, *cart)
 	if err != nil {
 		cs.handleCartNotFound(web.SessionFromContext(ctx), err)
-		cs.logger.WithContext(ctx).WithField(flamingo.LogKeyCategory, "CloseCurrentCart").Error(err)
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "CloseCurrentCart").Error(err)
 
 		return nil, err
 	}
@@ -519,33 +521,35 @@ func (cs *CartService) CompleteCurrentCart(ctx context.Context) (*cartDomain.Car
 
 // RestoreCart and cache
 func (cs *CartService) RestoreCart(ctx context.Context, cart *cartDomain.Cart) (*cartDomain.Cart, error) {
-	//_, behaviour, err := cs.cartReceiverService.GetCart(ctx, web.SessionFromContext(ctx))
-	//if err != nil {
-	//	return nil, err
-	//}
-	//// cart cache must be updated - with the current value of cart
-	//var defers cartDomain.DeferEvents
-	//defer func() {
-	//	cs.dispatchAllEvents(ctx, defers)
-	//}()
-	//completeBehaviour, ok := behaviour.(cartDomain.CompleteBehaviour)
-	//if !ok {
-	//	return nil, fmt.Errorf("not supported by used cart behaviour: %T", behaviour)
-	//}
-	//
-	//var completedCart *cartDomain.Cart
-	//completedCart, defers, err = completeBehaviour.Complete(ctx)
-	//if err != nil {
-	//	cs.handleCartNotFound(web.SessionFromContext(ctx), err)
-	//	cs.logger.WithContext(ctx).WithField(flamingo.LogKeyCategory, "CloseCurrentCart").Error(err)
-	//
-	//	return nil, err
-	//}
-	//cs.DeleteCartInCache(ctx, web.SessionFromContext(ctx), nil)
-	//
-	//return completedCart, nil
+	session := web.SessionFromContext(ctx)
+	behaviour, err := cs.cartReceiverService.ModifyBehaviour(ctx)
+	if err != nil {
+		return nil, err
+	}
 
-	return nil, nil
+	completeBehaviour, ok := behaviour.(cartDomain.CompleteBehaviour)
+	if !ok {
+		return nil, fmt.Errorf("not supported by used cart behaviour: %T", behaviour)
+	}
+
+	// cart cache must be updated - with the current value of cart
+	var defers cartDomain.DeferEvents
+	var restoredCart *cartDomain.Cart
+	defer func() {
+		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, restoredCart)
+		cs.dispatchAllEvents(ctx, defers)
+	}()
+
+	restoredCart, defers, err = completeBehaviour.Restore(ctx, *cart)
+
+	if err != nil {
+		cs.handleCartNotFound(web.SessionFromContext(ctx), err)
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "RestoreCart").Error(err)
+
+		return nil, err
+	}
+
+	return restoredCart, nil
 }
 
 // Clean current cart

@@ -168,6 +168,18 @@ func (cs *CartReceiverService) GetCart(ctx context.Context, session *web.Session
 	return cs.getNewGuestCart(ctx, session)
 }
 
+func (cs *CartReceiverService) ModifyBehaviour(ctx context.Context) (cartDomain.ModifyBehaviour, error) {
+	session := web.SessionFromContext(ctx)
+	if cs.userService.IsLoggedIn(ctx, session) {
+		auth, err := cs.authManager.Auth(ctx, session)
+		if err != nil {
+			return nil, err
+		}
+		return cs.customerCartService.GetModifyBehaviour(ctx, auth)
+	}
+	return cs.guestCartService.GetModifyBehaviour(ctx)
+}
+
 // getCustomerCart
 func (cs *CartReceiverService) getCustomerCart(ctx context.Context, session *web.Session) (*cartDomain.Cart, cartDomain.ModifyBehaviour, error) {
 
