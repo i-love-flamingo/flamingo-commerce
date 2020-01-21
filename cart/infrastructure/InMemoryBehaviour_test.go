@@ -9,6 +9,8 @@ import (
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/go-test/deep"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestInMemoryBehaviour_CleanCart(t *testing.T) {
@@ -476,4 +478,52 @@ func TestInMemoryBehaviour_RemoveGiftCard(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestInMemoryBehaviour_Complete(t *testing.T) {
+	t.Run("happy path", func(t *testing.T) {
+		cob := &InMemoryBehaviour{}
+		cob.Inject(
+			&InMemoryCartStorage{},
+			nil,
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+		)
+		cart := &domaincart.Cart{ID: "test-id"}
+		require.NoError(t, cob.storeCart(cart))
+
+		got, _, err := cob.Complete(context.Background(), *cart)
+		assert.NoError(t, err)
+		assert.Equal(t, got, cart)
+
+		_, err = cob.GetCart(context.Background(), "test-id")
+		assert.Error(t, err, "Cart should not be stored any more")
+	})
+}
+
+func TestInMemoryBehaviour_Restore(t *testing.T) {
+	t.Run("happy path", func(t *testing.T) {
+		cob := &InMemoryBehaviour{}
+		cob.Inject(
+			&InMemoryCartStorage{},
+			nil,
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+		)
+		cart := &domaincart.Cart{ID: "1234"}
+
+		got, _, err := cob.Restore(context.Background(), *cart)
+		assert.NoError(t, err)
+
+		_, err = cob.GetCart(context.Background(), got.ID)
+		assert.Nil(t, err)
+	})
 }
