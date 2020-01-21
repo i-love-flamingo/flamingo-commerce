@@ -60,10 +60,10 @@ func (po PlaceOrder) Run(ctx context.Context, p *process.Process) process.RunRes
 		}
 	}
 
-	// Todo: need new function in orderService to place a provided cart similiar to:
+	// Todo: need new function in orderService to place a provided cart similar to:
 	_, _ = po.orderService.CurrentCartPlaceOrder(ctx, web.SessionFromContext(ctx), *payment)
 
-	// todo: next state depeding on early place.. success / validate payment
+	// todo: next state depending on early place.. success / validate payment
 	return process.RunResult{}
 }
 
