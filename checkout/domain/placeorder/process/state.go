@@ -18,10 +18,4 @@ type (
 		RollbackData RollbackData
 		Failed       FailedReason
 	}
-
-	// FailedState interfaces
-	FailedState interface {
-		State
-		SetFailedReason(reason FailedReason) FailedState
-	}
 )

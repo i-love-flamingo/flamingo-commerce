@@ -2,7 +2,6 @@ package states
 
 import (
 	"context"
-	"encoding/gob"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 )
@@ -14,10 +13,6 @@ type (
 )
 
 var _ process.State = Success{}
-
-func init() {
-	gob.Register(Success{})
-}
 
 // Name get state name
 func (s Success) Name() string {

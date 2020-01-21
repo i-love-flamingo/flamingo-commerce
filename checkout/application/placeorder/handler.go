@@ -27,7 +27,14 @@ func (h *Handler) StartPlaceOrder(ctx context.Context, command StartPlaceOrderCo
 
 //RefreshPlaceOrder handles start RefreshPlaceOrder command
 func (h *Handler) RefreshPlaceOrder(ctx context.Context, command RefreshPlaceOrderCommand) (*process.Context, error) {
-	return h.coordinator.Last(ctx)
+	p, err := h.coordinator.LastProcess(ctx)
+	if err != nil {
+		return nil, err
+	}
+	poCtx := p.Context()
+
+	// todo h.coordinator.Run() ?
+	return &poCtx, nil
 }
 
 // HasUnfinishedProcess checks for processes not in final state

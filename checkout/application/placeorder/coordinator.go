@@ -113,17 +113,19 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *
 
 // HasUnfinishedProcess checks for processes not in final state
 func (c *Coordinator) HasUnfinishedProcess(ctx context.Context) (bool, error) {
-	last, err := c.Last(ctx)
+	last, err := c.LastProcess(ctx)
 	if err == ErrNoPlaceOrderProcess {
 		return false, nil
 	}
 	if err != nil {
 		return true, err
 	}
-	currentState := last.CurrentState()
-	if currentState == nil {
-		return true, errors.New("No current state")
+
+	currentState, err := last.CurrentState()
+	if err != nil {
+		return true, err
 	}
+
 	return !currentState.IsFinal(), nil
 }
 
@@ -136,23 +138,29 @@ func (c *Coordinator) storeProcessContext(ctx context.Context, pctx process.Cont
 	return nil
 }
 
-// Last Context of current place order process
-func (c *Coordinator) Last(ctx context.Context) (*process.Context, error) {
+// LastProcess current place order process
+func (c *Coordinator) LastProcess(ctx context.Context) (*process.Process, error) {
 	session := web.SessionFromContext(ctx)
 	if session == nil {
-		return nil, errors.New("Session not available to check for last placeorder context")
+		return nil, errors.New("session not available to check for last placeorder context")
 	}
 	data, found := session.Load(contextSessionStorageKey)
 	if !found {
 		return nil, ErrNoPlaceOrderProcess
 	}
-	pocontext, ok := data.(process.Context)
+	poContext, ok := data.(process.Context)
 	if !ok {
-		err := errors.New("Context could not be read from session")
+		err := errors.New("context could not be read from session")
 		c.logger.Error(err)
 		return nil, err
 	}
-	return &pocontext, nil
+
+	p, err := c.processFactory.NewFromProcessContext(poContext)
+	if err != nil {
+		return nil, err
+	}
+
+	return p, nil
 }
 
 // Cancel the process if it exists (blocking)

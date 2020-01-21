@@ -46,7 +46,7 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutRefreshPlaceOrder(ctx
 	return &dto.PlaceOrderContext{
 		Cart:       dc,
 		OrderInfos: nil,
-		State:      poctx.State,
+		State:      poctx.State, // todo: map internal state to GraphQL state..
 		UUID:       poctx.UUID,
 	}, nil
 }

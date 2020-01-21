@@ -2,7 +2,6 @@ package states
 
 import (
 	"context"
-	"encoding/gob"
 	"fmt"
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
@@ -15,9 +14,8 @@ import (
 type (
 	// PlaceOrder state
 	PlaceOrder struct {
-		paymentGateway interfaces.WebCartPaymentGateway
-		orderService   *application.OrderService
-		cartService    *cartApplication.CartService
+		orderService *application.OrderService
+		cartService  *cartApplication.CartService
 	}
 
 	// PlaceOrderRollbackData needed for rollbacks
@@ -28,17 +26,11 @@ type (
 
 var _ process.State = PlaceOrder{}
 
-func init() {
-	gob.Register(PlaceOrder{})
-}
-
 // Inject dependencies
 func (po *PlaceOrder) Inject(
-	paymentGateway interfaces.WebCartPaymentGateway,
 	orderService *application.OrderService,
 	cartService *cartApplication.CartService,
 ) *PlaceOrder {
-	po.paymentGateway = paymentGateway
 	po.orderService = orderService
 	po.cartService = cartService
 
@@ -54,7 +46,14 @@ func (PlaceOrder) Name() string {
 func (po PlaceOrder) Run(ctx context.Context, p *process.Process) process.RunResult {
 	cart := p.Context().Cart
 
-	payment, err := po.paymentGateway.OrderPaymentFromFlow(ctx, &cart, p.Context().UUID)
+	paymentGateway, err := po.orderService.GetPaymentGateway(ctx, interfaces.OfflineWebCartPaymentGatewayCode)
+	if err != nil {
+		return process.RunResult{
+			Failed: process.ErrorOccurredReason{Error: err.Error()},
+		}
+	}
+
+	payment, err := paymentGateway.OrderPaymentFromFlow(ctx, &cart, p.Context().UUID)
 	if err != nil {
 		return process.RunResult{
 			Failed: process.ErrorOccurredReason{Error: err.Error()},
@@ -62,7 +61,7 @@ func (po PlaceOrder) Run(ctx context.Context, p *process.Process) process.RunRes
 	}
 
 	// Todo: need new function in orderService to place a provided cart similiar to:
-	// po.orderService.CurrentCartPlaceOrder(ctx, web.SessionFromContext(ctx), *payment)
+	_, _ = po.orderService.CurrentCartPlaceOrder(ctx, web.SessionFromContext(ctx), *payment)
 
 	// todo: next state depeding on early place.. success / validate payment
 	return process.RunResult{}
