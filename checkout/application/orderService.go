@@ -185,29 +185,32 @@ func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.
 				return nil, err
 			}
 
-			validationResult := os.cartService.ValidateCart(placeOrderContext, session, decoratedCart)
-			if !validationResult.IsValid() {
-				// record fail count metric
-				stats.Record(placeOrderContext, orderFailedStat.M(1))
-				os.logger.WithContext(placeOrderContext).Warn("Try to place an invalid cart")
-				return nil, errors.New("cart is invalid")
-			}
-
-			placedOrderInfos, err := os.cartService.PlaceOrder(placeOrderContext, session, &cartPayment)
-			if err != nil {
-				// record fail count metric
-				stats.Record(placeOrderContext, orderFailedStat.M(1))
-				os.logger.WithContext(placeOrderContext).Error("Error during place Order:" + err.Error())
-				return nil, errors.New("error while placing the order. please contact customer support")
-			}
-
-			placeOrderInfo := os.preparePlaceOrderInfo(ctx, decoratedCart.Cart, placedOrderInfos, cartPayment)
-			os.storeLastPlacedOrder(ctx, placeOrderInfo)
-
-			return placeOrderInfo, nil
+			return os.placeOrder(placeOrderContext, session, decoratedCart, cartPayment)
 		}()
 	})
 	return info, err
+}
+
+func (os *OrderService) placeOrder(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart, payment placeorder.Payment) (*PlaceOrderInfo, error) {
+	validationResult := os.cartService.ValidateCart(ctx, session, decoratedCart)
+	if !validationResult.IsValid() {
+		// record fail count metric
+		stats.Record(ctx, orderFailedStat.M(1))
+		os.logger.WithContext(ctx).Warn("Try to place an invalid cart")
+		return nil, errors.New("cart is invalid")
+	}
+
+	placedOrderInfos, err := os.cartService.PlaceOrder(ctx, session, &payment)
+	if err != nil {
+		// record fail count metric
+		stats.Record(ctx, orderFailedStat.M(1))
+		os.logger.WithContext(ctx).Error("Error during place Order:" + err.Error())
+		return nil, errors.New("error while placing the order. please contact customer support")
+	}
+
+	placeOrderInfo := os.preparePlaceOrderInfo(ctx, decoratedCart.Cart, placedOrderInfos, payment)
+	os.storeLastPlacedOrder(ctx, placeOrderInfo)
+	return placeOrderInfo, nil
 }
 
 // CancelOrder cancels an previously placed order and returns the cart with the order content
@@ -246,6 +249,17 @@ func (os *OrderService) CartPlaceOrderWithPaymentProcessing(ctx context.Context,
 	// use a background context from here on to prevent the place order canceled by context cancel
 	web.RunWithDetachedContext(ctx, func(placeOrderContext context.Context) {
 		info, err = os.placeOrderWithPaymentProcessing(placeOrderContext, decoratedCart, session)
+	})
+	return info, err
+}
+
+// CartPlaceOrder places the cart passed to the function
+// this function enables clients to pass a cart as is, without the usage of the cartReceiverService
+func (os *OrderService) CartPlaceOrder(ctx context.Context, decoratedCart *decorator.DecoratedCart, payment placeorder.Payment) (*PlaceOrderInfo, error) {
+	var info *PlaceOrderInfo
+	var err error
+	web.RunWithDetachedContext(ctx, func(placeOrderContext context.Context) {
+		info, err = os.placeOrder(placeOrderContext, web.SessionFromContext(ctx), decoratedCart, payment)
 	})
 	return info, err
 }
