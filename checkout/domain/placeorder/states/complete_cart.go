@@ -77,7 +77,12 @@ func (c CompleteCart) Rollback(data process.RollbackData) error {
 		return fmt.Errorf("rollback data not of expected type 'CompleteCartRollbackData', but %T", rollbackData)
 	}
 
-	c.cartService.RestoreCart(ctx)
+	// todo: context is missing but needed here to restore cart cache..
+	_, err := c.cartService.RestoreCart(context.Background(), rollbackData.completedCart)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
