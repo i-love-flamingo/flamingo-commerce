@@ -79,8 +79,8 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *
 			return
 		}
 		if has {
-			c.logger.Error(err)
 			runerr = ErrAnotherPlaceOrderProcessRunning
+			c.logger.Info(runerr)
 			return
 		}
 
@@ -93,12 +93,14 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *
 		newProcess.Run(ctx)
 		pctx := newProcess.Context()
 		runpctx = &pctx
-		runerr = c.storeProcessContext(ctx, pctx)
+		err = c.storeProcessContext(ctx, pctx)
+		if err != nil {
+			runerr = err
+			c.logger.Error(err)
+			return
+		}
 	})
 
-	if runerr != nil {
-		c.logger.Error(runerr)
-	}
 	return runpctx, runerr
 
 	/* Todo:

@@ -36,6 +36,9 @@ pagination:
   defaultPageSize: 8
   showAroundActivePageAmount: 2
 
+graphql:
+  introspectionEnabled: true
+
 commerce:
   cart:
     defaultDeliveryCode: delivery
