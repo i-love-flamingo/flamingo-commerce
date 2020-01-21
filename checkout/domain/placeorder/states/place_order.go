@@ -2,9 +2,11 @@ package states
 
 import (
 	"context"
+	"encoding/gob"
 	"fmt"
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/checkout/application"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo-commerce/v3/payment/interfaces"
@@ -14,15 +16,20 @@ import (
 type (
 	// PlaceOrder state
 	PlaceOrder struct {
-		orderService *application.OrderService
-		cartService  *cartApplication.CartService
+		orderService         *application.OrderService
+		cartService          *cartApplication.CartService
+		cartDecoratorFactory *decorator.DecoratedCartFactory
 	}
 
 	// PlaceOrderRollbackData needed for rollbacks
 	PlaceOrderRollbackData struct {
-		order application.PlaceOrderInfo
+		infos application.PlaceOrderInfo
 	}
 )
+
+func init() {
+	gob.Register(PlaceOrderRollbackData{})
+}
 
 var _ process.State = PlaceOrder{}
 
@@ -30,9 +37,11 @@ var _ process.State = PlaceOrder{}
 func (po *PlaceOrder) Inject(
 	orderService *application.OrderService,
 	cartService *cartApplication.CartService,
+	cartDecoratorFactory *decorator.DecoratedCartFactory,
 ) *PlaceOrder {
 	po.orderService = orderService
 	po.cartService = cartService
+	po.cartDecoratorFactory = cartDecoratorFactory
 
 	return po
 }
@@ -45,6 +54,7 @@ func (PlaceOrder) Name() string {
 // Run the state operations
 func (po PlaceOrder) Run(ctx context.Context, p *process.Process) process.RunResult {
 	cart := p.Context().Cart
+	decoratedCart := po.cartDecoratorFactory.Create(ctx, cart)
 
 	paymentGateway, err := po.orderService.GetPaymentGateway(ctx, interfaces.OfflineWebCartPaymentGatewayCode)
 	if err != nil {
@@ -60,11 +70,17 @@ func (po PlaceOrder) Run(ctx context.Context, p *process.Process) process.RunRes
 		}
 	}
 
-	// Todo: need new function in orderService to place a provided cart similar to:
-	_, _ = po.orderService.CurrentCartPlaceOrder(ctx, web.SessionFromContext(ctx), *payment)
+	infos, err := po.orderService.CartPlaceOrder(ctx, decoratedCart, *payment)
+	if err != nil {
+		return process.RunResult{
+			Failed: process.ErrorOccurredReason{Error: err.Error()},
+		}
+	}
 
-	// todo: next state depending on early place.. success / validate payment
-	return process.RunResult{}
+	p.UpdateState(ValidatePayment{}.Name())
+	return process.RunResult{
+		RollbackData: PlaceOrderRollbackData{infos: *infos},
+	}
 }
 
 // Rollback the state operations
@@ -75,7 +91,7 @@ func (po PlaceOrder) Rollback(data process.RollbackData) error {
 	}
 
 	// todo: check if ctx/session needed.. cart restore needs also be done or?
-	_, err := po.orderService.CancelOrder(context.Background(), web.SessionFromContext(context.Background()), &rollbackData.order)
+	_, err := po.orderService.CancelOrder(context.Background(), web.SessionFromContext(context.Background()), &rollbackData.infos)
 	if err != nil {
 		return err
 	}
