@@ -45,3 +45,10 @@ func (s *InMemoryCartStorage) StoreCart(cart *domaincart.Cart) error {
 	s.guestCarts[cart.ID] = cart
 	return nil
 }
+
+// RemoveCart from storage
+func (s *InMemoryCartStorage) RemoveCart(cart *domaincart.Cart) error {
+	s.init()
+	delete(s.guestCarts, cart.ID)
+	return nil
+}

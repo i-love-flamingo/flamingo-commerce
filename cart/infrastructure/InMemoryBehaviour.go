@@ -33,11 +33,14 @@ type (
 		GetCart(id string) (*domaincart.Cart, error)
 		HasCart(id string) bool
 		StoreCart(cart *domaincart.Cart) error
+		RemoveCart(cart *domaincart.Cart) error
 	}
 )
 
 var (
-	_ domaincart.ModifyBehaviour = (*InMemoryBehaviour)(nil)
+	_ domaincart.ModifyBehaviour             = (*InMemoryBehaviour)(nil)
+	_ domaincart.GiftCardAndVoucherBehaviour = (*InMemoryBehaviour)(nil)
+	_ domaincart.CompleteBehaviour           = (*InMemoryBehaviour)(nil)
 )
 
 // Inject dependencies
@@ -62,6 +65,26 @@ func (cob *InMemoryBehaviour) Inject(
 	if config != nil {
 		cob.defaultTaxRate = config.DefaultTaxRate
 	}
+}
+
+// Complete a cart and remove from storage
+func (cob *InMemoryBehaviour) Complete(_ context.Context, cart domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	err := cob.cartStorage.RemoveCart(&cart)
+	if err != nil {
+		return nil, nil, err
+	}
+	return &cart, nil, nil
+}
+
+// Restore supplied cart and store with new ID
+func (cob *InMemoryBehaviour) Restore(_ context.Context, cart domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	newCart := cart
+	newCart.ID = strconv.Itoa(rand.Int())
+	err := cob.cartStorage.StoreCart(&newCart)
+	if err != nil {
+		return nil, nil, err
+	}
+	return &newCart, nil, nil
 }
 
 // DeleteItem removes an item from the cart

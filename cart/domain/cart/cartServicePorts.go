@@ -61,7 +61,7 @@ type (
 	// Complete is normally called before the cart is placed
 	// This can for example be used to invalidate gift cards
 	CompleteBehaviour interface {
-		Complete(context.Context) (*Cart, DeferEvents, error)
+		Complete(context.Context, Cart) (*Cart, DeferEvents, error)
 		Restore(context.Context, Cart) (*Cart, DeferEvents, error)
 	}
 
