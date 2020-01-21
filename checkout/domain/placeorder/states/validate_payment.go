@@ -4,15 +4,14 @@ import (
 	"context"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
+	"flamingo.me/flamingo-commerce/v3/payment/application"
 	paymentDomain "flamingo.me/flamingo-commerce/v3/payment/domain"
-	"flamingo.me/flamingo-commerce/v3/payment/interfaces"
 )
 
 type (
 	// ValidatePayment state
 	ValidatePayment struct {
-		paymentGateway  map[string]interfaces.WebCartPaymentGateway
-		EarlyPlaceOrder bool
+		paymentService *application.PaymentService
 	}
 )
 
@@ -20,9 +19,9 @@ var _ process.State = ValidatePayment{}
 
 // Inject dependencies
 func (v *ValidatePayment) Inject(
-	paymentGateway map[string]interfaces.WebCartPaymentGateway,
+	paymentService *application.PaymentService,
 ) *ValidatePayment {
-	v.paymentGateway = paymentGateway
+	v.paymentService = paymentService
 
 	return v
 }
@@ -35,7 +34,14 @@ func (ValidatePayment) Name() string {
 // Run the state operations
 func (v ValidatePayment) Run(ctx context.Context, p *process.Process) process.RunResult {
 	cart := p.Context().Cart
-	flowStatus, err := v.paymentGateway[interfaces.OfflineWebCartPaymentGatewayCode].FlowStatus(ctx, &cart, p.Context().UUID)
+	gateway, err := v.paymentService.PaymentGatewayByCart(p.Context().Cart)
+	if err != nil {
+		return process.RunResult{
+			Failed: process.ErrorOccurredReason{Error: err.Error()},
+		}
+	}
+
+	flowStatus, err := gateway.FlowStatus(ctx, &cart, p.Context().UUID)
 	if err != nil {
 		return process.RunResult{
 			Failed: process.ErrorOccurredReason{Error: err.Error()},
@@ -51,11 +57,7 @@ func (v ValidatePayment) Run(ctx context.Context, p *process.Process) process.Ru
 		p.UpdateState(CompletePayment{}.Name())
 	case paymentDomain.PaymentFlowStatusCompleted:
 		// payment is done and confirmed, place order if not already placed
-		if v.EarlyPlaceOrder {
-			p.UpdateState(Success{}.Name())
-		} else {
-			p.UpdateState(PlaceOrder{}.Name())
-		}
+		p.UpdateState(Success{}.Name())
 	case paymentDomain.PaymentFlowStatusAborted, paymentDomain.PaymentFlowStatusFailed, paymentDomain.PaymentFlowStatusCancelled:
 		return process.RunResult{
 			Failed: process.ErrorOccurredReason{Error: flowStatus.Status},
