@@ -26,7 +26,6 @@ type Commerce_Cart {
     paymentSelection: Commerce_Cart_PaymentSelection
     belongsToAuthenticatedUser: Boolean!
     authenticatedUserID: String!
-    appliedCouponCodes: [Commerce_CartCouponCode!]
     defaultCurrency: String!
     totalitems: [Commerce_CartTotalitem!]
     itemCount: Int!
