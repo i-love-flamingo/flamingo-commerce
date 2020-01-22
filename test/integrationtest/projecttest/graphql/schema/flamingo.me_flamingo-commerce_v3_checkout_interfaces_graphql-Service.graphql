@@ -31,47 +31,47 @@ type  Commerce_Checkout_PlaceOrderPaymentInfo {
 }
 
 
-#interface Commerce_Checkout_PlaceOrderState_State {
-#    name: String!
-#}
+interface Commerce_Checkout_PlaceOrderState_State {
+    name: String!
+}
 
-#type Commerce_Checkout_PlaceOrderState_State_New implements Commerce_Checkout_PlaceOrderState_State {
-#    name: String!
-#}
+type Commerce_Checkout_PlaceOrderState_State_New implements Commerce_Checkout_PlaceOrderState_State {
+    name: String!
+}
 
-#type Commerce_Checkout_PlaceOrderState_State_Wait implements Commerce_Checkout_PlaceOrderState_State {
-#    name: String!
-#}
+type Commerce_Checkout_PlaceOrderState_State_Wait implements Commerce_Checkout_PlaceOrderState_State {
+    name: String!
+}
 
-#type Commerce_Checkout_PlaceOrderState_State_Success implements Commerce_Checkout_PlaceOrderState_State {
-#    name: String!
-#}
+type Commerce_Checkout_PlaceOrderState_State_Success implements Commerce_Checkout_PlaceOrderState_State {
+    name: String!
+}
 
-#type Commerce_Checkout_PlaceOrderState_State_Failed implements Commerce_Checkout_PlaceOrderState_State {
-#    name: String!
-#    reason: String!
-#}
+type Commerce_Checkout_PlaceOrderState_State_Failed implements Commerce_Checkout_PlaceOrderState_State {
+    name: String!
+    reason: String!
+}
 
-#type Commerce_Checkout_PlaceOrderState_State_ShowIframe implements Commerce_Checkout_PlaceOrderState_State {
-#    name: String!
-#    URL: String!
-#}
+type Commerce_Checkout_PlaceOrderState_State_ShowIFrame implements Commerce_Checkout_PlaceOrderState_State {
+    name: String!
+    URL: String!
+}
 
-#type Commerce_Checkout_PlaceOrderState_State_ShowHtml implements Commerce_Checkout_PlaceOrderState_State {
-#    name: String!
-#    HTML: String!
-#}
+type Commerce_Checkout_PlaceOrderState_State_ShowHTML implements Commerce_Checkout_PlaceOrderState_State {
+    name: String!
+    HTML: String!
+}
 
-#type Commerce_Checkout_PlaceOrderState_State_Redirect implements Commerce_Checkout_PlaceOrderState_State {
-#    name: String!
-#    URL: String!
-#}
-#
-#type Commerce_Checkout_PlaceOrderState_State_PostRedirect implements Commerce_Checkout_PlaceOrderState_State {
-#    name: String!
-#    URL: String!
-#    Parameters: [Commerce_Checkout_Form_Parameter!]
-#}
+type Commerce_Checkout_PlaceOrderState_State_Redirect implements Commerce_Checkout_PlaceOrderState_State {
+    name: String!
+    URL: String!
+}
+
+type Commerce_Checkout_PlaceOrderState_State_PostRedirect implements Commerce_Checkout_PlaceOrderState_State {
+    name: String!
+    URL: String!
+    Parameters: [Commerce_Checkout_PlaceOrderState_Form_Parameter!]
+}
 
 interface Commerce_Checkout_PlaceOrderState_State_FailedReason {
     reason: String
@@ -91,7 +91,7 @@ type Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError im
     validationResult: Commerce_Cart_ValidationResult!
 }
 
-type Commerce_Checkout_Form_Parameter {
+type Commerce_Checkout_PlaceOrderState_Form_Parameter {
     key: String!
     value: [String!]
 }

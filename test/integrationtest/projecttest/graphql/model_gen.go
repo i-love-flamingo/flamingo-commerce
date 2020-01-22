@@ -2,7 +2,8 @@
 
 package graphql
 
-type CommerceCheckoutFormParameter struct {
-	Key   string   `json:"key"`
-	Value []string `json:"value"`
+type CommerceCheckoutPlaceOrderStateStateNew struct {
+	Name string `json:"name"`
 }
+
+func (CommerceCheckoutPlaceOrderStateStateNew) IsCommerceCheckoutPlaceOrderStateState() {}
