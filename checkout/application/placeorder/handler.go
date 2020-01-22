@@ -48,3 +48,8 @@ func (h *Handler) RefreshPlaceOrderBlocking(ctx context.Context, command Refresh
 func (h *Handler) HasUnfinishedProcess(ctx context.Context) (bool, error) {
 	return h.coordinator.HasUnfinishedProcess(ctx)
 }
+
+// CancelPlaceOrder handles RefreshPlaceOrder blocking
+func (h *Handler) CancelPlaceOrder(ctx context.Context, command CancelPlaceOrderCommand) error {
+	return h.coordinator.Cancel(ctx)
+}

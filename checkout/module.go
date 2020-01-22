@@ -2,8 +2,10 @@ package checkout
 
 import (
 	"flamingo.me/dingo"
+	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql/dto"
 	"flamingo.me/flamingo-commerce/v3/payment"
 	"flamingo.me/flamingo/v3/framework/config"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 	flamingographql "flamingo.me/graphql"
 	"github.com/go-playground/form"
@@ -52,6 +54,16 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	injector.BindMap(new(process.State), new(states.Wait).Name()).To(states.Wait{})
 	injector.BindMap(new(process.State), new(states.Success).Name()).To(states.Success{})
 	injector.BindMap(new(process.State), new(states.Failed).Name()).To(states.Failed{})
+
+	// bind internal states to graphQL states
+	injector.BindMap(new(dto.State), new(states.New).Name()).To(dto.Wait{})
+	injector.BindMap(new(dto.State), new(states.CreatePayment).Name()).To(dto.Wait{})
+	injector.BindMap(new(dto.State), new(states.CompleteCart).Name()).To(dto.Wait{})
+	injector.BindMap(new(dto.State), new(states.PlaceOrder).Name()).To(dto.Wait{})
+	injector.BindMap(new(dto.State), new(states.ValidatePayment).Name()).To(dto.Wait{})
+	injector.BindMap(new(dto.State), new(states.Wait).Name()).To(dto.Wait{})
+	injector.BindMap(new(dto.State), new(states.Success).Name()).To(dto.Success{})
+	injector.BindMap(new(dto.State), new(states.Failed).Name()).To(dto.Failed{})
 
 	web.BindRoutes(injector, new(routes))
 
@@ -108,5 +120,6 @@ func (m *Module) Depends() []dingo.Module {
 	return []dingo.Module{
 		new(cart.Module),
 		new(payment.Module),
+		new(flamingo.SessionModule),
 	}
 }

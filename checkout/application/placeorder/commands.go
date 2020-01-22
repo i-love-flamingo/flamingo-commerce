@@ -7,25 +7,17 @@ import (
 )
 
 type (
-
-	//StartPlaceOrderCommand Command triggers new place order
+	// StartPlaceOrderCommand triggers new place order
 	StartPlaceOrderCommand struct {
 		Cart      cartDomain.Cart
 		ReturnURL *url.URL
 	}
 
-	//RefreshPlaceOrderCommand Command
+	// RefreshPlaceOrderCommand proceeds in place order process
 	RefreshPlaceOrderCommand struct {
 	}
 
-/*
-	RefreshBlockingPlaceOrder struct {
-
+	// CancelPlaceOrderCommand cancels current running process
+	CancelPlaceOrderCommand struct {
 	}
-
-	CancelPlaceOrder struct {
-
-	}
-*/
-
 )

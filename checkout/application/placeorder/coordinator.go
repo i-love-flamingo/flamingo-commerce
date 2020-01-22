@@ -4,12 +4,15 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
+	"io"
+	"net/http"
 	"net/url"
 	"time"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
+	"github.com/gorilla/sessions"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 )
@@ -26,10 +29,13 @@ type (
 		locker         TryLock
 		logger         flamingo.Logger
 		processFactory *process.Factory
+		sessionStore   sessions.Store
 	}
 
 	//Unlock func
 	Unlock func() error
+
+	emptyResponseWriter struct{}
 )
 
 var (
@@ -51,11 +57,17 @@ func init() {
 	gob.Register(process.Context{})
 }
 
+// emptyResponseWriter to be able to properly persist sessions
+func (emptyResponseWriter) Header() http.Header        { return http.Header{} }
+func (emptyResponseWriter) Write([]byte) (int, error)  { return 0, io.ErrUnexpectedEOF }
+func (emptyResponseWriter) WriteHeader(statusCode int) {}
+
 //Inject dependencies
-func (c *Coordinator) Inject(locker TryLock, logger flamingo.Logger, processFactory *process.Factory) {
+func (c *Coordinator) Inject(locker TryLock, logger flamingo.Logger, processFactory *process.Factory, sessionStore sessions.Store) {
 	c.locker = locker
 	c.logger = logger.WithField(flamingo.LogKeyModule, "checkout").WithField(flamingo.LogKeyCategory, "placeorder")
 	c.processFactory = processFactory
+	c.sessionStore = sessionStore
 }
 
 // New acquires lock if possible and creates new process with first run call blocking
@@ -102,15 +114,6 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *
 	})
 
 	return runpctx, runerr
-
-	/* Todo:
-	1. determine lock key based on session/cart
-	2. check if place order process already in running if
-	3. try to acquire lock
-	4. create new place order context with state: new (Default start state should be configurable for project stuff)
-	5. run first state transition by State->Run()
-	6. store rollback callback
-	*/
 }
 
 // HasUnfinishedProcess checks for processes not in final state
@@ -167,26 +170,81 @@ func (c *Coordinator) LastProcess(ctx context.Context) (*process.Process, error)
 
 // Cancel the process if it exists (blocking)
 // be aware that all rollback callbacks are executed
-func (c *Coordinator) Cancel(ctx context.Context, cart cartDomain.Cart) error {
-	/* Todo:
-	1. Check if there is a place order process running
-	2. Check if place order is in final state
-	3. Wait for lock acquiring
-	4. Run Rollbacks
-	5. Set state to canceled
-	6. Return result
-	*/
-	return nil
+func (c *Coordinator) Cancel(ctx context.Context) (err error) {
+	web.RunWithDetachedContext(ctx, func(ctx context.Context) {
+		// todo: add tracing
+		p, err := c.LastProcess(ctx)
+		if err != nil {
+			return
+		}
+
+		currentState, err := p.CurrentState()
+		if err != nil {
+			return
+		}
+
+		if currentState.IsFinal() {
+			err = errors.New("process already in final state, cancel not possible")
+		}
+
+		var unlock Unlock
+		err = ErrLockTaken
+		for err == ErrLockTaken {
+			unlock, err = c.locker.TryLock(determineLockKeyForProcess(p), maxLockDuration)
+		}
+		if err != nil {
+			return
+		}
+		defer func() {
+			_ = unlock()
+		}()
+
+		p.Failed(ctx, process.CanceledByCustomerReason{})
+		c.storeProcessContext(ctx, p.Context())
+	})
+	return
 }
 
 // Run starts the next processing if not already running
 // Run is NOP if the process is locked
 // Run returns immediately
 func (c *Coordinator) Run(ctx context.Context) {
-	// todo move to go routine
+	go func(ctx context.Context) {
+		web.RunWithDetachedContext(ctx, func(ctx context.Context) {
+			// todo: add tracing
+			has, err := c.HasUnfinishedProcess(ctx)
+			if err != nil || has == false {
+				return
+			}
+
+			p, err := c.LastProcess(ctx)
+			if err != nil {
+				return
+			}
+
+			unlock, err := c.locker.TryLock(determineLockKeyForProcess(p), maxLockDuration)
+			if err != nil {
+				return
+			}
+			defer func() {
+				_ = unlock()
+			}()
+
+			p.Run(ctx)
+			c.forceProcessContextSessionStore(ctx, p.Context())
+		})
+	}(ctx)
+
+	return
+}
+
+// RunBlocking waits for the lock and starts the next processing
+// RunBlocking waits until the process is finished and returns its result
+func (c *Coordinator) RunBlocking(ctx context.Context) (pctx *process.Context, err error) {
 	web.RunWithDetachedContext(ctx, func(ctx context.Context) {
+		// todo: add tracing
 		has, err := c.HasUnfinishedProcess(ctx)
-		if err != nil || has == false {
+		if err != nil {
 			return
 		}
 
@@ -195,7 +253,17 @@ func (c *Coordinator) Run(ctx context.Context) {
 			return
 		}
 
-		unlock, err := c.locker.TryLock(determineLockKeyForProcess(p), maxLockDuration)
+		if !has {
+			lastPctx := p.Context()
+			pctx = &lastPctx
+			return
+		}
+
+		var unlock Unlock
+		err = ErrLockTaken
+		for err == ErrLockTaken {
+			unlock, err = c.locker.TryLock(determineLockKeyForProcess(p), maxLockDuration)
+		}
 		if err != nil {
 			return
 		}
@@ -205,26 +273,20 @@ func (c *Coordinator) Run(ctx context.Context) {
 
 		p.Run(ctx)
 		c.storeProcessContext(ctx, p.Context())
+		runPctx := p.Context()
+		pctx = &runPctx
 	})
 
-	/* Todo: Do stuff in a go routine to be non blocking
-	1. check if process is there
-	2. check if lock can acquired
-	3. hit state->run()
-	*/
 	return
 }
 
-// RunBlocking waits for the lock and starts the next processing
-// RunBlocking waits until the process is finished and returns its result
-func (c *Coordinator) RunBlocking(ctx context.Context) (*process.Context, error) {
-	/* Todo:
-	1. check if process is there
-	2. get lock
-	3. State->run()
-	4. Return result
-	*/
-	return &process.Context{}, nil
+func (c *Coordinator) forceProcessContextSessionStore(ctx context.Context, pctx process.Context) {
+	session, err := c.sessionStore.Get(web.RequestFromContext(ctx).Request(), "flamingo")
+	if err != nil {
+
+	}
+	session.Values[contextSessionStorageKey] = pctx
+	c.sessionStore.Save(web.RequestFromContext(ctx).Request(), new(emptyResponseWriter), session)
 }
 
 func determineLockKeyForCart(cart cartDomain.Cart) string {

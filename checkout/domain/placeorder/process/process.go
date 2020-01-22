@@ -52,6 +52,9 @@ type (
 		Error string
 	}
 
+	// CanceledByCustomerReason is used when customer cancels order
+	CanceledByCustomerReason struct{}
+
 	// PaymentErrorOccurredReason is used for errors during payment
 	PaymentErrorOccurredReason struct {
 		Error string
@@ -67,6 +70,7 @@ func init() {
 	gob.Register(ErrorOccurredReason{})
 	gob.Register(PaymentErrorOccurredReason{})
 	gob.Register(CartValidationErrorReason{})
+	gob.Register(CanceledByCustomerReason{})
 }
 
 // Reason for the error occurred
@@ -77,6 +81,11 @@ func (e ErrorOccurredReason) Reason() string {
 // Reason for the error occurred
 func (e PaymentErrorOccurredReason) Reason() string {
 	return e.Error
+}
+
+// Reason for the error occurred
+func (e CanceledByCustomerReason) Reason() string {
+	return "Order place canceled by customer"
 }
 
 // Reason for failing
@@ -191,6 +200,11 @@ func (p *Process) Context() Context {
 // UpdateState updates
 func (p *Process) UpdateState(s string) {
 	p.context.State = s
+}
+
+// UpdateContextData updates
+func (p *Process) UpdateContextData(data interface{}) {
+	p.context.Data = data
 }
 
 // Failed performs all collected rollbacks and switches to FailedState
