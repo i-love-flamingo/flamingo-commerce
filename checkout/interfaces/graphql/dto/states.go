@@ -38,10 +38,9 @@ type (
 		URL        string
 		Parameters []FormParameter
 	}
-	// FormParameter state
+	// FormParameter holds redirect related form data
 	FormParameter struct {
-		Name  string
 		Key   string
-		Value string
+		Value []string
 	}
 )
