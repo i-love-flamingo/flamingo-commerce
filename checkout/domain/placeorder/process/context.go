@@ -15,5 +15,6 @@ type (
 		ReturnURL          *url.URL
 		RollbackReferences []RollbackReference
 		FailedReason       FailedReason
+		Data               interface{}
 	}
 )

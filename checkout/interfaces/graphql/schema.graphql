@@ -30,53 +30,44 @@ type  Commerce_Checkout_PlaceOrderPaymentInfo {
     title:           String!
 }
 
-#
+
 #interface Commerce_Checkout_PlaceOrderState_State {
-#    isFinal: Boolean
 #    name: String!
 #}
 
 #type Commerce_Checkout_PlaceOrderState_State_New implements Commerce_Checkout_PlaceOrderState_State {
-#    isFinal: Boolean
 #    name: String!
 #}
 
 #type Commerce_Checkout_PlaceOrderState_State_Wait implements Commerce_Checkout_PlaceOrderState_State {
-#    isFinal: Boolean
 #    name: String!
 #}
 
 #type Commerce_Checkout_PlaceOrderState_State_Success implements Commerce_Checkout_PlaceOrderState_State {
-#    isFinal: Boolean
 #    name: String!
 #}
 
 #type Commerce_Checkout_PlaceOrderState_State_Failed implements Commerce_Checkout_PlaceOrderState_State {
-#    isFinal: Boolean
 #    name: String!
-#    reason: Commerce_Checkout_PlaceOrderState_State_FailedReason
+#    reason: String!
 #}
 
 #type Commerce_Checkout_PlaceOrderState_State_ShowIframe implements Commerce_Checkout_PlaceOrderState_State {
-#    isFinal: Boolean
 #    name: String!
 #    URL: String!
 #}
 
 #type Commerce_Checkout_PlaceOrderState_State_ShowHtml implements Commerce_Checkout_PlaceOrderState_State {
-#    isFinal: Boolean
 #    name: String!
 #    HTML: String!
 #}
 
 #type Commerce_Checkout_PlaceOrderState_State_Redirect implements Commerce_Checkout_PlaceOrderState_State {
-#    isFinal: Boolean
 #    name: String!
 #    URL: String!
 #}
-
+#
 #type Commerce_Checkout_PlaceOrderState_State_PostRedirect implements Commerce_Checkout_PlaceOrderState_State {
-#    isFinal: Boolean
 #    name: String!
 #    URL: String!
 #    Parameters: [Commerce_Checkout_Form_Parameter!]

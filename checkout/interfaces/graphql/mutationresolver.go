@@ -8,6 +8,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	graphqlDto "flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
 	"flamingo.me/flamingo-commerce/v3/checkout/application/placeorder"
+	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql/dto"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
@@ -17,6 +18,7 @@ import (
 type CommerceCheckoutMutationResolver struct {
 	placeorderHandler    *placeorder.Handler
 	cartService          *cartApplication.CartService
+	stateMapping         map[string]dto.State
 	logger               flamingo.Logger
 	decoratedCartFactory *decorator.DecoratedCartFactory
 }
@@ -26,18 +28,27 @@ func (r *CommerceCheckoutMutationResolver) Inject(
 	placeorderHandler *placeorder.Handler,
 	cartService *cartApplication.CartService,
 	decoratedCartFactory *decorator.DecoratedCartFactory,
+	stateMapping map[string]dto.State,
 	logger flamingo.Logger) {
 	r.placeorderHandler = placeorderHandler
 	r.decoratedCartFactory = decoratedCartFactory
 	r.cartService = cartService
+	r.stateMapping = stateMapping
 	r.logger = logger.WithField(flamingo.LogKeyModule, "checkout").WithField(flamingo.LogKeyCategory, "graphql")
 
 }
 
 // CommerceCheckoutRefreshPlaceOrder refreshes the current place order and proceeds the process
 func (r *CommerceCheckoutMutationResolver) CommerceCheckoutRefreshPlaceOrder(ctx context.Context) (*dto.PlaceOrderContext, error) {
+	return r.refresh(ctx, r.placeorderHandler.RefreshPlaceOrder)
+}
 
-	poctx, err := r.placeorderHandler.RefreshPlaceOrder(ctx, placeorder.RefreshPlaceOrderCommand{})
+func (r *CommerceCheckoutMutationResolver) refresh(
+	ctx context.Context,
+	refreshFnc func(context.Context, placeorder.RefreshPlaceOrderCommand) (*process.Context, error),
+) (*dto.PlaceOrderContext, error) {
+
+	poctx, err := refreshFnc(ctx, placeorder.RefreshPlaceOrderCommand{})
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +63,7 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutRefreshPlaceOrder(ctx
 	return &dto.PlaceOrderContext{
 		Cart:         dc,
 		OrderInfos:   nil,
-		State:        poctx.State, // todo: map internal state to GraphQL state..
+		State:        poctx.State,
 		UUID:         poctx.UUID,
 		FailedReason: failedReason,
 	}, nil
@@ -60,13 +71,7 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutRefreshPlaceOrder(ctx
 
 // CommerceCheckoutRefreshPlaceOrderBlocking refreshes the current place order blocking
 func (r *CommerceCheckoutMutationResolver) CommerceCheckoutRefreshPlaceOrderBlocking(ctx context.Context) (*dto.PlaceOrderContext, error) {
-	// TODO
-	_, err := r.placeorderHandler.RefreshPlaceOrderBlocking(ctx, placeorder.RefreshPlaceOrderCommand{})
-	if err != nil {
-		return nil, err
-	}
-
-	return &dto.PlaceOrderContext{}, nil
+	return r.refresh(ctx, r.placeorderHandler.RefreshPlaceOrderBlocking)
 }
 
 // CommerceCheckoutStartPlaceOrder starts a new process (if not running)
@@ -104,5 +109,11 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutStartPlaceOrder(ctx c
 
 // CommerceCheckoutCancelPlaceOrder cancels a running place order
 func (r *CommerceCheckoutMutationResolver) CommerceCheckoutCancelPlaceOrder(ctx context.Context) (bool, error) {
-	return true, nil
+	err := r.placeorderHandler.CancelPlaceOrder(ctx, placeorder.CancelPlaceOrderCommand{})
+
+	return err == nil, err
+}
+
+func (r *CommerceCheckoutMutationResolver) mapStatesToGraphQL(s string) dto.State {
+	return r.stateMapping[s]
 }
