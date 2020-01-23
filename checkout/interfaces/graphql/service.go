@@ -29,7 +29,7 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		"Commerce_Checkout_PlaceOrderState_State_Wait":                             dto.Wait{},
 		"Commerce_Checkout_PlaceOrderState_State_Success":                          dto.Success{},
 		"Commerce_Checkout_PlaceOrderState_State_Failed":                           dto.Failed{},
-		"Commerce_Checkout_PlaceOrderState_State_ShowIFrame":                       dto.ShowIFrame{},
+		"Commerce_Checkout_PlaceOrderState_State_ShowIframe":                       dto.ShowIframe{},
 		"Commerce_Checkout_PlaceOrderState_State_ShowHTML":                         dto.ShowHTML{},
 		"Commerce_Checkout_PlaceOrderState_State_Redirect":                         dto.Redirect{},
 		"Commerce_Checkout_PlaceOrderState_State_PostRedirect":                     dto.PostRedirect{},

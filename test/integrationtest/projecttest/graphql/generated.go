@@ -510,7 +510,7 @@ type ComplexityRoot struct {
 		Name func(childComplexity int) int
 	}
 
-	CommerceCheckoutPlaceOrderStateStateShowIFrame struct {
+	CommerceCheckoutPlaceOrderStateStateShowIframe struct {
 		Name func(childComplexity int) int
 		URL  func(childComplexity int) int
 	}
@@ -2802,19 +2802,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCheckoutPlaceOrderStateStateShowHTML.Name(childComplexity), true
 
-	case "Commerce_Checkout_PlaceOrderState_State_ShowIFrame.name":
-		if e.complexity.CommerceCheckoutPlaceOrderStateStateShowIFrame.Name == nil {
+	case "Commerce_Checkout_PlaceOrderState_State_ShowIframe.name":
+		if e.complexity.CommerceCheckoutPlaceOrderStateStateShowIframe.Name == nil {
 			break
 		}
 
-		return e.complexity.CommerceCheckoutPlaceOrderStateStateShowIFrame.Name(childComplexity), true
+		return e.complexity.CommerceCheckoutPlaceOrderStateStateShowIframe.Name(childComplexity), true
 
-	case "Commerce_Checkout_PlaceOrderState_State_ShowIFrame.URL":
-		if e.complexity.CommerceCheckoutPlaceOrderStateStateShowIFrame.URL == nil {
+	case "Commerce_Checkout_PlaceOrderState_State_ShowIframe.URL":
+		if e.complexity.CommerceCheckoutPlaceOrderStateStateShowIframe.URL == nil {
 			break
 		}
 
-		return e.complexity.CommerceCheckoutPlaceOrderStateStateShowIFrame.URL(childComplexity), true
+		return e.complexity.CommerceCheckoutPlaceOrderStateStateShowIframe.URL(childComplexity), true
 
 	case "Commerce_Checkout_PlaceOrderState_State_Success.name":
 		if e.complexity.CommerceCheckoutPlaceOrderStateStateSuccess.Name == nil {
@@ -4315,7 +4315,7 @@ type Commerce_Checkout_PlaceOrderState_State_Failed implements Commerce_Checkout
     reason: String!
 }
 
-type Commerce_Checkout_PlaceOrderState_State_ShowIFrame implements Commerce_Checkout_PlaceOrderState_State {
+type Commerce_Checkout_PlaceOrderState_State_ShowIframe implements Commerce_Checkout_PlaceOrderState_State {
     name: String!
     URL: String!
 }
@@ -12765,11 +12765,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHTML_HT
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIFrame_name(ctx context.Context, field graphql.CollectedField, obj *dto2.ShowIFrame) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe_name(ctx context.Context, field graphql.CollectedField, obj *dto2.ShowIframe) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_ShowIFrame",
+		Object:   "Commerce_Checkout_PlaceOrderState_State_ShowIframe",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -12792,11 +12792,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIFrame_
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIFrame_URL(ctx context.Context, field graphql.CollectedField, obj *dto2.ShowIFrame) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe_URL(ctx context.Context, field graphql.CollectedField, obj *dto2.ShowIframe) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_ShowIFrame",
+		Object:   "Commerce_Checkout_PlaceOrderState_State_ShowIframe",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -17119,8 +17119,8 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State(ctx context
 		return ec._Commerce_Checkout_PlaceOrderState_State_Success(ctx, sel, obj)
 	case *dto2.Failed:
 		return ec._Commerce_Checkout_PlaceOrderState_State_Failed(ctx, sel, obj)
-	case *dto2.ShowIFrame:
-		return ec._Commerce_Checkout_PlaceOrderState_State_ShowIFrame(ctx, sel, obj)
+	case *dto2.ShowIframe:
+		return ec._Commerce_Checkout_PlaceOrderState_State_ShowIframe(ctx, sel, obj)
 	case *dto2.ShowHTML:
 		return ec._Commerce_Checkout_PlaceOrderState_State_ShowHTML(ctx, sel, obj)
 	case *dto2.Redirect:
@@ -19548,24 +19548,24 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHTML(ct
 	return out
 }
 
-var commerce_Checkout_PlaceOrderState_State_ShowIFrameImplementors = []string{"Commerce_Checkout_PlaceOrderState_State_ShowIFrame", "Commerce_Checkout_PlaceOrderState_State"}
+var commerce_Checkout_PlaceOrderState_State_ShowIframeImplementors = []string{"Commerce_Checkout_PlaceOrderState_State_ShowIframe", "Commerce_Checkout_PlaceOrderState_State"}
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIFrame(ctx context.Context, sel ast.SelectionSet, obj *dto2.ShowIFrame) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_PlaceOrderState_State_ShowIFrameImplementors)
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe(ctx context.Context, sel ast.SelectionSet, obj *dto2.ShowIframe) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_PlaceOrderState_State_ShowIframeImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_ShowIFrame")
+			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_ShowIframe")
 		case "name":
-			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_ShowIFrame_name(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_ShowIframe_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "URL":
-			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_ShowIFrame_URL(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_ShowIframe_URL(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
