@@ -8,8 +8,7 @@ import (
 
 type (
 	// Success state
-	Success struct {
-	}
+	Success struct{}
 )
 
 var _ process.State = Success{}
@@ -21,12 +20,12 @@ func (s Success) Name() string {
 
 // Run the state operations
 func (s Success) Run(context.Context, *process.Process) process.RunResult {
-	panic("implement me")
+	return process.RunResult{}
 }
 
 // Rollback the state operations
 func (s Success) Rollback(process.RollbackData) error {
-	panic("implement me")
+	return nil
 }
 
 // IsFinal if state is a final state
