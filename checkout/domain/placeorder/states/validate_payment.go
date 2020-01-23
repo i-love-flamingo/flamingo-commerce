@@ -53,23 +53,23 @@ func (v ValidatePayment) Run(ctx context.Context, p *process.Process) process.Ru
 	case paymentDomain.PaymentFlowStatusUnapproved:
 		switch flowStatus.Action {
 		case paymentDomain.PaymentFlowActionPostRedirect:
-			formFields := make(map[string]process.FormField, len(flowStatus.Data.FormParameter))
-			for k, v := range flowStatus.Data.FormParameter {
+			formFields := make(map[string]process.FormField, len(flowStatus.ActionData.FormParameter))
+			for k, v := range flowStatus.ActionData.FormParameter {
 				formFields[k] = process.FormField{
 					Value: v.Value,
 				}
 			}
-			p.UpdateURL(flowStatus.Data.URL)
+			p.UpdateURL(flowStatus.ActionData.URL)
 			p.UpdateFormParameter(formFields)
 			p.UpdateState(PostRedirect{}.Name())
 		case paymentDomain.PaymentFlowActionRedirect:
-			p.UpdateURL(flowStatus.Data.URL)
+			p.UpdateURL(flowStatus.ActionData.URL)
 			p.UpdateState(Redirect{}.Name())
 		case paymentDomain.PaymentFlowActionShowHTML:
-			p.UpdateDisplayData(flowStatus.Data.DisplayData)
+			p.UpdateDisplayData(flowStatus.ActionData.DisplayData)
 			p.UpdateState(ShowHTML{}.Name())
 		case paymentDomain.PaymentFlowActionShowIFrame:
-			p.UpdateURL(flowStatus.Data.URL)
+			p.UpdateURL(flowStatus.ActionData.URL)
 			p.UpdateState(ShowIframe{}.Name())
 		default:
 			p.Failed(ctx, process.PaymentErrorOccurredReason{
