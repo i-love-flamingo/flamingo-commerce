@@ -47,7 +47,7 @@ type Commerce_Checkout_PlaceOrderState_State_Failed implements Commerce_Checkout
     reason: String!
 }
 
-type Commerce_Checkout_PlaceOrderState_State_ShowIFrame implements Commerce_Checkout_PlaceOrderState_State {
+type Commerce_Checkout_PlaceOrderState_State_ShowIframe implements Commerce_Checkout_PlaceOrderState_State {
     name: String!
     URL: String!
 }

@@ -23,8 +23,8 @@ type (
 	Wait struct {
 		Name string
 	}
-	// ShowIFrame state
-	ShowIFrame struct {
+	// ShowIframe state
+	ShowIframe struct {
 		Name string
 		URL  string
 	}
@@ -55,7 +55,7 @@ var (
 	_ State = new(Failed)
 	_ State = new(Success)
 	_ State = new(Wait)
-	_ State = new(ShowIFrame)
+	_ State = new(ShowIframe)
 	_ State = new(ShowHTML)
 	_ State = new(Redirect)
 	_ State = new(PostRedirect)
@@ -78,7 +78,7 @@ func (s *Wait) MapFrom(pctx process.Context) {
 }
 
 // MapFrom the internal process state to the graphQL state fields
-func (s *ShowIFrame) MapFrom(pctx process.Context) {
+func (s *ShowIframe) MapFrom(pctx process.Context) {
 	s.Name = pctx.State
 	s.URL = pctx.URL.String()
 }

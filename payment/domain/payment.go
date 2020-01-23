@@ -1,5 +1,7 @@
 package domain
 
+import "net/url"
+
 type (
 	// Method contains information about a general payment method
 	Method struct {
@@ -24,9 +26,24 @@ type (
 		// Action to perform to proceed in the payment flow
 		Action string
 		// Data contains additional information related to the action / flow
-		Data interface{}
+		Data FlowData
 		// Error contains additional information in case of an error (e.g. payment failed)
 		Error *Error
+	}
+
+	// FlowData contains additional data for the current action
+	FlowData struct {
+		// URL is used to pass URL data to the user if the current state needs some
+		URL *url.URL
+		// DisplayData holds data, normally HTML to be displayed to the user
+		DisplayData   string
+		FormParameter map[string]FormField
+		Additional    interface{}
+	}
+
+	// FormField contains form fields
+	FormField struct {
+		Value []string
 	}
 
 	// Error should be used by PaymentGateway to indicate that payment failed (so that the customer can see a speaking message)
@@ -62,6 +79,15 @@ const (
 	PaymentFlowWaitingForCustomer = "payment_waiting_for_customer"
 	// PaymentFlowStatusCancelled payment cancelled by provider
 	PaymentFlowStatusCancelled = "payment_cancelled"
+
+	// PaymentFlowActionShowIFrame signals the frontend to show an iframe
+	PaymentFlowActionShowIFrame = "show_iframe"
+	// PaymentFlowActionShowHTML signals the frontend to show HTML
+	PaymentFlowActionShowHTML = "show_html"
+	// PaymentFlowActionRedirect signals the frontend to do a redirect to a hosted payment page
+	PaymentFlowActionRedirect = "redirect"
+	// PaymentFlowActionPostRedirect signals the frontend to do a post redirect to a hosted payment page
+	PaymentFlowActionPostRedirect = "post_redirect"
 )
 
 // Error getter

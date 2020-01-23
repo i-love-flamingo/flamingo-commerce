@@ -2,6 +2,7 @@ package states
 
 import (
 	"context"
+	"fmt"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo-commerce/v3/payment/application"
@@ -50,8 +51,31 @@ func (v ValidatePayment) Run(ctx context.Context, p *process.Process) process.Ru
 
 	switch flowStatus.Status {
 	case paymentDomain.PaymentFlowStatusUnapproved:
-		// payment just started, frontend needs to do actions
-		p.UpdateState(Wait{}.Name())
+		switch flowStatus.Action {
+		case paymentDomain.PaymentFlowActionPostRedirect:
+			formFields := make(map[string]process.FormField, len(flowStatus.Data.FormParameter))
+			for k, v := range flowStatus.Data.FormParameter {
+				formFields[k] = process.FormField{
+					Value: v.Value,
+				}
+			}
+			p.UpdateURL(flowStatus.Data.URL)
+			p.UpdateFormParameter(formFields)
+			p.UpdateState(PostRedirect{}.Name())
+		case paymentDomain.PaymentFlowActionRedirect:
+			p.UpdateURL(flowStatus.Data.URL)
+			p.UpdateState(Redirect{}.Name())
+		case paymentDomain.PaymentFlowActionShowHTML:
+			p.UpdateDisplayData(flowStatus.Data.DisplayData)
+			p.UpdateState(ShowHTML{}.Name())
+		case paymentDomain.PaymentFlowActionShowIFrame:
+			p.UpdateURL(flowStatus.Data.URL)
+			p.UpdateState(ShowIframe{}.Name())
+		default:
+			p.Failed(ctx, process.PaymentErrorOccurredReason{
+				Error: fmt.Sprintf("Payment action not supported: %q", flowStatus.Action),
+			})
+		}
 	case paymentDomain.PaymentFlowStatusApproved:
 		// payment is done but needs confirmation
 		p.UpdateState(CompletePayment{}.Name())
@@ -67,7 +91,7 @@ func (v ValidatePayment) Run(ctx context.Context, p *process.Process) process.Ru
 		p.UpdateState(Wait{}.Name())
 	default:
 		// unknown payment flowStatus, let frontend handle it
-		p.UpdateState(Wait{}.Name())
+		p.UpdateState(Failed{}.Name())
 	}
 
 	return process.RunResult{}
