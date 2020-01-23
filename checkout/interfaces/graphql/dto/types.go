@@ -12,16 +12,15 @@ type (
 		UUID string
 	}
 
-	//PlaceOrderContext infos
+	// PlaceOrderContext infos
 	PlaceOrderContext struct {
-		Cart         *dto.DecoratedCart
-		OrderInfos   *PlacedOrderInfos
-		State        string
-		UUID         string
-		FailedReason string
+		Cart       *dto.DecoratedCart
+		OrderInfos *PlacedOrderInfos
+		State      State
+		UUID       string
 	}
 
-	//PlacedOrderInfos infos
+	// PlacedOrderInfos infos
 	PlacedOrderInfos struct {
 		PaymentInfos        []application.PlaceOrderPaymentInfo
 		PlacedOrderInfos    []placeorder.PlacedOrderInfo

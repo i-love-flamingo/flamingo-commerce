@@ -1,8 +1,14 @@
 package dto
 
+import (
+	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
+)
+
 type (
 	// State representation for graphql
-	State interface{}
+	State interface {
+		MapFrom(process.Context)
+	}
 
 	// Failed state
 	Failed struct {
@@ -44,3 +50,62 @@ type (
 		Value []string
 	}
 )
+
+var (
+	_ State = new(Failed)
+	_ State = new(Success)
+	_ State = new(Wait)
+	_ State = new(ShowIFrame)
+	_ State = new(ShowHTML)
+	_ State = new(Redirect)
+	_ State = new(PostRedirect)
+)
+
+// MapFrom the internal process state to the graphQL state fields
+func (s *Failed) MapFrom(pctx process.Context) {
+	s.Name = pctx.State
+	s.Reason = pctx.FailedReason.Reason()
+}
+
+// MapFrom the internal process state to the graphQL state fields
+func (s *Success) MapFrom(pctx process.Context) {
+	s.Name = pctx.State
+}
+
+// MapFrom the internal process state to the graphQL state fields
+func (s *Wait) MapFrom(pctx process.Context) {
+	s.Name = pctx.State
+}
+
+// MapFrom the internal process state to the graphQL state fields
+func (s *ShowIFrame) MapFrom(pctx process.Context) {
+	s.Name = pctx.State
+	s.URL = pctx.URL.String()
+}
+
+// MapFrom the internal process state to the graphQL state fields
+func (s *ShowHTML) MapFrom(pctx process.Context) {
+	s.Name = pctx.State
+	s.HTML = pctx.DisplayData
+}
+
+// MapFrom the internal process state to the graphQL state fields
+func (s *Redirect) MapFrom(pctx process.Context) {
+	s.Name = pctx.State
+	s.URL = pctx.URL.String()
+}
+
+// MapFrom the internal process state to the graphQL state fields
+func (s *PostRedirect) MapFrom(pctx process.Context) {
+	s.Name = pctx.State
+	s.URL = pctx.URL.String()
+	parameters := make([]FormParameter, 0, len(pctx.FormParameter))
+	for key, p := range pctx.FormParameter {
+		parameters = append(parameters, FormParameter{
+			Key:   key,
+			Value: p.Value,
+		})
+	}
+
+	s.Parameters = parameters
+}
