@@ -26,19 +26,19 @@ type (
 		// Action to perform to proceed in the payment flow
 		Action string
 		// Data contains additional information related to the action / flow
-		Data FlowData
+		Data       interface{}
+		ActionData FlowActionData
 		// Error contains additional information in case of an error (e.g. payment failed)
 		Error *Error
 	}
 
-	// FlowData contains additional data for the current action
-	FlowData struct {
+	// FlowActionData contains additional data for the current action
+	FlowActionData struct {
 		// URL is used to pass URL data to the user if the current state needs some
 		URL *url.URL
 		// DisplayData holds data, normally HTML to be displayed to the user
 		DisplayData   string
 		FormParameter map[string]FormField
-		Additional    interface{}
 	}
 
 	// FormField contains form fields
