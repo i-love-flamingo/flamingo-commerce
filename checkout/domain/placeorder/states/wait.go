@@ -14,6 +14,8 @@ type (
 
 var _ process.State = Wait{}
 
+// TODO: remove state since its not an internal state..
+
 // Name get state name
 func (w Wait) Name() string {
 	return "Wait"
@@ -21,15 +23,6 @@ func (w Wait) Name() string {
 
 // Run the state operations
 func (w Wait) Run(context.Context, *process.Process) process.RunResult {
-
-	/* Todo: maybe split in multiple states
-	1. Reserve Order id
-	2. Start Payment
-	3. Reserve Order if EarlyPlace
-	4. Get Payment Status
-	// n.ctx.UpdateState(WaitingForPaymentInformation)
-	*/
-
 	panic("implement me")
 }
 
