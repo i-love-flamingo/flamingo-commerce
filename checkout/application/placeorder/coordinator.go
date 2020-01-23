@@ -281,6 +281,7 @@ func (c *Coordinator) RunBlocking(ctx context.Context) (pctx *process.Context, e
 }
 
 func (c *Coordinator) forceProcessContextSessionStore(ctx context.Context, pctx process.Context) {
+	// todo: hacky, maybe use flamingo request task..
 	session, err := c.sessionStore.Get(web.RequestFromContext(ctx).Request(), "flamingo")
 	if err != nil {
 

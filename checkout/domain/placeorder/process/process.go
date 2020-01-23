@@ -185,6 +185,7 @@ func (p *Process) rollback() error {
 			p.logger.Error(fmt.Errorf("state %q not found for rollback", rollbackRef.StateName))
 			continue
 		}
+		// todo maybe provide ctx here..
 		// todo error types for fatal end and continue rollback chain
 		_ = state.Rollback(rollbackRef.Data)
 	}

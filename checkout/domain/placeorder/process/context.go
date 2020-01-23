@@ -9,8 +9,9 @@ import (
 type (
 	// Context contains information (state etc) about a placeorder process
 	Context struct {
-		UUID               string
-		State              string
+		UUID  string
+		State string
+		// todo: maybe add SateData so that the current state can expose data
 		Cart               cart.Cart
 		ReturnURL          *url.URL
 		RollbackReferences []RollbackReference

@@ -21,6 +21,7 @@ func (ShowIframe) Name() string {
 
 // Run the state operations
 func (si ShowIframe) Run(_ context.Context, p *process.Process) process.RunResult {
+	// todo: add extracted validate switch here and only update state if something happened
 	p.UpdateState(ValidatePayment{}.Name())
 	return process.RunResult{}
 }
