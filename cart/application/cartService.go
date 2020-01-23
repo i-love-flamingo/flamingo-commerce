@@ -970,7 +970,8 @@ func (cs *CartService) AdjustItemsToRestrictedQty(ctx context.Context, session *
 		if err != nil {
 			return nil, err
 		}
-		qtyAdjustmentResult.HasRemovedCouponCodes = !couponCodes.ContainedIn(cart.AppliedCouponCodes)
+
+		qtyAdjustmentResult.HasRemovedCouponCodes = !cartDomain.AppliedCouponCodes(couponCodes).ContainedIn(cart.AppliedCouponCodes)
 		qtyAdjustmentResults[index] = qtyAdjustmentResult
 	}
 

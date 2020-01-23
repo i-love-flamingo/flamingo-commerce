@@ -42,7 +42,7 @@ type (
 		BelongsToAuthenticatedUser bool
 		AuthenticatedUserID        string
 
-		AppliedCouponCodes AppliedCouponCodes
+		AppliedCouponCodes []CouponCode
 
 		DefaultCurrency string
 
