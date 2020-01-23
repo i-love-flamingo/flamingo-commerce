@@ -202,9 +202,19 @@ func (p *Process) UpdateState(s string) {
 	p.context.State = s
 }
 
-// UpdateContextData updates
-func (p *Process) UpdateContextData(data interface{}) {
-	p.context.Data = data
+// UpdateURL updates
+func (p *Process) UpdateURL(url *url.URL) {
+	p.context.URL = url
+}
+
+// UpdateDisplayData updates
+func (p *Process) UpdateDisplayData(data string) {
+	p.context.DisplayData = data
+}
+
+// UpdateFormParameter updates
+func (p *Process) UpdateFormParameter(params map[string]FormField) {
+	p.context.FormParameter = params
 }
 
 // Failed performs all collected rollbacks and switches to FailedState

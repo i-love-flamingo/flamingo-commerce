@@ -55,17 +55,11 @@ func (r *CommerceCheckoutMutationResolver) refresh(
 
 	dc := graphqlDto.NewDecoratedCart(r.decoratedCartFactory.Create(ctx, poctx.Cart))
 
-	failedReason := ""
-	if poctx.FailedReason != nil {
-		failedReason = poctx.FailedReason.Reason()
-	}
-
 	return &dto.PlaceOrderContext{
-		Cart:         dc,
-		OrderInfos:   nil,
-		State:        poctx.State,
-		UUID:         poctx.UUID,
-		FailedReason: failedReason,
+		Cart:       dc,
+		OrderInfos: nil,
+		State:      r.mapStateToGraphQL(*poctx),
+		UUID:       poctx.UUID,
 	}, nil
 }
 
@@ -114,6 +108,9 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutCancelPlaceOrder(ctx 
 	return err == nil, err
 }
 
-func (r *CommerceCheckoutMutationResolver) mapStatesToGraphQL(s string) dto.State {
-	return r.stateMapping[s]
+func (r *CommerceCheckoutMutationResolver) mapStateToGraphQL(pctx process.Context) dto.State {
+	resultState := r.stateMapping[pctx.State]
+	resultState.MapFrom(pctx)
+
+	return resultState
 }
