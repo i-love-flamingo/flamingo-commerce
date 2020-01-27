@@ -20,7 +20,7 @@ func TestFailed_Name(t *testing.T) {
 
 func TestFailed_Rollback(t *testing.T) {
 	s := Failed{}
-	assert.Nil(t, s.Rollback(nil, nil))
+	assert.Nil(t, s.Rollback(context.Background(), nil))
 }
 
 func TestFailed_Run(t *testing.T) {

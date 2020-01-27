@@ -21,7 +21,7 @@ func TestPostRedirect_Name(t *testing.T) {
 
 func TestPostRedirect_Rollback(t *testing.T) {
 	s := states.PostRedirect{}
-	assert.Nil(t, s.Rollback(nil, nil))
+	assert.Nil(t, s.Rollback(context.Background(), nil))
 }
 
 func TestPostRedirect_Run(t *testing.T) {
