@@ -76,14 +76,13 @@ func (c CompleteCart) Run(ctx context.Context, p *process.Process) process.RunRe
 }
 
 // Rollback the state operations
-func (c CompleteCart) Rollback(data process.RollbackData) error {
+func (c CompleteCart) Rollback(ctx context.Context, data process.RollbackData) error {
 	rollbackData, ok := data.(CompleteCartRollbackData)
 	if !ok {
 		return fmt.Errorf("rollback data not of expected type 'CompleteCartRollbackData', but %T", rollbackData)
 	}
 
-	// todo: check if missing context can lead to errors due to cart cache things
-	_, err := c.cartService.RestoreCart(context.Background(), rollbackData.CompletedCart)
+	_, err := c.cartService.RestoreCart(ctx, rollbackData.CompletedCart)
 	if err != nil {
 		return err
 	}

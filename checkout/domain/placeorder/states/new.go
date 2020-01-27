@@ -27,7 +27,7 @@ func (n New) Run(_ context.Context, p *process.Process) process.RunResult {
 }
 
 // Rollback the state operations
-func (n New) Rollback(process.RollbackData) error {
+func (n New) Rollback(context.Context, process.RollbackData) error {
 	return nil
 }
 

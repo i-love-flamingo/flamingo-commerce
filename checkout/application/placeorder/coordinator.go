@@ -185,6 +185,7 @@ func (c *Coordinator) Cancel(ctx context.Context) (err error) {
 
 		if currentState.IsFinal() {
 			err = errors.New("process already in final state, cancel not possible")
+			return
 		}
 
 		var unlock Unlock

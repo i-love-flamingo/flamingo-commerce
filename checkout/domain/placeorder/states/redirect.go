@@ -26,7 +26,7 @@ func (r Redirect) Run(_ context.Context, p *process.Process) process.RunResult {
 }
 
 // Rollback the state operations
-func (r Redirect) Rollback(process.RollbackData) error {
+func (r Redirect) Rollback(context.Context, process.RollbackData) error {
 	return nil
 }
 

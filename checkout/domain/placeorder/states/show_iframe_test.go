@@ -21,7 +21,7 @@ func TestShowIframe_Name(t *testing.T) {
 
 func TestShowIframe_Rollback(t *testing.T) {
 	s := states.ShowIframe{}
-	assert.Nil(t, s.Rollback(nil))
+	assert.Nil(t, s.Rollback(nil, nil))
 }
 
 func TestShowIframe_Run(t *testing.T) {

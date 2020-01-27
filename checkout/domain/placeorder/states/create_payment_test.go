@@ -202,7 +202,7 @@ func TestCreatePayment_Rollback(t *testing.T) {
 		paymentService := paymentServiceHelper(t, gateway)
 		state.Inject(paymentService)
 
-		result := state.Rollback(data)
+		result := state.Rollback(context.Background(), data)
 		assert.Nil(t, result)
 		gateway.AssertExpectations(t)
 	})
@@ -210,7 +210,7 @@ func TestCreatePayment_Rollback(t *testing.T) {
 	t.Run("RollbackData not of type", func(t *testing.T) {
 		state := states.CreatePayment{}
 
-		assert.Error(t, state.Rollback("lalala"))
+		assert.Error(t, state.Rollback(context.Background(), "string"))
 	})
 
 	t.Run("Error during payment selection", func(t *testing.T) {
@@ -226,7 +226,7 @@ func TestCreatePayment_Rollback(t *testing.T) {
 
 		paymentService := paymentServiceHelper(t, nil)
 		state.Inject(paymentService)
-		assert.Error(t, state.Rollback(data), "Missing payment selection / gateway should lead to an error")
+		assert.Error(t, state.Rollback(context.Background(), data), "Missing payment selection / gateway should lead to an error")
 	})
 
 	t.Run("Error during CancelOrderPayment", func(t *testing.T) {
@@ -248,7 +248,7 @@ func TestCreatePayment_Rollback(t *testing.T) {
 		gateway.On("CancelOrderPayment", mock.Anything, payment).Return(expectedError).Once()
 		paymentService := paymentServiceHelper(t, gateway)
 		state.Inject(paymentService)
-		assert.EqualError(t, state.Rollback(data), expectedError.Error())
+		assert.EqualError(t, state.Rollback(context.Background(), data), expectedError.Error())
 		gateway.AssertExpectations(t)
 	})
 

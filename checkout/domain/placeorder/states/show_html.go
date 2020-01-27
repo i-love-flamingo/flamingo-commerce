@@ -26,7 +26,7 @@ func (sh ShowHTML) Run(_ context.Context, p *process.Process) process.RunResult 
 }
 
 // Rollback the state operations
-func (sh ShowHTML) Rollback(process.RollbackData) error {
+func (sh ShowHTML) Rollback(context.Context, process.RollbackData) error {
 	return nil
 }
 
