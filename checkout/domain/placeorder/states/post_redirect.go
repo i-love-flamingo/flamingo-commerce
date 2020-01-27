@@ -26,7 +26,7 @@ func (pr PostRedirect) Run(_ context.Context, p *process.Process) process.RunRes
 }
 
 // Rollback the state operations
-func (pr PostRedirect) Rollback(process.RollbackData) error {
+func (pr PostRedirect) Rollback(context.Context, process.RollbackData) error {
 	return nil
 }
 

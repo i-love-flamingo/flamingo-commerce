@@ -8,7 +8,7 @@ type (
 	// State interface
 	State interface {
 		Run(context.Context, *Process) RunResult
-		Rollback(RollbackData) error
+		Rollback(context.Context, RollbackData) error
 		IsFinal() bool
 		Name() string
 	}

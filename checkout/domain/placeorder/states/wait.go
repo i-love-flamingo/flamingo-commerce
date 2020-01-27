@@ -27,7 +27,7 @@ func (w Wait) Run(context.Context, *process.Process) process.RunResult {
 }
 
 // Rollback the state operations
-func (w Wait) Rollback(process.RollbackData) error {
+func (w Wait) Rollback(context.Context, process.RollbackData) error {
 	panic("implement me")
 }
 

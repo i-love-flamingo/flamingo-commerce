@@ -74,7 +74,7 @@ func (c CreatePayment) Run(ctx context.Context, p *process.Process) process.RunR
 }
 
 // Rollback the state operations
-func (c CreatePayment) Rollback(data process.RollbackData) error {
+func (c CreatePayment) Rollback(ctx context.Context, data process.RollbackData) error {
 	rollbackData, ok := data.(CreatePaymentRollbackData)
 	if !ok {
 		return fmt.Errorf("rollback data not of expected type 'CreatePaymentRollbackData', but %T", rollbackData)
@@ -85,7 +85,7 @@ func (c CreatePayment) Rollback(data process.RollbackData) error {
 		return err
 	}
 
-	err = paymentGateway.CancelOrderPayment(context.Background(), &placeorder.Payment{Gateway: rollbackData.Gateway, PaymentID: rollbackData.PaymentID})
+	err = paymentGateway.CancelOrderPayment(ctx, &placeorder.Payment{Gateway: rollbackData.Gateway, PaymentID: rollbackData.PaymentID})
 	if err != nil {
 		return err
 	}

@@ -177,7 +177,7 @@ func (p *Process) CurrentState() (State, error) {
 	return state, nil
 }
 
-func (p *Process) rollback() error {
+func (p *Process) rollback(ctx context.Context) error {
 	for i := len(p.context.RollbackReferences) - 1; i >= 0; i-- {
 		rollbackRef := p.context.RollbackReferences[i]
 		state, ok := p.allStates[rollbackRef.StateName]
@@ -185,9 +185,9 @@ func (p *Process) rollback() error {
 			p.logger.Error(fmt.Errorf("state %q not found for rollback", rollbackRef.StateName))
 			continue
 		}
-		// todo maybe provide ctx here..
+
 		// todo error types for fatal end and continue rollback chain
-		_ = state.Rollback(rollbackRef.Data)
+		_ = state.Rollback(ctx, rollbackRef.Data)
 	}
 
 	return nil
@@ -220,7 +220,7 @@ func (p *Process) UpdateFormParameter(params map[string]FormField) {
 
 // Failed performs all collected rollbacks and switches to FailedState
 func (p *Process) Failed(ctx context.Context, reason FailedReason) {
-	err := p.rollback()
+	err := p.rollback(ctx)
 	if err != nil {
 		p.logger.WithContext(ctx).Error("rollback failed: ", err)
 	}

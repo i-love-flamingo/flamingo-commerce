@@ -27,7 +27,7 @@ func (si ShowIframe) Run(_ context.Context, p *process.Process) process.RunResul
 }
 
 // Rollback the state operations
-func (si ShowIframe) Rollback(process.RollbackData) error {
+func (si ShowIframe) Rollback(context.Context, process.RollbackData) error {
 	return nil
 }
 

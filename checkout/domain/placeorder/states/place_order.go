@@ -84,14 +84,13 @@ func (po PlaceOrder) Run(ctx context.Context, p *process.Process) process.RunRes
 }
 
 // Rollback the state operations
-func (po PlaceOrder) Rollback(data process.RollbackData) error {
+func (po PlaceOrder) Rollback(ctx context.Context, data process.RollbackData) error {
 	rollbackData, ok := data.(PlaceOrderRollbackData)
 	if !ok {
 		return fmt.Errorf("rollback data not of expected type 'PlaceOrderRollbackData', but %T", rollbackData)
 	}
 
-	// todo: check if ctx/session needed.. cart restore needs also be done or?
-	_, err := po.orderService.CancelOrder(context.Background(), web.SessionFromContext(context.Background()), &rollbackData.OrderInfos)
+	_, err := po.orderService.CancelOrder(ctx, web.SessionFromContext(context.Background()), &rollbackData.OrderInfos)
 	if err != nil {
 		return err
 	}

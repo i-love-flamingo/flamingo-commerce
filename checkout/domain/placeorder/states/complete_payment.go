@@ -53,7 +53,7 @@ func (c CompletePayment) Run(ctx context.Context, p *process.Process) process.Ru
 }
 
 // Rollback the state operations
-func (c CompletePayment) Rollback(_ process.RollbackData) error {
+func (c CompletePayment) Rollback(ctx context.Context, _ process.RollbackData) error {
 	return nil
 }
 

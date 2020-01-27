@@ -21,7 +21,7 @@ func TestShowHTML_Name(t *testing.T) {
 
 func TestShowHTML_Rollback(t *testing.T) {
 	s := states.ShowHTML{}
-	assert.Nil(t, s.Rollback(nil))
+	assert.Nil(t, s.Rollback(nil, nil))
 }
 
 func TestShowHTML_Run(t *testing.T) {
