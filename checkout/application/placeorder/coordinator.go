@@ -40,7 +40,7 @@ type (
 
 var (
 	//ErrLockTaken to indicate the lock is taken (by another running process)
-	ErrLockTaken = errors.New("Lock already taken")
+	ErrLockTaken = errors.New("lock already taken")
 	//ErrNoPlaceOrderProcess if a requested process not running
 	ErrNoPlaceOrderProcess = errors.New("ErrNoPlaceOrderProcess")
 	//ErrAnotherPlaceOrderProcessRunning if a process runs
@@ -58,9 +58,9 @@ func init() {
 }
 
 // emptyResponseWriter to be able to properly persist sessions
-func (emptyResponseWriter) Header() http.Header        { return http.Header{} }
-func (emptyResponseWriter) Write([]byte) (int, error)  { return 0, io.ErrUnexpectedEOF }
-func (emptyResponseWriter) WriteHeader(statusCode int) {}
+func (emptyResponseWriter) Header() http.Header       { return http.Header{} }
+func (emptyResponseWriter) Write([]byte) (int, error) { return 0, io.ErrUnexpectedEOF }
+func (emptyResponseWriter) WriteHeader(int)           {}
 
 //Inject dependencies
 func (c *Coordinator) Inject(locker TryLock, logger flamingo.Logger, processFactory *process.Factory, sessionStore sessions.Store) {
@@ -81,39 +81,39 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *
 		_ = unlock()
 	}()
 
-	var runerr error
-	var runpctx *process.Context
+	var runErr error
+	var runPCtx *process.Context
 	web.RunWithDetachedContext(ctx, func(ctx context.Context) {
 		has, err := c.HasUnfinishedProcess(ctx)
 		if err != nil {
-			runerr = err
+			runErr = err
 			c.logger.Error(err)
 			return
 		}
 		if has {
-			runerr = ErrAnotherPlaceOrderProcessRunning
-			c.logger.Info(runerr)
+			runErr = ErrAnotherPlaceOrderProcessRunning
+			c.logger.Info(runErr)
 			return
 		}
 
 		newProcess, err := c.processFactory.New(returnURL, cart)
 		if err != nil {
-			runerr = err
+			runErr = err
 			c.logger.Error(err)
 			return
 		}
 		newProcess.Run(ctx)
 		pctx := newProcess.Context()
-		runpctx = &pctx
+		runPCtx = &pctx
 		err = c.storeProcessContext(ctx, pctx)
 		if err != nil {
-			runerr = err
+			runErr = err
 			c.logger.Error(err)
 			return
 		}
 	})
 
-	return runpctx, runerr
+	return runPCtx, runErr
 }
 
 // HasUnfinishedProcess checks for processes not in final state
@@ -137,7 +137,7 @@ func (c *Coordinator) HasUnfinishedProcess(ctx context.Context) (bool, error) {
 func (c *Coordinator) storeProcessContext(ctx context.Context, pctx process.Context) error {
 	session := web.SessionFromContext(ctx)
 	if session == nil {
-		return errors.New("Session not available to check for last placeorder context")
+		return errors.New("session not available to check for last place order context")
 	}
 	session.Store(contextSessionStorageKey, pctx)
 	return nil
@@ -147,7 +147,7 @@ func (c *Coordinator) storeProcessContext(ctx context.Context, pctx process.Cont
 func (c *Coordinator) LastProcess(ctx context.Context) (*process.Process, error) {
 	session := web.SessionFromContext(ctx)
 	if session == nil {
-		return nil, errors.New("session not available to check for last placeorder context")
+		return nil, errors.New("session not available to check for last place order context")
 	}
 	data, found := session.Load(contextSessionStorageKey)
 	if !found {
@@ -200,7 +200,10 @@ func (c *Coordinator) Cancel(ctx context.Context) (err error) {
 		}()
 
 		p.Failed(ctx, process.CanceledByCustomerReason{})
-		c.storeProcessContext(ctx, p.Context())
+		err = c.storeProcessContext(ctx, p.Context())
+		if err != nil {
+			c.logger.Error("couldn't store process context into session: ", err)
+		}
 	})
 	return
 }
@@ -272,7 +275,10 @@ func (c *Coordinator) RunBlocking(ctx context.Context) (pctx *process.Context, e
 		}()
 
 		p.Run(ctx)
-		c.storeProcessContext(ctx, p.Context())
+		err = c.storeProcessContext(ctx, p.Context())
+		if err != nil {
+			c.logger.Error("couldn't store process context into session: ", err)
+		}
 		runPctx := p.Context()
 		pctx = &runPctx
 	})
@@ -284,10 +290,15 @@ func (c *Coordinator) forceProcessContextSessionStore(ctx context.Context, pctx 
 	// todo: hacky, maybe use flamingo request task..
 	session, err := c.sessionStore.Get(web.RequestFromContext(ctx).Request(), "flamingo")
 	if err != nil {
-
+		c.logger.Error("couldn't receive current session from session store:", err)
+		return
 	}
 	session.Values[contextSessionStorageKey] = pctx
-	c.sessionStore.Save(web.RequestFromContext(ctx).Request(), new(emptyResponseWriter), session)
+	err = c.sessionStore.Save(web.RequestFromContext(ctx).Request(), new(emptyResponseWriter), session)
+	if err != nil {
+		c.logger.Error("couldn't save session in the session store:", err)
+		return
+	}
 }
 
 func determineLockKeyForCart(cart cartDomain.Cart) string {

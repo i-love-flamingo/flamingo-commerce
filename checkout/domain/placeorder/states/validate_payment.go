@@ -98,7 +98,7 @@ func (v ValidatePayment) Run(ctx context.Context, p *process.Process) process.Ru
 }
 
 // Rollback the state operations
-func (v ValidatePayment) Rollback(data process.RollbackData) error {
+func (v ValidatePayment) Rollback(process.RollbackData) error {
 	return nil
 }
 

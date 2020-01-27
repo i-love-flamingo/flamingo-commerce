@@ -7,7 +7,7 @@ import (
 )
 
 type (
-	// Context contains information (state etc) about a placeorder process
+	// Context contains information (state etc) about a place order process
 	Context struct {
 		UUID  string
 		State string
