@@ -27,4 +27,11 @@ type (
 	FormField struct {
 		Value []string
 	}
+
+	// ContextStore can persist process Context instances
+	ContextStore interface {
+		Store(key string, value Context) error
+		Get(key string) (Context, bool)
+		Delete(key string) error
+	}
 )
