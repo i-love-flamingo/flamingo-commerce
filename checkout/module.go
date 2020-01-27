@@ -2,6 +2,7 @@ package checkout
 
 import (
 	"flamingo.me/dingo"
+	"flamingo.me/flamingo-commerce/v3/checkout/infrastructure/contextstore"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql/dto"
 	"flamingo.me/flamingo-commerce/v3/payment"
 	"flamingo.me/flamingo/v3/framework/config"
@@ -43,6 +44,9 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	} else {
 		injector.Bind(new(placeorder.TryLock)).To(locker.Simple{})
 	}
+
+	// todo: switch between implementations
+	injector.Bind(new(process.ContextStore)).To(new(contextstore.Memory)).In(dingo.Singleton)
 
 	injector.Bind(new(process.State)).AnnotatedWith("startState").To(states.New{})
 	injector.Bind(new(process.State)).AnnotatedWith("failedState").To(states.Failed{})

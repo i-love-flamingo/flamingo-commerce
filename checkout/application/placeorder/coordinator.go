@@ -12,7 +12,6 @@ import (
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
-	"github.com/gorilla/sessions"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 )
@@ -29,7 +28,7 @@ type (
 		locker         TryLock
 		logger         flamingo.Logger
 		processFactory *process.Factory
-		sessionStore   sessions.Store
+		contextStore   process.ContextStore
 	}
 
 	//Unlock func
@@ -49,10 +48,6 @@ var (
 	maxLockDuration = 2 * time.Minute
 )
 
-const (
-	contextSessionStorageKey = "checkout_placeorder_context"
-)
-
 func init() {
 	gob.Register(process.Context{})
 }
@@ -63,11 +58,11 @@ func (emptyResponseWriter) Write([]byte) (int, error) { return 0, io.ErrUnexpect
 func (emptyResponseWriter) WriteHeader(int)           {}
 
 //Inject dependencies
-func (c *Coordinator) Inject(locker TryLock, logger flamingo.Logger, processFactory *process.Factory, sessionStore sessions.Store) {
+func (c *Coordinator) Inject(locker TryLock, logger flamingo.Logger, processFactory *process.Factory, contextStore process.ContextStore) {
 	c.locker = locker
 	c.logger = logger.WithField(flamingo.LogKeyModule, "checkout").WithField(flamingo.LogKeyCategory, "placeorder")
 	c.processFactory = processFactory
-	c.sessionStore = sessionStore
+	c.contextStore = contextStore
 }
 
 // New acquires lock if possible and creates new process with first run call blocking
@@ -139,25 +134,20 @@ func (c *Coordinator) storeProcessContext(ctx context.Context, pctx process.Cont
 	if session == nil {
 		return errors.New("session not available to check for last place order context")
 	}
-	session.Store(contextSessionStorageKey, pctx)
-	return nil
+
+	return c.contextStore.Store(session.ID(), pctx)
 }
 
 // LastProcess current place order process
+// todo: states store
 func (c *Coordinator) LastProcess(ctx context.Context) (*process.Process, error) {
 	session := web.SessionFromContext(ctx)
 	if session == nil {
 		return nil, errors.New("session not available to check for last place order context")
 	}
-	data, found := session.Load(contextSessionStorageKey)
+	poContext, found := c.contextStore.Get(session.ID())
 	if !found {
 		return nil, ErrNoPlaceOrderProcess
-	}
-	poContext, ok := data.(process.Context)
-	if !ok {
-		err := errors.New("context could not be read from session")
-		c.logger.Error(err)
-		return nil, err
 	}
 
 	p, err := c.processFactory.NewFromProcessContext(poContext)
@@ -235,7 +225,7 @@ func (c *Coordinator) Run(ctx context.Context) {
 			}()
 
 			p.Run(ctx)
-			c.forceProcessContextSessionStore(ctx, p.Context())
+			_ = c.storeProcessContext(ctx, p.Context())
 		})
 	}(ctx)
 
@@ -278,28 +268,13 @@ func (c *Coordinator) RunBlocking(ctx context.Context) (pctx *process.Context, e
 		p.Run(ctx)
 		err = c.storeProcessContext(ctx, p.Context())
 		if err != nil {
-			c.logger.Error("couldn't store process context into session: ", err)
+			return
 		}
 		runPctx := p.Context()
 		pctx = &runPctx
 	})
 
 	return
-}
-
-func (c *Coordinator) forceProcessContextSessionStore(ctx context.Context, pctx process.Context) {
-	// todo: hacky, maybe use flamingo request task..
-	session, err := c.sessionStore.Get(web.RequestFromContext(ctx).Request(), "flamingo")
-	if err != nil {
-		c.logger.Error("couldn't receive current session from session store:", err)
-		return
-	}
-	session.Values[contextSessionStorageKey] = pctx
-	err = c.sessionStore.Save(web.RequestFromContext(ctx).Request(), new(emptyResponseWriter), session)
-	if err != nil {
-		c.logger.Error("couldn't save session in the session store:", err)
-		return
-	}
 }
 
 func determineLockKeyForCart(cart cartDomain.Cart) string {
