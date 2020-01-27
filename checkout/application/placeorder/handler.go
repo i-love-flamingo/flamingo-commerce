@@ -26,7 +26,7 @@ func (h *Handler) StartPlaceOrder(ctx context.Context, command StartPlaceOrderCo
 }
 
 // RefreshPlaceOrder handles RefreshPlaceOrder command
-func (h *Handler) RefreshPlaceOrder(ctx context.Context, command RefreshPlaceOrderCommand) (*process.Context, error) {
+func (h *Handler) RefreshPlaceOrder(ctx context.Context, _ RefreshPlaceOrderCommand) (*process.Context, error) {
 	p, err := h.coordinator.LastProcess(ctx)
 	if err != nil {
 		return nil, err
@@ -40,7 +40,7 @@ func (h *Handler) RefreshPlaceOrder(ctx context.Context, command RefreshPlaceOrd
 }
 
 // RefreshPlaceOrderBlocking handles RefreshPlaceOrder blocking
-func (h *Handler) RefreshPlaceOrderBlocking(ctx context.Context, command RefreshPlaceOrderCommand) (*process.Context, error) {
+func (h *Handler) RefreshPlaceOrderBlocking(ctx context.Context, _ RefreshPlaceOrderCommand) (*process.Context, error) {
 	return h.coordinator.RunBlocking(ctx)
 }
 
@@ -50,6 +50,6 @@ func (h *Handler) HasUnfinishedProcess(ctx context.Context) (bool, error) {
 }
 
 // CancelPlaceOrder handles RefreshPlaceOrder blocking
-func (h *Handler) CancelPlaceOrder(ctx context.Context, command CancelPlaceOrderCommand) error {
+func (h *Handler) CancelPlaceOrder(ctx context.Context, _ CancelPlaceOrderCommand) error {
 	return h.coordinator.Cancel(ctx)
 }
