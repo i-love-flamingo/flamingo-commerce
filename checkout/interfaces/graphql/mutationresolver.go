@@ -109,7 +109,7 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutCancelPlaceOrder(ctx 
 }
 
 func (r *CommerceCheckoutMutationResolver) mapStateToGraphQL(pctx process.Context) dto.State {
-	resultState := r.stateMapping[pctx.CurrrentStateName]
+	resultState := r.stateMapping[pctx.CurrentStateName]
 	resultState.MapFrom(pctx)
 
 	return resultState
