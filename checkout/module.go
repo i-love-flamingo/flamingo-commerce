@@ -39,13 +39,13 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	}
 
 	if m.PlaceOrderLockType == "clusterlock" {
-		// TODO provide cluster imple
+		// TODO provide cluster implementation
 		injector.Bind(new(placeorder.TryLock)).To(locker.Simple{})
 	} else {
 		injector.Bind(new(placeorder.TryLock)).To(locker.Simple{})
 	}
 
-	// todo: switch between implementations
+	// todo: switch between implementations, provide cluster implementation
 	injector.Bind(new(process.ContextStore)).To(new(contextstore.Memory)).In(dingo.Singleton)
 
 	injector.Bind(new(process.PaymentValidatorFunc)).ToInstance(placeorder.PaymentValidator)

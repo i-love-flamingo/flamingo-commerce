@@ -131,7 +131,6 @@ func (c *Coordinator) storeProcessContext(ctx context.Context, pctx process.Cont
 }
 
 // LastProcess current place order process
-// todo: states store
 func (c *Coordinator) LastProcess(ctx context.Context) (*process.Process, error) {
 	session := web.SessionFromContext(ctx)
 	if session == nil {
