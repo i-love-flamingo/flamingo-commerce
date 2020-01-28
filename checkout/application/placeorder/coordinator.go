@@ -160,21 +160,25 @@ func (c *Coordinator) LastProcess(ctx context.Context) (*process.Process, error)
 
 // Cancel the process if it exists (blocking)
 // be aware that all rollback callbacks are executed
-func (c *Coordinator) Cancel(ctx context.Context) (err error) {
+func (c *Coordinator) Cancel(ctx context.Context) error {
+	var returnErr error
 	web.RunWithDetachedContext(ctx, func(ctx context.Context) {
 		// todo: add tracing
 		p, err := c.LastProcess(ctx)
 		if err != nil {
+			returnErr = err
 			return
 		}
 
 		currentState, err := p.CurrentState()
 		if err != nil {
+			returnErr = err
 			return
 		}
 
 		if currentState.IsFinal() {
 			err = errors.New("process already in final state, cancel not possible")
+			returnErr = err
 			return
 		}
 
@@ -184,6 +188,7 @@ func (c *Coordinator) Cancel(ctx context.Context) (err error) {
 			unlock, err = c.locker.TryLock(determineLockKeyForProcess(p), maxLockDuration)
 		}
 		if err != nil {
+			returnErr = err
 			return
 		}
 		defer func() {
@@ -193,10 +198,10 @@ func (c *Coordinator) Cancel(ctx context.Context) (err error) {
 		p.Failed(ctx, process.CanceledByCustomerReason{})
 		err = c.storeProcessContext(ctx, p.Context())
 		if err != nil {
-			c.logger.Error("couldn't store process context into session: ", err)
+			returnErr = err
 		}
 	})
-	return
+	return returnErr
 }
 
 // Run starts the next processing if not already running

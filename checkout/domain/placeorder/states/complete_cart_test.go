@@ -2,11 +2,9 @@ package states_test
 
 import (
 	"context"
-	"net/url"
 	"testing"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
-	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/states"
 	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
 	"flamingo.me/flamingo/v3/core/oauth/domain"
@@ -23,8 +21,8 @@ func TestCompleteCart_Name(t *testing.T) {
 }
 
 func TestCompleteCart_Run(t *testing.T) {
-	factory := provideProcessFactory()
-	p, _ := factory.New(&url.URL{}, cartDomain.Cart{})
+	//factory := provideProcessFactory()
+	//p, _ := factory.New(&url.URL{}, cartDomain.Cart{})
 
 	cartReceiverService := &application.CartReceiverService{}
 

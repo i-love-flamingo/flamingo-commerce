@@ -169,7 +169,7 @@ func (p *Process) Run(ctx context.Context) {
 	}
 	stateAfterRun := p.Context().CurrentStateName
 
-	//Continue Run until no state change happend
+	// Continue Run until no state change happened
 	// TODO - protect endless loops with a max counter
 	if stateBeforeRun != stateAfterRun {
 		p.logger.Info(fmt.Sprintf("State Changed: %v => %v  Trigger Run() again", stateBeforeRun, stateAfterRun))
