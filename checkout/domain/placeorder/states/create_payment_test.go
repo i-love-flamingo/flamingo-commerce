@@ -6,6 +6,10 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
@@ -15,9 +19,6 @@ import (
 	"flamingo.me/flamingo-commerce/v3/payment/interfaces"
 	"flamingo.me/flamingo-commerce/v3/payment/interfaces/mocks"
 	price "flamingo.me/flamingo-commerce/v3/price/domain"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 )
 
 func TestCreatePayment_Run(t *testing.T) {
