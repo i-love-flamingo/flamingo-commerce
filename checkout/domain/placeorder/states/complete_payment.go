@@ -31,7 +31,7 @@ func (CompletePayment) Name() string {
 }
 
 // Run the state operations
-func (c CompletePayment) Run(ctx context.Context, p *process.Process) process.RunResult {
+func (c CompletePayment) Run(ctx context.Context, p *process.Process, stateData process.StateData) process.RunResult {
 	cart := p.Context().Cart
 
 	payment, err := c.paymentGateway.OrderPaymentFromFlow(ctx, &cart, p.Context().UUID)
@@ -48,7 +48,7 @@ func (c CompletePayment) Run(ctx context.Context, p *process.Process) process.Ru
 		}
 	}
 
-	p.UpdateState(ValidatePayment{}.Name())
+	p.UpdateState(ValidatePayment{}.Name(), nil)
 	return process.RunResult{}
 }
 

@@ -5,9 +5,9 @@ import (
 )
 
 type (
-	// State interface
+	// CurrrentStateName interface
 	State interface {
-		Run(context.Context, *Process) RunResult
+		Run(context.Context, *Process, StateData) RunResult
 		Rollback(context.Context, RollbackData) error
 		IsFinal() bool
 		Name() string

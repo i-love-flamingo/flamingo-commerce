@@ -22,7 +22,7 @@ func (w Wait) Name() string {
 }
 
 // Run the state operations
-func (w Wait) Run(context.Context, *process.Process) process.RunResult {
+func (w Wait) Run(context.Context, *process.Process, process.StateData) process.RunResult {
 	panic("implement me")
 }
 

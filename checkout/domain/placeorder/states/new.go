@@ -20,8 +20,8 @@ func (New) Name() string {
 }
 
 // Run the state operations
-func (n New) Run(_ context.Context, p *process.Process) process.RunResult {
-	p.UpdateState(CreatePayment{}.Name())
+func (n New) Run(_ context.Context, p *process.Process, stateData process.StateData) process.RunResult {
+	p.UpdateState(CreatePayment{}.Name(), nil)
 
 	return process.RunResult{}
 }

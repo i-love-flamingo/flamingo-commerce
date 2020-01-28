@@ -9,24 +9,16 @@ import (
 type (
 	// Context contains information (state etc) about a place order process
 	Context struct {
-		UUID  string
-		State string
-		// todo: maybe add SateData so that the current state can expose data
+		UUID               string
+		CurrrentStateName  string
+		CurrrentStateData  StateData
 		Cart               cart.Cart
 		ReturnURL          *url.URL
 		RollbackReferences []RollbackReference
 		FailedReason       FailedReason
-		// URL is used to pass URL data to the user if the current state needs some
-		URL *url.URL
-		// DisplayData holds data, normally HTML to be displayed to the user
-		DisplayData   string
-		FormParameter map[string]FormField
 	}
 
-	// FormField represents a form field to be displayed to the user
-	FormField struct {
-		Value []string
-	}
+	StateData interface{}
 
 	// ContextStore can persist process Context instances
 	ContextStore interface {

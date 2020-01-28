@@ -4275,7 +4275,7 @@ type Commerce_Checkout_PlaceOrderContext {
     cart: Commerce_DecoratedCart
     # The placed order in case order is already placed
     orderInfos: Commerce_Checkout_PlacedOrderInfos
-    # State depending on the state of payment and place order - state may contain additional infos
+    # CurrrentStateName depending on the state of payment and place order - state may contain additional infos
     state: Commerce_Checkout_PlaceOrderState_State!
     # A unique id for the process
     uuid: String!

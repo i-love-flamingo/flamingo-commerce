@@ -52,7 +52,7 @@ func (PlaceOrder) Name() string {
 }
 
 // Run the state operations
-func (po PlaceOrder) Run(ctx context.Context, p *process.Process) process.RunResult {
+func (po PlaceOrder) Run(ctx context.Context, p *process.Process, stateData process.StateData) process.RunResult {
 	cart := p.Context().Cart
 	decoratedCart := po.cartDecoratorFactory.Create(ctx, cart)
 
@@ -77,7 +77,7 @@ func (po PlaceOrder) Run(ctx context.Context, p *process.Process) process.RunRes
 		}
 	}
 
-	p.UpdateState(ValidatePayment{}.Name())
+	p.UpdateState(ValidatePayment{}.Name(), nil)
 	return process.RunResult{
 		RollbackData: PlaceOrderRollbackData{OrderInfos: *infos},
 	}

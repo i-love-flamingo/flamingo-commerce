@@ -33,7 +33,7 @@ func (ValidatePayment) Name() string {
 }
 
 // Run the state operations
-func (v ValidatePayment) Run(ctx context.Context, p *process.Process) process.RunResult {
+func (v ValidatePayment) Run(ctx context.Context, p *process.Process, stateData process.StateData) process.RunResult {
 	cart := p.Context().Cart
 	gateway, err := v.paymentService.PaymentGatewayByCart(p.Context().Cart)
 	if err != nil {
@@ -53,24 +53,28 @@ func (v ValidatePayment) Run(ctx context.Context, p *process.Process) process.Ru
 	case paymentDomain.PaymentFlowStatusUnapproved:
 		switch flowStatus.Action {
 		case paymentDomain.PaymentFlowActionPostRedirect:
-			formFields := make(map[string]process.FormField, len(flowStatus.ActionData.FormParameter))
+			formFields := make(map[string]FormField, len(flowStatus.ActionData.FormParameter))
 			for k, v := range flowStatus.ActionData.FormParameter {
-				formFields[k] = process.FormField{
+				formFields[k] = FormField{
 					Value: v.Value,
 				}
 			}
-			p.UpdateURL(flowStatus.ActionData.URL)
-			p.UpdateFormParameter(formFields)
-			p.UpdateState(PostRedirect{}.Name())
+			if flowStatus.ActionData.URL == nil {
+				p.Failed(ctx, process.ErrorOccurredReason{Error: "no redirect url set for action"})
+			}
+			p.UpdateState(PostRedirect{}.Name(), NewPostRedirectStateData(*flowStatus.ActionData.URL, formFields))
 		case paymentDomain.PaymentFlowActionRedirect:
-			p.UpdateURL(flowStatus.ActionData.URL)
-			p.UpdateState(Redirect{}.Name())
+			if flowStatus.ActionData.URL == nil {
+				p.Failed(ctx, process.ErrorOccurredReason{Error: "no redirect url set for action"})
+			}
+			p.UpdateState(Redirect{}.Name(), NewRedirectStateData(*flowStatus.ActionData.URL))
 		case paymentDomain.PaymentFlowActionShowHTML:
-			p.UpdateDisplayData(flowStatus.ActionData.DisplayData)
-			p.UpdateState(ShowHTML{}.Name())
+			p.UpdateState(ShowHTML{}.Name(), NewShowHTMLStateData(flowStatus.ActionData.DisplayData))
 		case paymentDomain.PaymentFlowActionShowIFrame:
-			p.UpdateURL(flowStatus.ActionData.URL)
-			p.UpdateState(ShowIframe{}.Name())
+			if flowStatus.ActionData.URL == nil {
+				p.Failed(ctx, process.ErrorOccurredReason{Error: "no redirect url set for action"})
+			}
+			p.UpdateState(ShowIframe{}.Name(), NewShowIframeStateData(*flowStatus.ActionData.URL))
 		default:
 			p.Failed(ctx, process.PaymentErrorOccurredReason{
 				Error: fmt.Sprintf("Payment action not supported: %q", flowStatus.Action),
@@ -78,20 +82,20 @@ func (v ValidatePayment) Run(ctx context.Context, p *process.Process) process.Ru
 		}
 	case paymentDomain.PaymentFlowStatusApproved:
 		// payment is done but needs confirmation
-		p.UpdateState(CompletePayment{}.Name())
+		p.UpdateState(CompletePayment{}.Name(), nil)
 	case paymentDomain.PaymentFlowStatusCompleted:
 		// payment is done and confirmed, place order if not already placed
-		p.UpdateState(Success{}.Name())
+		p.UpdateState(Success{}.Name(), nil)
 	case paymentDomain.PaymentFlowStatusAborted, paymentDomain.PaymentFlowStatusFailed, paymentDomain.PaymentFlowStatusCancelled:
 		return process.RunResult{
 			Failed: process.ErrorOccurredReason{Error: flowStatus.Status},
 		}
 	case paymentDomain.PaymentFlowWaitingForCustomer:
 		// payment pending, waiting for customer doing async stuff
-		p.UpdateState(Wait{}.Name())
+		p.UpdateState(Wait{}.Name(), nil)
 	default:
 		// unknown payment flowStatus, let frontend handle it
-		p.UpdateState(Failed{}.Name())
+		p.UpdateState(Failed{}.Name(), nil)
 	}
 
 	return process.RunResult{}

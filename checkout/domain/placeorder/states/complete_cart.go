@@ -45,7 +45,7 @@ func (CompleteCart) Name() string {
 }
 
 // Run the state operations
-func (c CompleteCart) Run(ctx context.Context, p *process.Process) process.RunResult {
+func (c CompleteCart) Run(ctx context.Context, p *process.Process, stateData process.StateData) process.RunResult {
 	behaviour, err := c.cartReceiverService.ModifyBehaviour(ctx)
 	if err != nil {
 		return process.RunResult{
@@ -56,7 +56,7 @@ func (c CompleteCart) Run(ctx context.Context, p *process.Process) process.RunRe
 	_, ok := behaviour.(cart.CompleteBehaviour)
 	if !ok {
 		// cart does not support completing, proceed to place order
-		p.UpdateState(PlaceOrder{}.Name())
+		p.UpdateState(PlaceOrder{}.Name(), nil)
 		return process.RunResult{}
 	}
 
@@ -67,7 +67,7 @@ func (c CompleteCart) Run(ctx context.Context, p *process.Process) process.RunRe
 		}
 	}
 
-	p.UpdateState(PlaceOrder{}.Name())
+	p.UpdateState(PlaceOrder{}.Name(), nil)
 	return process.RunResult{
 		RollbackData: &CompleteCartRollbackData{
 			CompletedCart: completedCart,

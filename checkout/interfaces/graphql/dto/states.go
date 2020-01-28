@@ -2,10 +2,12 @@ package dto
 
 import (
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
+	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/states"
+	"net/url"
 )
 
 type (
-	// State representation for graphql
+	// CurrrentStateName representation for graphql
 	State interface {
 		MapFrom(process.Context)
 	}
@@ -63,49 +65,56 @@ var (
 
 // MapFrom the internal process state to the graphQL state fields
 func (s *Failed) MapFrom(pctx process.Context) {
-	s.Name = pctx.State
+	s.Name = pctx.CurrrentStateName
 	s.Reason = pctx.FailedReason.Reason()
 }
 
 // MapFrom the internal process state to the graphQL state fields
 func (s *Success) MapFrom(pctx process.Context) {
-	s.Name = pctx.State
+	s.Name = pctx.CurrrentStateName
 }
 
 // MapFrom the internal process state to the graphQL state fields
 func (s *Wait) MapFrom(pctx process.Context) {
-	s.Name = pctx.State
+	s.Name = pctx.CurrrentStateName
 }
 
 // MapFrom the internal process state to the graphQL state fields
 func (s *ShowIframe) MapFrom(pctx process.Context) {
-	s.Name = pctx.State
-	s.URL = pctx.URL.String()
+	s.Name = pctx.CurrrentStateName
+	if stateData, ok := pctx.CurrrentStateData.(url.URL); ok {
+		s.URL = stateData.String()
+	}
 }
 
 // MapFrom the internal process state to the graphQL state fields
 func (s *ShowHTML) MapFrom(pctx process.Context) {
-	s.Name = pctx.State
-	s.HTML = pctx.DisplayData
+	s.Name = pctx.CurrrentStateName
+	if stateData, ok := pctx.CurrrentStateData.(string); ok {
+		s.HTML = stateData
+	}
 }
 
 // MapFrom the internal process state to the graphQL state fields
 func (s *Redirect) MapFrom(pctx process.Context) {
-	s.Name = pctx.State
-	s.URL = pctx.URL.String()
+	s.Name = pctx.CurrrentStateName
+	if stateData, ok := pctx.CurrrentStateData.(url.URL); ok {
+		s.URL = stateData.String()
+	}
 }
 
 // MapFrom the internal process state to the graphQL state fields
 func (s *PostRedirect) MapFrom(pctx process.Context) {
-	s.Name = pctx.State
-	s.URL = pctx.URL.String()
-	parameters := make([]FormParameter, 0, len(pctx.FormParameter))
-	for key, p := range pctx.FormParameter {
-		parameters = append(parameters, FormParameter{
-			Key:   key,
-			Value: p.Value,
-		})
+	s.Name = pctx.CurrrentStateName
+	if stateData, ok := pctx.CurrrentStateData.(states.PostRedirectData); ok {
+		s.URL = stateData.Url.String()
+		parameters := make([]FormParameter, 0, len(stateData.FormFields))
+		for key, p := range stateData.FormFields {
+			parameters = append(parameters, FormParameter{
+				Key:   key,
+				Value: p.Value,
+			})
+		}
+		s.Parameters = parameters
 	}
-
-	s.Parameters = parameters
 }
