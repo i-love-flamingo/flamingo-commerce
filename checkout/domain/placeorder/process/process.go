@@ -156,6 +156,7 @@ func (p *Process) Run(ctx context.Context) {
 		return
 	}
 
+	stateBeforeRun := p.Context().CurrrentStateName
 	runResult := currentState.Run(ctx, p, p.context.CurrrentStateData)
 	if runResult.RollbackData != nil {
 		p.context.RollbackReferences = append(p.context.RollbackReferences, RollbackReference{
@@ -165,6 +166,14 @@ func (p *Process) Run(ctx context.Context) {
 	}
 	if runResult.Failed != nil {
 		p.Failed(ctx, runResult.Failed)
+	}
+	stateAfterRun := p.Context().CurrrentStateName
+
+	//Continue Run until no state change happend
+	// TODO - protect endless loops with a max counter
+	if stateBeforeRun != stateAfterRun {
+		p.logger.Info(fmt.Sprintf("State Changed: %v => %v  Trigger Run() again", stateBeforeRun, stateAfterRun))
+		p.Run(ctx)
 	}
 }
 
@@ -198,7 +207,7 @@ func (p *Process) Context() Context {
 	return p.context
 }
 
-// UpdateState updates
+// UpdateState updates the current state in the context and its related state data
 func (p *Process) UpdateState(s string, stateData StateData) {
 	p.context.CurrrentStateName = s
 	p.context.CurrrentStateData = stateData
