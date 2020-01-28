@@ -4,7 +4,9 @@ import (
 	"context"
 	"testing"
 
+	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/states"
+	"flamingo.me/flamingo-commerce/v3/payment/application"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -24,5 +26,14 @@ func TestRedirect_Rollback(t *testing.T) {
 }
 
 func TestRedirect_Run(t *testing.T) {
+	s := states.Redirect{}
+	isCalled := false
+	s.Inject(nil, func(_ context.Context, _ *process.Process, _ *application.PaymentService) process.RunResult {
+		isCalled = true
+		return process.RunResult{}
+	})
 
+	s.Run(context.Background(), nil, nil)
+
+	assert.True(t, isCalled)
 }
