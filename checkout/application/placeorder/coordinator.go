@@ -4,8 +4,6 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
-	"io"
-	"net/http"
 	"net/url"
 	"time"
 
@@ -33,8 +31,6 @@ type (
 
 	//Unlock func
 	Unlock func() error
-
-	emptyResponseWriter struct{}
 )
 
 var (
@@ -51,11 +47,6 @@ var (
 func init() {
 	gob.Register(process.Context{})
 }
-
-// emptyResponseWriter to be able to properly persist sessions
-func (emptyResponseWriter) Header() http.Header       { return http.Header{} }
-func (emptyResponseWriter) Write([]byte) (int, error) { return 0, io.ErrUnexpectedEOF }
-func (emptyResponseWriter) WriteHeader(int)           {}
 
 //Inject dependencies
 func (c *Coordinator) Inject(locker TryLock, logger flamingo.Logger, processFactory *process.Factory, contextStore process.ContextStore) {
@@ -212,7 +203,7 @@ func (c *Coordinator) Run(ctx context.Context) {
 		web.RunWithDetachedContext(ctx, func(ctx context.Context) {
 			// todo: add tracing
 			has, err := c.HasUnfinishedProcess(ctx)
-			if err != nil || has == false {
+			if err != nil || !has {
 				return
 			}
 
@@ -233,8 +224,6 @@ func (c *Coordinator) Run(ctx context.Context) {
 			_ = c.storeProcessContext(ctx, p.Context())
 		})
 	}(ctx)
-
-	return
 }
 
 // RunBlocking waits for the lock and starts the next processing
