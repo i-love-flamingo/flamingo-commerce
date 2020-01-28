@@ -234,16 +234,20 @@ func (c *Coordinator) Run(ctx context.Context) {
 
 // RunBlocking waits for the lock and starts the next processing
 // RunBlocking waits until the process is finished and returns its result
-func (c *Coordinator) RunBlocking(ctx context.Context) (pctx *process.Context, err error) {
+func (c *Coordinator) RunBlocking(ctx context.Context) (*process.Context, error) {
+	var pctx *process.Context
+	var returnErr error
 	web.RunWithDetachedContext(ctx, func(ctx context.Context) {
 		// todo: add tracing
 		has, err := c.HasUnfinishedProcess(ctx)
 		if err != nil {
+			returnErr = err
 			return
 		}
 
 		p, err := c.LastProcess(ctx)
 		if err != nil {
+			returnErr = err
 			return
 		}
 
@@ -259,6 +263,7 @@ func (c *Coordinator) RunBlocking(ctx context.Context) (pctx *process.Context, e
 			unlock, err = c.locker.TryLock(determineLockKeyForProcess(p), maxLockDuration)
 		}
 		if err != nil {
+			returnErr = err
 			return
 		}
 		defer func() {
@@ -268,13 +273,14 @@ func (c *Coordinator) RunBlocking(ctx context.Context) (pctx *process.Context, e
 		p.Run(ctx)
 		err = c.storeProcessContext(ctx, p.Context())
 		if err != nil {
+			returnErr = err
 			return
 		}
 		runPctx := p.Context()
 		pctx = &runPctx
 	})
 
-	return
+	return pctx, returnErr
 }
 
 func determineLockKeyForCart(cart cartDomain.Cart) string {
