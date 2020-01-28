@@ -14,16 +14,21 @@ import (
 	"github.com/google/uuid"
 )
 
+const (
+	recursionDepth contextKey = iota
+)
+
 type (
 	// Provider for Processes
 	Provider func() *Process
 
 	// Process representing a place order process and has a current context with infos about result and current state
 	Process struct {
-		context     Context
-		allStates   map[string]State
-		failedState State
-		logger      flamingo.Logger
+		context           Context
+		allStates         map[string]State
+		failedState       State
+		logger            flamingo.Logger
+		maxRecursionCount int
 	}
 
 	// Factory use to get Process instance
@@ -51,6 +56,8 @@ type (
 	ErrorOccurredReason struct {
 		Error string
 	}
+
+	contextKey int
 
 	// CanceledByCustomerReason is used when customer cancels order
 	CanceledByCustomerReason struct{}
@@ -141,6 +148,7 @@ func (p *Process) Inject(
 	logger flamingo.Logger,
 ) *Process {
 	p.allStates = allStates
+	p.maxRecursionCount = 100
 	p.logger = logger.
 		WithField(flamingo.LogKeyModule, "checkout").
 		WithField(flamingo.LogKeyCategory, "process")
@@ -170,8 +178,23 @@ func (p *Process) Run(ctx context.Context) {
 	stateAfterRun := p.Context().CurrentStateName
 
 	// Continue Run until no state change happened
-	// TODO - protect endless loops with a max counter
+	count := ctx.Value(recursionDepth)
+	countInt, ok := count.(int)
+	if !ok {
+		countInt = 0
+	}
+
+	if countInt >= p.maxRecursionCount {
+		p.Failed(ctx, ErrorOccurredReason{
+			Error: fmt.Sprintf("max recursion level %d of state machine reached", countInt),
+		})
+
+		return
+	}
+
 	if stateBeforeRun != stateAfterRun {
+		countInt++
+		ctx = context.WithValue(ctx, recursionDepth, countInt)
 		p.logger.Info(fmt.Sprintf("State Changed: %v => %v  Trigger Run() again", stateBeforeRun, stateAfterRun))
 		p.Run(ctx)
 	}
