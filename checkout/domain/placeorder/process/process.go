@@ -117,10 +117,10 @@ func (f *Factory) New(returnURL *url.URL, cart cart.Cart) (*Process, error) {
 	p := f.provider()
 	p.failedState = f.failedState
 	p.context = Context{
-		UUID:              uuid.New().String(),
-		CurrrentStateName: f.startState.Name(),
-		Cart:              cart,
-		ReturnURL:         returnURL,
+		UUID:             uuid.New().String(),
+		CurrentStateName: f.startState.Name(),
+		Cart:             cart,
+		ReturnURL:        returnURL,
 	}
 
 	return p, nil
@@ -156,8 +156,8 @@ func (p *Process) Run(ctx context.Context) {
 		return
 	}
 
-	stateBeforeRun := p.Context().CurrrentStateName
-	runResult := currentState.Run(ctx, p, p.context.CurrrentStateData)
+	stateBeforeRun := p.Context().CurrentStateName
+	runResult := currentState.Run(ctx, p, p.context.CurrentStateData)
 	if runResult.RollbackData != nil {
 		p.context.RollbackReferences = append(p.context.RollbackReferences, RollbackReference{
 			StateName: currentState.Name(),
@@ -167,7 +167,7 @@ func (p *Process) Run(ctx context.Context) {
 	if runResult.Failed != nil {
 		p.Failed(ctx, runResult.Failed)
 	}
-	stateAfterRun := p.Context().CurrrentStateName
+	stateAfterRun := p.Context().CurrentStateName
 
 	//Continue Run until no state change happend
 	// TODO - protect endless loops with a max counter
@@ -179,9 +179,9 @@ func (p *Process) Run(ctx context.Context) {
 
 // CurrentState of the process context
 func (p *Process) CurrentState() (State, error) {
-	state, found := p.allStates[p.Context().CurrrentStateName]
+	state, found := p.allStates[p.Context().CurrentStateName]
 	if !found {
-		return nil, fmt.Errorf("current process context state %q not found", p.Context().CurrrentStateName)
+		return nil, fmt.Errorf("current process context state %q not found", p.Context().CurrentStateName)
 	}
 	return state, nil
 }
@@ -209,8 +209,8 @@ func (p *Process) Context() Context {
 
 // UpdateState updates the current state in the context and its related state data
 func (p *Process) UpdateState(s string, stateData StateData) {
-	p.context.CurrrentStateName = s
-	p.context.CurrrentStateData = stateData
+	p.context.CurrentStateName = s
+	p.context.CurrentStateData = stateData
 }
 
 // Failed performs all collected rollbacks and switches to FailedState

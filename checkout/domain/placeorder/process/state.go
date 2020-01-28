@@ -5,7 +5,7 @@ import (
 )
 
 type (
-	// CurrrentStateName interface
+	// State interface
 	State interface {
 		Run(context.Context, *Process, StateData) RunResult
 		Rollback(context.Context, RollbackData) error

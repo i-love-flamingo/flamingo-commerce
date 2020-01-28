@@ -1,13 +1,14 @@
 package dto
 
 import (
+	"net/url"
+
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/states"
-	"net/url"
 )
 
 type (
-	// CurrrentStateName representation for graphql
+	// State representation for graphql
 	State interface {
 		MapFrom(process.Context)
 	}
@@ -65,49 +66,49 @@ var (
 
 // MapFrom the internal process state to the graphQL state fields
 func (s *Failed) MapFrom(pctx process.Context) {
-	s.Name = pctx.CurrrentStateName
+	s.Name = pctx.CurrentStateName
 	s.Reason = pctx.FailedReason.Reason()
 }
 
 // MapFrom the internal process state to the graphQL state fields
 func (s *Success) MapFrom(pctx process.Context) {
-	s.Name = pctx.CurrrentStateName
+	s.Name = pctx.CurrentStateName
 }
 
 // MapFrom the internal process state to the graphQL state fields
 func (s *Wait) MapFrom(pctx process.Context) {
-	s.Name = pctx.CurrrentStateName
+	s.Name = pctx.CurrentStateName
 }
 
 // MapFrom the internal process state to the graphQL state fields
 func (s *ShowIframe) MapFrom(pctx process.Context) {
-	s.Name = pctx.CurrrentStateName
-	if stateData, ok := pctx.CurrrentStateData.(url.URL); ok {
+	s.Name = pctx.CurrentStateName
+	if stateData, ok := pctx.CurrentStateData.(url.URL); ok {
 		s.URL = stateData.String()
 	}
 }
 
 // MapFrom the internal process state to the graphQL state fields
 func (s *ShowHTML) MapFrom(pctx process.Context) {
-	s.Name = pctx.CurrrentStateName
-	if stateData, ok := pctx.CurrrentStateData.(string); ok {
+	s.Name = pctx.CurrentStateName
+	if stateData, ok := pctx.CurrentStateData.(string); ok {
 		s.HTML = stateData
 	}
 }
 
 // MapFrom the internal process state to the graphQL state fields
 func (s *Redirect) MapFrom(pctx process.Context) {
-	s.Name = pctx.CurrrentStateName
-	if stateData, ok := pctx.CurrrentStateData.(url.URL); ok {
+	s.Name = pctx.CurrentStateName
+	if stateData, ok := pctx.CurrentStateData.(url.URL); ok {
 		s.URL = stateData.String()
 	}
 }
 
 // MapFrom the internal process state to the graphQL state fields
 func (s *PostRedirect) MapFrom(pctx process.Context) {
-	s.Name = pctx.CurrrentStateName
-	if stateData, ok := pctx.CurrrentStateData.(states.PostRedirectData); ok {
-		s.URL = stateData.Url.String()
+	s.Name = pctx.CurrentStateName
+	if stateData, ok := pctx.CurrentStateData.(states.PostRedirectData); ok {
+		s.URL = stateData.URL.String()
 		parameters := make([]FormParameter, 0, len(stateData.FormFields))
 		for key, p := range stateData.FormFields {
 			parameters = append(parameters, FormParameter{

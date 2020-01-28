@@ -53,7 +53,7 @@ func TestCreatePayment_Run(t *testing.T) {
 		}
 		result := state.Run(context.Background(), p, nil)
 		assert.Equal(t, result, expectedResult)
-		assert.Equal(t, p.Context().CurrrentStateName, states.CompleteCart{}.Name())
+		assert.Equal(t, p.Context().CurrentStateName, states.CompleteCart{}.Name())
 		gateway.AssertExpectations(t)
 	})
 

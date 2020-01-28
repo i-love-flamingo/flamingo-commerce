@@ -10,14 +10,14 @@ type (
 	// Context contains information (state etc) about a place order process
 	Context struct {
 		UUID               string
-		CurrrentStateName  string
-		CurrrentStateData  StateData
+		CurrentStateName   string
+		CurrentStateData   StateData
 		Cart               cart.Cart
 		ReturnURL          *url.URL
 		RollbackReferences []RollbackReference
 		FailedReason       FailedReason
 	}
-
+	// StateData holding state relevant data
 	StateData interface{}
 
 	// ContextStore can persist process Context instances
