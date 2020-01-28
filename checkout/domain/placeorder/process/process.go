@@ -117,10 +117,10 @@ func (f *Factory) New(returnURL *url.URL, cart cart.Cart) (*Process, error) {
 	p := f.provider()
 	p.failedState = f.failedState
 	p.context = Context{
-		UUID:      uuid.New().String(),
-		State:     f.startState.Name(),
-		Cart:      cart,
-		ReturnURL: returnURL,
+		UUID:              uuid.New().String(),
+		CurrrentStateName: f.startState.Name(),
+		Cart:              cart,
+		ReturnURL:         returnURL,
 	}
 
 	return p, nil
@@ -156,7 +156,7 @@ func (p *Process) Run(ctx context.Context) {
 		return
 	}
 
-	runResult := currentState.Run(ctx, p)
+	runResult := currentState.Run(ctx, p, p.context.CurrrentStateData)
 	if runResult.RollbackData != nil {
 		p.context.RollbackReferences = append(p.context.RollbackReferences, RollbackReference{
 			StateName: currentState.Name(),
@@ -170,9 +170,9 @@ func (p *Process) Run(ctx context.Context) {
 
 // CurrentState of the process context
 func (p *Process) CurrentState() (State, error) {
-	state, found := p.allStates[p.Context().State]
+	state, found := p.allStates[p.Context().CurrrentStateName]
 	if !found {
-		return nil, fmt.Errorf("current process context state %q not found", p.Context().State)
+		return nil, fmt.Errorf("current process context state %q not found", p.Context().CurrrentStateName)
 	}
 	return state, nil
 }
@@ -199,23 +199,9 @@ func (p *Process) Context() Context {
 }
 
 // UpdateState updates
-func (p *Process) UpdateState(s string) {
-	p.context.State = s
-}
-
-// UpdateURL updates
-func (p *Process) UpdateURL(url *url.URL) {
-	p.context.URL = url
-}
-
-// UpdateDisplayData updates
-func (p *Process) UpdateDisplayData(data string) {
-	p.context.DisplayData = data
-}
-
-// UpdateFormParameter updates
-func (p *Process) UpdateFormParameter(params map[string]FormField) {
-	p.context.FormParameter = params
+func (p *Process) UpdateState(s string, stateData StateData) {
+	p.context.CurrrentStateName = s
+	p.context.CurrrentStateData = stateData
 }
 
 // Failed performs all collected rollbacks and switches to FailedState
@@ -226,5 +212,5 @@ func (p *Process) Failed(ctx context.Context, reason FailedReason) {
 	}
 
 	p.context.FailedReason = reason
-	p.UpdateState(p.failedState.Name())
+	p.UpdateState(p.failedState.Name(), nil)
 }

@@ -19,7 +19,7 @@ func (s Success) Name() string {
 }
 
 // Run the state operations
-func (s Success) Run(context.Context, *process.Process) process.RunResult {
+func (s Success) Run(context.Context, *process.Process, process.StateData) process.RunResult {
 	return process.RunResult{}
 }
 

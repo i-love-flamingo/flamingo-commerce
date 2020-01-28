@@ -2,17 +2,41 @@ package states
 
 import (
 	"context"
-
+	"encoding/gob"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
+	"net/url"
 )
 
 type (
 	// PostRedirect state
 	PostRedirect struct {
 	}
+
+	// PostRedirect state
+	PostRedirectData struct {
+		FormFields map[string]FormField
+		Url        url.URL
+	}
+
+	// FormField represents a form field to be displayed to the user
+	FormField struct {
+		Value []string
+	}
 )
 
+func init() {
+	gob.Register(PostRedirectData{})
+}
+
 var _ process.State = PostRedirect{}
+
+//NewPostRedirectStateData creates new StateData with (persited) Data required for this state
+func NewPostRedirectStateData(url url.URL, formParameter map[string]FormField) process.StateData {
+	return process.StateData(PostRedirectData{
+		FormFields: formParameter,
+		Url:        url,
+	})
+}
 
 // Name get state name
 func (PostRedirect) Name() string {
@@ -20,8 +44,8 @@ func (PostRedirect) Name() string {
 }
 
 // Run the state operations
-func (pr PostRedirect) Run(_ context.Context, p *process.Process) process.RunResult {
-	p.UpdateState(ValidatePayment{}.Name())
+func (pr PostRedirect) Run(_ context.Context, p *process.Process, stateData process.StateData) process.RunResult {
+	p.UpdateState(ValidatePayment{}.Name(), nil)
 	return process.RunResult{}
 }
 

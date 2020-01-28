@@ -21,7 +21,7 @@ func (f Failed) Name() string {
 }
 
 // Run the state operations
-func (f Failed) Run(context.Context, *process.Process) process.RunResult {
+func (f Failed) Run(context.Context, *process.Process, process.StateData) process.RunResult {
 	return process.RunResult{}
 }
 

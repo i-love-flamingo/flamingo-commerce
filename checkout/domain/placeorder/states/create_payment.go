@@ -44,7 +44,7 @@ func (CreatePayment) Name() string {
 }
 
 // Run the state operations
-func (c CreatePayment) Run(ctx context.Context, p *process.Process) process.RunResult {
+func (c CreatePayment) Run(ctx context.Context, p *process.Process, stateData process.StateData) process.RunResult {
 	cart := p.Context().Cart
 	paymentGateway, err := c.paymentService.PaymentGatewayByCart(cart)
 	if err != nil {
@@ -67,7 +67,7 @@ func (c CreatePayment) Run(ctx context.Context, p *process.Process) process.RunR
 		}
 	}
 
-	p.UpdateState(CompleteCart{}.Name())
+	p.UpdateState(CompleteCart{}.Name(), nil)
 	return process.RunResult{
 		RollbackData: CreatePaymentRollbackData{PaymentID: payment.PaymentID, Gateway: payment.Gateway},
 	}

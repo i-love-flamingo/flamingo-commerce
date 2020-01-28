@@ -28,9 +28,9 @@ func TestPostRedirect_Run(t *testing.T) {
 	s := states.PostRedirect{}
 	p := &process.Process{}
 
-	s.Run(context.Background(), p)
+	s.Run(context.Background(), p, nil)
 
-	assert.Equal(t, states.ValidatePayment{}.Name(), p.Context().State, "Next state should be ValidatePayment.")
+	assert.Equal(t, states.ValidatePayment{}.Name(), p.Context().CurrrentStateName, "Next state should be ValidatePayment.")
 
-	assert.Equal(t, s.Run(context.Background(), &process.Process{}), process.RunResult{})
+	assert.Equal(t, s.Run(context.Background(), &process.Process{}, nil), process.RunResult{})
 }

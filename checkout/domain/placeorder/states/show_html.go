@@ -14,14 +14,18 @@ type (
 
 var _ process.State = ShowHTML{}
 
+func NewShowHTMLStateData(html string) process.StateData {
+	return process.StateData(html)
+}
+
 // Name get state name
 func (ShowHTML) Name() string {
 	return "ShowHTML"
 }
 
 // Run the state operations
-func (sh ShowHTML) Run(_ context.Context, p *process.Process) process.RunResult {
-	p.UpdateState(ValidatePayment{}.Name())
+func (sh ShowHTML) Run(_ context.Context, p *process.Process, stateData process.StateData) process.RunResult {
+	p.UpdateState(ValidatePayment{}.Name(), nil)
 	return process.RunResult{}
 }
 
