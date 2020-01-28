@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/states"
 	"github.com/stretchr/testify/assert"
 )
@@ -25,12 +24,5 @@ func TestPostRedirect_Rollback(t *testing.T) {
 }
 
 func TestPostRedirect_Run(t *testing.T) {
-	s := states.PostRedirect{}
-	p := &process.Process{}
-
-	s.Run(context.Background(), p, nil)
-
-	assert.Equal(t, states.ValidatePayment{}.Name(), p.Context().CurrentStateName, "Next state should be ValidatePayment.")
-
-	assert.Equal(t, s.Run(context.Background(), &process.Process{}, nil), process.RunResult{})
+	// todo
 }

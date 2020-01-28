@@ -48,6 +48,8 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	// todo: switch between implementations
 	injector.Bind(new(process.ContextStore)).To(new(contextstore.Memory)).In(dingo.Singleton)
 
+	injector.Bind(new(process.PaymentValidatorFunc)).ToInstance(placeorder.PaymentValidator)
+
 	injector.Bind(new(process.State)).AnnotatedWith("startState").To(states.New{})
 	injector.Bind(new(process.State)).AnnotatedWith("failedState").To(states.Failed{})
 	injector.BindMap(new(process.State), new(states.New).Name()).To(states.New{})

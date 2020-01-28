@@ -2,6 +2,8 @@ package process
 
 import (
 	"context"
+
+	"flamingo.me/flamingo-commerce/v3/payment/application"
 )
 
 type (
@@ -18,4 +20,7 @@ type (
 		RollbackData RollbackData
 		Failed       FailedReason
 	}
+
+	// PaymentValidatorFunc to decide over next state depending on payment situation
+	PaymentValidatorFunc func(ctx context.Context, p *Process, paymentService *application.PaymentService) RunResult
 )
