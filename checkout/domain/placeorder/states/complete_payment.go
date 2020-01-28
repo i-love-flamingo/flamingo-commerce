@@ -4,13 +4,13 @@ import (
 	"context"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
-	"flamingo.me/flamingo-commerce/v3/payment/interfaces"
+	"flamingo.me/flamingo-commerce/v3/payment/application"
 )
 
 type (
 	// CompletePayment state
 	CompletePayment struct {
-		paymentGateway interfaces.WebCartPaymentGateway
+		paymentService *application.PaymentService
 	}
 )
 
@@ -18,9 +18,9 @@ var _ process.State = CompletePayment{}
 
 // Inject dependencies
 func (c *CompletePayment) Inject(
-	paymentGateway interfaces.WebCartPaymentGateway,
+	paymentService *application.PaymentService,
 ) *CompletePayment {
-	c.paymentGateway = paymentGateway
+	c.paymentService = paymentService
 
 	return c
 }
@@ -33,15 +33,21 @@ func (CompletePayment) Name() string {
 // Run the state operations
 func (c CompletePayment) Run(ctx context.Context, p *process.Process, stateData process.StateData) process.RunResult {
 	cart := p.Context().Cart
-
-	payment, err := c.paymentGateway.OrderPaymentFromFlow(ctx, &cart, p.Context().UUID)
+	paymentGateway, err := c.paymentService.PaymentGatewayByCart(cart)
 	if err != nil {
 		return process.RunResult{
 			Failed: process.ErrorOccurredReason{Error: err.Error()},
 		}
 	}
 
-	err = c.paymentGateway.ConfirmResult(ctx, &cart, payment)
+	payment, err := paymentGateway.OrderPaymentFromFlow(ctx, &cart, p.Context().UUID)
+	if err != nil {
+		return process.RunResult{
+			Failed: process.ErrorOccurredReason{Error: err.Error()},
+		}
+	}
+
+	err = paymentGateway.ConfirmResult(ctx, &cart, payment)
 	if err != nil {
 		return process.RunResult{
 			Failed: process.ErrorOccurredReason{Error: err.Error()},

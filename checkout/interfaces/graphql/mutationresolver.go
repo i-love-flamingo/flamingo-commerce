@@ -2,6 +2,7 @@ package graphql
 
 import (
 	"context"
+	"fmt"
 	"net/url"
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
@@ -55,10 +56,15 @@ func (r *CommerceCheckoutMutationResolver) refresh(
 
 	dc := graphqlDto.NewDecoratedCart(r.decoratedCartFactory.Create(ctx, poctx.Cart))
 
+	graphQLState, err := r.mapStateToGraphQL(*poctx)
+	if err != nil {
+		return nil, err
+	}
+
 	return &dto.PlaceOrderContext{
 		Cart:       dc,
 		OrderInfos: nil,
-		State:      r.mapStateToGraphQL(*poctx),
+		State:      graphQLState,
 		UUID:       poctx.UUID,
 	}, nil
 }
@@ -108,9 +114,12 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutCancelPlaceOrder(ctx 
 	return err == nil, err
 }
 
-func (r *CommerceCheckoutMutationResolver) mapStateToGraphQL(pctx process.Context) dto.State {
-	resultState := r.stateMapping[pctx.CurrentStateName]
+func (r *CommerceCheckoutMutationResolver) mapStateToGraphQL(pctx process.Context) (dto.State, error) {
+	resultState, found := r.stateMapping[pctx.CurrentStateName]
+	if !found {
+		return nil, fmt.Errorf("couldn't map the internal process state %q to a GraphQL state", pctx.CurrentStateName)
+	}
 	resultState.MapFrom(pctx)
 
-	return resultState
+	return resultState, nil
 }
