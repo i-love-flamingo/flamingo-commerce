@@ -22,7 +22,7 @@ import (
 
 func TestCreatePayment_Run(t *testing.T) {
 	t.Run("happy path", func(t *testing.T) {
-		factory := provideProcessFactory()
+		factory := provideProcessFactory(t)
 
 		cart := provideCartWithPaymentSelection(t)
 		p, _ := factory.New(&url.URL{}, cart)
@@ -47,7 +47,7 @@ func TestCreatePayment_Run(t *testing.T) {
 	})
 
 	t.Run("error missing payment selection", func(t *testing.T) {
-		factory := provideProcessFactory()
+		factory := provideProcessFactory(t)
 
 		cart := cartDomain.Cart{}
 
@@ -64,7 +64,7 @@ func TestCreatePayment_Run(t *testing.T) {
 	})
 
 	t.Run("error during gateway.StartFlow", func(t *testing.T) {
-		factory := provideProcessFactory()
+		factory := provideProcessFactory(t)
 
 		cart := provideCartWithPaymentSelection(t)
 
@@ -87,7 +87,7 @@ func TestCreatePayment_Run(t *testing.T) {
 	})
 
 	t.Run("error during gateway.OrderPaymentFromFlow", func(t *testing.T) {
-		factory := provideProcessFactory()
+		factory := provideProcessFactory(t)
 
 		cart := provideCartWithPaymentSelection(t)
 
@@ -112,7 +112,8 @@ func TestCreatePayment_Run(t *testing.T) {
 	})
 }
 
-func provideProcessFactory() *process.Factory {
+func provideProcessFactory(t *testing.T) *process.Factory {
+	t.Helper()
 	factory := &process.Factory{}
 	factory.Inject(
 		func() *process.Process {
