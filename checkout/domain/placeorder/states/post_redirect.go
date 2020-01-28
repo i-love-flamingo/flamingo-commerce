@@ -34,7 +34,7 @@ func init() {
 
 var _ process.State = PostRedirect{}
 
-//NewPostRedirectStateData creates new StateData with (persisted) Data required for this state
+// NewPostRedirectStateData creates new StateData with (persisted) Data required for this state
 func NewPostRedirectStateData(url url.URL, formParameter map[string]FormField) process.StateData {
 	return process.StateData(PostRedirectData{
 		FormFields: formParameter,
