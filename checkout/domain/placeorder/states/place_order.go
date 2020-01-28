@@ -90,7 +90,7 @@ func (po PlaceOrder) Rollback(ctx context.Context, data process.RollbackData) er
 		return fmt.Errorf("rollback data not of expected type 'PlaceOrderRollbackData', but %T", rollbackData)
 	}
 
-	_, err := po.orderService.CancelOrder(ctx, web.SessionFromContext(context.Background()), &rollbackData.OrderInfos)
+	_, err := po.orderService.CancelOrder(ctx, web.SessionFromContext(ctx), &rollbackData.OrderInfos)
 	if err != nil {
 		return err
 	}
