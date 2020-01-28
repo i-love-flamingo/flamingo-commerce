@@ -684,3 +684,89 @@ func TestAppliedCouponCodes_ContainedIn(t *testing.T) {
 		})
 	}
 }
+
+func TestCart_ProductCountAndUniqueProductCount(t *testing.T) {
+	tests := []struct {
+		name                   string
+		cart                   cartDomain.Cart
+		wantProductCount       int
+		wantProductUniqueCount int
+	}{
+		{
+			name:                   "empty cart",
+			cart:                   cartDomain.Cart{},
+			wantProductCount:       0,
+			wantProductUniqueCount: 0,
+		},
+		{
+			name: "single delivery in cart",
+			cart: cartDomain.Cart{
+				Deliveries: []cartDomain.Delivery{
+					{
+						Cartitems: []cartDomain.Item{
+							{
+								MarketplaceCode: "product1",
+							},
+						},
+					},
+				},
+			},
+			wantProductCount:       1,
+			wantProductUniqueCount: 1,
+		},
+		{
+			name: "two deliveries in cart with different products",
+			cart: cartDomain.Cart{
+				Deliveries: []cartDomain.Delivery{
+					{
+						Cartitems: []cartDomain.Item{
+							{
+								MarketplaceCode: "product1",
+							},
+						},
+					},
+					{
+						Cartitems: []cartDomain.Item{
+							{
+								MarketplaceCode: "product2",
+							},
+						},
+					},
+				},
+			},
+			wantProductCount:       2,
+			wantProductUniqueCount: 2,
+		},
+		{
+			name: "two deliveries in cart with a product in both deliveries",
+			cart: cartDomain.Cart{
+				Deliveries: []cartDomain.Delivery{
+					{
+						Cartitems: []cartDomain.Item{
+							{
+								MarketplaceCode: "product1",
+							},
+						},
+					},
+					{
+						Cartitems: []cartDomain.Item{
+							{
+								MarketplaceCode: "product1",
+							},
+							{
+								MarketplaceCode: "product2",
+							},
+						},
+					},
+				},
+			},
+			wantProductCount:       3,
+			wantProductUniqueCount: 2,
+		},
+	}
+
+	for _, tt := range tests {
+		assert.Equal(t, tt.wantProductCount, tt.cart.ProductCount(), "ProductCount has wrong result, expected %#v but got %#v", tt.wantProductCount, tt.cart.ProductCount())
+		assert.Equal(t, tt.wantProductUniqueCount, tt.cart.ProductCountUnique(), "ProductCountUnique has wrong result, expected %#v but got %#v", tt.wantProductUniqueCount, tt.cart.ProductCountUnique())
+	}
+}
