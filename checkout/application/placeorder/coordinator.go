@@ -88,7 +88,6 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *
 			c.logger.Error(err)
 			return
 		}
-		newProcess.Run(ctx)
 		pctx := newProcess.Context()
 		runPCtx = &pctx
 		err = c.storeProcessContext(ctx, pctx)
@@ -97,6 +96,8 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *
 			c.logger.Error(err)
 			return
 		}
+
+		c.Run(ctx)
 	})
 
 	return runPCtx, runErr
@@ -155,6 +156,28 @@ func (c *Coordinator) Cancel(ctx context.Context) error {
 	var returnErr error
 	web.RunWithDetachedContext(ctx, func(ctx context.Context) {
 		// todo: add tracing
+		{
+			// scope things here to avoid using old process later
+			p, err := c.LastProcess(ctx)
+			if err != nil {
+				returnErr = err
+				return
+			}
+			var unlock Unlock
+			err = ErrLockTaken
+			for err == ErrLockTaken {
+				unlock, err = c.locker.TryLock(determineLockKeyForProcess(p), maxLockDuration)
+			}
+			if err != nil {
+				returnErr = err
+				return
+			}
+			defer func() {
+				_ = unlock()
+			}()
+		}
+
+		// lock acquired get fresh process state
 		p, err := c.LastProcess(ctx)
 		if err != nil {
 			returnErr = err
@@ -172,19 +195,6 @@ func (c *Coordinator) Cancel(ctx context.Context) error {
 			returnErr = err
 			return
 		}
-
-		var unlock Unlock
-		err = ErrLockTaken
-		for err == ErrLockTaken {
-			unlock, err = c.locker.TryLock(determineLockKeyForProcess(p), maxLockDuration)
-		}
-		if err != nil {
-			returnErr = err
-			return
-		}
-		defer func() {
-			_ = unlock()
-		}()
 
 		p.Failed(ctx, process.CanceledByCustomerReason{})
 		err = c.storeProcessContext(ctx, p.Context())
@@ -233,6 +243,30 @@ func (c *Coordinator) RunBlocking(ctx context.Context) (*process.Context, error)
 	var returnErr error
 	web.RunWithDetachedContext(ctx, func(ctx context.Context) {
 		// todo: add tracing
+		{
+			// scope things here to avoid continuing with an old process state
+			p, err := c.LastProcess(ctx)
+			if err != nil {
+				returnErr = err
+				return
+			}
+
+			var unlock Unlock
+			err = ErrLockTaken
+			for err == ErrLockTaken {
+				unlock, err = c.locker.TryLock(determineLockKeyForProcess(p), maxLockDuration)
+			}
+			if err != nil {
+				returnErr = err
+				return
+			}
+
+			defer func() {
+				_ = unlock()
+			}()
+		}
+
+		// lock acquired fetch everything new
 		has, err := c.HasUnfinishedProcess(ctx)
 		if err != nil {
 			returnErr = err
@@ -250,19 +284,6 @@ func (c *Coordinator) RunBlocking(ctx context.Context) (*process.Context, error)
 			pctx = &lastPctx
 			return
 		}
-
-		var unlock Unlock
-		err = ErrLockTaken
-		for err == ErrLockTaken {
-			unlock, err = c.locker.TryLock(determineLockKeyForProcess(p), maxLockDuration)
-		}
-		if err != nil {
-			returnErr = err
-			return
-		}
-		defer func() {
-			_ = unlock()
-		}()
 
 		p.Run(ctx)
 		err = c.storeProcessContext(ctx, p.Context())
