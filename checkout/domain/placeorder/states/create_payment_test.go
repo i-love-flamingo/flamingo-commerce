@@ -22,18 +22,7 @@ import (
 
 func TestCreatePayment_Run(t *testing.T) {
 	t.Run("happy path", func(t *testing.T) {
-		factory := &process.Factory{}
-		factory.Inject(
-			func() *process.Process {
-				return &process.Process{}
-			},
-			&struct {
-				StartState  process.State `inject:"startState"`
-				FailedState process.State `inject:"failedState"`
-			}{
-				StartState: &states.Wait{},
-			},
-		)
+		factory := provideProcessFactory()
 
 		cart := provideCartWithPaymentSelection(t)
 		p, _ := factory.New(&url.URL{}, cart)
@@ -58,18 +47,7 @@ func TestCreatePayment_Run(t *testing.T) {
 	})
 
 	t.Run("error missing payment selection", func(t *testing.T) {
-		factory := &process.Factory{}
-		factory.Inject(
-			func() *process.Process {
-				return &process.Process{}
-			},
-			&struct {
-				StartState  process.State `inject:"startState"`
-				FailedState process.State `inject:"failedState"`
-			}{
-				StartState: &states.Wait{},
-			},
-		)
+		factory := provideProcessFactory()
 
 		cart := cartDomain.Cart{}
 
@@ -86,18 +64,7 @@ func TestCreatePayment_Run(t *testing.T) {
 	})
 
 	t.Run("error during gateway.StartFlow", func(t *testing.T) {
-		factory := &process.Factory{}
-		factory.Inject(
-			func() *process.Process {
-				return &process.Process{}
-			},
-			&struct {
-				StartState  process.State `inject:"startState"`
-				FailedState process.State `inject:"failedState"`
-			}{
-				StartState: &states.Wait{},
-			},
-		)
+		factory := provideProcessFactory()
 
 		cart := provideCartWithPaymentSelection(t)
 
@@ -120,18 +87,7 @@ func TestCreatePayment_Run(t *testing.T) {
 	})
 
 	t.Run("error during gateway.OrderPaymentFromFlow", func(t *testing.T) {
-		factory := &process.Factory{}
-		factory.Inject(
-			func() *process.Process {
-				return &process.Process{}
-			},
-			&struct {
-				StartState  process.State `inject:"startState"`
-				FailedState process.State `inject:"failedState"`
-			}{
-				StartState: &states.Wait{},
-			},
-		)
+		factory := provideProcessFactory()
 
 		cart := provideCartWithPaymentSelection(t)
 
@@ -154,6 +110,22 @@ func TestCreatePayment_Run(t *testing.T) {
 		assert.Equal(t, state.Run(context.Background(), p, nil), expectedResult)
 		gateway.AssertExpectations(t)
 	})
+}
+
+func provideProcessFactory() *process.Factory {
+	factory := &process.Factory{}
+	factory.Inject(
+		func() *process.Process {
+			return &process.Process{}
+		},
+		&struct {
+			StartState  process.State `inject:"startState"`
+			FailedState process.State `inject:"failedState"`
+		}{
+			StartState: &states.Wait{},
+		},
+	)
+	return factory
 }
 
 func provideCartWithPaymentSelection(t *testing.T) cartDomain.Cart {
