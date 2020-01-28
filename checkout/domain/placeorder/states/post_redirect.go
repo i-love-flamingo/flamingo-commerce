@@ -6,11 +6,14 @@ import (
 	"net/url"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
+	"flamingo.me/flamingo-commerce/v3/payment/application"
 )
 
 type (
 	// PostRedirect state
 	PostRedirect struct {
+		paymentService *application.PaymentService
+		validator      process.PaymentValidatorFunc
 	}
 
 	// PostRedirectData holds details regarding the redirect
@@ -39,15 +42,25 @@ func NewPostRedirectStateData(url url.URL, formParameter map[string]FormField) p
 	})
 }
 
+// Inject dependencies
+func (pr *PostRedirect) Inject(
+	paymentService *application.PaymentService,
+	validator process.PaymentValidatorFunc,
+) *PostRedirect {
+	pr.paymentService = paymentService
+	pr.validator = validator
+
+	return pr
+}
+
 // Name get state name
 func (PostRedirect) Name() string {
 	return "PostRedirect"
 }
 
 // Run the state operations
-func (pr PostRedirect) Run(_ context.Context, p *process.Process, stateData process.StateData) process.RunResult {
-	p.UpdateState(ValidatePayment{}.Name(), nil)
-	return process.RunResult{}
+func (pr PostRedirect) Run(ctx context.Context, p *process.Process, stateData process.StateData) process.RunResult {
+	return pr.validator(ctx, p, pr.paymentService)
 }
 
 // Rollback the state operations
