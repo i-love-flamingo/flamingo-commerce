@@ -2,7 +2,6 @@ package states
 
 import (
 	"context"
-	"encoding/gob"
 	"net/url"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
@@ -19,10 +18,6 @@ type (
 )
 
 var _ process.State = Redirect{}
-
-func init() {
-	gob.Register(url.URL{})
-}
 
 // NewRedirectStateData creates data required for this state
 func NewRedirectStateData(url url.URL) process.StateData {

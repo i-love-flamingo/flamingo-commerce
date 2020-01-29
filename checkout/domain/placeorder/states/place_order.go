@@ -80,7 +80,7 @@ func (po PlaceOrder) Run(ctx context.Context, p *process.Process, _ process.Stat
 			Failed: process.ErrorOccurredReason{Error: err.Error()},
 		}
 	}
-
+	p.UpdateOrderInfo(infos)
 	p.UpdateState(ValidatePayment{}.Name(), nil)
 	return process.RunResult{
 		RollbackData: PlaceOrderRollbackData{OrderInfos: *infos},
