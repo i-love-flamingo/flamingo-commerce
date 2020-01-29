@@ -53,21 +53,21 @@ func (c CreatePayment) Run(ctx context.Context, p *process.Process, _ process.St
 	paymentGateway, err := c.paymentService.PaymentGatewayByCart(cart)
 	if err != nil {
 		return process.RunResult{
-			Failed: process.ErrorOccurredReason{Error: err.Error()},
+			Failed: process.PaymentErrorOccurredReason{Error: err.Error()},
 		}
 	}
 
 	_, err = paymentGateway.StartFlow(ctx, &cart, p.Context().UUID, p.Context().ReturnURL)
 	if err != nil {
 		return process.RunResult{
-			Failed: process.ErrorOccurredReason{Error: err.Error()},
+			Failed: process.PaymentErrorOccurredReason{Error: err.Error()},
 		}
 	}
 
 	payment, err := paymentGateway.OrderPaymentFromFlow(ctx, &cart, p.Context().UUID)
 	if err != nil {
 		return process.RunResult{
-			Failed: process.ErrorOccurredReason{Error: err.Error()},
+			Failed: process.PaymentErrorOccurredReason{Error: err.Error()},
 		}
 	}
 

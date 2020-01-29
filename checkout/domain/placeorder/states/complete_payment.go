@@ -40,21 +40,21 @@ func (c CompletePayment) Run(ctx context.Context, p *process.Process, _ process.
 	paymentGateway, err := c.paymentService.PaymentGatewayByCart(cart)
 	if err != nil {
 		return process.RunResult{
-			Failed: process.ErrorOccurredReason{Error: err.Error()},
+			Failed: process.PaymentErrorOccurredReason{Error: err.Error()},
 		}
 	}
 
 	payment, err := paymentGateway.OrderPaymentFromFlow(ctx, &cart, p.Context().UUID)
 	if err != nil {
 		return process.RunResult{
-			Failed: process.ErrorOccurredReason{Error: err.Error()},
+			Failed: process.PaymentErrorOccurredReason{Error: err.Error()},
 		}
 	}
 
 	err = paymentGateway.ConfirmResult(ctx, &cart, payment)
 	if err != nil {
 		return process.RunResult{
-			Failed: process.ErrorOccurredReason{Error: err.Error()},
+			Failed: process.PaymentErrorOccurredReason{Error: err.Error()},
 		}
 	}
 

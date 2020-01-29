@@ -282,7 +282,7 @@ func TestPaymentValidator(t *testing.T) {
 				},
 			},
 			want: want{
-				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{Error: domain.PaymentFlowStatusAborted}},
+				runResult: process.RunResult{Failed: process.PaymentCanceledByCustomerReason{}},
 				state:     states.New{}.Name(),
 			},
 		},
@@ -294,7 +294,7 @@ func TestPaymentValidator(t *testing.T) {
 				},
 			},
 			want: want{
-				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{Error: domain.PaymentFlowStatusCancelled}},
+				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{}},
 				state:     states.New{}.Name(),
 			},
 		},
@@ -306,7 +306,7 @@ func TestPaymentValidator(t *testing.T) {
 				},
 			},
 			want: want{
-				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{Error: domain.PaymentFlowStatusFailed}},
+				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{}},
 				state:     states.New{}.Name(),
 			},
 		},

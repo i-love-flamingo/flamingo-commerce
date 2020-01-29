@@ -16,7 +16,7 @@ type (
 	// Failed state
 	Failed struct {
 		Name   string
-		Reason string
+		Reason process.FailedReason
 	}
 	// Success state
 	Success struct {
@@ -72,7 +72,7 @@ var (
 // MapFrom the internal process state to the graphQL state fields
 func (s *Failed) MapFrom(pctx process.Context) {
 	s.Name = pctx.CurrentStateName
-	s.Reason = pctx.FailedReason.Reason()
+	s.Reason = pctx.FailedReason
 }
 
 // MapFrom the internal process state to the graphQL state fields

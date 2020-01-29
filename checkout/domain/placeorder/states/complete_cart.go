@@ -73,7 +73,7 @@ func (c CompleteCart) Run(ctx context.Context, p *process.Process, _ process.Sta
 
 	p.UpdateState(PlaceOrder{}.Name(), nil)
 	return process.RunResult{
-		RollbackData: &CompleteCartRollbackData{
+		RollbackData: CompleteCartRollbackData{
 			CompletedCart: completedCart,
 		},
 	}
