@@ -5,6 +5,7 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo-commerce/v3/payment/application"
+	"go.opencensus.io/trace"
 )
 
 type (
@@ -34,12 +35,18 @@ func (WaitForCustomer) Name() string {
 }
 
 // Run the state operations
-func (wc WaitForCustomer) Run(ctx context.Context, p *process.Process, stateData process.StateData) process.RunResult {
+func (wc WaitForCustomer) Run(ctx context.Context, p *process.Process, _ process.StateData) process.RunResult {
+	ctx, span := trace.StartSpan(ctx, "placeorder/state/WaitForCustomer/Run")
+	defer span.End()
+
 	return wc.validator(ctx, p, wc.paymentService)
 }
 
 // Rollback the state operations
-func (wc WaitForCustomer) Rollback(context.Context, process.RollbackData) error {
+func (wc WaitForCustomer) Rollback(ctx context.Context, _ process.RollbackData) error {
+	ctx, span := trace.StartSpan(ctx, "placeorder/state/WaitForCustomer/Rollback")
+	defer span.End()
+
 	return nil
 }
 

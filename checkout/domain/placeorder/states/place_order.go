@@ -11,6 +11,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo-commerce/v3/payment/interfaces"
 	"flamingo.me/flamingo/v3/framework/web"
+	"go.opencensus.io/trace"
 )
 
 type (
@@ -52,7 +53,10 @@ func (PlaceOrder) Name() string {
 }
 
 // Run the state operations
-func (po PlaceOrder) Run(ctx context.Context, p *process.Process, stateData process.StateData) process.RunResult {
+func (po PlaceOrder) Run(ctx context.Context, p *process.Process, _ process.StateData) process.RunResult {
+	ctx, span := trace.StartSpan(ctx, "placeorder/state/PlaceOrder/Run")
+	defer span.End()
+
 	cart := p.Context().Cart
 	decoratedCart := po.cartDecoratorFactory.Create(ctx, cart)
 
@@ -85,6 +89,9 @@ func (po PlaceOrder) Run(ctx context.Context, p *process.Process, stateData proc
 
 // Rollback the state operations
 func (po PlaceOrder) Rollback(ctx context.Context, data process.RollbackData) error {
+	ctx, span := trace.StartSpan(ctx, "placeorder/state/PlaceOrder/Rollback")
+	defer span.End()
+
 	rollbackData, ok := data.(PlaceOrderRollbackData)
 	if !ok {
 		return fmt.Errorf("rollback data not of expected type 'PlaceOrderRollbackData', but %T", rollbackData)

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
+	"go.opencensus.io/trace"
 )
 
 type (
@@ -20,14 +21,20 @@ func (New) Name() string {
 }
 
 // Run the state operations
-func (n New) Run(_ context.Context, p *process.Process, stateData process.StateData) process.RunResult {
+func (n New) Run(ctx context.Context, p *process.Process, _ process.StateData) process.RunResult {
+	ctx, span := trace.StartSpan(ctx, "placeorder/state/New/Run")
+	defer span.End()
+
 	p.UpdateState(CreatePayment{}.Name(), nil)
 
 	return process.RunResult{}
 }
 
 // Rollback the state operations
-func (n New) Rollback(context.Context, process.RollbackData) error {
+func (n New) Rollback(ctx context.Context, _ process.RollbackData) error {
+	ctx, span := trace.StartSpan(ctx, "placeorder/state/New/Rollback")
+	defer span.End()
+
 	return nil
 }
 
