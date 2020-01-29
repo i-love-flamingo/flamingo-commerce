@@ -67,6 +67,9 @@ type (
 		Error string
 	}
 
+	// PaymentCanceledByCustomerReason is used to signal that payment was canceled by customer
+	PaymentCanceledByCustomerReason struct{}
+
 	// CartValidationErrorReason contains the ValidationResult
 	CartValidationErrorReason struct {
 		ValidationResult validation.Result
@@ -91,8 +94,13 @@ func (e PaymentErrorOccurredReason) Reason() string {
 }
 
 // Reason for the error occurred
+func (e PaymentCanceledByCustomerReason) Reason() string {
+	return "Payment canceled by customer"
+}
+
+// Reason for the error occurred
 func (e CanceledByCustomerReason) Reason() string {
-	return "Order place canceled by customer"
+	return "Place order canceled by customer"
 }
 
 // Reason for failing

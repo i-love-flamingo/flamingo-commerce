@@ -48,7 +48,7 @@ type Commerce_Checkout_PlaceOrderState_State_Success implements Commerce_Checkou
 
 type Commerce_Checkout_PlaceOrderState_State_Failed implements Commerce_Checkout_PlaceOrderState_State {
     name: String!
-    reason: String!
+    reason: Commerce_Checkout_PlaceOrderState_State_FailedReason!
 }
 
 type Commerce_Checkout_PlaceOrderState_State_ShowIframe implements Commerce_Checkout_PlaceOrderState_State {
@@ -82,6 +82,14 @@ type Commerce_Checkout_PlaceOrderState_State_FailedReason_Error implements Comme
 }
 
 type Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError implements Commerce_Checkout_PlaceOrderState_State_FailedReason {
+    reason: String
+}
+
+type Commerce_Checkout_PlaceOrderState_State_FailedReason_CanceledByCustomer implements Commerce_Checkout_PlaceOrderState_State_FailedReason {
+    reason: String
+}
+
+type Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentCanceledByCustomer implements Commerce_Checkout_PlaceOrderState_State_FailedReason {
     reason: String
 }
 

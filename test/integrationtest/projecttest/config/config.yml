@@ -22,6 +22,10 @@ flamingo:
     cookie:
       secure: false
     backend: memory
+  opencensus:
+    jaeger:
+      enable: true
+      serviceAddr: ":10000"
 
 # Configs for flamingo-commerce modules
 checkout:

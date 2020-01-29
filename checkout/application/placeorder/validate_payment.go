@@ -82,10 +82,17 @@ func PaymentValidator(ctx context.Context, p *process.Process, paymentService *a
 	case paymentDomain.PaymentFlowStatusCompleted:
 		// payment is done and confirmed, place order if not already placed
 		p.UpdateState(states.Success{}.Name(), nil)
-	case paymentDomain.PaymentFlowStatusAborted, paymentDomain.PaymentFlowStatusFailed, paymentDomain.PaymentFlowStatusCancelled:
+	case paymentDomain.PaymentFlowStatusFailed, paymentDomain.PaymentFlowStatusCancelled:
+		err := ""
+		if flowStatus.Error != nil {
+			err = flowStatus.Error.Error()
+		}
 		return process.RunResult{
-			// todo: what to set as error? flowStatus.Error.ErrorMessage / flowStatus.Error.ErrorCode?
-			Failed: process.PaymentErrorOccurredReason{Error: flowStatus.Status},
+			Failed: process.PaymentErrorOccurredReason{Error: err},
+		}
+	case paymentDomain.PaymentFlowStatusAborted:
+		return process.RunResult{
+			Failed: process.PaymentCanceledByCustomerReason{},
 		}
 	case paymentDomain.PaymentFlowWaitingForCustomer:
 		// payment pending, waiting for customer doing async stuff like finishing is payment in mobile app

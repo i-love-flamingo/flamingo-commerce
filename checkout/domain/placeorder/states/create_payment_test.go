@@ -81,7 +81,7 @@ func TestCreatePayment_Run(t *testing.T) {
 		state.Inject(paymentService)
 
 		expectedResult := process.RunResult{
-			Failed: process.ErrorOccurredReason{Error: expectedError.Error()},
+			Failed: process.PaymentErrorOccurredReason{Error: expectedError.Error()},
 		}
 		assert.Equal(t, state.Run(context.Background(), p, nil), expectedResult)
 		gateway.AssertExpectations(t)
@@ -106,7 +106,7 @@ func TestCreatePayment_Run(t *testing.T) {
 		state.Inject(paymentService)
 
 		expectedResult := process.RunResult{
-			Failed: process.ErrorOccurredReason{Error: expectedError.Error()},
+			Failed: process.PaymentErrorOccurredReason{Error: expectedError.Error()},
 		}
 		assert.Equal(t, state.Run(context.Background(), p, nil), expectedResult)
 		gateway.AssertExpectations(t)
