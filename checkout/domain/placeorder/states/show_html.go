@@ -5,6 +5,7 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo-commerce/v3/payment/application"
+	"go.opencensus.io/trace"
 )
 
 type (
@@ -38,12 +39,18 @@ func (ShowHTML) Name() string {
 }
 
 // Run the state operations
-func (sh ShowHTML) Run(ctx context.Context, p *process.Process, stateData process.StateData) process.RunResult {
+func (sh ShowHTML) Run(ctx context.Context, p *process.Process, _ process.StateData) process.RunResult {
+	ctx, span := trace.StartSpan(ctx, "placeorder/state/ShowHTML/Run")
+	defer span.End()
+
 	return sh.validator(ctx, p, sh.paymentService)
 }
 
 // Rollback the state operations
-func (sh ShowHTML) Rollback(context.Context, process.RollbackData) error {
+func (sh ShowHTML) Rollback(ctx context.Context, _ process.RollbackData) error {
+	ctx, span := trace.StartSpan(ctx, "placeorder/state/ShowHTML/Rollback")
+	defer span.End()
+
 	return nil
 }
 

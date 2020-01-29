@@ -5,6 +5,7 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo-commerce/v3/payment/application"
+	"go.opencensus.io/trace"
 )
 
 type (
@@ -31,7 +32,10 @@ func (CompletePayment) Name() string {
 }
 
 // Run the state operations
-func (c CompletePayment) Run(ctx context.Context, p *process.Process, stateData process.StateData) process.RunResult {
+func (c CompletePayment) Run(ctx context.Context, p *process.Process, _ process.StateData) process.RunResult {
+	ctx, span := trace.StartSpan(ctx, "placeorder/state/CompletePayment/Run")
+	defer span.End()
+
 	cart := p.Context().Cart
 	paymentGateway, err := c.paymentService.PaymentGatewayByCart(cart)
 	if err != nil {
@@ -60,6 +64,9 @@ func (c CompletePayment) Run(ctx context.Context, p *process.Process, stateData 
 
 // Rollback the state operations
 func (c CompletePayment) Rollback(ctx context.Context, _ process.RollbackData) error {
+	ctx, span := trace.StartSpan(ctx, "placeorder/state/CompletePayment/Rollback")
+	defer span.End()
+
 	return nil
 }
 

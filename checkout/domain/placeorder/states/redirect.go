@@ -7,6 +7,7 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo-commerce/v3/payment/application"
+	"go.opencensus.io/trace"
 )
 
 type (
@@ -45,12 +46,18 @@ func (Redirect) Name() string {
 }
 
 // Run the state operations
-func (r Redirect) Run(ctx context.Context, p *process.Process, data process.StateData) process.RunResult {
+func (r Redirect) Run(ctx context.Context, p *process.Process, _ process.StateData) process.RunResult {
+	ctx, span := trace.StartSpan(ctx, "placeorder/state/Redirect/Run")
+	defer span.End()
+
 	return r.validator(ctx, p, r.paymentService)
 }
 
 // Rollback the state operations
-func (r Redirect) Rollback(context.Context, process.RollbackData) error {
+func (r Redirect) Rollback(ctx context.Context, _ process.RollbackData) error {
+	ctx, span := trace.StartSpan(ctx, "placeorder/state/Redirect/Rollback")
+	defer span.End()
+
 	return nil
 }
 

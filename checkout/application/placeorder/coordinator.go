@@ -10,6 +10,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
+	"go.opencensus.io/trace"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 )
@@ -59,6 +60,9 @@ func (c *Coordinator) Inject(locker TryLock, logger flamingo.Logger, processFact
 // New acquires lock if possible and creates new process with first run call blocking
 // returns error if already locked or error during run
 func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *url.URL) (*process.Context, error) {
+	ctx, span := trace.StartSpan(ctx, "placeorder/coordinator/New")
+	defer span.End()
+
 	unlock, err := c.locker.TryLock(determineLockKeyForCart(cart), maxLockDuration)
 	if err != nil {
 		return nil, err
@@ -152,9 +156,11 @@ func (c *Coordinator) LastProcess(ctx context.Context) (*process.Process, error)
 // Cancel the process if it exists (blocking)
 // be aware that all rollback callbacks are executed
 func (c *Coordinator) Cancel(ctx context.Context) error {
+	ctx, span := trace.StartSpan(ctx, "placeorder/coordinator/Cancel")
+	defer span.End()
+
 	var returnErr error
 	web.RunWithDetachedContext(ctx, func(ctx context.Context) {
-		// todo: add tracing
 		{
 			// scope things here to avoid using old process later
 			p, err := c.LastProcess(ctx)
@@ -209,8 +215,10 @@ func (c *Coordinator) Cancel(ctx context.Context) error {
 // Run returns immediately
 func (c *Coordinator) Run(ctx context.Context) {
 	go func(ctx context.Context) {
+		ctx, span := trace.StartSpan(ctx, "placeorder/coordinator/Run")
+		defer span.End()
+
 		web.RunWithDetachedContext(ctx, func(ctx context.Context) {
-			// todo: add tracing
 			has, err := c.HasUnfinishedProcess(ctx)
 			if err != nil || !has {
 				return
@@ -238,10 +246,12 @@ func (c *Coordinator) Run(ctx context.Context) {
 // RunBlocking waits for the lock and starts the next processing
 // RunBlocking waits until the process is finished and returns its result
 func (c *Coordinator) RunBlocking(ctx context.Context) (*process.Context, error) {
+	ctx, span := trace.StartSpan(ctx, "placeorder/coordinator/RunBlocking")
+	defer span.End()
+
 	var pctx *process.Context
 	var returnErr error
 	web.RunWithDetachedContext(ctx, func(ctx context.Context) {
-		// todo: add tracing
 		{
 			// scope things here to avoid continuing with an old process state
 			p, err := c.LastProcess(ctx)
