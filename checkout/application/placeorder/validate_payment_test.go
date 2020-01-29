@@ -16,9 +16,9 @@ import (
 	"flamingo.me/flamingo-commerce/v3/payment/interfaces/mocks"
 	price "flamingo.me/flamingo-commerce/v3/price/domain"
 	"github.com/google/go-cmp/cmp"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"gopkg.in/go-playground/assert.v1"
 )
 
 func provideProcessFactory(t *testing.T) *process.Factory {
@@ -308,6 +308,18 @@ func TestPaymentValidator(t *testing.T) {
 			want: want{
 				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{Error: domain.PaymentFlowStatusFailed}},
 				state:     states.New{}.Name(),
+			},
+		},
+		{
+			name: "status: wait for customer",
+			flowStatus: flowStatusResult{
+				flowStatus: &domain.FlowStatus{
+					Status: domain.PaymentFlowWaitingForCustomer,
+				},
+			},
+			want: want{
+				runResult: process.RunResult{},
+				state:     states.WaitForCustomer{}.Name(),
 			},
 		},
 		{

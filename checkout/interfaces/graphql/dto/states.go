@@ -26,6 +26,11 @@ type (
 	Wait struct {
 		Name string
 	}
+	// WaitForCustomer state
+	WaitForCustomer struct {
+		Name string
+	}
+
 	// ShowIframe state
 	ShowIframe struct {
 		Name string
@@ -58,6 +63,7 @@ var (
 	_ State = new(Failed)
 	_ State = new(Success)
 	_ State = new(Wait)
+	_ State = new(WaitForCustomer)
 	_ State = new(ShowIframe)
 	_ State = new(ShowHTML)
 	_ State = new(Redirect)
@@ -77,6 +83,11 @@ func (s *Success) MapFrom(pctx process.Context) {
 
 // MapFrom the internal process state to the graphQL state fields
 func (s *Wait) MapFrom(pctx process.Context) {
+	s.Name = pctx.CurrentStateName
+}
+
+// MapFrom the internal process state to the graphQL state fields
+func (s *WaitForCustomer) MapFrom(pctx process.Context) {
 	s.Name = pctx.CurrentStateName
 }
 
