@@ -218,8 +218,14 @@ func (p *Process) rollback(ctx context.Context) error {
 			continue
 		}
 
-		// todo error types for fatal end and continue rollback chain
-		_ = state.Rollback(ctx, rollbackRef.Data)
+		err := state.Rollback(ctx, rollbackRef.Data)
+		if _, ok := err.(*FatalRollbackError); ok {
+			return err
+		}
+
+		if err != nil {
+			p.logger.Error(fmt.Sprintf("Non fatal error during state %q continue rollback: %s", state.Name(), err))
+		}
 	}
 
 	return nil
@@ -240,7 +246,7 @@ func (p *Process) UpdateState(s string, stateData StateData) {
 func (p *Process) Failed(ctx context.Context, reason FailedReason) {
 	err := p.rollback(ctx)
 	if err != nil {
-		p.logger.WithContext(ctx).Error("rollback failed: ", err)
+		p.logger.WithContext(ctx).Error("fatal rollback error: ", err)
 	}
 
 	p.context.FailedReason = reason
