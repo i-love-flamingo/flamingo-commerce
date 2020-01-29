@@ -38,6 +38,10 @@ type Commerce_Checkout_PlaceOrderState_State_Wait implements Commerce_Checkout_P
     name: String!
 }
 
+type Commerce_Checkout_PlaceOrderState_State_WaitForCustomer implements Commerce_Checkout_PlaceOrderState_State {
+    name: String!
+}
+
 type Commerce_Checkout_PlaceOrderState_State_Success implements Commerce_Checkout_PlaceOrderState_State {
     name: String!
 }

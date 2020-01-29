@@ -88,9 +88,8 @@ func PaymentValidator(ctx context.Context, p *process.Process, paymentService *a
 			Failed: process.PaymentErrorOccurredReason{Error: flowStatus.Status},
 		}
 	case paymentDomain.PaymentFlowWaitingForCustomer:
-		// payment pending, waiting for customer doing async stuff
-		// todo: add new state representing customer wait
-		p.UpdateState(states.Wait{}.Name(), nil)
+		// payment pending, waiting for customer doing async stuff like finishing is payment in mobile app
+		p.UpdateState(states.WaitForCustomer{}.Name(), nil)
 	default:
 		// unknown payment flow status
 		return process.RunResult{

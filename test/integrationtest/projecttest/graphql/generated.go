@@ -523,6 +523,10 @@ type ComplexityRoot struct {
 		Name func(childComplexity int) int
 	}
 
+	CommerceCheckoutPlaceOrderStateStateWaitForCustomer struct {
+		Name func(childComplexity int) int
+	}
+
 	CommerceCheckoutPlacedOrderInfos struct {
 		Email            func(childComplexity int) int
 		PaymentInfos     func(childComplexity int) int
@@ -2830,6 +2834,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCheckoutPlaceOrderStateStateWait.Name(childComplexity), true
 
+	case "Commerce_Checkout_PlaceOrderState_State_WaitForCustomer.name":
+		if e.complexity.CommerceCheckoutPlaceOrderStateStateWaitForCustomer.Name == nil {
+			break
+		}
+
+		return e.complexity.CommerceCheckoutPlaceOrderStateStateWaitForCustomer.Name(childComplexity), true
+
 	case "Commerce_Checkout_PlacedOrderInfos.email":
 		if e.complexity.CommerceCheckoutPlacedOrderInfos.Email == nil {
 			break
@@ -4303,6 +4314,10 @@ interface Commerce_Checkout_PlaceOrderState_State {
 }
 
 type Commerce_Checkout_PlaceOrderState_State_Wait implements Commerce_Checkout_PlaceOrderState_State {
+    name: String!
+}
+
+type Commerce_Checkout_PlaceOrderState_State_WaitForCustomer implements Commerce_Checkout_PlaceOrderState_State {
     name: String!
 }
 
@@ -12873,6 +12888,33 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Wait_name(c
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_WaitForCustomer_name(ctx context.Context, field graphql.CollectedField, obj *dto2.WaitForCustomer) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Checkout_PlaceOrderState_State_WaitForCustomer",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos_paymentInfos(ctx context.Context, field graphql.CollectedField, obj *dto2.PlacedOrderInfos) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -17115,6 +17157,8 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State(ctx context
 		return graphql.Null
 	case *dto2.Wait:
 		return ec._Commerce_Checkout_PlaceOrderState_State_Wait(ctx, sel, obj)
+	case *dto2.WaitForCustomer:
+		return ec._Commerce_Checkout_PlaceOrderState_State_WaitForCustomer(ctx, sel, obj)
 	case *dto2.Success:
 		return ec._Commerce_Checkout_PlaceOrderState_State_Success(ctx, sel, obj)
 	case *dto2.Failed:
@@ -19620,6 +19664,33 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Wait(ctx co
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_Wait")
 		case "name":
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_Wait_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Checkout_PlaceOrderState_State_WaitForCustomerImplementors = []string{"Commerce_Checkout_PlaceOrderState_State_WaitForCustomer", "Commerce_Checkout_PlaceOrderState_State"}
+
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_WaitForCustomer(ctx context.Context, sel ast.SelectionSet, obj *dto2.WaitForCustomer) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_PlaceOrderState_State_WaitForCustomerImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_WaitForCustomer")
+		case "name":
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_WaitForCustomer_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

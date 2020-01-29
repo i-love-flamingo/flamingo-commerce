@@ -27,6 +27,7 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		"Commerce_Checkout_PlaceOrderPaymentInfo":                                  application.PlaceOrderPaymentInfo{},
 		"Commerce_Checkout_PlaceOrderState_State":                                  new(dto.State),
 		"Commerce_Checkout_PlaceOrderState_State_Wait":                             dto.Wait{},
+		"Commerce_Checkout_PlaceOrderState_State_WaitForCustomer":                  dto.WaitForCustomer{},
 		"Commerce_Checkout_PlaceOrderState_State_Success":                          dto.Success{},
 		"Commerce_Checkout_PlaceOrderState_State_Failed":                           dto.Failed{},
 		"Commerce_Checkout_PlaceOrderState_State_ShowIframe":                       dto.ShowIframe{},
