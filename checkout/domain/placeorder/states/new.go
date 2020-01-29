@@ -22,7 +22,7 @@ func (New) Name() string {
 
 // Run the state operations
 func (n New) Run(ctx context.Context, p *process.Process, _ process.StateData) process.RunResult {
-	ctx, span := trace.StartSpan(ctx, "placeorder/state/New/Run")
+	_, span := trace.StartSpan(ctx, "placeorder/state/New/Run")
 	defer span.End()
 
 	p.UpdateState(CreatePayment{}.Name(), nil)
@@ -32,7 +32,7 @@ func (n New) Run(ctx context.Context, p *process.Process, _ process.StateData) p
 
 // Rollback the state operations
 func (n New) Rollback(ctx context.Context, _ process.RollbackData) error {
-	ctx, span := trace.StartSpan(ctx, "placeorder/state/New/Rollback")
+	_, span := trace.StartSpan(ctx, "placeorder/state/New/Rollback")
 	defer span.End()
 
 	return nil

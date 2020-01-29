@@ -50,7 +50,7 @@ func (si ShowIframe) Run(ctx context.Context, p *process.Process, _ process.Stat
 
 // Rollback the state operations
 func (si ShowIframe) Rollback(ctx context.Context, _ process.RollbackData) error {
-	ctx, span := trace.StartSpan(ctx, "placeorder/state/ShowIframe/Rollback")
+	_, span := trace.StartSpan(ctx, "placeorder/state/ShowIframe/Rollback")
 	defer span.End()
 
 	return nil

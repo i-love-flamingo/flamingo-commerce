@@ -48,7 +48,7 @@ func (sh ShowHTML) Run(ctx context.Context, p *process.Process, _ process.StateD
 
 // Rollback the state operations
 func (sh ShowHTML) Rollback(ctx context.Context, _ process.RollbackData) error {
-	ctx, span := trace.StartSpan(ctx, "placeorder/state/ShowHTML/Rollback")
+	_, span := trace.StartSpan(ctx, "placeorder/state/ShowHTML/Rollback")
 	defer span.End()
 
 	return nil
