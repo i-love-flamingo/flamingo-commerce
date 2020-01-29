@@ -124,7 +124,7 @@ func provideProcessFactory(t *testing.T) *process.Factory {
 			StartState  process.State `inject:"startState"`
 			FailedState process.State `inject:"failedState"`
 		}{
-			StartState: &states.Wait{},
+			StartState: &states.New{},
 		},
 	)
 	return factory

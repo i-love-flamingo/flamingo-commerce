@@ -2,6 +2,7 @@ package states_test
 
 import (
 	"context"
+	"net/url"
 	"testing"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
@@ -36,4 +37,8 @@ func TestRedirect_Run(t *testing.T) {
 	s.Run(context.Background(), nil, nil)
 
 	assert.True(t, isCalled)
+}
+
+func TestNewRedirectStateData(t *testing.T) {
+	assert.Equal(t, process.StateData(url.URL{Host: "test.com"}), states.NewRedirectStateData(url.URL{Host: "test.com"}))
 }

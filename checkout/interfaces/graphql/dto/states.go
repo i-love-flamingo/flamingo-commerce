@@ -30,7 +30,6 @@ type (
 	WaitForCustomer struct {
 		Name string
 	}
-
 	// ShowIframe state
 	ShowIframe struct {
 		Name string

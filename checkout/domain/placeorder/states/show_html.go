@@ -17,7 +17,7 @@ type (
 
 var _ process.State = ShowHTML{}
 
-//NewShowHTMLStateData creates new StateData required for this ShowHTML state
+// NewShowHTMLStateData creates new StateData required for this ShowHTML state
 func NewShowHTMLStateData(html string) process.StateData {
 	return process.StateData(html)
 }
