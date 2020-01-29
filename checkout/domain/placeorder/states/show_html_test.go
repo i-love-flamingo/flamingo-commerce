@@ -38,3 +38,7 @@ func TestShowHTML_Run(t *testing.T) {
 
 	assert.True(t, isCalled)
 }
+
+func TestNewShowHTMLStateData(t *testing.T) {
+	assert.Equal(t, process.StateData("<h2>test</h2>"), states.NewShowHTMLStateData("<h2>test</h2>"))
+}

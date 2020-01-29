@@ -23,7 +23,7 @@ func init() {
 	gob.Register(url.URL{})
 }
 
-//NewRedirectStateData - creates data required for this state
+// NewRedirectStateData creates data required for this state
 func NewRedirectStateData(url url.URL) process.StateData {
 	return process.StateData(url)
 }
