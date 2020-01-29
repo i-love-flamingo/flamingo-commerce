@@ -2,6 +2,7 @@ package placeorder_test
 
 import (
 	"context"
+	"errors"
 	"net/url"
 	"testing"
 
@@ -31,7 +32,8 @@ func provideProcessFactory(t *testing.T) *process.Factory {
 			StartState  process.State `inject:"startState"`
 			FailedState process.State `inject:"failedState"`
 		}{
-			StartState: &states.Wait{},
+			StartState:  &states.New{},
+			FailedState: &states.Failed{},
 		},
 	)
 	return factory
@@ -76,30 +78,248 @@ func TestPaymentValidator(t *testing.T) {
 		want       want
 	}{
 		{
-			name: "satus: unapproved, action: show iframe",
+			name: "generic payment error during FlowStatus request",
+			flowStatus: flowStatusResult{
+				err: errors.New("generic_error"),
+			},
+			want: want{
+				runResult: process.RunResult{Failed: process.ErrorOccurredReason{Error: "generic_error"}},
+				state:     states.New{}.Name(),
+			},
+		},
+		{
+			name: "status: unapproved, action: show iframe",
 			flowStatus: flowStatusResult{
 				flowStatus: &domain.FlowStatus{
 					Status: domain.PaymentFlowStatusUnapproved,
 					Action: domain.PaymentFlowActionShowIFrame,
 					ActionData: domain.FlowActionData{
-						URL: &url.URL{
-							Scheme: "http",
-							Host:   "test.com",
+						URL: &url.URL{Scheme: "https", Host: "iframe-url.com"},
+					},
+				},
+			},
+			want: want{
+				runResult: process.RunResult{Failed: nil},
+				state:     states.ShowIframe{}.Name(),
+				stateData: process.StateData(url.URL{Scheme: "https", Host: "iframe-url.com"}),
+			},
+		},
+		{
+			name: "status: unapproved, action: show iframe - URL missing",
+			flowStatus: flowStatusResult{
+				flowStatus: &domain.FlowStatus{
+					Status: domain.PaymentFlowStatusUnapproved,
+					Action: domain.PaymentFlowActionShowIFrame,
+				},
+			},
+			want: want{
+				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{Error: placeorder.ValidatePaymentErrorNoActionURL}},
+				state:     states.New{}.Name(),
+			},
+		},
+		{
+			name: "status: unapproved, action: show html",
+			flowStatus: flowStatusResult{
+				flowStatus: &domain.FlowStatus{
+					Status: domain.PaymentFlowStatusUnapproved,
+					Action: domain.PaymentFlowActionShowHTML,
+					ActionData: domain.FlowActionData{
+						DisplayData: "<h2>Payment Form<h2><form><input type=\"hidden\" /></form>",
+					},
+				},
+			},
+			want: want{
+				runResult: process.RunResult{Failed: nil},
+				state:     states.ShowHTML{}.Name(),
+				stateData: process.StateData("<h2>Payment Form<h2><form><input type=\"hidden\" /></form>"),
+			},
+		},
+		{
+			name: "status: unapproved, action: show html - html missing",
+			flowStatus: flowStatusResult{
+				flowStatus: &domain.FlowStatus{
+					Status: domain.PaymentFlowStatusUnapproved,
+					Action: domain.PaymentFlowActionShowHTML,
+				},
+			},
+			want: want{
+				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{Error: placeorder.ValidatePaymentErrorNoActionDisplayData}},
+				state:     states.New{}.Name(),
+			},
+		},
+		{
+			name: "status: unapproved, action: redirect",
+			flowStatus: flowStatusResult{
+				flowStatus: &domain.FlowStatus{
+					Status: domain.PaymentFlowStatusUnapproved,
+					Action: domain.PaymentFlowActionRedirect,
+					ActionData: domain.FlowActionData{
+						URL: &url.URL{Scheme: "https", Host: "redirect-url.com"},
+					},
+				},
+			},
+			want: want{
+				runResult: process.RunResult{Failed: nil},
+				state:     states.Redirect{}.Name(),
+				stateData: process.StateData(url.URL{Scheme: "https", Host: "redirect-url.com"}),
+			},
+		},
+		{
+			name: "status: unapproved, action: redirect - URL missing",
+			flowStatus: flowStatusResult{
+				flowStatus: &domain.FlowStatus{
+					Status: domain.PaymentFlowStatusUnapproved,
+					Action: domain.PaymentFlowActionRedirect,
+				},
+			},
+			want: want{
+				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{Error: placeorder.ValidatePaymentErrorNoActionURL}},
+				state:     states.New{}.Name(),
+			},
+		},
+		{
+			name: "status: unapproved, action: post redirect",
+			flowStatus: flowStatusResult{
+				flowStatus: &domain.FlowStatus{
+					Status: domain.PaymentFlowStatusUnapproved,
+					Action: domain.PaymentFlowActionPostRedirect,
+					ActionData: domain.FlowActionData{
+						URL: &url.URL{Scheme: "https", Host: "post-redirect-url.com"},
+						FormParameter: map[string]domain.FormField{
+							"form-field-0": {
+								Value: []string{"value0", "value1"},
+							},
+							"form-field-1": {
+								Value: []string{"value0"},
+							},
 						},
 					},
 				},
-				err: nil,
 			},
 			want: want{
-				runResult: process.RunResult{
-					RollbackData: nil,
-					Failed:       nil,
-				},
-				state: states.ShowIframe{}.Name(),
-				stateData: process.StateData(url.URL{
-					Scheme: "http",
-					Host:   "test.com",
+				runResult: process.RunResult{Failed: nil},
+				state:     states.PostRedirect{}.Name(),
+				stateData: process.StateData(states.PostRedirectData{
+					FormFields: map[string]states.FormField{
+						"form-field-0": {
+							Value: []string{"value0", "value1"},
+						},
+						"form-field-1": {
+							Value: []string{"value0"},
+						},
+					},
+					URL: url.URL{Scheme: "https", Host: "post-redirect-url.com"},
 				}),
+			},
+		},
+		{
+			name: "status: unapproved, action: post redirect - URL missing",
+			flowStatus: flowStatusResult{
+				flowStatus: &domain.FlowStatus{
+					Status: domain.PaymentFlowStatusUnapproved,
+					Action: domain.PaymentFlowActionPostRedirect,
+				},
+			},
+			want: want{
+				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{Error: placeorder.ValidatePaymentErrorNoActionURL}},
+				state:     states.New{}.Name(),
+			},
+		},
+		{
+			name: "status: unapproved, action: not supported",
+			flowStatus: flowStatusResult{
+				flowStatus: &domain.FlowStatus{
+					Status: domain.PaymentFlowStatusUnapproved,
+					Action: "unknown",
+				},
+			},
+			want: want{
+				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{Error: "Payment action not supported: \"unknown\""}},
+				state:     states.New{}.Name(),
+			},
+		},
+		{
+			name: "status: approved",
+			flowStatus: flowStatusResult{
+				flowStatus: &domain.FlowStatus{
+					Status: domain.PaymentFlowStatusApproved,
+				},
+			},
+			want: want{
+				runResult: process.RunResult{},
+				state:     states.CompletePayment{}.Name(),
+			},
+		},
+		{
+			name: "status: completed",
+			flowStatus: flowStatusResult{
+				flowStatus: &domain.FlowStatus{
+					Status: domain.PaymentFlowStatusCompleted,
+				},
+			},
+			want: want{
+				runResult: process.RunResult{},
+				state:     states.Success{}.Name(),
+			},
+		},
+		{
+			name: "status: completed",
+			flowStatus: flowStatusResult{
+				flowStatus: &domain.FlowStatus{
+					Status: domain.PaymentFlowStatusCompleted,
+				},
+			},
+			want: want{
+				runResult: process.RunResult{},
+				state:     states.Success{}.Name(),
+			},
+		},
+		{
+			name: "status: aborted",
+			flowStatus: flowStatusResult{
+				flowStatus: &domain.FlowStatus{
+					Status: domain.PaymentFlowStatusAborted,
+				},
+			},
+			want: want{
+				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{Error: domain.PaymentFlowStatusAborted}},
+				state:     states.New{}.Name(),
+			},
+		},
+		{
+			name: "status: cancelled",
+			flowStatus: flowStatusResult{
+				flowStatus: &domain.FlowStatus{
+					Status: domain.PaymentFlowStatusCancelled,
+				},
+			},
+			want: want{
+				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{Error: domain.PaymentFlowStatusCancelled}},
+				state:     states.New{}.Name(),
+			},
+		},
+		{
+			name: "status: failed",
+			flowStatus: flowStatusResult{
+				flowStatus: &domain.FlowStatus{
+					Status: domain.PaymentFlowStatusFailed,
+				},
+			},
+			want: want{
+				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{Error: domain.PaymentFlowStatusFailed}},
+				state:     states.New{}.Name(),
+			},
+		},
+		{
+			name: "status: unknown",
+			flowStatus: flowStatusResult{
+				flowStatus: &domain.FlowStatus{
+					Status: "unknown",
+				},
+			},
+			want: want{
+				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{Error: "Payment status not supported: \"unknown\""}},
+				state:     states.New{}.Name(),
 			},
 		},
 	}
@@ -107,7 +327,6 @@ func TestPaymentValidator(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			factory := provideProcessFactory(t)
 			p, _ := factory.New(&url.URL{}, provideCartWithPaymentSelection(t))
-
 			gateway := &mocks.WebCartPaymentGateway{}
 			gateway.On("FlowStatus", mock.Anything, mock.Anything, p.Context().UUID).Return(tt.flowStatus.flowStatus, tt.flowStatus.err).Once()
 
