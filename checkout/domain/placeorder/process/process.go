@@ -251,7 +251,7 @@ func (p *Process) UpdateState(s string, stateData StateData) {
 	p.context.CurrentStateData = stateData
 }
 
-// UpdateState updates the current state in the context and its related state data
+// UpdateOrderInfo updates the order infos of the current context
 func (p *Process) UpdateOrderInfo(info *application.PlaceOrderInfo) {
 	p.context.PlaceOrderInfo = info
 }
