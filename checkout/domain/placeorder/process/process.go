@@ -9,6 +9,7 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
+	"flamingo.me/flamingo-commerce/v3/checkout/application"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 
 	"github.com/google/uuid"
@@ -248,6 +249,11 @@ func (p *Process) Context() Context {
 func (p *Process) UpdateState(s string, stateData StateData) {
 	p.context.CurrentStateName = s
 	p.context.CurrentStateData = stateData
+}
+
+// UpdateState updates the current state in the context and its related state data
+func (p *Process) UpdateOrderInfo(info *application.PlaceOrderInfo) {
+	p.context.PlaceOrderInfo = info
 }
 
 // Failed performs all collected rollbacks and switches to FailedState

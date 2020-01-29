@@ -4,6 +4,7 @@ import (
 	"net/url"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/checkout/application"
 )
 
 type (
@@ -12,6 +13,7 @@ type (
 		UUID               string
 		CurrentStateName   string
 		CurrentStateData   StateData
+		PlaceOrderInfo     *application.PlaceOrderInfo
 		Cart               cart.Cart
 		ReturnURL          *url.URL
 		RollbackReferences []RollbackReference

@@ -61,9 +61,19 @@ func (r *CommerceCheckoutMutationResolver) refresh(
 		return nil, err
 	}
 
+	var orderInfos *dto.PlacedOrderInfos
+	if poctx.PlaceOrderInfo != nil {
+		orderInfos = &dto.PlacedOrderInfos{
+			PaymentInfos:        poctx.PlaceOrderInfo.PaymentInfos,
+			PlacedOrderInfos:    poctx.PlaceOrderInfo.PlacedOrders,
+			Email:               poctx.PlaceOrderInfo.ContactEmail,
+			PlacedDecoratedCart: dc,
+		}
+	}
+
 	return &dto.PlaceOrderContext{
 		Cart:       dc,
-		OrderInfos: nil,
+		OrderInfos: orderInfos,
 		State:      graphQLState,
 		UUID:       poctx.UUID,
 	}, nil
