@@ -64,7 +64,7 @@ func (c CompletePayment) Run(ctx context.Context, p *process.Process, _ process.
 
 // Rollback the state operations
 func (c CompletePayment) Rollback(ctx context.Context, _ process.RollbackData) error {
-	ctx, span := trace.StartSpan(ctx, "placeorder/state/CompletePayment/Rollback")
+	_, span := trace.StartSpan(ctx, "placeorder/state/CompletePayment/Rollback")
 	defer span.End()
 
 	return nil

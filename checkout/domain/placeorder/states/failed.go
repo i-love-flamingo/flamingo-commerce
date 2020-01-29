@@ -23,7 +23,7 @@ func (f Failed) Name() string {
 
 // Run the state operations
 func (f Failed) Run(ctx context.Context, _ *process.Process, _ process.StateData) process.RunResult {
-	ctx, span := trace.StartSpan(ctx, "placeorder/state/Failed/Run")
+	_, span := trace.StartSpan(ctx, "placeorder/state/Failed/Run")
 	defer span.End()
 
 	return process.RunResult{}
@@ -31,7 +31,7 @@ func (f Failed) Run(ctx context.Context, _ *process.Process, _ process.StateData
 
 // Rollback the state operations
 func (f Failed) Rollback(ctx context.Context, _ process.RollbackData) error {
-	ctx, span := trace.StartSpan(ctx, "placeorder/state/Failed/Rollback")
+	_, span := trace.StartSpan(ctx, "placeorder/state/Failed/Rollback")
 	defer span.End()
 
 	return nil

@@ -44,7 +44,7 @@ func (wc WaitForCustomer) Run(ctx context.Context, p *process.Process, _ process
 
 // Rollback the state operations
 func (wc WaitForCustomer) Rollback(ctx context.Context, _ process.RollbackData) error {
-	ctx, span := trace.StartSpan(ctx, "placeorder/state/WaitForCustomer/Rollback")
+	_, span := trace.StartSpan(ctx, "placeorder/state/WaitForCustomer/Rollback")
 	defer span.End()
 
 	return nil
