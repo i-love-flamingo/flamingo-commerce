@@ -25,7 +25,7 @@ func (n New) Run(ctx context.Context, p *process.Process, _ process.StateData) p
 	_, span := trace.StartSpan(ctx, "placeorder/state/New/Run")
 	defer span.End()
 
-	p.UpdateState(CreatePayment{}.Name(), nil)
+	p.UpdateState(ValidateCart{}.Name(), nil)
 
 	return process.RunResult{}
 }

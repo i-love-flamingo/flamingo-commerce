@@ -7,12 +7,12 @@ import (
 	"fmt"
 	"net/url"
 
+	"flamingo.me/flamingo/v3/framework/flamingo"
+	"github.com/google/uuid"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	"flamingo.me/flamingo-commerce/v3/checkout/application"
-	"flamingo.me/flamingo/v3/framework/flamingo"
-
-	"github.com/google/uuid"
 )
 
 const (

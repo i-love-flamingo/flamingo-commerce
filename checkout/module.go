@@ -53,6 +53,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	injector.Bind(new(process.State)).AnnotatedWith("startState").To(states.New{})
 	injector.Bind(new(process.State)).AnnotatedWith("failedState").To(states.Failed{})
 	injector.BindMap(new(process.State), new(states.New).Name()).To(states.New{})
+	injector.BindMap(new(process.State), new(states.ValidateCart).Name()).To(states.ValidateCart{})
 	injector.BindMap(new(process.State), new(states.CreatePayment).Name()).To(states.CreatePayment{})
 	injector.BindMap(new(process.State), new(states.CompleteCart).Name()).To(states.CompleteCart{})
 	injector.BindMap(new(process.State), new(states.CompletePayment).Name()).To(states.CompletePayment{})
@@ -68,6 +69,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 
 	// bind internal states to graphQL states
 	injector.BindMap(new(dto.State), new(states.New).Name()).To(dto.Wait{})
+	injector.BindMap(new(dto.State), new(states.ValidateCart).Name()).To(dto.Wait{})
 	injector.BindMap(new(dto.State), new(states.CreatePayment).Name()).To(dto.Wait{})
 	injector.BindMap(new(dto.State), new(states.CompleteCart).Name()).To(dto.Wait{})
 	injector.BindMap(new(dto.State), new(states.CompletePayment).Name()).To(dto.Wait{})
