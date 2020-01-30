@@ -5,10 +5,11 @@ import (
 	"encoding/gob"
 	"fmt"
 
+	"go.opencensus.io/trace"
+
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
-	"go.opencensus.io/trace"
 )
 
 type (
@@ -86,7 +87,7 @@ func (c CompleteCart) Rollback(ctx context.Context, data process.RollbackData) e
 
 	rollbackData, ok := data.(CompleteCartRollbackData)
 	if !ok {
-		return fmt.Errorf("rollback data not of expected type 'CompleteCartRollbackData', but %T", rollbackData)
+		return fmt.Errorf("rollback data not of expected type 'CompleteCartRollbackData', but %T", data)
 	}
 
 	_, err := c.cartService.RestoreCart(ctx, rollbackData.CompletedCart)
