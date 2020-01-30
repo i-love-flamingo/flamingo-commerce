@@ -249,7 +249,13 @@ func (cob *InMemoryBehaviour) buildItemForCart(ctx context.Context, addRequest d
 		product = productWithActiveVariant
 	}
 
-	itemBuilder.SetQty(addRequest.Qty).AddTaxInfo("default", big.NewFloat(cob.defaultTaxRate), nil).SetByProduct(product).SetID(strconv.Itoa(rand.Int())).SetExternalReference(strconv.Itoa(rand.Int()))
+	itemBuilder.
+		SetQty(addRequest.Qty).
+		AddTaxInfo("default", big.NewFloat(cob.defaultTaxRate), nil).
+		SetByProduct(product).
+		SetID(strconv.Itoa(rand.Int())).
+		SetExternalReference(strconv.Itoa(rand.Int())).
+		SetAdditionalData(addRequest.AdditionalData)
 
 	return itemBuilder.Build()
 }
