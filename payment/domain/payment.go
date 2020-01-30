@@ -80,8 +80,8 @@ const (
 	// PaymentFlowStatusCancelled payment cancelled by provider
 	PaymentFlowStatusCancelled = "payment_cancelled"
 
-	// PaymentFlowActionShowIFrame signals the frontend to show an iframe
-	PaymentFlowActionShowIFrame = "show_iframe"
+	// PaymentFlowActionShowIframe signals the frontend to show an iframe
+	PaymentFlowActionShowIframe = "show_iframe"
 	// PaymentFlowActionShowHTML signals the frontend to show HTML
 	PaymentFlowActionShowHTML = "show_html"
 	// PaymentFlowActionRedirect signals the frontend to do a redirect to a hosted payment page

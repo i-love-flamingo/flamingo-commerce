@@ -64,7 +64,7 @@ func PaymentValidator(ctx context.Context, p *process.Process, paymentService *a
 				}
 			}
 			p.UpdateState(states.ShowHTML{}.Name(), states.NewShowHTMLStateData(flowStatus.ActionData.DisplayData))
-		case paymentDomain.PaymentFlowActionShowIFrame:
+		case paymentDomain.PaymentFlowActionShowIframe:
 			if flowStatus.ActionData.URL == nil {
 				return process.RunResult{
 					Failed: process.PaymentErrorOccurredReason{Error: ValidatePaymentErrorNoActionURL},

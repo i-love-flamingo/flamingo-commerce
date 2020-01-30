@@ -92,7 +92,7 @@ func TestPaymentValidator(t *testing.T) {
 			flowStatus: flowStatusResult{
 				flowStatus: &domain.FlowStatus{
 					Status: domain.PaymentFlowStatusUnapproved,
-					Action: domain.PaymentFlowActionShowIFrame,
+					Action: domain.PaymentFlowActionShowIframe,
 					ActionData: domain.FlowActionData{
 						URL: &url.URL{Scheme: "https", Host: "iframe-url.com"},
 					},
@@ -109,7 +109,7 @@ func TestPaymentValidator(t *testing.T) {
 			flowStatus: flowStatusResult{
 				flowStatus: &domain.FlowStatus{
 					Status: domain.PaymentFlowStatusUnapproved,
-					Action: domain.PaymentFlowActionShowIFrame,
+					Action: domain.PaymentFlowActionShowIframe,
 				},
 			},
 			want: want{
