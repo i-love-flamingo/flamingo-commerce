@@ -79,7 +79,7 @@ func TestValidateCart_Run(t *testing.T) {
 		func() *decorator.DecoratedCartFactory {
 			result := &decorator.DecoratedCartFactory{}
 			result.Inject(
-				&MockProductService{},
+				nil,
 				flamingo.NullLogger{},
 			)
 
