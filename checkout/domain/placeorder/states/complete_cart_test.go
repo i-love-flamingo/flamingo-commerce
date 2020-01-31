@@ -90,13 +90,13 @@ func TestCompleteCart_Run(t *testing.T) {
 			name: "successful completion",
 			behaviour: func() cartDomain.ModifyBehaviour {
 				behaviour := new(mocks.AllBehaviour)
-				behaviour.On("Complete", mock.Anything, cart).Return(&cart, nil, nil)
+				behaviour.CompleteBehaviour.On("Complete", mock.Anything, &cart).Return(&cart, nil, nil)
 				return behaviour
 			}(),
 			behaviourError: nil,
 			validator: func(t *testing.T, behaviour interface{}) {
 				t.Helper()
-				behaviour.(*mocks.AllBehaviour).AssertNumberOfCalls(t, "Complete", 1)
+				behaviour.(*mocks.AllBehaviour).CompleteBehaviour.AssertNumberOfCalls(t, "Complete", 1)
 			},
 			expectedState: states.PlaceOrder{}.Name(),
 			expectedResult: process.RunResult{
@@ -109,13 +109,13 @@ func TestCompleteCart_Run(t *testing.T) {
 			name: "error on completion",
 			behaviour: func() cartDomain.ModifyBehaviour {
 				behaviour := new(mocks.AllBehaviour)
-				behaviour.On("Complete", mock.Anything, cart).Return(nil, nil, errors.New("test error"))
+				behaviour.CompleteBehaviour.On("Complete", mock.Anything, &cart).Return(nil, nil, errors.New("test error"))
 				return behaviour
 			}(),
 			behaviourError: nil,
 			validator: func(t *testing.T, behaviour interface{}) {
 				t.Helper()
-				behaviour.(*mocks.AllBehaviour).AssertNumberOfCalls(t, "Complete", 1)
+				behaviour.(*mocks.AllBehaviour).CompleteBehaviour.AssertNumberOfCalls(t, "Complete", 1)
 			},
 			expectedState: states.New{}.Name(),
 			expectedResult: process.RunResult{
@@ -217,7 +217,7 @@ func TestCompleteCart_Rollback(t *testing.T) {
 			name: "successful restore",
 			behaviour: func() cartDomain.ModifyBehaviour {
 				behaviour := new(mocks.AllBehaviour)
-				behaviour.On("Restore", mock.Anything, cart).Return(&cart, nil, nil)
+				behaviour.CompleteBehaviour.On("Restore", mock.Anything, &cart).Return(&cart, nil, nil)
 				return behaviour
 			}(),
 			rollbackData: states.CompleteCartRollbackData{
@@ -225,7 +225,7 @@ func TestCompleteCart_Rollback(t *testing.T) {
 			},
 			validator: func(t *testing.T, behaviour interface{}) {
 				t.Helper()
-				behaviour.(*mocks.AllBehaviour).AssertNumberOfCalls(t, "Restore", 1)
+				behaviour.(*mocks.AllBehaviour).CompleteBehaviour.AssertNumberOfCalls(t, "Restore", 1)
 			},
 			expectedError: nil,
 		},
@@ -233,7 +233,7 @@ func TestCompleteCart_Rollback(t *testing.T) {
 			name: "error on restore",
 			behaviour: func() cartDomain.ModifyBehaviour {
 				behaviour := new(mocks.AllBehaviour)
-				behaviour.On("Restore", mock.Anything, cart).Return(nil, nil, errors.New("test error"))
+				behaviour.CompleteBehaviour.On("Restore", mock.Anything, &cart).Return(nil, nil, errors.New("test error"))
 				return behaviour
 			}(),
 			rollbackData: states.CompleteCartRollbackData{
@@ -241,7 +241,7 @@ func TestCompleteCart_Rollback(t *testing.T) {
 			},
 			validator: func(t *testing.T, behaviour interface{}) {
 				t.Helper()
-				behaviour.(*mocks.AllBehaviour).AssertNumberOfCalls(t, "Restore", 1)
+				behaviour.(*mocks.AllBehaviour).CompleteBehaviour.AssertNumberOfCalls(t, "Restore", 1)
 			},
 			expectedError: errors.New("test error"),
 		},
