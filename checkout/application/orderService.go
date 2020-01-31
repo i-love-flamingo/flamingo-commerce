@@ -213,9 +213,14 @@ func (os *OrderService) placeOrder(ctx context.Context, session *web.Session, de
 	return placeOrderInfo, nil
 }
 
-// CancelOrder cancels an previously placed order and returns the cart with the order content
+// CancelOrder cancels an previously placed order and returns the restored cart with the order content
 func (os *OrderService) CancelOrder(ctx context.Context, session *web.Session, order *PlaceOrderInfo) (*cart.Cart, error) {
 	return os.cartService.CancelOrder(ctx, session, order.PlacedOrders, order.Cart)
+}
+
+// CancelOrderWithoutRestore cancels an previously placed order
+func (os *OrderService) CancelOrderWithoutRestore(ctx context.Context, session *web.Session, order *PlaceOrderInfo) error {
+	return os.cartService.CancelOrderWithoutRestore(ctx, session, order.PlacedOrders)
 }
 
 // CurrentCartPlaceOrderWithPaymentProcessing places the current cart which is fetched from the context
