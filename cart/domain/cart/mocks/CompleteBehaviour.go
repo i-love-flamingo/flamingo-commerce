@@ -12,7 +12,7 @@ type CompleteBehaviour struct {
 }
 
 // Complete provides a mock function with given fields: _a0, _a1
-func (_m *CompleteBehaviour) Complete(_a0 context.Context, _a1 cart.Cart) (*cart.Cart, cart.DeferEvents, error) {
+func (_m *CompleteBehaviour) Complete(_a0 context.Context, _a1 *cart.Cart) (*cart.Cart, cart.DeferEvents, error) {
 	ret := _m.Called(_a0, _a1)
 
 	var r0 *cart.Cart
@@ -44,7 +44,7 @@ func (_m *CompleteBehaviour) Complete(_a0 context.Context, _a1 cart.Cart) (*cart
 }
 
 // Restore provides a mock function with given fields: _a0, _a1
-func (_m *CompleteBehaviour) Restore(_a0 context.Context, _a1 cart.Cart) (*cart.Cart, cart.DeferEvents, error) {
+func (_m *CompleteBehaviour) Restore(_a0 context.Context, _a1 *cart.Cart) (*cart.Cart, cart.DeferEvents, error) {
 	ret := _m.Called(_a0, _a1)
 
 	var r0 *cart.Cart

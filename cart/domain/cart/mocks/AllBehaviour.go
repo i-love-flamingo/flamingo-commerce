@@ -469,7 +469,7 @@ func (_m *AllBehaviour) UpdatePurchaser(ctx context.Context, _a1 *cart.Cart, pur
 }
 
 // Complete provides a mock function with given fields: _a0, _a1
-func (_m *AllBehaviour) Complete(_a0 context.Context, _a1 cart.Cart) (*cart.Cart, cart.DeferEvents, error) {
+func (_m *AllBehaviour) Complete(_a0 context.Context, _a1 *cart.Cart) (*cart.Cart, cart.DeferEvents, error) {
 	ret := _m.Called(_a0, _a1)
 
 	var r0 *cart.Cart
@@ -501,7 +501,7 @@ func (_m *AllBehaviour) Complete(_a0 context.Context, _a1 cart.Cart) (*cart.Cart
 }
 
 // Restore provides a mock function with given fields: _a0, _a1
-func (_m *AllBehaviour) Restore(_a0 context.Context, _a1 cart.Cart) (*cart.Cart, cart.DeferEvents, error) {
+func (_m *AllBehaviour) Restore(_a0 context.Context, _a1 *cart.Cart) (*cart.Cart, cart.DeferEvents, error) {
 	ret := _m.Called(_a0, _a1)
 
 	var r0 *cart.Cart
