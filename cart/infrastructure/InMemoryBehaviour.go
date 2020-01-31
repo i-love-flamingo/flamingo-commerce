@@ -68,23 +68,23 @@ func (cob *InMemoryBehaviour) Inject(
 }
 
 // Complete a cart and remove from storage
-func (cob *InMemoryBehaviour) Complete(_ context.Context, cart domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
-	err := cob.cartStorage.RemoveCart(&cart)
+func (cob *InMemoryBehaviour) Complete(_ context.Context, cart *domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	err := cob.cartStorage.RemoveCart(cart)
 	if err != nil {
 		return nil, nil, err
 	}
-	return &cart, nil, nil
+	return cart, nil, nil
 }
 
 // Restore supplied cart and store with new ID
-func (cob *InMemoryBehaviour) Restore(_ context.Context, cart domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
+func (cob *InMemoryBehaviour) Restore(_ context.Context, cart *domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	newCart := cart
 	newCart.ID = strconv.Itoa(rand.Int())
-	err := cob.cartStorage.StoreCart(&newCart)
+	err := cob.cartStorage.StoreCart(newCart)
 	if err != nil {
 		return nil, nil, err
 	}
-	return &newCart, nil, nil
+	return newCart, nil, nil
 }
 
 // DeleteItem removes an item from the cart
