@@ -60,7 +60,7 @@ func (PostRedirect) Name() string {
 }
 
 // Run the state operations
-func (pr PostRedirect) Run(ctx context.Context, p *process.Process, _ process.StateData) process.RunResult {
+func (pr PostRedirect) Run(ctx context.Context, p *process.Process) process.RunResult {
 	ctx, span := trace.StartSpan(ctx, "placeorder/state/PostRedirect/Run")
 	defer span.End()
 

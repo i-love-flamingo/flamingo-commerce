@@ -34,7 +34,7 @@ func (ValidateCart) Name() string {
 }
 
 // Run the state operations
-func (v ValidateCart) Run(ctx context.Context, p *process.Process, _ process.StateData) process.RunResult {
+func (v ValidateCart) Run(ctx context.Context, p *process.Process) process.RunResult {
 	ctx, span := trace.StartSpan(ctx, "placeorder/state/ValidateCart/Run")
 	defer span.End()
 

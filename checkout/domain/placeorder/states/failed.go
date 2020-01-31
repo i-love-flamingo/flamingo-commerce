@@ -22,7 +22,7 @@ func (f Failed) Name() string {
 }
 
 // Run the state operations
-func (f Failed) Run(ctx context.Context, _ *process.Process, _ process.StateData) process.RunResult {
+func (f Failed) Run(ctx context.Context, _ *process.Process) process.RunResult {
 	_, span := trace.StartSpan(ctx, "placeorder/state/Failed/Run")
 	defer span.End()
 

@@ -174,7 +174,7 @@ func (p *Process) Run(ctx context.Context) {
 	}
 
 	stateBeforeRun := p.Context().CurrentStateName
-	runResult := currentState.Run(ctx, p, p.context.CurrentStateData)
+	runResult := currentState.Run(ctx, p)
 	if runResult.RollbackData != nil {
 		p.context.RollbackReferences = append(p.context.RollbackReferences, RollbackReference{
 			StateName: currentState.Name(),

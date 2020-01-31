@@ -120,7 +120,7 @@ func TestValidateCart_Run(t *testing.T) {
 			p := &process.Process{}
 			p.UpdateState(state.Name(), nil)
 			ctx := web.ContextWithSession(context.Background(), web.EmptySession())
-			result := state.Run(ctx, p, nil)
+			result := state.Run(ctx, p)
 
 			assert.Equal(t, tt.expectedState, p.Context().CurrentStateName, "Next state after ValidateCart should be CreatePayment.")
 			if diff := deep.Equal(result, tt.expectedResult); diff != nil {

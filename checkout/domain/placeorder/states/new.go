@@ -21,7 +21,7 @@ func (New) Name() string {
 }
 
 // Run the state operations
-func (n New) Run(ctx context.Context, p *process.Process, _ process.StateData) process.RunResult {
+func (n New) Run(ctx context.Context, p *process.Process) process.RunResult {
 	_, span := trace.StartSpan(ctx, "placeorder/state/New/Run")
 	defer span.End()
 

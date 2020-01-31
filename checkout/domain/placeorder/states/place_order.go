@@ -53,7 +53,7 @@ func (PlaceOrder) Name() string {
 }
 
 // Run the state operations
-func (po PlaceOrder) Run(ctx context.Context, p *process.Process, _ process.StateData) process.RunResult {
+func (po PlaceOrder) Run(ctx context.Context, p *process.Process) process.RunResult {
 	ctx, span := trace.StartSpan(ctx, "placeorder/state/PlaceOrder/Run")
 	defer span.End()
 

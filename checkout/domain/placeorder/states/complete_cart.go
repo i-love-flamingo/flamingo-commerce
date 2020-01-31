@@ -47,7 +47,7 @@ func (CompleteCart) Name() string {
 }
 
 // Run the state operations
-func (c CompleteCart) Run(ctx context.Context, p *process.Process, _ process.StateData) process.RunResult {
+func (c CompleteCart) Run(ctx context.Context, p *process.Process) process.RunResult {
 	ctx, span := trace.StartSpan(ctx, "placeorder/state/CompleteCart/Run")
 	defer span.End()
 

@@ -32,7 +32,7 @@ func TestValidatePayment_Run(t *testing.T) {
 		return process.RunResult{}
 	})
 
-	s.Run(context.Background(), nil, nil)
+	s.Run(context.Background(), nil)
 
 	assert.True(t, isCalled)
 }

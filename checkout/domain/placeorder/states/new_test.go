@@ -24,7 +24,7 @@ func TestNew_Run(t *testing.T) {
 	p := &process.Process{}
 	state := states.New{}
 
-	state.Run(context.Background(), p, nil)
+	state.Run(context.Background(), p)
 
 	assert.Equal(t, states.ValidateCart{}.Name(), p.Context().CurrentStateName, "Next state after New should be CreatePayment.")
 }
