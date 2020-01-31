@@ -542,6 +542,10 @@ func (cs *CartService) RestoreCart(ctx context.Context, cart *cartDomain.Cart) (
 
 	restoredCart, defers, err = completeBehaviour.Restore(ctx, cart)
 
+	if !restoredCart.BelongsToAuthenticatedUser {
+		session.Store(GuestCartSessionKey, restoredCart.ID)
+	}
+
 	if err != nil {
 		cs.handleCartNotFound(web.SessionFromContext(ctx), err)
 		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "RestoreCart").Error(err)
@@ -1002,8 +1006,23 @@ func (cs *CartService) placeOrder(ctx context.Context, session *web.Session, car
 
 // CancelOrder cancels a previously placed order and restores the cart content
 func (cs *CartService) CancelOrder(ctx context.Context, session *web.Session, orderInfos placeorder.PlacedOrderInfos, cart cartDomain.Cart) (*cartDomain.Cart, error) {
+	err := cs.cancelOrder(ctx, session, orderInfos)
+	if err != nil {
+		return nil, err
+	}
+
+	restoredCart, err := cs.RestoreCart(ctx, &cart)
+	if err != nil {
+		cs.logger.Error(fmt.Sprintf("couldn't restore cart err: %v", err))
+		return nil, err
+	}
+
+	return restoredCart, nil
+}
+
+func (cs *CartService) cancelOrder(ctx context.Context, session *web.Session, orderInfos placeorder.PlacedOrderInfos) error {
 	if cs.placeOrderService == nil {
-		return nil, errors.New("No placeOrderService registered")
+		return errors.New("No placeOrderService registered")
 	}
 
 	var cancelErr error
@@ -1011,7 +1030,7 @@ func (cs *CartService) CancelOrder(ctx context.Context, session *web.Session, or
 	if cs.cartReceiverService.IsLoggedIn(ctx, session) {
 		auth, err := cs.authManager.Auth(ctx, session)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		cancelErr = cs.placeOrderService.CancelCustomerOrder(ctx, orderInfos, auth)
 	} else {
@@ -1020,16 +1039,14 @@ func (cs *CartService) CancelOrder(ctx context.Context, session *web.Session, or
 
 	if cancelErr != nil {
 		cs.logger.Error(fmt.Sprintf("couldn't cancel order %q, err: %v", orderInfos, cancelErr))
-		return nil, cancelErr
+		return cancelErr
 	}
+	return nil
+}
 
-	restoredCart, err := cs.cartReceiverService.RestoreCart(ctx, session, cart)
-	if err != nil {
-		cs.logger.Error(fmt.Sprintf("couldn't restore cart err: %v", err))
-		return nil, err
-	}
-
-	return restoredCart, nil
+// CancelOrderWithoutRestore cancels a previously placed order
+func (cs *CartService) CancelOrderWithoutRestore(ctx context.Context, session *web.Session, orderInfos placeorder.PlacedOrderInfos) error {
+	return cs.cancelOrder(ctx, session, orderInfos)
 }
 
 // GetDefaultDeliveryCode returns the configured default deliverycode

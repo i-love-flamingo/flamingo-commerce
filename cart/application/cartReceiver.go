@@ -64,6 +64,7 @@ func (cs *CartReceiverService) Inject(
 }
 
 // RestoreCart restores a previously used guest / customer cart
+// deprecated: use CartService.RestoreCart(), ensure that your cart implements the CompleteBehaviour
 func (cs *CartReceiverService) RestoreCart(ctx context.Context, session *web.Session, cartToRestore cart.Cart) (*cartDomain.Cart, error) {
 	if cs.userService.IsLoggedIn(ctx, session) {
 		auth, err := cs.authManager.Auth(ctx, session)

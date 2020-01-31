@@ -4,12 +4,16 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
+	"io"
+	"net/http"
 	"net/url"
 	"time"
 
+	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
+	"github.com/gorilla/sessions"
 	"go.opencensus.io/trace"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -28,10 +32,14 @@ type (
 		logger         flamingo.Logger
 		processFactory *process.Factory
 		contextStore   process.ContextStore
+		sessionStore   sessions.Store
+		sessionName    string
 	}
 
 	//Unlock func
 	Unlock func() error
+
+	emptyResponseWriter struct{}
 )
 
 var (
@@ -45,16 +53,28 @@ var (
 	maxLockDuration = 2 * time.Minute
 )
 
+// emptyResponseWriter to be able to properly persist sessions
+func (emptyResponseWriter) Header() http.Header       { return http.Header{} }
+func (emptyResponseWriter) Write([]byte) (int, error) { return 0, io.ErrUnexpectedEOF }
+func (emptyResponseWriter) WriteHeader(int)           {}
+
 func init() {
 	gob.Register(process.Context{})
 }
 
 //Inject dependencies
-func (c *Coordinator) Inject(locker TryLock, logger flamingo.Logger, processFactory *process.Factory, contextStore process.ContextStore) {
+func (c *Coordinator) Inject(locker TryLock, logger flamingo.Logger, processFactory *process.Factory,
+	contextStore process.ContextStore, sessionStore sessions.Store,
+	cfg *struct {
+		SessionName string `inject:"config:flamingo.session.name,optional"`
+	},
+) {
 	c.locker = locker
 	c.logger = logger.WithField(flamingo.LogKeyModule, "checkout").WithField(flamingo.LogKeyCategory, "placeorder")
 	c.processFactory = processFactory
 	c.contextStore = contextStore
+	c.sessionStore = sessionStore
+	c.sessionName = cfg.SessionName
 }
 
 // New acquires lock if possible and creates new process with first run call blocking
@@ -239,6 +259,7 @@ func (c *Coordinator) Run(ctx context.Context) {
 
 			p.Run(ctx)
 			_ = c.storeProcessContext(ctx, p.Context())
+			c.updateGuestCartIDInSessionIfNeeded(ctx)
 		})
 	}(ctx)
 }
@@ -305,6 +326,35 @@ func (c *Coordinator) RunBlocking(ctx context.Context) (*process.Context, error)
 	})
 
 	return pctx, returnErr
+}
+
+func (c *Coordinator) updateGuestCartIDInSessionIfNeeded(ctx context.Context) {
+	rollbackSession := web.SessionFromContext(ctx)
+	rollbackGuestCartID := rollbackSession.Try(application.GuestCartSessionKey)
+
+	if rollbackGuestCartID == nil {
+		// no update of guest cart id happened
+		return
+	}
+
+	mostCurrentSession, err := c.sessionStore.Get(web.RequestFromContext(ctx).Request(), c.sessionName)
+	if err != nil {
+		c.logger.Error("couldn't receive current session from session store:", err)
+		return
+	}
+
+	// id of rollback session and latest session are equal, nothing to do
+	if rollbackGuestCartID == mostCurrentSession.Values[application.GuestCartSessionKey] {
+		return
+	}
+
+	mostCurrentSession.Values[application.GuestCartSessionKey] = rollbackGuestCartID
+
+	err = c.sessionStore.Save(web.RequestFromContext(ctx).Request(), new(emptyResponseWriter), mostCurrentSession)
+	if err != nil {
+		c.logger.Error("couldn't save session in the session store:", err)
+		return
+	}
 }
 
 func determineLockKeyForCart(cart cartDomain.Cart) string {
