@@ -39,7 +39,7 @@ func (ShowHTML) Name() string {
 }
 
 // Run the state operations
-func (sh ShowHTML) Run(ctx context.Context, p *process.Process, _ process.StateData) process.RunResult {
+func (sh ShowHTML) Run(ctx context.Context, p *process.Process) process.RunResult {
 	ctx, span := trace.StartSpan(ctx, "placeorder/state/ShowHTML/Run")
 	defer span.End()
 

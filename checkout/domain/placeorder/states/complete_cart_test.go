@@ -189,7 +189,7 @@ func TestCompleteCart_Run(t *testing.T) {
 			state.Inject(cartService, cartReceiverService)
 			ctx := web.ContextWithSession(context.Background(), web.EmptySession())
 
-			result := state.Run(ctx, p, nil)
+			result := state.Run(ctx, p)
 			assert.Equal(t, tt.expectedState, p.Context().CurrentStateName)
 
 			if diff := deep.Equal(result, tt.expectedResult); diff != nil {

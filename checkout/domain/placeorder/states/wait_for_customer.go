@@ -35,7 +35,7 @@ func (WaitForCustomer) Name() string {
 }
 
 // Run the state operations
-func (wc WaitForCustomer) Run(ctx context.Context, p *process.Process, _ process.StateData) process.RunResult {
+func (wc WaitForCustomer) Run(ctx context.Context, p *process.Process) process.RunResult {
 	ctx, span := trace.StartSpan(ctx, "placeorder/state/WaitForCustomer/Run")
 	defer span.End()
 

@@ -45,7 +45,7 @@ func (CreatePayment) Name() string {
 }
 
 // Run the state operations
-func (c CreatePayment) Run(ctx context.Context, p *process.Process, _ process.StateData) process.RunResult {
+func (c CreatePayment) Run(ctx context.Context, p *process.Process) process.RunResult {
 	ctx, span := trace.StartSpan(ctx, "placeorder/state/CreatePayment/Run")
 	defer span.End()
 

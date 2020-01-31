@@ -41,7 +41,7 @@ func (ShowIframe) Name() string {
 }
 
 // Run the state operations
-func (si ShowIframe) Run(ctx context.Context, p *process.Process, _ process.StateData) process.RunResult {
+func (si ShowIframe) Run(ctx context.Context, p *process.Process) process.RunResult {
 	ctx, span := trace.StartSpan(ctx, "placeorder/state/ShowIframe/Run")
 	defer span.End()
 

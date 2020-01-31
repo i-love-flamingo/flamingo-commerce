@@ -26,5 +26,5 @@ func TestSuccess_Rollback(t *testing.T) {
 
 func TestSuccess_Run(t *testing.T) {
 	s := states.Success{}
-	assert.Equal(t, s.Run(context.Background(), &process.Process{}, nil), process.RunResult{})
+	assert.Equal(t, s.Run(context.Background(), &process.Process{}), process.RunResult{})
 }

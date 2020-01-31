@@ -41,7 +41,7 @@ func (Redirect) Name() string {
 }
 
 // Run the state operations
-func (r Redirect) Run(ctx context.Context, p *process.Process, _ process.StateData) process.RunResult {
+func (r Redirect) Run(ctx context.Context, p *process.Process) process.RunResult {
 	ctx, span := trace.StartSpan(ctx, "placeorder/state/Redirect/Run")
 	defer span.End()
 

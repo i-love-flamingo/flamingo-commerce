@@ -20,7 +20,7 @@ func (s Success) Name() string {
 }
 
 // Run the state operations
-func (s Success) Run(ctx context.Context, _ *process.Process, _ process.StateData) process.RunResult {
+func (s Success) Run(ctx context.Context, _ *process.Process) process.RunResult {
 	_, span := trace.StartSpan(ctx, "placeorder/state/Success/Run")
 	defer span.End()
 

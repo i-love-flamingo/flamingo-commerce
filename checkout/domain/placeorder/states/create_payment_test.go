@@ -41,7 +41,7 @@ func TestCreatePayment_Run(t *testing.T) {
 		expectedResult := process.RunResult{
 			RollbackData: states.CreatePaymentRollbackData{Gateway: expectedPayment.Gateway, PaymentID: expectedPayment.PaymentID},
 		}
-		result := state.Run(context.Background(), p, nil)
+		result := state.Run(context.Background(), p)
 		assert.Equal(t, result, expectedResult)
 		assert.Equal(t, p.Context().CurrentStateName, states.CompleteCart{}.Name())
 		gateway.AssertExpectations(t)
@@ -60,7 +60,7 @@ func TestCreatePayment_Run(t *testing.T) {
 
 		state.Inject(paymentService)
 
-		result := state.Run(context.Background(), p, nil)
+		result := state.Run(context.Background(), p)
 		assert.NotNil(t, result.Failed, "Missing PaymentSelection in cart should lead to an error")
 	})
 
@@ -83,7 +83,7 @@ func TestCreatePayment_Run(t *testing.T) {
 		expectedResult := process.RunResult{
 			Failed: process.PaymentErrorOccurredReason{Error: expectedError.Error()},
 		}
-		assert.Equal(t, state.Run(context.Background(), p, nil), expectedResult)
+		assert.Equal(t, state.Run(context.Background(), p), expectedResult)
 		gateway.AssertExpectations(t)
 	})
 
@@ -108,7 +108,7 @@ func TestCreatePayment_Run(t *testing.T) {
 		expectedResult := process.RunResult{
 			Failed: process.PaymentErrorOccurredReason{Error: expectedError.Error()},
 		}
-		assert.Equal(t, state.Run(context.Background(), p, nil), expectedResult)
+		assert.Equal(t, state.Run(context.Background(), p), expectedResult)
 		gateway.AssertExpectations(t)
 	})
 }

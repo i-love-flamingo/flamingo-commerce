@@ -35,7 +35,7 @@ func (ValidatePayment) Name() string {
 }
 
 // Run the state operations
-func (v ValidatePayment) Run(ctx context.Context, p *process.Process, _ process.StateData) process.RunResult {
+func (v ValidatePayment) Run(ctx context.Context, p *process.Process) process.RunResult {
 	ctx, span := trace.StartSpan(ctx, "placeorder/state/ValidatePayment/Run")
 	defer span.End()
 
