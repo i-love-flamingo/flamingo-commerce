@@ -507,7 +507,7 @@ func (cs *CartService) CompleteCurrentCart(ctx context.Context) (*cartDomain.Car
 	}
 
 	var completedCart *cartDomain.Cart
-	completedCart, defers, err = completeBehaviour.Complete(ctx, *cart)
+	completedCart, defers, err = completeBehaviour.Complete(ctx, cart)
 	if err != nil {
 		cs.handleCartNotFound(web.SessionFromContext(ctx), err)
 		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "CloseCurrentCart").Error(err)
@@ -540,7 +540,7 @@ func (cs *CartService) RestoreCart(ctx context.Context, cart *cartDomain.Cart) (
 		cs.dispatchAllEvents(ctx, defers)
 	}()
 
-	restoredCart, defers, err = completeBehaviour.Restore(ctx, *cart)
+	restoredCart, defers, err = completeBehaviour.Restore(ctx, cart)
 
 	if err != nil {
 		cs.handleCartNotFound(web.SessionFromContext(ctx), err)
