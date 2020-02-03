@@ -123,7 +123,7 @@ func (cc *CartViewController) AddAndViewAction(ctx context.Context, r *web.Reque
 	qtyInt, _ := strconv.Atoi(qty)
 	deliveryCode, _ := r.Params["deliveryCode"]
 
-	addRequest := cc.applicationCartService.BuildAddRequest(ctx, r.Params["marketplaceCode"], variantMarketplaceCode, qtyInt)
+	addRequest := cc.applicationCartService.BuildAddRequest(ctx, r.Params["marketplaceCode"], variantMarketplaceCode, qtyInt, nil)
 
 	product, err := cc.applicationCartService.AddProduct(ctx, r.Session(), deliveryCode, addRequest)
 	if notAllowedErr, ok := err.(*validation.AddToCartNotAllowed); ok {
