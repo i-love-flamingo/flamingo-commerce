@@ -2,27 +2,24 @@ package integrationtest
 
 import (
 	"context"
-	"flamingo.me/flamingo/v3/framework/config"
-	"flamingo.me/flamingo/v3/framework/web"
 	"fmt"
+	"log"
+	"net"
 	"net/http"
+	"os"
+	"strconv"
 	"sync"
 	"time"
 
-	"log"
-	"os"
-
-	"flamingo.me/flamingo/v3"
-
-	// "flamingo.me/redirects"
 	"flamingo.me/dingo"
-
+	"flamingo.me/flamingo/v3"
+	"flamingo.me/flamingo/v3/framework/config"
 	flamingoFramework "flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (
-	eventReceiver struct{}
-	testmodule    struct {
+	testModule struct {
 		eventRouter flamingoFramework.EventRouter
 		router      *web.Router
 		server      *http.Server
@@ -37,63 +34,68 @@ type (
 	}
 )
 
-//Side effect vars to get status and exchange stuff with the testmodule
+// Side effect vars to get status and exchange stuff with the testModule
 var rw sync.Mutex
 
 var additionalConfig config.Map
-var lastPort = 9999
 
-//Configure for your testmodule in the app
-func (t *testmodule) Inject(eventRouter flamingoFramework.EventRouter,
-	router *web.Router) {
+//Configure for your testModule in the app
+func (t *testModule) Inject(eventRouter flamingoFramework.EventRouter, router *web.Router) {
 	t.eventRouter = eventRouter
 	t.router = router
 }
 
-//Configure for your testmodule in the app
-func (t *testmodule) Configure(i *dingo.Injector) {
+// Configure for your testModule in the app
+func (t *testModule) Configure(i *dingo.Injector) {
 	flamingoFramework.BindEventSubscriber(i).To(t)
 }
 
-//Notify gets notified by event router
-func (t *testmodule) Notify(ctx context.Context, event flamingoFramework.Event) {
+// Notify gets notified by event router
+func (t *testModule) Notify(ctx context.Context, event flamingoFramework.Event) {
 	switch event.(type) {
 	case *flamingoFramework.ShutdownEvent:
 		log.Printf("ShutdownEvent event received...")
 	}
 }
 
-// DefaultConfig enables inMemory cart service adapter
-func (t *testmodule) DefaultConfig() config.Map {
+// DefaultConfig of test module
+func (t *testModule) DefaultConfig() config.Map {
 	return additionalConfig
 }
 
-//shutdown until
-func (t *testmodule) shutdownServer() {
+// shutdown until
+func (t *testModule) shutdownServer() {
 	log.Printf("Trigger ServerShutdownEvent...")
 	t.eventRouter.Dispatch(context.Background(), &flamingoFramework.ServerShutdownEvent{})
 	_ = t.server.Shutdown(context.Background())
 }
 
-func (t *testmodule) nextServerPort() string {
-	lastPort++
-	return fmt.Sprintf("%v", lastPort)
-}
-
 //returns the port or error
-func (t *testmodule) startServer(listenAndServeQuited chan struct{}) (string, error) {
+func (t *testModule) startServer(listenAndServeQuited chan struct{}) (string, error) {
+	port := os.Getenv("INTEGRATION_TEST_PORT")
+	if port == "" {
+		port = "0"
+	}
 
 	t.eventRouter.Dispatch(context.Background(), &flamingoFramework.ServerStartEvent{})
 	t.server = &http.Server{
-		Addr: ":" + t.nextServerPort(),
+		Addr: ":" + port,
 	}
-	log.Printf("startServer on port %v", t.server.Addr)
+
 	t.server.Handler = t.router.Handler()
+	listener, err := net.Listen("tcp", t.server.Addr)
+	if err != nil {
+		return "", err
+	}
+
+	listenerPort := listener.Addr().(*net.TCPAddr).Port
+
+	log.Printf("startServer on port %v", port)
 	go func() {
-		_ = t.server.ListenAndServe()
+		_ = t.server.Serve(listener)
 		listenAndServeQuited <- struct{}{}
 	}()
-	return t.server.Addr, nil
+	return strconv.Itoa(listenerPort), nil
 }
 
 //Bootup flamingo app with the given modules (and the config in folder given )
@@ -105,8 +107,8 @@ func Bootup(modules []dingo.Module, configDir string, config config.Map) BootupI
 	}
 	rw.Lock()
 	defer rw.Unlock()
-	//add testmodul that listens
-	modules = append(modules, new(testmodule))
+	//add testModule that listens
+	modules = append(modules, new(testModule))
 	//rootArea := rootArea("config")
 	if len(os.Args) > 1 {
 		os.Args[1] = "serve"
@@ -118,13 +120,13 @@ func Bootup(modules []dingo.Module, configDir string, config config.Map) BootupI
 		panic(fmt.Sprintf("unable to get flamingo application: %v", err))
 	}
 
-	testmoduli, err := application.ConfigArea().Injector.GetInstance(new(testmodule))
-	testmodul := testmoduli.(*testmodule)
+	testModuleInterface, err := application.ConfigArea().Injector.GetInstance(new(testModule))
+	testModule := testModuleInterface.(*testModule)
 	if err != nil {
-		panic("unable to get testmodul in flamingo execution area")
+		panic("unable to get testModule in flamingo execution area")
 	}
 	listenAndServeQuited := make(chan struct{})
-	port, err := testmodul.startServer(listenAndServeQuited)
+	port, err := testModule.startServer(listenAndServeQuited)
 	if err != nil {
 		panic(err)
 	}
@@ -133,7 +135,7 @@ func Bootup(modules []dingo.Module, configDir string, config config.Map) BootupI
 
 	return BootupInfo{
 		func() {
-			testmodul.shutdownServer()
+			testModule.shutdownServer()
 		},
 		application,
 		"localhost" + port,

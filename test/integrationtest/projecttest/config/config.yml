@@ -10,6 +10,8 @@ core:
     enabled: false
 
 flamingo:
+  systemendpoint:
+    serviceAddr: ":0"
   debug:
     mode: false
   router:
@@ -53,8 +55,6 @@ commerce:
     useEmailPlaceOrderAdapter: true
     inMemoryCartServiceAdapter:
       defaultTaxRate: 19
-  payment:
-    enableOfflinePaymentGateway: true
   product:
     fakeservice:
       enabled: true

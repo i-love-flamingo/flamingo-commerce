@@ -35,4 +35,4 @@ fix:
 	gofmt -l -w .
 
 rundemoprojecttest:
-	export RUN="1" && cd test/integrationtest/projecttest/tests && go run ../main.go
+	cd test/integrationtest/projecttest/tests && RUN=1 INTEGRATION_TEST_PORT=10000 go run ../main.go
