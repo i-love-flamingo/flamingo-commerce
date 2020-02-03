@@ -1,8 +1,9 @@
 // +build integration
 
-package tests
+package graphql_test
 
 import (
+	"flag"
 	"os"
 	"testing"
 
@@ -13,7 +14,9 @@ var FlamingoURL string
 
 // TestMain used for setup and teardown
 func TestMain(m *testing.M) {
-	info := helper.BootupDemoProject()
+	flag.Parse()
+	testing.Verbose()
+	info := helper.BootupDemoProject("../../config/")
 	FlamingoURL = info.BaseURL
 	result := m.Run()
 	info.ShutdownFunc()
