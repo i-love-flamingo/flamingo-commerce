@@ -39,7 +39,7 @@ var rw sync.Mutex
 
 var additionalConfig config.Map
 
-//Configure for your testModule in the app
+// Configure for your testModule in the app
 func (t *testModule) Inject(eventRouter flamingoFramework.EventRouter, router *web.Router) {
 	t.eventRouter = eventRouter
 	t.router = router
@@ -70,7 +70,7 @@ func (t *testModule) shutdownServer() {
 	_ = t.server.Shutdown(context.Background())
 }
 
-//returns the port or error
+// returns the port or error
 func (t *testModule) startServer(listenAndServeQuited chan struct{}) (string, error) {
 	port := os.Getenv("INTEGRATION_TEST_PORT")
 	if port == "" {
@@ -90,7 +90,7 @@ func (t *testModule) startServer(listenAndServeQuited chan struct{}) (string, er
 
 	listenerPort := listener.Addr().(*net.TCPAddr).Port
 
-	log.Printf("startServer on port %v", port)
+	log.Printf("startServer on port %v", listenerPort)
 	go func() {
 		_ = t.server.Serve(listener)
 		listenAndServeQuited <- struct{}{}
@@ -98,7 +98,7 @@ func (t *testModule) startServer(listenAndServeQuited chan struct{}) (string, er
 	return strconv.Itoa(listenerPort), nil
 }
 
-//Bootup flamingo app with the given modules (and the config in folder given )
+// Bootup flamingo app with the given modules (and the config in folder given )
 func Bootup(modules []dingo.Module, configDir string, config config.Map) BootupInfo {
 	if configDir != "" {
 		if _, err := os.Stat(configDir); os.IsNotExist(err) {
@@ -138,7 +138,7 @@ func Bootup(modules []dingo.Module, configDir string, config config.Map) BootupI
 			testModule.shutdownServer()
 		},
 		application,
-		"localhost" + port,
+		"localhost:" + port,
 		listenAndServeQuited,
 	}
 }

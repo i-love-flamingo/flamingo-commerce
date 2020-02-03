@@ -1,6 +1,6 @@
 // +build integration
 
-package rest
+package rest_test
 
 import (
 	"testing"
@@ -12,7 +12,7 @@ import (
 
 func Test_AddToCart(t *testing.T) {
 	t.Run("adding simple product", func(t *testing.T) {
-		e := httpexpect.New(t, "http://"+FlamingoUrl)
+		e := httpexpect.New(t, "http://"+FlamingoURL)
 
 		testhelper.CartAddProduct(e, "fake_simple", 5, "", "")
 		item := testhelper.CartGetItems(e).MustContain(t, "fake_simple")
@@ -21,7 +21,7 @@ func Test_AddToCart(t *testing.T) {
 	})
 
 	t.Run("adding configurable product", func(t *testing.T) {
-		e := httpexpect.New(t, "http://"+FlamingoUrl)
+		e := httpexpect.New(t, "http://"+FlamingoURL)
 
 		testhelper.CartAddProduct(e, "fake_configurable", 3, "shirt-red-s", "")
 		item := testhelper.CartGetItems(e).MustContain(t, "fake_configurable")

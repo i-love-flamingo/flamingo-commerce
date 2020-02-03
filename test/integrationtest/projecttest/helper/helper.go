@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	"flamingo.me/flamingo-commerce/v3/breadcrumbs"
 	"flamingo.me/flamingo-commerce/v3/cart"
@@ -70,8 +71,8 @@ func modulesDemoProject() []dingo.Module {
 }
 
 // BootupDemoProject boots up a complete demo project
-func BootupDemoProject() integrationtest.BootupInfo {
-	return integrationtest.Bootup(modulesDemoProject(), "../config", nil)
+func BootupDemoProject(configDir string) integrationtest.BootupInfo {
+	return integrationtest.Bootup(modulesDemoProject(), configDir, nil)
 }
 
 // GenerateGraphQL generates the graphql interfaces for the demo project and saves to filesystem.
@@ -95,10 +96,35 @@ func GenerateGraphQL() {
 
 // GraphQlRequest helper to get a initialised httpexpect request with the graphql query - used in tests
 func GraphQlRequest(t *testing.T, e *httpexpect.Expect, query string) *httpexpect.Request {
+	t.Helper()
 	query = strings.Replace(query, "\n", "", -1)
 	query = strings.Replace(query, "\t", "", -1)
 	query = strings.Replace(query, `"`, `\"`, -1)
 	graphQlQuery := fmt.Sprintf(`{"variables":{},"query":"%v"}`, query)
-	t.Log("GraphQlRequest", graphQlQuery)
+	if testing.Verbose() {
+		t.Log("GraphQlRequest", graphQlQuery)
+	}
 	return e.POST("/en/graphql").WithHeader("Content-Type", "application/json").WithBytes([]byte(graphQlQuery))
+}
+
+// AsyncCheckWithTimeout calls fn every 10ms until timeout reached or fn doesn't return err anymore
+func AsyncCheckWithTimeout(t *testing.T, timeoutAfter time.Duration, fn func() error) {
+	t.Helper()
+	timeout := time.NewTimer(timeoutAfter)
+	ticker := time.NewTicker(10 * time.Millisecond)
+	defer ticker.Stop()
+
+	for {
+		err := fn()
+
+		if err == nil {
+			return
+		}
+
+		select {
+		case <-timeout.C:
+			t.Fatal(err)
+		case <-ticker.C:
+		}
+	}
 }

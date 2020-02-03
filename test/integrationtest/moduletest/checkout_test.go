@@ -26,7 +26,7 @@ func Test_CheckoutStartPage(t *testing.T) {
 			"commerce.product.fakeservice.enabled":    true,
 			"commerce.cart.emailAdapter.emailAddress": "test@test.de",
 			"commerce.customer.useNilCustomerAdapter": true,
-			//Waiting for refactor of auth module to avoid this dependency
+			// Waiting for refactor of auth module to avoid this dependency
 			"core.oauth.secret":   "test",
 			"core.oauth.server":   "https://accounts.google.com",
 			"core.oauth.clientid": "test",
