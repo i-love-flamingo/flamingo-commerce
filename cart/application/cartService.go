@@ -516,6 +516,11 @@ func (cs *CartService) CompleteCurrentCart(ctx context.Context) (*cartDomain.Car
 	}
 	cs.DeleteCartInCache(ctx, web.SessionFromContext(ctx), nil)
 
+	session := web.SessionFromContext(ctx)
+	if !cart.BelongsToAuthenticatedUser {
+		session.Delete(GuestCartSessionKey)
+	}
+
 	return completedCart, nil
 }
 
@@ -542,15 +547,15 @@ func (cs *CartService) RestoreCart(ctx context.Context, cart *cartDomain.Cart) (
 
 	restoredCart, defers, err = completeBehaviour.Restore(ctx, cart)
 
-	if !restoredCart.BelongsToAuthenticatedUser {
-		session.Store(GuestCartSessionKey, restoredCart.ID)
-	}
-
 	if err != nil {
 		cs.handleCartNotFound(web.SessionFromContext(ctx), err)
 		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "RestoreCart").Error(err)
 
 		return nil, err
+	}
+
+	if !restoredCart.BelongsToAuthenticatedUser {
+		session.Store(GuestCartSessionKey, restoredCart.ID)
 	}
 
 	return restoredCart, nil

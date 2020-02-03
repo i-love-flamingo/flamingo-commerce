@@ -332,11 +332,6 @@ func (c *Coordinator) updateGuestCartIDInSessionIfNeeded(ctx context.Context) {
 	rollbackSession := web.SessionFromContext(ctx)
 	rollbackGuestCartID := rollbackSession.Try(application.GuestCartSessionKey)
 
-	if rollbackGuestCartID == nil {
-		// no update of guest cart id happened
-		return
-	}
-
 	mostCurrentSession, err := c.sessionStore.Get(web.RequestFromContext(ctx).Request(), c.sessionName)
 	if err != nil {
 		c.logger.Error("couldn't receive current session from session store:", err)
@@ -349,6 +344,10 @@ func (c *Coordinator) updateGuestCartIDInSessionIfNeeded(ctx context.Context) {
 	}
 
 	mostCurrentSession.Values[application.GuestCartSessionKey] = rollbackGuestCartID
+
+	if rollbackGuestCartID == nil {
+		delete(mostCurrentSession.Values, application.GuestCartSessionKey)
+	}
 
 	err = c.sessionStore.Save(web.RequestFromContext(ctx).Request(), new(emptyResponseWriter), mostCurrentSession)
 	if err != nil {
