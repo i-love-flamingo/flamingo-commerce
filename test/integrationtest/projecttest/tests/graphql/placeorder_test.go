@@ -1,12 +1,13 @@
 // +build integration
 
-package tests
+package graphql
 
 import (
-	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/helper"
-	"github.com/gavv/httpexpect"
 	"net/http"
 	"testing"
+
+	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/helper"
+	"github.com/gavv/httpexpect"
 )
 
 func Test_PlaceOrderGraphQL(t *testing.T) {
@@ -21,9 +22,10 @@ func Test_PlaceOrderGraphQL(t *testing.T) {
     }
   }
 }`
-		helper.GraphQlQueryRequest(t, e, query).
+		helper.GraphQlRequest(t, e, query).
 			Expect().
-			Status(http.StatusOK).JSON().Object().Value("data").Object().Value("Commerce_AddToCart").Object().
+			Status(http.StatusOK).
+			JSON().Object().Value("data").Object().Value("Commerce_AddToCart").Object().
 			Value("cart").Object().
 			Value("itemCount").Number().Equal(1)
 
@@ -48,7 +50,7 @@ func Test_PlaceOrderGraphQL(t *testing.T) {
 				}
 			  }
 			}`
-		helper.GraphQlQueryRequest(t, e, query).
+		helper.GraphQlRequest(t, e, query).
 			Expect().
 			Status(http.StatusOK).JSON().Object().Value("data").Object().Value("Commerce_Cart").NotNull()
 	})

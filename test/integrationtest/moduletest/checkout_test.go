@@ -3,14 +3,15 @@
 package moduletest
 
 import (
+	"net/http"
+	"testing"
+
 	"flamingo.me/dingo"
 	"flamingo.me/flamingo-commerce/v3/checkout"
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest"
 	"flamingo.me/flamingo/v3/core/oauth"
 	"flamingo.me/flamingo/v3/framework/config"
 	"github.com/gavv/httpexpect"
-	"net/http"
-	"testing"
 )
 
 func Test_CheckoutStartPage(t *testing.T) {
@@ -21,6 +22,7 @@ func Test_CheckoutStartPage(t *testing.T) {
 		},
 		"",
 		config.Map{
+			"flamingo.systemendpoint.serviceAddr":     ":0",
 			"commerce.product.fakeservice.enabled":    true,
 			"commerce.cart.emailAdapter.emailAddress": "test@test.de",
 			"commerce.customer.useNilCustomerAdapter": true,

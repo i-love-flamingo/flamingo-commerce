@@ -8,7 +8,7 @@ import (
 )
 
 type (
-	// Module registers our profiler
+	// Module registers our payment module
 	Module struct {
 		EnableOfflinePayment bool `inject:"config:commerce.payment.enableOfflinePaymentGateway,optional"`
 	}

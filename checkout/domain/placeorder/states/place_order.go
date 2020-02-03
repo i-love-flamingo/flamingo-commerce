@@ -9,7 +9,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/checkout/application"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
-	"flamingo.me/flamingo-commerce/v3/payment/interfaces"
+	paymentApplication "flamingo.me/flamingo-commerce/v3/payment/application"
 	"flamingo.me/flamingo/v3/framework/web"
 	"go.opencensus.io/trace"
 )
@@ -20,6 +20,7 @@ type (
 		orderService         *application.OrderService
 		cartService          *cartApplication.CartService
 		cartDecoratorFactory *decorator.DecoratedCartFactory
+		paymentService       *paymentApplication.PaymentService
 	}
 
 	// PlaceOrderRollbackData needed for rollbacks
@@ -39,10 +40,12 @@ func (po *PlaceOrder) Inject(
 	orderService *application.OrderService,
 	cartService *cartApplication.CartService,
 	cartDecoratorFactory *decorator.DecoratedCartFactory,
+	paymentService *paymentApplication.PaymentService,
 ) *PlaceOrder {
 	po.orderService = orderService
 	po.cartService = cartService
 	po.cartDecoratorFactory = cartDecoratorFactory
+	po.paymentService = paymentService
 
 	return po
 }
@@ -60,10 +63,10 @@ func (po PlaceOrder) Run(ctx context.Context, p *process.Process) process.RunRes
 	cart := p.Context().Cart
 	decoratedCart := po.cartDecoratorFactory.Create(ctx, cart)
 
-	paymentGateway, err := po.orderService.GetPaymentGateway(ctx, interfaces.OfflineWebCartPaymentGatewayCode)
+	paymentGateway, err := po.paymentService.PaymentGatewayByCart(cart)
 	if err != nil {
 		return process.RunResult{
-			Failed: process.ErrorOccurredReason{Error: err.Error()},
+			Failed: process.PaymentErrorOccurredReason{Error: err.Error()},
 		}
 	}
 

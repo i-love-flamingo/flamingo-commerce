@@ -1,12 +1,13 @@
 // +build integration
 
-package tests
+package rest
 
 import (
+	"testing"
+
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest/testhelper"
 	"github.com/gavv/httpexpect"
 	"gopkg.in/go-playground/assert.v1"
-	"testing"
 )
 
 func Test_AddToCart(t *testing.T) {
