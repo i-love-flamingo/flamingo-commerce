@@ -8,12 +8,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gavv/httpexpect/v2"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/states"
 	"flamingo.me/flamingo-commerce/v3/payment/domain"
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/helper"
-	"github.com/gavv/httpexpect"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 // prepareCartWithPaymentSelection adds a simple product via graphQl
@@ -122,7 +123,7 @@ func Test_PlaceOrderGraphQL(t *testing.T) {
 			var actualState, actualGraphlQLState interface{}
 
 			helper.AsyncCheckWithTimeout(t, time.Second, func() error {
-				mutation = `mutation { Commerce_Checkout_RefreshPlaceOrder { uuid, state { name, __typename } } }`
+				mutation = `mutation { Commerce_Checkout_RefreshPlaceOrder { uuid, state { name, __typename, ... on Commerce_Checkout_PlaceOrderState_State_Failed { reason{ __typename reason } } } } }`
 				request = helper.GraphQlRequest(t, e, mutation)
 				response = request.Expect()
 				refreshUUID := getValue(response, "Commerce_Checkout_RefreshPlaceOrder", "uuid").Raw()

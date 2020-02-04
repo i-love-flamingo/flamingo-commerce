@@ -12,5 +12,5 @@ type (
 
 // Configure module
 func (m *Module) Configure(injector *dingo.Injector) {
-	injector.BindMap((*interfaces.WebCartPaymentGateway)(nil), FakePaymentGateway).To(Gateway{})
+	injector.BindMap((*interfaces.WebCartPaymentGateway)(nil), FakePaymentGateway).ToInstance(new(Gateway).Inject())
 }

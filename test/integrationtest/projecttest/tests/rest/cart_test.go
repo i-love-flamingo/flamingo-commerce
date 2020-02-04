@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest/testhelper"
-	"github.com/gavv/httpexpect"
+	"github.com/gavv/httpexpect/v2"
 	"gopkg.in/go-playground/assert.v1"
 )
 

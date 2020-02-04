@@ -2,9 +2,10 @@ package testhelper
 
 import (
 	"fmt"
-	"github.com/gavv/httpexpect"
 	"net/http"
 	"testing"
+
+	"github.com/gavv/httpexpect/v2"
 )
 
 type (
