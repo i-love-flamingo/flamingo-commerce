@@ -33,4 +33,4 @@ jobs:
       script:
         - cd test/integrationtest/projecttest && go run -tags graphql main.go && cd ../../../
         - git diff --quiet || (echo 'generated go files for graphql are not up to date, check go generate, go.sum and go.mod' ; git diff ; exit 1)
-        - go test -v ./test/integrationtest/... -tags=integration
+        - go test -test.count=10 -race -v ./test/integrationtest/... -tags=integration
