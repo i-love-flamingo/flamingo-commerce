@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/modules/payment"
+	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/modules/placeorder"
 	"flamingo.me/flamingo/v3"
 	"flamingo.me/flamingo/v3/core/healthcheck"
 	"flamingo.me/flamingo/v3/core/locale"
@@ -67,6 +68,7 @@ func modulesDemoProject() []dingo.Module {
 		new(projectTestGraphql.Module),
 		new(graphql.Module),
 		new(payment.Module),
+		new(placeorder.Module),
 	}
 }
 
