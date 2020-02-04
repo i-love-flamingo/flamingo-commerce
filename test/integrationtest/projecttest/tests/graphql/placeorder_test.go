@@ -31,7 +31,8 @@ func prepareCartWithPaymentSelection(t *testing.T, e *httpexpect.Expect, payment
 	helper.GraphQlRequest(t, e, query).Expect().Status(http.StatusOK)
 }
 
-func Test_PlaceOrderGraphQL(t *testing.T) {
+// TODO: Check additional payment state specific data like URL / Form Params / Failed Reason etc.
+func Test_PlaceOrderWithPaymentService(t *testing.T) {
 	baseURL := "http://" + FlamingoURL
 	tests := []struct {
 		name                 string
@@ -148,4 +149,53 @@ func Test_PlaceOrderGraphQL(t *testing.T) {
 
 func getValue(response *httpexpect.Response, queryName, key string) *httpexpect.Value {
 	return response.JSON().Object().Value("data").Object().Value(queryName).Object().Value(key)
+}
+
+// TODO: Test place order with fake order service, success / fail / fail during rollback / success during rollback
+func Test_PlaceOrderWithOrderService(t *testing.T) {
+
+}
+
+// TODO:
+// - Without cart
+// - with invalid cart
+// - when place order process already running
+func Test_StartPlaceOrder(t *testing.T) {
+
+}
+
+// TODO:
+// - without running process
+// - with running process
+func Test_RefreshPlaceOrder(t *testing.T) {
+
+}
+
+// TODO:
+// - without running process
+// - with running process
+func Test_RefreshBlockingPlaceOrder(t *testing.T) {
+
+}
+
+// TODO:
+// - without running process
+// - with running process in final state
+// - with running process in non final state
+func Test_CancelPlaceOrder(t *testing.T) {
+
+}
+
+// TODO: should generally test that restore of cart works and user can directly start a new process
+// start process which fails, then restart process which also fails
+// start process which fails, then restart with e.g. new payment method and success
+func Test_RestartStartPlaceOrder(t *testing.T) {
+
+}
+
+// TODO: check that running process can be detected with CommerceCheckoutActivePlaceOrder
+// - with running
+// - without running
+func Test_ActivePlaceOrder(t *testing.T) {
+
 }
