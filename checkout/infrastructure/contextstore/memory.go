@@ -1,12 +1,15 @@
 package contextstore
 
 import (
+	"sync"
+
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 )
 
 type (
 	// Memory saves all contexts in a simple map
 	Memory struct {
+		mx      sync.RWMutex
 		storage map[string]process.Context
 	}
 )
@@ -20,6 +23,8 @@ func (m *Memory) Inject() *Memory {
 
 // Store a given context
 func (m *Memory) Store(key string, value process.Context) error {
+	m.mx.Lock()
+	defer m.mx.Unlock()
 	m.storage[key] = value
 
 	return nil
@@ -27,6 +32,8 @@ func (m *Memory) Store(key string, value process.Context) error {
 
 // Get a stored context
 func (m *Memory) Get(key string) (process.Context, bool) {
+	m.mx.RLock()
+	defer m.mx.RUnlock()
 	value, ok := m.storage[key]
 
 	return value, ok
@@ -34,6 +41,8 @@ func (m *Memory) Get(key string) (process.Context, bool) {
 
 // Delete a stored context, nop if it doesn't exist
 func (m *Memory) Delete(key string) error {
+	m.mx.Lock()
+	defer m.mx.Unlock()
 	delete(m.storage, key)
 
 	return nil
