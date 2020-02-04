@@ -18,6 +18,7 @@ func TestMain(m *testing.M) {
 	info := helper.BootupDemoProject("../../config/")
 	FlamingoURL = info.BaseURL
 	result := m.Run()
-	info.ShutdownFunc()
+	// todo: panic: http: Server closed
+	// info.ShutdownFunc()
 	os.Exit(result)
 }

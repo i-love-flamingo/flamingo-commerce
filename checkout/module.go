@@ -40,9 +40,9 @@ func (m *Module) Configure(injector *dingo.Injector) {
 
 	if m.PlaceOrderLockType == "clusterlock" {
 		// TODO provide cluster implementation
-		injector.Bind(new(placeorder.TryLock)).To(locker.Simple{})
+		injector.Bind(new(placeorder.TryLock)).To(&locker.Simple{}).In(dingo.Singleton)
 	} else {
-		injector.Bind(new(placeorder.TryLock)).To(locker.Simple{})
+		injector.Bind(new(placeorder.TryLock)).To(&locker.Simple{}).In(dingo.Singleton)
 	}
 
 	// todo: switch between implementations, provide cluster implementation

@@ -50,6 +50,12 @@ var (
 				Status: domain.PaymentErrorAbortedByCustomer,
 			},
 		},
+		domain.PaymentFlowStatusAborted: {
+			Title: "Payment aborted",
+			Status: &domain.FlowStatus{
+				Status: domain.PaymentFlowStatusAborted,
+			},
+		},
 		domain.PaymentFlowStatusCancelled: {
 			Title: "Payment canceled",
 			Status: &domain.FlowStatus{

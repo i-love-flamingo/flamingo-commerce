@@ -361,5 +361,5 @@ func determineLockKeyForCart(cart cartDomain.Cart) string {
 }
 
 func determineLockKeyForProcess(p *process.Process) string {
-	return "checkout_placeorder_lock_" + p.Context().UUID
+	return "checkout_placeorder_lock_" + p.Context().Cart.ID
 }

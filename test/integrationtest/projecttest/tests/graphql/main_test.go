@@ -15,10 +15,10 @@ var FlamingoURL string
 // TestMain used for setup and teardown
 func TestMain(m *testing.M) {
 	flag.Parse()
-	testing.Verbose()
 	info := helper.BootupDemoProject("../../config/")
 	FlamingoURL = info.BaseURL
 	result := m.Run()
-	info.ShutdownFunc()
+	// todo: panic: http: Server closed
+	//info.ShutdownFunc()
 	os.Exit(result)
 }

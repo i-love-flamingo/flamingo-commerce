@@ -11,9 +11,9 @@ func main() {
 	if os.Getenv("RUN") == "1" {
 		info := helper.BootupDemoProject("../config")
 		<-info.Running
-		fmt.Println("Server existed")
+		fmt.Println("Server exited")
 	} else {
-		fmt.Println("Generating GraphQl")
+		fmt.Println("Generating GraphQL")
 		helper.GenerateGraphQL()
 	}
 }
