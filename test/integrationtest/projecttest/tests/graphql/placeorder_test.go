@@ -126,6 +126,7 @@ func Test_PlaceOrderGraphQL(t *testing.T) {
 				mutation = `mutation { Commerce_Checkout_RefreshPlaceOrder { uuid, state { name, __typename, ... on Commerce_Checkout_PlaceOrderState_State_Failed { reason{ __typename reason } } } } }`
 				request = helper.GraphQlRequest(t, e, mutation)
 				response = request.Expect()
+				fmt.Println(response.Body())
 				refreshUUID := getValue(response, "Commerce_Checkout_RefreshPlaceOrder", "uuid").Raw()
 				require.IsType(t, "string", refreshUUID)
 				assert.Equal(t, uuid, refreshUUID, "uuid has changed")

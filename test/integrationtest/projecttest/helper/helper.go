@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/modules/payment"
 	"flamingo.me/flamingo/v3"
 	"flamingo.me/flamingo/v3/core/healthcheck"
 	"flamingo.me/flamingo/v3/core/locale"
@@ -35,7 +36,6 @@ import (
 	"flamingo.me/flamingo-commerce/v3/search"
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest"
 	projectTestGraphql "flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/graphql"
-	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/modules/fake_payment"
 	"flamingo.me/flamingo-commerce/v3/w3cdatalayer"
 )
 
@@ -66,7 +66,7 @@ func modulesDemoProject() []dingo.Module {
 		new(price.Module),
 		new(projectTestGraphql.Module),
 		new(graphql.Module),
-		new(fake_payment.Module),
+		new(payment.Module),
 	}
 }
 

@@ -1,4 +1,4 @@
-package fake_payment
+package payment
 
 import (
 	"context"
@@ -12,12 +12,13 @@ import (
 )
 
 const (
+	// FakePaymentGateway gateway code
 	FakePaymentGateway = "fake_payment_gateway"
 )
 
 type (
-	// Gateway used for testing all payment states
-	Gateway struct {
+	// FakeGateway used for testing all payment states
+	FakeGateway struct {
 		CartIsCompleted map[string]bool
 	}
 
@@ -29,7 +30,7 @@ type (
 )
 
 var (
-	_       interfaces.WebCartPaymentGateway = &Gateway{}
+	_       interfaces.WebCartPaymentGateway = &FakeGateway{}
 	methods                                  = map[string]Method{
 		domain.PaymentFlowStatusCompleted: {
 			Title: "Payment completed",
@@ -118,14 +119,14 @@ var (
 )
 
 // Inject dependencies
-func (g *Gateway) Inject() *Gateway {
+func (g *FakeGateway) Inject() *FakeGateway {
 	g.CartIsCompleted = make(map[string]bool)
 
 	return g
 }
 
 // Methods returns all payment gateway methods
-func (g *Gateway) Methods() []domain.Method {
+func (g *FakeGateway) Methods() []domain.Method {
 	result := make([]domain.Method, 0, len(methods))
 
 	for key, val := range methods {
@@ -135,7 +136,7 @@ func (g *Gateway) Methods() []domain.Method {
 	return result
 }
 
-func (g *Gateway) isSupportedPaymentMethod(method string) bool {
+func (g *FakeGateway) isSupportedPaymentMethod(method string) bool {
 	for _, supportedMethod := range g.Methods() {
 		if supportedMethod.Code == method {
 			return true
@@ -144,10 +145,11 @@ func (g *Gateway) isSupportedPaymentMethod(method string) bool {
 	return false
 }
 
-func (g *Gateway) StartFlow(ctx context.Context, cart *cart.Cart, correlationID string, returnURL *url.URL) (*domain.FlowResult, error) {
+// StartFlow starts a new Payment flow
+func (g *FakeGateway) StartFlow(ctx context.Context, cart *cart.Cart, correlationID string, returnURL *url.URL) (*domain.FlowResult, error) {
 	method := ""
 	// just grab the first method we find and use it to decide between the different use cases
-	for qualifier, _ := range cart.PaymentSelection.CartSplit() {
+	for qualifier := range cart.PaymentSelection.CartSplit() {
 		method = qualifier.Method
 		break
 	}
@@ -164,7 +166,8 @@ func (g *Gateway) StartFlow(ctx context.Context, cart *cart.Cart, correlationID 
 
 }
 
-func (g *Gateway) FlowStatus(ctx context.Context, cart *cart.Cart, correlationID string) (*domain.FlowStatus, error) {
+// FlowStatus returns a payment with a state depending on the supplied payment method
+func (g *FakeGateway) FlowStatus(ctx context.Context, cart *cart.Cart, correlationID string) (*domain.FlowStatus, error) {
 	methodCode := ""
 	// just grab the first method we find and use it to decide between the different use cases
 	for qualifier := range cart.PaymentSelection.CartSplit() {
@@ -185,12 +188,14 @@ func (g *Gateway) FlowStatus(ctx context.Context, cart *cart.Cart, correlationID
 	return methods[methodCode].Status, nil
 }
 
-func (g *Gateway) ConfirmResult(ctx context.Context, cart *cart.Cart, cartPayment *placeorder.Payment) error {
+// ConfirmResult mark payment as completed
+func (g *FakeGateway) ConfirmResult(ctx context.Context, cart *cart.Cart, cartPayment *placeorder.Payment) error {
 	g.CartIsCompleted[cart.ID] = true
 	return nil
 }
 
-func (g *Gateway) OrderPaymentFromFlow(ctx context.Context, cart *cart.Cart, correlationID string) (*placeorder.Payment, error) {
+// OrderPaymentFromFlow return fake payment
+func (g *FakeGateway) OrderPaymentFromFlow(ctx context.Context, cart *cart.Cart, correlationID string) (*placeorder.Payment, error) {
 	return &placeorder.Payment{
 		Gateway: FakePaymentGateway,
 		Transactions: []placeorder.Transaction{
@@ -206,6 +211,7 @@ func (g *Gateway) OrderPaymentFromFlow(ctx context.Context, cart *cart.Cart, cor
 	}, nil
 }
 
-func (g *Gateway) CancelOrderPayment(ctx context.Context, cartPayment *placeorder.Payment) error {
+// CancelOrderPayment does nothing
+func (g *FakeGateway) CancelOrderPayment(ctx context.Context, cartPayment *placeorder.Payment) error {
 	return nil
 }
