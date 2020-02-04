@@ -52,7 +52,7 @@ commerce:
     useInMemoryCartServiceAdapters: true
     emailAdapter:
       emailAddress: test@test.de
-    useEmailPlaceOrderAdapter: true
+    useEmailPlaceOrderAdapter: false
     inMemoryCartServiceAdapter:
       defaultTaxRate: 19
   product:
