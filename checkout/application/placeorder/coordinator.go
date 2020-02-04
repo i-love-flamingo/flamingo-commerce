@@ -30,6 +30,7 @@ type (
 	Coordinator struct {
 		locker         TryLock
 		logger         flamingo.Logger
+		cartService    *application.CartService
 		processFactory *process.Factory
 		contextStore   process.ContextStore
 		sessionStore   sessions.Store
@@ -63,8 +64,13 @@ func init() {
 }
 
 //Inject dependencies
-func (c *Coordinator) Inject(locker TryLock, logger flamingo.Logger, processFactory *process.Factory,
-	contextStore process.ContextStore, sessionStore sessions.Store,
+func (c *Coordinator) Inject(
+	locker TryLock,
+	logger flamingo.Logger,
+	processFactory *process.Factory,
+	contextStore process.ContextStore,
+	sessionStore sessions.Store,
+	cartService *application.CartService,
 	cfg *struct {
 		SessionName string `inject:"config:flamingo.session.name,optional"`
 	},
@@ -75,6 +81,7 @@ func (c *Coordinator) Inject(locker TryLock, logger flamingo.Logger, processFact
 	c.contextStore = contextStore
 	c.sessionStore = sessionStore
 	c.sessionName = cfg.SessionName
+	c.cartService = cartService
 }
 
 // New acquires lock if possible and creates new process with first run call blocking
@@ -106,7 +113,14 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *
 			return
 		}
 
-		newProcess, err := c.processFactory.New(returnURL, cart)
+		preparedCart, err := c.prepareCart(ctx, cart)
+		if err != nil {
+			runErr = err
+			c.logger.Error(err)
+			return
+		}
+
+		newProcess, err := c.processFactory.New(returnURL, *preparedCart)
 		if err != nil {
 			runErr = err
 			c.logger.Error(err)
@@ -125,6 +139,26 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *
 	})
 
 	return runPCtx, runErr
+}
+
+func (c *Coordinator) prepareCart(ctx context.Context, cart cartDomain.Cart) (*cartDomain.Cart, error) {
+	_, err := c.cartService.ForceReserveOrderIDAndSave(ctx, web.SessionFromContext(ctx))
+	if err != nil {
+		return nil, err
+	}
+
+	paymentSelection, err := cart.PaymentSelection.GenerateNewIdempotencyKey()
+	if err != nil {
+		return nil, err
+	}
+
+	err = c.cartService.UpdatePaymentSelection(ctx, web.SessionFromContext(ctx), paymentSelection)
+	if err != nil {
+		return nil, err
+	}
+
+	newCart, _, err := c.cartService.GetCartReceiverService().GetCart(ctx, web.SessionFromContext(ctx))
+	return newCart, err
 }
 
 // HasUnfinishedProcess checks for processes not in final state
