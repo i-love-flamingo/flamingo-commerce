@@ -3,6 +3,8 @@ package placeorder
 import (
 	"context"
 	"errors"
+	"math/rand"
+	"strconv"
 
 	authDomain "flamingo.me/flamingo/v3/core/oauth/domain"
 
@@ -72,7 +74,7 @@ func (f *FakeAdapter) ReserveOrderID(_ context.Context, cart *cartDomain.Cart) (
 	if forcedError != "" {
 		return "", errors.New(forcedError)
 	}
-	return cart.ID, nil
+	return cart.ID + "-" + strconv.Itoa(rand.Int()), nil
 }
 
 // CancelGuestOrder cancels a guest order

@@ -3,11 +3,12 @@ package graphql
 import (
 	"context"
 	"errors"
+	"net/url"
+
 	cartForms "flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
 	formApplication "flamingo.me/form/application"
 	"flamingo.me/form/domain"
-	"net/url"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo/v3/framework/web"

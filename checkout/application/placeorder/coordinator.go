@@ -147,6 +147,10 @@ func (c *Coordinator) prepareCart(ctx context.Context, cart cartDomain.Cart) (*c
 		return nil, err
 	}
 
+	if cart.PaymentSelection == nil {
+		return &cart, nil
+	}
+
 	paymentSelection, err := cart.PaymentSelection.GenerateNewIdempotencyKey()
 	if err != nil {
 		return nil, err

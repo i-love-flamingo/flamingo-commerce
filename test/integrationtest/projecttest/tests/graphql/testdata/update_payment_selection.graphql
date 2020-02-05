@@ -1,0 +1,8 @@
+mutation {
+    Commerce_Cart_UpdateSelectedPayment(
+        gateway: "fake_payment_gateway"
+        method: "###PAYMENT_METHOD###"
+    ) {
+        processed
+    }
+}

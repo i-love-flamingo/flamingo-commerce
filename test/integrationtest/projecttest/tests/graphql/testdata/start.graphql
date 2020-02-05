@@ -1,0 +1,5 @@
+mutation {
+    Commerce_Checkout_StartPlaceOrder(returnUrl: ""){
+        uuid
+    }
+}

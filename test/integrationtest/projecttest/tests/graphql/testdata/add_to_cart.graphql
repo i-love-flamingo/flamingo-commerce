@@ -1,0 +1,11 @@
+mutation {
+    Commerce_AddToCart(
+        marketplaceCode: "fake_simple"
+        qty: 1
+        deliveryCode: "delivery"
+    ) {
+        cart {
+            id
+        }
+    }
+}
