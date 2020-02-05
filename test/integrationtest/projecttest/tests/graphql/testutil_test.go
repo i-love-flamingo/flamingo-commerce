@@ -1,24 +1,48 @@
 package graphql_test
 
 import (
+	"fmt"
+	"io/ioutil"
 	"net/http"
+	"path"
+	"strings"
 	"testing"
 
-	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/helper"
 	"github.com/gavv/httpexpect/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/helper"
 )
+
+func loadGraphQL(t *testing.T, name string, replacements map[string]string) string {
+	t.Helper()
+	content, err := ioutil.ReadFile(path.Join("testdata", name+".graphql"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	r := make([]string, 2*len(replacements))
+	i := 0
+	for key, val := range replacements {
+		r[i] = fmt.Sprintf("###%s###", key)
+		r[i+1] = val
+		i = i + 2
+	}
+	replacer := strings.NewReplacer(r...)
+
+	return replacer.Replace(string(content))
+}
 
 func assertRefreshPlaceOrder(t *testing.T, e *httpexpect.Expect, blocking bool) (*httpexpect.Response, string) {
 	t.Helper()
 	mutationName := "Commerce_Checkout_RefreshPlaceOrder"
-
+	fileName := "refresh"
 	if blocking {
 		mutationName = "Commerce_Checkout_RefreshPlaceOrderBlocking"
+		fileName = "refresh_blocking"
 	}
-	mutation := `mutation { ` + mutationName + ` { uuid, state { name, __typename
-... on Commerce_Checkout_PlaceOrderState_State_Redirect { URL }, ... on Commerce_Checkout_PlaceOrderState_State_PostRedirect { URL Parameters { key value } }, ... on Commerce_Checkout_PlaceOrderState_State_ShowHTML { HTML }, ... on Commerce_Checkout_PlaceOrderState_State_ShowIframe { URL }, ... on Commerce_Checkout_PlaceOrderState_State_Failed { reason{ __typename reason } } } } }`
+	mutation := loadGraphQL(t, fileName, nil)
 	request := helper.GraphQlRequest(t, e, mutation)
 	response := request.Expect()
 	t.Log(response.Body())
@@ -27,9 +51,9 @@ func assertRefreshPlaceOrder(t *testing.T, e *httpexpect.Expect, blocking bool) 
 	return response, refreshUUID.(string)
 }
 
-func assertStartPlaceOrderWithValidUUID(t *testing.T, e *httpexpect.Expect) (*httpexpect.Response, interface{}) {
+func assertStartPlaceOrderWithValidUUID(t *testing.T, e *httpexpect.Expect) (*httpexpect.Response, string) {
 	t.Helper()
-	mutation := `mutation {Commerce_Checkout_StartPlaceOrder(returnUrl: "placeorder") { uuid }}`
+	mutation := loadGraphQL(t, "start", nil)
 	request := helper.GraphQlRequest(t, e, mutation)
 	response := request.Expect()
 	t.Log(response.Body())
@@ -37,7 +61,7 @@ func assertStartPlaceOrderWithValidUUID(t *testing.T, e *httpexpect.Expect) (*ht
 	uuid := getValue(response, "Commerce_Checkout_StartPlaceOrder", "uuid").Raw()
 	require.IsType(t, "string", uuid)
 	assert.Regexp(t, "(?i)^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$", uuid)
-	return response, uuid
+	return response, uuid.(string)
 }
 
 func getValue(response *httpexpect.Response, queryName, key string) *httpexpect.Value {

@@ -22,23 +22,13 @@ import (
 // prepareCartWithPaymentSelection adds a simple product via graphQl
 func prepareCartWithPaymentSelection(t *testing.T, e *httpexpect.Expect, paymentMethod string) {
 	t.Helper()
-	query := `mutation {
-  Commerce_AddToCart(marketplaceCode: "fake_simple", qty: 1, deliveryCode: "delivery") {
-    cart { id }
-  }
-
-  Commerce_Cart_UpdateSelectedPayment( gateway: "fake_payment_gateway", method: "` + paymentMethod + `" ) { processed }
-}`
-
-	response := helper.GraphQlRequest(t, e, query).Expect()
-	response.Status(http.StatusOK)
+	helper.GraphQlRequest(t, e, loadGraphQL(t, "add_to_cart", nil)).Expect().Status(http.StatusOK)
+	helper.GraphQlRequest(t, e, loadGraphQL(t, "update_payment_selection", map[string]string{"PAYMENT_METHOD": paymentMethod})).Expect().Status(http.StatusOK)
 }
 
 func updatePaymentSelection(t *testing.T, e *httpexpect.Expect, paymentMethod string) {
 	t.Helper()
-	query := `mutation {
-  Commerce_Cart_UpdateSelectedPayment( gateway: "fake_payment_gateway", method: "` + paymentMethod + `" ) { processed }
-}`
+	query := loadGraphQL(t, "update_payment_selection", map[string]string{"PAYMENT_METHOD": paymentMethod})
 
 	response := helper.GraphQlRequest(t, e, query).Expect()
 	response.Status(http.StatusOK)
@@ -279,4 +269,5 @@ func Test_RestartStartPlaceOrder(t *testing.T) {
 // - with running
 // - without running
 func Test_ActivePlaceOrder(t *testing.T) {
+	//@thorsten
 }
