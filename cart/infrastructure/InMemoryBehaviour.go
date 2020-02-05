@@ -76,10 +76,9 @@ func (cob *InMemoryBehaviour) Complete(_ context.Context, cart *domaincart.Cart)
 	return cart, nil, nil
 }
 
-// Restore supplied cart and store with new ID
+// Restore supplied cart
 func (cob *InMemoryBehaviour) Restore(_ context.Context, cart *domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	newCart := cart
-	newCart.ID = strconv.Itoa(rand.Int())
 	err := cob.cartStorage.StoreCart(newCart)
 	if err != nil {
 		return nil, nil, err
