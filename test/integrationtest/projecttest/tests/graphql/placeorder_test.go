@@ -30,7 +30,18 @@ func prepareCartWithPaymentSelection(t *testing.T, e *httpexpect.Expect, payment
   Commerce_Cart_UpdateSelectedPayment( gateway: "fake_payment_gateway", method: "` + paymentMethod + `" ) { processed }
 }`
 
-	helper.GraphQlRequest(t, e, query).Expect().Status(http.StatusOK)
+	response := helper.GraphQlRequest(t, e, query).Expect()
+	response.Status(http.StatusOK)
+}
+
+func updatePaymentSelection(t *testing.T, e *httpexpect.Expect, paymentMethod string) {
+	t.Helper()
+	query := `mutation {
+  Commerce_Cart_UpdateSelectedPayment( gateway: "fake_payment_gateway", method: "` + paymentMethod + `" ) { processed }
+}`
+
+	response := helper.GraphQlRequest(t, e, query).Expect()
+	response.Status(http.StatusOK)
 }
 
 func Test_PlaceOrderWithPaymentService(t *testing.T) {
@@ -156,27 +167,13 @@ func Test_PlaceOrderWithPaymentService(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			e := httpexpect.New(t, baseURL)
 			prepareCartWithPaymentSelection(t, e, tt.gatewayMethod)
-			mutation := `mutation {Commerce_Checkout_StartPlaceOrder(returnUrl: "placeorder") { uuid }}`
-
-			request := helper.GraphQlRequest(t, e, mutation)
-			response := request.Expect()
-			t.Log(response.Body())
-			response.Status(http.StatusOK)
-			uuid := getValue(response, "Commerce_Checkout_StartPlaceOrder", "uuid").Raw()
-			require.IsType(t, "string", uuid)
-			assert.Regexp(t, "(?i)^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$", uuid)
+			_, uuid := assertStartPlaceOrderWithValidUUID(t, e)
 
 			var actualState interface{}
-
 			helper.AsyncCheckWithTimeout(t, time.Second, func() error {
-				mutation = `mutation { Commerce_Checkout_RefreshPlaceOrderBlocking { uuid, state { name, __typename, ... on Commerce_Checkout_PlaceOrderState_State_Redirect { URL }, ... on Commerce_Checkout_PlaceOrderState_State_PostRedirect { URL Parameters { key value } }, ... on Commerce_Checkout_PlaceOrderState_State_ShowHTML { HTML }, ... on Commerce_Checkout_PlaceOrderState_State_ShowIframe { URL }, ... on Commerce_Checkout_PlaceOrderState_State_Failed { reason{ __typename reason } } } } }`
-				request = helper.GraphQlRequest(t, e, mutation)
-				response = request.Expect()
-				t.Log(response.Body())
-				refreshUUID := getValue(response, "Commerce_Checkout_RefreshPlaceOrderBlocking", "uuid").Raw()
-				require.IsType(t, "string", refreshUUID)
+				response, refreshUUID := assertRefreshPlaceOrder(t, e, false)
 				assert.Equal(t, uuid, refreshUUID, "uuid has changed")
-				actualState = getValue(response, "Commerce_Checkout_RefreshPlaceOrderBlocking", "state").Raw()
+				actualState = getValue(response, "Commerce_Checkout_RefreshPlaceOrder", "state").Raw()
 				if diff := cmp.Diff(actualState, tt.expectedState); diff != "" {
 					return fmt.Errorf("timeout reached, -actual state +expected state =%v", diff)
 				}
@@ -186,17 +183,58 @@ func Test_PlaceOrderWithPaymentService(t *testing.T) {
 	}
 }
 
-func getValue(response *httpexpect.Response, queryName, key string) *httpexpect.Value {
-	return response.JSON().Object().Value("data").Object().Value(queryName).Object().Value(key)
-}
-
 // TODO: Test place order with fake order service, success / fail / fail during rollback / success during rollback
 func Test_PlaceOrderWithOrderService(t *testing.T) {
-	baseURL := "http://" + FlamingoURL
+	t.Run("PlaceOrder fails due to payment error, rollback of place order fails, restart afterwards can succeed ", func(t *testing.T) {
+		baseURL := "http://" + FlamingoURL
 
-	e := httpexpect.New(t, baseURL)
-	prepareCartWithPaymentSelection(t, e, domain.PaymentFlowStatusCompleted)
-	placeorder.NextCancelFails = true
+		e := httpexpect.New(t, baseURL)
+		prepareCartWithPaymentSelection(t, e, domain.PaymentFlowStatusFailed)
+		placeorder.NextCancelFails = true
+
+		_, uuid := assertStartPlaceOrderWithValidUUID(t, e)
+
+		var actualState interface{}
+		expectedState := map[string]interface{}{
+			"name":       states.Failed{}.Name(),
+			"__typename": "Commerce_Checkout_PlaceOrderState_State_Failed",
+			"reason": map[string]interface{}{
+				"__typename": "Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError",
+				"reason":     "",
+			},
+		}
+		helper.AsyncCheckWithTimeout(t, time.Second, func() error {
+			response, refreshUUID := assertRefreshPlaceOrder(t, e, false)
+			require.IsType(t, "string", refreshUUID)
+			assert.Equal(t, uuid, refreshUUID, "uuid has changed")
+			actualState = getValue(response, "Commerce_Checkout_RefreshPlaceOrder", "state").Raw()
+
+			if diff := cmp.Diff(actualState, expectedState); diff != "" {
+				return fmt.Errorf("timeout reached, -actual state +expected state =%v", diff)
+			}
+			return nil
+		})
+
+		updatePaymentSelection(t, e, domain.PaymentFlowStatusApproved)
+
+		_, uuid = assertStartPlaceOrderWithValidUUID(t, e)
+
+		expectedState = map[string]interface{}{
+			"name":       states.Success{}.Name(),
+			"__typename": "Commerce_Checkout_PlaceOrderState_State_Success",
+		}
+		helper.AsyncCheckWithTimeout(t, time.Second, func() error {
+			response, refreshUUID := assertRefreshPlaceOrder(t, e, false)
+			require.IsType(t, "string", refreshUUID)
+			assert.Equal(t, uuid, refreshUUID, "uuid has changed")
+			actualState = getValue(response, "Commerce_Checkout_RefreshPlaceOrder", "state").Raw()
+
+			if diff := cmp.Diff(actualState, expectedState); diff != "" {
+				return fmt.Errorf("timeout reached, -actual state +expected state =%v", diff)
+			}
+			return nil
+		})
+	})
 
 }
 
