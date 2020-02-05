@@ -11,6 +11,8 @@ import (
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/states"
 	"flamingo.me/flamingo-commerce/v3/payment/domain"
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/helper"
+	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/modules/placeorder"
+
 	"github.com/gavv/httpexpect/v2"
 	"github.com/google/go-cmp/cmp"
 	"github.com/stretchr/testify/assert"
@@ -190,6 +192,11 @@ func getValue(response *httpexpect.Response, queryName, key string) *httpexpect.
 
 // TODO: Test place order with fake order service, success / fail / fail during rollback / success during rollback
 func Test_PlaceOrderWithOrderService(t *testing.T) {
+	baseURL := "http://" + FlamingoURL
+
+	e := httpexpect.New(t, baseURL)
+	prepareCartWithPaymentSelection(t, e, domain.PaymentFlowStatusCompleted)
+	placeorder.NextCancelFails = true
 
 }
 
