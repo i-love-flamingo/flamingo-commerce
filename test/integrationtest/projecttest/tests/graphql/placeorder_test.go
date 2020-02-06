@@ -233,6 +233,33 @@ func Test_PlaceOrderWithOrderService(t *testing.T) {
 // - with invalid cart
 // - when place order process already running
 func Test_StartPlaceOrder(t *testing.T) {
+	baseURL := "http://" + FlamingoURL
+	t.Run("no payment selection", func(t *testing.T) {
+		e := httpexpect.New(t, baseURL)
+		assertStartPlaceOrderWithValidUUID(t, e)
+
+		response, _ := assertRefreshPlaceOrder(t, e, true)
+
+		actualState := getValue(response, "Commerce_Checkout_RefreshPlaceOrderBlocking", "state")
+		reason := actualState.Object().Value("reason").Object()
+		assert.Equal(t, "Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError", reason.Value("__typename").Raw())
+		assert.Equal(t, "PaymentSelection not set", reason.Value("reason").Raw())
+	})
+
+	t.Run("already running process", func(t *testing.T) {
+		e := httpexpect.New(t, baseURL)
+		prepareCartWithPaymentSelection(t, e, domain.PaymentFlowActionShowIframe)
+
+		_, firstUUID := assertStartPlaceOrderWithValidUUID(t, e)
+
+		_, refreshUUID := assertRefreshPlaceOrder(t, e, true)
+		assert.Equal(t, firstUUID, refreshUUID)
+
+		_, secondUUID := assertStartPlaceOrderWithValidUUID(t, e)
+
+		assert.Equal(t, firstUUID, secondUUID)
+
+	})
 
 }
 
