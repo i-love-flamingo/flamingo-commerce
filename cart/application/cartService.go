@@ -298,7 +298,7 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 		return err
 	}
 
-	cs.eventPublisher.PublishChangedQtyInCartEvent(ctx, item, qtyBefore, qty, cart.ID)
+	cs.eventPublisher.PublishChangedQtyInCartEvent(ctx, cart, item, qtyBefore, qty)
 	itemUpdate := cartDomain.ItemUpdateCommand{
 		Qty:            &qty,
 		ItemID:         itemID,
@@ -411,7 +411,7 @@ func (cs *CartService) DeleteItem(ctx context.Context, session *web.Session, ite
 	}
 
 	qtyBefore := item.Qty
-	cs.eventPublisher.PublishChangedQtyInCartEvent(ctx, item, qtyBefore, 0, cart.ID)
+	cs.eventPublisher.PublishChangedQtyInCartEvent(ctx, cart, item, qtyBefore, 0)
 
 	cart, defers, err = behaviour.DeleteItem(ctx, cart, itemID, deliveryCode)
 	if err != nil {
@@ -440,7 +440,7 @@ func (cs *CartService) DeleteAllItems(ctx context.Context, session *web.Session)
 	for _, delivery := range cart.Deliveries {
 		for _, item := range delivery.Cartitems {
 			qtyBefore := item.Qty
-			cs.eventPublisher.PublishChangedQtyInCartEvent(ctx, &item, qtyBefore, 0, cart.ID)
+			cs.eventPublisher.PublishChangedQtyInCartEvent(ctx, cart, &item, qtyBefore, 0)
 
 			cart, defers, err = behaviour.DeleteItem(ctx, cart, item.ID, delivery.DeliveryInfo.Code)
 			if err != nil {
@@ -471,7 +471,7 @@ func (cs *CartService) Clean(ctx context.Context, session *web.Session) error {
 	for _, delivery := range cart.Deliveries {
 		for _, item := range delivery.Cartitems {
 			qtyBefore := item.Qty
-			cs.eventPublisher.PublishChangedQtyInCartEvent(ctx, &item, qtyBefore, 0, cart.ID)
+			cs.eventPublisher.PublishChangedQtyInCartEvent(ctx, cart, &item, qtyBefore, 0)
 		}
 	}
 
@@ -503,7 +503,7 @@ func (cs *CartService) DeleteDelivery(ctx context.Context, session *web.Session,
 	}
 	for _, item := range delivery.Cartitems {
 		qtyBefore := item.Qty
-		cs.eventPublisher.PublishChangedQtyInCartEvent(ctx, &item, qtyBefore, 0, cart.ID)
+		cs.eventPublisher.PublishChangedQtyInCartEvent(ctx, cart, &item, qtyBefore, 0)
 	}
 
 	cart, defers, err = behaviour.CleanDelivery(ctx, cart, deliveryCode)
@@ -751,7 +751,7 @@ func (cs *CartService) checkProductQtyRestrictions(ctx context.Context, product 
 
 func (cs *CartService) publishAddtoCartEvent(ctx context.Context, currentCart cartDomain.Cart, addRequest cartDomain.AddRequest) {
 	if cs.eventPublisher != nil {
-		cs.eventPublisher.PublishAddToCartEvent(ctx, addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode, addRequest.Qty)
+		cs.eventPublisher.PublishAddToCartEvent(ctx, &currentCart, addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode, addRequest.Qty)
 	}
 }
 

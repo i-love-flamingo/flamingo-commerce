@@ -54,3 +54,10 @@
 
 # 17. January 2020
 * Add `AppliedGiftCard` convenience function `Total()`
+
+# 6. February 2020
+* Breaking Change to `EventPublisher` interface, `PublishChangedQtyInCartEvent` and `PublishAddToCartEvent` now
+include a cart as a parameter
+* The `AddToCartEvent` includes the current cart (with added product)
+* The `ChangedQtyInCartEvent` includes the current cart (with updated quantities)
+* Add Whitebox Test `TestCartService_CartInEvent` to check `AddToCartEvent`

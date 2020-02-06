@@ -18,6 +18,7 @@ import (
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/pkg/errors"
+	"github.com/stretchr/testify/mock"
 )
 
 type (
@@ -153,20 +154,28 @@ func (m *MockCartCache) BuildIdentifier(context.Context, *web.Session) (cartAppl
 // MockEventPublisher
 
 type (
-	MockEventPublisher struct{}
+	MockEventPublisher struct {
+		mock.Mock
+	}
 )
 
 var (
 	_ events.EventPublisher = (*MockEventPublisher)(nil)
 )
 
-func (m *MockEventPublisher) PublishAddToCartEvent(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode string, qty int) {
+func (m *MockEventPublisher) PublishAddToCartEvent(ctx context.Context, cart *cartDomain.Cart, marketPlaceCode string, variantMarketPlaceCode string, qty int) {
+	// we just add item count for white box test
+	m.Called(ctx, cart.ItemCount(), marketPlaceCode, variantMarketPlaceCode, qty)
 }
 
-func (m *MockEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context, item *cartDomain.Item, qtyBefore int, qtyAfter int, cartID string) {
+func (m *MockEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context, cart *cartDomain.Cart, item *cartDomain.Item, qtyBefore int, qtyAfter int) {
+	// we just add item count for white box test
+	m.Called(ctx, cart.ItemCount(), item, qtyBefore, qtyAfter)
 }
 
 func (m *MockEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos placeorder.PlacedOrderInfos) {
+	// we just add item count for white box test
+	m.Called(ctx, cart.ItemCount(), placedOrderInfos)
 }
 
 // MockCartValidator

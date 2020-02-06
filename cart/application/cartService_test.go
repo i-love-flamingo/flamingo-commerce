@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/go-test/deep"
+	"github.com/stretchr/testify/mock"
 
 	"flamingo.me/flamingo-commerce/v3/cart/infrastructure"
 
@@ -147,7 +148,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 		CartReceiverService *cartApplication.CartReceiverService
 		ProductService      productDomain.ProductService
 		Logger              flamingo.Logger
-		EventPublisher      events.EventPublisher
+		EventPublisher      *MockEventPublisher
 		EventRouter         flamingo.EventRouter
 		RestrictionService  *validation.RestrictionService
 		config              *struct {
@@ -375,6 +376,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			tt.fields.EventPublisher.On("PublishChangedQtyInCartEvent", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return()
 			cs := &cartApplication.CartService{}
 			cs.Inject(
 				tt.fields.CartReceiverService,
@@ -772,7 +774,7 @@ func (m *MockGuestCartServiceWithModifyBehaviour) GetModifyBehaviour(context.Con
 
 	cob.Inject(
 		storage,
-		nil,
+		&MockProductService{},
 		flamingo.NullLogger{},
 		func() *cartDomain.ItemBuilder {
 			return &cartDomain.ItemBuilder{}
@@ -930,4 +932,89 @@ func (mpos *MockPlaceOrderService) CancelGuestOrder(ctx context.Context, orderIn
 
 func (mpos *MockPlaceOrderService) CancelCustomerOrder(ctx context.Context, orderInfos placeorder.PlacedOrderInfos, auth oauth.Auth) error {
 	return nil
+}
+
+func TestCartService_CartInEvent(t *testing.T) {
+	// bootstrap cart service
+	authmanager := &authApplication.AuthManager{}
+	authmanager.Inject(&flamingo.NullLogger{}, nil, nil)
+	userservice := &authApplication.UserService{}
+	userservice.Inject(authmanager, nil)
+	cartReceiverService := func() *cartApplication.CartReceiverService {
+		result := &cartApplication.CartReceiverService{}
+		result.Inject(
+			new(MockGuestCartServiceWithModifyBehaviour),
+			new(MockCustomerCartService),
+			func() *decorator.DecoratedCartFactory {
+				result := &decorator.DecoratedCartFactory{}
+				result.Inject(
+					&MockProductService{},
+					flamingo.NullLogger{},
+				)
+
+				return result
+			}(),
+			authmanager,
+			userservice,
+			flamingo.NullLogger{},
+			nil,
+			&struct {
+				CartCache cartApplication.CartCache `inject:",optional"`
+			}{
+				CartCache: new(MockCartWithItemCacheWithAdditionalData),
+			},
+		)
+		return result
+	}()
+	productService := &MockProductService{}
+	logger := flamingo.NullLogger{}
+	eventPublisher := new(MockEventPublisher)
+	eventPublisher.On("PublishAddToCartEvent", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return()
+	config := &struct {
+		DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
+		DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
+	}{
+		DefaultDeliveryCode: "default_delivery_code",
+		DeleteEmptyDelivery: false,
+	}
+	deliveryInfoBuilder := new(MockDeliveryInfoBuilder)
+	restrictionService := func() *validation.RestrictionService {
+		rs := &validation.RestrictionService{}
+		rs.Inject(
+			[]validation.MaxQuantityRestrictor{
+				&MockRestrictor{},
+			},
+		)
+		return rs
+	}()
+
+	// init cart service with dependencies
+	cartService := cartApplication.CartService{}
+	cartService.Inject(
+		cartReceiverService,
+		productService,
+		eventPublisher,
+		nil,
+		deliveryInfoBuilder,
+		restrictionService,
+		authmanager,
+		logger,
+		config,
+		nil,
+	)
+
+	// add product to cart, we expect event to be thrown with updated cart
+	addRequest := cartDomain.AddRequest{
+		MarketplaceCode: "code-1",
+		Qty:             1,
+	}
+	ctx := context.Background()
+	session := web.EmptySession()
+	cartService.AddProduct(ctx, session, "default_delivery_code", addRequest)
+
+	// white box tests that event publisher has been called with the expected parameters
+	eventPublisher.AssertNumberOfCalls(t, "PublishAddToCartEvent", 1)
+	// quantity of item in cart receiver mock is 7, if product has been added should be 8
+	// this shows that the cart received by the event is the current updated cart
+	eventPublisher.AssertCalled(t, "PublishAddToCartEvent", ctx, 8, "code-1", "", 1)
 }

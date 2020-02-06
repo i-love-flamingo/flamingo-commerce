@@ -14,6 +14,7 @@ type (
 
 	// AddToCartEvent defines event properties
 	AddToCartEvent struct {
+		Cart                   *cartDomain.Cart
 		MarketplaceCode        string
 		VariantMarketplaceCode string
 		ProductName            string
@@ -22,6 +23,8 @@ type (
 
 	// ChangedQtyInCartEvent defines event properties
 	ChangedQtyInCartEvent struct {
+		Cart *cartDomain.Cart
+		// Deprecated: CartID exists for compatibility, use Cart instead
 		CartID                 string
 		MarketplaceCode        string
 		VariantMarketplaceCode string
