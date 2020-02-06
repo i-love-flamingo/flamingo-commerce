@@ -62,6 +62,7 @@ type (
 	// This can for example be used to invalidate gift cards
 	CompleteBehaviour interface {
 		Complete(context.Context, *Cart) (*Cart, DeferEvents, error)
+		// Restore should reopen the cart while maintaining the previously used cart id
 		Restore(context.Context, *Cart) (*Cart, DeferEvents, error)
 	}
 
