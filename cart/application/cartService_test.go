@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/go-test/deep"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
 	"flamingo.me/flamingo-commerce/v3/cart/infrastructure"
@@ -1010,8 +1011,8 @@ func TestCartService_CartInEvent(t *testing.T) {
 	}
 	ctx := context.Background()
 	session := web.EmptySession()
-	cartService.AddProduct(ctx, session, "default_delivery_code", addRequest)
-
+	_, err := cartService.AddProduct(ctx, session, "default_delivery_code", addRequest)
+	assert.Nil(t, err)
 	// white box tests that event publisher has been called with the expected parameters
 	eventPublisher.AssertNumberOfCalls(t, "PublishAddToCartEvent", 1)
 	// quantity of item in cart receiver mock is 7, if product has been added should be 8
