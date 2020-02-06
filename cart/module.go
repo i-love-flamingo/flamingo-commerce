@@ -108,6 +108,9 @@ func (m *Module) DefaultConfig() config.Map {
 				"cacheLifetime":                  float64(1200), // in seconds
 				"enableCartCache":                true,
 				"defaultUseBillingAddress":       false,
+				"simplePaymentForm": config.Map{
+					"giftCardPaymentMethod": "voucher",
+				},
 			},
 		},
 	}

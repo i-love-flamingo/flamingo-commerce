@@ -18,7 +18,7 @@ import (
 )
 
 type (
-	//SimplePaymentForm - the form for simple select of payment gateway
+	// SimplePaymentForm the form for simple select of payment gateway
 	SimplePaymentForm struct {
 		Gateway string `form:"gateway"  validate:"required"`
 		Method  string `form:"method"  validate:"required"`
@@ -28,9 +28,10 @@ type (
 	SimplePaymentFormService struct {
 		userService                    *authApplication.UserService
 		applicationCartReceiverService *cartApplication.CartReceiverService
+		giftCardPaymentMethod          string
 	}
 
-	// SimplePaymentFormController - the (mini) MVC
+	// SimplePaymentFormController the (mini) MVC
 	SimplePaymentFormController struct {
 		responder                      *web.Responder
 		applicationCartService         *cartApplication.CartService
@@ -43,12 +44,19 @@ type (
 	}
 )
 
-// Inject - dependencies
+// Inject dependencies
 func (p *SimplePaymentFormService) Inject(
 	userService *authApplication.UserService,
-	applicationCartReceiverService *cartApplication.CartReceiverService) {
+	applicationCartReceiverService *cartApplication.CartReceiverService,
+	config *struct {
+		GiftCardPaymentMethod string `inject:"config:commerce.cart.simplePaymentForm.giftCardPaymentMethod"`
+	},
+) {
 	p.userService = userService
 	p.applicationCartReceiverService = applicationCartReceiverService
+	if config != nil {
+		p.giftCardPaymentMethod = config.GiftCardPaymentMethod
+	}
 }
 
 // GetFormData from data provider
@@ -71,7 +79,7 @@ func (p *SimplePaymentFormService) GetFormData(ctx context.Context, req *web.Req
 	return SimplePaymentForm{}, nil
 }
 
-//Inject - Inject
+// Inject dependencies
 func (c *SimplePaymentFormController) Inject(responder *web.Responder,
 	applicationCartService *cartApplication.CartService,
 	applicationCartReceiverService *cartApplication.CartReceiverService,
@@ -96,7 +104,7 @@ func (c *SimplePaymentFormController) getFormHandler() (domain.FormHandler, erro
 	return builder.Build(), nil
 }
 
-//GetUnsubmittedForm - returns unsubmitted
+// GetUnsubmittedForm returns unsubmitted
 func (c *SimplePaymentFormController) GetUnsubmittedForm(ctx context.Context, r *web.Request) (*domain.Form, error) {
 	formHandler, err := c.getFormHandler()
 	if err != nil {
@@ -105,7 +113,7 @@ func (c *SimplePaymentFormController) GetUnsubmittedForm(ctx context.Context, r 
 	return formHandler.HandleUnsubmittedForm(ctx, r)
 }
 
-//HandleFormAction - return the form or error. If the form was submitted the action is performed
+// HandleFormAction return the form or error. If the form was submitted the action is performed
 func (c *SimplePaymentFormController) HandleFormAction(ctx context.Context, r *web.Request) (form *domain.Form, actionSuccessFull bool, err error) {
 	session := web.SessionFromContext(ctx)
 	formHandler, err := c.getFormHandler()
@@ -128,7 +136,8 @@ func (c *SimplePaymentFormController) HandleFormAction(ctx context.Context, r *w
 	if err != nil {
 		return nil, false, err
 	}
-	paymentSelection := simplePaymentForm.MapToPaymentSelection(currentCart)
+
+	paymentSelection := c.simplePaymentFormService.MapFormToPaymentSelection(simplePaymentForm, currentCart)
 
 	//update cart
 	err = c.applicationCartService.UpdatePaymentSelection(ctx, session, paymentSelection)
@@ -139,10 +148,11 @@ func (c *SimplePaymentFormController) HandleFormAction(ctx context.Context, r *w
 	return form, true, nil
 }
 
-//MapToPaymentSelection - mapper from form values to domain
-func (f *SimplePaymentForm) MapToPaymentSelection(currentCart *cartDomain.Cart) cartDomain.PaymentSelection {
+// MapFormToPaymentSelection maps form values to a valid payment selection
+func (p *SimplePaymentFormService) MapFormToPaymentSelection(f SimplePaymentForm, currentCart *cartDomain.Cart) cartDomain.PaymentSelection {
 	chargeTypeToPaymentMethod := map[string]string{
-		priceDomain.ChargeTypeMain: f.Method,
+		priceDomain.ChargeTypeMain:     f.Method,
+		priceDomain.ChargeTypeGiftCard: p.giftCardPaymentMethod,
 	}
 	selection, _ := cartDomain.NewDefaultPaymentSelection(f.Gateway, chargeTypeToPaymentMethod, *currentCart)
 	return selection
