@@ -23,7 +23,8 @@ type (
 )
 
 var (
-	_               placeorder.Service = new(FakeAdapter)
+	_ placeorder.Service = new(FakeAdapter)
+	// NextCancelFails can be set to let the next call to any FakeAdapter's instance fail
 	NextCancelFails bool
 )
 
