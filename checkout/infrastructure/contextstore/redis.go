@@ -28,6 +28,7 @@ func (r *Redis) Inject(cfg *struct {
 	IdleTimeOutMilliseconds int    `inject:"config:commerce.checkout.placeorder.contextstore.redis.idleTimeOutMilliseconds"`
 	Network                 string `inject:"config:commerce.checkout.placeorder.contextstore.redis.network"`
 	Address                 string `inject:"config:commerce.checkout.placeorder.contextstore.redis.address"`
+	Database                int    `inject:"config:commerce.checkout.placeorder.contextstore.redis.database"`
 }) *Redis {
 	if cfg != nil {
 		r.pool = &redis.Pool{
@@ -38,12 +39,11 @@ func (r *Redis) Inject(cfg *struct {
 				return err
 			},
 			Dial: func() (redis.Conn, error) {
-				return redis.Dial(cfg.Network, cfg.Address)
+				return redis.Dial(cfg.Network, cfg.Address, redis.DialDatabase(cfg.Database))
 			},
 		}
+		runtime.SetFinalizer(r, func(r *Redis) { r.pool.Close() }) // close all connections on destruction
 	}
-
-	runtime.SetFinalizer(r, func(r *Redis) { r.pool.Close() }) // close all connections on destruction
 
 	return r
 }
