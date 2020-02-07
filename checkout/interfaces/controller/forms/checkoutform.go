@@ -68,8 +68,8 @@ func (c *CheckoutFormController) Inject(responder *web.Responder,
 	simplePaymentFormController *cartInterfaceForms.SimplePaymentFormController,
 	personalDataFormController *cartInterfaceForms.PersonalDataFormController,
 	config *struct {
-		UseDeliveryForms    bool `inject:"config:checkout.useDeliveryForms"`
-		UsePersonalDataForm bool `inject:"config:checkout.usePersonalDataForm"`
+		UseDeliveryForms    bool `inject:"config:commerce.checkout.useDeliveryForms"`
+		UsePersonalDataForm bool `inject:"config:commerce.checkout.usePersonalDataForm"`
 	},
 ) {
 	c.responder = responder
