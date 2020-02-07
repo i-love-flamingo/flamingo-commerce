@@ -2,14 +2,14 @@ package checkout
 
 import (
 	"flamingo.me/dingo"
-	"flamingo.me/flamingo-commerce/v3/checkout/infrastructure/contextstore"
-	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql/dto"
-	"flamingo.me/flamingo-commerce/v3/payment"
-	"flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 	flamingographql "flamingo.me/graphql"
 	"github.com/go-playground/form"
+
+	"flamingo.me/flamingo-commerce/v3/checkout/infrastructure/contextstore"
+	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql/dto"
+	"flamingo.me/flamingo-commerce/v3/payment"
 
 	"flamingo.me/flamingo-commerce/v3/cart"
 	"flamingo.me/flamingo-commerce/v3/checkout/application/placeorder"
@@ -26,8 +26,8 @@ type (
 	// Module registers our profiler
 	Module struct {
 		UseFakeSourcingService bool   `inject:"config:checkout.useFakeSourcingService,optional"`
-		PlaceOrderLockType     string `inject:"config:checkout.placeorder.lockType,optional"`
-		PlaceOrderContextStore string `inject:"config:checkout.placeorder.contextStore,optional"`
+		PlaceOrderLockType     string `inject:"config:checkout.placeorder.lock.type,optional"`
+		PlaceOrderContextStore string `inject:"config:checkout.placeorder.contextstore.type,optional"`
 	}
 )
 
@@ -91,14 +91,54 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	injector.BindMulti(new(flamingographql.Service)).To(graphql.Service{})
 }
 
-// DefaultConfig for checkout module
-func (m *Module) DefaultConfig() config.Map {
-	return config.Map{
-		"checkout": config.Map{
-			"useDeliveryForms":    true,
-			"usePersonalDataForm": false,
-			"skipReviewAction":    false,
-		},
+// CueConfig definition
+func (m *Module) CueConfig() string {
+	return `
+commerce: checkout: {
+	redis :: {
+		maxIdle:                 int | *25
+		idleTimeoutMilliseconds: int | *240000
+		network:                 string | *"tcp"
+		address:                 string | *"localhost:6379"
+		database:                int | *0
+	}
+
+	useDeliveryForms:                bool | *true
+	usePersonalDataForm:             bool | *false
+	skipReviewAction:                bool | *false
+	skipStartAction:                 bool
+	showReviewStepAfterPaymentError: bool
+	showEmptyCartPageIfNoItems:      bool
+	redirectToCartOnInvalidCart:     bool
+	privacyPolicyRequired:           bool
+	placeorder: {
+		lock: {
+			type: *"memory" | "redis"
+			if type == "redis" {
+				redis: redis
+			}
+		}
+		contextstore: {
+			type: *"memory" | "redis"
+			if type == "redis" {
+				redis: redis
+			}
+		}
+	}
+}`
+}
+
+// FlamingoLegacyConfigAlias mapping
+func (m *Module) FlamingoLegacyConfigAlias() map[string]string {
+	return map[string]string{
+		"checkout.useDeliveryForms":                "commerce.checkout.useDeliveryForms",
+		"checkout.usePersonalDataForm":             "commerce.checkout.usePersonalDataForm",
+		"checkout.skipReviewAction":                "commerce.checkout.skipReviewAction",
+		"checkout.skipStartAction":                 "commerce.checkout.skipStartAction",
+		"checkout.showReviewStepAfterPaymentError": "commerce.checkout.showReviewStepAfterPaymentError",
+		"checkout.showEmptyCartPageIfNoItems":      "commerce.checkout.showEmptyCartPageIfNoItems",
+		"checkout.redirectToCartOnInvalideCart":    "commerce.checkout.redirectToCartOnInvalidCart",
+		"checkout.privacyPolicyRequired":           "commerce.checkout.privacyPolicyRequired",
 	}
 }
 

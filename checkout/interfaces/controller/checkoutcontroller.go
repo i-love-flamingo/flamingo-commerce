@@ -121,12 +121,12 @@ func (cc *CheckoutController) Inject(
 	logger flamingo.Logger,
 	checkoutFormController *forms.CheckoutFormController,
 	config *struct {
-		SkipStartAction                 bool `inject:"config:checkout.skipStartAction,optional"`
-		SkipReviewAction                bool `inject:"config:checkout.skipReviewAction,optional"`
-		ShowReviewStepAfterPaymentError bool `inject:"config:checkout.showReviewStepAfterPaymentError,optional"`
-		ShowEmptyCartPageIfNoItems      bool `inject:"config:checkout.showEmptyCartPageIfNoItems,optional"`
-		RedirectToCartOnInvalideCart    bool `inject:"config:checkout.redirectToCartOnInvalideCart,optional"`
-		PrivacyPolicyRequired           bool `inject:"config:checkout.privacyPolicyRequired,optional"`
+		SkipStartAction                 bool `inject:"config:commerce.checkout.skipStartAction,optional"`
+		SkipReviewAction                bool `inject:"config:commerce.checkout.skipReviewAction,optional"`
+		ShowReviewStepAfterPaymentError bool `inject:"config:commerce.checkout.showReviewStepAfterPaymentError,optional"`
+		ShowEmptyCartPageIfNoItems      bool `inject:"config:commerce.checkout.showEmptyCartPageIfNoItems,optional"`
+		RedirectToCartOnInvalideCart    bool `inject:"config:commerce.checkout.redirectToCartOnInvalidCart,optional"`
+		PrivacyPolicyRequired           bool `inject:"config:commerce.checkout.privacyPolicyRequired,optional"`
 		DevMode                         bool `inject:"config:debug.mode,optional"`
 	},
 ) {
