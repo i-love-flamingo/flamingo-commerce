@@ -14,6 +14,8 @@ type (
 	}
 )
 
+var _ process.ContextStore = new(Memory)
+
 // Inject dependencies
 func (m *Memory) Inject() *Memory {
 	m.storage = make(map[string]process.Context)

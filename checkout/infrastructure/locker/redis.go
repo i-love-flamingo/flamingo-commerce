@@ -22,6 +22,8 @@ type (
 	}
 )
 
+var _ placeorder.TryLock = &Redis{}
+
 // NewRedis creates a new distributed mutex using multiple Redis connection pools.
 func NewRedis(
 	cfg *struct {
@@ -58,8 +60,6 @@ func NewRedis(
 
 	return r
 }
-
-var _ placeorder.TryLock = &Redis{}
 
 // TryLock ties once to acquire a lock and returns the unlock func if successful
 func (r *Redis) TryLock(key string, maxlockduration time.Duration) (placeorder.Unlock, error) {

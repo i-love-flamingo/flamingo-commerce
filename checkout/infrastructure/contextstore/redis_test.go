@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/go-test/deep"
 	"github.com/gomodule/redigo/redis"
 	"github.com/ory/dockertest"
@@ -30,13 +31,15 @@ var (
 )
 
 func getRedisStore(network, address string) *contextstore.Redis {
-	return new(contextstore.Redis).Inject(&struct {
-		MaxIdle                 int    `inject:"config:commerce.checkout.placeorder.contextstore.redis.maxIdle"`
-		IdleTimeOutMilliseconds int    `inject:"config:commerce.checkout.placeorder.contextstore.redis.idleTimeOutMilliseconds"`
-		Network                 string `inject:"config:commerce.checkout.placeorder.contextstore.redis.network"`
-		Address                 string `inject:"config:commerce.checkout.placeorder.contextstore.redis.address"`
-		Database                int    `inject:"config:commerce.checkout.placeorder.contextstore.redis.database"`
-	}{MaxIdle: 3, IdleTimeOutMilliseconds: 240000, Network: network, Address: address, Database: 0})
+	return new(contextstore.Redis).Inject(
+		new(flamingo.NullLogger),
+		&struct {
+			MaxIdle                 int    `inject:"config:commerce.checkout.placeorder.contextstore.redis.maxIdle"`
+			IdleTimeOutMilliseconds int    `inject:"config:commerce.checkout.placeorder.contextstore.redis.idleTimeOutMilliseconds"`
+			Network                 string `inject:"config:commerce.checkout.placeorder.contextstore.redis.network"`
+			Address                 string `inject:"config:commerce.checkout.placeorder.contextstore.redis.address"`
+			Database                int    `inject:"config:commerce.checkout.placeorder.contextstore.redis.database"`
+		}{MaxIdle: 3, IdleTimeOutMilliseconds: 240000, Network: network, Address: address, Database: 0})
 }
 
 func prepareData(t *testing.T, conn redis.Conn) {
@@ -47,7 +50,7 @@ func prepareData(t *testing.T, conn redis.Conn) {
 	require.NoError(t, conn.Flush())
 }
 
-func startUpRedis(t *testing.T) (*tempredis.Server, redis.Conn) {
+func startUpLocalRedis(t *testing.T) (*tempredis.Server, redis.Conn) {
 	t.Helper()
 	server, err := tempredis.Start(tempredis.Config{})
 	if err != nil {
@@ -62,7 +65,7 @@ func startUpRedis(t *testing.T) (*tempredis.Server, redis.Conn) {
 	return server, conn
 }
 
-func startUpDocker(t *testing.T) (func(), string, redis.Conn) {
+func startUpDockerRedis(t *testing.T) (func(), string, redis.Conn) {
 	pool, err := dockertest.NewPool("")
 	if err != nil {
 		t.Skip("docker not installed")
@@ -124,7 +127,7 @@ func TestRedis_Get(t *testing.T) {
 		if _, err := exec.LookPath("redis-server"); err != nil {
 			t.Skip("redis-server not installed")
 		}
-		server, _ := startUpRedis(t)
+		server, _ := startUpLocalRedis(t)
 		store := getRedisStore("unix", server.Socket())
 		runTestCases(t, store)
 	})
@@ -132,7 +135,7 @@ func TestRedis_Get(t *testing.T) {
 		if _, err := exec.LookPath("docker"); err != nil {
 			t.Skip("docker not installed")
 		}
-		shutdown, address, _ := startUpDocker(t)
+		shutdown, address, _ := startUpDockerRedis(t)
 		defer shutdown()
 		store := getRedisStore("tcp", address)
 		runTestCases(t, store)
@@ -178,7 +181,7 @@ func TestRedis_Store(t *testing.T) {
 		if _, err := exec.LookPath("redis-server"); err != nil {
 			t.Skip("redis-server not installed")
 		}
-		server, conn := startUpRedis(t)
+		server, conn := startUpLocalRedis(t)
 		store := getRedisStore("unix", server.Socket())
 		runTestCases(t, store, conn)
 	})
@@ -186,7 +189,7 @@ func TestRedis_Store(t *testing.T) {
 		if _, err := exec.LookPath("docker"); err != nil {
 			t.Skip("docker not installed")
 		}
-		shutdown, address, conn := startUpDocker(t)
+		shutdown, address, conn := startUpDockerRedis(t)
 		defer shutdown()
 		store := getRedisStore("tcp", address)
 		runTestCases(t, store, conn)
@@ -223,7 +226,7 @@ func TestRedis_Delete(t *testing.T) {
 		if _, err := exec.LookPath("redis-server"); err != nil {
 			t.Skip("redis-server not installed")
 		}
-		server, conn := startUpRedis(t)
+		server, conn := startUpLocalRedis(t)
 		store := getRedisStore("unix", server.Socket())
 		runTestCases(t, store, conn)
 	})
@@ -231,10 +234,9 @@ func TestRedis_Delete(t *testing.T) {
 		if _, err := exec.LookPath("docker"); err != nil {
 			t.Skip("docker not installed")
 		}
-		shutdown, address, conn := startUpDocker(t)
+		shutdown, address, conn := startUpDockerRedis(t)
 		defer shutdown()
 		store := getRedisStore("tcp", address)
 		runTestCases(t, store, conn)
 	})
-
 }
