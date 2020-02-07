@@ -103,14 +103,14 @@ commerce: checkout: {
 		database:                int | *0
 	}
 
-	useDeliveryForms:                bool | *true
-	usePersonalDataForm:             bool | *false
-	skipReviewAction:                bool | *false
-	skipStartAction:                 bool
-	showReviewStepAfterPaymentError: bool
-	showEmptyCartPageIfNoItems:      bool
-	redirectToCartOnInvalidCart:     bool
-	privacyPolicyRequired:           bool
+	useDeliveryForms:                 bool | *true
+	usePersonalDataForm:              bool | *false
+	skipReviewAction:                 bool | *false
+	skipStartAction?:                 bool 
+	showReviewStepAfterPaymentError?: bool
+	showEmptyCartPageIfNoItems?:      bool
+	redirectToCartOnInvalidCart?:     bool
+	privacyPolicyRequired?:           bool
 	placeorder: {
 		lock: {
 			type: *"memory" | "redis"

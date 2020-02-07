@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os/exec"
 	"testing"
-	"time"
 
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/go-test/deep"
@@ -45,9 +44,10 @@ func getRedisStore(network, address string) *contextstore.Redis {
 func prepareData(t *testing.T, conn redis.Conn) {
 	buffer := new(bytes.Buffer)
 	require.NoError(t, gob.NewEncoder(buffer).Encode(testContext))
-	require.NoError(t, conn.Send("SET", existingKey, buffer))
-	require.NoError(t, conn.Send("SET", wrongDataKey, "wrong data"))
-	require.NoError(t, conn.Flush())
+	_, err := conn.Do("SET", existingKey, buffer)
+	require.NoError(t, err)
+	_, err = conn.Do("SET", wrongDataKey, "wrong data")
+	require.NoError(t, err)
 }
 
 func startUpLocalRedis(t *testing.T) (*tempredis.Server, redis.Conn) {
@@ -79,8 +79,6 @@ func startUpDockerRedis(t *testing.T) (func(), string, redis.Conn) {
 	require.NoError(t, pool.Retry(func() error { conn, err = redis.Dial("tcp", address); return err }))
 
 	prepareData(t, conn)
-	// wait for persistence
-	time.Sleep(100 * time.Millisecond)
 
 	return func() { pool.Purge(res) }, address, conn
 }
