@@ -18,6 +18,7 @@ type (
 		address     string
 		maxIdle     int
 		idleTimeout time.Duration
+		database    int
 	}
 )
 
@@ -25,9 +26,10 @@ type (
 func NewRedis(
 	cfg *struct {
 		MaxIdle                 int    `inject:"config:commerce.checkout.placeorder.lock.redis.maxIdle"`
-		IdleTimeoutMilliseconds int    `inject:"config:config:commerce.checkout.placeorder.lock.redis.idleTimeoutMilliseconds"`
-		Network                 string `inject:"config:config:commerce.checkout.placeorder.lock.redis.network"`
-		Address                 string `inject:"config:config:commerce.checkout.placeorder.lock.redis.address"`
+		IdleTimeoutMilliseconds int    `inject:"config:commerce.checkout.placeorder.lock.redis.idleTimeoutMilliseconds"`
+		Network                 string `inject:"config:commerce.checkout.placeorder.lock.redis.network"`
+		Address                 string `inject:"config:commerce.checkout.placeorder.lock.redis.address"`
+		Database                int    `inject:"config:commerce.checkout.placeorder.lock.redis.database"`
 	},
 ) *Redis {
 	r := new(Redis)
@@ -37,13 +39,14 @@ func NewRedis(
 		r.idleTimeout = time.Duration(cfg.IdleTimeoutMilliseconds) * time.Millisecond
 		r.network = cfg.Network
 		r.address = cfg.Address
+		r.database = cfg.Database
 	}
 
 	pools := []redsync.Pool{&redis.Pool{
 		MaxIdle:     r.maxIdle,
 		IdleTimeout: r.idleTimeout,
 		Dial: func() (redis.Conn, error) {
-			return redis.Dial(r.network, r.address)
+			return redis.Dial(r.network, r.address, redis.DialDatabase(r.database))
 		},
 		TestOnBorrow: func(c redis.Conn, t time.Time) error {
 			_, err := c.Do("PING")

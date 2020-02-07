@@ -28,10 +28,11 @@ func startUp(t *testing.T) *tempredis.Server {
 func getRedisLocker(network, address string) *locker.Redis {
 	redis := locker.NewRedis(&struct {
 		MaxIdle                 int    `inject:"config:commerce.checkout.placeorder.lock.redis.maxIdle"`
-		IdleTimeoutMilliseconds int    `inject:"config:config:commerce.checkout.placeorder.lock.redis.idleTimeoutMilliseconds"`
-		Network                 string `inject:"config:config:commerce.checkout.placeorder.lock.redis.network"`
-		Address                 string `inject:"config:config:commerce.checkout.placeorder.lock.redis.address"`
-	}{MaxIdle: 3, IdleTimeoutMilliseconds: 240000, Network: network, Address: address})
+		IdleTimeoutMilliseconds int    `inject:"config:commerce.checkout.placeorder.lock.redis.idleTimeoutMilliseconds"`
+		Network                 string `inject:"config:commerce.checkout.placeorder.lock.redis.network"`
+		Address                 string `inject:"config:commerce.checkout.placeorder.lock.redis.address"`
+		Database                int    `inject:"config:commerce.checkout.placeorder.lock.redis.database"`
+	}{MaxIdle: 3, IdleTimeoutMilliseconds: 240000, Network: network, Address: address, Database: 0})
 	return redis
 }
 
