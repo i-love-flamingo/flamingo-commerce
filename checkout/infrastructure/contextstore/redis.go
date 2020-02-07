@@ -3,9 +3,11 @@ package contextstore
 import (
 	"bytes"
 	"encoding/gob"
+	"fmt"
 	"runtime"
 	"time"
 
+	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/gomodule/redigo/redis"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
@@ -14,22 +16,28 @@ import (
 type (
 	// Redis saves all contexts in a simple map
 	Redis struct {
-		pool *redis.Pool
+		pool   *redis.Pool
+		logger flamingo.Logger
 	}
 )
+
+var _ process.ContextStore = new(Redis)
 
 func init() {
 	gob.Register(process.Context{})
 }
 
 // Inject dependencies
-func (r *Redis) Inject(cfg *struct {
-	MaxIdle                 int    `inject:"config:commerce.checkout.placeorder.contextstore.redis.maxIdle"`
-	IdleTimeOutMilliseconds int    `inject:"config:commerce.checkout.placeorder.contextstore.redis.idleTimeOutMilliseconds"`
-	Network                 string `inject:"config:commerce.checkout.placeorder.contextstore.redis.network"`
-	Address                 string `inject:"config:commerce.checkout.placeorder.contextstore.redis.address"`
-	Database                int    `inject:"config:commerce.checkout.placeorder.contextstore.redis.database"`
-}) *Redis {
+func (r *Redis) Inject(
+	logger flamingo.Logger,
+	cfg *struct {
+		MaxIdle                 int    `inject:"config:commerce.checkout.placeorder.contextstore.redis.maxIdle"`
+		IdleTimeOutMilliseconds int    `inject:"config:commerce.checkout.placeorder.contextstore.redis.idleTimeOutMilliseconds"`
+		Network                 string `inject:"config:commerce.checkout.placeorder.contextstore.redis.network"`
+		Address                 string `inject:"config:commerce.checkout.placeorder.contextstore.redis.address"`
+		Database                int    `inject:"config:commerce.checkout.placeorder.contextstore.redis.database"`
+	}) *Redis {
+	r.logger = logger
 	if cfg != nil {
 		r.pool = &redis.Pool{
 			MaxIdle:     cfg.MaxIdle,
@@ -81,6 +89,9 @@ func (r *Redis) Get(key string) (process.Context, bool) {
 	decoder := gob.NewDecoder(buffer)
 	pctx := new(process.Context)
 	err = decoder.Decode(pctx)
+	if err != nil {
+		r.logger.Error(fmt.Sprintf("context in key %q is not decodable: %s", key, err))
+	}
 
 	return *pctx, err == nil
 }
