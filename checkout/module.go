@@ -27,6 +27,7 @@ type (
 	Module struct {
 		UseFakeSourcingService bool   `inject:"config:checkout.useFakeSourcingService,optional"`
 		PlaceOrderLockType     string `inject:"config:checkout.placeorder.lockType,optional"`
+		PlaceOrderContextStore string `inject:"config:checkout.placeorder.contextStore,optional"`
 	}
 )
 
@@ -44,8 +45,11 @@ func (m *Module) Configure(injector *dingo.Injector) {
 		injector.Bind(new(placeorder.TryLock)).To(&locker.Simple{}).In(dingo.Singleton)
 	}
 
-	// todo: switch between implementations, provide cluster implementation
-	injector.Bind(new(process.ContextStore)).To(new(contextstore.Memory)).In(dingo.Singleton)
+	if m.PlaceOrderContextStore == "redis" {
+		injector.Bind(new(process.ContextStore)).To(new(contextstore.Redis)).In(dingo.Singleton)
+	} else {
+		injector.Bind(new(process.ContextStore)).To(new(contextstore.Memory)).In(dingo.Singleton)
+	}
 
 	injector.Bind(new(process.PaymentValidatorFunc)).ToInstance(placeorder.PaymentValidator)
 
