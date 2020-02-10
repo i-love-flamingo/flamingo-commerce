@@ -58,6 +58,8 @@
 # 6. February 2020
 * Breaking Change to `EventPublisher` interface, `PublishChangedQtyInCartEvent` and `PublishAddToCartEvent` now
 include a cart as a parameter
+* Breaking Change to behaviour of `AddToCartEvent` and `ChangedQtyInCartEvent`, they are now thrown after
+the cart has been adjusted and written back to cache
 * The `AddToCartEvent` includes the current cart (with added product)
 * The `ChangedQtyInCartEvent` includes the current cart (with updated quantities)
 * Add Whitebox Test `TestCartService_CartInEvent` to check `AddToCartEvent`
