@@ -72,7 +72,7 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 						&authApplication.AuthManager{},
 						&authApplication.UserService{},
 						flamingo.NullLogger{},
-						nil,
+						new(MockEventRouter),
 						&struct {
 							CartCache cartApplication.CartCache `inject:",optional"`
 						}{
@@ -150,7 +150,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 		ProductService      productDomain.ProductService
 		Logger              flamingo.Logger
 		EventPublisher      *MockEventPublisher
-		EventRouter         flamingo.EventRouter
+		EventRouter         *MockEventRouter
 		RestrictionService  *validation.RestrictionService
 		config              *struct {
 			DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
@@ -190,7 +190,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 						authmanager,
 						userservice,
 						flamingo.NullLogger{},
-						nil,
+						new(MockEventRouter),
 						&struct {
 							CartCache cartApplication.CartCache `inject:",optional"`
 						}{
@@ -201,6 +201,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 				}(),
 				ProductService: &MockProductService{},
 				Logger:         flamingo.NullLogger{},
+				EventRouter:    new(MockEventRouter),
 				EventPublisher: new(MockEventPublisher),
 				config: &struct {
 					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
@@ -247,7 +248,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 						authmanager,
 						userservice,
 						flamingo.NullLogger{},
-						nil,
+						new(MockEventRouter),
 						&struct {
 							CartCache cartApplication.CartCache `inject:",optional"`
 						}{
@@ -258,6 +259,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 				}(),
 				ProductService: &MockProductService{},
 				Logger:         flamingo.NullLogger{},
+				EventRouter:    new(MockEventRouter),
 				EventPublisher: new(MockEventPublisher),
 				config: &struct {
 					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
@@ -320,7 +322,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 						authmanager,
 						userservice,
 						flamingo.NullLogger{},
-						nil,
+						new(MockEventRouter),
 						&struct {
 							CartCache cartApplication.CartCache `inject:",optional"`
 						}{
@@ -331,6 +333,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 				}(),
 				ProductService: &MockProductService{},
 				Logger:         flamingo.NullLogger{},
+				EventRouter:    new(MockEventRouter),
 				EventPublisher: new(MockEventPublisher),
 				config: &struct {
 					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
@@ -377,7 +380,6 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tt.fields.EventPublisher.On("PublishChangedQtyInCartEvent", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return()
 			cs := &cartApplication.CartService{}
 			cs.Inject(
 				tt.fields.CartReceiverService,
@@ -391,7 +393,6 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 				tt.fields.config,
 				nil,
 			)
-
 			got, _ := cs.AdjustItemsToRestrictedQty(tt.args.ctx, tt.args.session)
 
 			if diff := deep.Equal(got, tt.want); diff != nil {
@@ -454,7 +455,7 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 						authmanager,
 						userservice,
 						flamingo.NullLogger{},
-						nil,
+						new(MockEventRouter),
 						&struct {
 							CartCache cartApplication.CartCache `inject:",optional"`
 						}{
@@ -465,6 +466,7 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 				}(),
 				ProductService: &MockProductService{},
 				Logger:         flamingo.NullLogger{},
+				EventRouter:    new(MockEventRouter),
 				EventPublisher: new(MockEventPublisher),
 				config: &struct {
 					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
@@ -504,7 +506,7 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 						authmanager,
 						userservice,
 						flamingo.NullLogger{},
-						nil,
+						new(MockEventRouter),
 						&struct {
 							CartCache cartApplication.CartCache `inject:",optional"`
 						}{
@@ -516,6 +518,7 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 				ProductService: &MockProductService{},
 				Logger:         flamingo.NullLogger{},
 				EventPublisher: new(MockEventPublisher),
+				EventRouter:    new(MockEventRouter),
 				config: &struct {
 					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
 					DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
@@ -621,7 +624,7 @@ func TestCartService_ForceReserveOrderIDAndSave(t *testing.T) {
 						authmanager,
 						userservice,
 						flamingo.NullLogger{},
-						nil,
+						new(MockEventRouter),
 						&struct {
 							CartCache cartApplication.CartCache `inject:",optional"`
 						}{
@@ -633,6 +636,7 @@ func TestCartService_ForceReserveOrderIDAndSave(t *testing.T) {
 				ProductService: &MockProductService{},
 				Logger:         flamingo.NullLogger{},
 				EventPublisher: new(MockEventPublisher),
+				EventRouter:    new(MockEventRouter),
 				config: &struct {
 					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
 					DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
@@ -671,7 +675,7 @@ func TestCartService_ForceReserveOrderIDAndSave(t *testing.T) {
 						authmanager,
 						userservice,
 						flamingo.NullLogger{},
-						nil,
+						new(MockEventRouter),
 						&struct {
 							CartCache cartApplication.CartCache `inject:",optional"`
 						}{
@@ -683,6 +687,7 @@ func TestCartService_ForceReserveOrderIDAndSave(t *testing.T) {
 				ProductService: &MockProductService{},
 				Logger:         flamingo.NullLogger{},
 				EventPublisher: new(MockEventPublisher),
+				EventRouter:    new(MockEventRouter),
 				config: &struct {
 					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
 					DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
@@ -958,7 +963,7 @@ func TestCartService_CartInEvent(t *testing.T) {
 			authmanager,
 			userservice,
 			flamingo.NullLogger{},
-			nil,
+			new(MockEventRouter),
 			&struct {
 				CartCache cartApplication.CartCache `inject:",optional"`
 			}{
@@ -970,7 +975,8 @@ func TestCartService_CartInEvent(t *testing.T) {
 	productService := &MockProductService{}
 	logger := flamingo.NullLogger{}
 	eventPublisher := new(MockEventPublisher)
-	eventPublisher.On("PublishAddToCartEvent", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return()
+	eventRouter := new(MockEventRouter)
+	eventRouter.On("Dispatch", mock.Anything, mock.Anything, mock.Anything).Return()
 	config := &struct {
 		DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
 		DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
@@ -995,7 +1001,7 @@ func TestCartService_CartInEvent(t *testing.T) {
 		cartReceiverService,
 		productService,
 		eventPublisher,
-		nil,
+		eventRouter,
 		deliveryInfoBuilder,
 		restrictionService,
 		authmanager,
@@ -1013,9 +1019,9 @@ func TestCartService_CartInEvent(t *testing.T) {
 	session := web.EmptySession()
 	_, err := cartService.AddProduct(ctx, session, "default_delivery_code", addRequest)
 	assert.Nil(t, err)
-	// white box tests that event publisher has been called with the expected parameters
-	eventPublisher.AssertNumberOfCalls(t, "PublishAddToCartEvent", 1)
-	// quantity of item in cart receiver mock is 7, if product has been added should be 8
-	// this shows that the cart received by the event is the current updated cart
-	eventPublisher.AssertCalled(t, "PublishAddToCartEvent", ctx, 8, "code-1", "", 1)
+	// white box tests that event router has been called as expected (once)
+	eventRouter.AssertNumberOfCalls(t, "Dispatch", 1)
+	// white box test that ensures router has been called with expected parameter (add to cart event)
+	// with the expected marketplace code of the item
+	eventRouter.AssertCalled(t, "Dispatch", ctx, fmt.Sprintf("%T", events.AddToCartEvent{}), addRequest.MarketplaceCode)
 }

@@ -2,6 +2,7 @@ package application_test
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -164,18 +165,15 @@ var (
 )
 
 func (m *MockEventPublisher) PublishAddToCartEvent(ctx context.Context, cart *cartDomain.Cart, marketPlaceCode string, variantMarketPlaceCode string, qty int) {
-	// we just add item count for white box test
-	m.Called(ctx, cart.ItemCount(), marketPlaceCode, variantMarketPlaceCode, qty)
+	m.Called()
 }
 
 func (m *MockEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context, cart *cartDomain.Cart, item *cartDomain.Item, qtyBefore int, qtyAfter int) {
-	// we just add item count for white box test
-	m.Called(ctx, cart.ItemCount(), item, qtyBefore, qtyAfter)
+	m.Called()
 }
 
 func (m *MockEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos placeorder.PlacedOrderInfos) {
-	// we just add item count for white box test
-	m.Called(ctx, cart.ItemCount(), placedOrderInfos)
+	m.Called()
 }
 
 // MockCartValidator
@@ -221,6 +219,24 @@ func (m *MockUserService) GetUser(ctx context.Context, session *web.Session) *do
 
 func (m *MockUserService) IsLoggedIn(ctx context.Context, session *web.Session) bool {
 	return true
+}
+
+type (
+	MockEventRouter struct {
+		mock.Mock
+	}
+)
+
+var _ flamingo.EventRouter = new(MockEventRouter)
+
+func (m *MockEventRouter) Dispatch(ctx context.Context, event flamingo.Event) {
+	// we just write the event type and the marketplace code to the mock, so we don't have to compare
+	// the complete cart
+	switch event.(type) {
+	case events.AddToCartEvent:
+		addToCart, _ := event.(events.AddToCartEvent)
+		m.Called(ctx, fmt.Sprintf("%T", event), addToCart.MarketplaceCode)
+	}
 }
 
 func TestCartReceiverService_ShouldHaveGuestCart(t *testing.T) {
