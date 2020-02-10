@@ -232,10 +232,9 @@ var _ flamingo.EventRouter = new(MockEventRouter)
 func (m *MockEventRouter) Dispatch(ctx context.Context, event flamingo.Event) {
 	// we just write the event type and the marketplace code to the mock, so we don't have to compare
 	// the complete cart
-	switch event.(type) {
-	case events.AddToCartEvent:
-		addToCart, _ := event.(events.AddToCartEvent)
-		m.Called(ctx, fmt.Sprintf("%T", event), addToCart.MarketplaceCode)
+	switch eventType := event.(type) {
+	case *events.AddToCartEvent:
+		m.Called(ctx, fmt.Sprintf("%T", event), eventType.MarketplaceCode)
 	}
 }
 

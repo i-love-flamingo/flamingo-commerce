@@ -313,7 +313,7 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 	}
 
 	// append deferred events of behaviour with changed qty event
-	updateEvent := events.ChangedQtyInCartEvent{
+	updateEvent := &events.ChangedQtyInCartEvent{
 		Cart:                   cart,
 		CartID:                 cart.ID,
 		MarketplaceCode:        item.MarketplaceCode,
@@ -431,7 +431,7 @@ func (cs *CartService) DeleteItem(ctx context.Context, session *web.Session, ite
 	}
 
 	// append deferred events of behaviour with changed qty event
-	updateEvent := events.ChangedQtyInCartEvent{
+	updateEvent := &events.ChangedQtyInCartEvent{
 		Cart:                   cart,
 		CartID:                 cart.ID,
 		MarketplaceCode:        item.MarketplaceCode,
@@ -462,7 +462,7 @@ func (cs *CartService) DeleteAllItems(ctx context.Context, session *web.Session)
 	// we throw a qty changed event for every item in delivery
 	for _, delivery := range cart.Deliveries {
 		for _, item := range delivery.Cartitems {
-			updateEvent := events.ChangedQtyInCartEvent{
+			updateEvent := &events.ChangedQtyInCartEvent{
 				Cart:                   cart,
 				CartID:                 cart.ID,
 				MarketplaceCode:        item.MarketplaceCode,
@@ -505,7 +505,7 @@ func (cs *CartService) Clean(ctx context.Context, session *web.Session) error {
 	// we throw a qty changed event for every item of each delivery
 	for _, delivery := range cart.Deliveries {
 		for _, item := range delivery.Cartitems {
-			updateEvent := events.ChangedQtyInCartEvent{
+			updateEvent := &events.ChangedQtyInCartEvent{
 				Cart:                   cart,
 				CartID:                 cart.ID,
 				MarketplaceCode:        item.MarketplaceCode,
@@ -549,7 +549,7 @@ func (cs *CartService) DeleteDelivery(ctx context.Context, session *web.Session,
 	}
 	// we throw a qty changed event for every item in delivery// we throw a qty changed event for every item in delivery
 	for _, item := range delivery.Cartitems {
-		updateEvent := events.ChangedQtyInCartEvent{
+		updateEvent := &events.ChangedQtyInCartEvent{
 			Cart:                   cart,
 			CartID:                 cart.ID,
 			MarketplaceCode:        item.MarketplaceCode,
@@ -639,7 +639,7 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 	}
 
 	// append deferred events of behaviour with add to cart event
-	addToCart := events.AddToCartEvent{
+	addToCart := &events.AddToCartEvent{
 		Cart:                   cart,
 		MarketplaceCode:        addRequest.MarketplaceCode,
 		VariantMarketplaceCode: addRequest.VariantMarketplaceCode,
