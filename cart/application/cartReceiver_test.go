@@ -2,6 +2,7 @@ package application_test
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -18,6 +19,7 @@ import (
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/pkg/errors"
+	"github.com/stretchr/testify/mock"
 )
 
 type (
@@ -153,20 +155,25 @@ func (m *MockCartCache) BuildIdentifier(context.Context, *web.Session) (cartAppl
 // MockEventPublisher
 
 type (
-	MockEventPublisher struct{}
+	MockEventPublisher struct {
+		mock.Mock
+	}
 )
 
 var (
 	_ events.EventPublisher = (*MockEventPublisher)(nil)
 )
 
-func (m *MockEventPublisher) PublishAddToCartEvent(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode string, qty int) {
+func (m *MockEventPublisher) PublishAddToCartEvent(ctx context.Context, cart *cartDomain.Cart, marketPlaceCode string, variantMarketPlaceCode string, qty int) {
+	m.Called()
 }
 
-func (m *MockEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context, item *cartDomain.Item, qtyBefore int, qtyAfter int, cartID string) {
+func (m *MockEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context, cart *cartDomain.Cart, item *cartDomain.Item, qtyBefore int, qtyAfter int) {
+	m.Called()
 }
 
 func (m *MockEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos placeorder.PlacedOrderInfos) {
+	m.Called()
 }
 
 // MockCartValidator
@@ -212,6 +219,23 @@ func (m *MockUserService) GetUser(ctx context.Context, session *web.Session) *do
 
 func (m *MockUserService) IsLoggedIn(ctx context.Context, session *web.Session) bool {
 	return true
+}
+
+type (
+	MockEventRouter struct {
+		mock.Mock
+	}
+)
+
+var _ flamingo.EventRouter = new(MockEventRouter)
+
+func (m *MockEventRouter) Dispatch(ctx context.Context, event flamingo.Event) {
+	// we just write the event type and the marketplace code to the mock, so we don't have to compare
+	// the complete cart
+	switch eventType := event.(type) {
+	case *events.AddToCartEvent:
+		m.Called(ctx, fmt.Sprintf("%T", event), eventType.MarketplaceCode)
+	}
 }
 
 func TestCartReceiverService_ShouldHaveGuestCart(t *testing.T) {

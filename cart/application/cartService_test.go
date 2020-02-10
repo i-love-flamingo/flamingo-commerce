@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"github.com/go-test/deep"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 
 	"flamingo.me/flamingo-commerce/v3/cart/infrastructure"
 
@@ -70,7 +72,7 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 						&authApplication.AuthManager{},
 						&authApplication.UserService{},
 						flamingo.NullLogger{},
-						nil,
+						new(MockEventRouter),
 						&struct {
 							CartCache cartApplication.CartCache `inject:",optional"`
 						}{
@@ -147,8 +149,8 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 		CartReceiverService *cartApplication.CartReceiverService
 		ProductService      productDomain.ProductService
 		Logger              flamingo.Logger
-		EventPublisher      events.EventPublisher
-		EventRouter         flamingo.EventRouter
+		EventPublisher      *MockEventPublisher
+		EventRouter         *MockEventRouter
 		RestrictionService  *validation.RestrictionService
 		config              *struct {
 			DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
@@ -188,7 +190,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 						authmanager,
 						userservice,
 						flamingo.NullLogger{},
-						nil,
+						new(MockEventRouter),
 						&struct {
 							CartCache cartApplication.CartCache `inject:",optional"`
 						}{
@@ -199,6 +201,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 				}(),
 				ProductService: &MockProductService{},
 				Logger:         flamingo.NullLogger{},
+				EventRouter:    new(MockEventRouter),
 				EventPublisher: new(MockEventPublisher),
 				config: &struct {
 					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
@@ -245,7 +248,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 						authmanager,
 						userservice,
 						flamingo.NullLogger{},
-						nil,
+						new(MockEventRouter),
 						&struct {
 							CartCache cartApplication.CartCache `inject:",optional"`
 						}{
@@ -256,6 +259,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 				}(),
 				ProductService: &MockProductService{},
 				Logger:         flamingo.NullLogger{},
+				EventRouter:    new(MockEventRouter),
 				EventPublisher: new(MockEventPublisher),
 				config: &struct {
 					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
@@ -318,7 +322,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 						authmanager,
 						userservice,
 						flamingo.NullLogger{},
-						nil,
+						new(MockEventRouter),
 						&struct {
 							CartCache cartApplication.CartCache `inject:",optional"`
 						}{
@@ -329,6 +333,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 				}(),
 				ProductService: &MockProductService{},
 				Logger:         flamingo.NullLogger{},
+				EventRouter:    new(MockEventRouter),
 				EventPublisher: new(MockEventPublisher),
 				config: &struct {
 					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
@@ -388,7 +393,6 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 				tt.fields.config,
 				nil,
 			)
-
 			got, _ := cs.AdjustItemsToRestrictedQty(tt.args.ctx, tt.args.session)
 
 			if diff := deep.Equal(got, tt.want); diff != nil {
@@ -451,7 +455,7 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 						authmanager,
 						userservice,
 						flamingo.NullLogger{},
-						nil,
+						new(MockEventRouter),
 						&struct {
 							CartCache cartApplication.CartCache `inject:",optional"`
 						}{
@@ -462,6 +466,7 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 				}(),
 				ProductService: &MockProductService{},
 				Logger:         flamingo.NullLogger{},
+				EventRouter:    new(MockEventRouter),
 				EventPublisher: new(MockEventPublisher),
 				config: &struct {
 					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
@@ -501,7 +506,7 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 						authmanager,
 						userservice,
 						flamingo.NullLogger{},
-						nil,
+						new(MockEventRouter),
 						&struct {
 							CartCache cartApplication.CartCache `inject:",optional"`
 						}{
@@ -513,6 +518,7 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 				ProductService: &MockProductService{},
 				Logger:         flamingo.NullLogger{},
 				EventPublisher: new(MockEventPublisher),
+				EventRouter:    new(MockEventRouter),
 				config: &struct {
 					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
 					DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
@@ -618,7 +624,7 @@ func TestCartService_ForceReserveOrderIDAndSave(t *testing.T) {
 						authmanager,
 						userservice,
 						flamingo.NullLogger{},
-						nil,
+						new(MockEventRouter),
 						&struct {
 							CartCache cartApplication.CartCache `inject:",optional"`
 						}{
@@ -630,6 +636,7 @@ func TestCartService_ForceReserveOrderIDAndSave(t *testing.T) {
 				ProductService: &MockProductService{},
 				Logger:         flamingo.NullLogger{},
 				EventPublisher: new(MockEventPublisher),
+				EventRouter:    new(MockEventRouter),
 				config: &struct {
 					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
 					DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
@@ -668,7 +675,7 @@ func TestCartService_ForceReserveOrderIDAndSave(t *testing.T) {
 						authmanager,
 						userservice,
 						flamingo.NullLogger{},
-						nil,
+						new(MockEventRouter),
 						&struct {
 							CartCache cartApplication.CartCache `inject:",optional"`
 						}{
@@ -680,6 +687,7 @@ func TestCartService_ForceReserveOrderIDAndSave(t *testing.T) {
 				ProductService: &MockProductService{},
 				Logger:         flamingo.NullLogger{},
 				EventPublisher: new(MockEventPublisher),
+				EventRouter:    new(MockEventRouter),
 				config: &struct {
 					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
 					DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
@@ -772,7 +780,7 @@ func (m *MockGuestCartServiceWithModifyBehaviour) GetModifyBehaviour(context.Con
 
 	cob.Inject(
 		storage,
-		nil,
+		&MockProductService{},
 		flamingo.NullLogger{},
 		func() *cartDomain.ItemBuilder {
 			return &cartDomain.ItemBuilder{}
@@ -930,4 +938,90 @@ func (mpos *MockPlaceOrderService) CancelGuestOrder(ctx context.Context, orderIn
 
 func (mpos *MockPlaceOrderService) CancelCustomerOrder(ctx context.Context, orderInfos placeorder.PlacedOrderInfos, auth oauth.Auth) error {
 	return nil
+}
+
+func TestCartService_CartInEvent(t *testing.T) {
+	// bootstrap cart service
+	authmanager := &authApplication.AuthManager{}
+	authmanager.Inject(&flamingo.NullLogger{}, nil, nil)
+	userservice := &authApplication.UserService{}
+	userservice.Inject(authmanager, nil)
+	cartReceiverService := func() *cartApplication.CartReceiverService {
+		result := &cartApplication.CartReceiverService{}
+		result.Inject(
+			new(MockGuestCartServiceWithModifyBehaviour),
+			new(MockCustomerCartService),
+			func() *decorator.DecoratedCartFactory {
+				result := &decorator.DecoratedCartFactory{}
+				result.Inject(
+					&MockProductService{},
+					flamingo.NullLogger{},
+				)
+
+				return result
+			}(),
+			authmanager,
+			userservice,
+			flamingo.NullLogger{},
+			new(MockEventRouter),
+			&struct {
+				CartCache cartApplication.CartCache `inject:",optional"`
+			}{
+				CartCache: new(MockCartWithItemCacheWithAdditionalData),
+			},
+		)
+		return result
+	}()
+	productService := &MockProductService{}
+	logger := flamingo.NullLogger{}
+	eventPublisher := new(MockEventPublisher)
+	eventRouter := new(MockEventRouter)
+	eventRouter.On("Dispatch", mock.Anything, mock.Anything, mock.Anything).Return()
+	config := &struct {
+		DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
+		DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
+	}{
+		DefaultDeliveryCode: "default_delivery_code",
+		DeleteEmptyDelivery: false,
+	}
+	deliveryInfoBuilder := new(MockDeliveryInfoBuilder)
+	restrictionService := func() *validation.RestrictionService {
+		rs := &validation.RestrictionService{}
+		rs.Inject(
+			[]validation.MaxQuantityRestrictor{
+				&MockRestrictor{},
+			},
+		)
+		return rs
+	}()
+
+	// init cart service with dependencies
+	cartService := cartApplication.CartService{}
+	cartService.Inject(
+		cartReceiverService,
+		productService,
+		eventPublisher,
+		eventRouter,
+		deliveryInfoBuilder,
+		restrictionService,
+		authmanager,
+		logger,
+		config,
+		nil,
+	)
+
+	// add product to cart, we expect event to be thrown with updated cart
+	addRequest := cartDomain.AddRequest{
+		MarketplaceCode: "code-1",
+		Qty:             1,
+	}
+	ctx := context.Background()
+	session := web.EmptySession()
+	_, err := cartService.AddProduct(ctx, session, "default_delivery_code", addRequest)
+	assert.Nil(t, err)
+	// white box tests that event router has been called as expected (once)
+	eventRouter.AssertNumberOfCalls(t, "Dispatch", 1)
+	// white box test that ensures router has been called with expected parameter (add to cart event)
+	// with the expected marketplace code of the item
+	eventRouter.AssertCalled(t, "Dispatch", ctx, fmt.Sprintf("%T", new(events.AddToCartEvent)), addRequest.MarketplaceCode)
 }

@@ -298,7 +298,6 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 		return err
 	}
 
-	cs.eventPublisher.PublishChangedQtyInCartEvent(ctx, item, qtyBefore, qty, cart.ID)
 	itemUpdate := cartDomain.ItemUpdateCommand{
 		Qty:            &qty,
 		ItemID:         itemID,
@@ -312,6 +311,18 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 
 		return err
 	}
+
+	// append deferred events of behaviour with changed qty event
+	updateEvent := &events.ChangedQtyInCartEvent{
+		Cart:                   cart,
+		CartID:                 cart.ID,
+		MarketplaceCode:        item.MarketplaceCode,
+		VariantMarketplaceCode: item.VariantMarketPlaceCode,
+		ProductName:            product.TeaserData().ShortTitle,
+		QtyBefore:              qtyBefore,
+		QtyAfter:               qty,
+	}
+	defers = append(defers, updateEvent)
 
 	return nil
 }
@@ -411,8 +422,6 @@ func (cs *CartService) DeleteItem(ctx context.Context, session *web.Session, ite
 	}
 
 	qtyBefore := item.Qty
-	cs.eventPublisher.PublishChangedQtyInCartEvent(ctx, item, qtyBefore, 0, cart.ID)
-
 	cart, defers, err = behaviour.DeleteItem(ctx, cart, itemID, deliveryCode)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
@@ -420,6 +429,18 @@ func (cs *CartService) DeleteItem(ctx context.Context, session *web.Session, ite
 
 		return err
 	}
+
+	// append deferred events of behaviour with changed qty event
+	updateEvent := &events.ChangedQtyInCartEvent{
+		Cart:                   cart,
+		CartID:                 cart.ID,
+		MarketplaceCode:        item.MarketplaceCode,
+		VariantMarketplaceCode: item.VariantMarketPlaceCode,
+		ProductName:            item.ProductName,
+		QtyBefore:              qtyBefore,
+		QtyAfter:               0,
+	}
+	defers = append(defers, updateEvent)
 
 	return nil
 }
@@ -432,15 +453,25 @@ func (cs *CartService) DeleteAllItems(ctx context.Context, session *web.Session)
 	}
 	// cart cache must be updated - with the current value of cart
 	var defers cartDomain.DeferEvents
+	var deleteItemEvents cartDomain.DeferEvents
 	defer func() {
 		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
 		cs.dispatchAllEvents(ctx, defers)
 	}()
 
+	// we throw a qty changed event for every item in delivery
 	for _, delivery := range cart.Deliveries {
 		for _, item := range delivery.Cartitems {
-			qtyBefore := item.Qty
-			cs.eventPublisher.PublishChangedQtyInCartEvent(ctx, &item, qtyBefore, 0, cart.ID)
+			updateEvent := &events.ChangedQtyInCartEvent{
+				Cart:                   cart,
+				CartID:                 cart.ID,
+				MarketplaceCode:        item.MarketplaceCode,
+				VariantMarketplaceCode: item.VariantMarketPlaceCode,
+				ProductName:            item.ProductName,
+				QtyBefore:              item.Qty,
+				QtyAfter:               0,
+			}
+			deleteItemEvents = append(deleteItemEvents, updateEvent)
 
 			cart, defers, err = behaviour.DeleteItem(ctx, cart, item.ID, delivery.DeliveryInfo.Code)
 			if err != nil {
@@ -451,6 +482,8 @@ func (cs *CartService) DeleteAllItems(ctx context.Context, session *web.Session)
 			}
 		}
 	}
+	// append deferred events of behaviour with changed qty events
+	defers = append(defers, deleteItemEvents)
 
 	return nil
 }
@@ -463,15 +496,25 @@ func (cs *CartService) Clean(ctx context.Context, session *web.Session) error {
 	}
 	// cart cache must be updated - with the current value of cart
 	var defers cartDomain.DeferEvents
+	var deleteItemEvents cartDomain.DeferEvents
 	defer func() {
 		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
 		cs.dispatchAllEvents(ctx, defers)
 	}()
 
+	// we throw a qty changed event for every item of each delivery
 	for _, delivery := range cart.Deliveries {
 		for _, item := range delivery.Cartitems {
-			qtyBefore := item.Qty
-			cs.eventPublisher.PublishChangedQtyInCartEvent(ctx, &item, qtyBefore, 0, cart.ID)
+			updateEvent := &events.ChangedQtyInCartEvent{
+				Cart:                   cart,
+				CartID:                 cart.ID,
+				MarketplaceCode:        item.MarketplaceCode,
+				VariantMarketplaceCode: item.VariantMarketPlaceCode,
+				ProductName:            item.ProductName,
+				QtyBefore:              item.Qty,
+				QtyAfter:               0,
+			}
+			deleteItemEvents = append(deleteItemEvents, updateEvent)
 		}
 	}
 
@@ -480,6 +523,8 @@ func (cs *CartService) Clean(ctx context.Context, session *web.Session) error {
 		cs.logger.WithContext(ctx).WithField("subCategory", "DeleteAllItems").Error(err)
 		return err
 	}
+	// append deferred events of behaviour with changed qty events for every deleted item
+	defers = append(defers, deleteItemEvents)
 
 	return nil
 }
@@ -492,6 +537,7 @@ func (cs *CartService) DeleteDelivery(ctx context.Context, session *web.Session,
 	}
 	// cart cache must be updated - with the current value of cart
 	var defers cartDomain.DeferEvents
+	var deleteItemEvents cartDomain.DeferEvents
 	defer func() {
 		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
 		cs.dispatchAllEvents(ctx, defers)
@@ -501,9 +547,18 @@ func (cs *CartService) DeleteDelivery(ctx context.Context, session *web.Session,
 	if !found {
 		return nil, errors.New("delivery not found: " + deliveryCode)
 	}
+	// we throw a qty changed event for every item in delivery// we throw a qty changed event for every item in delivery
 	for _, item := range delivery.Cartitems {
-		qtyBefore := item.Qty
-		cs.eventPublisher.PublishChangedQtyInCartEvent(ctx, &item, qtyBefore, 0, cart.ID)
+		updateEvent := &events.ChangedQtyInCartEvent{
+			Cart:                   cart,
+			CartID:                 cart.ID,
+			MarketplaceCode:        item.MarketplaceCode,
+			VariantMarketplaceCode: item.VariantMarketPlaceCode,
+			ProductName:            item.ProductName,
+			QtyBefore:              item.Qty,
+			QtyAfter:               0,
+		}
+		deleteItemEvents = append(deleteItemEvents, updateEvent)
 	}
 
 	cart, defers, err = behaviour.CleanDelivery(ctx, cart, deliveryCode)
@@ -511,6 +566,9 @@ func (cs *CartService) DeleteDelivery(ctx context.Context, session *web.Session,
 		cs.logger.WithContext(ctx).WithField("subCategory", "DeleteAllItems").Error(err)
 		return nil, err
 	}
+
+	// append deferred events of behaviour with changed qty events for every deleted item
+	defers = append(defers, deleteItemEvents)
 
 	return cart, nil
 }
@@ -581,7 +639,15 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 		return nil, err
 	}
 
-	cs.publishAddtoCartEvent(ctx, *cart, addRequest)
+	// append deferred events of behaviour with add to cart event
+	addToCart := &events.AddToCartEvent{
+		Cart:                   cart,
+		MarketplaceCode:        addRequest.MarketplaceCode,
+		VariantMarketplaceCode: addRequest.VariantMarketplaceCode,
+		ProductName:            product.TeaserData().ShortTitle,
+		Qty:                    addRequest.Qty,
+	}
+	defers = append(defers, addToCart)
 
 	return product, nil
 }
@@ -748,12 +814,6 @@ func (cs *CartService) checkProductQtyRestrictions(ctx context.Context, product 
 	}
 
 	return nil
-}
-
-func (cs *CartService) publishAddtoCartEvent(ctx context.Context, currentCart cartDomain.Cart, addRequest cartDomain.AddRequest) {
-	if cs.eventPublisher != nil {
-		cs.eventPublisher.PublishAddToCartEvent(ctx, addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode, addRequest.Qty)
-	}
 }
 
 func (cs *CartService) updateCartInCacheIfCacheIsEnabled(ctx context.Context, session *web.Session, cart *cartDomain.Cart) {

@@ -2,9 +2,9 @@ package events
 
 import (
 	"context"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 )
@@ -13,8 +13,8 @@ type (
 
 	//EventPublisher - technology free interface to publish events that might be interesting for outside (Publish)
 	EventPublisher interface {
-		PublishAddToCartEvent(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode string, qty int)
-		PublishChangedQtyInCartEvent(ctx context.Context, item *cartDomain.Item, qtyBefore int, qtyAfter int, cartID string)
+		PublishAddToCartEvent(ctx context.Context, cart *cartDomain.Cart, marketPlaceCode string, variantMarketPlaceCode string, qty int)
+		PublishChangedQtyInCartEvent(ctx context.Context, cart *cartDomain.Cart, item *cartDomain.Item, qtyBefore int, qtyAfter int)
 		PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos placeorder.PlacedOrderInfos)
 	}
 
@@ -46,7 +46,7 @@ func (d *DefaultEventPublisher) Inject(
 }
 
 // PublishAddToCartEvent publishes an event for add to cart actions
-func (d *DefaultEventPublisher) PublishAddToCartEvent(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode string, qty int) {
+func (d *DefaultEventPublisher) PublishAddToCartEvent(ctx context.Context, cart *cartDomain.Cart, marketPlaceCode string, variantMarketPlaceCode string, qty int) {
 	product, err := d.productService.Get(ctx, marketPlaceCode)
 	if err != nil {
 		return
@@ -57,6 +57,7 @@ func (d *DefaultEventPublisher) PublishAddToCartEvent(ctx context.Context, marke
 		VariantMarketplaceCode: variantMarketPlaceCode,
 		ProductName:            product.TeaserData().ShortTitle,
 		Qty:                    qty,
+		Cart:                   cart,
 	}
 
 	d.logger.WithContext(ctx).Info("Publish Event PublishAddToCartEvent: ", eventObject)
@@ -64,14 +65,15 @@ func (d *DefaultEventPublisher) PublishAddToCartEvent(ctx context.Context, marke
 }
 
 // PublishChangedQtyInCartEvent publishes an event for cart item quantity change actions
-func (d *DefaultEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context, item *cartDomain.Item, qtyBefore int, qtyAfter int, cartID string) {
+func (d *DefaultEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context, cart *cartDomain.Cart, item *cartDomain.Item, qtyBefore int, qtyAfter int) {
 	eventObject := ChangedQtyInCartEvent{
-		CartID:                 cartID,
+		CartID:                 cart.ID,
 		MarketplaceCode:        item.MarketplaceCode,
 		VariantMarketplaceCode: item.VariantMarketPlaceCode,
 		ProductName:            item.ProductName,
 		QtyBefore:              qtyBefore,
 		QtyAfter:               qtyAfter,
+		Cart:                   cart,
 	}
 
 	d.logger.WithContext(ctx).Info("Publish Event PublishCartChangedQtyEvent: ", eventObject)
