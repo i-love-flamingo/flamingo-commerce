@@ -3,9 +3,9 @@ module flamingo.me/flamingo-commerce/v3
 go 1.13
 
 require (
-	flamingo.me/dingo v0.2.6
+	flamingo.me/dingo v0.2.7
 	flamingo.me/flamingo/v3 v3.1.7-0.20200116110819-91a8ad6069e8
-	flamingo.me/form v1.0.1-0.20191008191024-ff6f3a9330d6
+	flamingo.me/form v1.0.1
 	flamingo.me/graphql v1.0.1
 	flamingo.me/pugtemplate v1.0.0
 	github.com/99designs/gqlgen v0.9.0
