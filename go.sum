@@ -14,6 +14,8 @@ flamingo.me/dingo v0.1.6/go.mod h1:jLnqSPkxqE113eKreQ4uBx1fnwluGuaK3rjRi9041wU=
 flamingo.me/dingo v0.2.3/go.mod h1:NXspAYkbktnP0EKs/27QW6Evija8WZfWGtrMcauOejQ=
 flamingo.me/dingo v0.2.6 h1:U1eXDot5R0cdc+yaZNNq7b/SfV//NCJCPrhMPEk7M1s=
 flamingo.me/dingo v0.2.6/go.mod h1:NXspAYkbktnP0EKs/27QW6Evija8WZfWGtrMcauOejQ=
+flamingo.me/dingo v0.2.7 h1:mxIosuFo8f/Ue4tgOuZbBtJHnFPEcTWesZNurtYwvXQ=
+flamingo.me/dingo v0.2.7/go.mod h1:NXspAYkbktnP0EKs/27QW6Evija8WZfWGtrMcauOejQ=
 flamingo.me/flamingo/v3 v3.0.1 h1:p/jjJDa5Il1Clpg7QuYJHosR6/eX1v89lZRTBMO9PAc=
 flamingo.me/flamingo/v3 v3.0.1/go.mod h1:qxq7rnO6bKIMgyx7WOoi3QcTy9UkX9jrAEGvFDnWFlc=
 flamingo.me/flamingo/v3 v3.1.1 h1:DA7qNhZPG01/25muE+wVvFlL0lttiPaG8HvfaksC3kc=
@@ -26,6 +28,8 @@ flamingo.me/flamingo/v3 v3.1.7-0.20200116110819-91a8ad6069e8 h1:jNixrIX2XjzI5vI5
 flamingo.me/flamingo/v3 v3.1.7-0.20200116110819-91a8ad6069e8/go.mod h1:jtZ9inQeo90nHVEbLfPHmC35j0J2mFULiCt4V1NkPBE=
 flamingo.me/form v1.0.1-0.20191008191024-ff6f3a9330d6 h1:IjB4m3ry8c2G3OCAaPTwqQFlA0PuuG0eJ2+GGs4kdWk=
 flamingo.me/form v1.0.1-0.20191008191024-ff6f3a9330d6/go.mod h1:vr043GHK3X/0W1ZIGDJBBic94piMMTm5TzXupcPvprQ=
+flamingo.me/form v1.0.1 h1:mII37OSedlU4ruWdH234UF5ebG7j+WAz1SlX8o6QiPY=
+flamingo.me/form v1.0.1/go.mod h1:wvH0kq3mTrMmRVGuPT2HwvTScz4xTH11YUeWXCxlRMQ=
 flamingo.me/graphql v1.0.1 h1:tovhUIzBoJtUl5A2/xE/tDfcQkDfd9IONuSy/perRKg=
 flamingo.me/graphql v1.0.1/go.mod h1:JfIijC5pf1WqeSJjtTGljqNkG19n18EBZuC7uy0VoFc=
 flamingo.me/pugtemplate v1.0.0 h1:aatUrrp/9+TxmVOkUUCcrY0a4aR6YCzmT5ZYUIy7ygE=
