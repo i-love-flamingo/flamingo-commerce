@@ -54,3 +54,7 @@
 
 # 17. January 2020
 * Add `AppliedGiftCard` convenience function `Total()`
+
+# 10. February 2020
+* Add `additionalData` to `AddRequest` 
+  * Breaking change: Update helper/builder function `BuildAddRequest`

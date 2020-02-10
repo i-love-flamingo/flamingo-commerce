@@ -516,7 +516,7 @@ func (cs *CartService) DeleteDelivery(ctx context.Context, session *web.Session,
 }
 
 // BuildAddRequest Helper to build
-func (cs *CartService) BuildAddRequest(ctx context.Context, marketplaceCode string, variantMarketplaceCode string, qty int) cartDomain.AddRequest {
+func (cs *CartService) BuildAddRequest(ctx context.Context, marketplaceCode string, variantMarketplaceCode string, qty int, additionalData map[string]string) cartDomain.AddRequest {
 	if qty < 0 {
 		qty = 0
 	}
@@ -525,6 +525,7 @@ func (cs *CartService) BuildAddRequest(ctx context.Context, marketplaceCode stri
 		MarketplaceCode:        marketplaceCode,
 		Qty:                    qty,
 		VariantMarketplaceCode: variantMarketplaceCode,
+		AdditionalData:         additionalData,
 	}
 }
 

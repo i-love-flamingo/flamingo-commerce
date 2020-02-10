@@ -43,7 +43,7 @@ func (r *CommerceCartMutationResolver) Inject(q *CommerceCartQueryResolver,
 func (r *CommerceCartMutationResolver) CommerceAddToCart(ctx context.Context, marketplaceCode string, qty int, deliveryCode string) (*dto.DecoratedCart, error) {
 	req := web.RequestFromContext(ctx)
 
-	addRequest := r.applicationCartService.BuildAddRequest(ctx, marketplaceCode, "", qty)
+	addRequest := r.applicationCartService.BuildAddRequest(ctx, marketplaceCode, "", qty, nil)
 
 	_, err := r.applicationCartService.AddProduct(ctx, req.Session(), deliveryCode, addRequest)
 	if err != nil {

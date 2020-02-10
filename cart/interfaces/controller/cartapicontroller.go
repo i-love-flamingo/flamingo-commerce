@@ -100,7 +100,7 @@ func (cc *CartAPIController) AddAction(ctx context.Context, r *web.Request) web.
 	qtyInt, _ := strconv.Atoi(qty)
 	deliveryCode, _ := r.Params["deliveryCode"]
 
-	addRequest := cc.cartService.BuildAddRequest(ctx, r.Params["marketplaceCode"], variantMarketplaceCode, qtyInt)
+	addRequest := cc.cartService.BuildAddRequest(ctx, r.Params["marketplaceCode"], variantMarketplaceCode, qtyInt, nil)
 	_, err := cc.cartService.AddProduct(ctx, r.Session(), deliveryCode, addRequest)
 
 	result := newResult()
