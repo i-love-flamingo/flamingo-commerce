@@ -82,7 +82,7 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 				}
 				for _, item := range d.Cartitems {
 					e.logger.WithContext(ctx).Debugf("Merging item from guest to user cart %v", item)
-					addRequest := e.cartService.BuildAddRequest(ctx, item.MarketplaceCode, item.VariantMarketPlaceCode, item.Qty)
+					addRequest := e.cartService.BuildAddRequest(ctx, item.MarketplaceCode, item.VariantMarketPlaceCode, item.Qty, item.AdditionalData)
 					_, err := e.cartService.AddProduct(ctx, currentEvent.Session, d.DeliveryInfo.Code, addRequest)
 					if err != nil {
 						e.logger.WithContext(ctx).Error("LoginEvent - customerCart product has merge error", addRequest.MarketplaceCode, err)

@@ -71,6 +71,7 @@ type (
 		MarketplaceCode        string
 		Qty                    int
 		VariantMarketplaceCode string
+		AdditionalData         map[string]string
 	}
 
 	// ItemUpdateCommand defines the update item command

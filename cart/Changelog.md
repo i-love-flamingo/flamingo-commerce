@@ -55,7 +55,9 @@
 # 17. January 2020
 * Add `AppliedGiftCard` convenience function `Total()`
 
-# 6. February 2020
+# 10. February 2020
+* Add `additionalData` to `AddRequest` 
+  * Breaking change: Update helper/builder function `BuildAddRequest`
 * Breaking Change to `EventPublisher` interface, `PublishChangedQtyInCartEvent` and `PublishAddToCartEvent` now
 include a cart as a parameter
 * Breaking Change to behaviour of `AddToCartEvent` and `ChangedQtyInCartEvent`, they are now thrown after
