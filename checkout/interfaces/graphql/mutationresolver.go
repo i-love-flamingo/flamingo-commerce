@@ -2,8 +2,10 @@ package graphql
 
 import (
 	"context"
-	"fmt"
 	"net/url"
+
+	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/web"
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
@@ -11,15 +13,13 @@ import (
 	"flamingo.me/flamingo-commerce/v3/checkout/application/placeorder"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql/dto"
-	"flamingo.me/flamingo/v3/framework/flamingo"
-	"flamingo.me/flamingo/v3/framework/web"
 )
 
 // CommerceCheckoutMutationResolver resolves graphql checkout mutations
 type CommerceCheckoutMutationResolver struct {
 	placeorderHandler    *placeorder.Handler
 	cartService          *cartApplication.CartService
-	stateMapping         map[string]dto.State
+	stateMapper          *dto.StateMapper
 	logger               flamingo.Logger
 	decoratedCartFactory *decorator.DecoratedCartFactory
 }
@@ -29,14 +29,14 @@ func (r *CommerceCheckoutMutationResolver) Inject(
 	placeorderHandler *placeorder.Handler,
 	cartService *cartApplication.CartService,
 	decoratedCartFactory *decorator.DecoratedCartFactory,
-	stateMapping map[string]dto.State,
-	logger flamingo.Logger) {
+	stateMapper *dto.StateMapper,
+	logger flamingo.Logger,
+) {
 	r.placeorderHandler = placeorderHandler
 	r.decoratedCartFactory = decoratedCartFactory
 	r.cartService = cartService
-	r.stateMapping = stateMapping
+	r.stateMapper = stateMapper
 	r.logger = logger.WithField(flamingo.LogKeyModule, "checkout").WithField(flamingo.LogKeyCategory, "graphql")
-
 }
 
 // CommerceCheckoutRefreshPlaceOrder refreshes the current place order and proceeds the process
@@ -56,7 +56,7 @@ func (r *CommerceCheckoutMutationResolver) refresh(
 
 	dc := graphqlDto.NewDecoratedCart(r.decoratedCartFactory.Create(ctx, poctx.Cart))
 
-	graphQLState, err := r.mapStateToGraphQL(*poctx)
+	graphQLState, err := r.stateMapper.Map(*poctx)
 	if err != nil {
 		return nil, err
 	}
@@ -122,14 +122,4 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutCancelPlaceOrder(ctx 
 	err := r.placeorderHandler.CancelPlaceOrder(ctx, placeorder.CancelPlaceOrderCommand{})
 
 	return err == nil, err
-}
-
-func (r *CommerceCheckoutMutationResolver) mapStateToGraphQL(pctx process.Context) (dto.State, error) {
-	resultState, found := r.stateMapping[pctx.CurrentStateName]
-	if !found {
-		return nil, fmt.Errorf("couldn't map the internal process state %q to a GraphQL state", pctx.CurrentStateName)
-	}
-	resultState.MapFrom(pctx)
-
-	return resultState, nil
 }
