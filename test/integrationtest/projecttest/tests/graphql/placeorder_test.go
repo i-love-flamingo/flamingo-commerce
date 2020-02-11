@@ -339,5 +339,28 @@ func Test_ActivePlaceOrder(t *testing.T) {
 	response = request.Expect()
 	status = response.JSON().Object().Value("data").Object().Value("Commerce_Checkout_ActivePlaceOrder")
 	assert.True(t, status.Boolean().Raw())
+}
 
+func Test_GetCurrentState(t *testing.T) {
+	baseURL := "http://" + FlamingoURL
+	e := httpexpect.New(t, baseURL)
+	// no current context before start
+	request := helper.GraphQlRequest(t, e, loadGraphQL(t, "current_context", nil))
+	request.Expect().JSON().Object().Value("errors").Array().First().Object().Value("message").String().Equal("ErrNoPlaceOrderProcess")
+
+	// prepare start and wait
+	prepareCartWithPaymentSelection(t, e, domain.PaymentFlowActionShowIframe)
+	_, uuid := assertStartPlaceOrderWithValidUUID(t, e)
+	result, uuid2 := assertRefreshPlaceOrder(t, e, true)
+	assert.Equal(t, uuid, uuid2)
+	state := getValue(result, "Commerce_Checkout_RefreshPlaceOrderBlocking", "state")
+
+	// now we can get the current state
+	request = helper.GraphQlRequest(t, e, loadGraphQL(t, "current_context", nil))
+	response := request.Expect()
+	uuid3 := getValue(response, "Commerce_Checkout_CurrentContext", "uuid").Raw()
+	assert.Equal(t, uuid, uuid3)
+	state2 := getValue(response, "Commerce_Checkout_CurrentContext", "state")
+
+	assert.Equal(t, state, state2, "current state must be the same as from RefreshPlaceOrderBlocking")
 }
