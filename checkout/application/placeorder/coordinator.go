@@ -297,7 +297,7 @@ func (c *Coordinator) Run(ctx context.Context) {
 
 			p.Run(ctx)
 			_ = c.storeProcessContext(ctx, p.Context())
-			c.updateGuestCartIDInSessionIfNeeded(ctx)
+			c.forceSessionUpdate(ctx, p.Context())
 		})
 	}(ctx)
 }
@@ -366,9 +366,13 @@ func (c *Coordinator) RunBlocking(ctx context.Context) (*process.Context, error)
 	return pctx, returnErr
 }
 
-func (c *Coordinator) updateGuestCartIDInSessionIfNeeded(ctx context.Context) {
+func (c *Coordinator) forceSessionUpdate(ctx context.Context, pctx process.Context) {
+	// todo: change to new session logic when ready.
 	rollbackSession := web.SessionFromContext(ctx)
 	rollbackGuestCartID := rollbackSession.Try(application.GuestCartSessionKey)
+
+	paymentSessionKey := "paymentCorrelationID#" + pctx.UUID
+	paymentSessionData := rollbackSession.Try(paymentSessionKey)
 
 	mostCurrentSession, err := c.sessionStore.Get(web.RequestFromContext(ctx).Request(), c.sessionName)
 	if err != nil {
@@ -377,11 +381,12 @@ func (c *Coordinator) updateGuestCartIDInSessionIfNeeded(ctx context.Context) {
 	}
 
 	// id of rollback session and latest session are equal, nothing to do
-	if rollbackGuestCartID == mostCurrentSession.Values[application.GuestCartSessionKey] {
+	if rollbackGuestCartID == mostCurrentSession.Values[application.GuestCartSessionKey] && paymentSessionData == mostCurrentSession.Values[paymentSessionKey] {
 		return
 	}
 
 	mostCurrentSession.Values[application.GuestCartSessionKey] = rollbackGuestCartID
+	mostCurrentSession.Values[paymentSessionKey] = paymentSessionData
 
 	if rollbackGuestCartID == nil {
 		delete(mostCurrentSession.Values, application.GuestCartSessionKey)
