@@ -20,8 +20,8 @@ import (
 	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/coreos/go-oidc"
 	"github.com/pkg/errors"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"golang.org/x/oauth2"
 )
 
