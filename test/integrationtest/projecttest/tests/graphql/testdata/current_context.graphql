@@ -1,0 +1,31 @@
+query {
+    Commerce_Checkout_CurrentContext {
+        uuid
+        state {
+            name
+            __typename
+            ... on Commerce_Checkout_PlaceOrderState_State_Redirect {
+                URL
+            }
+            ... on Commerce_Checkout_PlaceOrderState_State_PostRedirect {
+                URL
+                Parameters {
+                    key
+                    value
+                }
+            }
+            ... on Commerce_Checkout_PlaceOrderState_State_ShowHTML {
+                HTML
+            }
+            ... on Commerce_Checkout_PlaceOrderState_State_ShowIframe {
+                URL
+            }
+            ... on Commerce_Checkout_PlaceOrderState_State_Failed {
+                reason{
+                    __typename
+                    reason
+                }
+            }
+        }
+    }
+}
