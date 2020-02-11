@@ -298,6 +298,7 @@ func (cc *CheckoutController) SuccessAction(ctx context.Context, r *web.Request)
 				PlacedOrderInfos:    placeOrderFlashData.PlacedOrderInfos,
 			}
 
+			cc.orderService.ClearLastPlacedOrder(ctx)
 			return cc.responder.Render("checkout/success", viewData).SetNoCache()
 		}
 	}
