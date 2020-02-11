@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"fmt"
 	"net/url"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
@@ -11,6 +12,11 @@ type (
 	// State representation for graphql
 	State interface {
 		MapFrom(process.Context)
+	}
+
+	// StateMapper to create dto states from context states
+	StateMapper struct {
+		stateMapping map[string]State
 	}
 
 	// Failed state
@@ -128,4 +134,22 @@ func (s *PostRedirect) MapFrom(pctx process.Context) {
 		}
 		s.Parameters = parameters
 	}
+}
+
+// Inject dependencies
+func (sm *StateMapper) Inject(stateMapping map[string]State) *StateMapper {
+	sm.stateMapping = stateMapping
+
+	return sm
+}
+
+// Map a context into a state
+func (sm *StateMapper) Map(pctx process.Context) (State, error) {
+	resultState, found := sm.stateMapping[pctx.CurrentStateName]
+	if !found {
+		return nil, fmt.Errorf("couldn't map the internal process state %q to a GraphQL state", pctx.CurrentStateName)
+	}
+	resultState.MapFrom(pctx)
+
+	return resultState, nil
 }

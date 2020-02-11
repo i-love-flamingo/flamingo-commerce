@@ -713,6 +713,7 @@ type ComplexityRoot struct {
 		CommerceCategory                 func(childComplexity int, categoryCode string, categorySearchRequest *dto.CommerceSearchRequest) int
 		CommerceCategoryTree             func(childComplexity int, activeCategoryCode string) int
 		CommerceCheckoutActivePlaceOrder func(childComplexity int) int
+		CommerceCheckoutCurrentContext   func(childComplexity int) int
 		CommerceProduct                  func(childComplexity int, marketplaceCode string) int
 		CommerceProductSearch            func(childComplexity int, searchRequest *dto.CommerceSearchRequest) int
 		Flamingo                         func(childComplexity int) int
@@ -741,6 +742,7 @@ type QueryResolver interface {
 	CommerceProductSearch(ctx context.Context, searchRequest *dto.CommerceSearchRequest) (*application.SearchResult, error)
 	CommerceCart(ctx context.Context) (*dto1.DecoratedCart, error)
 	CommerceCheckoutActivePlaceOrder(ctx context.Context) (bool, error)
+	CommerceCheckoutCurrentContext(ctx context.Context) (*dto2.PlaceOrderContext, error)
 	CommerceCategoryTree(ctx context.Context, activeCategoryCode string) (domain2.Tree, error)
 	CommerceCategory(ctx context.Context, categoryCode string, categorySearchRequest *dto.CommerceSearchRequest) (*dto3.CategorySearchResult, error)
 }
@@ -3745,6 +3747,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.CommerceCheckoutActivePlaceOrder(childComplexity), true
 
+	case "Query.Commerce_Checkout_CurrentContext":
+		if e.complexity.Query.CommerceCheckoutCurrentContext == nil {
+			break
+		}
+
+		return e.complexity.Query.CommerceCheckoutCurrentContext(childComplexity), true
+
 	case "Query.Commerce_Product":
 		if e.complexity.Query.CommerceProduct == nil {
 			break
@@ -4406,6 +4415,7 @@ type Commerce_Checkout_PlaceOrderState_Form_Parameter {
 
 extend type Query {
     Commerce_Checkout_ActivePlaceOrder: Boolean!
+    Commerce_Checkout_CurrentContext: Commerce_Checkout_PlaceOrderContext!
 }
 
 extend type Mutation {
@@ -16026,6 +16036,33 @@ func (ec *executionContext) _Query_Commerce_Checkout_ActivePlaceOrder(ctx contex
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_Commerce_Checkout_CurrentContext(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().CommerceCheckoutCurrentContext(rctx)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*dto2.PlaceOrderContext)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNCommerce_Checkout_PlaceOrderContext2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPlaceOrderContext(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_Commerce_CategoryTree(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -20804,6 +20841,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_Commerce_Checkout_ActivePlaceOrder(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "Commerce_Checkout_CurrentContext":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_Commerce_Checkout_CurrentContext(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}

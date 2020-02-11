@@ -105,6 +105,7 @@ type Commerce_Checkout_PlaceOrderState_Form_Parameter {
 
 extend type Query {
     Commerce_Checkout_ActivePlaceOrder: Boolean!
+    Commerce_Checkout_CurrentContext: Commerce_Checkout_PlaceOrderContext!
 }
 
 extend type Mutation {

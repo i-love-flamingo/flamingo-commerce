@@ -25,6 +25,17 @@ func (h *Handler) StartPlaceOrder(ctx context.Context, command StartPlaceOrderCo
 	return h.coordinator.New(ctx, command.Cart, command.ReturnURL)
 }
 
+// CurrentContext returns the last saved state
+func (h *Handler) CurrentContext(ctx context.Context) (*process.Context, error) {
+	p, err := h.coordinator.LastProcess(ctx)
+	if err != nil {
+		return nil, err
+	}
+	currentContext := p.Context()
+
+	return &currentContext, nil
+}
+
 // RefreshPlaceOrder handles RefreshPlaceOrder command
 func (h *Handler) RefreshPlaceOrder(ctx context.Context, _ RefreshPlaceOrderCommand) (*process.Context, error) {
 	p, err := h.coordinator.LastProcess(ctx)
