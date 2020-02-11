@@ -136,7 +136,7 @@ func Test_PlaceOrderWithPaymentService(t *testing.T) {
 				"name":       states.PostRedirect{}.Name(),
 				"__typename": "Commerce_Checkout_PlaceOrderState_State_PostRedirect",
 				"URL":        "https://url.com",
-				"Parameters": []interface{}{}, //todo: better data in fake gateway
+				"Parameters": []interface{}{}, // todo: better data in fake gateway
 			},
 		},
 		{
@@ -287,16 +287,57 @@ func Test_CancelPlaceOrder(t *testing.T) {
 
 }
 
-// TODO: should generally test that restore of cart works and user can directly start a new process
-// start process which fails, then restart process which also fails
-// start process which fails, then restart with e.g. new payment method and success
 func Test_RestartStartPlaceOrder(t *testing.T) {
+	baseURL := "http://" + FlamingoURL
+	e := httpexpect.New(t, baseURL)
+	prepareCartWithPaymentSelection(t, e, domain.PaymentFlowStatusFailed)
+	_, uuid1 := assertStartPlaceOrderWithValidUUID(t, e)
+	// wait for fail
+	res, _ := assertRefreshPlaceOrder(t, e, true)
+	state := getValue(res, "Commerce_Checkout_RefreshPlaceOrderBlocking", "state")
+	assert.Equal(t, "Failed", state.Object().Value("name").Raw())
 
+	// restart
+	_, uuid2 := assertStartPlaceOrderWithValidUUID(t, e)
+	assert.NotEqual(t, uuid1, uuid2, "new process should have been started")
+	res, _ = assertRefreshPlaceOrder(t, e, true)
+	state = getValue(res, "Commerce_Checkout_RefreshPlaceOrderBlocking", "state")
+	assert.Equal(t, "Failed", state.Object().Value("name").Raw())
+	reason := state.Object().Value("reason").Object()
+	// payment selection should still be set, so we get the payment error (not PaymentSelection not set)
+	assert.Equal(t, "Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError", reason.Value("__typename").String().Raw())
+	assert.Equal(t, "", reason.Value("reason").String().Raw())
+
+	// update payment selection
+	helper.GraphQlRequest(t, e, loadGraphQL(t, "update_payment_selection", map[string]string{"PAYMENT_METHOD": domain.PaymentFlowStatusCompleted})).Expect().Status(http.StatusOK)
+	_, uuid3 := assertStartPlaceOrderWithValidUUID(t, e)
+	assert.NotEqual(t, uuid2, uuid3, "new process should have been started")
+	res, _ = assertRefreshPlaceOrder(t, e, true)
+	state = getValue(res, "Commerce_Checkout_RefreshPlaceOrderBlocking", "state")
+	assert.Equal(t, "Success", state.Object().Value("name").Raw())
 }
 
-// TODO: check that running process can be detected with CommerceCheckoutActivePlaceOrder
-// - with running
-// - without running
 func Test_ActivePlaceOrder(t *testing.T) {
-	//@thorsten
+	baseURL := "http://" + FlamingoURL
+	e := httpexpect.New(t, baseURL)
+	query := loadGraphQL(t, "active_place_order", nil)
+
+	// no process should be running at the start
+	request := helper.GraphQlRequest(t, e, query)
+	response := request.Expect()
+	status := response.JSON().Object().Value("data").Object().Value("Commerce_Checkout_ActivePlaceOrder")
+	assert.False(t, status.Boolean().Raw())
+
+	// let the process wait in iframe status
+	prepareCartWithPaymentSelection(t, e, domain.PaymentFlowActionShowIframe)
+	assertStartPlaceOrderWithValidUUID(t, e)
+	// wait for goroutine to be finished
+	assertRefreshPlaceOrder(t, e, true)
+
+	// now we have a running process
+	request = helper.GraphQlRequest(t, e, query)
+	response = request.Expect()
+	status = response.JSON().Object().Value("data").Object().Value("Commerce_Checkout_ActivePlaceOrder")
+	assert.True(t, status.Boolean().Raw())
+
 }
