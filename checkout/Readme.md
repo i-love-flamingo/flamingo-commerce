@@ -5,9 +5,51 @@ This package provides a one page standard checkout with the following features:
 * Concept for PaymentProviders, that can be used to implement specific Payments
 * An "offline payment" provider is part of the module
 
-## Standard checkout flow
+**Table of content**
 
-This module implements controller and services for the following checkout flow (the checkout process for the end customer):
+* [Configurations](#configurations)
+* [Checkout Controller](#checkout-controller)
+* [GraphQL Place Order Process](#graphql-place-order-process)
+  + [Queries / Mutations](#queries---mutations)
+  + [Place Order States](#place-order-states)
+  + [Context store](#context-store)
+    - [Ports / Implementation](#ports---implementation)
+  + [Locking](#locking)
+    - [Ports / Implementation](#ports---implementation-1)
+* [Provided Ports](#provided-ports)
+  + [Sourcing Service Secondary Ports](#sourcing-service-secondary-ports)
+  + [Process Context Store](#process-context-store)
+  + [Process Lock](#process-lock)
+
+## Configurations
+
+If your template does not want to ask for all the information required you can also set default values for the checkoutform (strings)
+
+```yaml
+commerce:
+  checkout:
+    # use a faked sourcing service
+    useFakeSourcingService: false
+    # to enable the offline payment provider
+    enableOfflinePaymentProvider: true
+
+    # checkout flow control flags:
+    skipStartAction: false
+    skipReviewAction: false
+    showReviewStepAfterPaymentError: false
+    showEmptyCartPageIfNoItems: false
+    redirectToCartOnInvalideCart: false
+
+    # checkout form settings:
+    useDeliveryForms:                 true
+	usePersonalDataForm:              false
+	privacyPolicyRequired:           true
+```
+
+
+## Checkout Controller
+
+This module implements a controller for the following checkout flow (the checkout process for the end customer):
 
 1. StartAction (optional)
     * check if user is logged in
@@ -43,34 +85,49 @@ This module implements controller and services for the following checkout flow (
 1. Success Action:
     * Renders order success template
 
-## Configurations
+## GraphQL Place Order Process
 
-If your template does not want to ask for all the information required you can also set default values for the checkoutform (strings)
+When we introduced GraphQL, we rethought the checkout process from the ground up. Among other things, we decided to
+map the individual steps of the checkout to states of a newly created place order state machine.
+This should mainly make the process more robust and make it easier to roll back operations in case of errors.
 
-```yaml
-commerce:
-  checkout:
-    # use a faked sourcing service
-    useFakeSourcingService: false
-    # to enable the offline payment provider
-    enableOfflinePaymentProvider: true
+### Queries / Mutations
 
-    # checkout flow control flags:
-    skipStartAction: false
-    skipReviewAction: false
-    showReviewStepAfterPaymentError: false
-    showEmptyCartPageIfNoItems: false
-    redirectToCartOnInvalideCart: false
+The checkout module exposes the following Mutations and Queries:
 
-    # checkout form settings:
-    useDeliveryForms:                 true
-	usePersonalDataForm:              false
-	privacyPolicyRequired:           true
-```
+...
+
+### Place Order States
+
+..
+
+### Context store
+
+..
+
+#### Ports / Implementation
+
+...
+
+### Locking
+
+..
+
+#### Ports / Implementation
+
+...
 
 
-## Sourcing Service Secondary Ports
+
+## Provided Ports
+### Sourcing Service Secondary Ports
 There is the an optional secondary port provided, that we call "Sourcing Service".
 The Sourcing service is responsible for assigning an Item in the cart the correct source location. The source location is the location where the item should be fulfilled from. Typically a warehouse.
 
 By providing an adapter for this port you can control the source locations for the items in your cart.
+
+### Process Context Store 
+New GraphQL related process context store. For more details see [Context store](#context-store)
+
+### Process Lock
+New GraphQL related process lock. For more details see [Locking](#locking)
