@@ -288,11 +288,11 @@ func (c Cart) ProductCount() int {
 
 // ProductCountUnique returns the amount of unique products across all deliveries
 func (c Cart) ProductCountUnique() int {
-	marketplaceCodes := make(map[string]string)
+	marketplaceCodes := make(map[string]struct{})
 	for _, delivery := range c.Deliveries {
 		for _, item := range delivery.Cartitems {
 			if _, ok := marketplaceCodes[item.MarketplaceCode]; !ok {
-				marketplaceCodes[item.MarketplaceCode] = item.MarketplaceCode
+				marketplaceCodes[item.MarketplaceCode] = struct{}{}
 			}
 		}
 	}
