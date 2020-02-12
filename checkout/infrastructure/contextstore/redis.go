@@ -32,7 +32,7 @@ func (r *Redis) Inject(
 	logger flamingo.Logger,
 	cfg *struct {
 		MaxIdle                 float64 `inject:"config:commerce.checkout.placeorder.contextstore.redis.maxIdle"`
-		IdleTimeOutMilliseconds float64 `inject:"config:commerce.checkout.placeorder.contextstore.redis.idleTimeOutMilliseconds"`
+		IdleTimeoutMilliseconds float64 `inject:"config:commerce.checkout.placeorder.contextstore.redis.idleTimeoutMilliseconds"`
 		Network                 string  `inject:"config:commerce.checkout.placeorder.contextstore.redis.network"`
 		Address                 string  `inject:"config:commerce.checkout.placeorder.contextstore.redis.address"`
 		Database                float64 `inject:"config:commerce.checkout.placeorder.contextstore.redis.database"`
@@ -41,7 +41,7 @@ func (r *Redis) Inject(
 	if cfg != nil {
 		r.pool = &redis.Pool{
 			MaxIdle:     int(cfg.MaxIdle),
-			IdleTimeout: time.Duration(cfg.IdleTimeOutMilliseconds) * time.Millisecond,
+			IdleTimeout: time.Duration(cfg.IdleTimeoutMilliseconds) * time.Millisecond,
 			TestOnBorrow: func(c redis.Conn, t time.Time) error {
 				_, err := c.Do("PING")
 				return err

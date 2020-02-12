@@ -34,11 +34,11 @@ func getRedisStore(network, address string) *contextstore.Redis {
 		new(flamingo.NullLogger),
 		&struct {
 			MaxIdle                 float64 `inject:"config:commerce.checkout.placeorder.contextstore.redis.maxIdle"`
-			IdleTimeOutMilliseconds float64 `inject:"config:commerce.checkout.placeorder.contextstore.redis.idleTimeOutMilliseconds"`
+			IdleTimeoutMilliseconds float64 `inject:"config:commerce.checkout.placeorder.contextstore.redis.idleTimeoutMilliseconds"`
 			Network                 string  `inject:"config:commerce.checkout.placeorder.contextstore.redis.network"`
 			Address                 string  `inject:"config:commerce.checkout.placeorder.contextstore.redis.address"`
 			Database                float64 `inject:"config:commerce.checkout.placeorder.contextstore.redis.database"`
-		}{MaxIdle: 3, IdleTimeOutMilliseconds: 240000, Network: network, Address: address, Database: 0})
+		}{MaxIdle: 3, IdleTimeoutMilliseconds: 240000, Network: network, Address: address, Database: 0})
 }
 
 func prepareData(t *testing.T, conn redis.Conn) {
