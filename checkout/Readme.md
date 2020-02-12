@@ -44,6 +44,13 @@ commerce:
     useDeliveryForms:                 true
 	usePersonalDataForm:              false
 	privacyPolicyRequired:           true
+
+    # GraphQL place order process
+    placeorder:
+      lock: 
+        type: "memory" # only suited for single node applications, use "redis" for multi node setup
+      contextstore:
+        type: "memory" # only suited for single node applications, use "redis" for multi node setup
 ```
 
 
@@ -111,12 +118,37 @@ The checkout module exposes the following Mutations and Queries:
 
 ### Locking
 
-..
+To ensure that the state machine cannot be processed multiple times for one process, we have decided to introduce a process lock.
+At the start of each place order transaction an attempt is made to obtain a lock, if this is not possible a transaction is already running and we just wait.
 
 #### Ports / Implementation
 
-...
+The module offers the `TryLock` port and currently two implementations (Memory, Redis).
 
+##### In Memory
+**Important: This lock is only suited for single node applications, please use redis for multi node setup**
+
+Default lock implementation. Provides a mutex based in memory adapter for the `TryLock` port.
+
+```yaml
+commerce.checkout.placeorder.lock.type: "memory"
+```
+
+##### Redis
+
+Provides a redis based lock implementation using the [go-redsync/redsync](https://github.com/go-redsync/redsync) package.
+Node acquires the lock and refreshes it every X second, if the node dies the lock is automatically released after the provided max duration.
+
+```yaml
+commerce.checkout.placeorder.lock:
+  type: "redis"
+  redis:
+    maxIdle: 25
+    idleTimeoutMilliseconds: 240000
+    network: "tcp"
+    address: "localhost:6379"
+    database: 0
+```
 
 
 ## Provided Ports

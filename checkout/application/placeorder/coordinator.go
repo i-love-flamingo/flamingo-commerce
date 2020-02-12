@@ -21,10 +21,17 @@ import (
 
 type (
 
-	//TryLock interface
+	// TryLock port for a locking implementation
 	TryLock interface {
+		// TryLock tries to get the lock for the provided key, if lock is already taken or couldn't be acquired function
+		// returns an error. If the lock could be acquired a unlock function is returned which should be called to release the lock.
+		// The provided duration is used in case that the node which required the lock dies so that the lock can released anyways.
+		// If the node stays alive the lock time is not restricted in any way.
 		TryLock(string, time.Duration) (Unlock, error)
 	}
+
+	// Unlock function to release the previously acquired lock, should be called within defer
+	Unlock func() error
 
 	// Coordinator ensures that certain parts of the place order process are only done once at a time
 	Coordinator struct {
@@ -37,18 +44,15 @@ type (
 		sessionName    string
 	}
 
-	//Unlock func
-	Unlock func() error
-
 	emptyResponseWriter struct{}
 )
 
 var (
-	//ErrLockTaken to indicate the lock is taken (by another running process)
+	// ErrLockTaken to indicate the lock is taken (by another running process)
 	ErrLockTaken = errors.New("lock already taken")
-	//ErrNoPlaceOrderProcess if a requested process not running
+	// ErrNoPlaceOrderProcess if a requested process not running
 	ErrNoPlaceOrderProcess = errors.New("ErrNoPlaceOrderProcess")
-	//ErrAnotherPlaceOrderProcessRunning if a process runs
+	// ErrAnotherPlaceOrderProcessRunning if a process runs
 	ErrAnotherPlaceOrderProcessRunning = errors.New("ErrAnotherPlaceOrderProcessRunning")
 
 	maxLockDuration = 2 * time.Minute

@@ -39,10 +39,10 @@ func (m *Module) Configure(injector *dingo.Injector) {
 		injector.Override((*domain.SourcingService)(nil), "").To(infrastructure.FakeSourcingService{})
 	}
 
-	if m.PlaceOrderLockType == "clusterlock" {
+	if m.PlaceOrderLockType == "redis" {
 		injector.Bind(new(placeorder.TryLock)).ToProvider(locker.NewRedis).In(dingo.Singleton)
 	} else {
-		injector.Bind(new(placeorder.TryLock)).To(&locker.Simple{}).In(dingo.Singleton)
+		injector.Bind(new(placeorder.TryLock)).To(new(locker.Memory)).In(dingo.Singleton)
 	}
 
 	if m.PlaceOrderContextStore == "redis" {
