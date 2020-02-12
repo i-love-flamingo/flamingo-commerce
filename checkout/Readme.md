@@ -41,9 +41,9 @@ commerce:
     redirectToCartOnInvalideCart: false
 
     # checkout form settings:
-    useDeliveryForms:                 true
-	usePersonalDataForm:              false
-	privacyPolicyRequired:           true
+    useDeliveryForms: true
+    usePersonalDataForm: false
+    privacyPolicyRequired: true
 
     # GraphQL place order process
     placeorder:
