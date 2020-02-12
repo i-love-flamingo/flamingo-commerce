@@ -68,7 +68,6 @@ func assertStartPlaceOrderWithValidUUID(t *testing.T, e *httpexpect.Expect) (*ht
 	mutation := loadGraphQL(t, "start", nil)
 	request := helper.GraphQlRequest(t, e, mutation)
 	response := request.Expect()
-	t.Log(response.Body())
 	response.Status(http.StatusOK)
 	uuidMatches := getValue(response, "Commerce_Checkout_StartPlaceOrder", "uuid").String().
 		Match("(?i)^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$")
