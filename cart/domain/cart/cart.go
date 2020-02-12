@@ -276,7 +276,7 @@ func (c Cart) ItemCount() int {
 	return count
 }
 
-// ProductCount - returns amount of different products
+// ProductCount returns the amount of different products, but a product is counted twice if it is in different deliveries
 func (c Cart) ProductCount() int {
 	count := 0
 	for _, delivery := range c.Deliveries {
@@ -284,6 +284,19 @@ func (c Cart) ProductCount() int {
 	}
 
 	return count
+}
+
+// ProductCountUnique returns the amount of unique products across all deliveries
+func (c Cart) ProductCountUnique() int {
+	marketplaceCodes := make(map[string]struct{})
+	for _, delivery := range c.Deliveries {
+		for _, item := range delivery.Cartitems {
+			if _, ok := marketplaceCodes[item.MarketplaceCode]; !ok {
+				marketplaceCodes[item.MarketplaceCode] = struct{}{}
+			}
+		}
+	}
+	return len(marketplaceCodes)
 }
 
 // IsPaymentSelected - returns true if a valid payment is selected
