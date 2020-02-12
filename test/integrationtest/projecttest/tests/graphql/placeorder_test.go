@@ -305,6 +305,8 @@ func Test_RestartStartPlaceOrder(t *testing.T) {
 	// wait for fail
 	res, _ := assertRefreshPlaceOrder(t, e, true)
 	getValue(res, "Commerce_Checkout_RefreshPlaceOrderBlocking", "state").Object().Value("name").Equal("Failed")
+	orderInfo1 := getValue(res, "Commerce_Checkout_RefreshPlaceOrderBlocking", "orderInfos")
+	orderNumber1 := orderInfo1.Object().Value("placedOrderInfos").Array().First().Object().Value("orderNumber").String()
 
 	// restart
 	_, uuid2 := assertStartPlaceOrderWithValidUUID(t, e)
@@ -312,8 +314,13 @@ func Test_RestartStartPlaceOrder(t *testing.T) {
 	res, _ = assertRefreshPlaceOrder(t, e, true)
 	state := getValue(res, "Commerce_Checkout_RefreshPlaceOrderBlocking", "state")
 	state.Object().Value("name").Equal("Failed")
-	reason := state.Object().Value("reason").Object()
+	// rollback of place order should lead to a new order number
+	orderInfo2 := getValue(res, "Commerce_Checkout_RefreshPlaceOrderBlocking", "orderInfos")
+	orderNumber2 := orderInfo2.Object().Value("placedOrderInfos").Array().First().Object().Value("orderNumber").String()
+	orderNumber2.NotEqual(orderNumber1.Raw())
+
 	// payment selection should still be set, so we get the payment error (not PaymentSelection not set)
+	reason := state.Object().Value("reason").Object()
 	reason.Value("__typename").Equal("Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError")
 	reason.Value("reason").Equal("")
 
@@ -323,6 +330,12 @@ func Test_RestartStartPlaceOrder(t *testing.T) {
 	assert.NotEqual(t, uuid2, uuid3, "new process should have been started")
 	res, _ = assertRefreshPlaceOrder(t, e, true)
 	getValue(res, "Commerce_Checkout_RefreshPlaceOrderBlocking", "state").Object().Value("name").Equal("Success")
+
+	// rollback of place order should lead to a new order number
+	orderInfo3 := getValue(res, "Commerce_Checkout_RefreshPlaceOrderBlocking", "orderInfos")
+	orderNumber3 := orderInfo3.Object().Value("placedOrderInfos").Array().First().Object().Value("orderNumber").String()
+	orderNumber3.NotEqual(orderNumber1.Raw())
+	orderNumber3.NotEqual(orderNumber2.Raw())
 }
 
 func Test_ActivePlaceOrder(t *testing.T) {
