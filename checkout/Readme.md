@@ -114,7 +114,30 @@ The checkout module exposes the following Mutations and Queries:
 
 #### Ports / Implementation
 
+**In Memory**
+
+_Important: This context store is only suited for single node applications, please use redis for multi node setup_
+
+Default context store implementation. Provides a map based in memory adapter for the `ContextStore` port.
+
+```yaml
+commerce.checkout.placeorder.contextstore.type: "memory"
+```
+
+**Redis**
+
 ...
+
+```yaml
+commerce.checkout.placeorder.contextstore:
+  type: "redis"
+  redis:
+    maxIdle: 25
+    idleTimeoutMilliseconds: 240000
+    network: "tcp"
+    address: "localhost:6379"
+    database: 0
+```
 
 ### Locking
 
@@ -125,8 +148,9 @@ At the start of each place order transaction an attempt is made to obtain a lock
 
 The module offers the `TryLock` port and currently two implementations (Memory, Redis).
 
-##### In Memory
-**Important: This lock is only suited for single node applications, please use redis for multi node setup**
+**In Memory**
+
+_Important: This lock is only suited for single node applications, please use redis for multi node setup_
 
 Default lock implementation. Provides a mutex based in memory adapter for the `TryLock` port.
 
@@ -134,7 +158,7 @@ Default lock implementation. Provides a mutex based in memory adapter for the `T
 commerce.checkout.placeorder.lock.type: "memory"
 ```
 
-##### Redis
+**Redis**
 
 Provides a redis based lock implementation using the [go-redsync/redsync](https://github.com/go-redsync/redsync) package.
 Node acquires the lock and refreshes it every X second, if the node dies the lock is automatically released after the provided max duration.
