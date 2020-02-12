@@ -21,8 +21,8 @@ import (
 
 type (
 
-	// TryLock port for a locking implementation
-	TryLock interface {
+	// TryLocker port for a locking implementation
+	TryLocker interface {
 		// TryLock tries to get the lock for the provided key, if lock is already taken or couldn't be acquired function
 		// returns an error. If the lock could be acquired a unlock function is returned which should be called to release the lock.
 		// The provided duration is used in case that the node which required the lock dies so that the lock can released anyways.
@@ -35,7 +35,7 @@ type (
 
 	// Coordinator ensures that certain parts of the place order process are only done once at a time
 	Coordinator struct {
-		locker         TryLock
+		locker         TryLocker
 		logger         flamingo.Logger
 		cartService    *application.CartService
 		processFactory *process.Factory
@@ -69,7 +69,7 @@ func init() {
 
 //Inject dependencies
 func (c *Coordinator) Inject(
-	locker TryLock,
+	locker TryLocker,
 	logger flamingo.Logger,
 	processFactory *process.Factory,
 	contextStore process.ContextStore,
