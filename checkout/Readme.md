@@ -48,19 +48,24 @@ This module implements controller and services for the following checkout flow (
 If your template does not want to ask for all the information required you can also set default values for the checkoutform (strings)
 
 ```yaml
-checkout:
-  # use a faked sourcing service
-  useFakeSourcingService: false
-  # to enable the offline payment provider
-  enableOfflinePaymentProvider: true
+commerce:
+  checkout:
+    # use a faked sourcing service
+    useFakeSourcingService: false
+    # to enable the offline payment provider
+    enableOfflinePaymentProvider: true
 
-  # checkout flow control flags:
-  skipStartAction: false
-  skipReviewAction: false
-  showReviewStepAfterPaymentError: false
-  showEmptyCartPageIfNoItems: false
-  redirectToCartOnInvalideCart: false
+    # checkout flow control flags:
+    skipStartAction: false
+    skipReviewAction: false
+    showReviewStepAfterPaymentError: false
+    showEmptyCartPageIfNoItems: false
+    redirectToCartOnInvalideCart: false
 
+    # checkout form settings:
+    useDeliveryForms:                 true
+	usePersonalDataForm:              false
+	privacyPolicyRequired:           true
 ```
 
 
