@@ -11,7 +11,7 @@ import (
 )
 
 type (
-	// Redis TryLock for nin clustered applications
+	// Redis TryLocker for clustered applications
 	Redis struct {
 		redsync     *redsync.Redsync
 		network     string
@@ -22,7 +22,7 @@ type (
 	}
 )
 
-var _ placeorder.TryLock = &Redis{}
+var _ placeorder.TryLocker = &Redis{}
 
 // NewRedis creates a new distributed mutex using multiple Redis connection pools.
 func NewRedis(

@@ -40,9 +40,9 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	}
 
 	if m.PlaceOrderLockType == "redis" {
-		injector.Bind(new(placeorder.TryLock)).ToProvider(locker.NewRedis).In(dingo.Singleton)
+		injector.Bind(new(placeorder.TryLocker)).ToProvider(locker.NewRedis).In(dingo.Singleton)
 	} else {
-		injector.Bind(new(placeorder.TryLock)).To(new(locker.Memory)).In(dingo.Singleton)
+		injector.Bind(new(placeorder.TryLocker)).To(new(locker.Memory)).In(dingo.Singleton)
 	}
 
 	if m.PlaceOrderContextStore == "redis" {
