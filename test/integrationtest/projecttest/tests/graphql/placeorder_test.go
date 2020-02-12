@@ -209,10 +209,6 @@ func Test_PlaceOrderWithOrderService(t *testing.T) {
 
 }
 
-// TODO:
-// - Without cart
-// - with invalid cart
-// - when place order process already running
 func Test_StartPlaceOrder(t *testing.T) {
 	baseURL := "http://" + FlamingoURL
 	t.Run("no payment selection", func(t *testing.T) {
@@ -246,26 +242,59 @@ func Test_StartPlaceOrder(t *testing.T) {
 
 }
 
-// TODO:
-// - without running process
-// - with running process
-func Test_RefreshPlaceOrder(t *testing.T) {
-
-}
-
-// TODO:
-// - without running process
-// - with running process
-func Test_RefreshBlockingPlaceOrder(t *testing.T) {
-
-}
-
-// TODO:
-// - without running process
-// - with running process in final state
-// - with running process in non final state
 func Test_CancelPlaceOrder(t *testing.T) {
+	baseURL := "http://" + FlamingoURL
+	tests := []struct {
+		name          string
+		gatewayMethod string
+		prepareAndRun bool
+		validator     func(*testing.T, *httpexpect.Object)
+	}{
+		{
+			name:          "already final",
+			gatewayMethod: domain.PaymentFlowStatusCompleted,
+			prepareAndRun: true,
+			validator: func(t *testing.T, response *httpexpect.Object) {
+				err := response.Value("errors").Array().First().Object()
+				err.Value("message").Equal("process already in final state, cancel not possible")
+				err.Value("path").Array().First().Equal("Commerce_Checkout_CancelPlaceOrder")
+			},
+		},
+		{
+			name:          "not final",
+			gatewayMethod: domain.PaymentFlowActionShowIframe,
+			prepareAndRun: true,
+			validator: func(t *testing.T, response *httpexpect.Object) {
+				response.Value("data").Object().Value("Commerce_Checkout_CancelPlaceOrder").Boolean().True()
+			},
+		},
+		{
+			name:          "no running process",
+			gatewayMethod: domain.PaymentFlowStatusCompleted,
+			prepareAndRun: false,
+			validator: func(t *testing.T, response *httpexpect.Object) {
+				err := response.Value("errors").Array().First().Object()
+				err.Value("message").Equal("ErrNoPlaceOrderProcess")
+				err.Value("path").Array().First().Equal("Commerce_Checkout_CancelPlaceOrder")
+			},
+		},
+	}
 
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := httpexpect.New(t, baseURL)
+			if tt.prepareAndRun {
+				prepareCartWithPaymentSelection(t, e, tt.gatewayMethod)
+				assertStartPlaceOrderWithValidUUID(t, e)
+				assertRefreshPlaceOrder(t, e, true)
+			}
+
+			request := helper.GraphQlRequest(t, e, loadGraphQL(t, "cancel", nil))
+			response := request.Expect().JSON().Object()
+			tt.validator(t, response)
+
+		})
+	}
 }
 
 func Test_RestartStartPlaceOrder(t *testing.T) {
