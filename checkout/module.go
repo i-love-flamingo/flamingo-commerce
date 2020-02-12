@@ -23,11 +23,11 @@ import (
 )
 
 type (
-	// Module registers our profiler
+	// Module registers our checkout module
 	Module struct {
-		UseFakeSourcingService bool   `inject:"config:checkout.useFakeSourcingService,optional"`
-		PlaceOrderLockType     string `inject:"config:checkout.placeorder.lock.type,optional"`
-		PlaceOrderContextStore string `inject:"config:checkout.placeorder.contextstore.type,optional"`
+		UseFakeSourcingService bool   `inject:"config:commerce.checkout.useFakeSourcingService,optional"`
+		PlaceOrderLockType     string `inject:"config:commerce.checkout.placeorder.lock.type"`
+		PlaceOrderContextStore string `inject:"config:commerce.checkout.placeorder.contextstore.type"`
 	}
 )
 
