@@ -4,10 +4,10 @@ import (
 	"errors"
 	"time"
 
+	"flamingo.me/flamingo-commerce/v3/checkout/application/placeorder"
+	"flamingo.me/flamingo/v3/core/healthcheck/domain/healthcheck"
 	"github.com/go-redsync/redsync"
 	"github.com/gomodule/redigo/redis"
-
-	"flamingo.me/flamingo-commerce/v3/checkout/application/placeorder"
 )
 
 type (
@@ -19,10 +19,12 @@ type (
 		maxIdle     int
 		idleTimeout time.Duration
 		database    int
+		healthcheck func() error
 	}
 )
 
 var _ placeorder.TryLocker = &Redis{}
+var _ healthcheck.Status = &Redis{}
 
 // NewRedis creates a new distributed mutex using multiple Redis connection pools.
 func NewRedis(
@@ -55,6 +57,11 @@ func NewRedis(
 			return err
 		},
 	}}
+
+	r.healthcheck = func() error {
+		_, err := pools[0].Get().Do("PING")
+		return err
+	}
 
 	r.redsync = redsync.New(pools)
 
@@ -89,4 +96,15 @@ func (r *Redis) TryLock(key string, maxlockduration time.Duration) (placeorder.U
 		ticker.Stop()
 		return nil
 	}, nil
+}
+
+// Status is the health check
+func (r *Redis) Status() (alive bool, details string) {
+	err := r.healthcheck()
+
+	if err == nil {
+		return true, "redis for place order lock replies to PING"
+	}
+
+	return false, err.Error()
 }

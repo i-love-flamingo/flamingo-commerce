@@ -7,6 +7,7 @@ import (
 	"runtime"
 	"time"
 
+	"flamingo.me/flamingo/v3/core/healthcheck/domain/healthcheck"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/gomodule/redigo/redis"
 
@@ -22,6 +23,7 @@ type (
 )
 
 var _ process.ContextStore = new(Redis)
+var _ healthcheck.Status = &Redis{}
 
 func init() {
 	gob.Register(process.Context{})
@@ -104,4 +106,17 @@ func (r *Redis) Delete(key string) error {
 	_, err := conn.Do("DEL", key)
 
 	return err
+}
+
+// Status handles the health check of redis
+func (r *Redis) Status() (alive bool, details string) {
+	conn := r.pool.Get()
+	defer conn.Close()
+
+	_, err := conn.Do("PING")
+	if err == nil {
+		return true, "redis for place order context store replies to PING"
+	}
+
+	return false, err.Error()
 }
