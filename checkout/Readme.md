@@ -138,7 +138,7 @@ The default implementation defines the state flow as follows:
 
 ### Context store
 
-..
+The place order context must be stored aside of the session, since it is manipulated by a background process.
 
 #### Ports / Implementation
 
@@ -154,7 +154,9 @@ commerce.checkout.placeorder.contextstore.type: "memory"
 
 **Redis**
 
-...
+The Redis implementation writes the context into the configured redis instance. The complete entry will be gob-encoded.
+
+**Be aware that you have to gob-register your own `StateData` if you introduce some.**
 
 ```yaml
 commerce.checkout.placeorder.contextstore:
