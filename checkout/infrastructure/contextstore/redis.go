@@ -31,23 +31,23 @@ func init() {
 func (r *Redis) Inject(
 	logger flamingo.Logger,
 	cfg *struct {
-		MaxIdle                 float64 `inject:"config:commerce.checkout.placeorder.contextstore.redis.maxIdle"`
-		IdleTimeoutMilliseconds float64 `inject:"config:commerce.checkout.placeorder.contextstore.redis.idleTimeoutMilliseconds"`
-		Network                 string  `inject:"config:commerce.checkout.placeorder.contextstore.redis.network"`
-		Address                 string  `inject:"config:commerce.checkout.placeorder.contextstore.redis.address"`
-		Database                float64 `inject:"config:commerce.checkout.placeorder.contextstore.redis.database"`
+		MaxIdle                 int    `inject:"config:commerce.checkout.placeorder.contextstore.redis.maxIdle"`
+		IdleTimeoutMilliseconds int    `inject:"config:commerce.checkout.placeorder.contextstore.redis.idleTimeoutMilliseconds"`
+		Network                 string `inject:"config:commerce.checkout.placeorder.contextstore.redis.network"`
+		Address                 string `inject:"config:commerce.checkout.placeorder.contextstore.redis.address"`
+		Database                int    `inject:"config:commerce.checkout.placeorder.contextstore.redis.database"`
 	}) *Redis {
 	r.logger = logger
 	if cfg != nil {
 		r.pool = &redis.Pool{
-			MaxIdle:     int(cfg.MaxIdle),
+			MaxIdle:     cfg.MaxIdle,
 			IdleTimeout: time.Duration(cfg.IdleTimeoutMilliseconds) * time.Millisecond,
 			TestOnBorrow: func(c redis.Conn, t time.Time) error {
 				_, err := c.Do("PING")
 				return err
 			},
 			Dial: func() (redis.Conn, error) {
-				return redis.Dial(cfg.Network, cfg.Address, redis.DialDatabase(int(cfg.Database)))
+				return redis.Dial(cfg.Network, cfg.Address, redis.DialDatabase(cfg.Database))
 			},
 		}
 		runtime.SetFinalizer(r, func(r *Redis) { r.pool.Close() }) // close all connections on destruction
