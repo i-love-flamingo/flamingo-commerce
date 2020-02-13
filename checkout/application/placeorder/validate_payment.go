@@ -49,14 +49,14 @@ func PaymentValidator(ctx context.Context, p *process.Process, paymentService *a
 					Failed: process.PaymentErrorOccurredReason{Error: ValidatePaymentErrorNoActionURL},
 				}
 			}
-			p.UpdateState(states.PostRedirect{}.Name(), states.NewPostRedirectStateData(*flowStatus.ActionData.URL, formFields))
+			p.UpdateState(states.PostRedirect{}.Name(), states.NewPostRedirectStateData(flowStatus.ActionData.URL, formFields))
 		case paymentDomain.PaymentFlowActionRedirect:
 			if flowStatus.ActionData.URL == nil {
 				return process.RunResult{
 					Failed: process.PaymentErrorOccurredReason{Error: ValidatePaymentErrorNoActionURL},
 				}
 			}
-			p.UpdateState(states.Redirect{}.Name(), states.NewRedirectStateData(*flowStatus.ActionData.URL))
+			p.UpdateState(states.Redirect{}.Name(), states.NewRedirectStateData(flowStatus.ActionData.URL))
 		case paymentDomain.PaymentFlowActionShowHTML:
 			if flowStatus.ActionData.DisplayData == "" {
 				return process.RunResult{
@@ -70,7 +70,7 @@ func PaymentValidator(ctx context.Context, p *process.Process, paymentService *a
 					Failed: process.PaymentErrorOccurredReason{Error: ValidatePaymentErrorNoActionURL},
 				}
 			}
-			p.UpdateState(states.ShowIframe{}.Name(), states.NewShowIframeStateData(*flowStatus.ActionData.URL))
+			p.UpdateState(states.ShowIframe{}.Name(), states.NewShowIframeStateData(flowStatus.ActionData.URL))
 		default:
 			return process.RunResult{
 				Failed: process.PaymentErrorOccurredReason{Error: fmt.Sprintf("Payment action not supported: %q", flowStatus.Action)},

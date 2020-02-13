@@ -20,7 +20,7 @@ type (
 var _ process.State = Redirect{}
 
 // NewRedirectStateData creates data required for this state
-func NewRedirectStateData(url url.URL) process.StateData {
+func NewRedirectStateData(url *url.URL) process.StateData {
 	return process.StateData(url)
 }
 

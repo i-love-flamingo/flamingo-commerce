@@ -41,5 +41,5 @@ func TestShowIframe_Run(t *testing.T) {
 }
 
 func TestNewShowIframeStateData(t *testing.T) {
-	assert.Equal(t, process.StateData(url.URL{Host: "test.com"}), states.NewShowIframeStateData(url.URL{Host: "test.com"}))
+	assert.Equal(t, process.StateData(&url.URL{Host: "test.com"}), states.NewShowIframeStateData(&url.URL{Host: "test.com"}))
 }

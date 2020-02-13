@@ -101,7 +101,7 @@ func TestPaymentValidator(t *testing.T) {
 			want: want{
 				runResult: process.RunResult{Failed: nil},
 				state:     states.ShowIframe{}.Name(),
-				stateData: process.StateData(url.URL{Scheme: "https", Host: "iframe-url.com"}),
+				stateData: process.StateData(&url.URL{Scheme: "https", Host: "iframe-url.com"}),
 			},
 		},
 		{
@@ -161,7 +161,7 @@ func TestPaymentValidator(t *testing.T) {
 			want: want{
 				runResult: process.RunResult{Failed: nil},
 				state:     states.Redirect{}.Name(),
-				stateData: process.StateData(url.URL{Scheme: "https", Host: "redirect-url.com"}),
+				stateData: process.StateData(&url.URL{Scheme: "https", Host: "redirect-url.com"}),
 			},
 		},
 		{
@@ -208,7 +208,7 @@ func TestPaymentValidator(t *testing.T) {
 							Value: []string{"value0"},
 						},
 					},
-					URL: url.URL{Scheme: "https", Host: "post-redirect-url.com"},
+					URL: &url.URL{Scheme: "https", Host: "post-redirect-url.com"},
 				}),
 			},
 		},

@@ -20,7 +20,7 @@ type (
 	// PostRedirectData holds details regarding the redirect
 	PostRedirectData struct {
 		FormFields map[string]FormField
-		URL        url.URL
+		URL        *url.URL
 	}
 
 	// FormField represents a form field to be displayed to the user
@@ -36,7 +36,7 @@ func init() {
 var _ process.State = PostRedirect{}
 
 // NewPostRedirectStateData creates new StateData with (persisted) Data required for this state
-func NewPostRedirectStateData(url url.URL, formParameter map[string]FormField) process.StateData {
+func NewPostRedirectStateData(url *url.URL, formParameter map[string]FormField) process.StateData {
 	return process.StateData(PostRedirectData{
 		FormFields: formParameter,
 		URL:        url,

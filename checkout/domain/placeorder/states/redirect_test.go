@@ -40,5 +40,5 @@ func TestRedirect_Run(t *testing.T) {
 }
 
 func TestNewRedirectStateData(t *testing.T) {
-	assert.Equal(t, process.StateData(url.URL{Host: "test.com"}), states.NewRedirectStateData(url.URL{Host: "test.com"}))
+	assert.Equal(t, process.StateData(&url.URL{Host: "test.com"}), states.NewRedirectStateData(&url.URL{Host: "test.com"}))
 }
