@@ -27,7 +27,7 @@ type (
 		// returns an error. If the lock could be acquired a unlock function is returned which should be called to release the lock.
 		// The provided duration is used in case that the node which required the lock dies so that the lock can released anyways.
 		// If the node stays alive the lock time is not restricted in any way.
-		TryLock(string, time.Duration) (Unlock, error)
+		TryLock(ctx context.Context, key string, maxLockDuration time.Duration) (Unlock, error)
 	}
 
 	// Unlock function to release the previously acquired lock, should be called within defer
@@ -94,7 +94,7 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *
 	ctx, span := trace.StartSpan(ctx, "placeorder/coordinator/New")
 	defer span.End()
 
-	unlock, err := c.locker.TryLock(determineLockKeyForCart(cart), maxLockDuration)
+	unlock, err := c.locker.TryLock(ctx, determineLockKeyForCart(cart), maxLockDuration)
 	if err != nil {
 		return nil, err
 	}
@@ -193,7 +193,7 @@ func (c *Coordinator) storeProcessContext(ctx context.Context, pctx process.Cont
 		return errors.New("session not available to check for last place order context")
 	}
 
-	return c.contextStore.Store(session.ID(), pctx)
+	return c.contextStore.Store(ctx, session.ID(), pctx)
 }
 
 // LastProcess current place order process
@@ -202,7 +202,7 @@ func (c *Coordinator) LastProcess(ctx context.Context) (*process.Process, error)
 	if session == nil {
 		return nil, errors.New("session not available to check for last place order context")
 	}
-	poContext, found := c.contextStore.Get(session.ID())
+	poContext, found := c.contextStore.Get(ctx, session.ID())
 	if !found {
 		return nil, ErrNoPlaceOrderProcess
 	}
@@ -233,7 +233,7 @@ func (c *Coordinator) Cancel(ctx context.Context) error {
 			var unlock Unlock
 			err = ErrLockTaken
 			for err == ErrLockTaken {
-				unlock, err = c.locker.TryLock(determineLockKeyForProcess(p), maxLockDuration)
+				unlock, err = c.locker.TryLock(ctx, determineLockKeyForProcess(p), maxLockDuration)
 			}
 			if err != nil {
 				returnErr = err
@@ -291,7 +291,7 @@ func (c *Coordinator) Run(ctx context.Context) {
 				return
 			}
 
-			unlock, err := c.locker.TryLock(determineLockKeyForProcess(p), maxLockDuration)
+			unlock, err := c.locker.TryLock(ctx, determineLockKeyForProcess(p), maxLockDuration)
 			if err != nil {
 				return
 			}
@@ -330,7 +330,7 @@ func (c *Coordinator) RunBlocking(ctx context.Context) (*process.Context, error)
 			var unlock Unlock
 			err = ErrLockTaken
 			for err == ErrLockTaken {
-				unlock, err = c.locker.TryLock(determineLockKeyForProcess(p), maxLockDuration)
+				unlock, err = c.locker.TryLock(ctx, determineLockKeyForProcess(p), maxLockDuration)
 			}
 			if err != nil {
 				returnErr = err

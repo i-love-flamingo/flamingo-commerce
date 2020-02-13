@@ -1,6 +1,7 @@
 package contextstore
 
 import (
+	"context"
 	"sync"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
@@ -24,7 +25,7 @@ func (m *Memory) Inject() *Memory {
 }
 
 // Store a given context
-func (m *Memory) Store(key string, value process.Context) error {
+func (m *Memory) Store(_ context.Context, key string, value process.Context) error {
 	m.mx.Lock()
 	defer m.mx.Unlock()
 	m.storage[key] = value
@@ -33,7 +34,7 @@ func (m *Memory) Store(key string, value process.Context) error {
 }
 
 // Get a stored context
-func (m *Memory) Get(key string) (process.Context, bool) {
+func (m *Memory) Get(_ context.Context, key string) (process.Context, bool) {
 	m.mx.RLock()
 	defer m.mx.RUnlock()
 	value, ok := m.storage[key]
@@ -42,7 +43,7 @@ func (m *Memory) Get(key string) (process.Context, bool) {
 }
 
 // Delete a stored context, nop if it doesn't exist
-func (m *Memory) Delete(key string) error {
+func (m *Memory) Delete(_ context.Context, key string) error {
 	m.mx.Lock()
 	defer m.mx.Unlock()
 	delete(m.storage, key)

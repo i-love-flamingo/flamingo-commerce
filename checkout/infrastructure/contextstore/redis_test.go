@@ -2,6 +2,7 @@ package contextstore_test
 
 import (
 	"bytes"
+	"context"
 	"encoding/gob"
 	"fmt"
 	"os/exec"
@@ -112,7 +113,7 @@ func TestRedis_Get(t *testing.T) {
 		}
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
-				got, ok := store.Get(tt.key)
+				got, ok := store.Get(context.Background(), tt.key)
 				assert.Equal(t, tt.expectedFound, ok)
 				if diff := deep.Equal(got, tt.expected); diff != nil {
 					t.Error("expected response is wrong: ", diff)
@@ -162,7 +163,7 @@ func TestRedis_Store(t *testing.T) {
 
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
-				require.NoError(t, store.Store(tt.key, tt.value))
+				require.NoError(t, store.Store(context.Background(), tt.key, tt.value))
 
 				result, err := redis.Bytes(conn.Do("GET", tt.key))
 				require.NoError(t, err)
@@ -212,7 +213,7 @@ func TestRedis_Delete(t *testing.T) {
 
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
-				require.NoError(t, store.Delete(tt.key))
+				require.NoError(t, store.Delete(context.Background(), tt.key))
 
 				_, err := redis.Bytes(conn.Do("GET", tt.key))
 				require.Error(t, err, "entry not deleted")

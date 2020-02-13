@@ -1,6 +1,7 @@
 package locker_test
 
 import (
+	"context"
 	"fmt"
 	"os/exec"
 	"testing"
@@ -75,11 +76,11 @@ func runTestCases(t *testing.T, redisLocker *locker.Redis) {
 		key := "test"
 		start := time.Now()
 		// get a long lock
-		unlock, err := redisLocker.TryLock(key, time.Minute)
+		unlock, err := redisLocker.TryLock(context.Background(), key, time.Minute)
 		require.NoError(t, err)
 
 		// try to get same lock
-		_, err = redisLocker.TryLock(key, time.Second)
+		_, err = redisLocker.TryLock(context.Background(), key, time.Second)
 		assert.Error(t, err)
 		// assert if we were really in the lock period
 		assert.True(t, time.Now().Before(start.Add(time.Minute)))
@@ -88,7 +89,7 @@ func runTestCases(t *testing.T, redisLocker *locker.Redis) {
 		require.NoError(t, unlock())
 
 		// get the lock successfully again after unlock
-		unlock, err = redisLocker.TryLock(key, time.Minute)
+		unlock, err = redisLocker.TryLock(context.Background(), key, time.Minute)
 		require.NoError(t, err)
 		require.NoError(t, unlock())
 	})
@@ -96,13 +97,13 @@ func runTestCases(t *testing.T, redisLocker *locker.Redis) {
 	t.Run("lock should be expanded", func(t *testing.T) {
 		key := "test_expanded"
 
-		unlock, err := redisLocker.TryLock(key, 100*time.Millisecond)
+		unlock, err := redisLocker.TryLock(context.Background(), key, 100*time.Millisecond)
 		require.NoError(t, err)
 		defer unlock()
 
 		time.Sleep(200 * time.Millisecond)
 		// try to get same lock
-		_, err = redisLocker.TryLock(key, time.Second)
+		_, err = redisLocker.TryLock(context.Background(), key, time.Second)
 		assert.Error(t, err)
 	})
 }

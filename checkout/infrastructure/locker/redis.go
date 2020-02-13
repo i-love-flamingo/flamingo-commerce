@@ -1,6 +1,7 @@
 package locker
 
 import (
+	"context"
 	"errors"
 	"time"
 
@@ -8,6 +9,7 @@ import (
 	"flamingo.me/flamingo/v3/core/healthcheck/domain/healthcheck"
 	"github.com/go-redsync/redsync"
 	"github.com/gomodule/redigo/redis"
+	"go.opencensus.io/trace"
 )
 
 type (
@@ -69,7 +71,9 @@ func NewRedis(
 }
 
 // TryLock ties once to acquire a lock and returns the unlock func if successful
-func (r *Redis) TryLock(key string, maxlockduration time.Duration) (placeorder.Unlock, error) {
+func (r *Redis) TryLock(ctx context.Context, key string, maxlockduration time.Duration) (placeorder.Unlock, error) {
+	ctx, span := trace.StartSpan(ctx, "placeorder/lock/TryLock")
+	defer span.End()
 	mutex := r.redsync.NewMutex(
 		key,
 		redsync.SetExpiry(maxlockduration),
