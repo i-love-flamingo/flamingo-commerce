@@ -99,7 +99,7 @@ func (s *WaitForCustomer) MapFrom(pctx process.Context) {
 // MapFrom the internal process state to the graphQL state fields
 func (s *ShowIframe) MapFrom(pctx process.Context) {
 	s.Name = pctx.CurrentStateName
-	if stateData, ok := pctx.CurrentStateData.(url.URL); ok {
+	if stateData, ok := pctx.CurrentStateData.(*url.URL); ok {
 		s.URL = stateData.String()
 	}
 }
@@ -115,7 +115,7 @@ func (s *ShowHTML) MapFrom(pctx process.Context) {
 // MapFrom the internal process state to the graphQL state fields
 func (s *Redirect) MapFrom(pctx process.Context) {
 	s.Name = pctx.CurrentStateName
-	if stateData, ok := pctx.CurrentStateData.(url.URL); ok {
+	if stateData, ok := pctx.CurrentStateData.(*url.URL); ok {
 		s.URL = stateData.String()
 	}
 }

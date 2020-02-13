@@ -2,6 +2,7 @@ package states
 
 import (
 	"context"
+	"encoding/gob"
 	"net/url"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
@@ -18,6 +19,10 @@ type (
 )
 
 var _ process.State = ShowIframe{}
+
+func init() {
+	gob.Register(&url.URL{})
+}
 
 // NewShowIframeStateData creates new state data for this state
 func NewShowIframeStateData(url *url.URL) process.StateData {
