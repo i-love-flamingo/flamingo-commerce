@@ -102,11 +102,39 @@ This should mainly make the process more robust and make it easier to roll back 
 
 The checkout module exposes the following Mutations and Queries:
 
-...
+* `mutation Commerce_Checkout_StartPlaceOrder`
+  starts a place order process and returns the process' UUID. The call is idempotent: if there is already a running process,
+  the same UUID is returned. The processing is started in background and continues after the return of the mutation until an
+  action is required or a final state (error or success) is reached.
+* `mutation Commerce_Checkout_RefreshPlaceOrder`
+  refreshes the process and tries to start the background processing again if it is not running anymore. The result is the state
+  at the moment of the mutation. If the background process is still running, this mutation is non-operational.
+* `mutation Commerce_Checkout_RefreshPlaceOrderBlocking`
+  refreshes the process and starts the background processing again if it is not running anymore. It **waits** with the return
+  until the background process comes to a final state or need an action.
+* `mutation Commerce_Checkout_CancelPlaceOrder` 
+  cancels the running process if it is not yet in a final state.  
+* `query Commerce_Checkout_ActivePlaceOrder`
+  checks if there is a place order process in a non-final state.
+* `query Commerce_Checkout_CurrentContext`
+  returns the current state **without** restarting the background processing.
+
 
 ### Place Order States
 
-..
+We differentiate between internal and exposed states.
+
+Internal states implement the interface `checkout/domain/placeorder/process.State`. There is a map binding on this interface using the name of the state.
+This way, other modules can overwrite specific states to introduce their own implementation.
+
+The start and failed states are defined by an annotated binding with annotations `startState` and `failedState`, respectively.
+
+Exposed states implement the interface `checkout/interfaces/graphql/dto.State`. To map internal states to exposed states, 
+we use a map binding on the `dto.State` interface with the internal state names as keys and the exposed state as target.
+
+The default implementation defines the state flow as follows: 
+
+![](domain/placeorder/states/transitions.png)
 
 ### Context store
 
