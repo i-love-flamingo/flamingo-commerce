@@ -50,9 +50,8 @@ func (m *Module) Configure(injector *dingo.Injector) {
 
 	if m.PlaceOrderContextStore == "redis" {
 		injector.Bind(new(contextstore.Redis)).In(dingo.Singleton)
-		injector.Bind(new(process.ContextStore)).ToProvider(func(t *contextstore.Redis) process.ContextStore { return t })
-		/*injector.BindMap(new(healthcheck.Status), "placeorder.contextstore.redis").
-		ToProvider(func(t process.ContextStore) healthcheck.Status { return t.(*contextstore.Redis) })*/
+		injector.Bind(new(process.ContextStore)).To(new(contextstore.Redis))
+		injector.BindMap(new(healthcheck.Status), "placeorder.contextstore.redis").To(new(contextstore.Redis))
 	} else {
 		injector.Bind(new(process.ContextStore)).To(new(contextstore.Memory)).In(dingo.Singleton)
 	}
