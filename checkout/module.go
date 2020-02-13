@@ -2,6 +2,7 @@ package checkout
 
 import (
 	"flamingo.me/dingo"
+	"flamingo.me/flamingo/v3/core/healthcheck/domain/healthcheck"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 	flamingographql "flamingo.me/graphql"
@@ -41,12 +42,17 @@ func (m *Module) Configure(injector *dingo.Injector) {
 
 	if m.PlaceOrderLockType == "redis" {
 		injector.Bind(new(placeorder.TryLocker)).ToProvider(locker.NewRedis).In(dingo.Singleton)
+		injector.BindMap(new(healthcheck.Status), "placeorder.locker.redis").
+			ToProvider(func(t placeorder.TryLocker) *locker.Redis { return t.(*locker.Redis) })
 	} else {
 		injector.Bind(new(placeorder.TryLocker)).To(new(locker.Memory)).In(dingo.Singleton)
 	}
 
 	if m.PlaceOrderContextStore == "redis" {
-		injector.Bind(new(process.ContextStore)).To(new(contextstore.Redis)).In(dingo.Singleton)
+		injector.Bind(new(contextstore.Redis)).In(dingo.Singleton)
+		injector.Bind(new(process.ContextStore)).ToProvider(func(t *contextstore.Redis) process.ContextStore { return t })
+		/*injector.BindMap(new(healthcheck.Status), "placeorder.contextstore.redis").
+		ToProvider(func(t process.ContextStore) healthcheck.Status { return t.(*contextstore.Redis) })*/
 	} else {
 		injector.Bind(new(process.ContextStore)).To(new(contextstore.Memory)).In(dingo.Singleton)
 	}
