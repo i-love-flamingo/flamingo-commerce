@@ -41,7 +41,7 @@ func TestPostRedirect_Run(t *testing.T) {
 }
 
 func TestNewPostRedirectStateData(t *testing.T) {
-	redirectURL := url.URL{Host: "test.com"}
+	redirectURL := &url.URL{Host: "test.com"}
 	formParameter := map[string]states.FormField{
 		"test": {Value: []string{"abc"}},
 	}

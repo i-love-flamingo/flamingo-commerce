@@ -20,7 +20,7 @@ type (
 var _ process.State = ShowIframe{}
 
 // NewShowIframeStateData creates new state data for this state
-func NewShowIframeStateData(url url.URL) process.StateData {
+func NewShowIframeStateData(url *url.URL) process.StateData {
 	return process.StateData(url)
 }
 

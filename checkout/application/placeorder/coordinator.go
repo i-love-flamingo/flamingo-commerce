@@ -300,7 +300,11 @@ func (c *Coordinator) Run(ctx context.Context) {
 			}()
 
 			p.Run(ctx)
-			_ = c.storeProcessContext(ctx, p.Context())
+			err = c.storeProcessContext(ctx, p.Context())
+			if err != nil {
+				return
+			}
+
 			c.forceSessionUpdate(ctx, p.Context())
 		})
 	}(ctx)
