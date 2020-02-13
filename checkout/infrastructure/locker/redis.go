@@ -27,21 +27,21 @@ var _ placeorder.TryLocker = &Redis{}
 // NewRedis creates a new distributed mutex using multiple Redis connection pools.
 func NewRedis(
 	cfg *struct {
-		MaxIdle                 float64 `inject:"config:commerce.checkout.placeorder.lock.redis.maxIdle"`
-		IdleTimeoutMilliseconds float64 `inject:"config:commerce.checkout.placeorder.lock.redis.idleTimeoutMilliseconds"`
-		Network                 string  `inject:"config:commerce.checkout.placeorder.lock.redis.network"`
-		Address                 string  `inject:"config:commerce.checkout.placeorder.lock.redis.address"`
-		Database                float64 `inject:"config:commerce.checkout.placeorder.lock.redis.database"`
+		MaxIdle                 int    `inject:"config:commerce.checkout.placeorder.lock.redis.maxIdle"`
+		IdleTimeoutMilliseconds int    `inject:"config:commerce.checkout.placeorder.lock.redis.idleTimeoutMilliseconds"`
+		Network                 string `inject:"config:commerce.checkout.placeorder.lock.redis.network"`
+		Address                 string `inject:"config:commerce.checkout.placeorder.lock.redis.address"`
+		Database                int    `inject:"config:commerce.checkout.placeorder.lock.redis.database"`
 	},
 ) *Redis {
 	r := new(Redis)
 
 	if cfg != nil {
-		r.maxIdle = int(cfg.MaxIdle)
+		r.maxIdle = cfg.MaxIdle
 		r.idleTimeout = time.Duration(cfg.IdleTimeoutMilliseconds) * time.Millisecond
 		r.network = cfg.Network
 		r.address = cfg.Address
-		r.database = int(cfg.Database)
+		r.database = cfg.Database
 	}
 
 	pools := []redsync.Pool{&redis.Pool{

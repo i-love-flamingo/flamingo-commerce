@@ -95,12 +95,12 @@ func (m *Module) Configure(injector *dingo.Injector) {
 func (m *Module) CueConfig() string {
 	return `
 commerce: checkout: {
-	redis :: {
-		maxIdle:                 int | *25
-		idleTimeoutMilliseconds: int | *240000
+	Redis :: {
+		maxIdle:                 number | *25
+		idleTimeoutMilliseconds: number | *240000
 		network:                 string | *"tcp"
 		address:                 string | *"localhost:6379"
-		database:                int | *0
+		database:                number | *0
 	}
 
 	useDeliveryForms:                 bool | *true
@@ -115,13 +115,13 @@ commerce: checkout: {
 		lock: {
 			type: *"memory" | "redis"
 			if type == "redis" {
-				redis: redis
+				redis: Redis
 			}
 		}
 		contextstore: {
 			type: *"memory" | "redis"
 			if type == "redis" {
-				redis: redis
+				redis: Redis
 			}
 		}
 	}
