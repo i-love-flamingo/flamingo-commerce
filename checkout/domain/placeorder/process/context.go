@@ -1,6 +1,7 @@
 package process
 
 import (
+	"context"
 	"net/url"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -24,8 +25,8 @@ type (
 
 	// ContextStore can persist process Context instances
 	ContextStore interface {
-		Store(key string, value Context) error
-		Get(key string) (Context, bool)
-		Delete(key string) error
+		Store(ctx context.Context, key string, placeOrderContext Context) error
+		Get(ctx context.Context, key string) (Context, bool)
+		Delete(ctx context.Context, key string) error
 	}
 )

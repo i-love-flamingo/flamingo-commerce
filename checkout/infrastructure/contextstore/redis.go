@@ -2,6 +2,7 @@ package contextstore
 
 import (
 	"bytes"
+	"context"
 	"encoding/gob"
 	"fmt"
 	"runtime"
@@ -10,6 +11,7 @@ import (
 	"flamingo.me/flamingo/v3/core/healthcheck/domain/healthcheck"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/gomodule/redigo/redis"
+	"go.opencensus.io/trace"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 )
@@ -59,12 +61,14 @@ func (r *Redis) Inject(
 }
 
 // Store a given context
-func (r *Redis) Store(key string, value process.Context) error {
+func (r *Redis) Store(ctx context.Context, key string, placeOrderContext process.Context) error {
+	ctx, span := trace.StartSpan(ctx, "placeorder/contextstore/Store")
+	defer span.End()
 	conn := r.pool.Get()
 	defer conn.Close()
 
 	buffer := new(bytes.Buffer)
-	err := gob.NewEncoder(buffer).Encode(value)
+	err := gob.NewEncoder(buffer).Encode(placeOrderContext)
 	if err != nil {
 		return err
 	}
@@ -78,7 +82,9 @@ func (r *Redis) Store(key string, value process.Context) error {
 }
 
 // Get a stored context
-func (r *Redis) Get(key string) (process.Context, bool) {
+func (r *Redis) Get(ctx context.Context, key string) (process.Context, bool) {
+	ctx, span := trace.StartSpan(ctx, "placeorder/contextstore/Get")
+	defer span.End()
 	conn := r.pool.Get()
 	defer conn.Close()
 
@@ -99,7 +105,9 @@ func (r *Redis) Get(key string) (process.Context, bool) {
 }
 
 // Delete a stored context, nop if it doesn't exist
-func (r *Redis) Delete(key string) error {
+func (r *Redis) Delete(ctx context.Context, key string) error {
+	ctx, span := trace.StartSpan(ctx, "placeorder/contextstore/Delete")
+	defer span.End()
 	conn := r.pool.Get()
 	defer conn.Close()
 
