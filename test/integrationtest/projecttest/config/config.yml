@@ -24,6 +24,7 @@ flamingo:
     cookie:
       secure: false
     backend: memory
+    saveMode: "OnWrite"
   opencensus:
     jaeger:
       enable: true
