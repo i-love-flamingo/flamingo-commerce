@@ -9,12 +9,12 @@ import (
 	"net/url"
 	"time"
 
+	"go.opencensus.io/trace"
+
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
-	"github.com/gorilla/sessions"
-	"go.opencensus.io/trace"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 )
@@ -40,7 +40,7 @@ type (
 		cartService    *application.CartService
 		processFactory *process.Factory
 		contextStore   process.ContextStore
-		sessionStore   sessions.Store
+		sessionStore   *web.SessionStore
 		sessionName    string
 	}
 
@@ -73,7 +73,7 @@ func (c *Coordinator) Inject(
 	logger flamingo.Logger,
 	processFactory *process.Factory,
 	contextStore process.ContextStore,
-	sessionStore sessions.Store,
+	sessionStore *web.SessionStore,
 	cartService *application.CartService,
 	cfg *struct {
 		SessionName string `inject:"config:flamingo.session.name,optional"`
@@ -375,36 +375,47 @@ func (c *Coordinator) RunBlocking(ctx context.Context) (*process.Context, error)
 }
 
 func (c *Coordinator) forceSessionUpdate(ctx context.Context, pctx process.Context) {
-	// todo: change to new session logic when ready.
-	rollbackSession := web.SessionFromContext(ctx)
-	rollbackGuestCartID := rollbackSession.Try(application.GuestCartSessionKey)
-
-	paymentSessionKey := "paymentCorrelationID#" + pctx.UUID
-	paymentSessionData := rollbackSession.Try(paymentSessionKey)
-
-	mostCurrentSession, err := c.sessionStore.Get(web.RequestFromContext(ctx).Request(), c.sessionName)
+	session, err := c.sessionStore.LoadByID(ctx, web.SessionFromContext(ctx).ID())
 	if err != nil {
 		c.logger.Error("couldn't receive current session from session store:", err)
 		return
 	}
-
-	// id of rollback session and latest session are equal, nothing to do
-	if rollbackGuestCartID == mostCurrentSession.Values[application.GuestCartSessionKey] && paymentSessionData == mostCurrentSession.Values[paymentSessionKey] {
-		return
+	id, ok := web.SessionFromContext(ctx).Load(application.GuestCartSessionKey)
+	if ok {
+		session.Store(application.GuestCartSessionKey, id)
 	}
-
-	mostCurrentSession.Values[application.GuestCartSessionKey] = rollbackGuestCartID
-	mostCurrentSession.Values[paymentSessionKey] = paymentSessionData
-
-	if rollbackGuestCartID == nil {
-		delete(mostCurrentSession.Values, application.GuestCartSessionKey)
-	}
-
-	err = c.sessionStore.Save(web.RequestFromContext(ctx).Request(), new(emptyResponseWriter), mostCurrentSession)
-	if err != nil {
-		c.logger.Error("couldn't save session in the session store:", err)
-		return
-	}
+	c.sessionStore.Save(ctx, session)
+	//
+	// // todo: change to new session logic when ready.
+	// rollbackSession := web.SessionFromContext(ctx)
+	// rollbackGuestCartID := rollbackSession.Try(application.GuestCartSessionKey)
+	//
+	// paymentSessionKey := "paymentCorrelationID#" + pctx.UUID
+	// paymentSessionData := rollbackSession.Try(paymentSessionKey)
+	//
+	// mostCurrentSession, err := c.sessionStore.Get(web.RequestFromContext(ctx).Request(), c.sessionName)
+	// if err != nil {
+	// 	c.logger.Error("couldn't receive current session from session store:", err)
+	// 	return
+	// }
+	//
+	// // id of rollback session and latest session are equal, nothing to do
+	// if rollbackGuestCartID == mostCurrentSession.Values[application.GuestCartSessionKey] && paymentSessionData == mostCurrentSession.Values[paymentSessionKey] {
+	// 	return
+	// }
+	//
+	// mostCurrentSession.Values[application.GuestCartSessionKey] = rollbackGuestCartID
+	// mostCurrentSession.Values[paymentSessionKey] = paymentSessionData
+	//
+	// if rollbackGuestCartID == nil {
+	// 	delete(mostCurrentSession.Values, application.GuestCartSessionKey)
+	// }
+	//
+	// err = c.sessionStore.Save(web.RequestFromContext(ctx).Request(), new(emptyResponseWriter), mostCurrentSession)
+	// if err != nil {
+	// 	c.logger.Error("couldn't save session in the session store:", err)
+	// 	return
+	// }
 }
 
 func determineLockKeyForCart(cart cartDomain.Cart) string {
