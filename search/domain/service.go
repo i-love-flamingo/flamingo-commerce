@@ -19,10 +19,11 @@ type (
 
 	// Result defines a search result for one type
 	Result struct {
-		SearchMeta SearchMeta
-		Hits       []Document
-		Suggestion []Suggestion
-		Facets     FacetCollection
+		SearchMeta         SearchMeta
+		Hits               []Document
+		Suggestion         []Suggestion
+		CategorySuggestion []CategorySuggestion
+		Facets             FacetCollection
 	}
 
 	// SearchMeta data
@@ -91,6 +92,14 @@ type (
 	Suggestion struct {
 		Text      string
 		Highlight string
+	}
+
+	// CategorySuggestion hint
+	CategorySuggestion struct {
+		Text      string
+		Highlight string
+		Path      string
+		Code      string
 	}
 
 	// Document holds a search result document
