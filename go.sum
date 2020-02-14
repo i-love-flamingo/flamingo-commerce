@@ -31,6 +31,8 @@ flamingo.me/flamingo/v3 v3.1.7-0.20200130080721-eb5761ef8f4a h1:mK7HHait9DgaBzTR
 flamingo.me/flamingo/v3 v3.1.7-0.20200130080721-eb5761ef8f4a/go.mod h1:EGOcK3HqVfoUs8wRGG0DNflamtAXXbVTQ1oHLbVvPlY=
 flamingo.me/flamingo/v3 v3.1.7-0.20200213100955-737bf2969bfa h1:5NT2V+YqFTawEWqieZ9s9EZHa3AJMX1YtJh0Afwx0x8=
 flamingo.me/flamingo/v3 v3.1.7-0.20200213100955-737bf2969bfa/go.mod h1:RaaeaoMxg05MqN+00qZyf28xGVynjrR93EcdDNjDb7Q=
+flamingo.me/flamingo/v3 v3.1.7-0.20200214110150-ab613aaeecec h1:j7stlkYRckdtZ+nli+DJE8GYox4Q03U5NLIUwJ2Lgt4=
+flamingo.me/flamingo/v3 v3.1.7-0.20200214110150-ab613aaeecec/go.mod h1:RaaeaoMxg05MqN+00qZyf28xGVynjrR93EcdDNjDb7Q=
 flamingo.me/form v1.0.1-0.20191008191024-ff6f3a9330d6 h1:IjB4m3ry8c2G3OCAaPTwqQFlA0PuuG0eJ2+GGs4kdWk=
 flamingo.me/form v1.0.1-0.20191008191024-ff6f3a9330d6/go.mod h1:vr043GHK3X/0W1ZIGDJBBic94piMMTm5TzXupcPvprQ=
 flamingo.me/form v1.0.1 h1:mII37OSedlU4ruWdH234UF5ebG7j+WAz1SlX8o6QiPY=
