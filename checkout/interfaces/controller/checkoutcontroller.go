@@ -258,6 +258,7 @@ func (cc *CheckoutController) placeOrderAction(ctx context.Context, r *web.Reque
 		cc.orderService.ClearLastPlacedOrder(ctx)
 	} else {
 		placedOrderInfo, err = cc.orderService.CurrentCartPlaceOrderWithPaymentProcessing(ctx, session)
+		cc.orderService.ClearLastPlacedOrder(ctx)
 
 		if err != nil {
 			cc.logger.WithContext(ctx).WithField("subcategory", "checkoutError").WithField("errorMsg", err.Error()).Error(fmt.Sprintf("place order failed: cart id: %v / total-amount: %v", decoratedCart.Cart.EntityID, decoratedCart.Cart.GrandTotal()))
@@ -298,7 +299,6 @@ func (cc *CheckoutController) SuccessAction(ctx context.Context, r *web.Request)
 				PlacedOrderInfos:    placeOrderFlashData.PlacedOrderInfos,
 			}
 
-			cc.orderService.ClearLastPlacedOrder(ctx)
 			return cc.responder.Render("checkout/success", viewData).SetNoCache()
 		}
 	}
