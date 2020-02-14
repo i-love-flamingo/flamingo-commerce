@@ -12,6 +12,8 @@ import (
 	"time"
 
 	"flamingo.me/dingo"
+	"github.com/gavv/httpexpect/v2"
+
 	"flamingo.me/flamingo/v3"
 	"flamingo.me/flamingo/v3/framework/config"
 	flamingoFramework "flamingo.me/flamingo/v3/framework/flamingo"
@@ -141,4 +143,13 @@ func Bootup(modules []dingo.Module, configDir string, config config.Map) BootupI
 		"localhost:" + port,
 		listenAndServeQuited,
 	}
+}
+
+// NewHTTPExpect returns a new Expect object without printer
+func NewHTTPExpect(t httpexpect.LoggerReporter, baseURL string) *httpexpect.Expect {
+	return httpexpect.WithConfig(httpexpect.Config{
+		BaseURL:  baseURL,
+		Reporter: httpexpect.NewAssertReporter(t),
+		Printers: nil,
+	})
 }

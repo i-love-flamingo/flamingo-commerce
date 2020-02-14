@@ -4,14 +4,13 @@ package moduletest
 
 import (
 	"net/http"
+	"testing"
 
 	"flamingo.me/dingo"
+
 	"flamingo.me/flamingo-commerce/v3/product"
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest"
 	"flamingo.me/flamingo/v3/framework/config"
-	"github.com/gavv/httpexpect"
-
-	"testing"
 )
 
 func Test_ProductPage(t *testing.T) {
@@ -27,7 +26,7 @@ func Test_ProductPage(t *testing.T) {
 	)
 	defer info.ShutdownFunc()
 
-	e := httpexpect.New(t, "http://"+info.BaseURL)
+	e := integrationtest.NewHTTPExpect(t, "http://"+info.BaseURL)
 	e.GET("/product/fake_configurable/typeconfigurable-product.html").
 		Expect().
 		Status(http.StatusOK).JSON().Object().Value("RenderContext").Equal("configurable")

@@ -7,11 +7,11 @@ import (
 	"testing"
 
 	"flamingo.me/dingo"
+
 	"flamingo.me/flamingo-commerce/v3/checkout"
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest"
 	"flamingo.me/flamingo/v3/core/oauth"
 	"flamingo.me/flamingo/v3/framework/config"
-	"github.com/gavv/httpexpect"
 )
 
 func Test_CheckoutStartPage(t *testing.T) {
@@ -34,7 +34,7 @@ func Test_CheckoutStartPage(t *testing.T) {
 	)
 	defer info.ShutdownFunc()
 
-	e := httpexpect.New(t, "http://"+info.BaseURL)
+	e := integrationtest.NewHTTPExpect(t, "http://"+info.BaseURL)
 	e.GET("/checkout/start").
 		Expect().
 		Status(http.StatusOK).JSON().Object().Value("CustomerLoggedIn").Equal(false)
