@@ -224,8 +224,6 @@ func Test_StartPlaceOrder(t *testing.T) {
 	})
 
 	t.Run("already running process", func(t *testing.T) {
-		t.Skip("skip for now") // @todo fix race condition w/ session
-		return
 		e := httpexpect.New(t, baseURL)
 		prepareCartWithPaymentSelection(t, e, domain.PaymentFlowActionShowIframe)
 
