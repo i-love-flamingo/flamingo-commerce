@@ -30,10 +30,6 @@ flamingo:
       enable: true
       serviceAddr: ":10000"
 
-# Configs for flamingo-commerce modules
-checkout:
-  showEmptyCartPageIfNoItems: true
-
 order:
   useFakeAdapters: true
 
@@ -46,6 +42,7 @@ pagination:
 graphql:
   introspectionEnabled: true
 
+# Configs for flamingo-commerce modules
 commerce:
   cart:
     defaultDeliveryCode: delivery
@@ -56,6 +53,8 @@ commerce:
     useEmailPlaceOrderAdapter: false
     inMemoryCartServiceAdapter:
       defaultTaxRate: 19
+  checkout:
+    showEmptyCartPageIfNoItems: true
   product:
     fakeservice:
       enabled: true

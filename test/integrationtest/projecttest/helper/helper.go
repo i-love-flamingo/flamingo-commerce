@@ -103,9 +103,7 @@ func GraphQlRequest(t *testing.T, e *httpexpect.Expect, query string) *httpexpec
 	query = strings.Replace(query, "\t", "", -1)
 	query = strings.Replace(query, `"`, `\"`, -1)
 	graphQlQuery := fmt.Sprintf(`{"variables":{},"query":"%v"}`, query)
-	if testing.Verbose() {
-		t.Log("GraphQlRequest", graphQlQuery)
-	}
+
 	return e.POST("/en/graphql").WithHeader("Content-Type", "application/json").WithBytes([]byte(graphQlQuery))
 }
 
