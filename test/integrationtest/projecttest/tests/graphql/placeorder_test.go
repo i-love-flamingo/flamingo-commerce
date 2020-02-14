@@ -235,7 +235,6 @@ func Test_StartPlaceOrder(t *testing.T) {
 		_, secondUUID := assertStartPlaceOrderWithValidUUID(t, e)
 
 		assert.Equal(t, firstUUID, secondUUID)
-
 	})
 
 }
