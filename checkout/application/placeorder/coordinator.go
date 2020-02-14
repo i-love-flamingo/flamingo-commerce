@@ -305,7 +305,7 @@ func (c *Coordinator) Run(ctx context.Context) {
 				return
 			}
 
-			c.forceSessionUpdate(ctx, p.Context())
+			c.forceSessionUpdate(ctx)
 		})
 	}(ctx)
 }
@@ -374,48 +374,13 @@ func (c *Coordinator) RunBlocking(ctx context.Context) (*process.Context, error)
 	return pctx, returnErr
 }
 
-func (c *Coordinator) forceSessionUpdate(ctx context.Context, pctx process.Context) {
-	session, err := c.sessionStore.LoadByID(ctx, web.SessionFromContext(ctx).ID())
-	if err != nil {
-		c.logger.Error("couldn't receive current session from session store:", err)
-		return
-	}
+func (c *Coordinator) forceSessionUpdate(ctx context.Context) {
+	session := web.SessionFromContext(ctx)
 	id, ok := web.SessionFromContext(ctx).Load(application.GuestCartSessionKey)
 	if ok {
 		session.Store(application.GuestCartSessionKey, id)
 	}
 	c.sessionStore.Save(ctx, session)
-	//
-	// // todo: change to new session logic when ready.
-	// rollbackSession := web.SessionFromContext(ctx)
-	// rollbackGuestCartID := rollbackSession.Try(application.GuestCartSessionKey)
-	//
-	// paymentSessionKey := "paymentCorrelationID#" + pctx.UUID
-	// paymentSessionData := rollbackSession.Try(paymentSessionKey)
-	//
-	// mostCurrentSession, err := c.sessionStore.Get(web.RequestFromContext(ctx).Request(), c.sessionName)
-	// if err != nil {
-	// 	c.logger.Error("couldn't receive current session from session store:", err)
-	// 	return
-	// }
-	//
-	// // id of rollback session and latest session are equal, nothing to do
-	// if rollbackGuestCartID == mostCurrentSession.Values[application.GuestCartSessionKey] && paymentSessionData == mostCurrentSession.Values[paymentSessionKey] {
-	// 	return
-	// }
-	//
-	// mostCurrentSession.Values[application.GuestCartSessionKey] = rollbackGuestCartID
-	// mostCurrentSession.Values[paymentSessionKey] = paymentSessionData
-	//
-	// if rollbackGuestCartID == nil {
-	// 	delete(mostCurrentSession.Values, application.GuestCartSessionKey)
-	// }
-	//
-	// err = c.sessionStore.Save(web.RequestFromContext(ctx).Request(), new(emptyResponseWriter), mostCurrentSession)
-	// if err != nil {
-	// 	c.logger.Error("couldn't save session in the session store:", err)
-	// 	return
-	// }
 }
 
 func determineLockKeyForCart(cart cartDomain.Cart) string {
