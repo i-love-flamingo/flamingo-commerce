@@ -196,6 +196,15 @@ func (c *Coordinator) storeProcessContext(ctx context.Context, pctx process.Cont
 	return c.contextStore.Store(ctx, session.ID(), pctx)
 }
 
+func (c *Coordinator) clearProcessContext(ctx context.Context) error {
+	session := web.SessionFromContext(ctx)
+	if session == nil {
+		return errors.New("session not available to check for last place order context")
+	}
+
+	return c.contextStore.Delete(ctx, session.ID())
+}
+
 // LastProcess current place order process
 func (c *Coordinator) LastProcess(ctx context.Context) (*process.Process, error) {
 	session := web.SessionFromContext(ctx)
@@ -265,6 +274,39 @@ func (c *Coordinator) Cancel(ctx context.Context) error {
 
 		p.Failed(ctx, process.CanceledByCustomerReason{})
 		err = c.storeProcessContext(ctx, p.Context())
+		if err != nil {
+			returnErr = err
+		}
+	})
+	return returnErr
+}
+
+// ClearLastProcess removes last stored process if in final state
+func (c *Coordinator) ClearLastProcess(ctx context.Context) error {
+	ctx, span := trace.StartSpan(ctx, "placeorder/coordinator/Clear")
+	defer span.End()
+
+	var returnErr error
+	web.RunWithDetachedContext(ctx, func(ctx context.Context) {
+		p, err := c.LastProcess(ctx)
+		if err != nil {
+			returnErr = err
+			return
+		}
+
+		currentState, err := p.CurrentState()
+		if err != nil {
+			returnErr = err
+			return
+		}
+
+		if !currentState.IsFinal() {
+			err = errors.New("process not in final state, clearing not possible")
+			returnErr = err
+			return
+		}
+
+		err = c.clearProcessContext(ctx)
 		if err != nil {
 			returnErr = err
 		}

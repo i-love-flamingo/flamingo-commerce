@@ -123,3 +123,10 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutCancelPlaceOrder(ctx 
 
 	return err == nil, err
 }
+
+// CommerceCheckoutClearPlaceOrder clears the last place order if in final state
+func (r *CommerceCheckoutMutationResolver) CommerceCheckoutClearPlaceOrder(ctx context.Context) (bool, error) {
+	err := r.placeorderHandler.ClearPlaceOrder(ctx)
+
+	return err == nil, err
+}

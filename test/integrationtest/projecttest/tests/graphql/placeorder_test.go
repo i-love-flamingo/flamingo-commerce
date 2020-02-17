@@ -295,6 +295,61 @@ func Test_CancelPlaceOrder(t *testing.T) {
 	}
 }
 
+func Test_ClearPlaceOrder(t *testing.T) {
+	baseURL := "http://" + FlamingoURL
+	tests := []struct {
+		name          string
+		gatewayMethod string
+		prepareAndRun bool
+		validator     func(*testing.T, *httpexpect.Object)
+	}{
+		{
+			name:          "already final",
+			gatewayMethod: domain.PaymentFlowStatusCompleted,
+			prepareAndRun: true,
+			validator: func(t *testing.T, response *httpexpect.Object) {
+				response.Value("data").Object().Value("Commerce_Checkout_ClearPlaceOrder").Boolean().True()
+			},
+		},
+		{
+			name:          "not final",
+			gatewayMethod: domain.PaymentFlowActionShowIframe,
+			prepareAndRun: true,
+			validator: func(t *testing.T, response *httpexpect.Object) {
+				err := response.Value("errors").Array().First().Object()
+				err.Value("message").Equal("process not in final state, clearing not possible")
+				err.Value("path").Array().First().Equal("Commerce_Checkout_ClearPlaceOrder")
+			},
+		},
+		{
+			name:          "no running process",
+			gatewayMethod: domain.PaymentFlowStatusCompleted,
+			prepareAndRun: false,
+			validator: func(t *testing.T, response *httpexpect.Object) {
+				err := response.Value("errors").Array().First().Object()
+				err.Value("message").Equal("ErrNoPlaceOrderProcess")
+				err.Value("path").Array().First().Equal("Commerce_Checkout_ClearPlaceOrder")
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := integrationtest.NewHTTPExpect(t, baseURL)
+			if tt.prepareAndRun {
+				prepareCartWithPaymentSelection(t, e, tt.gatewayMethod)
+				assertStartPlaceOrderWithValidUUID(t, e)
+				assertRefreshPlaceOrder(t, e, true)
+			}
+
+			request := helper.GraphQlRequest(t, e, loadGraphQL(t, "clear", nil))
+			response := request.Expect().JSON().Object()
+			tt.validator(t, response)
+
+		})
+	}
+}
+
 func Test_RestartStartPlaceOrder(t *testing.T) {
 	baseURL := "http://" + FlamingoURL
 	e := integrationtest.NewHTTPExpect(t, baseURL)

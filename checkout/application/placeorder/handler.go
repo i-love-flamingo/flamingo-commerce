@@ -36,6 +36,11 @@ func (h *Handler) CurrentContext(ctx context.Context) (*process.Context, error) 
 	return &currentContext, nil
 }
 
+// ClearPlaceOrder clears the last placed order from the context store, only possible if order in final state
+func (h *Handler) ClearPlaceOrder(ctx context.Context) error {
+	return h.coordinator.ClearLastProcess(ctx)
+}
+
 // RefreshPlaceOrder handles RefreshPlaceOrder command
 func (h *Handler) RefreshPlaceOrder(ctx context.Context, _ RefreshPlaceOrderCommand) (*process.Context, error) {
 	p, err := h.coordinator.LastProcess(ctx)
@@ -60,7 +65,7 @@ func (h *Handler) HasUnfinishedProcess(ctx context.Context) (bool, error) {
 	return h.coordinator.HasUnfinishedProcess(ctx)
 }
 
-// CancelPlaceOrder handles RefreshPlaceOrder blocking
+// CancelPlaceOrder handles order cancellation, is blocking
 func (h *Handler) CancelPlaceOrder(ctx context.Context, _ CancelPlaceOrderCommand) error {
 	return h.coordinator.Cancel(ctx)
 }

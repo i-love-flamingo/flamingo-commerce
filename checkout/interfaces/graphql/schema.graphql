@@ -104,15 +104,20 @@ type Commerce_Checkout_PlaceOrderState_Form_Parameter {
 }
 
 extend type Query {
+    # Is there a active place order process
     Commerce_Checkout_ActivePlaceOrder: Boolean!
     Commerce_Checkout_CurrentContext: Commerce_Checkout_PlaceOrderContext!
 }
 
 extend type Mutation {
-    # Only possible if Statemaschine not active or in a final state
+    # Only possible if state machine not active or in a final state, otherwise returns the current running process
     Commerce_Checkout_StartPlaceOrder(returnUrl: String!): Commerce_Checkout_StartPlaceOrder_Result!
-    # Possible if state is not final
+    # Cancels to current running place order process, possible if state is not final
     Commerce_Checkout_CancelPlaceOrder: Boolean!
+    # Clears the last stored place order process, possible if state is final
+    Commerce_Checkout_ClearPlaceOrder: Boolean!
+    # Gets the last stored place order state and ensures that the state machine proceeds, non blocking
     Commerce_Checkout_RefreshPlaceOrder: Commerce_Checkout_PlaceOrderContext!
+    # Gets the most recent place order state by waiting for the state machine to proceed, therefore blocking
     Commerce_Checkout_RefreshPlaceOrderBlocking: Commerce_Checkout_PlaceOrderContext!
 }

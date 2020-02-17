@@ -699,6 +699,7 @@ type ComplexityRoot struct {
 		CommerceCartUpdateBillingAddress          func(childComplexity int, addressForm *forms.BillingAddressForm) int
 		CommerceCartUpdateSelectedPayment         func(childComplexity int, gateway string, method string) int
 		CommerceCheckoutCancelPlaceOrder          func(childComplexity int) int
+		CommerceCheckoutClearPlaceOrder           func(childComplexity int) int
 		CommerceCheckoutRefreshPlaceOrder         func(childComplexity int) int
 		CommerceCheckoutRefreshPlaceOrderBlocking func(childComplexity int) int
 		CommerceCheckoutStartPlaceOrder           func(childComplexity int, returnURL string) int
@@ -733,6 +734,7 @@ type MutationResolver interface {
 	CommerceCartRemoveCouponCode(ctx context.Context, couponCode string) (*dto1.DecoratedCart, error)
 	CommerceCheckoutStartPlaceOrder(ctx context.Context, returnURL string) (*dto2.StartPlaceOrderResult, error)
 	CommerceCheckoutCancelPlaceOrder(ctx context.Context) (bool, error)
+	CommerceCheckoutClearPlaceOrder(ctx context.Context) (bool, error)
 	CommerceCheckoutRefreshPlaceOrder(ctx context.Context) (*dto2.PlaceOrderContext, error)
 	CommerceCheckoutRefreshPlaceOrderBlocking(ctx context.Context) (*dto2.PlaceOrderContext, error)
 }
@@ -3640,6 +3642,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CommerceCheckoutCancelPlaceOrder(childComplexity), true
 
+	case "Mutation.Commerce_Checkout_ClearPlaceOrder":
+		if e.complexity.Mutation.CommerceCheckoutClearPlaceOrder == nil {
+			break
+		}
+
+		return e.complexity.Mutation.CommerceCheckoutClearPlaceOrder(childComplexity), true
+
 	case "Mutation.Commerce_Checkout_RefreshPlaceOrder":
 		if e.complexity.Mutation.CommerceCheckoutRefreshPlaceOrder == nil {
 			break
@@ -4414,16 +4423,21 @@ type Commerce_Checkout_PlaceOrderState_Form_Parameter {
 }
 
 extend type Query {
+    # Is there a active place order process
     Commerce_Checkout_ActivePlaceOrder: Boolean!
     Commerce_Checkout_CurrentContext: Commerce_Checkout_PlaceOrderContext!
 }
 
 extend type Mutation {
-    # Only possible if Statemaschine not active or in a final state
+    # Only possible if state machine not active or in a final state, otherwise returns the current running process
     Commerce_Checkout_StartPlaceOrder(returnUrl: String!): Commerce_Checkout_StartPlaceOrder_Result!
-    # Possible if state is not final
+    # Cancels to current running place order process, possible if state is not final
     Commerce_Checkout_CancelPlaceOrder: Boolean!
+    # Clears the last stored place order process, possible if state is final
+    Commerce_Checkout_ClearPlaceOrder: Boolean!
+    # Gets the last stored place order state and ensures that the state machine proceeds, non blocking
     Commerce_Checkout_RefreshPlaceOrder: Commerce_Checkout_PlaceOrderContext!
+    # Gets the most recent place order state by waiting for the state machine to proceed, therefore blocking
     Commerce_Checkout_RefreshPlaceOrderBlocking: Commerce_Checkout_PlaceOrderContext!
 }
 `},
@@ -15839,6 +15853,33 @@ func (ec *executionContext) _Mutation_Commerce_Checkout_CancelPlaceOrder(ctx con
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_Commerce_Checkout_ClearPlaceOrder(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CommerceCheckoutClearPlaceOrder(rctx)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_Commerce_Checkout_RefreshPlaceOrder(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -20743,6 +20784,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "Commerce_Checkout_CancelPlaceOrder":
 			out.Values[i] = ec._Mutation_Commerce_Checkout_CancelPlaceOrder(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "Commerce_Checkout_ClearPlaceOrder":
+			out.Values[i] = ec._Mutation_Commerce_Checkout_ClearPlaceOrder(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

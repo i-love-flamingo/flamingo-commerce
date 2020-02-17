@@ -1,0 +1,3 @@
+mutation {
+    Commerce_Checkout_ClearPlaceOrder
+}
