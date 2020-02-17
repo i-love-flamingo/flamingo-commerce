@@ -298,18 +298,20 @@ func Test_CancelPlaceOrder(t *testing.T) {
 func Test_ClearPlaceOrder(t *testing.T) {
 	baseURL := "http://" + FlamingoURL
 	tests := []struct {
-		name          string
-		gatewayMethod string
-		prepareAndRun bool
-		validator     func(*testing.T, *httpexpect.Object)
+		name                  string
+		gatewayMethod         string
+		prepareAndRun         bool
+		validator             func(*testing.T, *httpexpect.Object)
+		shouldLeadToNoProcess bool
 	}{
 		{
-			name:          "already final",
+			name:          "final",
 			gatewayMethod: domain.PaymentFlowStatusCompleted,
 			prepareAndRun: true,
 			validator: func(t *testing.T, response *httpexpect.Object) {
 				response.Value("data").Object().Value("Commerce_Checkout_ClearPlaceOrder").Boolean().True()
 			},
+			shouldLeadToNoProcess: true,
 		},
 		{
 			name:          "not final",
@@ -320,9 +322,10 @@ func Test_ClearPlaceOrder(t *testing.T) {
 				err.Value("message").Equal("process not in final state, clearing not possible")
 				err.Value("path").Array().First().Equal("Commerce_Checkout_ClearPlaceOrder")
 			},
+			shouldLeadToNoProcess: false,
 		},
 		{
-			name:          "no running process",
+			name:          "no process",
 			gatewayMethod: domain.PaymentFlowStatusCompleted,
 			prepareAndRun: false,
 			validator: func(t *testing.T, response *httpexpect.Object) {
@@ -330,6 +333,7 @@ func Test_ClearPlaceOrder(t *testing.T) {
 				err.Value("message").Equal("ErrNoPlaceOrderProcess")
 				err.Value("path").Array().First().Equal("Commerce_Checkout_ClearPlaceOrder")
 			},
+			shouldLeadToNoProcess: false,
 		},
 	}
 
@@ -346,6 +350,13 @@ func Test_ClearPlaceOrder(t *testing.T) {
 			response := request.Expect().JSON().Object()
 			tt.validator(t, response)
 
+			if tt.shouldLeadToNoProcess {
+				request = helper.GraphQlRequest(t, e, loadGraphQL(t, "refresh_blocking", nil))
+				response = request.Expect().JSON().Object()
+				err := response.Value("errors").Array().First().Object()
+				err.Value("message").Equal("ErrNoPlaceOrderProcess")
+				err.Value("path").Array().First().Equal("Commerce_Checkout_RefreshPlaceOrderBlocking")
+			}
 		})
 	}
 }
