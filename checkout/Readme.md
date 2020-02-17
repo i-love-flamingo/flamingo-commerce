@@ -113,7 +113,9 @@ The checkout module exposes the following Mutations and Queries:
   refreshes the process and starts the background processing again if it is not running anymore. It **waits** with the return
   until the background process comes to a final state or need an action.
 * `mutation Commerce_Checkout_CancelPlaceOrder` 
-  cancels the running process if it is not yet in a final state.  
+  cancels the running process if it is not yet in a final state.
+* `mutation Commerce_Checkout_ClearPlaceOrder` 
+  clears the last stored process if it is in a final state.
 * `query Commerce_Checkout_ActivePlaceOrder`
   checks if there is a place order process in a non-final state.
 * `query Commerce_Checkout_CurrentContext`
