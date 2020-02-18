@@ -82,22 +82,21 @@ func (r *Redis) TryLock(ctx context.Context, key string, maxlockduration time.Du
 	)
 	err := mutex.Lock()
 	if err != nil {
-		return nil, err
+		return nil, placeorder.ErrLockTaken
 	}
 	ticker := time.NewTicker(maxlockduration / 3)
 	go func() {
-		for {
-			<-ticker.C
+		for range ticker.C {
 			mutex.Extend()
 		}
 	}()
 
 	return func() error {
+		ticker.Stop()
 		ok := mutex.Unlock()
 		if !ok {
 			return errors.New("unlock unsuccessful")
 		}
-		ticker.Stop()
 		return nil
 	}, nil
 }
