@@ -25,7 +25,7 @@ func (n New) Run(ctx context.Context, p *process.Process) process.RunResult {
 	_, span := trace.StartSpan(ctx, "placeorder/state/New/Run")
 	defer span.End()
 
-	p.UpdateState(ValidateCart{}.Name(), nil)
+	p.UpdateState(PrepareCart{}.Name(), nil)
 
 	return process.RunResult{}
 }
