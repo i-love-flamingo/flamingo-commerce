@@ -25,11 +25,10 @@ type (
 
 	// Process representing a place order process and has a current context with infos about result and current state
 	Process struct {
-		context           Context
-		allStates         map[string]State
-		failedState       State
-		logger            flamingo.Logger
-		maxRecursionCount int
+		context     Context
+		allStates   map[string]State
+		failedState State
+		logger      flamingo.Logger
 	}
 
 	// Factory use to get Process instance
@@ -157,7 +156,6 @@ func (p *Process) Inject(
 	logger flamingo.Logger,
 ) *Process {
 	p.allStates = allStates
-	p.maxRecursionCount = 100
 	p.logger = logger.
 		WithField(flamingo.LogKeyModule, "checkout").
 		WithField(flamingo.LogKeyCategory, "process")
@@ -173,7 +171,6 @@ func (p *Process) Run(ctx context.Context) {
 		return
 	}
 
-	stateBeforeRun := p.Context().CurrentStateName
 	runResult := currentState.Run(ctx, p)
 	if runResult.RollbackData != nil {
 		p.context.RollbackReferences = append(p.context.RollbackReferences, RollbackReference{
@@ -181,31 +178,9 @@ func (p *Process) Run(ctx context.Context) {
 			Data:      runResult.RollbackData,
 		})
 	}
+
 	if runResult.Failed != nil {
 		p.Failed(ctx, runResult.Failed)
-	}
-	stateAfterRun := p.Context().CurrentStateName
-
-	// Continue Run until no state change happened
-	count := ctx.Value(recursionDepth)
-	countInt, ok := count.(int)
-	if !ok {
-		countInt = 0
-	}
-
-	if countInt >= p.maxRecursionCount {
-		p.Failed(ctx, ErrorOccurredReason{
-			Error: fmt.Sprintf("max recursion level %d of state machine reached", countInt),
-		})
-
-		return
-	}
-
-	if stateBeforeRun != stateAfterRun {
-		countInt++
-		ctx = context.WithValue(ctx, recursionDepth, countInt)
-		p.logger.Info(fmt.Sprintf("State Changed: %v => %v  Trigger Run() again", stateBeforeRun, stateAfterRun))
-		p.Run(ctx)
 	}
 }
 
@@ -249,6 +224,11 @@ func (p *Process) Context() Context {
 func (p *Process) UpdateState(s string, stateData StateData) {
 	p.context.CurrentStateName = s
 	p.context.CurrentStateData = stateData
+}
+
+// UpdateCart updates the cart in the current state context
+func (p *Process) UpdateCart(cartToStore cart.Cart) {
+	p.context.Cart = cartToStore
 }
 
 // UpdateOrderInfo updates the order infos of the current context

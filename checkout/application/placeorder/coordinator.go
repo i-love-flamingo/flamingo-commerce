@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -117,14 +118,7 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *
 			return
 		}
 
-		preparedCart, err := c.prepareCart(ctx, cart)
-		if err != nil {
-			runErr = err
-			c.logger.Error(err)
-			return
-		}
-
-		newProcess, err := c.processFactory.New(returnURL, *preparedCart)
+		newProcess, err := c.processFactory.New(returnURL, cart)
 		if err != nil {
 			runErr = err
 			c.logger.Error(err)
@@ -341,15 +335,41 @@ func (c *Coordinator) Run(ctx context.Context) {
 				_ = unlock()
 			}()
 
-			p.Run(ctx)
-			err = c.storeProcessContext(ctx, p.Context())
+			p, err = c.LastProcess(ctx)
 			if err != nil {
 				return
 			}
 
-			c.forceSessionUpdate(ctx)
+			err = c.proceedInStateMachineUntilNoStateChange(ctx, p)
+			if err != nil {
+				return
+			}
 		})
 	}(ctx)
+}
+
+func (c *Coordinator) proceedInStateMachineUntilNoStateChange(ctx context.Context, p *process.Process) error {
+	const maxRunCount = 100
+	stateBeforeRun := p.Context().CurrentStateName
+	for i := 0; i < maxRunCount; i++ {
+
+		p.Run(ctx)
+		err := c.storeProcessContext(ctx, p.Context())
+		if err != nil {
+			return err
+		}
+		c.forceSessionUpdate(ctx)
+		stateAfterRun := p.Context().CurrentStateName
+		if stateBeforeRun == stateAfterRun {
+			return nil
+		}
+		stateBeforeRun = stateAfterRun
+	}
+
+	p.Failed(ctx, process.ErrorOccurredReason{
+		Error: fmt.Sprintf("max run count %d of state machine reached", maxRunCount),
+	})
+	return nil
 }
 
 // RunBlocking waits for the lock and starts the next processing
@@ -373,6 +393,7 @@ func (c *Coordinator) RunBlocking(ctx context.Context) (*process.Context, error)
 			err = ErrLockTaken
 			for err == ErrLockTaken {
 				unlock, err = c.locker.TryLock(ctx, determineLockKeyForProcess(p), maxLockDuration)
+				time.Sleep(100 * time.Millisecond)
 			}
 			if err != nil {
 				returnErr = err
@@ -403,8 +424,10 @@ func (c *Coordinator) RunBlocking(ctx context.Context) (*process.Context, error)
 			return
 		}
 
-		p.Run(ctx)
-		err = c.storeProcessContext(ctx, p.Context())
+		session, err := c.sessionStore.LoadByID(ctx, web.SessionFromContext(ctx).ID())
+		ctx = web.ContextWithSession(ctx, session)
+
+		err = c.proceedInStateMachineUntilNoStateChange(ctx, p)
 		if err != nil {
 			returnErr = err
 			return
@@ -418,10 +441,6 @@ func (c *Coordinator) RunBlocking(ctx context.Context) (*process.Context, error)
 
 func (c *Coordinator) forceSessionUpdate(ctx context.Context) {
 	session := web.SessionFromContext(ctx)
-	id, ok := web.SessionFromContext(ctx).Load(application.GuestCartSessionKey)
-	if ok {
-		session.Store(application.GuestCartSessionKey, id)
-	}
 	c.sessionStore.Save(ctx, session)
 }
 
