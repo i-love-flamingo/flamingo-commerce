@@ -37,11 +37,12 @@ type (
 
 	// SearchResult is the DTO for the search result
 	SearchResult struct {
-		Hits           []domain.Document
-		SearchMeta     domain.SearchMeta
-		Facets         domain.FacetCollection
-		Suggestions    []domain.Suggestion
-		PaginationInfo utils.PaginationInfo
+		Hits               []domain.Document
+		SearchMeta         domain.SearchMeta
+		Facets             domain.FacetCollection
+		Suggestions        []domain.Suggestion
+		CategorySuggestion []domain.CategorySuggestion
+		PaginationInfo     utils.PaginationInfo
 	}
 )
 
@@ -106,11 +107,12 @@ func (s *SearchService) FindBy(ctx context.Context, documentType string, searchR
 	}, *searchRequest.PaginationConfig, currentURL)
 
 	return &SearchResult{
-		SearchMeta:     result.SearchMeta,
-		Facets:         result.Facets,
-		Suggestions:    result.Suggestion,
-		Hits:           result.Hits,
-		PaginationInfo: paginationInfo,
+		SearchMeta:         result.SearchMeta,
+		Facets:             result.Facets,
+		Suggestions:        result.Suggestion,
+		CategorySuggestion: result.CategorySuggestion,
+		Hits:               result.Hits,
+		PaginationInfo:     paginationInfo,
 	}, nil
 }
 
@@ -163,11 +165,12 @@ func (s *SearchService) Find(ctx context.Context, searchRequest SearchRequest) (
 		}, *searchRequest.PaginationConfig, currentURL)
 
 		searchResult[k] = &SearchResult{
-			SearchMeta:     r.SearchMeta,
-			Facets:         r.Facets,
-			Suggestions:    r.Suggestion,
-			Hits:           r.Hits,
-			PaginationInfo: paginationInfo,
+			SearchMeta:         r.SearchMeta,
+			Facets:             r.Facets,
+			Suggestions:        r.Suggestion,
+			CategorySuggestion: r.CategorySuggestion,
+			Hits:               r.Hits,
+			PaginationInfo:     paginationInfo,
 		}
 	}
 
