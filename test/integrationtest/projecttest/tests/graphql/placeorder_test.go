@@ -3,6 +3,7 @@
 package graphql_test
 
 import (
+	"errors"
 	"net/http"
 	"testing"
 	"time"
@@ -12,7 +13,6 @@ import (
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest"
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/helper"
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/modules/placeorder"
-
 	"github.com/gavv/httpexpect/v2"
 	"github.com/stretchr/testify/assert"
 )
@@ -158,7 +158,7 @@ func Test_PlaceOrderWithOrderService(t *testing.T) {
 		prepareCartWithPaymentSelection(t, e, domain.PaymentFlowStatusFailed)
 		placeorder.NextCancelFails = true
 
-		_, uuid := assertStartPlaceOrderWithValidUUID(t, e)
+		_, firstUUID := assertStartPlaceOrderWithValidUUID(t, e)
 
 		expectedState := map[string]interface{}{
 			"name":       states.Failed{}.Name(),
@@ -169,21 +169,27 @@ func Test_PlaceOrderWithOrderService(t *testing.T) {
 			},
 		}
 		helper.AsyncCheckWithTimeout(t, time.Second, func() error {
-			return checkRefreshForExpectedState(t, e, uuid, expectedState)
-
+			return checkRefreshForExpectedState(t, e, firstUUID, expectedState)
 		})
 
 		updatePaymentSelection(t, e, domain.PaymentFlowStatusApproved)
 
-		_, uuid = assertStartPlaceOrderWithValidUUID(t, e)
+		var secondUUID string
+		helper.AsyncCheckWithTimeout(t, time.Second, func() error {
+			_, secondUUID = assertStartPlaceOrderWithValidUUID(t, e)
+			if secondUUID == firstUUID {
+				return errors.New("UUID didn't change during new start place order")
+			}
+			return nil
+		})
+		assert.NotEmpty(t, secondUUID, "start order should return uuid")
 
 		expectedState = map[string]interface{}{
 			"name":       states.Success{}.Name(),
 			"__typename": "Commerce_Checkout_PlaceOrderState_State_Success",
 		}
 		helper.AsyncCheckWithTimeout(t, time.Second, func() error {
-			return checkRefreshForExpectedState(t, e, uuid, expectedState)
-
+			return checkRefreshForExpectedState(t, e, secondUUID, expectedState)
 		})
 	})
 

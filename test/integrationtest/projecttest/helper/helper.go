@@ -111,7 +111,7 @@ func GraphQlRequest(t *testing.T, e *httpexpect.Expect, query string) *httpexpec
 func AsyncCheckWithTimeout(t *testing.T, timeoutAfter time.Duration, fn func() error) {
 	t.Helper()
 	timeout := time.NewTimer(timeoutAfter)
-	ticker := time.NewTicker(10 * time.Millisecond)
+	ticker := time.NewTicker(100 * time.Millisecond)
 	defer ticker.Stop()
 
 	for {
