@@ -24,7 +24,7 @@ test:
 	ineffassign .
 
 integrationtest:
-	go test -v ./test/integrationtest/... -tags=integration
+	go test -test.count=10 -race -v ./test/integrationtest/... -tags=integration
 
 generateprojecttestgraphql:
 	rm -f test/integrationtest/projecttest/graphql/generated.go
