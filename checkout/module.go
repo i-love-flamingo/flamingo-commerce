@@ -45,7 +45,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 		injector.BindMap(new(healthcheck.Status), "placeorder.locker.redis").
 			ToProvider(func(t placeorder.TryLocker) *locker.Redis { return t.(*locker.Redis) })
 	} else {
-		injector.Bind(new(placeorder.TryLocker)).To(new(locker.Memory)).In(dingo.Singleton)
+		injector.Bind(new(placeorder.TryLocker)).ToProvider(locker.NewMemory).In(dingo.Singleton)
 	}
 
 	if m.PlaceOrderContextStore == "redis" {
