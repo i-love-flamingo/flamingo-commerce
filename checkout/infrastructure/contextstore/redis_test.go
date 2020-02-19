@@ -81,7 +81,7 @@ func startUpDockerRedis(t *testing.T) (func(), string, redis.Conn) {
 
 	prepareData(t, conn)
 
-	return func() { pool.Purge(res) }, address, conn
+	return func() { _ = pool.Purge(res) }, address, conn
 }
 
 func TestRedis_Get(t *testing.T) {

@@ -5,8 +5,6 @@ import (
 	"encoding/gob"
 	"errors"
 	"fmt"
-	"io"
-	"net/http"
 	"net/url"
 	"time"
 
@@ -44,8 +42,6 @@ type (
 		sessionStore   *web.SessionStore
 		sessionName    string
 	}
-
-	emptyResponseWriter struct{}
 )
 
 // maxRunCount specifies the limit how often the coordinator should try to proceed in the state machine for a single call to Run / RunBlocking
@@ -64,11 +60,6 @@ var (
 
 	maxLockDuration = 2 * time.Minute
 )
-
-// emptyResponseWriter to be able to properly persist sessions
-func (emptyResponseWriter) Header() http.Header       { return http.Header{} }
-func (emptyResponseWriter) Write([]byte) (int, error) { return 0, io.ErrUnexpectedEOF }
-func (emptyResponseWriter) WriteHeader(int)           {}
 
 func init() {
 	gob.Register(process.Context{})
@@ -146,30 +137,6 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *
 	})
 
 	return runPCtx, runErr
-}
-
-func (c *Coordinator) prepareCart(ctx context.Context, cart cartDomain.Cart) (*cartDomain.Cart, error) {
-	_, err := c.cartService.ForceReserveOrderIDAndSave(ctx, web.SessionFromContext(ctx))
-	if err != nil {
-		return nil, err
-	}
-
-	if cart.PaymentSelection == nil {
-		return &cart, nil
-	}
-
-	paymentSelection, err := cart.PaymentSelection.GenerateNewIdempotencyKey()
-	if err != nil {
-		return nil, err
-	}
-
-	err = c.cartService.UpdatePaymentSelection(ctx, web.SessionFromContext(ctx), paymentSelection)
-	if err != nil {
-		return nil, err
-	}
-
-	newCart, _, err := c.cartService.GetCartReceiverService().GetCart(ctx, web.SessionFromContext(ctx))
-	return newCart, err
 }
 
 // HasUnfinishedProcess checks for processes not in final state
@@ -459,7 +426,10 @@ func (c *Coordinator) RunBlocking(ctx context.Context) (*process.Context, error)
 
 func (c *Coordinator) forceSessionUpdate(ctx context.Context) {
 	session := web.SessionFromContext(ctx)
-	c.sessionStore.Save(ctx, session)
+	_, err := c.sessionStore.Save(ctx, session)
+	if err != nil {
+		c.logger.Error(err)
+	}
 }
 
 func determineLockKeyForCart(cart cartDomain.Cart) string {

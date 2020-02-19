@@ -15,10 +15,6 @@ import (
 	"flamingo.me/flamingo-commerce/v3/checkout/application"
 )
 
-const (
-	recursionDepth contextKey = iota
-)
-
 type (
 	// Provider for Processes
 	Provider func() *Process
@@ -56,8 +52,6 @@ type (
 	ErrorOccurredReason struct {
 		Error string
 	}
-
-	contextKey int
 
 	// CanceledByCustomerReason is used when customer cancels order
 	CanceledByCustomerReason struct{}
