@@ -433,7 +433,13 @@ func (c *Coordinator) RunBlocking(ctx context.Context) (*process.Context, error)
 			return
 		}
 
+		// Load the most recent session, as we could have waited quite a while for the TryLock.
 		session, err := c.sessionStore.LoadByID(ctx, web.SessionFromContext(ctx).ID())
+		if err != nil {
+			returnErr = err
+			return
+		}
+
 		ctx = web.ContextWithSession(ctx, session)
 
 		err = c.proceedInStateMachineUntilNoStateChange(ctx, p)
