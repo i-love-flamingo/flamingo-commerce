@@ -45,7 +45,7 @@ func TestRedis_TryLockDocker(t *testing.T) {
 
 	res, err := pool.Run("redis", "5.0", nil)
 	require.NoError(t, err, "failed to run redis docker image")
-	defer pool.Purge(res)
+	defer func() { _ = pool.Purge(res) }()
 	address := fmt.Sprintf("%s:%s", "127.0.0.1", res.GetPort("6379/tcp"))
 
 	require.NoError(t, pool.Retry(func() error {
@@ -64,7 +64,7 @@ func TestRedis_TryLock(t *testing.T) {
 	}
 
 	server := startUp(t)
-	defer server.Term()
+	defer func() { _ = server.Term() }()
 	redisLocker := getRedisLocker("unix", server.Socket())
 
 	runTestCases(t, redisLocker)
@@ -99,7 +99,7 @@ func runTestCases(t *testing.T, redisLocker *locker.Redis) {
 
 		unlock, err := redisLocker.TryLock(context.Background(), key, 100*time.Millisecond)
 		require.NoError(t, err)
-		defer unlock()
+		defer func() { _ = unlock() }()
 
 		time.Sleep(200 * time.Millisecond)
 		// try to get same lock

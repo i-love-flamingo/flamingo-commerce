@@ -63,6 +63,7 @@ func performRefreshPlaceOrder(t *testing.T, e *httpexpect.Expect, blocking bool)
 }
 
 func checkRefreshForExpectedState(t *testing.T, e *httpexpect.Expect, expectedUUID string, expectedState map[string]interface{}) error {
+	t.Helper()
 	response := performRefreshPlaceOrder(t, e, false)
 	data := make(map[string]interface{})
 	require.NoError(t, json.Unmarshal([]byte(response.Body().Raw()), &data))
