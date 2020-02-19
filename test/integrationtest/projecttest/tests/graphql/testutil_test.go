@@ -1,6 +1,7 @@
 package graphql_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -9,6 +10,8 @@ import (
 	"testing"
 
 	"github.com/gavv/httpexpect/v2"
+	"github.com/google/go-cmp/cmp"
+	"github.com/stretchr/testify/require"
 
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/helper"
 )
@@ -47,17 +50,51 @@ func updatePaymentSelection(t *testing.T, e *httpexpect.Expect, paymentMethod st
 	response.Status(http.StatusOK)
 }
 
-func assertRefreshPlaceOrder(t *testing.T, e *httpexpect.Expect, blocking bool) (*httpexpect.Response, string) {
+func performRefreshPlaceOrder(t *testing.T, e *httpexpect.Expect, blocking bool) *httpexpect.Response {
 	t.Helper()
-	mutationName := "Commerce_Checkout_RefreshPlaceOrder"
 	fileName := "refresh"
 	if blocking {
-		mutationName = "Commerce_Checkout_RefreshPlaceOrderBlocking"
 		fileName = "refresh_blocking"
 	}
 	mutation := loadGraphQL(t, fileName, nil)
 	request := helper.GraphQlRequest(t, e, mutation)
-	response := request.Expect()
+
+	return request.Expect()
+}
+
+func checkRefreshForExpectedState(t *testing.T, e *httpexpect.Expect, expectedUUID string, expectedState map[string]interface{}) error {
+	response := performRefreshPlaceOrder(t, e, false)
+	data := make(map[string]interface{})
+	require.NoError(t, json.Unmarshal([]byte(response.Body().Raw()), &data))
+	if theData, ok := data["data"]; !ok || theData == nil {
+		return fmt.Errorf("no data in response: %s", response.Body().Raw())
+	} else {
+		data = theData.(map[string]interface{})
+	}
+	if theData, ok := data["Commerce_Checkout_RefreshPlaceOrder"]; !ok {
+		return fmt.Errorf("no data>Commerce_Checkout_RefreshPlaceOrder in response: %s", response.Body().Raw())
+	} else {
+		data = theData.(map[string]interface{})
+	}
+
+	refreshUUID := data["uuid"]
+	if expectedUUID != refreshUUID {
+		return fmt.Errorf("uuid has changed: expected: %q, got from refresh: %q", expectedUUID, refreshUUID)
+	}
+	actualState := data["state"]
+	if diff := cmp.Diff(actualState, expectedState); diff != "" {
+		return fmt.Errorf("timeout reached, -actual state +expected state =%v", diff)
+	}
+	return nil
+}
+
+func assertRefreshPlaceOrder(t *testing.T, e *httpexpect.Expect, blocking bool) (*httpexpect.Response, string) {
+	t.Helper()
+	response := performRefreshPlaceOrder(t, e, blocking)
+	mutationName := "Commerce_Checkout_RefreshPlaceOrder"
+	if blocking {
+		mutationName = "Commerce_Checkout_RefreshPlaceOrderBlocking"
+	}
 	refreshUUID := getValue(response, mutationName, "uuid").String().Raw()
 
 	return response, refreshUUID
