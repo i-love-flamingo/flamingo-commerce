@@ -9,6 +9,9 @@ import (
 )
 
 type (
+	// StateProvider returns a state instance
+	StateProvider func() map[string]State
+
 	// State representation for graphql
 	State interface {
 		MapFrom(process.Context)
@@ -16,7 +19,7 @@ type (
 
 	// StateMapper to create dto states from context states
 	StateMapper struct {
-		stateMapping map[string]State
+		stateProvider StateProvider
 	}
 
 	// Failed state
@@ -137,19 +140,19 @@ func (s *PostRedirect) MapFrom(pctx process.Context) {
 }
 
 // Inject dependencies
-func (sm *StateMapper) Inject(stateMapping map[string]State) *StateMapper {
-	sm.stateMapping = stateMapping
+func (sm *StateMapper) Inject(stateProvider StateProvider) *StateMapper {
+	sm.stateProvider = stateProvider
 
 	return sm
 }
 
 // Map a context into a state
 func (sm *StateMapper) Map(pctx process.Context) (State, error) {
-	resultState, found := sm.stateMapping[pctx.CurrentStateName]
+	resultState, found := sm.stateProvider()[pctx.CurrentStateName]
 	if !found {
 		return nil, fmt.Errorf("couldn't map the internal process state %q to a GraphQL state", pctx.CurrentStateName)
 	}
-	resultState.MapFrom(pctx)
 
+	resultState.MapFrom(pctx)
 	return resultState, nil
 }

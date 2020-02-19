@@ -34,7 +34,6 @@ type (
 
 // Configure module
 func (m *Module) Configure(injector *dingo.Injector) {
-
 	injector.Bind((*form.Decoder)(nil)).ToProvider(form.NewDecoder).AsEagerSingleton()
 	if m.UseFakeSourcingService {
 		injector.Override((*domain.SourcingService)(nil), "").To(infrastructure.FakeSourcingService{})
