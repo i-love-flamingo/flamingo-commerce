@@ -18,6 +18,7 @@ import (
 )
 
 func Test_PlaceOrderWithPaymentService(t *testing.T) {
+	t.Parallel()
 	baseURL := "http://" + FlamingoURL
 	tests := []struct {
 		name                 string
@@ -189,6 +190,7 @@ func Test_PlaceOrderWithOrderService(t *testing.T) {
 }
 
 func Test_StartPlaceOrder(t *testing.T) {
+	t.Parallel()
 	baseURL := "http://" + FlamingoURL
 	t.Run("no payment selection", func(t *testing.T) {
 		e := integrationtest.NewHTTPExpect(t, baseURL)
@@ -219,6 +221,7 @@ func Test_StartPlaceOrder(t *testing.T) {
 }
 
 func Test_CancelPlaceOrder(t *testing.T) {
+	t.Parallel()
 	baseURL := "http://" + FlamingoURL
 	tests := []struct {
 		name          string
@@ -274,6 +277,7 @@ func Test_CancelPlaceOrder(t *testing.T) {
 }
 
 func Test_ClearPlaceOrder(t *testing.T) {
+	t.Parallel()
 	baseURL := "http://" + FlamingoURL
 	tests := []struct {
 		name                  string
@@ -340,6 +344,7 @@ func Test_ClearPlaceOrder(t *testing.T) {
 }
 
 func Test_RestartStartPlaceOrder(t *testing.T) {
+	t.Parallel()
 	baseURL := "http://" + FlamingoURL
 	e := integrationtest.NewHTTPExpect(t, baseURL)
 	prepareCartWithPaymentSelection(t, e, domain.PaymentFlowStatusFailed)
@@ -403,6 +408,7 @@ func Test_ActivePlaceOrder(t *testing.T) {
 }
 
 func Test_GetCurrentState(t *testing.T) {
+	t.Parallel()
 	baseURL := "http://" + FlamingoURL
 	e := integrationtest.NewHTTPExpect(t, baseURL)
 	// no current context before start
