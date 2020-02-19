@@ -48,6 +48,9 @@ type (
 	emptyResponseWriter struct{}
 )
 
+// maxRunCount specifies the limit how often the coordinator should try to proceed in the state machine for a single call to Run / RunBlocking
+const maxRunCount = 100
+
 var (
 	// ErrLockTaken to indicate the lock is taken (by another running process)
 	ErrLockTaken = errors.New("lock already taken")
@@ -237,6 +240,8 @@ func (c *Coordinator) Cancel(ctx context.Context) error {
 			err = ErrLockTaken
 			for err == ErrLockTaken {
 				unlock, err = c.locker.TryLock(ctx, determineLockKeyForProcess(p), maxLockDuration)
+				// todo: add proper throttling
+				time.Sleep(100 * time.Millisecond)
 			}
 			if err != nil {
 				returnErr = err
@@ -349,7 +354,6 @@ func (c *Coordinator) Run(ctx context.Context) {
 }
 
 func (c *Coordinator) proceedInStateMachineUntilNoStateChange(ctx context.Context, p *process.Process) error {
-	const maxRunCount = 100
 	stateBeforeRun := p.Context().CurrentStateName
 	for i := 0; i < maxRunCount; i++ {
 
@@ -393,6 +397,7 @@ func (c *Coordinator) RunBlocking(ctx context.Context) (*process.Context, error)
 			err = ErrLockTaken
 			for err == ErrLockTaken {
 				unlock, err = c.locker.TryLock(ctx, determineLockKeyForProcess(p), maxLockDuration)
+				// todo: add proper throttling
 				time.Sleep(100 * time.Millisecond)
 			}
 			if err != nil {
