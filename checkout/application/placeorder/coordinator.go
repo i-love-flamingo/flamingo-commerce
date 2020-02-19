@@ -103,6 +103,9 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *
 
 	unlock, err := c.locker.TryLock(ctx, determineLockKeyForCart(cart), maxLockDuration)
 	if err != nil {
+		if err == ErrLockTaken {
+			return nil, ErrAnotherPlaceOrderProcessRunning
+		}
 		return nil, err
 	}
 	defer func() {

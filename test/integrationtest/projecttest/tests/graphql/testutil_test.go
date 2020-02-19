@@ -66,16 +66,18 @@ func checkRefreshForExpectedState(t *testing.T, e *httpexpect.Expect, expectedUU
 	response := performRefreshPlaceOrder(t, e, false)
 	data := make(map[string]interface{})
 	require.NoError(t, json.Unmarshal([]byte(response.Body().Raw()), &data))
-	if theData, ok := data["data"]; !ok || theData == nil {
+	var theData interface{}
+	var ok bool
+	if theData, ok = data["data"]; !ok || theData == nil {
 		return fmt.Errorf("no data in response: %s", response.Body().Raw())
-	} else {
-		data = theData.(map[string]interface{})
 	}
-	if theData, ok := data["Commerce_Checkout_RefreshPlaceOrder"]; !ok {
+	data = theData.(map[string]interface{})
+
+	if theData, ok = data["Commerce_Checkout_RefreshPlaceOrder"]; !ok {
 		return fmt.Errorf("no data>Commerce_Checkout_RefreshPlaceOrder in response: %s", response.Body().Raw())
-	} else {
-		data = theData.(map[string]interface{})
 	}
+
+	data = theData.(map[string]interface{})
 
 	refreshUUID := data["uuid"]
 	if expectedUUID != refreshUUID {

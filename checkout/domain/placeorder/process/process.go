@@ -79,6 +79,7 @@ type (
 func init() {
 	gob.Register(ErrorOccurredReason{})
 	gob.Register(PaymentErrorOccurredReason{})
+	gob.Register(PaymentCanceledByCustomerReason{})
 	gob.Register(CartValidationErrorReason{})
 	gob.Register(CanceledByCustomerReason{})
 }
