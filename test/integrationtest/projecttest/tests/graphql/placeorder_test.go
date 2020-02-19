@@ -3,7 +3,6 @@
 package graphql_test
 
 import (
-	"fmt"
 	"net/http"
 	"testing"
 	"time"
@@ -15,7 +14,6 @@ import (
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/modules/placeorder"
 
 	"github.com/gavv/httpexpect/v2"
-	"github.com/google/go-cmp/cmp"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -144,15 +142,8 @@ func Test_PlaceOrderWithPaymentService(t *testing.T) {
 			prepareCartWithPaymentSelection(t, e, tt.gatewayMethod)
 			_, uuid := assertStartPlaceOrderWithValidUUID(t, e)
 
-			var actualState interface{}
 			helper.AsyncCheckWithTimeout(t, time.Second, func() error {
-				response, refreshUUID := assertRefreshPlaceOrder(t, e, false)
-				assert.Equal(t, uuid, refreshUUID, "uuid has changed")
-				actualState = getValue(response, "Commerce_Checkout_RefreshPlaceOrder", "state").Raw()
-				if diff := cmp.Diff(actualState, tt.expectedState); diff != "" {
-					return fmt.Errorf("timeout reached, -actual state +expected state =%v", diff)
-				}
-				return nil
+				return checkRefreshForExpectedState(t, e, uuid, tt.expectedState)
 			})
 		})
 	}
@@ -168,7 +159,6 @@ func Test_PlaceOrderWithOrderService(t *testing.T) {
 
 		_, uuid := assertStartPlaceOrderWithValidUUID(t, e)
 
-		var actualState interface{}
 		expectedState := map[string]interface{}{
 			"name":       states.Failed{}.Name(),
 			"__typename": "Commerce_Checkout_PlaceOrderState_State_Failed",
@@ -178,14 +168,8 @@ func Test_PlaceOrderWithOrderService(t *testing.T) {
 			},
 		}
 		helper.AsyncCheckWithTimeout(t, time.Second, func() error {
-			response, refreshUUID := assertRefreshPlaceOrder(t, e, false)
-			assert.Equal(t, uuid, refreshUUID, "uuid has changed")
-			actualState = getValue(response, "Commerce_Checkout_RefreshPlaceOrder", "state").Raw()
+			return checkRefreshForExpectedState(t, e, uuid, expectedState)
 
-			if diff := cmp.Diff(actualState, expectedState); diff != "" {
-				return fmt.Errorf("timeout reached, -actual state +expected state =%v", diff)
-			}
-			return nil
 		})
 
 		updatePaymentSelection(t, e, domain.PaymentFlowStatusApproved)
@@ -197,14 +181,8 @@ func Test_PlaceOrderWithOrderService(t *testing.T) {
 			"__typename": "Commerce_Checkout_PlaceOrderState_State_Success",
 		}
 		helper.AsyncCheckWithTimeout(t, time.Second, func() error {
-			response, refreshUUID := assertRefreshPlaceOrder(t, e, false)
-			assert.Equal(t, uuid, refreshUUID, "uuid has changed")
-			actualState = getValue(response, "Commerce_Checkout_RefreshPlaceOrder", "state").Raw()
+			return checkRefreshForExpectedState(t, e, uuid, expectedState)
 
-			if diff := cmp.Diff(actualState, expectedState); diff != "" {
-				return fmt.Errorf("timeout reached, -actual state +expected state =%v", diff)
-			}
-			return nil
 		})
 	})
 
