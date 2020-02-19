@@ -5,6 +5,7 @@ import (
 	"errors"
 	"math/rand"
 	"strconv"
+	"sync"
 
 	authDomain "flamingo.me/flamingo/v3/core/oauth/domain"
 
@@ -18,6 +19,7 @@ const AttributeErrorKey = "test-error"
 type (
 	// FakeAdapter provides fake place order adapter
 	FakeAdapter struct {
+		locker       sync.Locker
 		placedOrders map[string]placeorder.PlacedOrderInfos
 	}
 )
@@ -31,7 +33,7 @@ var (
 // Inject dependencies
 func (f *FakeAdapter) Inject() *FakeAdapter {
 	f.placedOrders = make(map[string]placeorder.PlacedOrderInfos)
-
+	f.locker = &sync.Mutex{}
 	return f
 }
 
@@ -46,6 +48,8 @@ func (f *FakeAdapter) PlaceCustomerCart(ctx context.Context, auth authDomain.Aut
 }
 
 func (f *FakeAdapter) placeCart(cart *cartDomain.Cart) (placeorder.PlacedOrderInfos, error) {
+	f.locker.Lock()
+	defer f.locker.Unlock()
 	forcedError := cart.AdditionalData.CustomAttributes[AttributeErrorKey]
 	if forcedError != "" {
 		return nil, errors.New(forcedError)
@@ -89,6 +93,8 @@ func (f *FakeAdapter) CancelCustomerOrder(ctx context.Context, orderInfos placeo
 }
 
 func (f *FakeAdapter) cancelOrder(orderInfos placeorder.PlacedOrderInfos) error {
+	f.locker.Lock()
+	defer f.locker.Unlock()
 	if NextCancelFails {
 		NextCancelFails = false
 		return errors.New("test")
