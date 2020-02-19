@@ -26,7 +26,7 @@ func TestNew_Run(t *testing.T) {
 
 	state.Run(context.Background(), p)
 
-	assert.Equal(t, states.ValidateCart{}.Name(), p.Context().CurrentStateName, "Next state after New should be CreatePayment.")
+	assert.Equal(t, states.PrepareCart{}.Name(), p.Context().CurrentStateName, "Next state after New should be PrepareCart.")
 }
 
 func TestNew_IsFinal(t *testing.T) {
