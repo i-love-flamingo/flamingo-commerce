@@ -28,7 +28,7 @@ type (
 	Result struct {
 		SearchMeta SearchMeta
 		Hits       []Document
-		Suggestion Suggestions
+		Suggestion []Suggestion
 		Facets     FacetCollection
 	}
 
@@ -101,9 +101,6 @@ type (
 		Highlight            string
 		AdditionalAttributes map[string]string
 	}
-
-	// Suggestions can be of type product or category
-	Suggestions []Suggestion
 
 	// Document holds a search result document
 	Document interface{}

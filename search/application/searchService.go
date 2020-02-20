@@ -40,7 +40,7 @@ type (
 		Hits           []domain.Document
 		SearchMeta     domain.SearchMeta
 		Facets         domain.FacetCollection
-		Suggestions    domain.Suggestions
+		Suggestions    []domain.Suggestion
 		PaginationInfo utils.PaginationInfo
 	}
 )
