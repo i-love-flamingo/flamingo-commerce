@@ -23,7 +23,7 @@ type (
 
 	// SearchResult - much like the corresponding struct in search package, just that instead "Hits" we have a list of matching Products
 	SearchResult struct {
-		Suggestions    []searchdomain.Suggestion
+		Suggestions    searchdomain.Suggestions
 		Products       []domain.BasicProduct
 		SearchMeta     searchdomain.SearchMeta
 		Facets         searchdomain.FacetCollection
@@ -74,7 +74,7 @@ func (s *ProductSearchService) Find(ctx context.Context, searchRequest *applicat
 	return &SearchResult{
 		SearchMeta:     result.SearchMeta,
 		Facets:         result.Facets,
-		Suggestions:    result.Suggestion,
+		Suggestions:    result.Suggestions,
 		Products:       result.Hits,
 		PaginationInfo: paginationInfo,
 	}, nil
@@ -123,7 +123,7 @@ func (s *ProductSearchService) FindBy(ctx context.Context, attributeCode string,
 	return &SearchResult{
 		SearchMeta:     result.SearchMeta,
 		Facets:         result.Facets,
-		Suggestions:    result.Suggestion,
+		Suggestions:    result.Suggestions,
 		Products:       result.Hits,
 		PaginationInfo: paginationInfo,
 	}, nil

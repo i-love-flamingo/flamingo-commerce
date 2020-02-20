@@ -9,6 +9,13 @@ import (
 	"sort"
 )
 
+const (
+	// SuggestionTypeProduct represents product suggestions
+	SuggestionTypeProduct = "product"
+	// SuggestionTypeCategory represents category suggestions
+	SuggestionTypeCategory = "category"
+)
+
 type (
 	// SearchService defines how to access search
 	SearchService interface {
@@ -19,10 +26,10 @@ type (
 
 	// Result defines a search result for one type
 	Result struct {
-		SearchMeta SearchMeta
-		Hits       []Document
-		Suggestion []Suggestion
-		Facets     FacetCollection
+		SearchMeta  SearchMeta
+		Hits        []Document
+		Suggestions Suggestions
+		Facets      FacetCollection
 	}
 
 	// SearchMeta data
@@ -89,9 +96,14 @@ type (
 
 	// Suggestion hint
 	Suggestion struct {
-		Text      string
-		Highlight string
+		Type                 string
+		Text                 string
+		Highlight            string
+		AdditionalAttributes map[string]string
 	}
+
+	// Suggestions can be of type product or category
+	Suggestions []Suggestion
 
 	// Document holds a search result document
 	Document interface{}
