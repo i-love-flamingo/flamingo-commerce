@@ -44,9 +44,9 @@ func (s *SearchService) Search(ctx context.Context, filter ...searchDomain.Filte
 				SelectedFacets: nil,
 				SortOptions:    nil,
 			},
-			Hits:       []searchDomain.Document{p1, p2},
-			Suggestion: nil,
-			Facets:     nil,
+			Hits:        []searchDomain.Document{p1, p2},
+			Suggestions: searchDomain.Suggestions{},
+			Facets:      nil,
 		},
 		Hits: []domain.BasicProduct{p1, p2},
 	}, nil
