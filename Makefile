@@ -26,7 +26,7 @@ test:
 integrationtest:
 	go test -test.count=10 -race -v ./test/integrationtest/... -tags=integration
 
-generateprojecttestgraphql:
+generate-integrationtest-graphql:
 	rm -f test/integrationtest/projecttest/graphql/generated.go
 	go generate ./...
 	export RUN="0" && cd test/integrationtest/projecttest && go run -tags graphql main.go
@@ -34,5 +34,5 @@ generateprojecttestgraphql:
 fix:
 	gofmt -l -w .
 
-rundemoprojecttest:
+run-integrationtest-demo-project:
 	cd test/integrationtest/projecttest/tests && RUN=1 INTEGRATION_TEST_PORT=10000 go run ../main.go
