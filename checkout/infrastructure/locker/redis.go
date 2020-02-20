@@ -82,6 +82,10 @@ func (r *Redis) TryLock(ctx context.Context, key string, maxlockduration time.Du
 	)
 	err := mutex.Lock()
 	if err != nil {
+		alive, _ := r.Status()
+		if !alive {
+			return nil, errors.New("redis not reachable, see health-check")
+		}
 		return nil, placeorder.ErrLockTaken
 	}
 	ticker := time.NewTicker(maxlockduration / 3)
