@@ -26,10 +26,10 @@ type (
 
 	// Result defines a search result for one type
 	Result struct {
-		SearchMeta  SearchMeta
-		Hits        []Document
-		Suggestions Suggestions
-		Facets      FacetCollection
+		SearchMeta SearchMeta
+		Hits       []Document
+		Suggestion Suggestions
+		Facets     FacetCollection
 	}
 
 	// SearchMeta data

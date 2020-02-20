@@ -74,7 +74,7 @@ func (s *ProductSearchService) Find(ctx context.Context, searchRequest *applicat
 	return &SearchResult{
 		SearchMeta:     result.SearchMeta,
 		Facets:         result.Facets,
-		Suggestions:    result.Suggestions,
+		Suggestions:    result.Suggestion,
 		Products:       result.Hits,
 		PaginationInfo: paginationInfo,
 	}, nil
@@ -123,7 +123,7 @@ func (s *ProductSearchService) FindBy(ctx context.Context, attributeCode string,
 	return &SearchResult{
 		SearchMeta:     result.SearchMeta,
 		Facets:         result.Facets,
-		Suggestions:    result.Suggestions,
+		Suggestions:    result.Suggestion,
 		Products:       result.Hits,
 		PaginationInfo: paginationInfo,
 	}, nil
