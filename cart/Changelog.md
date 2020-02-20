@@ -66,3 +66,28 @@ the cart has been adjusted and written back to cache
 * The `AddToCartEvent` includes the current cart (with added product)
 * The `ChangedQtyInCartEvent` includes the current cart (with updated quantities)
 * Add Whitebox Test `TestCartService_CartInEvent` to check `AddToCartEvent`
+
+# 20. February 2020
+
+* Mark `CartReceiverService.RestoreCart()` as deprecated, use `CartService.RestoreCart()` instead,
+  the cart adapter therefore needs to implement the `CompleteBehaviour` interface.
+* Add `CartReceiverService.ModifyBehaviour()` to easily receive the current behaviour (guest/customer)
+
+* Add `CompleteBehaviour` interface which ensures that the cart adapter offers Complete / Restore functionality
+* Add `CartService.CompleteCurrentCart()` and `CartService.RestoreCart()` which rely on the new `CompleteBehaviour` interface
+* **Breaking**: Update `CartService.CancelOrder()` to use `CartService.RestoreCart()` instead of `CartReceiverService.RestoreCart()`,
+  if your cart supports completing/restoring please implement `CompleteBehaviour` interface
+* Add `CartService.CancelOrderWithoutRestore()` to allow order cancellation without restoring the cart
+
+* Mark `GuestCartService.RestoreCart` as deprecated, will be replaced by `CompleteBehaviour`
+* Mark `CustomerCartService.RestoreCart` as deprecated, will be replaced by `CompleteBehaviour`
+
+* Add mocks for all behaviours, you can use a specific one e.g. `&mocks.CompleteBehaviour{}` or the all in one `&mocks.AllBehaviour{}`
+
+* Update `InMemoryBehaviour` to fulfill the `CompleteBehaviour` interface (adds `Complete()`/`Restore()`)
+* Update `InMemoryCartStorage`, add Mutex to be thread safe
+
+* Update `SimplePaymentFormService` to allow gift cards in the `PaymentSelection`, please use the
+  config `commerce.cart.simplePaymentForm.giftCardPaymentMethod`to specify the default payment method for gift cards
+
+* Add missing `product` module dependency to cart module
