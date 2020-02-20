@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/gob"
+	"errors"
 	"fmt"
 	"runtime"
 	"time"
@@ -24,8 +25,12 @@ type (
 	}
 )
 
-var _ process.ContextStore = new(Redis)
-var _ healthcheck.Status = &Redis{}
+var (
+	_ process.ContextStore = new(Redis)
+	_ healthcheck.Status   = &Redis{}
+	// ErrNoRedisConnection is returned if the underlying connection is erroneous
+	ErrNoRedisConnection = errors.New("no redis connection, see healthcheck")
+)
 
 func init() {
 	gob.Register(process.Context{})
@@ -66,6 +71,10 @@ func (r *Redis) Store(ctx context.Context, key string, placeOrderContext process
 	defer span.End()
 	conn := r.pool.Get()
 	defer conn.Close()
+	if conn.Err() != nil {
+		r.logger.Error("placeorder/contextstore/Store:", conn.Err())
+		return ErrNoRedisConnection
+	}
 
 	buffer := new(bytes.Buffer)
 	err := gob.NewEncoder(buffer).Encode(placeOrderContext)
@@ -87,6 +96,9 @@ func (r *Redis) Get(ctx context.Context, key string) (process.Context, bool) {
 	defer span.End()
 	conn := r.pool.Get()
 	defer conn.Close()
+	if conn.Err() != nil {
+		r.logger.Error("placeorder/contextstore/Get:", conn.Err())
+	}
 
 	content, err := redis.Bytes(conn.Do("GET", key))
 	if err != nil {
@@ -110,6 +122,10 @@ func (r *Redis) Delete(ctx context.Context, key string) error {
 	defer span.End()
 	conn := r.pool.Get()
 	defer conn.Close()
+	if conn.Err() != nil {
+		r.logger.Error("placeorder/contextstore/Delete:", conn.Err())
+		return ErrNoRedisConnection
+	}
 
 	_, err := conn.Do("DEL", key)
 
