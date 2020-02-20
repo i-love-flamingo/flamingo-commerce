@@ -18,5 +18,3 @@
 - category:
     - Tree object uses a Tree Entity now which contains NOT all category properties. You have to fetch the category details separate on demand:
         - search for usages of the data funcs - they may need changes in rendering the data: `data('category´´..`
-- search:
-    - Search module domain model has the new Entity CategorySuggestion that contains suggestions used in the live search and are part of the Result struct.
