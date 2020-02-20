@@ -108,7 +108,7 @@ func (s *SearchService) FindBy(ctx context.Context, documentType string, searchR
 	return &SearchResult{
 		SearchMeta:     result.SearchMeta,
 		Facets:         result.Facets,
-		Suggestions:    result.Suggestions,
+		Suggestions:    result.Suggestion,
 		Hits:           result.Hits,
 		PaginationInfo: paginationInfo,
 	}, nil
@@ -165,7 +165,7 @@ func (s *SearchService) Find(ctx context.Context, searchRequest SearchRequest) (
 		searchResult[k] = &SearchResult{
 			SearchMeta:     r.SearchMeta,
 			Facets:         r.Facets,
-			Suggestions:    r.Suggestions,
+			Suggestions:    r.Suggestion,
 			Hits:           r.Hits,
 			PaginationInfo: paginationInfo,
 		}
