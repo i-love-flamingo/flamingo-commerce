@@ -10,7 +10,9 @@ import (
 )
 
 const (
-	SuggestionTypeProduct  = "product"
+	// SuggestionTypeProduct represents product suggestions
+	SuggestionTypeProduct = "product"
+	// SuggestionTypeCategory represents category suggestions
 	SuggestionTypeCategory = "category"
 )
 
