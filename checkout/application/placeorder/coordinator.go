@@ -10,10 +10,11 @@ import (
 
 	"go.opencensus.io/trace"
 
-	"flamingo.me/flamingo-commerce/v3/cart/application"
-	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
+
+	"flamingo.me/flamingo-commerce/v3/cart/application"
+	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 )
@@ -303,6 +304,7 @@ func (c *Coordinator) Run(ctx context.Context) {
 
 			p, err := c.LastProcess(ctx)
 			if err != nil {
+				c.logger.Error("no last process on run: ", err)
 				return
 			}
 
@@ -316,11 +318,13 @@ func (c *Coordinator) Run(ctx context.Context) {
 
 			p, err = c.LastProcess(ctx)
 			if err != nil {
+				c.logger.Error("no last process on run: ", err)
 				return
 			}
 
 			err = c.proceedInStateMachineUntilNoStateChange(ctx, p)
 			if err != nil {
+				c.logger.Error("proceeding in state machine failed: ", err)
 				return
 			}
 		})
