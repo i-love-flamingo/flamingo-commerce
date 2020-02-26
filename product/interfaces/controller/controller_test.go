@@ -32,16 +32,16 @@ func getController() *View {
 	r.Inject(
 		&struct {
 			// base url configuration
-			Scheme       string            `inject:"config:flamingo.router.scheme,optional"`
-			Host         string            `inject:"config:flamingo.router.host,optional"`
-			Path         string            `inject:"config:flamingo.router.path,optional"`
-			External     string            `inject:"config:flamingo.router.external,optional"`
-			SessionStore *web.SessionStore `inject:""`
-			SessionName  string            `inject:"config:flamingo.session.name,optional"`
+			Scheme      string `inject:"config:flamingo.router.scheme,optional"`
+			Host        string `inject:"config:flamingo.router.host,optional"`
+			Path        string `inject:"config:flamingo.router.path,optional"`
+			External    string `inject:"config:flamingo.router.external,optional"`
+			SessionName string `inject:"config:flamingo.session.name,optional"`
 		}{
 			Scheme: "http://",
 			Host:   "test",
 		},
+		nil,
 		nil,
 		func() []web.Filter {
 			return nil
