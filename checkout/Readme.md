@@ -98,6 +98,11 @@ When we introduced GraphQL, we rethought the checkout process from the ground up
 map the individual steps of the checkout to states of a newly created place order state machine.
 This should mainly make the process more robust and make it easier to roll back operations in case of errors.
 
+**Important:** when you start using the new place order process please ensure that you use the "OnWrite" Flamingo session save mode:
+```
+flamingo.session.saveMode: "OnWrite"
+```
+
 ### Queries / Mutations
 
 The checkout module exposes the following Mutations and Queries:
