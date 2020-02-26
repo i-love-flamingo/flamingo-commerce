@@ -3,8 +3,8 @@ module flamingo.me/flamingo-commerce/v3
 go 1.13
 
 require (
-	flamingo.me/dingo v0.2.7
-	flamingo.me/flamingo/v3 v3.1.7-0.20200221151200-7b030bdc42a3
+	flamingo.me/dingo v0.2.9
+	flamingo.me/flamingo/v3 v3.2.0
 	flamingo.me/form v1.0.1
 	flamingo.me/graphql v1.0.2-0.20200109090653-271ced2b302c
 	flamingo.me/pugtemplate v1.0.0
@@ -22,9 +22,9 @@ require (
 	github.com/go-redsync/redsync v1.3.1
 	github.com/go-test/deep v1.0.1
 	github.com/gomodule/redigo v2.0.0+incompatible
-	github.com/google/go-cmp v0.3.1
+	github.com/google/go-cmp v0.4.0
 	github.com/google/uuid v1.1.1
-	github.com/gorilla/sessions v1.1.3
+	github.com/gorilla/sessions v1.2.0
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/leekchan/accounting v0.0.0-20191104051123-0b9b0bd19c36
 	github.com/lib/pq v1.1.1 // indirect
@@ -32,14 +32,14 @@ require (
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/opencontainers/runc v0.1.1 // indirect
 	github.com/ory/dockertest v3.3.5+incompatible
-	github.com/pkg/errors v0.8.1
+	github.com/pkg/errors v0.9.1
 	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/stretchr/testify v1.4.0
 	github.com/stvp/tempredis v0.0.0-20181119212430-b82af8480203
 	github.com/valyala/fasthttp v1.6.0 // indirect
 	github.com/vektah/gqlparser v1.1.2
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
-	go.opencensus.io v0.22.2-0.20191001044506-fa651b05963c
+	go.opencensus.io v0.22.3
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	gopkg.in/go-playground/assert.v1 v1.2.1
 	gopkg.in/square/go-jose.v2 v2.3.0 // indirect

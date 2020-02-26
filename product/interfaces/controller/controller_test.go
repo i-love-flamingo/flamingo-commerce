@@ -51,6 +51,7 @@ func getController() *View {
 		},
 		new(flamingo.NullLogger),
 		nil,
+		nil,
 	)
 	// create a new handler to initialize the router registry
 	r.Handler()
