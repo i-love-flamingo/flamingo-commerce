@@ -69,9 +69,6 @@ func (pr PostRedirect) Run(ctx context.Context, p *process.Process) process.RunR
 
 // Rollback the state operations
 func (pr PostRedirect) Rollback(ctx context.Context, _ process.RollbackData) error {
-	_, span := trace.StartSpan(ctx, "placeorder/state/PostRedirect/Rollback")
-	defer span.End()
-
 	return nil
 }
 

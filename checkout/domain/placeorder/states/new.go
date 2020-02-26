@@ -32,9 +32,6 @@ func (n New) Run(ctx context.Context, p *process.Process) process.RunResult {
 
 // Rollback the state operations
 func (n New) Rollback(ctx context.Context, _ process.RollbackData) error {
-	_, span := trace.StartSpan(ctx, "placeorder/state/New/Rollback")
-	defer span.End()
-
 	return nil
 }
 
