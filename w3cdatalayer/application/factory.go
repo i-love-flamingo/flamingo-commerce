@@ -59,7 +59,7 @@ func (s *Factory) Inject(
 	},
 ) {
 	s.router = router2
-	s.logger = logger
+	s.logger = logger.WithField(flamingo.LogKeyModule, "w3cdatalayer")
 	s.datalayerProvider = provider
 	s.userService = userService
 
