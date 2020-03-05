@@ -5,6 +5,7 @@ import (
 	"crypto/sha512"
 	"encoding/base64"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
@@ -12,13 +13,16 @@ import (
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo-commerce/v3/w3cdatalayer/domain"
 	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
+	"github.com/pkg/errors"
 	"go.opencensus.io/tag"
 )
 
 // Factory is used to build new datalayers
 type Factory struct {
 	router            *web.Router
+	logger            flamingo.Logger
 	datalayerProvider domain.DatalayerProvider
 	userService       *authApplication.UserService
 
@@ -38,6 +42,7 @@ type Factory struct {
 // Inject factory dependencies
 func (s *Factory) Inject(
 	router2 *web.Router,
+	logger flamingo.Logger,
 	provider domain.DatalayerProvider,
 	userService *authApplication.UserService,
 	config *struct {
@@ -54,6 +59,7 @@ func (s *Factory) Inject(
 	},
 ) {
 	s.router = router2
+	s.logger = logger.WithField(flamingo.LogKeyModule, "w3cdatalayer")
 	s.datalayerProvider = provider
 	s.userService = userService
 
@@ -87,7 +93,11 @@ func (s Factory) BuildForCurrentRequest(ctx context.Context, request *web.Reques
 		language = localeParts[0]
 	}
 
-	baseURL, _ := s.router.Absolute(request, request.Request().URL.Path, nil)
+	baseURL, err := s.router.Absolute(request, request.Request().URL.Path, nil)
+	if err != nil {
+		s.logger.Warn(errors.Wrap(err, "cannot build absolute url"))
+		baseURL = new(url.URL)
+	}
 	layer.Page = &domain.Page{
 		PageInfo: domain.PageInfo{
 			PageID:         request.Request().URL.Path,

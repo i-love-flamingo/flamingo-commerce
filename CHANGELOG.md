@@ -22,7 +22,7 @@
 ## v3.0.1
 - Update dingo and form dependency to latest version
         
-## v3.1.0 [upcoming]
+## v3.1.0
 **tests**
 * Added GraphQL integration tests for new Place Order Process, run manually with `make integrationtest`
 * To run the GraphQL Demo project use `make run-integrationtest-demo-project`
@@ -90,3 +90,7 @@ the cart has been adjusted and written back to cache
  
 **search**
 * Extend `Suggestion` struct with `Type` and `AdditionalAttributes` to be able to distinguish between product/category suggestions
+
+## v3.1.1 [upcoming]
+**w3cdatalayer**
+* Fixed a bug that causes the datalayer to panic if it failed to build an absolute url
