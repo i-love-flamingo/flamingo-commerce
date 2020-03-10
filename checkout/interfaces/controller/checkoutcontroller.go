@@ -257,7 +257,13 @@ func (cc *CheckoutController) placeOrderAction(ctx context.Context, r *web.Reque
 		placedOrderInfo, _ = cc.orderService.LastPlacedOrder(ctx)
 		cc.orderService.ClearLastPlacedOrder(ctx)
 	} else {
-		placedOrderInfo, err = cc.orderService.CurrentCartPlaceOrderWithPaymentProcessing(ctx, session)
+		if decoratedCart.Cart.GrandTotal().IsZero() {
+			// Nothing to pay, so cart can be placed without payment processing.
+			placedOrderInfo, err = cc.orderService.CurrentCartPlaceOrder(ctx, session, placeorder.Payment{})
+		} else {
+			placedOrderInfo, err = cc.orderService.CurrentCartPlaceOrderWithPaymentProcessing(ctx, session)
+		}
+
 		cc.orderService.ClearLastPlacedOrder(ctx)
 
 		if err != nil {
@@ -468,6 +474,11 @@ func (cc *CheckoutController) processPayment(ctx context.Context, r *web.Request
 	if err != nil {
 		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error ", err)
 		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
+	}
+
+	// Cart grand total is zero, so no payment needed.
+	if decoratedCart.Cart.GrandTotal().IsZero() {
+		return cc.responder.RouteRedirect("checkout.placeorder", nil)
 	}
 
 	// get the payment gateway for the specified payment selection
