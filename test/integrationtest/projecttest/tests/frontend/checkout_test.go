@@ -15,6 +15,8 @@ import (
 
 const routeCheckoutSubmit = "/en/checkout"
 const routeCheckoutReview = "/en/checkout/review"
+const routeCheckoutPlaceOrder = "/en/checkout/placeorder"
+const routeCheckoutSuccess = "/en/checkout/success"
 
 func Test_SubmitCheckoutAction(t *testing.T) {
 	t.Run("empty cart should lead to an error", func(t *testing.T) {
@@ -125,5 +127,78 @@ func Test_SubmitCheckoutAction(t *testing.T) {
 
 		response.Status(http.StatusOK)
 		assert.Equal(t, routeCheckoutReview, response.Raw().Request.URL.RequestURI())
+	})
+}
+
+func Test_PlaceOrderAction(t *testing.T) {
+	t.Run("valid payment should lead to success page", func(t *testing.T) {
+		e := integrationtest.NewHTTPExpect(t, "http://"+FlamingoURL)
+		// prepare cart
+		testhelper.CartAddProduct(e, "fake_simple", 5, "", "inflight")
+
+		// submit checkout form
+		response := e.POST(routeCheckoutSubmit).WithForm(map[string]interface{}{
+			"billingAddress": map[string]interface{}{
+				"firstname": "firstname",
+				"lastname":  "lastname",
+				"email":     "test@test.com",
+			},
+			"deliveries": map[string]interface{}{
+				"inflight": map[string]interface{}{
+					"deliveryAddress": map[string]interface{}{
+						"firstname": "firstname",
+						"lastname":  "lastname",
+						"email":     "test@test.com",
+					},
+				},
+			},
+			"payment": map[string]interface{}{
+				"gateway": payment.FakePaymentGateway,
+				"method":  domain.PaymentFlowStatusCompleted,
+			},
+		}).Expect()
+
+		response.Status(http.StatusOK)
+		assert.Equal(t, routeCheckoutReview, response.Raw().Request.URL.RequestURI())
+
+		// place order
+		response = e.GET(routeCheckoutPlaceOrder).Expect()
+		response.Status(http.StatusOK)
+		assert.Equal(t, routeCheckoutSuccess, response.Raw().Request.URL.RequestURI())
+		response.JSON().Object().Value("PaymentInfos").NotNull()
+	})
+
+	t.Run("zero cart without payment should lead to success page", func(t *testing.T) {
+		e := integrationtest.NewHTTPExpect(t, "http://"+FlamingoURL)
+		// prepare cart
+		testhelper.CartAddProduct(e, "fake_simple", 5, "", "inflight")
+		testhelper.CartApplyVoucher(e, "100-percent-off")
+
+		// submit checkout form
+		response := e.POST(routeCheckoutSubmit).WithForm(map[string]interface{}{
+			"billingAddress": map[string]interface{}{
+				"firstname": "firstname",
+				"lastname":  "lastname",
+				"email":     "test@test.com",
+			},
+			"deliveries": map[string]interface{}{
+				"inflight": map[string]interface{}{
+					"deliveryAddress": map[string]interface{}{
+						"firstname": "firstname",
+						"lastname":  "lastname",
+						"email":     "test@test.com",
+					},
+				},
+			},
+		}).Expect()
+
+		response.Status(http.StatusOK)
+		assert.Equal(t, routeCheckoutReview, response.Raw().Request.URL.RequestURI())
+
+		// place order
+		response = e.GET(routeCheckoutPlaceOrder).Expect()
+		response.Status(http.StatusOK)
+		assert.Equal(t, routeCheckoutSuccess, response.Raw().Request.URL.RequestURI())
+		response.JSON().Object().Value("PaymentInfos").Null()
 	})
 }
