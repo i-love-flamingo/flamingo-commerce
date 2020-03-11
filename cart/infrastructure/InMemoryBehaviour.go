@@ -429,7 +429,7 @@ func (cob *InMemoryBehaviour) storeCart(cart *domaincart.Cart) error {
 
 // ApplyVoucher applies a voucher to the cart
 func (cob *InMemoryBehaviour) ApplyVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
-	if couponCode != "valid_voucher" && couponCode != "valid" {
+	if couponCode != "valid_voucher" && couponCode != "valid" && couponCode != "100-percent-off" {
 		err := errors.New("Code invalid")
 		return nil, nil, err
 	}
@@ -438,6 +438,23 @@ func (cob *InMemoryBehaviour) ApplyVoucher(ctx context.Context, cart *domaincart
 		Code: couponCode,
 	}
 	cart.AppliedCouponCodes = append(cart.AppliedCouponCodes, coupon)
+
+	if couponCode == "100-percent-off" {
+		for delKey, delivery := range cart.Deliveries {
+			for itemKey, item := range delivery.Cartitems {
+				cart.Deliveries[delKey].Cartitems[itemKey].AppliedDiscounts = []domaincart.AppliedDiscount{{
+					CampaignCode:  "100-percent-off",
+					CouponCode:    "100-percent-off",
+					Label:         "100% Off",
+					Applied:       item.RowPriceGross.Inverse(),
+					Type:          "coupon",
+					IsItemRelated: false,
+					SortOrder:     0,
+				}}
+			}
+		}
+	}
+
 	err := cob.cartStorage.StoreCart(cart)
 	if err != nil {
 		return nil, nil, err
