@@ -30,6 +30,7 @@ func Test_SubmitCheckoutAction(t *testing.T) {
 		// prepare cart
 		testhelper.CartAddProduct(e, "fake_simple", 5, "", "inflight")
 
+		// TODO: Maybe move this to a testhelper function.
 		response := e.POST(routeCheckoutSubmit).WithForm(map[string]interface{}{
 			"billingAddress": map[string]interface{}{
 				"firstname": "firstname",
@@ -106,7 +107,7 @@ func Test_SubmitCheckoutAction(t *testing.T) {
 		e := integrationtest.NewHTTPExpect(t, "http://"+FlamingoURL)
 		// prepare cart
 		testhelper.CartAddProduct(e, "fake_simple", 5, "", "inflight")
-		testhelper.CartApplyVoucher(e, "100-percent-off")
+		testhelper.CartApplyVoucher(t, e, "100-percent-off")
 
 		response := e.POST(routeCheckoutSubmit).WithForm(map[string]interface{}{
 			"billingAddress": map[string]interface{}{
@@ -130,7 +131,7 @@ func Test_SubmitCheckoutAction(t *testing.T) {
 	})
 }
 
-func Test_PlaceOrderAction(t *testing.T) {
+func Test_ReviewActionAndPlaceOrderAction(t *testing.T) {
 	t.Run("valid payment should lead to success page", func(t *testing.T) {
 		e := integrationtest.NewHTTPExpect(t, "http://"+FlamingoURL)
 		// prepare cart
@@ -161,18 +162,26 @@ func Test_PlaceOrderAction(t *testing.T) {
 		response.Status(http.StatusOK)
 		assert.Equal(t, routeCheckoutReview, response.Raw().Request.URL.RequestURI())
 
-		// place order
-		response = e.GET(routeCheckoutPlaceOrder).Expect()
+		// submit review form
+		// TODO: Maybe move this to a helper function
+		response = e.POST(routeCheckoutReview).WithForm(map[string]string{
+			"proceed":            "1",
+			"termsAndConditions": "1",
+			"privacyPolicy":      "1",
+		}).Expect()
+
 		response.Status(http.StatusOK)
+
 		assert.Equal(t, routeCheckoutSuccess, response.Raw().Request.URL.RequestURI())
 		response.JSON().Object().Value("PaymentInfos").NotNull()
+		response.JSON().Object().Value("PlacedOrderInfos").Array().First().Object().Value("OrderNumber").String().NotEmpty()
 	})
 
 	t.Run("zero cart without payment should lead to success page", func(t *testing.T) {
 		e := integrationtest.NewHTTPExpect(t, "http://"+FlamingoURL)
 		// prepare cart
 		testhelper.CartAddProduct(e, "fake_simple", 5, "", "inflight")
-		testhelper.CartApplyVoucher(e, "100-percent-off")
+		testhelper.CartApplyVoucher(t, e, "100-percent-off")
 
 		// submit checkout form
 		response := e.POST(routeCheckoutSubmit).WithForm(map[string]interface{}{
@@ -193,11 +202,18 @@ func Test_PlaceOrderAction(t *testing.T) {
 		}).Expect()
 
 		response.Status(http.StatusOK)
+
 		assert.Equal(t, routeCheckoutReview, response.Raw().Request.URL.RequestURI())
 
-		// place order
-		response = e.GET(routeCheckoutPlaceOrder).Expect()
+		// submit review form
+		response = e.POST(routeCheckoutReview).WithForm(map[string]string{
+			"proceed":            "1",
+			"termsAndConditions": "1",
+			"privacyPolicy":      "1",
+		}).Expect()
+
 		response.Status(http.StatusOK)
+
 		assert.Equal(t, routeCheckoutSuccess, response.Raw().Request.URL.RequestURI())
 		response.JSON().Object().Value("PaymentInfos").Null()
 	})

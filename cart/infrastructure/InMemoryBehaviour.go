@@ -439,6 +439,7 @@ func (cob *InMemoryBehaviour) ApplyVoucher(ctx context.Context, cart *domaincart
 	}
 	cart.AppliedCouponCodes = append(cart.AppliedCouponCodes, coupon)
 
+	// TODO: Move coupon logic to integration test
 	if couponCode == "100-percent-off" {
 		for delKey, delivery := range cart.Deliveries {
 			for itemKey, item := range delivery.Cartitems {
@@ -546,7 +547,7 @@ func (cob *InMemoryBehaviour) checkPaymentSelection(ctx context.Context, cart *d
 	}
 	paymentSelectionTotal := paymentSelection.TotalValue()
 
-	if !cart.GrandTotal().Equal(paymentSelectionTotal) {
+	if !cart.GrandTotal().LikelyEqual(paymentSelectionTotal) {
 		return errors.New("Payment Total does not match with Grandtotal")
 	}
 	return nil

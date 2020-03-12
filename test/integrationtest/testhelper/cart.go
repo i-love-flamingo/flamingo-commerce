@@ -33,7 +33,8 @@ func CartAddProduct(e *httpexpect.Expect, marketplaceCode string, qty int, varia
 }
 
 //CartApplyVoucher applies a voucher via api
-func CartApplyVoucher(e *httpexpect.Expect, code string) {
+func CartApplyVoucher(t *testing.T, e *httpexpect.Expect, code string) {
+	t.Helper()
 	request := e.POST("/en/api/cart/applyvoucher").WithQuery("couponCode", code)
 	request.Expect().Status(http.StatusOK)
 }

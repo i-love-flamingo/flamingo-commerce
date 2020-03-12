@@ -221,6 +221,13 @@ func (cc *CheckoutController) SubmitCheckoutAction(ctx context.Context, r *web.R
 		return guardRedirect
 	}
 
+	// reserve an unique order id for later order placing
+	_, err := cc.applicationCartService.ReserveOrderIDAndSave(ctx, r.Session())
+	if err != nil {
+		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error ", err)
+		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
+	}
+
 	return cc.showCheckoutFormAndHandleSubmit(ctx, r, "checkout/checkout")
 }
 
@@ -462,13 +469,6 @@ func getViewErrorInfo(err error) ViewErrorInfos {
 func (cc *CheckoutController) processPayment(ctx context.Context, r *web.Request) web.Result {
 	session := web.SessionFromContext(ctx)
 
-	// reserve an unique order id for later order placing
-	_, err := cc.applicationCartService.ReserveOrderIDAndSave(ctx, session)
-	if err != nil {
-		cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error ", err)
-		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
-	}
-
 	// guard clause if cart can not be fetched
 	decoratedCart, err := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if err != nil {
@@ -553,8 +553,14 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 	}
 
 	//Everything valid then return
-	if canProceed && err == nil && decoratedCart.Cart.IsPaymentSelected() {
-		return cc.processPayment(ctx, r)
+	if canProceed && err == nil {
+		if decoratedCart.Cart.IsPaymentSelected() {
+			return cc.processPayment(ctx, r)
+		}
+
+		if decoratedCart.Cart.GrandTotal().IsZero() {
+			return cc.responder.RouteRedirect("checkout.placeorder", nil)
+		}
 	}
 
 	return cc.responder.Render("checkout/review", viewData).SetNoCache()
