@@ -1,4 +1,4 @@
-package testhelper
+package frontend_test
 
 import (
 	"fmt"
@@ -19,8 +19,16 @@ type (
 	}
 )
 
+const (
+	routeCheckoutSubmit     = "/en/checkout"
+	routeCheckoutReview     = "/en/checkout/review"
+	routeCheckoutPlaceOrder = "/en/checkout/placeorder"
+	routeCheckoutSuccess    = "/en/checkout/success"
+)
+
 //CartAddProduct helper
-func CartAddProduct(e *httpexpect.Expect, marketplaceCode string, qty int, variantMarketplaceCode string, deliveryCode string) {
+func CartAddProduct(t *testing.T, e *httpexpect.Expect, marketplaceCode string, qty int, variantMarketplaceCode string, deliveryCode string) {
+	t.Helper()
 	request := e.GET("/en/cart/add/"+marketplaceCode).WithQuery("qty", qty)
 	if deliveryCode != "" {
 		request = request.WithQuery("deliveryCode", deliveryCode)
@@ -40,7 +48,8 @@ func CartApplyVoucher(t *testing.T, e *httpexpect.Expect, code string) {
 }
 
 //CartGetItems testhelper
-func CartGetItems(e *httpexpect.Expect) CartItems {
+func CartGetItems(t *testing.T, e *httpexpect.Expect) CartItems {
+	t.Helper()
 	var items CartItems
 
 	cartItems := e.GET("/en/cart/").Expect().Status(http.StatusOK).JSON().Object().
@@ -62,6 +71,7 @@ func CartGetItems(e *httpexpect.Expect) CartItems {
 
 //MustContain checks and returns CartItem by marketplaceCode
 func (c CartItems) MustContain(t *testing.T, marketplaceCode string) *CartItem {
+	t.Helper()
 	for _, v := range c {
 		if v.MarketplaceCode == marketplaceCode {
 			return &v
@@ -69,4 +79,16 @@ func (c CartItems) MustContain(t *testing.T, marketplaceCode string) *CartItem {
 	}
 	t.Fatal(fmt.Sprintf("No CartItem with marketplaceCode: %v Only: %#v", marketplaceCode, c))
 	return nil
+}
+
+// SubmitCheckoutForm sends a POST request to the checkout route with provided form params
+func SubmitCheckoutForm(t *testing.T, e *httpexpect.Expect, form map[string]interface{}) *httpexpect.Response {
+	t.Helper()
+	return e.POST(routeCheckoutSubmit).WithForm(form).Expect().Status(http.StatusOK)
+}
+
+// SubmitReviewForm sends a POST request to the review route with provided form params
+func SubmitReviewForm(t *testing.T, e *httpexpect.Expect, form map[string]interface{}) *httpexpect.Response {
+	t.Helper()
+	return e.POST(routeCheckoutReview).WithForm(form).Expect().Status(http.StatusOK)
 }
