@@ -456,7 +456,7 @@ func (cob *InMemoryBehaviour) storeCart(cart *domaincart.Cart) error {
 func (cob *InMemoryBehaviour) ApplyVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	cart, err := cob.voucherHandler.ApplyVoucher(ctx, cart, couponCode)
 
-	if cart != nil {
+	if err != nil {
 		return nil, nil, err
 	}
 
@@ -483,6 +483,9 @@ func (cob *InMemoryBehaviour) ApplyAny(ctx context.Context, cart *domaincart.Car
 // RemoveVoucher removes a voucher from the cart
 func (cob *InMemoryBehaviour) RemoveVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	cart, err := cob.voucherHandler.RemoveVoucher(ctx, cart, couponCode)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	err = cob.cartStorage.StoreCart(cart)
 	if err != nil {
@@ -581,7 +584,7 @@ func (DefaultVoucherHandler) RemoveVoucher(_ context.Context, cart *domaincart.C
 		}
 	}
 
-	return nil, errors.New("couldn't remove supplied voucher since it wasn't applied before")
+	return cart, nil
 }
 
 // ApplyGiftCard checks the gift card and adds it to the supplied cart if valid
@@ -612,5 +615,5 @@ func (DefaultGiftCardHandler) RemoveGiftCard(_ context.Context, cart *domaincart
 		}
 	}
 
-	return nil, errors.New("couldn't remove supplied gift card since it wasn't applied before")
+	return cart, nil
 }
