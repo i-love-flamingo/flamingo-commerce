@@ -91,6 +91,15 @@ the cart has been adjusted and written back to cache
 **search**
 * Extend `Suggestion` struct with `Type` and `AdditionalAttributes` to be able to distinguish between product/category suggestions
 
-## v3.1.1 [upcoming]
+## v3.X.X [upcoming]
 **w3cdatalayer**
 * Fixed a bug that causes the datalayer to panic if it failed to build an absolute url
+
+**checkout**
+* Allow checkout for fully discounted carts without payment processing. Previously all checkouts needed a valid payment to continue.
+  In case there is nothing to pay this can be skipped.
+  * Order ID will be reserved as soon as the user hits the checkout previously it was done before starting the payment
+
+**price**
+* IsZero() now uses LikelyEqual() instead of Equal() to avoid issues occurring due to floating-point arithmetic
+
