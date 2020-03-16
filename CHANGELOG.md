@@ -99,6 +99,11 @@ the cart has been adjusted and written back to cache
 * Allow checkout for fully discounted carts without payment processing. Previously all checkouts needed a valid payment to continue.
   In case there is nothing to pay this can be skipped.
   * Order ID will be reserved as soon as the user hits the checkout previously it was done before starting the payment
+  
+**cart**
+* inMemoryBehaviour: Allow custom logic for GiftCard / Voucher handling
+  * We introduced two new interfaces `GiftCardHandler` + `VoucherHandler`
+  * This enables users of the in-memory cart to add project specific gift card and voucher handling 
 
 **price**
 * IsZero() now uses LikelyEqual() instead of Equal() to avoid issues occurring due to floating-point arithmetic

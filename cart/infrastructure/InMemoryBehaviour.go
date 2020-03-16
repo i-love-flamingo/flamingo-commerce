@@ -7,10 +7,9 @@ import (
 	"math/rand"
 	"strconv"
 
+	domaincart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
-
-	domaincart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/pkg/errors"
@@ -25,22 +24,44 @@ type (
 		itemBuilderProvider     domaincart.ItemBuilderProvider
 		deliveryBuilderProvider domaincart.DeliveryBuilderProvider
 		cartBuilderProvider     domaincart.BuilderProvider
+		giftCardHandler         GiftCardHandler
+		voucherHandler          VoucherHandler
 		defaultTaxRate          float64
 	}
 
-	//CartStorage Interface - might be implemented by other persistence types later as well
+	// CartStorage Interface - might be implemented by other persistence types later as well
 	CartStorage interface {
 		GetCart(id string) (*domaincart.Cart, error)
 		HasCart(id string) bool
 		StoreCart(cart *domaincart.Cart) error
 		RemoveCart(cart *domaincart.Cart) error
 	}
+
+	// GiftCardHandler enables the projects to have specific GiftCard handling with in the in-memory cart
+	GiftCardHandler interface {
+		ApplyGiftCard(ctx context.Context, cart *domaincart.Cart, giftCardCode string) (*domaincart.Cart, error)
+		RemoveGiftCard(ctx context.Context, cart *domaincart.Cart, giftCardCode string) (*domaincart.Cart, error)
+	}
+
+	// VoucherHandler enables the projects to have specific Voucher handling with in the in-memory cart
+	VoucherHandler interface {
+		ApplyVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, error)
+		RemoveVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, error)
+	}
+
+	// DefaultGiftCardHandler implements a basic gift card handler
+	DefaultGiftCardHandler struct{}
+
+	// DefaultVoucherHandler implements a basic voucher handler
+	DefaultVoucherHandler struct{}
 )
 
 var (
 	_ domaincart.ModifyBehaviour             = (*InMemoryBehaviour)(nil)
 	_ domaincart.GiftCardAndVoucherBehaviour = (*InMemoryBehaviour)(nil)
 	_ domaincart.CompleteBehaviour           = (*InMemoryBehaviour)(nil)
+	_ GiftCardHandler                        = (*DefaultGiftCardHandler)(nil)
+	_ VoucherHandler                         = (*DefaultVoucherHandler)(nil)
 )
 
 // Inject dependencies
@@ -52,6 +73,8 @@ func (cob *InMemoryBehaviour) Inject(
 	deliveryBuilderProvider domaincart.DeliveryBuilderProvider,
 	cartBuilderProvider domaincart.BuilderProvider,
 	eventPublisher events.EventPublisher,
+	voucherHandler VoucherHandler,
+	giftCardHandler GiftCardHandler,
 	config *struct {
 		DefaultTaxRate float64 `inject:"config:commerce.cart.inMemoryCartServiceAdapter.defaultTaxRate,optional"`
 	},
@@ -62,6 +85,8 @@ func (cob *InMemoryBehaviour) Inject(
 	cob.itemBuilderProvider = itemBuilderProvider
 	cob.deliveryBuilderProvider = deliveryBuilderProvider
 	cob.cartBuilderProvider = cartBuilderProvider
+	cob.voucherHandler = voucherHandler
+	cob.giftCardHandler = giftCardHandler
 	if config != nil {
 		cob.defaultTaxRate = config.DefaultTaxRate
 	}
@@ -429,34 +454,13 @@ func (cob *InMemoryBehaviour) storeCart(cart *domaincart.Cart) error {
 
 // ApplyVoucher applies a voucher to the cart
 func (cob *InMemoryBehaviour) ApplyVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
-	if couponCode != "valid_voucher" && couponCode != "valid" && couponCode != "100-percent-off" {
-		err := errors.New("Code invalid")
+	cart, err := cob.voucherHandler.ApplyVoucher(ctx, cart, couponCode)
+
+	if cart != nil {
 		return nil, nil, err
 	}
 
-	coupon := domaincart.CouponCode{
-		Code: couponCode,
-	}
-	cart.AppliedCouponCodes = append(cart.AppliedCouponCodes, coupon)
-
-	// TODO: Move coupon logic to integration test
-	if couponCode == "100-percent-off" {
-		for delKey, delivery := range cart.Deliveries {
-			for itemKey, item := range delivery.Cartitems {
-				cart.Deliveries[delKey].Cartitems[itemKey].AppliedDiscounts = []domaincart.AppliedDiscount{{
-					CampaignCode:  "100-percent-off",
-					CouponCode:    "100-percent-off",
-					Label:         "100% Off",
-					Applied:       item.RowPriceGross.Inverse(),
-					Type:          "coupon",
-					IsItemRelated: false,
-					SortOrder:     0,
-				}}
-			}
-		}
-	}
-
-	err := cob.cartStorage.StoreCart(cart)
+	err = cob.cartStorage.StoreCart(cart)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -478,16 +482,9 @@ func (cob *InMemoryBehaviour) ApplyAny(ctx context.Context, cart *domaincart.Car
 
 // RemoveVoucher removes a voucher from the cart
 func (cob *InMemoryBehaviour) RemoveVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
-	for i, coupon := range cart.AppliedCouponCodes {
-		if coupon.Code == couponCode {
-			cart.AppliedCouponCodes[i] = cart.AppliedCouponCodes[len(cart.AppliedCouponCodes)-1]
-			cart.AppliedCouponCodes[len(cart.AppliedCouponCodes)-1] = domaincart.CouponCode{}
-			cart.AppliedCouponCodes = cart.AppliedCouponCodes[:len(cart.AppliedCouponCodes)-1]
-			break
-		}
-	}
+	cart, err := cob.voucherHandler.RemoveVoucher(ctx, cart, couponCode)
 
-	err := cob.cartStorage.StoreCart(cart)
+	err = cob.cartStorage.StoreCart(cart)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -498,18 +495,12 @@ func (cob *InMemoryBehaviour) RemoveVoucher(ctx context.Context, cart *domaincar
 // ApplyGiftCard applies a gift card to the cart
 // if a GiftCard is applied, it will be added to the array AppliedGiftCards on the cart
 func (cob *InMemoryBehaviour) ApplyGiftCard(ctx context.Context, cart *domaincart.Cart, giftCardCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
-	if giftCardCode != "valid_giftcard" && giftCardCode != "valid" {
-		err := errors.New("Code invalid")
+	cart, err := cob.giftCardHandler.ApplyGiftCard(ctx, cart, giftCardCode)
+	if err != nil {
 		return nil, nil, err
 	}
 
-	giftCard := domaincart.AppliedGiftCard{
-		Code:      giftCardCode,
-		Applied:   priceDomain.NewFromInt(10, 100, "$"),
-		Remaining: priceDomain.NewFromInt(0, 100, "$"),
-	}
-	cart.AppliedGiftCards = append(cart.AppliedGiftCards, giftCard)
-	err := cob.cartStorage.StoreCart(cart)
+	err = cob.cartStorage.StoreCart(cart)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -519,16 +510,12 @@ func (cob *InMemoryBehaviour) ApplyGiftCard(ctx context.Context, cart *domaincar
 // RemoveGiftCard removes a gift card from the cart
 // if a GiftCard is removed, it will be removed from the array AppliedGiftCards on the cart
 func (cob *InMemoryBehaviour) RemoveGiftCard(ctx context.Context, cart *domaincart.Cart, giftCardCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
-	for i, giftcard := range cart.AppliedGiftCards {
-		if giftcard.Code == giftCardCode {
-			cart.AppliedGiftCards[i] = cart.AppliedGiftCards[len(cart.AppliedGiftCards)-1]
-			cart.AppliedGiftCards[len(cart.AppliedGiftCards)-1] = domaincart.AppliedGiftCard{}
-			cart.AppliedGiftCards = cart.AppliedGiftCards[:len(cart.AppliedGiftCards)-1]
-			break
-		}
+	cart, err := cob.giftCardHandler.RemoveGiftCard(ctx, cart, giftCardCode)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	err := cob.cartStorage.StoreCart(cart)
+	err = cob.cartStorage.StoreCart(cart)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -566,4 +553,64 @@ func (cob *InMemoryBehaviour) resetPaymentSelectionIfInvalid(ctx context.Context
 	}
 
 	return cart, nil, nil
+}
+
+// ApplyVoucher checks the voucher and adds the voucher to the supplied cart if valid
+func (DefaultVoucherHandler) ApplyVoucher(_ context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, error) {
+	if couponCode != "valid_voucher" && couponCode != "valid" {
+		err := errors.New("Code invalid")
+		return nil, err
+	}
+
+	coupon := domaincart.CouponCode{
+		Code: couponCode,
+	}
+
+	cart.AppliedCouponCodes = append(cart.AppliedCouponCodes, coupon)
+	return cart, nil
+}
+
+// RemoveVoucher removes the voucher from the cart if possible
+func (DefaultVoucherHandler) RemoveVoucher(_ context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, error) {
+	for i, coupon := range cart.AppliedCouponCodes {
+		if coupon.Code == couponCode {
+			cart.AppliedCouponCodes[i] = cart.AppliedCouponCodes[len(cart.AppliedCouponCodes)-1]
+			cart.AppliedCouponCodes[len(cart.AppliedCouponCodes)-1] = domaincart.CouponCode{}
+			cart.AppliedCouponCodes = cart.AppliedCouponCodes[:len(cart.AppliedCouponCodes)-1]
+			return cart, nil
+		}
+	}
+
+	return nil, errors.New("couldn't remove supplied voucher since it wasn't applied before")
+}
+
+// ApplyGiftCard checks the gift card and adds it to the supplied cart if valid
+func (DefaultGiftCardHandler) ApplyGiftCard(_ context.Context, cart *domaincart.Cart, giftCardCode string) (*domaincart.Cart, error) {
+	if giftCardCode != "valid_giftcard" && giftCardCode != "valid" {
+		err := errors.New("Code invalid")
+		return nil, err
+	}
+
+	giftCard := domaincart.AppliedGiftCard{
+		Code:      giftCardCode,
+		Applied:   priceDomain.NewFromInt(10, 100, "$"),
+		Remaining: priceDomain.NewFromInt(0, 100, "$"),
+	}
+	cart.AppliedGiftCards = append(cart.AppliedGiftCards, giftCard)
+
+	return cart, nil
+}
+
+// RemoveGiftCard removes the gift card from the cart if possible
+func (DefaultGiftCardHandler) RemoveGiftCard(_ context.Context, cart *domaincart.Cart, giftCardCode string) (*domaincart.Cart, error) {
+	for i, giftcard := range cart.AppliedGiftCards {
+		if giftcard.Code == giftCardCode {
+			cart.AppliedGiftCards[i] = cart.AppliedGiftCards[len(cart.AppliedGiftCards)-1]
+			cart.AppliedGiftCards[len(cart.AppliedGiftCards)-1] = domaincart.AppliedGiftCard{}
+			cart.AppliedGiftCards = cart.AppliedGiftCards[:len(cart.AppliedGiftCards)-1]
+			return cart, nil
+		}
+	}
+
+	return nil, errors.New("couldn't remove supplied gift card since it wasn't applied before")
 }
