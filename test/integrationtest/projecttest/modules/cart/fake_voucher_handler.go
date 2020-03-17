@@ -28,7 +28,9 @@ func (f FakeVoucherHandler) ApplyVoucher(ctx context.Context, cart *domainCart.C
 		Code: couponCode,
 	}
 
-	cart.AppliedCouponCodes = append(cart.AppliedCouponCodes, coupon)
+	if !f.voucherAlreadyApplied(cart, couponCode) {
+		cart.AppliedCouponCodes = append(cart.AppliedCouponCodes, coupon)
+	}
 
 	if couponCode == "100-percent-off" {
 		for delKey, delivery := range cart.Deliveries {
@@ -61,4 +63,13 @@ func (f FakeVoucherHandler) RemoveVoucher(ctx context.Context, cart *domainCart.
 	}
 
 	return nil, errors.New("couldn't remove supplied voucher since it wasn't applied before")
+}
+
+func (FakeVoucherHandler) voucherAlreadyApplied(cart *domainCart.Cart, code string) bool {
+	for _, coupon := range cart.AppliedCouponCodes {
+		if coupon.Code == code {
+			return true
+		}
+	}
+	return false
 }
