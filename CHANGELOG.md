@@ -91,6 +91,11 @@ the cart has been adjusted and written back to cache
 **search**
 * Extend `Suggestion` struct with `Type` and `AdditionalAttributes` to be able to distinguish between product/category suggestions
 
-## v3.1.1 [upcoming]
+## v3.2.X [upcoming]
 **w3cdatalayer**
 * Fixed a bug that causes the datalayer to panic if it failed to build an absolute url
+
+**checkout**
+* Update source service to support external location codes.
+  * Adds `ExternalLocationCode` to the `Source` struct.
+  * Update `SetSourcesForCartItems()` to use the new `SourcingServiceDetail` functionality if the bound service implements the interface
