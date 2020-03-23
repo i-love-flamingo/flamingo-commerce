@@ -128,9 +128,10 @@ func (se *SourcingEngine) SetSourcesForCartItems(ctx context.Context, session *w
 			se.Logger.WithContext(ctx).WithField("category", "checkout").WithField("subcategory", "SourcingEngine").Debug("SourcingEngine detected source %v for item %v", source.LocationCode, decoratedCartItem.Item.ID)
 
 			itemUpdate := cartDomain.ItemUpdateCommand{
-				SourceID:         &source.LocationCode,
-				ItemID:           decoratedCartItem.Item.ID,
-				ExternalSourceID: &source.ExternalLocationCode,
+				SourceID: &source.LocationCode,
+				ItemID:   decoratedCartItem.Item.ID,
+				// ExternalSourceID contains the picking location used by an external system
+				AdditionalData: map[string]string{"ExternalSourceID": source.ExternalLocationCode},
 			}
 
 			itemUpdateCommands = append(itemUpdateCommands, itemUpdate)

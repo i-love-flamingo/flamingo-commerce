@@ -89,8 +89,6 @@ type (
 	ItemUpdateCommand struct {
 		// SourceID of where the items should be initial picked - This is set by the SourcingLogic
 		SourceID *string
-		// ExternalSourceID contains the picking location used by an external system
-		ExternalSourceID *string
 		// Qty contains the item quantity
 		Qty *int
 		// AdditionalData contains item related data
