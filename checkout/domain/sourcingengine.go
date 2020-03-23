@@ -32,7 +32,7 @@ type (
 		GetAvailableSources(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart, deliveryCode string, product domain.BasicProduct) (Sources, error)
 	}
 
-	//Sources is the result value object containing all sources (for the request item or product)
+	// Sources is the result value object containing all sources (for the request item or product)
 	Sources []Source
 
 	// Source represents the Sourcing info
@@ -54,13 +54,14 @@ type (
 )
 
 var (
-	//ErrInsufficientSourceQty - use to indicate that the requested qty exceeds the available qty
+	// ErrInsufficientSourceQty - use to indicate that the requested qty exceeds the available qty
 	ErrInsufficientSourceQty = errors.New("Available Source Qty insufficient")
-	//ErrNoSourceAvailable - use to indicate that no source for item is available at all
+	// ErrNoSourceAvailable - use to indicate that no source for item is available at all
 	ErrNoSourceAvailable = errors.New("No Available Source Qty")
 )
 
 const (
+	// ExternalSourceIDKey specifies the key for the ItemUpdateCommand.AdditionalData map where the external source id should be stored
 	ExternalSourceIDKey = "ExternalSourceID"
 )
 
