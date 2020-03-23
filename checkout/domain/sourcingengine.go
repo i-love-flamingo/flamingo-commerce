@@ -62,7 +62,7 @@ var (
 
 const (
 	// ExternalSourceIDKey specifies the key for the ItemUpdateCommand.AdditionalData map where the external source id should be stored
-	ExternalSourceIDKey = "ExternalSourceID"
+	ExternalSourceIDKey = "external_source_id"
 )
 
 // MainLocation returns first sourced location (or empty string)
