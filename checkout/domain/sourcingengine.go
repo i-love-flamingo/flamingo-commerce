@@ -153,6 +153,10 @@ func (se *SourcingEngine) sourceLocationForCartItem(ctx context.Context, session
 			return nil, err
 		}
 
+		if len(sources) == 0 {
+			return nil, errors.New("no source locations found")
+		}
+
 		return &sources[0], nil
 	}
 
