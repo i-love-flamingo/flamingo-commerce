@@ -60,6 +60,10 @@ var (
 	ErrNoSourceAvailable = errors.New("No Available Source Qty")
 )
 
+const (
+	ExternalSourceIDKey = "ExternalSourceID"
+)
+
 // MainLocation returns first sourced location (or empty string)
 func (s Sources) MainLocation() string {
 	if len(s) < 1 {
@@ -131,7 +135,7 @@ func (se *SourcingEngine) SetSourcesForCartItems(ctx context.Context, session *w
 				SourceID: &source.LocationCode,
 				ItemID:   decoratedCartItem.Item.ID,
 				// ExternalSourceID contains the picking location used by an external system
-				AdditionalData: map[string]string{"ExternalSourceID": source.ExternalLocationCode},
+				AdditionalData: map[string]string{ExternalSourceIDKey: source.ExternalLocationCode},
 			}
 
 			itemUpdateCommands = append(itemUpdateCommands, itemUpdate)
