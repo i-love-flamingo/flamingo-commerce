@@ -37,13 +37,13 @@ type (
 		RemoveCart(cart *domaincart.Cart) error
 	}
 
-	// GiftCardHandler enables the projects to have specific GiftCard handling with in the in-memory cart
+	// GiftCardHandler enables the projects to have specific GiftCard handling within the in-memory cart
 	GiftCardHandler interface {
 		ApplyGiftCard(ctx context.Context, cart *domaincart.Cart, giftCardCode string) (*domaincart.Cart, error)
 		RemoveGiftCard(ctx context.Context, cart *domaincart.Cart, giftCardCode string) (*domaincart.Cart, error)
 	}
 
-	// VoucherHandler enables the projects to have specific Voucher handling with in the in-memory cart
+	// VoucherHandler enables the projects to have specific Voucher handling within the in-memory cart
 	VoucherHandler interface {
 		ApplyVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, error)
 		RemoveVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, error)
