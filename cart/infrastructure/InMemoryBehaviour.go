@@ -561,8 +561,7 @@ func (cob *InMemoryBehaviour) resetPaymentSelectionIfInvalid(ctx context.Context
 // ApplyVoucher checks the voucher and adds the voucher to the supplied cart if valid
 func (DefaultVoucherHandler) ApplyVoucher(_ context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, error) {
 	if couponCode != "valid_voucher" && couponCode != "valid" {
-		err := errors.New("Code invalid")
-		return nil, err
+		return nil, errors.New("Code invalid")
 	}
 
 	coupon := domaincart.CouponCode{
@@ -590,8 +589,7 @@ func (DefaultVoucherHandler) RemoveVoucher(_ context.Context, cart *domaincart.C
 // ApplyGiftCard checks the gift card and adds it to the supplied cart if valid
 func (DefaultGiftCardHandler) ApplyGiftCard(_ context.Context, cart *domaincart.Cart, giftCardCode string) (*domaincart.Cart, error) {
 	if giftCardCode != "valid_giftcard" && giftCardCode != "valid" {
-		err := errors.New("Code invalid")
-		return nil, err
+		return nil, errors.New("Code invalid")
 	}
 
 	giftCard := domaincart.AppliedGiftCard{
