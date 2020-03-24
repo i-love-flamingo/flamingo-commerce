@@ -139,9 +139,13 @@ The start and failed states are defined by an annotated binding with annotations
 Exposed states implement the interface `checkout/interfaces/graphql/dto.State`. To map internal states to exposed states, 
 we use a map binding on the `dto.State` interface with the internal state names as keys and the exposed state as target.
 
-The default implementation defines the state flow as follows: 
+The default implementation defines the state flow as follows (for an cart that needs payment): 
 
 ![](domain/placeorder/states/transitions.png)
+
+Fully discounted carts don't need a payment, therefore the state flow is similar but lacks the payment creation/validation:
+
+![](domain/placeorder/states/transitions_zeropay.png)
 
 ### Context store
 

@@ -1,0 +1,34 @@
+@startuml
+scale max 1024 width
+hide empty description
+
+title
+	= PlaceOrder state transitions (fully discounted carts)
+	---
+	//top: internal state//
+	//bottom: exposed GraphQL state//
+end title
+
+state New: Commerce_Checkout_PlaceOrderState_State_Wait
+state PrepareCart: Commerce_Checkout_PlaceOrderState_State_Wait
+state ValidateCart: Commerce_Checkout_PlaceOrderState_State_Wait
+state CompleteCart: Commerce_Checkout_PlaceOrderState_State_Wait
+state PlaceOrder: Commerce_Checkout_PlaceOrderState_State_Wait
+state Failed: Commerce_Checkout_PlaceOrderState_State_Failed
+state Success: Commerce_Checkout_PlaceOrderState_State_Success
+
+[*] --> New
+New -r-> PrepareCart
+PrepareCart -d-> ValidateCart
+PrepareCart -d-> Failed
+ValidateCart -d-> CompleteCart
+ValidateCart -r-> Failed
+CompleteCart -d-> PlaceOrder
+CompleteCart -r-> Failed
+PlaceOrder -d-> Success
+PlaceOrder -r-> Failed
+
+Failed --> [*]
+Success -> [*]
+
+@enduml

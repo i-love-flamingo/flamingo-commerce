@@ -15,7 +15,7 @@ type (
 	}
 )
 
-/** Implementation fo the storage **/
+var _ CartStorage = &InMemoryCartStorage{}
 
 func (s *InMemoryCartStorage) init() {
 	if s.guestCarts == nil {
