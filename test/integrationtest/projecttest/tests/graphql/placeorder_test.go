@@ -200,6 +200,7 @@ func Test_StartPlaceOrder(t *testing.T) {
 	baseURL := "http://" + FlamingoURL
 	t.Run("no payment selection", func(t *testing.T) {
 		e := integrationtest.NewHTTPExpect(t, baseURL)
+		prepareCart(t, e)
 		assertStartPlaceOrderWithValidUUID(t, e)
 
 		response, _ := assertRefreshPlaceOrder(t, e, true)

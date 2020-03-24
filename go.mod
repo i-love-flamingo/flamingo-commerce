@@ -43,7 +43,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	gopkg.in/go-playground/assert.v1 v1.2.1
 	gopkg.in/square/go-jose.v2 v2.3.0 // indirect
-	gotest.tools v2.2.0+incompatible // indirect
+	gotest.tools v2.2.0+incompatible
 )
 
 replace (

@@ -295,7 +295,7 @@ func (p Price) IsPayable() bool {
 
 //IsZero - returns true if the price represents zero value
 func (p Price) IsZero() bool {
-	return p.Equal(NewZero(p.Currency())) || p.Equal(NewFromFloat(0, p.Currency()))
+	return p.LikelyEqual(NewZero(p.Currency())) || p.LikelyEqual(NewFromFloat(0, p.Currency()))
 }
 
 //FloatAmount gets the current amount as float

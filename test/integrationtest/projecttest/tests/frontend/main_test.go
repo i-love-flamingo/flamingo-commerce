@@ -1,6 +1,6 @@
 // +build integration
 
-package rest_test
+package frontend_test
 
 import (
 	"flag"

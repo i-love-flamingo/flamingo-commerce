@@ -326,7 +326,11 @@ injector.Bind((*cart.CustomerCartService)(nil)).To(infrastructure.YourAdapter{})
 Most of the cart modification methods are part of the `ModifyBehaviour` interface - if you look at the secondary ports you will see, that they need to return an (initialized) implementation of the
 `ModifyBehaviour` interface - so in fact this interface needs to be implemented when writing an adapter as well.
 
-There is a "InMemoryAdapter" implementation as part of the package.
+**in-memory cart adapter**
+There is a "InMemoryAdapter" implementation as part of the package. It allows basic cart operations with a cart that is stored in memory.
+Since the cart storage is not persisted in any way we currently recommend the usage only for demo / testing.
+
+The in memory adapter supports custom gift card / voucher logic by implementing the `GiftCardHandler` and `VoucherHandler` interfaces.
 
 **PlaceOrderService**
 

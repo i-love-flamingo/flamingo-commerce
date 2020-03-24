@@ -53,6 +53,11 @@ func (v ValidateCart) Run(ctx context.Context, p *process.Process) process.RunRe
 		}
 	}
 
+	if p.Context().Cart.GrandTotal().IsZero() {
+		p.UpdateState(CompleteCart{}.Name(), nil)
+		return process.RunResult{}
+	}
+
 	p.UpdateState(CreatePayment{}.Name(), nil)
 	return process.RunResult{}
 }
