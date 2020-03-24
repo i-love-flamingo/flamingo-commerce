@@ -103,6 +103,9 @@ the cart has been adjusted and written back to cache
 * GraphQL
   * Update place order process to also allow zero carts which don't need payment, this leads to a state flow that lacks the payment steps.
     See module readme for further details.
+* Update source service to support external location codes.
+  * Adds `ExternalLocationCode` to the `Source` struct.
+  * Update `SetSourcesForCartItems()` to use the new `SourcingServiceDetail` functionality if the bound service implements the interface
   
 **cart**
 * inMemoryBehaviour: Allow custom logic for GiftCard / Voucher handling
