@@ -37,6 +37,12 @@ func loadGraphQL(t *testing.T, name string, replacements map[string]string) stri
 	return replacer.Replace(string(content))
 }
 
+// prepareCart adds a simple product via graphQl
+func prepareCart(t *testing.T, e *httpexpect.Expect) {
+	t.Helper()
+	helper.GraphQlRequest(t, e, loadGraphQL(t, "add_to_cart", nil)).Expect().Status(http.StatusOK)
+}
+
 // prepareCartWithPaymentSelection adds a simple product via graphQl
 func prepareCartWithPaymentSelection(t *testing.T, e *httpexpect.Expect, paymentMethod string) {
 	t.Helper()

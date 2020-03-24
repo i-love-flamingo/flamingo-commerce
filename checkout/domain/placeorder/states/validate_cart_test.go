@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"flamingo.me/flamingo-commerce/v3/price/domain"
 	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
@@ -43,21 +44,31 @@ func TestValidateCart_Rollback(t *testing.T) {
 
 func TestValidateCart_Run(t *testing.T) {
 	tests := []struct {
-		name           string
-		isValid        bool
-		expectedState  string
-		expectedResult process.RunResult
+		name             string
+		isValid          bool
+		isGrandTotalZero bool
+		expectedState    string
+		expectedResult   process.RunResult
 	}{
 		{
-			name:           "Valid",
-			isValid:        true,
-			expectedState:  states.CreatePayment{}.Name(),
-			expectedResult: process.RunResult{},
+			name:             "Valid cart that requires payment",
+			isValid:          true,
+			isGrandTotalZero: false,
+			expectedState:    states.CreatePayment{}.Name(),
+			expectedResult:   process.RunResult{},
 		},
 		{
-			name:          "Invalid",
-			isValid:       false,
-			expectedState: states.ValidateCart{}.Name(),
+			name:             "Valid cart that is fully discounted, no payment needed",
+			isValid:          true,
+			isGrandTotalZero: true,
+			expectedState:    states.CompleteCart{}.Name(),
+			expectedResult:   process.RunResult{},
+		},
+		{
+			name:             "Invalid",
+			isValid:          false,
+			isGrandTotalZero: false,
+			expectedState:    states.ValidateCart{}.Name(),
 			expectedResult: process.RunResult{
 				RollbackData: nil,
 				Failed: process.CartValidationErrorReason{
@@ -118,6 +129,34 @@ func TestValidateCart_Run(t *testing.T) {
 			)
 			state := new(states.ValidateCart).Inject(&cartService)
 			p := &process.Process{}
+			cart := cartDomain.Cart{
+				ID:       "cart-id",
+				EntityID: "entity-id",
+				Deliveries: []cartDomain.Delivery{
+					{
+						Cartitems: []cartDomain.Item{
+							{
+								ID:               "1",
+								Qty:              1,
+								SinglePriceGross: domain.NewFromInt(1, 1, "EUR"),
+								RowPriceGross:    domain.NewFromInt(1, 1, "EUR"),
+								RowPriceNet:      domain.NewFromInt(1, 1, "EUR"),
+								SinglePriceNet:   domain.NewFromInt(1, 1, "EUR"),
+							},
+						},
+					},
+				},
+			}
+
+			if tt.isGrandTotalZero {
+				cart.Deliveries[0].Cartitems[0].AppliedDiscounts = []cartDomain.AppliedDiscount{
+					{
+						CampaignCode: "test",
+						Applied:      domain.NewFromInt(-1, 1, "EUR"),
+					},
+				}
+			}
+			p.UpdateCart(cart)
 			p.UpdateState(state.Name(), nil)
 			ctx := web.ContextWithSession(context.Background(), web.EmptySession())
 			result := state.Run(ctx, p)

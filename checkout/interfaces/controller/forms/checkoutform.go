@@ -175,6 +175,11 @@ func (c *CheckoutFormController) HandleFormAction(ctx context.Context, r *web.Re
 		return checkoutFormBuilder.getForm(), false, err
 	}
 
+	cart, err := c.applicationCartReceiverService.ViewCart(ctx, r.Session())
+	if err != nil {
+		return checkoutFormBuilder.getForm(), false, err
+	}
+
 	//1, #### Process and add Billing Form Controller result
 	billingForm, success, err := c.billingAddressFormController.HandleFormAction(ctx, newRequestWithResolvedNamespace("billingAddress", r))
 	overallSuccess = overallSuccess && success
@@ -189,10 +194,6 @@ func (c *CheckoutFormController) HandleFormAction(ctx context.Context, r *web.Re
 	if c.useDeliveryForms {
 		// 2. #### Process ALL the delivery forms:
 		// Add a Delivery Form for every delivery:
-		cart, err := c.applicationCartReceiverService.ViewCart(ctx, r.Session())
-		if err != nil {
-			return checkoutFormBuilder.getForm(), false, err
-		}
 		for _, delivery := range cart.Deliveries {
 			if !delivery.HasItems() {
 				continue
@@ -226,15 +227,17 @@ func (c *CheckoutFormController) HandleFormAction(ctx context.Context, r *web.Re
 		}
 	}
 
-	//4. ### Add the simplePaymentForm
-	simplePaymentForm, success, err := c.simplePaymentFormController.HandleFormAction(ctx, newRequestWithResolvedNamespace("payment", r))
-	overallSuccess = overallSuccess && success
-	if err != nil {
-		return checkoutFormBuilder.getForm(), false, err
-	}
-	err = checkoutFormBuilder.addSimplePaymentForm(simplePaymentForm)
-	if err != nil {
-		return checkoutFormBuilder.getForm(), false, err
+	if !cart.GrandTotal().IsZero() {
+		//4. ### Add the simplePaymentForm if payment is required.
+		simplePaymentForm, success, err := c.simplePaymentFormController.HandleFormAction(ctx, newRequestWithResolvedNamespace("payment", r))
+		overallSuccess = overallSuccess && success
+		if err != nil {
+			return checkoutFormBuilder.getForm(), false, err
+		}
+		err = checkoutFormBuilder.addSimplePaymentForm(simplePaymentForm)
+		if err != nil {
+			return checkoutFormBuilder.getForm(), false, err
+		}
 	}
 
 	return checkoutFormBuilder.getForm(), overallSuccess, nil

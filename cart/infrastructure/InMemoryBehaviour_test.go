@@ -48,6 +48,8 @@ func TestInMemoryBehaviour_CleanCart(t *testing.T) {
 				},
 				nil,
 				nil,
+				nil,
+				nil,
 			)
 			cart := &domaincart.Cart{
 				ID: "17",
@@ -174,6 +176,8 @@ func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
 				},
 				nil,
 				nil,
+				nil,
+				nil,
 			)
 			if err := cob.cartStorage.StoreCart(tt.args.cart); err != nil {
 				t.Fatalf("cart could not be initialized")
@@ -241,6 +245,8 @@ func TestInMemoryBehaviour_ApplyVoucher(t *testing.T) {
 				nil,
 				nil,
 				nil,
+				&DefaultVoucherHandler{},
+				&DefaultGiftCardHandler{},
 				nil,
 			)
 			got, _, err := cob.ApplyVoucher(context.Background(), tt.args.cart, tt.args.voucherCode)
@@ -334,6 +340,8 @@ func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 					return &domaincart.Builder{}
 				},
 				nil,
+				&DefaultVoucherHandler{},
+				&DefaultGiftCardHandler{},
 				nil,
 			)
 
@@ -399,6 +407,8 @@ func TestInMemoryBehaviour_ApplyGiftCard(t *testing.T) {
 				nil,
 				nil,
 				nil,
+				&DefaultVoucherHandler{},
+				&DefaultGiftCardHandler{},
 				nil,
 			)
 			got, _, err := cob.ApplyGiftCard(context.Background(), tt.args.cart, tt.args.giftCardCode)
@@ -466,6 +476,8 @@ func TestInMemoryBehaviour_RemoveGiftCard(t *testing.T) {
 				nil,
 				nil,
 				nil,
+				&DefaultVoucherHandler{},
+				&DefaultGiftCardHandler{},
 				nil,
 			)
 			got, _, err := cob.RemoveGiftCard(context.Background(), tt.args.cart, tt.args.giftCardCode)
@@ -492,6 +504,8 @@ func TestInMemoryBehaviour_Complete(t *testing.T) {
 			nil,
 			nil,
 			nil,
+			nil,
+			nil,
 		)
 		cart := &domaincart.Cart{ID: "test-id"}
 		require.NoError(t, cob.storeCart(cart))
@@ -512,6 +526,8 @@ func TestInMemoryBehaviour_Restore(t *testing.T) {
 			&InMemoryCartStorage{},
 			nil,
 			flamingo.NullLogger{},
+			nil,
+			nil,
 			nil,
 			nil,
 			nil,

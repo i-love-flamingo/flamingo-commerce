@@ -46,6 +46,12 @@ func (v PrepareCart) Run(ctx context.Context, p *process.Process) process.RunRes
 		}
 	}
 
+	if cart.GrandTotal().IsZero() {
+		p.UpdateState(ValidateCart{}.Name(), nil)
+		p.UpdateCart(*cart)
+		return process.RunResult{}
+	}
+
 	if cart.PaymentSelection == nil {
 		return process.RunResult{
 			Failed: process.PaymentErrorOccurredReason{Error: errors.New("PaymentSelection not set").Error()},

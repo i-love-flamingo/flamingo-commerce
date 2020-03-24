@@ -96,6 +96,22 @@ the cart has been adjusted and written back to cache
 * Fixed a bug that causes the datalayer to panic if it failed to build an absolute url
 
 **checkout**
+* Controller
+  * Allow checkout for fully discounted carts without payment processing. Previously all checkouts needed a valid payment to continue.
+    In case there is nothing to pay this can be skipped.
+    * Order ID will be reserved as soon as the user hits the checkout previously it was done before starting the payment
+* GraphQL
+  * Update place order process to also allow zero carts which don't need payment, this leads to a state flow that lacks the payment steps.
+    See module readme for further details.
 * Update source service to support external location codes.
   * Adds `ExternalLocationCode` to the `Source` struct.
   * Update `SetSourcesForCartItems()` to use the new `SourcingServiceDetail` functionality if the bound service implements the interface
+  
+**cart**
+* inMemoryBehaviour: Allow custom logic for GiftCard / Voucher handling
+  * We introduced two new interfaces `GiftCardHandler` + `VoucherHandler`
+  * This enables users of the in-memory cart to add project specific gift card and voucher handling 
+
+**price**
+* IsZero() now uses LikelyEqual() instead of Equal() to avoid issues occurring due to floating-point arithmetic
+
