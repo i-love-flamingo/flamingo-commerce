@@ -87,7 +87,7 @@ type (
 
 	// ItemUpdateCommand defines the update item command
 	ItemUpdateCommand struct {
-		// SourceID of where the items should be initial picked - This is set by the SourcingLogic
+		// SourceID of where the items should be initially picked from - This is set by the SourcingLogic
 		SourceID *string
 		// Qty contains the item quantity
 		Qty *int
