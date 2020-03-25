@@ -111,6 +111,7 @@ the cart has been adjusted and written back to cache
 * inMemoryBehaviour: Allow custom logic for GiftCard / Voucher handling
   * We introduced two new interfaces `GiftCardHandler` + `VoucherHandler`
   * This enables users of the in-memory cart to add project specific gift card and voucher handling 
+* Fix `CreateInitialDeliveryIfNotPresent` so that cache gets updated now when an initial delivery is created
 
 **price**
 * IsZero() now uses LikelyEqual() instead of Equal() to avoid issues occurring due to floating-point arithmetic
