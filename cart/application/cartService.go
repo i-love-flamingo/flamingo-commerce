@@ -745,12 +745,13 @@ func (cs *CartService) CreateInitialDeliveryIfNotPresent(ctx context.Context, se
 		DeliveryInfo: *delInfo,
 	}
 
-	info, defers, err := behaviour.UpdateDeliveryInfo(ctx, cart, deliveryCode, updateCommand)
+	updatedCart, defers, err := behaviour.UpdateDeliveryInfo(ctx, cart, deliveryCode, updateCommand)
 	defer func() {
+		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, updatedCart)
 		cs.dispatchAllEvents(ctx, defers)
 	}()
 
-	return info, err
+	return updatedCart, err
 }
 
 // GetInitialDelivery - calls the registered deliveryInfoBuilder to get the initial values for a Delivery based on the given code
