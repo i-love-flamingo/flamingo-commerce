@@ -2,7 +2,6 @@ package w3cdatalayer
 
 import (
 	"flamingo.me/dingo"
-	"flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 
 	"flamingo.me/flamingo-commerce/v3/w3cdatalayer/application"
@@ -20,8 +19,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	flamingo.BindEventSubscriber(injector).To(application.EventReceiver{})
 }
 
-func (m *Module) DefaultConfig() config.Map {
-	return config.Map{
-		"w3cDatalayer.hashEncoding": "base64url",
-	}
+// CueConfig schema and configuration
+func (m *Module) CueConfig() string {
+	return `w3cDatalayer: {	hashEncoding: string | *"base64url" }`
 }
