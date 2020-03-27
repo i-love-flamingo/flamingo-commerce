@@ -96,16 +96,20 @@ var (
 
 func init() {
 	gob.Register(PlaceOrderInfo{})
-	opencensus.View("flamingo-commerce/checkout/order_validation_failed", orderValidationFailCount, view.Count())
-	opencensus.View("flamingo-commerce/checkout/decorated_cart_creation_failed", decoratedCartCreationFailCount, view.Count())
-	opencensus.View("flamingo-commerce/checkout/no_payment_selection", noPaymentSelectionCount, view.Count())
-	opencensus.View("flamingo-commerce/checkout/selected_payment_gateway_not_found", selectedPaymentGatewayNotFoundCount, view.Count())
-	opencensus.View("flamingo-commerce/checkout/payment_flow_status_error", paymentFlowStatusErrorCount, view.Count())
-	opencensus.View("flamingo-commerce/checkout/order_payment_from_flow", orderPaymentFromFlowErrorCount, view.Count())
-	opencensus.View("flamingo-commerce/checkout/payment_flow_status_failed_canceled", paymentFlowStatusFailedCanceledCount, view.Count())
-	opencensus.View("flamingo-commerce/checkout/payment_flow_status_aborted", paymentFlowStatusAbortedCount, view.Count())
-	opencensus.View("flamingo-commerce/checkout/place_order_failed", placeOrderFailCount, view.Count())
-	opencensus.View("flamingo-commerce/checkout/place_order_successful", placeOrderSuccessCount, view.Count())
+	err := opencensus.View("flamingo-commerce/checkout/order_validation_failed", orderValidationFailCount, view.Count())
+	err = opencensus.View("flamingo-commerce/checkout/decorated_cart_creation_failed", decoratedCartCreationFailCount, view.Count())
+	err = opencensus.View("flamingo-commerce/checkout/no_payment_selection", noPaymentSelectionCount, view.Count())
+	err = opencensus.View("flamingo-commerce/checkout/selected_payment_gateway_not_found", selectedPaymentGatewayNotFoundCount, view.Count())
+	err = opencensus.View("flamingo-commerce/checkout/payment_flow_status_error", paymentFlowStatusErrorCount, view.Count())
+	err = opencensus.View("flamingo-commerce/checkout/order_payment_from_flow", orderPaymentFromFlowErrorCount, view.Count())
+	err = opencensus.View("flamingo-commerce/checkout/payment_flow_status_failed_canceled", paymentFlowStatusFailedCanceledCount, view.Count())
+	err = opencensus.View("flamingo-commerce/checkout/payment_flow_status_aborted", paymentFlowStatusAbortedCount, view.Count())
+	err = opencensus.View("flamingo-commerce/checkout/place_order_failed", placeOrderFailCount, view.Count())
+	err = opencensus.View("flamingo-commerce/checkout/place_order_successful", placeOrderSuccessCount, view.Count())
+
+	if err != nil {
+		panic(err)
+	}
 }
 
 // Inject dependencies
