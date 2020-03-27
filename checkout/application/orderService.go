@@ -96,19 +96,24 @@ var (
 
 func init() {
 	gob.Register(PlaceOrderInfo{})
-	err := opencensus.View("flamingo-commerce/checkout/order_validation_failed", orderValidationFailCount, view.Count())
-	err = opencensus.View("flamingo-commerce/checkout/decorated_cart_creation_failed", decoratedCartCreationFailCount, view.Count())
-	err = opencensus.View("flamingo-commerce/checkout/no_payment_selection", noPaymentSelectionCount, view.Count())
-	err = opencensus.View("flamingo-commerce/checkout/selected_payment_gateway_not_found", selectedPaymentGatewayNotFoundCount, view.Count())
-	err = opencensus.View("flamingo-commerce/checkout/payment_flow_status_error", paymentFlowStatusErrorCount, view.Count())
-	err = opencensus.View("flamingo-commerce/checkout/order_payment_from_flow", orderPaymentFromFlowErrorCount, view.Count())
-	err = opencensus.View("flamingo-commerce/checkout/payment_flow_status_failed_canceled", paymentFlowStatusFailedCanceledCount, view.Count())
-	err = opencensus.View("flamingo-commerce/checkout/payment_flow_status_aborted", paymentFlowStatusAbortedCount, view.Count())
-	err = opencensus.View("flamingo-commerce/checkout/place_order_failed", placeOrderFailCount, view.Count())
-	err = opencensus.View("flamingo-commerce/checkout/place_order_successful", placeOrderSuccessCount, view.Count())
+	openCensusViews := map[string]*stats.Int64Measure{
+		"flamingo-commerce/checkout/order_validation_failed":             orderValidationFailCount,
+		"flamingo-commerce/checkout/decorated_cart_creation_failed":      decoratedCartCreationFailCount,
+		"flamingo-commerce/checkout/no_payment_selection":                noPaymentSelectionCount,
+		"flamingo-commerce/checkout/selected_payment_gateway_not_found":  selectedPaymentGatewayNotFoundCount,
+		"flamingo-commerce/checkout/payment_flow_status_error":           paymentFlowStatusErrorCount,
+		"flamingo-commerce/checkout/order_payment_from_flow":             orderPaymentFromFlowErrorCount,
+		"flamingo-commerce/checkout/payment_flow_status_failed_canceled": paymentFlowStatusFailedCanceledCount,
+		"flamingo-commerce/checkout/payment_flow_status_aborted":         paymentFlowStatusAbortedCount,
+		"flamingo-commerce/checkout/place_order_failed":                  placeOrderFailCount,
+		"flamingo-commerce/checkout/place_order_successful":              placeOrderSuccessCount,
+	}
 
-	if err != nil {
-		panic(err)
+	for name, measure := range openCensusViews {
+		err := opencensus.View(name, measure, view.Count())
+		if err != nil {
+			panic(err)
+		}
 	}
 }
 
