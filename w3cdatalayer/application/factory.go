@@ -62,17 +62,17 @@ func (s *Factory) Inject(
 	provider domain.DatalayerProvider,
 	userService *authApplication.UserService,
 	config *struct {
-		PageInstanceIDPrefix           string `inject:"config:w3cDatalayer.pageInstanceIDPrefix,optional"`
-		PageInstanceIDStage            string `inject:"config:w3cDatalayer.pageInstanceIDStage,optional"`
-		ProductMediaBaseURL            string `inject:"config:w3cDatalayer.productMediaBaseUrl,optional"`
-		ProductMediaURLPrefix          string `inject:"config:w3cDatalayer.productMediaUrlPrefix,optional"`
-		ProductMediaThumbnailURLPrefix string `inject:"config:w3cDatalayer.productMediaThumbnailUrlPrefix,optional"`
-		PageNamePrefix                 string `inject:"config:w3cDatalayer.pageNamePrefix,optional"`
-		SiteName                       string `inject:"config:w3cDatalayer.siteName,optional"`
+		PageInstanceIDPrefix           string `inject:"config:commerce.w3cDatalayer.pageInstanceIDPrefix,optional"`
+		PageInstanceIDStage            string `inject:"config:commerce.w3cDatalayer.pageInstanceIDStage,optional"`
+		ProductMediaBaseURL            string `inject:"config:commerce.w3cDatalayer.productMediaBaseUrl,optional"`
+		ProductMediaURLPrefix          string `inject:"config:commerce.w3cDatalayer.productMediaUrlPrefix,optional"`
+		ProductMediaThumbnailURLPrefix string `inject:"config:commerce.w3cDatalayer.productMediaThumbnailUrlPrefix,optional"`
+		PageNamePrefix                 string `inject:"config:commerce.w3cDatalayer.pageNamePrefix,optional"`
+		SiteName                       string `inject:"config:commerce.w3cDatalayer.siteName,optional"`
 		Locale                         string `inject:"config:locale.locale,optional"`
-		DefaultCurrency                string `inject:"config:w3cDatalayer.defaultCurrency,optional"`
-		HashUserValues                 bool   `inject:"config:w3cDatalayer.hashUserValues,optional"`
-		HashEncoding                   string `inject:"config:w3cDatalayer.hashEncoding,optional"`
+		DefaultCurrency                string `inject:"config:commerce.w3cDatalayer.defaultCurrency,optional"`
+		HashUserValues                 bool   `inject:"config:commerce.w3cDatalayer.hashUserValues,optional"`
+		HashEncoding                   string `inject:"config:commerce.w3cDatalayer.hashEncoding,optional"`
 	},
 ) {
 	s.router = router2
@@ -98,7 +98,7 @@ func (s *Factory) Inject(
 		case "hex":
 			s.hashEncoder = &hexEncoder{}
 		default:
-			s.logger.Warn("invalid configuration for w3cDatalayer.hashEncoding, using base64url encoding as fallback")
+			s.logger.Warn("invalid configuration for commerce.w3cDatalayer.hashEncoding, using base64url encoding as fallback")
 			s.hashEncoder = base64.URLEncoding
 		}
 	}
