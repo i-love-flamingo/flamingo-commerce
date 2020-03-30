@@ -23,17 +23,17 @@ func (m *Module) Configure(injector *dingo.Injector) {
 func (m *Module) CueConfig() string {
 	return `
 commerce: w3cDatalayer: {	
-	pageInstanceIDPrefix: string
-	pageInstanceIDStage: string
-	pageNamePrefix: string
-	siteName: string
-	defaultCurrency: string
-	version: string
-	hashUserValues: bool
+	pageInstanceIDPrefix?: string
+	pageInstanceIDStage?: string
+	pageNamePrefix?: string
+	siteName?: string
+	defaultCurrency?: string
+	version?: string
+	hashUserValues: bool | *false
 	hashEncoding: string | *"base64url" 
-	productMediaBaseUrl: string
-	productMediaThumbnailUrlPrefix: string
-	productMediaUrlPrefix: string
+	productMediaBaseUrl?: string
+	productMediaThumbnailUrlPrefix?: string
+	productMediaUrlPrefix?: string
 }
 `
 }
