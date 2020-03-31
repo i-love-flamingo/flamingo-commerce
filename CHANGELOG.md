@@ -94,6 +94,10 @@ the cart has been adjusted and written back to cache
 ## v3.2.X [upcoming]
 **w3cdatalayer**
 * Fixed a bug that causes the datalayer to panic if it failed to build an absolute url
+* Introduced a configuration option to choose between base64url and hex encoding for the hashed values
+* Move config to commerce namespace, from `w3cDatalayer` to `commerce.w3cDatalayer`
+* Add legacy config mapping so old mappings can still be used
+* Add cue based config to have config validation in place
 
 **checkout**
 * Controller

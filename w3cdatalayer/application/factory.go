@@ -4,39 +4,55 @@ import (
 	"context"
 	"crypto/sha512"
 	"encoding/base64"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+	"encoding/hex"
 	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
 
-	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
-	"flamingo.me/flamingo-commerce/v3/w3cdatalayer/domain"
 	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/pkg/errors"
 	"go.opencensus.io/tag"
+
+	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
+	"flamingo.me/flamingo-commerce/v3/w3cdatalayer/domain"
 )
 
-// Factory is used to build new datalayers
-type Factory struct {
-	router            *web.Router
-	logger            flamingo.Logger
-	datalayerProvider domain.DatalayerProvider
-	userService       *authApplication.UserService
+type (
+	// Factory is used to build new datalayers
+	Factory struct {
+		router            *web.Router
+		logger            flamingo.Logger
+		datalayerProvider domain.DatalayerProvider
+		userService       *authApplication.UserService
+		hashEncoder       encoder
 
-	pageInstanceIDPrefix           string
-	pageInstanceIDStage            string
-	productMediaBaseURL            string
-	productMediaURLPrefix          string
-	productMediaThumbnailURLPrefix string
-	pageNamePrefix                 string
-	siteName                       string
-	locale                         string
-	defaultCurrency                string
-	hashUserValues                 bool
-	regex                          *regexp.Regexp
+		pageInstanceIDPrefix           string
+		pageInstanceIDStage            string
+		productMediaBaseURL            string
+		productMediaURLPrefix          string
+		productMediaThumbnailURLPrefix string
+		pageNamePrefix                 string
+		siteName                       string
+		locale                         string
+		defaultCurrency                string
+		hashUserValues                 bool
+		regex                          *regexp.Regexp
+	}
+
+	// hexEncoder is a wrapper for hex.EncodeToString
+	hexEncoder struct{}
+
+	encoder interface {
+		EncodeToString(src []byte) string
+	}
+)
+
+func (h *hexEncoder) EncodeToString(src []byte) string {
+	return hex.EncodeToString(src)
 }
 
 // Inject factory dependencies
@@ -46,16 +62,17 @@ func (s *Factory) Inject(
 	provider domain.DatalayerProvider,
 	userService *authApplication.UserService,
 	config *struct {
-		PageInstanceIDPrefix           string `inject:"config:w3cDatalayer.pageInstanceIDPrefix,optional"`
-		PageInstanceIDStage            string `inject:"config:w3cDatalayer.pageInstanceIDStage,optional"`
-		ProductMediaBaseURL            string `inject:"config:w3cDatalayer.productMediaBaseUrl,optional"`
-		ProductMediaURLPrefix          string `inject:"config:w3cDatalayer.productMediaUrlPrefix,optional"`
-		ProductMediaThumbnailURLPrefix string `inject:"config:w3cDatalayer.productMediaThumbnailUrlPrefix,optional"`
-		PageNamePrefix                 string `inject:"config:w3cDatalayer.pageNamePrefix,optional"`
-		SiteName                       string `inject:"config:w3cDatalayer.siteName,optional"`
+		PageInstanceIDPrefix           string `inject:"config:commerce.w3cDatalayer.pageInstanceIDPrefix,optional"`
+		PageInstanceIDStage            string `inject:"config:commerce.w3cDatalayer.pageInstanceIDStage,optional"`
+		ProductMediaBaseURL            string `inject:"config:commerce.w3cDatalayer.productMediaBaseUrl,optional"`
+		ProductMediaURLPrefix          string `inject:"config:commerce.w3cDatalayer.productMediaUrlPrefix,optional"`
+		ProductMediaThumbnailURLPrefix string `inject:"config:commerce.w3cDatalayer.productMediaThumbnailUrlPrefix,optional"`
+		PageNamePrefix                 string `inject:"config:commerce.w3cDatalayer.pageNamePrefix,optional"`
+		SiteName                       string `inject:"config:commerce.w3cDatalayer.siteName,optional"`
 		Locale                         string `inject:"config:locale.locale,optional"`
-		DefaultCurrency                string `inject:"config:w3cDatalayer.defaultCurrency,optional"`
-		HashUserValues                 bool   `inject:"config:w3cDatalayer.hashUserValues,optional"`
+		DefaultCurrency                string `inject:"config:commerce.w3cDatalayer.defaultCurrency,optional"`
+		HashUserValues                 bool   `inject:"config:commerce.w3cDatalayer.hashUserValues,optional"`
+		HashEncoding                   string `inject:"config:commerce.w3cDatalayer.hashEncoding,optional"`
 	},
 ) {
 	s.router = router2
@@ -73,6 +90,18 @@ func (s *Factory) Inject(
 	s.locale = config.Locale
 	s.defaultCurrency = config.DefaultCurrency
 	s.hashUserValues = config.HashUserValues
+
+	if config.HashUserValues {
+		switch config.HashEncoding {
+		case "base64url":
+			s.hashEncoder = base64.URLEncoding
+		case "hex":
+			s.hashEncoder = &hexEncoder{}
+		default:
+			s.logger.Warn("invalid configuration for commerce.w3cDatalayer.hashEncoding, using base64url encoding as fallback")
+			s.hashEncoder = base64.URLEncoding
+		}
+	}
 
 	regexString := "[,|;|\\|]"
 	r, err := regexp.Compile(regexString)
@@ -169,7 +198,7 @@ func (s Factory) getUserProfile(email string, sub string) *domain.UserProfile {
 // HashValueIfConfigured returns the hashed `value` if hashing is configured
 func (s Factory) HashValueIfConfigured(value string) string {
 	if s.hashUserValues && value != "" {
-		return hashWithSHA512(value)
+		return s.hashWithSHA512(value)
 	}
 	return value
 }
@@ -413,13 +442,13 @@ func (s Factory) getProductImageURL(baseData productDomain.BasicProductData) str
 	return ""
 }
 
-func hashWithSHA512(value string) string {
+func (s Factory) hashWithSHA512(value string) string {
 	newHash := sha512.New()
 	newHash.Write([]byte(value))
 	//the hash is a byte array
 	result := newHash.Sum(nil)
 	//since we want to use it in a variable we base64 encode it (other alternative would be Hexadecimal representation "% x", h.Sum(nil)
-	return base64.URLEncoding.EncodeToString(result)
+	return s.hashEncoder.EncodeToString(result)
 }
 
 // BuildChangeQtyEvent builds the change quantity domain event

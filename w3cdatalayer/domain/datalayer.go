@@ -15,7 +15,7 @@ type (
 		PageInstanceID string
 		Page           *Page
 		SiteInfo       *SiteInfo
-		Version        string `inject:"config:w3cDatalayer.version,optional"` // todo: version should not be injected here (domain layer)
+		Version        string `inject:"config:commerce.w3cDatalayer.version,optional"` // todo: version should not be injected here (domain layer)
 		//User List of user(s) interacting with the page. (Although typically web data has a single user per recorded interaction, this object is an array and can capture multiple users.)
 		User []User
 		//The Cart object carries details about a shopping cart or basket and the products that have been added to it.
