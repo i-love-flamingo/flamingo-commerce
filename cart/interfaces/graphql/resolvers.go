@@ -36,6 +36,7 @@ func (r *CommerceCartQueryResolver) CommerceCart(ctx context.Context) (*dto.Deco
 	return dto.NewDecoratedCart(dc), nil
 }
 
+// CommerceCartValidator to trigger the cart validation service
 func (r *CommerceCartQueryResolver) CommerceCartValidator(ctx context.Context) (*validation.Result, error) {
 	session := web.SessionFromContext(ctx)
 
