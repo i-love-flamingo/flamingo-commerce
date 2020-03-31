@@ -717,6 +717,8 @@ type ComplexityRoot struct {
 
 	Query struct {
 		CommerceCart                     func(childComplexity int) int
+		CommerceCartValidator            func(childComplexity int) int
+		CommerceCartValidator            func(childComplexity int) int
 		CommerceCategory                 func(childComplexity int, categoryCode string, categorySearchRequest *dto.CommerceSearchRequest) int
 		CommerceCategoryTree             func(childComplexity int, activeCategoryCode string) int
 		CommerceCheckoutActivePlaceOrder func(childComplexity int) int
@@ -749,6 +751,7 @@ type QueryResolver interface {
 	CommerceProduct(ctx context.Context, marketplaceCode string) (domain1.BasicProduct, error)
 	CommerceProductSearch(ctx context.Context, searchRequest *dto.CommerceSearchRequest) (*application.SearchResult, error)
 	CommerceCart(ctx context.Context) (*dto1.DecoratedCart, error)
+	CommerceCartValidator(ctx context.Context) (*validation.Result, error)
 	CommerceCheckoutActivePlaceOrder(ctx context.Context) (bool, error)
 	CommerceCheckoutCurrentContext(ctx context.Context) (*dto2.PlaceOrderContext, error)
 	CommerceCategoryTree(ctx context.Context, activeCategoryCode string) (domain2.Tree, error)
@@ -3752,6 +3755,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.CommerceCart(childComplexity), true
 
+	case "Query.Commerce_Cart_Validator":
+		if e.complexity.Query.CommerceCartValidator == nil {
+			break
+		}
+
+		return e.complexity.Query.CommerceCartValidator(childComplexity), true
+
 	case "Query.Commerce_Category":
 		if e.complexity.Query.CommerceCategory == nil {
 			break
@@ -4265,6 +4275,7 @@ input Commerce_BillingAddressFormInput {
 
 extend type Query {
     Commerce_Cart: Commerce_DecoratedCart!
+    Commerce_Cart_Validator: Commerce_Cart_ValidationResult!
 }
 
 extend type Mutation {
@@ -16155,6 +16166,33 @@ func (ec *executionContext) _Query_Commerce_Cart(ctx context.Context, field grap
 	return ec.marshalNCommerce_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_Commerce_Cart_Validator(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().CommerceCartValidator(rctx)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*validation.Result)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNCommerce_Cart_ValidationResult2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐResult(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_Commerce_Checkout_ActivePlaceOrder(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -21017,6 +21055,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}
 				return res
 			})
+		case "Commerce_Cart_Validator":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_Commerce_Cart_Validator(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "Commerce_Checkout_ActivePlaceOrder":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -21537,6 +21589,16 @@ func (ec *executionContext) marshalNCommerce_Cart_Teaser2ᚖflamingoᚗmeᚋflam
 
 func (ec *executionContext) marshalNCommerce_Cart_ValidationResult2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐResult(ctx context.Context, sel ast.SelectionSet, v validation.Result) graphql.Marshaler {
 	return ec._Commerce_Cart_ValidationResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Cart_ValidationResult2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐResult(ctx context.Context, sel ast.SelectionSet, v *validation.Result) graphql.Marshaler {
+	if v == nil {
+		if !ec.HasError(graphql.GetResolverContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Commerce_Cart_ValidationResult(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNCommerce_Category2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcategoryᚋdomainᚐCategory(ctx context.Context, sel ast.SelectionSet, v domain2.Category) graphql.Marshaler {

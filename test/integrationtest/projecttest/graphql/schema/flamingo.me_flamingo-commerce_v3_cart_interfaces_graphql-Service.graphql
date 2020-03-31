@@ -365,6 +365,7 @@ input Commerce_BillingAddressFormInput {
 
 extend type Query {
     Commerce_Cart: Commerce_DecoratedCart!
+    Commerce_Cart_Validator: Commerce_Cart_ValidationResult!
 }
 
 extend type Mutation {
