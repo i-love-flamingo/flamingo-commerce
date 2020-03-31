@@ -718,7 +718,6 @@ type ComplexityRoot struct {
 	Query struct {
 		CommerceCart                     func(childComplexity int) int
 		CommerceCartValidator            func(childComplexity int) int
-		CommerceCartValidator            func(childComplexity int) int
 		CommerceCategory                 func(childComplexity int, categoryCode string, categorySearchRequest *dto.CommerceSearchRequest) int
 		CommerceCategoryTree             func(childComplexity int, activeCategoryCode string) int
 		CommerceCheckoutActivePlaceOrder func(childComplexity int) int
@@ -23660,7 +23659,7 @@ func (ec *executionContext) unmarshalOString2ᚕstring(ctx context.Context, v in
 	var err error
 	res := make([]string, len(vSlice))
 	for i := range vSlice {
-		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
+		res[i], err = ec.unmarshalOString2string(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -23674,7 +23673,7 @@ func (ec *executionContext) marshalOString2ᚕstring(ctx context.Context, sel as
 	}
 	ret := make(graphql.Array, len(v))
 	for i := range v {
-		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
+		ret[i] = ec.marshalOString2string(ctx, sel, v[i])
 	}
 
 	return ret
