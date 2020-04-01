@@ -116,6 +116,7 @@ the cart has been adjusted and written back to cache
   * We introduced two new interfaces `GiftCardHandler` + `VoucherHandler`
   * This enables users of the in-memory cart to add project specific gift card and voucher handling 
 * Fix `CreateInitialDeliveryIfNotPresent` so that cache gets updated now when an initial delivery is created
+* GraphQL: Add new cart validation query `Commerce_Cart_Validator` to check if cart contains valid items
 
 **price**
 * IsZero() now uses LikelyEqual() instead of Equal() to avoid issues occurring due to floating-point arithmetic

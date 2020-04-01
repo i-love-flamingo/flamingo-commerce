@@ -333,6 +333,11 @@ type ComplexityRoot struct {
 		GeneralErrors func(childComplexity int) int
 	}
 
+	CommerceCartItemValidationError struct {
+		ErrorMessageKey func(childComplexity int) int
+		ItemID          func(childComplexity int) int
+	}
+
 	CommerceCartPlacedOrderInfo struct {
 		DeliveryCode func(childComplexity int) int
 		OrderNumber  func(childComplexity int) int
@@ -394,6 +399,7 @@ type ComplexityRoot struct {
 	CommerceCartValidationResult struct {
 		CommonErrorMessageKey func(childComplexity int) int
 		HasCommonError        func(childComplexity int) int
+		ItemResults           func(childComplexity int) int
 	}
 
 	CommerceCategoryData struct {
@@ -711,6 +717,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		CommerceCart                     func(childComplexity int) int
+		CommerceCartValidator            func(childComplexity int) int
 		CommerceCategory                 func(childComplexity int, categoryCode string, categorySearchRequest *dto.CommerceSearchRequest) int
 		CommerceCategoryTree             func(childComplexity int, activeCategoryCode string) int
 		CommerceCheckoutActivePlaceOrder func(childComplexity int) int
@@ -743,6 +750,7 @@ type QueryResolver interface {
 	CommerceProduct(ctx context.Context, marketplaceCode string) (domain1.BasicProduct, error)
 	CommerceProductSearch(ctx context.Context, searchRequest *dto.CommerceSearchRequest) (*application.SearchResult, error)
 	CommerceCart(ctx context.Context) (*dto1.DecoratedCart, error)
+	CommerceCartValidator(ctx context.Context) (*validation.Result, error)
 	CommerceCheckoutActivePlaceOrder(ctx context.Context) (bool, error)
 	CommerceCheckoutCurrentContext(ctx context.Context) (*dto2.PlaceOrderContext, error)
 	CommerceCategoryTree(ctx context.Context, activeCategoryCode string) (domain2.Tree, error)
@@ -2194,6 +2202,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCartFormValidationInfo.GeneralErrors(childComplexity), true
 
+	case "Commerce_Cart_ItemValidationError.errorMessageKey":
+		if e.complexity.CommerceCartItemValidationError.ErrorMessageKey == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartItemValidationError.ErrorMessageKey(childComplexity), true
+
+	case "Commerce_Cart_ItemValidationError.itemID":
+		if e.complexity.CommerceCartItemValidationError.ItemID == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartItemValidationError.ItemID(childComplexity), true
+
 	case "Commerce_Cart_PlacedOrderInfo.deliveryCode":
 		if e.complexity.CommerceCartPlacedOrderInfo.DeliveryCode == nil {
 			break
@@ -2408,6 +2430,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceCartValidationResult.HasCommonError(childComplexity), true
+
+	case "Commerce_Cart_ValidationResult.itemResults":
+		if e.complexity.CommerceCartValidationResult.ItemResults == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartValidationResult.ItemResults(childComplexity), true
 
 	case "Commerce_CategoryData.active":
 		if e.complexity.CommerceCategoryData.Active == nil {
@@ -3725,6 +3754,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.CommerceCart(childComplexity), true
 
+	case "Query.Commerce_Cart_Validator":
+		if e.complexity.Query.CommerceCartValidator == nil {
+			break
+		}
+
+		return e.complexity.Query.CommerceCartValidator(childComplexity), true
+
 	case "Query.Commerce_Category":
 		if e.complexity.Query.CommerceCategory == nil {
 			break
@@ -4151,13 +4187,13 @@ type Commerce_CartAppliedGiftCard {
 type Commerce_Cart_ValidationResult {
     hasCommonError:        Boolean!
     commonErrorMessageKey: String!
-    #itemResults:          [Commerce_Cart_ItemValidationError!]
+    itemResults:           [Commerce_Cart_ItemValidationError!]
 }
 
-#type Commerce_Cart_ItemValidationError {
-#    itemID:          String!
-#    errorMessageKey: String!
-#}
+type Commerce_Cart_ItemValidationError {
+    itemID:          String!
+    errorMessageKey: String!
+}
 
 type Commerce_Cart_PlacedOrderInfo {
     orderNumber:    String!
@@ -4238,6 +4274,7 @@ input Commerce_BillingAddressFormInput {
 
 extend type Query {
     Commerce_Cart: Commerce_DecoratedCart!
+    Commerce_Cart_Validator: Commerce_Cart_ValidationResult!
 }
 
 extend type Mutation {
@@ -10548,6 +10585,60 @@ func (ec *executionContext) _Commerce_Cart_Form_ValidationInfo_generalErrors(ctx
 	return ec.marshalOCommerce_Cart_Form_Error2ᚕflamingoᚗmeᚋformᚋdomainᚐError(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_Cart_ItemValidationError_itemID(ctx context.Context, field graphql.CollectedField, obj *validation.ItemValidationError) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_ItemValidationError",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ItemID, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_ItemValidationError_errorMessageKey(ctx context.Context, field graphql.CollectedField, obj *validation.ItemValidationError) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_ItemValidationError",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ErrorMessageKey, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_Cart_PlacedOrderInfo_orderNumber(ctx context.Context, field graphql.CollectedField, obj *placeorder.PlacedOrderInfo) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -11318,6 +11409,30 @@ func (ec *executionContext) _Commerce_Cart_ValidationResult_commonErrorMessageKe
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_ValidationResult_itemResults(ctx context.Context, field graphql.CollectedField, obj *validation.Result) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_ValidationResult",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ItemResults, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]validation.ItemValidationError)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOCommerce_Cart_ItemValidationError2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐItemValidationError(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_CategoryData_code(ctx context.Context, field graphql.CollectedField, obj *domain2.CategoryData) graphql.Marshaler {
@@ -16050,6 +16165,33 @@ func (ec *executionContext) _Query_Commerce_Cart(ctx context.Context, field grap
 	return ec.marshalNCommerce_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_Commerce_Cart_Validator(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().CommerceCartValidator(rctx)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*validation.Result)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNCommerce_Cart_ValidationResult2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐResult(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_Commerce_Checkout_ActivePlaceOrder(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -18745,6 +18887,38 @@ func (ec *executionContext) _Commerce_Cart_Form_ValidationInfo(ctx context.Conte
 	return out
 }
 
+var commerce_Cart_ItemValidationErrorImplementors = []string{"Commerce_Cart_ItemValidationError"}
+
+func (ec *executionContext) _Commerce_Cart_ItemValidationError(ctx context.Context, sel ast.SelectionSet, obj *validation.ItemValidationError) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Cart_ItemValidationErrorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_ItemValidationError")
+		case "itemID":
+			out.Values[i] = ec._Commerce_Cart_ItemValidationError_itemID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "errorMessageKey":
+			out.Values[i] = ec._Commerce_Cart_ItemValidationError_errorMessageKey(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var commerce_Cart_PlacedOrderInfoImplementors = []string{"Commerce_Cart_PlacedOrderInfo"}
 
 func (ec *executionContext) _Commerce_Cart_PlacedOrderInfo(ctx context.Context, sel ast.SelectionSet, obj *placeorder.PlacedOrderInfo) graphql.Marshaler {
@@ -19081,6 +19255,8 @@ func (ec *executionContext) _Commerce_Cart_ValidationResult(ctx context.Context,
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "itemResults":
+			out.Values[i] = ec._Commerce_Cart_ValidationResult_itemResults(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -20878,6 +21054,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}
 				return res
 			})
+		case "Commerce_Cart_Validator":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_Commerce_Cart_Validator(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "Commerce_Checkout_ActivePlaceOrder":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -21299,6 +21489,10 @@ func (ec *executionContext) marshalNCommerce_Cart_Form_FieldError2flamingoᚗme�
 	return ec._Commerce_Cart_Form_FieldError(ctx, sel, &v)
 }
 
+func (ec *executionContext) marshalNCommerce_Cart_ItemValidationError2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐItemValidationError(ctx context.Context, sel ast.SelectionSet, v validation.ItemValidationError) graphql.Marshaler {
+	return ec._Commerce_Cart_ItemValidationError(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalNCommerce_Cart_PlacedOrderInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋplaceorderᚐPlacedOrderInfo(ctx context.Context, sel ast.SelectionSet, v placeorder.PlacedOrderInfo) graphql.Marshaler {
 	return ec._Commerce_Cart_PlacedOrderInfo(ctx, sel, &v)
 }
@@ -21394,6 +21588,16 @@ func (ec *executionContext) marshalNCommerce_Cart_Teaser2ᚖflamingoᚗmeᚋflam
 
 func (ec *executionContext) marshalNCommerce_Cart_ValidationResult2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐResult(ctx context.Context, sel ast.SelectionSet, v validation.Result) graphql.Marshaler {
 	return ec._Commerce_Cart_ValidationResult(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Cart_ValidationResult2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐResult(ctx context.Context, sel ast.SelectionSet, v *validation.Result) graphql.Marshaler {
+	if v == nil {
+		if !ec.HasError(graphql.GetResolverContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Commerce_Cart_ValidationResult(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNCommerce_Category2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcategoryᚋdomainᚐCategory(ctx context.Context, sel ast.SelectionSet, v domain2.Category) graphql.Marshaler {
@@ -22402,6 +22606,46 @@ func (ec *executionContext) marshalOCommerce_Cart_Form_FieldError2ᚕflamingoᚗ
 
 func (ec *executionContext) marshalOCommerce_Cart_Form_ValidationInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐValidationInfo(ctx context.Context, sel ast.SelectionSet, v dto1.ValidationInfo) graphql.Marshaler {
 	return ec._Commerce_Cart_Form_ValidationInfo(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_ItemValidationError2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐItemValidationError(ctx context.Context, sel ast.SelectionSet, v []validation.ItemValidationError) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		rctx := &graphql.ResolverContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithResolverContext(ctx, rctx)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCommerce_Cart_ItemValidationError2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐItemValidationError(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
 }
 
 func (ec *executionContext) marshalOCommerce_Cart_PaymentSelection2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐPaymentSelection(ctx context.Context, sel ast.SelectionSet, v cart.PaymentSelection) graphql.Marshaler {

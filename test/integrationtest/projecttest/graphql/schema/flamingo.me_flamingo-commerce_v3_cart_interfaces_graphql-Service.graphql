@@ -278,13 +278,13 @@ type Commerce_CartAppliedGiftCard {
 type Commerce_Cart_ValidationResult {
     hasCommonError:        Boolean!
     commonErrorMessageKey: String!
-    #itemResults:          [Commerce_Cart_ItemValidationError!]
+    itemResults:           [Commerce_Cart_ItemValidationError!]
 }
 
-#type Commerce_Cart_ItemValidationError {
-#    itemID:          String!
-#    errorMessageKey: String!
-#}
+type Commerce_Cart_ItemValidationError {
+    itemID:          String!
+    errorMessageKey: String!
+}
 
 type Commerce_Cart_PlacedOrderInfo {
     orderNumber:    String!
@@ -365,6 +365,7 @@ input Commerce_BillingAddressFormInput {
 
 extend type Query {
     Commerce_Cart: Commerce_DecoratedCart!
+    Commerce_Cart_Validator: Commerce_Cart_ValidationResult!
 }
 
 extend type Mutation {
