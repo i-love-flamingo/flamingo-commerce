@@ -601,3 +601,15 @@ func (a Attributes) Attribute(key string) Attribute {
 	attribute := a[key]
 	return attribute
 }
+
+// AttributesByCode returns slice of attributes by given attribute codes
+func (a Attributes) AttributesByCode(codes []string) []Attribute {
+	res := make([]Attribute, 0)
+	for _, code := range codes {
+		if attribute, ok := a[code]; ok {
+			res = append(res, attribute)
+		}
+	}
+
+	return res
+}

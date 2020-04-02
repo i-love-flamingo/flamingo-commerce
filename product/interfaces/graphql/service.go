@@ -42,9 +42,10 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		"Commerce_ProductAttributes": graphql.ModelMapEntry{
 			Type: domain.Attributes{},
 			Fields: map[string]string{
-				"getAttribute":     "Attribute",
-				"getAttributes":    "Attributes",
-				"getAttributeKeys": "AttributeKeys",
+				"getAttribute":        "Attribute",
+				"getAttributes":       "Attributes",
+				"getAttributeKeys":    "AttributeKeys",
+				"getAttributesByCode": "AttributesByCode",
 			},
 		},
 		"Commerce_ProductAttribute":        domain.Attribute{},
