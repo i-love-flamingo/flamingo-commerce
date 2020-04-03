@@ -586,11 +586,11 @@ type ComplexityRoot struct {
 	}
 
 	CommerceProductAttributes struct {
-		Attribute        func(childComplexity int, key string) int
-		AttributeKeys    func(childComplexity int) int
-		Attributes       func(childComplexity int) int
-		AttributesByCode func(childComplexity int, codes []string) int
-		HasAttribute     func(childComplexity int, key string) int
+		Attribute       func(childComplexity int, key string) int
+		AttributeKeys   func(childComplexity int) int
+		Attributes      func(childComplexity int) int
+		AttributesByKey func(childComplexity int, keys []string) int
+		HasAttribute    func(childComplexity int, key string) int
 	}
 
 	CommerceProductLoyaltyPriceInfo struct {
@@ -3110,17 +3110,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceProductAttributes.Attributes(childComplexity), true
 
-	case "Commerce_ProductAttributes.getAttributesByCode":
-		if e.complexity.CommerceProductAttributes.AttributesByCode == nil {
+	case "Commerce_ProductAttributes.getAttributesByKey":
+		if e.complexity.CommerceProductAttributes.AttributesByKey == nil {
 			break
 		}
 
-		args, err := ec.field_Commerce_ProductAttributes_getAttributesByCode_args(context.TODO(), rawArgs)
+		args, err := ec.field_Commerce_ProductAttributes_getAttributesByKey_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.CommerceProductAttributes.AttributesByCode(childComplexity, args["codes"].([]string)), true
+		return e.complexity.CommerceProductAttributes.AttributesByKey(childComplexity, args["keys"].([]string)), true
 
 	case "Commerce_ProductAttributes.hasAttribute":
 		if e.complexity.CommerceProductAttributes.HasAttribute == nil {
@@ -4646,7 +4646,7 @@ type Commerce_ProductAttributes {
     attributes: [Commerce_ProductAttribute!]
     hasAttribute(key: String!): Boolean
     getAttribute(key: String!): Commerce_ProductAttribute
-    getAttributesByCode(codes: [String!]): [Commerce_ProductAttribute!]
+    getAttributesByKey(keys: [String!]): [Commerce_ProductAttribute!]
 }
 
 type Commerce_ProductAttribute {
@@ -5067,17 +5067,17 @@ func (ec *executionContext) field_Commerce_ProductAttributes_getAttribute_args(c
 	return args, nil
 }
 
-func (ec *executionContext) field_Commerce_ProductAttributes_getAttributesByCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_ProductAttributes_getAttributesByKey_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 []string
-	if tmp, ok := rawArgs["codes"]; ok {
+	if tmp, ok := rawArgs["keys"]; ok {
 		arg0, err = ec.unmarshalOString2ᚕstring(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["codes"] = arg0
+	args["keys"] = arg0
 	return args, nil
 }
 
@@ -13905,7 +13905,7 @@ func (ec *executionContext) _Commerce_ProductAttributes_getAttribute(ctx context
 	return ec.marshalOCommerce_ProductAttribute2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐAttribute(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_ProductAttributes_getAttributesByCode(ctx context.Context, field graphql.CollectedField, obj *domain1.Attributes) graphql.Marshaler {
+func (ec *executionContext) _Commerce_ProductAttributes_getAttributesByKey(ctx context.Context, field graphql.CollectedField, obj *domain1.Attributes) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -13916,7 +13916,7 @@ func (ec *executionContext) _Commerce_ProductAttributes_getAttributesByCode(ctx 
 	}
 	ctx = graphql.WithResolverContext(ctx, rctx)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Commerce_ProductAttributes_getAttributesByCode_args(ctx, rawArgs)
+	args, err := ec.field_Commerce_ProductAttributes_getAttributesByKey_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -13925,7 +13925,7 @@ func (ec *executionContext) _Commerce_ProductAttributes_getAttributesByCode(ctx 
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.AttributesByCode(args["codes"].([]string)), nil
+		return obj.AttributesByKey(args["keys"].([]string)), nil
 	})
 	if resTmp == nil {
 		return graphql.Null
@@ -20446,8 +20446,8 @@ func (ec *executionContext) _Commerce_ProductAttributes(ctx context.Context, sel
 			out.Values[i] = ec._Commerce_ProductAttributes_hasAttribute(ctx, field, obj)
 		case "getAttribute":
 			out.Values[i] = ec._Commerce_ProductAttributes_getAttribute(ctx, field, obj)
-		case "getAttributesByCode":
-			out.Values[i] = ec._Commerce_ProductAttributes_getAttributesByCode(ctx, field, obj)
+		case "getAttributesByKey":
+			out.Values[i] = ec._Commerce_ProductAttributes_getAttributesByKey(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
