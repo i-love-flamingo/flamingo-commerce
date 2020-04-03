@@ -602,7 +602,7 @@ func (a Attributes) Attribute(key string) Attribute {
 	return attribute
 }
 
-// AttributesByKeys returns slice of attributes by given attribute keys
+// AttributesByKey returns slice of attributes by given attribute keys
 func (a Attributes) AttributesByKey(keys []string) []Attribute {
 	res := make([]Attribute, 0)
 	for _, key := range keys {
