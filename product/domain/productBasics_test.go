@@ -118,6 +118,28 @@ func TestBasicProductHasAttribute(t *testing.T) {
 	assert.False(t, b.HasAttribute("Code"))
 }
 
+func TestBasicProductHasGetAttributesByKey(t *testing.T) {
+	b := BasicProductData{}
+	b.Attributes = map[string]Attribute{
+		"foo": {Code: "foo"},
+		"bar": {Code: "bar"},
+	}
+	assert.Equal(t, []Attribute{
+		{Code: "foo"},
+		{Code: "bar"},
+	}, b.Attributes.AttributesByKey([]string{"foo", "bar"}))
+
+	assert.Equal(t, []Attribute{
+		{Code: "bar"},
+		{Code: "foo"},
+	}, b.Attributes.AttributesByKey([]string{"bar", "foo"}))
+
+	assert.Equal(t, []Attribute{
+		{Code: "foo"},
+		{Code: "bar"},
+	}, b.Attributes.AttributesByKey([]string{"foo", "baz", "bar"}))
+}
+
 func TestBasicProductGetFinalPrice(t *testing.T) {
 	p := PriceInfo{
 		IsDiscounted: false,

@@ -601,3 +601,15 @@ func (a Attributes) Attribute(key string) Attribute {
 	attribute := a[key]
 	return attribute
 }
+
+// AttributesByKey returns slice of attributes by given attribute keys
+func (a Attributes) AttributesByKey(keys []string) []Attribute {
+	res := make([]Attribute, 0)
+	for _, key := range keys {
+		if a.HasAttribute(key) {
+			res = append(res, a.Attribute(key))
+		}
+	}
+
+	return res
+}

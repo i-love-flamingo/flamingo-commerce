@@ -115,10 +115,12 @@ type Commerce_ProductAttributes {
     attributes: [Commerce_ProductAttribute!]
     hasAttribute(key: String!): Boolean
     getAttribute(key: String!): Commerce_ProductAttribute
+    getAttributesByKey(keys: [String!]): [Commerce_ProductAttribute!]
 }
 
 type Commerce_ProductAttribute {
     code: String!
+    codeLabel: String!
     label: String!
     unitCode: String!
 }
