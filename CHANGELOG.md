@@ -14,7 +14,10 @@
     - removed depricated viewdata (CartTotals)
 - products:
     - product category breadcrumb is not filled in controller - if you want a breadcrum you can use category data functions
-    - product category fields are changed to use a categoryTeaser
+    - product category fields are changed to use a categoryTeaser       
+    - product attributes:
+        - Added AttributesByKey domain method to filter attributes by key and exposed this method as getAttributesByKey in GraphQL
+        - Exposing codeLabel property in the Commerce_ProductAttribute type in GraphQL
 - category:
     - Tree object uses a Tree Entity now which contains NOT all category properties. You have to fetch the category details separate on demand:
         - search for usages of the data funcs - they may need changes in rendering the data: `data('category´´..`
