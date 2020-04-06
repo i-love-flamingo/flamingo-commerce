@@ -41,7 +41,7 @@ type (
 		Cart         cart.Cart
 	}
 
-	//PlaceOrderPaymentInfo holding payment infos
+	// PlaceOrderPaymentInfo holding payment infos
 	PlaceOrderPaymentInfo struct {
 		Gateway         string
 		PaymentProvider string
@@ -65,16 +65,16 @@ var (
 	cartValidationFailCount = stats.Int64("flamingo-commerce/checkout/orders/cart_validation_failed", "Count of failures while validating carts", stats.UnitDimensionless)
 
 	// noPaymentSelectionCount counts error for orders without payment selection
-	noPaymentSelectionCount = stats.Int64("flamingo-commerce/checkout/orders/no_payment_selection", "Count of orders without having a selected payment", stats.UnitDimensionless)
+	noPaymentSelectionCount = stats.Int64("flamingo-commerce/checkout/orders/no_payment_selection", "Count of carts without having a selected payment", stats.UnitDimensionless)
 
-	// selectedPaymentGatewayNotFoundCount counts errors if payment gateway for selected payment could not be found
-	selectedPaymentGatewayNotFoundCount = stats.Int64("flamingo-commerce/checkout/orders/selected_payment_gateway_not_found", "The selected payment gateway could not be found", stats.UnitDimensionless)
+	// paymentGatewayNotFoundCount counts errors if payment gateway for selected payment could not be found
+	paymentGatewayNotFoundCount = stats.Int64("flamingo-commerce/checkout/orders/payment_gateway_not_found", "The selected payment gateway could not be found", stats.UnitDimensionless)
 
 	// paymentFlowStatusErrorCount counts errors while fetching payment flow status
 	paymentFlowStatusErrorCount = stats.Int64("flamingo-commerce/checkout/orders/payment_flow_status_error", "Count of failures while fetching payment flow status", stats.UnitDimensionless)
 
 	// orderPaymentFromFlowErrorCount counts errors while fetching payment from flow
-	orderPaymentFromFlowErrorCount = stats.Int64("flamingo-commerce/checkout/orders/order_payment_from_flow", "Count of failures while fetching payment from flow", stats.UnitDimensionless)
+	orderPaymentFromFlowErrorCount = stats.Int64("flamingo-commerce/checkout/orders/order_payment_from_flow_error", "Count of failures while fetching payment from flow", stats.UnitDimensionless)
 
 	// paymentFlowStatusFailedCanceledCount counts orders trying to be placed with payment status either failed or canceled
 	paymentFlowStatusFailedCanceledCount = stats.Int64("flamingo-commerce/checkout/orders/payment_flow_status_failed_canceled", "Count of payments with status failed or canceled", stats.UnitDimensionless)
@@ -94,9 +94,9 @@ func init() {
 	openCensusViews := map[string]*stats.Int64Measure{
 		"flamingo-commerce/checkout/orders/cart_validation_failed":              cartValidationFailCount,
 		"flamingo-commerce/checkout/orders/no_payment_selection":                noPaymentSelectionCount,
-		"flamingo-commerce/checkout/orders/selected_payment_gateway_not_found":  selectedPaymentGatewayNotFoundCount,
+		"flamingo-commerce/checkout/orders/payment_gateway_not_found":           paymentGatewayNotFoundCount,
 		"flamingo-commerce/checkout/orders/payment_flow_status_error":           paymentFlowStatusErrorCount,
-		"flamingo-commerce/checkout/orders/order_payment_from_flow":             orderPaymentFromFlowErrorCount,
+		"flamingo-commerce/checkout/orders/order_payment_from_flow_error":       orderPaymentFromFlowErrorCount,
 		"flamingo-commerce/checkout/orders/payment_flow_status_failed_canceled": paymentFlowStatusFailedCanceledCount,
 		"flamingo-commerce/checkout/orders/payment_flow_status_aborted":         paymentFlowStatusAbortedCount,
 		"flamingo-commerce/checkout/orders/place_order_failed":                  placeOrderFailCount,
@@ -425,8 +425,8 @@ func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, dec
 
 	gateway, err := os.GetPaymentGateway(ctx, decoratedCart.Cart.PaymentSelection.Gateway())
 	if err != nil {
-		// record selectedPaymentGatewayNotFoundCount metric
-		stats.Record(ctx, selectedPaymentGatewayNotFoundCount.M(1))
+		// record paymentGatewayNotFoundCount metric
+		stats.Record(ctx, paymentGatewayNotFoundCount.M(1))
 		os.logger.WithContext(ctx).Error(fmt.Sprintf("cart.checkoutcontroller.submitaction: Error %v  Gateway: %v", err, decoratedCart.Cart.PaymentSelection.Gateway()))
 
 		return nil, errors.New("selected gateway not available")

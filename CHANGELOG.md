@@ -18,6 +18,18 @@
 * Update source service to support external location codes.
   * Adds `ExternalLocationCode` to the `Source` struct.
   * Update `SetSourcesForCartItems()` to use the new `SourcingServiceDetail` functionality if the bound service implements the interface
+* Update `OrderService` to expose more metrics regarding the place order process:
+    ```
+    flamingo-commerce/checkout/orders/cart_validation_failed
+    flamingo-commerce/checkout/orders/no_payment_selection
+    flamingo-commerce/checkout/orders/payment_gateway_not_found
+    flamingo-commerce/checkout/orders/payment_flow_status_error
+    flamingo-commerce/checkout/orders/order_payment_from_flow_error
+    flamingo-commerce/checkout/orders/payment_flow_status_failed_canceled
+    flamingo-commerce/checkout/orders/payment_flow_status_aborted
+    flamingo-commerce/checkout/orders/place_order_failed
+    flamingo-commerce/checkout/orders/place_order_successful
+    ```
   
 **cart**
 * inMemoryBehaviour: Allow custom logic for GiftCard / Voucher handling
