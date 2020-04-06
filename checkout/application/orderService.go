@@ -6,21 +6,19 @@ import (
 	"errors"
 	"fmt"
 
+	"flamingo.me/flamingo-commerce/v3/cart/application"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
+	"flamingo.me/flamingo-commerce/v3/checkout/domain"
 	paymentDomain "flamingo.me/flamingo-commerce/v3/payment/domain"
-	"go.opencensus.io/stats"
-	"go.opencensus.io/stats/view"
-
+	"flamingo.me/flamingo-commerce/v3/payment/interfaces"
+	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/opencensus"
 	"flamingo.me/flamingo/v3/framework/web"
-
-	"flamingo.me/flamingo-commerce/v3/cart/application"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
-	"flamingo.me/flamingo-commerce/v3/checkout/domain"
-	"flamingo.me/flamingo-commerce/v3/payment/interfaces"
-	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
+	"go.opencensus.io/stats"
+	"go.opencensus.io/stats/view"
 )
 
 type (
@@ -43,7 +41,7 @@ type (
 		Cart         cart.Cart
 	}
 
-	//PlaceOrderPaymentInfo holding payment infos
+	// PlaceOrderPaymentInfo holding payment infos
 	PlaceOrderPaymentInfo struct {
 		Gateway         string
 		PaymentProvider string
@@ -62,11 +60,55 @@ const (
 	LastPlacedOrderSessionKey = "orderservice_last_placed"
 )
 
-var orderFailedStat = stats.Int64("flamingo-commerce/orderfailed", "my stat records 1 occurrence per error", stats.UnitDimensionless)
+var (
+	// cartValidationFailCount counts validation failures on carts
+	cartValidationFailCount = stats.Int64("flamingo-commerce/checkout/orders/cart_validation_failed", "Count of failures while validating carts", stats.UnitDimensionless)
+
+	// noPaymentSelectionCount counts error for orders without payment selection
+	noPaymentSelectionCount = stats.Int64("flamingo-commerce/checkout/orders/no_payment_selection", "Count of carts without having a selected payment", stats.UnitDimensionless)
+
+	// paymentGatewayNotFoundCount counts errors if payment gateway for selected payment could not be found
+	paymentGatewayNotFoundCount = stats.Int64("flamingo-commerce/checkout/orders/payment_gateway_not_found", "The selected payment gateway could not be found", stats.UnitDimensionless)
+
+	// paymentFlowStatusErrorCount counts errors while fetching payment flow status
+	paymentFlowStatusErrorCount = stats.Int64("flamingo-commerce/checkout/orders/payment_flow_status_error", "Count of failures while fetching payment flow status", stats.UnitDimensionless)
+
+	// orderPaymentFromFlowErrorCount counts errors while fetching payment from flow
+	orderPaymentFromFlowErrorCount = stats.Int64("flamingo-commerce/checkout/orders/order_payment_from_flow_error", "Count of failures while fetching payment from flow", stats.UnitDimensionless)
+
+	// paymentFlowStatusFailedCanceledCount counts orders trying to be placed with payment status either failed or canceled
+	paymentFlowStatusFailedCanceledCount = stats.Int64("flamingo-commerce/checkout/orders/payment_flow_status_failed_canceled", "Count of payments with status failed or canceled", stats.UnitDimensionless)
+
+	// paymentFlowStatusAbortedCount counts orders trying to be placed with payment status aborted
+	paymentFlowStatusAbortedCount = stats.Int64("flamingo-commerce/checkout/orders/payment_flow_status_aborted", "Count of payments with status aborted", stats.UnitDimensionless)
+
+	// placeOrderFailCount counts failed placed orders
+	placeOrderFailCount = stats.Int64("flamingo-commerce/checkout/orders/place_order_failed", "Count of failures while placing orders", stats.UnitDimensionless)
+
+	// placeOrderSuccessCount counts successfully placed orders
+	placeOrderSuccessCount = stats.Int64("flamingo-commerce/checkout/orders/place_order_successful", "Count of successfully placed orders", stats.UnitDimensionless)
+)
 
 func init() {
 	gob.Register(PlaceOrderInfo{})
-	opencensus.View("flamingo-commerce/orderfailed/count", orderFailedStat, view.Count())
+	openCensusViews := map[string]*stats.Int64Measure{
+		"flamingo-commerce/checkout/orders/cart_validation_failed":              cartValidationFailCount,
+		"flamingo-commerce/checkout/orders/no_payment_selection":                noPaymentSelectionCount,
+		"flamingo-commerce/checkout/orders/payment_gateway_not_found":           paymentGatewayNotFoundCount,
+		"flamingo-commerce/checkout/orders/payment_flow_status_error":           paymentFlowStatusErrorCount,
+		"flamingo-commerce/checkout/orders/order_payment_from_flow_error":       orderPaymentFromFlowErrorCount,
+		"flamingo-commerce/checkout/orders/payment_flow_status_failed_canceled": paymentFlowStatusFailedCanceledCount,
+		"flamingo-commerce/checkout/orders/payment_flow_status_aborted":         paymentFlowStatusAbortedCount,
+		"flamingo-commerce/checkout/orders/place_order_failed":                  placeOrderFailCount,
+		"flamingo-commerce/checkout/orders/place_order_successful":              placeOrderSuccessCount,
+	}
+
+	for name, measure := range openCensusViews {
+		err := opencensus.View(name, measure, view.Count())
+		if err != nil {
+			panic(err)
+		}
+	}
 }
 
 // Inject dependencies
@@ -93,13 +135,17 @@ func (os *OrderService) SetSources(ctx context.Context, session *web.Session) er
 	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(ctx, session)
 	if err != nil {
 		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error ", err)
+
 		return err
 	}
+
 	err = os.sourcingEngine.SetSourcesForCartItems(ctx, session, decoratedCart)
 	if err != nil {
 		os.logger.WithContext(ctx).Error("Error while getting sources: ", err)
+
 		return errors.New("error while setting sources")
 	}
+
 	return nil
 }
 
@@ -109,12 +155,14 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.S
 
 	if billingAddress == nil {
 		os.logger.WithContext(ctx).Warn("CurrentCartSaveInfos called without billing address")
+
 		return errors.New("Billing Address is missing")
 	}
 
 	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(ctx, session)
 	if err != nil {
 		os.logger.WithContext(ctx).Error("CurrentCartSaveInfos GetDecoratedCart Error ", err)
+
 		return err
 	}
 
@@ -122,6 +170,7 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.S
 	err = os.cartService.UpdateBillingAddress(ctx, session, billingAddress)
 	if err != nil {
 		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder UpdateBillingAddress Error ", err)
+
 		return err
 	}
 
@@ -134,16 +183,17 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.S
 			err = os.cartService.UpdateDeliveryInfo(ctx, session, d.DeliveryInfo.Code, newDeliveryInfoUpdateCommand)
 			if err != nil {
 				os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder UpdateDeliveryInfosAndBilling Error ", err)
+
 				return err
 			}
 		}
-
 	}
 
 	// Update Purchaser
 	err = os.cartService.UpdatePurchaser(ctx, session, purchaser, additionalData)
 	if err != nil {
 		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder UpdatePurchaser Error ", err)
+
 		return err
 	}
 
@@ -151,8 +201,10 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.S
 	err = os.SetSources(ctx, session)
 	if err != nil {
 		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder SetSources Error ", err)
+
 		return err
 	}
+
 	return nil
 }
 
@@ -179,37 +231,43 @@ func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.
 		info, err = func() (*PlaceOrderInfo, error) {
 			decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(placeOrderContext, session)
 			if err != nil {
-				// record fail count metric
-				stats.Record(placeOrderContext, orderFailedStat.M(1))
 				os.logger.WithContext(placeOrderContext).Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error ", err)
+
 				return nil, err
 			}
 
 			return os.placeOrder(placeOrderContext, session, decoratedCart, cartPayment)
 		}()
 	})
+
 	return info, err
 }
 
 func (os *OrderService) placeOrder(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart, payment placeorder.Payment) (*PlaceOrderInfo, error) {
 	validationResult := os.cartService.ValidateCart(ctx, session, decoratedCart)
 	if !validationResult.IsValid() {
-		// record fail count metric
-		stats.Record(ctx, orderFailedStat.M(1))
+		// record cartValidationFailCount metric
+		stats.Record(ctx, cartValidationFailCount.M(1))
 		os.logger.WithContext(ctx).Warn("Try to place an invalid cart")
+
 		return nil, errors.New("cart is invalid")
 	}
 
 	placedOrderInfos, err := os.cartService.PlaceOrderWithCart(ctx, session, &decoratedCart.Cart, &payment)
 	if err != nil {
-		// record fail count metric
-		stats.Record(ctx, orderFailedStat.M(1))
+		// record placeOrderFailCount metric
+		stats.Record(ctx, placeOrderFailCount.M(1))
 		os.logger.WithContext(ctx).Error("Error during place Order:" + err.Error())
+
 		return nil, errors.New("error while placing the order. please contact customer support")
 	}
 
 	placeOrderInfo := os.preparePlaceOrderInfo(ctx, decoratedCart.Cart, placedOrderInfos, payment)
 	os.storeLastPlacedOrder(ctx, placeOrderInfo)
+
+	// record placeOrderSuccessCount metric
+	stats.Record(ctx, placeOrderSuccessCount.M(1))
+
 	return placeOrderInfo, nil
 }
 
@@ -233,15 +291,15 @@ func (os *OrderService) CurrentCartPlaceOrderWithPaymentProcessing(ctx context.C
 			// fetch decorated cart either via cache or freshly from cart receiver service
 			decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(placeOrderContext, session)
 			if err != nil {
-				// record fail count metric
-				stats.Record(placeOrderContext, orderFailedStat.M(1))
 				os.logger.WithContext(placeOrderContext).Warn("Cannot create decorated cart from cart")
+
 				return nil, errors.New("cart is invalid")
 			}
 
 			return os.placeOrderWithPaymentProcessing(placeOrderContext, decoratedCart, session)
 		}()
 	})
+
 	return info, err
 }
 
@@ -255,6 +313,7 @@ func (os *OrderService) CartPlaceOrderWithPaymentProcessing(ctx context.Context,
 	web.RunWithDetachedContext(ctx, func(placeOrderContext context.Context) {
 		info, err = os.placeOrderWithPaymentProcessing(placeOrderContext, decoratedCart, session)
 	})
+
 	return info, err
 }
 
@@ -266,6 +325,7 @@ func (os *OrderService) CartPlaceOrder(ctx context.Context, decoratedCart *decor
 	web.RunWithDetachedContext(ctx, func(placeOrderContext context.Context) {
 		info, err = os.placeOrder(placeOrderContext, web.SessionFromContext(ctx), decoratedCart, payment)
 	})
+
 	return info, err
 }
 
@@ -276,6 +336,7 @@ func (os *OrderService) GetContactMail(cart cart.Cart) string {
 	if shippingEmail == "" && cart.BillingAddress != nil {
 		shippingEmail = cart.BillingAddress.Email
 	}
+
 	return shippingEmail
 }
 
@@ -306,6 +367,7 @@ func (os *OrderService) LastPlacedOrder(ctx context.Context) (*PlaceOrderInfo, e
 // HasLastPlacedOrder returns if a order has been previously placed
 func (os *OrderService) HasLastPlacedOrder(ctx context.Context) bool {
 	lastPlaced, err := os.LastPlacedOrder(ctx)
+
 	return lastPlaced != nil && err == nil
 }
 
@@ -320,6 +382,7 @@ func (os *OrderService) LastPlacedOrCurrentCart(ctx context.Context) (*decorator
 	lastPlacedOrder, err := os.LastPlacedOrder(ctx)
 	if err != nil {
 		os.logger.Warn("couldn't get last placed order:", err)
+
 		return nil, err
 	}
 
@@ -332,6 +395,7 @@ func (os *OrderService) LastPlacedOrCurrentCart(ctx context.Context) (*decorator
 	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(ctx, web.SessionFromContext(ctx))
 	if err != nil {
 		os.logger.WithContext(ctx).Error("ViewDecoratedCart Error:", err)
+
 		return nil, err
 	}
 
@@ -343,60 +407,72 @@ func (os *OrderService) LastPlacedOrCurrentCart(ctx context.Context) (*decorator
 func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, decoratedCart *decorator.DecoratedCart,
 	session *web.Session) (*PlaceOrderInfo, error) {
 	if !decoratedCart.Cart.IsPaymentSelected() {
-		stats.Record(ctx, orderFailedStat.M(1))
+		// record noPaymentSelectionCount metric
+		stats.Record(ctx, noPaymentSelectionCount.M(1))
 		os.logger.WithContext(ctx).Error("cart.checkoutcontroller.submitaction: Error Gateway not in carts PaymentSelection")
+
 		return nil, errors.New("no payment gateway selected")
 	}
 
 	validationResult := os.cartService.ValidateCart(ctx, session, decoratedCart)
 	if !validationResult.IsValid() {
-		// record fail count metric
-		stats.Record(ctx, orderFailedStat.M(1))
+		// record cartValidationFailCount metric
+		stats.Record(ctx, cartValidationFailCount.M(1))
 		os.logger.WithContext(ctx).Warn("Try to place an invalid cart")
+
 		return nil, errors.New("cart is invalid")
 	}
 
 	gateway, err := os.GetPaymentGateway(ctx, decoratedCart.Cart.PaymentSelection.Gateway())
 	if err != nil {
-		// record fail count metric
-		stats.Record(ctx, orderFailedStat.M(1))
+		// record paymentGatewayNotFoundCount metric
+		stats.Record(ctx, paymentGatewayNotFoundCount.M(1))
 		os.logger.WithContext(ctx).Error(fmt.Sprintf("cart.checkoutcontroller.submitaction: Error %v  Gateway: %v", err, decoratedCart.Cart.PaymentSelection.Gateway()))
+
 		return nil, errors.New("selected gateway not available")
 	}
 
 	flowStatus, err := gateway.FlowStatus(ctx, &decoratedCart.Cart, PaymentFlowStandardCorrelationID)
 	if err != nil {
-		// record fail count metric
-		stats.Record(ctx, orderFailedStat.M(1))
+		// record paymentFlowStatusErrorCount metric
+		stats.Record(ctx, paymentFlowStatusErrorCount.M(1))
+
 		return nil, err
 	}
 
 	if flowStatus.Status == paymentDomain.PaymentFlowStatusFailed || flowStatus.Status == paymentDomain.PaymentFlowStatusCancelled {
-		// record fail count metric
-		stats.Record(ctx, orderFailedStat.M(1))
+		// record paymentFlowStatusFailedCanceledCount metric
+		stats.Record(ctx, paymentFlowStatusFailedCanceledCount.M(1))
 		os.logger.WithContext(ctx).Info("cart.checkoutcontroller.submitaction: PaymentFlowStatusFailed or PaymentFlowStatusCancelled: Error ", flowStatus.Error)
+
 		return nil, flowStatus.Error
 	}
 
 	if flowStatus.Status == paymentDomain.PaymentFlowStatusAborted {
+		// record paymentFlowStatusAbortedCount metric
+		stats.Record(ctx, paymentFlowStatusAbortedCount.M(1))
 		os.logger.WithContext(ctx).Info("cart.checkoutcontroller.submitaction: PaymentFlowStatusAborted: Error ", flowStatus.Error)
+
 		return nil, flowStatus.Error
 	}
 
 	cartPayment, err := gateway.OrderPaymentFromFlow(ctx, &decoratedCart.Cart, PaymentFlowStandardCorrelationID)
 	if err != nil {
-		// record fail count metric
-		stats.Record(ctx, orderFailedStat.M(1))
+		// record orderPaymentFromFlowErrorCount metric
+		stats.Record(ctx, orderPaymentFromFlowErrorCount.M(1))
+
 		return nil, err
 	}
 
 	placedOrderInfos, err := os.cartService.PlaceOrderWithCart(ctx, session, &decoratedCart.Cart, cartPayment)
 	if err != nil {
-		// record fail count metric
-		stats.Record(ctx, orderFailedStat.M(1))
+		// record placeOrderFailCount metric
+		stats.Record(ctx, placeOrderFailCount.M(1))
 		os.logger.WithContext(ctx).Error("Error during place Order:" + err.Error())
+
 		return nil, err
 	}
+
 	os.logger.WithContext(ctx).Info("Placed Order: ", placedOrderInfos)
 
 	placeOrderInfo := os.preparePlaceOrderInfo(ctx, decoratedCart.Cart, placedOrderInfos, *cartPayment)
@@ -405,8 +481,12 @@ func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, dec
 	err = gateway.ConfirmResult(ctx, &decoratedCart.Cart, cartPayment)
 	if err != nil {
 		os.logger.WithContext(ctx).Error("Error during gateway.ConfirmResult:" + err.Error())
+
 		return nil, err
 	}
+
+	// record placeOrderSuccessCount metric
+	stats.Record(ctx, placeOrderSuccessCount.M(1))
 
 	return placeOrderInfo, nil
 }
