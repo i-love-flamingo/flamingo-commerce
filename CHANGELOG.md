@@ -45,6 +45,9 @@
 * product attributes:
   * Added `AttributesByKey` domain method to filter attributes by key and exposed this method as `getAttributesByKey` in GraphQL
   * GraphQL: Exposing `codeLabel` property in the `Commerce_ProductAttribute` type
+  
+**payment**
+* Introduced error message for already used idempotency key 
 
 ## v3.1.0
 **tests**

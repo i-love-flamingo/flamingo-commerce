@@ -54,16 +54,18 @@ type (
 )
 
 const (
-	// PaymentErrorCodeFailed error
+	// PaymentErrorCodeFailed error will be returned when a general error occurred
 	PaymentErrorCodeFailed = "failed"
-	// PaymentErrorCodeAuthorizeFailed error
+	// PaymentErrorCodeAuthorizeFailed error will be returned when the authorization failed
 	PaymentErrorCodeAuthorizeFailed = "authorization_failed"
-	// PaymentErrorCodeCaptureFailed error
+	// PaymentErrorCodeCaptureFailed error will be returned when capturing failed
 	PaymentErrorCodeCaptureFailed = "capture_failed"
-	// PaymentErrorAbortedByCustomer error
+	// PaymentErrorAbortedByCustomer error will be returned when the payment will be aborted by the customer
 	PaymentErrorAbortedByCustomer = "aborted_by_customer"
-	// PaymentErrorCodeCancelled error
+	// PaymentErrorCodeCancelled error will be returned when the payment will be canceled
 	PaymentErrorCodeCancelled = "cancelled"
+	// PaymentErrorDuplicateIdempotencyKey error will be returned when idempotency key already in use
+	PaymentErrorDuplicateIdempotencyKey = "duplicate_idempotency_key"
 
 	// PaymentFlowStatusUnapproved payment started
 	PaymentFlowStatusUnapproved = "payment_unapproved"
