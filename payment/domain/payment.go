@@ -54,7 +54,7 @@ type (
 )
 
 const (
-	// PaymentErrorCodeFailed error will be returned when a general error occured
+	// PaymentErrorCodeFailed error will be returned when a general error occurred
 	PaymentErrorCodeFailed = "failed"
 	// PaymentErrorCodeAuthorizeFailed error will be returned when the authorization failed
 	PaymentErrorCodeAuthorizeFailed = "authorization_failed"
