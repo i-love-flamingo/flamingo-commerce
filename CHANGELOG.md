@@ -1,5 +1,8 @@
 # Changelog
-## v3.2.X [upcoming]
+## v3.3.0 [upcoming]
+
+
+## v3.2.0
 **w3cdatalayer**
 * Fixed a bug that causes the datalayer to panic if it failed to build an absolute url
 * Introduced a configuration option to choose between base64url and hex encoding for the hashed values
