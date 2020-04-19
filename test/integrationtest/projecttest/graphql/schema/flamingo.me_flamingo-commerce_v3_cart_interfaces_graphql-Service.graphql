@@ -363,6 +363,72 @@ input Commerce_BillingAddressFormInput {
     email:                  String!
 }
 
+input Commerce_DeliveryAddressFormInput {
+    vat:                    String
+    firstname:              String!
+    lastname:               String!
+    middleName:             String
+    title:                  String
+    salutation:             String
+    street:                 String
+    streetNr:               String
+    addressLine1:           String
+    addressLine2:           String
+    company:                String
+    city:                   String
+    postCode:               String
+    state:                  String
+    regionCode:             String
+    country:                String
+    countryCode:            String
+    phoneNumber:            String
+    email:                  String!
+}
+
+input Commerce_Cart_DeliveryAddressInput {
+    deliveryAddress: Commerce_DeliveryAddressFormInput!
+    useBillingAddress: Boolean!
+    shippingMethod: String
+    shippingCarrier: String
+    deliveryCode: String!
+}
+
+type Commerce_Cart_DeliveryAddressForms {
+    forms: [Commerce_Cart_DeliveryAddressForm!]
+}
+
+type Commerce_Cart_DeliveryAddressForm {
+    formData:       Commerce_Cart_DeliveryAddressFormData
+    useBillingAddress: Boolean!
+    deliveryCode: String!
+    method: String
+    carrier: String
+    validationInfo: Commerce_Cart_Form_ValidationInfo
+    processed: Boolean
+}
+
+type Commerce_Cart_DeliveryAddressFormData {
+    vat:                    String!
+    firstname:              String!
+    lastname:               String!
+    middleName:             String!
+    title:                  String!
+    salutation:             String!
+    street:                 String!
+    streetNr:               String!
+    addressLine1:           String!
+    addressLine2:           String!
+    company:                String!
+    city:                   String!
+    postCode:               String!
+    state:                  String!
+    regionCode:             String!
+    country:                String!
+    countryCode:            String!
+    phoneNumber:            String!
+    email:                  String!
+}
+
 extend type Query {
     Commerce_Cart: Commerce_DecoratedCart!
     Commerce_Cart_Validator: Commerce_Cart_ValidationResult!
@@ -378,4 +444,5 @@ extend type Mutation {
     Commerce_Cart_ApplyCouponCodeOrGiftCard(code: String!): Commerce_DecoratedCart
     Commerce_Cart_RemoveGiftCard(giftCardCode: String!): Commerce_DecoratedCart
     Commerce_Cart_RemoveCouponCode(couponCode: String!): Commerce_DecoratedCart
+    Commerce_Cart_UpdateDeliveryAddresses(deliveyAdresses: String!): Commerce_DecoratedCart!
 }

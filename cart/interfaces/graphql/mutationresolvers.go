@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/url"
 
+	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	cartForms "flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
 	formApplication "flamingo.me/form/application"
@@ -164,6 +165,16 @@ func (r *CommerceCartMutationResolver) CommerceCartRemoveGiftCard(ctx context.Co
 	}
 
 	return r.q.CommerceCart(ctx)
+}
+
+func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryAddresses(ctx context.Context, deliveyAdresses string) (*dto.DecoratedCart, error) {
+	// call to service
+
+	// call to form handler controller
+
+	// map response to wanted graphql response
+
+	return dto.NewDecoratedCart(&decorator.DecoratedCart{}), nil
 }
 
 //mapCommerce_Cart_BillingAddressForm - helper to map the graphql type Commerce_Cart_BillingAddressForm from common form

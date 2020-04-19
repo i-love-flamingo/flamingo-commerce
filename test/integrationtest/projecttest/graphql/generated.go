@@ -317,6 +317,42 @@ type ComplexityRoot struct {
 		TotalValue func(childComplexity int) int
 	}
 
+	CommerceCartDeliveryAddressForm struct {
+		Carrier           func(childComplexity int) int
+		DeliveryCode      func(childComplexity int) int
+		FormData          func(childComplexity int) int
+		Method            func(childComplexity int) int
+		Processed         func(childComplexity int) int
+		UseBillingAddress func(childComplexity int) int
+		ValidationInfo    func(childComplexity int) int
+	}
+
+	CommerceCartDeliveryAddressFormData struct {
+		AddressLine1 func(childComplexity int) int
+		AddressLine2 func(childComplexity int) int
+		City         func(childComplexity int) int
+		Company      func(childComplexity int) int
+		Country      func(childComplexity int) int
+		CountryCode  func(childComplexity int) int
+		Email        func(childComplexity int) int
+		Firstname    func(childComplexity int) int
+		Lastname     func(childComplexity int) int
+		MiddleName   func(childComplexity int) int
+		PhoneNumber  func(childComplexity int) int
+		PostCode     func(childComplexity int) int
+		RegionCode   func(childComplexity int) int
+		Salutation   func(childComplexity int) int
+		State        func(childComplexity int) int
+		Street       func(childComplexity int) int
+		StreetNr     func(childComplexity int) int
+		Title        func(childComplexity int) int
+		Vat          func(childComplexity int) int
+	}
+
+	CommerceCartDeliveryAddressForms struct {
+		Forms func(childComplexity int) int
+	}
+
 	CommerceCartFormError struct {
 		DefaultLabel func(childComplexity int) int
 		MessageKey   func(childComplexity int) int
@@ -706,6 +742,7 @@ type ComplexityRoot struct {
 		CommerceCartRemoveCouponCode              func(childComplexity int, couponCode string) int
 		CommerceCartRemoveGiftCard                func(childComplexity int, giftCardCode string) int
 		CommerceCartUpdateBillingAddress          func(childComplexity int, addressForm *forms.BillingAddressForm) int
+		CommerceCartUpdateDeliveryAddresses       func(childComplexity int, deliveyAdresses string) int
 		CommerceCartUpdateSelectedPayment         func(childComplexity int, gateway string, method string) int
 		CommerceCheckoutCancelPlaceOrder          func(childComplexity int) int
 		CommerceCheckoutClearPlaceOrder           func(childComplexity int) int
@@ -742,6 +779,7 @@ type MutationResolver interface {
 	CommerceCartApplyCouponCodeOrGiftCard(ctx context.Context, code string) (*dto1.DecoratedCart, error)
 	CommerceCartRemoveGiftCard(ctx context.Context, giftCardCode string) (*dto1.DecoratedCart, error)
 	CommerceCartRemoveCouponCode(ctx context.Context, couponCode string) (*dto1.DecoratedCart, error)
+	CommerceCartUpdateDeliveryAddresses(ctx context.Context, deliveyAdresses string) (*dto1.DecoratedCart, error)
 	CommerceCheckoutStartPlaceOrder(ctx context.Context, returnURL string) (*dto2.StartPlaceOrderResult, error)
 	CommerceCheckoutCancelPlaceOrder(ctx context.Context) (bool, error)
 	CommerceCheckoutClearPlaceOrder(ctx context.Context) (bool, error)
@@ -2155,6 +2193,195 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceCartDefaultPaymentSelection.TotalValue(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressForm.carrier":
+		if e.complexity.CommerceCartDeliveryAddressForm.Carrier == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressForm.Carrier(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressForm.deliveryCode":
+		if e.complexity.CommerceCartDeliveryAddressForm.DeliveryCode == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressForm.DeliveryCode(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressForm.formData":
+		if e.complexity.CommerceCartDeliveryAddressForm.FormData == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressForm.FormData(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressForm.method":
+		if e.complexity.CommerceCartDeliveryAddressForm.Method == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressForm.Method(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressForm.processed":
+		if e.complexity.CommerceCartDeliveryAddressForm.Processed == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressForm.Processed(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressForm.useBillingAddress":
+		if e.complexity.CommerceCartDeliveryAddressForm.UseBillingAddress == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressForm.UseBillingAddress(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressForm.validationInfo":
+		if e.complexity.CommerceCartDeliveryAddressForm.ValidationInfo == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressForm.ValidationInfo(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressFormData.addressLine1":
+		if e.complexity.CommerceCartDeliveryAddressFormData.AddressLine1 == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressFormData.AddressLine1(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressFormData.addressLine2":
+		if e.complexity.CommerceCartDeliveryAddressFormData.AddressLine2 == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressFormData.AddressLine2(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressFormData.city":
+		if e.complexity.CommerceCartDeliveryAddressFormData.City == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressFormData.City(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressFormData.company":
+		if e.complexity.CommerceCartDeliveryAddressFormData.Company == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressFormData.Company(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressFormData.country":
+		if e.complexity.CommerceCartDeliveryAddressFormData.Country == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressFormData.Country(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressFormData.countryCode":
+		if e.complexity.CommerceCartDeliveryAddressFormData.CountryCode == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressFormData.CountryCode(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressFormData.email":
+		if e.complexity.CommerceCartDeliveryAddressFormData.Email == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressFormData.Email(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressFormData.firstname":
+		if e.complexity.CommerceCartDeliveryAddressFormData.Firstname == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressFormData.Firstname(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressFormData.lastname":
+		if e.complexity.CommerceCartDeliveryAddressFormData.Lastname == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressFormData.Lastname(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressFormData.middleName":
+		if e.complexity.CommerceCartDeliveryAddressFormData.MiddleName == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressFormData.MiddleName(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressFormData.phoneNumber":
+		if e.complexity.CommerceCartDeliveryAddressFormData.PhoneNumber == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressFormData.PhoneNumber(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressFormData.postCode":
+		if e.complexity.CommerceCartDeliveryAddressFormData.PostCode == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressFormData.PostCode(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressFormData.regionCode":
+		if e.complexity.CommerceCartDeliveryAddressFormData.RegionCode == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressFormData.RegionCode(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressFormData.salutation":
+		if e.complexity.CommerceCartDeliveryAddressFormData.Salutation == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressFormData.Salutation(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressFormData.state":
+		if e.complexity.CommerceCartDeliveryAddressFormData.State == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressFormData.State(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressFormData.street":
+		if e.complexity.CommerceCartDeliveryAddressFormData.Street == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressFormData.Street(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressFormData.streetNr":
+		if e.complexity.CommerceCartDeliveryAddressFormData.StreetNr == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressFormData.StreetNr(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressFormData.title":
+		if e.complexity.CommerceCartDeliveryAddressFormData.Title == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressFormData.Title(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressFormData.vat":
+		if e.complexity.CommerceCartDeliveryAddressFormData.Vat == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressFormData.Vat(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressForms.forms":
+		if e.complexity.CommerceCartDeliveryAddressForms.Forms == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressForms.Forms(childComplexity), true
 
 	case "Commerce_Cart_Form_Error.defaultLabel":
 		if e.complexity.CommerceCartFormError.DefaultLabel == nil {
@@ -3681,6 +3908,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CommerceCartUpdateBillingAddress(childComplexity, args["addressForm"].(*forms.BillingAddressForm)), true
 
+	case "Mutation.Commerce_Cart_UpdateDeliveryAddresses":
+		if e.complexity.Mutation.CommerceCartUpdateDeliveryAddresses == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_Commerce_Cart_UpdateDeliveryAddresses_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CommerceCartUpdateDeliveryAddresses(childComplexity, args["deliveyAdresses"].(string)), true
+
 	case "Mutation.Commerce_Cart_UpdateSelectedPayment":
 		if e.complexity.Mutation.CommerceCartUpdateSelectedPayment == nil {
 			break
@@ -4301,6 +4540,72 @@ input Commerce_BillingAddressFormInput {
     email:                  String!
 }
 
+input Commerce_DeliveryAddressFormInput {
+    vat:                    String
+    firstname:              String!
+    lastname:               String!
+    middleName:             String
+    title:                  String
+    salutation:             String
+    street:                 String
+    streetNr:               String
+    addressLine1:           String
+    addressLine2:           String
+    company:                String
+    city:                   String
+    postCode:               String
+    state:                  String
+    regionCode:             String
+    country:                String
+    countryCode:            String
+    phoneNumber:            String
+    email:                  String!
+}
+
+input Commerce_Cart_DeliveryAddressInput {
+    deliveryAddress: Commerce_DeliveryAddressFormInput!
+    useBillingAddress: Boolean!
+    shippingMethod: String
+    shippingCarrier: String
+    deliveryCode: String!
+}
+
+type Commerce_Cart_DeliveryAddressForms {
+    forms: [Commerce_Cart_DeliveryAddressForm!]
+}
+
+type Commerce_Cart_DeliveryAddressForm {
+    formData:       Commerce_Cart_DeliveryAddressFormData
+    useBillingAddress: Boolean!
+    deliveryCode: String!
+    method: String
+    carrier: String
+    validationInfo: Commerce_Cart_Form_ValidationInfo
+    processed: Boolean
+}
+
+type Commerce_Cart_DeliveryAddressFormData {
+    vat:                    String!
+    firstname:              String!
+    lastname:               String!
+    middleName:             String!
+    title:                  String!
+    salutation:             String!
+    street:                 String!
+    streetNr:               String!
+    addressLine1:           String!
+    addressLine2:           String!
+    company:                String!
+    city:                   String!
+    postCode:               String!
+    state:                  String!
+    regionCode:             String!
+    country:                String!
+    countryCode:            String!
+    phoneNumber:            String!
+    email:                  String!
+}
+
 extend type Query {
     Commerce_Cart: Commerce_DecoratedCart!
     Commerce_Cart_Validator: Commerce_Cart_ValidationResult!
@@ -4316,6 +4621,7 @@ extend type Mutation {
     Commerce_Cart_ApplyCouponCodeOrGiftCard(code: String!): Commerce_DecoratedCart
     Commerce_Cart_RemoveGiftCard(giftCardCode: String!): Commerce_DecoratedCart
     Commerce_Cart_RemoveCouponCode(couponCode: String!): Commerce_DecoratedCart
+    Commerce_Cart_UpdateDeliveryAddresses(deliveyAdresses: String!): Commerce_DecoratedCart!
 }
 `},
 	&ast.Source{Name: "graphql/schema/flamingo.me_flamingo-commerce_v3_category_interfaces_graphql-Service.graphql", Input: `type Commerce_Category_Attributes {
@@ -5231,6 +5537,20 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateBillingAddress_ar
 		}
 	}
 	args["addressForm"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveryAddresses_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["deliveyAdresses"]; ok {
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["deliveyAdresses"] = arg0
 	return args, nil
 }
 
@@ -10446,6 +10766,717 @@ func (ec *executionContext) _Commerce_Cart_DefaultPaymentSelection_totalValue(ct
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_formData(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressForm) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressForm",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FormData, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*CommerceCartDeliveryAddressFormData)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOCommerce_Cart_DeliveryAddressFormData2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋtestᚋintegrationtestᚋprojecttestᚋgraphqlᚐCommerceCartDeliveryAddressFormData(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_useBillingAddress(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressForm) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressForm",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UseBillingAddress, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_deliveryCode(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressForm) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressForm",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DeliveryCode, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_method(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressForm) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressForm",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Method, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_carrier(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressForm) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressForm",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Carrier, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_validationInfo(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressForm) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressForm",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ValidationInfo, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*dto1.ValidationInfo)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOCommerce_Cart_Form_ValidationInfo2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐValidationInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_processed(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressForm) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressForm",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Processed, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*bool)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOBoolean2ᚖbool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressFormData_vat(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressFormData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressFormData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Vat, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressFormData_firstname(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressFormData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressFormData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Firstname, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressFormData_lastname(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressFormData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressFormData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Lastname, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressFormData_middleName(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressFormData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressFormData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MiddleName, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressFormData_title(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressFormData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressFormData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Title, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressFormData_salutation(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressFormData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressFormData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Salutation, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressFormData_street(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressFormData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressFormData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Street, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressFormData_streetNr(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressFormData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressFormData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StreetNr, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressFormData_addressLine1(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressFormData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressFormData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AddressLine1, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressFormData_addressLine2(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressFormData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressFormData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AddressLine2, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressFormData_company(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressFormData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressFormData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Company, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressFormData_city(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressFormData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressFormData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.City, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressFormData_postCode(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressFormData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressFormData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PostCode, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressFormData_state(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressFormData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressFormData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.State, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressFormData_regionCode(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressFormData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressFormData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RegionCode, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressFormData_country(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressFormData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressFormData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Country, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressFormData_countryCode(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressFormData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressFormData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CountryCode, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressFormData_phoneNumber(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressFormData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressFormData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PhoneNumber, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressFormData_email(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressFormData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressFormData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Email, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressForms_forms(ctx context.Context, field graphql.CollectedField, obj *CommerceCartDeliveryAddressForms) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressForms",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Forms, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*CommerceCartDeliveryAddressForm)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOCommerce_Cart_DeliveryAddressForm2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋtestᚋintegrationtestᚋprojecttestᚋgraphqlᚐCommerceCartDeliveryAddressForm(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Cart_Form_Error_messageKey(ctx context.Context, field graphql.CollectedField, obj *domain3.Error) graphql.Marshaler {
@@ -16035,6 +17066,40 @@ func (ec *executionContext) _Mutation_Commerce_Cart_RemoveCouponCode(ctx context
 	return ec.marshalOCommerce_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_Commerce_Cart_UpdateDeliveryAddresses(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_Commerce_Cart_UpdateDeliveryAddresses_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx.Args = args
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CommerceCartUpdateDeliveryAddresses(rctx, args["deliveyAdresses"].(string))
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*dto1.DecoratedCart)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNCommerce_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_Commerce_Checkout_StartPlaceOrder(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -17451,6 +18516,48 @@ func (ec *executionContext) unmarshalInputCommerce_BillingAddressFormInput(ctx c
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx context.Context, v interface{}) (CommerceCartDeliveryAddressInput, error) {
+	var it CommerceCartDeliveryAddressInput
+	var asMap = v.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "deliveryAddress":
+			var err error
+			it.DeliveryAddress, err = ec.unmarshalNCommerce_DeliveryAddressFormInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋtestᚋintegrationtestᚋprojecttestᚋgraphqlᚐCommerceDeliveryAddressFormInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "useBillingAddress":
+			var err error
+			it.UseBillingAddress, err = ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "shippingMethod":
+			var err error
+			it.ShippingMethod, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "shippingCarrier":
+			var err error
+			it.ShippingCarrier, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "deliveryCode":
+			var err error
+			it.DeliveryCode, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCommerce_ChargeQualifierInput(ctx context.Context, v interface{}) (domain.ChargeQualifier, error) {
 	var it domain.ChargeQualifier
 	var asMap = v.(map[string]interface{})
@@ -17466,6 +18573,132 @@ func (ec *executionContext) unmarshalInputCommerce_ChargeQualifierInput(ctx cont
 		case "reference":
 			var err error
 			it.Reference, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCommerce_DeliveryAddressFormInput(ctx context.Context, v interface{}) (CommerceDeliveryAddressFormInput, error) {
+	var it CommerceDeliveryAddressFormInput
+	var asMap = v.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "vat":
+			var err error
+			it.Vat, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "firstname":
+			var err error
+			it.Firstname, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "lastname":
+			var err error
+			it.Lastname, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "middleName":
+			var err error
+			it.MiddleName, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "title":
+			var err error
+			it.Title, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "salutation":
+			var err error
+			it.Salutation, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "street":
+			var err error
+			it.Street, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "streetNr":
+			var err error
+			it.StreetNr, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "addressLine1":
+			var err error
+			it.AddressLine1, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "addressLine2":
+			var err error
+			it.AddressLine2, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "company":
+			var err error
+			it.Company, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "city":
+			var err error
+			it.City, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "postCode":
+			var err error
+			it.PostCode, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "state":
+			var err error
+			it.State, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "regionCode":
+			var err error
+			it.RegionCode, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "country":
+			var err error
+			it.Country, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "countryCode":
+			var err error
+			it.CountryCode, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "phoneNumber":
+			var err error
+			it.PhoneNumber, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "email":
+			var err error
+			it.Email, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -18909,6 +20142,189 @@ func (ec *executionContext) _Commerce_Cart_DefaultPaymentSelection(ctx context.C
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Cart_DeliveryAddressFormImplementors = []string{"Commerce_Cart_DeliveryAddressForm"}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm(ctx context.Context, sel ast.SelectionSet, obj *CommerceCartDeliveryAddressForm) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Cart_DeliveryAddressFormImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_DeliveryAddressForm")
+		case "formData":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_formData(ctx, field, obj)
+		case "useBillingAddress":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_useBillingAddress(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deliveryCode":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_deliveryCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "method":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_method(ctx, field, obj)
+		case "carrier":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_carrier(ctx, field, obj)
+		case "validationInfo":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_validationInfo(ctx, field, obj)
+		case "processed":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_processed(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Cart_DeliveryAddressFormDataImplementors = []string{"Commerce_Cart_DeliveryAddressFormData"}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressFormData(ctx context.Context, sel ast.SelectionSet, obj *CommerceCartDeliveryAddressFormData) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Cart_DeliveryAddressFormDataImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_DeliveryAddressFormData")
+		case "vat":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressFormData_vat(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "firstname":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressFormData_firstname(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "lastname":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressFormData_lastname(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "middleName":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressFormData_middleName(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "title":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressFormData_title(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "salutation":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressFormData_salutation(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "street":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressFormData_street(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "streetNr":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressFormData_streetNr(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "addressLine1":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressFormData_addressLine1(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "addressLine2":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressFormData_addressLine2(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "company":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressFormData_company(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "city":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressFormData_city(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "postCode":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressFormData_postCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "state":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressFormData_state(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "regionCode":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressFormData_regionCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "country":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressFormData_country(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "countryCode":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressFormData_countryCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "phoneNumber":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressFormData_phoneNumber(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "email":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressFormData_email(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Cart_DeliveryAddressFormsImplementors = []string{"Commerce_Cart_DeliveryAddressForms"}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressForms(ctx context.Context, sel ast.SelectionSet, obj *CommerceCartDeliveryAddressForms) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Cart_DeliveryAddressFormsImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_DeliveryAddressForms")
+		case "forms":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForms_forms(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -21090,6 +22506,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_Commerce_Cart_RemoveGiftCard(ctx, field)
 		case "Commerce_Cart_RemoveCouponCode":
 			out.Values[i] = ec._Mutation_Commerce_Cart_RemoveCouponCode(ctx, field)
+		case "Commerce_Cart_UpdateDeliveryAddresses":
+			out.Values[i] = ec._Mutation_Commerce_Cart_UpdateDeliveryAddresses(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "Commerce_Checkout_StartPlaceOrder":
 			out.Values[i] = ec._Mutation_Commerce_Checkout_StartPlaceOrder(ctx, field)
 			if out.Values[i] == graphql.Null {
@@ -21618,6 +23039,20 @@ func (ec *executionContext) marshalNCommerce_Cart_BillingAddressForm2ᚖflamingo
 	return ec._Commerce_Cart_BillingAddressForm(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNCommerce_Cart_DeliveryAddressForm2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋtestᚋintegrationtestᚋprojecttestᚋgraphqlᚐCommerceCartDeliveryAddressForm(ctx context.Context, sel ast.SelectionSet, v CommerceCartDeliveryAddressForm) graphql.Marshaler {
+	return ec._Commerce_Cart_DeliveryAddressForm(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Cart_DeliveryAddressForm2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋtestᚋintegrationtestᚋprojecttestᚋgraphqlᚐCommerceCartDeliveryAddressForm(ctx context.Context, sel ast.SelectionSet, v *CommerceCartDeliveryAddressForm) graphql.Marshaler {
+	if v == nil {
+		if !ec.HasError(graphql.GetResolverContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Commerce_Cart_DeliveryAddressForm(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNCommerce_Cart_Form_Error2flamingoᚗmeᚋformᚋdomainᚐError(ctx context.Context, sel ast.SelectionSet, v domain3.Error) graphql.Marshaler {
 	return ec._Commerce_Cart_Form_Error(ctx, sel, &v)
 }
@@ -21821,6 +23256,18 @@ func (ec *executionContext) marshalNCommerce_DecoratedCart2ᚖflamingoᚗmeᚋfl
 		return graphql.Null
 	}
 	return ec._Commerce_DecoratedCart(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNCommerce_DeliveryAddressFormInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋtestᚋintegrationtestᚋprojecttestᚋgraphqlᚐCommerceDeliveryAddressFormInput(ctx context.Context, v interface{}) (CommerceDeliveryAddressFormInput, error) {
+	return ec.unmarshalInputCommerce_DeliveryAddressFormInput(ctx, v)
+}
+
+func (ec *executionContext) unmarshalNCommerce_DeliveryAddressFormInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋtestᚋintegrationtestᚋprojecttestᚋgraphqlᚐCommerceDeliveryAddressFormInput(ctx context.Context, v interface{}) (*CommerceDeliveryAddressFormInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalNCommerce_DeliveryAddressFormInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋtestᚋintegrationtestᚋprojecttestᚋgraphqlᚐCommerceDeliveryAddressFormInput(ctx, v)
+	return &res, err
 }
 
 func (ec *executionContext) marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx context.Context, sel ast.SelectionSet, v domain.Price) graphql.Marshaler {
@@ -22661,6 +24108,57 @@ func (ec *executionContext) marshalOCommerce_Cart_BillingAddressFormData2flaming
 	return ec._Commerce_Cart_BillingAddressFormData(ctx, sel, &v)
 }
 
+func (ec *executionContext) marshalOCommerce_Cart_DeliveryAddressForm2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋtestᚋintegrationtestᚋprojecttestᚋgraphqlᚐCommerceCartDeliveryAddressForm(ctx context.Context, sel ast.SelectionSet, v []*CommerceCartDeliveryAddressForm) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		rctx := &graphql.ResolverContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithResolverContext(ctx, rctx)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCommerce_Cart_DeliveryAddressForm2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋtestᚋintegrationtestᚋprojecttestᚋgraphqlᚐCommerceCartDeliveryAddressForm(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_DeliveryAddressFormData2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋtestᚋintegrationtestᚋprojecttestᚋgraphqlᚐCommerceCartDeliveryAddressFormData(ctx context.Context, sel ast.SelectionSet, v CommerceCartDeliveryAddressFormData) graphql.Marshaler {
+	return ec._Commerce_Cart_DeliveryAddressFormData(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_DeliveryAddressFormData2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋtestᚋintegrationtestᚋprojecttestᚋgraphqlᚐCommerceCartDeliveryAddressFormData(ctx context.Context, sel ast.SelectionSet, v *CommerceCartDeliveryAddressFormData) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Commerce_Cart_DeliveryAddressFormData(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalOCommerce_Cart_Form_Error2ᚕflamingoᚗmeᚋformᚋdomainᚐError(ctx context.Context, sel ast.SelectionSet, v []domain3.Error) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -22743,6 +24241,13 @@ func (ec *executionContext) marshalOCommerce_Cart_Form_FieldError2ᚕflamingoᚗ
 
 func (ec *executionContext) marshalOCommerce_Cart_Form_ValidationInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐValidationInfo(ctx context.Context, sel ast.SelectionSet, v dto1.ValidationInfo) graphql.Marshaler {
 	return ec._Commerce_Cart_Form_ValidationInfo(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_Form_ValidationInfo2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐValidationInfo(ctx context.Context, sel ast.SelectionSet, v *dto1.ValidationInfo) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Commerce_Cart_Form_ValidationInfo(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOCommerce_Cart_ItemValidationError2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐItemValidationError(ctx context.Context, sel ast.SelectionSet, v []validation.ItemValidationError) graphql.Marshaler {
