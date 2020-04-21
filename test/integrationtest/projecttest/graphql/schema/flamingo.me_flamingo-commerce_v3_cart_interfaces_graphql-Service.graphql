@@ -429,6 +429,12 @@ type Commerce_Cart_DeliveryAddressFormData {
     email:                  String!
 }
 
+input Commerce_Cart_DeliveryShippingOption {
+    deliveryCode: String!
+    method: String!
+    carrier: String!
+}
+
 extend type Query {
     Commerce_Cart: Commerce_DecoratedCart!
     Commerce_Cart_Validator: Commerce_Cart_ValidationResult!
@@ -445,4 +451,5 @@ extend type Mutation {
     Commerce_Cart_RemoveGiftCard(giftCardCode: String!): Commerce_DecoratedCart
     Commerce_Cart_RemoveCouponCode(couponCode: String!): Commerce_DecoratedCart
     Commerce_Cart_UpdateDeliveryAddresses(deliveryAdresses: [Commerce_Cart_DeliveryAddressInput!]): Commerce_Cart_DeliveryAddressForms!
+    Commerce_Cart_UpdateDeliveryShippingOptions(options: [Commerce_Cart_DeliveryShippingOption!]): Commerce_Cart_DeliveryAddressForms!
 }

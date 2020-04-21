@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/url"
 
+	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
 	cartForms "flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
@@ -18,29 +19,29 @@ import (
 // CommerceCartMutationResolver resolves cart mutations
 type CommerceCartMutationResolver struct {
 	q                            *CommerceCartQueryResolver
-	applicationCartService       *application.CartService
+	cartService                  *application.CartService
+	cartReceiverService          *application.CartReceiverService
 	billingAddressFormController *cartForms.BillingAddressFormController
 	deliveryFormController       *cartForms.DeliveryFormController
 	simplePaymentFormController  *cartForms.SimplePaymentFormController
 	formDataEncoderFactory       formApplication.FormDataEncoderFactory
-	cartService                  *application.CartService
 }
 
 // Inject dependencies
 func (r *CommerceCartMutationResolver) Inject(q *CommerceCartQueryResolver,
-	applicationCartService *application.CartService,
 	billingAddressFormController *cartForms.BillingAddressFormController,
 	deliveryFormController *cartForms.DeliveryFormController,
 	formDataEncoderFactory formApplication.FormDataEncoderFactory,
 	simplePaymentFormController *cartForms.SimplePaymentFormController,
-	cartService *application.CartService) *CommerceCartMutationResolver {
+	cartService *application.CartService,
+	cartReceiverService *application.CartReceiverService) *CommerceCartMutationResolver {
 	r.q = q
-	r.applicationCartService = applicationCartService
 	r.billingAddressFormController = billingAddressFormController
 	r.deliveryFormController = deliveryFormController
 	r.formDataEncoderFactory = formDataEncoderFactory
 	r.simplePaymentFormController = simplePaymentFormController
 	r.cartService = cartService
+	r.cartReceiverService = cartReceiverService
 	return r
 }
 
@@ -48,9 +49,9 @@ func (r *CommerceCartMutationResolver) Inject(q *CommerceCartQueryResolver,
 func (r *CommerceCartMutationResolver) CommerceAddToCart(ctx context.Context, marketplaceCode string, qty int, deliveryCode string) (*dto.DecoratedCart, error) {
 	req := web.RequestFromContext(ctx)
 
-	addRequest := r.applicationCartService.BuildAddRequest(ctx, marketplaceCode, "", qty, nil)
+	addRequest := r.cartService.BuildAddRequest(ctx, marketplaceCode, "", qty, nil)
 
-	_, err := r.applicationCartService.AddProduct(ctx, req.Session(), deliveryCode, addRequest)
+	_, err := r.cartService.AddProduct(ctx, req.Session(), deliveryCode, addRequest)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +63,7 @@ func (r *CommerceCartMutationResolver) CommerceAddToCart(ctx context.Context, ma
 func (r *CommerceCartMutationResolver) CommerceDeleteItem(ctx context.Context, itemID string, deliveryCode string) (*dto.DecoratedCart, error) {
 	req := web.RequestFromContext(ctx)
 
-	err := r.applicationCartService.DeleteItem(ctx, req.Session(), itemID, deliveryCode)
+	err := r.cartService.DeleteItem(ctx, req.Session(), itemID, deliveryCode)
 
 	if err != nil {
 		return nil, err
@@ -74,7 +75,7 @@ func (r *CommerceCartMutationResolver) CommerceDeleteItem(ctx context.Context, i
 // CommerceDeleteCartDelivery mutation for removing deliveries from current users cart
 func (r *CommerceCartMutationResolver) CommerceDeleteCartDelivery(ctx context.Context, deliveryCode string) (*dto.DecoratedCart, error) {
 	req := web.RequestFromContext(ctx)
-	_, err := r.applicationCartService.DeleteDelivery(ctx, req.Session(), deliveryCode)
+	_, err := r.cartService.DeleteDelivery(ctx, req.Session(), deliveryCode)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +85,7 @@ func (r *CommerceCartMutationResolver) CommerceDeleteCartDelivery(ctx context.Co
 // CommerceUpdateItemQty mutation for updating item quantity
 func (r *CommerceCartMutationResolver) CommerceUpdateItemQty(ctx context.Context, itemID string, deliveryCode string, qty int) (*dto.DecoratedCart, error) {
 	req := web.RequestFromContext(ctx)
-	err := r.applicationCartService.UpdateItemQty(ctx, req.Session(), itemID, deliveryCode, qty)
+	err := r.cartService.UpdateItemQty(ctx, req.Session(), itemID, deliveryCode, qty)
 	if err != nil {
 		return nil, err
 	}
@@ -192,6 +193,50 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryAddresses(ctx c
 		}
 
 		result.Forms = append(result.Forms, deliveryAddressForm)
+	}
+
+	return result, nil
+}
+
+// CommerceCartUpdateDeliveryShippingOptions updates the method/carrier of one or multiple existing deliveries
+func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryShippingOptions(ctx context.Context, shippingOptions []*dto.DeliveryShippingOption) (*dto.DeliveryAddressForms, error) {
+	result := &dto.DeliveryAddressForms{}
+
+	session := web.SessionFromContext(ctx)
+	cart, err := r.cartReceiverService.ViewCart(ctx, session)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, shippingOption := range shippingOptions {
+		formResult := dto.DeliveryAddressForm{
+			Processed:    false,
+			DeliveryCode: shippingOption.DeliveryCode,
+			Method:       shippingOption.Method,
+			Carrier:      shippingOption.Carrier,
+		}
+
+		delivery, found := cart.GetDeliveryByCode(shippingOption.DeliveryCode)
+		if !found {
+			formResult.ValidationInfo.GeneralErrors = []domain.Error{
+				{
+					MessageKey: "delivery_not_found",
+				},
+			}
+			result.Forms = append(result.Forms, formResult)
+			continue
+		}
+
+		deliveryInfo := delivery.DeliveryInfo
+		deliveryInfo.Carrier = shippingOption.Carrier
+		deliveryInfo.Method = shippingOption.Method
+
+		err = r.cartService.UpdateDeliveryInfo(ctx, session, shippingOption.DeliveryCode, cartDomain.CreateDeliveryInfoUpdateCommand(deliveryInfo))
+		if err != nil {
+			return nil, err
+		}
+		formResult.Processed = true
+		result.Forms = append(result.Forms, formResult)
 	}
 
 	return result, nil

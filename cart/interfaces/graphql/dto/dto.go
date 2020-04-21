@@ -29,6 +29,13 @@ type (
 		Carrier           string
 	}
 
+	// DeliveryShippingOption used to update shipping method/carrier for a specific delivery
+	DeliveryShippingOption struct {
+		DeliveryCode string
+		Method       string
+		Carrier      string
+	}
+
 	// ValidationInfo contains form related validation information
 	ValidationInfo struct {
 		GeneralErrors []formDomain.Error

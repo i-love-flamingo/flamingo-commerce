@@ -79,5 +79,6 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		},
 		"Commerce_Cart_DeliveryAddressFormData": forms.AddressForm{},
 		"Commerce_DeliveryAddressFormInput":     forms.AddressForm{},
+		"Commerce_Cart_DeliveryShippingOption":  dto.DeliveryShippingOption{},
 	}.Models()
 }
