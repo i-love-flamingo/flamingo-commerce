@@ -742,7 +742,7 @@ type ComplexityRoot struct {
 		CommerceCartRemoveCouponCode              func(childComplexity int, couponCode string) int
 		CommerceCartRemoveGiftCard                func(childComplexity int, giftCardCode string) int
 		CommerceCartUpdateBillingAddress          func(childComplexity int, addressForm *forms.BillingAddressForm) int
-		CommerceCartUpdateDeliveryAddresses       func(childComplexity int, deliveyAdresses []*forms.DeliveryForm) int
+		CommerceCartUpdateDeliveryAddresses       func(childComplexity int, deliveryAdresses []*forms.DeliveryForm) int
 		CommerceCartUpdateSelectedPayment         func(childComplexity int, gateway string, method string) int
 		CommerceCheckoutCancelPlaceOrder          func(childComplexity int) int
 		CommerceCheckoutClearPlaceOrder           func(childComplexity int) int
@@ -779,7 +779,7 @@ type MutationResolver interface {
 	CommerceCartApplyCouponCodeOrGiftCard(ctx context.Context, code string) (*dto1.DecoratedCart, error)
 	CommerceCartRemoveGiftCard(ctx context.Context, giftCardCode string) (*dto1.DecoratedCart, error)
 	CommerceCartRemoveCouponCode(ctx context.Context, couponCode string) (*dto1.DecoratedCart, error)
-	CommerceCartUpdateDeliveryAddresses(ctx context.Context, deliveyAdresses []*forms.DeliveryForm) (*dto1.DeliveryAddressForms, error)
+	CommerceCartUpdateDeliveryAddresses(ctx context.Context, deliveryAdresses []*forms.DeliveryForm) (*dto1.DeliveryAddressForms, error)
 	CommerceCheckoutStartPlaceOrder(ctx context.Context, returnURL string) (*dto2.StartPlaceOrderResult, error)
 	CommerceCheckoutCancelPlaceOrder(ctx context.Context) (bool, error)
 	CommerceCheckoutClearPlaceOrder(ctx context.Context) (bool, error)
@@ -3918,7 +3918,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CommerceCartUpdateDeliveryAddresses(childComplexity, args["deliveyAdresses"].([]*forms.DeliveryForm)), true
+		return e.complexity.Mutation.CommerceCartUpdateDeliveryAddresses(childComplexity, args["deliveryAdresses"].([]*forms.DeliveryForm)), true
 
 	case "Mutation.Commerce_Cart_UpdateSelectedPayment":
 		if e.complexity.Mutation.CommerceCartUpdateSelectedPayment == nil {
@@ -4621,7 +4621,7 @@ extend type Mutation {
     Commerce_Cart_ApplyCouponCodeOrGiftCard(code: String!): Commerce_DecoratedCart
     Commerce_Cart_RemoveGiftCard(giftCardCode: String!): Commerce_DecoratedCart
     Commerce_Cart_RemoveCouponCode(couponCode: String!): Commerce_DecoratedCart
-    Commerce_Cart_UpdateDeliveryAddresses(deliveyAdresses: [Commerce_Cart_DeliveryAddressInput!]): Commerce_Cart_DeliveryAddressForms!
+    Commerce_Cart_UpdateDeliveryAddresses(deliveryAdresses: [Commerce_Cart_DeliveryAddressInput!]): Commerce_Cart_DeliveryAddressForms!
 }
 `},
 	&ast.Source{Name: "graphql/schema/flamingo.me_flamingo-commerce_v3_category_interfaces_graphql-Service.graphql", Input: `type Commerce_Category_Attributes {
@@ -5544,13 +5544,13 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveryAddresses
 	var err error
 	args := map[string]interface{}{}
 	var arg0 []*forms.DeliveryForm
-	if tmp, ok := rawArgs["deliveyAdresses"]; ok {
+	if tmp, ok := rawArgs["deliveryAdresses"]; ok {
 		arg0, err = ec.unmarshalOCommerce_Cart_DeliveryAddressInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐDeliveryForm(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["deliveyAdresses"] = arg0
+	args["deliveryAdresses"] = arg0
 	return args, nil
 }
 
@@ -17086,7 +17086,7 @@ func (ec *executionContext) _Mutation_Commerce_Cart_UpdateDeliveryAddresses(ctx 
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CommerceCartUpdateDeliveryAddresses(rctx, args["deliveyAdresses"].([]*forms.DeliveryForm))
+		return ec.resolvers.Mutation().CommerceCartUpdateDeliveryAddresses(rctx, args["deliveryAdresses"].([]*forms.DeliveryForm))
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
