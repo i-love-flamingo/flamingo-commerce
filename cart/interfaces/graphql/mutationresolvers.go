@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net/url"
 
-	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
 	cartForms "flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
 	formApplication "flamingo.me/form/application"
@@ -20,6 +20,7 @@ type CommerceCartMutationResolver struct {
 	q                            *CommerceCartQueryResolver
 	applicationCartService       *application.CartService
 	billingAddressFormController *cartForms.BillingAddressFormController
+	deliveryFormController       *cartForms.DeliveryFormController
 	simplePaymentFormController  *cartForms.SimplePaymentFormController
 	formDataEncoderFactory       formApplication.FormDataEncoderFactory
 	cartService                  *application.CartService
@@ -29,12 +30,14 @@ type CommerceCartMutationResolver struct {
 func (r *CommerceCartMutationResolver) Inject(q *CommerceCartQueryResolver,
 	applicationCartService *application.CartService,
 	billingAddressFormController *cartForms.BillingAddressFormController,
+	deliveryFormController *cartForms.DeliveryFormController,
 	formDataEncoderFactory formApplication.FormDataEncoderFactory,
 	simplePaymentFormController *cartForms.SimplePaymentFormController,
 	cartService *application.CartService) *CommerceCartMutationResolver {
 	r.q = q
 	r.applicationCartService = applicationCartService
 	r.billingAddressFormController = billingAddressFormController
+	r.deliveryFormController = deliveryFormController
 	r.formDataEncoderFactory = formDataEncoderFactory
 	r.simplePaymentFormController = simplePaymentFormController
 	r.cartService = cartService
@@ -167,17 +170,54 @@ func (r *CommerceCartMutationResolver) CommerceCartRemoveGiftCard(ctx context.Co
 	return r.q.CommerceCart(ctx)
 }
 
-func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryAddresses(ctx context.Context, deliveyAdresses string) (*dto.DecoratedCart, error) {
-	// call to service
+// CommerceCartUpdateDeliveryAddresses can be used to update or set one or multiple delivery addresses, uses the delivery form controller
+func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryAddresses(ctx context.Context, deliveryForms []*forms.DeliveryForm) (*dto.DeliveryAddressForms, error) {
+	result := &dto.DeliveryAddressForms{}
+	request := web.CreateRequest(web.RequestFromContext(ctx).Request(), web.SessionFromContext(ctx))
+	for _, deliveryForm := range deliveryForms {
+		encodedForm, err := r.formDataEncoderFactory.CreateByNamedEncoder("commerce.cart.billingFormService").Encode(ctx, deliveryForm)
+		if err != nil {
+			return nil, err
+		}
+		request.Request().Form = encodedForm
+		request.Params["deliveryCode"] = deliveryForm.LocationCode
+		form, success, err := r.deliveryFormController.HandleFormAction(ctx, request)
+		if err != nil {
+			return nil, err
+		}
 
-	// call to form handler controller
+		deliveryAddressForm, err := mapCommerceDeliveryAddressForm(form, success)
+		if err != nil {
+			return nil, err
+		}
 
-	// map response to wanted graphql response
+		result.Forms = append(result.Forms, deliveryAddressForm)
+	}
 
-	return dto.NewDecoratedCart(&decorator.DecoratedCart{}), nil
+	return result, nil
 }
 
-//mapCommerce_Cart_BillingAddressForm - helper to map the graphql type Commerce_Cart_BillingAddressForm from common form
+func mapCommerceDeliveryAddressForm(form *domain.Form, success bool) (dto.DeliveryAddressForm, error) {
+	formData, ok := form.Data.(cartForms.DeliveryForm)
+	if !ok {
+		return dto.DeliveryAddressForm{}, errors.New("unexpected form data")
+	}
+
+	return dto.DeliveryAddressForm{
+		FormData:  formData.DeliveryAddress,
+		Processed: success,
+		ValidationInfo: dto.ValidationInfo{
+			GeneralErrors: form.ValidationInfo.GetGeneralErrors(),
+			FieldErrors:   mapFieldErrors(form.ValidationInfo),
+		},
+		UseBillingAddress: false,
+		DeliveryCode:      formData.LocationCode,
+		Method:            formData.ShippingMethod,
+		Carrier:           formData.ShippingCarrier,
+	}, nil
+}
+
+// mapCommerceBillingAddressForm helper to map the graphql type Commerce_Cart_BillingAddressForm from common form
 func mapCommerceBillingAddressForm(form *domain.Form, success bool) (*dto.BillingAddressForm, error) {
 	billingFormData, ok := form.Data.(cartForms.BillingAddressForm)
 	if !ok {

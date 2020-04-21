@@ -386,7 +386,7 @@ input Commerce_DeliveryAddressFormInput {
 }
 
 input Commerce_Cart_DeliveryAddressInput {
-    deliveryAddress: Commerce_DeliveryAddressFormInput!
+    deliveryAddress: Commerce_DeliveryAddressFormInput
     useBillingAddress: Boolean!
     shippingMethod: String
     shippingCarrier: String
@@ -444,5 +444,5 @@ extend type Mutation {
     Commerce_Cart_ApplyCouponCodeOrGiftCard(code: String!): Commerce_DecoratedCart
     Commerce_Cart_RemoveGiftCard(giftCardCode: String!): Commerce_DecoratedCart
     Commerce_Cart_RemoveCouponCode(couponCode: String!): Commerce_DecoratedCart
-    Commerce_Cart_UpdateDeliveryAddresses(deliveyAdresses: String!): Commerce_DecoratedCart!
+    Commerce_Cart_UpdateDeliveryAddresses(deliveyAdresses: [Commerce_Cart_DeliveryAddressInput!]): Commerce_Cart_DeliveryAddressForms!
 }

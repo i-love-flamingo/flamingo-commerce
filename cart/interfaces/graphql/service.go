@@ -69,5 +69,15 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		"Commerce_Cart_SelectedPaymentResult":   dto.SelectedPaymentResult{},
 		"Commerce_Cart_PaymentSelection":        new(cart.PaymentSelection),
 		"Commerce_Cart_DefaultPaymentSelection": cart.DefaultPaymentSelection{},
+		"Commerce_Cart_DeliveryAddressForms":    dto.DeliveryAddressForms{},
+		"Commerce_Cart_DeliveryAddressForm":     dto.DeliveryAddressForm{},
+		"Commerce_Cart_DeliveryAddressInput": graphql.ModelMapEntry{
+			Type: forms.DeliveryForm{},
+			Fields: map[string]string{
+				"deliveryCode": "LocationCode",
+			},
+		},
+		"Commerce_Cart_DeliveryAddressFormData": forms.AddressForm{},
+		"Commerce_DeliveryAddressFormInput":     forms.AddressForm{},
 	}.Models()
 }
