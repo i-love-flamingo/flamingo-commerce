@@ -583,6 +583,7 @@ type ComplexityRoot struct {
 		CodeLabel func(childComplexity int) int
 		Label     func(childComplexity int) int
 		UnitCode  func(childComplexity int) int
+		Values    func(childComplexity int) int
 	}
 
 	CommerceProductAttributes struct {
@@ -3084,6 +3085,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceProductAttribute.UnitCode(childComplexity), true
 
+	case "Commerce_ProductAttribute.values":
+		if e.complexity.CommerceProductAttribute.Values == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductAttribute.Values(childComplexity), true
+
 	case "Commerce_ProductAttributes.getAttribute":
 		if e.complexity.CommerceProductAttributes.Attribute == nil {
 			break
@@ -4654,6 +4662,7 @@ type Commerce_ProductAttribute {
     codeLabel: String!
     label: String!
     unitCode: String!
+    values: [String!]
 }
 
 type Commerce_CategoryTeaser {
@@ -13795,6 +13804,30 @@ func (ec *executionContext) _Commerce_ProductAttribute_unitCode(ctx context.Cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_ProductAttribute_values(ctx context.Context, field graphql.CollectedField, obj *domain1.Attribute) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_ProductAttribute",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Values(), nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOString2ᚕstring(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_ProductAttributes_attributeKeys(ctx context.Context, field graphql.CollectedField, obj *domain1.Attributes) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -20416,6 +20449,8 @@ func (ec *executionContext) _Commerce_ProductAttribute(ctx context.Context, sel 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "values":
+			out.Values[i] = ec._Commerce_ProductAttribute_values(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
