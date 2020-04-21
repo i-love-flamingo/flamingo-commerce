@@ -1,6 +1,6 @@
 mutation {
     Commerce_Cart_UpdateDeliveryAddresses(
-        deliveyAdresses: [
+        deliveryAdresses: [
             {
                 useBillingAddress: false
                 deliveryCode: "foo"
