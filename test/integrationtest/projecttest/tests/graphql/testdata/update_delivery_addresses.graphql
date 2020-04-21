@@ -9,6 +9,8 @@ mutation {
                     lastname: "foo-lastname"
                     email: "foo@flamingo.me"
                 }
+                shippingCarrier: "carrier"
+                shippingMethod: "method"
             }
             {
                 useBillingAddress: true
@@ -27,6 +29,8 @@ mutation {
     ) {
         forms {
             deliveryCode
+            carrier
+            method
             formData {
                 firstname
                 lastname

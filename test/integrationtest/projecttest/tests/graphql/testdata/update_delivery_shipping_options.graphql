@@ -1,0 +1,39 @@
+mutation {
+    Commerce_Cart_UpdateDeliveryShippingOptions(
+        options: [
+            {
+                deliveryCode: "foo"
+                method: "foo-method"
+                carrier: "foo-carrier"
+            }
+            {
+                deliveryCode: "bar"
+                method: "bar-method"
+                carrier: "bar-carrier"
+            }
+            {
+                deliveryCode: "non-existing"
+                method: "foo"
+                carrier: "bar"
+            }
+        ]
+    ) {
+        forms {
+            deliveryCode
+            carrier
+            method
+            processed
+            validationInfo {
+                fieldErrors {
+                    messageKey
+                    defaultLabel
+                    fieldName
+                }
+                generalErrors {
+                    messageKey
+                    defaultLabel
+                }
+            }
+        }
+    }
+}
