@@ -210,7 +210,7 @@ func mapCommerceDeliveryAddressForm(form *domain.Form, success bool) (dto.Delive
 			GeneralErrors: form.ValidationInfo.GetGeneralErrors(),
 			FieldErrors:   mapFieldErrors(form.ValidationInfo),
 		},
-		UseBillingAddress: false,
+		UseBillingAddress: formData.UseBillingAddress,
 		DeliveryCode:      formData.LocationCode,
 		Method:            formData.ShippingMethod,
 		Carrier:           formData.ShippingCarrier,

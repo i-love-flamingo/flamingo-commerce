@@ -1,0 +1,56 @@
+query {
+    Commerce_Cart {
+        cart {
+            billingAddress {
+                vat
+                firstname
+                lastname
+                middleName
+                title
+                salutation
+                street
+                streetNr
+                additionalAddressLines
+                company
+                city
+                postCode
+                state
+                regionCode
+                country
+                countryCode
+                telephone
+                email
+            }
+            deliveries {
+                deliveryInfo {
+                    code
+                    carrier
+                    method
+                    deliveryLocation {
+                        useBillingAddress
+                        address {
+                            vat
+                            firstname
+                            lastname
+                            middleName
+                            title
+                            salutation
+                            street
+                            streetNr
+                            additionalAddressLines
+                            company
+                            city
+                            postCode
+                            state
+                            regionCode
+                            country
+                            countryCode
+                            telephone
+                            email
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
