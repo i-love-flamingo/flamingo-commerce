@@ -1,6 +1,8 @@
 # Changelog
 ## v3.3.0 [upcoming]
-
+**product**
+* GraphQL
+  * Added values field of Attribute to schema
 
 ## v3.2.0
 **w3cdatalayer**
