@@ -303,18 +303,25 @@ type Commerce_Cart_SelectedPaymentResult {
 }
 
 type Commerce_Cart_Form_ValidationInfo {
+    "Field specific validation errors"
     fieldErrors: [Commerce_Cart_Form_FieldError!]
+    "General validation errors"
     generalErrors: [Commerce_Cart_Form_Error!]
 }
 
 type Commerce_Cart_Form_Error {
+    "A key of the error message. Often used for transaltion"
     messageKey: String!
+    "A speaking error label. Often used to show to end user - in case no translation exists"
     defaultLabel: String!
 }
 
 type Commerce_Cart_Form_FieldError {
+    "A key of the error message. Often used for transaltion"
     messageKey: String!
+    "A speaking error label. Often used to show to end user - in case no translation exists"
     defaultLabel: String!
+    "Identifier for a form field"
     fieldName: String!
 }
 
@@ -386,20 +393,32 @@ input Commerce_DeliveryAddressFormInput {
 }
 
 input Commerce_Cart_DeliveryAddressInput {
-    deliveryAddress: Commerce_DeliveryAddressFormInput
-    useBillingAddress: Boolean!
-    method: String
-    carrier: String
+    "Unique delivery code to identify the delivery"
     deliveryCode: String!
+    "Delivery address form data"
+    deliveryAddress: Commerce_DeliveryAddressFormInput
+    "Should the data of the billing address be used for this delivery"
+    useBillingAddress: Boolean!
+    "Optional Shipping Method"
+    method: String
+    "Optional Shipping Method"
+    carrier: String
 }
 
 type Commerce_Cart_DeliveryAddressForm {
-    formData:       Commerce_Cart_DeliveryAddressFormData
-    useBillingAddress: Boolean!
+    "Unique delivery code to identify the delivery"
     deliveryCode: String!
+    "Delivery address form data"
+    formData:       Commerce_Cart_DeliveryAddressFormData
+    "Shows if the data of the billing address should be used for this delivery"
+    useBillingAddress: Boolean!
+    "Shipping Method"
     method: String
+    "Shipping Carrier"
     carrier: String
+    "Validation of supplied delivery address, empty if address is valid"
     validationInfo: Commerce_Cart_Form_ValidationInfo
+    "Shows if the request was succesfully processed"
     processed: Boolean
 }
 
@@ -426,8 +445,11 @@ type Commerce_Cart_DeliveryAddressFormData {
 }
 
 input Commerce_Cart_DeliveryShippingOption {
+    "Unique delivery code to identify an **existing** delivery"
     deliveryCode: String!
+    "Shipping Method"
     method: String!
+    "Shipping Carrier"
     carrier: String!
 }
 
@@ -446,6 +468,8 @@ extend type Mutation {
     Commerce_Cart_ApplyCouponCodeOrGiftCard(code: String!): Commerce_DecoratedCart
     Commerce_Cart_RemoveGiftCard(giftCardCode: String!): Commerce_DecoratedCart
     Commerce_Cart_RemoveCouponCode(couponCode: String!): Commerce_DecoratedCart
+    "Adds/Updates one/multiple Delivery Addresses"
     Commerce_Cart_UpdateDeliveryAddresses(deliveryAdresses: [Commerce_Cart_DeliveryAddressInput!]): [Commerce_Cart_DeliveryAddressForm]!
+    "Adds/Updates one/multiple Delivery Addresses"
     Commerce_Cart_UpdateDeliveryShippingOptions(shippingOptions: [Commerce_Cart_DeliveryShippingOption!]): [Commerce_Cart_DeliveryAddressForm]!
 }

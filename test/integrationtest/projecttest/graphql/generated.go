@@ -4483,18 +4483,25 @@ type Commerce_Cart_SelectedPaymentResult {
 }
 
 type Commerce_Cart_Form_ValidationInfo {
+    "Field specific validation errors"
     fieldErrors: [Commerce_Cart_Form_FieldError!]
+    "General validation errors"
     generalErrors: [Commerce_Cart_Form_Error!]
 }
 
 type Commerce_Cart_Form_Error {
+    "A key of the error message. Often used for transaltion"
     messageKey: String!
+    "A speaking error label. Often used to show to end user - in case no translation exists"
     defaultLabel: String!
 }
 
 type Commerce_Cart_Form_FieldError {
+    "A key of the error message. Often used for transaltion"
     messageKey: String!
+    "A speaking error label. Often used to show to end user - in case no translation exists"
     defaultLabel: String!
+    "Identifier for a form field"
     fieldName: String!
 }
 
@@ -4566,20 +4573,32 @@ input Commerce_DeliveryAddressFormInput {
 }
 
 input Commerce_Cart_DeliveryAddressInput {
-    deliveryAddress: Commerce_DeliveryAddressFormInput
-    useBillingAddress: Boolean!
-    method: String
-    carrier: String
+    "Unique delivery code to identify the delivery"
     deliveryCode: String!
+    "Delivery address form data"
+    deliveryAddress: Commerce_DeliveryAddressFormInput
+    "Should the data of the billing address be used for this delivery"
+    useBillingAddress: Boolean!
+    "Optional Shipping Method"
+    method: String
+    "Optional Shipping Method"
+    carrier: String
 }
 
 type Commerce_Cart_DeliveryAddressForm {
-    formData:       Commerce_Cart_DeliveryAddressFormData
-    useBillingAddress: Boolean!
+    "Unique delivery code to identify the delivery"
     deliveryCode: String!
+    "Delivery address form data"
+    formData:       Commerce_Cart_DeliveryAddressFormData
+    "Shows if the data of the billing address should be used for this delivery"
+    useBillingAddress: Boolean!
+    "Shipping Method"
     method: String
+    "Shipping Carrier"
     carrier: String
+    "Validation of supplied delivery address, empty if address is valid"
     validationInfo: Commerce_Cart_Form_ValidationInfo
+    "Shows if the request was succesfully processed"
     processed: Boolean
 }
 
@@ -4606,8 +4625,11 @@ type Commerce_Cart_DeliveryAddressFormData {
 }
 
 input Commerce_Cart_DeliveryShippingOption {
+    "Unique delivery code to identify an **existing** delivery"
     deliveryCode: String!
+    "Shipping Method"
     method: String!
+    "Shipping Carrier"
     carrier: String!
 }
 
@@ -4626,7 +4648,9 @@ extend type Mutation {
     Commerce_Cart_ApplyCouponCodeOrGiftCard(code: String!): Commerce_DecoratedCart
     Commerce_Cart_RemoveGiftCard(giftCardCode: String!): Commerce_DecoratedCart
     Commerce_Cart_RemoveCouponCode(couponCode: String!): Commerce_DecoratedCart
+    "Adds/Updates one/multiple Delivery Addresses"
     Commerce_Cart_UpdateDeliveryAddresses(deliveryAdresses: [Commerce_Cart_DeliveryAddressInput!]): [Commerce_Cart_DeliveryAddressForm]!
+    "Adds/Updates one/multiple Delivery Addresses"
     Commerce_Cart_UpdateDeliveryShippingOptions(shippingOptions: [Commerce_Cart_DeliveryShippingOption!]): [Commerce_Cart_DeliveryAddressForm]!
 }
 `},
@@ -10788,6 +10812,33 @@ func (ec *executionContext) _Commerce_Cart_DefaultPaymentSelection_totalValue(ct
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_deliveryCode(ctx context.Context, field graphql.CollectedField, obj *dto.DeliveryAddressForm) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Cart_DeliveryAddressForm",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DeliveryCode, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_formData(ctx context.Context, field graphql.CollectedField, obj *dto.DeliveryAddressForm) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -10837,33 +10888,6 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_useBillingAddress
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_deliveryCode(ctx context.Context, field graphql.CollectedField, obj *dto.DeliveryAddressForm) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object:   "Commerce_Cart_DeliveryAddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.DeliveryCode, nil
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_method(ctx context.Context, field graphql.CollectedField, obj *dto.DeliveryAddressForm) graphql.Marshaler {
@@ -18552,6 +18576,12 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx
 
 	for k, v := range asMap {
 		switch k {
+		case "deliveryCode":
+			var err error
+			it.LocationCode, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "deliveryAddress":
 			var err error
 			it.DeliveryAddress, err = ec.unmarshalOCommerce_DeliveryAddressFormInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐAddressForm(ctx, v)
@@ -18573,12 +18603,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx
 		case "carrier":
 			var err error
 			it.ShippingCarrier, err = ec.unmarshalOString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "deliveryCode":
-			var err error
-			it.LocationCode, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -20224,15 +20248,15 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm(ctx context.Conte
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_DeliveryAddressForm")
+		case "deliveryCode":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_deliveryCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "formData":
 			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_formData(ctx, field, obj)
 		case "useBillingAddress":
 			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_useBillingAddress(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "deliveryCode":
-			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_deliveryCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
