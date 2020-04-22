@@ -310,14 +310,14 @@ type Commerce_Cart_Form_ValidationInfo {
 }
 
 type Commerce_Cart_Form_Error {
-    "A key of the error message. Often used for transaltion"
+    "A key of the error message. Often used for translation"
     messageKey: String!
     "A speaking error label. Often used to show to end user - in case no translation exists"
     defaultLabel: String!
 }
 
 type Commerce_Cart_Form_FieldError {
-    "A key of the error message. Often used for transaltion"
+    "A key of the error message. Often used for translation"
     messageKey: String!
     "A speaking error label. Often used to show to end user - in case no translation exists"
     defaultLabel: String!
