@@ -47,6 +47,7 @@ commerce:
 
     # GraphQL place order process
     placeorder:
+      validateBeforePlace: true
       lock: 
         type: "memory" # only suited for single node applications, use "redis" for multi node setup
       contextstore:
