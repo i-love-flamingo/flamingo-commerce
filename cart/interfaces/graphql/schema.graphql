@@ -418,7 +418,7 @@ type Commerce_Cart_DeliveryAddressForm {
     carrier: String
     "Validation of supplied delivery address, empty if address is valid"
     validationInfo: Commerce_Cart_Form_ValidationInfo
-    "Shows if the request was succesfully processed"
+    "Shows if the request was successfully processed"
     processed: Boolean
 }
 
