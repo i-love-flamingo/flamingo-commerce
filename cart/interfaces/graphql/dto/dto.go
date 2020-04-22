@@ -13,11 +13,6 @@ type (
 		ValidationInfo ValidationInfo
 	}
 
-	// DeliveryAddressForms slice of multiple delivery forms
-	DeliveryAddressForms struct {
-		Forms []DeliveryAddressForm
-	}
-
 	// DeliveryAddressForm is the GraphQL representation of the delivery form
 	DeliveryAddressForm struct {
 		FormData          forms.AddressForm

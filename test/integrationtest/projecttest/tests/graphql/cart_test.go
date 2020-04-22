@@ -17,7 +17,7 @@ func Test_CartUpdateDeliveryAddresses(t *testing.T) {
 	// check response of update delivery mutation
 	response := helper.GraphQlRequest(t, e, loadGraphQL(t, "update_delivery_addresses", nil)).Expect()
 	response.Status(http.StatusOK)
-	forms := getValue(response, "Commerce_Cart_UpdateDeliveryAddresses", "forms").Array()
+	forms := getArray(response, "Commerce_Cart_UpdateDeliveryAddresses")
 	forms.Length().Equal(3)
 
 	address := forms.Element(0).Object()
@@ -70,13 +70,13 @@ func Test_CommerceCartUpdateDeliveryShippingOptions(t *testing.T) {
 	// add some deliveries
 	response := helper.GraphQlRequest(t, e, loadGraphQL(t, "update_delivery_addresses", nil)).Expect()
 	response.Status(http.StatusOK)
-	forms := getValue(response, "Commerce_Cart_UpdateDeliveryAddresses", "forms").Array()
+	forms := getArray(response, "Commerce_Cart_UpdateDeliveryAddresses")
 	forms.Length().Equal(3)
 
 	// update shipping options
 	response = helper.GraphQlRequest(t, e, loadGraphQL(t, "update_delivery_shipping_options", nil)).Expect()
 	response.Status(http.StatusOK)
-	forms = getValue(response, "Commerce_Cart_UpdateDeliveryShippingOptions", "forms").Array()
+	forms = getArray(response, "Commerce_Cart_UpdateDeliveryShippingOptions")
 	forms.Length().Equal(3)
 
 	address := forms.Element(0).Object()

@@ -9,8 +9,8 @@ mutation {
                     lastname: "foo-lastname"
                     email: "foo@flamingo.me"
                 }
-                shippingCarrier: "carrier"
-                shippingMethod: "method"
+                carrier: "carrier"
+                method: "method"
             }
             {
                 useBillingAddress: true
@@ -27,28 +27,26 @@ mutation {
             }
         ]
     ) {
-        forms {
-            deliveryCode
-            carrier
-            method
-            formData {
-                firstname
-                lastname
-                email
-            }
-            validationInfo {
-                generalErrors {
-                    messageKey
-                    defaultLabel
-                }
-                fieldErrors {
-                    messageKey
-                    defaultLabel
-                    fieldName
-                }
-            }
-            useBillingAddress
-            processed
+        deliveryCode
+        carrier
+        method
+        formData {
+            firstname
+            lastname
+            email
         }
+        validationInfo {
+            generalErrors {
+                messageKey
+                defaultLabel
+            }
+            fieldErrors {
+                messageKey
+                defaultLabel
+                fieldName
+            }
+        }
+        useBillingAddress
+        processed
     }
 }

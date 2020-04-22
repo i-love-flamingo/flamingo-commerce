@@ -1,6 +1,6 @@
 mutation {
     Commerce_Cart_UpdateDeliveryShippingOptions(
-        options: [
+        shippingOptions: [
             {
                 deliveryCode: "foo"
                 method: "foo-method"
@@ -18,21 +18,19 @@ mutation {
             }
         ]
     ) {
-        forms {
-            deliveryCode
-            carrier
-            method
-            processed
-            validationInfo {
-                fieldErrors {
-                    messageKey
-                    defaultLabel
-                    fieldName
-                }
-                generalErrors {
-                    messageKey
-                    defaultLabel
-                }
+        deliveryCode
+        carrier
+        method
+        processed
+        validationInfo {
+            fieldErrors {
+                messageKey
+                defaultLabel
+                fieldName
+            }
+            generalErrors {
+                messageKey
+                defaultLabel
             }
         }
     }

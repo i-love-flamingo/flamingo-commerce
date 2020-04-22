@@ -172,8 +172,8 @@ func (r *CommerceCartMutationResolver) CommerceCartRemoveGiftCard(ctx context.Co
 }
 
 // CommerceCartUpdateDeliveryAddresses can be used to update or set one or multiple delivery addresses, uses the delivery form controller
-func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryAddresses(ctx context.Context, deliveryForms []*forms.DeliveryForm) (*dto.DeliveryAddressForms, error) {
-	result := &dto.DeliveryAddressForms{}
+func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryAddresses(ctx context.Context, deliveryForms []*forms.DeliveryForm) ([]*dto.DeliveryAddressForm, error) {
+	result := make([]*dto.DeliveryAddressForm, 0, len(deliveryForms))
 	request := web.CreateRequest(web.RequestFromContext(ctx).Request(), web.SessionFromContext(ctx))
 	for _, deliveryForm := range deliveryForms {
 		encodedForm, err := r.formDataEncoderFactory.CreateByNamedEncoder("commerce.cart.billingFormService").Encode(ctx, deliveryForm)
@@ -192,15 +192,15 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryAddresses(ctx c
 			return nil, err
 		}
 
-		result.Forms = append(result.Forms, deliveryAddressForm)
+		result = append(result, &deliveryAddressForm)
 	}
 
 	return result, nil
 }
 
 // CommerceCartUpdateDeliveryShippingOptions updates the method/carrier of one or multiple existing deliveries
-func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryShippingOptions(ctx context.Context, shippingOptions []*dto.DeliveryShippingOption) (*dto.DeliveryAddressForms, error) {
-	result := &dto.DeliveryAddressForms{}
+func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryShippingOptions(ctx context.Context, shippingOptions []*dto.DeliveryShippingOption) ([]*dto.DeliveryAddressForm, error) {
+	result := make([]*dto.DeliveryAddressForm, 0, len(shippingOptions))
 
 	session := web.SessionFromContext(ctx)
 	cart, err := r.cartReceiverService.ViewCart(ctx, session)
@@ -223,7 +223,7 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryShippingOptions
 					MessageKey: "delivery_not_found",
 				},
 			}
-			result.Forms = append(result.Forms, formResult)
+			result = append(result, &formResult)
 			continue
 		}
 
@@ -236,7 +236,7 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryShippingOptions
 			return nil, err
 		}
 		formResult.Processed = true
-		result.Forms = append(result.Forms, formResult)
+		result = append(result, &formResult)
 	}
 
 	return result, nil
