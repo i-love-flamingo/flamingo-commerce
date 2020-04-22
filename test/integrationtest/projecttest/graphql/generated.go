@@ -4433,6 +4433,7 @@ type Commerce_CartPersonalDetails {
 }
 
 type Commerce_CartAdditionalData {
+    #    customAttributes: Map
     reservedOrderID: String!
 }
 
