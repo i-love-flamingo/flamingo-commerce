@@ -123,6 +123,7 @@ type Commerce_ProductAttribute {
     codeLabel: String!
     label: String!
     unitCode: String!
+    values: [String!]
 }
 
 type Commerce_CategoryTeaser {
