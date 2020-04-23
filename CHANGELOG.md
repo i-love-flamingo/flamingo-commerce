@@ -56,6 +56,11 @@
 * Fix `CreateInitialDeliveryIfNotPresent` so that cache gets updated now when an initial delivery is created
 * GraphQL: Add new cart validation query `Commerce_Cart_Validator` to check if cart contains valid items
 
+**customer**
+* GraphQL: Add new customer queries:
+  * `Commerce_Customer_Status` returns the customer's login status
+  * `Commerce_Customer` returns the logged-in customer
+
 **price**
 * IsZero() now uses LikelyEqual() instead of Equal() to avoid issues occurring due to floating-point arithmetic
 
