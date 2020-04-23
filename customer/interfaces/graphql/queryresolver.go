@@ -2,22 +2,67 @@ package graphql
 
 import (
 	"context"
+	"errors"
+
+	"flamingo.me/flamingo/v3/framework/web"
+
+	"flamingo.me/flamingo-commerce/v3/customer/application"
 	"flamingo.me/flamingo-commerce/v3/customer/interfaces/dtocustomer"
 )
 
-type(
+type (
 	// CustomerResolver graphql resolver
-	CustomerResolver struct{
-
+	CustomerResolver struct {
+		service *application.Service
 	}
 )
 
-// CommerceCustomerStatus ...
-func (r *CustomerResolver) CommerceCustomerStatus (ctx context.Context) (*dtocustomer.CustomerStatusResult, error) {
-	return &dtocustomer.CustomerStatusResult{}, nil
+// Inject dependencies
+func (r *CustomerResolver) Inject(
+	service *application.Service,
+) *CustomerResolver {
+	r.service = service
+
+	return r
 }
 
-// CommerceCustomer ...
-func (r *CustomerResolver) CommerceCustomer (ctx context.Context) (*dtocustomer.CustomerResult, error) {
-	return &dtocustomer.CustomerResult{}, nil
+// CommerceCustomerStatus resolves the commerce customer query
+func (r *CustomerResolver) CommerceCustomerStatus(ctx context.Context) (*dtocustomer.CustomerStatusResult, error) {
+	userID, err := r.service.GetUserID(ctx, web.RequestFromContext(ctx))
+	if errors.Is(err, application.ErrNoIdentity) {
+		return &dtocustomer.CustomerStatusResult{IsLoggedIn: false}, nil
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &dtocustomer.CustomerStatusResult{
+		IsLoggedIn: true,
+		UserID:     userID,
+	}, nil
+}
+
+// CommerceCustomer resolver the commerce customer
+func (r *CustomerResolver) CommerceCustomer(ctx context.Context) (*dtocustomer.CustomerResult, error) {
+	user, err := r.service.GetForAuthenticatedUser(ctx, web.SessionFromContext(ctx))
+	if err != nil {
+		return nil, err
+	}
+
+	result := &dtocustomer.CustomerResult{
+		Id:           user.GetId(),
+		PersonalData: user.GetPersonalData(),
+		Addresses:    user.GetAddresses(),
+	}
+
+	if address := user.GetDefaultShippingAddress(); address != nil {
+		result.DefaultShippingAddress = *address
+	}
+
+	if address := user.GetDefaultBillingAddress(); address != nil {
+		result.DefaultBillingAddress = *address
+	}
+
+	return result, nil
 }
