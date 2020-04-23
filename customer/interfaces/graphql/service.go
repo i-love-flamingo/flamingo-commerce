@@ -21,8 +21,8 @@ func (*Service) Schema() []byte {
 func (*Service) Models() map[string]config.TypeMapEntry {
 	return graphql.ModelMap{
 		"Commerce_Customer_StatusResult": dtocustomer.CustomerStatusResult{},
-		"Commerce_CustomerResult": dtocustomer.CustomerResult{},
-		"Commerce_Customer_PersonData": domain.PersonData{},
-		"Commerce_Customer_Address": domain.Address{},
+		"Commerce_CustomerResult":        dtocustomer.CustomerResult{},
+		"Commerce_Customer_PersonData":   domain.PersonData{},
+		"Commerce_Customer_Address":      domain.Address{},
 	}.Models()
 }

@@ -8,15 +8,15 @@ type (
 	// CustomerStatusResult is a dto
 	CustomerStatusResult struct {
 		IsLoggedIn bool
-		UserID string
+		UserID     string
 	}
 
 	// CustomerResult is a dto
 	CustomerResult struct {
-		Id string
-		PersonalData domain.PersonData
-		Addresses []domain.Address
+		Id                     string
+		PersonalData           domain.PersonData
+		Addresses              []domain.Address
 		DefaultShippingAddress domain.Address
-		DefaultBillingAddress domain.Address
+		DefaultBillingAddress  domain.Address
 	}
 )
