@@ -93,7 +93,7 @@ func (r *CommerceCartMutationResolver) CommerceUpdateItemQty(ctx context.Context
 }
 
 //CommerceCartUpdateBillingAddress resolver method
-func (r *CommerceCartMutationResolver) CommerceCartUpdateBillingAddress(ctx context.Context, address *cartForms.BillingAddressForm) (*dto.BillingAddressForm, error) {
+func (r *CommerceCartMutationResolver) CommerceCartUpdateBillingAddress(ctx context.Context, address *cartForms.AddressForm) (*dto.BillingAddressForm, error) {
 	newRequest := web.CreateRequest(web.RequestFromContext(ctx).Request(), web.SessionFromContext(ctx))
 	v, err := r.formDataEncoderFactory.CreateByNamedEncoder("commerce.cart.billingFormService").Encode(ctx, address)
 	if err != nil {
@@ -270,7 +270,7 @@ func mapCommerceBillingAddressForm(form *domain.Form, success bool) (*dto.Billin
 	}
 
 	return &dto.BillingAddressForm{
-		FormData:  billingFormData,
+		FormData:  forms.AddressForm(billingFormData),
 		Processed: success,
 		ValidationInfo: dto.ValidationInfo{
 			GeneralErrors: form.ValidationInfo.GetGeneralErrors(),

@@ -8,7 +8,7 @@ import (
 type (
 	// BillingAddressForm is the GraphQL representation of the billing form
 	BillingAddressForm struct {
-		FormData       forms.BillingAddressForm
+		FormData       forms.AddressForm
 		Processed      bool
 		ValidationInfo ValidationInfo
 	}

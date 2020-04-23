@@ -292,7 +292,7 @@ type Commerce_Cart_PlacedOrderInfo {
 }
 
 type Commerce_Cart_BillingAddressForm {
-    formData:       Commerce_Cart_BillingAddressFormData
+    formData:       Commerce_Cart_AddressForm
     validationInfo: Commerce_Cart_Form_ValidationInfo
     processed: Boolean
 }
@@ -325,7 +325,7 @@ type Commerce_Cart_Form_FieldError {
     fieldName: String!
 }
 
-type Commerce_Cart_BillingAddressFormData {
+type Commerce_Cart_AddressForm {
     vat:                    String!
     firstname:              String!
     lastname:               String!
@@ -347,30 +347,7 @@ type Commerce_Cart_BillingAddressFormData {
     email:                  String!
 }
 
-
-input Commerce_BillingAddressFormInput {
-    vat:                    String
-    firstname:              String!
-    lastname:               String!
-    middleName:             String
-    title:                  String
-    salutation:             String
-    street:                 String
-    streetNr:               String
-    addressLine1:           String
-    addressLine2:           String
-    company:                String
-    city:                   String
-    postCode:               String
-    state:                  String
-    regionCode:             String
-    country:                String
-    countryCode:            String
-    phoneNumber:            String
-    email:                  String!
-}
-
-input Commerce_DeliveryAddressFormInput {
+input Commerce_Cart_AddressFormInput {
     vat:                    String
     firstname:              String!
     lastname:               String!
@@ -396,7 +373,7 @@ input Commerce_Cart_DeliveryAddressInput {
     "Unique delivery code to identify the delivery"
     deliveryCode: String!
     "Delivery address form data"
-    deliveryAddress: Commerce_DeliveryAddressFormInput
+    deliveryAddress: Commerce_Cart_AddressFormInput
     "Should the data of the billing address be used for this delivery"
     useBillingAddress: Boolean!
     "Optional Shipping Method"
@@ -409,7 +386,7 @@ type Commerce_Cart_DeliveryAddressForm {
     "Unique delivery code to identify the delivery"
     deliveryCode: String!
     "Delivery address form data"
-    formData:       Commerce_Cart_DeliveryAddressFormData
+    formData:       Commerce_Cart_AddressForm
     "Shows if the data of the billing address should be used for this delivery"
     useBillingAddress: Boolean!
     "Shipping Method"
@@ -420,28 +397,6 @@ type Commerce_Cart_DeliveryAddressForm {
     validationInfo: Commerce_Cart_Form_ValidationInfo
     "Shows if the request was successfully processed"
     processed: Boolean
-}
-
-type Commerce_Cart_DeliveryAddressFormData {
-    vat:                    String!
-    firstname:              String!
-    lastname:               String!
-    middleName:             String!
-    title:                  String!
-    salutation:             String!
-    street:                 String!
-    streetNr:               String!
-    addressLine1:           String!
-    addressLine2:           String!
-    company:                String!
-    city:                   String!
-    postCode:               String!
-    state:                  String!
-    regionCode:             String!
-    country:                String!
-    countryCode:            String!
-    phoneNumber:            String!
-    email:                  String!
 }
 
 input Commerce_Cart_DeliveryShippingOption {
@@ -463,7 +418,7 @@ extend type Mutation {
     Commerce_DeleteCartDelivery(deliveryCode: String!): Commerce_DecoratedCart!
     Commerce_DeleteItem(itemID: ID!, deliveryCode: String!): Commerce_DecoratedCart!
     Commerce_UpdateItemQty(itemID: ID!, deliveryCode: String!, qty: Int!): Commerce_DecoratedCart!
-    Commerce_Cart_UpdateBillingAddress(addressForm: Commerce_BillingAddressFormInput): Commerce_Cart_BillingAddressForm!
+    Commerce_Cart_UpdateBillingAddress(addressForm: Commerce_Cart_AddressFormInput): Commerce_Cart_BillingAddressForm!
     Commerce_Cart_UpdateSelectedPayment(gateway: String!, method: String!): Commerce_Cart_SelectedPaymentResult!
     Commerce_Cart_ApplyCouponCodeOrGiftCard(code: String!): Commerce_DecoratedCart
     Commerce_Cart_RemoveGiftCard(giftCardCode: String!): Commerce_DecoratedCart
