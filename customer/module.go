@@ -4,6 +4,8 @@ import (
 	"flamingo.me/dingo"
 	customerDomain "flamingo.me/flamingo-commerce/v3/customer/domain"
 	customerInfrastructure "flamingo.me/flamingo-commerce/v3/customer/infrastructure"
+	customerGraphql "flamingo.me/flamingo-commerce/v3/customer/interfaces/graphql"
+	flamingoGraphql "flamingo.me/graphql"
 )
 
 type (
@@ -27,4 +29,5 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	if m.useNilCustomerAdapter {
 		injector.Bind((*customerDomain.CustomerService)(nil)).To(customerInfrastructure.NilCustomerServiceAdapter{})
 	}
+	injector.BindMulti(new(flamingoGraphql.Service)).To(customerGraphql.Service{})
 }
