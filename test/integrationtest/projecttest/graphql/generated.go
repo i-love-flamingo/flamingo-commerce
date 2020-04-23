@@ -4317,8 +4317,11 @@ type Commerce_Cart_PlacedOrderInfo {
 }
 
 type Commerce_Cart_BillingAddressForm {
+    "Billing address form data"
     formData:       Commerce_Cart_AddressForm
+    "Validation of supplied billing address, empty if address is valid"
     validationInfo: Commerce_Cart_Form_ValidationInfo
+    "Shows if the request was successfully processed"
     processed: Boolean
 }
 
@@ -4443,6 +4446,7 @@ extend type Mutation {
     Commerce_DeleteCartDelivery(deliveryCode: String!): Commerce_DecoratedCart!
     Commerce_DeleteItem(itemID: ID!, deliveryCode: String!): Commerce_DecoratedCart!
     Commerce_UpdateItemQty(itemID: ID!, deliveryCode: String!, qty: Int!): Commerce_DecoratedCart!
+    "Adds/Updates the Billing Address of the current cart"
     Commerce_Cart_UpdateBillingAddress(addressForm: Commerce_Cart_AddressFormInput): Commerce_Cart_BillingAddressForm!
     Commerce_Cart_UpdateSelectedPayment(gateway: String!, method: String!): Commerce_Cart_SelectedPaymentResult!
     Commerce_Cart_ApplyCouponCodeOrGiftCard(code: String!): Commerce_DecoratedCart
@@ -24438,7 +24442,7 @@ func (ec *executionContext) unmarshalOString2ᚕstring(ctx context.Context, v in
 	var err error
 	res := make([]string, len(vSlice))
 	for i := range vSlice {
-		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
+		res[i], err = ec.unmarshalOString2string(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -24452,7 +24456,7 @@ func (ec *executionContext) marshalOString2ᚕstring(ctx context.Context, sel as
 	}
 	ret := make(graphql.Array, len(v))
 	for i := range v {
-		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
+		ret[i] = ec.marshalOString2string(ctx, sel, v[i])
 	}
 
 	return ret
