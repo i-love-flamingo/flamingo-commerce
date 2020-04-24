@@ -1,10 +1,11 @@
 package graphql
 
 import (
-	"flamingo.me/flamingo-commerce/v3/customer/domain"
-	"flamingo.me/flamingo-commerce/v3/customer/interfaces/dtocustomer"
 	"flamingo.me/graphql"
 	"github.com/99designs/gqlgen/codegen/config"
+
+	"flamingo.me/flamingo-commerce/v3/customer/domain"
+	"flamingo.me/flamingo-commerce/v3/customer/interfaces/graphql/dtocustomer"
 )
 
 //go:generate go run github.com/go-bindata/go-bindata/go-bindata -nometadata -o fs.go -pkg graphql schema.graphql

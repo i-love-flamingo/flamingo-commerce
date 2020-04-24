@@ -7,7 +7,7 @@ import (
 	"flamingo.me/flamingo/v3/framework/web"
 
 	"flamingo.me/flamingo-commerce/v3/customer/application"
-	"flamingo.me/flamingo-commerce/v3/customer/interfaces/dtocustomer"
+	"flamingo.me/flamingo-commerce/v3/customer/interfaces/graphql/dtocustomer"
 )
 
 type (
