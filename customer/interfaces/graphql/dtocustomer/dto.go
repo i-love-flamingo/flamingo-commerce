@@ -13,7 +13,7 @@ type (
 
 	// CustomerResult is a dto
 	CustomerResult struct {
-		Id                     string
+		ID                     string
 		PersonalData           domain.PersonData
 		Addresses              []domain.Address
 		DefaultShippingAddress domain.Address

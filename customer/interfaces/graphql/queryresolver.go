@@ -51,7 +51,7 @@ func (r *CustomerResolver) CommerceCustomer(ctx context.Context) (*dtocustomer.C
 	}
 
 	result := &dtocustomer.CustomerResult{
-		Id:           user.GetId(),
+		ID:           user.GetId(),
 		PersonalData: user.GetPersonalData(),
 		Addresses:    user.GetAddresses(),
 	}
