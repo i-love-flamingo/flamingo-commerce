@@ -426,9 +426,137 @@ func TestSaleable_GetLoyaltyChargeSplitIgnoreMin(t *testing.T) {
 }
 
 func TestSaleable_GetLoyaltyEarningByType(t *testing.T) {
-	// TODO
+
+	tests := []struct {
+		name            string
+		loyaltyEarnings []LoyaltyEarningInfo
+		leType          string
+		wantBool        bool
+		wantEarning     *LoyaltyEarningInfo
+	}{
+		{
+			name:            "empty loyalty info",
+			loyaltyEarnings: nil,
+			leType:          "dontCare",
+			wantBool:        false,
+			wantEarning:     nil,
+		},
+		{
+			name: "matching loyalty info",
+			loyaltyEarnings: []LoyaltyEarningInfo{
+				{
+					Type:    "MilesAndMore",
+					Default: priceDomain.NewFromFloat(23.23, "NZD"),
+				},
+				{
+					Type:    "TheOtherThing",
+					Default: priceDomain.NewFromFloat(24.24, "NZD"),
+				},
+			},
+			leType:   "MilesAndMore",
+			wantBool: true,
+			wantEarning: &LoyaltyEarningInfo{
+				Type:    "MilesAndMore",
+				Default: priceDomain.NewFromFloat(23.23, "NZD"),
+			},
+		},
+		{
+			name: "no matching loyalty info",
+			loyaltyEarnings: []LoyaltyEarningInfo{
+				{
+					Type:    "MilesAndMoreX",
+					Default: priceDomain.NewFromFloat(23.23, "NZD"),
+				},
+				{
+					Type:    "TheOtherThing",
+					Default: priceDomain.NewFromFloat(24.24, "NZD"),
+				},
+			},
+			leType:      "MilesAndMore",
+			wantBool:    false,
+			wantEarning: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		saleable := new(Saleable)
+		saleable.LoyaltyEarnings = tt.loyaltyEarnings
+
+		resultEarning, resultBool := saleable.GetLoyaltyEarningByType(tt.leType)
+		assert.Equal(t, tt.wantBool, resultBool, tt.name)
+		assert.Equal(t, tt.wantEarning, resultEarning, tt.name)
+	}
+
 }
 
 func TestLoyaltyEarningInfo_GetRate(t *testing.T) {
-	// TODO
+
+	tests := []struct {
+		name               string
+		valuedPrice        domain.Price
+		loyaltyEarningInfo LoyaltyEarningInfo
+		want               big.Float
+	}{
+		{
+			name:        "negative price",
+			valuedPrice: priceDomain.NewFromFloat(-10.00, "Bitcoins"),
+			loyaltyEarningInfo: LoyaltyEarningInfo{
+				Type:    "something",
+				Default: priceDomain.NewFromFloat(-10.00, "Bitcoins"),
+			},
+			want: *big.NewFloat(0),
+		},
+		{
+			name:        "rate equals one",
+			valuedPrice: priceDomain.NewFromFloat(10.00, "Bitcoins"),
+			loyaltyEarningInfo: LoyaltyEarningInfo{
+				Type:    "something",
+				Default: priceDomain.NewFromFloat(10.00, "Bitcoins"),
+			},
+			want: *big.NewFloat(1),
+		},
+		{
+			name:        "both prices are zero",
+			valuedPrice: priceDomain.NewFromFloat(0.00, "Bitcoins"),
+			loyaltyEarningInfo: LoyaltyEarningInfo{
+				Type:    "something",
+				Default: priceDomain.NewFromFloat(0.00, "Bitcoins"),
+			},
+			want: *big.NewFloat(0),
+		},
+		{
+			name:        "one price is zero",
+			valuedPrice: priceDomain.NewFromFloat(0.00, "Bitcoins"),
+			loyaltyEarningInfo: LoyaltyEarningInfo{
+				Type:    "something",
+				Default: priceDomain.NewFromFloat(10.00, "Bitcoins"),
+			},
+			want: *big.NewFloat(0),
+		},
+		{
+			name:        "0.5 rate",
+			valuedPrice: priceDomain.NewFromFloat(10.00, "Bitcoins"),
+			loyaltyEarningInfo: LoyaltyEarningInfo{
+				Type:    "something",
+				Default: priceDomain.NewFromFloat(20.00, "Bitcoins"),
+			},
+			want: *big.NewFloat(0.5),
+		},
+		{
+			name:        "0.1 rate",
+			valuedPrice: priceDomain.NewFromFloat(10.0, "Bitcoins"),
+			loyaltyEarningInfo: LoyaltyEarningInfo{
+				Type:    "something",
+				Default: priceDomain.NewFromFloat(100.0, "Bitcoins"),
+			},
+			want: *big.NewFloat(0.1),
+		},
+	}
+
+	for _, tt := range tests {
+		result := tt.loyaltyEarningInfo.GetRate(tt.valuedPrice)
+		res, _ := result.Float64()
+		expected, _ := tt.want.Float64()
+		assert.Equal(t, expected, res, tt.name, result.String(), tt.want.String())
+	}
 }
