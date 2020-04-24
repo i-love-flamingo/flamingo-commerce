@@ -29,5 +29,5 @@ jobs:
       go: 1.x
       script:
         - cd test/integrationtest/projecttest && go run -tags graphql main.go && cd ../../../
-        - git diff --quiet || (echo 'generated go files for graphql are not up to date, check go generate, go.sum and go.mod' ; git diff ; exit 1)
+        - if [[ ! -z $(git difftool -y -x 'diff -I "marshalNString2string"') ]] ; then echo 'generated go files for graphql are not up to date, check go generate, go.sum and go.mod'; git diff; exit 1 ; fi
         - go test -test.count=10 -race -v ./test/integrationtest/... -tags=integration
