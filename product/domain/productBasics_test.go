@@ -424,3 +424,11 @@ func TestSaleable_GetLoyaltyChargeSplitIgnoreMin(t *testing.T) {
 	assert.True(t, found)
 	assert.Equal(t, priceDomain.NewFromInt(100, 1, "€"), chargeMain.Price)
 }
+
+func TestSaleable_GetLoyaltyEarningByType(t *testing.T) {
+	// TODO
+}
+
+func TestLoyaltyEarningInfo_GetRate(t *testing.T) {
+	// TODO
+}
