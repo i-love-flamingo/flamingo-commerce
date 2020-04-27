@@ -6,7 +6,9 @@ import (
 	graphql3 "flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql"
 	graphql2 "flamingo.me/flamingo-commerce/v3/category/interfaces/graphql"
 	graphql4 "flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql"
+	graphql6 "flamingo.me/flamingo-commerce/v3/customer/interfaces/graphql"
 	graphql5 "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql"
+
 	"flamingo.me/graphql"
 )
 
@@ -43,6 +45,7 @@ type queryResolver struct {
 	*graphql3.CommerceCartQueryResolver     `inject:""`
 	*graphql4.CommerceCheckoutQueryResolver `inject:""`
 	*graphql5.CommerceProductQueryResolver  `inject:""`
+	*graphql6.CustomerResolver              `inject:""`
 }
 
 // Inject dependencies
