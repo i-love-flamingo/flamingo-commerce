@@ -28,6 +28,7 @@ func (m *Module) Inject(config *struct {
 func (m *Module) Configure(injector *dingo.Injector) {
 	if m.useNilCustomerAdapter {
 		injector.Bind((*customerDomain.CustomerService)(nil)).To(customerInfrastructure.NilCustomerServiceAdapter{})
+		injector.Bind((*customerDomain.CustomerIdentityService)(nil)).To(customerInfrastructure.NilCustomerServiceAdapter{})
 	}
 	injector.BindMulti(new(flamingoGraphql.Service)).To(customerGraphql.Service{})
 }

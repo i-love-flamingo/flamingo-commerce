@@ -45,7 +45,7 @@ func (r *CustomerResolver) CommerceCustomerStatus(ctx context.Context) (*dtocust
 
 // CommerceCustomer resolver the commerce customer
 func (r *CustomerResolver) CommerceCustomer(ctx context.Context) (*dtocustomer.CustomerResult, error) {
-	user, err := r.service.GetForAuthenticatedUser(ctx, web.SessionFromContext(ctx))
+	user, err := r.service.GetForIdentity(ctx, web.RequestFromContext(ctx))
 	if err != nil {
 		return nil, err
 	}
