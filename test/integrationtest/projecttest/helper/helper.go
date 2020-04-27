@@ -6,20 +6,26 @@ import (
 	"testing"
 	"time"
 
-	integrationCart "flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/modules/cart"
-	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/modules/payment"
-	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/modules/placeorder"
-	"flamingo.me/flamingo/v3"
-	"flamingo.me/flamingo/v3/core/healthcheck"
-	"flamingo.me/flamingo/v3/core/locale"
-	auth "flamingo.me/flamingo/v3/core/oauth"
-	"flamingo.me/flamingo/v3/core/security"
-	"flamingo.me/flamingo/v3/framework/cmd"
-	"flamingo.me/flamingo/v3/framework/web/filter"
 	"flamingo.me/graphql"
 	"github.com/gavv/httpexpect/v2"
 
+	fakeCustomer "flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/modules/customer"
+	"flamingo.me/flamingo/v3"
+	"flamingo.me/flamingo/v3/core/auth"
+	fakeAuth "flamingo.me/flamingo/v3/core/auth/fake"
+	"flamingo.me/flamingo/v3/core/healthcheck"
+	"flamingo.me/flamingo/v3/core/locale"
+	"flamingo.me/flamingo/v3/core/security"
+	"flamingo.me/flamingo/v3/framework/cmd"
+	"flamingo.me/flamingo/v3/framework/web/filter"
+
+	"flamingo.me/flamingo-commerce/v3/customer"
+	integrationCart "flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/modules/cart"
+	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/modules/payment"
+	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/modules/placeorder"
+
 	"flamingo.me/dingo"
+
 	"flamingo.me/flamingo/v3/core/requestlogger"
 	"flamingo.me/flamingo/v3/core/robotstxt"
 	"flamingo.me/flamingo/v3/core/zap"
@@ -51,13 +57,16 @@ func modulesDemoProject() []dingo.Module {
 		new(prefixrouter.Module),
 		new(product.Module),
 		new(locale.Module),
+		new(customer.Module),
+		new(fakeCustomer.Module),
 		new(cart.Module),
 		new(checkout.Module),
 		new(search.Module),
 		new(category.Module),
 		new(requestlogger.Module),
 		new(filter.DefaultCacheStrategyModule),
-		new(auth.Module),
+		new(auth.WebModule),
+		new(fakeAuth.Module),
 		new(breadcrumbs.Module),
 		new(order.Module),
 		new(healthcheck.Module),

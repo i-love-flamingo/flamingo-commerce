@@ -37,6 +37,23 @@ func loadGraphQL(t *testing.T, name string, replacements map[string]string) stri
 	return replacer.Replace(string(content))
 }
 
+// loginTestCustomer performs a login of the configured fake user
+func loginTestCustomer(t *testing.T, e *httpexpect.Expect) {
+	t.Helper()
+	// perform login
+	e.POST("/en/core/auth/callback/fake").
+		WithForm(map[string]interface{}{"username": "username", "password": "password"}).
+		Expect()
+
+	// check if login succeeded
+	resp := e.GET("/en/core/auth/debug").Expect()
+	resp.Status(http.StatusOK)
+	body := resp.Body().Raw()
+	if !strings.Contains(body, "fake: fake/username:") || strings.Contains(body, "fake: identity not saved in session") {
+		t.Fatal("login failed")
+	}
+}
+
 // prepareCart adds a simple product via graphQl
 func prepareCart(t *testing.T, e *httpexpect.Expect) {
 	t.Helper()
