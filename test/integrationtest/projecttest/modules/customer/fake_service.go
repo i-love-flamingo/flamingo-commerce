@@ -11,6 +11,7 @@ import (
 )
 
 type (
+	// FakeService returns the hard configured customer with ID from given auth or identity
 	FakeService struct{}
 
 	customer struct {
@@ -26,47 +27,53 @@ var (
 	_ domain.CustomerService         = new(FakeService)
 	_ domain.CustomerIdentityService = new(FakeService)
 	_ domain.Customer                = new(customer)
-
-	birthdayOfFlamingoCommerce, _ = time.Parse("2006-01-02", "2019-04-02")
 )
 
+// GetByAuth gets a customer based on Auth infos
 func (f FakeService) GetByAuth(_ context.Context, auth OAuthDomain.Auth) (domain.Customer, error) {
 	if auth.IDToken != nil {
-		return getCustomer(auth.IDToken.Subject, birthdayOfFlamingoCommerce), nil
+		return getCustomer(auth.IDToken.Subject), nil
 	}
 
 	return nil, errors.New("not logged in")
 }
 
+// GetByIdentity retrieves the authenticated customer by Identity
 func (f FakeService) GetByIdentity(_ context.Context, identity auth.Identity) (domain.Customer, error) {
 	if identity != nil {
-		return getCustomer(identity.Subject(), birthdayOfFlamingoCommerce), nil
+		return getCustomer(identity.Subject()), nil
 	}
 
 	return nil, errors.New("not logged in")
 }
 
+// GetId of the customer
 func (c customer) GetId() string {
 	return c.id
 }
 
+// GetPersonalData of the customer
 func (c customer) GetPersonalData() domain.PersonData {
 	return c.personalData
 }
 
+// GetAddresses of the customer
 func (c customer) GetAddresses() []domain.Address {
 	return c.addresses
 }
 
+// GetDefaultShippingAddress of the customer
 func (c customer) GetDefaultShippingAddress() *domain.Address {
 	return c.defaultShippingAddress
 }
 
+// GetDefaultBillingAddress of the customer
 func (c customer) GetDefaultBillingAddress() *domain.Address {
 	return c.defaultBillingAddress
 }
 
-func getCustomer(id string, birthday time.Time) *customer {
+func getCustomer(id string) *customer {
+	birthdayOfFlamingoCommerce, _ := time.Parse("2006-01-02", "2019-04-02")
 	return &customer{
 		id: id,
 		personalData: domain.PersonData{
@@ -76,7 +83,7 @@ func getCustomer(id string, birthday time.Time) *customer {
 			MiddleName:  "C.",
 			MainEmail:   "flamingo@aoe.com",
 			Prefix:      "Mr.",
-			Birthday:    birthday,
+			Birthday:    birthdayOfFlamingoCommerce,
 			Nationality: "DE",
 		},
 		addresses:              nil,

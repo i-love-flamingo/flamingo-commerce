@@ -18,10 +18,11 @@ var _ customerDomain.CustomerService = new(NilCustomerServiceAdapter)
 var _ customerDomain.CustomerIdentityService = new(NilCustomerServiceAdapter)
 
 // GetByAuth - implementation of required interface to get a customer based on Auth infos
-func (n *NilCustomerServiceAdapter) GetByAuth(ctx context.Context, auth domain.Auth) (customerDomain.Customer, error) {
+func (n *NilCustomerServiceAdapter) GetByAuth(context.Context, domain.Auth) (customerDomain.Customer, error) {
 	return nil, customerDomain.ErrCustomerNotFoundError
 }
 
-func (n *NilCustomerServiceAdapter) GetByIdentity(ctx context.Context, identity auth.Identity) (customerDomain.Customer, error) {
+// GetByIdentity retrieves the authenticated customer by Identity
+func (n *NilCustomerServiceAdapter) GetByIdentity(context.Context, auth.Identity) (customerDomain.Customer, error) {
 	return nil, customerDomain.ErrCustomerNotFoundError
 }
