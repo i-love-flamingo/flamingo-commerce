@@ -1,0 +1,52 @@
+mutation {
+    Commerce_Cart_UpdateDeliveryAddresses(
+        deliveryAdresses: [
+            {
+                useBillingAddress: false
+                deliveryCode: "foo"
+                deliveryAddress: {
+                    firstname: "foo-firstname"
+                    lastname: "foo-lastname"
+                    email: "foo@flamingo.me"
+                }
+                carrier: "carrier"
+                method: "method"
+            }
+            {
+                useBillingAddress: true
+                deliveryCode: "bar"
+            }
+            {
+                useBillingAddress: false
+                deliveryCode: "invalid-email-address"
+                deliveryAddress: {
+                    firstname: "test"
+                    lastname: "test"
+                    email: "invalid-email-address"
+                }
+            }
+        ]
+    ) {
+        deliveryCode
+        carrier
+        method
+        formData {
+            firstname
+            lastname
+            email
+        }
+        validationInfo {
+            generalErrors {
+                messageKey
+                defaultLabel
+            }
+            fieldErrors {
+                messageKey
+                defaultLabel
+                fieldName
+            }
+        }
+        useBillingAddress
+        processed
+    }
+}

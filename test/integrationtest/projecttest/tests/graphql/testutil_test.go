@@ -127,3 +127,7 @@ func assertStartPlaceOrderWithValidUUID(t *testing.T, e *httpexpect.Expect) (*ht
 func getValue(response *httpexpect.Response, queryName, key string) *httpexpect.Value {
 	return response.JSON().Object().Value("data").Object().Value(queryName).Object().Value(key)
 }
+
+func getArray(response *httpexpect.Response, queryName string) *httpexpect.Array {
+	return response.JSON().Object().Value("data").Object().Value(queryName).Array()
+}

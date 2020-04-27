@@ -58,8 +58,8 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		"Commerce_Cart_PricedShippingItem":      dto.PricedShippingItem{},
 		"Commerce_Cart_PricedTotalItem":         dto.PricedTotalItem{},
 		"Commerce_Cart_BillingAddressForm":      dto.BillingAddressForm{},
-		"Commerce_Cart_BillingAddressFormData":  forms.BillingAddressForm{},
-		"Commerce_BillingAddressFormInput":      forms.BillingAddressForm{},
+		"Commerce_Cart_AddressForm":             forms.AddressForm{},
+		"Commerce_Cart_AddressFormInput":        forms.AddressForm{},
 		"Commerce_Cart_Form_ValidationInfo":     dto.ValidationInfo{},
 		"Commerce_Cart_Form_Error":              formDomain.Error{},
 		"Commerce_Cart_Form_FieldError":         dto.FieldError{},
@@ -69,5 +69,15 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		"Commerce_Cart_SelectedPaymentResult":   dto.SelectedPaymentResult{},
 		"Commerce_Cart_PaymentSelection":        new(cart.PaymentSelection),
 		"Commerce_Cart_DefaultPaymentSelection": cart.DefaultPaymentSelection{},
+		"Commerce_Cart_DeliveryAddressForm":     dto.DeliveryAddressForm{},
+		"Commerce_Cart_DeliveryAddressInput": graphql.ModelMapEntry{
+			Type: forms.DeliveryForm{},
+			Fields: map[string]string{
+				"deliveryCode": "LocationCode",
+				"carrier":      "ShippingCarrier",
+				"method":       "ShippingMethod",
+			},
+		},
+		"Commerce_Cart_DeliveryShippingOption": dto.DeliveryShippingOption{},
 	}.Models()
 }

@@ -455,6 +455,7 @@ The templates get the following variables passed:
 * CartValidationResult
 
 ### Cart template function
+
 Use the `getCart` template function to get the cart.
 Use the `getDecoratedCart` template function to get the decorated cart.
 
@@ -470,3 +471,7 @@ Use the `getDecoratedCart` template function to get the decorated cart.
 There are also of course ajax endpoints, that can be used to interact with the cart directly from your browser and the javascript functionality of your template.
 To get an idea of all endpoints, have a look at the module.go, especially the apiRoutes method where endpoints are handled.
 
+
+### GraphQL
+
+The module exposes most of its functionality also via GraphQL, have a look at the [schema](interfaces/graphql/schema.graphql) to see all available querys / mutations.

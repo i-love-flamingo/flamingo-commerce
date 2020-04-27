@@ -6,20 +6,38 @@ import (
 )
 
 type (
-	//BillingAddressForm - dto for graphql
+	// BillingAddressForm is the GraphQL representation of the billing form
 	BillingAddressForm struct {
-		FormData       forms.BillingAddressForm
+		FormData       forms.AddressForm
 		Processed      bool
 		ValidationInfo ValidationInfo
 	}
 
-	//ValidationInfo - dto for graphql
+	// DeliveryAddressForm is the GraphQL representation of the delivery form
+	DeliveryAddressForm struct {
+		FormData          forms.AddressForm
+		Processed         bool
+		ValidationInfo    ValidationInfo
+		UseBillingAddress bool
+		DeliveryCode      string
+		Method            string
+		Carrier           string
+	}
+
+	// DeliveryShippingOption used to update shipping method/carrier for a specific delivery
+	DeliveryShippingOption struct {
+		DeliveryCode string
+		Method       string
+		Carrier      string
+	}
+
+	// ValidationInfo contains form related validation information
 	ValidationInfo struct {
 		GeneralErrors []formDomain.Error
 		FieldErrors   []FieldError
 	}
 
-	//FieldError - dto for graphql
+	// FieldError contains field related errors
 	FieldError struct {
 		// MessageKey - a key of the error message. Often used to pass to translation func in the template
 		MessageKey string
@@ -29,7 +47,7 @@ type (
 		FieldName string
 	}
 
-	//SelectedPaymentResult represents the selected payment
+	// SelectedPaymentResult represents the selected payment
 	SelectedPaymentResult struct {
 		//Processed
 		Processed bool
