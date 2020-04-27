@@ -60,6 +60,8 @@ type Commerce_ProductTeaserData {
     marketPlaceCode: String
     teaserAvailablePrices : [Commerce_ProductPriceInfo!]
     teaserLoyaltyPriceInfo: Commerce_ProductLoyaltyPriceInfo
+    "teaserLoyaltyEarningInfo for the current product"
+    teaserLoyaltyEarningInfo: Commerce_ProductLoyaltyEarningInfo
 }
 
 type Commerce_ProductLoyaltyPriceInfo {
@@ -71,6 +73,14 @@ type Commerce_ProductLoyaltyPriceInfo {
     minPointsToSpent: Float!
     maxPointsToSpent: Float!
     context: Commerce_PriceContext!
+}
+
+"LoyaltyEarningInfo shows the type and the points earned"
+type Commerce_ProductLoyaltyEarningInfo {
+    "The type of the LoyaltyEarningInfo, e.g. MilesAndMore"
+    type: String!
+    "The value of the LoyaltyEarningInfo, currency can be e.g. points or miles"
+    default: Commerce_Price!
 }
 
 type Commerce_PriceContext {
@@ -100,6 +110,8 @@ type Commerce_ProductSaleable {
     activePrice: Commerce_ProductPriceInfo
     availablePrices: [Commerce_ProductPriceInfo!]
     loyaltyPrices: [Commerce_ProductLoyaltyPriceInfo!]
+    "loyaltyEarningInfo for the current product"
+    loyaltyEarnings: [Commerce_ProductLoyaltyEarningInfo!]
 }
 
 type Commerce_ProductMedia {
