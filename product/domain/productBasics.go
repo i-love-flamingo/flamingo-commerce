@@ -588,14 +588,6 @@ func (w WishedToPay) Split(count int) []WishedToPay {
 	return result
 }
 
-// GetRate get the currency conversion rate of the current loyalty earning
-func (l LoyaltyEarningInfo) GetRate(valuedPrice priceDomain.Price) big.Float {
-	if !l.Default.IsPositive() {
-		return *big.NewFloat(0)
-	}
-	return *new(big.Float).Quo(valuedPrice.Amount(), l.Default.Amount())
-}
-
 // AttributeKeys lists all available keys
 func (a Attributes) AttributeKeys() []string {
 	res := make([]string, len(a))
