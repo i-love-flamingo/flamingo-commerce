@@ -1,8 +1,10 @@
 # Changelog
 ## v3.3.0 [upcoming]
 **product**
+* Extended product model with loyalty earnings
 * GraphQL
   * Added values field of Attribute to schema
+  * exposed loyalty earnings
 
 ## v3.2.0
 **w3cdatalayer**
