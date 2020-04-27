@@ -63,8 +63,22 @@ class Attribute {
     Code
     Label
 }
+class TeaserData {
+    ShortTitle
+    ShortDescription
+    URLSlug
+    TeaserPrice
+    TeaserPriceIsFromPrice
+    PreSelectedVariantSku
+    Media
+    MarketPlaceCode
+    TeaserAvailablePrices
+    TeaserLoyaltyPriceInfo
+    TeaserLoyaltyEarningInfo
+}
 
 BasicProduct --> BasicProductData : BaseData()
+BasicProduct --> TeaserData : TeaserData()
 BasicProduct -down-> Saleable : SaleableData
 BasicProductData --> CategoryTeaser : MainCategory()
 BasicProductData o-- Attribute : Attributes
