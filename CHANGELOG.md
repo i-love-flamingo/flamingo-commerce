@@ -13,6 +13,9 @@
   * **Breaking**: renamed the following GraphQL types
     * type `Commerce_Cart_BillingAddressFormData` is now `Commerce_Cart_AddressForm`
     * input `Commerce_BillingAddressFormInput` is now `Commerce_Cart_AddressFormInput`
+ 
+**checkout**
+* Make cart validation before place order optional with configuration
 
 ## v3.2.0
 **w3cdatalayer**
