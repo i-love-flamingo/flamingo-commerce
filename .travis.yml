@@ -10,14 +10,18 @@ script:
   - set -e
   - fmt=$(gofmt -l .)
   - test -z $fmt || (echo "please run gofmt" ; echo $fmt ; exit 1)
-  - go run golang.org/x/lint/golint -set_exit_status $(go list ./...)
   - go test -race -vet=all ./...
   - go run github.com/fzipp/gocyclo -top 20 .
   - go run github.com/client9/misspell/cmd/misspell -error .
   - go run github.com/gordonklaus/ineffassign .
 
 jobs:
+  allow_failures:
+    - script: go run golang.org/x/lint/golint -set_exit_status $(go list ./...)
   include:
+    - stage: static
+      go: 1.x
+      script: go run golang.org/x/lint/golint -set_exit_status $(go list ./...)
     - stage: testrecent
       go: 1.x
       script:
