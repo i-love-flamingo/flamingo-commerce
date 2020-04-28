@@ -13,6 +13,11 @@
   * **Breaking**: renamed the following GraphQL types
     * type `Commerce_Cart_BillingAddressFormData` is now `Commerce_Cart_AddressForm`
     * input `Commerce_BillingAddressFormInput` is now `Commerce_Cart_AddressFormInput`
+    
+**customer**
+* **Breaking**: renamed `GetId` to `GetID` in `domain.Customer` interface* 
+* introduced new `CustomerIdentityService` to retrieve authenticated customers by `auth.Identity` 
+* deprecated `CustomerService` as it will be replaced by `CustomerIdentityService`
  
 **checkout**
 * Make cart validation before place order optional with configuration

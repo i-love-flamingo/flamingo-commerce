@@ -12,7 +12,7 @@ import (
 type (
 	// Customer data interface
 	Customer interface {
-		GetId() string
+		GetID() string
 		GetPersonalData() PersonData
 		GetAddresses() []Address
 		GetDefaultShippingAddress() *Address
@@ -50,6 +50,7 @@ type (
 	}
 
 	// CustomerService to retrieve customers
+	// Deprecated: use CustomerIdentityService and core/auth module instead
 	CustomerService interface {
 		// GetByAuth - returns Customer by the provided Auth infos
 		GetByAuth(ctx context.Context, auth domain.Auth) (Customer, error)
