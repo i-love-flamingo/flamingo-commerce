@@ -65,12 +65,12 @@ var (
 	maxLockDuration = 2 * time.Minute
 
 	// newUUIDCount counts generation of new UUIDs
-	newUUIDCount = stats.Int64("flamingo/standard_place_order/new_uuid", "Count of logs", stats.UnitDimensionless)
+	newUUIDCount = stats.Int64("flamingo-commerce/checkout/placeorder/starts", "", stats.UnitDimensionless)
 )
 
 func init() {
 	gob.Register(process.Context{})
-	err := opencensus.View("flamingo/standard_place_order/new_uuid", newUUIDCount, view.Count())
+	err := opencensus.View("flamingo-commerce/checkout/placeorder/starts", newUUIDCount, view.Count())
 	if err != nil {
 		panic(err)
 	}

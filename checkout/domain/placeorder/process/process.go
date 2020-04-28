@@ -78,9 +78,9 @@ type (
 
 var (
 	// processedState counts processed states
-	processedState = stats.Int64("flamingo/standard_place_order/processed_state", "Count of processed states", stats.UnitDimensionless)
+	processedState = stats.Int64("flamingo-commerce/checkout/placeorder/state_run_count", "", stats.UnitDimensionless)
 	// failedStateTransition counts failed state transitions
-	failedStateTransition = stats.Int64("flamingo/standard_place_order/failed_state_transition", "Count of processed states", stats.UnitDimensionless)
+	failedStateTransition = stats.Int64("flamingo-commerce/checkout/placeorder/state_failed_count", "", stats.UnitDimensionless)
 	keyState, _           = tag.NewKey("state")
 )
 
@@ -91,10 +91,10 @@ func init() {
 	gob.Register(CartValidationErrorReason{})
 	gob.Register(CanceledByCustomerReason{})
 
-	if err := opencensus.View("flamingo/standard_place_order/processed_state", processedState, view.Count(), keyState); err != nil {
+	if err := opencensus.View("flamingo-commerce/checkout/placeorder/state_run_count", processedState, view.Count(), keyState); err != nil {
 		panic(err)
 	}
-	if err := opencensus.View("flamingo/standard_place_order/failed_state_transition", failedStateTransition, view.Count(), keyState); err != nil {
+	if err := opencensus.View("flamingo-commerce/checkout/placeorder/state_failed_count", failedStateTransition, view.Count(), keyState); err != nil {
 		panic(err)
 	}
 }
@@ -187,7 +187,7 @@ func (p *Process) Run(ctx context.Context) {
 		return
 	}
 
-	censusCtx, _ := tag.New(ctx, tag.Upsert(opencensus.KeyArea, "-"), tag.Upsert(keyState, currentState.Name()))
+	censusCtx, _ := tag.New(ctx, tag.Upsert(keyState, currentState.Name()))
 	stats.Record(censusCtx, processedState.M(1))
 
 	runResult := currentState.Run(ctx, p)
