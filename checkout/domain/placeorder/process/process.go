@@ -7,8 +7,14 @@ import (
 	"fmt"
 	"net/url"
 
-	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/google/uuid"
+
+	"go.opencensus.io/stats"
+	"go.opencensus.io/stats/view"
+	"go.opencensus.io/tag"
+
+	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/opencensus"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
@@ -70,12 +76,27 @@ type (
 	}
 )
 
+var (
+	// processedState counts processed states
+	processedState = stats.Int64("flamingo/standard_place_order/processed_state", "Count of processed states", stats.UnitDimensionless)
+	// failedStateTransition counts failed state transitions
+	failedStateTransition = stats.Int64("flamingo/standard_place_order/failed_state_transition", "Count of processed states", stats.UnitDimensionless)
+	keyState, _           = tag.NewKey("state")
+)
+
 func init() {
 	gob.Register(ErrorOccurredReason{})
 	gob.Register(PaymentErrorOccurredReason{})
 	gob.Register(PaymentCanceledByCustomerReason{})
 	gob.Register(CartValidationErrorReason{})
 	gob.Register(CanceledByCustomerReason{})
+
+	if err := opencensus.View("flamingo/standard_place_order/processed_state", processedState, view.Count(), keyState); err != nil {
+		panic(err)
+	}
+	if err := opencensus.View("flamingo/standard_place_order/failed_state_transition", failedStateTransition, view.Count(), keyState); err != nil {
+		panic(err)
+	}
 }
 
 // Reason for the error occurred
@@ -166,6 +187,9 @@ func (p *Process) Run(ctx context.Context) {
 		return
 	}
 
+	censusCtx, _ := tag.New(ctx, tag.Upsert(opencensus.KeyArea, "-"), tag.Upsert(keyState, currentState.Name()))
+	stats.Record(censusCtx, processedState.M(1))
+
 	runResult := currentState.Run(ctx, p)
 	if runResult.RollbackData != nil {
 		p.context.RollbackReferences = append(p.context.RollbackReferences, RollbackReference{
@@ -175,6 +199,7 @@ func (p *Process) Run(ctx context.Context) {
 	}
 
 	if runResult.Failed != nil {
+		stats.Record(censusCtx, failedStateTransition.M(1))
 		p.Failed(ctx, runResult.Failed)
 	}
 }

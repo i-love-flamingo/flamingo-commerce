@@ -8,9 +8,12 @@ import (
 	"net/url"
 	"time"
 
+	"go.opencensus.io/stats"
+	"go.opencensus.io/stats/view"
 	"go.opencensus.io/trace"
 
 	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/opencensus"
 	"flamingo.me/flamingo/v3/framework/web"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
@@ -60,10 +63,17 @@ var (
 	ErrAnotherPlaceOrderProcessRunning = errors.New("ErrAnotherPlaceOrderProcessRunning")
 
 	maxLockDuration = 2 * time.Minute
+
+	// newUUIDCount counts generation of new UUIDs
+	newUUIDCount = stats.Int64("flamingo/standard_place_order/new_uuid", "Count of logs", stats.UnitDimensionless)
 )
 
 func init() {
 	gob.Register(process.Context{})
+	err := opencensus.View("flamingo/standard_place_order/new_uuid", newUUIDCount, view.Count())
+	if err != nil {
+		panic(err)
+	}
 }
 
 //Inject dependencies
@@ -119,6 +129,7 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *
 			return
 		}
 
+		stats.Record(ctx, newUUIDCount.M(1))
 		newProcess, err := c.processFactory.New(returnURL, cart)
 		if err != nil {
 			runErr = err
