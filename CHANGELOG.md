@@ -18,6 +18,9 @@
 * **Breaking**: renamed `GetId` to `GetID` in `domain.Customer` interface* 
 * introduced new `CustomerIdentityService` to retrieve authenticated customers by `auth.Identity` 
 * deprecated `CustomerService` as it will be replaced by `CustomerIdentityService`
+* GraphQL: Add new customer queries:
+  * `Commerce_Customer_Status` returns the customer's login status
+  * `Commerce_Customer` returns the logged-in customer
  
 **checkout**
 * Make cart validation before place order optional with configuration
@@ -60,11 +63,6 @@
   * This enables users of the in-memory cart to add project specific gift card and voucher handling 
 * Fix `CreateInitialDeliveryIfNotPresent` so that cache gets updated now when an initial delivery is created
 * GraphQL: Add new cart validation query `Commerce_Cart_Validator` to check if cart contains valid items
-
-**customer**
-* GraphQL: Add new customer queries:
-  * `Commerce_Customer_Status` returns the customer's login status
-  * `Commerce_Customer` returns the logged-in customer
 
 **price**
 * IsZero() now uses LikelyEqual() instead of Equal() to avoid issues occurring due to floating-point arithmetic
