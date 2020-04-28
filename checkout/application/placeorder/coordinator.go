@@ -10,6 +10,7 @@ import (
 
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
+	"go.opencensus.io/tag"
 	"go.opencensus.io/trace"
 
 	"flamingo.me/flamingo/v3/framework/flamingo"
@@ -45,6 +46,7 @@ type (
 		contextStore   process.ContextStore
 		sessionStore   *web.SessionStore
 		sessionName    string
+		area           string
 	}
 )
 
@@ -86,6 +88,7 @@ func (c *Coordinator) Inject(
 	cartService *application.CartService,
 	cfg *struct {
 		SessionName string `inject:"config:flamingo.session.name,optional"`
+		Area        string `inject:"config:area"`
 	},
 ) {
 	c.locker = locker
@@ -93,8 +96,12 @@ func (c *Coordinator) Inject(
 	c.processFactory = processFactory
 	c.contextStore = contextStore
 	c.sessionStore = sessionStore
-	c.sessionName = cfg.SessionName
 	c.cartService = cartService
+
+	if cfg != nil {
+		c.area = cfg.Area
+		c.sessionName = cfg.SessionName
+	}
 }
 
 // New acquires lock if possible and creates new process with first run call blocking
@@ -129,7 +136,8 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *
 			return
 		}
 
-		stats.Record(ctx, newUUIDCount.M(1))
+		censusCtx, _ := tag.New(ctx, tag.Upsert(opencensus.KeyArea, c.area))
+		stats.Record(censusCtx, newUUIDCount.M(1))
 		newProcess, err := c.processFactory.New(returnURL, cart)
 		if err != nil {
 			runErr = err

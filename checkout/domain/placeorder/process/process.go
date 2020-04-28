@@ -31,6 +31,7 @@ type (
 		allStates   map[string]State
 		failedState State
 		logger      flamingo.Logger
+		area        string
 	}
 
 	// Factory use to get Process instance
@@ -170,11 +171,18 @@ func (f *Factory) NewFromProcessContext(pctx Context) (*Process, error) {
 func (p *Process) Inject(
 	allStates map[string]State,
 	logger flamingo.Logger,
+	cfg *struct {
+		Area string `inject:"config:area"`
+	},
 ) *Process {
 	p.allStates = allStates
 	p.logger = logger.
 		WithField(flamingo.LogKeyModule, "checkout").
 		WithField(flamingo.LogKeyCategory, "process")
+
+	if cfg != nil {
+		p.area = cfg.Area
+	}
 
 	return p
 }
@@ -187,7 +195,7 @@ func (p *Process) Run(ctx context.Context) {
 		return
 	}
 
-	censusCtx, _ := tag.New(ctx, tag.Upsert(keyState, currentState.Name()))
+	censusCtx, _ := tag.New(ctx, tag.Upsert(opencensus.KeyArea, p.area), tag.Upsert(keyState, currentState.Name()))
 	stats.Record(censusCtx, processedState.M(1))
 
 	runResult := currentState.Run(ctx, p)
