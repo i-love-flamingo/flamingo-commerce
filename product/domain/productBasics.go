@@ -90,6 +90,8 @@ type (
 		AvailablePrices []PriceInfo
 		//LoyaltyPrices - Optional infos for products that can be paid in a loyalty program
 		LoyaltyPrices []LoyaltyPriceInfo
+		// LoyaltyEarnings optional infos about potential loyalty earnings
+		LoyaltyEarnings []LoyaltyEarningInfo
 	}
 
 	// PriceInfo holds product price information
@@ -120,6 +122,12 @@ type (
 		Context          PriceContext
 	}
 
+	// LoyaltyEarningInfo contains earning infos
+	LoyaltyEarningInfo struct {
+		Type    string
+		Default priceDomain.Price
+	}
+
 	// PriceContext defines the scope in which the price was calculated
 	PriceContext struct {
 		CustomerGroup string
@@ -145,6 +153,8 @@ type (
 		TeaserAvailablePrices []PriceInfo
 		//TeaserLoyaltyPriceInfo - optional the Loyaltyprice that can be used for teaser (e.g. on listing views)
 		TeaserLoyaltyPriceInfo *LoyaltyPriceInfo
+		// TeaserLoyaltyEarning optional teaser for the loyalty earning used in grid / list view
+		TeaserLoyaltyEarningInfo *LoyaltyEarningInfo
 	}
 
 	// Media holds product media information
@@ -345,6 +355,16 @@ func (p Saleable) GetLoyaltyPriceByType(ltype string) (*LoyaltyPriceInfo, bool) 
 	for _, lp := range p.LoyaltyPrices {
 		if lp.Type == ltype {
 			return &lp, true
+		}
+	}
+	return nil, false
+}
+
+// GetLoyaltyEarningByType returns the loyalty earning infos for a specific loyalty type
+func (p Saleable) GetLoyaltyEarningByType(ltype string) (*LoyaltyEarningInfo, bool) {
+	for _, le := range p.LoyaltyEarnings {
+		if le.Type == ltype {
+			return &le, true
 		}
 	}
 	return nil, false

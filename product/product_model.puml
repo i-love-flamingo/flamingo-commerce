@@ -1,0 +1,97 @@
+@startuml
+scale max 1024 width
+
+title
+    = Product Model
+end title
+
+interface BasicProduct {
+    BaseData()
+    TeaserData()
+    GetSpecifications()
+    IsSaleable()
+    Type()
+    HasMedia()
+}
+interface Configurable {
+    ConfigurableProductWithActiveVariant GetConfigurableWithActiveVariant()
+    []Variant Variant()
+    Variant GetDefaultVariant()
+    bool HasVariant()
+}
+class ConfigurableProductWithActiveVariant {
+    ActiveVariant
+}
+class ConfigurableProduct
+class SimpleProduct
+class BasicProductData {
+    Title
+    Attributes
+    MarketPlaceCode
+    RetailerCode
+    RetailerSku
+    Categories
+    MainCategory
+    Keywords
+}
+class Saleable {
+    IsSaleable
+    SaleableFrom
+    SaleableTo
+    ActivePrice
+    AvailablePrices
+    LoyaltyPrices
+    LoyaltyEarnings
+}
+class PriceInfo {
+    Default Price
+    Discounted Price
+    TaxClass
+    Context
+    Price GetFinalPrice()
+}
+class PriceContext {
+    CustomerGroup
+    ChannelCode
+    Locale
+}
+class CategoryTeaser {
+    Code
+    Name
+}
+class Attribute {
+    Code
+    Label
+}
+class TeaserData {
+    ShortTitle
+    ShortDescription
+    URLSlug
+    TeaserPrice
+    TeaserPriceIsFromPrice
+    PreSelectedVariantSku
+    Media
+    MarketPlaceCode
+    TeaserAvailablePrices
+    TeaserLoyaltyPriceInfo
+    TeaserLoyaltyEarningInfo
+}
+
+BasicProduct --> BasicProductData : BaseData()
+BasicProduct --> TeaserData : TeaserData()
+BasicProduct -down-> Saleable : SaleableData
+BasicProductData --> CategoryTeaser : MainCategory()
+BasicProductData o-- Attribute : Attributes
+CategoryTeaser --o BasicProductData : Categories
+CategoryTeaser --> CategoryTeaser : parent
+ConfigurableProduct .up> BasicProduct
+ConfigurableProduct .up.> Configurable
+ConfigurableProductWithActiveVariant .up.> Configurable
+ConfigurableProductWithActiveVariant .up.> BasicProduct
+SimpleProduct .up.> BasicProduct
+PriceInfo --> PriceContext : Context
+Saleable o-- PriceInfo : AvailablePrices
+Saleable o-- PriceInfo : LoyaltyPrices
+Saleable --> PriceInfo : ActivePrice
+
+@enduml

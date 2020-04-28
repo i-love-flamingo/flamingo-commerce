@@ -48,11 +48,12 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 				"getAttributesByKey": "AttributesByKey",
 			},
 		},
-		"Commerce_ProductAttribute":        domain.Attribute{},
-		"Commerce_CategoryTeaser":          domain.CategoryTeaser{},
-		"Commerce_ProductPriceInfo":        domain.PriceInfo{},
-		"Commerce_ProductLoyaltyPriceInfo": domain.LoyaltyPriceInfo{},
-		"Commerce_PriceContext":            domain.PriceContext{},
-		"Commerce_Product_SearchResult":    application.SearchResult{},
+		"Commerce_ProductAttribute":          domain.Attribute{},
+		"Commerce_CategoryTeaser":            domain.CategoryTeaser{},
+		"Commerce_ProductPriceInfo":          domain.PriceInfo{},
+		"Commerce_ProductLoyaltyPriceInfo":   domain.LoyaltyPriceInfo{},
+		"Commerce_ProductLoyaltyEarningInfo": domain.LoyaltyEarningInfo{},
+		"Commerce_PriceContext":              domain.PriceContext{},
+		"Commerce_Product_SearchResult":      application.SearchResult{},
 	}.Models()
 }

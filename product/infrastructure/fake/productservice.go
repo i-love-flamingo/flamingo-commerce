@@ -136,6 +136,12 @@ func (ps *ProductService) FakeSimple(marketplaceCode string, isNew bool, isExclu
 		IsSaleable:   true,
 		SaleableTo:   time.Now().Add(time.Hour * time.Duration(1)),
 		SaleableFrom: time.Now().Add(time.Hour * time.Duration(-1)),
+		LoyaltyEarnings: []domain.LoyaltyEarningInfo{
+			{
+				Type:    "AwesomeLoyaltyProgram",
+				Default: priceDomain.NewFromFloat(23.23, "BonusPoints"),
+			},
+		},
 	}
 
 	product.ActivePrice = ps.getPrice(20.99+float64(rand.Intn(10)), 10.49+float64(rand.Intn(10)))
@@ -154,6 +160,10 @@ func (ps *ProductService) FakeSimple(marketplaceCode string, isNew bool, isExclu
 		MarketPlaceCode:  product.MarketPlaceCode,
 		TeaserPrice: domain.PriceInfo{
 			Default: priceDomain.NewFromFloat(9.99, "SD").GetPayable(),
+		},
+		TeaserLoyaltyEarningInfo: &domain.LoyaltyEarningInfo{
+			Type:    "AwesomeLoyaltyProgram",
+			Default: priceDomain.NewFromFloat(23.23, "BonusPoints"),
 		},
 	}
 
