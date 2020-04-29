@@ -8,6 +8,20 @@ core:
     myhost: '%%ENV:FLAMINGO_HOSTNAME%%'
     disableOfflineToken: true
     enabled: false
+  auth:
+    web:
+      debugController: true
+      broker:
+        - # empty entry will be filled by oauth modules default config
+        -
+          broker: "fake"
+          typ: "fake"
+          userConfig:
+            username:
+              password: "password"
+          validatePassword: true
+          usernameFieldId: "username"
+          passwordFieldId: "password"
 
 flamingo:
   systemendpoint:
@@ -60,7 +74,7 @@ commerce:
       enabled: true
     priceIsGross: true
   customer:
-    useNilCustomerAdapter: true
+    useNilCustomerAdapter: false
   category:
     useCategoryFixedAdapter: true
     categoryServiceFixed:

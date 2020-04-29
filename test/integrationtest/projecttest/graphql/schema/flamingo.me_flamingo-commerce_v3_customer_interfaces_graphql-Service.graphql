@@ -1,0 +1,50 @@
+type Commerce_Customer_Status_Result {
+    isLoggedIn: Boolean!
+    userID: String!
+}
+
+type Commerce_Customer_Result {
+    id: String!
+    personalData: Commerce_Customer_PersonData!
+    addresses: [Commerce_Customer_Address!]
+    defaultShippingAddress: Commerce_Customer_Address!
+    defaultBillingAddress: Commerce_Customer_Address!
+}
+
+type Commerce_Customer_PersonData {
+    gender:     String!
+    firstName:  String!
+    lastName:   String!
+    middleName: String!
+    mainEmail:  String!
+    prefix:      String!
+    birthday:    Time!
+    nationality: String!
+}
+
+type Commerce_Customer_Address {
+    regionCode:             String!
+    countryCode:            String!
+    company:                String!
+    street:                 String!
+    streetNr:               String!
+    additionalAddressLines: [String!]
+    telephone:              String!
+    postCode:               String!
+    city:                   String!
+    firstname:              String!
+    lastname:               String!
+    email:                  String!
+}
+
+extend type Query {
+    """
+    Returns the logged in status for the current session
+    """
+    Commerce_Customer_Status: Commerce_Customer_Status_Result
+    """
+    Returns the logged in customer for the current session or an error if it is not logged in.
+    If you don't want to handle the error, check with Commerce_Customer_Status first.
+    """
+    Commerce_Customer: Commerce_Customer_Result
+}

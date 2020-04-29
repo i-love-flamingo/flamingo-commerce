@@ -19,3 +19,9 @@ You can enable the provided adapter for the customerService with:
 ```yaml
 commerce.customer.useNilCustomerAdapter: true
 ```
+
+## GraphQL
+
+Queries:
+  * `Commerce_Customer_Status` returns the customer's login status
+  * `Commerce_Customer` returns the logged-in customer

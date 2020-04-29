@@ -24,10 +24,12 @@ import (
 	application1 "flamingo.me/flamingo-commerce/v3/checkout/application"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	dto2 "flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql/dto"
+	domain4 "flamingo.me/flamingo-commerce/v3/customer/domain"
+	"flamingo.me/flamingo-commerce/v3/customer/interfaces/graphql/dtocustomer"
 	"flamingo.me/flamingo-commerce/v3/price/domain"
 	"flamingo.me/flamingo-commerce/v3/product/application"
 	domain1 "flamingo.me/flamingo-commerce/v3/product/domain"
-	domain4 "flamingo.me/flamingo-commerce/v3/search/domain"
+	domain5 "flamingo.me/flamingo-commerce/v3/search/domain"
 	dto1 "flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/dto"
 	domain3 "flamingo.me/form/domain"
 	graphql1 "flamingo.me/graphql"
@@ -561,6 +563,45 @@ type ComplexityRoot struct {
 		UUID func(childComplexity int) int
 	}
 
+	CommerceCustomerAddress struct {
+		AdditionalAddressLines func(childComplexity int) int
+		City                   func(childComplexity int) int
+		Company                func(childComplexity int) int
+		CountryCode            func(childComplexity int) int
+		Email                  func(childComplexity int) int
+		Firstname              func(childComplexity int) int
+		Lastname               func(childComplexity int) int
+		PostCode               func(childComplexity int) int
+		RegionCode             func(childComplexity int) int
+		Street                 func(childComplexity int) int
+		StreetNr               func(childComplexity int) int
+		Telephone              func(childComplexity int) int
+	}
+
+	CommerceCustomerPersonData struct {
+		Birthday    func(childComplexity int) int
+		FirstName   func(childComplexity int) int
+		Gender      func(childComplexity int) int
+		LastName    func(childComplexity int) int
+		MainEmail   func(childComplexity int) int
+		MiddleName  func(childComplexity int) int
+		Nationality func(childComplexity int) int
+		Prefix      func(childComplexity int) int
+	}
+
+	CommerceCustomerResult struct {
+		Addresses              func(childComplexity int) int
+		DefaultBillingAddress  func(childComplexity int) int
+		DefaultShippingAddress func(childComplexity int) int
+		ID                     func(childComplexity int) int
+		PersonalData           func(childComplexity int) int
+	}
+
+	CommerceCustomerStatusResult struct {
+		IsLoggedIn func(childComplexity int) int
+		UserID     func(childComplexity int) int
+	}
+
 	CommerceDecoratedCart struct {
 		Cart                       func(childComplexity int) int
 		CartSummary                func(childComplexity int) int
@@ -744,6 +785,8 @@ type ComplexityRoot struct {
 		CommerceCategoryTree             func(childComplexity int, activeCategoryCode string) int
 		CommerceCheckoutActivePlaceOrder func(childComplexity int) int
 		CommerceCheckoutCurrentContext   func(childComplexity int) int
+		CommerceCustomer                 func(childComplexity int) int
+		CommerceCustomerStatus           func(childComplexity int) int
 		CommerceProduct                  func(childComplexity int, marketplaceCode string) int
 		CommerceProductSearch            func(childComplexity int, searchRequest *dto1.CommerceSearchRequest) int
 		Flamingo                         func(childComplexity int) int
@@ -773,6 +816,8 @@ type QueryResolver interface {
 	Flamingo(ctx context.Context) (*string, error)
 	CommerceProduct(ctx context.Context, marketplaceCode string) (domain1.BasicProduct, error)
 	CommerceProductSearch(ctx context.Context, searchRequest *dto1.CommerceSearchRequest) (*application.SearchResult, error)
+	CommerceCustomerStatus(ctx context.Context) (*dtocustomer.CustomerStatusResult, error)
+	CommerceCustomer(ctx context.Context) (*dtocustomer.CustomerResult, error)
 	CommerceCart(ctx context.Context) (*dto.DecoratedCart, error)
 	CommerceCartValidator(ctx context.Context) (*validation.Result, error)
 	CommerceCheckoutActivePlaceOrder(ctx context.Context) (bool, error)
@@ -2997,6 +3042,195 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCheckoutStartPlaceOrderResult.UUID(childComplexity), true
 
+	case "Commerce_Customer_Address.additionalAddressLines":
+		if e.complexity.CommerceCustomerAddress.AdditionalAddressLines == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerAddress.AdditionalAddressLines(childComplexity), true
+
+	case "Commerce_Customer_Address.city":
+		if e.complexity.CommerceCustomerAddress.City == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerAddress.City(childComplexity), true
+
+	case "Commerce_Customer_Address.company":
+		if e.complexity.CommerceCustomerAddress.Company == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerAddress.Company(childComplexity), true
+
+	case "Commerce_Customer_Address.countryCode":
+		if e.complexity.CommerceCustomerAddress.CountryCode == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerAddress.CountryCode(childComplexity), true
+
+	case "Commerce_Customer_Address.email":
+		if e.complexity.CommerceCustomerAddress.Email == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerAddress.Email(childComplexity), true
+
+	case "Commerce_Customer_Address.firstname":
+		if e.complexity.CommerceCustomerAddress.Firstname == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerAddress.Firstname(childComplexity), true
+
+	case "Commerce_Customer_Address.lastname":
+		if e.complexity.CommerceCustomerAddress.Lastname == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerAddress.Lastname(childComplexity), true
+
+	case "Commerce_Customer_Address.postCode":
+		if e.complexity.CommerceCustomerAddress.PostCode == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerAddress.PostCode(childComplexity), true
+
+	case "Commerce_Customer_Address.regionCode":
+		if e.complexity.CommerceCustomerAddress.RegionCode == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerAddress.RegionCode(childComplexity), true
+
+	case "Commerce_Customer_Address.street":
+		if e.complexity.CommerceCustomerAddress.Street == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerAddress.Street(childComplexity), true
+
+	case "Commerce_Customer_Address.streetNr":
+		if e.complexity.CommerceCustomerAddress.StreetNr == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerAddress.StreetNr(childComplexity), true
+
+	case "Commerce_Customer_Address.telephone":
+		if e.complexity.CommerceCustomerAddress.Telephone == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerAddress.Telephone(childComplexity), true
+
+	case "Commerce_Customer_PersonData.birthday":
+		if e.complexity.CommerceCustomerPersonData.Birthday == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerPersonData.Birthday(childComplexity), true
+
+	case "Commerce_Customer_PersonData.firstName":
+		if e.complexity.CommerceCustomerPersonData.FirstName == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerPersonData.FirstName(childComplexity), true
+
+	case "Commerce_Customer_PersonData.gender":
+		if e.complexity.CommerceCustomerPersonData.Gender == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerPersonData.Gender(childComplexity), true
+
+	case "Commerce_Customer_PersonData.lastName":
+		if e.complexity.CommerceCustomerPersonData.LastName == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerPersonData.LastName(childComplexity), true
+
+	case "Commerce_Customer_PersonData.mainEmail":
+		if e.complexity.CommerceCustomerPersonData.MainEmail == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerPersonData.MainEmail(childComplexity), true
+
+	case "Commerce_Customer_PersonData.middleName":
+		if e.complexity.CommerceCustomerPersonData.MiddleName == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerPersonData.MiddleName(childComplexity), true
+
+	case "Commerce_Customer_PersonData.nationality":
+		if e.complexity.CommerceCustomerPersonData.Nationality == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerPersonData.Nationality(childComplexity), true
+
+	case "Commerce_Customer_PersonData.prefix":
+		if e.complexity.CommerceCustomerPersonData.Prefix == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerPersonData.Prefix(childComplexity), true
+
+	case "Commerce_Customer_Result.addresses":
+		if e.complexity.CommerceCustomerResult.Addresses == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerResult.Addresses(childComplexity), true
+
+	case "Commerce_Customer_Result.defaultBillingAddress":
+		if e.complexity.CommerceCustomerResult.DefaultBillingAddress == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerResult.DefaultBillingAddress(childComplexity), true
+
+	case "Commerce_Customer_Result.defaultShippingAddress":
+		if e.complexity.CommerceCustomerResult.DefaultShippingAddress == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerResult.DefaultShippingAddress(childComplexity), true
+
+	case "Commerce_Customer_Result.id":
+		if e.complexity.CommerceCustomerResult.ID == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerResult.ID(childComplexity), true
+
+	case "Commerce_Customer_Result.personalData":
+		if e.complexity.CommerceCustomerResult.PersonalData == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerResult.PersonalData(childComplexity), true
+
+	case "Commerce_Customer_Status_Result.isLoggedIn":
+		if e.complexity.CommerceCustomerStatusResult.IsLoggedIn == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerStatusResult.IsLoggedIn(childComplexity), true
+
+	case "Commerce_Customer_Status_Result.userID":
+		if e.complexity.CommerceCustomerStatusResult.UserID == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerStatusResult.UserID(childComplexity), true
+
 	case "Commerce_DecoratedCart.cart":
 		if e.complexity.CommerceDecoratedCart.Cart == nil {
 			break
@@ -3950,6 +4184,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.CommerceCheckoutCurrentContext(childComplexity), true
 
+	case "Query.Commerce_Customer":
+		if e.complexity.Query.CommerceCustomer == nil {
+			break
+		}
+
+		return e.complexity.Query.CommerceCustomer(childComplexity), true
+
+	case "Query.Commerce_Customer_Status":
+		if e.complexity.Query.CommerceCustomerStatus == nil {
+			break
+		}
+
+		return e.complexity.Query.CommerceCustomerStatus(childComplexity), true
+
 	case "Query.Commerce_Product":
 		if e.complexity.Query.CommerceProduct == nil {
 			break
@@ -4680,6 +4928,57 @@ extend type Mutation {
     Commerce_Checkout_RefreshPlaceOrder: Commerce_Checkout_PlaceOrderContext!
     # Gets the most recent place order state by waiting for the state machine to proceed, therefore blocking
     Commerce_Checkout_RefreshPlaceOrderBlocking: Commerce_Checkout_PlaceOrderContext!
+}
+`},
+	&ast.Source{Name: "graphql/schema/flamingo.me_flamingo-commerce_v3_customer_interfaces_graphql-Service.graphql", Input: `type Commerce_Customer_Status_Result {
+    isLoggedIn: Boolean!
+    userID: String!
+}
+
+type Commerce_Customer_Result {
+    id: String!
+    personalData: Commerce_Customer_PersonData!
+    addresses: [Commerce_Customer_Address!]
+    defaultShippingAddress: Commerce_Customer_Address!
+    defaultBillingAddress: Commerce_Customer_Address!
+}
+
+type Commerce_Customer_PersonData {
+    gender:     String!
+    firstName:  String!
+    lastName:   String!
+    middleName: String!
+    mainEmail:  String!
+    prefix:      String!
+    birthday:    Time!
+    nationality: String!
+}
+
+type Commerce_Customer_Address {
+    regionCode:             String!
+    countryCode:            String!
+    company:                String!
+    street:                 String!
+    streetNr:               String!
+    additionalAddressLines: [String!]
+    telephone:              String!
+    postCode:               String!
+    city:                   String!
+    firstname:              String!
+    lastname:               String!
+    email:                  String!
+}
+
+extend type Query {
+    """
+    Returns the logged in status for the current session
+    """
+    Commerce_Customer_Status: Commerce_Customer_Status_Result
+    """
+    Returns the logged in customer for the current session or an error if it is not logged in.
+    If you don't want to handle the error, check with Commerce_Customer_Status first.
+    """
+    Commerce_Customer: Commerce_Customer_Result
 }
 `},
 	&ast.Source{Name: "graphql/schema/flamingo.me_flamingo-commerce_v3_price_interfaces_graphql-Service.graphql", Input: `type Commerce_Price{
@@ -13669,6 +13968,729 @@ func (ec *executionContext) _Commerce_Checkout_StartPlaceOrder_Result_uuid(ctx c
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_Customer_Address_regionCode(ctx context.Context, field graphql.CollectedField, obj *domain4.Address) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_Address",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RegionCode, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_Address_countryCode(ctx context.Context, field graphql.CollectedField, obj *domain4.Address) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_Address",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CountryCode, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_Address_company(ctx context.Context, field graphql.CollectedField, obj *domain4.Address) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_Address",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Company, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_Address_street(ctx context.Context, field graphql.CollectedField, obj *domain4.Address) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_Address",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Street, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_Address_streetNr(ctx context.Context, field graphql.CollectedField, obj *domain4.Address) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_Address",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StreetNr, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_Address_additionalAddressLines(ctx context.Context, field graphql.CollectedField, obj *domain4.Address) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_Address",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AdditionalAddressLines, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOString2ᚕstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_Address_telephone(ctx context.Context, field graphql.CollectedField, obj *domain4.Address) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_Address",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Telephone, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_Address_postCode(ctx context.Context, field graphql.CollectedField, obj *domain4.Address) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_Address",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PostCode, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_Address_city(ctx context.Context, field graphql.CollectedField, obj *domain4.Address) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_Address",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.City, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_Address_firstname(ctx context.Context, field graphql.CollectedField, obj *domain4.Address) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_Address",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Firstname, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_Address_lastname(ctx context.Context, field graphql.CollectedField, obj *domain4.Address) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_Address",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Lastname, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_Address_email(ctx context.Context, field graphql.CollectedField, obj *domain4.Address) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_Address",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Email, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_PersonData_gender(ctx context.Context, field graphql.CollectedField, obj *domain4.PersonData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_PersonData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Gender, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_PersonData_firstName(ctx context.Context, field graphql.CollectedField, obj *domain4.PersonData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_PersonData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FirstName, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_PersonData_lastName(ctx context.Context, field graphql.CollectedField, obj *domain4.PersonData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_PersonData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.LastName, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_PersonData_middleName(ctx context.Context, field graphql.CollectedField, obj *domain4.PersonData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_PersonData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MiddleName, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_PersonData_mainEmail(ctx context.Context, field graphql.CollectedField, obj *domain4.PersonData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_PersonData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MainEmail, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_PersonData_prefix(ctx context.Context, field graphql.CollectedField, obj *domain4.PersonData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_PersonData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Prefix, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_PersonData_birthday(ctx context.Context, field graphql.CollectedField, obj *domain4.PersonData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_PersonData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Birthday, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_PersonData_nationality(ctx context.Context, field graphql.CollectedField, obj *domain4.PersonData) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_PersonData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Nationality, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_Result_id(ctx context.Context, field graphql.CollectedField, obj *dtocustomer.CustomerResult) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_Result",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_Result_personalData(ctx context.Context, field graphql.CollectedField, obj *dtocustomer.CustomerResult) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_Result",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PersonalData, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain4.PersonData)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNCommerce_Customer_PersonData2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋdomainᚐPersonData(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_Result_addresses(ctx context.Context, field graphql.CollectedField, obj *dtocustomer.CustomerResult) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_Result",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Addresses, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]domain4.Address)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOCommerce_Customer_Address2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋdomainᚐAddress(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_Result_defaultShippingAddress(ctx context.Context, field graphql.CollectedField, obj *dtocustomer.CustomerResult) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_Result",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DefaultShippingAddress, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain4.Address)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNCommerce_Customer_Address2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋdomainᚐAddress(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_Result_defaultBillingAddress(ctx context.Context, field graphql.CollectedField, obj *dtocustomer.CustomerResult) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_Result",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DefaultBillingAddress, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain4.Address)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNCommerce_Customer_Address2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋdomainᚐAddress(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_Status_Result_isLoggedIn(ctx context.Context, field graphql.CollectedField, obj *dtocustomer.CustomerStatusResult) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_Status_Result",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsLoggedIn, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_Status_Result_userID(ctx context.Context, field graphql.CollectedField, obj *dtocustomer.CustomerStatusResult) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Customer_Status_Result",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_DecoratedCart_cart(ctx context.Context, field graphql.CollectedField, obj *dto.DecoratedCart) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -15594,7 +16616,7 @@ func (ec *executionContext) _Commerce_Product_SearchResult_suggestions(ctx conte
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]domain4.Suggestion)
+	res := resTmp.([]domain5.Suggestion)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalOCommerce_Search_Suggestion2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐSuggestion(ctx, field.Selections, res)
@@ -15621,13 +16643,13 @@ func (ec *executionContext) _Commerce_Product_SearchResult_searchMeta(ctx contex
 		}
 		return graphql.Null
 	}
-	res := resTmp.(domain4.SearchMeta)
+	res := resTmp.(domain5.SearchMeta)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalNCommerce_Search_Meta2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐSearchMeta(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_Meta_query(ctx context.Context, field graphql.CollectedField, obj *domain4.SearchMeta) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_Meta_query(ctx context.Context, field graphql.CollectedField, obj *domain5.SearchMeta) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -15654,7 +16676,7 @@ func (ec *executionContext) _Commerce_Search_Meta_query(ctx context.Context, fie
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_Meta_originalQuery(ctx context.Context, field graphql.CollectedField, obj *domain4.SearchMeta) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_Meta_originalQuery(ctx context.Context, field graphql.CollectedField, obj *domain5.SearchMeta) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -15681,7 +16703,7 @@ func (ec *executionContext) _Commerce_Search_Meta_originalQuery(ctx context.Cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_Meta_page(ctx context.Context, field graphql.CollectedField, obj *domain4.SearchMeta) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_Meta_page(ctx context.Context, field graphql.CollectedField, obj *domain5.SearchMeta) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -15708,7 +16730,7 @@ func (ec *executionContext) _Commerce_Search_Meta_page(ctx context.Context, fiel
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_Meta_numPages(ctx context.Context, field graphql.CollectedField, obj *domain4.SearchMeta) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_Meta_numPages(ctx context.Context, field graphql.CollectedField, obj *domain5.SearchMeta) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -15735,7 +16757,7 @@ func (ec *executionContext) _Commerce_Search_Meta_numPages(ctx context.Context, 
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_Meta_numResults(ctx context.Context, field graphql.CollectedField, obj *domain4.SearchMeta) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_Meta_numResults(ctx context.Context, field graphql.CollectedField, obj *domain5.SearchMeta) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -15762,7 +16784,7 @@ func (ec *executionContext) _Commerce_Search_Meta_numResults(ctx context.Context
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_Meta_sortOptions(ctx context.Context, field graphql.CollectedField, obj *domain4.SearchMeta) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_Meta_sortOptions(ctx context.Context, field graphql.CollectedField, obj *domain5.SearchMeta) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -15780,13 +16802,13 @@ func (ec *executionContext) _Commerce_Search_Meta_sortOptions(ctx context.Contex
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]domain4.SortOption)
+	res := resTmp.([]domain5.SortOption)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalOCommerce_Search_SortOption2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐSortOption(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_SortOption_label(ctx context.Context, field graphql.CollectedField, obj *domain4.SortOption) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_SortOption_label(ctx context.Context, field graphql.CollectedField, obj *domain5.SortOption) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -15813,7 +16835,7 @@ func (ec *executionContext) _Commerce_Search_SortOption_label(ctx context.Contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_SortOption_field(ctx context.Context, field graphql.CollectedField, obj *domain4.SortOption) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_SortOption_field(ctx context.Context, field graphql.CollectedField, obj *domain5.SortOption) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -15840,7 +16862,7 @@ func (ec *executionContext) _Commerce_Search_SortOption_field(ctx context.Contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_SortOption_selectedAsc(ctx context.Context, field graphql.CollectedField, obj *domain4.SortOption) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_SortOption_selectedAsc(ctx context.Context, field graphql.CollectedField, obj *domain5.SortOption) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -15867,7 +16889,7 @@ func (ec *executionContext) _Commerce_Search_SortOption_selectedAsc(ctx context.
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_SortOption_selectedDesc(ctx context.Context, field graphql.CollectedField, obj *domain4.SortOption) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_SortOption_selectedDesc(ctx context.Context, field graphql.CollectedField, obj *domain5.SortOption) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -15894,7 +16916,7 @@ func (ec *executionContext) _Commerce_Search_SortOption_selectedDesc(ctx context
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_Suggestion_text(ctx context.Context, field graphql.CollectedField, obj *domain4.Suggestion) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_Suggestion_text(ctx context.Context, field graphql.CollectedField, obj *domain5.Suggestion) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -15921,7 +16943,7 @@ func (ec *executionContext) _Commerce_Search_Suggestion_text(ctx context.Context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_Suggestion_highlight(ctx context.Context, field graphql.CollectedField, obj *domain4.Suggestion) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_Suggestion_highlight(ctx context.Context, field graphql.CollectedField, obj *domain5.Suggestion) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -16823,6 +17845,54 @@ func (ec *executionContext) _Query_Commerce_Product_Search(ctx context.Context, 
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalNCommerce_Product_SearchResult2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋapplicationᚐSearchResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_Commerce_Customer_Status(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().CommerceCustomerStatus(rctx)
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*dtocustomer.CustomerStatusResult)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOCommerce_Customer_Status_Result2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋinterfacesᚋgraphqlᚋdtocustomerᚐCustomerStatusResult(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_Commerce_Customer(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Query",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().CommerceCustomer(rctx)
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*dtocustomer.CustomerResult)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOCommerce_Customer_Result2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋinterfacesᚋgraphqlᚋdtocustomerᚐCustomerResult(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_Commerce_Cart(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
@@ -20952,6 +22022,223 @@ func (ec *executionContext) _Commerce_Checkout_StartPlaceOrder_Result(ctx contex
 	return out
 }
 
+var commerce_Customer_AddressImplementors = []string{"Commerce_Customer_Address"}
+
+func (ec *executionContext) _Commerce_Customer_Address(ctx context.Context, sel ast.SelectionSet, obj *domain4.Address) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Customer_AddressImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Customer_Address")
+		case "regionCode":
+			out.Values[i] = ec._Commerce_Customer_Address_regionCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "countryCode":
+			out.Values[i] = ec._Commerce_Customer_Address_countryCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "company":
+			out.Values[i] = ec._Commerce_Customer_Address_company(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "street":
+			out.Values[i] = ec._Commerce_Customer_Address_street(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "streetNr":
+			out.Values[i] = ec._Commerce_Customer_Address_streetNr(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "additionalAddressLines":
+			out.Values[i] = ec._Commerce_Customer_Address_additionalAddressLines(ctx, field, obj)
+		case "telephone":
+			out.Values[i] = ec._Commerce_Customer_Address_telephone(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "postCode":
+			out.Values[i] = ec._Commerce_Customer_Address_postCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "city":
+			out.Values[i] = ec._Commerce_Customer_Address_city(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "firstname":
+			out.Values[i] = ec._Commerce_Customer_Address_firstname(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "lastname":
+			out.Values[i] = ec._Commerce_Customer_Address_lastname(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "email":
+			out.Values[i] = ec._Commerce_Customer_Address_email(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Customer_PersonDataImplementors = []string{"Commerce_Customer_PersonData"}
+
+func (ec *executionContext) _Commerce_Customer_PersonData(ctx context.Context, sel ast.SelectionSet, obj *domain4.PersonData) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Customer_PersonDataImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Customer_PersonData")
+		case "gender":
+			out.Values[i] = ec._Commerce_Customer_PersonData_gender(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "firstName":
+			out.Values[i] = ec._Commerce_Customer_PersonData_firstName(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "lastName":
+			out.Values[i] = ec._Commerce_Customer_PersonData_lastName(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "middleName":
+			out.Values[i] = ec._Commerce_Customer_PersonData_middleName(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "mainEmail":
+			out.Values[i] = ec._Commerce_Customer_PersonData_mainEmail(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "prefix":
+			out.Values[i] = ec._Commerce_Customer_PersonData_prefix(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "birthday":
+			out.Values[i] = ec._Commerce_Customer_PersonData_birthday(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "nationality":
+			out.Values[i] = ec._Commerce_Customer_PersonData_nationality(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Customer_ResultImplementors = []string{"Commerce_Customer_Result"}
+
+func (ec *executionContext) _Commerce_Customer_Result(ctx context.Context, sel ast.SelectionSet, obj *dtocustomer.CustomerResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Customer_ResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Customer_Result")
+		case "id":
+			out.Values[i] = ec._Commerce_Customer_Result_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "personalData":
+			out.Values[i] = ec._Commerce_Customer_Result_personalData(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "addresses":
+			out.Values[i] = ec._Commerce_Customer_Result_addresses(ctx, field, obj)
+		case "defaultShippingAddress":
+			out.Values[i] = ec._Commerce_Customer_Result_defaultShippingAddress(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "defaultBillingAddress":
+			out.Values[i] = ec._Commerce_Customer_Result_defaultBillingAddress(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Customer_Status_ResultImplementors = []string{"Commerce_Customer_Status_Result"}
+
+func (ec *executionContext) _Commerce_Customer_Status_Result(ctx context.Context, sel ast.SelectionSet, obj *dtocustomer.CustomerStatusResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Customer_Status_ResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Customer_Status_Result")
+		case "isLoggedIn":
+			out.Values[i] = ec._Commerce_Customer_Status_Result_isLoggedIn(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "userID":
+			out.Values[i] = ec._Commerce_Customer_Status_Result_userID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var commerce_DecoratedCartImplementors = []string{"Commerce_DecoratedCart"}
 
 func (ec *executionContext) _Commerce_DecoratedCart(ctx context.Context, sel ast.SelectionSet, obj *dto.DecoratedCart) graphql.Marshaler {
@@ -21558,7 +22845,7 @@ func (ec *executionContext) _Commerce_Product_SearchResult(ctx context.Context, 
 
 var commerce_Search_MetaImplementors = []string{"Commerce_Search_Meta"}
 
-func (ec *executionContext) _Commerce_Search_Meta(ctx context.Context, sel ast.SelectionSet, obj *domain4.SearchMeta) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_Meta(ctx context.Context, sel ast.SelectionSet, obj *domain5.SearchMeta) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Search_MetaImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -21607,7 +22894,7 @@ func (ec *executionContext) _Commerce_Search_Meta(ctx context.Context, sel ast.S
 
 var commerce_Search_SortOptionImplementors = []string{"Commerce_Search_SortOption"}
 
-func (ec *executionContext) _Commerce_Search_SortOption(ctx context.Context, sel ast.SelectionSet, obj *domain4.SortOption) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_SortOption(ctx context.Context, sel ast.SelectionSet, obj *domain5.SortOption) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Search_SortOptionImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -21649,7 +22936,7 @@ func (ec *executionContext) _Commerce_Search_SortOption(ctx context.Context, sel
 
 var commerce_Search_SuggestionImplementors = []string{"Commerce_Search_Suggestion"}
 
-func (ec *executionContext) _Commerce_Search_Suggestion(ctx context.Context, sel ast.SelectionSet, obj *domain4.Suggestion) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_Suggestion(ctx context.Context, sel ast.SelectionSet, obj *domain5.Suggestion) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Search_SuggestionImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -21894,6 +23181,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
+				return res
+			})
+		case "Commerce_Customer_Status":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_Commerce_Customer_Status(ctx, field)
+				return res
+			})
+		case "Commerce_Customer":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_Commerce_Customer(ctx, field)
 				return res
 			})
 		case "Commerce_Cart":
@@ -22589,6 +23898,14 @@ func (ec *executionContext) marshalNCommerce_Checkout_StartPlaceOrder_Result2ᚖ
 	return ec._Commerce_Checkout_StartPlaceOrder_Result(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNCommerce_Customer_Address2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋdomainᚐAddress(ctx context.Context, sel ast.SelectionSet, v domain4.Address) graphql.Marshaler {
+	return ec._Commerce_Customer_Address(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Customer_PersonData2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋdomainᚐPersonData(ctx context.Context, sel ast.SelectionSet, v domain4.PersonData) graphql.Marshaler {
+	return ec._Commerce_Customer_PersonData(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalNCommerce_DecoratedCart2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx context.Context, sel ast.SelectionSet, v dto.DecoratedCart) graphql.Marshaler {
 	return ec._Commerce_DecoratedCart(ctx, sel, &v)
 }
@@ -22677,15 +23994,15 @@ func (ec *executionContext) unmarshalNCommerce_Search_KeyValueFilter2flamingoᚗ
 	return ec.unmarshalInputCommerce_Search_KeyValueFilter(ctx, v)
 }
 
-func (ec *executionContext) marshalNCommerce_Search_Meta2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐSearchMeta(ctx context.Context, sel ast.SelectionSet, v domain4.SearchMeta) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Search_Meta2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐSearchMeta(ctx context.Context, sel ast.SelectionSet, v domain5.SearchMeta) graphql.Marshaler {
 	return ec._Commerce_Search_Meta(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Search_SortOption2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐSortOption(ctx context.Context, sel ast.SelectionSet, v domain4.SortOption) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Search_SortOption2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐSortOption(ctx context.Context, sel ast.SelectionSet, v domain5.SortOption) graphql.Marshaler {
 	return ec._Commerce_Search_SortOption(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Search_Suggestion2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐSuggestion(ctx context.Context, sel ast.SelectionSet, v domain4.Suggestion) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Search_Suggestion2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐSuggestion(ctx context.Context, sel ast.SelectionSet, v domain5.Suggestion) graphql.Marshaler {
 	return ec._Commerce_Search_Suggestion(ctx, sel, &v)
 }
 
@@ -22759,6 +24076,20 @@ func (ec *executionContext) unmarshalNString2string(ctx context.Context, v inter
 
 func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	res := graphql.MarshalString(v)
+	if res == graphql.Null {
+		if !ec.HasError(graphql.GetResolverContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
+	return graphql.UnmarshalTime(v)
+}
+
+func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
+	res := graphql.MarshalTime(v)
 	if res == graphql.Null {
 		if !ec.HasError(graphql.GetResolverContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -24087,6 +25418,68 @@ func (ec *executionContext) marshalOCommerce_Checkout_PlacedOrderInfos2ᚖflamin
 	return ec._Commerce_Checkout_PlacedOrderInfos(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalOCommerce_Customer_Address2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋdomainᚐAddress(ctx context.Context, sel ast.SelectionSet, v []domain4.Address) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		rctx := &graphql.ResolverContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithResolverContext(ctx, rctx)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCommerce_Customer_Address2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋdomainᚐAddress(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalOCommerce_Customer_Result2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋinterfacesᚋgraphqlᚋdtocustomerᚐCustomerResult(ctx context.Context, sel ast.SelectionSet, v dtocustomer.CustomerResult) graphql.Marshaler {
+	return ec._Commerce_Customer_Result(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOCommerce_Customer_Result2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋinterfacesᚋgraphqlᚋdtocustomerᚐCustomerResult(ctx context.Context, sel ast.SelectionSet, v *dtocustomer.CustomerResult) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Commerce_Customer_Result(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOCommerce_Customer_Status_Result2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋinterfacesᚋgraphqlᚋdtocustomerᚐCustomerStatusResult(ctx context.Context, sel ast.SelectionSet, v dtocustomer.CustomerStatusResult) graphql.Marshaler {
+	return ec._Commerce_Customer_Status_Result(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOCommerce_Customer_Status_Result2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋinterfacesᚋgraphqlᚋdtocustomerᚐCustomerStatusResult(ctx context.Context, sel ast.SelectionSet, v *dtocustomer.CustomerStatusResult) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Commerce_Customer_Status_Result(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalOCommerce_DecoratedCart2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx context.Context, sel ast.SelectionSet, v dto.DecoratedCart) graphql.Marshaler {
 	return ec._Commerce_DecoratedCart(ctx, sel, &v)
 }
@@ -24499,7 +25892,7 @@ func (ec *executionContext) unmarshalOCommerce_Search_Request2ᚖflamingoᚗme�
 	return &res, err
 }
 
-func (ec *executionContext) marshalOCommerce_Search_SortOption2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐSortOption(ctx context.Context, sel ast.SelectionSet, v []domain4.SortOption) graphql.Marshaler {
+func (ec *executionContext) marshalOCommerce_Search_SortOption2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐSortOption(ctx context.Context, sel ast.SelectionSet, v []domain5.SortOption) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -24539,7 +25932,7 @@ func (ec *executionContext) marshalOCommerce_Search_SortOption2ᚕflamingoᚗme�
 	return ret
 }
 
-func (ec *executionContext) marshalOCommerce_Search_Suggestion2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐSuggestion(ctx context.Context, sel ast.SelectionSet, v []domain4.Suggestion) graphql.Marshaler {
+func (ec *executionContext) marshalOCommerce_Search_Suggestion2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐSuggestion(ctx context.Context, sel ast.SelectionSet, v []domain5.Suggestion) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
