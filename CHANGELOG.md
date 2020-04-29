@@ -17,6 +17,13 @@
 **checkout**
 * Make cart validation before place order optional with configuration
 
+**checkout**
+* State Machine
+  * Add additional metrics to monitor place order flow
+    * flamingo_commerce_checkout_placeorder_starts
+    * flamingo_commerce_checkout_placeorder_state_run_count
+    * flamingo_commerce_checkout_placeorder_state_failed_count
+
 ## v3.2.0
 **w3cdatalayer**
 * Fixed a bug that causes the datalayer to panic if it failed to build an absolute url

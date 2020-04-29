@@ -7,8 +7,14 @@ import (
 	"fmt"
 	"net/url"
 
-	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/google/uuid"
+
+	"go.opencensus.io/stats"
+	"go.opencensus.io/stats/view"
+	"go.opencensus.io/tag"
+
+	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/opencensus"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
@@ -25,6 +31,7 @@ type (
 		allStates   map[string]State
 		failedState State
 		logger      flamingo.Logger
+		area        string
 	}
 
 	// Factory use to get Process instance
@@ -70,12 +77,27 @@ type (
 	}
 )
 
+var (
+	// processedState counts processed states
+	processedState = stats.Int64("flamingo-commerce/checkout/placeorder/state_run_count", "Counts how often a state is run", stats.UnitDimensionless)
+	// failedStateTransition counts failed state transitions
+	failedStateTransition = stats.Int64("flamingo-commerce/checkout/placeorder/state_failed_count", "Counts how often running a state resulted in a failure", stats.UnitDimensionless)
+	keyState, _           = tag.NewKey("state")
+)
+
 func init() {
 	gob.Register(ErrorOccurredReason{})
 	gob.Register(PaymentErrorOccurredReason{})
 	gob.Register(PaymentCanceledByCustomerReason{})
 	gob.Register(CartValidationErrorReason{})
 	gob.Register(CanceledByCustomerReason{})
+
+	if err := opencensus.View("flamingo-commerce/checkout/placeorder/state_run_count", processedState, view.Count(), keyState); err != nil {
+		panic(err)
+	}
+	if err := opencensus.View("flamingo-commerce/checkout/placeorder/state_failed_count", failedStateTransition, view.Count(), keyState); err != nil {
+		panic(err)
+	}
 }
 
 // Reason for the error occurred
@@ -149,11 +171,18 @@ func (f *Factory) NewFromProcessContext(pctx Context) (*Process, error) {
 func (p *Process) Inject(
 	allStates map[string]State,
 	logger flamingo.Logger,
+	cfg *struct {
+		Area string `inject:"config:area"`
+	},
 ) *Process {
 	p.allStates = allStates
 	p.logger = logger.
 		WithField(flamingo.LogKeyModule, "checkout").
 		WithField(flamingo.LogKeyCategory, "process")
+
+	if cfg != nil {
+		p.area = cfg.Area
+	}
 
 	return p
 }
@@ -166,6 +195,9 @@ func (p *Process) Run(ctx context.Context) {
 		return
 	}
 
+	censusCtx, _ := tag.New(ctx, tag.Upsert(opencensus.KeyArea, p.area), tag.Upsert(keyState, currentState.Name()))
+	stats.Record(censusCtx, processedState.M(1))
+
 	runResult := currentState.Run(ctx, p)
 	if runResult.RollbackData != nil {
 		p.context.RollbackReferences = append(p.context.RollbackReferences, RollbackReference{
@@ -175,6 +207,7 @@ func (p *Process) Run(ctx context.Context) {
 	}
 
 	if runResult.Failed != nil {
+		stats.Record(censusCtx, failedStateTransition.M(1))
 		p.Failed(ctx, runResult.Failed)
 	}
 }

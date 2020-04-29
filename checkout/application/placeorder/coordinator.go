@@ -8,9 +8,13 @@ import (
 	"net/url"
 	"time"
 
+	"go.opencensus.io/stats"
+	"go.opencensus.io/stats/view"
+	"go.opencensus.io/tag"
 	"go.opencensus.io/trace"
 
 	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/opencensus"
 	"flamingo.me/flamingo/v3/framework/web"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
@@ -42,6 +46,7 @@ type (
 		contextStore   process.ContextStore
 		sessionStore   *web.SessionStore
 		sessionName    string
+		area           string
 	}
 )
 
@@ -60,10 +65,17 @@ var (
 	ErrAnotherPlaceOrderProcessRunning = errors.New("ErrAnotherPlaceOrderProcessRunning")
 
 	maxLockDuration = 2 * time.Minute
+
+	// startCount counts starts of new place order processes
+	startCount = stats.Int64("flamingo-commerce/checkout/placeorder/starts", "Counts how often a new place order process was started", stats.UnitDimensionless)
 )
 
 func init() {
 	gob.Register(process.Context{})
+	err := opencensus.View("flamingo-commerce/checkout/placeorder/starts", startCount, view.Count())
+	if err != nil {
+		panic(err)
+	}
 }
 
 //Inject dependencies
@@ -76,6 +88,7 @@ func (c *Coordinator) Inject(
 	cartService *application.CartService,
 	cfg *struct {
 		SessionName string `inject:"config:flamingo.session.name,optional"`
+		Area        string `inject:"config:area"`
 	},
 ) {
 	c.locker = locker
@@ -83,8 +96,12 @@ func (c *Coordinator) Inject(
 	c.processFactory = processFactory
 	c.contextStore = contextStore
 	c.sessionStore = sessionStore
-	c.sessionName = cfg.SessionName
 	c.cartService = cartService
+
+	if cfg != nil {
+		c.area = cfg.Area
+		c.sessionName = cfg.SessionName
+	}
 }
 
 // New acquires lock if possible and creates new process with first run call blocking
@@ -119,6 +136,8 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *
 			return
 		}
 
+		censusCtx, _ := tag.New(ctx, tag.Upsert(opencensus.KeyArea, c.area))
+		stats.Record(censusCtx, startCount.M(1))
 		newProcess, err := c.processFactory.New(returnURL, cart)
 		if err != nil {
 			runErr = err
