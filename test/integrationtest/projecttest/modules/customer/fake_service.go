@@ -47,7 +47,7 @@ func (f FakeService) GetByIdentity(_ context.Context, identity auth.Identity) (d
 	return nil, errors.New("not logged in")
 }
 
-// GetId of the customer
+// GetID of the customer
 func (c customer) GetID() string {
 	return c.id
 }

@@ -7,7 +7,7 @@ import (
 )
 
 type (
-	// Module registers our fake customer order module
+	// Module is a fake customer module
 	Module struct{}
 )
 

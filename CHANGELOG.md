@@ -15,7 +15,7 @@
     * input `Commerce_BillingAddressFormInput` is now `Commerce_Cart_AddressFormInput`
     
 **customer**
-* **Breaking**: renamed `GetId` to `GetID` in `domain.Customer` interface* 
+* **Breaking**: renamed `GetId` to `GetID` in `domain.Customer` interface
 * introduced new `CustomerIdentityService` to retrieve authenticated customers by `auth.Identity` 
 * deprecated `CustomerService` as it will be replaced by `CustomerIdentityService`
 * GraphQL: Add new customer queries:

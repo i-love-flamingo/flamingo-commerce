@@ -21,9 +21,9 @@ func (*Service) Schema() []byte {
 // Models return the 'Schema name' => 'Go model' mapping of this module
 func (*Service) Models() map[string]config.TypeMapEntry {
 	return graphql.ModelMap{
-		"Commerce_Customer_StatusResult": dtocustomer.CustomerStatusResult{},
-		"Commerce_CustomerResult":        dtocustomer.CustomerResult{},
-		"Commerce_Customer_PersonData":   domain.PersonData{},
-		"Commerce_Customer_Address":      domain.Address{},
+		"Commerce_Customer_Status_Result": dtocustomer.CustomerStatusResult{},
+		"Commerce_Customer_Result":        dtocustomer.CustomerResult{},
+		"Commerce_Customer_PersonData":    domain.PersonData{},
+		"Commerce_Customer_Address":       domain.Address{},
 	}.Models()
 }
