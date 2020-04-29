@@ -79,9 +79,9 @@ type (
 
 var (
 	// processedState counts processed states
-	processedState = stats.Int64("flamingo-commerce/checkout/placeorder/state_run_count", "", stats.UnitDimensionless)
+	processedState = stats.Int64("flamingo-commerce/checkout/placeorder/state_run_count", "Counts how often a state is run", stats.UnitDimensionless)
 	// failedStateTransition counts failed state transitions
-	failedStateTransition = stats.Int64("flamingo-commerce/checkout/placeorder/state_failed_count", "", stats.UnitDimensionless)
+	failedStateTransition = stats.Int64("flamingo-commerce/checkout/placeorder/state_failed_count", "Counts how often running a state resulted in a failure", stats.UnitDimensionless)
 	keyState, _           = tag.NewKey("state")
 )
 

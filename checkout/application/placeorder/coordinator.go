@@ -66,13 +66,13 @@ var (
 
 	maxLockDuration = 2 * time.Minute
 
-	// newUUIDCount counts generation of new UUIDs
-	newUUIDCount = stats.Int64("flamingo-commerce/checkout/placeorder/starts", "", stats.UnitDimensionless)
+	// startCount counts starts of new place order processes
+	startCount = stats.Int64("flamingo-commerce/checkout/placeorder/starts", "Counts how often a new place order process was started", stats.UnitDimensionless)
 )
 
 func init() {
 	gob.Register(process.Context{})
-	err := opencensus.View("flamingo-commerce/checkout/placeorder/starts", newUUIDCount, view.Count())
+	err := opencensus.View("flamingo-commerce/checkout/placeorder/starts", startCount, view.Count())
 	if err != nil {
 		panic(err)
 	}
@@ -137,7 +137,7 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *
 		}
 
 		censusCtx, _ := tag.New(ctx, tag.Upsert(opencensus.KeyArea, c.area))
-		stats.Record(censusCtx, newUUIDCount.M(1))
+		stats.Record(censusCtx, startCount.M(1))
 		newProcess, err := c.processFactory.New(returnURL, cart)
 		if err != nil {
 			runErr = err
