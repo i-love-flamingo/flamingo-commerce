@@ -47,17 +47,18 @@ flamingo:
 order:
   useFakeAdapters: true
 
-pagination:
-  showFirstPage: false
-  showLastPage: false
-  defaultPageSize: 8
-  showAroundActivePageAmount: 2
+
 
 graphql:
   introspectionEnabled: true
 
 # Configs for flamingo-commerce modules
 commerce:
+  pagination:
+    showFirstPage: false
+    showLastPage: false
+    defaultPageSize: 8
+    showAroundActivePageAmount: 2
   cart:
     defaultDeliveryCode: delivery
     enableCartCache: false

@@ -35,10 +35,7 @@ commerce: {
 // FlamingoLegacyConfigAlias mapping
 func (*Module) FlamingoLegacyConfigAlias() map[string]string {
 	return map[string]string{
-		"pagination.defaultPageSize":            "commerce.pagination.defaultPageSize",
-		"pagination.showFirstPage":              "commerce.pagination.showFirstPage",
-		"pagination.showLastPage":               "commerce.pagination.showLastPage",
-		"pagination.showAroundActivePageAmount": "commerce.pagination.showAroundActivePageAmount",
+		"pagination": "commerce.pagination",
 	}
 }
 
