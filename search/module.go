@@ -19,6 +19,29 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	injector.BindMulti(new(graphql.Service)).To(new(searchgraphql.Service))
 }
 
+// CueConfig defines the prefixrouter configuration
+func (*Module) CueConfig() string {
+	return `
+commerce: {
+	pagination: {
+		defaultPageSize: number | *50
+		showFirstPage: 	bool | *false
+		showLastPage:	bool | *false
+		showAroundActivePageAmount: number | *3
+	}
+}`
+}
+
+// FlamingoLegacyConfigAlias mapping
+func (*Module) FlamingoLegacyConfigAlias() map[string]string {
+	return map[string]string{
+		"pagination.defaultPageSize":            "commerce.pagination.defaultPageSize",
+		"pagination.showFirstPage":              "commerce.pagination.showFirstPage",
+		"pagination.showLastPage":               "commerce.pagination.showLastPage",
+		"pagination.showAroundActivePageAmount": "commerce.pagination.showAroundActivePageAmount",
+	}
+}
+
 // DefaultConfig enables inMemory cart service adapter
 func (m *Module) DefaultConfig() config.Map {
 	return config.Map{

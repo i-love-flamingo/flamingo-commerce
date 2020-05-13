@@ -45,8 +45,3 @@ require (
 	gopkg.in/square/go-jose.v2 v2.3.0 // indirect
 	gotest.tools v2.2.0+incompatible // indirect
 )
-
-replace (
-	github.com/robertkrimen/otto => github.com/thebod/otto v0.0.0-20170712091932-83d297c4b64a
-	golang.org/x/oauth2 => github.com/Ompluscator/oauth2 v0.0.0-20190121141151-b76268579942
-)
