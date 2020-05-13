@@ -1,0 +1,10 @@
+query {
+    Commerce_Cart_Validation_Restriction(
+        marketplaceCode:"###MARKETPLACECODE###",
+        deliveryCode:"home") {
+        isRestricted
+        maxAllowed
+        remainingDifference
+        restrictorName
+    }
+}

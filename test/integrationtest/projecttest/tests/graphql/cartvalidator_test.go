@@ -23,3 +23,30 @@ func Test_CartValidator(t *testing.T) {
 	response.Status(http.StatusOK)
 	getValue(response, "Commerce_Cart_Validator", "hasCommonError").Boolean().False()
 }
+
+// In Commerce, the secondary port of `Validator` from cart/domain/validation/cartValidator.go
+// is not implemented. So the query will always return an empty result.
+// This test checks just if the query works
+func Test_CartRestrictor(t *testing.T) {
+	baseURL := "http://" + FlamingoURL
+	e := integrationtest.NewHTTPExpect(t, baseURL)
+
+	t.Run("restricted product", func(t *testing.T) {
+		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "validate_restrictor", map[string]string{"MARKETPLACECODE": "fake_simple"})).Expect()
+		response.Status(http.StatusOK)
+		getValue(response, "Commerce_Cart_Validation_Restriction", "isRestricted").Boolean().True()
+	})
+
+	t.Run("unrestricted product", func(t *testing.T) {
+		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "validate_restrictor", map[string]string{"MARKETPLACECODE": "fake_configurable"})).Expect()
+		response.Status(http.StatusOK)
+		getValue(response, "Commerce_Cart_Validation_Restriction", "isRestricted").Boolean().False()
+	})
+
+	t.Run("404 product", func(t *testing.T) {
+		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "validate_restrictor", map[string]string{"MARKETPLACECODE": "some"})).Expect()
+		response.Status(http.StatusOK)
+		response.JSON().Object().Value("errors").NotNull()
+	})
+
+}

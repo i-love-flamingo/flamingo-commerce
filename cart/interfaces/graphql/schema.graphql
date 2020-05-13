@@ -286,6 +286,14 @@ type Commerce_Cart_ItemValidationError {
     errorMessageKey: String!
 }
 
+
+type Commerce_Cart_RestrictionResult {
+    isRestricted:        Boolean!
+    maxAllowed:          Int!
+    remainingDifference: Int!
+    restrictorName:      String!
+}
+
 type Commerce_Cart_PlacedOrderInfo {
     orderNumber:    String!
     deliveryCode:   String!
@@ -414,6 +422,7 @@ input Commerce_Cart_DeliveryShippingOption {
 extend type Query {
     Commerce_Cart: Commerce_DecoratedCart!
     Commerce_Cart_Validator: Commerce_Cart_ValidationResult!
+    Commerce_Cart_Validation_Restriction(marketplaceCode: String!, variantCode: String, deliveryCode: String!): Commerce_Cart_RestrictionResult!
 }
 
 extend type Mutation {
