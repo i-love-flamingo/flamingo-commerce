@@ -22,7 +22,7 @@ func (f FakeQtyRestrictor) Name() string {
 	return "Name"
 }
 
-// RemoveVoucher fake implementation
+// Restrict fake implementation
 func (f FakeQtyRestrictor) Restrict(ctx context.Context, product domain.BasicProduct, cart *domainCart.Cart, deliveryCode string) *validation.RestrictionResult {
 	if product.BaseData().MarketPlaceCode == "fake_simple" {
 		return &validation.RestrictionResult{

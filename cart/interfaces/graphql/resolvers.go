@@ -57,7 +57,7 @@ func (r *CommerceCartQueryResolver) CommerceCartValidator(ctx context.Context) (
 	return &result, nil
 }
 
-// CommerceCartValidator to trigger the cart validation service
+// CommerceCartValidationRestriction to trigger the cart validation service
 func (r *CommerceCartQueryResolver) CommerceCartValidationRestriction(ctx context.Context, marketplaceCode string, variantCode *string, deliveryCode string) (*validation.RestrictionResult, error) {
 	session := web.SessionFromContext(ctx)
 
