@@ -57,8 +57,9 @@ func (r *CommerceCartQueryResolver) CommerceCartValidator(ctx context.Context) (
 	return &result, nil
 }
 
-// CommerceCartValidationRestriction to trigger the cart validation service
-func (r *CommerceCartQueryResolver) CommerceCartValidationRestriction(ctx context.Context, marketplaceCode string, variantCode *string, deliveryCode string) (*validation.RestrictionResult, error) {
+
+// CommerceCartQtyRestriction checks if given sku is restricted in terms of qty
+func (r *CommerceCartQueryResolver) CommerceCartQtyRestriction(ctx context.Context, marketplaceCode string, variantCode *string, deliveryCode string) (*validation.RestrictionResult, error) {
 	session := web.SessionFromContext(ctx)
 
 	product, err := r.productService.Get(ctx, marketplaceCode)

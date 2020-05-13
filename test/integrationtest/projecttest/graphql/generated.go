@@ -376,7 +376,7 @@ type ComplexityRoot struct {
 		Code   func(childComplexity int) int
 	}
 
-	CommerceCartRestrictionResult struct {
+	CommerceCartQtyRestrictionResult struct {
 		IsRestricted        func(childComplexity int) int
 		MaxAllowed          func(childComplexity int) int
 		RemainingDifference func(childComplexity int) int
@@ -786,18 +786,18 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		CommerceCart                      func(childComplexity int) int
-		CommerceCartValidationRestriction func(childComplexity int, marketplaceCode string, variantCode *string, deliveryCode string) int
-		CommerceCartValidator             func(childComplexity int) int
-		CommerceCategory                  func(childComplexity int, categoryCode string, categorySearchRequest *dto1.CommerceSearchRequest) int
-		CommerceCategoryTree              func(childComplexity int, activeCategoryCode string) int
-		CommerceCheckoutActivePlaceOrder  func(childComplexity int) int
-		CommerceCheckoutCurrentContext    func(childComplexity int) int
-		CommerceCustomer                  func(childComplexity int) int
-		CommerceCustomerStatus            func(childComplexity int) int
-		CommerceProduct                   func(childComplexity int, marketplaceCode string) int
-		CommerceProductSearch             func(childComplexity int, searchRequest *dto1.CommerceSearchRequest) int
-		Flamingo                          func(childComplexity int) int
+		CommerceCart                     func(childComplexity int) int
+		CommerceCartQtyRestriction       func(childComplexity int, marketplaceCode string, variantCode *string, deliveryCode string) int
+		CommerceCartValidator            func(childComplexity int) int
+		CommerceCategory                 func(childComplexity int, categoryCode string, categorySearchRequest *dto1.CommerceSearchRequest) int
+		CommerceCategoryTree             func(childComplexity int, activeCategoryCode string) int
+		CommerceCheckoutActivePlaceOrder func(childComplexity int) int
+		CommerceCheckoutCurrentContext   func(childComplexity int) int
+		CommerceCustomer                 func(childComplexity int) int
+		CommerceCustomerStatus           func(childComplexity int) int
+		CommerceProduct                  func(childComplexity int, marketplaceCode string) int
+		CommerceProductSearch            func(childComplexity int, searchRequest *dto1.CommerceSearchRequest) int
+		Flamingo                         func(childComplexity int) int
 	}
 }
 
@@ -828,7 +828,7 @@ type QueryResolver interface {
 	CommerceCustomer(ctx context.Context) (*dtocustomer.CustomerResult, error)
 	CommerceCart(ctx context.Context) (*dto.DecoratedCart, error)
 	CommerceCartValidator(ctx context.Context) (*validation.Result, error)
-	CommerceCartValidationRestriction(ctx context.Context, marketplaceCode string, variantCode *string, deliveryCode string) (*validation.RestrictionResult, error)
+	CommerceCartQtyRestriction(ctx context.Context, marketplaceCode string, variantCode *string, deliveryCode string) (*validation.RestrictionResult, error)
 	CommerceCheckoutActivePlaceOrder(ctx context.Context) (bool, error)
 	CommerceCheckoutCurrentContext(ctx context.Context) (*dto2.PlaceOrderContext, error)
 	CommerceCategoryTree(ctx context.Context, activeCategoryCode string) (domain2.Tree, error)
@@ -2420,33 +2420,33 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCartPricedTotalItem.Code(childComplexity), true
 
-	case "Commerce_Cart_RestrictionResult.isRestricted":
-		if e.complexity.CommerceCartRestrictionResult.IsRestricted == nil {
+	case "Commerce_Cart_QtyRestrictionResult.isRestricted":
+		if e.complexity.CommerceCartQtyRestrictionResult.IsRestricted == nil {
 			break
 		}
 
-		return e.complexity.CommerceCartRestrictionResult.IsRestricted(childComplexity), true
+		return e.complexity.CommerceCartQtyRestrictionResult.IsRestricted(childComplexity), true
 
-	case "Commerce_Cart_RestrictionResult.maxAllowed":
-		if e.complexity.CommerceCartRestrictionResult.MaxAllowed == nil {
+	case "Commerce_Cart_QtyRestrictionResult.maxAllowed":
+		if e.complexity.CommerceCartQtyRestrictionResult.MaxAllowed == nil {
 			break
 		}
 
-		return e.complexity.CommerceCartRestrictionResult.MaxAllowed(childComplexity), true
+		return e.complexity.CommerceCartQtyRestrictionResult.MaxAllowed(childComplexity), true
 
-	case "Commerce_Cart_RestrictionResult.remainingDifference":
-		if e.complexity.CommerceCartRestrictionResult.RemainingDifference == nil {
+	case "Commerce_Cart_QtyRestrictionResult.remainingDifference":
+		if e.complexity.CommerceCartQtyRestrictionResult.RemainingDifference == nil {
 			break
 		}
 
-		return e.complexity.CommerceCartRestrictionResult.RemainingDifference(childComplexity), true
+		return e.complexity.CommerceCartQtyRestrictionResult.RemainingDifference(childComplexity), true
 
-	case "Commerce_Cart_RestrictionResult.restrictorName":
-		if e.complexity.CommerceCartRestrictionResult.RestrictorName == nil {
+	case "Commerce_Cart_QtyRestrictionResult.restrictorName":
+		if e.complexity.CommerceCartQtyRestrictionResult.RestrictorName == nil {
 			break
 		}
 
-		return e.complexity.CommerceCartRestrictionResult.RestrictorName(childComplexity), true
+		return e.complexity.CommerceCartQtyRestrictionResult.RestrictorName(childComplexity), true
 
 	case "Commerce_Cart_SelectedPaymentResult.processed":
 		if e.complexity.CommerceCartSelectedPaymentResult.Processed == nil {
@@ -4176,17 +4176,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.CommerceCart(childComplexity), true
 
-	case "Query.Commerce_Cart_Validation_Restriction":
-		if e.complexity.Query.CommerceCartValidationRestriction == nil {
+	case "Query.Commerce_Cart_QtyRestriction":
+		if e.complexity.Query.CommerceCartQtyRestriction == nil {
 			break
 		}
 
-		args, err := ec.field_Query_Commerce_Cart_Validation_Restriction_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_Commerce_Cart_QtyRestriction_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.CommerceCartValidationRestriction(childComplexity, args["marketplaceCode"].(string), args["variantCode"].(*string), args["deliveryCode"].(string)), true
+		return e.complexity.Query.CommerceCartQtyRestriction(childComplexity, args["marketplaceCode"].(string), args["variantCode"].(*string), args["deliveryCode"].(string)), true
 
 	case "Query.Commerce_Cart_Validator":
 		if e.complexity.Query.CommerceCartValidator == nil {
@@ -4644,7 +4644,7 @@ type Commerce_Cart_ItemValidationError {
 }
 
 
-type Commerce_Cart_RestrictionResult {
+type Commerce_Cart_QtyRestrictionResult {
     isRestricted:        Boolean!
     maxAllowed:          Int!
     remainingDifference: Int!
@@ -4779,7 +4779,8 @@ input Commerce_Cart_DeliveryShippingOption {
 extend type Query {
     Commerce_Cart: Commerce_DecoratedCart!
     Commerce_Cart_Validator: Commerce_Cart_ValidationResult!
-    Commerce_Cart_Validation_Restriction(marketplaceCode: String!, variantCode: String, deliveryCode: String!): Commerce_Cart_RestrictionResult!
+    "Commerce_Cart_QtyRestriction returns if the product is restricted in terms of the allowed quantity for the current cart and the given delivery"
+    Commerce_Cart_QtyRestriction(marketplaceCode: String!, variantCode: String, deliveryCode: String!): Commerce_Cart_QtyRestrictionResult!
 }
 
 extend type Mutation {
@@ -5908,7 +5909,7 @@ func (ec *executionContext) field_Mutation_Commerce_UpdateItemQty_args(ctx conte
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_Commerce_Cart_Validation_Restriction_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_Commerce_Cart_QtyRestriction_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -11749,11 +11750,11 @@ func (ec *executionContext) _Commerce_Cart_PricedTotalItem_code(ctx context.Cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Cart_RestrictionResult_isRestricted(ctx context.Context, field graphql.CollectedField, obj *validation.RestrictionResult) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult_isRestricted(ctx context.Context, field graphql.CollectedField, obj *validation.RestrictionResult) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object:   "Commerce_Cart_RestrictionResult",
+		Object:   "Commerce_Cart_QtyRestrictionResult",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -11776,11 +11777,11 @@ func (ec *executionContext) _Commerce_Cart_RestrictionResult_isRestricted(ctx co
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Cart_RestrictionResult_maxAllowed(ctx context.Context, field graphql.CollectedField, obj *validation.RestrictionResult) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult_maxAllowed(ctx context.Context, field graphql.CollectedField, obj *validation.RestrictionResult) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object:   "Commerce_Cart_RestrictionResult",
+		Object:   "Commerce_Cart_QtyRestrictionResult",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -11803,11 +11804,11 @@ func (ec *executionContext) _Commerce_Cart_RestrictionResult_maxAllowed(ctx cont
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Cart_RestrictionResult_remainingDifference(ctx context.Context, field graphql.CollectedField, obj *validation.RestrictionResult) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult_remainingDifference(ctx context.Context, field graphql.CollectedField, obj *validation.RestrictionResult) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object:   "Commerce_Cart_RestrictionResult",
+		Object:   "Commerce_Cart_QtyRestrictionResult",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -11830,11 +11831,11 @@ func (ec *executionContext) _Commerce_Cart_RestrictionResult_remainingDifference
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Cart_RestrictionResult_restrictorName(ctx context.Context, field graphql.CollectedField, obj *validation.RestrictionResult) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult_restrictorName(ctx context.Context, field graphql.CollectedField, obj *validation.RestrictionResult) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object:   "Commerce_Cart_RestrictionResult",
+		Object:   "Commerce_Cart_QtyRestrictionResult",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -18145,7 +18146,7 @@ func (ec *executionContext) _Query_Commerce_Cart_Validator(ctx context.Context, 
 	return ec.marshalNCommerce_Cart_ValidationResult2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐResult(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_Commerce_Cart_Validation_Restriction(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+func (ec *executionContext) _Query_Commerce_Cart_QtyRestriction(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18156,7 +18157,7 @@ func (ec *executionContext) _Query_Commerce_Cart_Validation_Restriction(ctx cont
 	}
 	ctx = graphql.WithResolverContext(ctx, rctx)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_Commerce_Cart_Validation_Restriction_args(ctx, rawArgs)
+	args, err := ec.field_Query_Commerce_Cart_QtyRestriction_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -18165,7 +18166,7 @@ func (ec *executionContext) _Query_Commerce_Cart_Validation_Restriction(ctx cont
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().CommerceCartValidationRestriction(rctx, args["marketplaceCode"].(string), args["variantCode"].(*string), args["deliveryCode"].(string))
+		return ec.resolvers.Query().CommerceCartQtyRestriction(rctx, args["marketplaceCode"].(string), args["variantCode"].(*string), args["deliveryCode"].(string))
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -18176,7 +18177,7 @@ func (ec *executionContext) _Query_Commerce_Cart_Validation_Restriction(ctx cont
 	res := resTmp.(*validation.RestrictionResult)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNCommerce_Cart_RestrictionResult2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐRestrictionResult(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Cart_QtyRestrictionResult2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐRestrictionResult(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_Commerce_Checkout_ActivePlaceOrder(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
@@ -21176,34 +21177,34 @@ func (ec *executionContext) _Commerce_Cart_PricedTotalItem(ctx context.Context, 
 	return out
 }
 
-var commerce_Cart_RestrictionResultImplementors = []string{"Commerce_Cart_RestrictionResult"}
+var commerce_Cart_QtyRestrictionResultImplementors = []string{"Commerce_Cart_QtyRestrictionResult"}
 
-func (ec *executionContext) _Commerce_Cart_RestrictionResult(ctx context.Context, sel ast.SelectionSet, obj *validation.RestrictionResult) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Cart_RestrictionResultImplementors)
+func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult(ctx context.Context, sel ast.SelectionSet, obj *validation.RestrictionResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Cart_QtyRestrictionResultImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_Cart_RestrictionResult")
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_QtyRestrictionResult")
 		case "isRestricted":
-			out.Values[i] = ec._Commerce_Cart_RestrictionResult_isRestricted(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Cart_QtyRestrictionResult_isRestricted(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "maxAllowed":
-			out.Values[i] = ec._Commerce_Cart_RestrictionResult_maxAllowed(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Cart_QtyRestrictionResult_maxAllowed(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "remainingDifference":
-			out.Values[i] = ec._Commerce_Cart_RestrictionResult_remainingDifference(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Cart_QtyRestrictionResult_remainingDifference(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "restrictorName":
-			out.Values[i] = ec._Commerce_Cart_RestrictionResult_restrictorName(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Cart_QtyRestrictionResult_restrictorName(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -23505,7 +23506,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}
 				return res
 			})
-		case "Commerce_Cart_Validation_Restriction":
+		case "Commerce_Cart_QtyRestriction":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -23513,7 +23514,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_Commerce_Cart_Validation_Restriction(ctx, field)
+				res = ec._Query_Commerce_Cart_QtyRestriction(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -24025,18 +24026,18 @@ func (ec *executionContext) marshalNCommerce_Cart_PricedTotalItem2flamingoᚗme�
 	return ec._Commerce_Cart_PricedTotalItem(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Cart_RestrictionResult2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐRestrictionResult(ctx context.Context, sel ast.SelectionSet, v validation.RestrictionResult) graphql.Marshaler {
-	return ec._Commerce_Cart_RestrictionResult(ctx, sel, &v)
+func (ec *executionContext) marshalNCommerce_Cart_QtyRestrictionResult2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐRestrictionResult(ctx context.Context, sel ast.SelectionSet, v validation.RestrictionResult) graphql.Marshaler {
+	return ec._Commerce_Cart_QtyRestrictionResult(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Cart_RestrictionResult2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐRestrictionResult(ctx context.Context, sel ast.SelectionSet, v *validation.RestrictionResult) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Cart_QtyRestrictionResult2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐRestrictionResult(ctx context.Context, sel ast.SelectionSet, v *validation.RestrictionResult) graphql.Marshaler {
 	if v == nil {
 		if !ec.HasError(graphql.GetResolverContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
 		}
 		return graphql.Null
 	}
-	return ec._Commerce_Cart_RestrictionResult(ctx, sel, v)
+	return ec._Commerce_Cart_QtyRestrictionResult(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNCommerce_Cart_SelectedPaymentResult2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐSelectedPaymentResult(ctx context.Context, sel ast.SelectionSet, v dto.SelectedPaymentResult) graphql.Marshaler {
