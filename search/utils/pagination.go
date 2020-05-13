@@ -10,10 +10,10 @@ import (
 type (
 	//PaginationConfig - represents configuration Options used by the PaginationInfo Build method
 	PaginationConfig struct {
-		ShowFirstPage bool `inject:"config:pagination.showFirstPage"`
-		ShowLastPage  bool `inject:"config:pagination.showLastPage"`
+		ShowFirstPage bool `inject:"config:commerce.pagination.showFirstPage"`
+		ShowLastPage  bool `inject:"config:commerce.pagination.showLastPage"`
 		//ShowAroundActivePageAmount - amount of pages to show before and after the current page (so a value of2 would show 2 pages before and 2 pages after)
-		ShowAroundActivePageAmount float64 `inject:"config:pagination.showAroundActivePageAmount"`
+		ShowAroundActivePageAmount float64 `inject:"config:commerce.pagination.showAroundActivePageAmount"`
 		NameSpace                  string
 	}
 

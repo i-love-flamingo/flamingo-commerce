@@ -45,7 +45,7 @@ func (*Module) Depends() []dingo.Module {
 	}
 }
 
-// CueConfig defines the prefixrouter configuration
+// CueConfig defines the product module configuration
 func (*Module) CueConfig() string {
 	return `
 commerce: {
