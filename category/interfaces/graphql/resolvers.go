@@ -42,22 +42,25 @@ func (r *CommerceCategoryQueryResolver) CommerceCategory(
 		return nil, err
 	}
 
-	var filters []searchDomain.Filter
-	for _, filter := range request.KeyValueFilters {
-		filters = append(filters, searchDomain.NewKeyValueFilter(filter.K, filter.V))
+	searchRequest := &application.SearchRequest{}
+	if request != nil {
+		var filters []searchDomain.Filter
+		for _, filter := range request.KeyValueFilters {
+			filters = append(filters, searchDomain.NewKeyValueFilter(filter.K, filter.V))
+		}
+
+		filters = append(filters, domain.NewCategoryFacet(categoryCode))
+		searchRequest = &application.SearchRequest{
+			AdditionalFilter: filters,
+			PageSize:         request.PageSize,
+			Page:             request.Page,
+			SortBy:           request.SortBy,
+			SortDirection:    request.SortDirection,
+			Query:            request.Query,
+			PaginationConfig: nil,
+		}
 	}
-
-	filters = append(filters, domain.NewCategoryFacet(categoryCode))
-
-	result, err := r.searchService.Find(ctx, &application.SearchRequest{
-		AdditionalFilter: filters,
-		PageSize:         request.PageSize,
-		Page:             request.Page,
-		SortBy:           request.SortBy,
-		SortDirection:    request.SortDirection,
-		Query:            request.Query,
-		PaginationConfig: nil,
-	})
+	result, err := r.searchService.Find(ctx, searchRequest)
 
 	if err != nil {
 		return nil, err

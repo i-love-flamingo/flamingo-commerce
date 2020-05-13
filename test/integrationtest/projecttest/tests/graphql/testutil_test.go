@@ -37,6 +37,29 @@ func loadGraphQL(t *testing.T, name string, replacements map[string]string) stri
 	return replacer.Replace(string(content))
 }
 
+// loginTestCustomer performs a login of the configured fake user
+func loginTestCustomer(t *testing.T, e *httpexpect.Expect) {
+	t.Helper()
+	// perform login
+	e.POST("/en/core/auth/callback/fake").
+		WithForm(map[string]interface{}{"username": "username", "password": "password"}).
+		Expect()
+
+	// check if login succeeded
+	resp := e.GET("/en/core/auth/debug").Expect()
+	resp.Status(http.StatusOK)
+	body := resp.Body().Raw()
+	if !strings.Contains(body, "fake: fake/username:") || strings.Contains(body, "fake: identity not saved in session") {
+		t.Fatal("login failed")
+	}
+}
+
+// prepareCart adds a simple product via graphQl
+func prepareCart(t *testing.T, e *httpexpect.Expect) {
+	t.Helper()
+	helper.GraphQlRequest(t, e, loadGraphQL(t, "add_to_cart", nil)).Expect().Status(http.StatusOK)
+}
+
 // prepareCartWithPaymentSelection adds a simple product via graphQl
 func prepareCartWithPaymentSelection(t *testing.T, e *httpexpect.Expect, paymentMethod string) {
 	t.Helper()
@@ -120,4 +143,8 @@ func assertStartPlaceOrderWithValidUUID(t *testing.T, e *httpexpect.Expect) (*ht
 
 func getValue(response *httpexpect.Response, queryName, key string) *httpexpect.Value {
 	return response.JSON().Object().Value("data").Object().Value(queryName).Object().Value(key)
+}
+
+func getArray(response *httpexpect.Response, queryName string) *httpexpect.Array {
+	return response.JSON().Object().Value("data").Object().Value(queryName).Array()
 }

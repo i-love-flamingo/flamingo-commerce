@@ -32,15 +32,17 @@ type (
 		GetAvailableSources(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart, deliveryCode string, product domain.BasicProduct) (Sources, error)
 	}
 
-	//Sources - result value object containing all sources (for the request item or product)
+	// Sources is the result value object containing all sources (for the request item or product)
 	Sources []Source
 
-	// Source - represents the Sourceing info
+	// Source represents the Sourcing info
 	Source struct {
-		//LocationCode - idendifies the warehouse or stocklocation
+		// LocationCode identifies the warehouse or stock location
 		LocationCode string
-		//Qty - for the sources items
+		// Qty for the sources items
 		Qty int
+		// ExternalLocationCode identifies the source location in an external system
+		ExternalLocationCode string
 	}
 
 	// SourcingEngine computes item sources
@@ -52,10 +54,15 @@ type (
 )
 
 var (
-	//ErrInsufficientSourceQty - use to indicate that the requested qty exceeds the available qty
+	// ErrInsufficientSourceQty - use to indicate that the requested qty exceeds the available qty
 	ErrInsufficientSourceQty = errors.New("Available Source Qty insufficient")
-	//ErrNoSourceAvailable - use to indicate that no source for item is available at all
+	// ErrNoSourceAvailable - use to indicate that no source for item is available at all
 	ErrNoSourceAvailable = errors.New("No Available Source Qty")
+)
+
+const (
+	// ExternalSourceIDKey specifies the key for the ItemUpdateCommand.AdditionalData map where the external source id should be stored
+	ExternalSourceIDKey = "external_source_id"
 )
 
 // MainLocation returns first sourced location (or empty string)
@@ -118,16 +125,18 @@ func (se *SourcingEngine) SetSourcesForCartItems(ctx context.Context, session *w
 	itemUpdateCommands := make([]cartDomain.ItemUpdateCommand, 0)
 	for _, decoratedDelivery := range decoratedCart.DecoratedDeliveries {
 		for _, decoratedCartItem := range decoratedDelivery.DecoratedItems {
-			sourceID, err := se.SourcingService.GetSourceID(ctx, session, decoratedCart, decoratedDelivery.Delivery.DeliveryInfo.Code, &decoratedCartItem)
+			source, err := se.sourceLocationForCartItem(ctx, session, decoratedCart, decoratedDelivery.Delivery.DeliveryInfo.Code, &decoratedCartItem)
 			if err != nil {
 				se.Logger.WithContext(ctx).WithField("subcategory", "SourcingEngine").Error(err)
 				return fmt.Errorf("checkout.application.sourcingengine error: %v", err)
 			}
-			se.Logger.WithContext(ctx).WithField("category", "checkout").WithField("subcategory", "SourcingEngine").Debug("SourcingEngine detected source %v for item %v", sourceID, decoratedCartItem.Item.ID)
+			se.Logger.WithContext(ctx).WithField("category", "checkout").WithField("subcategory", "SourcingEngine").Debug("SourcingEngine detected source %v for item %v", source.LocationCode, decoratedCartItem.Item.ID)
 
 			itemUpdate := cartDomain.ItemUpdateCommand{
-				SourceID: &sourceID,
+				SourceID: &source.LocationCode,
 				ItemID:   decoratedCartItem.Item.ID,
+				// ExternalSourceID contains the picking location used by an external system
+				AdditionalData: map[string]string{ExternalSourceIDKey: source.ExternalLocationCode},
 			}
 
 			itemUpdateCommands = append(itemUpdateCommands, itemUpdate)
@@ -140,4 +149,27 @@ func (se *SourcingEngine) SetSourcesForCartItems(ctx context.Context, session *w
 	}
 
 	return nil
+}
+
+func (se *SourcingEngine) sourceLocationForCartItem(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart, deliveryCode string, item *decorator.DecoratedCartItem) (*Source, error) {
+	detailService, ok := se.SourcingService.(SourcingServiceDetail)
+	if ok {
+		sources, err := detailService.GetSourcesForItem(ctx, session, decoratedCart, deliveryCode, item)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(sources) == 0 {
+			return nil, errors.New("no source locations found")
+		}
+
+		return &sources[0], nil
+	}
+
+	sourceID, err := se.SourcingService.GetSourceID(ctx, session, decoratedCart, deliveryCode, item)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Source{LocationCode: sourceID}, nil
 }

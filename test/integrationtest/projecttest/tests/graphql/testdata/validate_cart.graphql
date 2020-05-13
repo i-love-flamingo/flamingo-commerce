@@ -1,0 +1,10 @@
+query {
+    Commerce_Cart_Validator{
+        hasCommonError
+        commonErrorMessageKey
+        itemResults {
+            itemID
+            errorMessageKey
+        }
+    }
+}

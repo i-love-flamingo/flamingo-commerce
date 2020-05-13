@@ -118,6 +118,28 @@ func TestBasicProductHasAttribute(t *testing.T) {
 	assert.False(t, b.HasAttribute("Code"))
 }
 
+func TestBasicProductHasGetAttributesByKey(t *testing.T) {
+	b := BasicProductData{}
+	b.Attributes = map[string]Attribute{
+		"foo": {Code: "foo"},
+		"bar": {Code: "bar"},
+	}
+	assert.Equal(t, []Attribute{
+		{Code: "foo"},
+		{Code: "bar"},
+	}, b.Attributes.AttributesByKey([]string{"foo", "bar"}))
+
+	assert.Equal(t, []Attribute{
+		{Code: "bar"},
+		{Code: "foo"},
+	}, b.Attributes.AttributesByKey([]string{"bar", "foo"}))
+
+	assert.Equal(t, []Attribute{
+		{Code: "foo"},
+		{Code: "bar"},
+	}, b.Attributes.AttributesByKey([]string{"foo", "baz", "bar"}))
+}
+
 func TestBasicProductGetFinalPrice(t *testing.T) {
 	p := PriceInfo{
 		IsDiscounted: false,
@@ -401,4 +423,68 @@ func TestSaleable_GetLoyaltyChargeSplitIgnoreMin(t *testing.T) {
 	chargeMain, found := charges.GetByType(priceDomain.ChargeTypeMain)
 	assert.True(t, found)
 	assert.Equal(t, priceDomain.NewFromInt(100, 1, "€"), chargeMain.Price)
+}
+
+func TestSaleable_GetLoyaltyEarningByType(t *testing.T) {
+
+	tests := []struct {
+		name            string
+		loyaltyEarnings []LoyaltyEarningInfo
+		leType          string
+		wantBool        bool
+		wantEarning     *LoyaltyEarningInfo
+	}{
+		{
+			name:            "empty loyalty info",
+			loyaltyEarnings: nil,
+			leType:          "dontCare",
+			wantBool:        false,
+			wantEarning:     nil,
+		},
+		{
+			name: "matching loyalty info",
+			loyaltyEarnings: []LoyaltyEarningInfo{
+				{
+					Type:    "MilesAndMore",
+					Default: priceDomain.NewFromFloat(23.23, "NZD"),
+				},
+				{
+					Type:    "TheOtherThing",
+					Default: priceDomain.NewFromFloat(24.24, "NZD"),
+				},
+			},
+			leType:   "MilesAndMore",
+			wantBool: true,
+			wantEarning: &LoyaltyEarningInfo{
+				Type:    "MilesAndMore",
+				Default: priceDomain.NewFromFloat(23.23, "NZD"),
+			},
+		},
+		{
+			name: "no matching loyalty info",
+			loyaltyEarnings: []LoyaltyEarningInfo{
+				{
+					Type:    "MilesAndMoreX",
+					Default: priceDomain.NewFromFloat(23.23, "NZD"),
+				},
+				{
+					Type:    "TheOtherThing",
+					Default: priceDomain.NewFromFloat(24.24, "NZD"),
+				},
+			},
+			leType:      "MilesAndMore",
+			wantBool:    false,
+			wantEarning: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		saleable := new(Saleable)
+		saleable.LoyaltyEarnings = tt.loyaltyEarnings
+
+		resultEarning, resultBool := saleable.GetLoyaltyEarningByType(tt.leType)
+		assert.Equal(t, tt.wantBool, resultBool, tt.name)
+		assert.Equal(t, tt.wantEarning, resultEarning, tt.name)
+	}
+
 }

@@ -23,3 +23,6 @@
     * Add new `TryLocker` port to provide an easy way to sync multiple order processes across different nodes
         * Provide InMemory and Redis Adapter
     * Breaking: Add new GraphQL mutations / queries to start / stop / refresh the place order process
+
+# 22. April 2020
+* Add coniguration to switch off cart validation on place order

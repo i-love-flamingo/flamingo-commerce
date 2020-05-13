@@ -326,7 +326,11 @@ injector.Bind((*cart.CustomerCartService)(nil)).To(infrastructure.YourAdapter{})
 Most of the cart modification methods are part of the `ModifyBehaviour` interface - if you look at the secondary ports you will see, that they need to return an (initialized) implementation of the
 `ModifyBehaviour` interface - so in fact this interface needs to be implemented when writing an adapter as well.
 
-There is a "InMemoryAdapter" implementation as part of the package.
+**in-memory cart adapter**
+There is a "InMemoryAdapter" implementation as part of the package. It allows basic cart operations with a cart that is stored in memory.
+Since the cart storage is not persisted in any way we currently recommend the usage only for demo / testing.
+
+The in memory adapter supports custom gift card / voucher logic by implementing the `GiftCardHandler` and `VoucherHandler` interfaces.
 
 **PlaceOrderService**
 
@@ -451,6 +455,7 @@ The templates get the following variables passed:
 * CartValidationResult
 
 ### Cart template function
+
 Use the `getCart` template function to get the cart.
 Use the `getDecoratedCart` template function to get the decorated cart.
 
@@ -466,3 +471,7 @@ Use the `getDecoratedCart` template function to get the decorated cart.
 There are also of course ajax endpoints, that can be used to interact with the cart directly from your browser and the javascript functionality of your template.
 To get an idea of all endpoints, have a look at the module.go, especially the apiRoutes method where endpoints are handled.
 
+
+### GraphQL
+
+The module exposes most of its functionality also via GraphQL, have a look at the [schema](interfaces/graphql/schema.graphql) to see all available querys / mutations.

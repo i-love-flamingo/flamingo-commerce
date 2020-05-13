@@ -7,6 +7,7 @@ import (
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/checkout/application"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	paymentApplication "flamingo.me/flamingo-commerce/v3/payment/application"
@@ -63,18 +64,25 @@ func (po PlaceOrder) Run(ctx context.Context, p *process.Process) process.RunRes
 	cart := p.Context().Cart
 	decoratedCart := po.cartDecoratorFactory.Create(ctx, cart)
 
-	paymentGateway, err := po.paymentService.PaymentGatewayByCart(cart)
-	if err != nil {
-		return process.RunResult{
-			Failed: process.PaymentErrorOccurredReason{Error: err.Error()},
+	payment := &placeorder.Payment{}
+	if !cart.GrandTotal().IsZero() {
+		paymentGateway, err := po.paymentService.PaymentGatewayByCart(cart)
+		if err != nil {
+			return process.RunResult{
+				Failed: process.PaymentErrorOccurredReason{Error: err.Error()},
+			}
 		}
-	}
 
-	payment, err := paymentGateway.OrderPaymentFromFlow(ctx, &cart, p.Context().UUID)
-	if err != nil {
-		return process.RunResult{
-			Failed: process.ErrorOccurredReason{Error: err.Error()},
+		payment, err = paymentGateway.OrderPaymentFromFlow(ctx, &cart, p.Context().UUID)
+		if err != nil {
+			return process.RunResult{
+				Failed: process.ErrorOccurredReason{Error: err.Error()},
+			}
 		}
+
+		p.UpdateState(ValidatePayment{}.Name(), nil)
+	} else {
+		p.UpdateState(Success{}.Name(), nil)
 	}
 
 	infos, err := po.orderService.CartPlaceOrder(ctx, decoratedCart, *payment)
@@ -83,8 +91,8 @@ func (po PlaceOrder) Run(ctx context.Context, p *process.Process) process.RunRes
 			Failed: process.ErrorOccurredReason{Error: err.Error()},
 		}
 	}
+
 	p.UpdateOrderInfo(infos)
-	p.UpdateState(ValidatePayment{}.Name(), nil)
 	return process.RunResult{
 		RollbackData: PlaceOrderRollbackData{OrderInfos: *infos},
 	}
