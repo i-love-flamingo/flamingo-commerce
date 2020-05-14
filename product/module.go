@@ -11,7 +11,6 @@ import (
 	productgraphql "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql"
 	"flamingo.me/flamingo-commerce/v3/product/interfaces/templatefunctions"
 	"flamingo.me/flamingo-commerce/v3/search"
-	"flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 	"flamingo.me/graphql"
@@ -46,25 +45,24 @@ func (*Module) Depends() []dingo.Module {
 	}
 }
 
-// DefaultConfig for this module
-func (m *Module) DefaultConfig() config.Map {
-	return config.Map{
-		"commerce": config.Map{
-			"product": config.Map{
-				"view": config.Map{
-					"template": "product/product",
-				},
-				"priceIsGross":      true,
-				"generateSlug":      true,
-				"slugAttributeCode": "urlSlug",
-			},
-		},
-		"templating": config.Map{
-			"product": config.Map{
-				"attributeRenderer": config.Map{},
-			},
-		},
+// CueConfig defines the product module configuration
+func (*Module) CueConfig() string {
+	return `
+commerce: {
+	product: {
+		view:  {
+			template: *"product/product" | !=""
+		}
+		priceIsGross: bool | *true
+		generateSlug: bool | *true
+		slugAttributeCode: string | *"urlSlug"
+		fakeservice: {
+			enabled: bool | *false
+			currency: *"€" | !=""  
+		}
+		pagination: defaultPageSize: number | *commerce.pagination.defaultPageSize
 	}
+}`
 }
 
 type routes struct {

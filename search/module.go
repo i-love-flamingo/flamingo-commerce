@@ -4,7 +4,6 @@ import (
 	"flamingo.me/dingo"
 	"flamingo.me/flamingo-commerce/v3/search/interfaces"
 	searchgraphql "flamingo.me/flamingo-commerce/v3/search/interfaces/graphql"
-	"flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/web"
 	"flamingo.me/graphql"
 )
@@ -19,14 +18,23 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	injector.BindMulti(new(graphql.Service)).To(new(searchgraphql.Service))
 }
 
-// DefaultConfig enables inMemory cart service adapter
-func (m *Module) DefaultConfig() config.Map {
-	return config.Map{
-		"pagination": config.Map{
-			"showFirstPage":              false,
-			"showLastPage":               false,
-			"showAroundActivePageAmount": 3,
-		},
+// CueConfig defines the prefixrouter configuration
+func (*Module) CueConfig() string {
+	return `
+commerce: {
+	pagination: {
+		defaultPageSize: number | *50
+		showFirstPage: 	bool | *false
+		showLastPage:	bool | *false
+		showAroundActivePageAmount: number | *3
+	}
+}`
+}
+
+// FlamingoLegacyConfigAlias mapping
+func (*Module) FlamingoLegacyConfigAlias() map[string]string {
+	return map[string]string{
+		"pagination": "commerce.pagination",
 	}
 }
 

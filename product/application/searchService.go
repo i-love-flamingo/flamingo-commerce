@@ -17,7 +17,7 @@ type (
 	ProductSearchService struct {
 		SearchService         domain.SearchService         `inject:""`
 		PaginationInfoFactory *utils.PaginationInfoFactory `inject:""`
-		DefaultPageSize       float64                      `inject:"config:pagination.defaultPageSize,optional"`
+		DefaultPageSize       float64                      `inject:"config:commerce.product.pagination.defaultPageSize,optional"`
 		Logger                flamingo.Logger              `inject:""`
 	}
 

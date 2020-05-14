@@ -51,7 +51,7 @@ func (s *SearchService) Inject(
 	logger flamingo.Logger,
 	optionals *struct {
 		SearchService   domain.SearchService `inject:",optional"`
-		DefaultPageSize float64              `inject:"config:pagination.defaultPageSize,optional"`
+		DefaultPageSize float64              `inject:"config:commerce.pagination.defaultPageSize,optional"`
 	}) *SearchService {
 	s.paginationInfoFactory = paginationInfoFactory
 	s.logger = logger

@@ -91,3 +91,8 @@ the cart has been adjusted and written back to cache
   config `commerce.cart.simplePaymentForm.giftCardPaymentMethod`to specify the default payment method for gift cards
 
 * Add missing `product` module dependency to cart module
+
+# 13. May 2020
+
+* Update pagination module configuration. Use "commerce.pagination" namespace for configuration now.
+* search and product module configuration is using CueConfig - and therefore config options can be looked up in the commandline
