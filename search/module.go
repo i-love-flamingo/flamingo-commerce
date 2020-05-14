@@ -4,7 +4,6 @@ import (
 	"flamingo.me/dingo"
 	"flamingo.me/flamingo-commerce/v3/search/interfaces"
 	searchgraphql "flamingo.me/flamingo-commerce/v3/search/interfaces/graphql"
-	"flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/web"
 	"flamingo.me/graphql"
 )
