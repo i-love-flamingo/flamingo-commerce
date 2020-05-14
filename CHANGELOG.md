@@ -1,6 +1,7 @@
 # Changelog
 ## v3.3.0 [upcoming]
 **product**
+* Switch module config to CUE
 * Extended product model with loyalty earnings
 * GraphQL
   * Added values field of Attribute to schema
@@ -24,13 +25,15 @@
  
 **checkout**
 * Make cart validation before place order optional with configuration
-
-**checkout**
 * State Machine
   * Add additional metrics to monitor place order flow
     * flamingo_commerce_checkout_placeorder_starts
     * flamingo_commerce_checkout_placeorder_state_run_count
     * flamingo_commerce_checkout_placeorder_state_failed_count
+    
+**search**
+* Switch module config to CUE
+* Update `pagination` module configuration. Use `commerce.pagination` namespace for configuration now.
 
 ## v3.2.0
 **w3cdatalayer**
