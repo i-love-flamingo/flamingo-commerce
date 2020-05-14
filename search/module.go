@@ -39,17 +39,6 @@ func (*Module) FlamingoLegacyConfigAlias() map[string]string {
 	}
 }
 
-// DefaultConfig enables inMemory cart service adapter
-func (m *Module) DefaultConfig() config.Map {
-	return config.Map{
-		"pagination": config.Map{
-			"showFirstPage":              false,
-			"showLastPage":               false,
-			"showAroundActivePageAmount": 3,
-		},
-	}
-}
-
 type routes struct {
 	controller *interfaces.ViewController
 }
