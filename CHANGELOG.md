@@ -3,6 +3,7 @@
 **product**
 * Switch module config to CUE
 * Extended product model with loyalty earnings
+* Added Rest API route to get products
 * GraphQL
   * Added values field of Attribute to schema
   * exposed loyalty earnings

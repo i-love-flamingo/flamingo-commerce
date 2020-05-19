@@ -12,7 +12,6 @@ import (
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 
 	"flamingo.me/flamingo-commerce/v3/product/domain"
-	"github.com/pkg/errors"
 )
 
 var (
@@ -123,7 +122,7 @@ func (ps *ProductService) Get(ctx context.Context, marketplaceCode string) (doma
 	if marketplaceCode == "fake_simple_out_of_stock" {
 		return ps.FakeSimple(marketplaceCode, false, false, true), nil
 	}
-	return nil, errors.New("Code " + marketplaceCode + " Not implemented in FAKE: Only code 'fake_configurable' or 'fake_simple' or 'fake_simple_out_of_stock' should be used")
+	return nil, domain.ProductNotFound{MarketplaceCode: "Code " + marketplaceCode + " Not implemented in FAKE: Only code 'fake_configurable' or 'fake_simple' or 'fake_simple_out_of_stock' should be used"}
 }
 
 // FakeSimple - generate a simple fake product
