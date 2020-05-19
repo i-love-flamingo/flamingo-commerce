@@ -48,7 +48,7 @@ func (m *MockGuestCartServiceAdapter) GetNewCart(ctx context.Context) (*cartDoma
 }
 
 func (m *MockGuestCartServiceAdapter) GetModifyBehaviour(context.Context) (cartDomain.ModifyBehaviour, error) {
-	return new(cartInfrastructure.InMemoryBehaviour), nil
+	return new(cartInfrastructure.DefaultCartBehaviour), nil
 }
 
 func (m *MockGuestCartServiceAdapter) RestoreCart(ctx context.Context, cart cartDomain.Cart) (*cartDomain.Cart, error) {
@@ -76,7 +76,7 @@ func (m *MockGuestCartServiceAdapterError) GetNewCart(ctx context.Context) (*car
 }
 
 func (m *MockGuestCartServiceAdapterError) GetModifyBehaviour(context.Context) (cartDomain.ModifyBehaviour, error) {
-	return new(cartInfrastructure.InMemoryBehaviour), nil
+	return new(cartInfrastructure.DefaultCartBehaviour), nil
 }
 
 func (m *MockGuestCartServiceAdapterError) RestoreCart(ctx context.Context, cart cartDomain.Cart) (*cartDomain.Cart, error) {
@@ -95,7 +95,7 @@ var (
 )
 
 func (m *MockCustomerCartService) GetModifyBehaviour(context.Context, domain.Auth) (cartDomain.ModifyBehaviour, error) {
-	return new(cartInfrastructure.InMemoryBehaviour), nil
+	return new(cartInfrastructure.DefaultCartBehaviour), nil
 }
 
 func (m *MockCustomerCartService) GetCart(ctx context.Context, auth domain.Auth, cartID string) (*cartDomain.Cart, error) {
@@ -695,7 +695,7 @@ func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 				session: web.EmptySession().Store("some_nonvalid_key", "some_guest_id"),
 			},
 			wantType0: &decorator.DecoratedCart{},
-			wantType1: &cartInfrastructure.InMemoryBehaviour{},
+			wantType1: &cartInfrastructure.DefaultCartBehaviour{},
 			wantErr:   false,
 		},
 	}
@@ -984,7 +984,7 @@ func TestCartReceiverService_ModifyBehaviour(t *testing.T) {
 		behaviour, err := cs.ModifyBehaviour(context.Background())
 
 		assert.NoError(t, err)
-		assert.IsType(t, behaviour, &cartInfrastructure.InMemoryBehaviour{})
+		assert.IsType(t, behaviour, &cartInfrastructure.DefaultCartBehaviour{})
 	})
 
 	t.Run("get customer behaviour", func(t *testing.T) {
@@ -1007,7 +1007,7 @@ func TestCartReceiverService_ModifyBehaviour(t *testing.T) {
 		behaviour, err := cs.ModifyBehaviour(context.Background())
 
 		assert.NoError(t, err)
-		assert.IsType(t, behaviour, &cartInfrastructure.InMemoryBehaviour{})
+		assert.IsType(t, behaviour, &cartInfrastructure.DefaultCartBehaviour{})
 	})
 
 	t.Run("error during customer auth should lead to error", func(t *testing.T) {

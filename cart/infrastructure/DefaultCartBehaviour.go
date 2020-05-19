@@ -16,8 +16,8 @@ import (
 )
 
 type (
-	// InMemoryBehaviour defines the in memory cart order behaviour
-	InMemoryBehaviour struct {
+	// DefaultCartBehaviour defines the in memory cart order behaviour
+	DefaultCartBehaviour struct {
 		cartStorage             CartStorage
 		productService          domain.ProductService
 		logger                  flamingo.Logger
@@ -57,15 +57,15 @@ type (
 )
 
 var (
-	_ domaincart.ModifyBehaviour             = (*InMemoryBehaviour)(nil)
-	_ domaincart.GiftCardAndVoucherBehaviour = (*InMemoryBehaviour)(nil)
-	_ domaincart.CompleteBehaviour           = (*InMemoryBehaviour)(nil)
+	_ domaincart.ModifyBehaviour             = (*DefaultCartBehaviour)(nil)
+	_ domaincart.GiftCardAndVoucherBehaviour = (*DefaultCartBehaviour)(nil)
+	_ domaincart.CompleteBehaviour           = (*DefaultCartBehaviour)(nil)
 	_ GiftCardHandler                        = (*DefaultGiftCardHandler)(nil)
 	_ VoucherHandler                         = (*DefaultVoucherHandler)(nil)
 )
 
 // Inject dependencies
-func (cob *InMemoryBehaviour) Inject(
+func (cob *DefaultCartBehaviour) Inject(
 	CartStorage CartStorage,
 	ProductService domain.ProductService,
 	Logger flamingo.Logger,
@@ -92,7 +92,7 @@ func (cob *InMemoryBehaviour) Inject(
 }
 
 // Complete a cart and remove from storage
-func (cob *InMemoryBehaviour) Complete(_ context.Context, cart *domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
+func (cob *DefaultCartBehaviour) Complete(_ context.Context, cart *domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	err := cob.cartStorage.RemoveCart(cart)
 	if err != nil {
 		return nil, nil, err
@@ -101,7 +101,7 @@ func (cob *InMemoryBehaviour) Complete(_ context.Context, cart *domaincart.Cart)
 }
 
 // Restore supplied cart
-func (cob *InMemoryBehaviour) Restore(_ context.Context, cart *domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
+func (cob *DefaultCartBehaviour) Restore(_ context.Context, cart *domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	newCart := cart
 	err := cob.cartStorage.StoreCart(newCart)
 	if err != nil {
@@ -111,9 +111,9 @@ func (cob *InMemoryBehaviour) Restore(_ context.Context, cart *domaincart.Cart) 
 }
 
 // DeleteItem removes an item from the cart
-func (cob *InMemoryBehaviour) DeleteItem(ctx context.Context, cart *domaincart.Cart, itemID string, deliveryCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
+func (cob *DefaultCartBehaviour) DeleteItem(ctx context.Context, cart *domaincart.Cart, itemID string, deliveryCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	if !cob.cartStorage.HasCart(cart.ID) {
-		return nil, nil, fmt.Errorf("cart.infrastructure.InMemoryBehaviour: Cannot delete - Guestcart with id %v not existent", cart.ID)
+		return nil, nil, fmt.Errorf("cart.infrastructure.DefaultCartBehaviour: Cannot delete - Guestcart with id %v not existent", cart.ID)
 	}
 
 	if newDelivery, ok := cart.GetDeliveryByCode(deliveryCode); ok {
@@ -139,15 +139,15 @@ func (cob *InMemoryBehaviour) DeleteItem(ctx context.Context, cart *domaincart.C
 
 	err := cob.cartStorage.StoreCart(cart)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
 	}
 	return cob.resetPaymentSelectionIfInvalid(ctx, cart)
 }
 
 // UpdateItem updates a cart item
-func (cob *InMemoryBehaviour) UpdateItem(ctx context.Context, cart *domaincart.Cart, itemUpdateCommand domaincart.ItemUpdateCommand) (*domaincart.Cart, domaincart.DeferEvents, error) {
+func (cob *DefaultCartBehaviour) UpdateItem(ctx context.Context, cart *domaincart.Cart, itemUpdateCommand domaincart.ItemUpdateCommand) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	if !cob.cartStorage.HasCart(cart.ID) {
-		return nil, nil, fmt.Errorf("cart.infrastructure.InMemoryBehaviour: Cannot add - Guestcart with id %v not existent", cart.ID)
+		return nil, nil, fmt.Errorf("cart.infrastructure.DefaultCartBehaviour: Cannot add - Guestcart with id %v not existent", cart.ID)
 	}
 
 	err := cob.updateItem(ctx, cart, itemUpdateCommand)
@@ -157,16 +157,16 @@ func (cob *InMemoryBehaviour) UpdateItem(ctx context.Context, cart *domaincart.C
 
 	err = cob.cartStorage.StoreCart(cart)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
 	}
 
 	return cob.resetPaymentSelectionIfInvalid(ctx, cart)
 }
 
 // UpdateItems updates multiple cart items
-func (cob *InMemoryBehaviour) UpdateItems(ctx context.Context, cart *domaincart.Cart, itemUpdateCommands []domaincart.ItemUpdateCommand) (*domaincart.Cart, domaincart.DeferEvents, error) {
+func (cob *DefaultCartBehaviour) UpdateItems(ctx context.Context, cart *domaincart.Cart, itemUpdateCommands []domaincart.ItemUpdateCommand) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	if !cob.cartStorage.HasCart(cart.ID) {
-		return nil, nil, fmt.Errorf("cart.infrastructure.InMemoryBehaviour: Cannot update - Guestcart with id %v not existent", cart.ID)
+		return nil, nil, fmt.Errorf("cart.infrastructure.DefaultCartBehaviour: Cannot update - Guestcart with id %v not existent", cart.ID)
 	}
 
 	for _, itemUpdateCommand := range itemUpdateCommands {
@@ -178,13 +178,13 @@ func (cob *InMemoryBehaviour) UpdateItems(ctx context.Context, cart *domaincart.
 
 	err := cob.cartStorage.StoreCart(cart)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
 	}
 
 	return cob.resetPaymentSelectionIfInvalid(ctx, cart)
 }
 
-func (cob *InMemoryBehaviour) updateItem(ctx context.Context, cart *domaincart.Cart, itemUpdateCommand domaincart.ItemUpdateCommand) error {
+func (cob *DefaultCartBehaviour) updateItem(ctx context.Context, cart *domaincart.Cart, itemUpdateCommand domaincart.ItemUpdateCommand) error {
 	itemBuilder := cob.itemBuilderProvider()
 	itemDelivery, err := cart.GetDeliveryByItemID(itemUpdateCommand.ItemID)
 	if err != nil {
@@ -226,10 +226,10 @@ func (cob *InMemoryBehaviour) updateItem(ctx context.Context, cart *domaincart.C
 }
 
 // AddToCart add an item to the cart
-func (cob *InMemoryBehaviour) AddToCart(ctx context.Context, cart *domaincart.Cart, deliveryCode string, addRequest domaincart.AddRequest) (*domaincart.Cart, domaincart.DeferEvents, error) {
+func (cob *DefaultCartBehaviour) AddToCart(ctx context.Context, cart *domaincart.Cart, deliveryCode string, addRequest domaincart.AddRequest) (*domaincart.Cart, domaincart.DeferEvents, error) {
 
 	if cart != nil && !cob.cartStorage.HasCart(cart.ID) {
-		return nil, nil, fmt.Errorf("cart.infrastructure.InMemoryBehaviour: Cannot add - Guestcart with id %v not existent", cart.ID)
+		return nil, nil, fmt.Errorf("cart.infrastructure.DefaultCartBehaviour: Cannot add - Guestcart with id %v not existent", cart.ID)
 	}
 
 	// create delivery if it does not yet exist
@@ -271,13 +271,13 @@ func (cob *InMemoryBehaviour) AddToCart(ctx context.Context, cart *domaincart.Ca
 
 	err = cob.cartStorage.StoreCart(cart)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
 	}
 
 	return cob.resetPaymentSelectionIfInvalid(ctx, cart)
 }
 
-func (cob *InMemoryBehaviour) buildItemForCart(ctx context.Context, addRequest domaincart.AddRequest) (*domaincart.Item, error) {
+func (cob *DefaultCartBehaviour) buildItemForCart(ctx context.Context, addRequest domaincart.AddRequest) (*domaincart.Item, error) {
 	itemBuilder := cob.itemBuilderProvider()
 
 	// create and add new item
@@ -307,30 +307,30 @@ func (cob *InMemoryBehaviour) buildItemForCart(ctx context.Context, addRequest d
 }
 
 // CleanCart removes all deliveries and their items from the cart
-func (cob *InMemoryBehaviour) CleanCart(_ context.Context, cart *domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
+func (cob *DefaultCartBehaviour) CleanCart(ctx context.Context, cart *domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	if !cob.cartStorage.HasCart(cart.ID) {
-		return nil, nil, fmt.Errorf("cart.infrastructure.InMemoryBehaviour: Cannot delete - Guestcart with id %v not existent", cart.ID)
+		return nil, nil, fmt.Errorf("cart.infrastructure.DefaultCartBehaviour: Cannot delete - Guestcart with id %v not existent", cart.ID)
 	}
 
 	cart.Deliveries = []domaincart.Delivery{}
 
 	err := cob.cartStorage.StoreCart(cart)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
 	}
 
 	return cart, nil, nil
 }
 
 // CleanDelivery removes a complete delivery with its items from the cart
-func (cob *InMemoryBehaviour) CleanDelivery(ctx context.Context, cart *domaincart.Cart, deliveryCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
+func (cob *DefaultCartBehaviour) CleanDelivery(ctx context.Context, cart *domaincart.Cart, deliveryCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	if !cob.cartStorage.HasCart(cart.ID) {
-		return nil, nil, fmt.Errorf("cart.infrastructure.InMemoryBehaviour: Cannot delete - Guestcart with id %v not existent", cart.ID)
+		return nil, nil, fmt.Errorf("cart.infrastructure.DefaultCartBehaviour: Cannot delete - Guestcart with id %v not existent", cart.ID)
 	}
 
 	// create delivery if it does not yet exist
 	if !cart.HasDeliveryForCode(deliveryCode) {
-		return nil, nil, errors.Errorf("cart.infrastructure.InMemoryBehaviour: delivery %s not found", deliveryCode)
+		return nil, nil, errors.Errorf("cart.infrastructure.DefaultCartBehaviour: delivery %s not found", deliveryCode)
 	}
 
 	var position int
@@ -348,55 +348,56 @@ func (cob *InMemoryBehaviour) CleanDelivery(ctx context.Context, cart *domaincar
 
 	err := cob.cartStorage.StoreCart(cart)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
 	}
 
 	return cob.resetPaymentSelectionIfInvalid(ctx, cart)
 }
 
-// UpdatePurchaser sets the purchaser data and the additional data on the cart
-func (cob *InMemoryBehaviour) UpdatePurchaser(_ context.Context, cart *domaincart.Cart, purchaser *domaincart.Person, additionalData *domaincart.AdditionalData) (*domaincart.Cart, domaincart.DeferEvents, error) {
-	cart.Purchaser = purchaser
 
-	if additionalData != nil {
-		cart.AdditionalData.CustomAttributes = additionalData.CustomAttributes
-	}
+// UpdatePurchaser @todo implement when needed
+func (cob *DefaultCartBehaviour) UpdatePurchaser(ctx context.Context, cart *domaincart.Cart, purchaser *domaincart.Person, additionalData *domaincart.AdditionalData) (*domaincart.Cart, domaincart.DeferEvents, error) {
+		cart.Purchaser = purchaser
 
-	err := cob.cartStorage.StoreCart(cart)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
-	}
+		if additionalData != nil {
+			cart.AdditionalData.CustomAttributes = additionalData.CustomAttributes
+		}
 
-	return cart, nil, nil
+		err := cob.cartStorage.StoreCart(ctx, cart)
+		if err != nil {
+			return nil, nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
+		}
+
+		return cart, nil, nil
 }
 
-// UpdateBillingAddress updates the billing address
-func (cob *InMemoryBehaviour) UpdateBillingAddress(_ context.Context, cart *domaincart.Cart, billingAddress domaincart.Address) (*domaincart.Cart, domaincart.DeferEvents, error) {
+// UpdateBillingAddress - updates address
+func (cob *DefaultCartBehaviour) UpdateBillingAddress(ctx context.Context, cart *domaincart.Cart, billingAddress domaincart.Address) (*domaincart.Cart, domaincart.DeferEvents, error) {
 
 	cart.BillingAddress = &billingAddress
 
 	err := cob.cartStorage.StoreCart(cart)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
 	}
 
 	return cart, nil, nil
 }
 
 // UpdateAdditionalData updates additional data
-func (cob *InMemoryBehaviour) UpdateAdditionalData(_ context.Context, cart *domaincart.Cart, additionalData *domaincart.AdditionalData) (*domaincart.Cart, domaincart.DeferEvents, error) {
+func (cob *DefaultCartBehaviour) UpdateAdditionalData(ctx context.Context, cart *domaincart.Cart, additionalData *domaincart.AdditionalData) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	cart.AdditionalData = *additionalData
 	err := cob.cartStorage.StoreCart(cart)
 
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on updating additional data")
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on updating additional data")
 	}
 
 	return cart, nil, nil
 }
 
 //UpdatePaymentSelection updates payment on cart
-func (cob *InMemoryBehaviour) UpdatePaymentSelection(ctx context.Context, cart *domaincart.Cart, paymentSelection domaincart.PaymentSelection) (*domaincart.Cart, domaincart.DeferEvents, error) {
+func (cob *DefaultCartBehaviour) UpdatePaymentSelection(ctx context.Context, cart *domaincart.Cart, paymentSelection domaincart.PaymentSelection) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	if paymentSelection != nil {
 		err := cob.checkPaymentSelection(ctx, cart, paymentSelection)
 		if err != nil {
@@ -407,14 +408,14 @@ func (cob *InMemoryBehaviour) UpdatePaymentSelection(ctx context.Context, cart *
 
 	err := cob.cartStorage.StoreCart(cart)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
 	}
 
 	return cart, nil, nil
 }
 
 // UpdateDeliveryInfo updates a delivery info
-func (cob *InMemoryBehaviour) UpdateDeliveryInfo(ctx context.Context, cart *domaincart.Cart, deliveryCode string, deliveryInfoUpdateCommand domaincart.DeliveryInfoUpdateCommand) (*domaincart.Cart, domaincart.DeferEvents, error) {
+func (cob *DefaultCartBehaviour) UpdateDeliveryInfo(ctx context.Context, cart *domaincart.Cart, deliveryCode string, deliveryInfoUpdateCommand domaincart.DeliveryInfoUpdateCommand) (*domaincart.Cart, domaincart.DeferEvents, error) {
 
 	deliveryInfo := deliveryInfoUpdateCommand.DeliveryInfo
 	deliveryInfo.AdditionalDeliveryInfos = deliveryInfoUpdateCommand.Additional()
@@ -424,7 +425,7 @@ func (cob *InMemoryBehaviour) UpdateDeliveryInfo(ctx context.Context, cart *doma
 			cart.Deliveries[key].DeliveryInfo = deliveryInfo
 			err := cob.cartStorage.StoreCart(cart)
 			if err != nil {
-				return nil, nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
+				return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
 			}
 			return cart, nil, nil
 		}
@@ -433,19 +434,19 @@ func (cob *InMemoryBehaviour) UpdateDeliveryInfo(ctx context.Context, cart *doma
 
 	err := cob.cartStorage.StoreCart(cart)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
 	}
 
 	return cob.resetPaymentSelectionIfInvalid(ctx, cart)
 }
 
 // UpdateDeliveryInfoAdditionalData @todo implement when needed
-func (cob *InMemoryBehaviour) UpdateDeliveryInfoAdditionalData(_ context.Context, cart *domaincart.Cart, _ string, _ *domaincart.AdditionalData) (*domaincart.Cart, domaincart.DeferEvents, error) {
+func (cob *DefaultCartBehaviour) UpdateDeliveryInfoAdditionalData(ctx context.Context, cart *domaincart.Cart, deliveryCode string, additionalData *domaincart.AdditionalData) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	return cart, nil, nil
 }
 
 // GetCart returns the current cart from storage
-func (cob *InMemoryBehaviour) GetCart(_ context.Context, cartID string) (*domaincart.Cart, error) {
+func (cob *DefaultCartBehaviour) GetCart(ctx context.Context, cartID string) (*domaincart.Cart, error) {
 	if cob.cartStorage.HasCart(cartID) {
 		// if cart exists, there is no error ;)
 		cart, err := cob.cartStorage.GetCart(cartID)
@@ -454,16 +455,16 @@ func (cob *InMemoryBehaviour) GetCart(_ context.Context, cartID string) (*domain
 		}
 	}
 
-	return nil, fmt.Errorf("cart.infrastructure.InMemoryBehaviour: Cannot get - Guestcart with id %v not existent", cartID)
+	return nil, fmt.Errorf("cart.infrastructure.DefaultCartBehaviour: Cannot get - Guestcart with id %v not existent", cartID)
 }
 
 // storeCart in the memory
-func (cob *InMemoryBehaviour) storeCart(cart *domaincart.Cart) error {
+func (cob *DefaultCartBehaviour) storeCart(cart *domaincart.Cart) error {
 	return cob.cartStorage.StoreCart(cart)
 }
 
 // ApplyVoucher applies a voucher to the cart
-func (cob *InMemoryBehaviour) ApplyVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
+func (cob *DefaultCartBehaviour) ApplyVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	cart, err := cob.voucherHandler.ApplyVoucher(ctx, cart, couponCode)
 
 	if err != nil {
@@ -479,7 +480,7 @@ func (cob *InMemoryBehaviour) ApplyVoucher(ctx context.Context, cart *domaincart
 }
 
 // ApplyAny applies a voucher or giftcard to the cart
-func (cob *InMemoryBehaviour) ApplyAny(ctx context.Context, cart *domaincart.Cart, anyCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
+func (cob *DefaultCartBehaviour) ApplyAny(ctx context.Context, cart *domaincart.Cart, anyCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	currentCart, deferFunc, err := cob.ApplyVoucher(ctx, cart, anyCode)
 	if err == nil {
 		// successfully applied as voucher
@@ -491,7 +492,7 @@ func (cob *InMemoryBehaviour) ApplyAny(ctx context.Context, cart *domaincart.Car
 }
 
 // RemoveVoucher removes a voucher from the cart
-func (cob *InMemoryBehaviour) RemoveVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
+func (cob *DefaultCartBehaviour) RemoveVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	cart, err := cob.voucherHandler.RemoveVoucher(ctx, cart, couponCode)
 	if err != nil {
 		return nil, nil, err
@@ -507,7 +508,7 @@ func (cob *InMemoryBehaviour) RemoveVoucher(ctx context.Context, cart *domaincar
 
 // ApplyGiftCard applies a gift card to the cart
 // if a GiftCard is applied, it will be added to the array AppliedGiftCards on the cart
-func (cob *InMemoryBehaviour) ApplyGiftCard(ctx context.Context, cart *domaincart.Cart, giftCardCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
+func (cob *DefaultCartBehaviour) ApplyGiftCard(ctx context.Context, cart *domaincart.Cart, giftCardCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	cart, err := cob.giftCardHandler.ApplyGiftCard(ctx, cart, giftCardCode)
 	if err != nil {
 		return nil, nil, err
@@ -522,7 +523,7 @@ func (cob *InMemoryBehaviour) ApplyGiftCard(ctx context.Context, cart *domaincar
 
 // RemoveGiftCard removes a gift card from the cart
 // if a GiftCard is removed, it will be removed from the array AppliedGiftCards on the cart
-func (cob *InMemoryBehaviour) RemoveGiftCard(ctx context.Context, cart *domaincart.Cart, giftCardCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
+func (cob *DefaultCartBehaviour) RemoveGiftCard(ctx context.Context, cart *domaincart.Cart, giftCardCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	cart, err := cob.giftCardHandler.RemoveGiftCard(ctx, cart, giftCardCode)
 	if err != nil {
 		return nil, nil, err
@@ -536,12 +537,12 @@ func (cob *InMemoryBehaviour) RemoveGiftCard(ctx context.Context, cart *domainca
 	return cob.resetPaymentSelectionIfInvalid(ctx, cart)
 }
 
-func (cob *InMemoryBehaviour) isCurrentPaymentSelectionValid(ctx context.Context, cart *domaincart.Cart) bool {
+func (cob *DefaultCartBehaviour) isCurrentPaymentSelectionValid(ctx context.Context, cart *domaincart.Cart) bool {
 	return cob.checkPaymentSelection(ctx, cart, cart.PaymentSelection) == nil
 }
 
 // isPaymentSelectionValid checks if the grand total of the cart matches the total of the supplied payment selection
-func (cob *InMemoryBehaviour) checkPaymentSelection(_ context.Context, cart *domaincart.Cart, paymentSelection domaincart.PaymentSelection) error {
+func (cob *DefaultCartBehaviour) checkPaymentSelection(ctx context.Context, cart *domaincart.Cart, paymentSelection domaincart.PaymentSelection) error {
 	if paymentSelection == nil {
 		return nil
 	}
@@ -554,7 +555,7 @@ func (cob *InMemoryBehaviour) checkPaymentSelection(_ context.Context, cart *dom
 }
 
 // resetPaymentSelectionIfInvalid checks for valid paymentselection on givencart and deletes in in case it is invalid
-func (cob *InMemoryBehaviour) resetPaymentSelectionIfInvalid(ctx context.Context, cart *domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
+func (cob *DefaultCartBehaviour) resetPaymentSelectionIfInvalid(ctx context.Context, cart *domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	if cart.PaymentSelection == nil {
 		return cart, nil, nil
 	}

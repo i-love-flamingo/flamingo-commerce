@@ -61,8 +61,8 @@ func (m *Module) Configure(injector *dingo.Injector) {
 		injector.Bind((*infrastructure.CartStorage)(nil)).To(infrastructure.InMemoryCartStorage{}).AsEagerSingleton()
 		injector.Bind((*infrastructure.GiftCardHandler)(nil)).To(infrastructure.DefaultGiftCardHandler{})
 		injector.Bind((*infrastructure.VoucherHandler)(nil)).To(infrastructure.DefaultVoucherHandler{})
-		injector.Bind((*cart.GuestCartService)(nil)).To(infrastructure.InMemoryGuestCartService{})
-		injector.Bind((*cart.CustomerCartService)(nil)).To(infrastructure.InMemoryCustomerCartService{})
+		injector.Bind((*cart.GuestCartService)(nil)).To(infrastructure.DefaultGuestCartService{})
+		injector.Bind((*cart.CustomerCartService)(nil)).To(infrastructure.DefaultCustomerCartService{})
 	}
 	if m.useEmailAdapter {
 		injector.Bind((*placeorder.Service)(nil)).To(email.PlaceOrderServiceAdapter{})
@@ -125,6 +125,15 @@ commerce: {
 		}
 		simplePaymentForm: {
 			giftCardPaymentMethod: string | *"voucher"
+		}
+		emailAdapter: {
+			emailAddress: bool | *""
+			SMTPCredentials: {
+				password: string | *""
+				server:   string | *""
+				port:     string | *""
+				user:     string | *""
+			}
 		}
 	}
 }`

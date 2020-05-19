@@ -758,7 +758,7 @@ func (m *MockGuestCartServiceWithModifyBehaviour) GetNewCart(ctx context.Context
 }
 
 func (m *MockGuestCartServiceWithModifyBehaviour) GetModifyBehaviour(context.Context) (cartDomain.ModifyBehaviour, error) {
-	cob := &infrastructure.InMemoryBehaviour{}
+	cob := &infrastructure.DefaultCartBehaviour{}
 
 	storage := &infrastructure.InMemoryCartStorage{}
 	cart := cartDomain.Cart{

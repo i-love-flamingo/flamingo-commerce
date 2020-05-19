@@ -8,14 +8,24 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	authDomain "flamingo.me/flamingo/v3/core/oauth/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
+	//"github.com/matcornic/hermes/v2"
+	//"github.com/jordan-wright/email"
 )
 
 type (
 	// PlaceOrderServiceAdapter provides an implementation of the Service as email adapter
-	//  TODO - this example adapter need to be implemented
 	PlaceOrderServiceAdapter struct {
-		emailAddress string
-		logger       flamingo.Logger
+		emailAddress    string
+		logger          flamingo.Logger
+		sMTPCredentials SMTPCredentials
+	}
+
+	// SMTPCredentials defines the smtp credentials provided for the SendService
+	SMTPCredentials struct {
+		password string
+		server   string
+		port     string
+		user     string
 	}
 )
 
@@ -25,10 +35,12 @@ var (
 
 // Inject dependencies
 func (e *PlaceOrderServiceAdapter) Inject(logger flamingo.Logger, config *struct {
-	EmailAddress string `inject:"config:commerce.cart.emailAdapter.emailAddress"`
+	EmailAddress    string           `inject:"config:commerce.cart.emailAdapter.emailAddress"`
+	SMTPCredentials *SMTPCredentials `inject:"config:commerce.cart.emailAdapter.SMTPCredentials"`
 }) {
 	e.emailAddress = config.EmailAddress
 	e.logger = logger.WithField("module", "cart").WithField("category", "emailAdapter")
+	e.logger.Warn(config.SMTPCredentials)
 }
 
 // PlaceGuestCart places a guest cart as order email
