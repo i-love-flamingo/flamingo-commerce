@@ -19,6 +19,7 @@ import (
 // Module registers our profiler
 type Module struct {
 	FakeService bool `inject:"config:commerce.product.fakeservice.enabled,optional"`
+	Api         bool `inject:"config:commerce.product.api.enabled,optional"`
 }
 
 // Configure the product URL
@@ -28,6 +29,9 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	flamingo.BindTemplateFunc(injector, "findProducts", new(templatefunctions.FindProducts))
 
 	web.BindRoutes(injector, new(routes))
+	if m.Api {
+		web.BindRoutes(injector, new(apiroutes))
+	}
 
 	injector.BindMulti(new(graphql.Service)).To(new(productgraphql.Service))
 	if m.FakeService {
@@ -60,6 +64,9 @@ commerce: {
 			enabled: bool | *false
 			currency: *"€" | !=""  
 		}
+		api: {
+			enabled: bool | *true
+		}
 		pagination: defaultPageSize: number | *commerce.pagination.defaultPageSize
 	}
 }`
@@ -69,7 +76,7 @@ type routes struct {
 	controller *controller.View
 }
 
-func (r *routes) Inject(controller *controller.View) {
+func (r *routes) Inject(controller *controller.View, apiController *controller.ApiController) {
 	r.controller = controller
 }
 
@@ -79,4 +86,17 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 	h.Normalize("name")
 	h, _ = registry.Route("/product/:marketplacecode/:variantcode/:name.html", `product.view(marketplacecode, variantcode, name, backurl?="")`)
 	h.Normalize("name")
+}
+
+type apiroutes struct {
+	apiController *controller.ApiController
+}
+
+func (r *apiroutes) Inject(apiController *controller.ApiController) {
+	r.apiController = apiController
+}
+
+func (r *apiroutes) Routes(registry *web.RouterRegistry) {
+	registry.Route("/api/v1/products/:marketplacecode", "products.api.get")
+	registry.HandleGet("products.api.get", r.apiController.Get)
 }

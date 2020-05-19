@@ -30,4 +30,12 @@ func Test_ProductPage(t *testing.T) {
 	e.GET("/product/fake_configurable/typeconfigurable-product.html").
 		Expect().
 		Status(http.StatusOK).JSON().Object().Value("RenderContext").Equal("configurable")
+
+	e.GET("/api/v1/products/fake_simple").
+		Expect().
+		Status(http.StatusOK).JSON().Object().Value("Success").Boolean().True()
+
+	e.GET("/api/v1/products/404").
+		Expect().
+		Status(http.StatusOK).JSON().Object().Value("Success").Boolean().False()
 }
