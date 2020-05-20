@@ -74,6 +74,13 @@ func (cc *CartAPIController) Inject(
 }
 
 // GetAction Get JSON Format of API
+// @Summary Get the current cart
+// @Tags cart
+// @Accept json
+// @Produce json
+// @Success 200 {object} getCartResult
+// @Failure 500 {object} CartAPIResult
+// @Router /api/v1/cart [get]
 func (cc *CartAPIController) GetAction(ctx context.Context, r *web.Request) web.Result {
 	decoratedCart, e := cc.cartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if e != nil {
@@ -90,6 +97,17 @@ func (cc *CartAPIController) GetAction(ctx context.Context, r *web.Request) web.
 }
 
 // AddAction Add Item to cart
+// @Summary Add Item to cart
+// @Tags cart
+// @Accept json
+// @Produce json
+// @Success 200 {object} CartAPIResult
+// @Failure 500 {object} CartAPIResult
+// @Param deliveryCode path string true "the idendifier for the delivery in the cart"
+// @Param marketplaceCode query string true "the product idendifier that should be added"
+// @Param variantMarketplaceCode query string false "optional the product idendifier of the variant (for configurable products) that should be added"
+// @Param qty query integer false "optional the qty that should be added"
+// @Router /api/v1/cart/delivery/{deliveryCode}/additem [post]
 func (cc *CartAPIController) AddAction(ctx context.Context, r *web.Request) web.Result {
 	variantMarketplaceCode, _ := r.Params["variantMarketplaceCode"]
 
@@ -117,16 +135,41 @@ func (cc *CartAPIController) AddAction(ctx context.Context, r *web.Request) web.
 }
 
 // ApplyVoucherAndGetAction applies the given voucher and returns the cart
+// @Summary Apply Voucher Code
+// @Tags cart
+// @Accept json
+// @Produce json
+// @Success 200 {object} CartAPIResult
+// @Failure 500 {object} CartAPIResult
+// @Param couponCode query string true "the couponCode that should be applied"
+// @Router /api/v1/cart/applyvoucher [post]
+// @Router /api/v1/cart/applyvoucher [put]
 func (cc *CartAPIController) ApplyVoucherAndGetAction(ctx context.Context, r *web.Request) web.Result {
 	return cc.handlePromotionAction(ctx, r, "voucher_error", cc.cartService.ApplyVoucher)
 }
 
 // RemoveVoucherAndGetAction removes the given voucher and returns the cart
+// @Summary Remove Voucher Code
+// @Tags cart
+// @Accept json
+// @Produce json
+// @Success 200 {object} CartAPIResult
+// @Failure 500 {object} CartAPIResult
+// @Param couponCode query string true "the couponCode that should be applied"
+// @Router /api/v1/cart/removevoucher [post]
+// @Router /api/v1/cart/removevoucher [delete]
 func (cc *CartAPIController) RemoveVoucherAndGetAction(ctx context.Context, r *web.Request) web.Result {
 	return cc.handlePromotionAction(ctx, r, "voucher_error", cc.cartService.RemoveVoucher)
 }
 
 // DeleteCartAction cleans the cart and returns the cleaned cart
+// @Summary cleans the cart and returns the cleaned cart
+// @Tags cart
+// @Accept json
+// @Produce json
+// @Success 200 {object} CartAPIResult
+// @Failure 500 {object} CartAPIResult
+// @Router /api/v1/cart [delete]
 func (cc *CartAPIController) DeleteCartAction(ctx context.Context, r *web.Request) web.Result {
 	err := cc.cartService.DeleteAllItems(ctx, r.Session())
 	result := newResult()
@@ -141,18 +184,44 @@ func (cc *CartAPIController) DeleteCartAction(ctx context.Context, r *web.Reques
 
 // ApplyGiftCardAndGetAction applies the given giftcard and returns the cart
 // the request needs a query string param "couponCode" which includes the corresponding giftcard code
+// @Summary Apply Giftcart
+// @Tags cart
+// @Accept json
+// @Produce json
+// @Success 200 {object} CartAPIResult
+// @Failure 500 {object} CartAPIResult
+// @Param couponCode query string true "the couponCode that should be applied as giftcart"
+// @Router /api/v1/cart/applygiftcard [post]
+// @Router /api/v1/cart/applygiftcard [put]
 func (cc *CartAPIController) ApplyGiftCardAndGetAction(ctx context.Context, r *web.Request) web.Result {
 	return cc.handlePromotionAction(ctx, r, "giftcard_error", cc.cartService.ApplyGiftCard)
 }
 
 // ApplyCombinedVoucherGift applies a given code (which might be either a voucher or a giftcard code) to the
 // cartService and returns the cart
+// @Summary Apply Giftcart or Voucher (autodetected)
+// @Description Use this if you have one user input and that input can be used to either enter a voucher or a giftcart
+// @Tags cart
+// @Accept json
+// @Produce json
+// @Success 200 {object} CartAPIResult
+// @Failure 500 {object} CartAPIResult
+// @Param couponCode query string true "the couponCode that should be applied as giftcart or voucher"
+// @Router /api/v1/cart/applycombinedvouchergift [post]
 func (cc *CartAPIController) ApplyCombinedVoucherGift(ctx context.Context, r *web.Request) web.Result {
 	return cc.handlePromotionAction(ctx, r, "applyany_error", cc.cartService.ApplyAny)
 }
 
 // RemoveGiftCardAndGetAction removes the given giftcard and returns the cart
 // the request needs a query string param "couponCode" which includes the corresponding giftcard code
+// @Summary Remove Giftcart
+// @Tags cart
+// @Accept json
+// @Produce json
+// @Success 200 {object} CartAPIResult
+// @Failure 500 {object} CartAPIResult
+// @Param couponCode query string true "the couponCode that should be deleted as giftcart"
+// @Router /api/v1/cart/removeGiftCard [post]
 func (cc *CartAPIController) RemoveGiftCardAndGetAction(ctx context.Context, r *web.Request) web.Result {
 	return cc.handlePromotionAction(ctx, r, "giftcard_error", cc.cartService.RemoveGiftCard)
 }
@@ -175,6 +244,14 @@ func (cc *CartAPIController) handlePromotionAction(ctx context.Context, r *web.R
 }
 
 // DeleteDelivery cleans the given delivery from the cart and returns the cleaned cart
+// @Summary cleans the given delivery from the cart
+// @Tags cart
+// @Accept json
+// @Produce json
+// @Success 200 {object} CartAPIResult
+// @Failure 500 {object} CartAPIResult
+// @Param deliveryCode path string true "the idendifier for the delivery in the cart"
+// @Router /api/v1/cart/delivery/{deliveryCode} [delete]
 func (cc *CartAPIController) DeleteDelivery(ctx context.Context, r *web.Request) web.Result {
 	result := newResult()
 	deliveryCode := r.Params["deliveryCode"]
@@ -187,7 +264,16 @@ func (cc *CartAPIController) DeleteDelivery(ctx context.Context, r *web.Request)
 	return cc.responder.Data(result)
 }
 
-// BillingAction handles the checkout start action
+// BillingAction adds billing infos
+// @Summary adds billing infos to cart
+// @Description Data need to be posted as application/x-www-form-urlencoded
+// @Tags cart
+// @Accept application/x-www-form-urlencoded
+// @Produce json
+// @Success 200 {object} CartAPIResult
+// @Failure 500 {object} CartAPIResult
+// @Param billingAddressForm body forms.BillingAddressForm true "billing form"
+// @Router /api/v1/cart/billing [post]
 func (cc *CartAPIController) BillingAction(ctx context.Context, r *web.Request) web.Result {
 	result := newResult()
 	form, success, err := cc.billingAddressFormController.HandleFormAction(ctx, r)

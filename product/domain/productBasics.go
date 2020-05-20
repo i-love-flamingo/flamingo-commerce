@@ -468,9 +468,9 @@ func (p Saleable) generateLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price
 // Type "main" is the remaining charge in the main currency and the other charges returned are the loyalty price charges that need to be paid.
 // The method takes the min, max and the calculated loyalty conversion rate into account
 //
-// @param valuedPriceToPay  Optional the price that need to be paid - if not given the products final price will be used
-// @param loyaltyPointsWishedToPay   Optional a list of loyaltyPrices that the (customer) wants to spend. Its used as a wish and may not be fulfilled because of min, max properties on the products loyaltyPrices
-// @param qty the quantity of the current item affects min max loyalty charge
+// * valuedPriceToPay  Optional the price that need to be paid - if not given the products final price will be used
+// * loyaltyPointsWishedToPay   Optional a list of loyaltyPrices that the (customer) wants to spend. Its used as a wish and may not be fulfilled because of min, max properties on the products loyaltyPrices
+// * qty the quantity of the current item affects min max loyalty charge
 func (p Saleable) GetLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price, loyaltyPointsWishedToPay *WishedToPay, qty int) priceDomain.Charges {
 	return p.generateLoyaltyChargeSplit(valuedPriceToPay, loyaltyPointsWishedToPay, qty, false)
 }

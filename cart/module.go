@@ -168,39 +168,51 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 func (r *routes) apiRoutes(registry *web.RouterRegistry) {
 
 	registry.Route("/api/cart", "cart.api.get")
+	registry.Route("/api/v1/cart", "cart.api.get")
 	registry.HandleDelete("cart.api.get", r.apiController.DeleteCartAction)
 	registry.HandleGet("cart.api.get", r.apiController.GetAction)
 
 	//add command under the delivery:
 	registry.Route("/api/cart/delivery/:deliveryCode/additem", `cart.api.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryCode?="")`)
+	registry.Route("/api/v1/cart/delivery/:deliveryCode/additem", `cart.api.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryCode?="")`)
+
 	registry.HandlePost("cart.api.add", r.apiController.AddAction)
 
 	registry.Route("/api/cart/applyvoucher", `cart.api.applyVoucher(couponCode)`)
+	registry.Route("/api/v1/cart/applyvoucher", `cart.api.applyVoucher(couponCode)`)
+
 	registry.HandlePost("cart.api.applyVoucher", r.apiController.ApplyVoucherAndGetAction)
 	registry.HandlePut("cart.api.applyVoucher", r.apiController.ApplyVoucherAndGetAction)
 
 	registry.Route("/api/cart/removevoucher", `cart.api.removeVoucher(couponCode)`)
+	registry.Route("/api/v1/cart/removevoucher", `cart.api.removeVoucher(couponCode)`)
 	registry.HandlePost("cart.api.removeVoucher", r.apiController.RemoveVoucherAndGetAction)
 	registry.HandleDelete("cart.api.removeVoucher", r.apiController.RemoveVoucherAndGetAction)
 
 	registry.Route("/api/cart/applygiftcard", `cart.api.applyGiftCard(couponCode)`)
+	registry.Route("/api/v1/cart/applygiftcard", `cart.api.applyGiftCard(couponCode)`)
 	registry.HandlePost("cart.api.applyGiftCard", r.apiController.ApplyGiftCardAndGetAction)
 	registry.HandlePut("cart.api.applyGiftCard", r.apiController.ApplyGiftCardAndGetAction)
 
 	registry.Route("/api/cart/removegiftcard", `cart.api.removeGiftCard(couponCode)`)
+	registry.Route("/api/v1/cart/removegiftcard", `cart.api.removeGiftCard(couponCode)`)
 	registry.HandlePost("cart.api.removeGiftCard", r.apiController.RemoveGiftCardAndGetAction)
 	registry.HandleDelete("cart.api.removeGiftCard", r.apiController.RemoveGiftCardAndGetAction)
 
 	registry.Route("/api/cart/applycombinedvouchergift", `cart.api.applyCombinedVoucherGift(couponCode)`)
+	registry.Route("/api/v1/cart/applycombinedvouchergift", `cart.api.applyCombinedVoucherGift(couponCode)`)
 	registry.HandlePost("cart.api.applyCombinedVoucherGift", r.apiController.ApplyCombinedVoucherGift)
 
 	registry.Route("/api/cart/billing", `cart.api.billing`)
+	registry.Route("/api/v1/cart/billing", `cart.api.billing`)
 	registry.HandlePost("cart.api.billing", r.apiController.BillingAction)
 
 	registry.Route("/api/cart/delivery/:deliveryCode", `cart.api.delivery.delete`)
+	registry.Route("/api/v1/cart/delivery/:deliveryCode", `cart.api.delivery.delete`)
 	registry.HandleDelete("cart.api.delivery.delete", r.apiController.DeleteDelivery)
 
 	registry.Route("/api/cart/delivery/:deliveryCode/deliveryinfo", `cart.api.delivery.update`)
+	registry.Route("/api/v1/cart/delivery/:deliveryCode/deliveryinfo", `cart.api.delivery.update`)
 	registry.HandlePost("cart.api.delivery.update", r.apiController.UpdateDeliveryInfoAction)
 
 	//registry.Route("/api/cart/delivery/:shipping", `cart.api.shipping(deliveryCode?="")`)

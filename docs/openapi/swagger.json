@@ -1,0 +1,1044 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Flamingo Commerce Modules",
+        "contact": {
+            "name": "Flamingo",
+            "url": "https://gitter.im/i-love-flamingo/community#",
+            "email": "flamingo@aoe.com"
+        },
+        "license": {
+            "name": "MIT"
+        },
+        "version": "1.0"
+    },
+    "paths": {
+        "/api/v1/cart": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cart"
+                ],
+                "summary": "Get the current cart",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.getCartResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cart"
+                ],
+                "summary": "cleans the cart and returns the cleaned cart",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cart/applycombinedvouchergift": {
+            "post": {
+                "description": "Use this if you have one user input and that input can be used to either enter a voucher or a giftcart",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cart"
+                ],
+                "summary": "Apply Giftcart or Voucher (autodetected)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the couponCode that should be applied as giftcart or voucher",
+                        "name": "couponCode",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cart/applygiftcard": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cart"
+                ],
+                "summary": "Apply Giftcart",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the couponCode that should be applied as giftcart",
+                        "name": "couponCode",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cart/applyvoucher": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cart"
+                ],
+                "summary": "Apply Voucher Code",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the couponCode that should be applied",
+                        "name": "couponCode",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cart/billing": {
+            "post": {
+                "description": "Data need to be posted as application/x-www-form-urlencoded",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cart"
+                ],
+                "summary": "adds billing infos to cart",
+                "parameters": [
+                    {
+                        "description": "billing form",
+                        "name": "billingAddressForm",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/forms.BillingAddressForm"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cart/delivery/{deliveryCode}": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cart"
+                ],
+                "summary": "cleans the given delivery from the cart",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the idendifier for the delivery in the cart",
+                        "name": "deliveryCode",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cart/delivery/{deliveryCode}/additem": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cart"
+                ],
+                "summary": "Add Item to cart",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the idendifier for the delivery in the cart",
+                        "name": "deliveryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the product idendifier that should be added",
+                        "name": "marketplaceCode",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "optional the product idendifier of the variant (for configurable products) that should be added",
+                        "name": "variantMarketplaceCode",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "optional the qty that should be added",
+                        "name": "qty",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cart/removeGiftCard": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cart"
+                ],
+                "summary": "Remove Giftcart",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the couponCode that should be deleted as giftcart",
+                        "name": "couponCode",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cart/removevoucher": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cart"
+                ],
+                "summary": "Remove Voucher Code",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the couponCode that should be applied",
+                        "name": "couponCode",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "cart.AdditionalData": {
+            "type": "object",
+            "properties": {
+                "customAttributes": {
+                    "description": "CustomAttributes list of key values",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "reservedOrderID": {
+                    "description": "ReservedOrderID is an ID already known by the Cart of the future order ID",
+                    "type": "string"
+                }
+            }
+        },
+        "cart.Address": {
+            "type": "object",
+            "properties": {
+                "additionalAddressLines": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "city": {
+                    "type": "string"
+                },
+                "company": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "countryCode": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "middleName": {
+                    "type": "string"
+                },
+                "postCode": {
+                    "type": "string"
+                },
+                "regionCode": {
+                    "type": "string"
+                },
+                "salutation": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "street": {
+                    "type": "string"
+                },
+                "streetNr": {
+                    "type": "string"
+                },
+                "telephone": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "vat": {
+                    "type": "string"
+                }
+            }
+        },
+        "cart.AppliedDiscount": {
+            "type": "object",
+            "properties": {
+                "applied": {
+                    "description": "how much of the discount has been subtracted from cart price, IMPORTANT: always negative",
+                    "type": "object",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "campaignCode": {
+                    "description": "unique code of the underlying campaign or rule e.g. \"summer-campaign-2018\"",
+                    "type": "string"
+                },
+                "couponCode": {
+                    "description": "code of discount e.g. provided by user \"summer2018\"",
+                    "type": "string"
+                },
+                "isItemRelated": {
+                    "description": "flag indicating if the discount is applied due to item in cart",
+                    "type": "boolean"
+                },
+                "label": {
+                    "description": "readable name of discount \"Super Summer Sale 2018\"",
+                    "type": "string"
+                },
+                "sortOrder": {
+                    "description": "indicates in which order discount have been applied, low value has been applied before high value",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "to distinguish between discounts",
+                    "type": "string"
+                }
+            }
+        },
+        "cart.AppliedDiscounts": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/cart.AppliedDiscount"
+            }
+        },
+        "cart.AppliedGiftCard": {
+            "type": "object",
+            "properties": {
+                "applied": {
+                    "description": "how much of the gift card has been subtracted from cart price",
+                    "type": "object",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "customAttributes": {
+                    "description": "additional custom attributes",
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "remaining": {
+                    "description": "how much of the gift card is still available",
+                    "type": "object",
+                    "$ref": "#/definitions/domain.Price"
+                }
+            }
+        },
+        "cart.Cart": {
+            "type": "object",
+            "properties": {
+                "additionalData": {
+                    "description": "AdditionalData   can be used for Custom attributes",
+                    "type": "object",
+                    "$ref": "#/definitions/cart.AdditionalData"
+                },
+                "appliedCouponCodes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/cart.CouponCode"
+                    }
+                },
+                "appliedGiftCards": {
+                    "description": "List of applied gift cards",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/cart.AppliedGiftCard"
+                    }
+                },
+                "authenticatedUserID": {
+                    "type": "string"
+                },
+                "belongsToAuthenticatedUser": {
+                    "description": "BelongsToAuthenticatedUser - false = Guest Cart true = cart from the authenticated user",
+                    "type": "boolean"
+                },
+                "billingAddress": {
+                    "description": "BillingAddress - the main billing address (relevant for all payments/invoices)",
+                    "type": "object",
+                    "$ref": "#/definitions/cart.Address"
+                },
+                "defaultCurrency": {
+                    "type": "string"
+                },
+                "deliveries": {
+                    "description": "Deliveries - list of desired Deliveries (or Shipments) involved in this cart",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/cart.Delivery"
+                    }
+                },
+                "entityID": {
+                    "description": "EntityID is a second identifier that may be used by some backends",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID is the main identifier of the cart",
+                    "type": "string"
+                },
+                "paymentSelection": {
+                    "description": "PaymentSelection - the saved PaymentSelection (saves \"how\" the customer want to pay)",
+                    "type": "object",
+                    "$ref": "#/definitions/cart.PaymentSelection"
+                },
+                "purchaser": {
+                    "description": "Purchaser - additional infos for the legal contact person in this order",
+                    "type": "object",
+                    "$ref": "#/definitions/cart.Person"
+                },
+                "totalitems": {
+                    "description": "Additional non taxable totals",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/cart.Totalitem"
+                    }
+                }
+            }
+        },
+        "cart.CouponCode": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "customAttributes": {
+                    "description": "CustomAttributes can hold additional data for coupon code - keys and values are project specific",
+                    "type": "object",
+                    "additionalProperties": true
+                }
+            }
+        },
+        "cart.Delivery": {
+            "type": "object",
+            "properties": {
+                "cartitems": {
+                    "description": "Cartitems - list of cartitems",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/cart.Item"
+                    }
+                },
+                "deliveryInfo": {
+                    "description": "DeliveryInfo - The details for this delivery - normally completed during checkout",
+                    "type": "object",
+                    "$ref": "#/definitions/cart.DeliveryInfo"
+                },
+                "shippingItem": {
+                    "description": "ShippingItem\t- The Shipping Costs that may be involved in this delivery",
+                    "type": "object",
+                    "$ref": "#/definitions/cart.ShippingItem"
+                }
+            }
+        },
+        "cart.DeliveryInfo": {
+            "type": "object",
+            "properties": {
+                "additionalData": {
+                    "description": "AdditionalData  - Possibility for key value based information on the delivery - can be used flexible by each project",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "carrier": {
+                    "description": "Carrier - Optional the name of the Carrier that should be responsible for executing the delivery",
+                    "type": "string"
+                },
+                "code": {
+                    "description": "Code - is a project specific identifier for the Delivery - you need it for the AddToCart Request for example\nThe code can follow the convention in the Readme: Type_Method_LocationType_LocationCode",
+                    "type": "string"
+                },
+                "deliveryLocation": {
+                    "description": "DeliveryLocation The target Location for the delivery",
+                    "type": "object",
+                    "$ref": "#/definitions/cart.DeliveryLocation"
+                },
+                "desiredTime": {
+                    "description": "DesiredTime - Optional - the desired time of the delivery",
+                    "type": "string"
+                },
+                "method": {
+                    "description": "Method - The shippingmethod something that is project specific and that can mean different delivery qualities with different deliverycosts",
+                    "type": "string"
+                },
+                "workflow": {
+                    "description": "Type - The Type of the Delivery - e.g. delivery or pickup - this might trigger different workflows",
+                    "type": "string"
+                }
+            }
+        },
+        "cart.DeliveryLocation": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "Address -  (only relevant for type address)",
+                    "type": "object",
+                    "$ref": "#/definitions/cart.Address"
+                },
+                "code": {
+                    "description": "Code - optional identifier of this location/destination - is used in special destination Types",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "Type - the type of the delivery - use some of the constant defined in the package like DeliverylocationTypeAddress",
+                    "type": "string"
+                },
+                "useBillingAddress": {
+                    "description": "UseBillingAddress - the address should be taken from billing (only relevant for type address)",
+                    "type": "boolean"
+                }
+            }
+        },
+        "cart.ExistingCustomerData": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "ID of the customer",
+                    "type": "string"
+                }
+            }
+        },
+        "cart.Item": {
+            "type": "object",
+            "properties": {
+                "additionalData": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "appliedDiscounts": {
+                    "description": "AppliedDiscounts contains the details about the discounts applied to this item - they can be \"itemrelated\" or not",
+                    "type": "object",
+                    "$ref": "#/definitions/cart.AppliedDiscounts"
+                },
+                "externalReference": {
+                    "description": "ExternalReference can be used by cart service implementations to separate the representation in an external\ncart service from the unique item ID",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID of the item - needs to be unique over the whole cart",
+                    "type": "string"
+                },
+                "marketplaceCode": {
+                    "type": "string"
+                },
+                "productName": {
+                    "type": "string"
+                },
+                "qty": {
+                    "type": "integer"
+                },
+                "rowPriceGross": {
+                    "description": "RowPriceGross",
+                    "type": "object",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "rowPriceNet": {
+                    "description": "RowPriceNet",
+                    "type": "object",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "rowTaxes": {
+                    "description": "RowPriceGross",
+                    "type": "object",
+                    "$ref": "#/definitions/cart.Taxes"
+                },
+                "singlePriceGross": {
+                    "description": "SinglePriceGross brutto (gross) for single product",
+                    "type": "object",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "singlePriceNet": {
+                    "description": "SinglePriceNet net price for single product",
+                    "type": "object",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "sourceID": {
+                    "description": "Source Id of where the items should be initial picked - This is set by the SourcingLogic",
+                    "type": "string"
+                },
+                "variantMarketPlaceCode": {
+                    "description": "VariantMarketPlaceCode is used for Configurable products",
+                    "type": "string"
+                }
+            }
+        },
+        "cart.PaymentSelection": {
+            "type": "object"
+        },
+        "cart.Person": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "object",
+                    "$ref": "#/definitions/cart.Address"
+                },
+                "existingCustomerData": {
+                    "description": "ExistingCustomerData if the current purchaser is an existing customer - this contains infos about existing customer",
+                    "type": "object",
+                    "$ref": "#/definitions/cart.ExistingCustomerData"
+                },
+                "personalDetails": {
+                    "type": "object",
+                    "$ref": "#/definitions/cart.PersonalDetails"
+                }
+            }
+        },
+        "cart.PersonalDetails": {
+            "type": "object",
+            "properties": {
+                "dateOfBirth": {
+                    "type": "string"
+                },
+                "nationality": {
+                    "type": "string"
+                },
+                "passportCountry": {
+                    "type": "string"
+                },
+                "passportNumber": {
+                    "type": "string"
+                }
+            }
+        },
+        "cart.ShippingItem": {
+            "type": "object",
+            "properties": {
+                "appliedDiscounts": {
+                    "type": "object",
+                    "$ref": "#/definitions/cart.AppliedDiscounts"
+                },
+                "priceNet": {
+                    "type": "object",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "taxAmount": {
+                    "type": "object",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "cart.Tax": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "object",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "rate": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "cart.Taxes": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/cart.Tax"
+            }
+        },
+        "cart.Teaser": {
+            "type": "object",
+            "properties": {
+                "deliveryCodes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "itemCount": {
+                    "type": "integer"
+                },
+                "productCount": {
+                    "type": "integer"
+                }
+            }
+        },
+        "cart.Totalitem": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "object",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.CartAPIResult": {
+            "type": "object",
+            "properties": {
+                "cartTeaser": {
+                    "type": "object",
+                    "$ref": "#/definitions/cart.Teaser"
+                },
+                "cartValidationResult": {
+                    "type": "object",
+                    "$ref": "#/definitions/validation.Result"
+                },
+                "data": {
+                    "type": "object"
+                },
+                "dataValidationInfo": {
+                    "type": "string"
+                },
+                "error": {
+                    "description": "Contains details if success is false",
+                    "type": "object",
+                    "$ref": "#/definitions/controller.resultError"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "controller.getCartResult": {
+            "type": "object",
+            "properties": {
+                "cart": {
+                    "type": "object",
+                    "$ref": "#/definitions/cart.Cart"
+                },
+                "cartValidationResult": {
+                    "type": "object",
+                    "$ref": "#/definitions/validation.Result"
+                }
+            }
+        },
+        "controller.resultError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.Price": {
+            "type": "object"
+        },
+        "forms.AddressForm": {
+            "type": "object",
+            "required": [
+                "email",
+                "firstname",
+                "lastname"
+            ],
+            "properties": {
+                "addressLine1": {
+                    "type": "string"
+                },
+                "addressLine2": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "company": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "countryCode": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "middleName": {
+                    "type": "string"
+                },
+                "phoneAreaCode": {
+                    "type": "string"
+                },
+                "phoneCountryCode": {
+                    "type": "string"
+                },
+                "phoneNumber": {
+                    "type": "string"
+                },
+                "postCode": {
+                    "type": "string"
+                },
+                "regionCode": {
+                    "type": "string"
+                },
+                "salutation": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "street": {
+                    "type": "string"
+                },
+                "streetNr": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "vat": {
+                    "type": "string"
+                }
+            }
+        },
+        "forms.BillingAddressForm": {
+            "$ref": "#/definitions/forms.AddressForm"
+        },
+        "validation.ItemValidationError": {
+            "type": "object",
+            "properties": {
+                "errorMessageKey": {
+                    "type": "string"
+                },
+                "itemID": {
+                    "type": "string"
+                }
+            }
+        },
+        "validation.Result": {
+            "type": "object",
+            "properties": {
+                "commonErrorMessageKey": {
+                    "type": "string"
+                },
+                "hasCommonError": {
+                    "type": "boolean"
+                },
+                "itemResults": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/validation.ItemValidationError"
+                    }
+                }
+            }
+        }
+    }
+}

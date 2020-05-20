@@ -37,7 +37,7 @@ type (
 		//AdditionalData  - Possibility for key value based information on the delivery - can be used flexible by each project
 		AdditionalData map[string]string
 		//AdditionalDeliveryInfos - similar to AdditionalData this can be used to store "any" other object on a delivery encoded as json.RawMessage
-		AdditionalDeliveryInfos map[string]json.RawMessage
+		AdditionalDeliveryInfos map[string]json.RawMessage `swaggerignore:"true"`
 	}
 
 	// ShippingItem value object
