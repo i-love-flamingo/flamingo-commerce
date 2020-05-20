@@ -1,0 +1,10 @@
+query {
+    Commerce_Cart_QtyRestriction(
+        marketplaceCode:"###MARKETPLACECODE###",
+        deliveryCode:"home") {
+        isRestricted
+        maxAllowed
+        remainingDifference
+        restrictorName
+    }
+}

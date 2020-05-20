@@ -286,6 +286,14 @@ type Commerce_Cart_ItemValidationError {
     errorMessageKey: String!
 }
 
+
+type Commerce_Cart_QtyRestrictionResult {
+    isRestricted:        Boolean!
+    maxAllowed:          Int!
+    remainingDifference: Int!
+    restrictorName:      String!
+}
+
 type Commerce_Cart_PlacedOrderInfo {
     orderNumber:    String!
     deliveryCode:   String!
@@ -414,6 +422,8 @@ input Commerce_Cart_DeliveryShippingOption {
 extend type Query {
     Commerce_Cart: Commerce_DecoratedCart!
     Commerce_Cart_Validator: Commerce_Cart_ValidationResult!
+    "Commerce_Cart_QtyRestriction returns if the product is restricted in terms of the allowed quantity for the current cart and the given delivery"
+    Commerce_Cart_QtyRestriction(marketplaceCode: String!, variantCode: String, deliveryCode: String!): Commerce_Cart_QtyRestrictionResult!
 }
 
 extend type Mutation {

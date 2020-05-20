@@ -3,6 +3,7 @@ package cart
 import (
 	"flamingo.me/dingo"
 	"flamingo.me/flamingo-commerce/v3/cart"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	"flamingo.me/flamingo-commerce/v3/cart/infrastructure"
 )
 
@@ -14,6 +15,7 @@ type (
 // Configure module
 func (m *Module) Configure(injector *dingo.Injector) {
 	injector.Override((*infrastructure.VoucherHandler)(nil), "").To(&FakeVoucherHandler{})
+	injector.BindMulti((*validation.MaxQuantityRestrictor)(nil)).To(FakeQtyRestrictor{})
 }
 
 // Depends on other modules

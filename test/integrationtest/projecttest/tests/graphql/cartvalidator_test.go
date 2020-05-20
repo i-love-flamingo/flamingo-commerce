@@ -23,3 +23,28 @@ func Test_CartValidator(t *testing.T) {
 	response.Status(http.StatusOK)
 	getValue(response, "Commerce_Cart_Validator", "hasCommonError").Boolean().False()
 }
+
+// This test checks if qty Restrictions work
+func Test_CartRestrictor(t *testing.T) {
+	baseURL := "http://" + FlamingoURL
+	e := integrationtest.NewHTTPExpect(t, baseURL)
+
+	t.Run("restricted product", func(t *testing.T) {
+		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "validate_restrictor", map[string]string{"MARKETPLACECODE": "fake_simple"})).Expect()
+		response.Status(http.StatusOK)
+		getValue(response, "Commerce_Cart_QtyRestriction", "isRestricted").Boolean().True()
+	})
+
+	t.Run("unrestricted product", func(t *testing.T) {
+		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "validate_restrictor", map[string]string{"MARKETPLACECODE": "fake_configurable"})).Expect()
+		response.Status(http.StatusOK)
+		getValue(response, "Commerce_Cart_QtyRestriction", "isRestricted").Boolean().False()
+	})
+
+	t.Run("404 product", func(t *testing.T) {
+		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "validate_restrictor", map[string]string{"MARKETPLACECODE": "some"})).Expect()
+		response.Status(http.StatusOK)
+		response.JSON().Object().Value("errors").NotNull()
+	})
+
+}

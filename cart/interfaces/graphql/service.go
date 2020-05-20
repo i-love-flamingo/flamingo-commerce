@@ -79,5 +79,6 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 			},
 		},
 		"Commerce_Cart_DeliveryShippingOption": dto.DeliveryShippingOption{},
+		"Commerce_Cart_QtyRestrictionResult":   validation.RestrictionResult{},
 	}.Models()
 }

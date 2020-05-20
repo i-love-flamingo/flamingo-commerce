@@ -11,6 +11,7 @@
 * GraphQL
   * Add new mutation to set / update one or multiple delivery addresses `Commerce_Cart_UpdateDeliveryAddresses`
   * Add new mutation to update the shipping options (carrier / method) of an existing delivery `Commerce_Cart_UpdateDeliveryShippingOptions`
+  * Add new query to check if a product is restricted in terms of the allowed quantity `Commerce_Cart_QtyRestriction`
   * **Breaking**: renamed the following GraphQL types
     * type `Commerce_Cart_BillingAddressFormData` is now `Commerce_Cart_AddressForm`
     * input `Commerce_BillingAddressFormInput` is now `Commerce_Cart_AddressFormInput`
