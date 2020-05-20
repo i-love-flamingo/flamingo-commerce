@@ -2,13 +2,13 @@ package graphql
 
 import (
 	"context"
-	"flamingo.me/flamingo-commerce/v3/product/domain"
 
 	"flamingo.me/flamingo/v3/framework/web"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
+	"flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
 // CommerceCartQueryResolver resolver for carts
@@ -56,7 +56,6 @@ func (r *CommerceCartQueryResolver) CommerceCartValidator(ctx context.Context) (
 
 	return &result, nil
 }
-
 
 // CommerceCartQtyRestriction checks if given sku is restricted in terms of qty
 func (r *CommerceCartQueryResolver) CommerceCartQtyRestriction(ctx context.Context, marketplaceCode string, variantCode *string, deliveryCode string) (*validation.RestrictionResult, error) {
