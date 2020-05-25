@@ -1,6 +1,4 @@
-package flamingo_commerce
-
-import _ "flamingo.me/flamingo-commerce/v3/cart"
+package main_test
 
 //go:generate go run github.com/swaggo/swag/cmd/swag init --generalInfo=openapidoc.go --dir=./ --output=docs/openapi
 
