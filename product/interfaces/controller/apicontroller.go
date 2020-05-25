@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+
 	"flamingo.me/flamingo-commerce/v3/product/application"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo/v3/framework/web"
@@ -9,8 +10,8 @@ import (
 )
 
 type (
-	// ApiController for products
-	ApiController struct {
+	// APIController for products
+	APIController struct {
 		responder      *web.Responder
 		productService domain.ProductService
 		uRLService     *application.URLService
@@ -30,9 +31,9 @@ type (
 )
 
 // Inject dependencies
-func (c *ApiController) Inject(responder *web.Responder,
+func (c *APIController) Inject(responder *web.Responder,
 	productService domain.ProductService,
-	uRLService *application.URLService) *ApiController {
+	uRLService *application.URLService) *APIController {
 	c.responder = responder
 	c.productService = productService
 	c.uRLService = uRLService
@@ -40,7 +41,7 @@ func (c *ApiController) Inject(responder *web.Responder,
 }
 
 // Get Response for Product matching marketplacecode param
-func (c *ApiController) Get(ctx context.Context, r *web.Request) web.Result {
+func (c *APIController) Get(ctx context.Context, r *web.Request) web.Result {
 	product, err := c.productService.Get(ctx, r.Params["marketplacecode"])
 	if err != nil {
 		switch errors.Cause(err).(type) {

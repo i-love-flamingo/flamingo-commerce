@@ -3,8 +3,6 @@ package product
 import (
 	"flamingo.me/dingo"
 	"flamingo.me/flamingo-commerce/v3/price"
-
-	//"flamingo.me/flamingo-commerce/v3/price"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo-commerce/v3/product/infrastructure/fake"
 	"flamingo.me/flamingo-commerce/v3/product/interfaces/controller"
@@ -16,25 +14,40 @@ import (
 	"flamingo.me/graphql"
 )
 
-// Module registers our profiler
+// Module represents the product module
 type Module struct {
-	FakeService bool `inject:"config:commerce.product.fakeservice.enabled,optional"`
-	Api         bool `inject:"config:commerce.product.api.enabled,optional"`
+	fakeService bool
+	api         bool
 }
 
-// Configure the product URL
+// Inject module configuration
+func (m *Module) Inject(
+	cfg *struct {
+		FakeService bool `inject:"config:commerce.product.fakeservice.enabled,optional"`
+		API         bool `inject:"config:commerce.product.api.enabled,optional"`
+	},
+) *Module {
+	if cfg != nil {
+		m.api = cfg.API
+		m.fakeService = cfg.FakeService
+	}
+
+	return m
+}
+
+// Configure the product module
 func (m *Module) Configure(injector *dingo.Injector) {
 	flamingo.BindTemplateFunc(injector, "getProduct", new(templatefunctions.GetProduct))
 	flamingo.BindTemplateFunc(injector, "getProductUrl", new(templatefunctions.GetProductURL))
 	flamingo.BindTemplateFunc(injector, "findProducts", new(templatefunctions.FindProducts))
 
 	web.BindRoutes(injector, new(routes))
-	if m.Api {
-		web.BindRoutes(injector, new(apiroutes))
+	if m.api {
+		web.BindRoutes(injector, new(apiRoutes))
 	}
 
 	injector.BindMulti(new(graphql.Service)).To(new(productgraphql.Service))
-	if m.FakeService {
+	if m.fakeService {
 		injector.Bind((*domain.ProductService)(nil)).To(fake.ProductService{})
 		injector.Bind((*domain.SearchService)(nil)).To(fake.SearchService{})
 	}
@@ -76,7 +89,7 @@ type routes struct {
 	controller *controller.View
 }
 
-func (r *routes) Inject(controller *controller.View, apiController *controller.ApiController) {
+func (r *routes) Inject(controller *controller.View) {
 	r.controller = controller
 }
 
@@ -88,15 +101,15 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 	h.Normalize("name")
 }
 
-type apiroutes struct {
-	apiController *controller.ApiController
+type apiRoutes struct {
+	apiController *controller.APIController
 }
 
-func (r *apiroutes) Inject(apiController *controller.ApiController) {
+func (r *apiRoutes) Inject(apiController *controller.APIController) {
 	r.apiController = apiController
 }
 
-func (r *apiroutes) Routes(registry *web.RouterRegistry) {
+func (r *apiRoutes) Routes(registry *web.RouterRegistry) {
 	registry.Route("/api/v1/products/:marketplacecode", "products.api.get")
 	registry.HandleGet("products.api.get", r.apiController.Get)
 }
