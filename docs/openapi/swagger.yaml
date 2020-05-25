@@ -409,57 +409,6 @@ definitions:
     type: object
   domain.Price:
     type: object
-  forms.AddressForm:
-    properties:
-      addressLine1:
-        type: string
-      addressLine2:
-        type: string
-      city:
-        type: string
-      company:
-        type: string
-      country:
-        type: string
-      countryCode:
-        type: string
-      email:
-        type: string
-      firstname:
-        type: string
-      lastname:
-        type: string
-      middleName:
-        type: string
-      phoneAreaCode:
-        type: string
-      phoneCountryCode:
-        type: string
-      phoneNumber:
-        type: string
-      postCode:
-        type: string
-      regionCode:
-        type: string
-      salutation:
-        type: string
-      state:
-        type: string
-      street:
-        type: string
-      streetNr:
-        type: string
-      title:
-        type: string
-      vat:
-        type: string
-    required:
-    - email
-    - firstname
-    - lastname
-    type: object
-  forms.BillingAddressForm:
-    $ref: '#/definitions/forms.AddressForm'
   validation.ItemValidationError:
     properties:
       errorMessageKey:
@@ -483,15 +432,14 @@ info:
     email: flamingo@aoe.com
     name: Flamingo
     url: https://gitter.im/i-love-flamingo/community#
+  description: Swagger (OpenAPI) Spec of all Flamingo Commerce modules
   license:
     name: MIT
-  title: Flamingo Commerce Modules
+  title: Flamingo Commerce API Spec
   version: "1.0"
 paths:
   /api/v1/cart:
     delete:
-      consumes:
-      - application/json
       produces:
       - application/json
       responses:
@@ -505,10 +453,8 @@ paths:
             $ref: '#/definitions/controller.CartAPIResult'
       summary: cleans the cart and returns the cleaned cart
       tags:
-      - cart
+      - v1 Cart ajax API
     get:
-      consumes:
-      - application/json
       produces:
       - application/json
       responses:
@@ -522,11 +468,9 @@ paths:
             $ref: '#/definitions/controller.CartAPIResult'
       summary: Get the current cart
       tags:
-      - cart
+      - v1 Cart ajax API
   /api/v1/cart/applycombinedvouchergift:
     post:
-      consumes:
-      - application/json
       description: Use this if you have one user input and that input can be used
         to either enter a voucher or a giftcart
       parameters:
@@ -548,11 +492,9 @@ paths:
             $ref: '#/definitions/controller.CartAPIResult'
       summary: Apply Giftcart or Voucher (autodetected)
       tags:
-      - cart
+      - v1 Cart ajax API
   /api/v1/cart/applygiftcard:
     put:
-      consumes:
-      - application/json
       parameters:
       - description: the couponCode that should be applied as giftcart
         in: query
@@ -572,11 +514,9 @@ paths:
             $ref: '#/definitions/controller.CartAPIResult'
       summary: Apply Giftcart
       tags:
-      - cart
+      - v1 Cart ajax API
   /api/v1/cart/applyvoucher:
     put:
-      consumes:
-      - application/json
       parameters:
       - description: the couponCode that should be applied
         in: query
@@ -596,19 +536,20 @@ paths:
             $ref: '#/definitions/controller.CartAPIResult'
       summary: Apply Voucher Code
       tags:
-      - cart
+      - v1 Cart ajax API
   /api/v1/cart/billing:
     post:
       consumes:
       - application/x-www-form-urlencoded
-      description: Data need to be posted as application/x-www-form-urlencoded
+      description: Data need to be posted as application/x-www-form-urlencoded. Valid
+        fields are all fields in "AddressForm" type. E.g. "firstname=max&lastname=mustermann&mail=max@example.org"
       parameters:
-      - description: billing form
+      - description: billing form values
         in: body
         name: billingAddressForm
         required: true
         schema:
-          $ref: '#/definitions/forms.BillingAddressForm'
+          type: string
       produces:
       - application/json
       responses:
@@ -622,11 +563,9 @@ paths:
             $ref: '#/definitions/controller.CartAPIResult'
       summary: adds billing infos to cart
       tags:
-      - cart
+      - v1 Cart ajax API
   /api/v1/cart/delivery/{deliveryCode}:
     delete:
-      consumes:
-      - application/json
       parameters:
       - description: the idendifier for the delivery in the cart
         in: path
@@ -646,11 +585,9 @@ paths:
             $ref: '#/definitions/controller.CartAPIResult'
       summary: cleans the given delivery from the cart
       tags:
-      - cart
+      - v1 Cart ajax API
   /api/v1/cart/delivery/{deliveryCode}/additem:
     post:
-      consumes:
-      - application/json
       parameters:
       - description: the idendifier for the delivery in the cart
         in: path
@@ -684,11 +621,9 @@ paths:
             $ref: '#/definitions/controller.CartAPIResult'
       summary: Add Item to cart
       tags:
-      - cart
+      - v1 Cart ajax API
   /api/v1/cart/removeGiftCard:
     post:
-      consumes:
-      - application/json
       parameters:
       - description: the couponCode that should be deleted as giftcart
         in: query
@@ -708,11 +643,9 @@ paths:
             $ref: '#/definitions/controller.CartAPIResult'
       summary: Remove Giftcart
       tags:
-      - cart
+      - v1 Cart ajax API
   /api/v1/cart/removevoucher:
     delete:
-      consumes:
-      - application/json
       parameters:
       - description: the couponCode that should be applied
         in: query
@@ -732,5 +665,9 @@ paths:
             $ref: '#/definitions/controller.CartAPIResult'
       summary: Remove Voucher Code
       tags:
-      - cart
+      - v1 Cart ajax API
 swagger: "2.0"
+tags:
+- description: This Cart APIs are most suitable to be called from a browser, because
+    they rely on the session and cookie headers.
+  name: v1 Cart ajax API
