@@ -12,6 +12,7 @@ require (
 	github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78 // indirect
 	github.com/Microsoft/go-winio v0.4.14 // indirect
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
+	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/containerd/continuity v0.0.0-20200107194136-26c1120b8d41 // indirect
 	github.com/coreos/go-oidc v2.0.0+incompatible
@@ -35,7 +36,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.4.0
 	github.com/stvp/tempredis v0.0.0-20181119212430-b82af8480203
-	github.com/swaggo/swag v1.6.6 // indirect
+	github.com/swaggo/swag v1.6.6
 	github.com/valyala/fasthttp v1.6.0 // indirect
 	github.com/vektah/gqlparser v1.1.2
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
