@@ -33,14 +33,11 @@ var doc = `{
     "paths": {
         "/api/v1/cart": {
             "get": {
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "cart"
+                    "v1 Cart ajax API"
                 ],
                 "summary": "Get the current cart",
                 "responses": {
@@ -59,14 +56,11 @@ var doc = `{
                 }
             },
             "delete": {
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "cart"
+                    "v1 Cart ajax API"
                 ],
                 "summary": "cleans the cart and returns the cleaned cart",
                 "responses": {
@@ -88,14 +82,11 @@ var doc = `{
         "/api/v1/cart/applycombinedvouchergift": {
             "post": {
                 "description": "Use this if you have one user input and that input can be used to either enter a voucher or a giftcart",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "cart"
+                    "v1 Cart ajax API"
                 ],
                 "summary": "Apply Giftcart or Voucher (autodetected)",
                 "parameters": [
@@ -125,14 +116,11 @@ var doc = `{
         },
         "/api/v1/cart/applygiftcard": {
             "put": {
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "cart"
+                    "v1 Cart ajax API"
                 ],
                 "summary": "Apply Giftcart",
                 "parameters": [
@@ -162,14 +150,11 @@ var doc = `{
         },
         "/api/v1/cart/applyvoucher": {
             "put": {
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "cart"
+                    "v1 Cart ajax API"
                 ],
                 "summary": "Apply Voucher Code",
                 "parameters": [
@@ -199,7 +184,7 @@ var doc = `{
         },
         "/api/v1/cart/billing": {
             "post": {
-                "description": "Data need to be posted as application/x-www-form-urlencoded",
+                "description": "Data need to be posted as application/x-www-form-urlencoded. Valid fields are all fields in \"AddressForm\" type. E.g. \"firstname=max\u0026lastname=mustermann\u0026mail=max@example.org\"",
                 "consumes": [
                     "application/x-www-form-urlencoded"
                 ],
@@ -207,17 +192,17 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "cart"
+                    "v1 Cart ajax API"
                 ],
                 "summary": "adds billing infos to cart",
                 "parameters": [
                     {
-                        "description": "billing form",
+                        "description": "billing form values",
                         "name": "billingAddressForm",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/forms.BillingAddressForm"
+                            "type": "string"
                         }
                     }
                 ],
@@ -239,14 +224,11 @@ var doc = `{
         },
         "/api/v1/cart/delivery/{deliveryCode}": {
             "delete": {
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "cart"
+                    "v1 Cart ajax API"
                 ],
                 "summary": "cleans the given delivery from the cart",
                 "parameters": [
@@ -276,14 +258,11 @@ var doc = `{
         },
         "/api/v1/cart/delivery/{deliveryCode}/additem": {
             "post": {
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "cart"
+                    "v1 Cart ajax API"
                 ],
                 "summary": "Add Item to cart",
                 "parameters": [
@@ -332,14 +311,11 @@ var doc = `{
         },
         "/api/v1/cart/removeGiftCard": {
             "post": {
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "cart"
+                    "v1 Cart ajax API"
                 ],
                 "summary": "Remove Giftcart",
                 "parameters": [
@@ -369,14 +345,11 @@ var doc = `{
         },
         "/api/v1/cart/removevoucher": {
             "delete": {
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "cart"
+                    "v1 Cart ajax API"
                 ],
                 "summary": "Remove Voucher Code",
                 "parameters": [
@@ -954,82 +927,6 @@ var doc = `{
         "domain.Price": {
             "type": "object"
         },
-        "forms.AddressForm": {
-            "type": "object",
-            "required": [
-                "email",
-                "firstname",
-                "lastname"
-            ],
-            "properties": {
-                "addressLine1": {
-                    "type": "string"
-                },
-                "addressLine2": {
-                    "type": "string"
-                },
-                "city": {
-                    "type": "string"
-                },
-                "company": {
-                    "type": "string"
-                },
-                "country": {
-                    "type": "string"
-                },
-                "countryCode": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "firstname": {
-                    "type": "string"
-                },
-                "lastname": {
-                    "type": "string"
-                },
-                "middleName": {
-                    "type": "string"
-                },
-                "phoneAreaCode": {
-                    "type": "string"
-                },
-                "phoneCountryCode": {
-                    "type": "string"
-                },
-                "phoneNumber": {
-                    "type": "string"
-                },
-                "postCode": {
-                    "type": "string"
-                },
-                "regionCode": {
-                    "type": "string"
-                },
-                "salutation": {
-                    "type": "string"
-                },
-                "state": {
-                    "type": "string"
-                },
-                "street": {
-                    "type": "string"
-                },
-                "streetNr": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "vat": {
-                    "type": "string"
-                }
-            }
-        },
-        "forms.BillingAddressForm": {
-            "$ref": "#/definitions/forms.AddressForm"
-        },
         "validation.ItemValidationError": {
             "type": "object",
             "properties": {
@@ -1058,7 +955,13 @@ var doc = `{
                 }
             }
         }
-    }
+    },
+    "tags": [
+        {
+            "description": "This Cart APIs are most suitable to be called from a browser, because they rely on the session and cookie headers.",
+            "name": "v1 Cart ajax API"
+        }
+    ]
 }`
 
 type swaggerInfo struct {
@@ -1076,8 +979,8 @@ var SwaggerInfo = swaggerInfo{
 	Host:        "",
 	BasePath:    "",
 	Schemes:     []string{},
-	Title:       "Flamingo Commerce Modules",
-	Description: "",
+	Title:       "Flamingo Commerce API Spec",
+	Description: "Swagger (OpenAPI) Spec of all Flamingo Commerce modules",
 }
 
 type s struct{}
