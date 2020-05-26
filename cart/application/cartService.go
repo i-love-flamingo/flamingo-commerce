@@ -681,7 +681,7 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 		cs.dispatchAllEvents(ctx, defers)
 	}()
 
-	addRequest, product, err := cs.checkProductForAddRequest(ctx, session, deliveryCode, addRequest)
+	addRequest, product, err := cs.checkProductForAddRequest(ctx, session, cart, deliveryCode, addRequest)
 	if err != nil {
 		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "AddProduct").Error(err)
 
@@ -844,7 +844,7 @@ func (cs *CartService) handleCartNotFound(session *web.Session, err error) {
 }
 
 // checkProductForAddRequest existence and validate with productService
-func (cs *CartService) checkProductForAddRequest(ctx context.Context, session *web.Session, deliveryCode string, addRequest cartDomain.AddRequest) (cartDomain.AddRequest, productDomain.BasicProduct, error) {
+func (cs *CartService) checkProductForAddRequest(ctx context.Context, session *web.Session, cart *cartDomain.Cart, deliveryCode string, addRequest cartDomain.AddRequest) (cartDomain.AddRequest, productDomain.BasicProduct, error) {
 	product, err := cs.productService.Get(ctx, addRequest.MarketplaceCode)
 	if err != nil {
 		return addRequest, nil, fmt.Errorf("cart.application.cartservice - AddProduct Error: %v", err)
@@ -868,7 +868,8 @@ func (cs *CartService) checkProductForAddRequest(ctx context.Context, session *w
 
 	// Now Validate the Item with the optional registered ItemValidator
 	if cs.itemValidator != nil {
-		return addRequest, product, cs.itemValidator.Validate(ctx, session, deliveryCode, addRequest, product)
+		decoratedCart, _ := cs.cartReceiverService.DecorateCart(ctx, cart)
+		return addRequest, product, cs.itemValidator.Validate(ctx, session, decoratedCart, deliveryCode, addRequest, product)
 	}
 
 	return addRequest, product, nil

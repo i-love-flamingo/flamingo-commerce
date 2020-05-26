@@ -26,7 +26,7 @@
   * `Commerce_Customer` returns the logged-in customer
  
 **checkout**
-* Make cart validation before place order optional with configuration
+* Cart item validation now requires the decorated cart to be passed to assure that validators don't rely on a cart from any other source (e.g. session)
 * State Machine
   * Add additional metrics to monitor place order flow
     * flamingo_commerce_checkout_placeorder_starts

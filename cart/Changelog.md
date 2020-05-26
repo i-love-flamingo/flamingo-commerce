@@ -96,3 +96,7 @@ the cart has been adjusted and written back to cache
 
 * Update pagination module configuration. Use "commerce.pagination" namespace for configuration now.
 * search and product module configuration is using CueConfig - and therefore config options can be looked up in the commandline
+
+# 26. May 2020
+
+* Change `ItemValidator` interface to require the decorated cart, so that implemented validators don't ave to load the cart again which can be the wrong cart after all. 
