@@ -5,14 +5,12 @@ import (
 	"flamingo.me/flamingo-commerce/v3/order/domain"
 	"flamingo.me/flamingo-commerce/v3/order/infrastructure/fake"
 	"flamingo.me/flamingo-commerce/v3/order/interfaces/controller"
-	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (
 	// Module definition of the order module
 	Module struct {
-		logger             flamingo.Logger
 		useFakeAdapters    bool
 		useInMemoryService bool
 	}
@@ -25,12 +23,10 @@ const (
 
 // Inject dependencies
 func (m *Module) Inject(
-	logger flamingo.Logger,
 	config *struct {
 		UseFakeAdapters bool `inject:"config:order.useFakeAdapters,optional"`
 	},
 ) {
-	m.logger = logger
 	if config != nil {
 		m.useFakeAdapters = config.UseFakeAdapters
 	}
