@@ -32,7 +32,6 @@ type (
 		deliveryInfoBuilder    cart.DeliveryInfoBuilder
 		webCartPaymentGateways map[string]interfaces.WebCartPaymentGateway
 		decoratedCartFactory   *decorator.DecoratedCartFactory
-		validateBeforePlace    bool
 	}
 
 	// PlaceOrderInfo struct defines the data of payments on placed orders
@@ -122,9 +121,6 @@ func (os *OrderService) Inject(
 	DeliveryInfoBuilder cart.DeliveryInfoBuilder,
 	webCartPaymentGatewayProvider interfaces.WebCartPaymentGatewayProvider,
 	decoratedCartFactory *decorator.DecoratedCartFactory,
-	cfg *struct {
-		ValidateBeforePlace bool `inject:"config:commerce.checkout.placeorder.validateBeforePlace"`
-	},
 ) {
 	os.sourcingEngine = SourcingEngine
 	os.logger = logger.WithField(flamingo.LogKeyCategory, "checkout.OrderService").WithField(flamingo.LogKeyModule, "checkout")
@@ -133,9 +129,6 @@ func (os *OrderService) Inject(
 	os.webCartPaymentGateways = webCartPaymentGatewayProvider()
 	os.deliveryInfoBuilder = DeliveryInfoBuilder
 	os.decoratedCartFactory = decoratedCartFactory
-	if cfg != nil {
-		os.validateBeforePlace = cfg.ValidateBeforePlace
-	}
 }
 
 // SetSources sets sources for sessions carts items
@@ -252,15 +245,13 @@ func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.
 }
 
 func (os *OrderService) placeOrder(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart, payment placeorder.Payment) (*PlaceOrderInfo, error) {
-	if os.validateBeforePlace {
-		validationResult := os.cartService.ValidateCart(ctx, session, decoratedCart)
-		if !validationResult.IsValid() {
-			// record cartValidationFailCount metric
-			stats.Record(ctx, cartValidationFailCount.M(1))
-			os.logger.WithContext(ctx).Warn("Try to place an invalid cart")
+	validationResult := os.cartService.ValidateCart(ctx, session, decoratedCart)
+	if !validationResult.IsValid() {
+		// record cartValidationFailCount metric
+		stats.Record(ctx, cartValidationFailCount.M(1))
+		os.logger.WithContext(ctx).Warn("Try to place an invalid cart")
 
-			return nil, errors.New("cart is invalid")
-		}
+		return nil, errors.New("cart is invalid")
 	}
 
 	placedOrderInfos, err := os.cartService.PlaceOrderWithCart(ctx, session, &decoratedCart.Cart, &payment)
