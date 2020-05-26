@@ -3,7 +3,7 @@ package commerce
 /*
 	Flamingo Commerce Modules.
 	The subpackage represent Flamingo Commerce modules - please refer to the documentations for the individual modules.
- */
+*/
 
 //go:generate go run github.com/swaggo/swag/cmd/swag init --generalInfo=openapidoc.go --dir=./ --output=docs/openapi
 
