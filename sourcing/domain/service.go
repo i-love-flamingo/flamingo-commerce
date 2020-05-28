@@ -18,7 +18,7 @@ type (
 		// e.g. use this during place order to know
 		// throws ErrInsufficientSourceQty if not enough stock is available for the amount of items in the cart
 		// throws ErrNoSourceAvailable if no source is available at all for one of the items
-		// throws ErrNeedMoreDetailsSourceCannotBeDetected  is informations on the cart (or delivery is missing)
+		// throws ErrNeedMoreDetailsSourceCannotBeDetected if information on the cart (or delivery is missing)
 		AllocateItems(ctx context.Context, decoratedCart *decorator.DecoratedCart) (ItemAllocations, error)
 
 		// GetAvailableSources returns possible Sources for the product and the desired delivery.
@@ -166,10 +166,6 @@ func getItemIdsWithProduct(dc *decorator.DecoratedCart, product domain.BasicProd
 
 // AllocateItems - see description in Interface
 func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCart *decorator.DecoratedCart) (ItemAllocations, error) {
-	// throws ErrInsufficientSourceQty if not enough stock is available for the amount of items in the cart
-	// throws ErrNoSourceAvailable if no source is available at all for one of the items
-	// throws ErrNeedMoreDetailsSourceCannotBeDetected  is informations on the cart (or delivery is missing)
-
 	resultItemAllocations := make(ItemAllocations)
 
 	if decoratedCart == nil {
@@ -190,12 +186,21 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 
 	var productSourcestock = map[string]map[string]int{}
 
+	if len(decoratedCart.DecoratedDeliveries) == 0 {
+		return nil, ErrNeedMoreDetailsSourceCannotBeDetected
+	}
+
 	for _, delivery := range decoratedCart.DecoratedDeliveries {
 		for _, decoratedItem := range delivery.DecoratedItems {
 			sources, err := d.availableSourcesProvider.GetPossibleSources(ctx, decoratedItem.Product, &delivery.Delivery.DeliveryInfo)
 			if err != nil {
 				// todo error handling
-				continue
+
+				return nil, err
+			}
+
+			if len(sources) == 0 {
+				return nil, ErrNoSourceAvailable
 			}
 
 			qtyToAllocate := decoratedItem.Item.Qty
@@ -204,6 +209,9 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 			resultItemAllocations[ItemID(decoratedItem.Item.ID)] = make(AllocatedQtys)
 
 			productID := decoratedItem.Product.GetIdentifier()
+			if productID == "" {
+				return nil, ErrNeedMoreDetailsSourceCannotBeDetected
+			}
 
 			if _, exists := productSourcestock[productID]; !exists {
 				productSourcestock[productID] = make(map[string]int)
@@ -211,11 +219,16 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 
 			for _, source := range sources {
 				sourceKey := source.LocationCode + source.ExternalLocationCode
+				if sourceKey == "" {
+					return nil, ErrNeedMoreDetailsSourceCannotBeDetected
+				}
+
 				if _, exists := productSourcestock[productID][sourceKey]; !exists {
 					sourceStock, err := d.stockProvider.GetStock(ctx, decoratedItem.Product, source)
 					if err != nil {
 						// todo error handling
-						continue
+
+						return nil, err
 					}
 
 					productSourcestock[productID][sourceKey] = sourceStock
@@ -236,6 +249,10 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 					// decrement remaining productSourceStock accordingly as its not happening by itself
 					productSourcestock[productID][sourceKey] = productSourcestock[productID][sourceKey] - stockToAllocate
 				}
+			}
+
+			if qtyToAllocate > 0 {
+				return nil, ErrInsufficientSourceQty
 			}
 		}
 	}
