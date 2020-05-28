@@ -22,26 +22,32 @@ type stockProviderMock struct {
 
 var _ AvailableSourcesProvider = new(availableSourcesProviderMock)
 var _ StockProvider = new(stockProviderMock)
+var _ AvailableSourcesProvider = new(stockBySourceAndProductProviderMock)
+
 
 func (a availableSourcesProviderMock) GetPossibleSources(ctx context.Context, product domain.BasicProduct, deliveryInfo *cart.DeliveryInfo) ([]Source, error) {
 	return a.Sources, a.Error
 }
+
 func (s stockProviderMock) GetStock(ctx context.Context, product domain.BasicProduct, source Source) (int, error) {
 	return s.Qty, s.Error
 }
 
-type stockBySourcAndProductProviderMock struct {
-	//per source -> per Product.Idendifier = Qty
+type stockBySourceAndProductProviderMock struct {
+	// [source.LocationCode][product.Identifier] = Qty
 	Qty   map[string]map[string]int
 	Error error
 }
 
-func (s stockBySourcAndProductProviderMock) GetStock(ctx context.Context, product domain.BasicProduct, source Source) (int, error) {
+func (s stockBySourceAndProductProviderMock) GetStock(ctx context.Context, product domain.BasicProduct, source Source) (int, error) {
 	return s.Qty[source.LocationCode][product.GetIdentifier()], s.Error
 }
 
-func TestDefaultSourcingService_GetAvailableSources(t *testing.T) {
+func (s stockBySourceAndProductProviderMock) GetPossibleSources(ctx context.Context, product domain.BasicProduct, deliveryInfo *cart.DeliveryInfo) ([]Source, error) {
+	panic("implement me")
+}
 
+func TestDefaultSourcingService_GetAvailableSources(t *testing.T) {
 	t.Run("full qty with nil cart", func(t *testing.T) {
 		stubbedSources := []Source{{LocationCode: "loc1"}}
 		stubbedStockQty := 10
@@ -60,11 +66,11 @@ func TestDefaultSourcingService_GetAvailableSources(t *testing.T) {
 		stubbedStockQty := 10
 		stubbedQtyAlreadyInCart := 2
 		stubbedProduct := domain.SimpleProduct{Identifier: "productid"}
-		cart := decorator.DecoratedCart{
+		testCart := decorator.DecoratedCart{
 			DecoratedDeliveries: []decorator.DecoratedDelivery{
-				decorator.DecoratedDelivery{
+				{
 					DecoratedItems: []decorator.DecoratedCartItem{
-						decorator.DecoratedCartItem{
+						{
 							Product: stubbedProduct,
 							Item:    cart.Item{Qty: stubbedQtyAlreadyInCart, ID: "item1"},
 						},
@@ -75,7 +81,7 @@ func TestDefaultSourcingService_GetAvailableSources(t *testing.T) {
 		stockProviderMock := stockProviderMock{Qty: stubbedStockQty}
 		sourcingService := newDefaultSourcingService(stockProviderMock, stubbedSources)
 
-		sources, err := sourcingService.GetAvailableSources(context.Background(), stubbedProduct, nil, &cart)
+		sources, err := sourcingService.GetAvailableSources(context.Background(), stubbedProduct, nil, &testCart)
 		assert.NoError(t, err)
 
 		expectedSources := AvailableSources{stubbedSources[0]: stubbedStockQty - stubbedQtyAlreadyInCart}
@@ -87,11 +93,11 @@ func TestDefaultSourcingService_GetAvailableSources(t *testing.T) {
 		stubbedStockQty := 5
 		stubbedQtyAlreadyInCart := 10
 		stubbedProduct := domain.SimpleProduct{}
-		cart := decorator.DecoratedCart{
+		testCart := decorator.DecoratedCart{
 			DecoratedDeliveries: []decorator.DecoratedDelivery{
-				decorator.DecoratedDelivery{
+				{
 					DecoratedItems: []decorator.DecoratedCartItem{
-						decorator.DecoratedCartItem{
+						{
 							Product: stubbedProduct,
 							Item:    cart.Item{Qty: stubbedQtyAlreadyInCart},
 						},
@@ -102,12 +108,11 @@ func TestDefaultSourcingService_GetAvailableSources(t *testing.T) {
 		stockProviderMock := stockProviderMock{Qty: stubbedStockQty}
 		sourcingService := newDefaultSourcingService(stockProviderMock, stubbedSources)
 
-		_, err := sourcingService.GetAvailableSources(context.Background(), stubbedProduct, nil, &cart)
+		_, err := sourcingService.GetAvailableSources(context.Background(), stubbedProduct, nil, &testCart)
 		assert.Error(t, err)
 		assert.Equal(t, err, ErrNoSourceAvailable)
 
 	})
-
 }
 
 func TestDefaultSourcingService_AllocateItems(t *testing.T) {
@@ -148,7 +153,7 @@ func TestDefaultSourcingService_AllocateItems(t *testing.T) {
 		source3 := Source{LocationCode: "Source3"}
 		stubbedSources := []Source{source1, source2, source3}
 
-		stockBySourceAndProductProviderMock := stockBySourcAndProductProviderMock{
+		stockBySourceAndProductProviderMock := stockBySourceAndProductProviderMock{
 			Qty: make(map[string]map[string]int),
 		}
 		stockBySourceAndProductProviderMock.Qty["Source1"] = make(map[string]int)
@@ -161,23 +166,23 @@ func TestDefaultSourcingService_AllocateItems(t *testing.T) {
 
 		stubbedProduct1 := domain.SimpleProduct{Identifier: "product1"}
 		stubbedProduct2 := domain.SimpleProduct{Identifier: "product2"}
-		cart := decorator.DecoratedCart{
+		testCart := decorator.DecoratedCart{
 			DecoratedDeliveries: []decorator.DecoratedDelivery{
-				decorator.DecoratedDelivery{
+				{
 					DecoratedItems: []decorator.DecoratedCartItem{
-						decorator.DecoratedCartItem{
+						{
 							Product: stubbedProduct1,
 							Item:    cart.Item{Qty: 10, ID: "item1"},
 						},
-						decorator.DecoratedCartItem{
+						{
 							Product: stubbedProduct2,
 							Item:    cart.Item{Qty: 5, ID: "item2"},
 						},
 					},
 				},
-				decorator.DecoratedDelivery{
+				{
 					DecoratedItems: []decorator.DecoratedCartItem{
-						decorator.DecoratedCartItem{
+						{
 							Product: stubbedProduct1,
 							Item:    cart.Item{Qty: 5, ID: "item3"},
 						},
@@ -188,7 +193,7 @@ func TestDefaultSourcingService_AllocateItems(t *testing.T) {
 
 		sourcingService := newDefaultSourcingService(stockBySourceAndProductProviderMock, stubbedSources)
 
-		itemAllocation, err := sourcingService.AllocateItems(context.Background(), &cart)
+		itemAllocation, err := sourcingService.AllocateItems(context.Background(), &testCart)
 		assert.NoError(t, err)
 		assert.Len(t, itemAllocation[ItemID("item1")], 2)
 		assert.Equal(t, 8, itemAllocation[ItemID("item1")][source1])
@@ -203,11 +208,14 @@ func TestDefaultSourcingService_AllocateItems(t *testing.T) {
 func newDefaultSourcingService(stockProvider StockProvider, expectedSources []Source) DefaultSourcingService {
 	sourcingService := DefaultSourcingService{}
 	availableSourcesProviderMock := availableSourcesProviderMock{Sources: expectedSources}
+
 	sourcingService.Inject(flamingo.NullLogger{}, &struct {
 		AvailableSourcesProvider AvailableSourcesProvider `inject:",optional"`
 		StockProvider            StockProvider            `inject:",optional"`
 	}{
-		StockProvider: stockProvider, AvailableSourcesProvider: availableSourcesProviderMock,
+		StockProvider: stockProvider,
+		AvailableSourcesProvider: availableSourcesProviderMock,
 	})
+
 	return sourcingService
 }

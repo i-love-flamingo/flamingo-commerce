@@ -13,7 +13,6 @@ import (
 )
 
 type (
-
 	// SourcingService interface
 	SourcingService interface {
 		//AllocateItems returns Sources for the given item in the given cart
@@ -31,13 +30,16 @@ type (
 		GetAvailableSources(ctx context.Context, product domain.BasicProduct, deliveryInfo *cartDomain.DeliveryInfo, decoratedCart *decorator.DecoratedCart) (AvailableSources, error)
 	}
 
+	// ItemID string alias
 	ItemID string
+
 	//ItemAllocations represents the allocated Qtys per itemId
 	ItemAllocations map[ItemID]AllocatedQtys
 
 	//AllocatedQtys represents the allocated Qty per source
 	AllocatedQtys map[Source]int
 
+	// Source descriptor for a single location
 	Source struct {
 		// LocationCode identifies the warehouse or stock location
 		LocationCode string
@@ -55,10 +57,12 @@ type (
 		logger                   flamingo.Logger
 	}
 
+	// AvailableSourcesProvider interface for DefaultSourcingService
 	AvailableSourcesProvider interface {
 		GetPossibleSources(ctx context.Context, product domain.BasicProduct, deliveryInfo *cartDomain.DeliveryInfo) ([]Source, error)
 	}
 
+	// StockProvider interface for DefaultSourcingService
 	StockProvider interface {
 		GetStock(ctx context.Context, product domain.BasicProduct, source Source) (int, error)
 	}
@@ -78,21 +82,27 @@ var (
 )
 
 //Inject the dependencies
-func (d *DefaultSourcingService) Inject(logger flamingo.Logger, dep *struct {
-	AvailableSourcesProvider AvailableSourcesProvider `inject:",optional"`
-	StockProvider            StockProvider            `inject:",optional"`
-}) *DefaultSourcingService {
+func (d *DefaultSourcingService) Inject(
+	logger flamingo.Logger,
+	dep *struct {
+		AvailableSourcesProvider AvailableSourcesProvider `inject:",optional"`
+		StockProvider            StockProvider            `inject:",optional"`
+	},
+) *DefaultSourcingService {
+	d.logger = logger.WithField(flamingo.LogKeyModule, "sourcing").WithField(flamingo.LogKeyCategory, "DefaultSourcingService")
+
 	if dep != nil {
 		d.availableSourcesProvider = dep.AvailableSourcesProvider
 		d.stockProvider = dep.StockProvider
 	}
-	d.logger = logger.WithField(flamingo.LogKeyModule, "sourcing").WithField(flamingo.LogKeyCategory, "DefaultSourcingService")
+
 	return d
 }
 
-//GetAvailableSources
+// GetAvailableSources - see description in Interface
 func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, product domain.BasicProduct, deliveryInfo *cartDomain.DeliveryInfo, decoratedCart *decorator.DecoratedCart) (AvailableSources, error) {
 	availableSources := make(AvailableSources)
+
 	if d.availableSourcesProvider == nil {
 		d.logger.Error("no Source Provider bound")
 		return nil, errors.New("no Source Provider bound")
@@ -108,11 +118,13 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 	}
 
 	var lastStockError error
+
 	for _, source := range sources {
 		qty, err := d.stockProvider.GetStock(ctx, product, source)
 		if err != nil {
 			d.logger.Error(err)
 			lastStockError = err
+
 			continue
 		}
 		if qty > 0 {
@@ -126,9 +138,11 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 		if err != nil {
 			return nil, err
 		}
+
 		itemIdsWithProduct := getItemIdsWithProduct(decoratedCart, product)
-		for _, itemId := range itemIdsWithProduct {
-			availableSources = availableSources.Reduce(allocatedSources[itemId])
+
+		for _, itemID := range itemIdsWithProduct {
+			availableSources = availableSources.Reduce(allocatedSources[itemID])
 		}
 	}
 
@@ -137,6 +151,7 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 	} else if len(availableSources) == 0 {
 		return availableSources, ErrNoSourceAvailable
 	}
+
 	return availableSources, nil
 }
 
@@ -150,16 +165,20 @@ func getItemIdsWithProduct(dc *decorator.DecoratedCart, product domain.BasicProd
 	return result
 }
 
+// AllocateItems - see description in Interface
 func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCart *decorator.DecoratedCart) (ItemAllocations, error) {
 	if decoratedCart == nil {
 		return nil, errors.New("Cart not given")
 	}
+
 	if d.availableSourcesProvider == nil {
 		d.logger.Error("no Source Provider bound")
+
 		return nil, errors.New("no Source Provider bound")
 	}
 	if d.stockProvider == nil {
 		d.logger.Error("no Stock Provider bound")
+
 		return nil, errors.New("no Stock Provider bound")
 	}
 
@@ -167,8 +186,8 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 		for _, _ = range delivery.DecoratedItems {
 
 		}
-
 	}
+
 	return nil, nil
 }
 
@@ -215,10 +234,11 @@ func (s Sources) QtySum() int {
 */
 
 // Reduce returns new AvailableSources reduced by the given AvailableSources
-func (s AvailableSources) Reduce(reduceby AllocatedQtys) AvailableSources {
+func (s AvailableSources) Reduce(reducedBy AllocatedQtys) AvailableSources {
 	newAvailableSources := make(AvailableSources)
+
 	for source, availableQty := range s {
-		if allocated, ok := reduceby[source]; ok {
+		if allocated, ok := reducedBy[source]; ok {
 			newQty := availableQty - allocated
 			if newQty > 0 {
 				newAvailableSources[source] = newQty
@@ -227,5 +247,6 @@ func (s AvailableSources) Reduce(reduceby AllocatedQtys) AvailableSources {
 			newAvailableSources[source] = availableQty
 		}
 	}
+
 	return s
 }
