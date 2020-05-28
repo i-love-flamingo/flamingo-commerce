@@ -146,33 +146,18 @@ func TestDefaultSourcingService_AllocateItems(t *testing.T) {
 		Cart:
 			Delivery1:
 				item1:product1 - 10
-						sourced: Souce1->8  + Source2->2
+						sourced: Source1 -> 8 & Source2 -> 2
 				item2:product2 - 5
-						sourced: Source1->3  + Source3: 2
+						sourced: Source1 -> 3 & Source3 -> 2
 			Delivery2:
 				item3: product1 - 5
-						sourced: Source2->5
+						sourced: Source2 -> 5
 
 	*/
 	t.Run("allocate easy", func(t *testing.T) {
-		source1 := Source{LocationCode: "Source1"}
-		source2 := Source{LocationCode: "Source2"}
-		source3 := Source{LocationCode: "Source3"}
-		stubbedSources := []Source{source1, source2, source3}
-
-		stockBySourceAndProductProviderMock := stockBySourceAndProductProviderMock{
-			Qty: make(map[string]map[string]int),
-		}
-		stockBySourceAndProductProviderMock.Qty["Source1"] = make(map[string]int)
-		stockBySourceAndProductProviderMock.Qty["Source1"]["product1"] = 8
-		stockBySourceAndProductProviderMock.Qty["Source1"]["product2"] = 3
-		stockBySourceAndProductProviderMock.Qty["Source2"] = make(map[string]int)
-		stockBySourceAndProductProviderMock.Qty["Source2"]["product1"] = 10
-		stockBySourceAndProductProviderMock.Qty["Source3"] = make(map[string]int)
-		stockBySourceAndProductProviderMock.Qty["Source3"]["product2"] = 10
-
 		stubbedProduct1 := domain.SimpleProduct{Identifier: "product1"}
 		stubbedProduct2 := domain.SimpleProduct{Identifier: "product2"}
+
 		testCart := decorator.DecoratedCart{
 			DecoratedDeliveries: []decorator.DecoratedDelivery{
 				{
@@ -198,6 +183,27 @@ func TestDefaultSourcingService_AllocateItems(t *testing.T) {
 			},
 		}
 
+		source1 := Source{LocationCode: "Source1"}
+		source2 := Source{LocationCode: "Source2"}
+		source3 := Source{LocationCode: "Source3"}
+		stubbedSources := []Source{source1, source2, source3}
+
+		stockBySourceAndProductProviderMock := stockBySourceAndProductProviderMock{
+			Qty: map[string]map[string]int{
+				"Source1": {
+					"product1": 8,
+					"product2": 3,
+				},
+				"Source2": {
+					"product1": 10,
+				},
+				"Source3": {
+					"product2": 10,
+				},
+			},
+		}
+
+
 		sourcingService := newDefaultSourcingService(stockBySourceAndProductProviderMock, stubbedSources)
 
 		itemAllocation, err := sourcingService.AllocateItems(context.Background(), &testCart)
@@ -209,7 +215,6 @@ func TestDefaultSourcingService_AllocateItems(t *testing.T) {
 		assert.Equal(t, 2, itemAllocation[ItemID("item2")][source3])
 		assert.Equal(t, 5, itemAllocation[ItemID("item3")][source2])
 	})
-
 }
 
 func newDefaultSourcingService(stockProvider StockProvider, expectedSources []Source) DefaultSourcingService {

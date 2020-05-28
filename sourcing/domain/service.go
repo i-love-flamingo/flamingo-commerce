@@ -188,6 +188,8 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 		return nil, errors.New("no Stock Provider bound")
 	}
 
+	var productSourcestock = map[string]map[string]int{}
+
 	for _, delivery := range decoratedCart.DecoratedDeliveries {
 		for _, decoratedItem := range delivery.DecoratedItems {
 			sources, err := d.availableSourcesProvider.GetPossibleSources(ctx, decoratedItem.Product, &delivery.Delivery.DeliveryInfo)
@@ -201,24 +203,38 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 
 			resultItemAllocations[ItemID(decoratedItem.Item.ID)] = make(AllocatedQtys)
 
+			productID := decoratedItem.Product.GetIdentifier()
+
+			if _, exists := productSourcestock[productID]; !exists {
+				productSourcestock[productID] = make(map[string]int)
+			}
+
 			for _, source := range sources {
-				sourceStock, err := d.stockProvider.GetStock(ctx, decoratedItem.Product, source)
-				if err != nil {
-					// todo error handling
-					continue
+				sourceKey := source.LocationCode + source.ExternalLocationCode
+				if _, exists := productSourcestock[productID][sourceKey]; !exists {
+					sourceStock, err := d.stockProvider.GetStock(ctx, decoratedItem.Product, source)
+					if err != nil {
+						// todo error handling
+						continue
+					}
+
+					productSourcestock[productID][sourceKey] = sourceStock
 				}
 
-				if sourceStock > 0 && allocatedQty < qtyToAllocate {
+				if productSourcestock[productID][sourceKey] > 0 && allocatedQty < qtyToAllocate {
 					// stock to write to result allocation is the lowest of either :
 					// - the remaining qty that is to be allocated
 					// OR
 					// - the existing sourceStock that is then used completely
-					stockToAllocate := min(qtyToAllocate-allocatedQty, sourceStock)
+					stockToAllocate := min(qtyToAllocate-allocatedQty, productSourcestock[productID][sourceKey])
 
 					resultItemAllocations[ItemID(decoratedItem.Item.ID)][source] = stockToAllocate
 
 					// increment allocatedQty by allocated Stock
 					allocatedQty = allocatedQty + stockToAllocate
+
+					// decrement remaining productSourceStock accordingly as its not happening by itself
+					productSourcestock[productID][sourceKey] = productSourcestock[productID][sourceKey] - stockToAllocate
 				}
 			}
 		}
