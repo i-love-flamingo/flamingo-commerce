@@ -24,7 +24,6 @@ var _ AvailableSourcesProvider = new(availableSourcesProviderMock)
 var _ StockProvider = new(stockProviderMock)
 var _ AvailableSourcesProvider = new(stockBySourceAndProductProviderMock)
 
-
 func (a availableSourcesProviderMock) GetPossibleSources(ctx context.Context, product domain.BasicProduct, deliveryInfo *cart.DeliveryInfo) ([]Source, error) {
 	return a.Sources, a.Error
 }
@@ -102,8 +101,8 @@ func TestDefaultSourcingService_GetAvailableSources(t *testing.T) {
 					DecoratedItems: []decorator.DecoratedCartItem{
 						{
 							Product: stubbedProduct,
-							Item:    cart.Item{
-								ID: "itemID1",
+							Item: cart.Item{
+								ID:  "itemID1",
 								Qty: stubbedQtyAlreadyInCart,
 							},
 						},
@@ -203,7 +202,6 @@ func TestDefaultSourcingService_AllocateItems(t *testing.T) {
 			},
 		}
 
-
 		sourcingService := newDefaultSourcingService(stockBySourceAndProductProviderMock, stubbedSources)
 
 		itemAllocation, err := sourcingService.AllocateItems(context.Background(), &testCart)
@@ -225,7 +223,7 @@ func newDefaultSourcingService(stockProvider StockProvider, expectedSources []So
 		AvailableSourcesProvider AvailableSourcesProvider `inject:",optional"`
 		StockProvider            StockProvider            `inject:",optional"`
 	}{
-		StockProvider: stockProvider,
+		StockProvider:            stockProvider,
 		AvailableSourcesProvider: availableSourcesProviderMock,
 	})
 
