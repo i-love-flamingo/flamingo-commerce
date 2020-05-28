@@ -2,9 +2,8 @@ package domain
 
 import (
 	"context"
-	"flamingo.me/flamingo/v3/framework/flamingo"
-
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
@@ -167,6 +166,12 @@ func getItemIdsWithProduct(dc *decorator.DecoratedCart, product domain.BasicProd
 
 // AllocateItems - see description in Interface
 func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCart *decorator.DecoratedCart) (ItemAllocations, error) {
+	// throws ErrInsufficientSourceQty if not enough stock is available for the amount of items in the cart
+	// throws ErrNoSourceAvailable if no source is available at all for one of the items
+	// throws ErrNeedMoreDetailsSourceCannotBeDetected  is informations on the cart (or delivery is missing)
+
+	resultItemAllocations := make(ItemAllocations)
+
 	if decoratedCart == nil {
 		return nil, errors.New("Cart not given")
 	}
@@ -176,6 +181,7 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 
 		return nil, errors.New("no Source Provider bound")
 	}
+
 	if d.stockProvider == nil {
 		d.logger.Error("no Stock Provider bound")
 
@@ -183,12 +189,42 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 	}
 
 	for _, delivery := range decoratedCart.DecoratedDeliveries {
-		for _, _ = range delivery.DecoratedItems {
+		for _, decoratedItem := range delivery.DecoratedItems {
+			sources, err := d.availableSourcesProvider.GetPossibleSources(ctx, decoratedItem.Product, &delivery.Delivery.DeliveryInfo)
+			if err != nil {
+				// todo error handling
+				continue
+			}
 
+			qtyToAllocate := decoratedItem.Item.Qty
+			allocatedQty := 0
+
+			resultItemAllocations[ItemID(decoratedItem.Item.ID)] = make(AllocatedQtys)
+
+			for _, source := range sources {
+				sourceStock, err := d.stockProvider.GetStock(ctx, decoratedItem.Product, source)
+				if err != nil {
+					// todo error handling
+					continue
+				}
+
+				if sourceStock > 0 && allocatedQty < qtyToAllocate {
+					// stock to write to result allocation is the lowest of either :
+					// - the remaining qty that is to be allocated
+					// OR
+					// - the existing sourceStock that is then used completely
+					stockToAllocate := min(qtyToAllocate-allocatedQty, sourceStock)
+
+					resultItemAllocations[ItemID(decoratedItem.Item.ID)][source] = stockToAllocate
+
+					// increment allocatedQty by allocated Stock
+					allocatedQty = allocatedQty + stockToAllocate
+				}
+			}
 		}
 	}
 
-	return nil, nil
+	return resultItemAllocations, nil
 }
 
 /*
@@ -248,5 +284,13 @@ func (s AvailableSources) Reduce(reducedBy AllocatedQtys) AvailableSources {
 		}
 	}
 
-	return s
+	return newAvailableSources
+}
+
+func min(a int, b int) int {
+	if a < b {
+		return a
+	}
+
+	return b
 }
