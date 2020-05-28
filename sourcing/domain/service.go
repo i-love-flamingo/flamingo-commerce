@@ -2,68 +2,177 @@ package domain
 
 import (
 	"context"
-	"fmt"
-	"math"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 
-	"flamingo.me/flamingo-commerce/v3/cart/application"
-	"flamingo.me/flamingo/v3/framework/flamingo"
-	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/pkg/errors"
 )
 
 type (
 
 	// SourcingService interface
-	SourcingServiceDetail interface {
-		//GetSourcesForItem returns Sources for the given item in the cart
-		GetSourcesForItem(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart, deliveryCode string, item *decorator.DecoratedCartItem) (Sources, error)
-		//GetAvailableSources returns Sources for the product - containing the maximum possible qty per source
-		GetAvailableSources(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart, deliveryCode string, product domain.BasicProduct) (Sources, error)
+	SourcingService interface {
+		//AllocateItems returns Sources for the given item in the given cart
+		// e.g. use this during place order to know
+		// throws ErrInsufficientSourceQty if not enough stock is available for the amount of items in the cart
+		// throws ErrNoSourceAvailable if no source is available at all for one of the items
+		// throws ErrNeedMoreDetailsSourceCannotBeDetected  is informations on the cart (or delivery is missing)
+		AllocateItems(ctx context.Context, decoratedCart *decorator.DecoratedCart) (ItemAllocations, error)
+
+		// GetAvailableSources returns possible Sources for the product and the desired delivery.
+		// Optional the existing cart can be passed so that existing items in the cart can be evaluated also (e.g. deduct stock)
+		// e.g. use this before a product should be placed in the cart to know if and from where an item can be sourced
+		// throws ErrNeedMoreDetailsSourceCannotBeDetected
+		// throws ErrNoSourceAvailable if no source is available for the product and the given delivery
+		GetAvailableSources(ctx context.Context, product domain.BasicProduct, deliveryInfo *cartDomain.DeliveryInfo, decoratedCart *decorator.DecoratedCart) (AvailableSources, error)
 	}
 
-	//USE Deliverydata struct!
-	// Add application service to use current cart and delivery (usages)
+	ItemID string
+	//ItemAllocations represents the allocated Qtys per itemId
+	ItemAllocations map[ItemID]AllocatedQtys
 
-	//Why session?
+	//AllocatedQtys represents the allocated Qty per source
+	AllocatedQtys map[Source]int
 
-	// Sources is the result value object containing all sources (for the request item or product)
-	Sources []Source
-
-	// Source represents the Sourcing info
 	Source struct {
 		// LocationCode identifies the warehouse or stock location
 		LocationCode string
-		// Qty for the sources items
-		Qty int
 		// ExternalLocationCode identifies the source location in an external system
 		ExternalLocationCode string
 	}
 
-	// SourcingEngine computes item sources
-	SourcingEngine struct {
-		SourcingService SourcingService          `inject:",optional"`
-		Logger          flamingo.Logger          `inject:""`
-		Cartservice     *application.CartService `inject:""`
+	// AvailableSources is the result value object containing the available Qty per Source
+	AvailableSources map[Source]int
+
+	//DefaultSourcingService - an example implementation
+	DefaultSourcingService struct {
+		availableSourcesProvider AvailableSourcesProvider
+		stockProvider            StockProvider
+		logger                   flamingo.Logger
+	}
+
+	AvailableSourcesProvider interface {
+		GetPossibleSources(ctx context.Context, product domain.BasicProduct, deliveryInfo *cartDomain.DeliveryInfo) ([]Source, error)
+	}
+
+	StockProvider interface {
+		GetStock(ctx context.Context, product domain.BasicProduct, source Source) (int, error)
 	}
 )
 
 var (
+	_ SourcingService = new(DefaultSourcingService)
+
 	// ErrInsufficientSourceQty - use to indicate that the requested qty exceeds the available qty
 	ErrInsufficientSourceQty = errors.New("Available Source Qty insufficient")
+
 	// ErrNoSourceAvailable - use to indicate that no source for item is available at all
 	ErrNoSourceAvailable = errors.New("No Available Source Qty")
+
+	// ErrNeedMoreDetailsSourceCannotBeDetected - use to indicate that informations are missing to determine a source
+	ErrNeedMoreDetailsSourceCannotBeDetected = errors.New("Source cannot be detected")
 )
 
-const (
-	// ExternalSourceIDKey specifies the key for the ItemUpdateCommand.AdditionalData map where the external source id should be stored
-	ExternalSourceIDKey = "external_source_id"
-)
+//Inject the dependencies
+func (d *DefaultSourcingService) Inject(logger flamingo.Logger, dep *struct {
+	AvailableSourcesProvider AvailableSourcesProvider `inject:",optional"`
+	StockProvider            StockProvider            `inject:",optional"`
+}) *DefaultSourcingService {
+	if dep != nil {
+		d.availableSourcesProvider = dep.AvailableSourcesProvider
+		d.stockProvider = dep.StockProvider
+	}
+	d.logger = logger.WithField(flamingo.LogKeyModule, "sourcing").WithField(flamingo.LogKeyCategory, "DefaultSourcingService")
+	return d
+}
 
+//GetAvailableSources
+func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, product domain.BasicProduct, deliveryInfo *cartDomain.DeliveryInfo, decoratedCart *decorator.DecoratedCart) (AvailableSources, error) {
+	availableSources := make(AvailableSources)
+	if d.availableSourcesProvider == nil {
+		d.logger.Error("no Source Provider bound")
+		return nil, errors.New("no Source Provider bound")
+	}
+	if d.stockProvider == nil {
+		d.logger.Error("no Stock Provider bound")
+		return nil, errors.New("no Stock Provider bound")
+	}
+
+	sources, err := d.availableSourcesProvider.GetPossibleSources(ctx, product, deliveryInfo)
+	if err != nil {
+		return nil, err
+	}
+
+	var lastStockError error
+	for _, source := range sources {
+		qty, err := d.stockProvider.GetStock(ctx, product, source)
+		if err != nil {
+			d.logger.Error(err)
+			lastStockError = err
+			continue
+		}
+		if qty > 0 {
+			availableSources[source] = qty
+		}
+	}
+
+	// if a cart is given we need to deduct the possible allocated items in the cart
+	if decoratedCart != nil {
+		allocatedSources, err := d.AllocateItems(ctx, decoratedCart)
+		if err != nil {
+			return nil, err
+		}
+		itemIdsWithProduct := getItemIdsWithProduct(decoratedCart, product)
+		for _, itemId := range itemIdsWithProduct {
+			availableSources = availableSources.Reduce(allocatedSources[itemId])
+		}
+	}
+
+	if len(availableSources) == 0 && lastStockError != nil {
+		return availableSources, errors.Wrap(ErrNoSourceAvailable, lastStockError.Error())
+	} else if len(availableSources) == 0 {
+		return availableSources, ErrNoSourceAvailable
+	}
+	return availableSources, nil
+}
+
+func getItemIdsWithProduct(dc *decorator.DecoratedCart, product domain.BasicProduct) []ItemID {
+	var result []ItemID
+	for _, di := range dc.GetAllDecoratedItems() {
+		if di.Product.GetIdentifier() == product.GetIdentifier() {
+			result = append(result, ItemID(di.Item.ID))
+		}
+	}
+	return result
+}
+
+func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCart *decorator.DecoratedCart) (ItemAllocations, error) {
+	if decoratedCart == nil {
+		return nil, errors.New("Cart not given")
+	}
+	if d.availableSourcesProvider == nil {
+		d.logger.Error("no Source Provider bound")
+		return nil, errors.New("no Source Provider bound")
+	}
+	if d.stockProvider == nil {
+		d.logger.Error("no Stock Provider bound")
+		return nil, errors.New("no Stock Provider bound")
+	}
+
+	for _, delivery := range decoratedCart.DecoratedDeliveries {
+		for _, _ = range delivery.DecoratedItems {
+
+		}
+
+	}
+	return nil, nil
+}
+
+/*
 // MainLocation returns first sourced location (or empty string)
 func (s Sources) MainLocation() string {
 	if len(s) < 1 {
@@ -102,73 +211,21 @@ func (s Sources) QtySum() int {
 	return qty
 }
 
-// Reduce returns new Source
-func (s Sources) Reduce(reduceby Sources) Sources {
-	for k, source := range s {
-		for _, reducebySource := range reduceby {
-			if source.LocationCode == reducebySource.LocationCode {
-				s[k].Qty = s[k].Qty - reducebySource.Qty
+
+*/
+
+// Reduce returns new AvailableSources reduced by the given AvailableSources
+func (s AvailableSources) Reduce(reduceby AllocatedQtys) AvailableSources {
+	newAvailableSources := make(AvailableSources)
+	for source, availableQty := range s {
+		if allocated, ok := reduceby[source]; ok {
+			newQty := availableQty - allocated
+			if newQty > 0 {
+				newAvailableSources[source] = newQty
 			}
+		} else {
+			newAvailableSources[source] = availableQty
 		}
 	}
 	return s
-}
-
-// SetSourcesForCartItems gets Sources and modifies the Cart Items
-// todo move to application layer ?
-func (se *SourcingEngine) SetSourcesForCartItems(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart) error {
-	if se.SourcingService == nil {
-		return nil
-	}
-
-	itemUpdateCommands := make([]cartDomain.ItemUpdateCommand, 0)
-	for _, decoratedDelivery := range decoratedCart.DecoratedDeliveries {
-		for _, decoratedCartItem := range decoratedDelivery.DecoratedItems {
-			source, err := se.sourceLocationForCartItem(ctx, session, decoratedCart, decoratedDelivery.Delivery.DeliveryInfo.Code, &decoratedCartItem)
-			if err != nil {
-				se.Logger.WithContext(ctx).WithField("subcategory", "SourcingEngine").Error(err)
-				return fmt.Errorf("checkout.application.sourcingengine error: %v", err)
-			}
-			se.Logger.WithContext(ctx).WithField("category", "checkout").WithField("subcategory", "SourcingEngine").Debug("SourcingEngine detected source %v for item %v", source.LocationCode, decoratedCartItem.Item.ID)
-
-			itemUpdate := cartDomain.ItemUpdateCommand{
-				SourceID: &source.LocationCode,
-				ItemID:   decoratedCartItem.Item.ID,
-				// ExternalSourceID contains the picking location used by an external system
-				AdditionalData: map[string]string{ExternalSourceIDKey: source.ExternalLocationCode},
-			}
-
-			itemUpdateCommands = append(itemUpdateCommands, itemUpdate)
-		}
-	}
-
-	err := se.Cartservice.UpdateItems(ctx, session, itemUpdateCommands)
-	if err != nil {
-		return errors.Wrap(err, "Could not update cart items")
-	}
-
-	return nil
-}
-
-func (se *SourcingEngine) sourceLocationForCartItem(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart, deliveryCode string, item *decorator.DecoratedCartItem) (*Source, error) {
-	detailService, ok := se.SourcingService.(SourcingServiceDetail)
-	if ok {
-		sources, err := detailService.GetSourcesForItem(ctx, session, decoratedCart, deliveryCode, item)
-		if err != nil {
-			return nil, err
-		}
-
-		if len(sources) == 0 {
-			return nil, errors.New("no source locations found")
-		}
-
-		return &sources[0], nil
-	}
-
-	sourceID, err := se.SourcingService.GetSourceID(ctx, session, decoratedCart, deliveryCode, item)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Source{LocationCode: sourceID}, nil
 }
