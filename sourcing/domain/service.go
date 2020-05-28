@@ -251,7 +251,7 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 				}
 			}
 
-			if qtyToAllocate > 0 {
+			if allocatedQty < qtyToAllocate {
 				return nil, ErrInsufficientSourceQty
 			}
 		}

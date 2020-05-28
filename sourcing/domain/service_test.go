@@ -94,7 +94,9 @@ func TestDefaultSourcingService_GetAvailableSources(t *testing.T) {
 		stubbedSources := []Source{{LocationCode: "loc1"}, {LocationCode: "loc2"}}
 		stubbedStockQty := 5
 		stubbedQtyAlreadyInCart := 10
-		stubbedProduct := domain.SimpleProduct{}
+		stubbedProduct := domain.SimpleProduct{
+			Identifier: "marketPlaceCode1",
+		}
 		testCart := decorator.DecoratedCart{
 			DecoratedDeliveries: []decorator.DecoratedDelivery{
 				{
