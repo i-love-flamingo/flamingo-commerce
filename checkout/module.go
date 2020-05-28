@@ -118,7 +118,6 @@ commerce: checkout: {
 	redirectToCartOnInvalidCart?:     bool
 	privacyPolicyRequired?:           bool
 	placeorder: {
-		validateBeforePlace: bool | *true
 		lock: {
 			type: *"memory" | "redis"
 			if type == "redis" {

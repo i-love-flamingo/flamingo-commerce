@@ -9,6 +9,7 @@
   * exposed loyalty earnings
 
 **cart**
+* **Breaking**: Cart item validation now requires the decorated cart to be passed to assure that validators don't rely on a cart from any other source (e.g. session)
 * GraphQL
   * Add new mutation to set / update one or multiple delivery addresses `Commerce_Cart_UpdateDeliveryAddresses`
   * Add new mutation to update the shipping options (carrier / method) of an existing delivery `Commerce_Cart_UpdateDeliveryShippingOptions`
@@ -26,7 +27,6 @@
   * `Commerce_Customer` returns the logged-in customer
  
 **checkout**
-* Make cart validation before place order optional with configuration
 * State Machine
   * Add additional metrics to monitor place order flow
     * flamingo_commerce_checkout_placeorder_starts

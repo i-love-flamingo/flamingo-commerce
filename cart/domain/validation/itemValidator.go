@@ -3,6 +3,8 @@ package validation
 import (
 	"context"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+
 	"fmt"
 
 	"flamingo.me/flamingo-commerce/v3/product/domain"
@@ -12,7 +14,7 @@ import (
 type (
 	// ItemValidator checks a cart item
 	ItemValidator interface {
-		Validate(ctx context.Context, session *web.Session, deliveryCode string, request cart.AddRequest, product domain.BasicProduct) error
+		Validate(ctx context.Context, session *web.Session, cart *decorator.DecoratedCart, deliveryCode string, request cart.AddRequest, product domain.BasicProduct) error
 	}
 
 	// AddToCartNotAllowed error

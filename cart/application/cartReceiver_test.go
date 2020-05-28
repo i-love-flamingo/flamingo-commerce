@@ -6,14 +6,6 @@ import (
 	"reflect"
 	"testing"
 
-	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
-	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
-	cartInfrastructure "flamingo.me/flamingo-commerce/v3/cart/infrastructure"
-	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
 	"flamingo.me/flamingo/v3/core/oauth/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
@@ -23,6 +15,14 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"golang.org/x/oauth2"
+
+	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
+	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
+	cartInfrastructure "flamingo.me/flamingo-commerce/v3/cart/infrastructure"
+	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
 type (
@@ -178,27 +178,6 @@ func (m *MockEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context, c
 func (m *MockEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos placeorder.PlacedOrderInfos) {
 	m.Called()
 }
-
-// MockCartValidator
-type (
-	MockCartValidator struct{}
-)
-
-func (m *MockCartValidator) Validate(ctx context.Context, session *web.Session, cart *decorator.DecoratedCart) validation.Result {
-	return validation.Result{}
-}
-
-// MockItemValidator
-
-type (
-	MockItemValidator struct{}
-)
-
-func (m *MockItemValidator) Validate(ctx context.Context, session *web.Session, deliveryCode string, request cartDomain.AddRequest, product productDomain.BasicProduct) error {
-	return nil
-}
-
-// MockDeliveryInfoBuilder
 
 type (
 	MockDeliveryInfoBuilder struct{}
