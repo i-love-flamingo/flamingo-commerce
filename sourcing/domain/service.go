@@ -2,9 +2,10 @@ package domain
 
 import (
 	"context"
-	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+
 	"flamingo.me/flamingo/v3/framework/flamingo"
 
+	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 
