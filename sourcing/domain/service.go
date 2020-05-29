@@ -101,13 +101,8 @@ func (d *DefaultSourcingService) Inject(
 
 // GetAvailableSources - see description in Interface
 func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, product domain.BasicProduct, deliveryInfo *cartDomain.DeliveryInfo, decoratedCart *decorator.DecoratedCart) (AvailableSources, error) {
-	if d.availableSourcesProvider == nil {
-		d.logger.Error("no Source Provider bound")
-		return nil, errors.New("no Source Provider bound")
-	}
-	if d.stockProvider == nil {
-		d.logger.Error("no Stock Provider bound")
-		return nil, errors.New("no Stock Provider bound")
+	if err := d.checkConfiguration(); err != nil {
+		return nil, err
 	}
 
 	sources, err := d.availableSourcesProvider.GetPossibleSources(ctx, product, deliveryInfo)
@@ -116,7 +111,6 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 	}
 
 	var lastStockError error
-
 	availableSources := AvailableSources{}
 	for _, source := range sources {
 		qty, err := d.stockProvider.GetStock(ctx, product, source)
@@ -154,6 +148,19 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 	return availableSources, nil
 }
 
+func (d *DefaultSourcingService) checkConfiguration() error {
+	if d.availableSourcesProvider == nil {
+		d.logger.Error("no Source Provider bound")
+		return errors.New("no Source Provider bound")
+	}
+	if d.stockProvider == nil {
+		d.logger.Error("no Stock Provider bound")
+		return errors.New("no Stock Provider bound")
+	}
+
+	return nil
+}
+
 func getItemIdsWithProduct(dc *decorator.DecoratedCart, product domain.BasicProduct) []ItemID {
 	var result []ItemID
 	for _, di := range dc.GetAllDecoratedItems() {
@@ -166,30 +173,19 @@ func getItemIdsWithProduct(dc *decorator.DecoratedCart, product domain.BasicProd
 
 // AllocateItems - see description in Interface
 func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCart *decorator.DecoratedCart) (ItemAllocations, error) {
-	resultItemAllocations := make(ItemAllocations)
-
+	if err := d.checkConfiguration(); err != nil {
+		return nil, err
+	}
 	if decoratedCart == nil {
 		return nil, errors.New("Cart not given")
 	}
-
-	if d.availableSourcesProvider == nil {
-		d.logger.Error("no Source Provider bound")
-
-		return nil, errors.New("no Source Provider bound")
-	}
-
-	if d.stockProvider == nil {
-		d.logger.Error("no Stock Provider bound")
-
-		return nil, errors.New("no Stock Provider bound")
-	}
-
-	var productSourcestock = map[string]map[string]int{}
 
 	if len(decoratedCart.DecoratedDeliveries) == 0 {
 		return nil, ErrNeedMoreDetailsSourceCannotBeDetected
 	}
 
+	productSourcestock := map[string]map[string]int{}
+	resultItemAllocations := ItemAllocations{}
 	for _, delivery := range decoratedCart.DecoratedDeliveries {
 		for _, decoratedItem := range delivery.DecoratedItems {
 			sources, err := d.availableSourcesProvider.GetPossibleSources(ctx, decoratedItem.Product, &delivery.Delivery.DeliveryInfo)
