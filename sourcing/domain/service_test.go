@@ -12,19 +12,27 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type availableSourcesProviderMock struct {
-	Sources []domain.Source
-	Error   error
-}
+type (
+	availableSourcesProviderMock struct {
+		Sources []domain.Source
+		Error   error
+	}
+	stockProviderMock struct {
+		Qty   int
+		Error error
+	}
+	stockBySourceAndProductProviderMock struct {
+		// [source.LocationCode][product.Identifier] = Qty
+		Qty   map[string]map[string]int
+		Error error
+	}
+)
 
-type stockProviderMock struct {
-	Qty   int
-	Error error
-}
-
-var _ domain.AvailableSourcesProvider = new(availableSourcesProviderMock)
-var _ domain.StockProvider = new(stockProviderMock)
-var _ domain.AvailableSourcesProvider = new(stockBySourceAndProductProviderMock)
+var (
+	_ domain.AvailableSourcesProvider = new(availableSourcesProviderMock)
+	_ domain.StockProvider            = new(stockProviderMock)
+	_ domain.AvailableSourcesProvider = new(stockBySourceAndProductProviderMock)
+)
 
 func (a availableSourcesProviderMock) GetPossibleSources(ctx context.Context, product productDomain.BasicProduct, deliveryInfo *cart.DeliveryInfo) ([]domain.Source, error) {
 	return a.Sources, a.Error
@@ -32,12 +40,6 @@ func (a availableSourcesProviderMock) GetPossibleSources(ctx context.Context, pr
 
 func (s stockProviderMock) GetStock(ctx context.Context, product productDomain.BasicProduct, source domain.Source) (int, error) {
 	return s.Qty, s.Error
-}
-
-type stockBySourceAndProductProviderMock struct {
-	// [source.LocationCode][product.Identifier] = Qty
-	Qty   map[string]map[string]int
-	Error error
 }
 
 func (s stockBySourceAndProductProviderMock) GetStock(ctx context.Context, product productDomain.BasicProduct, source domain.Source) (int, error) {
