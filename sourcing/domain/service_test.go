@@ -2,6 +2,7 @@ package domain_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -51,6 +52,34 @@ func (s stockBySourceAndProductProviderMock) GetPossibleSources(ctx context.Cont
 }
 
 func TestDefaultSourcingService_GetAvailableSources(t *testing.T) {
+	t.Run("error handling on unbound providers", func(t *testing.T) {
+		sourcingService := domain.DefaultSourcingService{}
+		sourcingService.Inject(flamingo.NullLogger{}, nil)
+		_, err := sourcingService.GetAvailableSources(context.Background(), nil, nil, nil)
+		assert.EqualError(t, err, "no Source Provider bound", "received error if available sources provider and stock provider are not configured")
+
+		sourcingService = newDefaultSourcingService(nil, nil)
+		_, err = sourcingService.GetAvailableSources(context.Background(), nil, nil, nil)
+		assert.EqualError(t, err, "no Stock Provider bound", "received error if stock provider is not set")
+	})
+
+	t.Run("error handing on error fetching available sources", func(t *testing.T) {
+		sourcingService := domain.DefaultSourcingService{}
+		sourcingService.Inject(flamingo.NullLogger{}, &struct {
+			AvailableSourcesProvider domain.AvailableSourcesProvider `inject:",optional"`
+			StockProvider            domain.StockProvider            `inject:",optional"`
+		}{
+			AvailableSourcesProvider: availableSourcesProviderMock{
+				Sources: nil,
+				Error:   errors.New("mocked available sources provider error"),
+			},
+			StockProvider: stockProviderMock{},
+		})
+
+		_, err := sourcingService.GetAvailableSources(context.Background(), nil, nil, nil)
+		assert.EqualError(t, err, "mocked available sources provider error", "result contains the error message of the available sources provider")
+	})
+
 	t.Run("full qty with nil cart", func(t *testing.T) {
 		stubbedSources := []domain.Source{{LocationCode: "loc1"}}
 		stubbedStockQty := 10

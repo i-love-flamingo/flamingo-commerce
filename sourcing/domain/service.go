@@ -101,8 +101,6 @@ func (d *DefaultSourcingService) Inject(
 
 // GetAvailableSources - see description in Interface
 func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, product domain.BasicProduct, deliveryInfo *cartDomain.DeliveryInfo, decoratedCart *decorator.DecoratedCart) (AvailableSources, error) {
-	availableSources := make(AvailableSources)
-
 	if d.availableSourcesProvider == nil {
 		d.logger.Error("no Source Provider bound")
 		return nil, errors.New("no Source Provider bound")
@@ -119,6 +117,7 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 
 	var lastStockError error
 
+	availableSources := AvailableSources{}
 	for _, source := range sources {
 		qty, err := d.stockProvider.GetStock(ctx, product, source)
 		if err != nil {
