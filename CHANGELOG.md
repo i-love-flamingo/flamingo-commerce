@@ -72,6 +72,9 @@
 **sourcing**
 * Add new "sourcing" module that can be used standalone. See sourcing/Readme.md for more details
 
+**w3cdatalayer**
+* **Breaking**: Switch from flamingo `oauth` module to the new `auth` module, to keep w3cdatalayer working please configure the new `auth` module accordingly
+
 ## v3.2.0
 **w3cdatalayer**
 * Fixed a bug that causes the datalayer to panic if it failed to build an absolute url
