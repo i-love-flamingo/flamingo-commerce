@@ -419,22 +419,6 @@ definitions:
         type: string
     type: object
   domain.Attribute:
-    properties:
-      code:
-        type: string
-      label:
-        type: string
-      values:
-        items:
-          $ref: '#/definitions/domain.AttributeValue'
-        type: array
-    type: object
-  domain.AttributeValue:
-    properties:
-      label:
-        type: string
-      rawValue:
-        type: object
     type: object
   domain.Attributes:
     additionalProperties:

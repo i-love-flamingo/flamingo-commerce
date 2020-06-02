@@ -1042,32 +1042,7 @@ var doc = `{
             }
         },
         "domain.Attribute": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "label": {
-                    "type": "string"
-                },
-                "values": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/domain.AttributeValue"
-                    }
-                }
-            }
-        },
-        "domain.AttributeValue": {
-            "type": "object",
-            "properties": {
-                "label": {
-                    "type": "string"
-                },
-                "rawValue": {
-                    "type": "object"
-                }
-            }
+            "type": "object"
         },
         "domain.Attributes": {
             "type": "object",
