@@ -8,7 +8,7 @@ import (
 )
 
 func TestModule_Configure(t *testing.T) {
-	if err := config.TryModules(config.Map{"order.useFakeAdapters": true}, new(order.Module)); err != nil {
+	if err := config.TryModules(config.Map{"commerce.order.useFakeAdapter": true}, new(order.Module)); err != nil {
 		t.Error(err)
 	}
 }

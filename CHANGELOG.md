@@ -75,6 +75,10 @@
 **w3cdatalayer**
 * **Breaking**: Switch from flamingo `oauth` module to the new `auth` module, to keep w3cdatalayer working please configure the new `auth` module accordingly
 
+**order**
+* **Breaking**: removed interface `CustomerOrderService` please use `CustomerIdentityOrderService`
+* Update config path: `order.useFakeAdapters` to `commerce.order.useFakeAdapter`
+
 ## v3.2.0
 **w3cdatalayer**
 * Fixed a bug that causes the datalayer to panic if it failed to build an absolute url

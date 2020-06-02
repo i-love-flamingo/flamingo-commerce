@@ -5,24 +5,23 @@ import (
 	"time"
 
 	"flamingo.me/flamingo-commerce/v3/order/domain"
-	authDomain "flamingo.me/flamingo/v3/core/oauth/domain"
+	"flamingo.me/flamingo/v3/core/auth"
 )
 
 type (
-	// CustomerOrders is the fake customer orders api service
+	// CustomerOrders is the fake customer order adapter
 	CustomerOrders struct{}
 )
 
 var (
-	_ domain.CustomerOrderService = (*CustomerOrders)(nil)
+	_ domain.CustomerIdentityOrderService = (*CustomerOrders)(nil)
 )
 
-// Get returns a CustomerOrders struct
-func (co *CustomerOrders) Get(ctx context.Context, authentication authDomain.Auth) ([]*domain.Order, error) {
+// Get all orders for a customer
+func (co *CustomerOrders) Get(_ context.Context, _ auth.Identity) ([]*domain.Order, error) {
 	return []*domain.Order{
 		{
-			ID: "100",
-
+			ID:           "100",
 			CreationTime: time.Now(),
 			UpdateTime:   time.Now(),
 			Status:       "Teststatus",
@@ -30,8 +29,7 @@ func (co *CustomerOrders) Get(ctx context.Context, authentication authDomain.Aut
 			Total:        123.45,
 			CurrencyCode: "EUR",
 		}, {
-			ID: "100",
-
+			ID:           "101",
 			CreationTime: time.Now(),
 			UpdateTime:   time.Now(),
 			Status:       "Teststatus",
@@ -39,8 +37,7 @@ func (co *CustomerOrders) Get(ctx context.Context, authentication authDomain.Aut
 			Total:        123.45,
 			CurrencyCode: "EUR",
 		}, {
-			ID: "100",
-
+			ID:           "102",
 			CreationTime: time.Now(),
 			UpdateTime:   time.Now(),
 			Status:       "Teststatus",
@@ -48,8 +45,7 @@ func (co *CustomerOrders) Get(ctx context.Context, authentication authDomain.Aut
 			Total:        123.45,
 			CurrencyCode: "EUR",
 		}, {
-			ID: "100",
-
+			ID:           "103",
 			CreationTime: time.Now(),
 			UpdateTime:   time.Now(),
 			Status:       "Teststatus",
@@ -60,10 +56,10 @@ func (co *CustomerOrders) Get(ctx context.Context, authentication authDomain.Aut
 	}, nil
 }
 
-// GetByID fetches a faked customer order by id
-func (co *CustomerOrders) GetByID(ctx context.Context, authentication authDomain.Auth, id string) (*domain.Order, error) {
+// GetByID returns a single customer order
+func (co *CustomerOrders) GetByID(_ context.Context, _ auth.Identity, orderID string) (*domain.Order, error) {
 	return &domain.Order{
-		ID:           "100",
+		ID:           orderID,
 		CreationTime: time.Now(),
 		UpdateTime:   time.Now(),
 		Status:       "Teststatus",
