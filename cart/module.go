@@ -115,7 +115,7 @@ commerce: {
 		defaultDeliveryCode: string | *"delivery"
 		deleteEmptyDelivery: bool | *false
 		personalDataForm: {
-			additionalFormFields: [string]
+			additionalFormFields: [string] | *[]
 			dateOfBirthRequired: false
 			passportCountryRequired: bool | *false
 			passportNumberRequired: bool | *false
