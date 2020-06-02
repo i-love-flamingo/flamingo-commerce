@@ -4,13 +4,15 @@ import (
 	"context"
 	"errors"
 
+	"flamingo.me/flamingo/v3/core/auth"
 	"flamingo.me/flamingo/v3/framework/web"
+
+	"flamingo.me/flamingo/v3/framework/flamingo"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
-	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
-	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo-commerce/v3/customer/application"
 )
 
 type (
@@ -19,8 +21,7 @@ type (
 		guestCartService     cartDomain.GuestCartService
 		customerCartService  cartDomain.CustomerCartService
 		cartDecoratorFactory *decorator.DecoratedCartFactory
-		authManager          AuthManagerInterface
-		userService          authApplication.UserServiceInterface
+		webIdentityService   *auth.WebIdentityService
 		eventRouter          flamingo.EventRouter
 		logger               flamingo.Logger
 		// CartCache is optional
@@ -43,8 +44,7 @@ func (cs *CartReceiverService) Inject(
 	guestCartService cartDomain.GuestCartService,
 	customerCartService cartDomain.CustomerCartService,
 	cartDecoratorFactory *decorator.DecoratedCartFactory,
-	authManager AuthManagerInterface,
-	userService authApplication.UserServiceInterface,
+	webIdentityService *auth.WebIdentityService,
 	logger flamingo.Logger,
 	eventRouter flamingo.EventRouter,
 	optionals *struct {
@@ -54,8 +54,7 @@ func (cs *CartReceiverService) Inject(
 	cs.guestCartService = guestCartService
 	cs.customerCartService = customerCartService
 	cs.cartDecoratorFactory = cartDecoratorFactory
-	cs.authManager = authManager
-	cs.userService = userService
+	cs.webIdentityService = webIdentityService
 	cs.logger = logger.WithField("module", "cart").WithField(flamingo.LogKeyCategory, "checkout.cartreceiver")
 	cs.eventRouter = eventRouter
 	if optionals != nil {
@@ -66,13 +65,9 @@ func (cs *CartReceiverService) Inject(
 // RestoreCart restores a previously used guest / customer cart
 // deprecated: use CartService.RestoreCart(), ensure that your cart implements the CompleteBehaviour
 func (cs *CartReceiverService) RestoreCart(ctx context.Context, session *web.Session, cartToRestore cart.Cart) (*cartDomain.Cart, error) {
-	if cs.userService.IsLoggedIn(ctx, session) {
-		auth, err := cs.authManager.Auth(ctx, session)
-		if err != nil {
-			return nil, err
-		}
-
-		restoredCart, err := cs.customerCartService.RestoreCart(ctx, auth, cartToRestore)
+	identitiy := cs.webIdentityService.Identify(ctx, web.RequestFromContext(ctx))
+	if identitiy != nil {
+		restoredCart, err := cs.customerCartService.RestoreCart(ctx, identitiy, cartToRestore)
 		if err != nil {
 			return nil, err
 		}
@@ -91,14 +86,9 @@ func (cs *CartReceiverService) RestoreCart(ctx context.Context, session *web.Ses
 	return restoredCart, nil
 }
 
-// IsLoggedIn returns the logged in state
-func (cs *CartReceiverService) IsLoggedIn(ctx context.Context, session *web.Session) bool {
-	return cs.userService.IsLoggedIn(ctx, session)
-}
-
 // ShouldHaveCart - checks if there should be a cart. Indicated if a call to GetCart should return a real cart
 func (cs *CartReceiverService) ShouldHaveCart(ctx context.Context, session *web.Session) bool {
-	if cs.userService.IsLoggedIn(ctx, session) {
+	if cs.webIdentityService.Identify(ctx, web.RequestFromContext(ctx)) != nil {
 		return true
 	}
 
@@ -160,7 +150,7 @@ func (cs *CartReceiverService) storeCartInCacheIfCacheIsEnabled(ctx context.Cont
 
 // GetCart Get the correct Cart (either Guest or User)
 func (cs *CartReceiverService) GetCart(ctx context.Context, session *web.Session) (*cartDomain.Cart, cartDomain.ModifyBehaviour, error) {
-	if cs.userService.IsLoggedIn(ctx, session) {
+	if cs.webIdentityService.Identify(ctx, web.RequestFromContext(ctx)) != nil {
 		return cs.getCustomerCart(ctx, session)
 	}
 	if cs.ShouldHaveGuestCart(session) {
@@ -171,44 +161,39 @@ func (cs *CartReceiverService) GetCart(ctx context.Context, session *web.Session
 
 // ModifyBehaviour returns the correct behaviour to modify the cart for the current user (guest/customer)
 func (cs *CartReceiverService) ModifyBehaviour(ctx context.Context) (cartDomain.ModifyBehaviour, error) {
-	session := web.SessionFromContext(ctx)
-	if cs.userService.IsLoggedIn(ctx, session) {
-		auth, err := cs.authManager.Auth(ctx, session)
-		if err != nil {
-			return nil, err
-		}
-		return cs.customerCartService.GetModifyBehaviour(ctx, auth)
+	identity := cs.webIdentityService.Identify(ctx, web.RequestFromContext(ctx))
+	if identity != nil {
+		return cs.customerCartService.GetModifyBehaviour(ctx, identity)
 	}
 	return cs.guestCartService.GetModifyBehaviour(ctx)
 }
 
 // getCustomerCart
 func (cs *CartReceiverService) getCustomerCart(ctx context.Context, session *web.Session) (*cartDomain.Cart, cartDomain.ModifyBehaviour, error) {
-
 	cart, found, err := cs.getCartFromCacheIfCacheIsEnabled(ctx, session)
 
-	if err != nil {
-		if err == ErrCacheIsInvalid {
-			cs.logger.WithContext(ctx).Info(err)
-		} else if err == ErrNoCacheEntry {
-			cs.logger.WithContext(ctx).Info(err)
-		} else {
-			cs.logger.WithContext(ctx).Error(err)
-		}
+	switch err {
+	case nil:
+	case ErrCacheIsInvalid, ErrNoCacheEntry:
+		cs.logger.WithContext(ctx).Info(err)
+	default:
+		cs.logger.WithContext(ctx).Error(err)
 	}
-	auth, err := cs.authManager.Auth(ctx, session)
-	if err != nil {
-		return nil, nil, err
+
+	identitiy := cs.webIdentityService.Identify(ctx, web.RequestFromContext(ctx))
+	if identitiy == nil {
+		return nil, nil, application.ErrNoIdentity
 	}
-	if err != nil || !found {
-		cart, err = cs.customerCartService.GetCart(ctx, auth, "me")
+
+	if !found {
+		cart, err = cs.customerCartService.GetCart(ctx, identitiy, "me")
 		if err != nil {
 			return nil, nil, err
 		}
-		cs.storeCartInCacheIfCacheIsEnabled(ctx, session, cart)
+		_ = cs.storeCartInCacheIfCacheIsEnabled(ctx, session, cart)
 	}
 
-	behaviour, err := cs.customerCartService.GetModifyBehaviour(ctx, auth)
+	behaviour, err := cs.customerCartService.GetModifyBehaviour(ctx, identitiy)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -261,7 +246,7 @@ func (cs *CartReceiverService) getExistingGuestCart(ctx context.Context, session
 			return nil, nil, ErrTemporaryCartService
 		}
 
-		cs.storeCartInCacheIfCacheIsEnabled(ctx, session, cart)
+		_ = cs.storeCartInCacheIfCacheIsEnabled(ctx, session, cart)
 		cs.logger.WithContext(ctx).Debug("guestcart not in cache - requested and passed to cache")
 	}
 
@@ -290,7 +275,7 @@ func (cs *CartReceiverService) getNewGuestCart(ctx context.Context, session *web
 
 	cs.logger.WithContext(ctx).Info("cart.application.cartservice: Requested new Guestcart %v", guestCart)
 	session.Store(GuestCartSessionKey, guestCart.ID)
-	cs.storeCartInCacheIfCacheIsEnabled(ctx, session, guestCart)
+	_ = cs.storeCartInCacheIfCacheIsEnabled(ctx, session, guestCart)
 	behaviour, err := cs.guestCartService.GetModifyBehaviour(ctx)
 
 	if err != nil {
@@ -313,12 +298,9 @@ func (cs *CartReceiverService) GetCartWithoutCache(ctx context.Context, session 
 		cs.eventRouter.Dispatch(ctx, &cart.InvalidateCartEvent{Session: session})
 	}
 
-	if cs.userService.IsLoggedIn(ctx, session) {
-		auth, err := cs.authManager.Auth(ctx, session)
-		if err != nil {
-			return nil, err
-		}
-		return cs.customerCartService.GetCart(ctx, auth, "me")
+	identitiy := cs.webIdentityService.Identify(ctx, web.RequestFromContext(ctx))
+	if identitiy != nil {
+		return cs.customerCartService.GetCart(ctx, identitiy, "me")
 	}
 
 	if cs.ShouldHaveGuestCart(session) {

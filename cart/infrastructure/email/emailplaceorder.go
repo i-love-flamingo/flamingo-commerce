@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 
+	"flamingo.me/flamingo/v3/core/auth"
+	"flamingo.me/flamingo/v3/framework/flamingo"
+
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
-	authDomain "flamingo.me/flamingo/v3/core/oauth/domain"
-	"flamingo.me/flamingo/v3/framework/flamingo"
 )
 
 type (
@@ -55,7 +56,7 @@ func (e *PlaceOrderServiceAdapter) PlaceGuestCart(ctx context.Context, cart *car
 }
 
 // PlaceCustomerCart places a customer cart as order email
-func (e *PlaceOrderServiceAdapter) PlaceCustomerCart(ctx context.Context, auth authDomain.Auth, cart *cartDomain.Cart, payment *placeorder.Payment) (placeorder.PlacedOrderInfos, error) {
+func (e *PlaceOrderServiceAdapter) PlaceCustomerCart(ctx context.Context, identity auth.Identity, cart *cartDomain.Cart, payment *placeorder.Payment) (placeorder.PlacedOrderInfos, error) {
 	var placedOrders placeorder.PlacedOrderInfos
 	placedOrders = append(placedOrders, placeorder.PlacedOrderInfo{
 		OrderNumber: cart.ID,
@@ -76,7 +77,7 @@ func (e *PlaceOrderServiceAdapter) CancelGuestOrder(ctx context.Context, orderIn
 }
 
 // CancelCustomerOrder cancels a customer order
-func (e *PlaceOrderServiceAdapter) CancelCustomerOrder(ctx context.Context, orderInfos placeorder.PlacedOrderInfos, auth authDomain.Auth) error {
+func (e *PlaceOrderServiceAdapter) CancelCustomerOrder(ctx context.Context, orderInfos placeorder.PlacedOrderInfos, identity auth.Identity) error {
 	// since we don't actual place orders we just return nil here
 	return nil
 }

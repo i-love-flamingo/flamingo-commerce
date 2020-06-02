@@ -1,31 +1,26 @@
 package cart
 
 import (
-	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
-	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql"
-	"flamingo.me/flamingo-commerce/v3/customer"
-	"flamingo.me/flamingo-commerce/v3/product"
-	oauthApplication "flamingo.me/flamingo/v3/core/oauth/application"
-	flamingographql "flamingo.me/graphql"
-
-	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
-
-	formDomain "flamingo.me/form/domain"
-
-	"flamingo.me/form"
-
-	"flamingo.me/flamingo-commerce/v3/cart/infrastructure/email"
-
 	"flamingo.me/dingo"
-	"flamingo.me/flamingo-commerce/v3/cart/application"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	"flamingo.me/flamingo-commerce/v3/cart/infrastructure"
-	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller"
-	"flamingo.me/flamingo-commerce/v3/cart/interfaces/templatefunctions"
-	"flamingo.me/flamingo/v3/core/oauth"
+	"flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
+	"flamingo.me/form"
+	formDomain "flamingo.me/form/domain"
+	flamingographql "flamingo.me/graphql"
+
+	"flamingo.me/flamingo-commerce/v3/cart/application"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
+	"flamingo.me/flamingo-commerce/v3/cart/infrastructure"
+	"flamingo.me/flamingo-commerce/v3/cart/infrastructure/email"
+	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller"
+	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
+	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql"
+	"flamingo.me/flamingo-commerce/v3/cart/interfaces/templatefunctions"
+	"flamingo.me/flamingo-commerce/v3/customer"
+	"flamingo.me/flamingo-commerce/v3/product"
 )
 
 type (
@@ -69,8 +64,6 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	}
 	// Register Default EventPublisher
 	injector.Bind((*events.EventPublisher)(nil)).To(events.DefaultEventPublisher{})
-
-	injector.Bind((*application.AuthManagerInterface)(nil)).To(oauthApplication.AuthManager{})
 
 	// Event
 	flamingo.BindEventSubscriber(injector).To(application.EventReceiver{})
@@ -133,7 +126,6 @@ commerce: {
 // Depends on other modules
 func (m *Module) Depends() []dingo.Module {
 	return []dingo.Module{
-		new(oauth.Module),
 		new(product.Module),
 		new(form.Module),
 		new(customer.Module),
