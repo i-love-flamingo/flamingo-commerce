@@ -1,4 +1,17 @@
 definitions:
+  ProductMedia:
+    properties:
+      mimeType:
+        type: string
+      reference:
+        type: string
+      title:
+        type: string
+      type:
+        type: string
+      usage:
+        type: string
+    type: object
   cart.AdditionalData:
     properties:
       customAttributes:
@@ -419,24 +432,6 @@ definitions:
         type: string
     type: object
   domain.Attribute:
-    properties:
-      code:
-        description: Code is the internal attribute identifier
-        type: string
-      codeLabel:
-        description: CodeLabel is the human readable (perhaps localized) attribute
-          name
-        type: string
-      label:
-        description: Label is the human readable (perhaps localized) attribute value
-        type: string
-      rawValue:
-        description: RawValue is the untouched original value of the attribute
-        type: object
-      unitCode:
-        description: UnitCode is the internal code of the attribute values measuring
-          unit
-        type: string
     type: object
   domain.Attributes:
     additionalProperties:
@@ -544,19 +539,6 @@ definitions:
         description: Type - Name( or Type) of the Loyalty program
         type: string
     type: object
-  domain.Media:
-    properties:
-      mimeType:
-        type: string
-      reference:
-        type: string
-      title:
-        type: string
-      type:
-        type: string
-      usage:
-        type: string
-    type: object
   domain.Price:
     type: object
   domain.PriceContext:
@@ -650,7 +632,7 @@ definitions:
         type: string
       media:
         items:
-          $ref: '#/definitions/domain.Media'
+          $ref: '#/definitions/ProductMedia'
         type: array
       retailerCode:
         type: string
@@ -686,7 +668,7 @@ definitions:
       media:
         description: Media
         items:
-          $ref: '#/definitions/domain.Media'
+          $ref: '#/definitions/ProductMedia'
         type: array
       preSelectedVariantSku:
         description: PreSelectedVariantSku - might be set for configurables to give

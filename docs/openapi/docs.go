@@ -480,6 +480,26 @@ var doc = `{
         }
     },
     "definitions": {
+        "ProductMedia": {
+            "type": "object",
+            "properties": {
+                "mimeType": {
+                    "type": "string"
+                },
+                "reference": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "usage": {
+                    "type": "string"
+                }
+            }
+        },
         "cart.AdditionalData": {
             "type": "object",
             "properties": {
@@ -1042,29 +1062,7 @@ var doc = `{
             }
         },
         "domain.Attribute": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "description": "Code is the internal attribute identifier",
-                    "type": "string"
-                },
-                "codeLabel": {
-                    "description": "CodeLabel is the human readable (perhaps localized) attribute name",
-                    "type": "string"
-                },
-                "label": {
-                    "description": "Label is the human readable (perhaps localized) attribute value",
-                    "type": "string"
-                },
-                "rawValue": {
-                    "description": "RawValue is the untouched original value of the attribute",
-                    "type": "object"
-                },
-                "unitCode": {
-                    "description": "UnitCode is the internal code of the attribute values measuring unit",
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "domain.Attributes": {
             "type": "object",
@@ -1209,26 +1207,6 @@ var doc = `{
                 }
             }
         },
-        "domain.Media": {
-            "type": "object",
-            "properties": {
-                "mimeType": {
-                    "type": "string"
-                },
-                "reference": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "usage": {
-                    "type": "string"
-                }
-            }
-        },
         "domain.Price": {
             "type": "object"
         },
@@ -1364,7 +1342,7 @@ var doc = `{
                 "media": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/domain.Media"
+                        "$ref": "#/definitions/ProductMedia"
                     }
                 },
                 "retailerCode": {
@@ -1417,7 +1395,7 @@ var doc = `{
                     "description": "Media",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/domain.Media"
+                        "$ref": "#/definitions/ProductMedia"
                     }
                 },
                 "preSelectedVariantSku": {

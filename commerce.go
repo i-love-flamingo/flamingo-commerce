@@ -5,6 +5,7 @@ package commerce
 	The subpackage represent Flamingo Commerce modules - please refer to the documentations for the individual modules.
 */
 
+//go:generate rm -rf docs/openapi
 //go:generate go run github.com/swaggo/swag/cmd/swag init --generalInfo=commerce.go --dir=./ --output=docs/openapi
 
 // Swagger Documentation used for generator swag (https://github.com/swaggo/swag#declarative-comments-format)
