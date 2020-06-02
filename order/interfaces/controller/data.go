@@ -3,36 +3,37 @@ package controller
 import (
 	"context"
 
-	"flamingo.me/flamingo-commerce/v3/order/domain"
-	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
+	"flamingo.me/flamingo/v3/core/auth"
 	"flamingo.me/flamingo/v3/framework/web"
+
+	"flamingo.me/flamingo-commerce/v3/order/domain"
 )
 
 type (
 	// DataControllerCustomerOrders for `get("orders.customerorders", ...)` requests
 	DataControllerCustomerOrders struct {
-		customerOrderService domain.CustomerOrderService
-		authManager          *authApplication.AuthManager
+		customerIdentityOrderService domain.CustomerIdentityOrderService
+		webIdentityService           *auth.WebIdentityService
 	}
 )
 
 // Inject dependencies
 func (dc *DataControllerCustomerOrders) Inject(
-	customerOrderService domain.CustomerOrderService,
-	authManager *authApplication.AuthManager,
+	customerIdentityOrderService domain.CustomerIdentityOrderService,
+	webIdentityService *auth.WebIdentityService,
 ) {
-	dc.customerOrderService = customerOrderService
-	dc.authManager = authManager
+	dc.customerIdentityOrderService = customerIdentityOrderService
+	dc.webIdentityService = webIdentityService
 }
 
 // Data controller for blocks
-func (dc *DataControllerCustomerOrders) Data(c context.Context, r *web.Request, _ web.RequestParams) interface{} {
-	auth, err := dc.authManager.Auth(c, r.Session())
-	if err != nil {
+func (dc *DataControllerCustomerOrders) Data(ctx context.Context, r *web.Request, _ web.RequestParams) interface{} {
+	identity := dc.webIdentityService.Identify(ctx, r)
+	if identity == nil {
 		return nil
 	}
 
-	customerOrders, _ := dc.customerOrderService.Get(c, auth)
+	customerOrders, _ := dc.customerIdentityOrderService.Get(ctx, identity)
 
 	return customerOrders
 }

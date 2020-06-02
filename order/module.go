@@ -58,6 +58,6 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 // FlamingoLegacyConfigAlias maps legacy config entries to new ones
 func (m *Module) FlamingoLegacyConfigAlias() map[string]string {
 	return map[string]string{
-		"order.useFakeAdapter": "commerce.order.useFakeAdapter",
+		"order.useFakeAdapters": "commerce.order.useFakeAdapter",
 	}
 }
