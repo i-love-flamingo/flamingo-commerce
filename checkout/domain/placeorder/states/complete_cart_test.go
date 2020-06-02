@@ -6,15 +6,11 @@ import (
 	"net/url"
 	"testing"
 
-	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
-	"flamingo.me/flamingo/v3/core/oauth/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
-	"github.com/coreos/go-oidc"
 	"github.com/go-test/deep"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"golang.org/x/oauth2"
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -22,50 +18,6 @@ import (
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/states"
 )
-
-type (
-	MockUserService struct {
-		LoggedIn bool
-	}
-)
-
-var _ authApplication.UserServiceInterface = (*MockUserService)(nil)
-
-func (m *MockUserService) GetUser(context.Context, *web.Session) *domain.User {
-	return &domain.User{
-		Name: "Test",
-	}
-}
-
-func (m *MockUserService) IsLoggedIn(context.Context, *web.Session) bool {
-	return m.LoggedIn
-}
-
-type (
-	MockAuthManager struct {
-		ShouldReturnError bool
-	}
-	MockTokenSource struct {
-	}
-)
-
-var _ cartApplication.AuthManagerInterface = &MockAuthManager{}
-var _ oauth2.TokenSource = &MockTokenSource{}
-
-func (m MockTokenSource) Token() (*oauth2.Token, error) {
-	return &oauth2.Token{}, nil
-}
-
-func (m MockAuthManager) Auth(_ context.Context, _ *web.Session) (domain.Auth, error) {
-	if m.ShouldReturnError {
-		return domain.Auth{}, errors.New("generic auth error")
-	}
-
-	return domain.Auth{
-		TokenSource: &MockTokenSource{},
-		IDToken:     &oidc.IDToken{},
-	}, nil
-}
 
 func TestCompleteCart_IsFinal(t *testing.T) {
 	assert.False(t, states.CompleteCart{}.IsFinal())
@@ -162,11 +114,6 @@ func TestCompleteCart_Run(t *testing.T) {
 				nil,
 				nil,
 				nil,
-				func() authApplication.UserServiceInterface {
-					us := new(authApplication.UserService)
-					us.Inject(new(authApplication.AuthManager), nil)
-					return us
-				}(),
 				new(flamingo.NullLogger),
 				nil,
 				nil,
@@ -268,11 +215,6 @@ func TestCompleteCart_Rollback(t *testing.T) {
 				nil,
 				nil,
 				nil,
-				func() authApplication.UserServiceInterface {
-					us := new(authApplication.UserService)
-					us.Inject(new(authApplication.AuthManager), nil)
-					return us
-				}(),
 				new(flamingo.NullLogger),
 				nil,
 				nil,

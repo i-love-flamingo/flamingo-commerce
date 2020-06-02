@@ -9,10 +9,8 @@ import (
 
 func TestModule_Configure(t *testing.T) {
 	if err := config.TryModules(config.Map{
-		"flamingo.session.backend": "memory",
-		"core.oauth.secret":        "secret",
-		"core.oauth.server":        "server",
-		"core.oauth.clientid":      "clientid",
+		"flamingo.session.backend":      "memory",
+		"core.auth.web.debugController": false,
 	}, new(checkout.Module)); err != nil {
 		t.Error(err)
 	}

@@ -6,35 +6,32 @@ import (
 	"net/url"
 	"strings"
 
-	cartInterfaceForms "flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
-
-	"flamingo.me/form/domain"
-
-	"flamingo.me/form/application"
-
-	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
-	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
+	"flamingo.me/form/application"
+	"flamingo.me/form/domain"
+
+	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
+	cartInterfaceForms "flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
 )
 
 type (
-	//CheckoutFormComposite - a complete form (composite) for collecting all checkout data
+	// CheckoutFormComposite - a complete form (composite) for collecting all checkout data
 	CheckoutFormComposite struct {
-		//BillingAddressForm - the processed Form object for the BillingAddressForm
+		// BillingAddressForm - the processed Form object for the BillingAddressForm
 		// incoming form values are expected with namespace "billingAddress"
 		BillingAddressForm *domain.Form
-		//DeliveryForms - the processed Form object for the DeliveryForms
+		// DeliveryForms - the processed Form object for the DeliveryForms
 		// incoming form values are expected with namespace "deliveries.###DELIVERYCODE###"
 		DeliveryForms map[string]*domain.Form
-		//SimplePaymentForm - the processed Form object for the SimplePaymentForm
+		// SimplePaymentForm - the processed Form object for the SimplePaymentForm
 		// incoming form values are expected with namespace "payment"
 		SimplePaymentForm *domain.Form
-		//PersonalDataForm - the processed Form object for personal data
+		// PersonalDataForm - the processed Form object for personal data
 		PersonalDataForm *domain.Form
 	}
 
-	//checkoutFormBuilder - private builder for a form with CheckoutForm Data
+	// checkoutFormBuilder - private builder for a form with CheckoutForm Data
 	checkoutFormBuilder struct {
 		checkoutForm *CheckoutFormComposite
 	}
@@ -44,7 +41,6 @@ type (
 		responder                      *web.Responder
 		applicationCartService         *cartApplication.CartService
 		applicationCartReceiverService *cartApplication.CartReceiverService
-		userService                    *authApplication.UserService
 		logger                         flamingo.Logger
 		formHandlerFactory             application.FormHandlerFactory
 		billingAddressFormController   *cartInterfaceForms.BillingAddressFormController
@@ -56,11 +52,10 @@ type (
 	}
 )
 
-//Inject - Inject
+// Inject dependencies
 func (c *CheckoutFormController) Inject(responder *web.Responder,
 	applicationCartService *cartApplication.CartService,
 	applicationCartReceiverService *cartApplication.CartReceiverService,
-	userService *authApplication.UserService,
 	logger flamingo.Logger,
 	formHandlerFactory application.FormHandlerFactory,
 	billingAddressFormController *cartInterfaceForms.BillingAddressFormController,
@@ -75,7 +70,6 @@ func (c *CheckoutFormController) Inject(responder *web.Responder,
 	c.responder = responder
 	c.applicationCartReceiverService = applicationCartReceiverService
 	c.applicationCartService = applicationCartService
-	c.userService = userService
 	c.formHandlerFactory = formHandlerFactory
 	c.logger = logger
 	c.billingAddressFormController = billingAddressFormController
@@ -88,11 +82,11 @@ func (c *CheckoutFormController) Inject(responder *web.Responder,
 	}
 }
 
-//GetUnsubmittedForm - Action that returns
+// GetUnsubmittedForm returns the form
 func (c *CheckoutFormController) GetUnsubmittedForm(ctx context.Context, r *web.Request) (*CheckoutFormComposite, error) {
 	checkoutFormBuilder := newCheckoutFormBuilder()
 
-	//Add the billing form:
+	// Add the billing form:
 	billingForm, err := c.billingAddressFormController.GetUnsubmittedForm(ctx, r)
 	if err != nil {
 		return checkoutFormBuilder.getForm(), err
@@ -136,7 +130,7 @@ func (c *CheckoutFormController) GetUnsubmittedForm(ctx context.Context, r *web.
 		}
 	}
 
-	//4. Add the simplePaymentForm
+	// 4. Add the simplePaymentForm
 	simplePaymentForm, err := c.simplePaymentFormController.GetUnsubmittedForm(ctx, r)
 	if err != nil {
 		return checkoutFormBuilder.getForm(), err
@@ -150,7 +144,7 @@ func (c *CheckoutFormController) GetUnsubmittedForm(ctx context.Context, r *web.
 
 }
 
-//newRequestWithResolvedNamespace - creates a new request with only the namespaced form values
+// newRequestWithResolvedNamespace creates a new request with only the namespaced form values
 func newRequestWithResolvedNamespace(namespace string, r *web.Request) *web.Request {
 	newRequest := web.CreateRequest(r.Request(), r.Session())
 	newURLValues := make(url.Values)
@@ -165,9 +159,8 @@ func newRequestWithResolvedNamespace(namespace string, r *web.Request) *web.Requ
 	return newRequest
 }
 
-//HandleFormAction - Action that returns
+// HandleFormAction handles the submitted form request
 func (c *CheckoutFormController) HandleFormAction(ctx context.Context, r *web.Request) (*CheckoutFormComposite, bool, error) {
-	//session := web.SessionFromContext(ctx)
 	checkoutFormBuilder := newCheckoutFormBuilder()
 	overallSuccess := true
 	err := r.Request().ParseForm()
@@ -180,7 +173,7 @@ func (c *CheckoutFormController) HandleFormAction(ctx context.Context, r *web.Re
 		return checkoutFormBuilder.getForm(), false, err
 	}
 
-	//1, #### Process and add Billing Form Controller result
+	// 1, #### Process and add Billing Form Controller result
 	billingForm, success, err := c.billingAddressFormController.HandleFormAction(ctx, newRequestWithResolvedNamespace("billingAddress", r))
 	overallSuccess = overallSuccess && success
 	if err != nil {
@@ -228,7 +221,7 @@ func (c *CheckoutFormController) HandleFormAction(ctx context.Context, r *web.Re
 	}
 
 	if !cart.GrandTotal().IsZero() {
-		//4. ### Add the simplePaymentForm if payment is required.
+		// 4. ### Add the simplePaymentForm if payment is required.
 		simplePaymentForm, success, err := c.simplePaymentFormController.HandleFormAction(ctx, newRequestWithResolvedNamespace("payment", r))
 		overallSuccess = overallSuccess && success
 		if err != nil {
@@ -289,13 +282,13 @@ func (b *checkoutFormBuilder) addSimplePaymentForm(simplePaymentForm *domain.For
 	return nil
 }
 
-//HasAnyGeneralErrors - true if any from the included forms has general errors
+// HasAnyGeneralErrors checks if any from the included forms has general errors
 func (c *CheckoutFormComposite) HasAnyGeneralErrors() bool {
-	errors := c.GetAllGeneralErrors()
-	return len(errors) > 0
+	errs := c.GetAllGeneralErrors()
+	return len(errs) > 0
 }
 
-//GetAllGeneralErrors - gets all general errors from the included forms
+// GetAllGeneralErrors from the included forms
 func (c *CheckoutFormComposite) GetAllGeneralErrors() []domain.Error {
 	var generalErrors []domain.Error
 	generalErrors = append(generalErrors, c.BillingAddressForm.GetGeneralErrors()...)
