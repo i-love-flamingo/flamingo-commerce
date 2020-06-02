@@ -241,12 +241,14 @@ func TestDefaultSourcingService_AllocateItems(t *testing.T) {
 
 		itemAllocation, err := sourcingService.AllocateItems(context.Background(), &testCart)
 		assert.NoError(t, err)
-		assert.Len(t, itemAllocation[domain.ItemID("item1")], 2)
-		assert.Equal(t, 8, itemAllocation[domain.ItemID("item1")][source1])
-		assert.Equal(t, 2, itemAllocation[domain.ItemID("item1")][source2])
-		assert.Equal(t, 3, itemAllocation[domain.ItemID("item2")][source1])
-		assert.Equal(t, 2, itemAllocation[domain.ItemID("item2")][source3])
-		assert.Equal(t, 5, itemAllocation[domain.ItemID("item3")][source2])
+		assert.NoError(t, itemAllocation[domain.ItemID("item1")].Error)
+		assert.Len(t, itemAllocation[domain.ItemID("item1")].AllocatedQtys, 2)
+		assert.Equal(t, 8, itemAllocation[domain.ItemID("item1")].AllocatedQtys[source1])
+		assert.Equal(t, 2, itemAllocation[domain.ItemID("item1")].AllocatedQtys[source2])
+		assert.Equal(t, 3, itemAllocation[domain.ItemID("item2")].AllocatedQtys[source1])
+		assert.Equal(t, 2, itemAllocation[domain.ItemID("item2")].AllocatedQtys[source3])
+		assert.Equal(t, 5, itemAllocation[domain.ItemID("item3")].AllocatedQtys[source2])
+
 	})
 }
 

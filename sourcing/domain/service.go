@@ -34,7 +34,13 @@ type (
 	ItemID string
 
 	//ItemAllocations represents the allocated Qtys per itemId
-	ItemAllocations map[ItemID]AllocatedQtys
+	ItemAllocations map[ItemID]ItemAllocation
+
+	//ItemAllocation info
+	ItemAllocation struct {
+		AllocatedQtys AllocatedQtys
+		Error         error
+	}
 
 	//AllocatedQtys represents the allocated Qty per source
 	AllocatedQtys map[Source]int
@@ -135,7 +141,7 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 		itemIdsWithProduct := getItemIdsWithProduct(decoratedCart, product)
 
 		for _, itemID := range itemIdsWithProduct {
-			availableSources = availableSources.Reduce(allocatedSources[itemID])
+			availableSources = availableSources.Reduce(allocatedSources[itemID].AllocatedQtys)
 		}
 	}
 
@@ -180,80 +186,97 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 		return nil, errors.New("Cart not given")
 	}
 
+	//productSourcestock holds the availablestock per product and source.
+	// During allocation the initial retrieved available stock is reduced according to used allocation
+	var productSourcestock = map[string]map[Source]int{}
+
 	if len(decoratedCart.DecoratedDeliveries) == 0 {
 		return nil, ErrNeedMoreDetailsSourceCannotBeDetected
 	}
 
-	productSourcestock := map[string]map[string]int{}
 	resultItemAllocations := ItemAllocations{}
+
+	//overallError that will be returned
+	var overallError error
 	for _, delivery := range decoratedCart.DecoratedDeliveries {
 		for _, decoratedItem := range delivery.DecoratedItems {
-			sources, err := d.availableSourcesProvider.GetPossibleSources(ctx, decoratedItem.Product, &delivery.Delivery.DeliveryInfo)
-			if err != nil {
-				// todo error handling
-
-				return nil, err
-			}
-
-			if len(sources) == 0 {
-				return nil, ErrNoSourceAvailable
-			}
-
-			qtyToAllocate := decoratedItem.Item.Qty
-			allocatedQty := 0
-
-			resultItemAllocations[ItemID(decoratedItem.Item.ID)] = make(AllocatedQtys)
-
-			productID := decoratedItem.Product.GetIdentifier()
-			if productID == "" {
-				return nil, ErrNeedMoreDetailsSourceCannotBeDetected
-			}
-
-			if _, exists := productSourcestock[productID]; !exists {
-				productSourcestock[productID] = make(map[string]int)
-			}
-
-			for _, source := range sources {
-				sourceKey := source.LocationCode + source.ExternalLocationCode
-				if sourceKey == "" {
-					return nil, ErrNeedMoreDetailsSourceCannotBeDetected
-				}
-
-				if _, exists := productSourcestock[productID][sourceKey]; !exists {
-					sourceStock, err := d.stockProvider.GetStock(ctx, decoratedItem.Product, source)
-					if err != nil {
-						// todo error handling
-
-						return nil, err
-					}
-
-					productSourcestock[productID][sourceKey] = sourceStock
-				}
-
-				if productSourcestock[productID][sourceKey] > 0 && allocatedQty < qtyToAllocate {
-					// stock to write to result allocation is the lowest of either :
-					// - the remaining qty that is to be allocated
-					// OR
-					// - the existing sourceStock that is then used completely
-					stockToAllocate := min(qtyToAllocate-allocatedQty, productSourcestock[productID][sourceKey])
-
-					resultItemAllocations[ItemID(decoratedItem.Item.ID)][source] = stockToAllocate
-
-					// increment allocatedQty by allocated Stock
-					allocatedQty = allocatedQty + stockToAllocate
-
-					// decrement remaining productSourceStock accordingly as its not happening by itself
-					productSourcestock[productID][sourceKey] = productSourcestock[productID][sourceKey] - stockToAllocate
-				}
-			}
-
-			if allocatedQty < qtyToAllocate {
-				return nil, ErrInsufficientSourceQty
-			}
+			var itemAllocation ItemAllocation
+			itemAllocation, productSourcestock = d.allocateItem(ctx, productSourcestock, decoratedItem, delivery.Delivery.DeliveryInfo)
+			resultItemAllocations[ItemID(decoratedItem.Item.ID)] = itemAllocation
 		}
 	}
 
-	return resultItemAllocations, nil
+	return resultItemAllocations, overallError
+}
+
+//allocateItem returns the itemAllocaton and the remaining stock
+func (d *DefaultSourcingService) allocateItem(ctx context.Context, productSourcestock map[string]map[Source]int, decoratedItem decorator.DecoratedCartItem, deliveryInfo cartDomain.DeliveryInfo) (ItemAllocation, map[string]map[Source]int) {
+	var resultItemAllocation = ItemAllocation{
+		AllocatedQtys: make(AllocatedQtys),
+	}
+	//copy given known stock
+	remainingSourcestock := productSourcestock
+
+	productID := decoratedItem.Product.GetIdentifier()
+	if productID == "" {
+		return ItemAllocation{
+			Error: errors.New("product id missing"),
+		}, remainingSourcestock
+	}
+	sources, err := d.availableSourcesProvider.GetPossibleSources(ctx, decoratedItem.Product, &deliveryInfo)
+	if err != nil {
+		return ItemAllocation{
+			Error: err,
+		}, remainingSourcestock
+	}
+	if len(sources) == 0 {
+		return ItemAllocation{
+			Error: ErrNoSourceAvailable,
+		}, remainingSourcestock
+	}
+
+	qtyToAllocate := decoratedItem.Item.Qty
+	allocatedQty := 0
+
+	if _, exists := productSourcestock[productID]; !exists {
+		productSourcestock[productID] = make(map[Source]int)
+	}
+
+	for _, source := range sources {
+		//If we have not stock given for source and productid we fetch it initially
+		if _, exists := remainingSourcestock[productID][source]; !exists {
+			sourceStock, err := d.stockProvider.GetStock(ctx, decoratedItem.Product, source)
+			if err != nil {
+				d.logger.Error(err)
+				continue
+			}
+			remainingSourcestock[productID][source] = sourceStock
+		}
+
+		if remainingSourcestock[productID][source] == 0 {
+			continue
+		}
+		if allocatedQty < qtyToAllocate {
+			// stock to write to result allocation is the lowest of either :
+			// - the remaining qty that is to be allocated
+			// OR
+			// - the existing sourceStock that is then used completely
+			stockToAllocate := min(qtyToAllocate-allocatedQty, productSourcestock[productID][source])
+
+			resultItemAllocation.AllocatedQtys[source] = stockToAllocate
+
+			// increment allocatedQty by allocated Stock
+			allocatedQty = allocatedQty + stockToAllocate
+
+			// decrement remaining productSourceStock accordingly as its not happening by itself
+			remainingSourcestock[productID][source] = remainingSourcestock[productID][source] - stockToAllocate
+		}
+	}
+
+	if allocatedQty < qtyToAllocate {
+		resultItemAllocation.Error = ErrInsufficientSourceQty
+	}
+	return resultItemAllocation, remainingSourcestock
 }
 
 /*
