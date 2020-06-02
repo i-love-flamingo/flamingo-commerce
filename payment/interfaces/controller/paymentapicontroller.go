@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"flamingo.me/flamingo-commerce/v3/payment/domain"
 	"fmt"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/application"
@@ -36,6 +37,12 @@ func (pc *PaymentAPIController) Inject(
 }
 
 // Status Get Payment Status
+// @Summary Get the payment status of current cart (or last placed cart)
+// @Tags v1 Payment ajax API
+// @Produce json
+// @Success 200 {object} domain.FlowStatus{data=cart.Cart}
+// @Failure 500 {object} resultError
+// @Router /api/v1/payment/status [get]
 func (pc *PaymentAPIController) Status(ctx context.Context, r *web.Request) web.Result {
 	decoratedCart, err := pc.orderService.LastPlacedOrCurrentCart(ctx)
 

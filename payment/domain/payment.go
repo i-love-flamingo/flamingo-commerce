@@ -21,9 +21,9 @@ type (
 
 	// FlowStatus contains information about the current payment status
 	FlowStatus struct {
-		// Status of the payment flow
+		// Status of the payment flow. E.g. "payment_completed", "payment_waiting_for_customer" or "payment_failed"
 		Status string
-		// Action to perform to proceed in the payment flow
+		// Action to perform to proceed in the payment flow. If status is "payment_waiting_for_customer" this field contains information about what to do - e.g. "redirect" or "show_iframe"
 		Action string
 		// Data contains additional information related to the action / flow
 		Data       interface{}
