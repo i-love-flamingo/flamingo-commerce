@@ -21,7 +21,7 @@ type (
 	// Deprecated: Sourcing moved to separate module
 	SourcingService interface {
 		//GetSourceID  returns one source location code where the product should be sourced
-		//@todo will be Depricated in future in favor of SourcingServiceDetail interface
+		//@todo will be Deprecated in future in favor of SourcingServiceDetail interface
 		GetSourceID(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart, deliveryCode string, item *decorator.DecoratedCartItem) (string, error)
 	}
 	// SourcingServiceDetail additional interface to return

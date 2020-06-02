@@ -29,6 +29,8 @@
   * `Commerce_Customer` returns the logged-in customer
  
 **checkout**
+* Deprecate Sourcing service port in checkout (activate if required with setting `commerce.checkout.activateDeprecatedSourcing`)
+* Make cart validation before place order optional with configuration
 * State Machine
   * Add additional metrics to monitor place order flow
     * flamingo_commerce_checkout_placeorder_starts
@@ -42,6 +44,8 @@
 
 **docs**
 * Add Swagger/OpenAPI 2.0 specification to project, using [swaggo/swag](https://github.com/swaggo/swag)
+**sourcing**
+* Add new "sourcing" module that can be used standalone. See sourcing/Readme.md for more details
 
 ## v3.2.0
 **w3cdatalayer**
