@@ -7,7 +7,6 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/customer/domain"
 	"flamingo.me/flamingo/v3/core/auth"
-	OAuthDomain "flamingo.me/flamingo/v3/core/oauth/domain"
 )
 
 type (
@@ -24,19 +23,9 @@ type (
 )
 
 var (
-	_ domain.CustomerService         = new(FakeService)
 	_ domain.CustomerIdentityService = new(FakeService)
 	_ domain.Customer                = new(customer)
 )
-
-// GetByAuth gets a customer based on Auth infos
-func (f FakeService) GetByAuth(_ context.Context, auth OAuthDomain.Auth) (domain.Customer, error) {
-	if auth.IDToken != nil {
-		return getCustomer(auth.IDToken.Subject), nil
-	}
-
-	return nil, errors.New("not logged in")
-}
 
 // GetByIdentity retrieves the authenticated customer by Identity
 func (f FakeService) GetByIdentity(_ context.Context, identity auth.Identity) (domain.Customer, error) {

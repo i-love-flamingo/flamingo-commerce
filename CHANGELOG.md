@@ -35,7 +35,7 @@
 **customer**
 * **Breaking**: renamed `GetId` to `GetID` in `domain.Customer` interface
 * introduced new `CustomerIdentityService` to retrieve authenticated customers by `auth.Identity` 
-* deprecated `CustomerService` as it will be replaced by `CustomerIdentityService`
+* **Breaking**: removed `CustomerService` please use `CustomerIdentityService`
 * GraphQL: Add new customer queries:
   * `Commerce_Customer_Status` returns the customer's login status
   * `Commerce_Customer` returns the logged-in customer

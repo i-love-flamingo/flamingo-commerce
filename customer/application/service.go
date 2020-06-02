@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"flamingo.me/flamingo/v3/core/auth"
-	"flamingo.me/flamingo/v3/core/oauth/application"
 	"flamingo.me/flamingo/v3/framework/web"
 
 	"flamingo.me/flamingo-commerce/v3/customer/domain"
@@ -18,8 +17,6 @@ var (
 
 // Service for customer management
 type Service struct {
-	AuthManager             *application.AuthManager
-	CustomerService         domain.CustomerService
 	customerIdentityService domain.CustomerIdentityService
 
 	webIdentityService *auth.WebIdentityService
@@ -27,26 +24,13 @@ type Service struct {
 
 // Inject dependencies
 func (s *Service) Inject(
-	authManager *application.AuthManager,
-	customerService domain.CustomerService,
 	webIdentityService *auth.WebIdentityService,
 	customerIdentityService domain.CustomerIdentityService,
 ) *Service {
-	s.AuthManager = authManager
-	s.CustomerService = customerService
 	s.webIdentityService = webIdentityService
 	s.customerIdentityService = customerIdentityService
 
 	return s
-}
-
-// GetForAuthenticatedUser returns the authenticated user
-func (s *Service) GetForAuthenticatedUser(ctx context.Context, session *web.Session) (domain.Customer, error) {
-	userAuth, err := s.AuthManager.Auth(ctx, session)
-	if err != nil {
-		return nil, err
-	}
-	return s.CustomerService.GetByAuth(ctx, userAuth)
 }
 
 // GetForIdentity returns the authenticated user if logged in
