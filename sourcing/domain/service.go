@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"math"
 
 	"flamingo.me/flamingo/v3/framework/flamingo"
 
@@ -154,29 +155,6 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 	return availableSources, nil
 }
 
-func (d *DefaultSourcingService) checkConfiguration() error {
-	if d.availableSourcesProvider == nil {
-		d.logger.Error("no Source Provider bound")
-		return errors.New("no Source Provider bound")
-	}
-	if d.stockProvider == nil {
-		d.logger.Error("no Stock Provider bound")
-		return errors.New("no Stock Provider bound")
-	}
-
-	return nil
-}
-
-func getItemIdsWithProduct(dc *decorator.DecoratedCart, product domain.BasicProduct) []ItemID {
-	var result []ItemID
-	for _, di := range dc.GetAllDecoratedItems() {
-		if di.Product.GetIdentifier() == product.GetIdentifier() {
-			result = append(result, ItemID(di.Item.ID))
-		}
-	}
-	return result
-}
-
 // AllocateItems - see description in Interface
 func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCart *decorator.DecoratedCart) (ItemAllocations, error) {
 	if err := d.checkConfiguration(); err != nil {
@@ -209,7 +187,31 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 	return resultItemAllocations, overallError
 }
 
-//allocateItem returns the itemAllocaton and the remaining stock
+func (d *DefaultSourcingService) checkConfiguration() error {
+	if d.availableSourcesProvider == nil {
+		d.logger.Error("no Source Provider bound")
+		return errors.New("no Source Provider bound")
+	}
+	if d.stockProvider == nil {
+		d.logger.Error("no Stock Provider bound")
+		return errors.New("no Stock Provider bound")
+	}
+
+	return nil
+}
+
+func getItemIdsWithProduct(dc *decorator.DecoratedCart, product domain.BasicProduct) []ItemID {
+	var result []ItemID
+	for _, di := range dc.GetAllDecoratedItems() {
+		if di.Product.GetIdentifier() == product.GetIdentifier() {
+			result = append(result, ItemID(di.Item.ID))
+		}
+	}
+	return result
+}
+
+//allocateItem returns the itemAllocation and the remaining stock for the given item.
+// The passed productSourcestock is used - and the remaining productSourcestock is returned. In case a source is not yet goven in productSourcestock it will be fetched
 func (d *DefaultSourcingService) allocateItem(ctx context.Context, productSourcestock map[string]map[Source]int, decoratedItem decorator.DecoratedCartItem, deliveryInfo cartDomain.DeliveryInfo) (ItemAllocation, map[string]map[Source]int) {
 	var resultItemAllocation = ItemAllocation{
 		AllocatedQtys: make(AllocatedQtys),
@@ -279,52 +281,21 @@ func (d *DefaultSourcingService) allocateItem(ctx context.Context, productSource
 	return resultItemAllocation, remainingSourcestock
 }
 
-/*
-// MainLocation returns first sourced location (or empty string)
-func (s Sources) MainLocation() string {
-	if len(s) < 1 {
-		return ""
-	}
-	return s[0].LocationCode
-}
-
-// Next - returns the next source and the remaining, or error if nothing remains
-func (s Sources) Next() (Source, Sources, error) {
-	if s.QtySum() < 1 {
-		return Source{}, Sources{}, ErrInsufficientSourceQty
-	}
-	for _, source := range s {
-		if source.Qty > 0 {
-			usedSource := Source{
-				Qty:          1,
-				LocationCode: source.LocationCode,
-			}
-			usedSources := Sources{usedSource}
-			return usedSource, s.Reduce(usedSources), nil
-		}
-	}
-	return Source{}, Sources{}, ErrInsufficientSourceQty
-}
-
 // QtySum returns the sum of all sourced items
-func (s Sources) QtySum() int {
+func (s AvailableSources) QtySum() int {
 	qty := int(0)
-	for _, source := range s {
-		if source.Qty == math.MaxInt64 {
-			return math.MaxInt64
+	for _, sqty := range s {
+		if sqty == math.MaxInt64 {
+			return sqty
 		}
-		qty = qty + source.Qty
+		qty = qty + sqty
 	}
 	return qty
 }
 
-
-*/
-
 // Reduce returns new AvailableSources reduced by the given AvailableSources
 func (s AvailableSources) Reduce(reducedBy AllocatedQtys) AvailableSources {
 	newAvailableSources := make(AvailableSources)
-
 	for source, availableQty := range s {
 		if allocated, ok := reducedBy[source]; ok {
 			newQty := availableQty - allocated
@@ -335,14 +306,13 @@ func (s AvailableSources) Reduce(reducedBy AllocatedQtys) AvailableSources {
 			newAvailableSources[source] = availableQty
 		}
 	}
-
 	return newAvailableSources
 }
 
+//min returns minimum of 2 ints
 func min(a int, b int) int {
 	if a < b {
 		return a
 	}
-
 	return b
 }
