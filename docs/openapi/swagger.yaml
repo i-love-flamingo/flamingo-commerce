@@ -1,32 +1,4 @@
 definitions:
-  CategoryAttribute:
-    properties:
-      code:
-        type: string
-      label:
-        type: string
-      values:
-        items:
-          $ref: '#/definitions/domain.AttributeValue'
-        type: array
-    type: object
-  CategoryAttributes:
-    additionalProperties:
-      $ref: '#/definitions/CategoryAttribute'
-    type: object
-  ProductMedia:
-    properties:
-      mimeType:
-        type: string
-      reference:
-        type: string
-      title:
-        type: string
-      type:
-        type: string
-      usage:
-        type: string
-    type: object
   cart.AdditionalData:
     properties:
       customAttributes:
@@ -446,12 +418,11 @@ definitions:
       message:
         type: string
     type: object
-  domain.AttributeValue:
-    properties:
-      label:
-        type: string
-      rawValue:
-        type: object
+  domain.Attribute:
+    type: object
+  domain.Attributes:
+    additionalProperties:
+      $ref: '#/definitions/domain.Attribute'
     type: object
   domain.BasicProduct:
     type: object
@@ -555,6 +526,8 @@ definitions:
         description: Type - Name( or Type) of the Loyalty program
         type: string
     type: object
+  domain.Media:
+    type: object
   domain.Price:
     type: object
   domain.PriceContext:
@@ -602,7 +575,7 @@ definitions:
         $ref: '#/definitions/domain.PriceInfo'
         type: object
       attributes:
-        $ref: '#/definitions/CategoryAttributes'
+        $ref: '#/definitions/domain.Attributes'
         type: object
       availablePrices:
         items:
@@ -648,7 +621,7 @@ definitions:
         type: string
       media:
         items:
-          $ref: '#/definitions/ProductMedia'
+          $ref: '#/definitions/domain.Media'
         type: array
       retailerCode:
         type: string
@@ -684,7 +657,7 @@ definitions:
       media:
         description: Media
         items:
-          $ref: '#/definitions/ProductMedia'
+          $ref: '#/definitions/domain.Media'
         type: array
       preSelectedVariantSku:
         description: PreSelectedVariantSku - might be set for configurables to give

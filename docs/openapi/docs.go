@@ -480,49 +480,6 @@ var doc = `{
         }
     },
     "definitions": {
-        "CategoryAttribute": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "label": {
-                    "type": "string"
-                },
-                "values": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/domain.AttributeValue"
-                    }
-                }
-            }
-        },
-        "CategoryAttributes": {
-            "type": "object",
-            "additionalProperties": {
-                "$ref": "#/definitions/CategoryAttribute"
-            }
-        },
-        "ProductMedia": {
-            "type": "object",
-            "properties": {
-                "mimeType": {
-                    "type": "string"
-                },
-                "reference": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "usage": {
-                    "type": "string"
-                }
-            }
-        },
         "cart.AdditionalData": {
             "type": "object",
             "properties": {
@@ -1084,15 +1041,13 @@ var doc = `{
                 }
             }
         },
-        "domain.AttributeValue": {
+        "domain.Attribute": {
+            "type": "object"
+        },
+        "domain.Attributes": {
             "type": "object",
-            "properties": {
-                "label": {
-                    "type": "string"
-                },
-                "rawValue": {
-                    "type": "object"
-                }
+            "additionalProperties": {
+                "$ref": "#/definitions/domain.Attribute"
             }
         },
         "domain.BasicProduct": {
@@ -1232,6 +1187,9 @@ var doc = `{
                 }
             }
         },
+        "domain.Media": {
+            "type": "object"
+        },
         "domain.Price": {
             "type": "object"
         },
@@ -1302,7 +1260,7 @@ var doc = `{
                 },
                 "attributes": {
                     "type": "object",
-                    "$ref": "#/definitions/CategoryAttributes"
+                    "$ref": "#/definitions/domain.Attributes"
                 },
                 "availablePrices": {
                     "type": "array",
@@ -1367,7 +1325,7 @@ var doc = `{
                 "media": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ProductMedia"
+                        "$ref": "#/definitions/domain.Media"
                     }
                 },
                 "retailerCode": {
@@ -1420,7 +1378,7 @@ var doc = `{
                     "description": "Media",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ProductMedia"
+                        "$ref": "#/definitions/domain.Media"
                     }
                 },
                 "preSelectedVariantSku": {
