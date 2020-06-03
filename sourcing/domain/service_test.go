@@ -151,6 +151,7 @@ func TestDefaultSourcingService_GetAvailableSources(t *testing.T) {
 		availableSources, err := sourcingService.GetAvailableSources(context.Background(), stubbedProduct, nil, &testCart)
 
 		t.Log(availableSources)
+
 		assert.Error(t, err)
 		assert.Equal(t, err, domain.ErrNoSourceAvailable)
 	})
@@ -248,7 +249,6 @@ func TestDefaultSourcingService_AllocateItems(t *testing.T) {
 		assert.Equal(t, 3, itemAllocation[domain.ItemID("item2")].AllocatedQtys[source1])
 		assert.Equal(t, 2, itemAllocation[domain.ItemID("item2")].AllocatedQtys[source3])
 		assert.Equal(t, 5, itemAllocation[domain.ItemID("item3")].AllocatedQtys[source2])
-
 	})
 }
 

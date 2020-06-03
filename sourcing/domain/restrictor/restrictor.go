@@ -15,7 +15,7 @@ type (
 	// Restrictor restricts qty based on available stock
 	Restrictor struct {
 		logger          flamingo.Logger
-		sourcingService *application.Service
+		sourcingService application.SourcingApplication
 	}
 )
 
@@ -24,10 +24,11 @@ var _ validation.MaxQuantityRestrictor = new(Restrictor)
 // Inject dependencies
 func (r *Restrictor) Inject(
 	l flamingo.Logger,
-	sourcingService *application.Service,
+	sourcingService application.SourcingApplication,
 ) *Restrictor {
 	r.logger = l.WithField(flamingo.LogKeyCategory, "SourceAvailableRestrictor")
 	r.sourcingService = sourcingService
+
 	return r
 }
 
@@ -49,13 +50,14 @@ func (r *Restrictor) Restrict(ctx context.Context, product productDomain.BasicPr
 	}
 
 	availableSources, err := r.sourcingService.GetAvailableSources(ctx, product, deliveryCode)
-
 	if err != nil {
 		return unrestricted
 	}
-	availableSourcesDeducted, err := r.sourcingService.GetAvailableSources(ctx, product, deliveryCode)
+
+	availableSourcesDeducted, err := r.sourcingService.GetAvailableSourcesDeductedByCurrentCart(ctx, product, deliveryCode)
 	if err != nil {
 		r.logger.Error(err)
+
 		return &validation.RestrictionResult{
 			IsRestricted:        true,
 			MaxAllowed:          availableSources.QtySum(),
@@ -63,6 +65,7 @@ func (r *Restrictor) Restrict(ctx context.Context, product productDomain.BasicPr
 			RestrictorName:      r.Name(),
 		}
 	}
+
 	return &validation.RestrictionResult{
 		IsRestricted:        true,
 		MaxAllowed:          availableSources.QtySum(),

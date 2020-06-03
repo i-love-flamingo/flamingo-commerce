@@ -1,0 +1,151 @@
+package restrictors
+
+import (
+	"context"
+	"errors"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
+	"flamingo.me/flamingo-commerce/v3/product/domain"
+	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
+	sourcingApplication "flamingo.me/flamingo-commerce/v3/sourcing/application"
+	sourcingDomain "flamingo.me/flamingo-commerce/v3/sourcing/domain"
+	"flamingo.me/flamingo/v3/framework/flamingo"
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
+
+type (
+	sourcingServiceMock struct {
+		AvailableSources              sourcingDomain.AvailableSources
+		AvailableSourcesError         error
+		DeductedAvailableSources      sourcingDomain.AvailableSources
+		DeductedAvailableSourcesError error
+	}
+)
+
+func (s *sourcingServiceMock) GetAvailableSourcesDeductedByCurrentCart(ctx context.Context, product domain.BasicProduct, deliveryCode string) (sourcingDomain.AvailableSources, error) {
+	return s.DeductedAvailableSources, s.DeductedAvailableSourcesError
+}
+
+func (s *sourcingServiceMock) GetAvailableSources(ctx context.Context, product domain.BasicProduct, deliveryCode string) (sourcingDomain.AvailableSources, error) {
+	return s.AvailableSources, s.AvailableSourcesError
+}
+
+var (
+	_ sourcingApplication.SourcingApplication = new(sourcingServiceMock)
+)
+
+func TestRestrictor_Restrict(t *testing.T) {
+	fixtureProduct := productDomain.SimpleProduct{Identifier: "productid"}
+
+	fixtureCart := &cart.Cart{}
+
+	t.Run("error handing on error fetching available sources", func(t *testing.T) {
+		want := &validation.RestrictionResult{
+			IsRestricted:        false,
+			MaxAllowed:          0,
+			RemainingDifference: 0,
+			RestrictorName:      "SourceAvailableRestrictor",
+		}
+
+		restrictor := &Restrictor{}
+		restrictor.Inject(
+			flamingo.NullLogger{},
+			&sourcingServiceMock{
+				AvailableSources:         nil,
+				DeductedAvailableSources: nil,
+				AvailableSourcesError:    errors.New("mocked available sources error"),
+			},
+		)
+
+		got := restrictor.Restrict(
+			context.Background(),
+			fixtureProduct,
+			fixtureCart,
+			"test",
+		)
+
+		assert.Equal(t, got, want)
+	})
+
+	t.Run("available sources were fetched but deduction failed, returning full source stock", func(t *testing.T) {
+		want := &validation.RestrictionResult{
+			IsRestricted:        true,
+			MaxAllowed:          3,
+			RemainingDifference: 0,
+			RestrictorName:      "SourceAvailableRestrictor",
+		}
+
+		restrictor := &Restrictor{}
+		restrictor.Inject(
+			flamingo.NullLogger{},
+			&sourcingServiceMock{
+				AvailableSources: sourcingDomain.AvailableSources{
+					sourcingDomain.Source{
+						LocationCode:         "testCode1",
+						ExternalLocationCode: "testExternalLocation1",
+					}: 3,
+				},
+				DeductedAvailableSources:      nil,
+				AvailableSourcesError:         nil,
+				DeductedAvailableSourcesError: errors.New("mocked available sources error"),
+			},
+		)
+
+		got := restrictor.Restrict(
+			context.Background(),
+			fixtureProduct,
+			fixtureCart,
+			"test",
+		)
+
+		assert.Equal(t, got, want)
+	})
+
+	t.Run("returning deducted source normally", func(t *testing.T) {
+		want := &validation.RestrictionResult{
+			IsRestricted:        true,
+			MaxAllowed:          5,
+			RemainingDifference: 3,
+			RestrictorName:      "SourceAvailableRestrictor",
+		}
+
+		restrictor := &Restrictor{}
+		restrictor.Inject(
+			flamingo.NullLogger{},
+			&sourcingServiceMock{
+				AvailableSources: sourcingDomain.AvailableSources{
+					sourcingDomain.Source{
+						LocationCode:         "testCode1",
+						ExternalLocationCode: "testExternalLocation1",
+					}: 3,
+					sourcingDomain.Source{
+						LocationCode:         "testCode2",
+						ExternalLocationCode: "testExternalLocation1",
+					}: 2,
+				},
+				DeductedAvailableSources: sourcingDomain.AvailableSources{
+					sourcingDomain.Source{
+						LocationCode:         "testCode1",
+						ExternalLocationCode: "testExternalLocation",
+					}: 2,
+					sourcingDomain.Source{
+						LocationCode:         "testCode2",
+						ExternalLocationCode: "testExternalLocation",
+					}: 1,
+				},
+				AvailableSourcesError:         nil,
+				DeductedAvailableSourcesError: nil,
+			},
+		)
+
+		got := restrictor.Restrict(
+			context.Background(),
+			fixtureProduct,
+			fixtureCart,
+			"test",
+		)
+
+		assert.Equal(t, got, want)
+	})
+}

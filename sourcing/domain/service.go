@@ -16,7 +16,7 @@ import (
 type (
 	// SourcingService interface
 	SourcingService interface {
-		//AllocateItems returns Sources for the given item in the given cart
+		// AllocateItems returns Sources for the given item in the given cart
 		// e.g. use this during place order to know
 		// throws ErrInsufficientSourceQty if not enough stock is available for the amount of items in the cart
 		// throws ErrNoSourceAvailable if no source is available at all for one of the items
@@ -34,7 +34,7 @@ type (
 	// ItemID string alias
 	ItemID string
 
-	//ItemAllocations represents the allocated Qtys per itemId
+	// ItemAllocations represents the allocated Qtys per itemId
 	ItemAllocations map[ItemID]ItemAllocation
 
 	//ItemAllocation info
@@ -43,7 +43,7 @@ type (
 		Error         error
 	}
 
-	//AllocatedQtys represents the allocated Qty per source
+	// AllocatedQtys represents the allocated Qty per source
 	AllocatedQtys map[Source]int
 
 	// Source descriptor for a single location
@@ -164,7 +164,7 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 		return nil, errors.New("Cart not given")
 	}
 
-	//productSourcestock holds the availablestock per product and source.
+	// productSourcestock holds the availablestock per product and source.
 	// During allocation the initial retrieved available stock is reduced according to used allocation
 	var productSourcestock = map[string]map[Source]int{}
 
@@ -174,7 +174,7 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 
 	resultItemAllocations := ItemAllocations{}
 
-	//overallError that will be returned
+	// overallError that will be returned
 	var overallError error
 	for _, delivery := range decoratedCart.DecoratedDeliveries {
 		for _, decoratedItem := range delivery.DecoratedItems {
@@ -210,13 +210,13 @@ func getItemIdsWithProduct(dc *decorator.DecoratedCart, product domain.BasicProd
 	return result
 }
 
-//allocateItem returns the itemAllocation and the remaining stock for the given item.
+// allocateItem returns the itemAllocation and the remaining stock for the given item.
 // The passed productSourcestock is used - and the remaining productSourcestock is returned. In case a source is not yet goven in productSourcestock it will be fetched
 func (d *DefaultSourcingService) allocateItem(ctx context.Context, productSourcestock map[string]map[Source]int, decoratedItem decorator.DecoratedCartItem, deliveryInfo cartDomain.DeliveryInfo) (ItemAllocation, map[string]map[Source]int) {
 	var resultItemAllocation = ItemAllocation{
 		AllocatedQtys: make(AllocatedQtys),
 	}
-	//copy given known stock
+	// copy given known stock
 	remainingSourcestock := productSourcestock
 
 	productID := decoratedItem.Product.GetIdentifier()
@@ -245,7 +245,7 @@ func (d *DefaultSourcingService) allocateItem(ctx context.Context, productSource
 	}
 
 	for _, source := range sources {
-		//If we have not stock given for source and productid we fetch it initially
+		// if we have no stock given for source and productid we fetch it initially
 		if _, exists := remainingSourcestock[productID][source]; !exists {
 			sourceStock, err := d.stockProvider.GetStock(ctx, decoratedItem.Product, source)
 			if err != nil {

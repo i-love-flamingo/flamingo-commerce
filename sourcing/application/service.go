@@ -15,6 +15,12 @@ import (
 )
 
 type (
+	// SourcingApplication interface
+	SourcingApplication interface {
+		GetAvailableSourcesDeductedByCurrentCart(ctx context.Context, product productDomain.BasicProduct, deliveryCode string) (domain.AvailableSources, error)
+		GetAvailableSources(ctx context.Context, product productDomain.BasicProduct, deliveryCode string) (domain.AvailableSources, error)
+	}
+
 	// Service to access the ourcing based on current cart
 	Service struct {
 		logger              flamingo.Logger
@@ -22,6 +28,10 @@ type (
 		cartReceiverService *application.CartReceiverService
 		deliveryInfoBuilder cart.DeliveryInfoBuilder
 	}
+)
+
+var (
+	_ SourcingApplication = new(Service)
 )
 
 // Inject dependencies
@@ -40,12 +50,11 @@ func (r *Service) Inject(
 	return r
 }
 
-// GetAvailableSourcesDeductedByCurrentCart
+// GetAvailableSourcesDeductedByCurrentCart fetches available sources minus those already allocated to the cart
 func (r *Service) GetAvailableSourcesDeductedByCurrentCart(ctx context.Context, product productDomain.BasicProduct, deliveryCode string) (domain.AvailableSources, error) {
-
 	if product == nil {
 		r.logger.WithContext(ctx).Error("No product given for GetAvailableSourcesDeductedByCurrentCart")
-		return nil, errors.New("No product given for GetAvailableSourcesDeductedByCurrentCart")
+		return nil, errors.New("no product given for GetAvailableSourcesDeductedByCurrentCart")
 	}
 
 	deliveryInfo, decoratedCart, err := r.getDeliveryInfo(ctx, deliveryCode)
@@ -53,6 +62,7 @@ func (r *Service) GetAvailableSourcesDeductedByCurrentCart(ctx context.Context, 
 		return nil, err
 	}
 
+	// todo : these need to be reduced somehow - cant read intention on how from this
 	return r.sourcingService.GetAvailableSources(ctx, product, deliveryInfo, decoratedCart)
 }
 
@@ -61,7 +71,7 @@ func (r *Service) GetAvailableSources(ctx context.Context, product productDomain
 
 	if product == nil {
 		r.logger.WithContext(ctx).Error("No product given for GetAvailableSources")
-		return nil, errors.New("No product given for GetAvailableSources")
+		return nil, errors.New("no product given for GetAvailableSources")
 	}
 
 	deliveryInfo, _, err := r.getDeliveryInfo(ctx, deliveryCode)
