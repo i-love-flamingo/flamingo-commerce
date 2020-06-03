@@ -480,6 +480,29 @@ var doc = `{
         }
     },
     "definitions": {
+        "CategoryAttribute": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "values": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.AttributeValue"
+                    }
+                }
+            }
+        },
+        "CategoryAttributes": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/CategoryAttribute"
+            }
+        },
         "cart.AdditionalData": {
             "type": "object",
             "properties": {
@@ -1041,13 +1064,15 @@ var doc = `{
                 }
             }
         },
-        "domain.Attribute": {
-            "type": "object"
-        },
-        "domain.Attributes": {
+        "domain.AttributeValue": {
             "type": "object",
-            "additionalProperties": {
-                "$ref": "#/definitions/domain.Attribute"
+            "properties": {
+                "label": {
+                    "type": "string"
+                },
+                "rawValue": {
+                    "type": "object"
+                }
             }
         },
         "domain.BasicProduct": {
@@ -1260,7 +1285,7 @@ var doc = `{
                 },
                 "attributes": {
                     "type": "object",
-                    "$ref": "#/definitions/domain.Attributes"
+                    "$ref": "#/definitions/CategoryAttributes"
                 },
                 "availablePrices": {
                     "type": "array",
