@@ -2,7 +2,6 @@ package cart
 
 import (
 	"flamingo.me/dingo"
-	"flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 	"flamingo.me/form"
@@ -176,7 +175,7 @@ func (r *routes) apiRoutes(registry *web.RouterRegistry) {
 	registry.HandleDelete("cart.api.get", r.apiController.DeleteCartAction)
 	registry.HandleGet("cart.api.get", r.apiController.GetAction)
 
-	//add command under the delivery:
+	// add command under the delivery:
 	registry.Route("/api/cart/delivery/:deliveryCode/additem", `cart.api.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryCode?="")`)
 	registry.Route("/api/v1/cart/delivery/:deliveryCode/additem", `cart.api.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryCode?="")`)
 
@@ -222,6 +221,6 @@ func (r *routes) apiRoutes(registry *web.RouterRegistry) {
 	registry.Route("/api/v1/cart/updatepaymentselection", `cart.api.updatepaymentselection`)
 	registry.HandlePut("cart.api.updatepaymentselection", r.apiController.UpdatePaymentSelectionAction)
 
-	//registry.Route("/api/cart/delivery/:shipping", `cart.api.shipping(deliveryCode?="")`)
-	//TODO registry.HandleDelete("cart.api.delivery", r.apiController.DeleteDelivery)
+	// registry.Route("/api/cart/delivery/:shipping", `cart.api.shipping(deliveryCode?="")`)
+	// TODO registry.HandleDelete("cart.api.delivery", r.apiController.DeleteDelivery)
 }
