@@ -293,7 +293,7 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 
 	err = cs.checkProductQtyRestrictions(ctx, product, cart, qty-qtyBefore, deliveryCode, itemID)
 	if err != nil {
-		cs.logger.WithContext(ctx).WithField("subCategory", "UpdateItemQty").Error(err)
+		cs.logger.WithContext(ctx).WithField("subCategory", "UpdateItemQty").Info(err)
 
 		return err
 	}
@@ -682,9 +682,14 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 	}()
 
 	addRequest, product, err := cs.checkProductForAddRequest(ctx, session, cart, deliveryCode, addRequest)
-	if err != nil {
-		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "AddProduct").Error(err)
 
+	switch err.(type) {
+	case nil:
+	case *validation.AddToCartNotAllowed:
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "AddProduct").Info(err)
+		return nil, err
+	default:
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "AddProduct").Warn(err)
 		return nil, err
 	}
 
@@ -699,7 +704,7 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 
 	err = cs.checkProductQtyRestrictions(ctx, product, cart, addRequest.Qty, deliveryCode, "")
 	if err != nil {
-		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "AddProduct").Error(err)
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "AddProduct").Info(err)
 
 		return nil, err
 	}
@@ -847,22 +852,22 @@ func (cs *CartService) handleCartNotFound(session *web.Session, err error) {
 func (cs *CartService) checkProductForAddRequest(ctx context.Context, session *web.Session, cart *cartDomain.Cart, deliveryCode string, addRequest cartDomain.AddRequest) (cartDomain.AddRequest, productDomain.BasicProduct, error) {
 	product, err := cs.productService.Get(ctx, addRequest.MarketplaceCode)
 	if err != nil {
-		return addRequest, nil, fmt.Errorf("cart.application.cartservice - AddProduct Error: %v", err)
+		return addRequest, nil, err
 	}
 
 	if product.Type() == productDomain.TypeConfigurable {
 		if addRequest.VariantMarketplaceCode == "" {
-			return addRequest, nil, errors.New("cart.application.cartservice - AddProduct:No Variant given for configurable product")
+			return addRequest, nil, errors.New("no variant given for configurable product")
 		}
 
 		configurableProduct := product.(productDomain.ConfigurableProduct)
 		if !configurableProduct.HasVariant(addRequest.VariantMarketplaceCode) {
-			return addRequest, nil, errors.New("cart.application.cartservice - AddProduct:Product has not the given variant")
+			return addRequest, nil, errors.New("product has not the given variant")
 		}
 
 		product, err = configurableProduct.GetConfigurableWithActiveVariant(addRequest.VariantMarketplaceCode)
 		if err != nil {
-			return addRequest, nil, fmt.Errorf("cart.application.cartservice - AddProduct: Get active variant error: %v", err)
+			return addRequest, nil, err
 		}
 	}
 
