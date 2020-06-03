@@ -6,7 +6,7 @@ require (
 	flamingo.me/dingo v0.2.9
 	flamingo.me/flamingo/v3 v3.2.1-0.20200331091700-03bb354d2ab5
 	flamingo.me/form v1.0.1
-	flamingo.me/graphql v1.0.2-0.20200109090653-271ced2b302c
+	flamingo.me/graphql v1.0.2
 	flamingo.me/pugtemplate v1.1.3
 	github.com/99designs/gqlgen v0.9.0
 	github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78 // indirect

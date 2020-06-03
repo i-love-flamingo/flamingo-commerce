@@ -41,6 +41,14 @@ func (c *APIController) Inject(responder *web.Responder,
 }
 
 // Get Response for Product matching marketplacecode param
+// @Summary Gets the requested product
+// @Tags v1 Product API
+// @Produce json
+// @Success 200 {object} APIResult{product=domain.SimpleProduct}
+// @Failure 500 {object} APIResult
+// @Failure 404 {object} APIResult
+// @Param marketplacecode path string true "the marketplace code (idendifier) for the product"
+// @Router /api/v1/products/{marketplacecode} [get]
 func (c *APIController) Get(ctx context.Context, r *web.Request) web.Result {
 	product, err := c.productService.Get(ctx, r.Params["marketplacecode"])
 	if err != nil {

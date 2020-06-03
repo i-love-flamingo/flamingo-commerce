@@ -1,4 +1,17 @@
 definitions:
+  ProductMedia:
+    properties:
+      mimeType:
+        type: string
+      reference:
+        type: string
+      title:
+        type: string
+      type:
+        type: string
+      usage:
+        type: string
+    type: object
   cart.AdditionalData:
     properties:
       customAttributes:
@@ -372,6 +385,17 @@ definitions:
       type:
         type: string
     type: object
+  controller.APIResult:
+    properties:
+      error:
+        $ref: '#/definitions/controller.resultError'
+        type: object
+      product:
+        $ref: '#/definitions/domain.BasicProduct'
+        type: object
+      success:
+        type: boolean
+    type: object
   controller.CartAPIResult:
     properties:
       cartTeaser:
@@ -407,7 +431,279 @@ definitions:
       message:
         type: string
     type: object
+  domain.Attribute:
+    type: object
+  domain.Attributes:
+    additionalProperties:
+      $ref: '#/definitions/domain.Attribute'
+    type: object
+  domain.BasicProduct:
+    type: object
+  domain.CategoryTeaser:
+    properties:
+      code:
+        description: Code the idendifier of the Category
+        type: string
+      name:
+        description: Name - speaking name of the category
+        type: string
+      parent:
+        $ref: '#/definitions/domain.CategoryTeaser'
+        description: Optional link to parent teaser
+        type: object
+      path:
+        description: The Path (root to leaf) for this Category - separated by "/"
+        type: string
+    type: object
+  domain.Error:
+    properties:
+      errorCode:
+        type: string
+      errorMessage:
+        type: string
+    type: object
+  domain.FlowActionData:
+    properties:
+      displayData:
+        description: DisplayData holds data, normally HTML to be displayed to the
+          user
+        type: string
+      formParameter:
+        additionalProperties:
+          $ref: '#/definitions/domain.FormField'
+        type: object
+      url:
+        description: URL is used to pass URL data to the user if the current state
+          needs some
+        type: string
+    type: object
+  domain.FlowStatus:
+    properties:
+      action:
+        description: Action to perform to proceed in the payment flow. If status is
+          "payment_waiting_for_customer" this field contains information about what
+          to do - e.g. "redirect" or "show_iframe"
+        type: string
+      actionData:
+        $ref: '#/definitions/domain.FlowActionData'
+        type: object
+      data:
+        description: Data contains additional information related to the action /
+          flow
+        type: object
+      error:
+        $ref: '#/definitions/domain.Error'
+        description: Error contains additional information in case of an error (e.g.
+          payment failed)
+        type: object
+      status:
+        description: Status of the payment flow. E.g. "payment_completed", "payment_waiting_for_customer"
+          or "payment_failed"
+        type: string
+    type: object
+  domain.FormField:
+    properties:
+      value:
+        items:
+          type: string
+        type: array
+    type: object
+  domain.LoyaltyEarningInfo:
+    properties:
+      default:
+        $ref: '#/definitions/domain.Price'
+        type: object
+      type:
+        type: string
+    type: object
+  domain.LoyaltyPriceInfo:
+    properties:
+      context:
+        $ref: '#/definitions/domain.PriceContext'
+        type: object
+      default:
+        $ref: '#/definitions/domain.Price'
+        type: object
+      discountText:
+        type: string
+      discounted:
+        $ref: '#/definitions/domain.Price'
+        type: object
+      isDiscounted:
+        type: boolean
+      maxPointsToSpent:
+        type: string
+      minPointsToSpent:
+        type: string
+      type:
+        description: Type - Name( or Type) of the Loyalty program
+        type: string
+    type: object
   domain.Price:
+    type: object
+  domain.PriceContext:
+    properties:
+      channelCode:
+        type: string
+      customerGroup:
+        type: string
+      locale:
+        type: string
+    type: object
+  domain.PriceInfo:
+    properties:
+      activeBase:
+        type: string
+      activeBaseAmount:
+        type: string
+      activeBaseUnit:
+        type: string
+      campaignRules:
+        items:
+          type: string
+        type: array
+      context:
+        $ref: '#/definitions/domain.PriceContext'
+        type: object
+      default:
+        $ref: '#/definitions/domain.Price'
+        type: object
+      denyMoreDiscounts:
+        type: boolean
+      discountText:
+        type: string
+      discounted:
+        $ref: '#/definitions/domain.Price'
+        type: object
+      isDiscounted:
+        type: boolean
+      taxClass:
+        type: string
+    type: object
+  domain.SimpleProduct:
+    properties:
+      activePrice:
+        $ref: '#/definitions/domain.PriceInfo'
+        type: object
+      attributes:
+        $ref: '#/definitions/domain.Attributes'
+        type: object
+      availablePrices:
+        items:
+          $ref: '#/definitions/domain.PriceInfo'
+        type: array
+      categories:
+        items:
+          $ref: '#/definitions/domain.CategoryTeaser'
+        type: array
+      categoryToCodeMapping:
+        items:
+          type: string
+        type: array
+      createdAt:
+        type: string
+      description:
+        type: string
+      identifier:
+        type: string
+      isNew:
+        type: boolean
+      isSaleable:
+        type: boolean
+      keywords:
+        items:
+          type: string
+        type: array
+      loyaltyEarnings:
+        description: LoyaltyEarnings optional infos about potential loyalty earnings
+        items:
+          $ref: '#/definitions/domain.LoyaltyEarningInfo'
+        type: array
+      loyaltyPrices:
+        description: LoyaltyPrices - Optional infos for products that can be paid
+          in a loyalty program
+        items:
+          $ref: '#/definitions/domain.LoyaltyPriceInfo'
+        type: array
+      mainCategory:
+        $ref: '#/definitions/domain.CategoryTeaser'
+        type: object
+      marketPlaceCode:
+        type: string
+      media:
+        items:
+          $ref: '#/definitions/ProductMedia'
+        type: array
+      retailerCode:
+        type: string
+      retailerName:
+        type: string
+      retailerSku:
+        type: string
+      saleableFrom:
+        type: string
+      saleableTo:
+        type: string
+      shortDescription:
+        type: string
+      stockLevel:
+        type: string
+      teaser:
+        $ref: '#/definitions/domain.TeaserData'
+        type: object
+      title:
+        type: string
+      updatedAt:
+        type: string
+      visibleFrom:
+        type: string
+      visibleTo:
+        type: string
+    type: object
+  domain.TeaserData:
+    properties:
+      marketPlaceCode:
+        description: The sku that should be used to link from Teasers
+        type: string
+      media:
+        description: Media
+        items:
+          $ref: '#/definitions/ProductMedia'
+        type: array
+      preSelectedVariantSku:
+        description: PreSelectedVariantSku - might be set for configurables to give
+          a hint to link to a variant of a configurable (That might be the case if
+          a user filters for an attribute and in the teaser the variant with that
+          attribute is shown)
+        type: string
+      shortDescription:
+        type: string
+      shortTitle:
+        type: string
+      teaserAvailablePrices:
+        items:
+          $ref: '#/definitions/domain.PriceInfo'
+        type: array
+      teaserLoyaltyEarningInfo:
+        $ref: '#/definitions/domain.LoyaltyEarningInfo'
+        description: TeaserLoyaltyEarning optional teaser for the loyalty earning
+          used in grid / list view
+        type: object
+      teaserLoyaltyPriceInfo:
+        $ref: '#/definitions/domain.LoyaltyPriceInfo'
+        description: TeaserLoyaltyPriceInfo - optional the Loyaltyprice that can be
+          used for teaser (e.g. on listing views)
+        type: object
+      teaserPrice:
+        $ref: '#/definitions/domain.PriceInfo'
+        description: TeaserPrice is the price that should be shown in teasers (listview)
+        type: object
+      teaserPriceIsFromPrice:
+        description: TeaserPriceIsFromPrice - is set to true in cases where a product
+          might have different prices (e.g. configurable)
+        type: boolean
+      urlslug:
+        type: string
     type: object
   validation.ItemValidationError:
     properties:
@@ -614,7 +910,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/controller.CartAPIResult'
+            allOf:
+            - $ref: '#/definitions/controller.CartAPIResult'
+            - properties:
+                data:
+                  $ref: '#/definitions/cart.Cart'
+              type: object
         "500":
           description: Internal Server Error
           schema:
@@ -666,8 +967,65 @@ paths:
       summary: Remove Voucher Code
       tags:
       - v1 Cart ajax API
+  /api/v1/payment/status:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/domain.FlowStatus'
+            - properties:
+                data:
+                  $ref: '#/definitions/cart.Cart'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.resultError'
+      summary: Get the payment status of current cart (or last placed cart)
+      tags:
+      - v1 Payment ajax API
+  /api/v1/products/{marketplacecode}:
+    get:
+      parameters:
+      - description: the marketplace code (idendifier) for the product
+        in: path
+        name: marketplacecode
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controller.APIResult'
+            - properties:
+                product:
+                  $ref: '#/definitions/domain.SimpleProduct'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.APIResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.APIResult'
+      summary: Gets the requested product
+      tags:
+      - v1 Product API
 swagger: "2.0"
 tags:
 - description: This Cart APIs are most suitable to be called from a browser, because
     they rely on the session and cookie headers.
   name: v1 Cart ajax API
+- description: This Payment APIs are most suitable to be called from a browser, because
+    they rely on the session and cookie headers.
+  name: v1 Payment ajax API
+- description: Product API.
+  name: v1 Product API

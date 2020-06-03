@@ -34,5 +34,6 @@ func (r *routes) Inject(apiController *controller.PaymentAPIController) {
 func (r *routes) Routes(registry *web.RouterRegistry) {
 	registry.HandleGet("payment.status", r.paymentAPIController.Status)
 	registry.Route("/api/payment/status", "payment.status")
+	registry.Route("/api/v1/payment/status", "payment.status")
 
 }

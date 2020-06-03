@@ -24,7 +24,9 @@ jobs:
         # test is done only for recent version.
         # Older versions might include other files during compilation and may therefore generate different go.mod files
         - go generate ./...
-        - git diff --quiet || (echo 'generated go files are not up to date, check go generate, go.sum and go.mod' ; git diff ; exit 1)
+        # Bug in swag results in Flaky swagger docs - see https://github.com/swaggo/swag/issues/721
+        #- git diff --quiet  || (echo 'generated go files are not up to date, check go generate, go.sum and go.mod' ; git diff ; exit 1)
+        - git diff --quiet -- . ":(exclude)docs" || (echo 'generated go files are not up to date, check go generate, go.sum and go.mod' ; git diff -- . ":(exclude)docs"; exit 1)
     - stage: integrationtest
       go: 1.x
       script:

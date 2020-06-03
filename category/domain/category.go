@@ -32,14 +32,14 @@ type (
 	}
 
 	// Attributes define additional category attributes
-	Attributes map[string]Attribute
+	Attributes map[string]Attribute //@name CategoryAttributes
 
 	// Attribute instance representation
 	Attribute struct {
 		Code   string
 		Label  string
 		Values []AttributeValue
-	}
+	} //@name CategoryAttribute
 
 	//AttributeValue represents the value that a Attribute can have
 	AttributeValue struct {

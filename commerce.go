@@ -5,7 +5,8 @@ package commerce
 	The subpackage represent Flamingo Commerce modules - please refer to the documentations for the individual modules.
 */
 
-//go:generate go run github.com/swaggo/swag/cmd/swag init --generalInfo=openapidoc.go --dir=./ --output=docs/openapi
+//go:generate rm -rf docs/openapi
+//go:generate go run github.com/swaggo/swag/cmd/swag init --generalInfo=commerce.go --dir=./ --output=docs/openapi
 
 // Swagger Documentation used for generator swag (https://github.com/swaggo/swag#declarative-comments-format)
 // @title Flamingo Commerce API Spec
@@ -17,3 +18,7 @@ package commerce
 // @license.name MIT
 // @tag.name v1 Cart ajax API
 // @tag.description This Cart APIs are most suitable to be called from a browser, because they rely on the session and cookie headers.
+// @tag.name v1 Payment ajax API
+// @tag.description This Payment APIs are most suitable to be called from a browser, because they rely on the session and cookie headers.
+// @tag.name v1 Product API
+// @tag.description Product API.

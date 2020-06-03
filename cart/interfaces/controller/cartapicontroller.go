@@ -99,7 +99,7 @@ func (cc *CartAPIController) GetAction(ctx context.Context, r *web.Request) web.
 // @Summary Add Item to cart
 // @Tags v1 Cart ajax API
 // @Produce json
-// @Success 200 {object} CartAPIResult
+// @Success 200 {object} CartAPIResult{data=cart.Cart}
 // @Failure 500 {object} CartAPIResult
 // @Param deliveryCode path string true "the idendifier for the delivery in the cart"
 // @Param marketplaceCode query string true "the product idendifier that should be added"

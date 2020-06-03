@@ -24,7 +24,6 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/templatefunctions"
 	"flamingo.me/flamingo/v3/core/oauth"
-	"flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 )
@@ -100,22 +99,35 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	injector.BindMulti(new(flamingographql.Service)).To(graphql.Service{})
 }
 
-// DefaultConfig enables inMemory cart service adapter
-func (m *Module) DefaultConfig() config.Map {
-	return config.Map{
-		"commerce": config.Map{
-			"cart": config.Map{
-				"useInMemoryCartServiceAdapters": true,
-				"useEmailPlaceOrderAdapter":      true,
-				"cacheLifetime":                  float64(1200), // in seconds
-				"enableCartCache":                true,
-				"defaultUseBillingAddress":       false,
-				"simplePaymentForm": config.Map{
-					"giftCardPaymentMethod": "voucher",
-				},
-			},
-		},
+// CueConfig defines the cart module configuration
+func (*Module) CueConfig() string {
+	return `
+commerce: {
+	cart: {
+		useInMemoryCartServiceAdapters: bool | *true
+		inMemoryCartServiceAdapter: {
+			defaultTaxRate?: number
+		}
+		useEmailPlaceOrderAdapter: bool | *true
+		enableCartCache: bool | *true
+		cacheLifetime: number | *1200
+		defaultUseBillingAddress: bool | *false
+		defaultDeliveryCode: string | *"delivery"
+		deleteEmptyDelivery: bool | *false
+		showEmptyCartPageIfNoItems?: bool
+		adjustItemsToRestrictedQty?: bool
+		personalDataForm: {
+			additionalFormFields: [string] | *[]
+			dateOfBirthRequired: bool | *false
+			passportCountryRequired: bool | *false
+			passportNumberRequired: bool | *false
+			minAge?: number
+		}
+		simplePaymentForm: {
+			giftCardPaymentMethod: string | *"voucher"
+		}
 	}
+}`
 }
 
 // Depends on other modules

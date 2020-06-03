@@ -280,7 +280,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/controller.CartAPIResult"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controller.CartAPIResult"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/cart.Cart"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "500": {
@@ -359,9 +371,118 @@
                     }
                 }
             }
+        },
+        "/api/v1/payment/status": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 Payment ajax API"
+                ],
+                "summary": "Get the payment status of current cart (or last placed cart)",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/domain.FlowStatus"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/cart.Cart"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.resultError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/products/{marketplacecode}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 Product API"
+                ],
+                "summary": "Gets the requested product",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the marketplace code (idendifier) for the product",
+                        "name": "marketplacecode",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controller.APIResult"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "product": {
+                                            "$ref": "#/definitions/domain.SimpleProduct"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/controller.APIResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.APIResult"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "ProductMedia": {
+            "type": "object",
+            "properties": {
+                "mimeType": {
+                    "type": "string"
+                },
+                "reference": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "usage": {
+                    "type": "string"
+                }
+            }
+        },
         "cart.AdditionalData": {
             "type": "object",
             "properties": {
@@ -856,6 +977,22 @@
                 }
             }
         },
+        "controller.APIResult": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "object",
+                    "$ref": "#/definitions/controller.resultError"
+                },
+                "product": {
+                    "type": "object",
+                    "$ref": "#/definitions/domain.BasicProduct"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
         "controller.CartAPIResult": {
             "type": "object",
             "properties": {
@@ -907,8 +1044,382 @@
                 }
             }
         },
+        "domain.Attribute": {
+            "type": "object"
+        },
+        "domain.Attributes": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/domain.Attribute"
+            }
+        },
+        "domain.BasicProduct": {
+            "type": "object"
+        },
+        "domain.CategoryTeaser": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "Code the idendifier of the Category",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Name - speaking name of the category",
+                    "type": "string"
+                },
+                "parent": {
+                    "description": "Optional link to parent teaser",
+                    "type": "object",
+                    "$ref": "#/definitions/domain.CategoryTeaser"
+                },
+                "path": {
+                    "description": "The Path (root to leaf) for this Category - separated by \"/\"",
+                    "type": "string"
+                }
+            }
+        },
+        "domain.Error": {
+            "type": "object",
+            "properties": {
+                "errorCode": {
+                    "type": "string"
+                },
+                "errorMessage": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.FlowActionData": {
+            "type": "object",
+            "properties": {
+                "displayData": {
+                    "description": "DisplayData holds data, normally HTML to be displayed to the user",
+                    "type": "string"
+                },
+                "formParameter": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/domain.FormField"
+                    }
+                },
+                "url": {
+                    "description": "URL is used to pass URL data to the user if the current state needs some",
+                    "type": "string"
+                }
+            }
+        },
+        "domain.FlowStatus": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "description": "Action to perform to proceed in the payment flow. If status is \"payment_waiting_for_customer\" this field contains information about what to do - e.g. \"redirect\" or \"show_iframe\"",
+                    "type": "string"
+                },
+                "actionData": {
+                    "type": "object",
+                    "$ref": "#/definitions/domain.FlowActionData"
+                },
+                "data": {
+                    "description": "Data contains additional information related to the action / flow",
+                    "type": "object"
+                },
+                "error": {
+                    "description": "Error contains additional information in case of an error (e.g. payment failed)",
+                    "type": "object",
+                    "$ref": "#/definitions/domain.Error"
+                },
+                "status": {
+                    "description": "Status of the payment flow. E.g. \"payment_completed\", \"payment_waiting_for_customer\" or \"payment_failed\"",
+                    "type": "string"
+                }
+            }
+        },
+        "domain.FormField": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "domain.LoyaltyEarningInfo": {
+            "type": "object",
+            "properties": {
+                "default": {
+                    "type": "object",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.LoyaltyPriceInfo": {
+            "type": "object",
+            "properties": {
+                "context": {
+                    "type": "object",
+                    "$ref": "#/definitions/domain.PriceContext"
+                },
+                "default": {
+                    "type": "object",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "discountText": {
+                    "type": "string"
+                },
+                "discounted": {
+                    "type": "object",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "isDiscounted": {
+                    "type": "boolean"
+                },
+                "maxPointsToSpent": {
+                    "type": "string"
+                },
+                "minPointsToSpent": {
+                    "type": "string"
+                },
+                "type": {
+                    "description": "Type - Name( or Type) of the Loyalty program",
+                    "type": "string"
+                }
+            }
+        },
         "domain.Price": {
             "type": "object"
+        },
+        "domain.PriceContext": {
+            "type": "object",
+            "properties": {
+                "channelCode": {
+                    "type": "string"
+                },
+                "customerGroup": {
+                    "type": "string"
+                },
+                "locale": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.PriceInfo": {
+            "type": "object",
+            "properties": {
+                "activeBase": {
+                    "type": "string"
+                },
+                "activeBaseAmount": {
+                    "type": "string"
+                },
+                "activeBaseUnit": {
+                    "type": "string"
+                },
+                "campaignRules": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "context": {
+                    "type": "object",
+                    "$ref": "#/definitions/domain.PriceContext"
+                },
+                "default": {
+                    "type": "object",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "denyMoreDiscounts": {
+                    "type": "boolean"
+                },
+                "discountText": {
+                    "type": "string"
+                },
+                "discounted": {
+                    "type": "object",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "isDiscounted": {
+                    "type": "boolean"
+                },
+                "taxClass": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.SimpleProduct": {
+            "type": "object",
+            "properties": {
+                "activePrice": {
+                    "type": "object",
+                    "$ref": "#/definitions/domain.PriceInfo"
+                },
+                "attributes": {
+                    "type": "object",
+                    "$ref": "#/definitions/domain.Attributes"
+                },
+                "availablePrices": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.PriceInfo"
+                    }
+                },
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.CategoryTeaser"
+                    }
+                },
+                "categoryToCodeMapping": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "identifier": {
+                    "type": "string"
+                },
+                "isNew": {
+                    "type": "boolean"
+                },
+                "isSaleable": {
+                    "type": "boolean"
+                },
+                "keywords": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "loyaltyEarnings": {
+                    "description": "LoyaltyEarnings optional infos about potential loyalty earnings",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.LoyaltyEarningInfo"
+                    }
+                },
+                "loyaltyPrices": {
+                    "description": "LoyaltyPrices - Optional infos for products that can be paid in a loyalty program",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.LoyaltyPriceInfo"
+                    }
+                },
+                "mainCategory": {
+                    "type": "object",
+                    "$ref": "#/definitions/domain.CategoryTeaser"
+                },
+                "marketPlaceCode": {
+                    "type": "string"
+                },
+                "media": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ProductMedia"
+                    }
+                },
+                "retailerCode": {
+                    "type": "string"
+                },
+                "retailerName": {
+                    "type": "string"
+                },
+                "retailerSku": {
+                    "type": "string"
+                },
+                "saleableFrom": {
+                    "type": "string"
+                },
+                "saleableTo": {
+                    "type": "string"
+                },
+                "shortDescription": {
+                    "type": "string"
+                },
+                "stockLevel": {
+                    "type": "string"
+                },
+                "teaser": {
+                    "type": "object",
+                    "$ref": "#/definitions/domain.TeaserData"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "visibleFrom": {
+                    "type": "string"
+                },
+                "visibleTo": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.TeaserData": {
+            "type": "object",
+            "properties": {
+                "marketPlaceCode": {
+                    "description": "The sku that should be used to link from Teasers",
+                    "type": "string"
+                },
+                "media": {
+                    "description": "Media",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ProductMedia"
+                    }
+                },
+                "preSelectedVariantSku": {
+                    "description": "PreSelectedVariantSku - might be set for configurables to give a hint to link to a variant of a configurable (That might be the case if a user filters for an attribute and in the teaser the variant with that attribute is shown)",
+                    "type": "string"
+                },
+                "shortDescription": {
+                    "type": "string"
+                },
+                "shortTitle": {
+                    "type": "string"
+                },
+                "teaserAvailablePrices": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.PriceInfo"
+                    }
+                },
+                "teaserLoyaltyEarningInfo": {
+                    "description": "TeaserLoyaltyEarning optional teaser for the loyalty earning used in grid / list view",
+                    "type": "object",
+                    "$ref": "#/definitions/domain.LoyaltyEarningInfo"
+                },
+                "teaserLoyaltyPriceInfo": {
+                    "description": "TeaserLoyaltyPriceInfo - optional the Loyaltyprice that can be used for teaser (e.g. on listing views)",
+                    "type": "object",
+                    "$ref": "#/definitions/domain.LoyaltyPriceInfo"
+                },
+                "teaserPrice": {
+                    "description": "TeaserPrice is the price that should be shown in teasers (listview)",
+                    "type": "object",
+                    "$ref": "#/definitions/domain.PriceInfo"
+                },
+                "teaserPriceIsFromPrice": {
+                    "description": "TeaserPriceIsFromPrice - is set to true in cases where a product might have different prices (e.g. configurable)",
+                    "type": "boolean"
+                },
+                "urlslug": {
+                    "type": "string"
+                }
+            }
         },
         "validation.ItemValidationError": {
             "type": "object",
@@ -943,6 +1454,14 @@
         {
             "description": "This Cart APIs are most suitable to be called from a browser, because they rely on the session and cookie headers.",
             "name": "v1 Cart ajax API"
+        },
+        {
+            "description": "This Payment APIs are most suitable to be called from a browser, because they rely on the session and cookie headers.",
+            "name": "v1 Payment ajax API"
+        },
+        {
+            "description": "Product API.",
+            "name": "v1 Product API"
         }
     ]
 }

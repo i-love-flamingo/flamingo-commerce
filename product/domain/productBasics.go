@@ -164,10 +164,10 @@ type (
 		Usage     string
 		Title     string
 		Reference string
-	}
+	} //@name ProductMedia
 
 	// Attributes describe a product attributes map
-	Attributes map[string]Attribute
+	Attributes map[string]Attribute //@name ProductAttributes
 
 	// Attribute for product attributes
 	// Example:
@@ -189,7 +189,7 @@ type (
 		RawValue interface{}
 		// UnitCode is the internal code of the attribute values measuring unit
 		UnitCode string
-	}
+	} //@name ProductAttribute
 
 	// Specifications of a product
 	Specifications struct {
