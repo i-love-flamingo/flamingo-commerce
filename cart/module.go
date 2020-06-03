@@ -105,20 +105,26 @@ func (*Module) CueConfig() string {
 commerce: {
 	cart: {
 		useInMemoryCartServiceAdapters: bool | *true
+		inMemoryCartServiceAdapter: {
+			defaultTaxRate?: number
+		}
 		useEmailPlaceOrderAdapter: bool | *true
 		enableCartCache: bool | *true
-		defaultUseBillingAddress: bool | *false
 		cacheLifetime: number | *1200
-		simplePaymentForm: {
-			giftCardPaymentMethod: string | *"voucher"
-		}
+		defaultUseBillingAddress: bool | *false
 		defaultDeliveryCode: string | *"delivery"
 		deleteEmptyDelivery: bool | *false
+		showEmptyCartPageIfNoItems?: bool
+		adjustItemsToRestrictedQty?: bool
 		personalDataForm: {
 			additionalFormFields: [string] | *[]
 			dateOfBirthRequired: bool | *false
 			passportCountryRequired: bool | *false
 			passportNumberRequired: bool | *false
+			minAge?: number
+		}
+		simplePaymentForm: {
+			giftCardPaymentMethod: string | *"voucher"
 		}
 	}
 }`
