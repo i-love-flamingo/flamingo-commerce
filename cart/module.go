@@ -116,7 +116,7 @@ commerce: {
 		deleteEmptyDelivery: bool | *false
 		personalDataForm: {
 			additionalFormFields: [string] | *[]
-			dateOfBirthRequired: false
+			dateOfBirthRequired: bool | *false
 			passportCountryRequired: bool | *false
 			passportNumberRequired: bool | *false
 		}
