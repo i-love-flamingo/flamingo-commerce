@@ -22,6 +22,26 @@ type Commerce_SimpleProduct implements Commerce_Product {
     getMedia(group: String!, usage: String!): Commerce_ProductMedia!
 }
 
+
+type Commerce_ConfigurableProduct implements Commerce_Product {
+    baseData: Commerce_BasicProductData!
+    teaserData: Commerce_ProductTeaserData!
+    specifications: Commerce_ProductSpecifications!
+    isSaleable: Boolean!
+    saleableData: Commerce_ProductSaleable!
+    type: String!
+    getIdentifier: String!
+    hasMedia(group: String!, usage: String!): Boolean!
+    getMedia(group: String!, usage: String!): Commerce_ProductMedia!
+    variants: [Commerce_Product_Variant!]
+    variantVariationAttributes: [String!]
+}
+
+type Commerce_Product_Variant {
+    baseData: Commerce_BasicProductData!
+    saleableData: Commerce_ProductSaleable!
+}
+
 type Commerce_BasicProductData {
     title:            String!
     attributes:       Commerce_ProductAttributes

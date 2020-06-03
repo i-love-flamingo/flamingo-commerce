@@ -1,0 +1,31 @@
+query  {
+    Commerce_Product(marketplaceCode:"fake_configurable") {
+        baseData {
+            title
+        }
+        __typename
+        ... on Commerce_ConfigurableProduct {
+
+            variants {
+                baseData {title}
+                saleableData{
+                    isSaleable
+                    activePrice {
+                        default {amount currency}
+                        discounted {amount currency}
+                        isDiscounted
+                    }
+                }
+            }
+
+        }
+        isSaleable
+        saleableData{
+            activePrice {
+                default {amount, currency}
+                isDiscounted
+                discounted {amount, currency}
+            }
+        }
+    }
+}
