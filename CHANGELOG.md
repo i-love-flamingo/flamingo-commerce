@@ -10,6 +10,7 @@
 
 **cart**
 * **Breaking**: Cart item validation now requires the decorated cart to be passed to assure that validators don't rely on a cart from any other source (e.g. session)
+* Switch module config to CUE
 * GraphQL
   * Add new mutation to set / update one or multiple delivery addresses `Commerce_Cart_UpdateDeliveryAddresses`
   * Add new mutation to update the shipping options (carrier / method) of an existing delivery `Commerce_Cart_UpdateDeliveryShippingOptions`
@@ -36,6 +37,9 @@
 **search**
 * Switch module config to CUE
 * Update `pagination` module configuration. Use `commerce.pagination` namespace for configuration now.
+
+**docs**
+* Add Swagger/OpenAPI 2.0 specification to project, using [swaggo/swag](https://github.com/swaggo/swag)
 
 ## v3.2.0
 **w3cdatalayer**
