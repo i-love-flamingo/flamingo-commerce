@@ -293,7 +293,7 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 
 	err = cs.checkProductQtyRestrictions(ctx, product, cart, qty-qtyBefore, deliveryCode, itemID)
 	if err != nil {
-		cs.logger.WithContext(ctx).WithField("subCategory", "UpdateItemQty").Error(err)
+		cs.logger.WithContext(ctx).WithField("subCategory", "UpdateItemQty").Info(err)
 
 		return err
 	}
