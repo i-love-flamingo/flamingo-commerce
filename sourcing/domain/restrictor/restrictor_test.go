@@ -72,7 +72,7 @@ func TestRestrictor_Restrict(t *testing.T) {
 		want := &validation.RestrictionResult{
 			IsRestricted:        true,
 			MaxAllowed:          3,
-			RemainingDifference: 0,
+			RemainingDifference: 3,
 			RestrictorName:      "SourceAvailableRestrictor",
 		}
 

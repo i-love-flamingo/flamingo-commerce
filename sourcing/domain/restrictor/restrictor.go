@@ -61,7 +61,7 @@ func (r *Restrictor) Restrict(ctx context.Context, product productDomain.BasicPr
 		return &validation.RestrictionResult{
 			IsRestricted:        true,
 			MaxAllowed:          availableSources.QtySum(),
-			RemainingDifference: 0,
+			RemainingDifference: availableSources.QtySum(),
 			RestrictorName:      r.Name(),
 		}
 	}
