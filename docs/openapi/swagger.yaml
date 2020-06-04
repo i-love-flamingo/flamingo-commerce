@@ -360,10 +360,17 @@ definitions:
       type:
         type: string
     type: object
+  cartResultError:
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+    type: object
   controller.APIResult:
     properties:
       error:
-        $ref: '#/definitions/flamingo.me_flamingo-commerce_v3_product_interfaces_controller.resultError'
+        $ref: '#/definitions/productResultError'
       product:
         $ref: '#/definitions/domain.BasicProduct'
       success:
@@ -380,7 +387,7 @@ definitions:
       dataValidationInfo:
         type: object
       error:
-        $ref: '#/definitions/controller.resultError'
+        $ref: '#/definitions/cartResultError'
         description: Contains details if success is false
       success:
         type: boolean
@@ -391,13 +398,6 @@ definitions:
         $ref: '#/definitions/cart.Cart'
       cartValidationResult:
         $ref: '#/definitions/validation.Result'
-    type: object
-  controller.resultError:
-    properties:
-      code:
-        type: string
-      message:
-        type: string
     type: object
   domain.BasicProduct:
     type: object
@@ -633,14 +633,14 @@ definitions:
       urlslug:
         type: string
     type: object
-  flamingo.me_flamingo-commerce_v3_payment_interfaces_controller.resultError:
+  paymentResultError:
     properties:
       code:
         type: string
       message:
         type: string
     type: object
-  flamingo.me_flamingo-commerce_v3_product_interfaces_controller.resultError:
+  productResultError:
     properties:
       code:
         type: string
@@ -923,7 +923,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/flamingo.me_flamingo-commerce_v3_payment_interfaces_controller.resultError'
+            $ref: '#/definitions/paymentResultError'
       summary: Get the payment status of current cart (or last placed cart)
       tags:
       - v1 Payment ajax API

@@ -403,7 +403,7 @@
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/flamingo.me_flamingo-commerce_v3_payment_interfaces_controller.resultError"
+                            "$ref": "#/definitions/paymentResultError"
                         }
                     }
                 }
@@ -980,11 +980,22 @@
                 }
             }
         },
+        "cartResultError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "controller.APIResult": {
             "type": "object",
             "properties": {
                 "error": {
-                    "$ref": "#/definitions/flamingo.me_flamingo-commerce_v3_product_interfaces_controller.resultError"
+                    "$ref": "#/definitions/productResultError"
                 },
                 "product": {
                     "$ref": "#/definitions/domain.BasicProduct"
@@ -1011,7 +1022,7 @@
                 },
                 "error": {
                     "description": "Contains details if success is false",
-                    "$ref": "#/definitions/controller.resultError"
+                    "$ref": "#/definitions/cartResultError"
                 },
                 "success": {
                     "type": "boolean"
@@ -1026,17 +1037,6 @@
                 },
                 "cartValidationResult": {
                     "$ref": "#/definitions/validation.Result"
-                }
-            }
-        },
-        "controller.resultError": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "message": {
-                    "type": "string"
                 }
             }
         },
@@ -1387,7 +1387,7 @@
                 }
             }
         },
-        "flamingo.me_flamingo-commerce_v3_payment_interfaces_controller.resultError": {
+        "paymentResultError": {
             "type": "object",
             "properties": {
                 "code": {
@@ -1398,7 +1398,7 @@
                 }
             }
         },
-        "flamingo.me_flamingo-commerce_v3_product_interfaces_controller.resultError": {
+        "productResultError": {
             "type": "object",
             "properties": {
                 "code": {
