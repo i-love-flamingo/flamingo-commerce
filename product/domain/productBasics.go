@@ -78,7 +78,7 @@ type (
 		//Name - speaking name of the category
 		Name string
 		//Optional link to parent teaser
-		Parent *CategoryTeaser
+		Parent *CategoryTeaser `swaggerignore:"true"`
 	}
 
 	// Saleable are properties required for being selled
@@ -99,8 +99,8 @@ type (
 		Default           priceDomain.Price
 		Discounted        priceDomain.Price
 		DiscountText      string
-		ActiveBase        big.Float
-		ActiveBaseAmount  big.Float
+		ActiveBase        big.Float `swaggertype:"string"`
+		ActiveBaseAmount  big.Float `swaggertype:"string"`
 		ActiveBaseUnit    string
 		IsDiscounted      bool
 		CampaignRules     []string
@@ -117,8 +117,8 @@ type (
 		IsDiscounted     bool
 		Discounted       priceDomain.Price
 		DiscountText     string
-		MinPointsToSpent big.Float
-		MaxPointsToSpent *big.Float
+		MinPointsToSpent big.Float  `swaggertype:"string"`
+		MaxPointsToSpent *big.Float `swaggertype:"string"`
 		Context          PriceContext
 	}
 

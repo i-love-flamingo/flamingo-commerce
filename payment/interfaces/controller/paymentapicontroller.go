@@ -2,6 +2,8 @@ package controller
 
 import (
 	"context"
+	_ "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	_ "flamingo.me/flamingo-commerce/v3/payment/domain"
 	"fmt"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/application"

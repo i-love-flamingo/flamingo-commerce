@@ -99,7 +99,7 @@ type (
 	Tax struct {
 		Amount domain.Price
 		Type   string
-		Rate   *big.Float
+		Rate   *big.Float `swaggertype:"string"`
 	}
 
 	// Totalitem for totals

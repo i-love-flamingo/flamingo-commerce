@@ -13,7 +13,7 @@ type (
 	//Price is a Type that represents a Amount - it is immutable
 	// DevHint: We use Amount and Charge as Value - so we do not pass pointers. (According to Go Wiki's code review comments page suggests passing by value when structs are small and likely to stay that way)
 	Price struct {
-		amount   big.Float
+		amount   big.Float `swaggertype:"string"`
 		currency string
 	}
 
