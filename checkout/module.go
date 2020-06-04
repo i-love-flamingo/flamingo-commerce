@@ -93,6 +93,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	injector.BindMap(new(dto.State), new(states.PostRedirect).Name()).To(dto.PostRedirect{})
 
 	web.BindRoutes(injector, new(routes))
+	web.BindRoutes(injector, new(apiRoutes))
 
 	injector.BindMulti(new(flamingographql.Service)).To(graphql.Service{})
 }
@@ -189,4 +190,22 @@ func (m *Module) Depends() []dingo.Module {
 		new(payment.Module),
 		new(flamingo.SessionModule),
 	}
+}
+
+type apiRoutes struct {
+	apiController *controller.APIController
+}
+
+func (r *apiRoutes) Inject(apiController *controller.APIController) {
+	r.apiController = apiController
+}
+
+func (r *apiRoutes) Routes(registry *web.RouterRegistry) {
+	registry.Route("/api/v1/checkout/placeorder", "checkout.api.placeorder")
+	registry.HandleGet("checkout.api.placeorder", r.apiController.CurrentPlaceOrderContextAction)
+	registry.HandlePut("checkout.api.placeorder", r.apiController.StartPlaceOrderAction)
+	registry.HandleDelete("checkout.api.placeorder", r.apiController.ClearPlaceOrderAction)
+
+	registry.Route("/api/v1/checkout/placeorder/cancel", "checkout.api.placeorder.cancel")
+	registry.HandleGet("checkout.api.placeorder.cancel", r.apiController.CancelPlaceOrderAction)
 }

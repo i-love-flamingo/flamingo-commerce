@@ -184,7 +184,7 @@ var doc = `{
         },
         "/api/v1/cart/billing": {
             "post": {
-                "description": "Data need to be posted as application/x-www-form-urlencoded. Valid fields are all fields in \"AddressForm\" type. E.g. \"firstname=max\u0026lastname=mustermann\u0026mail=max@example.org\"",
+                "description": "Data need to be posted as application/x-www-form-urlencoded. (Ajax Post of a html form). The valid fields are all fields in \"AddressForm\" type. E.g. \"firstname=max\u0026lastname=mustermann\u0026email=max@example.org\"",
                 "consumes": [
                     "application/x-www-form-urlencoded"
                 ],
@@ -197,7 +197,7 @@ var doc = `{
                 "summary": "adds billing infos to cart",
                 "parameters": [
                     {
-                        "description": "billing form values",
+                        "description": "billing form fields x-www-form-urlencoded. E.g.: firstname=max\u0026lastname=mustermann\u0026email=max@example.org",
                         "name": "billingAddressForm",
                         "in": "body",
                         "required": true,
@@ -389,6 +389,212 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/cart/updatepaymentselection": {
+            "put": {
+                "description": "Data need to be posted as application/x-www-form-urlencoded. (Ajax Post of a html form). Valid fields are all fields in \"AddressForm\" type. E.g. \"deliveryAddress.firstname=max\u0026deliveryAddress.lastname=mustermann\u0026deliveryAddress.mail=max@example.org\u0026useBillingAddress=1\"",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 Cart ajax API"
+                ],
+                "summary": "adds delivery infos, such as shipping address to the delivery for th cart",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name of the payment gateway - e.g. 'offline'",
+                        "name": "gateway",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name of the payment method - e.g. 'offlinepayment_cashondelivery'",
+                        "name": "method",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cart/{deliveryCode}/deliveryinfo": {
+            "post": {
+                "description": "Data need to be posted as application/x-www-form-urlencoded. (Ajax Post of a html form). Valid fields are all fields in \"AddressForm\" type. E.g. \"deliveryAddress.firstname=max\u0026deliveryAddress.lastname=mustermann\u0026deliveryAddress.mail=max@example.org\u0026useBillingAddress=1\"",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 Cart ajax API"
+                ],
+                "summary": "adds delivery infos, such as shipping address to the delivery for th cart",
+                "parameters": [
+                    {
+                        "description": "delivery form fields - x-www-form-urlencoded. E.g. 'deliveryAddress.firstname=max\u0026deliveryAddress.lastname=mustermann\u0026deliveryAddress.email=max@example.org\u0026useBillingAddress=1'",
+                        "name": "deliveryInfoForm",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "primitive"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "the idendifier for the delivery in the cart",
+                        "name": "deliveryCode",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/checkout/placeorder": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 Checkout ajax API"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.placeOrderContext"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/checkoutError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 Checkout ajax API"
+                ],
+                "summary": "starts the place order process, which is a background process handling payment and rollbacks if required.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the returnURL that should be used after an external payment flow",
+                        "name": "returnURL",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.startPlaceOrderResult"
+                        }
+                    },
+                    "201": {
+                        "description": "201 if new process was started",
+                        "schema": {
+                            "$ref": "#/definitions/controller.startPlaceOrderResult"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/checkoutError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/checkoutError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 Checkout ajax API"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/checkoutError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/checkout/placeorder/cancel": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 Checkout ajax API"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/checkoutError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/payment/status": {
             "get": {
                 "produces": [
@@ -483,23 +689,23 @@ var doc = `{
         "ProductAttribute": {
             "type": "object",
             "properties": {
-                "code": {
+                "Code": {
                     "description": "Code is the internal attribute identifier",
                     "type": "string"
                 },
-                "codeLabel": {
+                "CodeLabel": {
                     "description": "CodeLabel is the human readable (perhaps localized) attribute name",
                     "type": "string"
                 },
-                "label": {
+                "Label": {
                     "description": "Label is the human readable (perhaps localized) attribute value",
                     "type": "string"
                 },
-                "rawValue": {
+                "RawValue": {
                     "description": "RawValue is the untouched original value of the attribute",
                     "type": "object"
                 },
-                "unitCode": {
+                "UnitCode": {
                     "description": "UnitCode is the internal code of the attribute values measuring unit",
                     "type": "string"
                 }
@@ -514,19 +720,42 @@ var doc = `{
         "ProductMedia": {
             "type": "object",
             "properties": {
-                "mimeType": {
+                "MimeType": {
                     "type": "string"
                 },
-                "reference": {
+                "Reference": {
                     "type": "string"
                 },
-                "title": {
+                "Title": {
                     "type": "string"
                 },
-                "type": {
+                "Type": {
                     "type": "string"
                 },
-                "usage": {
+                "Usage": {
+                    "type": "string"
+                }
+            }
+        },
+        "application.PlaceOrderPaymentInfo": {
+            "type": "object",
+            "properties": {
+                "Amount": {
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "CreditCardInfo": {
+                    "$ref": "#/definitions/placeorder.CreditCardInfo"
+                },
+                "Gateway": {
+                    "type": "string"
+                },
+                "Method": {
+                    "type": "string"
+                },
+                "PaymentProvider": {
+                    "type": "string"
+                },
+                "Title": {
                     "type": "string"
                 }
             }
@@ -534,14 +763,14 @@ var doc = `{
         "cart.AdditionalData": {
             "type": "object",
             "properties": {
-                "customAttributes": {
+                "CustomAttributes": {
                     "description": "CustomAttributes list of key values",
                     "type": "object",
                     "additionalProperties": {
                         "type": "string"
                     }
                 },
-                "reservedOrderID": {
+                "ReservedOrderID": {
                     "description": "ReservedOrderID is an ID already known by the Cart of the future order ID",
                     "type": "string"
                 }
@@ -550,61 +779,61 @@ var doc = `{
         "cart.Address": {
             "type": "object",
             "properties": {
-                "additionalAddressLines": {
+                "AdditionalAddressLines": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
-                "city": {
+                "City": {
                     "type": "string"
                 },
-                "company": {
+                "Company": {
                     "type": "string"
                 },
-                "country": {
+                "Country": {
                     "type": "string"
                 },
-                "countryCode": {
+                "CountryCode": {
                     "type": "string"
                 },
-                "email": {
+                "Email": {
                     "type": "string"
                 },
-                "firstname": {
+                "Firstname": {
                     "type": "string"
                 },
-                "lastname": {
+                "Lastname": {
                     "type": "string"
                 },
-                "middleName": {
+                "MiddleName": {
                     "type": "string"
                 },
-                "postCode": {
+                "PostCode": {
                     "type": "string"
                 },
-                "regionCode": {
+                "RegionCode": {
                     "type": "string"
                 },
-                "salutation": {
+                "Salutation": {
                     "type": "string"
                 },
-                "state": {
+                "State": {
                     "type": "string"
                 },
-                "street": {
+                "Street": {
                     "type": "string"
                 },
-                "streetNr": {
+                "StreetNr": {
                     "type": "string"
                 },
-                "telephone": {
+                "Telephone": {
                     "type": "string"
                 },
-                "title": {
+                "Title": {
                     "type": "string"
                 },
-                "vat": {
+                "Vat": {
                     "type": "string"
                 }
             }
@@ -612,31 +841,31 @@ var doc = `{
         "cart.AppliedDiscount": {
             "type": "object",
             "properties": {
-                "applied": {
+                "Applied": {
                     "description": "how much of the discount has been subtracted from cart price, IMPORTANT: always negative",
                     "$ref": "#/definitions/domain.Price"
                 },
-                "campaignCode": {
+                "CampaignCode": {
                     "description": "unique code of the underlying campaign or rule e.g. \"summer-campaign-2018\"",
                     "type": "string"
                 },
-                "couponCode": {
+                "CouponCode": {
                     "description": "code of discount e.g. provided by user \"summer2018\"",
                     "type": "string"
                 },
-                "isItemRelated": {
+                "IsItemRelated": {
                     "description": "flag indicating if the discount is applied due to item in cart",
                     "type": "boolean"
                 },
-                "label": {
+                "Label": {
                     "description": "readable name of discount \"Super Summer Sale 2018\"",
                     "type": "string"
                 },
-                "sortOrder": {
+                "SortOrder": {
                     "description": "indicates in which order discount have been applied, low value has been applied before high value",
                     "type": "integer"
                 },
-                "type": {
+                "Type": {
                     "description": "to distinguish between discounts",
                     "type": "string"
                 }
@@ -645,19 +874,19 @@ var doc = `{
         "cart.AppliedGiftCard": {
             "type": "object",
             "properties": {
-                "applied": {
+                "Applied": {
                     "description": "how much of the gift card has been subtracted from cart price",
                     "$ref": "#/definitions/domain.Price"
                 },
-                "code": {
+                "Code": {
                     "type": "string"
                 },
-                "customAttributes": {
+                "CustomAttributes": {
                     "description": "additional custom attributes",
                     "type": "object",
                     "additionalProperties": true
                 },
-                "remaining": {
+                "Remaining": {
                     "description": "how much of the gift card is still available",
                     "$ref": "#/definitions/domain.Price"
                 }
@@ -666,61 +895,61 @@ var doc = `{
         "cart.Cart": {
             "type": "object",
             "properties": {
-                "additionalData": {
+                "AdditionalData": {
                     "description": "AdditionalData   can be used for Custom attributes",
                     "$ref": "#/definitions/cart.AdditionalData"
                 },
-                "appliedCouponCodes": {
+                "AppliedCouponCodes": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/cart.CouponCode"
                     }
                 },
-                "appliedGiftCards": {
+                "AppliedGiftCards": {
                     "description": "List of applied gift cards",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/cart.AppliedGiftCard"
                     }
                 },
-                "authenticatedUserID": {
+                "AuthenticatedUserID": {
                     "type": "string"
                 },
-                "belongsToAuthenticatedUser": {
+                "BelongsToAuthenticatedUser": {
                     "description": "BelongsToAuthenticatedUser - false = Guest Cart true = cart from the authenticated user",
                     "type": "boolean"
                 },
-                "billingAddress": {
+                "BillingAddress": {
                     "description": "BillingAddress - the main billing address (relevant for all payments/invoices)",
                     "$ref": "#/definitions/cart.Address"
                 },
-                "defaultCurrency": {
+                "DefaultCurrency": {
                     "type": "string"
                 },
-                "deliveries": {
+                "Deliveries": {
                     "description": "Deliveries - list of desired Deliveries (or Shipments) involved in this cart",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/cart.Delivery"
                     }
                 },
-                "entityID": {
+                "EntityID": {
                     "description": "EntityID is a second identifier that may be used by some backends",
                     "type": "string"
                 },
-                "id": {
+                "ID": {
                     "description": "ID is the main identifier of the cart",
                     "type": "string"
                 },
-                "paymentSelection": {
+                "PaymentSelection": {
                     "description": "PaymentSelection - the saved PaymentSelection (saves \"how\" the customer want to pay)",
                     "$ref": "#/definitions/cart.PaymentSelection"
                 },
-                "purchaser": {
+                "Purchaser": {
                     "description": "Purchaser - additional infos for the legal contact person in this order",
                     "$ref": "#/definitions/cart.Person"
                 },
-                "totalitems": {
+                "Totalitems": {
                     "description": "Additional non taxable totals",
                     "type": "array",
                     "items": {
@@ -732,10 +961,10 @@ var doc = `{
         "cart.CouponCode": {
             "type": "object",
             "properties": {
-                "code": {
+                "Code": {
                     "type": "string"
                 },
-                "customAttributes": {
+                "CustomAttributes": {
                     "description": "CustomAttributes can hold additional data for coupon code - keys and values are project specific",
                     "type": "object",
                     "additionalProperties": true
@@ -745,18 +974,18 @@ var doc = `{
         "cart.Delivery": {
             "type": "object",
             "properties": {
-                "cartitems": {
+                "Cartitems": {
                     "description": "Cartitems - list of cartitems",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/cart.Item"
                     }
                 },
-                "deliveryInfo": {
+                "DeliveryInfo": {
                     "description": "DeliveryInfo - The details for this delivery - normally completed during checkout",
                     "$ref": "#/definitions/cart.DeliveryInfo"
                 },
-                "shippingItem": {
+                "ShippingItem": {
                     "description": "ShippingItem\t- The Shipping Costs that may be involved in this delivery",
                     "$ref": "#/definitions/cart.ShippingItem"
                 }
@@ -765,34 +994,34 @@ var doc = `{
         "cart.DeliveryInfo": {
             "type": "object",
             "properties": {
-                "additionalData": {
+                "AdditionalData": {
                     "description": "AdditionalData  - Possibility for key value based information on the delivery - can be used flexible by each project",
                     "type": "object",
                     "additionalProperties": {
                         "type": "string"
                     }
                 },
-                "carrier": {
+                "Carrier": {
                     "description": "Carrier - Optional the name of the Carrier that should be responsible for executing the delivery",
                     "type": "string"
                 },
-                "code": {
+                "Code": {
                     "description": "Code - is a project specific identifier for the Delivery - you need it for the AddToCart Request for example\nThe code can follow the convention in the Readme: Type_Method_LocationType_LocationCode",
                     "type": "string"
                 },
-                "deliveryLocation": {
+                "DeliveryLocation": {
                     "description": "DeliveryLocation The target Location for the delivery",
                     "$ref": "#/definitions/cart.DeliveryLocation"
                 },
-                "desiredTime": {
+                "DesiredTime": {
                     "description": "DesiredTime - Optional - the desired time of the delivery",
                     "type": "string"
                 },
-                "method": {
+                "Method": {
                     "description": "Method - The shippingmethod something that is project specific and that can mean different delivery qualities with different deliverycosts",
                     "type": "string"
                 },
-                "workflow": {
+                "Workflow": {
                     "description": "Type - The Type of the Delivery - e.g. delivery or pickup - this might trigger different workflows",
                     "type": "string"
                 }
@@ -801,19 +1030,19 @@ var doc = `{
         "cart.DeliveryLocation": {
             "type": "object",
             "properties": {
-                "address": {
+                "Address": {
                     "description": "Address -  (only relevant for type address)",
                     "$ref": "#/definitions/cart.Address"
                 },
-                "code": {
+                "Code": {
                     "description": "Code - optional identifier of this location/destination - is used in special destination Types",
                     "type": "string"
                 },
-                "type": {
+                "Type": {
                     "description": "Type - the type of the delivery - use some of the constant defined in the package like DeliverylocationTypeAddress",
                     "type": "string"
                 },
-                "useBillingAddress": {
+                "UseBillingAddress": {
                     "description": "UseBillingAddress - the address should be taken from billing (only relevant for type address)",
                     "type": "boolean"
                 }
@@ -822,7 +1051,7 @@ var doc = `{
         "cart.ExistingCustomerData": {
             "type": "object",
             "properties": {
-                "id": {
+                "ID": {
                     "description": "ID of the customer",
                     "type": "string"
                 }
@@ -831,64 +1060,64 @@ var doc = `{
         "cart.Item": {
             "type": "object",
             "properties": {
-                "additionalData": {
+                "AdditionalData": {
                     "type": "object",
                     "additionalProperties": {
                         "type": "string"
                     }
                 },
-                "appliedDiscounts": {
+                "AppliedDiscounts": {
                     "description": "AppliedDiscounts contains the details about the discounts applied to this item - they can be \"itemrelated\" or not",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/cart.AppliedDiscount"
                     }
                 },
-                "externalReference": {
+                "ExternalReference": {
                     "description": "ExternalReference can be used by cart service implementations to separate the representation in an external\ncart service from the unique item ID",
                     "type": "string"
                 },
-                "id": {
+                "ID": {
                     "description": "ID of the item - needs to be unique over the whole cart",
                     "type": "string"
                 },
-                "marketplaceCode": {
+                "MarketplaceCode": {
                     "type": "string"
                 },
-                "productName": {
+                "ProductName": {
                     "type": "string"
                 },
-                "qty": {
+                "Qty": {
                     "type": "integer"
                 },
-                "rowPriceGross": {
+                "RowPriceGross": {
                     "description": "RowPriceGross",
                     "$ref": "#/definitions/domain.Price"
                 },
-                "rowPriceNet": {
+                "RowPriceNet": {
                     "description": "RowPriceNet",
                     "$ref": "#/definitions/domain.Price"
                 },
-                "rowTaxes": {
+                "RowTaxes": {
                     "description": "RowPriceGross",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/cart.Tax"
                     }
                 },
-                "singlePriceGross": {
+                "SinglePriceGross": {
                     "description": "SinglePriceGross brutto (gross) for single product",
                     "$ref": "#/definitions/domain.Price"
                 },
-                "singlePriceNet": {
+                "SinglePriceNet": {
                     "description": "SinglePriceNet net price for single product",
                     "$ref": "#/definitions/domain.Price"
                 },
-                "sourceID": {
+                "SourceID": {
                     "description": "Source Id of where the items should be initial picked - This is set by the SourcingLogic",
                     "type": "string"
                 },
-                "variantMarketPlaceCode": {
+                "VariantMarketPlaceCode": {
                     "description": "VariantMarketPlaceCode is used for Configurable products",
                     "type": "string"
                 }
@@ -900,14 +1129,14 @@ var doc = `{
         "cart.Person": {
             "type": "object",
             "properties": {
-                "address": {
+                "Address": {
                     "$ref": "#/definitions/cart.Address"
                 },
-                "existingCustomerData": {
+                "ExistingCustomerData": {
                     "description": "ExistingCustomerData if the current purchaser is an existing customer - this contains infos about existing customer",
                     "$ref": "#/definitions/cart.ExistingCustomerData"
                 },
-                "personalDetails": {
+                "PersonalDetails": {
                     "$ref": "#/definitions/cart.PersonalDetails"
                 }
             }
@@ -915,16 +1144,16 @@ var doc = `{
         "cart.PersonalDetails": {
             "type": "object",
             "properties": {
-                "dateOfBirth": {
+                "DateOfBirth": {
                     "type": "string"
                 },
-                "nationality": {
+                "Nationality": {
                     "type": "string"
                 },
-                "passportCountry": {
+                "PassportCountry": {
                     "type": "string"
                 },
-                "passportNumber": {
+                "PassportNumber": {
                     "type": "string"
                 }
             }
@@ -932,19 +1161,19 @@ var doc = `{
         "cart.ShippingItem": {
             "type": "object",
             "properties": {
-                "appliedDiscounts": {
+                "AppliedDiscounts": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/cart.AppliedDiscount"
                     }
                 },
-                "priceNet": {
+                "PriceNet": {
                     "$ref": "#/definitions/domain.Price"
                 },
-                "taxAmount": {
+                "TaxAmount": {
                     "$ref": "#/definitions/domain.Price"
                 },
-                "title": {
+                "Title": {
                     "type": "string"
                 }
             }
@@ -952,13 +1181,13 @@ var doc = `{
         "cart.Tax": {
             "type": "object",
             "properties": {
-                "amount": {
+                "Amount": {
                     "$ref": "#/definitions/domain.Price"
                 },
-                "rate": {
+                "Rate": {
                     "type": "string"
                 },
-                "type": {
+                "Type": {
                     "type": "string"
                 }
             }
@@ -966,16 +1195,16 @@ var doc = `{
         "cart.Teaser": {
             "type": "object",
             "properties": {
-                "deliveryCodes": {
+                "DeliveryCodes": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
-                "itemCount": {
+                "ItemCount": {
                     "type": "integer"
                 },
-                "productCount": {
+                "ProductCount": {
                     "type": "integer"
                 }
             }
@@ -983,16 +1212,16 @@ var doc = `{
         "cart.Totalitem": {
             "type": "object",
             "properties": {
-                "code": {
+                "Code": {
                     "type": "string"
                 },
-                "price": {
+                "Price": {
                     "$ref": "#/definitions/domain.Price"
                 },
-                "title": {
+                "Title": {
                     "type": "string"
                 },
-                "type": {
+                "Type": {
                     "type": "string"
                 }
             }
@@ -1000,10 +1229,21 @@ var doc = `{
         "cartResultError": {
             "type": "object",
             "properties": {
-                "code": {
+                "Code": {
                     "type": "string"
                 },
-                "message": {
+                "Message": {
+                    "type": "string"
+                }
+            }
+        },
+        "checkoutError": {
+            "type": "object",
+            "properties": {
+                "Code": {
+                    "type": "string"
+                },
+                "Message": {
                     "type": "string"
                 }
             }
@@ -1011,13 +1251,13 @@ var doc = `{
         "controller.APIResult": {
             "type": "object",
             "properties": {
-                "error": {
+                "Error": {
                     "$ref": "#/definitions/productResultError"
                 },
-                "product": {
+                "Product": {
                     "$ref": "#/definitions/domain.BasicProduct"
                 },
-                "success": {
+                "Success": {
                     "type": "boolean"
                 }
             }
@@ -1025,23 +1265,23 @@ var doc = `{
         "controller.CartAPIResult": {
             "type": "object",
             "properties": {
-                "cartTeaser": {
+                "CartTeaser": {
                     "$ref": "#/definitions/cart.Teaser"
                 },
-                "cartValidationResult": {
+                "CartValidationResult": {
                     "$ref": "#/definitions/validation.Result"
                 },
-                "data": {
+                "Data": {
                     "type": "object"
                 },
-                "dataValidationInfo": {
+                "DataValidationInfo": {
                     "type": "object"
                 },
-                "error": {
+                "Error": {
                     "description": "Contains details if success is false",
                     "$ref": "#/definitions/cartResultError"
                 },
-                "success": {
+                "Success": {
                     "type": "boolean"
                 }
             }
@@ -1049,11 +1289,104 @@ var doc = `{
         "controller.getCartResult": {
             "type": "object",
             "properties": {
-                "cart": {
+                "Cart": {
                     "$ref": "#/definitions/cart.Cart"
                 },
-                "cartValidationResult": {
+                "CartValidationResult": {
                     "$ref": "#/definitions/validation.Result"
+                }
+            }
+        },
+        "controller.placeOrderContext": {
+            "type": "object",
+            "properties": {
+                "Cart": {
+                    "$ref": "#/definitions/cart.Cart"
+                },
+                "FailedReason": {
+                    "type": "string"
+                },
+                "OrderInfos": {
+                    "$ref": "#/definitions/controller.placedOrderInfos"
+                },
+                "State": {
+                    "type": "string"
+                },
+                "StateData": {
+                    "type": "object"
+                },
+                "UUID": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.placedOrderInfos": {
+            "type": "object",
+            "properties": {
+                "Email": {
+                    "type": "string"
+                },
+                "PaymentInfos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/application.PlaceOrderPaymentInfo"
+                    }
+                },
+                "PlacedDecoratedCart": {
+                    "$ref": "#/definitions/decorator.DecoratedCart"
+                },
+                "PlacedOrderInfos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placeorder.PlacedOrderInfo"
+                    }
+                }
+            }
+        },
+        "controller.startPlaceOrderResult": {
+            "type": "object",
+            "properties": {
+                "UUID": {
+                    "type": "string"
+                }
+            }
+        },
+        "decorator.DecoratedCart": {
+            "type": "object",
+            "properties": {
+                "Cart": {
+                    "$ref": "#/definitions/cart.Cart"
+                },
+                "DecoratedDeliveries": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/decorator.DecoratedDelivery"
+                    }
+                }
+            }
+        },
+        "decorator.DecoratedCartItem": {
+            "type": "object",
+            "properties": {
+                "Item": {
+                    "$ref": "#/definitions/cart.Item"
+                },
+                "Product": {
+                    "$ref": "#/definitions/domain.BasicProduct"
+                }
+            }
+        },
+        "decorator.DecoratedDelivery": {
+            "type": "object",
+            "properties": {
+                "DecoratedItems": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/decorator.DecoratedCartItem"
+                    }
+                },
+                "Delivery": {
+                    "$ref": "#/definitions/cart.Delivery"
                 }
             }
         },
@@ -1063,15 +1396,15 @@ var doc = `{
         "domain.CategoryTeaser": {
             "type": "object",
             "properties": {
-                "code": {
+                "Code": {
                     "description": "Code the idendifier of the Category",
                     "type": "string"
                 },
-                "name": {
+                "Name": {
                     "description": "Name - speaking name of the category",
                     "type": "string"
                 },
-                "path": {
+                "Path": {
                     "description": "The Path (root to leaf) for this Category - separated by \"/\"",
                     "type": "string"
                 }
@@ -1080,10 +1413,10 @@ var doc = `{
         "domain.Error": {
             "type": "object",
             "properties": {
-                "errorCode": {
+                "ErrorCode": {
                     "type": "string"
                 },
-                "errorMessage": {
+                "ErrorMessage": {
                     "type": "string"
                 }
             }
@@ -1091,17 +1424,17 @@ var doc = `{
         "domain.FlowActionData": {
             "type": "object",
             "properties": {
-                "displayData": {
+                "DisplayData": {
                     "description": "DisplayData holds data, normally HTML to be displayed to the user",
                     "type": "string"
                 },
-                "formParameter": {
+                "FormParameter": {
                     "type": "object",
                     "additionalProperties": {
                         "$ref": "#/definitions/domain.FormField"
                     }
                 },
-                "url": {
+                "URL": {
                     "description": "URL is used to pass URL data to the user if the current state needs some",
                     "type": "string"
                 }
@@ -1110,22 +1443,22 @@ var doc = `{
         "domain.FlowStatus": {
             "type": "object",
             "properties": {
-                "action": {
+                "Action": {
                     "description": "Action to perform to proceed in the payment flow. If status is \"payment_waiting_for_customer\" this field contains information about what to do - e.g. \"redirect\" or \"show_iframe\"",
                     "type": "string"
                 },
-                "actionData": {
+                "ActionData": {
                     "$ref": "#/definitions/domain.FlowActionData"
                 },
-                "data": {
+                "Data": {
                     "description": "Data contains additional information related to the action / flow",
                     "type": "object"
                 },
-                "error": {
+                "Error": {
                     "description": "Error contains additional information in case of an error (e.g. payment failed)",
                     "$ref": "#/definitions/domain.Error"
                 },
-                "status": {
+                "Status": {
                     "description": "Status of the payment flow. E.g. \"payment_completed\", \"payment_waiting_for_customer\" or \"payment_failed\"",
                     "type": "string"
                 }
@@ -1134,7 +1467,7 @@ var doc = `{
         "domain.FormField": {
             "type": "object",
             "properties": {
-                "value": {
+                "Value": {
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -1145,10 +1478,10 @@ var doc = `{
         "domain.LoyaltyEarningInfo": {
             "type": "object",
             "properties": {
-                "default": {
+                "Default": {
                     "$ref": "#/definitions/domain.Price"
                 },
-                "type": {
+                "Type": {
                     "type": "string"
                 }
             }
@@ -1156,28 +1489,28 @@ var doc = `{
         "domain.LoyaltyPriceInfo": {
             "type": "object",
             "properties": {
-                "context": {
+                "Context": {
                     "$ref": "#/definitions/domain.PriceContext"
                 },
-                "default": {
+                "Default": {
                     "$ref": "#/definitions/domain.Price"
                 },
-                "discountText": {
+                "DiscountText": {
                     "type": "string"
                 },
-                "discounted": {
+                "Discounted": {
                     "$ref": "#/definitions/domain.Price"
                 },
-                "isDiscounted": {
+                "IsDiscounted": {
                     "type": "boolean"
                 },
-                "maxPointsToSpent": {
+                "MaxPointsToSpent": {
                     "type": "string"
                 },
-                "minPointsToSpent": {
+                "MinPointsToSpent": {
                     "type": "string"
                 },
-                "type": {
+                "Type": {
                     "description": "Type - Name( or Type) of the Loyalty program",
                     "type": "string"
                 }
@@ -1189,13 +1522,13 @@ var doc = `{
         "domain.PriceContext": {
             "type": "object",
             "properties": {
-                "channelCode": {
+                "ChannelCode": {
                     "type": "string"
                 },
-                "customerGroup": {
+                "CustomerGroup": {
                     "type": "string"
                 },
-                "locale": {
+                "Locale": {
                     "type": "string"
                 }
             }
@@ -1203,40 +1536,40 @@ var doc = `{
         "domain.PriceInfo": {
             "type": "object",
             "properties": {
-                "activeBase": {
+                "ActiveBase": {
                     "type": "string"
                 },
-                "activeBaseAmount": {
+                "ActiveBaseAmount": {
                     "type": "string"
                 },
-                "activeBaseUnit": {
+                "ActiveBaseUnit": {
                     "type": "string"
                 },
-                "campaignRules": {
+                "CampaignRules": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
-                "context": {
+                "Context": {
                     "$ref": "#/definitions/domain.PriceContext"
                 },
-                "default": {
+                "Default": {
                     "$ref": "#/definitions/domain.Price"
                 },
-                "denyMoreDiscounts": {
+                "DenyMoreDiscounts": {
                     "type": "boolean"
                 },
-                "discountText": {
+                "DiscountText": {
                     "type": "string"
                 },
-                "discounted": {
+                "Discounted": {
                     "$ref": "#/definitions/domain.Price"
                 },
-                "isDiscounted": {
+                "IsDiscounted": {
                     "type": "boolean"
                 },
-                "taxClass": {
+                "TaxClass": {
                     "type": "string"
                 }
             }
@@ -1244,111 +1577,111 @@ var doc = `{
         "domain.SimpleProduct": {
             "type": "object",
             "properties": {
-                "activePrice": {
+                "ActivePrice": {
                     "$ref": "#/definitions/domain.PriceInfo"
                 },
-                "attributes": {
+                "Attributes": {
                     "$ref": "#/definitions/ProductAttributes"
                 },
-                "availablePrices": {
+                "AvailablePrices": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/domain.PriceInfo"
                     }
                 },
-                "categories": {
+                "Categories": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/domain.CategoryTeaser"
                     }
                 },
-                "categoryToCodeMapping": {
+                "CategoryToCodeMapping": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
-                "createdAt": {
+                "CreatedAt": {
                     "type": "string"
                 },
-                "description": {
+                "Description": {
                     "type": "string"
                 },
-                "identifier": {
+                "Identifier": {
                     "type": "string"
                 },
-                "isNew": {
+                "IsNew": {
                     "type": "boolean"
                 },
-                "isSaleable": {
+                "IsSaleable": {
                     "type": "boolean"
                 },
-                "keywords": {
+                "Keywords": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
-                "loyaltyEarnings": {
+                "LoyaltyEarnings": {
                     "description": "LoyaltyEarnings optional infos about potential loyalty earnings",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/domain.LoyaltyEarningInfo"
                     }
                 },
-                "loyaltyPrices": {
+                "LoyaltyPrices": {
                     "description": "LoyaltyPrices - Optional infos for products that can be paid in a loyalty program",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/domain.LoyaltyPriceInfo"
                     }
                 },
-                "mainCategory": {
+                "MainCategory": {
                     "$ref": "#/definitions/domain.CategoryTeaser"
                 },
-                "marketPlaceCode": {
+                "MarketPlaceCode": {
                     "type": "string"
                 },
-                "media": {
+                "Media": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/ProductMedia"
                     }
                 },
-                "retailerCode": {
+                "RetailerCode": {
                     "type": "string"
                 },
-                "retailerName": {
+                "RetailerName": {
                     "type": "string"
                 },
-                "retailerSku": {
+                "RetailerSku": {
                     "type": "string"
                 },
-                "saleableFrom": {
+                "SaleableFrom": {
                     "type": "string"
                 },
-                "saleableTo": {
+                "SaleableTo": {
                     "type": "string"
                 },
-                "shortDescription": {
+                "ShortDescription": {
                     "type": "string"
                 },
-                "stockLevel": {
+                "StockLevel": {
                     "type": "string"
                 },
-                "teaser": {
+                "Teaser": {
                     "$ref": "#/definitions/domain.TeaserData"
                 },
-                "title": {
+                "Title": {
                     "type": "string"
                 },
-                "updatedAt": {
+                "UpdatedAt": {
                     "type": "string"
                 },
-                "visibleFrom": {
+                "VisibleFrom": {
                     "type": "string"
                 },
-                "visibleTo": {
+                "VisibleTo": {
                     "type": "string"
                 }
             }
@@ -1356,50 +1689,50 @@ var doc = `{
         "domain.TeaserData": {
             "type": "object",
             "properties": {
-                "marketPlaceCode": {
+                "MarketPlaceCode": {
                     "description": "The sku that should be used to link from Teasers",
                     "type": "string"
                 },
-                "media": {
+                "Media": {
                     "description": "Media",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/ProductMedia"
                     }
                 },
-                "preSelectedVariantSku": {
+                "PreSelectedVariantSku": {
                     "description": "PreSelectedVariantSku - might be set for configurables to give a hint to link to a variant of a configurable (That might be the case if a user filters for an attribute and in the teaser the variant with that attribute is shown)",
                     "type": "string"
                 },
-                "shortDescription": {
+                "ShortDescription": {
                     "type": "string"
                 },
-                "shortTitle": {
+                "ShortTitle": {
                     "type": "string"
                 },
-                "teaserAvailablePrices": {
+                "TeaserAvailablePrices": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/domain.PriceInfo"
                     }
                 },
-                "teaserLoyaltyEarningInfo": {
+                "TeaserLoyaltyEarningInfo": {
                     "description": "TeaserLoyaltyEarning optional teaser for the loyalty earning used in grid / list view",
                     "$ref": "#/definitions/domain.LoyaltyEarningInfo"
                 },
-                "teaserLoyaltyPriceInfo": {
+                "TeaserLoyaltyPriceInfo": {
                     "description": "TeaserLoyaltyPriceInfo - optional the Loyaltyprice that can be used for teaser (e.g. on listing views)",
                     "$ref": "#/definitions/domain.LoyaltyPriceInfo"
                 },
-                "teaserPrice": {
+                "TeaserPrice": {
                     "description": "TeaserPrice is the price that should be shown in teasers (listview)",
                     "$ref": "#/definitions/domain.PriceInfo"
                 },
-                "teaserPriceIsFromPrice": {
+                "TeaserPriceIsFromPrice": {
                     "description": "TeaserPriceIsFromPrice - is set to true in cases where a product might have different prices (e.g. configurable)",
                     "type": "boolean"
                 },
-                "urlslug": {
+                "URLSlug": {
                     "type": "string"
                 }
             }
@@ -1407,10 +1740,38 @@ var doc = `{
         "paymentResultError": {
             "type": "object",
             "properties": {
-                "code": {
+                "Code": {
                     "type": "string"
                 },
-                "message": {
+                "Message": {
+                    "type": "string"
+                }
+            }
+        },
+        "placeorder.CreditCardInfo": {
+            "type": "object",
+            "properties": {
+                "AnonymizedCardNumber": {
+                    "type": "string"
+                },
+                "CardHolder": {
+                    "type": "string"
+                },
+                "Expire": {
+                    "type": "string"
+                },
+                "Type": {
+                    "type": "string"
+                }
+            }
+        },
+        "placeorder.PlacedOrderInfo": {
+            "type": "object",
+            "properties": {
+                "DeliveryCode": {
+                    "type": "string"
+                },
+                "OrderNumber": {
                     "type": "string"
                 }
             }
@@ -1418,10 +1779,10 @@ var doc = `{
         "productResultError": {
             "type": "object",
             "properties": {
-                "code": {
+                "Code": {
                     "type": "string"
                 },
-                "message": {
+                "Message": {
                     "type": "string"
                 }
             }
@@ -1429,10 +1790,10 @@ var doc = `{
         "validation.ItemValidationError": {
             "type": "object",
             "properties": {
-                "errorMessageKey": {
+                "ErrorMessageKey": {
                     "type": "string"
                 },
-                "itemID": {
+                "ItemID": {
                     "type": "string"
                 }
             }
@@ -1440,13 +1801,13 @@ var doc = `{
         "validation.Result": {
             "type": "object",
             "properties": {
-                "commonErrorMessageKey": {
+                "CommonErrorMessageKey": {
                     "type": "string"
                 },
-                "hasCommonError": {
+                "HasCommonError": {
                     "type": "boolean"
                 },
-                "itemResults": {
+                "ItemResults": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/validation.ItemValidationError"

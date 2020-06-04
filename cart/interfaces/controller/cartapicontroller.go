@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"net/url"
 	"strconv"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
@@ -25,6 +26,7 @@ type (
 		logger                       flamingo.Logger
 		billingAddressFormController *forms.BillingAddressFormController
 		deliveryFormController       *forms.DeliveryFormController
+		simplePaymentFormController  *forms.SimplePaymentFormController
 	}
 
 	// CartAPIResult view data
@@ -63,6 +65,7 @@ func (cc *CartAPIController) Inject(
 	ApplicationCartReceiverService *application.CartReceiverService,
 	billingAddressFormController *forms.BillingAddressFormController,
 	deliveryFormController *forms.DeliveryFormController,
+	simplePaymentFormController *forms.SimplePaymentFormController,
 	Logger flamingo.Logger,
 ) {
 	cc.responder = responder
@@ -71,6 +74,7 @@ func (cc *CartAPIController) Inject(
 	cc.logger = Logger.WithField("category", "CartApiController")
 	cc.billingAddressFormController = billingAddressFormController
 	cc.deliveryFormController = deliveryFormController
+	cc.simplePaymentFormController = simplePaymentFormController
 }
 
 // GetAction Get JSON Format of API
@@ -257,13 +261,13 @@ func (cc *CartAPIController) DeleteDelivery(ctx context.Context, r *web.Request)
 
 // BillingAction adds billing infos
 // @Summary adds billing infos to cart
-// @Description Data need to be posted as application/x-www-form-urlencoded. Valid fields are all fields in "AddressForm" type. E.g. "firstname=max&lastname=mustermann&mail=max@example.org"
+// @Description Data need to be posted as application/x-www-form-urlencoded. (Ajax Post of a html form). The valid fields are all fields in "AddressForm" type. E.g. "firstname=max&lastname=mustermann&email=max@example.org"
 // @Tags v1 Cart ajax API
 // @Accept application/x-www-form-urlencoded
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
-// @Param billingAddressForm body string true "billing form values"
+// @Param billingAddressForm body string true "billing form fields x-www-form-urlencoded. E.g.: firstname=max&lastname=mustermann&email=max@example.org"
 // @Router /api/v1/cart/billing [post]
 func (cc *CartAPIController) BillingAction(ctx context.Context, r *web.Request) web.Result {
 	result := newResult()
@@ -284,13 +288,13 @@ func (cc *CartAPIController) BillingAction(ctx context.Context, r *web.Request) 
 
 // UpdateDeliveryInfoAction updates the delivery info
 // @Summary adds delivery infos, such as shipping address to the delivery for th cart
-// @Description Data need to be posted as application/x-www-form-urlencoded. Valid fields are all fields in "AddressForm" type. E.g. "deliveryAddress.firstname=max&deliveryAddress.lastname=mustermann&deliveryAddress.mail=max@example.org&useBillingAddress=1"
+// @Description Data need to be posted as application/x-www-form-urlencoded. (Ajax Post of a html form). Valid fields are all fields in "AddressForm" type. E.g. "deliveryAddress.firstname=max&deliveryAddress.lastname=mustermann&deliveryAddress.mail=max@example.org&useBillingAddress=1"
 // @Tags v1 Cart ajax API
 // @Accept application/x-www-form-urlencoded
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
-// @Param deliveryInfoForm body string true "billing form values"
+// @Param deliveryInfoForm body string true "delivery form fields - x-www-form-urlencoded. E.g. 'deliveryAddress.firstname=max&deliveryAddress.lastname=mustermann&deliveryAddress.email=max@example.org&useBillingAddress=1'"
 // @Param deliveryCode path string true "the idendifier for the delivery in the cart"
 // @Router /api/v1/cart/{deliveryCode}/deliveryinfo [post]
 func (cc *CartAPIController) UpdateDeliveryInfoAction(ctx context.Context, r *web.Request) web.Result {
@@ -300,6 +304,44 @@ func (cc *CartAPIController) UpdateDeliveryInfoAction(ctx context.Context, r *we
 	if err != nil {
 		result.SetError(err, "form_error")
 		return cc.responder.Data(result)
+	}
+	if form != nil {
+		result.Data = form.Data
+		result.DataValidationInfo = &form.ValidationInfo
+	}
+	cc.enrichResultWithCartInfos(ctx, &result)
+	return cc.responder.Data(result)
+}
+
+// UpdateDeliveryInfoAction updates the delivery info
+// @Summary adds delivery infos, such as shipping address to the delivery for th cart
+// @Description Data need to be posted as application/x-www-form-urlencoded. (Ajax Post of a html form). Valid fields are all fields in "AddressForm" type. E.g. "deliveryAddress.firstname=max&deliveryAddress.lastname=mustermann&deliveryAddress.mail=max@example.org&useBillingAddress=1"
+// @Tags v1 Cart ajax API
+// @Accept application/x-www-form-urlencoded
+// @Produce json
+// @Success 200 {object} CartAPIResult
+// @Failure 500 {object} CartAPIResult
+// @Param gateway query string true "name of the payment gateway - e.g. 'offline'"
+// @Param method query string true "name of the payment method - e.g. 'offlinepayment_cashondelivery'"
+// @Router /api/v1/cart/updatepaymentselection [put]
+func (cc *CartAPIController) UpdatePaymentSelectionAction(ctx context.Context, r *web.Request) web.Result {
+	result := newResult()
+	gateway, _ := r.Query1("gateway")
+	method, _ := r.Query1("method")
+
+	urlValues := make(url.Values)
+	urlValues["gateway"] = []string{gateway}
+	urlValues["method"] = []string{method}
+	newRequest := web.CreateRequest(web.RequestFromContext(ctx).Request(), web.SessionFromContext(ctx))
+	newRequest.Request().Form = urlValues
+
+	form, success, err := cc.simplePaymentFormController.HandleFormAction(ctx, newRequest)
+	result.Success = success
+	if err != nil {
+		result.SetError(err, "form_error")
+		response := cc.responder.Data(result)
+		response.Status(500)
+		return response
 	}
 	if form != nil {
 		result.Data = form.Data
