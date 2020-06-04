@@ -202,7 +202,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
+                            "type": "primitive"
                         }
                     }
                 ],
@@ -420,7 +420,7 @@ var doc = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/controller.resultError"
+                            "$ref": "#/definitions/flamingo.me_flamingo-commerce_v3_payment_interfaces_controller.resultError"
                         }
                     }
                 }
@@ -480,27 +480,55 @@ var doc = `{
         }
     },
     "definitions": {
-        "CategoryAttribute": {
+        "ProductAttribute": {
             "type": "object",
             "properties": {
                 "code": {
+                    "description": "Code is the internal attribute identifier",
+                    "type": "string"
+                },
+                "codeLabel": {
+                    "description": "CodeLabel is the human readable (perhaps localized) attribute name",
                     "type": "string"
                 },
                 "label": {
+                    "description": "Label is the human readable (perhaps localized) attribute value",
                     "type": "string"
                 },
-                "values": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/domain.AttributeValue"
-                    }
+                "rawValue": {
+                    "description": "RawValue is the untouched original value of the attribute",
+                    "type": "object"
+                },
+                "unitCode": {
+                    "description": "UnitCode is the internal code of the attribute values measuring unit",
+                    "type": "string"
                 }
             }
         },
-        "CategoryAttributes": {
+        "ProductAttributes": {
             "type": "object",
             "additionalProperties": {
-                "$ref": "#/definitions/CategoryAttribute"
+                "$ref": "#/definitions/ProductAttribute"
+            }
+        },
+        "ProductMedia": {
+            "type": "object",
+            "properties": {
+                "mimeType": {
+                    "type": "string"
+                },
+                "reference": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "usage": {
+                    "type": "string"
+                }
             }
         },
         "cart.AdditionalData": {
@@ -586,7 +614,6 @@ var doc = `{
             "properties": {
                 "applied": {
                     "description": "how much of the discount has been subtracted from cart price, IMPORTANT: always negative",
-                    "type": "object",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "campaignCode": {
@@ -615,18 +642,11 @@ var doc = `{
                 }
             }
         },
-        "cart.AppliedDiscounts": {
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/cart.AppliedDiscount"
-            }
-        },
         "cart.AppliedGiftCard": {
             "type": "object",
             "properties": {
                 "applied": {
                     "description": "how much of the gift card has been subtracted from cart price",
-                    "type": "object",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "code": {
@@ -639,7 +659,6 @@ var doc = `{
                 },
                 "remaining": {
                     "description": "how much of the gift card is still available",
-                    "type": "object",
                     "$ref": "#/definitions/domain.Price"
                 }
             }
@@ -649,7 +668,6 @@ var doc = `{
             "properties": {
                 "additionalData": {
                     "description": "AdditionalData   can be used for Custom attributes",
-                    "type": "object",
                     "$ref": "#/definitions/cart.AdditionalData"
                 },
                 "appliedCouponCodes": {
@@ -674,7 +692,6 @@ var doc = `{
                 },
                 "billingAddress": {
                     "description": "BillingAddress - the main billing address (relevant for all payments/invoices)",
-                    "type": "object",
                     "$ref": "#/definitions/cart.Address"
                 },
                 "defaultCurrency": {
@@ -697,12 +714,10 @@ var doc = `{
                 },
                 "paymentSelection": {
                     "description": "PaymentSelection - the saved PaymentSelection (saves \"how\" the customer want to pay)",
-                    "type": "object",
                     "$ref": "#/definitions/cart.PaymentSelection"
                 },
                 "purchaser": {
                     "description": "Purchaser - additional infos for the legal contact person in this order",
-                    "type": "object",
                     "$ref": "#/definitions/cart.Person"
                 },
                 "totalitems": {
@@ -739,12 +754,10 @@ var doc = `{
                 },
                 "deliveryInfo": {
                     "description": "DeliveryInfo - The details for this delivery - normally completed during checkout",
-                    "type": "object",
                     "$ref": "#/definitions/cart.DeliveryInfo"
                 },
                 "shippingItem": {
                     "description": "ShippingItem\t- The Shipping Costs that may be involved in this delivery",
-                    "type": "object",
                     "$ref": "#/definitions/cart.ShippingItem"
                 }
             }
@@ -769,7 +782,6 @@ var doc = `{
                 },
                 "deliveryLocation": {
                     "description": "DeliveryLocation The target Location for the delivery",
-                    "type": "object",
                     "$ref": "#/definitions/cart.DeliveryLocation"
                 },
                 "desiredTime": {
@@ -791,7 +803,6 @@ var doc = `{
             "properties": {
                 "address": {
                     "description": "Address -  (only relevant for type address)",
-                    "type": "object",
                     "$ref": "#/definitions/cart.Address"
                 },
                 "code": {
@@ -828,8 +839,10 @@ var doc = `{
                 },
                 "appliedDiscounts": {
                     "description": "AppliedDiscounts contains the details about the discounts applied to this item - they can be \"itemrelated\" or not",
-                    "type": "object",
-                    "$ref": "#/definitions/cart.AppliedDiscounts"
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/cart.AppliedDiscount"
+                    }
                 },
                 "externalReference": {
                     "description": "ExternalReference can be used by cart service implementations to separate the representation in an external\ncart service from the unique item ID",
@@ -850,27 +863,25 @@ var doc = `{
                 },
                 "rowPriceGross": {
                     "description": "RowPriceGross",
-                    "type": "object",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "rowPriceNet": {
                     "description": "RowPriceNet",
-                    "type": "object",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "rowTaxes": {
                     "description": "RowPriceGross",
-                    "type": "object",
-                    "$ref": "#/definitions/cart.Taxes"
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/cart.Tax"
+                    }
                 },
                 "singlePriceGross": {
                     "description": "SinglePriceGross brutto (gross) for single product",
-                    "type": "object",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "singlePriceNet": {
                     "description": "SinglePriceNet net price for single product",
-                    "type": "object",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "sourceID": {
@@ -890,16 +901,13 @@ var doc = `{
             "type": "object",
             "properties": {
                 "address": {
-                    "type": "object",
                     "$ref": "#/definitions/cart.Address"
                 },
                 "existingCustomerData": {
                     "description": "ExistingCustomerData if the current purchaser is an existing customer - this contains infos about existing customer",
-                    "type": "object",
                     "$ref": "#/definitions/cart.ExistingCustomerData"
                 },
                 "personalDetails": {
-                    "type": "object",
                     "$ref": "#/definitions/cart.PersonalDetails"
                 }
             }
@@ -925,15 +933,15 @@ var doc = `{
             "type": "object",
             "properties": {
                 "appliedDiscounts": {
-                    "type": "object",
-                    "$ref": "#/definitions/cart.AppliedDiscounts"
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/cart.AppliedDiscount"
+                    }
                 },
                 "priceNet": {
-                    "type": "object",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "taxAmount": {
-                    "type": "object",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "title": {
@@ -945,7 +953,6 @@ var doc = `{
             "type": "object",
             "properties": {
                 "amount": {
-                    "type": "object",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "rate": {
@@ -954,12 +961,6 @@ var doc = `{
                 "type": {
                     "type": "string"
                 }
-            }
-        },
-        "cart.Taxes": {
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/cart.Tax"
             }
         },
         "cart.Teaser": {
@@ -986,7 +987,6 @@ var doc = `{
                     "type": "string"
                 },
                 "price": {
-                    "type": "object",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "title": {
@@ -1001,11 +1001,9 @@ var doc = `{
             "type": "object",
             "properties": {
                 "error": {
-                    "type": "object",
-                    "$ref": "#/definitions/controller.resultError"
+                    "$ref": "#/definitions/flamingo.me_flamingo-commerce_v3_product_interfaces_controller.resultError"
                 },
                 "product": {
-                    "type": "object",
                     "$ref": "#/definitions/domain.BasicProduct"
                 },
                 "success": {
@@ -1017,22 +1015,19 @@ var doc = `{
             "type": "object",
             "properties": {
                 "cartTeaser": {
-                    "type": "object",
                     "$ref": "#/definitions/cart.Teaser"
                 },
                 "cartValidationResult": {
-                    "type": "object",
                     "$ref": "#/definitions/validation.Result"
                 },
                 "data": {
                     "type": "object"
                 },
                 "dataValidationInfo": {
-                    "type": "string"
+                    "type": "object"
                 },
                 "error": {
                     "description": "Contains details if success is false",
-                    "type": "object",
                     "$ref": "#/definitions/controller.resultError"
                 },
                 "success": {
@@ -1044,11 +1039,9 @@ var doc = `{
             "type": "object",
             "properties": {
                 "cart": {
-                    "type": "object",
                     "$ref": "#/definitions/cart.Cart"
                 },
                 "cartValidationResult": {
-                    "type": "object",
                     "$ref": "#/definitions/validation.Result"
                 }
             }
@@ -1061,17 +1054,6 @@ var doc = `{
                 },
                 "message": {
                     "type": "string"
-                }
-            }
-        },
-        "domain.AttributeValue": {
-            "type": "object",
-            "properties": {
-                "label": {
-                    "type": "string"
-                },
-                "rawValue": {
-                    "type": "object"
                 }
             }
         },
@@ -1088,11 +1070,6 @@ var doc = `{
                 "name": {
                     "description": "Name - speaking name of the category",
                     "type": "string"
-                },
-                "parent": {
-                    "description": "Optional link to parent teaser",
-                    "type": "object",
-                    "$ref": "#/definitions/domain.CategoryTeaser"
                 },
                 "path": {
                     "description": "The Path (root to leaf) for this Category - separated by \"/\"",
@@ -1138,7 +1115,6 @@ var doc = `{
                     "type": "string"
                 },
                 "actionData": {
-                    "type": "object",
                     "$ref": "#/definitions/domain.FlowActionData"
                 },
                 "data": {
@@ -1147,7 +1123,6 @@ var doc = `{
                 },
                 "error": {
                     "description": "Error contains additional information in case of an error (e.g. payment failed)",
-                    "type": "object",
                     "$ref": "#/definitions/domain.Error"
                 },
                 "status": {
@@ -1171,7 +1146,6 @@ var doc = `{
             "type": "object",
             "properties": {
                 "default": {
-                    "type": "object",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "type": {
@@ -1183,18 +1157,15 @@ var doc = `{
             "type": "object",
             "properties": {
                 "context": {
-                    "type": "object",
                     "$ref": "#/definitions/domain.PriceContext"
                 },
                 "default": {
-                    "type": "object",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "discountText": {
                     "type": "string"
                 },
                 "discounted": {
-                    "type": "object",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "isDiscounted": {
@@ -1211,9 +1182,6 @@ var doc = `{
                     "type": "string"
                 }
             }
-        },
-        "domain.Media": {
-            "type": "object"
         },
         "domain.Price": {
             "type": "object"
@@ -1251,11 +1219,9 @@ var doc = `{
                     }
                 },
                 "context": {
-                    "type": "object",
                     "$ref": "#/definitions/domain.PriceContext"
                 },
                 "default": {
-                    "type": "object",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "denyMoreDiscounts": {
@@ -1265,7 +1231,6 @@ var doc = `{
                     "type": "string"
                 },
                 "discounted": {
-                    "type": "object",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "isDiscounted": {
@@ -1280,12 +1245,10 @@ var doc = `{
             "type": "object",
             "properties": {
                 "activePrice": {
-                    "type": "object",
                     "$ref": "#/definitions/domain.PriceInfo"
                 },
                 "attributes": {
-                    "type": "object",
-                    "$ref": "#/definitions/CategoryAttributes"
+                    "$ref": "#/definitions/ProductAttributes"
                 },
                 "availablePrices": {
                     "type": "array",
@@ -1341,7 +1304,6 @@ var doc = `{
                     }
                 },
                 "mainCategory": {
-                    "type": "object",
                     "$ref": "#/definitions/domain.CategoryTeaser"
                 },
                 "marketPlaceCode": {
@@ -1350,7 +1312,7 @@ var doc = `{
                 "media": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/domain.Media"
+                        "$ref": "#/definitions/ProductMedia"
                     }
                 },
                 "retailerCode": {
@@ -1375,7 +1337,6 @@ var doc = `{
                     "type": "string"
                 },
                 "teaser": {
-                    "type": "object",
                     "$ref": "#/definitions/domain.TeaserData"
                 },
                 "title": {
@@ -1403,7 +1364,7 @@ var doc = `{
                     "description": "Media",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/domain.Media"
+                        "$ref": "#/definitions/ProductMedia"
                     }
                 },
                 "preSelectedVariantSku": {
@@ -1424,17 +1385,14 @@ var doc = `{
                 },
                 "teaserLoyaltyEarningInfo": {
                     "description": "TeaserLoyaltyEarning optional teaser for the loyalty earning used in grid / list view",
-                    "type": "object",
                     "$ref": "#/definitions/domain.LoyaltyEarningInfo"
                 },
                 "teaserLoyaltyPriceInfo": {
                     "description": "TeaserLoyaltyPriceInfo - optional the Loyaltyprice that can be used for teaser (e.g. on listing views)",
-                    "type": "object",
                     "$ref": "#/definitions/domain.LoyaltyPriceInfo"
                 },
                 "teaserPrice": {
                     "description": "TeaserPrice is the price that should be shown in teasers (listview)",
-                    "type": "object",
                     "$ref": "#/definitions/domain.PriceInfo"
                 },
                 "teaserPriceIsFromPrice": {
@@ -1442,6 +1400,28 @@ var doc = `{
                     "type": "boolean"
                 },
                 "urlslug": {
+                    "type": "string"
+                }
+            }
+        },
+        "flamingo.me_flamingo-commerce_v3_payment_interfaces_controller.resultError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "flamingo.me_flamingo-commerce_v3_product_interfaces_controller.resultError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "message": {
                     "type": "string"
                 }
             }
