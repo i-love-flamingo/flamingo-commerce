@@ -2,7 +2,9 @@ package controller
 
 import (
 	"context"
+	//cart type is referenced in swag comment and requires empty import
 	_ "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	//domain type is referenced in swag comment and requires empty import
 	_ "flamingo.me/flamingo-commerce/v3/payment/domain"
 	"fmt"
 
