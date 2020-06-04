@@ -62,7 +62,6 @@ func (r *Service) GetAvailableSourcesDeductedByCurrentCart(ctx context.Context, 
 		return nil, err
 	}
 
-	// todo : these need to be reduced somehow - cant read intention on how from this
 	return r.sourcingService.GetAvailableSources(ctx, product, deliveryInfo, decoratedCart)
 }
 
