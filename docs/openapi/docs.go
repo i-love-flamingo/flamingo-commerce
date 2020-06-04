@@ -420,7 +420,7 @@ var doc = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/flamingo.me_flamingo-commerce_v3_payment_interfaces_controller.resultError"
+                            "$ref": "#/definitions/controller.resultError"
                         }
                     }
                 }
@@ -1001,7 +1001,7 @@ var doc = `{
             "type": "object",
             "properties": {
                 "error": {
-                    "$ref": "#/definitions/controller.resultError"
+                    "$ref": "#/definitions/flamingo.me_flamingo-commerce_v3_product_interfaces_controller.resultError"
                 },
                 "product": {
                     "$ref": "#/definitions/domain.BasicProduct"
@@ -1415,7 +1415,7 @@ var doc = `{
                 }
             }
         },
-        "flamingo.me_flamingo-commerce_v3_payment_interfaces_controller.resultError": {
+        "flamingo.me_flamingo-commerce_v3_product_interfaces_controller.resultError": {
             "type": "object",
             "properties": {
                 "code": {
