@@ -313,7 +313,7 @@ func (cc *CartAPIController) UpdateDeliveryInfoAction(ctx context.Context, r *we
 	return cc.responder.Data(result)
 }
 
-// UpdateDeliveryInfoAction updates the delivery info
+// UpdatePaymentSelectionAction updates the delivery info
 // @Summary adds delivery infos, such as shipping address to the delivery for th cart
 // @Description Data need to be posted as application/x-www-form-urlencoded. (Ajax Post of a html form). Valid fields are all fields in "AddressForm" type. E.g. "deliveryAddress.firstname=max&deliveryAddress.lastname=mustermann&deliveryAddress.mail=max@example.org&useBillingAddress=1"
 // @Tags v1 Cart ajax API

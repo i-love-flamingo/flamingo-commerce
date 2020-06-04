@@ -17,6 +17,7 @@ import (
 )
 
 type (
+	//APIController for checkout rest api
 	APIController struct {
 		responder            *web.Responder
 		placeorderHandler    *placeorder.Handler
