@@ -283,6 +283,16 @@ func (cc *CartAPIController) BillingAction(ctx context.Context, r *web.Request) 
 }
 
 // UpdateDeliveryInfoAction updates the delivery info
+// @Summary adds delivery infos, such as shipping address to the delivery for th cart
+// @Description Data need to be posted as application/x-www-form-urlencoded. Valid fields are all fields in "AddressForm" type. E.g. "deliveryAddress.firstname=max&deliveryAddress.lastname=mustermann&deliveryAddress.mail=max@example.org&useBillingAddress=1"
+// @Tags v1 Cart ajax API
+// @Accept application/x-www-form-urlencoded
+// @Produce json
+// @Success 200 {object} CartAPIResult
+// @Failure 500 {object} CartAPIResult
+// @Param deliveryInfoForm body string true "billing form values"
+// @Param deliveryCode path string true "the idendifier for the delivery in the cart"
+// @Router /api/v1/cart/{deliveryCode}/deliveryinfo [post]
 func (cc *CartAPIController) UpdateDeliveryInfoAction(ctx context.Context, r *web.Request) web.Result {
 	result := newResult()
 	form, success, err := cc.deliveryFormController.HandleFormAction(ctx, r)
