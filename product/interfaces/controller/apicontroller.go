@@ -27,7 +27,7 @@ type (
 	resultError struct {
 		Message string
 		Code    string
-	}
+	} //@name productResultError
 )
 
 // Inject dependencies

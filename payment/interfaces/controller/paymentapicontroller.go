@@ -23,7 +23,7 @@ type (
 	resultError struct {
 		Message string
 		Code    string
-	}
+	} //@name paymentResultError
 )
 
 // Inject dependencies
