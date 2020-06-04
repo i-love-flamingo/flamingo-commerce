@@ -380,7 +380,7 @@ definitions:
       dataValidationInfo:
         type: object
       error:
-        $ref: '#/definitions/flamingo.me_flamingo-commerce_v3_cart_interfaces_controller.resultError'
+        $ref: '#/definitions/controller.resultError'
         description: Contains details if success is false
       success:
         type: boolean
@@ -633,7 +633,7 @@ definitions:
       urlslug:
         type: string
     type: object
-  flamingo.me_flamingo-commerce_v3_cart_interfaces_controller.resultError:
+  flamingo.me_flamingo-commerce_v3_payment_interfaces_controller.resultError:
     properties:
       code:
         type: string
@@ -923,7 +923,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/controller.resultError'
+            $ref: '#/definitions/flamingo.me_flamingo-commerce_v3_payment_interfaces_controller.resultError'
       summary: Get the payment status of current cart (or last placed cart)
       tags:
       - v1 Payment ajax API

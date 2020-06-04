@@ -420,7 +420,7 @@ var doc = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/controller.resultError"
+                            "$ref": "#/definitions/flamingo.me_flamingo-commerce_v3_payment_interfaces_controller.resultError"
                         }
                     }
                 }
@@ -1028,7 +1028,7 @@ var doc = `{
                 },
                 "error": {
                     "description": "Contains details if success is false",
-                    "$ref": "#/definitions/flamingo.me_flamingo-commerce_v3_cart_interfaces_controller.resultError"
+                    "$ref": "#/definitions/controller.resultError"
                 },
                 "success": {
                     "type": "boolean"
@@ -1404,7 +1404,7 @@ var doc = `{
                 }
             }
         },
-        "flamingo.me_flamingo-commerce_v3_cart_interfaces_controller.resultError": {
+        "flamingo.me_flamingo-commerce_v3_payment_interfaces_controller.resultError": {
             "type": "object",
             "properties": {
                 "code": {
