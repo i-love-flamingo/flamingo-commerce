@@ -2,6 +2,10 @@ package controller
 
 import (
 	"context"
+	//cart type is referenced in swag comment and requires empty import
+	_ "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	//domain type is referenced in swag comment and requires empty import
+	_ "flamingo.me/flamingo-commerce/v3/payment/domain"
 	"fmt"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/application"
@@ -21,7 +25,7 @@ type (
 	resultError struct {
 		Message string
 		Code    string
-	}
+	} //@name paymentResultError
 )
 
 // Inject dependencies

@@ -35,7 +35,7 @@ type (
 	// FlowActionData contains additional data for the current action
 	FlowActionData struct {
 		// URL is used to pass URL data to the user if the current state needs some
-		URL *url.URL
+		URL *url.URL `swaggertype:"string"`
 		// DisplayData holds data, normally HTML to be displayed to the user
 		DisplayData   string
 		FormParameter map[string]FormField

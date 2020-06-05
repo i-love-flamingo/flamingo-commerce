@@ -32,6 +32,13 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 				"specifications": "GetSpecifications",
 			},
 		},
+		"Commerce_ConfigurableProduct": graphql.ModelMapEntry{
+			Type: domain.ConfigurableProduct{},
+			Fields: map[string]string{
+				"specifications": "GetSpecifications",
+			},
+		},
+		"Commerce_Product_Variant":           domain.Variant{},
 		"Commerce_BasicProductData":          domain.BasicProductData{},
 		"Commerce_ProductTeaserData":         domain.TeaserData{},
 		"Commerce_ProductSpecifications":     domain.Specifications{},

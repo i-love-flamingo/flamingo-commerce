@@ -570,6 +570,20 @@ type ComplexityRoot struct {
 		UUID func(childComplexity int) int
 	}
 
+	CommerceConfigurableProduct struct {
+		BaseData                   func(childComplexity int) int
+		GetIdentifier              func(childComplexity int) int
+		GetMedia                   func(childComplexity int, group string, usage string) int
+		GetSpecifications          func(childComplexity int) int
+		HasMedia                   func(childComplexity int, group string, usage string) int
+		IsSaleable                 func(childComplexity int) int
+		SaleableData               func(childComplexity int) int
+		TeaserData                 func(childComplexity int) int
+		Type                       func(childComplexity int) int
+		VariantVariationAttributes func(childComplexity int) int
+		Variants                   func(childComplexity int) int
+	}
+
 	CommerceCustomerAddress struct {
 		AdditionalAddressLines func(childComplexity int) int
 		City                   func(childComplexity int) int
@@ -730,6 +744,11 @@ type ComplexityRoot struct {
 		Products    func(childComplexity int) int
 		SearchMeta  func(childComplexity int) int
 		Suggestions func(childComplexity int) int
+	}
+
+	CommerceProductVariant struct {
+		BaseData     func(childComplexity int) int
+		SaleableData func(childComplexity int) int
 	}
 
 	CommerceSearchMeta struct {
@@ -3079,6 +3098,93 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCheckoutStartPlaceOrderResult.UUID(childComplexity), true
 
+	case "Commerce_ConfigurableProduct.baseData":
+		if e.complexity.CommerceConfigurableProduct.BaseData == nil {
+			break
+		}
+
+		return e.complexity.CommerceConfigurableProduct.BaseData(childComplexity), true
+
+	case "Commerce_ConfigurableProduct.getIdentifier":
+		if e.complexity.CommerceConfigurableProduct.GetIdentifier == nil {
+			break
+		}
+
+		return e.complexity.CommerceConfigurableProduct.GetIdentifier(childComplexity), true
+
+	case "Commerce_ConfigurableProduct.getMedia":
+		if e.complexity.CommerceConfigurableProduct.GetMedia == nil {
+			break
+		}
+
+		args, err := ec.field_Commerce_ConfigurableProduct_getMedia_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.CommerceConfigurableProduct.GetMedia(childComplexity, args["group"].(string), args["usage"].(string)), true
+
+	case "Commerce_ConfigurableProduct.specifications":
+		if e.complexity.CommerceConfigurableProduct.GetSpecifications == nil {
+			break
+		}
+
+		return e.complexity.CommerceConfigurableProduct.GetSpecifications(childComplexity), true
+
+	case "Commerce_ConfigurableProduct.hasMedia":
+		if e.complexity.CommerceConfigurableProduct.HasMedia == nil {
+			break
+		}
+
+		args, err := ec.field_Commerce_ConfigurableProduct_hasMedia_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.CommerceConfigurableProduct.HasMedia(childComplexity, args["group"].(string), args["usage"].(string)), true
+
+	case "Commerce_ConfigurableProduct.isSaleable":
+		if e.complexity.CommerceConfigurableProduct.IsSaleable == nil {
+			break
+		}
+
+		return e.complexity.CommerceConfigurableProduct.IsSaleable(childComplexity), true
+
+	case "Commerce_ConfigurableProduct.saleableData":
+		if e.complexity.CommerceConfigurableProduct.SaleableData == nil {
+			break
+		}
+
+		return e.complexity.CommerceConfigurableProduct.SaleableData(childComplexity), true
+
+	case "Commerce_ConfigurableProduct.teaserData":
+		if e.complexity.CommerceConfigurableProduct.TeaserData == nil {
+			break
+		}
+
+		return e.complexity.CommerceConfigurableProduct.TeaserData(childComplexity), true
+
+	case "Commerce_ConfigurableProduct.type":
+		if e.complexity.CommerceConfigurableProduct.Type == nil {
+			break
+		}
+
+		return e.complexity.CommerceConfigurableProduct.Type(childComplexity), true
+
+	case "Commerce_ConfigurableProduct.variantVariationAttributes":
+		if e.complexity.CommerceConfigurableProduct.VariantVariationAttributes == nil {
+			break
+		}
+
+		return e.complexity.CommerceConfigurableProduct.VariantVariationAttributes(childComplexity), true
+
+	case "Commerce_ConfigurableProduct.variants":
+		if e.complexity.CommerceConfigurableProduct.Variants == nil {
+			break
+		}
+
+		return e.complexity.CommerceConfigurableProduct.Variants(childComplexity), true
+
 	case "Commerce_Customer_Address.additionalAddressLines":
 		if e.complexity.CommerceCustomerAddress.AdditionalAddressLines == nil {
 			break
@@ -3832,6 +3938,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceProductSearchResult.Suggestions(childComplexity), true
+
+	case "Commerce_Product_Variant.baseData":
+		if e.complexity.CommerceProductVariant.BaseData == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductVariant.BaseData(childComplexity), true
+
+	case "Commerce_Product_Variant.saleableData":
+		if e.complexity.CommerceProductVariant.SaleableData == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductVariant.SaleableData(childComplexity), true
 
 	case "Commerce_Search_Meta.numPages":
 		if e.complexity.CommerceSearchMeta.NumPages == nil {
@@ -5094,6 +5214,26 @@ type Commerce_SimpleProduct implements Commerce_Product {
     getMedia(group: String!, usage: String!): Commerce_ProductMedia!
 }
 
+
+type Commerce_ConfigurableProduct implements Commerce_Product {
+    baseData: Commerce_BasicProductData!
+    teaserData: Commerce_ProductTeaserData!
+    specifications: Commerce_ProductSpecifications!
+    isSaleable: Boolean!
+    saleableData: Commerce_ProductSaleable!
+    type: String!
+    getIdentifier: String!
+    hasMedia(group: String!, usage: String!): Boolean!
+    getMedia(group: String!, usage: String!): Commerce_ProductMedia!
+    variants: [Commerce_Product_Variant!]
+    variantVariationAttributes: [String!]
+}
+
+type Commerce_Product_Variant {
+    baseData: Commerce_BasicProductData!
+    saleableData: Commerce_ProductSaleable!
+}
+
 type Commerce_BasicProductData {
     title:            String!
     attributes:       Commerce_ProductAttributes
@@ -5534,6 +5674,50 @@ func (ec *executionContext) field_Commerce_Category_Attributes_has_args(ctx cont
 		}
 	}
 	args["code"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Commerce_ConfigurableProduct_getMedia_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["group"]; ok {
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["group"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["usage"]; ok {
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["usage"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Commerce_ConfigurableProduct_hasMedia_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["group"]; ok {
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["group"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["usage"]; ok {
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["usage"] = arg1
 	return args, nil
 }
 
@@ -14165,6 +14349,311 @@ func (ec *executionContext) _Commerce_Checkout_StartPlaceOrder_Result_uuid(ctx c
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_ConfigurableProduct_baseData(ctx context.Context, field graphql.CollectedField, obj *domain1.ConfigurableProduct) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_ConfigurableProduct",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BaseData(), nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain1.BasicProductData)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNCommerce_BasicProductData2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐBasicProductData(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_ConfigurableProduct_teaserData(ctx context.Context, field graphql.CollectedField, obj *domain1.ConfigurableProduct) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_ConfigurableProduct",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TeaserData(), nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain1.TeaserData)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNCommerce_ProductTeaserData2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐTeaserData(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_ConfigurableProduct_specifications(ctx context.Context, field graphql.CollectedField, obj *domain1.ConfigurableProduct) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_ConfigurableProduct",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GetSpecifications(), nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain1.Specifications)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNCommerce_ProductSpecifications2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐSpecifications(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_ConfigurableProduct_isSaleable(ctx context.Context, field graphql.CollectedField, obj *domain1.ConfigurableProduct) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_ConfigurableProduct",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsSaleable(), nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_ConfigurableProduct_saleableData(ctx context.Context, field graphql.CollectedField, obj *domain1.ConfigurableProduct) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_ConfigurableProduct",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SaleableData(), nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain1.Saleable)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNCommerce_ProductSaleable2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐSaleable(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_ConfigurableProduct_type(ctx context.Context, field graphql.CollectedField, obj *domain1.ConfigurableProduct) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_ConfigurableProduct",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type(), nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_ConfigurableProduct_getIdentifier(ctx context.Context, field graphql.CollectedField, obj *domain1.ConfigurableProduct) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_ConfigurableProduct",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GetIdentifier(), nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_ConfigurableProduct_hasMedia(ctx context.Context, field graphql.CollectedField, obj *domain1.ConfigurableProduct) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_ConfigurableProduct",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Commerce_ConfigurableProduct_hasMedia_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx.Args = args
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HasMedia(args["group"].(string), args["usage"].(string)), nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_ConfigurableProduct_getMedia(ctx context.Context, field graphql.CollectedField, obj *domain1.ConfigurableProduct) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_ConfigurableProduct",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Commerce_ConfigurableProduct_getMedia_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx.Args = args
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GetMedia(args["group"].(string), args["usage"].(string)), nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain1.Media)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNCommerce_ProductMedia2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐMedia(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_ConfigurableProduct_variants(ctx context.Context, field graphql.CollectedField, obj *domain1.ConfigurableProduct) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_ConfigurableProduct",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Variants, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]domain1.Variant)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOCommerce_Product_Variant2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐVariant(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_ConfigurableProduct_variantVariationAttributes(ctx context.Context, field graphql.CollectedField, obj *domain1.ConfigurableProduct) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_ConfigurableProduct",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.VariantVariationAttributes, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOString2ᚕstring(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_Customer_Address_regionCode(ctx context.Context, field graphql.CollectedField, obj *domain4.Address) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -16844,6 +17333,60 @@ func (ec *executionContext) _Commerce_Product_SearchResult_searchMeta(ctx contex
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalNCommerce_Search_Meta2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐSearchMeta(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Product_Variant_baseData(ctx context.Context, field graphql.CollectedField, obj *domain1.Variant) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Product_Variant",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BaseData(), nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain1.BasicProductData)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNCommerce_BasicProductData2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐBasicProductData(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Product_Variant_saleableData(ctx context.Context, field graphql.CollectedField, obj *domain1.Variant) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Product_Variant",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SaleableData(), nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain1.Saleable)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNCommerce_ProductSaleable2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐSaleable(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Search_Meta_query(ctx context.Context, field graphql.CollectedField, obj *domain5.SearchMeta) graphql.Marshaler {
@@ -19571,6 +20114,10 @@ func (ec *executionContext) _Commerce_Product(ctx context.Context, sel ast.Selec
 		return ec._Commerce_SimpleProduct(ctx, sel, &obj)
 	case *domain1.SimpleProduct:
 		return ec._Commerce_SimpleProduct(ctx, sel, obj)
+	case domain1.ConfigurableProduct:
+		return ec._Commerce_ConfigurableProduct(ctx, sel, &obj)
+	case *domain1.ConfigurableProduct:
+		return ec._Commerce_ConfigurableProduct(ctx, sel, obj)
 	default:
 		panic(fmt.Errorf("unexpected type %T", obj))
 	}
@@ -22295,6 +22842,77 @@ func (ec *executionContext) _Commerce_Checkout_StartPlaceOrder_Result(ctx contex
 	return out
 }
 
+var commerce_ConfigurableProductImplementors = []string{"Commerce_ConfigurableProduct", "Commerce_Product"}
+
+func (ec *executionContext) _Commerce_ConfigurableProduct(ctx context.Context, sel ast.SelectionSet, obj *domain1.ConfigurableProduct) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_ConfigurableProductImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_ConfigurableProduct")
+		case "baseData":
+			out.Values[i] = ec._Commerce_ConfigurableProduct_baseData(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "teaserData":
+			out.Values[i] = ec._Commerce_ConfigurableProduct_teaserData(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "specifications":
+			out.Values[i] = ec._Commerce_ConfigurableProduct_specifications(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "isSaleable":
+			out.Values[i] = ec._Commerce_ConfigurableProduct_isSaleable(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "saleableData":
+			out.Values[i] = ec._Commerce_ConfigurableProduct_saleableData(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "type":
+			out.Values[i] = ec._Commerce_ConfigurableProduct_type(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "getIdentifier":
+			out.Values[i] = ec._Commerce_ConfigurableProduct_getIdentifier(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "hasMedia":
+			out.Values[i] = ec._Commerce_ConfigurableProduct_hasMedia(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "getMedia":
+			out.Values[i] = ec._Commerce_ConfigurableProduct_getMedia(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "variants":
+			out.Values[i] = ec._Commerce_ConfigurableProduct_variants(ctx, field, obj)
+		case "variantVariationAttributes":
+			out.Values[i] = ec._Commerce_ConfigurableProduct_variantVariationAttributes(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var commerce_Customer_AddressImplementors = []string{"Commerce_Customer_Address"}
 
 func (ec *executionContext) _Commerce_Customer_Address(ctx context.Context, sel ast.SelectionSet, obj *domain4.Address) graphql.Marshaler {
@@ -23102,6 +23720,38 @@ func (ec *executionContext) _Commerce_Product_SearchResult(ctx context.Context, 
 			out.Values[i] = ec._Commerce_Product_SearchResult_suggestions(ctx, field, obj)
 		case "searchMeta":
 			out.Values[i] = ec._Commerce_Product_SearchResult_searchMeta(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Product_VariantImplementors = []string{"Commerce_Product_Variant"}
+
+func (ec *executionContext) _Commerce_Product_Variant(ctx context.Context, sel ast.SelectionSet, obj *domain1.Variant) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Product_VariantImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Product_Variant")
+		case "baseData":
+			out.Values[i] = ec._Commerce_Product_Variant_baseData(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "saleableData":
+			out.Values[i] = ec._Commerce_Product_Variant_saleableData(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -24289,6 +24939,10 @@ func (ec *executionContext) marshalNCommerce_Product_SearchResult2ᚖflamingoᚗ
 		return graphql.Null
 	}
 	return ec._Commerce_Product_SearchResult(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNCommerce_Product_Variant2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐVariant(ctx context.Context, sel ast.SelectionSet, v domain1.Variant) graphql.Marshaler {
+	return ec._Commerce_Product_Variant(ctx, sel, &v)
 }
 
 func (ec *executionContext) unmarshalNCommerce_Search_KeyValueFilter2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchKeyValueFilter(ctx context.Context, v interface{}) (dto1.CommerceSearchKeyValueFilter, error) {
@@ -26149,6 +26803,46 @@ func (ec *executionContext) marshalOCommerce_ProductSpecificationGroup2ᚕflamin
 				defer wg.Done()
 			}
 			ret[i] = ec.marshalNCommerce_ProductSpecificationGroup2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐSpecificationGroup(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalOCommerce_Product_Variant2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐVariant(ctx context.Context, sel ast.SelectionSet, v []domain1.Variant) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		rctx := &graphql.ResolverContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithResolverContext(ctx, rctx)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCommerce_Product_Variant2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐVariant(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)

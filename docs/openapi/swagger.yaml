@@ -1,4 +1,26 @@
 definitions:
+  ProductAttribute:
+    properties:
+      code:
+        description: Code is the internal attribute identifier
+        type: string
+      codeLabel:
+        description: CodeLabel is the human readable (perhaps localized) attribute name
+        type: string
+      label:
+        description: Label is the human readable (perhaps localized) attribute value
+        type: string
+      rawValue:
+        description: RawValue is the untouched original value of the attribute
+        type: object
+      unitCode:
+        description: UnitCode is the internal code of the attribute values measuring unit
+        type: string
+    type: object
+  ProductAttributes:
+    additionalProperties:
+      $ref: '#/definitions/ProductAttribute'
+    type: object
   ProductMedia:
     properties:
       mimeType:
@@ -20,8 +42,7 @@ definitions:
         description: CustomAttributes list of key values
         type: object
       reservedOrderID:
-        description: ReservedOrderID is an ID already known by the Cart of the future
-          order ID
+        description: ReservedOrderID is an ID already known by the Cart of the future order ID
         type: string
     type: object
   cart.Address:
@@ -69,9 +90,7 @@ definitions:
     properties:
       applied:
         $ref: '#/definitions/domain.Price'
-        description: 'how much of the discount has been subtracted from cart price,
-          IMPORTANT: always negative'
-        type: object
+        description: 'how much of the discount has been subtracted from cart price, IMPORTANT: always negative'
       campaignCode:
         description: unique code of the underlying campaign or rule e.g. "summer-campaign-2018"
         type: string
@@ -85,23 +104,17 @@ definitions:
         description: readable name of discount "Super Summer Sale 2018"
         type: string
       sortOrder:
-        description: indicates in which order discount have been applied, low value
-          has been applied before high value
+        description: indicates in which order discount have been applied, low value has been applied before high value
         type: integer
       type:
         description: to distinguish between discounts
         type: string
     type: object
-  cart.AppliedDiscounts:
-    items:
-      $ref: '#/definitions/cart.AppliedDiscount'
-    type: array
   cart.AppliedGiftCard:
     properties:
       applied:
         $ref: '#/definitions/domain.Price'
         description: how much of the gift card has been subtracted from cart price
-        type: object
       code:
         type: string
       customAttributes:
@@ -111,14 +124,12 @@ definitions:
       remaining:
         $ref: '#/definitions/domain.Price'
         description: how much of the gift card is still available
-        type: object
     type: object
   cart.Cart:
     properties:
       additionalData:
         $ref: '#/definitions/cart.AdditionalData'
         description: AdditionalData   can be used for Custom attributes
-        type: object
       appliedCouponCodes:
         items:
           $ref: '#/definitions/cart.CouponCode'
@@ -131,18 +142,15 @@ definitions:
       authenticatedUserID:
         type: string
       belongsToAuthenticatedUser:
-        description: BelongsToAuthenticatedUser - false = Guest Cart true = cart from
-          the authenticated user
+        description: BelongsToAuthenticatedUser - false = Guest Cart true = cart from the authenticated user
         type: boolean
       billingAddress:
         $ref: '#/definitions/cart.Address'
         description: BillingAddress - the main billing address (relevant for all payments/invoices)
-        type: object
       defaultCurrency:
         type: string
       deliveries:
-        description: Deliveries - list of desired Deliveries (or Shipments) involved
-          in this cart
+        description: Deliveries - list of desired Deliveries (or Shipments) involved in this cart
         items:
           $ref: '#/definitions/cart.Delivery'
         type: array
@@ -154,14 +162,10 @@ definitions:
         type: string
       paymentSelection:
         $ref: '#/definitions/cart.PaymentSelection'
-        description: PaymentSelection - the saved PaymentSelection (saves "how" the
-          customer want to pay)
-        type: object
+        description: PaymentSelection - the saved PaymentSelection (saves "how" the customer want to pay)
       purchaser:
         $ref: '#/definitions/cart.Person'
-        description: Purchaser - additional infos for the legal contact person in
-          this order
-        type: object
+        description: Purchaser - additional infos for the legal contact person in this order
       totalitems:
         description: Additional non taxable totals
         items:
@@ -174,8 +178,7 @@ definitions:
         type: string
       customAttributes:
         additionalProperties: true
-        description: CustomAttributes can hold additional data for coupon code - keys
-          and values are project specific
+        description: CustomAttributes can hold additional data for coupon code - keys and values are project specific
         type: object
     type: object
   cart.Delivery:
@@ -187,26 +190,20 @@ definitions:
         type: array
       deliveryInfo:
         $ref: '#/definitions/cart.DeliveryInfo'
-        description: DeliveryInfo - The details for this delivery - normally completed
-          during checkout
-        type: object
+        description: DeliveryInfo - The details for this delivery - normally completed during checkout
       shippingItem:
         $ref: '#/definitions/cart.ShippingItem'
-        description: "ShippingItem\t- The Shipping Costs that may be involved in this
-          delivery"
-        type: object
+        description: "ShippingItem\t- The Shipping Costs that may be involved in this delivery"
     type: object
   cart.DeliveryInfo:
     properties:
       additionalData:
         additionalProperties:
           type: string
-        description: AdditionalData  - Possibility for key value based information
-          on the delivery - can be used flexible by each project
+        description: AdditionalData  - Possibility for key value based information on the delivery - can be used flexible by each project
         type: object
       carrier:
-        description: Carrier - Optional the name of the Carrier that should be responsible
-          for executing the delivery
+        description: Carrier - Optional the name of the Carrier that should be responsible for executing the delivery
         type: string
       code:
         description: |-
@@ -216,17 +213,14 @@ definitions:
       deliveryLocation:
         $ref: '#/definitions/cart.DeliveryLocation'
         description: DeliveryLocation The target Location for the delivery
-        type: object
       desiredTime:
         description: DesiredTime - Optional - the desired time of the delivery
         type: string
       method:
-        description: Method - The shippingmethod something that is project specific
-          and that can mean different delivery qualities with different deliverycosts
+        description: Method - The shippingmethod something that is project specific and that can mean different delivery qualities with different deliverycosts
         type: string
       workflow:
-        description: Type - The Type of the Delivery - e.g. delivery or pickup - this
-          might trigger different workflows
+        description: Type - The Type of the Delivery - e.g. delivery or pickup - this might trigger different workflows
         type: string
     type: object
   cart.DeliveryLocation:
@@ -234,18 +228,14 @@ definitions:
       address:
         $ref: '#/definitions/cart.Address'
         description: Address -  (only relevant for type address)
-        type: object
       code:
-        description: Code - optional identifier of this location/destination - is
-          used in special destination Types
+        description: Code - optional identifier of this location/destination - is used in special destination Types
         type: string
       type:
-        description: Type - the type of the delivery - use some of the constant defined
-          in the package like DeliverylocationTypeAddress
+        description: Type - the type of the delivery - use some of the constant defined in the package like DeliverylocationTypeAddress
         type: string
       useBillingAddress:
-        description: UseBillingAddress - the address should be taken from billing
-          (only relevant for type address)
+        description: UseBillingAddress - the address should be taken from billing (only relevant for type address)
         type: boolean
     type: object
   cart.ExistingCustomerData:
@@ -261,10 +251,10 @@ definitions:
           type: string
         type: object
       appliedDiscounts:
-        $ref: '#/definitions/cart.AppliedDiscounts'
-        description: AppliedDiscounts contains the details about the discounts applied
-          to this item - they can be "itemrelated" or not
-        type: object
+        description: AppliedDiscounts contains the details about the discounts applied to this item - they can be "itemrelated" or not
+        items:
+          $ref: '#/definitions/cart.AppliedDiscount'
+        type: array
       externalReference:
         description: |-
           ExternalReference can be used by cart service implementations to separate the representation in an external
@@ -282,26 +272,22 @@ definitions:
       rowPriceGross:
         $ref: '#/definitions/domain.Price'
         description: RowPriceGross
-        type: object
       rowPriceNet:
         $ref: '#/definitions/domain.Price'
         description: RowPriceNet
-        type: object
       rowTaxes:
-        $ref: '#/definitions/cart.Taxes'
         description: RowPriceGross
-        type: object
+        items:
+          $ref: '#/definitions/cart.Tax'
+        type: array
       singlePriceGross:
         $ref: '#/definitions/domain.Price'
         description: SinglePriceGross brutto (gross) for single product
-        type: object
       singlePriceNet:
         $ref: '#/definitions/domain.Price'
         description: SinglePriceNet net price for single product
-        type: object
       sourceID:
-        description: Source Id of where the items should be initial picked - This
-          is set by the SourcingLogic
+        description: Source Id of where the items should be initial picked - This is set by the SourcingLogic
         type: string
       variantMarketPlaceCode:
         description: VariantMarketPlaceCode is used for Configurable products
@@ -313,15 +299,11 @@ definitions:
     properties:
       address:
         $ref: '#/definitions/cart.Address'
-        type: object
       existingCustomerData:
         $ref: '#/definitions/cart.ExistingCustomerData'
-        description: ExistingCustomerData if the current purchaser is an existing
-          customer - this contains infos about existing customer
-        type: object
+        description: ExistingCustomerData if the current purchaser is an existing customer - this contains infos about existing customer
       personalDetails:
         $ref: '#/definitions/cart.PersonalDetails'
-        type: object
     type: object
   cart.PersonalDetails:
     properties:
@@ -337,14 +319,13 @@ definitions:
   cart.ShippingItem:
     properties:
       appliedDiscounts:
-        $ref: '#/definitions/cart.AppliedDiscounts'
-        type: object
+        items:
+          $ref: '#/definitions/cart.AppliedDiscount'
+        type: array
       priceNet:
         $ref: '#/definitions/domain.Price'
-        type: object
       taxAmount:
         $ref: '#/definitions/domain.Price'
-        type: object
       title:
         type: string
     type: object
@@ -352,16 +333,11 @@ definitions:
     properties:
       amount:
         $ref: '#/definitions/domain.Price'
-        type: object
       rate:
         type: string
       type:
         type: string
     type: object
-  cart.Taxes:
-    items:
-      $ref: '#/definitions/cart.Tax'
-    type: array
   cart.Teaser:
     properties:
       deliveryCodes:
@@ -379,20 +355,24 @@ definitions:
         type: string
       price:
         $ref: '#/definitions/domain.Price'
-        type: object
       title:
         type: string
       type:
         type: string
     type: object
+  cartResultError:
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+    type: object
   controller.APIResult:
     properties:
       error:
-        $ref: '#/definitions/controller.resultError'
-        type: object
+        $ref: '#/definitions/productResultError'
       product:
         $ref: '#/definitions/domain.BasicProduct'
-        type: object
       success:
         type: boolean
     type: object
@@ -400,18 +380,15 @@ definitions:
     properties:
       cartTeaser:
         $ref: '#/definitions/cart.Teaser'
-        type: object
       cartValidationResult:
         $ref: '#/definitions/validation.Result'
-        type: object
       data:
         type: object
       dataValidationInfo:
-        type: string
-      error:
-        $ref: '#/definitions/controller.resultError'
-        description: Contains details if success is false
         type: object
+      error:
+        $ref: '#/definitions/cartResultError'
+        description: Contains details if success is false
       success:
         type: boolean
     type: object
@@ -419,23 +396,8 @@ definitions:
     properties:
       cart:
         $ref: '#/definitions/cart.Cart'
-        type: object
       cartValidationResult:
         $ref: '#/definitions/validation.Result'
-        type: object
-    type: object
-  controller.resultError:
-    properties:
-      code:
-        type: string
-      message:
-        type: string
-    type: object
-  domain.Attribute:
-    type: object
-  domain.Attributes:
-    additionalProperties:
-      $ref: '#/definitions/domain.Attribute'
     type: object
   domain.BasicProduct:
     type: object
@@ -447,10 +409,6 @@ definitions:
       name:
         description: Name - speaking name of the category
         type: string
-      parent:
-        $ref: '#/definitions/domain.CategoryTeaser'
-        description: Optional link to parent teaser
-        type: object
       path:
         description: The Path (root to leaf) for this Category - separated by "/"
         type: string
@@ -465,40 +423,31 @@ definitions:
   domain.FlowActionData:
     properties:
       displayData:
-        description: DisplayData holds data, normally HTML to be displayed to the
-          user
+        description: DisplayData holds data, normally HTML to be displayed to the user
         type: string
       formParameter:
         additionalProperties:
           $ref: '#/definitions/domain.FormField'
         type: object
       url:
-        description: URL is used to pass URL data to the user if the current state
-          needs some
+        description: URL is used to pass URL data to the user if the current state needs some
         type: string
     type: object
   domain.FlowStatus:
     properties:
       action:
-        description: Action to perform to proceed in the payment flow. If status is
-          "payment_waiting_for_customer" this field contains information about what
-          to do - e.g. "redirect" or "show_iframe"
+        description: Action to perform to proceed in the payment flow. If status is "payment_waiting_for_customer" this field contains information about what to do - e.g. "redirect" or "show_iframe"
         type: string
       actionData:
         $ref: '#/definitions/domain.FlowActionData'
-        type: object
       data:
-        description: Data contains additional information related to the action /
-          flow
+        description: Data contains additional information related to the action / flow
         type: object
       error:
         $ref: '#/definitions/domain.Error'
-        description: Error contains additional information in case of an error (e.g.
-          payment failed)
-        type: object
+        description: Error contains additional information in case of an error (e.g. payment failed)
       status:
-        description: Status of the payment flow. E.g. "payment_completed", "payment_waiting_for_customer"
-          or "payment_failed"
+        description: Status of the payment flow. E.g. "payment_completed", "payment_waiting_for_customer" or "payment_failed"
         type: string
     type: object
   domain.FormField:
@@ -512,7 +461,6 @@ definitions:
     properties:
       default:
         $ref: '#/definitions/domain.Price'
-        type: object
       type:
         type: string
     type: object
@@ -520,15 +468,12 @@ definitions:
     properties:
       context:
         $ref: '#/definitions/domain.PriceContext'
-        type: object
       default:
         $ref: '#/definitions/domain.Price'
-        type: object
       discountText:
         type: string
       discounted:
         $ref: '#/definitions/domain.Price'
-        type: object
       isDiscounted:
         type: boolean
       maxPointsToSpent:
@@ -564,17 +509,14 @@ definitions:
         type: array
       context:
         $ref: '#/definitions/domain.PriceContext'
-        type: object
       default:
         $ref: '#/definitions/domain.Price'
-        type: object
       denyMoreDiscounts:
         type: boolean
       discountText:
         type: string
       discounted:
         $ref: '#/definitions/domain.Price'
-        type: object
       isDiscounted:
         type: boolean
       taxClass:
@@ -584,10 +526,8 @@ definitions:
     properties:
       activePrice:
         $ref: '#/definitions/domain.PriceInfo'
-        type: object
       attributes:
-        $ref: '#/definitions/domain.Attributes'
-        type: object
+        $ref: '#/definitions/ProductAttributes'
       availablePrices:
         items:
           $ref: '#/definitions/domain.PriceInfo'
@@ -620,14 +560,12 @@ definitions:
           $ref: '#/definitions/domain.LoyaltyEarningInfo'
         type: array
       loyaltyPrices:
-        description: LoyaltyPrices - Optional infos for products that can be paid
-          in a loyalty program
+        description: LoyaltyPrices - Optional infos for products that can be paid in a loyalty program
         items:
           $ref: '#/definitions/domain.LoyaltyPriceInfo'
         type: array
       mainCategory:
         $ref: '#/definitions/domain.CategoryTeaser'
-        type: object
       marketPlaceCode:
         type: string
       media:
@@ -650,7 +588,6 @@ definitions:
         type: string
       teaser:
         $ref: '#/definitions/domain.TeaserData'
-        type: object
       title:
         type: string
       updatedAt:
@@ -671,10 +608,7 @@ definitions:
           $ref: '#/definitions/ProductMedia'
         type: array
       preSelectedVariantSku:
-        description: PreSelectedVariantSku - might be set for configurables to give
-          a hint to link to a variant of a configurable (That might be the case if
-          a user filters for an attribute and in the teaser the variant with that
-          attribute is shown)
+        description: PreSelectedVariantSku - might be set for configurables to give a hint to link to a variant of a configurable (That might be the case if a user filters for an attribute and in the teaser the variant with that attribute is shown)
         type: string
       shortDescription:
         type: string
@@ -686,23 +620,31 @@ definitions:
         type: array
       teaserLoyaltyEarningInfo:
         $ref: '#/definitions/domain.LoyaltyEarningInfo'
-        description: TeaserLoyaltyEarning optional teaser for the loyalty earning
-          used in grid / list view
-        type: object
+        description: TeaserLoyaltyEarning optional teaser for the loyalty earning used in grid / list view
       teaserLoyaltyPriceInfo:
         $ref: '#/definitions/domain.LoyaltyPriceInfo'
-        description: TeaserLoyaltyPriceInfo - optional the Loyaltyprice that can be
-          used for teaser (e.g. on listing views)
-        type: object
+        description: TeaserLoyaltyPriceInfo - optional the Loyaltyprice that can be used for teaser (e.g. on listing views)
       teaserPrice:
         $ref: '#/definitions/domain.PriceInfo'
         description: TeaserPrice is the price that should be shown in teasers (listview)
-        type: object
       teaserPriceIsFromPrice:
-        description: TeaserPriceIsFromPrice - is set to true in cases where a product
-          might have different prices (e.g. configurable)
+        description: TeaserPriceIsFromPrice - is set to true in cases where a product might have different prices (e.g. configurable)
         type: boolean
       urlslug:
+        type: string
+    type: object
+  paymentResultError:
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+    type: object
+  productResultError:
+    properties:
+      code:
+        type: string
+      message:
         type: string
     type: object
   validation.ItemValidationError:
@@ -767,8 +709,7 @@ paths:
       - v1 Cart ajax API
   /api/v1/cart/applycombinedvouchergift:
     post:
-      description: Use this if you have one user input and that input can be used
-        to either enter a voucher or a giftcart
+      description: Use this if you have one user input and that input can be used to either enter a voucher or a giftcart
       parameters:
       - description: the couponCode that should be applied as giftcart or voucher
         in: query
@@ -837,15 +778,14 @@ paths:
     post:
       consumes:
       - application/x-www-form-urlencoded
-      description: Data need to be posted as application/x-www-form-urlencoded. Valid
-        fields are all fields in "AddressForm" type. E.g. "firstname=max&lastname=mustermann&mail=max@example.org"
+      description: Data need to be posted as application/x-www-form-urlencoded. Valid fields are all fields in "AddressForm" type. E.g. "firstname=max&lastname=mustermann&mail=max@example.org"
       parameters:
       - description: billing form values
         in: body
         name: billingAddressForm
         required: true
         schema:
-          type: string
+          type: primitive
       produces:
       - application/json
       responses:
@@ -895,8 +835,7 @@ paths:
         name: marketplaceCode
         required: true
         type: string
-      - description: optional the product idendifier of the variant (for configurable
-          products) that should be added
+      - description: optional the product idendifier of the variant (for configurable products) that should be added
         in: query
         name: variantMarketplaceCode
         type: string
@@ -984,7 +923,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/controller.resultError'
+            $ref: '#/definitions/paymentResultError'
       summary: Get the payment status of current cart (or last placed cart)
       tags:
       - v1 Payment ajax API
@@ -1021,11 +960,9 @@ paths:
       - v1 Product API
 swagger: "2.0"
 tags:
-- description: This Cart APIs are most suitable to be called from a browser, because
-    they rely on the session and cookie headers.
+- description: This Cart APIs are most suitable to be called from a browser, because they rely on the session and cookie headers.
   name: v1 Cart ajax API
-- description: This Payment APIs are most suitable to be called from a browser, because
-    they rely on the session and cookie headers.
+- description: This Payment APIs are most suitable to be called from a browser, because they rely on the session and cookie headers.
   name: v1 Payment ajax API
 - description: Product API.
   name: v1 Product API

@@ -34,7 +34,7 @@ type (
 		Success              bool
 		CartTeaser           *cart.Teaser
 		Data                 interface{}
-		DataValidationInfo   *formDomain.ValidationInfo
+		DataValidationInfo   *formDomain.ValidationInfo `swaggertype:"object"`
 		CartValidationResult *validation.Result
 	}
 
@@ -46,7 +46,7 @@ type (
 	resultError struct {
 		Message string
 		Code    string
-	}
+	} //@name cartResultError
 
 	messageCodeAvailable interface {
 		MessageCode() string
