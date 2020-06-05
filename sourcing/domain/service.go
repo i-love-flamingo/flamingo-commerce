@@ -4,11 +4,11 @@ import (
 	"context"
 	"math"
 
-	"flamingo.me/flamingo/v3/framework/flamingo"
-
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
+
+	"flamingo.me/flamingo/v3/framework/flamingo"
 
 	"github.com/pkg/errors"
 )

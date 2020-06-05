@@ -2,6 +2,7 @@ package sourcing
 
 import (
 	"flamingo.me/dingo"
+
 	"flamingo.me/flamingo-commerce/v3/cart"
 	"flamingo.me/flamingo-commerce/v3/sourcing/application"
 	"flamingo.me/flamingo-commerce/v3/sourcing/domain"

@@ -2,13 +2,15 @@ package restrictors
 
 import (
 	"context"
-	"flamingo.me/flamingo-commerce/v3/sourcing/application"
-	"go.opencensus.io/trace"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
+	"flamingo.me/flamingo-commerce/v3/sourcing/application"
+
 	"flamingo.me/flamingo/v3/framework/flamingo"
+
+	"go.opencensus.io/trace"
 )
 
 type (

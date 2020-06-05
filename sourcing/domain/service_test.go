@@ -9,7 +9,9 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo-commerce/v3/sourcing/domain"
+
 	"flamingo.me/flamingo/v3/framework/flamingo"
+
 	"github.com/stretchr/testify/assert"
 )
 

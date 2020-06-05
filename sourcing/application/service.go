@@ -3,13 +3,13 @@ package application
 import (
 	"context"
 	"errors"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
-	"flamingo.me/flamingo-commerce/v3/sourcing/domain"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
-
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
+	"flamingo.me/flamingo-commerce/v3/sourcing/domain"
+
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 )
