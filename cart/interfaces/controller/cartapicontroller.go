@@ -11,10 +11,11 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
 
-	"flamingo.me/flamingo-commerce/v3/cart/application"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
+
+	"flamingo.me/flamingo-commerce/v3/cart/application"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 )
 
 type (
@@ -31,7 +32,7 @@ type (
 
 	// CartAPIResult view data
 	CartAPIResult struct {
-		//Contains details if success is false
+		// Contains details if success is false
 		Error                *resultError
 		Success              bool
 		CartTeaser           *cart.Teaser
@@ -48,7 +49,7 @@ type (
 	resultError struct {
 		Message string
 		Code    string
-	} //@name cartResultError
+	} // @name cartResultError
 
 	messageCodeAvailable interface {
 		MessageCode() string
@@ -163,7 +164,7 @@ func (cc *CartAPIController) RemoveVoucherAndGetAction(ctx context.Context, r *w
 }
 
 // DeleteCartAction cleans the cart and returns the cleaned cart
-// @Summary cleans the cart and returns the cleaned cart
+// @Summary Cleans the cart and returns the cleaned cart
 // @Tags v1 Cart ajax API
 // @Produce json
 // @Success 200 {object} CartAPIResult
@@ -181,9 +182,9 @@ func (cc *CartAPIController) DeleteCartAction(ctx context.Context, r *web.Reques
 	return cc.responder.Data(result)
 }
 
-// ApplyGiftCardAndGetAction applies the given giftcard and returns the cart
-// the request needs a query string param "couponCode" which includes the corresponding giftcard code
-// @Summary Apply Giftcart
+// ApplyGiftCardAndGetAction applies the given gift card and returns the cart
+// the request needs a query string param "couponCode" which includes the corresponding gift card code
+// @Summary Apply Gift Card
 // @Tags v1 Cart ajax API
 // @Produce json
 // @Success 200 {object} CartAPIResult
@@ -195,10 +196,10 @@ func (cc *CartAPIController) ApplyGiftCardAndGetAction(ctx context.Context, r *w
 	return cc.handlePromotionAction(ctx, r, "giftcard_error", cc.cartService.ApplyGiftCard)
 }
 
-// ApplyCombinedVoucherGift applies a given code (which might be either a voucher or a giftcard code) to the
+// ApplyCombinedVoucherGift applies a given code (which might be either a voucher or a Gift Card code) to the
 // cartService and returns the cart
-// @Summary Apply Giftcart or Voucher (autodetected)
-// @Description Use this if you have one user input and that input can be used to either enter a voucher or a giftcart
+// @Summary Apply Gift Card or Voucher (autodetected)
+// @Description Use this if you have one user input and that input can be used to either enter a voucher or a gift card
 // @Tags v1 Cart ajax API
 // @Produce json
 // @Success 200 {object} CartAPIResult
@@ -211,12 +212,12 @@ func (cc *CartAPIController) ApplyCombinedVoucherGift(ctx context.Context, r *we
 
 // RemoveGiftCardAndGetAction removes the given giftcard and returns the cart
 // the request needs a query string param "couponCode" which includes the corresponding giftcard code
-// @Summary Remove Giftcart
+// @Summary Remove gift card
 // @Tags v1 Cart ajax API
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
-// @Param couponCode query string true "the couponCode that should be deleted as giftcart"
+// @Param couponCode query string true "the couponCode that should be deleted as gift card"
 // @Router /api/v1/cart/removeGiftCard [post]
 func (cc *CartAPIController) RemoveGiftCardAndGetAction(ctx context.Context, r *web.Request) web.Result {
 	return cc.handlePromotionAction(ctx, r, "giftcard_error", cc.cartService.RemoveGiftCard)
@@ -240,7 +241,7 @@ func (cc *CartAPIController) handlePromotionAction(ctx context.Context, r *web.R
 }
 
 // DeleteDelivery cleans the given delivery from the cart and returns the cleaned cart
-// @Summary cleans the given delivery from the cart
+// @Summary Cleans the given delivery from the cart
 // @Tags v1 Cart ajax API
 // @Produce json
 // @Success 200 {object} CartAPIResult
@@ -260,7 +261,7 @@ func (cc *CartAPIController) DeleteDelivery(ctx context.Context, r *web.Request)
 }
 
 // BillingAction adds billing infos
-// @Summary adds billing infos to cart
+// @Summary Adds billing infos to the current cart
 // @Description Data need to be posted as application/x-www-form-urlencoded. (Ajax Post of a html form). The valid fields are all fields in "AddressForm" type. E.g. "firstname=max&lastname=mustermann&email=max@example.org"
 // @Tags v1 Cart ajax API
 // @Accept application/x-www-form-urlencoded
@@ -287,7 +288,7 @@ func (cc *CartAPIController) BillingAction(ctx context.Context, r *web.Request) 
 }
 
 // UpdateDeliveryInfoAction updates the delivery info
-// @Summary adds delivery infos, such as shipping address to the delivery for th cart
+// @Summary Adds delivery infos, such as shipping address to the delivery for the cart
 // @Description Data need to be posted as application/x-www-form-urlencoded. (Ajax Post of a html form). Valid fields are all fields in "AddressForm" type. E.g. "deliveryAddress.firstname=max&deliveryAddress.lastname=mustermann&deliveryAddress.mail=max@example.org&useBillingAddress=1"
 // @Tags v1 Cart ajax API
 // @Accept application/x-www-form-urlencoded
@@ -313,8 +314,8 @@ func (cc *CartAPIController) UpdateDeliveryInfoAction(ctx context.Context, r *we
 	return cc.responder.Data(result)
 }
 
-// UpdatePaymentSelectionAction updates the delivery info
-// @Summary adds delivery infos, such as shipping address to the delivery for th cart
+// UpdatePaymentSelectionAction to set / update the cart payment selection
+// @Summary Update/set the PaymentSelection for the current cart
 // @Description Data need to be posted as application/x-www-form-urlencoded. (Ajax Post of a html form). Valid fields are all fields in "AddressForm" type. E.g. "deliveryAddress.firstname=max&deliveryAddress.lastname=mustermann&deliveryAddress.mail=max@example.org&useBillingAddress=1"
 // @Tags v1 Cart ajax API
 // @Accept application/x-www-form-urlencoded
@@ -363,14 +364,14 @@ func (cc *CartAPIController) enrichResultWithCartInfos(ctx context.Context, resu
 	result.CartValidationResult = &validationResult
 }
 
-//newResult - factory to get new CartApiResult (with success true)
+// newResult factory to get new CartApiResult (with success true)
 func newResult() CartAPIResult {
 	return CartAPIResult{
 		Success: true,
 	}
 }
 
-//SetErrorByCode - sets the error on the CartApiResult data and success to false
+// SetErrorByCode sets the error on the CartApiResult data and success to false
 func (r *CartAPIResult) SetErrorByCode(message string, code string) *CartAPIResult {
 	r.Success = false
 	r.Error = &resultError{

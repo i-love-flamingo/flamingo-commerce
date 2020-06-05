@@ -2,12 +2,13 @@ package controller
 
 import (
 	"context"
+	"net/http"
+	"net/url"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	placeorderDomain "flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/checkout/application"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
-	"net/http"
-	"net/url"
 
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
@@ -18,7 +19,7 @@ import (
 )
 
 type (
-	//APIController for checkout rest api
+	// APIController for checkout rest api
 	APIController struct {
 		responder            *web.Responder
 		placeorderHandler    *placeorder.Handler
@@ -50,11 +51,11 @@ type (
 		PlacedDecoratedCart *decorator.DecoratedCart
 	}
 
-	//errorResponse format
+	// errorResponse format
 	errorResponse struct {
 		Code    string
 		Message string
-	} //@name checkoutError
+	} // @name checkoutError
 )
 
 // Inject dependencies
@@ -73,7 +74,7 @@ func (c *APIController) Inject(
 }
 
 // StartPlaceOrderAction starts a new process (if not running)
-// @Summary starts the place order process, which is a background process handling payment and rollbacks if required.
+// @Summary Starts the place order process, which is a background process handling payment and rollbacks if required.
 // @Tags v1 Checkout ajax API
 // @Produce json
 // @Success 200 {object} startPlaceOrderResult
@@ -130,7 +131,8 @@ func (c *APIController) StartPlaceOrderAction(ctx context.Context, r *web.Reques
 	return response
 }
 
-// CancelPlaceOrderAction cancels a running place order
+// CancelPlaceOrderAction cancels a running place order process
+// @Summary Cancels a running place order process
 // @Tags v1 Checkout ajax API
 // @Produce json
 // @Success 200 {boolean} boolean
@@ -147,6 +149,7 @@ func (c *APIController) CancelPlaceOrderAction(ctx context.Context, r *web.Reque
 }
 
 // ClearPlaceOrderAction clears the last place order if in final state
+// @Summary Clears the last placed order if in final state
 // @Tags v1 Checkout ajax API
 // @Produce json
 // @Success 200 {boolean} boolean
@@ -163,6 +166,7 @@ func (c *APIController) ClearPlaceOrderAction(ctx context.Context, r *web.Reques
 }
 
 // CurrentPlaceOrderContextAction returns the last saved context
+// @Summary Returns the last saved context
 // @Tags v1 Checkout ajax API
 // @Produce json
 // @Success 200 {object} placeOrderContext
@@ -204,7 +208,8 @@ func (c *APIController) getPlaceOrderContext(ctx context.Context, pctx *process.
 	}
 }
 
-// RefreshPlaceOrder refreshes the current place order and proceeds the process
+// RefreshPlaceOrderAction returns the current place order context and proceeds the process in a non blocking way
+// @Summary Returns the current place order context and proceeds the process in a non blocking way
 // @Tags v1 Checkout ajax API
 // @Produce json
 // @Success 200 {object} placeOrderContext
@@ -220,7 +225,9 @@ func (c *APIController) RefreshPlaceOrderAction(ctx context.Context, r *web.Requ
 	return c.responder.Data(c.getPlaceOrderContext(ctx, pctx))
 }
 
-// RefreshPlaceOrderBlockingAction refreshes the current place order and proceeds the process
+// RefreshPlaceOrderBlockingAction proceeds the process and returns the place order context afterwards (blocking)
+// @Summary Proceeds the process and returns the place order context afterwards (blocking)
+// @Description This is useful to get the most recent place order context, for example after returning from an external payment provider
 // @Tags v1 Checkout ajax API
 // @Produce json
 // @Success 200 {object} placeOrderContext
