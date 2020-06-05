@@ -595,6 +595,54 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/checkout/placeorder/refreshplaceorder": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 Checkout ajax API"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.placeOrderContext"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/checkoutError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/checkout/placeorder/refreshplaceorderblocking": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 Checkout ajax API"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.placeOrderContext"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/checkoutError"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/payment/status": {
             "get": {
                 "produces": [

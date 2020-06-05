@@ -5,6 +5,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	placeorderDomain "flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/checkout/application"
+	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"net/http"
 	"net/url"
 
@@ -175,6 +176,10 @@ func (c *APIController) CurrentPlaceOrderContextAction(ctx context.Context, r *w
 		return response
 	}
 
+	return c.responder.Data(c.getPlaceOrderContext(ctx, pctx))
+}
+
+func (c *APIController) getPlaceOrderContext(ctx context.Context, pctx *process.Context) placeOrderContext {
 	var orderInfos *placedOrderInfos
 	if pctx.PlaceOrderInfo != nil {
 		decoratedCart := c.decoratedCartFactory.Create(ctx, pctx.Cart)
@@ -189,12 +194,44 @@ func (c *APIController) CurrentPlaceOrderContextAction(ctx context.Context, r *w
 	if pctx.FailedReason != nil {
 		failedReason = pctx.FailedReason.Reason()
 	}
-	return c.responder.Data(placeOrderContext{
+	return placeOrderContext{
 		Cart:         &pctx.Cart,
 		OrderInfos:   orderInfos,
 		State:        pctx.CurrentStateName,
 		StateData:    pctx.CurrentStateData,
 		FailedReason: failedReason,
 		UUID:         pctx.UUID,
-	})
+	}
+}
+
+// RefreshPlaceOrder refreshes the current place order and proceeds the process
+// @Tags v1 Checkout ajax API
+// @Produce json
+// @Success 200 {object} placeOrderContext
+// @Failure 500 {object} errorResponse
+// @Router /api/v1/checkout/placeorder/refreshplaceorder [post]
+func (c *APIController) RefreshPlaceOrderAction(ctx context.Context, r *web.Request) web.Result {
+	pctx, err := c.placeorderHandler.RefreshPlaceOrder(ctx, placeorder.RefreshPlaceOrderCommand{})
+	if err != nil {
+		response := c.responder.Data(errorResponse{Code: "500", Message: err.Error()})
+		response.Status(http.StatusInternalServerError)
+		return response
+	}
+	return c.responder.Data(c.getPlaceOrderContext(ctx, pctx))
+}
+
+// RefreshPlaceOrderBlockingAction refreshes the current place order and proceeds the process
+// @Tags v1 Checkout ajax API
+// @Produce json
+// @Success 200 {object} placeOrderContext
+// @Failure 500 {object} errorResponse
+// @Router /api/v1/checkout/placeorder/refreshplaceorderblocking [post]
+func (c *APIController) RefreshPlaceOrderBlockingAction(ctx context.Context, r *web.Request) web.Result {
+	pctx, err := c.placeorderHandler.RefreshPlaceOrderBlocking(ctx, placeorder.RefreshPlaceOrderCommand{})
+	if err != nil {
+		response := c.responder.Data(errorResponse{Code: "500", Message: err.Error()})
+		response.Status(http.StatusInternalServerError)
+		return response
+	}
+	return c.responder.Data(c.getPlaceOrderContext(ctx, pctx))
 }
