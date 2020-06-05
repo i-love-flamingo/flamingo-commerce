@@ -32,4 +32,16 @@ For your shop it is helpful to have access to the Sourcing logic for advanced us
 ## About this package
 Provides Port for Sourcing logic, that can be implemented according to your project needs.
 
+The main Port is the "SourcingService" interface that you can provide a custom adapter and have all possible freedom to design your sourcing logic.
+
+### DefaultSourcingService
+The package also offers a "DefaultSourcingService" that does sourcing based on two inputs:
+
+1. The theoretical available or possible sourcelocations for a given delivery
+2. The available stock for a specific sourcelocations
+
+For this two inputs the DefaultSourcingService offers also Ports where you can provide individual adapters.
+Based on this the DefaultSourcingService fetches the possible sourcelocations and will source items based on the available stock on that locations (starting from the first sourcelocation retrieved).
+
+
  
