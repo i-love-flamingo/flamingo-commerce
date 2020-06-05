@@ -62,7 +62,7 @@ var doc = `{
                 "tags": [
                     "v1 Cart ajax API"
                 ],
-                "summary": "cleans the cart and returns the cleaned cart",
+                "summary": "Cleans the cart and returns the cleaned cart",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -81,14 +81,14 @@ var doc = `{
         },
         "/api/v1/cart/applycombinedvouchergift": {
             "post": {
-                "description": "Use this if you have one user input and that input can be used to either enter a voucher or a giftcart",
+                "description": "Use this if you have one user input and that input can be used to either enter a voucher or a gift card",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "v1 Cart ajax API"
                 ],
-                "summary": "Apply Giftcart or Voucher (autodetected)",
+                "summary": "Apply Gift Card or Voucher (autodetected)",
                 "parameters": [
                     {
                         "type": "string",
@@ -122,7 +122,7 @@ var doc = `{
                 "tags": [
                     "v1 Cart ajax API"
                 ],
-                "summary": "Apply Giftcart",
+                "summary": "Apply Gift Card",
                 "parameters": [
                     {
                         "type": "string",
@@ -194,7 +194,7 @@ var doc = `{
                 "tags": [
                     "v1 Cart ajax API"
                 ],
-                "summary": "adds billing infos to cart",
+                "summary": "Adds billing infos to the current cart",
                 "parameters": [
                     {
                         "description": "billing form fields x-www-form-urlencoded. E.g.: firstname=max\u0026lastname=mustermann\u0026email=max@example.org",
@@ -230,7 +230,7 @@ var doc = `{
                 "tags": [
                     "v1 Cart ajax API"
                 ],
-                "summary": "cleans the given delivery from the cart",
+                "summary": "Cleans the given delivery from the cart",
                 "parameters": [
                     {
                         "type": "string",
@@ -329,11 +329,11 @@ var doc = `{
                 "tags": [
                     "v1 Cart ajax API"
                 ],
-                "summary": "Remove Giftcart",
+                "summary": "Remove gift card",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "the couponCode that should be deleted as giftcart",
+                        "description": "the couponCode that should be deleted as gift card",
                         "name": "couponCode",
                         "in": "query",
                         "required": true
@@ -401,7 +401,7 @@ var doc = `{
                 "tags": [
                     "v1 Cart ajax API"
                 ],
-                "summary": "adds delivery infos, such as shipping address to the delivery for th cart",
+                "summary": "Update/set the PaymentSelection for the current cart",
                 "parameters": [
                     {
                         "type": "string",
@@ -446,7 +446,7 @@ var doc = `{
                 "tags": [
                     "v1 Cart ajax API"
                 ],
-                "summary": "adds delivery infos, such as shipping address to the delivery for th cart",
+                "summary": "Adds delivery infos, such as shipping address to the delivery for the cart",
                 "parameters": [
                     {
                         "description": "delivery form fields - x-www-form-urlencoded. E.g. 'deliveryAddress.firstname=max\u0026deliveryAddress.lastname=mustermann\u0026deliveryAddress.email=max@example.org\u0026useBillingAddress=1'",
@@ -489,6 +489,7 @@ var doc = `{
                 "tags": [
                     "v1 Checkout ajax API"
                 ],
+                "summary": "Returns the last saved context",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -511,7 +512,7 @@ var doc = `{
                 "tags": [
                     "v1 Checkout ajax API"
                 ],
-                "summary": "starts the place order process, which is a background process handling payment and rollbacks if required.",
+                "summary": "Starts the place order process, which is a background process handling payment and rollbacks if required.",
                 "parameters": [
                     {
                         "type": "string",
@@ -555,6 +556,7 @@ var doc = `{
                 "tags": [
                     "v1 Checkout ajax API"
                 ],
+                "summary": "Clears the last placed order if in final state",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -579,6 +581,7 @@ var doc = `{
                 "tags": [
                     "v1 Checkout ajax API"
                 ],
+                "summary": "Cancels a running place order process",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -595,7 +598,7 @@ var doc = `{
                 }
             }
         },
-        "/api/v1/checkout/placeorder/refreshplaceorder": {
+        "/api/v1/checkout/placeorder/refresh": {
             "post": {
                 "produces": [
                     "application/json"
@@ -603,6 +606,7 @@ var doc = `{
                 "tags": [
                     "v1 Checkout ajax API"
                 ],
+                "summary": "Returns the current place order context and proceeds the process in a non blocking way",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -619,14 +623,16 @@ var doc = `{
                 }
             }
         },
-        "/api/v1/checkout/placeorder/refreshplaceorderblocking": {
+        "/api/v1/checkout/placeorder/refreshblocking": {
             "post": {
+                "description": "This is useful to get the most recent place order context, for example after returning from an external payment provider",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "v1 Checkout ajax API"
                 ],
+                "summary": "Proceeds the process and returns the place order context afterwards (blocking)",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1361,7 +1367,7 @@ var doc = `{
                     "type": "string"
                 },
                 "StateData": {
-                    "type": "object"
+                    "$ref": "#/definitions/process.StateData"
                 },
                 "UUID": {
                     "type": "string"
@@ -1823,6 +1829,9 @@ var doc = `{
                     "type": "string"
                 }
             }
+        },
+        "process.StateData": {
+            "type": "object"
         },
         "productResultError": {
             "type": "object",

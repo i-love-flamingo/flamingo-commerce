@@ -33,6 +33,7 @@
     * flamingo_commerce_checkout_placeorder_starts
     * flamingo_commerce_checkout_placeorder_state_run_count
     * flamingo_commerce_checkout_placeorder_state_failed_count
+* Expose placeorder endpoints also via rest
     
 **search**
 * Switch module config to CUE

@@ -31,9 +31,14 @@ func Test_Checkout_SimplePlaceOrderProcess(t *testing.T) {
 	// start place order
 	response = e.PUT("/api/v1/checkout/placeorder").WithQuery("returnURL", "http://www.example.org").Expect()
 	response.Status(201).JSON().Object().Value("UUID").String().NotEmpty()
+	uuid := response.Status(201).JSON().Object().Value("UUID").String().Raw()
+	response = e.GET("/api/v1/checkout/placeorder").WithQuery("returnURL", "http://www.example.org").Expect()
+	response.Status(200).JSON().Object().Value("UUID").String().Equal(uuid)
 
 	// refresh place order
-	response = e.POST("/api/v1/checkout/placeorder/refreshplaceorderblocking").Expect()
+	response = e.POST("/api/v1/checkout/placeorder/refresh").Expect()
+	response.Status(200).JSON().Object().Value("State").String().NotEmpty()
+	response = e.POST("/api/v1/checkout/placeorder/refreshblocking").Expect()
 	response.Status(200).JSON().Object().Value("State").String().NotEmpty()
 
 	// get place order

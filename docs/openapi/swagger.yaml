@@ -432,7 +432,7 @@ definitions:
       State:
         type: string
       StateData:
-        type: object
+        $ref: '#/definitions/process.StateData'
       UUID:
         type: string
     type: object
@@ -740,6 +740,8 @@ definitions:
       OrderNumber:
         type: string
     type: object
+  process.StateData:
+    type: object
   productResultError:
     properties:
       Code:
@@ -789,7 +791,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/controller.CartAPIResult'
-      summary: cleans the cart and returns the cleaned cart
+      summary: Cleans the cart and returns the cleaned cart
       tags:
       - v1 Cart ajax API
     get:
@@ -835,12 +837,12 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/controller.CartAPIResult'
-      summary: adds delivery infos, such as shipping address to the delivery for th cart
+      summary: Adds delivery infos, such as shipping address to the delivery for the cart
       tags:
       - v1 Cart ajax API
   /api/v1/cart/applycombinedvouchergift:
     post:
-      description: Use this if you have one user input and that input can be used to either enter a voucher or a giftcart
+      description: Use this if you have one user input and that input can be used to either enter a voucher or a gift card
       parameters:
       - description: the couponCode that should be applied as giftcart or voucher
         in: query
@@ -858,7 +860,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/controller.CartAPIResult'
-      summary: Apply Giftcart or Voucher (autodetected)
+      summary: Apply Gift Card or Voucher (autodetected)
       tags:
       - v1 Cart ajax API
   /api/v1/cart/applygiftcard:
@@ -880,7 +882,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/controller.CartAPIResult'
-      summary: Apply Giftcart
+      summary: Apply Gift Card
       tags:
       - v1 Cart ajax API
   /api/v1/cart/applyvoucher:
@@ -928,7 +930,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/controller.CartAPIResult'
-      summary: adds billing infos to cart
+      summary: Adds billing infos to the current cart
       tags:
       - v1 Cart ajax API
   /api/v1/cart/delivery/{deliveryCode}:
@@ -950,7 +952,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/controller.CartAPIResult'
-      summary: cleans the given delivery from the cart
+      summary: Cleans the given delivery from the cart
       tags:
       - v1 Cart ajax API
   /api/v1/cart/delivery/{deliveryCode}/additem:
@@ -996,7 +998,7 @@ paths:
   /api/v1/cart/removeGiftCard:
     post:
       parameters:
-      - description: the couponCode that should be deleted as giftcart
+      - description: the couponCode that should be deleted as gift card
         in: query
         name: couponCode
         required: true
@@ -1012,7 +1014,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/controller.CartAPIResult'
-      summary: Remove Giftcart
+      summary: Remove gift card
       tags:
       - v1 Cart ajax API
   /api/v1/cart/removevoucher:
@@ -1064,7 +1066,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/controller.CartAPIResult'
-      summary: adds delivery infos, such as shipping address to the delivery for th cart
+      summary: Update/set the PaymentSelection for the current cart
       tags:
       - v1 Cart ajax API
   /api/v1/checkout/placeorder:
@@ -1080,6 +1082,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/checkoutError'
+      summary: Clears the last placed order if in final state
       tags:
       - v1 Checkout ajax API
     get:
@@ -1094,6 +1097,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/checkoutError'
+      summary: Returns the last saved context
       tags:
       - v1 Checkout ajax API
     put:
@@ -1122,7 +1126,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/checkoutError'
-      summary: starts the place order process, which is a background process handling payment and rollbacks if required.
+      summary: Starts the place order process, which is a background process handling payment and rollbacks if required.
       tags:
       - v1 Checkout ajax API
   /api/v1/checkout/placeorder/cancel:
@@ -1138,9 +1142,10 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/checkoutError'
+      summary: Cancels a running place order process
       tags:
       - v1 Checkout ajax API
-  /api/v1/checkout/placeorder/refreshplaceorder:
+  /api/v1/checkout/placeorder/refresh:
     post:
       produces:
       - application/json
@@ -1153,10 +1158,12 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/checkoutError'
+      summary: Returns the current place order context and proceeds the process in a non blocking way
       tags:
       - v1 Checkout ajax API
-  /api/v1/checkout/placeorder/refreshplaceorderblocking:
+  /api/v1/checkout/placeorder/refreshblocking:
     post:
+      description: This is useful to get the most recent place order context, for example after returning from an external payment provider
       produces:
       - application/json
       responses:
@@ -1168,6 +1175,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/checkoutError'
+      summary: Proceeds the process and returns the place order context afterwards (blocking)
       tags:
       - v1 Checkout ajax API
   /api/v1/payment/status:
