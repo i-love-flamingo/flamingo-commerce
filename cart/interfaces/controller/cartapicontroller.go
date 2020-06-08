@@ -210,15 +210,15 @@ func (cc *CartAPIController) ApplyCombinedVoucherGift(ctx context.Context, r *we
 	return cc.handlePromotionAction(ctx, r, "applyany_error", cc.cartService.ApplyAny)
 }
 
-// RemoveGiftCardAndGetAction removes the given giftcard and returns the cart
-// the request needs a query string param "couponCode" which includes the corresponding giftcard code
-// @Summary Remove gift card
+// RemoveGiftCardAndGetAction removes the given gift card and returns the cart
+// the request needs a query string param "couponCode" which includes the corresponding gift card code
+// @Summary Remove Gift Card
 // @Tags v1 Cart ajax API
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
 // @Param couponCode query string true "the couponCode that should be deleted as gift card"
-// @Router /api/v1/cart/removeGiftCard [post]
+// @Router /api/v1/cart/removegiftcard [post]
 func (cc *CartAPIController) RemoveGiftCardAndGetAction(ctx context.Context, r *web.Request) web.Result {
 	return cc.handlePromotionAction(ctx, r, "giftcard_error", cc.cartService.RemoveGiftCard)
 }
@@ -262,13 +262,32 @@ func (cc *CartAPIController) DeleteDelivery(ctx context.Context, r *web.Request)
 
 // BillingAction adds billing infos
 // @Summary Adds billing infos to the current cart
-// @Description Data need to be posted as application/x-www-form-urlencoded. (Ajax Post of a html form). The valid fields are all fields in "AddressForm" type. E.g. "firstname=max&lastname=mustermann&email=max@example.org"
 // @Tags v1 Cart ajax API
-// @Accept application/x-www-form-urlencoded
+// @Accept x-www-form-urlencoded
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
-// @Param billingAddressForm body string true "billing form fields x-www-form-urlencoded. E.g.: firstname=max&lastname=mustermann&email=max@example.org"
+// @Param vat formData string false "vat"
+// @Param firstname formData string true "firstname"
+// @Param lastname formData string true "lastname"
+// @Param middlename formData string false "middlename"
+// @Param title formData string false "title"
+// @Param salutation formData string false "salutation"
+// @Param street formData string false "street"
+// @Param streetNr formData string false "streetNr"
+// @Param addressLine1 formData string false "addressLine1"
+// @Param addressLine2 formData string false "addressLine2"
+// @Param company formData string false "company"
+// @Param postCode formData string false "postCode"
+// @Param city formData string false "city"
+// @Param state formData string false "state"
+// @Param regionCode formData string false "regionCode"
+// @Param country formData string false "country"
+// @Param countryCode formData string false "countryCode"
+// @Param phoneAreaCode formData string false "phoneAreaCode"
+// @Param phoneCountryCode formData string false "phoneCountryCode"
+// @Param phoneNumber formData string false "phoneNumber"
+// @Param email formData string true "email"
 // @Router /api/v1/cart/billing [post]
 func (cc *CartAPIController) BillingAction(ctx context.Context, r *web.Request) web.Result {
 	result := newResult()
@@ -289,15 +308,38 @@ func (cc *CartAPIController) BillingAction(ctx context.Context, r *web.Request) 
 
 // UpdateDeliveryInfoAction updates the delivery info
 // @Summary Adds delivery infos, such as shipping address to the delivery for the cart
-// @Description Data need to be posted as application/x-www-form-urlencoded. (Ajax Post of a html form). Valid fields are all fields in "AddressForm" type. E.g. "deliveryAddress.firstname=max&deliveryAddress.lastname=mustermann&deliveryAddress.mail=max@example.org&useBillingAddress=1"
 // @Tags v1 Cart ajax API
-// @Accept application/x-www-form-urlencoded
+// @Accept x-www-form-urlencoded
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
-// @Param deliveryInfoForm body string true "delivery form fields - x-www-form-urlencoded. E.g. 'deliveryAddress.firstname=max&deliveryAddress.lastname=mustermann&deliveryAddress.email=max@example.org&useBillingAddress=1'"
 // @Param deliveryCode path string true "the idendifier for the delivery in the cart"
-// @Router /api/v1/cart/{deliveryCode}/deliveryinfo [post]
+// @Param deliveryAddress.vat formData string false "vat"
+// @Param deliveryAddress.firstname formData string true "firstname"
+// @Param deliveryAddress.lastname formData string true "lastname"
+// @Param deliveryAddress.middlename formData string false "middlename"
+// @Param deliveryAddress.title formData string false "title"
+// @Param deliveryAddress.salutation formData string false "salutation"
+// @Param deliveryAddress.street formData string false "street"
+// @Param deliveryAddress.streetNr formData string false "streetNr"
+// @Param deliveryAddress.addressLine1 formData string false "addressLine1"
+// @Param deliveryAddress.addressLine2 formData string false "addressLine2"
+// @Param deliveryAddress.company formData string false "company"
+// @Param deliveryAddress.postCode formData string false "postCode"
+// @Param deliveryAddress.city formData string false "city"
+// @Param deliveryAddress.state formData string false "state"
+// @Param deliveryAddress.regionCode formData string false "regionCode"
+// @Param deliveryAddress.country formData string false "country"
+// @Param deliveryAddress.countryCode formData string false "countryCode"
+// @Param deliveryAddress.phoneAreaCode formData string false "phoneAreaCode"
+// @Param deliveryAddress.phoneCountryCode formData string false "phoneCountryCode"
+// @Param deliveryAddress.phoneNumber formData string false "phoneNumber"
+// @Param deliveryAddress.email formData string true "email"
+// @Param useBillingAddress formData bool false "useBillingAddress"
+// @Param shippingMethod formData string false "shippingMethod"
+// @Param shippingCarrier formData string false "shippingCarrier"
+// @Param locationCode formData bool string "locationCode"
+// @Router /api/v1/cart/delivery/{deliveryCode}/deliveryinfo [post]
 func (cc *CartAPIController) UpdateDeliveryInfoAction(ctx context.Context, r *web.Request) web.Result {
 	result := newResult()
 	form, success, err := cc.deliveryFormController.HandleFormAction(ctx, r)
@@ -316,9 +358,7 @@ func (cc *CartAPIController) UpdateDeliveryInfoAction(ctx context.Context, r *we
 
 // UpdatePaymentSelectionAction to set / update the cart payment selection
 // @Summary Update/set the PaymentSelection for the current cart
-// @Description Data need to be posted as application/x-www-form-urlencoded. (Ajax Post of a html form). Valid fields are all fields in "AddressForm" type. E.g. "deliveryAddress.firstname=max&deliveryAddress.lastname=mustermann&deliveryAddress.mail=max@example.org&useBillingAddress=1"
 // @Tags v1 Cart ajax API
-// @Accept application/x-www-form-urlencoded
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult

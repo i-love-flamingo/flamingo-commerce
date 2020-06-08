@@ -167,7 +167,7 @@
         },
         "/api/v1/cart/billing": {
             "post": {
-                "description": "Data need to be posted as application/x-www-form-urlencoded. (Ajax Post of a html form). The valid fields are all fields in \"AddressForm\" type. E.g. \"firstname=max\u0026lastname=mustermann\u0026email=max@example.org\"",
+                "description": "Data need to be posted as x-www-form-urlencoded. (Ajax Post of a html form). The valid fields are all fields in \"AddressForm\" type. E.g. \"firstname=max\u0026lastname=mustermann\u0026email=max@example.org\"",
                 "consumes": [
                     "application/x-www-form-urlencoded"
                 ],
@@ -180,13 +180,133 @@
                 "summary": "Adds billing infos to the current cart",
                 "parameters": [
                     {
-                        "description": "billing form fields x-www-form-urlencoded. E.g.: firstname=max\u0026lastname=mustermann\u0026email=max@example.org",
-                        "name": "billingAddressForm",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "primitive"
-                        }
+                        "type": "string",
+                        "description": "vat",
+                        "name": "vat",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "firstname",
+                        "name": "firstname",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "lastname",
+                        "name": "lastname",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "middlename",
+                        "name": "middlename",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "title",
+                        "name": "title",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "salutation",
+                        "name": "salutation",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "street",
+                        "name": "street",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "streetNr",
+                        "name": "streetNr",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "addressLine1",
+                        "name": "addressLine1",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "addressLine2",
+                        "name": "addressLine2",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "company",
+                        "name": "company",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "postCode",
+                        "name": "postCode",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "city",
+                        "name": "city",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "state",
+                        "name": "state",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "regionCode",
+                        "name": "regionCode",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "country",
+                        "name": "country",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "countryCode",
+                        "name": "countryCode",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "phoneAreaCode",
+                        "name": "phoneAreaCode",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "phoneCountryCode",
+                        "name": "phoneCountryCode",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "phoneNumber",
+                        "name": "phoneNumber",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "email",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -304,7 +424,198 @@
                 }
             }
         },
-        "/api/v1/cart/removeGiftCard": {
+        "/api/v1/cart/delivery/{deliveryCode}/deliveryinfo": {
+            "post": {
+                "description": "Data need to be posted as x-www-form-urlencoded. (Ajax Post of a html form). Valid fields are all fields in \"AddressForm\" type. E.g. \"deliveryAddress.firstname=max\u0026deliveryAddress.lastname=mustermann\u0026deliveryAddress.mail=max@example.org\u0026useBillingAddress=1\"",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 Cart ajax API"
+                ],
+                "summary": "Adds delivery infos, such as shipping address to the delivery for the cart",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the idendifier for the delivery in the cart",
+                        "name": "deliveryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "vat",
+                        "name": "deliveryAddress.vat",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "firstname",
+                        "name": "deliveryAddress.firstname",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "lastname",
+                        "name": "deliveryAddress.lastname",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "middlename",
+                        "name": "deliveryAddress.middlename",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "title",
+                        "name": "deliveryAddress.title",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "salutation",
+                        "name": "deliveryAddress.salutation",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "street",
+                        "name": "deliveryAddress.street",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "streetNr",
+                        "name": "deliveryAddress.streetNr",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "addressLine1",
+                        "name": "deliveryAddress.addressLine1",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "addressLine2",
+                        "name": "deliveryAddress.addressLine2",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "company",
+                        "name": "deliveryAddress.company",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "postCode",
+                        "name": "deliveryAddress.postCode",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "city",
+                        "name": "deliveryAddress.city",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "state",
+                        "name": "deliveryAddress.state",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "regionCode",
+                        "name": "deliveryAddress.regionCode",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "country",
+                        "name": "deliveryAddress.country",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "countryCode",
+                        "name": "deliveryAddress.countryCode",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "phoneAreaCode",
+                        "name": "deliveryAddress.phoneAreaCode",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "phoneCountryCode",
+                        "name": "deliveryAddress.phoneCountryCode",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "phoneNumber",
+                        "name": "deliveryAddress.phoneNumber",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "email",
+                        "name": "deliveryAddress.email",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "useBillingAddress",
+                        "name": "useBillingAddress",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "shippingMethod",
+                        "name": "shippingMethod",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "shippingCarrier",
+                        "name": "shippingCarrier",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "locationCode",
+                        "name": "locationCode",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cart/removegiftcard": {
             "post": {
                 "produces": [
                     "application/json"
@@ -312,7 +623,7 @@
                 "tags": [
                     "v1 Cart ajax API"
                 ],
-                "summary": "Remove gift card",
+                "summary": "Remove Gift Card",
                 "parameters": [
                     {
                         "type": "string",
@@ -374,10 +685,7 @@
         },
         "/api/v1/cart/updatepaymentselection": {
             "put": {
-                "description": "Data need to be posted as application/x-www-form-urlencoded. (Ajax Post of a html form). Valid fields are all fields in \"AddressForm\" type. E.g. \"deliveryAddress.firstname=max\u0026deliveryAddress.lastname=mustermann\u0026deliveryAddress.mail=max@example.org\u0026useBillingAddress=1\"",
-                "consumes": [
-                    "application/x-www-form-urlencoded"
-                ],
+                "description": "Data need to be posted as x-www-form-urlencoded. (Ajax Post of a html form). Valid fields are all fields in \"AddressForm\" type. E.g. \"deliveryAddress.firstname=max\u0026deliveryAddress.lastname=mustermann\u0026deliveryAddress.mail=max@example.org\u0026useBillingAddress=1\"",
                 "produces": [
                     "application/json"
                 ],
@@ -398,53 +706,6 @@
                         "description": "name of the payment method - e.g. 'offlinepayment_cashondelivery'",
                         "name": "method",
                         "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/controller.CartAPIResult"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/controller.CartAPIResult"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/cart/{deliveryCode}/deliveryinfo": {
-            "post": {
-                "description": "Data need to be posted as application/x-www-form-urlencoded. (Ajax Post of a html form). Valid fields are all fields in \"AddressForm\" type. E.g. \"deliveryAddress.firstname=max\u0026deliveryAddress.lastname=mustermann\u0026deliveryAddress.mail=max@example.org\u0026useBillingAddress=1\"",
-                "consumes": [
-                    "application/x-www-form-urlencoded"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "v1 Cart ajax API"
-                ],
-                "summary": "Adds delivery infos, such as shipping address to the delivery for the cart",
-                "parameters": [
-                    {
-                        "description": "delivery form fields - x-www-form-urlencoded. E.g. 'deliveryAddress.firstname=max\u0026deliveryAddress.lastname=mustermann\u0026deliveryAddress.email=max@example.org\u0026useBillingAddress=1'",
-                        "name": "deliveryInfoForm",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "primitive"
-                        }
-                    },
-                    {
-                        "type": "string",
-                        "description": "the idendifier for the delivery in the cart",
-                        "name": "deliveryCode",
-                        "in": "path",
                         "required": true
                     }
                 ],

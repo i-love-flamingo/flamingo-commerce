@@ -809,37 +809,6 @@ paths:
       summary: Get the current cart
       tags:
       - v1 Cart ajax API
-  /api/v1/cart/{deliveryCode}/deliveryinfo:
-    post:
-      consumes:
-      - application/x-www-form-urlencoded
-      description: Data need to be posted as application/x-www-form-urlencoded. (Ajax Post of a html form). Valid fields are all fields in "AddressForm" type. E.g. "deliveryAddress.firstname=max&deliveryAddress.lastname=mustermann&deliveryAddress.mail=max@example.org&useBillingAddress=1"
-      parameters:
-      - description: delivery form fields - x-www-form-urlencoded. E.g. 'deliveryAddress.firstname=max&deliveryAddress.lastname=mustermann&deliveryAddress.email=max@example.org&useBillingAddress=1'
-        in: body
-        name: deliveryInfoForm
-        required: true
-        schema:
-          type: primitive
-      - description: the idendifier for the delivery in the cart
-        in: path
-        name: deliveryCode
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.CartAPIResult'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/controller.CartAPIResult'
-      summary: Adds delivery infos, such as shipping address to the delivery for the cart
-      tags:
-      - v1 Cart ajax API
   /api/v1/cart/applycombinedvouchergift:
     post:
       description: Use this if you have one user input and that input can be used to either enter a voucher or a gift card
@@ -911,14 +880,95 @@ paths:
     post:
       consumes:
       - application/x-www-form-urlencoded
-      description: Data need to be posted as application/x-www-form-urlencoded. (Ajax Post of a html form). The valid fields are all fields in "AddressForm" type. E.g. "firstname=max&lastname=mustermann&email=max@example.org"
+      description: Data need to be posted as x-www-form-urlencoded. (Ajax Post of a html form). The valid fields are all fields in "AddressForm" type. E.g. "firstname=max&lastname=mustermann&email=max@example.org"
       parameters:
-      - description: 'billing form fields x-www-form-urlencoded. E.g.: firstname=max&lastname=mustermann&email=max@example.org'
-        in: body
-        name: billingAddressForm
+      - description: vat
+        in: formData
+        name: vat
+        type: string
+      - description: firstname
+        in: formData
+        name: firstname
         required: true
-        schema:
-          type: primitive
+        type: string
+      - description: lastname
+        in: formData
+        name: lastname
+        required: true
+        type: string
+      - description: middlename
+        in: formData
+        name: middlename
+        type: string
+      - description: title
+        in: formData
+        name: title
+        type: string
+      - description: salutation
+        in: formData
+        name: salutation
+        type: string
+      - description: street
+        in: formData
+        name: street
+        type: string
+      - description: streetNr
+        in: formData
+        name: streetNr
+        type: string
+      - description: addressLine1
+        in: formData
+        name: addressLine1
+        type: string
+      - description: addressLine2
+        in: formData
+        name: addressLine2
+        type: string
+      - description: company
+        in: formData
+        name: company
+        type: string
+      - description: postCode
+        in: formData
+        name: postCode
+        type: string
+      - description: city
+        in: formData
+        name: city
+        type: string
+      - description: state
+        in: formData
+        name: state
+        type: string
+      - description: regionCode
+        in: formData
+        name: regionCode
+        type: string
+      - description: country
+        in: formData
+        name: country
+        type: string
+      - description: countryCode
+        in: formData
+        name: countryCode
+        type: string
+      - description: phoneAreaCode
+        in: formData
+        name: phoneAreaCode
+        type: string
+      - description: phoneCountryCode
+        in: formData
+        name: phoneCountryCode
+        type: string
+      - description: phoneNumber
+        in: formData
+        name: phoneNumber
+        type: string
+      - description: email
+        in: formData
+        name: email
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -995,7 +1045,135 @@ paths:
       summary: Add Item to cart
       tags:
       - v1 Cart ajax API
-  /api/v1/cart/removeGiftCard:
+  /api/v1/cart/delivery/{deliveryCode}/deliveryinfo:
+    post:
+      consumes:
+      - application/x-www-form-urlencoded
+      description: Data need to be posted as x-www-form-urlencoded. (Ajax Post of a html form). Valid fields are all fields in "AddressForm" type. E.g. "deliveryAddress.firstname=max&deliveryAddress.lastname=mustermann&deliveryAddress.mail=max@example.org&useBillingAddress=1"
+      parameters:
+      - description: the idendifier for the delivery in the cart
+        in: path
+        name: deliveryCode
+        required: true
+        type: string
+      - description: vat
+        in: formData
+        name: deliveryAddress.vat
+        type: string
+      - description: firstname
+        in: formData
+        name: deliveryAddress.firstname
+        required: true
+        type: string
+      - description: lastname
+        in: formData
+        name: deliveryAddress.lastname
+        required: true
+        type: string
+      - description: middlename
+        in: formData
+        name: deliveryAddress.middlename
+        type: string
+      - description: title
+        in: formData
+        name: deliveryAddress.title
+        type: string
+      - description: salutation
+        in: formData
+        name: deliveryAddress.salutation
+        type: string
+      - description: street
+        in: formData
+        name: deliveryAddress.street
+        type: string
+      - description: streetNr
+        in: formData
+        name: deliveryAddress.streetNr
+        type: string
+      - description: addressLine1
+        in: formData
+        name: deliveryAddress.addressLine1
+        type: string
+      - description: addressLine2
+        in: formData
+        name: deliveryAddress.addressLine2
+        type: string
+      - description: company
+        in: formData
+        name: deliveryAddress.company
+        type: string
+      - description: postCode
+        in: formData
+        name: deliveryAddress.postCode
+        type: string
+      - description: city
+        in: formData
+        name: deliveryAddress.city
+        type: string
+      - description: state
+        in: formData
+        name: deliveryAddress.state
+        type: string
+      - description: regionCode
+        in: formData
+        name: deliveryAddress.regionCode
+        type: string
+      - description: country
+        in: formData
+        name: deliveryAddress.country
+        type: string
+      - description: countryCode
+        in: formData
+        name: deliveryAddress.countryCode
+        type: string
+      - description: phoneAreaCode
+        in: formData
+        name: deliveryAddress.phoneAreaCode
+        type: string
+      - description: phoneCountryCode
+        in: formData
+        name: deliveryAddress.phoneCountryCode
+        type: string
+      - description: phoneNumber
+        in: formData
+        name: deliveryAddress.phoneNumber
+        type: string
+      - description: email
+        in: formData
+        name: deliveryAddress.email
+        required: true
+        type: string
+      - description: useBillingAddress
+        in: formData
+        name: useBillingAddress
+        type: boolean
+      - description: shippingMethod
+        in: formData
+        name: shippingMethod
+        type: string
+      - description: shippingCarrier
+        in: formData
+        name: shippingCarrier
+        type: string
+      - description: locationCode
+        in: formData
+        name: locationCode
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.CartAPIResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.CartAPIResult'
+      summary: Adds delivery infos, such as shipping address to the delivery for the cart
+      tags:
+      - v1 Cart ajax API
+  /api/v1/cart/removegiftcard:
     post:
       parameters:
       - description: the couponCode that should be deleted as gift card
@@ -1014,7 +1192,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/controller.CartAPIResult'
-      summary: Remove gift card
+      summary: Remove Gift Card
       tags:
       - v1 Cart ajax API
   /api/v1/cart/removevoucher:
@@ -1041,9 +1219,7 @@ paths:
       - v1 Cart ajax API
   /api/v1/cart/updatepaymentselection:
     put:
-      consumes:
-      - application/x-www-form-urlencoded
-      description: Data need to be posted as application/x-www-form-urlencoded. (Ajax Post of a html form). Valid fields are all fields in "AddressForm" type. E.g. "deliveryAddress.firstname=max&deliveryAddress.lastname=mustermann&deliveryAddress.mail=max@example.org&useBillingAddress=1"
+      description: Data need to be posted as x-www-form-urlencoded. (Ajax Post of a html form). Valid fields are all fields in "AddressForm" type. E.g. "deliveryAddress.firstname=max&deliveryAddress.lastname=mustermann&deliveryAddress.mail=max@example.org&useBillingAddress=1"
       parameters:
       - description: name of the payment gateway - e.g. 'offline'
         in: query
