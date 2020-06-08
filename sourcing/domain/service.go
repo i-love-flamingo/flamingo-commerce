@@ -146,9 +146,10 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 		}
 	}
 
-	if len(availableSources) == 0 && lastStockError != nil {
-		return availableSources, errors.Wrap(ErrNoSourceAvailable, lastStockError.Error())
-	} else if len(availableSources) == 0 {
+	if len(availableSources) == 0 {
+		if lastStockError != nil {
+			return availableSources, errors.Wrap(ErrNoSourceAvailable, lastStockError.Error())
+		}
 		return availableSources, ErrNoSourceAvailable
 	}
 
