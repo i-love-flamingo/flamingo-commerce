@@ -212,7 +212,7 @@ func getItemIdsWithProduct(dc *decorator.DecoratedCart, product domain.BasicProd
 }
 
 // allocateItem returns the itemAllocation and the remaining stock for the given item.
-// The passed productSourcestock is used - and the remaining productSourcestock is returned. In case a source is not yet goven in productSourcestock it will be fetched
+// The passed productSourcestock is used - and the remaining productSourcestock is returned. In case a source is not yet given in productSourcestock it will be fetched
 func (d *DefaultSourcingService) allocateItem(ctx context.Context, productSourcestock map[string]map[Source]int, decoratedItem decorator.DecoratedCartItem, deliveryInfo cartDomain.DeliveryInfo) (ItemAllocation, map[string]map[Source]int) {
 	var resultItemAllocation = ItemAllocation{
 		AllocatedQtys: make(AllocatedQtys),
