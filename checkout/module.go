@@ -207,7 +207,7 @@ func (r *apiRoutes) Routes(registry *web.RouterRegistry) {
 	registry.HandleDelete("checkout.api.placeorder", r.apiController.ClearPlaceOrderAction)
 
 	registry.Route("/api/v1/checkout/placeorder/cancel", "checkout.api.placeorder.cancel")
-	registry.HandleGet("checkout.api.placeorder.cancel", r.apiController.CancelPlaceOrderAction)
+	registry.HandlePost("checkout.api.placeorder.cancel", r.apiController.CancelPlaceOrderAction)
 
 	registry.Route("/api/v1/checkout/placeorder/refresh", "checkout.api.placeorder.refresh")
 	registry.HandlePost("checkout.api.placeorder.refresh", r.apiController.RefreshPlaceOrderAction)
