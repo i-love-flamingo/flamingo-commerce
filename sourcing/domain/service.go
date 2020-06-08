@@ -14,7 +14,7 @@ import (
 )
 
 type (
-	// SourcingService interface
+	// SourcingService describes the main port used by the sourcing logic.
 	SourcingService interface {
 		// AllocateItems returns Sources for the given item in the given cart
 		// e.g. use this during place order to know
