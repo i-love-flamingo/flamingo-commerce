@@ -40,7 +40,7 @@ func (r *Restrictor) Name() string {
 }
 
 // Restrict qty based on product data
-func (r *Restrictor) Restrict(ctx context.Context, product productDomain.BasicProduct, cart *cart.Cart, deliveryCode string) *validation.RestrictionResult {
+func (r *Restrictor) Restrict(ctx context.Context, product productDomain.BasicProduct, _ *cart.Cart, deliveryCode string) *validation.RestrictionResult {
 	ctx, span := trace.StartSpan(ctx, "sourcing/restrictors/SourceAvailableRestrictor")
 	defer span.End()
 
