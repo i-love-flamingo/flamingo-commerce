@@ -284,7 +284,7 @@ func (d *DefaultSourcingService) allocateItem(ctx context.Context, productSource
 
 // QtySum returns the sum of all sourced items
 func (s AvailableSources) QtySum() int {
-	qty := int(0)
+	qty := 0
 	for _, sqty := range s {
 		if sqty == math.MaxInt64 {
 			return sqty
