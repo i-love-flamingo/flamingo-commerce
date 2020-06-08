@@ -154,7 +154,7 @@ func (s Factory) BuildForCurrentRequest(ctx context.Context, request *web.Reques
 
 	layer.PageInstanceID = s.pageInstanceIDPrefix + s.pageInstanceIDStage
 
-	//Handle User
+	// Handle User
 	layer.Page.Attributes["loggedIn"] = false
 	layer.Page.Attributes["logintype"] = "guest"
 
@@ -362,7 +362,7 @@ func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.Produ
 
 	productName := s.regex.ReplaceAllString(baseData.Title, "-")
 
-	//Handle Variants if it is a Configurable
+	// Handle Variants if it is a Configurable
 	var parentIDRef *string
 	var variantSelectedAttributeRef *string
 	if product.Type() == productDomain.TypeConfigurableWithActiveVariant {
@@ -454,9 +454,9 @@ func (s Factory) getProductImageURL(baseData productDomain.BasicProductData) str
 func (s Factory) hashWithSHA512(value string) string {
 	newHash := sha512.New()
 	newHash.Write([]byte(value))
-	//the hash is a byte array
+	// the hash is a byte array
 	result := newHash.Sum(nil)
-	//since we want to use it in a variable we base64 encode it (other alternative would be Hexadecimal representation "% x", h.Sum(nil)
+	// since we want to use it in a variable we base64 encode it (other alternative would be Hexadecimal representation "% x", h.Sum(nil)
 	return s.hashEncoder.EncodeToString(result)
 }
 

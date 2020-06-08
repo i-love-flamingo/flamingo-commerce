@@ -14,7 +14,7 @@ import (
 )
 
 type (
-	//BillingAddressForm the form for billing address
+	// BillingAddressForm the form for billing address
 	BillingAddressForm AddressForm
 
 	// BillingAddressFormService implements Form(Data)Provider interface of form package
@@ -117,7 +117,7 @@ func (c *BillingAddressFormController) HandleFormAction(ctx context.Context, r *
 	addressForm := AddressForm(billingAddressForm)
 	billingAddress := addressForm.MapToDomainAddress()
 
-	//update Billing
+	// update Billing
 	err = c.applicationCartService.UpdateBillingAddress(ctx, session, &billingAddress)
 	if err != nil {
 		c.logger.WithContext(ctx).Error("BillingAddressFormController UpdateBillingAddress Error %v", err)

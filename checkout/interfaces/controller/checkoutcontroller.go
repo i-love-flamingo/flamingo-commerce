@@ -380,7 +380,6 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 		if found {
 			viewData.ErrorInfos = *flashViewErrorInfos
 		}
-
 		form, err := cc.checkoutFormController.GetUnsubmittedForm(ctx, r)
 		if err != nil {
 			if !found {

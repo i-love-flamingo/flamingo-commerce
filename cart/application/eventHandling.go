@@ -13,7 +13,7 @@ import (
 )
 
 type (
-	//EventReceiver - handles events from other packages
+	// EventReceiver - handles events from other packages
 	EventReceiver struct {
 		logger              flamingo.Logger
 		cartService         *CartService
@@ -42,15 +42,15 @@ func (e *EventReceiver) Inject(
 	}
 }
 
-//Notify should get called by flamingo Eventlogic
+// Notify should get called by flamingo Eventlogic
 func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 	switch currentEvent := event.(type) {
-	//Handle Logout
+	// Handle Logout
 	case *auth.WebLogoutEvent:
 		if e.cartCache != nil {
 			_ = e.cartCache.DeleteAll(ctx, currentEvent.Request.Session())
 		}
-	//Handle WebLoginEvent and Merge Cart
+	// Handle WebLoginEvent and Merge Cart
 	case *auth.WebLoginEvent:
 		web.RunWithDetachedContext(ctx, func(ctx context.Context) {
 			if currentEvent == nil {
