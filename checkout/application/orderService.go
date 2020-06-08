@@ -162,7 +162,7 @@ func (os *OrderService) SetSources(ctx context.Context, session *web.Session) er
 }
 
 // CurrentCartSaveInfos saves additional information on current cart
-// @Deprecated: method is not called within flamingo-commerce and method does not support multiple delivery addresses
+// Deprecated: method is not called within flamingo-commerce and method does not support multiple delivery addresses
 func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.Session, billingAddress *cart.Address, shippingAddress *cart.Address, purchaser *cart.Person, additionalData *cart.AdditionalData) error {
 	os.logger.WithContext(ctx).Debug("CurrentCartSaveInfos call billingAddress:%v shippingAddress:%v payment:%v", billingAddress, shippingAddress)
 

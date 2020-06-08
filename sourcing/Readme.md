@@ -13,7 +13,7 @@ Different things can play a role while figuring out the correct source location(
 - synergies regarding the complete order  
   (e.g. source the order from a warehouse where most of the items are available)
 - delivery time (if time is more important than cost -
-  then picking the source location that can delivery the fastest)
+  then picking the source location that can deliver the fastest)
 ...
 
 ## Typical Use cases in e-commerce

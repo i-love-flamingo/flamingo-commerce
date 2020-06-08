@@ -37,19 +37,19 @@ var (
 	_ domain.AvailableSourcesProvider = new(stockBySourceAndProductProviderMock)
 )
 
-func (a availableSourcesProviderMock) GetPossibleSources(ctx context.Context, product productDomain.BasicProduct, deliveryInfo *cart.DeliveryInfo) ([]domain.Source, error) {
+func (a availableSourcesProviderMock) GetPossibleSources(_ context.Context, _ productDomain.BasicProduct, _ *cart.DeliveryInfo) ([]domain.Source, error) {
 	return a.Sources, a.Error
 }
 
-func (s stockProviderMock) GetStock(ctx context.Context, product productDomain.BasicProduct, source domain.Source) (int, error) {
+func (s stockProviderMock) GetStock(_ context.Context, _ productDomain.BasicProduct, _ domain.Source) (int, error) {
 	return s.Qty, s.Error
 }
 
-func (s stockBySourceAndProductProviderMock) GetStock(ctx context.Context, product productDomain.BasicProduct, source domain.Source) (int, error) {
+func (s stockBySourceAndProductProviderMock) GetStock(_ context.Context, product productDomain.BasicProduct, source domain.Source) (int, error) {
 	return s.Qty[source.LocationCode][product.GetIdentifier()], s.Error
 }
 
-func (s stockBySourceAndProductProviderMock) GetPossibleSources(ctx context.Context, product productDomain.BasicProduct, deliveryInfo *cart.DeliveryInfo) ([]domain.Source, error) {
+func (s stockBySourceAndProductProviderMock) GetPossibleSources(_ context.Context, _ productDomain.BasicProduct, _ *cart.DeliveryInfo) ([]domain.Source, error) {
 	panic("implement me")
 }
 
