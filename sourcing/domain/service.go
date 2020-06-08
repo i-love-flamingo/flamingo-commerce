@@ -34,7 +34,7 @@ type (
 	// ItemID string alias
 	ItemID string
 
-	// ItemAllocations represents the allocated Qtys per itemId
+	// ItemAllocations represents the allocated Qtys per itemID
 	ItemAllocations map[ItemID]ItemAllocation
 
 	//ItemAllocation info
@@ -57,7 +57,8 @@ type (
 	// AvailableSources is the result value object containing the available Qty per Source
 	AvailableSources map[Source]int
 
-	//DefaultSourcingService - an example implementation
+	// DefaultSourcingService provides a default implementation of the SourcingService interface.
+	// This default implementation is used unless a project overrides the interface binding.
 	DefaultSourcingService struct {
 		availableSourcesProvider AvailableSourcesProvider
 		stockProvider            StockProvider
