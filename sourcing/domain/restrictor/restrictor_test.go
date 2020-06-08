@@ -26,11 +26,11 @@ type (
 	}
 )
 
-func (s *sourcingServiceMock) GetAvailableSourcesDeductedByCurrentCart(ctx context.Context, product domain.BasicProduct, deliveryCode string) (sourcingDomain.AvailableSources, error) {
+func (s *sourcingServiceMock) GetAvailableSourcesDeductedByCurrentCart(_ context.Context, _ domain.BasicProduct, _ string) (sourcingDomain.AvailableSources, error) {
 	return s.DeductedAvailableSources, s.DeductedAvailableSourcesError
 }
 
-func (s *sourcingServiceMock) GetAvailableSources(ctx context.Context, product domain.BasicProduct, deliveryCode string) (sourcingDomain.AvailableSources, error) {
+func (s *sourcingServiceMock) GetAvailableSources(_ context.Context, _ domain.BasicProduct, _ string) (sourcingDomain.AvailableSources, error) {
 	return s.AvailableSources, s.AvailableSourcesError
 }
 
