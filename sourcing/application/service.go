@@ -17,8 +17,8 @@ import (
 type (
 	// SourcingApplication interface
 	SourcingApplication interface {
-		GetAvailableSourcesDeductedByCurrentCart(ctx context.Context, product productDomain.BasicProduct, deliveryCode string) (domain.AvailableSources, error)
-		GetAvailableSources(ctx context.Context, product productDomain.BasicProduct, deliveryCode string) (domain.AvailableSources, error)
+		GetAvailableSourcesDeductedByCurrentCart(ctx context.Context, session *web.Session, product productDomain.BasicProduct, deliveryCode string) (domain.AvailableSources, error)
+		GetAvailableSources(ctx context.Context, session *web.Session, product productDomain.BasicProduct, deliveryCode string) (domain.AvailableSources, error)
 	}
 
 	// Service to access the sourcing based on current cart
@@ -51,13 +51,13 @@ func (s *Service) Inject(
 }
 
 // GetAvailableSourcesDeductedByCurrentCart fetches available sources minus those already allocated to the cart
-func (s *Service) GetAvailableSourcesDeductedByCurrentCart(ctx context.Context, product productDomain.BasicProduct, deliveryCode string) (domain.AvailableSources, error) {
+func (s *Service) GetAvailableSourcesDeductedByCurrentCart(ctx context.Context, session *web.Session, product productDomain.BasicProduct, deliveryCode string) (domain.AvailableSources, error) {
 	if product == nil {
 		s.logger.WithContext(ctx).Error("No product given for GetAvailableSourcesDeductedByCurrentCart")
 		return nil, errors.New("no product given for GetAvailableSourcesDeductedByCurrentCart")
 	}
 
-	deliveryInfo, decoratedCart, err := s.getDeliveryInfo(ctx, deliveryCode)
+	deliveryInfo, decoratedCart, err := s.getDeliveryInfo(ctx, session, deliveryCode)
 	if err != nil {
 		return nil, err
 	}
@@ -66,14 +66,14 @@ func (s *Service) GetAvailableSourcesDeductedByCurrentCart(ctx context.Context, 
 }
 
 // GetAvailableSources without evaluating current cart items
-func (s *Service) GetAvailableSources(ctx context.Context, product productDomain.BasicProduct, deliveryCode string) (domain.AvailableSources, error) {
+func (s *Service) GetAvailableSources(ctx context.Context, session *web.Session, product productDomain.BasicProduct, deliveryCode string) (domain.AvailableSources, error) {
 
 	if product == nil {
 		s.logger.WithContext(ctx).Error("No product given for GetAvailableSources")
 		return nil, errors.New("no product given for GetAvailableSources")
 	}
 
-	deliveryInfo, _, err := s.getDeliveryInfo(ctx, deliveryCode)
+	deliveryInfo, _, err := s.getDeliveryInfo(ctx, session, deliveryCode)
 	if err != nil {
 		return nil, err
 	}
@@ -81,8 +81,7 @@ func (s *Service) GetAvailableSources(ctx context.Context, product productDomain
 	return s.sourcingService.GetAvailableSources(ctx, product, deliveryInfo, nil)
 }
 
-func (s *Service) getDeliveryInfo(ctx context.Context, deliveryCode string) (*cart.DeliveryInfo, *decorator.DecoratedCart, error) {
-	session := web.SessionFromContext(ctx)
+func (s *Service) getDeliveryInfo(ctx context.Context, session *web.Session, deliveryCode string) (*cart.DeliveryInfo, *decorator.DecoratedCart, error) {
 	decoratedCart, err := s.cartReceiverService.ViewDecoratedCart(ctx, session)
 	if err != nil {
 		s.logger.WithContext(ctx).Error(err)

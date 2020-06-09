@@ -13,6 +13,7 @@ import (
 	sourcingDomain "flamingo.me/flamingo-commerce/v3/sourcing/domain"
 
 	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/web"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -26,11 +27,11 @@ type (
 	}
 )
 
-func (s *sourcingServiceMock) GetAvailableSourcesDeductedByCurrentCart(_ context.Context, _ domain.BasicProduct, _ string) (sourcingDomain.AvailableSources, error) {
+func (s *sourcingServiceMock) GetAvailableSourcesDeductedByCurrentCart(_ context.Context, _ *web.Session, _ domain.BasicProduct, _ string) (sourcingDomain.AvailableSources, error) {
 	return s.DeductedAvailableSources, s.DeductedAvailableSourcesError
 }
 
-func (s *sourcingServiceMock) GetAvailableSources(_ context.Context, _ domain.BasicProduct, _ string) (sourcingDomain.AvailableSources, error) {
+func (s *sourcingServiceMock) GetAvailableSources(_ context.Context, _ *web.Session, _ domain.BasicProduct, _ string) (sourcingDomain.AvailableSources, error) {
 	return s.AvailableSources, s.AvailableSourcesError
 }
 
@@ -63,6 +64,7 @@ func TestRestrictor_Restrict(t *testing.T) {
 
 		got := restrictor.Restrict(
 			context.Background(),
+			web.EmptySession(),
 			fixtureProduct,
 			fixtureCart,
 			"test",
@@ -97,6 +99,7 @@ func TestRestrictor_Restrict(t *testing.T) {
 
 		got := restrictor.Restrict(
 			context.Background(),
+			web.EmptySession(),
 			fixtureProduct,
 			fixtureCart,
 			"test",
@@ -144,6 +147,7 @@ func TestRestrictor_Restrict(t *testing.T) {
 
 		got := restrictor.Restrict(
 			context.Background(),
+			web.EmptySession(),
 			fixtureProduct,
 			fixtureCart,
 			"test",

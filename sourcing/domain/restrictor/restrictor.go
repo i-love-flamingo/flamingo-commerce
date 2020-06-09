@@ -9,6 +9,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/sourcing/application"
 
 	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/web"
 
 	"go.opencensus.io/trace"
 )
@@ -40,7 +41,7 @@ func (r *Restrictor) Name() string {
 }
 
 // Restrict qty based on product data
-func (r *Restrictor) Restrict(ctx context.Context, product productDomain.BasicProduct, _ *cart.Cart, deliveryCode string) *validation.RestrictionResult {
+func (r *Restrictor) Restrict(ctx context.Context, session *web.Session, product productDomain.BasicProduct, _ *cart.Cart, deliveryCode string) *validation.RestrictionResult {
 	ctx, span := trace.StartSpan(ctx, "sourcing/restrictors/SourceAvailableRestrictor")
 	defer span.End()
 
@@ -51,12 +52,12 @@ func (r *Restrictor) Restrict(ctx context.Context, product productDomain.BasicPr
 		RestrictorName:      r.Name(),
 	}
 
-	availableSources, err := r.sourcingService.GetAvailableSources(ctx, product, deliveryCode)
+	availableSources, err := r.sourcingService.GetAvailableSources(ctx, session, product, deliveryCode)
 	if err != nil {
 		return unrestricted
 	}
 
-	availableSourcesDeducted, err := r.sourcingService.GetAvailableSourcesDeductedByCurrentCart(ctx, product, deliveryCode)
+	availableSourcesDeducted, err := r.sourcingService.GetAvailableSourcesDeductedByCurrentCart(ctx, session, product, deliveryCode)
 	if err != nil {
 		r.logger.Error(err)
 

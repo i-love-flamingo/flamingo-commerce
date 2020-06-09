@@ -78,6 +78,6 @@ func (r *CommerceCartQueryResolver) CommerceCartQtyRestriction(ctx context.Conte
 	if err != nil {
 		return nil, err
 	}
-	result := r.restrictionService.RestrictQty(ctx, product, cart, deliveryCode)
+	result := r.restrictionService.RestrictQty(ctx, session, product, cart, deliveryCode)
 	return result, nil
 }

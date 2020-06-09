@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
+	"flamingo.me/flamingo/v3/framework/web"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
@@ -25,7 +26,7 @@ func (r *MockRestrictor) Name() string {
 	return fmt.Sprintf("MockRestrictor")
 }
 
-func (r *MockRestrictor) Restrict(ctx context.Context, product domain.BasicProduct, currentCart *cart.Cart, deliveryCode string) *validation.RestrictionResult {
+func (r *MockRestrictor) Restrict(ctx context.Context, session *web.Session, product domain.BasicProduct, currentCart *cart.Cart, deliveryCode string) *validation.RestrictionResult {
 	return &validation.RestrictionResult{
 		IsRestricted:        r.IsRestricted,
 		MaxAllowed:          r.MaxQty,
@@ -117,7 +118,7 @@ func TestRestrictionService_RestrictQty(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			rs := &validation.RestrictionService{}
 			rs.Inject(tt.fields.qtyRestrictors)
-			got := rs.RestrictQty(tt.args.ctx, tt.args.product, tt.args.cart, tt.args.deliveryCode)
+			got := rs.RestrictQty(tt.args.ctx, web.EmptySession(), tt.args.product, tt.args.cart, tt.args.deliveryCode)
 			if !reflect.DeepEqual(got, tt.expectedRestrictionResult) {
 				t.Errorf("RestrictionService.RestrictQty() got = %v, expected = %v", got, tt.expectedRestrictionResult)
 			}
