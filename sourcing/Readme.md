@@ -36,6 +36,15 @@ Provides Port for Sourcing logic, that can be implemented according to your proj
 
 The main Port is the "SourcingService" interface that you can provide a custom adapter and have all possible freedom to design your sourcing logic.
 
+### Configurations
+
+```yaml
+  commerce:
+    sourcing:
+      # use the DefaultSourcingService (default: true)
+      useDefaultSourcingService: true
+```
+
 ### DefaultSourcingService
 
 The package also offers a "DefaultSourcingService" that does sourcing based on two inputs:
