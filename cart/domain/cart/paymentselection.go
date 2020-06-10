@@ -20,9 +20,9 @@ type (
 	// PaymentSelection value object - that represents the payment selection on the cart
 	PaymentSelection interface {
 		Gateway() string
-		//ChargeSplits - the selected split per ChargeType and PaymentMethod
+		// ChargeSplits - the selected split per ChargeType and PaymentMethod
 		CartSplit() PaymentSplit
-		//ChargeSplits - the selected split per ChargeType and PaymentMethod
+		// ChargeSplits - the selected split per ChargeType and PaymentMethod
 		ItemSplit() PaymentSplitByItem
 		TotalValue() price.Price
 		MethodByType(string) string
@@ -30,31 +30,31 @@ type (
 		GenerateNewIdempotencyKey() (PaymentSelection, error)
 	}
 
-	//SplitQualifier qualifies by Charge Type, Charge Reference and Payment Method
+	// SplitQualifier qualifies by Charge Type, Charge Reference and Payment Method
 	SplitQualifier struct {
 		ChargeType      string
 		ChargeReference string
 		Method          string
 	}
 
-	//PaymentSplit represents the Charges qualified by Charge Type, Charge Reference and Payment Method
+	// PaymentSplit represents the Charges qualified by Charge Type, Charge Reference and Payment Method
 	PaymentSplit map[SplitQualifier]price.Charge
 
-	//PaymentSplitByItem - similar to value object that contains items of the different possible types, that have a price
+	// PaymentSplitByItem - similar to value object that contains items of the different possible types, that have a price
 	PaymentSplitByItem struct {
 		CartItems     map[string]PaymentSplit
 		ShippingItems map[string]PaymentSplit
 		TotalItems    map[string]PaymentSplit
 	}
 
-	//PaymentSplitByItemBuilder - Builder to get valid PaymentSplitByItem instances
+	// PaymentSplitByItemBuilder - Builder to get valid PaymentSplitByItem instances
 	PaymentSplitByItemBuilder struct {
 		inBuilding *PaymentSplitByItem
 	}
 
 	// DefaultPaymentSelection value object - that implements the PaymentSelection interface
 	DefaultPaymentSelection struct {
-		//GatewayProp - the selected Gateway
+		// GatewayProp - the selected Gateway
 		GatewayProp        string
 		ChargedItemsProp   PaymentSplitByItem
 		IdempotencyKeyUUID string
@@ -63,7 +63,7 @@ type (
 	// PaymentSplitService enables the creation of a PaymentSplitByItem following different payment methods
 	PaymentSplitService struct{}
 
-	// builderAddFunc is a function used by builder to add items
+	// builderAddFunc is a function used by the builder to add items
 	// function which corresponds to builder addX function (addCartItem, addShipping, addTotal)
 	builderAddFunc func(string, string, price.Charge) *PaymentSplitByItemBuilder
 
@@ -233,32 +233,32 @@ func NewPaymentSelection(gateway string, chargedItems PaymentSplitByItem) Paymen
 	return selection
 }
 
-//Gateway - returns the selected Gateway code
+// Gateway - returns the selected Gateway code
 func (d DefaultPaymentSelection) Gateway() string {
 	return d.GatewayProp
 }
 
-//CartSplit - the selected split per ChargeType and PaymentMethod
+// CartSplit - the selected split per ChargeType and PaymentMethod
 func (d DefaultPaymentSelection) CartSplit() PaymentSplit {
 	return d.ChargedItemsProp.Sum()
 }
 
-//ItemSplit - the selected split per ChargeType and PaymentMethod
+// ItemSplit - the selected split per ChargeType and PaymentMethod
 func (d DefaultPaymentSelection) ItemSplit() PaymentSplitByItem {
 	return d.ChargedItemsProp
 }
 
-//TotalValue - returns Valued price sum
+// TotalValue - returns Valued price sum
 func (d DefaultPaymentSelection) TotalValue() price.Price {
 	return d.ChargedItemsProp.Sum().TotalValue()
 }
 
-//IdempotencyKey returns the Idempotency-Key for this payment selection
+// IdempotencyKey returns the Idempotency-Key for this payment selection
 func (d DefaultPaymentSelection) IdempotencyKey() string {
 	return d.IdempotencyKeyUUID
 }
 
-//GenerateNewIdempotencyKey updates the Idempotency-Key to a new value
+// GenerateNewIdempotencyKey updates the Idempotency-Key to a new value
 func (d DefaultPaymentSelection) GenerateNewIdempotencyKey() (PaymentSelection, error) {
 	key, err := uuid.NewRandom()
 	if err != nil {
@@ -268,7 +268,7 @@ func (d DefaultPaymentSelection) GenerateNewIdempotencyKey() (PaymentSelection, 
 	return d, nil
 }
 
-//MarshalJSON adds the Idempotency-Key to the payment selection json
+// MarshalJSON adds the Idempotency-Key to the payment selection json
 func (d DefaultPaymentSelection) MarshalJSON() ([]byte, error) {
 	return json.Marshal(struct {
 		GatewayProp      string             `json:"GatewayProp"`
@@ -281,7 +281,7 @@ func (d DefaultPaymentSelection) MarshalJSON() ([]byte, error) {
 	})
 }
 
-//Sum - the resulting Split after sum all the included item split
+// Sum - the resulting Split after sum all the included item split
 func (c PaymentSplitByItem) Sum() PaymentSplit {
 	sum := make(PaymentSplit)
 	addToSum := func(splits PaymentSplit) {
@@ -306,7 +306,7 @@ func (c PaymentSplitByItem) Sum() PaymentSplit {
 	return sum
 }
 
-//TotalValue returns the sum of the valued Price in the included Charges in this Split
+// TotalValue returns the sum of the valued Price in the included Charges in this Split
 func (s PaymentSplit) TotalValue() price.Price {
 	var prices []price.Price
 	for _, v := range s {
@@ -316,7 +316,7 @@ func (s PaymentSplit) TotalValue() price.Price {
 	return sum
 }
 
-//ChargesByType returns Charges (a list of Charges summed by Type)
+// ChargesByType returns Charges (a list of Charges summed by Type)
 func (s PaymentSplit) ChargesByType() price.Charges {
 	charges := price.Charges{}
 	for _, charge := range s {
@@ -331,7 +331,7 @@ func (s PaymentSplit) MarshalJSON() ([]byte, error) {
 	for qualifier, charge := range s {
 		// explicit method and chargeType is necessary, otherwise keys could be overwritten
 		if qualifier.Method == "" || qualifier.ChargeType == "" {
-			return nil, errors.New("Method or ChargeType is empty")
+			return nil, errors.New("method or ChargeType is empty")
 		}
 		// SplitQualifier is parsed to a string method-chargeType-chargeReference
 		result[qualifier.Method+splitQualifierSeparator+qualifier.ChargeType+splitQualifierSeparator+qualifier.ChargeReference] = charge
@@ -349,7 +349,7 @@ func (s *PaymentSplit) UnmarshalJSON(data []byte) error {
 	// parse string method-chargeType-chargeReference back to split qualifier
 	for key, charge := range input {
 		splitted := strings.Split(key, splitQualifierSeparator)
-		// guard in case cannot be splitted
+		// guard in case cannot be split
 		if len(splitted) < 2 {
 			return errors.New("SplitQualifier cannot be parsed for paymentsplit")
 		}
@@ -368,7 +368,7 @@ func (s *PaymentSplit) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-//AddCartItem - adds a cartitems charge to the PaymentSplitByItem
+// AddCartItem - adds a cartitems charge to the PaymentSplitByItem
 func (pb *PaymentSplitByItemBuilder) AddCartItem(id string, method string, charge price.Charge) *PaymentSplitByItemBuilder {
 	pb.init()
 	if pb.inBuilding.CartItems[id] == nil {
@@ -382,7 +382,7 @@ func (pb *PaymentSplitByItemBuilder) AddCartItem(id string, method string, charg
 	return pb
 }
 
-//AddShippingItem - adds shipping charge
+// AddShippingItem - adds shipping charge
 func (pb *PaymentSplitByItemBuilder) AddShippingItem(deliveryCode string, method string, charge price.Charge) *PaymentSplitByItemBuilder {
 	pb.init()
 	if pb.inBuilding.ShippingItems[deliveryCode] == nil {
@@ -396,7 +396,7 @@ func (pb *PaymentSplitByItemBuilder) AddShippingItem(deliveryCode string, method
 	return pb
 }
 
-//AddTotalItem - adds totalitem charge
+// AddTotalItem - adds totalitem charge
 func (pb *PaymentSplitByItemBuilder) AddTotalItem(totalType string, method string, charge price.Charge) *PaymentSplitByItemBuilder {
 	pb.init()
 	if pb.inBuilding.TotalItems[totalType] == nil {
@@ -410,7 +410,7 @@ func (pb *PaymentSplitByItemBuilder) AddTotalItem(totalType string, method strin
 	return pb
 }
 
-//Build - returns the instance of PaymentSplitByItem
+// Build - returns the instance of PaymentSplitByItem
 func (pb *PaymentSplitByItemBuilder) Build() PaymentSplitByItem {
 	pb.init()
 	return *pb.inBuilding

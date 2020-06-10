@@ -6,7 +6,7 @@ import (
 )
 
 type (
-	//PricedItems – provides custom graphql interface methods
+	// PricedItems – provides custom graphql interface methods
 	PricedItems struct {
 		items cart.PricedItems
 	}

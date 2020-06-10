@@ -5,7 +5,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 )
 
-//DecoratedCart – provides custom graphql interface methods
+// DecoratedCart – provides custom graphql interface methods
 type DecoratedCart struct {
 	decoratedCart *decorator.DecoratedCart
 }
@@ -20,7 +20,7 @@ func (dc DecoratedCart) DecoratedDeliveries() []decorator.DecoratedDelivery {
 	return dc.decoratedCart.DecoratedDeliveries
 }
 
-//GetDecoratedDeliveryByCode – returns decorated delivery filtered by code
+// GetDecoratedDeliveryByCode – returns decorated delivery filtered by code
 func (dc *DecoratedCart) GetDecoratedDeliveryByCode(deliveryCode string) *decorator.DecoratedDelivery {
 	decoratedDelivery, _ := dc.decoratedCart.GetDecoratedDeliveryByCode(deliveryCode)
 	return decoratedDelivery
