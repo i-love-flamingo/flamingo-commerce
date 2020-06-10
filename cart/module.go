@@ -117,7 +117,7 @@ commerce: {
 		showEmptyCartPageIfNoItems?: bool
 		adjustItemsToRestrictedQty?: bool
 		personalDataForm: {
-			additionalFormFields: [string] | *[]
+			additionalFormFields: [...string] | *[]
 			dateOfBirthRequired: bool | *false
 			passportCountryRequired: bool | *false
 			passportNumberRequired: bool | *false
