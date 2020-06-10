@@ -227,6 +227,9 @@ func (r *routes) apiRoutes(registry *web.RouterRegistry) {
 	registry.Route("/api/v1/cart/delivery/:deliveryCode/deliveryinfo", `cart.api.delivery.update`)
 	registry.HandlePost("cart.api.delivery.update", r.apiController.UpdateDeliveryInfoAction)
 
+	registry.Route("/api/v1/cart/updatepaymentselection", `cart.api.updatepaymentselection`)
+	registry.HandlePut("cart.api.updatepaymentselection", r.apiController.UpdatePaymentSelectionAction)
+
 	//registry.Route("/api/cart/delivery/:shipping", `cart.api.shipping(deliveryCode?="")`)
 	//TODO registry.HandleDelete("cart.api.delivery", r.apiController.DeleteDelivery)
 }

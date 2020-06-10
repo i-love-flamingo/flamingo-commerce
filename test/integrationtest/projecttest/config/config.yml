@@ -54,6 +54,9 @@ graphql:
 
 # Configs for flamingo-commerce modules
 commerce:
+  payment:
+    # Include the basic payment gateway adapter that provides "offline" payment methods
+    enableOfflinePaymentGateway: true
   pagination:
     showFirstPage: false
     showLastPage: false

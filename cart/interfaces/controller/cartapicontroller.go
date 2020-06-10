@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"net/url"
 	"strconv"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
@@ -10,10 +11,11 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
 
-	"flamingo.me/flamingo-commerce/v3/cart/application"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
+
+	"flamingo.me/flamingo-commerce/v3/cart/application"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 )
 
 type (
@@ -25,11 +27,12 @@ type (
 		logger                       flamingo.Logger
 		billingAddressFormController *forms.BillingAddressFormController
 		deliveryFormController       *forms.DeliveryFormController
+		simplePaymentFormController  *forms.SimplePaymentFormController
 	}
 
 	// CartAPIResult view data
 	CartAPIResult struct {
-		//Contains details if success is false
+		// Contains details if success is false
 		Error                *resultError
 		Success              bool
 		CartTeaser           *cart.Teaser
@@ -46,7 +49,7 @@ type (
 	resultError struct {
 		Message string
 		Code    string
-	} //@name cartResultError
+	} // @name cartResultError
 
 	messageCodeAvailable interface {
 		MessageCode() string
@@ -63,6 +66,7 @@ func (cc *CartAPIController) Inject(
 	ApplicationCartReceiverService *application.CartReceiverService,
 	billingAddressFormController *forms.BillingAddressFormController,
 	deliveryFormController *forms.DeliveryFormController,
+	simplePaymentFormController *forms.SimplePaymentFormController,
 	Logger flamingo.Logger,
 ) {
 	cc.responder = responder
@@ -71,6 +75,7 @@ func (cc *CartAPIController) Inject(
 	cc.logger = Logger.WithField("category", "CartApiController")
 	cc.billingAddressFormController = billingAddressFormController
 	cc.deliveryFormController = deliveryFormController
+	cc.simplePaymentFormController = simplePaymentFormController
 }
 
 // GetAction Get JSON Format of API
@@ -159,7 +164,7 @@ func (cc *CartAPIController) RemoveVoucherAndGetAction(ctx context.Context, r *w
 }
 
 // DeleteCartAction cleans the cart and returns the cleaned cart
-// @Summary cleans the cart and returns the cleaned cart
+// @Summary Cleans the cart and returns the cleaned cart
 // @Tags v1 Cart ajax API
 // @Produce json
 // @Success 200 {object} CartAPIResult
@@ -177,9 +182,9 @@ func (cc *CartAPIController) DeleteCartAction(ctx context.Context, r *web.Reques
 	return cc.responder.Data(result)
 }
 
-// ApplyGiftCardAndGetAction applies the given giftcard and returns the cart
-// the request needs a query string param "couponCode" which includes the corresponding giftcard code
-// @Summary Apply Giftcart
+// ApplyGiftCardAndGetAction applies the given gift card and returns the cart
+// the request needs a query string param "couponCode" which includes the corresponding gift card code
+// @Summary Apply Gift Card
 // @Tags v1 Cart ajax API
 // @Produce json
 // @Success 200 {object} CartAPIResult
@@ -191,10 +196,10 @@ func (cc *CartAPIController) ApplyGiftCardAndGetAction(ctx context.Context, r *w
 	return cc.handlePromotionAction(ctx, r, "giftcard_error", cc.cartService.ApplyGiftCard)
 }
 
-// ApplyCombinedVoucherGift applies a given code (which might be either a voucher or a giftcard code) to the
+// ApplyCombinedVoucherGift applies a given code (which might be either a voucher or a Gift Card code) to the
 // cartService and returns the cart
-// @Summary Apply Giftcart or Voucher (autodetected)
-// @Description Use this if you have one user input and that input can be used to either enter a voucher or a giftcart
+// @Summary Apply Gift Card or Voucher (autodetected)
+// @Description Use this if you have one user input and that input can be used to either enter a voucher or a gift card
 // @Tags v1 Cart ajax API
 // @Produce json
 // @Success 200 {object} CartAPIResult
@@ -205,15 +210,15 @@ func (cc *CartAPIController) ApplyCombinedVoucherGift(ctx context.Context, r *we
 	return cc.handlePromotionAction(ctx, r, "applyany_error", cc.cartService.ApplyAny)
 }
 
-// RemoveGiftCardAndGetAction removes the given giftcard and returns the cart
-// the request needs a query string param "couponCode" which includes the corresponding giftcard code
-// @Summary Remove Giftcart
+// RemoveGiftCardAndGetAction removes the given gift card and returns the cart
+// the request needs a query string param "couponCode" which includes the corresponding gift card code
+// @Summary Remove Gift Card
 // @Tags v1 Cart ajax API
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
-// @Param couponCode query string true "the couponCode that should be deleted as giftcart"
-// @Router /api/v1/cart/removeGiftCard [post]
+// @Param couponCode query string true "the couponCode that should be deleted as gift card"
+// @Router /api/v1/cart/removegiftcard [post]
 func (cc *CartAPIController) RemoveGiftCardAndGetAction(ctx context.Context, r *web.Request) web.Result {
 	return cc.handlePromotionAction(ctx, r, "giftcard_error", cc.cartService.RemoveGiftCard)
 }
@@ -236,7 +241,7 @@ func (cc *CartAPIController) handlePromotionAction(ctx context.Context, r *web.R
 }
 
 // DeleteDelivery cleans the given delivery from the cart and returns the cleaned cart
-// @Summary cleans the given delivery from the cart
+// @Summary Cleans the given delivery from the cart
 // @Tags v1 Cart ajax API
 // @Produce json
 // @Success 200 {object} CartAPIResult
@@ -256,14 +261,33 @@ func (cc *CartAPIController) DeleteDelivery(ctx context.Context, r *web.Request)
 }
 
 // BillingAction adds billing infos
-// @Summary adds billing infos to cart
-// @Description Data need to be posted as application/x-www-form-urlencoded. Valid fields are all fields in "AddressForm" type. E.g. "firstname=max&lastname=mustermann&mail=max@example.org"
+// @Summary Adds billing infos to the current cart
 // @Tags v1 Cart ajax API
-// @Accept application/x-www-form-urlencoded
+// @Accept x-www-form-urlencoded
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
-// @Param billingAddressForm body string true "billing form values"
+// @Param vat formData string false "vat"
+// @Param firstname formData string true "firstname"
+// @Param lastname formData string true "lastname"
+// @Param middlename formData string false "middlename"
+// @Param title formData string false "title"
+// @Param salutation formData string false "salutation"
+// @Param street formData string false "street"
+// @Param streetNr formData string false "streetNr"
+// @Param addressLine1 formData string false "addressLine1"
+// @Param addressLine2 formData string false "addressLine2"
+// @Param company formData string false "company"
+// @Param postCode formData string false "postCode"
+// @Param city formData string false "city"
+// @Param state formData string false "state"
+// @Param regionCode formData string false "regionCode"
+// @Param country formData string false "country"
+// @Param countryCode formData string false "countryCode"
+// @Param phoneAreaCode formData string false "phoneAreaCode"
+// @Param phoneCountryCode formData string false "phoneCountryCode"
+// @Param phoneNumber formData string false "phoneNumber"
+// @Param email formData string true "email"
 // @Router /api/v1/cart/billing [post]
 func (cc *CartAPIController) BillingAction(ctx context.Context, r *web.Request) web.Result {
 	result := newResult()
@@ -283,6 +307,39 @@ func (cc *CartAPIController) BillingAction(ctx context.Context, r *web.Request) 
 }
 
 // UpdateDeliveryInfoAction updates the delivery info
+// @Summary Adds delivery infos, such as shipping address to the delivery for the cart
+// @Tags v1 Cart ajax API
+// @Accept x-www-form-urlencoded
+// @Produce json
+// @Success 200 {object} CartAPIResult
+// @Failure 500 {object} CartAPIResult
+// @Param deliveryCode path string true "the idendifier for the delivery in the cart"
+// @Param deliveryAddress.vat formData string false "vat"
+// @Param deliveryAddress.firstname formData string true "firstname"
+// @Param deliveryAddress.lastname formData string true "lastname"
+// @Param deliveryAddress.middlename formData string false "middlename"
+// @Param deliveryAddress.title formData string false "title"
+// @Param deliveryAddress.salutation formData string false "salutation"
+// @Param deliveryAddress.street formData string false "street"
+// @Param deliveryAddress.streetNr formData string false "streetNr"
+// @Param deliveryAddress.addressLine1 formData string false "addressLine1"
+// @Param deliveryAddress.addressLine2 formData string false "addressLine2"
+// @Param deliveryAddress.company formData string false "company"
+// @Param deliveryAddress.postCode formData string false "postCode"
+// @Param deliveryAddress.city formData string false "city"
+// @Param deliveryAddress.state formData string false "state"
+// @Param deliveryAddress.regionCode formData string false "regionCode"
+// @Param deliveryAddress.country formData string false "country"
+// @Param deliveryAddress.countryCode formData string false "countryCode"
+// @Param deliveryAddress.phoneAreaCode formData string false "phoneAreaCode"
+// @Param deliveryAddress.phoneCountryCode formData string false "phoneCountryCode"
+// @Param deliveryAddress.phoneNumber formData string false "phoneNumber"
+// @Param deliveryAddress.email formData string true "email"
+// @Param useBillingAddress formData bool false "useBillingAddress"
+// @Param shippingMethod formData string false "shippingMethod"
+// @Param shippingCarrier formData string false "shippingCarrier"
+// @Param locationCode formData bool string "locationCode"
+// @Router /api/v1/cart/delivery/{deliveryCode}/deliveryinfo [post]
 func (cc *CartAPIController) UpdateDeliveryInfoAction(ctx context.Context, r *web.Request) web.Result {
 	result := newResult()
 	form, success, err := cc.deliveryFormController.HandleFormAction(ctx, r)
@@ -290,6 +347,42 @@ func (cc *CartAPIController) UpdateDeliveryInfoAction(ctx context.Context, r *we
 	if err != nil {
 		result.SetError(err, "form_error")
 		return cc.responder.Data(result)
+	}
+	if form != nil {
+		result.Data = form.Data
+		result.DataValidationInfo = &form.ValidationInfo
+	}
+	cc.enrichResultWithCartInfos(ctx, &result)
+	return cc.responder.Data(result)
+}
+
+// UpdatePaymentSelectionAction to set / update the cart payment selection
+// @Summary Update/set the PaymentSelection for the current cart
+// @Tags v1 Cart ajax API
+// @Produce json
+// @Success 200 {object} CartAPIResult
+// @Failure 500 {object} CartAPIResult
+// @Param gateway query string true "name of the payment gateway - e.g. 'offline'"
+// @Param method query string true "name of the payment method - e.g. 'offlinepayment_cashondelivery'"
+// @Router /api/v1/cart/updatepaymentselection [put]
+func (cc *CartAPIController) UpdatePaymentSelectionAction(ctx context.Context, r *web.Request) web.Result {
+	result := newResult()
+	gateway, _ := r.Query1("gateway")
+	method, _ := r.Query1("method")
+
+	urlValues := make(url.Values)
+	urlValues["gateway"] = []string{gateway}
+	urlValues["method"] = []string{method}
+	newRequest := web.CreateRequest(web.RequestFromContext(ctx).Request(), web.SessionFromContext(ctx))
+	newRequest.Request().Form = urlValues
+
+	form, success, err := cc.simplePaymentFormController.HandleFormAction(ctx, newRequest)
+	result.Success = success
+	if err != nil {
+		result.SetError(err, "form_error")
+		response := cc.responder.Data(result)
+		response.Status(500)
+		return response
 	}
 	if form != nil {
 		result.Data = form.Data
@@ -311,14 +404,14 @@ func (cc *CartAPIController) enrichResultWithCartInfos(ctx context.Context, resu
 	result.CartValidationResult = &validationResult
 }
 
-//newResult - factory to get new CartApiResult (with success true)
+// newResult factory to get new CartApiResult (with success true)
 func newResult() CartAPIResult {
 	return CartAPIResult{
 		Success: true,
 	}
 }
 
-//SetErrorByCode - sets the error on the CartApiResult data and success to false
+// SetErrorByCode sets the error on the CartApiResult data and success to false
 func (r *CartAPIResult) SetErrorByCode(message string, code string) *CartAPIResult {
 	r.Success = false
 	r.Error = &resultError{
