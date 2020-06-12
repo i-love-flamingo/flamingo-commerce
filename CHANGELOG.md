@@ -19,10 +19,14 @@
   * Add new mutation to set / update one or multiple delivery addresses `Commerce_Cart_UpdateDeliveryAddresses`
   * Add new mutation to update the shipping options (carrier / method) of an existing delivery `Commerce_Cart_UpdateDeliveryShippingOptions`
   * Add new query to check if a product is restricted in terms of the allowed quantity `Commerce_Cart_QtyRestriction`
+  * Expose PaymentSelection.CartSplit() via GraphQL, add new types `Commerce_Cart_PaymentSelection_Split` and `Commerce_Cart_PaymentSelection_SplitQualifier`
   * **Breaking**: renamed the following GraphQL types
     * type `Commerce_Cart_BillingAddressFormData` is now `Commerce_Cart_AddressForm`
     * input `Commerce_BillingAddressFormInput` is now `Commerce_Cart_AddressFormInput`
-  
+    * type `Commerce_Charge` is now `Commerce_Price_Charge`
+    * type `Commerce_ChargeQualifier` is now `Commerce_Price_ChargeQualifier`
+    * input `Commerce_ChargeQualifierInput` is now `Commerce_Price_ChargeQualifierInput`
+
 **customer**
 * **Breaking**: renamed `GetId` to `GetID` in `domain.Customer` interface
 * introduced new `CustomerIdentityService` to retrieve authenticated customers by `auth.Identity` 
@@ -30,7 +34,7 @@
 * GraphQL: Add new customer queries:
   * `Commerce_Customer_Status` returns the customer's login status
   * `Commerce_Customer` returns the logged-in customer
- 
+
 **checkout**
 * Deprecate Sourcing service port in checkout (activate if required with setting `commerce.checkout.activateDeprecatedSourcing`)
 * Make cart validation before place order optional with configuration
