@@ -184,7 +184,6 @@ var doc = `{
         },
         "/api/v1/cart/billing": {
             "post": {
-                "description": "Data need to be posted as x-www-form-urlencoded. (Ajax Post of a html form). The valid fields are all fields in \"AddressForm\" type. E.g. \"firstname=max\u0026lastname=mustermann\u0026email=max@example.org\"",
                 "consumes": [
                     "application/x-www-form-urlencoded"
                 ],
@@ -443,7 +442,6 @@ var doc = `{
         },
         "/api/v1/cart/delivery/{deliveryCode}/deliveryinfo": {
             "post": {
-                "description": "Data need to be posted as x-www-form-urlencoded. (Ajax Post of a html form). Valid fields are all fields in \"AddressForm\" type. E.g. \"deliveryAddress.firstname=max\u0026deliveryAddress.lastname=mustermann\u0026deliveryAddress.mail=max@example.org\u0026useBillingAddress=1\"",
                 "consumes": [
                     "application/x-www-form-urlencoded"
                 ],
@@ -702,7 +700,6 @@ var doc = `{
         },
         "/api/v1/cart/updatepaymentselection": {
             "put": {
-                "description": "Data need to be posted as x-www-form-urlencoded. (Ajax Post of a html form). Valid fields are all fields in \"AddressForm\" type. E.g. \"deliveryAddress.firstname=max\u0026deliveryAddress.lastname=mustermann\u0026deliveryAddress.mail=max@example.org\u0026useBillingAddress=1\"",
                 "produces": [
                     "application/json"
                 ],
