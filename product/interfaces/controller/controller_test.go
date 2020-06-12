@@ -321,6 +321,65 @@ func TestViewController_variantSelection(t *testing.T) {
 				},
 			},
 		},
+		{
+			variantVariationAttributesSorting: map[string][]string{"volume": {"500", "1"}},
+			variants: []domain.Variant{
+				{
+					BasicProductData: domain.BasicProductData{
+						Attributes: domain.Attributes{"volume": {Label: "500ML", CodeLabel: "Volume", RawValue: "500", UnitCode: "MILLILITER"}},
+						StockLevel: "high",
+					},
+				},
+				{
+					BasicProductData: domain.BasicProductData{
+						Attributes: domain.Attributes{"volume": {Label: "1L", CodeLabel: "Volume", RawValue: "1", UnitCode: "LITER"}},
+						StockLevel: "high",
+					},
+				},
+			},
+			activeVariant: &domain.Variant{
+				BasicProductData: domain.BasicProductData{
+					Attributes: map[string]domain.Attribute{
+						"volume": {Label: "500ML", CodeLabel: "Volume", RawValue: "500", UnitCode: "MILLILITER"},
+					},
+				},
+			},
+
+			out: variantSelection{
+				Attributes: []viewVariantAttribute{
+					{
+						Key:       "volume",
+						Title:     "Volume",
+						CodeLabel: "Volume",
+						Options: []viewVariantOption{
+							{
+								Key:      "500",
+								Title:    "500ML",
+								Selected: true,
+								Unit:     "MILLILITER",
+							},
+							{
+								Key:   "1",
+								Title: "1L",
+								Unit:  "LITER",
+							},
+						},
+					},
+				},
+				Variants: []viewVariant{
+					{
+						Attributes: map[string]string{"volume": "500"},
+						URL:        "/?marketplacecode=&name=&variantcode=",
+						InStock:    true,
+					},
+					{
+						Attributes: map[string]string{"volume": "1"},
+						URL:        "/?marketplacecode=&name=&variantcode=",
+						InStock:    true,
+					},
+				},
+			},
+		},
 	}
 
 	for _, tc := range testCases {
@@ -396,6 +455,9 @@ func viewVariantOptionsEqual(t *testing.T, o1, o2 viewVariantOption) bool {
 		return false
 	}
 	if o1.Selected != o2.Selected {
+		return false
+	}
+	if o1.Unit != o2.Unit {
 		return false
 	}
 	if len(o1.Combinations) != len(o2.Combinations) {
