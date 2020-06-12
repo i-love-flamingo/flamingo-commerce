@@ -20,6 +20,10 @@ type rootResolver struct {
 	mutationResolver *mutationResolver
 }
 
+func (r *rootResolver) Commerce_Cart_DefaultPaymentSelection() Commerce_Cart_DefaultPaymentSelectionResolver {
+	return r.queryResolver.CommerceCartQueryResolver
+}
+
 // interface guard
 var _ ResolverRoot = new(rootResolver)
 

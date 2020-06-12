@@ -104,7 +104,6 @@ type Commerce_Cart_Taxes {
     getByType(taxType: String): Commerce_Cart_Tax!
 }
 
-
 type Commerce_Cart_Teaser {
     productCount:  Int
     ItemCount:     Int

@@ -113,11 +113,24 @@ type Commerce_Cart_Teaser {
 interface Commerce_Cart_PaymentSelection {
     gateway: String!
     totalValue: Commerce_Price!
+    cartSplit: [Commerce_Cart_PaymentSelection_Split!]
+}
+
+type Commerce_Cart_PaymentSelection_Split {
+    qualifier: Commerce_Cart_PaymentSelection_SplitQualifier!
+    charge: Commerce_Price_Charge!
+}
+
+type Commerce_Cart_PaymentSelection_SplitQualifier {
+    type: String!
+    method: String!
+    reference: String!
 }
 
 type Commerce_Cart_DefaultPaymentSelection implements Commerce_Cart_PaymentSelection {
     gateway: String!
     totalValue: Commerce_Price!
+    cartSplit: [Commerce_Cart_PaymentSelection_Split!]
 }
 
 type Commerce_CartDecoratedDelivery {
