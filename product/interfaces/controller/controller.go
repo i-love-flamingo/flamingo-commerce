@@ -51,6 +51,7 @@ type (
 		Title        string
 		Combinations map[string][]string
 		Selected     bool
+		Unit         string
 	}
 
 	viewVariant struct {
@@ -66,6 +67,7 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 	var variants variantSelection
 	combinations := make(map[string]map[string]map[string]map[string]bool)
 	titles := make(map[string]map[string]string)
+	units := make(map[string]map[string]string)
 
 	combinationsOrder := make(map[string][]string)
 
@@ -73,9 +75,11 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 		// attribute -> value -> combinableAttribute -> combinableValue -> true
 		combinations[attribute] = make(map[string]map[string]map[string]bool)
 		titles[attribute] = make(map[string]string)
+		units[attribute] = make(map[string]string)
 
 		for _, variant := range configurable.Variants {
 			titles[attribute][variant.Attributes[attribute].Value()] = variant.Attributes[attribute].Label
+			units[attribute][variant.Attributes[attribute].Value()] = variant.Attributes[attribute].UnitCode
 
 			for _, subattribute := range configurable.VariantVariationAttributes {
 				if _, ok := variant.Attributes[attribute]; !ok {
@@ -145,6 +149,7 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 				Title:        label,
 				Selected:     selected,
 				Combinations: combinations,
+				Unit:         units[code][optionCode],
 			})
 		}
 
