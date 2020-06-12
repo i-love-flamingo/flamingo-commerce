@@ -326,13 +326,13 @@ func TestViewController_variantSelection(t *testing.T) {
 			variants: []domain.Variant{
 				{
 					BasicProductData: domain.BasicProductData{
-						Attributes: domain.Attributes{"volume": {Label: "500ML", CodeLabel: "Volume", RawValue: "500", UnitCode: "MILLILITER"}},
+						Attributes: domain.Attributes{"volume": {CodeLabel: "Volume", RawValue: "500", UnitCode: "MILLILITRE"}},
 						StockLevel: "high",
 					},
 				},
 				{
 					BasicProductData: domain.BasicProductData{
-						Attributes: domain.Attributes{"volume": {Label: "1L", CodeLabel: "Volume", RawValue: "1", UnitCode: "LITER"}},
+						Attributes: domain.Attributes{"volume": {CodeLabel: "Volume", RawValue: "1", UnitCode: "LITRE"}},
 						StockLevel: "high",
 					},
 				},
@@ -340,7 +340,7 @@ func TestViewController_variantSelection(t *testing.T) {
 			activeVariant: &domain.Variant{
 				BasicProductData: domain.BasicProductData{
 					Attributes: map[string]domain.Attribute{
-						"volume": {Label: "500ML", CodeLabel: "Volume", RawValue: "500", UnitCode: "MILLILITER"},
+						"volume": {CodeLabel: "Volume", RawValue: "500", UnitCode: "MILLILITRE"},
 					},
 				},
 			},
@@ -354,14 +354,14 @@ func TestViewController_variantSelection(t *testing.T) {
 						Options: []viewVariantOption{
 							{
 								Key:      "500",
-								Title:    "500ML",
+								Title:    "500",
 								Selected: true,
-								Unit:     "MILLILITER",
+								Unit:     "MILLILITRE",
 							},
 							{
 								Key:   "1",
-								Title: "1L",
-								Unit:  "LITER",
+								Title: "1",
+								Unit:  "LITRE",
 							},
 						},
 					},
