@@ -7,6 +7,7 @@
 * GraphQL
   * Added values field of Attribute to schema
   * exposed loyalty earnings
+* Expose unit of product variant attributes
 
 **cart**
 * **Breaking**: Cart item validation now requires the decorated cart to be passed to assure that validators don't rely on a cart from any other source (e.g. session)
