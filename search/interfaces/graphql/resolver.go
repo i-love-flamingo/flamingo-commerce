@@ -6,8 +6,10 @@ import (
 	"flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/dto"
 )
 
+// CommerceSearchQueryResolver is a commerce search query resolver
 type CommerceSearchQueryResolver struct{}
 
+// SortOptions remaps search meta options to graphql structure
 func (r *CommerceSearchQueryResolver) SortOptions(ctx context.Context, searchMeta *domain.SearchMeta) ([]*dto.CommerceSearchSortOption, error) {
 	var options = make([]*dto.CommerceSearchSortOption, 0)
 	for _, option := range searchMeta.SortOptions {

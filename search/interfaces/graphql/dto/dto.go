@@ -1,6 +1,6 @@
 package dto
 
-// CommerceSearchRequest - search request structure for graphQl
+// CommerceSearchRequest - search request structure for GraphQL
 type CommerceSearchRequest struct {
 	PageSize        int
 	Page            int
@@ -16,6 +16,7 @@ type CommerceSearchKeyValueFilter struct {
 	V []string
 }
 
+// CommerceSearchSortOption – search option structure for GraphQL
 type CommerceSearchSortOption struct {
 	Label    string
 	Field    string
