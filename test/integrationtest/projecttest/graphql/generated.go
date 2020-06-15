@@ -761,6 +761,8 @@ type ComplexityRoot struct {
 	}
 
 	CommerceSearchSortOption struct {
+		Asc          func(childComplexity int) int
+		Desc         func(childComplexity int) int
 		Field        func(childComplexity int) int
 		Label        func(childComplexity int) int
 		SelectedAsc  func(childComplexity int) int
@@ -3995,6 +3997,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceSearchMeta.SortOptions(childComplexity), true
 
+	case "Commerce_Search_SortOption.asc":
+		if e.complexity.CommerceSearchSortOption.Asc == nil {
+			break
+		}
+
+		return e.complexity.CommerceSearchSortOption.Asc(childComplexity), true
+
+	case "Commerce_Search_SortOption.desc":
+		if e.complexity.CommerceSearchSortOption.Desc == nil {
+			break
+		}
+
+		return e.complexity.CommerceSearchSortOption.Desc(childComplexity), true
+
 	case "Commerce_Search_SortOption.field":
 		if e.complexity.CommerceSearchSortOption.Field == nil {
 			break
@@ -5414,8 +5430,12 @@ type Commerce_Search_Meta {
 type Commerce_Search_SortOption {
     label: String!
     field: String!
+
     selectedAsc: Boolean!
     selectedDesc: Boolean!
+
+    desc: String!
+    asc: String!
 }
 
 type Commerce_Search_Suggestion {
@@ -5434,7 +5454,8 @@ type Commerce_Search_Suggestion {
 #extend type Query {
 #    Commerce_Search(searchRequest: Commerce_Search_Request): Commerce_Search_Result
 #    Commerce_Search_LiveSearch(searchRequest: Commerce_Search_LiveSearchRequest): Commerce_Search_ResultCommerce_Search_LiveSearchRequest!
-#}`},
+#}
+`},
 	&ast.Source{Name: "graphql/schema/schema.graphql", Input: `type Query { flamingo: String }
 type Mutation { flamingo: String }
 scalar Time
@@ -17656,6 +17677,60 @@ func (ec *executionContext) _Commerce_Search_SortOption_selectedDesc(ctx context
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_Search_SortOption_desc(ctx context.Context, field graphql.CollectedField, obj *domain5.SortOption) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Search_SortOption",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Desc, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Search_SortOption_asc(ctx context.Context, field graphql.CollectedField, obj *domain5.SortOption) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Commerce_Search_SortOption",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Asc, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_Search_Suggestion_text(ctx context.Context, field graphql.CollectedField, obj *domain5.Suggestion) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -23843,6 +23918,16 @@ func (ec *executionContext) _Commerce_Search_SortOption(ctx context.Context, sel
 			}
 		case "selectedDesc":
 			out.Values[i] = ec._Commerce_Search_SortOption_selectedDesc(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "desc":
+			out.Values[i] = ec._Commerce_Search_SortOption_desc(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "asc":
+			out.Values[i] = ec._Commerce_Search_SortOption_asc(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

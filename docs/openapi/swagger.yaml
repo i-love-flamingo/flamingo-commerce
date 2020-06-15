@@ -880,7 +880,6 @@ paths:
     post:
       consumes:
       - application/x-www-form-urlencoded
-      description: Data need to be posted as x-www-form-urlencoded. (Ajax Post of a html form). The valid fields are all fields in "AddressForm" type. E.g. "firstname=max&lastname=mustermann&email=max@example.org"
       parameters:
       - description: vat
         in: formData
@@ -1049,7 +1048,6 @@ paths:
     post:
       consumes:
       - application/x-www-form-urlencoded
-      description: Data need to be posted as x-www-form-urlencoded. (Ajax Post of a html form). Valid fields are all fields in "AddressForm" type. E.g. "deliveryAddress.firstname=max&deliveryAddress.lastname=mustermann&deliveryAddress.mail=max@example.org&useBillingAddress=1"
       parameters:
       - description: the idendifier for the delivery in the cart
         in: path
@@ -1219,7 +1217,6 @@ paths:
       - v1 Cart ajax API
   /api/v1/cart/updatepaymentselection:
     put:
-      description: Data need to be posted as x-www-form-urlencoded. (Ajax Post of a html form). Valid fields are all fields in "AddressForm" type. E.g. "deliveryAddress.firstname=max&deliveryAddress.lastname=mustermann&deliveryAddress.mail=max@example.org&useBillingAddress=1"
       parameters:
       - description: name of the payment gateway - e.g. 'offline'
         in: query

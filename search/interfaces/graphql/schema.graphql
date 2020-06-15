@@ -28,8 +28,12 @@ type Commerce_Search_Meta {
 type Commerce_Search_SortOption {
     label: String!
     field: String!
+
     selectedAsc: Boolean!
     selectedDesc: Boolean!
+
+    desc: String!
+    asc: String!
 }
 
 type Commerce_Search_Suggestion {

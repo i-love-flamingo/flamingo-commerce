@@ -6,7 +6,7 @@
 * Added Rest API route to get products
 * GraphQL
   * Added values field of Attribute to schema
-  * exposed loyalty earnings
+  * exposed loyalty earnings  
 * Expose unit of product variant attributes
 
 **cart**
@@ -39,6 +39,8 @@
 **search**
 * Switch module config to CUE
 * Update `pagination` module configuration. Use `commerce.pagination` namespace for configuration now.
+* GraphQL
+  * exposed asc & desc properties of the search sort options
 
 **docs**
 * Add Swagger/OpenAPI 2.0 specification to project, using [swaggo/swag](https://github.com/swaggo/swag)
