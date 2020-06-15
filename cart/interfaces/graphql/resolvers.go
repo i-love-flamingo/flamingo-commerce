@@ -6,6 +6,7 @@ import (
 	"flamingo.me/flamingo/v3/framework/web"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
@@ -80,4 +81,21 @@ func (r *CommerceCartQueryResolver) CommerceCartQtyRestriction(ctx context.Conte
 	}
 	result := r.restrictionService.RestrictQty(ctx, session, product, cart, deliveryCode)
 	return result, nil
+}
+
+// CartSplit returns graphql specific cart split
+func (r *CommerceCartQueryResolver) CartSplit(_ context.Context, paymentSelection *cart.DefaultPaymentSelection) ([]*dto.PaymentSelectionSplit, error) {
+	if paymentSelection == nil {
+		return nil, nil
+	}
+
+	paymentSelectionSplit := make([]*dto.PaymentSelectionSplit, 0)
+	for qualifier, charge := range paymentSelection.CartSplit() {
+		paymentSelectionSplit = append(paymentSelectionSplit, &dto.PaymentSelectionSplit{
+			Qualifier: qualifier,
+			Charge:    charge,
+		})
+	}
+
+	return paymentSelectionSplit, nil
 }

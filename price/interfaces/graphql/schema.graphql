@@ -3,27 +3,27 @@ type Commerce_Price{
     currency: String!
 }
 
-type Commerce_Charge {
+type Commerce_Price_Charge {
     price: Commerce_Price!
     value: Commerce_Price!
     type: String!
     reference: String!
 }
 
-type Commerce_ChargeQualifier {
+type Commerce_Price_ChargeQualifier {
     type: String!
     reference: String!
 }
 
-input Commerce_ChargeQualifierInput {
+input Commerce_Price_ChargeQualifierInput {
     type: String!
     reference: String!
 }
 
 type Commerce_Price_Charges {
-    items: [Commerce_Charge!]
+    items: [Commerce_Price_Charge!]
     hasType(ctype: String): Boolean
-    hasChargeQualifier(qualifier: Commerce_ChargeQualifierInput!): Boolean
-    getByChargeQualifierForced(qualifier: Commerce_ChargeQualifierInput!): Commerce_Charge
-    getByTypeForced(ctype: String): Commerce_Charge
+    hasChargeQualifier(qualifier: Commerce_Price_ChargeQualifierInput!): Boolean
+    getByChargeQualifierForced(qualifier: Commerce_Price_ChargeQualifierInput!): Commerce_Price_Charge
+    getByTypeForced(ctype: String): Commerce_Price_Charge
 }

@@ -6,7 +6,7 @@ import (
 	"github.com/99designs/gqlgen/codegen/config"
 )
 
-//go:generate go run github.com/go-bindata/go-bindata/go-bindata -nometadata -o fs.go -pkg graphql schema.graphql
+//go:generate go run github.com/go-bindata/go-bindata/go-bindata -nometadata -o schema.go -pkg graphql schema.graphql
 
 // Service is the Graphql-Service of this module
 type Service struct{}
@@ -25,9 +25,9 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 				"amount": "FloatAmount",
 			},
 		},
-		"Commerce_Price_Charges":        domain.Charges{},
-		"Commerce_Charge":               domain.Charge{},
-		"Commerce_ChargeQualifier":      domain.ChargeQualifier{},
-		"Commerce_ChargeQualifierInput": domain.ChargeQualifier{},
+		"Commerce_Price_Charges":              domain.Charges{},
+		"Commerce_Price_Charge":               domain.Charge{},
+		"Commerce_Price_ChargeQualifier":      domain.ChargeQualifier{},
+		"Commerce_Price_ChargeQualifierInput": domain.ChargeQualifier{},
 	}.Models()
 }

@@ -80,5 +80,13 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		},
 		"Commerce_Cart_DeliveryShippingOption": dto.DeliveryShippingOption{},
 		"Commerce_Cart_QtyRestrictionResult":   validation.RestrictionResult{},
+		"Commerce_Cart_PaymentSelection_Split": dto.PaymentSelectionSplit{},
+		"Commerce_Cart_PaymentSelection_SplitQualifier": graphql.ModelMapEntry{
+			Type: cart.SplitQualifier{},
+			Fields: map[string]string{
+				"type":      "ChargeType",
+				"reference": "ChargeReference",
+			},
+		},
 	}.Models()
 }

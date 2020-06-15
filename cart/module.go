@@ -67,12 +67,12 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	if m.useEmailAdapter {
 		injector.Bind((*placeorder.Service)(nil)).To(email.PlaceOrderServiceAdapter{})
 	}
-	//Register Default EventPublisher
+	// Register Default EventPublisher
 	injector.Bind((*events.EventPublisher)(nil)).To(events.DefaultEventPublisher{})
 
 	injector.Bind((*application.AuthManagerInterface)(nil)).To(oauthApplication.AuthManager{})
 
-	//Event
+	// Event
 	flamingo.BindEventSubscriber(injector).To(application.EventReceiver{})
 
 	// TemplateFunction
@@ -89,7 +89,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 		injector.Bind((*application.CartCache)(nil)).To(application.CartSessionCache{})
 	}
 
-	//Register Form Data Provider
+	// Register Form Data Provider
 	injector.BindMap(new(formDomain.FormService), "commerce.cart.deliveryFormService").To(forms.DeliveryFormService{})
 	injector.BindMap(new(formDomain.FormService), "commerce.cart.billingFormService").To(forms.BillingAddressFormService{})
 	injector.BindMap(new(formDomain.FormService), "commerce.cart.personaldataFormService").To(forms.DefaultPersonalDataFormService{})
