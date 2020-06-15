@@ -15,3 +15,9 @@ type CommerceSearchKeyValueFilter struct {
 	K string
 	V []string
 }
+
+type CommerceSearchSortOption struct {
+	Label    string
+	Field    string
+	Selected bool
+}

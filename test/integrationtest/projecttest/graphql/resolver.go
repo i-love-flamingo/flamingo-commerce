@@ -8,7 +8,7 @@ import (
 	graphql4 "flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql"
 	graphql6 "flamingo.me/flamingo-commerce/v3/customer/interfaces/graphql"
 	graphql5 "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql"
-
+	graphql7 "flamingo.me/flamingo-commerce/v3/search/interfaces/graphql"
 	"flamingo.me/graphql"
 )
 
@@ -46,6 +46,11 @@ type queryResolver struct {
 	*graphql4.CommerceCheckoutQueryResolver `inject:""`
 	*graphql5.CommerceProductQueryResolver  `inject:""`
 	*graphql6.CustomerResolver              `inject:""`
+	*graphql7.CommerceSearchQueryResolver   `inject:""`
+}
+
+func (r *rootResolver) Commerce_Search_Meta() Commerce_Search_MetaResolver {
+	return r.queryResolver.CommerceSearchQueryResolver
 }
 
 // Inject dependencies

@@ -10,7 +10,8 @@ script:
   - set -e
   - fmt=$(gofmt -l .)
   - test -z $fmt || (echo "please run gofmt" ; echo $fmt ; exit 1)
-  - go run golang.org/x/lint/golint -set_exit_status $(go list ./...)
+  # gqlgen generates resolver interfaces with snake case names, the implementation of those interfaces then let golint fail
+  - go run golang.org/x/lint/golint -set_exit_status $(go list ./... | grep -v test/integrationtest/projecttest/graphql)
   - go test -race -vet=all ./...
   - go run github.com/fzipp/gocyclo -top 20 .
   - go run github.com/client9/misspell/cmd/misspell -error .
