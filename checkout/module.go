@@ -109,7 +109,7 @@ commerce: checkout: {
 		address:                 string | *"localhost:6379"
 		database:                number | *0
 	}
-
+	activateDeprecatedSourcing:		    bool | *false
 	useDeliveryForms:                 bool | *true
 	usePersonalDataForm:              bool | *false
 	skipReviewAction:                 bool | *false

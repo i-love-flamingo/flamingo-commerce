@@ -658,6 +658,7 @@ func (b *Builder) SetPurchaser(p Person) *Builder {
 }
 
 // AddDelivery - add a delivery subobject - use the DeliveryBuilder
+// todo Make sure that item id is unique over the whole cart (that is an invariant so we need to ensure that invalid cart objects cannot be build)
 func (b *Builder) AddDelivery(d Delivery) *Builder {
 	b.init()
 	b.cartInBuilding.Deliveries = append(b.cartInBuilding.Deliveries, d)

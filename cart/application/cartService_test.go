@@ -764,10 +764,10 @@ func (m *MockGuestCartServiceWithModifyBehaviour) GetModifyBehaviour(context.Con
 	cart := cartDomain.Cart{
 		ID: "mock_guest_cart",
 		Deliveries: []cartDomain.Delivery{
-			cartDomain.Delivery{
+			{
 				DeliveryInfo: cartDomain.DeliveryInfo{Code: "default_delivery_code"},
 				Cartitems: []cartDomain.Item{
-					cartDomain.Item{
+					{
 						ID:  "mock_item",
 						Qty: 7,
 					},
@@ -814,10 +814,10 @@ func (m *MockCartWithItemCache) GetCart(context.Context, *web.Session, cartAppli
 	m.CachedCart = cartDomain.Cart{
 		ID: "mock_guest_cart",
 		Deliveries: []cartDomain.Delivery{
-			cartDomain.Delivery{
+			{
 				DeliveryInfo: cartDomain.DeliveryInfo{Code: "default_delivery_code"},
 				Cartitems: []cartDomain.Item{
-					cartDomain.Item{
+					{
 						ID:  "mock_item",
 						Qty: 7,
 					},
@@ -860,10 +860,10 @@ func (m *MockCartWithItemCacheWithAdditionalData) GetCart(context.Context, *web.
 	m.CachedCart = cartDomain.Cart{
 		ID: "mock_guest_cart",
 		Deliveries: []cartDomain.Delivery{
-			cartDomain.Delivery{
+			{
 				DeliveryInfo: cartDomain.DeliveryInfo{Code: "default_delivery_code"},
 				Cartitems: []cartDomain.Item{
-					cartDomain.Item{
+					{
 						ID:  "mock_item",
 						Qty: 7,
 					},
@@ -910,7 +910,7 @@ func (r *MockRestrictor) Name() string {
 	return fmt.Sprintf("MockRestrictor")
 }
 
-func (r *MockRestrictor) Restrict(ctx context.Context, product productDomain.BasicProduct, currentCart *cartDomain.Cart, deliveryCode string) *validation.RestrictionResult {
+func (r *MockRestrictor) Restrict(ctx context.Context, session *web.Session, product productDomain.BasicProduct, currentCart *cartDomain.Cart, deliveryCode string) *validation.RestrictionResult {
 	return &validation.RestrictionResult{
 		IsRestricted:        r.IsRestricted,
 		MaxAllowed:          r.MaxQty,
