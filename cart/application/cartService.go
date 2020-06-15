@@ -291,7 +291,7 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 		return err
 	}
 
-	err = cs.checkProductQtyRestrictions(ctx, product, cart, qty-qtyBefore, deliveryCode, itemID)
+	err = cs.checkProductQtyRestrictions(ctx, session, product, cart, qty-qtyBefore, deliveryCode, itemID)
 	if err != nil {
 		cs.logger.WithContext(ctx).WithField("subCategory", "UpdateItemQty").Info(err)
 
@@ -702,7 +702,7 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 		return nil, err
 	}
 
-	err = cs.checkProductQtyRestrictions(ctx, product, cart, addRequest.Qty, deliveryCode, "")
+	err = cs.checkProductQtyRestrictions(ctx, session, product, cart, addRequest.Qty, deliveryCode, "")
 	if err != nil {
 		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "AddProduct").Info(err)
 
@@ -880,8 +880,8 @@ func (cs *CartService) checkProductForAddRequest(ctx context.Context, session *w
 	return addRequest, product, nil
 }
 
-func (cs *CartService) checkProductQtyRestrictions(ctx context.Context, product productDomain.BasicProduct, cart *cartDomain.Cart, qtyToCheck int, deliveryCode string, itemID string) error {
-	restrictionResult := cs.restrictionService.RestrictQty(ctx, product, cart, deliveryCode)
+func (cs *CartService) checkProductQtyRestrictions(ctx context.Context, sess *web.Session, product productDomain.BasicProduct, cart *cartDomain.Cart, qtyToCheck int, deliveryCode string, itemID string) error {
+	restrictionResult := cs.restrictionService.RestrictQty(ctx, sess, product, cart, deliveryCode)
 
 	if restrictionResult.IsRestricted {
 		if qtyToCheck > restrictionResult.RemainingDifference {
@@ -1152,7 +1152,7 @@ func (cs *CartService) generateRestrictedQtyAdjustments(ctx context.Context, ses
 				return nil, err
 			}
 
-			restrictionResult := cs.restrictionService.RestrictQty(ctx, product, cart, delivery.DeliveryInfo.Code)
+			restrictionResult := cs.restrictionService.RestrictQty(ctx, session, product, cart, delivery.DeliveryInfo.Code)
 			if restrictionResult.RemainingDifference >= 0 {
 				continue
 			}

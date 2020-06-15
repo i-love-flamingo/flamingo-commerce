@@ -25,13 +25,14 @@ import (
 type (
 	// OrderService defines the order service
 	OrderService struct {
-		sourcingEngine         *domain.SourcingEngine
-		logger                 flamingo.Logger
-		cartService            *application.CartService
-		cartReceiverService    *application.CartReceiverService
-		deliveryInfoBuilder    cart.DeliveryInfoBuilder
-		webCartPaymentGateways map[string]interfaces.WebCartPaymentGateway
-		decoratedCartFactory   *decorator.DecoratedCartFactory
+		sourcingEngine           *domain.SourcingEngine
+		logger                   flamingo.Logger
+		cartService              *application.CartService
+		cartReceiverService      *application.CartReceiverService
+		deliveryInfoBuilder      cart.DeliveryInfoBuilder
+		webCartPaymentGateways   map[string]interfaces.WebCartPaymentGateway
+		decoratedCartFactory     *decorator.DecoratedCartFactory
+		deprecatedSourcingActive bool
 	}
 
 	// PlaceOrderInfo struct defines the data of payments on placed orders
@@ -121,6 +122,9 @@ func (os *OrderService) Inject(
 	DeliveryInfoBuilder cart.DeliveryInfoBuilder,
 	webCartPaymentGatewayProvider interfaces.WebCartPaymentGatewayProvider,
 	decoratedCartFactory *decorator.DecoratedCartFactory,
+	cfg *struct {
+		DeprecatedSourcingActive bool `inject:"config:commerce.checkout.activateDeprecatedSourcing,optional"`
+	},
 ) {
 	os.sourcingEngine = SourcingEngine
 	os.logger = logger.WithField(flamingo.LogKeyCategory, "checkout.OrderService").WithField(flamingo.LogKeyModule, "checkout")
@@ -129,10 +133,17 @@ func (os *OrderService) Inject(
 	os.webCartPaymentGateways = webCartPaymentGatewayProvider()
 	os.deliveryInfoBuilder = DeliveryInfoBuilder
 	os.decoratedCartFactory = decoratedCartFactory
+	if cfg != nil {
+		os.deprecatedSourcingActive = cfg.DeprecatedSourcingActive
+	}
 }
 
 // SetSources sets sources for sessions carts items
+// Deprecated: Sourcing moved to new module see sourcing module
 func (os *OrderService) SetSources(ctx context.Context, session *web.Session) error {
+	if !os.deprecatedSourcingActive {
+		return nil
+	}
 	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(ctx, session)
 	if err != nil {
 		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error ", err)
@@ -151,6 +162,7 @@ func (os *OrderService) SetSources(ctx context.Context, session *web.Session) er
 }
 
 // CurrentCartSaveInfos saves additional information on current cart
+// Deprecated: method is not called within flamingo-commerce and method does not support multiple delivery addresses
 func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.Session, billingAddress *cart.Address, shippingAddress *cart.Address, purchaser *cart.Person, additionalData *cart.AdditionalData) error {
 	os.logger.WithContext(ctx).Debug("CurrentCartSaveInfos call billingAddress:%v shippingAddress:%v payment:%v", billingAddress, shippingAddress)
 

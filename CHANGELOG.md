@@ -10,7 +10,10 @@
 * Expose unit of product variant attributes
 
 **cart**
-* **Breaking**: Cart item validation now requires the decorated cart to be passed to assure that validators don't rely on a cart from any other source (e.g. session)
+* **Breaking**
+  * Cart item validation now requires the decorated cart to be passed to assure that validators don't rely on a cart from any other source (e.g. session)
+  * Session added as parameter to interface method `MaxQuantityRestrictor.Restrict`
+  * Session added as parameter to `RestrictionService.RestrictQty`
 * Switch module config to CUE
 * GraphQL
   * Add new mutation to set / update one or multiple delivery addresses `Commerce_Cart_UpdateDeliveryAddresses`
@@ -19,7 +22,7 @@
   * **Breaking**: renamed the following GraphQL types
     * type `Commerce_Cart_BillingAddressFormData` is now `Commerce_Cart_AddressForm`
     * input `Commerce_BillingAddressFormInput` is now `Commerce_Cart_AddressFormInput`
-    
+  
 **customer**
 * **Breaking**: renamed `GetId` to `GetID` in `domain.Customer` interface
 * introduced new `CustomerIdentityService` to retrieve authenticated customers by `auth.Identity` 
@@ -29,6 +32,8 @@
   * `Commerce_Customer` returns the logged-in customer
  
 **checkout**
+* Deprecate Sourcing service port in checkout (activate if required with setting `commerce.checkout.activateDeprecatedSourcing`)
+* Make cart validation before place order optional with configuration
 * State Machine
   * Add additional metrics to monitor place order flow
     * flamingo_commerce_checkout_placeorder_starts
@@ -42,6 +47,8 @@
 
 **docs**
 * Add Swagger/OpenAPI 2.0 specification to project, using [swaggo/swag](https://github.com/swaggo/swag)
+**sourcing**
+* Add new "sourcing" module that can be used standalone. See sourcing/Readme.md for more details
 
 ## v3.2.0
 **w3cdatalayer**

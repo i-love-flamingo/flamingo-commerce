@@ -46,7 +46,7 @@ func TestOrderService_LastPlacedOrder(t *testing.T) {
 			}
 
 			os := &application.OrderService{}
-			os.Inject(nil, flamingo.NullLogger{}, nil, nil, nil, fakeGatewayProvider, nil)
+			os.Inject(nil, flamingo.NullLogger{}, nil, nil, nil, fakeGatewayProvider, nil, nil)
 			got, err := os.LastPlacedOrder(tt.args.ctx)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("LastPlacedOrder() error = %v, wantErr %v", err, tt.wantErr)
@@ -65,7 +65,7 @@ func TestOrderService_ClearLastPlacedOrder(t *testing.T) {
 	}
 
 	os := &application.OrderService{}
-	os.Inject(nil, flamingo.NullLogger{}, nil, nil, nil, fakeGatewayProvider, nil)
+	os.Inject(nil, flamingo.NullLogger{}, nil, nil, nil, fakeGatewayProvider, nil, nil)
 
 	want := &application.PlaceOrderInfo{
 		PaymentInfos: nil,

@@ -18,13 +18,14 @@ import (
 
 type (
 	// SourcingService helps in retrieving item sources
+	// Deprecated: Sourcing moved to separate module
 	SourcingService interface {
 		//GetSourceID  returns one source location code where the product should be sourced
-		//@todo will be Depricated in future in favor of SourcingServiceDetail interface
+		//@todo will be Deprecated in future in favor of SourcingServiceDetail interface
 		GetSourceID(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart, deliveryCode string, item *decorator.DecoratedCartItem) (string, error)
 	}
 	// SourcingServiceDetail additional interface to return
-	// @todo - the methods in the interface will replace the methods in interface above (SourcingServiceDetail will be deleted then)
+	// Deprecated: Sourcing moved to separate module
 	SourcingServiceDetail interface {
 		//GetSourcesForItem returns Sources for the given item in the cart
 		GetSourcesForItem(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart, deliveryCode string, item *decorator.DecoratedCartItem) (Sources, error)
@@ -33,9 +34,11 @@ type (
 	}
 
 	// Sources is the result value object containing all sources (for the request item or product)
+	// Deprecated: Sourcing moved to separate module
 	Sources []Source
 
 	// Source represents the Sourcing info
+	// Deprecated: Sourcing moved to separate module
 	Source struct {
 		// LocationCode identifies the warehouse or stock location
 		LocationCode string
@@ -46,6 +49,7 @@ type (
 	}
 
 	// SourcingEngine computes item sources
+	// Deprecated: Sourcing moved to separate module
 	SourcingEngine struct {
 		SourcingService SourcingService          `inject:",optional"`
 		Logger          flamingo.Logger          `inject:""`
