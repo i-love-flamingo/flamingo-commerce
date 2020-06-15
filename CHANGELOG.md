@@ -48,6 +48,8 @@
 **search**
 * Switch module config to CUE
 * Update `pagination` module configuration. Use `commerce.pagination` namespace for configuration now.
+* GraphQL
+  * **Breaking** simplified Commerce_Search_SortOption type
 
 **docs**
 * Add Swagger/OpenAPI 2.0 specification to project, using [swaggo/swag](https://github.com/swaggo/swag)

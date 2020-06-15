@@ -28,8 +28,7 @@ type Commerce_Search_Meta {
 type Commerce_Search_SortOption {
     label: String!
     field: String!
-    selectedAsc: Boolean!
-    selectedDesc: Boolean!
+    selected: Boolean!
 }
 
 type Commerce_Search_Suggestion {
