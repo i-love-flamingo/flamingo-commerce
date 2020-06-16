@@ -10,7 +10,6 @@ import (
 
 func TestModule_Configure(t *testing.T) {
 	if err := config.TryModules(config.Map{
-		"flamingo.session.backend":      "memory",
 		"core.auth.web.debugController": false,
 	}, new(cart.Module)); err != nil {
 		t.Error(err)
