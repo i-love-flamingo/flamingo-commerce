@@ -26,6 +26,6 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		"Commerce_Search_KeyValueFilter": dto.CommerceSearchKeyValueFilter{},
 		"Commerce_Search_Suggestion":     domain.Suggestion{},
 		"Commerce_Search_Result":         application.SearchResult{},
-		"Commerce_Search_SortOption":     domain.SortOption{},
+		"Commerce_Search_SortOption":     dto.CommerceSearchSortOption{},
 	}.Models()
 }
