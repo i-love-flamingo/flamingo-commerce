@@ -323,7 +323,7 @@ func (cc *CheckoutController) SuccessAction(ctx context.Context, r *web.Request)
 }
 
 // ExpiredAction handles the expired cart action
-func (cc *CheckoutController) ExpiredAction(_ context.Context, _ *web.Request) web.Result {
+func (cc *CheckoutController) ExpiredAction(context.Context, *web.Request) web.Result {
 	if cc.showEmptyCartPageIfNoItems {
 		return cc.responder.Render("checkout/emptycart", EmptyCartInfo{
 			CartExpired: true,
