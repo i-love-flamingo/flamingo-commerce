@@ -63,16 +63,21 @@ commerce:
     defaultPageSize: 8
     showAroundActivePageAmount: 2
   cart:
-    defaultDeliveryCode: delivery
+    personalDataForm:
+      additionalFormFields:
+        - "place-order-error"
+        - "reserve-order-id-error"
+    defaultDeliveryCode: "delivery"
     enableCartCache: false
     useInMemoryCartServiceAdapters: true
     emailAdapter:
-      emailAddress: test@test.de
+      emailAddress: "test@test.de"
     useEmailPlaceOrderAdapter: false
     inMemoryCartServiceAdapter:
       defaultTaxRate: 19
   checkout:
     showEmptyCartPageIfNoItems: true
+    usePersonalDataForm: true
   product:
     fakeservice:
       enabled: true

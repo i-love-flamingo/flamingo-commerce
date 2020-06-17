@@ -13,8 +13,12 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 )
 
-// AttributeErrorKey is used to store a forced test error to the cart's additional attributes
-const AttributeErrorKey = "test-error"
+const (
+	// CustomAttributesKeyPlaceOrderError can be used to force an error during place order
+	CustomAttributesKeyPlaceOrderError = "place-order-error"
+	// CustomAttributesKeyReserveOrderIDError can be used to force an error during reserve order id
+	CustomAttributesKeyReserveOrderIDError = "reserve-order-id-error"
+)
 
 type (
 	// FakeAdapter provides fake place order adapter
@@ -38,19 +42,19 @@ func (f *FakeAdapter) Inject() *FakeAdapter {
 }
 
 // PlaceGuestCart places a guest cart order
-func (f *FakeAdapter) PlaceGuestCart(ctx context.Context, cart *cartDomain.Cart, payment *placeorder.Payment) (placeorder.PlacedOrderInfos, error) {
+func (f *FakeAdapter) PlaceGuestCart(_ context.Context, cart *cartDomain.Cart, _ *placeorder.Payment) (placeorder.PlacedOrderInfos, error) {
 	return f.placeCart(cart)
 }
 
 // PlaceCustomerCart places a customer cart
-func (f *FakeAdapter) PlaceCustomerCart(ctx context.Context, auth authDomain.Auth, cart *cartDomain.Cart, payment *placeorder.Payment) (placeorder.PlacedOrderInfos, error) {
+func (f *FakeAdapter) PlaceCustomerCart(_ context.Context, _ authDomain.Auth, cart *cartDomain.Cart, _ *placeorder.Payment) (placeorder.PlacedOrderInfos, error) {
 	return f.placeCart(cart)
 }
 
 func (f *FakeAdapter) placeCart(cart *cartDomain.Cart) (placeorder.PlacedOrderInfos, error) {
 	f.locker.Lock()
 	defer f.locker.Unlock()
-	forcedError := cart.AdditionalData.CustomAttributes[AttributeErrorKey]
+	forcedError := cart.AdditionalData.CustomAttributes[CustomAttributesKeyPlaceOrderError]
 	if forcedError != "" {
 		return nil, errors.New(forcedError)
 	}
@@ -75,7 +79,7 @@ func (f *FakeAdapter) placeCart(cart *cartDomain.Cart) (placeorder.PlacedOrderIn
 
 // ReserveOrderID returns the reserved order id
 func (f *FakeAdapter) ReserveOrderID(_ context.Context, cart *cartDomain.Cart) (string, error) {
-	forcedError := cart.AdditionalData.CustomAttributes[AttributeErrorKey]
+	forcedError := cart.AdditionalData.CustomAttributes[CustomAttributesKeyReserveOrderIDError]
 	if forcedError != "" {
 		return "", errors.New(forcedError)
 	}
@@ -83,12 +87,12 @@ func (f *FakeAdapter) ReserveOrderID(_ context.Context, cart *cartDomain.Cart) (
 }
 
 // CancelGuestOrder cancels a guest order
-func (f *FakeAdapter) CancelGuestOrder(ctx context.Context, orderInfos placeorder.PlacedOrderInfos) error {
+func (f *FakeAdapter) CancelGuestOrder(_ context.Context, orderInfos placeorder.PlacedOrderInfos) error {
 	return f.cancelOrder(orderInfos)
 }
 
 // CancelCustomerOrder cancels a customer order
-func (f *FakeAdapter) CancelCustomerOrder(ctx context.Context, orderInfos placeorder.PlacedOrderInfos, auth authDomain.Auth) error {
+func (f *FakeAdapter) CancelCustomerOrder(_ context.Context, orderInfos placeorder.PlacedOrderInfos, _ authDomain.Auth) error {
 	return f.cancelOrder(orderInfos)
 }
 

@@ -222,7 +222,7 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.S
 }
 
 // GetPaymentGateway tries to get the supplied payment gateway by code from the registered payment gateways
-func (os *OrderService) GetPaymentGateway(ctx context.Context, paymentGatewayCode string) (interfaces.WebCartPaymentGateway, error) {
+func (os *OrderService) GetPaymentGateway(_ context.Context, paymentGatewayCode string) (interfaces.WebCartPaymentGateway, error) {
 	gateway, ok := os.webCartPaymentGateways[paymentGatewayCode]
 	if !ok {
 		return nil, errors.New("Payment gateway " + paymentGatewayCode + " not found")
@@ -232,7 +232,7 @@ func (os *OrderService) GetPaymentGateway(ctx context.Context, paymentGatewayCod
 }
 
 // GetAvailablePaymentGateways returns the list of registered WebCartPaymentGateway
-func (os *OrderService) GetAvailablePaymentGateways(ctx context.Context) map[string]interfaces.WebCartPaymentGateway {
+func (os *OrderService) GetAvailablePaymentGateways(_ context.Context) map[string]interfaces.WebCartPaymentGateway {
 	return os.webCartPaymentGateways
 }
 
@@ -481,7 +481,7 @@ func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, dec
 	if err != nil {
 		// record placeOrderFailCount metric
 		stats.Record(ctx, placeOrderFailCount.M(1))
-		os.logger.WithContext(ctx).Error("Error during place Order:" + err.Error())
+		os.logger.WithContext(ctx).Error("Error during place Order: " + err.Error())
 
 		return nil, err
 	}
@@ -493,7 +493,7 @@ func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, dec
 
 	err = gateway.ConfirmResult(ctx, &decoratedCart.Cart, cartPayment)
 	if err != nil {
-		os.logger.WithContext(ctx).Error("Error during gateway.ConfirmResult:" + err.Error())
+		os.logger.WithContext(ctx).Error("Error during gateway.ConfirmResult: " + err.Error())
 
 		return nil, err
 	}
@@ -504,7 +504,7 @@ func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, dec
 	return placeOrderInfo, nil
 }
 
-func (os *OrderService) preparePlaceOrderInfo(ctx context.Context, currentCart cart.Cart, placedOrderInfos placeorder.PlacedOrderInfos, cartPayment placeorder.Payment) *PlaceOrderInfo {
+func (os *OrderService) preparePlaceOrderInfo(_ context.Context, currentCart cart.Cart, placedOrderInfos placeorder.PlacedOrderInfos, cartPayment placeorder.Payment) *PlaceOrderInfo {
 	email := os.GetContactMail(currentCart)
 
 	placeOrderInfo := &PlaceOrderInfo{
