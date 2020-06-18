@@ -44,6 +44,9 @@
     * flamingo_commerce_checkout_placeorder_state_run_count
     * flamingo_commerce_checkout_placeorder_state_failed_count
 * Expose placeorder endpoints also via rest
+* In case of a payment error the checkoutcontroller will no redirect to the review form instead of just rendering it.
+* In case of an error during place order, the checkoutcontroller will no redirect to the checkout step instead of just rendering it.
+* In both cases the error will be stored in the session and restored from the corresponding action. 
     
 **search**
 * Switch module config to CUE
