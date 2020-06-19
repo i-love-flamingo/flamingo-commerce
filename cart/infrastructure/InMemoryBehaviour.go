@@ -357,7 +357,10 @@ func (cob *InMemoryBehaviour) CleanDelivery(ctx context.Context, cart *domaincar
 // UpdatePurchaser sets the purchaser data and the additional data on the cart
 func (cob *InMemoryBehaviour) UpdatePurchaser(_ context.Context, cart *domaincart.Cart, purchaser *domaincart.Person, additionalData *domaincart.AdditionalData) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	cart.Purchaser = purchaser
-	cart.AdditionalData = *additionalData
+
+	if additionalData != nil {
+		cart.AdditionalData.CustomAttributes = additionalData.CustomAttributes
+	}
 
 	err := cob.cartStorage.StoreCart(cart)
 	if err != nil {
