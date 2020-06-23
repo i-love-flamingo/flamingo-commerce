@@ -9,6 +9,8 @@ import (
 	"flamingo.me/flamingo-commerce/v3/payment/domain"
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest"
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/modules/payment"
+	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/modules/placeorder"
+
 	"gotest.tools/assert"
 )
 
@@ -196,5 +198,92 @@ func Test_Checkout_ReviewActionAndPlaceOrderAction(t *testing.T) {
 
 		assert.Equal(t, routeCheckoutSuccess, response.Raw().Request.URL.RequestURI())
 		response.JSON().Object().Value("PaymentInfos").Null()
+	})
+
+	t.Run("error during payment should lead to checkout page", func(t *testing.T) {
+		e := integrationtest.NewHTTPExpect(t, "http://"+FlamingoURL)
+		// prepare cart
+		CartAddProduct(t, e, "fake_simple", 5, "", "inflight")
+
+		// submit checkout form
+		response := SubmitCheckoutForm(t, e, map[string]interface{}{
+			"billingAddress": map[string]interface{}{
+				"firstname": "firstname",
+				"lastname":  "lastname",
+				"email":     "test@test.com",
+			},
+			"deliveries": map[string]interface{}{
+				"inflight": map[string]interface{}{
+					"deliveryAddress": map[string]interface{}{
+						"firstname": "firstname",
+						"lastname":  "lastname",
+						"email":     "test@test.com",
+					},
+				},
+			},
+			"payment": map[string]interface{}{
+				"gateway": payment.FakePaymentGateway,
+				"method":  domain.PaymentFlowStatusFailed,
+			},
+		})
+
+		assert.Equal(t, routeCheckoutReview, response.Raw().Request.URL.RequestURI())
+
+		// submit review form
+		response = SubmitReviewForm(t, e, map[string]interface{}{
+			"proceed":            "1",
+			"termsAndConditions": "1",
+			"privacyPolicy":      "1",
+		})
+
+		assert.Equal(t, routeCheckoutSubmit, response.Raw().Request.URL.RequestURI())
+		response.JSON().Object().Value("ErrorInfos").Object().Value("HasPaymentError").Boolean().True()
+		response.JSON().Object().Value("ErrorInfos").Object().Value("HasError").Boolean().True()
+		response.JSON().Object().Value("ErrorInfos").Object().Value("ErrorMessage").String().Equal(domain.PaymentErrorCodeFailed)
+	})
+
+	t.Run("error during place order should lead to checkout page", func(t *testing.T) {
+		e := integrationtest.NewHTTPExpect(t, "http://"+FlamingoURL)
+		// prepare cart
+		CartAddProduct(t, e, "fake_simple", 5, "", "inflight")
+
+		// submit checkout form
+		response := SubmitCheckoutForm(t, e, map[string]interface{}{
+			"billingAddress": map[string]interface{}{
+				"firstname": "firstname",
+				"lastname":  "lastname",
+				"email":     "test@test.com",
+			},
+			"personalData": map[string]interface{}{
+				placeorder.CustomAttributesKeyPlaceOrderError: "generic error during place order",
+			},
+			"deliveries": map[string]interface{}{
+				"inflight": map[string]interface{}{
+					"deliveryAddress": map[string]interface{}{
+						"firstname": "firstname",
+						"lastname":  "lastname",
+						"email":     "test@test.com",
+					},
+				},
+			},
+			"payment": map[string]interface{}{
+				"gateway": payment.FakePaymentGateway,
+				"method":  domain.PaymentFlowStatusCompleted,
+			},
+		})
+
+		assert.Equal(t, routeCheckoutReview, response.Raw().Request.URL.RequestURI())
+
+		// submit review form
+		response = SubmitReviewForm(t, e, map[string]interface{}{
+			"proceed":            "1",
+			"termsAndConditions": "1",
+			"privacyPolicy":      "1",
+		})
+
+		assert.Equal(t, routeCheckoutSubmit, response.Raw().Request.URL.RequestURI())
+		response.JSON().Object().Value("ErrorInfos").Object().Value("HasError").Boolean().True()
+		response.JSON().Object().Value("ErrorInfos").Object().Value("HasPaymentError").Boolean().False()
+		response.JSON().Object().Value("ErrorInfos").Object().Value("ErrorMessage").String().Equal("generic error during place order")
 	})
 }

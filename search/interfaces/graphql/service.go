@@ -8,7 +8,7 @@ import (
 	"github.com/99designs/gqlgen/codegen/config"
 )
 
-//go:generate go run github.com/go-bindata/go-bindata/go-bindata -nometadata -o fs.go -pkg graphql schema.graphql
+//go:generate go run github.com/go-bindata/go-bindata/go-bindata -nometadata -o graphql.go -pkg graphql schema.graphql
 
 // Service is the Graphql-Service of this module
 type Service struct{}

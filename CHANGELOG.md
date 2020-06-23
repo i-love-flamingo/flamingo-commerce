@@ -44,6 +44,10 @@
     * flamingo_commerce_checkout_placeorder_state_run_count
     * flamingo_commerce_checkout_placeorder_state_failed_count
 * Expose placeorder endpoints also via rest
+* Checkout controller, update to the error handling:
+  * In case of a payment error the checkout controller will now redirect to the checkout/review action instead of just rendering the matching template on the current route.
+  * Same applies in case of an error during place order, the checkout controller will now redirect to the checkout step.
+  * In both cases the error will be stored as a flash message in the session before redirecting, the target action will then receive it and pass it to the template view data. 
     
 **search**
 * Switch module config to CUE

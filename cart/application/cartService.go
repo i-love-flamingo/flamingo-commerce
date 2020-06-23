@@ -647,7 +647,7 @@ func (cs *CartService) DeleteDelivery(ctx context.Context, session *web.Session,
 }
 
 // BuildAddRequest Helper to build
-func (cs *CartService) BuildAddRequest(ctx context.Context, marketplaceCode string, variantMarketplaceCode string, qty int, additionalData map[string]string) cartDomain.AddRequest {
+func (cs *CartService) BuildAddRequest(_ context.Context, marketplaceCode string, variantMarketplaceCode string, qty int, additionalData map[string]string) cartDomain.AddRequest {
 	if qty < 0 {
 		qty = 0
 	}
@@ -844,7 +844,7 @@ func (cs *CartService) executeVoucherBehaviour(ctx context.Context, session *web
 
 func (cs *CartService) handleCartNotFound(session *web.Session, err error) {
 	if err == cartDomain.ErrCartNotFound {
-		cs.DeleteSavedSessionGuestCartID(session)
+		_ = cs.DeleteSavedSessionGuestCartID(session)
 	}
 }
 
@@ -915,7 +915,7 @@ func (cs *CartService) updateCartInCacheIfCacheIsEnabled(ctx context.Context, se
 }
 
 // DeleteCartInCache removes the cart from cache
-func (cs *CartService) DeleteCartInCache(ctx context.Context, session *web.Session, cart *cartDomain.Cart) {
+func (cs *CartService) DeleteCartInCache(ctx context.Context, session *web.Session, _ *cartDomain.Cart) {
 	if cs.cartCache != nil {
 		id, err := cs.cartCache.BuildIdentifier(ctx, session)
 		if err != nil {
@@ -1005,12 +1005,11 @@ func (cs *CartService) placeOrder(ctx context.Context, session *web.Session, car
 
 	if errPlaceOrder != nil {
 		cs.handleCartNotFound(session, errPlaceOrder)
-		cs.logger.WithContext(ctx).Error(errPlaceOrder)
 		return nil, errPlaceOrder
 	}
 
 	cs.eventPublisher.PublishOrderPlacedEvent(ctx, cart, placeOrderInfos)
-	cs.DeleteSavedSessionGuestCartID(session)
+	_ = cs.DeleteSavedSessionGuestCartID(session)
 	cs.DeleteCartInCache(ctx, session, cart)
 
 	return placeOrderInfos, nil
@@ -1173,7 +1172,7 @@ func (cs *CartService) generateRestrictedQtyAdjustments(ctx context.Context, ses
 	return result, nil
 }
 
-func (cs *CartService) getProductWithActiveVariantIfProductIsConfigurable(ctx context.Context, product productDomain.BasicProduct, variantMarketplaceCode string) (productDomain.BasicProduct, error) {
+func (cs *CartService) getProductWithActiveVariantIfProductIsConfigurable(_ context.Context, product productDomain.BasicProduct, variantMarketplaceCode string) (productDomain.BasicProduct, error) {
 	var err error
 	if product.Type() != productDomain.TypeConfigurable {
 		return product, nil
