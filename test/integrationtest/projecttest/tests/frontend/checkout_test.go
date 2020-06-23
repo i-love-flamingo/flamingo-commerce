@@ -238,6 +238,8 @@ func Test_Checkout_ReviewActionAndPlaceOrderAction(t *testing.T) {
 
 		assert.Equal(t, routeCheckoutSubmit, response.Raw().Request.URL.RequestURI())
 		response.JSON().Object().Value("ErrorInfos").Object().Value("HasPaymentError").Boolean().True()
+		response.JSON().Object().Value("ErrorInfos").Object().Value("HasError").Boolean().True()
+		response.JSON().Object().Value("ErrorInfos").Object().Value("ErrorMessage").String().Equal(domain.PaymentErrorCodeFailed)
 	})
 
 	t.Run("error during place order should lead to checkout page", func(t *testing.T) {

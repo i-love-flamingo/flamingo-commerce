@@ -378,17 +378,14 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 
 	if r.Request().Method != http.MethodPost {
 		// Form not Submitted:
-		flashErrors := r.Session().Flashes(CheckoutErrorFlashKey)
-		if len(flashErrors) == 1 {
-			flashViewErrorInfos, ok := flashErrors[0].(ViewErrorInfos)
-			if ok {
-				viewData.ErrorInfos = flashViewErrorInfos
-			}
+		flashViewErrorInfos, found := cc.getViewErrorsFromSessionFlash(r)
+		if found {
+			viewData.ErrorInfos = *flashViewErrorInfos
 		}
 
 		form, err := cc.checkoutFormController.GetUnsubmittedForm(ctx, r)
 		if err != nil {
-			if len(flashErrors) == 0 {
+			if !found {
 				viewData.ErrorInfos = getViewErrorInfo(err)
 			}
 			return cc.responder.Render(template, viewData).SetNoCache()
@@ -549,13 +546,10 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 		DecoratedCart: *decoratedCart,
 	}
 
-	flashErrors := r.Session().Flashes(CheckoutErrorFlashKey)
-	if len(flashErrors) == 1 {
-		flashViewErrorInfos, ok := flashErrors[0].(ViewErrorInfos)
-		if ok {
-			viewData.ErrorInfos = flashViewErrorInfos
-			return cc.responder.Render("checkout/review", viewData).SetNoCache()
-		}
+	flashViewErrorInfos, found := cc.getViewErrorsFromSessionFlash(r)
+	if found {
+		viewData.ErrorInfos = *flashViewErrorInfos
+		return cc.responder.Render("checkout/review", viewData).SetNoCache()
 	}
 
 	// check for terms and conditions and privacy policy
@@ -794,4 +788,17 @@ func (cc *CheckoutController) checkTermsAndPrivacyPolicy(r *web.Request) (bool, 
 	}
 
 	return canProceed, errors.New(strings.Join(errorMessages, ", "))
+}
+
+// getViewErrorsFromSessionFlash check if session flash data contains checkout errors, if so return them and remove the flash message from the session
+func (cc *CheckoutController) getViewErrorsFromSessionFlash(r *web.Request) (*ViewErrorInfos, bool) {
+	flashErrors := r.Session().Flashes(CheckoutErrorFlashKey)
+	if len(flashErrors) == 1 {
+		flashViewErrorInfos, ok := flashErrors[0].(ViewErrorInfos)
+		if ok {
+			return &flashViewErrorInfos, true
+		}
+	}
+
+	return nil, false
 }
