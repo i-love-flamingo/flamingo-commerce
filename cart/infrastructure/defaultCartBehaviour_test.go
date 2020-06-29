@@ -10,7 +10,6 @@ import (
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/go-test/deep"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestInMemoryBehaviour_CleanCart(t *testing.T) {
@@ -62,7 +61,7 @@ func TestInMemoryBehaviour_CleanCart(t *testing.T) {
 				},
 			}
 
-			if err := cob.cartStorage.StoreCart(cart); err != nil {
+			if err := cob.cartStorage.StoreCart(context.Background(), cart); err != nil {
 				t.Fatalf("cart could not be initialized")
 			}
 
@@ -177,7 +176,7 @@ func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
 				nil,
 				nil,
 			)
-			if err := cob.cartStorage.StoreCart(tt.args.cart); err != nil {
+			if err := cob.cartStorage.StoreCart(context.Background(), tt.args.cart); err != nil {
 				t.Fatalf("cart could not be initialized")
 			}
 
@@ -341,7 +340,7 @@ func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 				nil,
 			)
 
-			if err := cob.cartStorage.StoreCart(tt.args.cart); err != nil {
+			if err := cob.cartStorage.StoreCart(context.Background(), tt.args.cart); err != nil {
 				t.Fatalf("cart could not be initialized")
 			}
 
@@ -500,8 +499,8 @@ func TestInMemoryBehaviour_Complete(t *testing.T) {
 			nil,
 			nil,
 		)
-		cart := &domaincart.Cart{ID: "test-id"}
-		require.NoError(t, cob.storeCart(cart))
+		cart, err := cob.NewCart(context.Background(), "test-id")
+		assert.NoError(t, err)
 
 		got, _, err := cob.Complete(context.Background(), cart)
 		assert.NoError(t, err)

@@ -15,7 +15,7 @@ import (
 
 	"flamingo.me/form"
 
-	"flamingo.me/flamingo-commerce/v3/cart/infrastructure/email"
+	placeorderAdapter "flamingo.me/flamingo-commerce/v3/cart/infrastructure/placeorder"
 
 	"flamingo.me/dingo"
 	"flamingo.me/flamingo-commerce/v3/cart/application"
@@ -31,10 +31,10 @@ import (
 type (
 	// Module registers our profiler
 	Module struct {
-		routerRegistry  *web.RouterRegistry
-		useInMemoryCart bool
-		useEmailAdapter bool
-		enableCartCache bool
+		routerRegistry                *web.RouterRegistry
+		enableDefaultCartAdapter      bool
+		enablePlaceOrderLoggerAdapter bool
+		enableCartCache               bool
 	}
 )
 
@@ -42,30 +42,30 @@ type (
 func (m *Module) Inject(
 	routerRegistry *web.RouterRegistry,
 	config *struct {
-		UseInMemoryCart bool `inject:"config:commerce.cart.useInMemoryCartServiceAdapters,optional"`
-		EnableCartCache bool `inject:"config:commerce.cart.enableCartCache,optional"`
-		UseEmailAdapter bool `inject:"config:commerce.cart.useEmailPlaceOrderAdapter,optional"`
+		EnableDefaultCartAdapter      bool `inject:"config:commerce.cart.defaultCartAdapter.enabled,optional"`
+		EnableCartCache               bool `inject:"config:commerce.cart.enableCartCache,optional"`
+		EnablePlaceOrderLoggerAdapter bool `inject:"config:commerce.cart.placeOrderLogger.enabled,optional"`
 	},
 ) {
 	m.routerRegistry = routerRegistry
 	if config != nil {
-		m.useInMemoryCart = config.UseInMemoryCart
+		m.enableDefaultCartAdapter = config.EnableDefaultCartAdapter
 		m.enableCartCache = config.EnableCartCache
-		m.useEmailAdapter = config.UseEmailAdapter
+		m.enablePlaceOrderLoggerAdapter = config.EnablePlaceOrderLoggerAdapter
 	}
 }
 
 // Configure module
 func (m *Module) Configure(injector *dingo.Injector) {
-	if m.useInMemoryCart {
+	if m.enableDefaultCartAdapter {
 		injector.Bind((*infrastructure.CartStorage)(nil)).To(infrastructure.InMemoryCartStorage{}).AsEagerSingleton()
 		injector.Bind((*infrastructure.GiftCardHandler)(nil)).To(infrastructure.DefaultGiftCardHandler{})
 		injector.Bind((*infrastructure.VoucherHandler)(nil)).To(infrastructure.DefaultVoucherHandler{})
 		injector.Bind((*cart.GuestCartService)(nil)).To(infrastructure.DefaultGuestCartService{})
 		injector.Bind((*cart.CustomerCartService)(nil)).To(infrastructure.DefaultCustomerCartService{})
 	}
-	if m.useEmailAdapter {
-		injector.Bind((*placeorder.Service)(nil)).To(email.PlaceOrderServiceAdapter{})
+	if m.enablePlaceOrderLoggerAdapter {
+		injector.Bind((*placeorder.Service)(nil)).To(placeorderAdapter.PlaceOrderLoggerAdapter{})
 	}
 	// Register Default EventPublisher
 	injector.Bind((*events.EventPublisher)(nil)).To(events.DefaultEventPublisher{})
@@ -104,11 +104,6 @@ func (*Module) CueConfig() string {
 	return `
 commerce: {
 	cart: {
-		useInMemoryCartServiceAdapters: bool | *true
-		inMemoryCartServiceAdapter: {
-			defaultTaxRate?: number
-		}
-		useEmailPlaceOrderAdapter: bool | *true
 		enableCartCache: bool | *true
 		cacheLifetime: number | *1200
 		defaultUseBillingAddress: bool | *false
@@ -126,14 +121,16 @@ commerce: {
 		simplePaymentForm: {
 			giftCardPaymentMethod: string | *"voucher"
 		}
-		emailAdapter: {
-			emailAddress: bool | *""
-			SMTPCredentials: {
-				password: string | *""
-				server:   string | *""
-				port:     string | *""
-				user:     string | *""
-			}
+		defaultCartAdapter: {
+			enabled: bool | *true
+			storage: "inmemory"
+			defaultTaxRate?: number
+		}
+		placeOrderLogger: {
+			enabled: bool | *true
+			useFlamingoLog: bool | *true
+			logAsFile: bool | *true
+			logDirectory: string | *"./orders/"
 		}
 	}
 }`
@@ -184,6 +181,15 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 	registry.HandleAny("cart.deleteItem", r.viewController.DeleteAndViewAction)
 	registry.Route("/cart/delete/:id", `cart.deleteItem(id,deliveryCode?="")`)
 	r.apiRoutes(registry)
+}
+
+// FlamingoLegacyConfigAlias mapping
+func (*Module) FlamingoLegacyConfigAlias() map[string]string {
+	return map[string]string{
+		"commerce.cart.useEmailPlaceOrderAdapter":                 "commerce.cart.placeOrderLogger.enabled",
+		"commerce.cart.useInMemoryCartServiceAdapters":            "commerce.cart.defaultCartAdapter.enabled",
+		"commerce.cart.inMemoryCartServiceAdapter.defaultTaxRate": "commerce.cart.defaultCartAdapter.defaultTaxRate",
+	}
 }
 
 func (r *routes) apiRoutes(registry *web.RouterRegistry) {

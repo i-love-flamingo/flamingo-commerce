@@ -776,7 +776,7 @@ func (m *MockGuestCartServiceWithModifyBehaviour) GetModifyBehaviour(context.Con
 		},
 	}
 
-	_ = storage.StoreCart(&cart)
+	_ = storage.StoreCart(context.Background(), &cart)
 
 	cob.Inject(
 		storage,
