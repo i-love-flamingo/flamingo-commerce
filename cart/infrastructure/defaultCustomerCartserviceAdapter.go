@@ -23,12 +23,12 @@ var (
 )
 
 // Inject dependencies
-func (gcs *DefaultCustomerCartService) Inject(
+func (cs *DefaultCustomerCartService) Inject(
 	behaviour *DefaultCartBehaviour,
 	logger flamingo.Logger,
 ) {
-	gcs.defaultBehaviour = behaviour
-	gcs.logger = logger
+	cs.defaultBehaviour = behaviour
+	cs.logger = logger
 }
 
 // GetCart gets a customer cart from the in memory customer cart service

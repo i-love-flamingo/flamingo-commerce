@@ -115,7 +115,6 @@ func (e *PlaceOrderLoggerAdapter) logOrder(cart *cartDomain.Cart, payment *place
 				return err
 			}
 		}
-
 		type order struct {
 			Cart    cartDomain.Cart
 			Payment placeorder.Payment
