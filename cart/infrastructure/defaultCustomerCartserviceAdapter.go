@@ -32,19 +32,19 @@ func (gcs *DefaultCustomerCartService) Inject(
 }
 
 // GetCart gets a customer cart from the in memory customer cart service
-func (gcs *DefaultCustomerCartService) GetCart(ctx context.Context, auth domain.Auth, cartID string) (*cart.Cart, error) {
-	customersCartId, err := gcs.authToId(auth, cartID)
-	foundCart, err := gcs.defaultBehaviour.GetCart(ctx, customersCartId)
+func (cs *DefaultCustomerCartService) GetCart(ctx context.Context, auth domain.Auth, cartID string) (*cart.Cart, error) {
+	customersCartID, err := cs.authToID(auth, cartID)
+	foundCart, err := cs.defaultBehaviour.GetCart(ctx, customersCartID)
 	if err == nil {
 		return foundCart, err
 	}
 	if err == cart.ErrCartNotFound {
-		return gcs.defaultBehaviour.NewCart(ctx, customersCartId)
+		return cs.defaultBehaviour.NewCart(ctx, customersCartID)
 	}
 	return nil, err
 }
 
-func (cob *DefaultCustomerCartService) authToId(auth domain.Auth, cartID string) (string, error) {
+func (cs *DefaultCustomerCartService) authToID(auth domain.Auth, cartID string) (string, error) {
 	if auth.IDToken == nil {
 		return "", errors.New("Idtoken not given")
 	}
@@ -55,12 +55,12 @@ func (cob *DefaultCustomerCartService) authToId(auth domain.Auth, cartID string)
 }
 
 // GetModifyBehaviour gets the cart order behaviour of the service
-func (gcs *DefaultCustomerCartService) GetModifyBehaviour(context.Context, domain.Auth) (cart.ModifyBehaviour, error) {
-	return gcs.defaultBehaviour, nil
+func (cs *DefaultCustomerCartService) GetModifyBehaviour(context.Context, domain.Auth) (cart.ModifyBehaviour, error) {
+	return cs.defaultBehaviour, nil
 }
 
 // RestoreCart restores a previously used cart
-func (gcs *DefaultCustomerCartService) RestoreCart(ctx context.Context, auth domain.Auth, cart cart.Cart) (*cart.Cart, error) {
-	gcs.logger.Warn("RestoreCart depricated")
+func (cs *DefaultCustomerCartService) RestoreCart(ctx context.Context, auth domain.Auth, cart cart.Cart) (*cart.Cart, error) {
+	cs.logger.Warn("RestoreCart depricated")
 	return &cart, nil
 }
