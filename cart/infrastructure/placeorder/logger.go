@@ -107,7 +107,7 @@ func (e *PlaceOrderLoggerAdapter) logOrder(cart *cartDomain.Cart, payment *place
 		if !modfile.IsDirectoryPath(e.logDirectory) {
 			return fmt.Errorf("%v is not a valid directory path", e.logDirectory)
 		}
-		//Create folder if not existend
+		//Create folder if not exist
 		if _, err := os.Stat(e.logDirectory); os.IsNotExist(err) {
 			err = os.MkdirAll(e.logDirectory, os.ModePerm)
 			if err != nil {
