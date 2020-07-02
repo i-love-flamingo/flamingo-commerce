@@ -499,7 +499,7 @@ func TestInMemoryBehaviour_Complete(t *testing.T) {
 			nil,
 			nil,
 		)
-		cart, err := cob.NewCart(context.Background(), "test-id")
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{ID: "test-id"})
 		assert.NoError(t, err)
 
 		got, _, err := cob.Complete(context.Background(), cart)

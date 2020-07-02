@@ -42,7 +42,10 @@ func (cs *DefaultCustomerCartService) GetCart(ctx context.Context, auth domain.A
 		return foundCart, err
 	}
 	if err == cart.ErrCartNotFound {
-		return cs.defaultBehaviour.NewCart(ctx, customersCartID)
+		cart := &cart.Cart{ID: customersCartID}
+		cart.BelongsToAuthenticatedUser = true
+		cart.AuthenticatedUserID = auth.IDToken.Subject
+		return cs.defaultBehaviour.StoreNewCart(ctx, cart)
 	}
 	return nil, err
 }

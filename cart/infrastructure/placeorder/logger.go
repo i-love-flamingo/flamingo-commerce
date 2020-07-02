@@ -1,4 +1,4 @@
-package email
+package logger
 
 import (
 	"context"
@@ -47,24 +47,16 @@ func (e *PlaceOrderLoggerAdapter) Inject(logger flamingo.Logger,
 
 // PlaceGuestCart places a guest cart as order email
 func (e *PlaceOrderLoggerAdapter) PlaceGuestCart(ctx context.Context, cart *cartDomain.Cart, payment *placeorder.Payment) (placeorder.PlacedOrderInfos, error) {
-	err := e.checkPayment(cart, payment)
-	if err != nil {
-		return nil, err
-	}
-	err = e.logOrder(cart, payment)
-	if err != nil {
-		return nil, err
-	}
-	var placedOrders placeorder.PlacedOrderInfos
-	placedOrders = append(placedOrders, placeorder.PlacedOrderInfo{
-		OrderNumber: cart.ID,
-	})
-
-	return placedOrders, nil
+	return e.placeCart(cart, payment)
 }
 
 // PlaceCustomerCart places a customer cart as order email
 func (e *PlaceOrderLoggerAdapter) PlaceCustomerCart(ctx context.Context, auth authDomain.Auth, cart *cartDomain.Cart, payment *placeorder.Payment) (placeorder.PlacedOrderInfos, error) {
+	return e.placeCart(cart, payment)
+}
+
+// placeCart
+func (e *PlaceOrderLoggerAdapter) placeCart(cart *cartDomain.Cart, payment *placeorder.Payment) (placeorder.PlacedOrderInfos, error) {
 	err := e.checkPayment(cart, payment)
 	if err != nil {
 		return nil, err
@@ -74,9 +66,12 @@ func (e *PlaceOrderLoggerAdapter) PlaceCustomerCart(ctx context.Context, auth au
 		return nil, err
 	}
 	var placedOrders placeorder.PlacedOrderInfos
-	placedOrders = append(placedOrders, placeorder.PlacedOrderInfo{
-		OrderNumber: cart.ID,
-	})
+	for _, del := range cart.Deliveries {
+		placedOrders = append(placedOrders, placeorder.PlacedOrderInfo{
+			OrderNumber:  cart.ID,
+			DeliveryCode: del.DeliveryInfo.Code,
+		})
+	}
 
 	return placedOrders, nil
 }

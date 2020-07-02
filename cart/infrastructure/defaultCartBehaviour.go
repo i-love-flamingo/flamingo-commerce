@@ -456,10 +456,10 @@ func (cob *DefaultCartBehaviour) GetCart(ctx context.Context, cartID string) (*d
 	return nil, domaincart.ErrCartNotFound
 }
 
-// NewCart created and stores a new cart. If id not given a uuid is generatd
-func (cob *DefaultCartBehaviour) NewCart(ctx context.Context, id string) (*domaincart.Cart, error) {
-	newCart := &domaincart.Cart{
-		ID: id,
+// NewCart created and stores a new cart.
+func (cob *DefaultCartBehaviour) StoreNewCart(ctx context.Context, newCart *domaincart.Cart) (*domaincart.Cart, error) {
+	if newCart.ID == "" {
+		return nil, errors.New("no id given")
 	}
 	return newCart, cob.cartStorage.StoreCart(ctx, newCart)
 }

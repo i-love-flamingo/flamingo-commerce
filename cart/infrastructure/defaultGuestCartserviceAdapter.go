@@ -37,7 +37,7 @@ func (gcs *DefaultGuestCartService) GetCart(ctx context.Context, cartID string) 
 
 // GetNewCart gets a new cart from the in memory guest cart service
 func (gcs *DefaultGuestCartService) GetNewCart(ctx context.Context) (*cart.Cart, error) {
-	return gcs.defaultBehaviour.NewCart(ctx, strconv.Itoa(rand.Int()))
+	return gcs.defaultBehaviour.StoreNewCart(ctx, &cart.Cart{ID: strconv.Itoa(rand.Int())})
 }
 
 // GetModifyBehaviour returns the cart order behaviour of the service
