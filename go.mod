@@ -49,6 +49,7 @@ require (
 	github.com/vektah/gqlparser v1.1.2
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
 	go.opencensus.io v0.22.3
+	golang.org/x/mod v0.2.0
 	golang.org/x/net v0.0.0-20200602114024-627f9648deb9 // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/tools v0.0.0-20200603170713-0310561d584d // indirect

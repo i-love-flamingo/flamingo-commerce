@@ -34,6 +34,9 @@ func (cs *DefaultCustomerCartService) Inject(
 // GetCart gets a customer cart from the in memory customer cart service
 func (cs *DefaultCustomerCartService) GetCart(ctx context.Context, auth domain.Auth, cartID string) (*cart.Cart, error) {
 	customersCartID, err := cs.authToID(auth, cartID)
+	if err == nil {
+		return nil, err
+	}
 	foundCart, err := cs.defaultBehaviour.GetCart(ctx, customersCartID)
 	if err == nil {
 		return foundCart, err
