@@ -1,6 +1,8 @@
 query {
     Commerce_Customer {
         id
+        userId
+        isLoggedIn
         personalData {
             gender
             prefix

@@ -26,7 +26,7 @@ func (r *CustomerResolver) Inject(
 	return r
 }
 
-// CommerceCustomerStatus resolves the commerce customer query
+// Deprecated: CommerceCustomerStatus resolves the commerce customer query
 func (r *CustomerResolver) CommerceCustomerStatus(ctx context.Context) (*dtocustomer.CustomerStatusResult, error) {
 	userID, err := r.service.GetUserID(ctx, web.RequestFromContext(ctx))
 	if errors.Is(err, application.ErrNoIdentity) {
@@ -46,12 +46,14 @@ func (r *CustomerResolver) CommerceCustomerStatus(ctx context.Context) (*dtocust
 // CommerceCustomer resolver the commerce customer
 func (r *CustomerResolver) CommerceCustomer(ctx context.Context) (*dtocustomer.CustomerResult, error) {
 	user, err := r.service.GetForIdentity(ctx, web.RequestFromContext(ctx))
-	if err != nil {
-		return nil, err
+	if errors.Is(err, application.ErrNoIdentity) {
+		return &dtocustomer.CustomerResult{IsLoggedIn: false}, nil
 	}
 
 	result := &dtocustomer.CustomerResult{
 		ID:           user.GetID(),
+		UserID:       user.GetID(),
+		IsLoggedIn:   true,
 		PersonalData: user.GetPersonalData(),
 		Addresses:    user.GetAddresses(),
 	}
