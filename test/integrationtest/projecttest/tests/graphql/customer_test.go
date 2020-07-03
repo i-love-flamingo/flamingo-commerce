@@ -70,7 +70,7 @@ func Test_CommerceCustomer(t *testing.T) {
 			name:         "not logged in",
 			performLogin: false,
 			validator: func(t *testing.T, response *httpexpect.Response) {
-				getValue(response, "Commerce_Customer", "isLoggedIn").Boolean().Equal(false)
+				response.JSON().Object().Value("data").Object().Value("Commerce_Customer").Null()
 			},
 		},
 		{
@@ -78,8 +78,6 @@ func Test_CommerceCustomer(t *testing.T) {
 			performLogin: true,
 			validator: func(t *testing.T, response *httpexpect.Response) {
 				getValue(response, "Commerce_Customer", "id").Equal("username")
-				getValue(response, "Commerce_Customer", "userId").Equal("username")
-				getValue(response, "Commerce_Customer", "isLoggedIn").Boolean().Equal(true)
 				personalData := getValue(response, "Commerce_Customer", "personalData").Object()
 				personalData.Value("firstName").Equal("Flamingo")
 				personalData.Value("lastName").Equal("Commerce")

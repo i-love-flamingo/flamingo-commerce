@@ -4,9 +4,7 @@ type Commerce_Customer_Status_Result {
 }
 
 type Commerce_Customer_Result {
-    id: String! @deprecated(reason: "Use `userID` field.")
-    userID: String!
-    isLoggedIn: Boolean!
+    id: String!
     personalData: Commerce_Customer_PersonData!
     addresses: [Commerce_Customer_Address!]
     defaultShippingAddress: Commerce_Customer_Address!

@@ -48,13 +48,11 @@ func (r *CustomerResolver) CommerceCustomerStatus(ctx context.Context) (*dtocust
 func (r *CustomerResolver) CommerceCustomer(ctx context.Context) (*dtocustomer.CustomerResult, error) {
 	user, err := r.service.GetForIdentity(ctx, web.RequestFromContext(ctx))
 	if errors.Is(err, application.ErrNoIdentity) {
-		return &dtocustomer.CustomerResult{IsLoggedIn: false}, nil
+		return nil, nil
 	}
 
 	result := &dtocustomer.CustomerResult{
 		ID:           user.GetID(),
-		UserID:       user.GetID(),
-		IsLoggedIn:   true,
 		PersonalData: user.GetPersonalData(),
 		Addresses:    user.GetAddresses(),
 	}

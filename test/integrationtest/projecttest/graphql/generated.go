@@ -617,9 +617,7 @@ type ComplexityRoot struct {
 		DefaultBillingAddress  func(childComplexity int) int
 		DefaultShippingAddress func(childComplexity int) int
 		ID                     func(childComplexity int) int
-		IsLoggedIn             func(childComplexity int) int
 		PersonalData           func(childComplexity int) int
-		UserID                 func(childComplexity int) int
 	}
 
 	CommerceCustomerStatusResult struct {
@@ -3374,26 +3372,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCustomerResult.ID(childComplexity), true
 
-	case "Commerce_Customer_Result.isLoggedIn":
-		if e.complexity.CommerceCustomerResult.IsLoggedIn == nil {
-			break
-		}
-
-		return e.complexity.CommerceCustomerResult.IsLoggedIn(childComplexity), true
-
 	case "Commerce_Customer_Result.personalData":
 		if e.complexity.CommerceCustomerResult.PersonalData == nil {
 			break
 		}
 
 		return e.complexity.CommerceCustomerResult.PersonalData(childComplexity), true
-
-	case "Commerce_Customer_Result.userID":
-		if e.complexity.CommerceCustomerResult.UserID == nil {
-			break
-		}
-
-		return e.complexity.CommerceCustomerResult.UserID(childComplexity), true
 
 	case "Commerce_Customer_Status_Result.isLoggedIn":
 		if e.complexity.CommerceCustomerStatusResult.IsLoggedIn == nil {
@@ -5198,9 +5182,7 @@ extend type Mutation {
 }
 
 type Commerce_Customer_Result {
-    id: String! @deprecated(reason: "Use ` + "`" + `userID` + "`" + ` field.")
-    userID: String!
-    isLoggedIn: Boolean!
+    id: String!
     personalData: Commerce_Customer_PersonData!
     addresses: [Commerce_Customer_Address!]
     defaultShippingAddress: Commerce_Customer_Address!
@@ -15299,60 +15281,6 @@ func (ec *executionContext) _Commerce_Customer_Result_id(ctx context.Context, fi
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Customer_Result_userID(ctx context.Context, field graphql.CollectedField, obj *dtocustomer.CustomerResult) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object:   "Commerce_Customer_Result",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.UserID, nil
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Customer_Result_isLoggedIn(ctx context.Context, field graphql.CollectedField, obj *dtocustomer.CustomerResult) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object:   "Commerce_Customer_Result",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.IsLoggedIn, nil
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
 func (ec *executionContext) _Commerce_Customer_Result_personalData(ctx context.Context, field graphql.CollectedField, obj *dtocustomer.CustomerResult) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -23343,16 +23271,6 @@ func (ec *executionContext) _Commerce_Customer_Result(ctx context.Context, sel a
 			out.Values[i] = graphql.MarshalString("Commerce_Customer_Result")
 		case "id":
 			out.Values[i] = ec._Commerce_Customer_Result_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "userID":
-			out.Values[i] = ec._Commerce_Customer_Result_userID(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "isLoggedIn":
-			out.Values[i] = ec._Commerce_Customer_Result_isLoggedIn(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
