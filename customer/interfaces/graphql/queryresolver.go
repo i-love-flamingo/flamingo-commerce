@@ -26,7 +26,8 @@ func (r *CustomerResolver) Inject(
 	return r
 }
 
-// Deprecated: CommerceCustomerStatus resolves the commerce customer query
+// CommerceCustomerStatus resolves the commerce customer query
+// Deprecated: use commerce customer query resolver instead
 func (r *CustomerResolver) CommerceCustomerStatus(ctx context.Context) (*dtocustomer.CustomerStatusResult, error) {
 	userID, err := r.service.GetUserID(ctx, web.RequestFromContext(ctx))
 	if errors.Is(err, application.ErrNoIdentity) {
