@@ -14,8 +14,8 @@ type (
 	// CustomerResult is a dto
 	CustomerResult struct {
 		ID                     string
-		UserID     string
-		IsLoggedIn bool
+		UserID                 string
+		IsLoggedIn             bool
 		PersonalData           domain.PersonData
 		Addresses              []domain.Address
 		DefaultShippingAddress domain.Address
