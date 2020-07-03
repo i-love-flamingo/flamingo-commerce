@@ -33,7 +33,7 @@
 * deprecated `CustomerService` as it will be replaced by `CustomerIdentityService`
 * GraphQL: Add new customer queries:
   * `Commerce_Customer_Status` returns the customer's login status
-  * `Commerce_Customer` returns customers full information including login status.
+  * `Commerce_Customer` returns the logged-in customer
 
 **checkout**
 * Deprecate Sourcing service port in checkout (activate if required with setting `commerce.checkout.activateDeprecatedSourcing`)
