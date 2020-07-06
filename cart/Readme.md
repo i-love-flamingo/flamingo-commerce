@@ -22,7 +22,7 @@ The cart module and its services are used by the checkout module.
 ### Configurations
 
 For all possible configurations you can check the `module.go` (CueConfig function)
-As always you can also dumo the current configuration with the "config" Flamingo command.
+As always you can also dump the current configuration with the "config" Flamingo command.
 
 Here is a typical configuration
 ```yaml
