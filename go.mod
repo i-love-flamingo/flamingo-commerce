@@ -31,11 +31,9 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/imkira/go-interpol v1.1.0 // indirect
-	github.com/jordan-wright/email v0.0.0-20200602115436-fd8a7622303e
 	github.com/leekchan/accounting v0.0.0-20191104051123-0b9b0bd19c36
 	github.com/lib/pq v1.1.1 // indirect
 	github.com/mailru/easyjson v0.7.1 // indirect
-	github.com/matcornic/hermes/v2 v2.1.0
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/opencontainers/runc v0.1.1 // indirect
 	github.com/ory/dockertest v3.3.5+incompatible
