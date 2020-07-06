@@ -51,6 +51,10 @@ func (r *CustomerResolver) CommerceCustomer(ctx context.Context) (*dtocustomer.C
 		return nil, nil
 	}
 
+	if err != nil {
+		return nil, err
+	}
+
 	result := &dtocustomer.CustomerResult{
 		ID:           user.GetID(),
 		PersonalData: user.GetPersonalData(),
