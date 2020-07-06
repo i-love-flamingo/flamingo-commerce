@@ -456,7 +456,7 @@ func (cob *DefaultCartBehaviour) GetCart(ctx context.Context, cartID string) (*d
 	return nil, domaincart.ErrCartNotFound
 }
 
-// NewCart created and stores a new cart.
+// StoreNewCart created and stores a new cart.
 func (cob *DefaultCartBehaviour) StoreNewCart(ctx context.Context, newCart *domaincart.Cart) (*domaincart.Cart, error) {
 	if newCart.ID == "" {
 		return nil, errors.New("no id given")
