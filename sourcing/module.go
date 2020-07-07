@@ -2,6 +2,8 @@ package sourcing
 
 import (
 	"flamingo.me/dingo"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
+	restrictors "flamingo.me/flamingo-commerce/v3/sourcing/domain/restrictor"
 
 	"flamingo.me/flamingo-commerce/v3/cart"
 	"flamingo.me/flamingo-commerce/v3/sourcing/application"
@@ -12,6 +14,7 @@ type (
 	// Module registers sourcing module
 	Module struct {
 		useDefaultSourcingService bool
+		enableQtyRestrictor       bool
 	}
 )
 
@@ -19,11 +22,13 @@ type (
 func (m *Module) Inject(
 	config *struct {
 		UseDefaultSourcingService bool `inject:"config:commerce.sourcing.useDefaultSourcingService,optional"`
+		EnableQtyRestrictor       bool `inject:"config:commerce.sourcing.enableQtyRestrictor,optional"`
 	},
 ) {
 
 	if config != nil {
 		m.useDefaultSourcingService = config.UseDefaultSourcingService
+		m.enableQtyRestrictor = config.EnableQtyRestrictor
 	}
 
 }
@@ -32,6 +37,10 @@ func (m *Module) Inject(
 func (m *Module) Configure(injector *dingo.Injector) {
 	if m.useDefaultSourcingService {
 		injector.Bind(new(domain.SourcingService)).To(domain.DefaultSourcingService{})
+	}
+
+	if m.enableQtyRestrictor {
+		injector.Bind(new(validation.MaxQuantityRestrictor)).To(restrictors.Restrictor{})
 	}
 
 	injector.Bind(new(application.SourcingApplication)).To(application.Service{})
@@ -50,6 +59,7 @@ func (m *Module) CueConfig() string {
 commerce: {
 	sourcing: {
 		useDefaultSourcingService: bool | *true
+		enableQtyRestrictor: bool | *false
 	}
 }
 `

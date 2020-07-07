@@ -8,7 +8,6 @@ import (
 
 	"github.com/gavv/httpexpect/v2"
 
-	"flamingo.me/flamingo-commerce/v3/customer/application"
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest"
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/helper"
 )
@@ -71,9 +70,7 @@ func Test_CommerceCustomer(t *testing.T) {
 			name:         "not logged in",
 			performLogin: false,
 			validator: func(t *testing.T, response *httpexpect.Response) {
-				err := response.JSON().Object().Value("errors").Array().First().Object()
-				err.Value("message").Equal(application.ErrNoIdentity.Error())
-				err.Value("path").Array().First().Equal("Commerce_Customer")
+				response.JSON().Object().Value("data").Object().Value("Commerce_Customer").Null()
 			},
 		},
 		{
