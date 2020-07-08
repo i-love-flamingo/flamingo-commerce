@@ -31,7 +31,7 @@ func (r *CommerceProductQueryResolver) CommerceProduct(ctx context.Context, mark
 }
 
 // CommerceProductSearch returns a search result of products based on the given search request
-func (r *CommerceProductQueryResolver) CommerceProductSearch(ctx context.Context, request *dto.CommerceSearchRequest) (*productApplication.SearchResult, error) {
+func (r *CommerceProductQueryResolver) CommerceProductSearch(ctx context.Context, request *dto.CommerceSearchRequest) (*SearchResultDTO, error) {
 
 	var filters []searchDomain.Filter
 	for _, filter := range request.KeyValueFilters {
@@ -43,7 +43,6 @@ func (r *CommerceProductQueryResolver) CommerceProductSearch(ctx context.Context
 		PageSize:         request.PageSize,
 		Page:             request.Page,
 		SortBy:           request.SortBy,
-		SortDirection:    request.SortDirection,
 		Query:            request.Query,
 		PaginationConfig: nil,
 	})
@@ -52,5 +51,5 @@ func (r *CommerceProductQueryResolver) CommerceProductSearch(ctx context.Context
 		return nil, err
 	}
 
-	return result, nil
+	return WrapSearchResult(result), nil
 }

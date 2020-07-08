@@ -5,7 +5,6 @@ type CommerceSearchRequest struct {
 	PageSize        int
 	Page            int
 	SortBy          string
-	SortDirection   string
 	KeyValueFilters []CommerceSearchKeyValueFilter
 	Query           string
 }

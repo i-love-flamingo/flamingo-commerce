@@ -5459,7 +5459,6 @@ input Commerce_Search_Request {
     pageSize:           Int
     page:               Int
     sortBy:             String
-    sortDirection:      String
     keyValueFilters:    [Commerce_Search_KeyValueFilter!]
     query:              String
 }
@@ -20193,12 +20192,6 @@ func (ec *executionContext) unmarshalInputCommerce_Search_Request(ctx context.Co
 		case "sortBy":
 			var err error
 			it.SortBy, err = ec.unmarshalOString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "sortDirection":
-			var err error
-			it.SortDirection, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}

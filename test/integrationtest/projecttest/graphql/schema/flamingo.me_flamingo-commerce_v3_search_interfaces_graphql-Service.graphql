@@ -7,7 +7,6 @@ input Commerce_Search_Request {
     pageSize:           Int
     page:               Int
     sortBy:             String
-    sortDirection:      String
     keyValueFilters:    [Commerce_Search_KeyValueFilter!]
     query:              String
 }

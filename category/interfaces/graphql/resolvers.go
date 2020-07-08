@@ -5,6 +5,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/category/domain"
 	graphqlDto "flamingo.me/flamingo-commerce/v3/category/interfaces/graphql/dto"
 	productApplication "flamingo.me/flamingo-commerce/v3/product/application"
+	"flamingo.me/flamingo-commerce/v3/product/interfaces/graphql"
 	"flamingo.me/flamingo-commerce/v3/search/application"
 	searchDomain "flamingo.me/flamingo-commerce/v3/search/domain"
 	"flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/dto"
@@ -55,7 +56,6 @@ func (r *CommerceCategoryQueryResolver) CommerceCategory(
 			PageSize:         request.PageSize,
 			Page:             request.Page,
 			SortBy:           request.SortBy,
-			SortDirection:    request.SortDirection,
 			Query:            request.Query,
 			PaginationConfig: nil,
 		}
@@ -66,5 +66,5 @@ func (r *CommerceCategoryQueryResolver) CommerceCategory(
 		return nil, err
 	}
 
-	return &graphqlDto.CategorySearchResult{Category: category, ProductSearchResult: result}, nil
+	return &graphqlDto.CategorySearchResult{Category: category, ProductSearchResult: graphql.WrapSearchResult(result)}, nil
 }
