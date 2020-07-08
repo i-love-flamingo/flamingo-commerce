@@ -30,6 +30,72 @@ type Commerce_Search_SortOption {
     selected: Boolean!
 }
 
+interface Commerce_Search_Facet {
+    name: String!
+    label: String!
+    position: Int!
+    items: [Commerce_Search_FacetItem!]!
+    hasSelectedItem: Boolean!
+}
+
+interface Commerce_Search_FacetItem {
+    label: String!
+    value: String!
+    selected: Boolean!
+    count: Int!
+}
+
+type Commerce_Search_ListFacet implements Commerce_Search_Facet {
+    name: String!
+    label: String!
+    position: Int!
+    items: [Commerce_Search_ListFacetItem!]!
+    hasSelectedItem: Boolean!
+}
+
+type Commerce_Search_ListFacetItem implements Commerce_Search_FacetItem {
+    label: String!
+    value: String!
+    selected: Boolean!
+    count: Int!
+}
+
+type Commerce_Search_TreeFacet implements Commerce_Search_Facet {
+    name: String!
+    label: String!
+    position: Int!
+    items: [Commerce_Search_TreeFacetItem!]!
+    hasSelectedItem: Boolean!
+}
+
+type Commerce_Search_TreeFacetItem implements Commerce_Search_FacetItem {
+    label: String!
+    value: String!
+    selected: Boolean!
+    count: Int!
+    active: Boolean!
+    items: [Commerce_Search_TreeFacetItem!]
+}
+
+type Commerce_Search_RangeFacet implements Commerce_Search_Facet {
+    name: String!
+    label: String!
+    position: Int!
+    items: [Commerce_Search_RangeFacetItem!]!
+    hasSelectedItem: Boolean!
+}
+
+type Commerce_Search_RangeFacetItem implements Commerce_Search_FacetItem {
+    label: String!
+    value: String!
+    selected: Boolean!
+    count: Int!
+    min: Int!
+    max: Int!
+    selectedMin: Int!
+    selectedMax: Int!
+}
+
 type Commerce_Search_Suggestion {
     text:      String!
     highlight: String!
