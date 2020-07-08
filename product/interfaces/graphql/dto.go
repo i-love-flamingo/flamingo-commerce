@@ -49,8 +49,8 @@ func (obj *SearchResultDTO) PaginationInfo() utils.PaginationInfo {
 }
 
 // Facets get facets
-func (obj *SearchResultDTO) Facets() []dto.Commerce_Search_Facet {
-	var res = []dto.Commerce_Search_Facet{}
+func (obj *SearchResultDTO) Facets() []dto.CommerceSearchFacet {
+	var res = []dto.CommerceSearchFacet{}
 
 	for _, facet := range obj.result.Facets {
 		mappedFacet := mapFacet(facet, obj.logger)
@@ -66,7 +66,7 @@ func (obj *SearchResultDTO) Facets() []dto.Commerce_Search_Facet {
 	return res
 }
 
-func mapFacet(facet searchdomain.Facet, logger flamingo.Logger) dto.Commerce_Search_Facet {
+func mapFacet(facet searchdomain.Facet, logger flamingo.Logger) dto.CommerceSearchFacet {
 	switch searchdomain.FacetType(facet.Type) {
 	case searchdomain.ListFacet:
 		return dto.WrapListFacet(facet)
@@ -83,7 +83,7 @@ func mapFacet(facet searchdomain.Facet, logger flamingo.Logger) dto.Commerce_Sea
 	}
 }
 
-// HasSelectedFacets check if there are any selected facets
+// HasSelectedFacet check if there are any selected facets
 func (obj *SearchResultDTO) HasSelectedFacet() bool {
 	return len(obj.result.SearchMeta.SelectedFacets) > 0
 }

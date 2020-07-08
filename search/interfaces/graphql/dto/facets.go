@@ -2,17 +2,17 @@ package dto
 
 import searchdomain "flamingo.me/flamingo-commerce/v3/search/domain"
 
-// Commerce_Search_Facet interface for facets
-type Commerce_Search_Facet interface {
+// CommerceSearchFacet interface for facets
+type CommerceSearchFacet interface {
 	Name() string
 	Label() string
 	Position() int
-	//Items() []Commerce_Search_FacetItem
+	//Items() []CommerceSearchFacetItem
 	HasSelectedItem() bool
 }
 
-// Commerce_Search_Facet interface for facet items
-type Commerce_Search_FacetItem interface {
+// CommerceSearchFacetItem interface for facet items
+type CommerceSearchFacetItem interface {
 	Label() string
 	Value() string
 	Selected() bool
@@ -20,10 +20,10 @@ type Commerce_Search_FacetItem interface {
 }
 
 // WrapListFacet wraps the list facet into the graphql dto
-func WrapListFacet(facet searchdomain.Facet) *Commerce_Search_ListFacet {
-	items := make([]*Commerce_Search_ListFacetItem, len(facet.Items))
+func WrapListFacet(facet searchdomain.Facet) *CommerceSearchListFacet {
+	items := make([]*CommerceSearchListFacetItem, len(facet.Items))
 	for i, item := range facet.Items {
-		items[i] = &Commerce_Search_ListFacetItem{
+		items[i] = &CommerceSearchListFacetItem{
 			label:    item.Label,
 			value:    item.Value,
 			selected: item.Selected,
@@ -31,7 +31,7 @@ func WrapListFacet(facet searchdomain.Facet) *Commerce_Search_ListFacet {
 		}
 	}
 
-	return &Commerce_Search_ListFacet{
+	return &CommerceSearchListFacet{
 		name:     facet.Name,
 		label:    facet.Label,
 		position: facet.Position,
@@ -39,36 +39,36 @@ func WrapListFacet(facet searchdomain.Facet) *Commerce_Search_ListFacet {
 	}
 }
 
-// Commerce_Search_ListFacet dto for list facets
-type Commerce_Search_ListFacet struct {
+// CommerceSearchListFacet dto for list facets
+type CommerceSearchListFacet struct {
 	name     string
 	label    string
 	position int
-	items    []*Commerce_Search_ListFacetItem
+	items    []*CommerceSearchListFacetItem
 }
 
 // Name getter
-func (c *Commerce_Search_ListFacet) Name() string {
+func (c *CommerceSearchListFacet) Name() string {
 	return c.name
 }
 
 // Label getter
-func (c *Commerce_Search_ListFacet) Label() string {
+func (c *CommerceSearchListFacet) Label() string {
 	return c.label
 }
 
 // Position getter
-func (c *Commerce_Search_ListFacet) Position() int {
+func (c *CommerceSearchListFacet) Position() int {
 	return c.position
 }
 
 // Items getter
-func (c *Commerce_Search_ListFacet) Items() []*Commerce_Search_ListFacetItem {
+func (c *CommerceSearchListFacet) Items() []*CommerceSearchListFacetItem {
 	return c.items
 }
 
 // HasSelectedItem getter
-func (c *Commerce_Search_ListFacet) HasSelectedItem() bool {
+func (c *CommerceSearchListFacet) HasSelectedItem() bool {
 	for _, item := range c.items {
 		if item.selected {
 			return true
@@ -77,8 +77,8 @@ func (c *Commerce_Search_ListFacet) HasSelectedItem() bool {
 	return false
 }
 
-// Commerce_Search_ListFacetItem dto for list facet items
-type Commerce_Search_ListFacetItem struct {
+// CommerceSearchListFacetItem dto for list facet items
+type CommerceSearchListFacetItem struct {
 	label    string
 	value    string
 	selected bool
@@ -86,29 +86,29 @@ type Commerce_Search_ListFacetItem struct {
 }
 
 // Label getter
-func (c *Commerce_Search_ListFacetItem) Label() string {
+func (c *CommerceSearchListFacetItem) Label() string {
 	return c.label
 }
 
 // Value getter
-func (c *Commerce_Search_ListFacetItem) Value() string {
+func (c *CommerceSearchListFacetItem) Value() string {
 	return c.value
 }
 
 // Selected getter
-func (c *Commerce_Search_ListFacetItem) Selected() bool {
+func (c *CommerceSearchListFacetItem) Selected() bool {
 	return c.selected
 }
 
 // Count getter
-func (c *Commerce_Search_ListFacetItem) Count() int {
+func (c *CommerceSearchListFacetItem) Count() int {
 	return c.count
 }
 
-func mapTreeFacetItems(facetItems []*searchdomain.FacetItem) []*Commerce_Search_TreeFacetItem {
-	items := make([]*Commerce_Search_TreeFacetItem, len(facetItems))
+func mapTreeFacetItems(facetItems []*searchdomain.FacetItem) []*CommerceSearchTreeFacetItem {
+	items := make([]*CommerceSearchTreeFacetItem, len(facetItems))
 	for i, item := range facetItems {
-		items[i] = &Commerce_Search_TreeFacetItem{
+		items[i] = &CommerceSearchTreeFacetItem{
 			label:    item.Label,
 			value:    item.Value,
 			selected: item.Selected,
@@ -121,8 +121,8 @@ func mapTreeFacetItems(facetItems []*searchdomain.FacetItem) []*Commerce_Search_
 }
 
 // WrapTreeFacet wraps the tree facet into the graphql dto
-func WrapTreeFacet(facet searchdomain.Facet) *Commerce_Search_TreeFacet {
-	return &Commerce_Search_TreeFacet{
+func WrapTreeFacet(facet searchdomain.Facet) *CommerceSearchTreeFacet {
+	return &CommerceSearchTreeFacet{
 		name:     facet.Name,
 		label:    facet.Label,
 		position: facet.Position,
@@ -130,35 +130,35 @@ func WrapTreeFacet(facet searchdomain.Facet) *Commerce_Search_TreeFacet {
 	}
 }
 
-// Commerce_Search_TreeFacet dto for tree facets
-type Commerce_Search_TreeFacet struct {
+// CommerceSearchTreeFacet dto for tree facets
+type CommerceSearchTreeFacet struct {
 	name     string
 	label    string
 	position int
-	items    []*Commerce_Search_TreeFacetItem
+	items    []*CommerceSearchTreeFacetItem
 }
 
 // Name getter
-func (c *Commerce_Search_TreeFacet) Name() string {
+func (c *CommerceSearchTreeFacet) Name() string {
 	return c.name
 }
 
 // Label getter
-func (c *Commerce_Search_TreeFacet) Label() string {
+func (c *CommerceSearchTreeFacet) Label() string {
 	return c.label
 }
 
 // Position getter
-func (c *Commerce_Search_TreeFacet) Position() int {
+func (c *CommerceSearchTreeFacet) Position() int {
 	return c.position
 }
 
 // Items getter
-func (c *Commerce_Search_TreeFacet) Items() []*Commerce_Search_TreeFacetItem {
+func (c *CommerceSearchTreeFacet) Items() []*CommerceSearchTreeFacetItem {
 	return c.items
 }
 
-func hasSelectedItem(items []*Commerce_Search_TreeFacetItem) bool {
+func hasSelectedItem(items []*CommerceSearchTreeFacetItem) bool {
 	for _, item := range items {
 		if item.selected || hasSelectedItem(item.items) {
 			return true
@@ -168,58 +168,58 @@ func hasSelectedItem(items []*Commerce_Search_TreeFacetItem) bool {
 }
 
 // HasSelectedItem getter
-func (c *Commerce_Search_TreeFacet) HasSelectedItem() bool {
+func (c *CommerceSearchTreeFacet) HasSelectedItem() bool {
 	if hasSelectedItem(c.items) {
 		return true
 	}
 	return false
 }
 
-// Commerce_Search_TreeFacetItem dto for tree facet items
-type Commerce_Search_TreeFacetItem struct {
+// CommerceSearchTreeFacetItem dto for tree facet items
+type CommerceSearchTreeFacetItem struct {
 	label    string
 	value    string
 	selected bool
 	count    int
 	active   bool
-	items    []*Commerce_Search_TreeFacetItem
+	items    []*CommerceSearchTreeFacetItem
 }
 
 // Label getter
-func (c *Commerce_Search_TreeFacetItem) Label() string {
+func (c *CommerceSearchTreeFacetItem) Label() string {
 	return c.label
 }
 
 // Value getter
-func (c *Commerce_Search_TreeFacetItem) Value() string {
+func (c *CommerceSearchTreeFacetItem) Value() string {
 	return c.value
 }
 
 // Selected getter
-func (c *Commerce_Search_TreeFacetItem) Selected() bool {
+func (c *CommerceSearchTreeFacetItem) Selected() bool {
 	return c.selected
 }
 
 // Count getter
-func (c *Commerce_Search_TreeFacetItem) Count() int {
+func (c *CommerceSearchTreeFacetItem) Count() int {
 	return c.count
 }
 
 // Active getter
-func (c *Commerce_Search_TreeFacetItem) Active() bool {
+func (c *CommerceSearchTreeFacetItem) Active() bool {
 	return c.active
 }
 
 // Items getter
-func (c *Commerce_Search_TreeFacetItem) Items() []*Commerce_Search_TreeFacetItem {
+func (c *CommerceSearchTreeFacetItem) Items() []*CommerceSearchTreeFacetItem {
 	return c.items
 }
 
 // WrapRangeFacet wraps the range facet into the graphql dto
-func WrapRangeFacet(facet searchdomain.Facet) *Commerce_Search_RangeFacet {
-	items := make([]*Commerce_Search_RangeFacetItem, len(facet.Items))
+func WrapRangeFacet(facet searchdomain.Facet) *CommerceSearchRangeFacet {
+	items := make([]*CommerceSearchRangeFacetItem, len(facet.Items))
 	for i, item := range facet.Items {
-		items[i] = &Commerce_Search_RangeFacetItem{
+		items[i] = &CommerceSearchRangeFacetItem{
 			label:       item.Label,
 			value:       item.Value,
 			selected:    item.Selected,
@@ -231,7 +231,7 @@ func WrapRangeFacet(facet searchdomain.Facet) *Commerce_Search_RangeFacet {
 		}
 	}
 
-	return &Commerce_Search_RangeFacet{
+	return &CommerceSearchRangeFacet{
 		name:     facet.Name,
 		label:    facet.Label,
 		position: facet.Position,
@@ -239,36 +239,36 @@ func WrapRangeFacet(facet searchdomain.Facet) *Commerce_Search_RangeFacet {
 	}
 }
 
-// Commerce_Search_RangeFacet dto for range facets
-type Commerce_Search_RangeFacet struct {
+// CommerceSearchRangeFacet dto for range facets
+type CommerceSearchRangeFacet struct {
 	name     string
 	label    string
 	position int
-	items    []*Commerce_Search_RangeFacetItem
+	items    []*CommerceSearchRangeFacetItem
 }
 
 // Name getter
-func (c *Commerce_Search_RangeFacet) Name() string {
+func (c *CommerceSearchRangeFacet) Name() string {
 	return c.name
 }
 
 // Label getter
-func (c *Commerce_Search_RangeFacet) Label() string {
+func (c *CommerceSearchRangeFacet) Label() string {
 	return c.label
 }
 
 // Position getter
-func (c *Commerce_Search_RangeFacet) Position() int {
+func (c *CommerceSearchRangeFacet) Position() int {
 	return c.position
 }
 
 // Items getter
-func (c *Commerce_Search_RangeFacet) Items() []*Commerce_Search_RangeFacetItem {
+func (c *CommerceSearchRangeFacet) Items() []*CommerceSearchRangeFacetItem {
 	return c.items
 }
 
 // HasSelectedItem getter
-func (c *Commerce_Search_RangeFacet) HasSelectedItem() bool {
+func (c *CommerceSearchRangeFacet) HasSelectedItem() bool {
 	for _, item := range c.items {
 		if item.selected {
 			return true
@@ -277,8 +277,8 @@ func (c *Commerce_Search_RangeFacet) HasSelectedItem() bool {
 	return false
 }
 
-// Commerce_Search_RangeFacetItem dto for range facet items
-type Commerce_Search_RangeFacetItem struct {
+// CommerceSearchRangeFacetItem dto for range facet items
+type CommerceSearchRangeFacetItem struct {
 	label       string
 	value       string
 	selected    bool
@@ -290,41 +290,41 @@ type Commerce_Search_RangeFacetItem struct {
 }
 
 // Label getter
-func (c *Commerce_Search_RangeFacetItem) Label() string {
+func (c *CommerceSearchRangeFacetItem) Label() string {
 	return c.label
 }
 
 // Value getter
-func (c *Commerce_Search_RangeFacetItem) Value() string {
+func (c *CommerceSearchRangeFacetItem) Value() string {
 	return c.value
 }
 
 // Selected getter
-func (c *Commerce_Search_RangeFacetItem) Selected() bool {
+func (c *CommerceSearchRangeFacetItem) Selected() bool {
 	return c.selected
 }
 
 // Count getter
-func (c *Commerce_Search_RangeFacetItem) Count() int {
+func (c *CommerceSearchRangeFacetItem) Count() int {
 	return c.count
 }
 
 // Min getter
-func (c *Commerce_Search_RangeFacetItem) Min() int {
+func (c *CommerceSearchRangeFacetItem) Min() int {
 	return c.min
 }
 
 // Max getter
-func (c *Commerce_Search_RangeFacetItem) Max() int {
+func (c *CommerceSearchRangeFacetItem) Max() int {
 	return c.max
 }
 
 // SelectedMin getter
-func (c *Commerce_Search_RangeFacetItem) SelectedMin() int {
+func (c *CommerceSearchRangeFacetItem) SelectedMin() int {
 	return c.selectedMin
 }
 
 // SelectedMax getter
-func (c *Commerce_Search_RangeFacetItem) SelectedMax() int {
+func (c *CommerceSearchRangeFacetItem) SelectedMax() int {
 	return c.selectedMax
 }
