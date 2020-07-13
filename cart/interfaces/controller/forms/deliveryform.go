@@ -3,6 +3,7 @@ package forms
 import (
 	"context"
 	"errors"
+	"time"
 
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
@@ -22,6 +23,7 @@ type (
 		ShippingMethod    string `form:"shippingMethod"`
 		ShippingCarrier   string `form:"shippingCarrier"`
 		LocationCode      string `form:"locationCode"`
+		DesiredTime       time.Time `form:"desiredTime" validate:"dateformat"`
 	}
 
 	// DeliveryFormService implements Form(Data)Provider interface of form package
@@ -48,6 +50,7 @@ func (d *DeliveryForm) MapToDeliveryInfo(currentInfo cartDomain.DeliveryInfo) ca
 	currentInfo.DeliveryLocation.Code = d.LocationCode
 	currentInfo.Method = d.ShippingMethod
 	currentInfo.Carrier = d.ShippingCarrier
+	currentInfo.DesiredTime = d.DesiredTime
 	return currentInfo
 }
 
