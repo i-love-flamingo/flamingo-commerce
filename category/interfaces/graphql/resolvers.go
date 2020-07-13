@@ -3,12 +3,12 @@ package graphql
 import (
 	"context"
 	"flamingo.me/flamingo-commerce/v3/category/domain"
-	graphqlDto "flamingo.me/flamingo-commerce/v3/category/interfaces/graphql/dto"
+	graphqlDto "flamingo.me/flamingo-commerce/v3/category/interfaces/graphql/categorydto"
 	productApplication "flamingo.me/flamingo-commerce/v3/product/application"
 	"flamingo.me/flamingo-commerce/v3/product/interfaces/graphql"
 	"flamingo.me/flamingo-commerce/v3/search/application"
 	searchDomain "flamingo.me/flamingo-commerce/v3/search/domain"
-	"flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/dto"
+	"flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/searchdto"
 )
 
 // CommerceCategoryQueryResolver resolves graphql category queries
@@ -36,7 +36,7 @@ func (r *CommerceCategoryQueryResolver) CommerceCategoryTree(ctx context.Context
 func (r *CommerceCategoryQueryResolver) CommerceCategory(
 	ctx context.Context,
 	categoryCode string,
-	request *dto.CommerceSearchRequest) (*graphqlDto.CategorySearchResult, error) {
+	request *searchdto.CommerceSearchRequest) (*graphqlDto.CategorySearchResult, error) {
 	category, err := r.categoryService.Get(ctx, categoryCode)
 
 	if err != nil {

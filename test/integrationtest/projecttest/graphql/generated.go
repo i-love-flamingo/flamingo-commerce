@@ -20,17 +20,17 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
 	domain3 "flamingo.me/flamingo-commerce/v3/category/domain"
-	dto3 "flamingo.me/flamingo-commerce/v3/category/interfaces/graphql/dto"
+	"flamingo.me/flamingo-commerce/v3/category/interfaces/graphql/categorydto"
 	"flamingo.me/flamingo-commerce/v3/checkout/application"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
-	dto2 "flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql/dto"
+	dto1 "flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql/dto"
 	domain5 "flamingo.me/flamingo-commerce/v3/customer/domain"
 	"flamingo.me/flamingo-commerce/v3/customer/interfaces/graphql/dtocustomer"
 	"flamingo.me/flamingo-commerce/v3/price/domain"
 	domain2 "flamingo.me/flamingo-commerce/v3/product/domain"
 	graphql1 "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql"
 	domain1 "flamingo.me/flamingo-commerce/v3/search/domain"
-	dto1 "flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/dto"
+	"flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/searchdto"
 	domain4 "flamingo.me/form/domain"
 	graphql2 "flamingo.me/graphql"
 	"github.com/99designs/gqlgen/graphql"
@@ -874,14 +874,14 @@ type ComplexityRoot struct {
 		CommerceCart                     func(childComplexity int) int
 		CommerceCartQtyRestriction       func(childComplexity int, marketplaceCode string, variantCode *string, deliveryCode string) int
 		CommerceCartValidator            func(childComplexity int) int
-		CommerceCategory                 func(childComplexity int, categoryCode string, categorySearchRequest *dto1.CommerceSearchRequest) int
+		CommerceCategory                 func(childComplexity int, categoryCode string, categorySearchRequest *searchdto.CommerceSearchRequest) int
 		CommerceCategoryTree             func(childComplexity int, activeCategoryCode string) int
 		CommerceCheckoutActivePlaceOrder func(childComplexity int) int
 		CommerceCheckoutCurrentContext   func(childComplexity int) int
 		CommerceCustomer                 func(childComplexity int) int
 		CommerceCustomerStatus           func(childComplexity int) int
 		CommerceProduct                  func(childComplexity int, marketplaceCode string) int
-		CommerceProductSearch            func(childComplexity int, searchRequest *dto1.CommerceSearchRequest) int
+		CommerceProductSearch            func(childComplexity int, searchRequest *searchdto.CommerceSearchRequest) int
 		Flamingo                         func(childComplexity int) int
 	}
 }
@@ -890,7 +890,7 @@ type Commerce_Cart_DefaultPaymentSelectionResolver interface {
 	CartSplit(ctx context.Context, obj *cart.DefaultPaymentSelection) ([]*dto.PaymentSelectionSplit, error)
 }
 type Commerce_Search_MetaResolver interface {
-	SortOptions(ctx context.Context, obj *domain1.SearchMeta) ([]*dto1.CommerceSearchSortOption, error)
+	SortOptions(ctx context.Context, obj *domain1.SearchMeta) ([]*searchdto.CommerceSearchSortOption, error)
 }
 type MutationResolver interface {
 	Flamingo(ctx context.Context) (*string, error)
@@ -905,25 +905,25 @@ type MutationResolver interface {
 	CommerceCartRemoveCouponCode(ctx context.Context, couponCode string) (*dto.DecoratedCart, error)
 	CommerceCartUpdateDeliveryAddresses(ctx context.Context, deliveryAdresses []*forms.DeliveryForm) ([]*dto.DeliveryAddressForm, error)
 	CommerceCartUpdateDeliveryShippingOptions(ctx context.Context, shippingOptions []*dto.DeliveryShippingOption) ([]*dto.DeliveryAddressForm, error)
-	CommerceCheckoutStartPlaceOrder(ctx context.Context, returnURL string) (*dto2.StartPlaceOrderResult, error)
+	CommerceCheckoutStartPlaceOrder(ctx context.Context, returnURL string) (*dto1.StartPlaceOrderResult, error)
 	CommerceCheckoutCancelPlaceOrder(ctx context.Context) (bool, error)
 	CommerceCheckoutClearPlaceOrder(ctx context.Context) (bool, error)
-	CommerceCheckoutRefreshPlaceOrder(ctx context.Context) (*dto2.PlaceOrderContext, error)
-	CommerceCheckoutRefreshPlaceOrderBlocking(ctx context.Context) (*dto2.PlaceOrderContext, error)
+	CommerceCheckoutRefreshPlaceOrder(ctx context.Context) (*dto1.PlaceOrderContext, error)
+	CommerceCheckoutRefreshPlaceOrderBlocking(ctx context.Context) (*dto1.PlaceOrderContext, error)
 }
 type QueryResolver interface {
 	Flamingo(ctx context.Context) (*string, error)
 	CommerceProduct(ctx context.Context, marketplaceCode string) (domain2.BasicProduct, error)
-	CommerceProductSearch(ctx context.Context, searchRequest *dto1.CommerceSearchRequest) (*graphql1.SearchResultDTO, error)
+	CommerceProductSearch(ctx context.Context, searchRequest *searchdto.CommerceSearchRequest) (*graphql1.SearchResultDTO, error)
 	CommerceCustomerStatus(ctx context.Context) (*dtocustomer.CustomerStatusResult, error)
 	CommerceCustomer(ctx context.Context) (*dtocustomer.CustomerResult, error)
 	CommerceCart(ctx context.Context) (*dto.DecoratedCart, error)
 	CommerceCartValidator(ctx context.Context) (*validation.Result, error)
 	CommerceCartQtyRestriction(ctx context.Context, marketplaceCode string, variantCode *string, deliveryCode string) (*validation.RestrictionResult, error)
 	CommerceCheckoutActivePlaceOrder(ctx context.Context) (bool, error)
-	CommerceCheckoutCurrentContext(ctx context.Context) (*dto2.PlaceOrderContext, error)
+	CommerceCheckoutCurrentContext(ctx context.Context) (*dto1.PlaceOrderContext, error)
 	CommerceCategoryTree(ctx context.Context, activeCategoryCode string) (domain3.Tree, error)
-	CommerceCategory(ctx context.Context, categoryCode string, categorySearchRequest *dto1.CommerceSearchRequest) (*dto3.CategorySearchResult, error)
+	CommerceCategory(ctx context.Context, categoryCode string, categorySearchRequest *searchdto.CommerceSearchRequest) (*categorydto.CategorySearchResult, error)
 }
 
 type executableSchema struct {
@@ -4677,7 +4677,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.CommerceCategory(childComplexity, args["categoryCode"].(string), args["categorySearchRequest"].(*dto1.CommerceSearchRequest)), true
+		return e.complexity.Query.CommerceCategory(childComplexity, args["categoryCode"].(string), args["categorySearchRequest"].(*searchdto.CommerceSearchRequest)), true
 
 	case "Query.Commerce_CategoryTree":
 		if e.complexity.Query.CommerceCategoryTree == nil {
@@ -4741,7 +4741,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.CommerceProductSearch(childComplexity, args["searchRequest"].(*dto1.CommerceSearchRequest)), true
+		return e.complexity.Query.CommerceProductSearch(childComplexity, args["searchRequest"].(*searchdto.CommerceSearchRequest)), true
 
 	case "Query.flamingo":
 		if e.complexity.Query.Flamingo == nil {
@@ -6578,9 +6578,9 @@ func (ec *executionContext) field_Query_Commerce_Category_args(ctx context.Conte
 		}
 	}
 	args["categoryCode"] = arg0
-	var arg1 *dto1.CommerceSearchRequest
+	var arg1 *searchdto.CommerceSearchRequest
 	if tmp, ok := rawArgs["categorySearchRequest"]; ok {
-		arg1, err = ec.unmarshalOCommerce_Search_Request2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchRequest(ctx, tmp)
+		arg1, err = ec.unmarshalOCommerce_Search_Request2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRequest(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -6592,9 +6592,9 @@ func (ec *executionContext) field_Query_Commerce_Category_args(ctx context.Conte
 func (ec *executionContext) field_Query_Commerce_Product_Search_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *dto1.CommerceSearchRequest
+	var arg0 *searchdto.CommerceSearchRequest
 	if tmp, ok := rawArgs["searchRequest"]; ok {
-		arg0, err = ec.unmarshalOCommerce_Search_Request2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchRequest(ctx, tmp)
+		arg0, err = ec.unmarshalOCommerce_Search_Request2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRequest(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -13810,7 +13810,7 @@ func (ec *executionContext) _Commerce_Category_Attributes_all(ctx context.Contex
 	return ec.marshalOCommerce_Category_Attribute2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcategoryᚋdomainᚐAttribute(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Category_SearchResult_category(ctx context.Context, field graphql.CollectedField, obj *dto3.CategorySearchResult) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Category_SearchResult_category(ctx context.Context, field graphql.CollectedField, obj *categorydto.CategorySearchResult) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -13837,7 +13837,7 @@ func (ec *executionContext) _Commerce_Category_SearchResult_category(ctx context
 	return ec.marshalNCommerce_Category2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcategoryᚋdomainᚐCategory(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Category_SearchResult_productSearchResult(ctx context.Context, field graphql.CollectedField, obj *dto3.CategorySearchResult) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Category_SearchResult_productSearchResult(ctx context.Context, field graphql.CollectedField, obj *categorydto.CategorySearchResult) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -13864,7 +13864,7 @@ func (ec *executionContext) _Commerce_Category_SearchResult_productSearchResult(
 	return ec.marshalNCommerce_Product_SearchResult2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚐSearchResultDTO(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_cart(ctx context.Context, field graphql.CollectedField, obj *dto2.PlaceOrderContext) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_cart(ctx context.Context, field graphql.CollectedField, obj *dto1.PlaceOrderContext) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -13888,7 +13888,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_cart(ctx contex
 	return ec.marshalOCommerce_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_orderInfos(ctx context.Context, field graphql.CollectedField, obj *dto2.PlaceOrderContext) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_orderInfos(ctx context.Context, field graphql.CollectedField, obj *dto1.PlaceOrderContext) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -13906,13 +13906,13 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_orderInfos(ctx 
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*dto2.PlacedOrderInfos)
+	res := resTmp.(*dto1.PlacedOrderInfos)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalOCommerce_Checkout_PlacedOrderInfos2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPlacedOrderInfos(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_state(ctx context.Context, field graphql.CollectedField, obj *dto2.PlaceOrderContext) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_state(ctx context.Context, field graphql.CollectedField, obj *dto1.PlaceOrderContext) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -13933,13 +13933,13 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_state(ctx conte
 		}
 		return graphql.Null
 	}
-	res := resTmp.(dto2.State)
+	res := resTmp.(dto1.State)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalNCommerce_Checkout_PlaceOrderState_State2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐState(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_uuid(ctx context.Context, field graphql.CollectedField, obj *dto2.PlaceOrderContext) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_uuid(ctx context.Context, field graphql.CollectedField, obj *dto1.PlaceOrderContext) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -14101,7 +14101,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_title(ctx c
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_Form_Parameter_key(ctx context.Context, field graphql.CollectedField, obj *dto2.FormParameter) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_Form_Parameter_key(ctx context.Context, field graphql.CollectedField, obj *dto1.FormParameter) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -14128,7 +14128,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_Form_Parameter_ke
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_Form_Parameter_value(ctx context.Context, field graphql.CollectedField, obj *dto2.FormParameter) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_Form_Parameter_value(ctx context.Context, field graphql.CollectedField, obj *dto1.FormParameter) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -14152,7 +14152,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_Form_Parameter_va
 	return ec.marshalOString2ᚕstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed_name(ctx context.Context, field graphql.CollectedField, obj *dto2.Failed) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed_name(ctx context.Context, field graphql.CollectedField, obj *dto1.Failed) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -14179,7 +14179,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed_name
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed_reason(ctx context.Context, field graphql.CollectedField, obj *dto2.Failed) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed_reason(ctx context.Context, field graphql.CollectedField, obj *dto1.Failed) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -14353,7 +14353,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirect_name(ctx context.Context, field graphql.CollectedField, obj *dto2.PostRedirect) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirect_name(ctx context.Context, field graphql.CollectedField, obj *dto1.PostRedirect) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -14380,7 +14380,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirec
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirect_URL(ctx context.Context, field graphql.CollectedField, obj *dto2.PostRedirect) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirect_URL(ctx context.Context, field graphql.CollectedField, obj *dto1.PostRedirect) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -14407,7 +14407,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirec
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirect_Parameters(ctx context.Context, field graphql.CollectedField, obj *dto2.PostRedirect) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirect_Parameters(ctx context.Context, field graphql.CollectedField, obj *dto1.PostRedirect) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -14425,13 +14425,13 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirec
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]dto2.FormParameter)
+	res := resTmp.([]dto1.FormParameter)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalOCommerce_Checkout_PlaceOrderState_Form_Parameter2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐFormParameter(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect_name(ctx context.Context, field graphql.CollectedField, obj *dto2.Redirect) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect_name(ctx context.Context, field graphql.CollectedField, obj *dto1.Redirect) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -14458,7 +14458,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect_na
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect_URL(ctx context.Context, field graphql.CollectedField, obj *dto2.Redirect) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect_URL(ctx context.Context, field graphql.CollectedField, obj *dto1.Redirect) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -14485,7 +14485,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect_UR
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHTML_name(ctx context.Context, field graphql.CollectedField, obj *dto2.ShowHTML) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHTML_name(ctx context.Context, field graphql.CollectedField, obj *dto1.ShowHTML) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -14512,7 +14512,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHTML_na
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHTML_HTML(ctx context.Context, field graphql.CollectedField, obj *dto2.ShowHTML) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHTML_HTML(ctx context.Context, field graphql.CollectedField, obj *dto1.ShowHTML) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -14539,7 +14539,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHTML_HT
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe_name(ctx context.Context, field graphql.CollectedField, obj *dto2.ShowIframe) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe_name(ctx context.Context, field graphql.CollectedField, obj *dto1.ShowIframe) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -14566,7 +14566,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe_
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe_URL(ctx context.Context, field graphql.CollectedField, obj *dto2.ShowIframe) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe_URL(ctx context.Context, field graphql.CollectedField, obj *dto1.ShowIframe) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -14593,7 +14593,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe_
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Success_name(ctx context.Context, field graphql.CollectedField, obj *dto2.Success) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Success_name(ctx context.Context, field graphql.CollectedField, obj *dto1.Success) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -14620,7 +14620,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Success_nam
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Wait_name(ctx context.Context, field graphql.CollectedField, obj *dto2.Wait) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Wait_name(ctx context.Context, field graphql.CollectedField, obj *dto1.Wait) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -14647,7 +14647,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Wait_name(c
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_WaitForCustomer_name(ctx context.Context, field graphql.CollectedField, obj *dto2.WaitForCustomer) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_WaitForCustomer_name(ctx context.Context, field graphql.CollectedField, obj *dto1.WaitForCustomer) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -14674,7 +14674,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_WaitForCust
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos_paymentInfos(ctx context.Context, field graphql.CollectedField, obj *dto2.PlacedOrderInfos) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos_paymentInfos(ctx context.Context, field graphql.CollectedField, obj *dto1.PlacedOrderInfos) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -14698,7 +14698,7 @@ func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos_paymentInfos(ctx
 	return ec.marshalOCommerce_Checkout_PlaceOrderPaymentInfo2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋapplicationᚐPlaceOrderPaymentInfo(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos_placedOrderInfos(ctx context.Context, field graphql.CollectedField, obj *dto2.PlacedOrderInfos) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos_placedOrderInfos(ctx context.Context, field graphql.CollectedField, obj *dto1.PlacedOrderInfos) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -14722,7 +14722,7 @@ func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos_placedOrderInfos
 	return ec.marshalOCommerce_Cart_PlacedOrderInfo2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋplaceorderᚐPlacedOrderInfo(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos_email(ctx context.Context, field graphql.CollectedField, obj *dto2.PlacedOrderInfos) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos_email(ctx context.Context, field graphql.CollectedField, obj *dto1.PlacedOrderInfos) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -14749,7 +14749,7 @@ func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos_email(ctx contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Checkout_StartPlaceOrder_Result_uuid(ctx context.Context, field graphql.CollectedField, obj *dto2.StartPlaceOrderResult) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_StartPlaceOrder_Result_uuid(ctx context.Context, field graphql.CollectedField, obj *dto1.StartPlaceOrderResult) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -17894,10 +17894,10 @@ func (ec *executionContext) _Commerce_Product_SearchResult_facets(ctx context.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]dto1.CommerceSearchFacet)
+	res := resTmp.([]searchdto.CommerceSearchFacet)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNCommerce_Search_Facet2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchFacet(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Search_Facet2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchFacet(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Product_SearchResult_suggestions(ctx context.Context, field graphql.CollectedField, obj *graphql1.SearchResultDTO) graphql.Marshaler {
@@ -18032,7 +18032,7 @@ func (ec *executionContext) _Commerce_Product_Variant_saleableData(ctx context.C
 	return ec.marshalNCommerce_ProductSaleable2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐSaleable(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_ListFacet_name(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchListFacet) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_ListFacet_name(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchListFacet) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18059,7 +18059,7 @@ func (ec *executionContext) _Commerce_Search_ListFacet_name(ctx context.Context,
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_ListFacet_label(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchListFacet) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_ListFacet_label(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchListFacet) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18086,7 +18086,7 @@ func (ec *executionContext) _Commerce_Search_ListFacet_label(ctx context.Context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_ListFacet_position(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchListFacet) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_ListFacet_position(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchListFacet) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18113,7 +18113,7 @@ func (ec *executionContext) _Commerce_Search_ListFacet_position(ctx context.Cont
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_ListFacet_items(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchListFacet) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_ListFacet_items(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchListFacet) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18134,13 +18134,13 @@ func (ec *executionContext) _Commerce_Search_ListFacet_items(ctx context.Context
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*dto1.CommerceSearchListFacetItem)
+	res := resTmp.([]*searchdto.CommerceSearchListFacetItem)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNCommerce_Search_ListFacetItem2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchListFacetItem(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Search_ListFacetItem2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchListFacetItem(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_ListFacet_hasSelectedItem(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchListFacet) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_ListFacet_hasSelectedItem(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchListFacet) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18167,7 +18167,7 @@ func (ec *executionContext) _Commerce_Search_ListFacet_hasSelectedItem(ctx conte
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_ListFacetItem_label(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchListFacetItem) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_ListFacetItem_label(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchListFacetItem) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18194,7 +18194,7 @@ func (ec *executionContext) _Commerce_Search_ListFacetItem_label(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_ListFacetItem_value(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchListFacetItem) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_ListFacetItem_value(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchListFacetItem) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18221,7 +18221,7 @@ func (ec *executionContext) _Commerce_Search_ListFacetItem_value(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_ListFacetItem_selected(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchListFacetItem) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_ListFacetItem_selected(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchListFacetItem) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18248,7 +18248,7 @@ func (ec *executionContext) _Commerce_Search_ListFacetItem_selected(ctx context.
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_ListFacetItem_count(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchListFacetItem) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_ListFacetItem_count(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchListFacetItem) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18428,13 +18428,13 @@ func (ec *executionContext) _Commerce_Search_Meta_sortOptions(ctx context.Contex
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*dto1.CommerceSearchSortOption)
+	res := resTmp.([]*searchdto.CommerceSearchSortOption)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOCommerce_Search_SortOption2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchSortOption(ctx, field.Selections, res)
+	return ec.marshalOCommerce_Search_SortOption2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchSortOption(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_RangeFacet_name(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchRangeFacet) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_RangeFacet_name(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacet) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18461,7 +18461,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacet_name(ctx context.Context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_RangeFacet_label(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchRangeFacet) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_RangeFacet_label(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacet) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18488,7 +18488,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacet_label(ctx context.Contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_RangeFacet_position(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchRangeFacet) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_RangeFacet_position(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacet) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18515,7 +18515,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacet_position(ctx context.Con
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_RangeFacet_items(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchRangeFacet) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_RangeFacet_items(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacet) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18536,13 +18536,13 @@ func (ec *executionContext) _Commerce_Search_RangeFacet_items(ctx context.Contex
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*dto1.CommerceSearchRangeFacetItem)
+	res := resTmp.([]*searchdto.CommerceSearchRangeFacetItem)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNCommerce_Search_RangeFacetItem2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchRangeFacetItem(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Search_RangeFacetItem2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRangeFacetItem(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_RangeFacet_hasSelectedItem(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchRangeFacet) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_RangeFacet_hasSelectedItem(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacet) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18569,7 +18569,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacet_hasSelectedItem(ctx cont
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_RangeFacetItem_label(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchRangeFacetItem) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_RangeFacetItem_label(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacetItem) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18596,7 +18596,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_label(ctx context.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_RangeFacetItem_value(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchRangeFacetItem) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_RangeFacetItem_value(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacetItem) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18623,7 +18623,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_value(ctx context.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_RangeFacetItem_selected(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchRangeFacetItem) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_RangeFacetItem_selected(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacetItem) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18650,7 +18650,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_selected(ctx context
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_RangeFacetItem_count(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchRangeFacetItem) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_RangeFacetItem_count(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacetItem) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18677,7 +18677,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_count(ctx context.Co
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_RangeFacetItem_min(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchRangeFacetItem) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_RangeFacetItem_min(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacetItem) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18704,7 +18704,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_min(ctx context.Cont
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_RangeFacetItem_max(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchRangeFacetItem) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_RangeFacetItem_max(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacetItem) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18731,7 +18731,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_max(ctx context.Cont
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_RangeFacetItem_selectedMin(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchRangeFacetItem) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_RangeFacetItem_selectedMin(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacetItem) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18758,7 +18758,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_selectedMin(ctx cont
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_RangeFacetItem_selectedMax(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchRangeFacetItem) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_RangeFacetItem_selectedMax(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacetItem) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18785,7 +18785,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_selectedMax(ctx cont
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_SortOption_label(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchSortOption) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_SortOption_label(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchSortOption) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18812,7 +18812,7 @@ func (ec *executionContext) _Commerce_Search_SortOption_label(ctx context.Contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_SortOption_field(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchSortOption) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_SortOption_field(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchSortOption) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18839,7 +18839,7 @@ func (ec *executionContext) _Commerce_Search_SortOption_field(ctx context.Contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_SortOption_selected(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchSortOption) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_SortOption_selected(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchSortOption) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18920,7 +18920,7 @@ func (ec *executionContext) _Commerce_Search_Suggestion_highlight(ctx context.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_TreeFacet_name(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchTreeFacet) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_TreeFacet_name(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchTreeFacet) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18947,7 +18947,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacet_name(ctx context.Context,
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_TreeFacet_label(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchTreeFacet) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_TreeFacet_label(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchTreeFacet) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -18974,7 +18974,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacet_label(ctx context.Context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_TreeFacet_position(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchTreeFacet) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_TreeFacet_position(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchTreeFacet) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -19001,7 +19001,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacet_position(ctx context.Cont
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_TreeFacet_items(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchTreeFacet) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_TreeFacet_items(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchTreeFacet) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -19022,13 +19022,13 @@ func (ec *executionContext) _Commerce_Search_TreeFacet_items(ctx context.Context
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*dto1.CommerceSearchTreeFacetItem)
+	res := resTmp.([]*searchdto.CommerceSearchTreeFacetItem)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalNCommerce_Search_TreeFacetItem2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchTreeFacetItem(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Search_TreeFacetItem2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchTreeFacetItem(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_TreeFacet_hasSelectedItem(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchTreeFacet) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_TreeFacet_hasSelectedItem(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchTreeFacet) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -19055,7 +19055,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacet_hasSelectedItem(ctx conte
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_TreeFacetItem_label(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchTreeFacetItem) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_TreeFacetItem_label(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchTreeFacetItem) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -19082,7 +19082,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_label(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_TreeFacetItem_value(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchTreeFacetItem) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_TreeFacetItem_value(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchTreeFacetItem) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -19109,7 +19109,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_value(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_TreeFacetItem_selected(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchTreeFacetItem) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_TreeFacetItem_selected(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchTreeFacetItem) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -19136,7 +19136,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_selected(ctx context.
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_TreeFacetItem_count(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchTreeFacetItem) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_TreeFacetItem_count(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchTreeFacetItem) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -19163,7 +19163,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_count(ctx context.Con
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_TreeFacetItem_active(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchTreeFacetItem) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_TreeFacetItem_active(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchTreeFacetItem) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -19190,7 +19190,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_active(ctx context.Co
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Search_TreeFacetItem_items(ctx context.Context, field graphql.CollectedField, obj *dto1.CommerceSearchTreeFacetItem) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_TreeFacetItem_items(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchTreeFacetItem) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -19208,10 +19208,10 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_items(ctx context.Con
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*dto1.CommerceSearchTreeFacetItem)
+	res := resTmp.([]*searchdto.CommerceSearchTreeFacetItem)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOCommerce_Search_TreeFacetItem2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchTreeFacetItem(ctx, field.Selections, res)
+	return ec.marshalOCommerce_Search_TreeFacetItem2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchTreeFacetItem(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_SimpleProduct_baseData(ctx context.Context, field graphql.CollectedField, obj *domain2.SimpleProduct) graphql.Marshaler {
@@ -19888,7 +19888,7 @@ func (ec *executionContext) _Mutation_Commerce_Checkout_StartPlaceOrder(ctx cont
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*dto2.StartPlaceOrderResult)
+	res := resTmp.(*dto1.StartPlaceOrderResult)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalNCommerce_Checkout_StartPlaceOrder_Result2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐStartPlaceOrderResult(ctx, field.Selections, res)
@@ -19969,7 +19969,7 @@ func (ec *executionContext) _Mutation_Commerce_Checkout_RefreshPlaceOrder(ctx co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*dto2.PlaceOrderContext)
+	res := resTmp.(*dto1.PlaceOrderContext)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalNCommerce_Checkout_PlaceOrderContext2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPlaceOrderContext(ctx, field.Selections, res)
@@ -19996,7 +19996,7 @@ func (ec *executionContext) _Mutation_Commerce_Checkout_RefreshPlaceOrderBlockin
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*dto2.PlaceOrderContext)
+	res := resTmp.(*dto1.PlaceOrderContext)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalNCommerce_Checkout_PlaceOrderContext2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPlaceOrderContext(ctx, field.Selections, res)
@@ -20077,7 +20077,7 @@ func (ec *executionContext) _Query_Commerce_Product_Search(ctx context.Context, 
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().CommerceProductSearch(rctx, args["searchRequest"].(*dto1.CommerceSearchRequest))
+		return ec.resolvers.Query().CommerceProductSearch(rctx, args["searchRequest"].(*searchdto.CommerceSearchRequest))
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -20275,7 +20275,7 @@ func (ec *executionContext) _Query_Commerce_Checkout_CurrentContext(ctx context.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*dto2.PlaceOrderContext)
+	res := resTmp.(*dto1.PlaceOrderContext)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalNCommerce_Checkout_PlaceOrderContext2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPlaceOrderContext(ctx, field.Selections, res)
@@ -20335,15 +20335,15 @@ func (ec *executionContext) _Query_Commerce_Category(ctx context.Context, field 
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().CommerceCategory(rctx, args["categoryCode"].(string), args["categorySearchRequest"].(*dto1.CommerceSearchRequest))
+		return ec.resolvers.Query().CommerceCategory(rctx, args["categoryCode"].(string), args["categorySearchRequest"].(*searchdto.CommerceSearchRequest))
 	})
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*dto3.CategorySearchResult)
+	res := resTmp.(*categorydto.CategorySearchResult)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOCommerce_Category_SearchResult2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcategoryᚋinterfacesᚋgraphqlᚋdtoᚐCategorySearchResult(ctx, field.Selections, res)
+	return ec.marshalOCommerce_Category_SearchResult2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcategoryᚋinterfacesᚋgraphqlᚋcategorydtoᚐCategorySearchResult(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
@@ -21454,8 +21454,8 @@ func (ec *executionContext) unmarshalInputCommerce_Price_ChargeQualifierInput(ct
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCommerce_Search_KeyValueFilter(ctx context.Context, v interface{}) (dto1.CommerceSearchKeyValueFilter, error) {
-	var it dto1.CommerceSearchKeyValueFilter
+func (ec *executionContext) unmarshalInputCommerce_Search_KeyValueFilter(ctx context.Context, v interface{}) (searchdto.CommerceSearchKeyValueFilter, error) {
+	var it searchdto.CommerceSearchKeyValueFilter
 	var asMap = v.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -21478,8 +21478,8 @@ func (ec *executionContext) unmarshalInputCommerce_Search_KeyValueFilter(ctx con
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCommerce_Search_Request(ctx context.Context, v interface{}) (dto1.CommerceSearchRequest, error) {
-	var it dto1.CommerceSearchRequest
+func (ec *executionContext) unmarshalInputCommerce_Search_Request(ctx context.Context, v interface{}) (searchdto.CommerceSearchRequest, error) {
+	var it searchdto.CommerceSearchRequest
 	var asMap = v.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -21504,7 +21504,7 @@ func (ec *executionContext) unmarshalInputCommerce_Search_Request(ctx context.Co
 			}
 		case "keyValueFilters":
 			var err error
-			it.KeyValueFilters, err = ec.unmarshalOCommerce_Search_KeyValueFilter2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchKeyValueFilter(ctx, v)
+			it.KeyValueFilters, err = ec.unmarshalOCommerce_Search_KeyValueFilter2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchKeyValueFilter(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -21550,25 +21550,25 @@ func (ec *executionContext) _Commerce_Category(ctx context.Context, sel ast.Sele
 	}
 }
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State(ctx context.Context, sel ast.SelectionSet, obj *dto2.State) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State(ctx context.Context, sel ast.SelectionSet, obj *dto1.State) graphql.Marshaler {
 	switch obj := (*obj).(type) {
 	case nil:
 		return graphql.Null
-	case *dto2.Wait:
+	case *dto1.Wait:
 		return ec._Commerce_Checkout_PlaceOrderState_State_Wait(ctx, sel, obj)
-	case *dto2.WaitForCustomer:
+	case *dto1.WaitForCustomer:
 		return ec._Commerce_Checkout_PlaceOrderState_State_WaitForCustomer(ctx, sel, obj)
-	case *dto2.Success:
+	case *dto1.Success:
 		return ec._Commerce_Checkout_PlaceOrderState_State_Success(ctx, sel, obj)
-	case *dto2.Failed:
+	case *dto1.Failed:
 		return ec._Commerce_Checkout_PlaceOrderState_State_Failed(ctx, sel, obj)
-	case *dto2.ShowIframe:
+	case *dto1.ShowIframe:
 		return ec._Commerce_Checkout_PlaceOrderState_State_ShowIframe(ctx, sel, obj)
-	case *dto2.ShowHTML:
+	case *dto1.ShowHTML:
 		return ec._Commerce_Checkout_PlaceOrderState_State_ShowHTML(ctx, sel, obj)
-	case *dto2.Redirect:
+	case *dto1.Redirect:
 		return ec._Commerce_Checkout_PlaceOrderState_State_Redirect(ctx, sel, obj)
-	case *dto2.PostRedirect:
+	case *dto1.PostRedirect:
 		return ec._Commerce_Checkout_PlaceOrderState_State_PostRedirect(ctx, sel, obj)
 	default:
 		panic(fmt.Errorf("unexpected type %T", obj))
@@ -21621,30 +21621,30 @@ func (ec *executionContext) _Commerce_Product(ctx context.Context, sel ast.Selec
 	}
 }
 
-func (ec *executionContext) _Commerce_Search_Facet(ctx context.Context, sel ast.SelectionSet, obj *dto1.CommerceSearchFacet) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_Facet(ctx context.Context, sel ast.SelectionSet, obj *searchdto.CommerceSearchFacet) graphql.Marshaler {
 	switch obj := (*obj).(type) {
 	case nil:
 		return graphql.Null
-	case *dto1.CommerceSearchListFacet:
+	case *searchdto.CommerceSearchListFacet:
 		return ec._Commerce_Search_ListFacet(ctx, sel, obj)
-	case *dto1.CommerceSearchTreeFacet:
+	case *searchdto.CommerceSearchTreeFacet:
 		return ec._Commerce_Search_TreeFacet(ctx, sel, obj)
-	case *dto1.CommerceSearchRangeFacet:
+	case *searchdto.CommerceSearchRangeFacet:
 		return ec._Commerce_Search_RangeFacet(ctx, sel, obj)
 	default:
 		panic(fmt.Errorf("unexpected type %T", obj))
 	}
 }
 
-func (ec *executionContext) _Commerce_Search_FacetItem(ctx context.Context, sel ast.SelectionSet, obj *dto1.CommerceSearchFacetItem) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_FacetItem(ctx context.Context, sel ast.SelectionSet, obj *searchdto.CommerceSearchFacetItem) graphql.Marshaler {
 	switch obj := (*obj).(type) {
 	case nil:
 		return graphql.Null
-	case *dto1.CommerceSearchListFacetItem:
+	case *searchdto.CommerceSearchListFacetItem:
 		return ec._Commerce_Search_ListFacetItem(ctx, sel, obj)
-	case *dto1.CommerceSearchTreeFacetItem:
+	case *searchdto.CommerceSearchTreeFacetItem:
 		return ec._Commerce_Search_TreeFacetItem(ctx, sel, obj)
-	case *dto1.CommerceSearchRangeFacetItem:
+	case *searchdto.CommerceSearchRangeFacetItem:
 		return ec._Commerce_Search_RangeFacetItem(ctx, sel, obj)
 	default:
 		panic(fmt.Errorf("unexpected type %T", obj))
@@ -23808,7 +23808,7 @@ func (ec *executionContext) _Commerce_Category_Attributes(ctx context.Context, s
 
 var commerce_Category_SearchResultImplementors = []string{"Commerce_Category_SearchResult"}
 
-func (ec *executionContext) _Commerce_Category_SearchResult(ctx context.Context, sel ast.SelectionSet, obj *dto3.CategorySearchResult) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Category_SearchResult(ctx context.Context, sel ast.SelectionSet, obj *categorydto.CategorySearchResult) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Category_SearchResultImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -23840,7 +23840,7 @@ func (ec *executionContext) _Commerce_Category_SearchResult(ctx context.Context,
 
 var commerce_Checkout_PlaceOrderContextImplementors = []string{"Commerce_Checkout_PlaceOrderContext"}
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext(ctx context.Context, sel ast.SelectionSet, obj *dto2.PlaceOrderContext) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext(ctx context.Context, sel ast.SelectionSet, obj *dto1.PlaceOrderContext) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_PlaceOrderContextImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -23923,7 +23923,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo(ctx context
 
 var commerce_Checkout_PlaceOrderState_Form_ParameterImplementors = []string{"Commerce_Checkout_PlaceOrderState_Form_Parameter"}
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_Form_Parameter(ctx context.Context, sel ast.SelectionSet, obj *dto2.FormParameter) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_Form_Parameter(ctx context.Context, sel ast.SelectionSet, obj *dto1.FormParameter) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_PlaceOrderState_Form_ParameterImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -23952,7 +23952,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_Form_Parameter(ct
 
 var commerce_Checkout_PlaceOrderState_State_FailedImplementors = []string{"Commerce_Checkout_PlaceOrderState_State_Failed", "Commerce_Checkout_PlaceOrderState_State"}
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed(ctx context.Context, sel ast.SelectionSet, obj *dto2.Failed) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed(ctx context.Context, sel ast.SelectionSet, obj *dto1.Failed) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_PlaceOrderState_State_FailedImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -24109,7 +24109,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 
 var commerce_Checkout_PlaceOrderState_State_PostRedirectImplementors = []string{"Commerce_Checkout_PlaceOrderState_State_PostRedirect", "Commerce_Checkout_PlaceOrderState_State"}
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirect(ctx context.Context, sel ast.SelectionSet, obj *dto2.PostRedirect) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirect(ctx context.Context, sel ast.SelectionSet, obj *dto1.PostRedirect) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_PlaceOrderState_State_PostRedirectImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -24143,7 +24143,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirec
 
 var commerce_Checkout_PlaceOrderState_State_RedirectImplementors = []string{"Commerce_Checkout_PlaceOrderState_State_Redirect", "Commerce_Checkout_PlaceOrderState_State"}
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect(ctx context.Context, sel ast.SelectionSet, obj *dto2.Redirect) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect(ctx context.Context, sel ast.SelectionSet, obj *dto1.Redirect) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_PlaceOrderState_State_RedirectImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -24175,7 +24175,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect(ct
 
 var commerce_Checkout_PlaceOrderState_State_ShowHTMLImplementors = []string{"Commerce_Checkout_PlaceOrderState_State_ShowHTML", "Commerce_Checkout_PlaceOrderState_State"}
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHTML(ctx context.Context, sel ast.SelectionSet, obj *dto2.ShowHTML) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHTML(ctx context.Context, sel ast.SelectionSet, obj *dto1.ShowHTML) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_PlaceOrderState_State_ShowHTMLImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -24207,7 +24207,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHTML(ct
 
 var commerce_Checkout_PlaceOrderState_State_ShowIframeImplementors = []string{"Commerce_Checkout_PlaceOrderState_State_ShowIframe", "Commerce_Checkout_PlaceOrderState_State"}
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe(ctx context.Context, sel ast.SelectionSet, obj *dto2.ShowIframe) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe(ctx context.Context, sel ast.SelectionSet, obj *dto1.ShowIframe) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_PlaceOrderState_State_ShowIframeImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -24239,7 +24239,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe(
 
 var commerce_Checkout_PlaceOrderState_State_SuccessImplementors = []string{"Commerce_Checkout_PlaceOrderState_State_Success", "Commerce_Checkout_PlaceOrderState_State"}
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Success(ctx context.Context, sel ast.SelectionSet, obj *dto2.Success) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Success(ctx context.Context, sel ast.SelectionSet, obj *dto1.Success) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_PlaceOrderState_State_SuccessImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -24266,7 +24266,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Success(ctx
 
 var commerce_Checkout_PlaceOrderState_State_WaitImplementors = []string{"Commerce_Checkout_PlaceOrderState_State_Wait", "Commerce_Checkout_PlaceOrderState_State"}
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Wait(ctx context.Context, sel ast.SelectionSet, obj *dto2.Wait) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Wait(ctx context.Context, sel ast.SelectionSet, obj *dto1.Wait) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_PlaceOrderState_State_WaitImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -24293,7 +24293,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Wait(ctx co
 
 var commerce_Checkout_PlaceOrderState_State_WaitForCustomerImplementors = []string{"Commerce_Checkout_PlaceOrderState_State_WaitForCustomer", "Commerce_Checkout_PlaceOrderState_State"}
 
-func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_WaitForCustomer(ctx context.Context, sel ast.SelectionSet, obj *dto2.WaitForCustomer) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_WaitForCustomer(ctx context.Context, sel ast.SelectionSet, obj *dto1.WaitForCustomer) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_PlaceOrderState_State_WaitForCustomerImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -24320,7 +24320,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_WaitForCust
 
 var commerce_Checkout_PlacedOrderInfosImplementors = []string{"Commerce_Checkout_PlacedOrderInfos"}
 
-func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos(ctx context.Context, sel ast.SelectionSet, obj *dto2.PlacedOrderInfos) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos(ctx context.Context, sel ast.SelectionSet, obj *dto1.PlacedOrderInfos) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_PlacedOrderInfosImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -24351,7 +24351,7 @@ func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos(ctx context.Cont
 
 var commerce_Checkout_StartPlaceOrder_ResultImplementors = []string{"Commerce_Checkout_StartPlaceOrder_Result"}
 
-func (ec *executionContext) _Commerce_Checkout_StartPlaceOrder_Result(ctx context.Context, sel ast.SelectionSet, obj *dto2.StartPlaceOrderResult) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Checkout_StartPlaceOrder_Result(ctx context.Context, sel ast.SelectionSet, obj *dto1.StartPlaceOrderResult) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Checkout_StartPlaceOrder_ResultImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -25386,7 +25386,7 @@ func (ec *executionContext) _Commerce_Product_Variant(ctx context.Context, sel a
 
 var commerce_Search_ListFacetImplementors = []string{"Commerce_Search_ListFacet", "Commerce_Search_Facet"}
 
-func (ec *executionContext) _Commerce_Search_ListFacet(ctx context.Context, sel ast.SelectionSet, obj *dto1.CommerceSearchListFacet) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_ListFacet(ctx context.Context, sel ast.SelectionSet, obj *searchdto.CommerceSearchListFacet) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Search_ListFacetImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -25433,7 +25433,7 @@ func (ec *executionContext) _Commerce_Search_ListFacet(ctx context.Context, sel 
 
 var commerce_Search_ListFacetItemImplementors = []string{"Commerce_Search_ListFacetItem", "Commerce_Search_FacetItem"}
 
-func (ec *executionContext) _Commerce_Search_ListFacetItem(ctx context.Context, sel ast.SelectionSet, obj *dto1.CommerceSearchListFacetItem) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_ListFacetItem(ctx context.Context, sel ast.SelectionSet, obj *searchdto.CommerceSearchListFacetItem) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Search_ListFacetItemImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -25533,7 +25533,7 @@ func (ec *executionContext) _Commerce_Search_Meta(ctx context.Context, sel ast.S
 
 var commerce_Search_RangeFacetImplementors = []string{"Commerce_Search_RangeFacet", "Commerce_Search_Facet"}
 
-func (ec *executionContext) _Commerce_Search_RangeFacet(ctx context.Context, sel ast.SelectionSet, obj *dto1.CommerceSearchRangeFacet) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_RangeFacet(ctx context.Context, sel ast.SelectionSet, obj *searchdto.CommerceSearchRangeFacet) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Search_RangeFacetImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -25580,7 +25580,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacet(ctx context.Context, sel
 
 var commerce_Search_RangeFacetItemImplementors = []string{"Commerce_Search_RangeFacetItem", "Commerce_Search_FacetItem"}
 
-func (ec *executionContext) _Commerce_Search_RangeFacetItem(ctx context.Context, sel ast.SelectionSet, obj *dto1.CommerceSearchRangeFacetItem) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_RangeFacetItem(ctx context.Context, sel ast.SelectionSet, obj *searchdto.CommerceSearchRangeFacetItem) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Search_RangeFacetItemImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -25642,7 +25642,7 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem(ctx context.Context,
 
 var commerce_Search_SortOptionImplementors = []string{"Commerce_Search_SortOption"}
 
-func (ec *executionContext) _Commerce_Search_SortOption(ctx context.Context, sel ast.SelectionSet, obj *dto1.CommerceSearchSortOption) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_SortOption(ctx context.Context, sel ast.SelectionSet, obj *searchdto.CommerceSearchSortOption) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Search_SortOptionImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -25711,7 +25711,7 @@ func (ec *executionContext) _Commerce_Search_Suggestion(ctx context.Context, sel
 
 var commerce_Search_TreeFacetImplementors = []string{"Commerce_Search_TreeFacet", "Commerce_Search_Facet"}
 
-func (ec *executionContext) _Commerce_Search_TreeFacet(ctx context.Context, sel ast.SelectionSet, obj *dto1.CommerceSearchTreeFacet) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_TreeFacet(ctx context.Context, sel ast.SelectionSet, obj *searchdto.CommerceSearchTreeFacet) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Search_TreeFacetImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -25758,7 +25758,7 @@ func (ec *executionContext) _Commerce_Search_TreeFacet(ctx context.Context, sel 
 
 var commerce_Search_TreeFacetItemImplementors = []string{"Commerce_Search_TreeFacetItem", "Commerce_Search_FacetItem"}
 
-func (ec *executionContext) _Commerce_Search_TreeFacetItem(ctx context.Context, sel ast.SelectionSet, obj *dto1.CommerceSearchTreeFacetItem) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Search_TreeFacetItem(ctx context.Context, sel ast.SelectionSet, obj *searchdto.CommerceSearchTreeFacetItem) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, commerce_Search_TreeFacetItemImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -26731,11 +26731,11 @@ func (ec *executionContext) marshalNCommerce_Category_Attributes2flamingoᚗme�
 	return ec._Commerce_Category_Attributes(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Checkout_PlaceOrderContext2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPlaceOrderContext(ctx context.Context, sel ast.SelectionSet, v dto2.PlaceOrderContext) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Checkout_PlaceOrderContext2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPlaceOrderContext(ctx context.Context, sel ast.SelectionSet, v dto1.PlaceOrderContext) graphql.Marshaler {
 	return ec._Commerce_Checkout_PlaceOrderContext(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Checkout_PlaceOrderContext2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPlaceOrderContext(ctx context.Context, sel ast.SelectionSet, v *dto2.PlaceOrderContext) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Checkout_PlaceOrderContext2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPlaceOrderContext(ctx context.Context, sel ast.SelectionSet, v *dto1.PlaceOrderContext) graphql.Marshaler {
 	if v == nil {
 		if !ec.HasError(graphql.GetResolverContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -26749,11 +26749,11 @@ func (ec *executionContext) marshalNCommerce_Checkout_PlaceOrderPaymentInfo2flam
 	return ec._Commerce_Checkout_PlaceOrderPaymentInfo(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Checkout_PlaceOrderState_Form_Parameter2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐFormParameter(ctx context.Context, sel ast.SelectionSet, v dto2.FormParameter) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Checkout_PlaceOrderState_Form_Parameter2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐFormParameter(ctx context.Context, sel ast.SelectionSet, v dto1.FormParameter) graphql.Marshaler {
 	return ec._Commerce_Checkout_PlaceOrderState_Form_Parameter(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Checkout_PlaceOrderState_State2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐState(ctx context.Context, sel ast.SelectionSet, v dto2.State) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Checkout_PlaceOrderState_State2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐState(ctx context.Context, sel ast.SelectionSet, v dto1.State) graphql.Marshaler {
 	return ec._Commerce_Checkout_PlaceOrderState_State(ctx, sel, &v)
 }
 
@@ -26761,11 +26761,11 @@ func (ec *executionContext) marshalNCommerce_Checkout_PlaceOrderState_State_Fail
 	return ec._Commerce_Checkout_PlaceOrderState_State_FailedReason(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Checkout_StartPlaceOrder_Result2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐStartPlaceOrderResult(ctx context.Context, sel ast.SelectionSet, v dto2.StartPlaceOrderResult) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Checkout_StartPlaceOrder_Result2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐStartPlaceOrderResult(ctx context.Context, sel ast.SelectionSet, v dto1.StartPlaceOrderResult) graphql.Marshaler {
 	return ec._Commerce_Checkout_StartPlaceOrder_Result(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Checkout_StartPlaceOrder_Result2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐStartPlaceOrderResult(ctx context.Context, sel ast.SelectionSet, v *dto2.StartPlaceOrderResult) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Checkout_StartPlaceOrder_Result2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐStartPlaceOrderResult(ctx context.Context, sel ast.SelectionSet, v *dto1.StartPlaceOrderResult) graphql.Marshaler {
 	if v == nil {
 		if !ec.HasError(graphql.GetResolverContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -26879,11 +26879,11 @@ func (ec *executionContext) marshalNCommerce_Product_Variant2flamingoᚗmeᚋfla
 	return ec._Commerce_Product_Variant(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Search_Facet2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchFacet(ctx context.Context, sel ast.SelectionSet, v dto1.CommerceSearchFacet) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Search_Facet2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchFacet(ctx context.Context, sel ast.SelectionSet, v searchdto.CommerceSearchFacet) graphql.Marshaler {
 	return ec._Commerce_Search_Facet(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Search_Facet2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchFacet(ctx context.Context, sel ast.SelectionSet, v []dto1.CommerceSearchFacet) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Search_Facet2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchFacet(ctx context.Context, sel ast.SelectionSet, v []searchdto.CommerceSearchFacet) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -26907,7 +26907,7 @@ func (ec *executionContext) marshalNCommerce_Search_Facet2ᚕflamingoᚗmeᚋfla
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNCommerce_Search_Facet2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchFacet(ctx, sel, v[i])
+			ret[i] = ec.marshalNCommerce_Search_Facet2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchFacet(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -26920,15 +26920,15 @@ func (ec *executionContext) marshalNCommerce_Search_Facet2ᚕflamingoᚗmeᚋfla
 	return ret
 }
 
-func (ec *executionContext) unmarshalNCommerce_Search_KeyValueFilter2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchKeyValueFilter(ctx context.Context, v interface{}) (dto1.CommerceSearchKeyValueFilter, error) {
+func (ec *executionContext) unmarshalNCommerce_Search_KeyValueFilter2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchKeyValueFilter(ctx context.Context, v interface{}) (searchdto.CommerceSearchKeyValueFilter, error) {
 	return ec.unmarshalInputCommerce_Search_KeyValueFilter(ctx, v)
 }
 
-func (ec *executionContext) marshalNCommerce_Search_ListFacetItem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchListFacetItem(ctx context.Context, sel ast.SelectionSet, v dto1.CommerceSearchListFacetItem) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Search_ListFacetItem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchListFacetItem(ctx context.Context, sel ast.SelectionSet, v searchdto.CommerceSearchListFacetItem) graphql.Marshaler {
 	return ec._Commerce_Search_ListFacetItem(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Search_ListFacetItem2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchListFacetItem(ctx context.Context, sel ast.SelectionSet, v []*dto1.CommerceSearchListFacetItem) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Search_ListFacetItem2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchListFacetItem(ctx context.Context, sel ast.SelectionSet, v []*searchdto.CommerceSearchListFacetItem) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -26952,7 +26952,7 @@ func (ec *executionContext) marshalNCommerce_Search_ListFacetItem2ᚕᚖflamingo
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNCommerce_Search_ListFacetItem2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchListFacetItem(ctx, sel, v[i])
+			ret[i] = ec.marshalNCommerce_Search_ListFacetItem2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchListFacetItem(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -26965,7 +26965,7 @@ func (ec *executionContext) marshalNCommerce_Search_ListFacetItem2ᚕᚖflamingo
 	return ret
 }
 
-func (ec *executionContext) marshalNCommerce_Search_ListFacetItem2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchListFacetItem(ctx context.Context, sel ast.SelectionSet, v *dto1.CommerceSearchListFacetItem) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Search_ListFacetItem2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchListFacetItem(ctx context.Context, sel ast.SelectionSet, v *searchdto.CommerceSearchListFacetItem) graphql.Marshaler {
 	if v == nil {
 		if !ec.HasError(graphql.GetResolverContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -26979,11 +26979,11 @@ func (ec *executionContext) marshalNCommerce_Search_Meta2flamingoᚗmeᚋflaming
 	return ec._Commerce_Search_Meta(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Search_RangeFacetItem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchRangeFacetItem(ctx context.Context, sel ast.SelectionSet, v dto1.CommerceSearchRangeFacetItem) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Search_RangeFacetItem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRangeFacetItem(ctx context.Context, sel ast.SelectionSet, v searchdto.CommerceSearchRangeFacetItem) graphql.Marshaler {
 	return ec._Commerce_Search_RangeFacetItem(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Search_RangeFacetItem2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchRangeFacetItem(ctx context.Context, sel ast.SelectionSet, v []*dto1.CommerceSearchRangeFacetItem) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Search_RangeFacetItem2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRangeFacetItem(ctx context.Context, sel ast.SelectionSet, v []*searchdto.CommerceSearchRangeFacetItem) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -27007,7 +27007,7 @@ func (ec *executionContext) marshalNCommerce_Search_RangeFacetItem2ᚕᚖflaming
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNCommerce_Search_RangeFacetItem2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchRangeFacetItem(ctx, sel, v[i])
+			ret[i] = ec.marshalNCommerce_Search_RangeFacetItem2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRangeFacetItem(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -27020,7 +27020,7 @@ func (ec *executionContext) marshalNCommerce_Search_RangeFacetItem2ᚕᚖflaming
 	return ret
 }
 
-func (ec *executionContext) marshalNCommerce_Search_RangeFacetItem2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchRangeFacetItem(ctx context.Context, sel ast.SelectionSet, v *dto1.CommerceSearchRangeFacetItem) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Search_RangeFacetItem2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRangeFacetItem(ctx context.Context, sel ast.SelectionSet, v *searchdto.CommerceSearchRangeFacetItem) graphql.Marshaler {
 	if v == nil {
 		if !ec.HasError(graphql.GetResolverContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -27030,11 +27030,11 @@ func (ec *executionContext) marshalNCommerce_Search_RangeFacetItem2ᚖflamingo�
 	return ec._Commerce_Search_RangeFacetItem(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNCommerce_Search_SortOption2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchSortOption(ctx context.Context, sel ast.SelectionSet, v dto1.CommerceSearchSortOption) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Search_SortOption2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchSortOption(ctx context.Context, sel ast.SelectionSet, v searchdto.CommerceSearchSortOption) graphql.Marshaler {
 	return ec._Commerce_Search_SortOption(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Search_SortOption2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchSortOption(ctx context.Context, sel ast.SelectionSet, v *dto1.CommerceSearchSortOption) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Search_SortOption2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchSortOption(ctx context.Context, sel ast.SelectionSet, v *searchdto.CommerceSearchSortOption) graphql.Marshaler {
 	if v == nil {
 		if !ec.HasError(graphql.GetResolverContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -27048,11 +27048,11 @@ func (ec *executionContext) marshalNCommerce_Search_Suggestion2flamingoᚗmeᚋf
 	return ec._Commerce_Search_Suggestion(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Search_TreeFacetItem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchTreeFacetItem(ctx context.Context, sel ast.SelectionSet, v dto1.CommerceSearchTreeFacetItem) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Search_TreeFacetItem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchTreeFacetItem(ctx context.Context, sel ast.SelectionSet, v searchdto.CommerceSearchTreeFacetItem) graphql.Marshaler {
 	return ec._Commerce_Search_TreeFacetItem(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Search_TreeFacetItem2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchTreeFacetItem(ctx context.Context, sel ast.SelectionSet, v []*dto1.CommerceSearchTreeFacetItem) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Search_TreeFacetItem2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchTreeFacetItem(ctx context.Context, sel ast.SelectionSet, v []*searchdto.CommerceSearchTreeFacetItem) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -27076,7 +27076,7 @@ func (ec *executionContext) marshalNCommerce_Search_TreeFacetItem2ᚕᚖflamingo
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNCommerce_Search_TreeFacetItem2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchTreeFacetItem(ctx, sel, v[i])
+			ret[i] = ec.marshalNCommerce_Search_TreeFacetItem2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchTreeFacetItem(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -27089,7 +27089,7 @@ func (ec *executionContext) marshalNCommerce_Search_TreeFacetItem2ᚕᚖflamingo
 	return ret
 }
 
-func (ec *executionContext) marshalNCommerce_Search_TreeFacetItem2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchTreeFacetItem(ctx context.Context, sel ast.SelectionSet, v *dto1.CommerceSearchTreeFacetItem) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Search_TreeFacetItem2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchTreeFacetItem(ctx context.Context, sel ast.SelectionSet, v *searchdto.CommerceSearchTreeFacetItem) graphql.Marshaler {
 	if v == nil {
 		if !ec.HasError(graphql.GetResolverContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -28405,11 +28405,11 @@ func (ec *executionContext) marshalOCommerce_Category_AttributeValue2ᚕflamingo
 	return ret
 }
 
-func (ec *executionContext) marshalOCommerce_Category_SearchResult2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcategoryᚋinterfacesᚋgraphqlᚋdtoᚐCategorySearchResult(ctx context.Context, sel ast.SelectionSet, v dto3.CategorySearchResult) graphql.Marshaler {
+func (ec *executionContext) marshalOCommerce_Category_SearchResult2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcategoryᚋinterfacesᚋgraphqlᚋcategorydtoᚐCategorySearchResult(ctx context.Context, sel ast.SelectionSet, v categorydto.CategorySearchResult) graphql.Marshaler {
 	return ec._Commerce_Category_SearchResult(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalOCommerce_Category_SearchResult2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcategoryᚋinterfacesᚋgraphqlᚋdtoᚐCategorySearchResult(ctx context.Context, sel ast.SelectionSet, v *dto3.CategorySearchResult) graphql.Marshaler {
+func (ec *executionContext) marshalOCommerce_Category_SearchResult2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcategoryᚋinterfacesᚋgraphqlᚋcategorydtoᚐCategorySearchResult(ctx context.Context, sel ast.SelectionSet, v *categorydto.CategorySearchResult) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -28456,7 +28456,7 @@ func (ec *executionContext) marshalOCommerce_Checkout_PlaceOrderPaymentInfo2ᚕf
 	return ret
 }
 
-func (ec *executionContext) marshalOCommerce_Checkout_PlaceOrderState_Form_Parameter2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐFormParameter(ctx context.Context, sel ast.SelectionSet, v []dto2.FormParameter) graphql.Marshaler {
+func (ec *executionContext) marshalOCommerce_Checkout_PlaceOrderState_Form_Parameter2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐFormParameter(ctx context.Context, sel ast.SelectionSet, v []dto1.FormParameter) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -28496,11 +28496,11 @@ func (ec *executionContext) marshalOCommerce_Checkout_PlaceOrderState_Form_Param
 	return ret
 }
 
-func (ec *executionContext) marshalOCommerce_Checkout_PlacedOrderInfos2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPlacedOrderInfos(ctx context.Context, sel ast.SelectionSet, v dto2.PlacedOrderInfos) graphql.Marshaler {
+func (ec *executionContext) marshalOCommerce_Checkout_PlacedOrderInfos2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPlacedOrderInfos(ctx context.Context, sel ast.SelectionSet, v dto1.PlacedOrderInfos) graphql.Marshaler {
 	return ec._Commerce_Checkout_PlacedOrderInfos(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalOCommerce_Checkout_PlacedOrderInfos2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPlacedOrderInfos(ctx context.Context, sel ast.SelectionSet, v *dto2.PlacedOrderInfos) graphql.Marshaler {
+func (ec *executionContext) marshalOCommerce_Checkout_PlacedOrderInfos2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPlacedOrderInfos(ctx context.Context, sel ast.SelectionSet, v *dto1.PlacedOrderInfos) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -29033,7 +29033,7 @@ func (ec *executionContext) marshalOCommerce_Product_Variant2ᚕflamingoᚗmeᚋ
 	return ret
 }
 
-func (ec *executionContext) unmarshalOCommerce_Search_KeyValueFilter2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchKeyValueFilter(ctx context.Context, v interface{}) ([]dto1.CommerceSearchKeyValueFilter, error) {
+func (ec *executionContext) unmarshalOCommerce_Search_KeyValueFilter2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchKeyValueFilter(ctx context.Context, v interface{}) ([]searchdto.CommerceSearchKeyValueFilter, error) {
 	var vSlice []interface{}
 	if v != nil {
 		if tmp1, ok := v.([]interface{}); ok {
@@ -29043,9 +29043,9 @@ func (ec *executionContext) unmarshalOCommerce_Search_KeyValueFilter2ᚕflamingo
 		}
 	}
 	var err error
-	res := make([]dto1.CommerceSearchKeyValueFilter, len(vSlice))
+	res := make([]searchdto.CommerceSearchKeyValueFilter, len(vSlice))
 	for i := range vSlice {
-		res[i], err = ec.unmarshalNCommerce_Search_KeyValueFilter2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchKeyValueFilter(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNCommerce_Search_KeyValueFilter2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchKeyValueFilter(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -29053,19 +29053,19 @@ func (ec *executionContext) unmarshalOCommerce_Search_KeyValueFilter2ᚕflamingo
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalOCommerce_Search_Request2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchRequest(ctx context.Context, v interface{}) (dto1.CommerceSearchRequest, error) {
+func (ec *executionContext) unmarshalOCommerce_Search_Request2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRequest(ctx context.Context, v interface{}) (searchdto.CommerceSearchRequest, error) {
 	return ec.unmarshalInputCommerce_Search_Request(ctx, v)
 }
 
-func (ec *executionContext) unmarshalOCommerce_Search_Request2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchRequest(ctx context.Context, v interface{}) (*dto1.CommerceSearchRequest, error) {
+func (ec *executionContext) unmarshalOCommerce_Search_Request2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRequest(ctx context.Context, v interface{}) (*searchdto.CommerceSearchRequest, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := ec.unmarshalOCommerce_Search_Request2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchRequest(ctx, v)
+	res, err := ec.unmarshalOCommerce_Search_Request2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRequest(ctx, v)
 	return &res, err
 }
 
-func (ec *executionContext) marshalOCommerce_Search_SortOption2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchSortOption(ctx context.Context, sel ast.SelectionSet, v []*dto1.CommerceSearchSortOption) graphql.Marshaler {
+func (ec *executionContext) marshalOCommerce_Search_SortOption2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchSortOption(ctx context.Context, sel ast.SelectionSet, v []*searchdto.CommerceSearchSortOption) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -29092,7 +29092,7 @@ func (ec *executionContext) marshalOCommerce_Search_SortOption2ᚕᚖflamingoᚗ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNCommerce_Search_SortOption2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchSortOption(ctx, sel, v[i])
+			ret[i] = ec.marshalNCommerce_Search_SortOption2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchSortOption(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -29145,7 +29145,7 @@ func (ec *executionContext) marshalOCommerce_Search_Suggestion2ᚕflamingoᚗme�
 	return ret
 }
 
-func (ec *executionContext) marshalOCommerce_Search_TreeFacetItem2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchTreeFacetItem(ctx context.Context, sel ast.SelectionSet, v []*dto1.CommerceSearchTreeFacetItem) graphql.Marshaler {
+func (ec *executionContext) marshalOCommerce_Search_TreeFacetItem2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchTreeFacetItem(ctx context.Context, sel ast.SelectionSet, v []*searchdto.CommerceSearchTreeFacetItem) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -29172,7 +29172,7 @@ func (ec *executionContext) marshalOCommerce_Search_TreeFacetItem2ᚕᚖflamingo
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNCommerce_Search_TreeFacetItem2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋdtoᚐCommerceSearchTreeFacetItem(ctx, sel, v[i])
+			ret[i] = ec.marshalNCommerce_Search_TreeFacetItem2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchTreeFacetItem(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)

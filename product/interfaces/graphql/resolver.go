@@ -6,7 +6,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo-commerce/v3/search/application"
 	searchDomain "flamingo.me/flamingo-commerce/v3/search/domain"
-	"flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/dto"
+	"flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/searchdto"
 )
 
 // CommerceProductQueryResolver resolves graphql product queries
@@ -31,7 +31,7 @@ func (r *CommerceProductQueryResolver) CommerceProduct(ctx context.Context, mark
 }
 
 // CommerceProductSearch returns a search result of products based on the given search request
-func (r *CommerceProductQueryResolver) CommerceProductSearch(ctx context.Context, request *dto.CommerceSearchRequest) (*SearchResultDTO, error) {
+func (r *CommerceProductQueryResolver) CommerceProductSearch(ctx context.Context, request *searchdto.CommerceSearchRequest) (*SearchResultDTO, error) {
 
 	var filters []searchDomain.Filter
 	for _, filter := range request.KeyValueFilters {

@@ -4,7 +4,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/product/application"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	searchdomain "flamingo.me/flamingo-commerce/v3/search/domain"
-	"flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/dto"
+	"flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/searchdto"
 	"flamingo.me/flamingo-commerce/v3/search/utils"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"sort"
@@ -49,8 +49,8 @@ func (obj *SearchResultDTO) PaginationInfo() utils.PaginationInfo {
 }
 
 // Facets get facets
-func (obj *SearchResultDTO) Facets() []dto.CommerceSearchFacet {
-	var res = []dto.CommerceSearchFacet{}
+func (obj *SearchResultDTO) Facets() []searchdto.CommerceSearchFacet {
+	var res = []searchdto.CommerceSearchFacet{}
 
 	for _, facet := range obj.result.Facets {
 		mappedFacet := mapFacet(facet, obj.logger)
@@ -66,16 +66,16 @@ func (obj *SearchResultDTO) Facets() []dto.CommerceSearchFacet {
 	return res
 }
 
-func mapFacet(facet searchdomain.Facet, logger flamingo.Logger) dto.CommerceSearchFacet {
+func mapFacet(facet searchdomain.Facet, logger flamingo.Logger) searchdto.CommerceSearchFacet {
 	switch searchdomain.FacetType(facet.Type) {
 	case searchdomain.ListFacet:
-		return dto.WrapListFacet(facet)
+		return searchdto.WrapListFacet(facet)
 
 	case searchdomain.TreeFacet:
-		return dto.WrapTreeFacet(facet)
+		return searchdto.WrapTreeFacet(facet)
 
 	case searchdomain.RangeFacet:
-		return dto.WrapRangeFacet(facet)
+		return searchdto.WrapRangeFacet(facet)
 
 	default:
 		logger.Warn("Trying to map unknown facet type: ", facet.Type)

@@ -1,4 +1,4 @@
-package dto
+package categorydto
 
 import (
 	"flamingo.me/flamingo-commerce/v3/category/domain"

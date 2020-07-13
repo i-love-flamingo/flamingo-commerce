@@ -1,4 +1,4 @@
-package dto
+package searchdto
 
 import searchdomain "flamingo.me/flamingo-commerce/v3/search/domain"
 
