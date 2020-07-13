@@ -1,0 +1,10 @@
+query {
+    Commerce_Product_Search(searchRequest: {query: ""}) {
+        facets {
+            name
+            items {
+                value
+            }
+        }
+    }
+}

@@ -1,7 +1,6 @@
 package graphql
 
 import (
-	"flamingo.me/flamingo-commerce/v3/product/application"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/graphql"
 	"github.com/99designs/gqlgen/codegen/config"
@@ -61,6 +60,6 @@ func (*Service) Models() map[string]config.TypeMapEntry {
 		"Commerce_ProductLoyaltyPriceInfo":   domain.LoyaltyPriceInfo{},
 		"Commerce_ProductLoyaltyEarningInfo": domain.LoyaltyEarningInfo{},
 		"Commerce_PriceContext":              domain.PriceContext{},
-		"Commerce_Product_SearchResult":      application.SearchResult{},
+		"Commerce_Product_SearchResult":      SearchResultDTO{},
 	}.Models()
 }

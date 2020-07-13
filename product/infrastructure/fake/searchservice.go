@@ -46,7 +46,32 @@ func (s *SearchService) Search(ctx context.Context, filter ...searchDomain.Filte
 			},
 			Hits:       []searchDomain.Document{p1, p2},
 			Suggestion: []searchDomain.Suggestion{},
-			Facets:     nil,
+			Facets: map[string]searchDomain.Facet{"brandCode": {
+				Type:  string(searchDomain.ListFacet),
+				Name:  "brandCode",
+				Label: "Brand",
+				Items: []*searchDomain.FacetItem{{
+					Label:    "Apple",
+					Value:    "apple",
+					Active:   false,
+					Selected: false,
+					Count:    2,
+				}},
+				Position: 0,
+			},
+				"retailerCode": {
+					Type:  string(searchDomain.ListFacet),
+					Name:  "retailerCode",
+					Label: "Retailer",
+					Items: []*searchDomain.FacetItem{{
+						Label:    "Test Retailer",
+						Value:    "retailer",
+						Active:   false,
+						Selected: false,
+						Count:    2,
+					}},
+					Position: 0,
+				}},
 		},
 		Hits: []domain.BasicProduct{p1, p2},
 	}, nil
