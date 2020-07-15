@@ -105,6 +105,7 @@ func TestValidateCart_Run(t *testing.T) {
 		new(flamingo.NullLogger),
 		nil,
 		nil,
+		nil,
 	)
 
 	for _, tt := range tests {

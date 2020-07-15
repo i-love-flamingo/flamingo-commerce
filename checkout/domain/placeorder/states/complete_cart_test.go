@@ -170,6 +170,7 @@ func TestCompleteCart_Run(t *testing.T) {
 				new(flamingo.NullLogger),
 				nil,
 				nil,
+				nil,
 			)
 			cartService := &cartApplication.CartService{}
 			cartService.Inject(
@@ -274,6 +275,7 @@ func TestCompleteCart_Rollback(t *testing.T) {
 					return us
 				}(),
 				new(flamingo.NullLogger),
+				nil,
 				nil,
 				nil,
 			)
