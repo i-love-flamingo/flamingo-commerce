@@ -16,6 +16,8 @@
   * Session added as parameter to interface method `MaxQuantityRestrictor.Restrict`
   * Session added as parameter to `RestrictionService.RestrictQty`
 * Switch module config to CUE
+* SessionCacheHandling
+  * Add new config for multistore setup to be able to switch between the carts inside the different stores. ConfigKey: commerce.cart.cartCachePrefix
 * GraphQL
   * Add new mutation to set / update one or multiple delivery addresses `Commerce_Cart_UpdateDeliveryAddresses`
   * Add new mutation to update the shipping options (carrier / method) of an existing delivery `Commerce_Cart_UpdateDeliveryShippingOptions`
