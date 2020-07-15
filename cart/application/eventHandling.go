@@ -6,13 +6,14 @@ import (
 
 	"flamingo.me/flamingo/v3/framework/web"
 
-	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo/v3/core/oauth/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
+
+	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 )
 
 type (
-	//EventReceiver - handles events from other packages
+	// EventReceiver - handles events from other packages
 	EventReceiver struct {
 		logger              flamingo.Logger
 		cartService         *CartService
@@ -38,15 +39,15 @@ func (e *EventReceiver) Inject(
 	}
 }
 
-//Notify should get called by flamingo Eventlogic
+// Notify should get called by flamingo Eventlogic
 func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 	switch currentEvent := event.(type) {
-	//Handle Logout
+	// Handle Logout
 	case *domain.LogoutEvent:
 		if e.cartCache != nil {
 			e.cartCache.DeleteAll(ctx, currentEvent.Session)
 		}
-	//Handle LoginEvent and Merge Cart
+	// Handle LoginEvent and Merge Cart
 	case *domain.LoginEvent:
 		web.RunWithDetachedContext(ctx, func(ctx context.Context) {
 			if currentEvent == nil {

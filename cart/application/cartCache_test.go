@@ -278,6 +278,7 @@ func TestCartSessionCache_CartExpiry(t *testing.T) {
 		flamingo.NullLogger{},
 		&struct {
 			LifetimeSeconds float64 `inject:"config:commerce.cart.cacheLifetime"` // in seconds
+			CartCachePrefix string  `inject:"config:commerce.cart.cartCachePrefix,optional"`
 		}{
 			LifetimeSeconds: 1,
 		},

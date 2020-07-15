@@ -34,10 +34,11 @@ type (
 		restrictionService  *validation.RestrictionService
 		deleteEmptyDelivery bool
 		// optionals - these may be nil
-		cartValidator     validation.Validator
-		itemValidator     validation.ItemValidator
-		cartCache         CartCache
-		placeOrderService placeorder.Service
+		cartValidator      validation.Validator
+		itemValidator      validation.ItemValidator
+		cartCache          CartCache
+		sessionCachePrefix string
+		placeOrderService  placeorder.Service
 	}
 
 	// AuthManagerInterface is the interface required to get Auth infos for CustomerCart handling
@@ -92,6 +93,7 @@ func (cs *CartService) Inject(
 	config *struct {
 		DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
 		DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
+		CartCachePrefix     string `inject:"config:commerce.cart.cartCachePrefix,optional"`
 	},
 	optionals *struct {
 		CartValidator     validation.Validator     `inject:",optional"`
@@ -111,6 +113,9 @@ func (cs *CartService) Inject(
 	if config != nil {
 		cs.defaultDeliveryCode = config.DefaultDeliveryCode
 		cs.deleteEmptyDelivery = config.DeleteEmptyDelivery
+		cs.sessionCachePrefix = GuestCartSessionKey + config.CartCachePrefix
+	} else {
+		cs.sessionCachePrefix = GuestCartSessionKey
 	}
 	if optionals != nil {
 		cs.cartValidator = optionals.CartValidator
@@ -147,7 +152,7 @@ func (cs *CartService) ValidateCurrentCart(ctx context.Context, session *web.Ses
 	return cs.ValidateCart(ctx, session, decoratedCart), nil
 }
 
-// UpdatePaymentSelection updates the paymentselection in the cart
+// UpdatePaymentSelection updates the payment selection in the cart
 func (cs *CartService) UpdatePaymentSelection(ctx context.Context, session *web.Session, paymentSelection cartDomain.PaymentSelection) error {
 	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
@@ -518,7 +523,7 @@ func (cs *CartService) CompleteCurrentCart(ctx context.Context) (*cartDomain.Car
 
 	session := web.SessionFromContext(ctx)
 	if !cart.BelongsToAuthenticatedUser {
-		session.Delete(GuestCartSessionKey)
+		session.Delete(cs.sessionCachePrefix)
 	}
 
 	return completedCart, nil
@@ -555,7 +560,7 @@ func (cs *CartService) RestoreCart(ctx context.Context, cart *cartDomain.Cart) (
 	}
 
 	if !restoredCart.BelongsToAuthenticatedUser {
-		session.Store(GuestCartSessionKey, restoredCart.ID)
+		session.Store(cs.sessionCachePrefix, restoredCart.ID)
 	}
 
 	return restoredCart, nil

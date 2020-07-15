@@ -78,6 +78,9 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 						}{
 							CartCache: new(MockCartCache),
 						},
+						&struct {
+							CartCachePrefix string `inject:"config:commerce.cart.cartCachePrefix,optional"`
+						}{},
 					)
 					return result
 				}(),
@@ -119,7 +122,7 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 				tt.fields.RestrictionService,
 				authmanager,
 				tt.fields.Logger,
-				tt.fields.config,
+				nil,
 				nil,
 			)
 
@@ -155,6 +158,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 		config              *struct {
 			DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
 			DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
+			CartCachePrefix     string `inject:"config:commerce.cart.cartCachePrefix,optional"`
 		}
 		DeliveryInfoBuilder cartDomain.DeliveryInfoBuilder
 		CartCache           cartApplication.CartCache
@@ -196,6 +200,9 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 						}{
 							CartCache: new(MockCartWithItemCache),
 						},
+						&struct {
+							CartCachePrefix string `inject:"config:commerce.cart.cartCachePrefix,optional"`
+						}{},
 					)
 					return result
 				}(),
@@ -206,6 +213,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 				config: &struct {
 					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
 					DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
+					CartCachePrefix     string `inject:"config:commerce.cart.cartCachePrefix,optional"`
 				}{
 					DefaultDeliveryCode: "default_delivery_code",
 					DeleteEmptyDelivery: false,
@@ -254,6 +262,9 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 						}{
 							CartCache: new(MockCartWithItemCache),
 						},
+						&struct {
+							CartCachePrefix string `inject:"config:commerce.cart.cartCachePrefix,optional"`
+						}{},
 					)
 					return result
 				}(),
@@ -264,6 +275,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 				config: &struct {
 					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
 					DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
+					CartCachePrefix     string `inject:"config:commerce.cart.cartCachePrefix,optional"`
 				}{
 					DefaultDeliveryCode: "default_delivery_code",
 					DeleteEmptyDelivery: false,
@@ -328,6 +340,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 						}{
 							CartCache: new(MockCartWithItemCache),
 						},
+						nil,
 					)
 					return result
 				}(),
@@ -338,6 +351,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 				config: &struct {
 					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
 					DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
+					CartCachePrefix     string `inject:"config:commerce.cart.cartCachePrefix,optional"`
 				}{
 					DefaultDeliveryCode: "default_delivery_code",
 					DeleteEmptyDelivery: false,
@@ -418,6 +432,7 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 		config              *struct {
 			DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
 			DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
+			CartCachePrefix     string `inject:"config:commerce.cart.cartCachePrefix,optional"`
 		}
 		DeliveryInfoBuilder cartDomain.DeliveryInfoBuilder
 		CartCache           cartApplication.CartCache
@@ -461,6 +476,9 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 						}{
 							CartCache: new(MockCartWithItemCacheWithAdditionalData),
 						},
+						&struct {
+							CartCachePrefix string `inject:"config:commerce.cart.cartCachePrefix,optional"`
+						}{},
 					)
 					return result
 				}(),
@@ -471,6 +489,7 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 				config: &struct {
 					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
 					DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
+					CartCachePrefix     string `inject:"config:commerce.cart.cartCachePrefix,optional"`
 				}{
 					DefaultDeliveryCode: "default_delivery_code",
 					DeleteEmptyDelivery: false,
@@ -512,6 +531,9 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 						}{
 							CartCache: new(MockCartWithItemCache),
 						},
+						&struct {
+							CartCachePrefix string `inject:"config:commerce.cart.cartCachePrefix,optional"`
+						}{},
 					)
 					return result
 				}(),
@@ -522,6 +544,7 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 				config: &struct {
 					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
 					DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
+					CartCachePrefix     string `inject:"config:commerce.cart.cartCachePrefix,optional"`
 				}{
 					DefaultDeliveryCode: "default_delivery_code",
 					DeleteEmptyDelivery: false,
@@ -587,6 +610,7 @@ func TestCartService_ForceReserveOrderIDAndSave(t *testing.T) {
 		config              *struct {
 			DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
 			DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
+			CartCachePrefix     string `inject:"config:commerce.cart.cartCachePrefix,optional"`
 		}
 		DeliveryInfoBuilder cartDomain.DeliveryInfoBuilder
 		CartCache           cartApplication.CartCache
@@ -630,6 +654,9 @@ func TestCartService_ForceReserveOrderIDAndSave(t *testing.T) {
 						}{
 							CartCache: new(MockCartWithItemCacheWithAdditionalData),
 						},
+						&struct {
+							CartCachePrefix string `inject:"config:commerce.cart.cartCachePrefix,optional"`
+						}{},
 					)
 					return result
 				}(),
@@ -640,6 +667,7 @@ func TestCartService_ForceReserveOrderIDAndSave(t *testing.T) {
 				config: &struct {
 					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
 					DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
+					CartCachePrefix     string `inject:"config:commerce.cart.cartCachePrefix,optional"`
 				}{
 					DefaultDeliveryCode: "default_delivery_code",
 					DeleteEmptyDelivery: false,
@@ -681,6 +709,9 @@ func TestCartService_ForceReserveOrderIDAndSave(t *testing.T) {
 						}{
 							CartCache: new(MockCartWithItemCache),
 						},
+						&struct {
+							CartCachePrefix string `inject:"config:commerce.cart.cartCachePrefix,optional"`
+						}{},
 					)
 					return result
 				}(),
@@ -691,9 +722,11 @@ func TestCartService_ForceReserveOrderIDAndSave(t *testing.T) {
 				config: &struct {
 					DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
 					DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
+					CartCachePrefix     string `inject:"config:commerce.cart.cartCachePrefix,optional"`
 				}{
 					DefaultDeliveryCode: "default_delivery_code",
 					DeleteEmptyDelivery: false,
+					CartCachePrefix:     "",
 				},
 				DeliveryInfoBuilder: new(MockDeliveryInfoBuilder),
 				CartCache:           new(MockCartWithItemCache),
@@ -970,6 +1003,9 @@ func TestCartService_CartInEvent(t *testing.T) {
 			}{
 				CartCache: new(MockCartWithItemCacheWithAdditionalData),
 			},
+			&struct {
+				CartCachePrefix string `inject:"config:commerce.cart.cartCachePrefix,optional"`
+			}{},
 		)
 		return result
 	}()
@@ -981,6 +1017,7 @@ func TestCartService_CartInEvent(t *testing.T) {
 	config := &struct {
 		DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
 		DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
+		CartCachePrefix     string `inject:"config:commerce.cart.cartCachePrefix,optional"`
 	}{
 		DefaultDeliveryCode: "default_delivery_code",
 		DeleteEmptyDelivery: false,

@@ -35,13 +35,13 @@ var (
 	_ cartDomain.GuestCartService = (*MockGuestCartServiceAdapter)(nil)
 )
 
-func (m *MockGuestCartServiceAdapter) GetCart(ctx context.Context, cartID string) (*cartDomain.Cart, error) {
+func (m *MockGuestCartServiceAdapter) GetCart(_ context.Context, _ string) (*cartDomain.Cart, error) {
 	return &cartDomain.Cart{
 		ID: "mock_guest_cart",
 	}, nil
 }
 
-func (m *MockGuestCartServiceAdapter) GetNewCart(ctx context.Context) (*cartDomain.Cart, error) {
+func (m *MockGuestCartServiceAdapter) GetNewCart(_ context.Context) (*cartDomain.Cart, error) {
 	return &cartDomain.Cart{
 		ID: "mock_guest_cart",
 	}, nil
@@ -51,7 +51,7 @@ func (m *MockGuestCartServiceAdapter) GetModifyBehaviour(context.Context) (cartD
 	return new(cartInfrastructure.InMemoryBehaviour), nil
 }
 
-func (m *MockGuestCartServiceAdapter) RestoreCart(ctx context.Context, cart cartDomain.Cart) (*cartDomain.Cart, error) {
+func (m *MockGuestCartServiceAdapter) RestoreCart(_ context.Context, cart cartDomain.Cart) (*cartDomain.Cart, error) {
 	restoredCart := cart
 	restoredCart.ID = "1111"
 	return &restoredCart, nil
@@ -67,11 +67,11 @@ type (
 	MockGuestCartServiceAdapterError struct{}
 )
 
-func (m *MockGuestCartServiceAdapterError) GetCart(ctx context.Context, cartID string) (*cartDomain.Cart, error) {
+func (m *MockGuestCartServiceAdapterError) GetCart(_ context.Context, _ string) (*cartDomain.Cart, error) {
 	return nil, errors.New("defective")
 }
 
-func (m *MockGuestCartServiceAdapterError) GetNewCart(ctx context.Context) (*cartDomain.Cart, error) {
+func (m *MockGuestCartServiceAdapterError) GetNewCart(_ context.Context) (*cartDomain.Cart, error) {
 	return nil, errors.New("defective")
 }
 
@@ -79,7 +79,7 @@ func (m *MockGuestCartServiceAdapterError) GetModifyBehaviour(context.Context) (
 	return new(cartInfrastructure.InMemoryBehaviour), nil
 }
 
-func (m *MockGuestCartServiceAdapterError) RestoreCart(ctx context.Context, cart cartDomain.Cart) (*cartDomain.Cart, error) {
+func (m *MockGuestCartServiceAdapterError) RestoreCart(_ context.Context, _ cartDomain.Cart) (*cartDomain.Cart, error) {
 	return nil, errors.New("defective")
 }
 
@@ -98,13 +98,13 @@ func (m *MockCustomerCartService) GetModifyBehaviour(context.Context, domain.Aut
 	return new(cartInfrastructure.InMemoryBehaviour), nil
 }
 
-func (m *MockCustomerCartService) GetCart(ctx context.Context, auth domain.Auth, cartID string) (*cartDomain.Cart, error) {
+func (m *MockCustomerCartService) GetCart(_ context.Context, _ domain.Auth, _ string) (*cartDomain.Cart, error) {
 	return &cartDomain.Cart{
 		ID: "mock_customer_cart",
 	}, nil
 }
 
-func (m *MockCustomerCartService) RestoreCart(ctx context.Context, auth domain.Auth, cart cartDomain.Cart) (*cartDomain.Cart, error) {
+func (m *MockCustomerCartService) RestoreCart(_ context.Context, _ domain.Auth, _ cartDomain.Cart) (*cartDomain.Cart, error) {
 	panic("implement me")
 }
 
@@ -114,7 +114,7 @@ type (
 	MockProductService struct{}
 )
 
-func (m *MockProductService) Get(ctx context.Context, marketplaceCode string) (productDomain.BasicProduct, error) {
+func (m *MockProductService) Get(_ context.Context, _ string) (productDomain.BasicProduct, error) {
 	mockProduct := new(productDomain.SimpleProduct)
 
 	mockProduct.Identifier = "mock_product"
@@ -134,7 +134,7 @@ func (m *MockCartCache) GetCart(context.Context, *web.Session, cartApplication.C
 	return m.CachedCart, nil
 }
 
-func (m *MockCartCache) CacheCart(ctx context.Context, s *web.Session, cci cartApplication.CartCacheIdentifier, cart *cartDomain.Cart) error {
+func (m *MockCartCache) CacheCart(_ context.Context, _ *web.Session, _ cartApplication.CartCacheIdentifier, cart *cartDomain.Cart) error {
 	m.CachedCart = cart
 	return nil
 }
@@ -167,15 +167,15 @@ var (
 	_ events.EventPublisher = (*MockEventPublisher)(nil)
 )
 
-func (m *MockEventPublisher) PublishAddToCartEvent(ctx context.Context, cart *cartDomain.Cart, marketPlaceCode string, variantMarketPlaceCode string, qty int) {
+func (m *MockEventPublisher) PublishAddToCartEvent(_ context.Context, _ *cartDomain.Cart, _ string, _ string, _ int) {
 	m.Called()
 }
 
-func (m *MockEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context, cart *cartDomain.Cart, item *cartDomain.Item, qtyBefore int, qtyAfter int) {
+func (m *MockEventPublisher) PublishChangedQtyInCartEvent(_ context.Context, _ *cartDomain.Cart, _ *cartDomain.Item, _ int, _ int) {
 	m.Called()
 }
 
-func (m *MockEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos placeorder.PlacedOrderInfos) {
+func (m *MockEventPublisher) PublishOrderPlacedEvent(_ context.Context, _ *cartDomain.Cart, _ placeorder.PlacedOrderInfos) {
 	m.Called()
 }
 
@@ -183,7 +183,7 @@ type (
 	MockDeliveryInfoBuilder struct{}
 )
 
-func (m *MockDeliveryInfoBuilder) BuildByDeliveryCode(deliveryCode string) (*cartDomain.DeliveryInfo, error) {
+func (m *MockDeliveryInfoBuilder) BuildByDeliveryCode(_ string) (*cartDomain.DeliveryInfo, error) {
 	return &cartDomain.DeliveryInfo{}, nil
 }
 
@@ -195,13 +195,13 @@ type (
 
 var _ authApplication.UserServiceInterface = (*MockUserService)(nil)
 
-func (m *MockUserService) GetUser(ctx context.Context, session *web.Session) *domain.User {
+func (m *MockUserService) GetUser(_ context.Context, _ *web.Session) *domain.User {
 	return &domain.User{
 		Name: "Test",
 	}
 }
 
-func (m *MockUserService) IsLoggedIn(ctx context.Context, session *web.Session) bool {
+func (m *MockUserService) IsLoggedIn(_ context.Context, _ *web.Session) bool {
 	return m.LoggedIn
 }
 
@@ -333,6 +333,9 @@ func TestCartReceiverService_ShouldHaveGuestCart(t *testing.T) {
 				}{
 					CartCache: tt.fields.CartCache,
 				},
+				&struct {
+					CartCachePrefix string `inject:"config:commerce.cart.cartCachePrefix,optional"`
+				}{},
 			)
 
 			got := cs.ShouldHaveGuestCart(tt.args.session)
@@ -465,6 +468,9 @@ func TestCartReceiverService_ViewGuestCart(t *testing.T) {
 				}{
 					CartCache: tt.fields.CartCache,
 				},
+				&struct {
+					CartCachePrefix string `inject:"config:commerce.cart.cartCachePrefix,optional"`
+				}{},
 			)
 
 			got, err := cs.ViewGuestCart(tt.args.ctx, tt.args.session)
@@ -592,6 +598,9 @@ func TestCartReceiverService_DecorateCart(t *testing.T) {
 				}{
 					CartCache: tt.fields.CartCache,
 				},
+				&struct {
+					CartCachePrefix string `inject:"config:commerce.cart.cartCachePrefix,optional"`
+				}{},
 			)
 
 			got, err := cs.DecorateCart(tt.args.ctx, tt.args.cart)
@@ -716,6 +725,9 @@ func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 				}{
 					CartCache: tt.fields.CartCache,
 				},
+				&struct {
+					CartCachePrefix string `inject:"config:commerce.cart.cartCachePrefix,optional"`
+				}{},
 			)
 
 			got, got1, err := cs.GetDecoratedCart(tt.args.ctx, tt.args.session)
@@ -932,6 +944,9 @@ func TestCartReceiverService_RestoreCart(t *testing.T) {
 				}{
 					CartCache: tt.fields.cartCache,
 				},
+				&struct {
+					CartCachePrefix string `inject:"config:commerce.cart.cartCachePrefix,optional"`
+				}{},
 			)
 			got, err := cs.RestoreCart(tt.args.ctx, tt.args.session, tt.args.cartToRestore)
 			if (err != nil) != tt.wantErr {
@@ -979,6 +994,9 @@ func TestCartReceiverService_ModifyBehaviour(t *testing.T) {
 			}{
 				CartCache: &MockCartCache{},
 			},
+			&struct {
+				CartCachePrefix string `inject:"config:commerce.cart.cartCachePrefix,optional"`
+			}{},
 		)
 
 		behaviour, err := cs.ModifyBehaviour(context.Background())
@@ -1002,6 +1020,9 @@ func TestCartReceiverService_ModifyBehaviour(t *testing.T) {
 			}{
 				CartCache: &MockCartCache{},
 			},
+			&struct {
+				CartCachePrefix string `inject:"config:commerce.cart.cartCachePrefix,optional"`
+			}{},
 		)
 
 		behaviour, err := cs.ModifyBehaviour(context.Background())
@@ -1025,6 +1046,9 @@ func TestCartReceiverService_ModifyBehaviour(t *testing.T) {
 			}{
 				CartCache: &MockCartCache{},
 			},
+			&struct {
+				CartCachePrefix string `inject:"config:commerce.cart.cartCachePrefix,optional"`
+			}{},
 		)
 
 		behaviour, err := cs.ModifyBehaviour(context.Background())
