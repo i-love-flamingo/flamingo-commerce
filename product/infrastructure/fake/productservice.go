@@ -115,16 +115,19 @@ func (ps *ProductService) Get(ctx context.Context, marketplaceCode string) (doma
 		return product, nil
 	}
 	if marketplaceCode == "fake_simple" {
-		return ps.FakeSimple(marketplaceCode, false, false, false), nil
+		return ps.FakeSimple(marketplaceCode, false, false, false, true, false), nil
+	}
+	if marketplaceCode == "fake_fixed_simple_without_discounts" {
+		return ps.FakeSimple(marketplaceCode, false, false, false, false, true), nil
 	}
 	if marketplaceCode == "fake_simple_out_of_stock" {
-		return ps.FakeSimple(marketplaceCode, false, false, true), nil
+		return ps.FakeSimple(marketplaceCode, false, false, true, true, false), nil
 	}
-	return nil, domain.ProductNotFound{MarketplaceCode: "Code " + marketplaceCode + " Not implemented in FAKE: Only code 'fake_configurable' or 'fake_simple' or 'fake_simple_out_of_stock' should be used"}
+	return nil, domain.ProductNotFound{MarketplaceCode: "Code " + marketplaceCode + " Not implemented in FAKE: Only code 'fake_configurable' or 'fake_simple' or 'fake_simple_out_of_stock' or 'fake_fixed_simple_without_discounts' should be used"}
 }
 
 // FakeSimple - generate a simple fake product
-func (ps *ProductService) FakeSimple(marketplaceCode string, isNew bool, isExclusive bool, isOutOfStock bool) domain.SimpleProduct {
+func (ps *ProductService) FakeSimple(marketplaceCode string, isNew bool, isExclusive bool, isOutOfStock bool, isDiscounted bool, hasFixedPrice bool) domain.SimpleProduct {
 	product := domain.SimpleProduct{}
 	product.Title = "TypeSimple product"
 	ps.addBasicData(&product.BasicProductData)
@@ -147,7 +150,17 @@ func (ps *ProductService) FakeSimple(marketplaceCode string, isNew bool, isExclu
 		},
 	}
 
-	product.ActivePrice = ps.getPrice(20.99+float64(rand.Intn(10)), 10.49+float64(rand.Intn(10)))
+	discountedPrice := 0.0
+	if isDiscounted {
+		discountedPrice = 10.49 + float64(rand.Intn(10))
+	}
+
+	defaultPrice := 20.99 + float64(rand.Intn(10))
+	if hasFixedPrice {
+		defaultPrice = 20.99
+	}
+
+	product.ActivePrice = ps.getPrice(defaultPrice, discountedPrice)
 	product.MarketPlaceCode = marketplaceCode
 
 	product.CreatedAt = time.Date(2019, 6, 29, 00, 00, 00, 00, time.UTC)
@@ -258,7 +271,7 @@ func (ps *ProductService) getPrice(defaultP float64, discounted float64) domain.
 	}
 
 	price.Default = priceDomain.NewFromFloat(defaultP, currency).GetPayable()
-	if discounted != 0 {
+	if discounted > 0 {
 		price.Discounted = priceDomain.NewFromFloat(discounted, currency).GetPayable()
 		price.DiscountText = "Super test campaign"
 		price.IsDiscounted = true
