@@ -9,6 +9,7 @@
   * exposed loyalty earnings
   * Added facets to fake search service
 * Expose unit of product variant attributes
+* fake: add loyalty pricing for fake_simple product
 
 **cart**
 * **Breaking**
