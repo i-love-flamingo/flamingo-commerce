@@ -43,8 +43,6 @@ func (ps *ProductService) Inject(
 
 // Get returns a product struct
 func (ps *ProductService) Get(ctx context.Context, marketplaceCode string) (domain.BasicProduct, error) {
-	//defer ctx.Profile("service", "get product "+foreignId)()
-
 	if marketplaceCode == "fake_configurable" {
 		product := ps.getFakeConfigurable(marketplaceCode)
 		product.RetailerCode = "retailer"
@@ -135,6 +133,12 @@ func (ps *ProductService) FakeSimple(marketplaceCode string, isNew bool, isExclu
 		IsSaleable:   true,
 		SaleableTo:   time.Now().Add(time.Hour * time.Duration(1)),
 		SaleableFrom: time.Now().Add(time.Hour * time.Duration(-1)),
+		LoyaltyPrices: []domain.LoyaltyPriceInfo{
+			{
+				Type:    "AwesomeLoyaltyProgram",
+				Default: priceDomain.NewFromFloat(500, "BonusPoints"),
+			},
+		},
 		LoyaltyEarnings: []domain.LoyaltyEarningInfo{
 			{
 				Type:    "AwesomeLoyaltyProgram",
@@ -159,6 +163,10 @@ func (ps *ProductService) FakeSimple(marketplaceCode string, isNew bool, isExclu
 		MarketPlaceCode:  product.MarketPlaceCode,
 		TeaserPrice: domain.PriceInfo{
 			Default: priceDomain.NewFromFloat(9.99, "SD").GetPayable(),
+		},
+		TeaserLoyaltyPriceInfo: &domain.LoyaltyPriceInfo{
+			Type:    "AwesomeLoyaltyProgram",
+			Default: priceDomain.NewFromFloat(500, "BonusPoints"),
 		},
 		TeaserLoyaltyEarningInfo: &domain.LoyaltyEarningInfo{
 			Type:    "AwesomeLoyaltyProgram",
