@@ -42,23 +42,16 @@ func (ps *ProductService) Inject(
 }
 
 // Get returns a product struct
-func (ps *ProductService) Get(ctx context.Context, marketplaceCode string) (domain.BasicProduct, error) {
-	//defer ctx.Profile("service", "get product "+foreignId)()
-
-	if marketplaceCode == "fake_configurable" {
+func (ps *ProductService) Get(_ context.Context, marketplaceCode string) (domain.BasicProduct, error) {
+	switch marketplaceCode {
+	case "fake_configurable":
 		product := ps.getFakeConfigurable(marketplaceCode)
 		product.RetailerCode = "retailer"
 
 		product.VariantVariationAttributes = []string{"color", "size", "manufacturerColor", "manufacturerColorCode"}
 
-		// prepare departure / arrival attributes
-		// add departure / arrival to attributes
-		collectionOptionList := make([]interface{}, 2)
-		collectionOptionList[0] = "departure"
-		collectionOptionList[1] = "arrival"
-
 		variants := []struct {
-			marketplacecode string
+			marketplaceCode string
 			title           string
 			attributes      domain.Attributes
 			stockLevel      string
@@ -99,12 +92,12 @@ func (ps *ProductService) Get(ctx context.Context, marketplaceCode string) (doma
 		}
 
 		for _, variant := range variants {
-			simpleVariant := ps.fakeVariant(variant.marketplacecode)
+			simpleVariant := ps.fakeVariant(variant.marketplaceCode)
 			simpleVariant.Title = variant.title
 			simpleVariant.Attributes = variant.attributes
 			simpleVariant.StockLevel = variant.stockLevel
 
-			// Give new images for variants with custom colours
+			// Give new images for variants with custom colors
 			if simpleVariant.Attributes.HasAttribute("manufacturerColorCode") {
 				manufacturerColorCode := simpleVariant.Attributes["manufacturerColorCode"].Value()
 				manufacturerColorCode = strings.TrimPrefix(manufacturerColorCode, "#")
@@ -115,18 +108,22 @@ func (ps *ProductService) Get(ctx context.Context, marketplaceCode string) (doma
 		}
 
 		return product, nil
+
+	case "fake_simple":
+		return ps.FakeSimple(marketplaceCode, false, false, false, true, false), nil
+
+	case "fake_fixed_simple_without_discounts":
+		return ps.FakeSimple(marketplaceCode, false, false, false, false, true), nil
+
+	case "fake_simple_out_of_stock":
+		return ps.FakeSimple(marketplaceCode, false, false, true, true, false), nil
 	}
-	if marketplaceCode == "fake_simple" {
-		return ps.FakeSimple(marketplaceCode, false, false, false), nil
-	}
-	if marketplaceCode == "fake_simple_out_of_stock" {
-		return ps.FakeSimple(marketplaceCode, false, false, true), nil
-	}
-	return nil, domain.ProductNotFound{MarketplaceCode: "Code " + marketplaceCode + " Not implemented in FAKE: Only code 'fake_configurable' or 'fake_simple' or 'fake_simple_out_of_stock' should be used"}
+
+	return nil, domain.ProductNotFound{MarketplaceCode: "Code " + marketplaceCode + " Not implemented in FAKE: Only code 'fake_configurable' or 'fake_simple' or 'fake_simple_out_of_stock' or 'fake_fixed_simple_without_discounts' should be used"}
 }
 
-// FakeSimple - generate a simple fake product
-func (ps *ProductService) FakeSimple(marketplaceCode string, isNew bool, isExclusive bool, isOutOfStock bool) domain.SimpleProduct {
+// FakeSimple generates a simple fake product
+func (ps *ProductService) FakeSimple(marketplaceCode string, isNew bool, isExclusive bool, isOutOfStock bool, isDiscounted bool, hasFixedPrice bool) domain.SimpleProduct {
 	product := domain.SimpleProduct{}
 	product.Title = "TypeSimple product"
 	ps.addBasicData(&product.BasicProductData)
@@ -135,6 +132,12 @@ func (ps *ProductService) FakeSimple(marketplaceCode string, isNew bool, isExclu
 		IsSaleable:   true,
 		SaleableTo:   time.Now().Add(time.Hour * time.Duration(1)),
 		SaleableFrom: time.Now().Add(time.Hour * time.Duration(-1)),
+		LoyaltyPrices: []domain.LoyaltyPriceInfo{
+			{
+				Type:    "AwesomeLoyaltyProgram",
+				Default: priceDomain.NewFromFloat(500, "BonusPoints"),
+			},
+		},
 		LoyaltyEarnings: []domain.LoyaltyEarningInfo{
 			{
 				Type:    "AwesomeLoyaltyProgram",
@@ -143,7 +146,17 @@ func (ps *ProductService) FakeSimple(marketplaceCode string, isNew bool, isExclu
 		},
 	}
 
-	product.ActivePrice = ps.getPrice(20.99+float64(rand.Intn(10)), 10.49+float64(rand.Intn(10)))
+	discountedPrice := 0.0
+	if isDiscounted {
+		discountedPrice = 10.49 + float64(rand.Intn(10))
+	}
+
+	defaultPrice := 20.99 + float64(rand.Intn(10))
+	if hasFixedPrice {
+		defaultPrice = 20.99
+	}
+
+	product.ActivePrice = ps.getPrice(defaultPrice, discountedPrice)
 	product.MarketPlaceCode = marketplaceCode
 
 	product.CreatedAt = time.Date(2019, 6, 29, 00, 00, 00, 00, time.UTC)
@@ -159,6 +172,10 @@ func (ps *ProductService) FakeSimple(marketplaceCode string, isNew bool, isExclu
 		MarketPlaceCode:  product.MarketPlaceCode,
 		TeaserPrice: domain.PriceInfo{
 			Default: priceDomain.NewFromFloat(9.99, "SD").GetPayable(),
+		},
+		TeaserLoyaltyPriceInfo: &domain.LoyaltyPriceInfo{
+			Type:    "AwesomeLoyaltyProgram",
+			Default: priceDomain.NewFromFloat(500, "BonusPoints"),
 		},
 		TeaserLoyaltyEarningInfo: &domain.LoyaltyEarningInfo{
 			Type:    "AwesomeLoyaltyProgram",
@@ -196,7 +213,7 @@ func (ps *ProductService) getFakeConfigurable(marketplaceCode string) domain.Con
 
 func (ps *ProductService) fakeVariant(marketplaceCode string) domain.Variant {
 	var simpleVariant domain.Variant
-	simpleVariant.Attributes = domain.Attributes(make(map[string]domain.Attribute))
+	simpleVariant.Attributes = make(map[string]domain.Attribute)
 
 	ps.addBasicData(&simpleVariant.BasicProductData)
 
@@ -250,7 +267,7 @@ func (ps *ProductService) getPrice(defaultP float64, discounted float64) domain.
 	}
 
 	price.Default = priceDomain.NewFromFloat(defaultP, currency).GetPayable()
-	if discounted != 0 {
+	if discounted > 0 {
 		price.Discounted = priceDomain.NewFromFloat(discounted, currency).GetPayable()
 		price.DiscountText = "Super test campaign"
 		price.IsDiscounted = true
