@@ -57,7 +57,7 @@ var (
 	_ CartCache = (*CartSessionCache)(nil)
 	// ErrCacheIsInvalid sets generalized invalid Cache Error
 	ErrCacheIsInvalid = errors.New("cache is invalid")
-	// ErrNoCacheEntry - used if cahce is not found
+	// ErrNoCacheEntry - used if cache is not found
 	ErrNoCacheEntry = errors.New("cache entry not found")
 )
 
@@ -196,7 +196,7 @@ func (cs *CartSessionCache) Invalidate(ctx context.Context, session *web.Session
 		}
 	}
 
-	return errors.New("not found for invalidate")
+	return ErrNoCacheEntry
 }
 
 // Delete a Cache entry
@@ -208,7 +208,7 @@ func (cs *CartSessionCache) Delete(ctx context.Context, session *web.Session, id
 		return nil
 	}
 
-	return errors.New("not found for delete")
+	return ErrNoCacheEntry
 }
 
 // DeleteAll empties the Cache
@@ -228,5 +228,5 @@ func (cs *CartSessionCache) DeleteAll(ctx context.Context, session *web.Session)
 		return nil
 	}
 
-	return errors.New("not found for delete")
+	return ErrNoCacheEntry
 }
