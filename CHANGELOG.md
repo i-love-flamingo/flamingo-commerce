@@ -16,6 +16,7 @@
   * Cart item validation now requires the decorated cart to be passed to assure that validators don't rely on a cart from any other source (e.g. session)
   * Session added as parameter to interface method `MaxQuantityRestrictor.Restrict`
   * Session added as parameter to `RestrictionService.RestrictQty`
+  * Changed no cache entry found error for cartCache `Invalidate`, `Delete` and `DeleteAll` to `ErrNoCacheEntry`
 * Switch module config to CUE
 * GraphQL
   * Add new mutation to set / update one or multiple delivery addresses `Commerce_Cart_UpdateDeliveryAddresses`
