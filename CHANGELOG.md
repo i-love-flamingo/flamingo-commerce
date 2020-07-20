@@ -28,6 +28,7 @@
     * type `Commerce_Charge` is now `Commerce_Price_Charge`
     * type `Commerce_ChargeQualifier` is now `Commerce_Price_ChargeQualifier`
     * input `Commerce_ChargeQualifierInput` is now `Commerce_Price_ChargeQualifierInput`
+* Adjusted log level for cache entry not found error when trying to delete the cached cart   
 
 **customer**
 * **Breaking**: renamed `GetId` to `GetID` in `domain.Customer` interface
@@ -50,7 +51,7 @@
   * In case of a payment error the checkout controller will now redirect to the checkout/review action instead of just rendering the matching template on the current route.
   * Same applies in case of an error during place order, the checkout controller will now redirect to the checkout step.
   * In both cases the error will be stored as a flash message in the session before redirecting, the target action will then receive it and pass it to the template view data. 
-    
+ 
 **search**
 * Switch module config to CUE
 * Update `pagination` module configuration. Use `commerce.pagination` namespace for configuration now.

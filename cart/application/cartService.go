@@ -923,6 +923,10 @@ func (cs *CartService) DeleteCartInCache(ctx context.Context, session *web.Sessi
 		}
 
 		err = cs.cartCache.Delete(ctx, session, id)
+		if err == ErrNoCacheEntry {
+			cs.logger.WithContext(ctx).Info("Cart in cache not found: %v", err)
+			return
+		}
 		if err != nil {
 			cs.logger.WithContext(ctx).Error("Error while deleting cart in cache: %v", err)
 		}

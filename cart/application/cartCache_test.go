@@ -337,7 +337,7 @@ func TestCartSessionCache_Invalidate(t *testing.T) {
 				},
 			},
 			wantErr:               true,
-			wantMessageErr:        "not found for invalidate",
+			wantMessageErr:        "cache entry not found",
 			wantCacheEntryInvalid: false,
 		},
 		{
@@ -421,7 +421,7 @@ func TestCartSessionCache_Delete(t *testing.T) {
 				},
 			},
 			wantErr:        true,
-			wantMessageErr: "not found for delete",
+			wantMessageErr: "cache entry not found",
 		},
 		{
 			name:   "deleted correctly",
@@ -486,7 +486,7 @@ func TestCartSessionCache_DeleteAll(t *testing.T) {
 				session: web.EmptySession(),
 			},
 			wantErr:                true,
-			wantMessageErr:         "not found for delete",
+			wantMessageErr:         "cache entry not found",
 			wantSessionValuesEmpty: false,
 		},
 		{
