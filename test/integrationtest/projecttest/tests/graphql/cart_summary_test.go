@@ -42,7 +42,7 @@ func Test_CartSummary(t *testing.T) {
 			response := helper.GraphQlRequest(t, e, loadGraphQL(t, "cart_summary", nil)).Expect().Status(http.StatusOK)
 			response.Status(http.StatusOK)
 
-			assertResponseForExpectedState(t, e, response, tt.expectedState);
+			assertResponseForExpectedState(t, e, response, tt.expectedState)
 		})
 	}
 }
