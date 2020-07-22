@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"path"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -147,4 +148,22 @@ func getValue(response *httpexpect.Response, queryName, key string) *httpexpect.
 
 func getArray(response *httpexpect.Response, queryName string) *httpexpect.Array {
 	return response.JSON().Object().Value("data").Object().Value(queryName).Array()
+}
+
+func assertResponseForExpectedState(t *testing.T, e *httpexpect.Expect, response *httpexpect.Response, expectedState map[string]interface{}) error {
+	t.Helper()
+	data := make(map[string]interface{})
+	require.NoError(t, json.Unmarshal([]byte(response.Body().Raw()), &data))
+	var theData interface{}
+	var ok bool
+	if theData, ok = data["data"]; !ok || theData == nil {
+		return fmt.Errorf("no data in response: %s", response.Body().Raw())
+	}
+	data = theData.(map[string]interface{})
+
+	if !reflect.DeepEqual(data, expectedState) {
+		return fmt.Errorf("response: %s \nis not equal to expectingState: %s", data, expectedState)
+	}
+
+	return nil
 }
