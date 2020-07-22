@@ -3,12 +3,10 @@
 package graphql_test
 
 import (
-	"net/http"
-	"testing"
-	"time"
-
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest"
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/helper"
+	"net/http"
+	"testing"
 )
 
 func Test_CartSummary(t *testing.T) {
@@ -27,7 +25,7 @@ func Test_CartSummary(t *testing.T) {
 				"Commerce_Cart": map[string]interface{}{
 					"cartSummary": map[string]interface{}{
 						"total": map[string]interface{}{
-							"amount":   10.49,
+							"amount":   14.49,
 							"currency": "€",
 						},
 					},
@@ -44,9 +42,7 @@ func Test_CartSummary(t *testing.T) {
 			response := helper.GraphQlRequest(t, e, loadGraphQL(t, "cart_summary", nil)).Expect().Status(http.StatusOK)
 			response.Status(http.StatusOK)
 
-			helper.AsyncCheckWithTimeout(t, time.Second, func() error {
-				return assertResponseForExpectedState(t, e, response, tt.expectedState)
-			})
+			assertResponseForExpectedState(t, e, response, tt.expectedState);
 		})
 	}
 }
