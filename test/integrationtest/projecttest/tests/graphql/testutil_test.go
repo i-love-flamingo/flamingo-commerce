@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"path"
-	"reflect"
 	"strings"
 	"testing"
 
@@ -161,8 +160,8 @@ func assertResponseForExpectedState(t *testing.T, e *httpexpect.Expect, response
 	}
 	data = theData.(map[string]interface{})
 
-	if !reflect.DeepEqual(data, expectedState) {
-		return fmt.Errorf("response: %s \nis not equal to expectingState: %s", data, expectedState)
+	if diff := cmp.Diff(data, expectedState); diff != "" {
+		return fmt.Errorf("diff mismatch (-want +got):\\n%s", diff)
 	}
 
 	return nil
