@@ -14,6 +14,7 @@ type Commerce_Cart_Summary {
     sumTotalDiscountWithGiftCardsAmount: Commerce_Price
     hasAppliedDiscounts: Boolean!
     sumTaxes: Commerce_Cart_Taxes
+    sumPaymentSelectionCartSplitValueAmountByMethods(methods: [String!]): Commerce_Price
 }
 
 type Commerce_Cart {

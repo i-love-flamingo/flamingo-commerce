@@ -112,6 +112,9 @@ func (ps *ProductService) Get(_ context.Context, marketplaceCode string) (domain
 	case "fake_simple":
 		return ps.FakeSimple(marketplaceCode, false, false, false, true, false), nil
 
+	case "fake_simple_with_fixed_price":
+		return ps.FakeSimple(marketplaceCode, false, false, false, true, true), nil
+
 	case "fake_fixed_simple_without_discounts":
 		return ps.FakeSimple(marketplaceCode, false, false, false, false, true), nil
 
@@ -119,7 +122,7 @@ func (ps *ProductService) Get(_ context.Context, marketplaceCode string) (domain
 		return ps.FakeSimple(marketplaceCode, false, false, true, true, false), nil
 	}
 
-	return nil, domain.ProductNotFound{MarketplaceCode: "Code " + marketplaceCode + " Not implemented in FAKE: Only code 'fake_configurable' or 'fake_simple' or 'fake_simple_out_of_stock' or 'fake_fixed_simple_without_discounts' should be used"}
+	return nil, domain.ProductNotFound{MarketplaceCode: "Code " + marketplaceCode + " Not implemented in FAKE: Only code 'fake_configurable' or 'fake_simple' or 'fake_simple_with_fixed_price' or 'fake_simple_out_of_stock' or 'fake_fixed_simple_without_discounts' should be used"}
 }
 
 // FakeSimple generates a simple fake product
@@ -149,6 +152,9 @@ func (ps *ProductService) FakeSimple(marketplaceCode string, isNew bool, isExclu
 	discountedPrice := 0.0
 	if isDiscounted {
 		discountedPrice = 10.49 + float64(rand.Intn(10))
+		if hasFixedPrice {
+			discountedPrice = 10.49
+		}
 	}
 
 	defaultPrice := 20.99 + float64(rand.Intn(10))

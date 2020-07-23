@@ -140,7 +140,7 @@ func Test_PlaceOrderWithPaymentService(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			e := integrationtest.NewHTTPExpect(t, baseURL)
-			prepareCartWithPaymentSelection(t, e, tt.gatewayMethod)
+			prepareCartWithPaymentSelection(t, e, tt.gatewayMethod, nil)
 			_, uuid := assertStartPlaceOrderWithValidUUID(t, e)
 
 			helper.AsyncCheckWithTimeout(t, time.Second, func() error {
@@ -155,7 +155,7 @@ func Test_PlaceOrderWithOrderService(t *testing.T) {
 		baseURL := "http://" + FlamingoURL
 
 		e := integrationtest.NewHTTPExpect(t, baseURL)
-		prepareCartWithPaymentSelection(t, e, domain.PaymentFlowStatusFailed)
+		prepareCartWithPaymentSelection(t, e, domain.PaymentFlowStatusFailed, nil)
 		placeorder.NextCancelFails = true
 
 		_, firstUUID := assertStartPlaceOrderWithValidUUID(t, e)
@@ -213,7 +213,7 @@ func Test_StartPlaceOrder(t *testing.T) {
 
 	t.Run("already running process", func(t *testing.T) {
 		e := integrationtest.NewHTTPExpect(t, baseURL)
-		prepareCartWithPaymentSelection(t, e, domain.PaymentFlowActionShowIframe)
+		prepareCartWithPaymentSelection(t, e, domain.PaymentFlowActionShowIframe, nil)
 
 		_, firstUUID := assertStartPlaceOrderWithValidUUID(t, e)
 
@@ -270,7 +270,7 @@ func Test_CancelPlaceOrder(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			e := integrationtest.NewHTTPExpect(t, baseURL)
 			if tt.prepareAndRun {
-				prepareCartWithPaymentSelection(t, e, tt.gatewayMethod)
+				prepareCartWithPaymentSelection(t, e, tt.gatewayMethod, nil)
 				assertStartPlaceOrderWithValidUUID(t, e)
 				assertRefreshPlaceOrder(t, e, true)
 			}
@@ -330,7 +330,7 @@ func Test_ClearPlaceOrder(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			e := integrationtest.NewHTTPExpect(t, baseURL)
 			if tt.prepareAndRun {
-				prepareCartWithPaymentSelection(t, e, tt.gatewayMethod)
+				prepareCartWithPaymentSelection(t, e, tt.gatewayMethod, nil)
 				assertStartPlaceOrderWithValidUUID(t, e)
 				assertRefreshPlaceOrder(t, e, true)
 			}
@@ -354,7 +354,7 @@ func Test_RestartStartPlaceOrder(t *testing.T) {
 	t.Parallel()
 	baseURL := "http://" + FlamingoURL
 	e := integrationtest.NewHTTPExpect(t, baseURL)
-	prepareCartWithPaymentSelection(t, e, domain.PaymentFlowStatusFailed)
+	prepareCartWithPaymentSelection(t, e, domain.PaymentFlowStatusFailed, nil)
 	_, uuid1 := assertStartPlaceOrderWithValidUUID(t, e)
 	// wait for fail
 	res, _ := assertRefreshPlaceOrder(t, e, true)
@@ -403,7 +403,7 @@ func Test_ActivePlaceOrder(t *testing.T) {
 	response.JSON().Object().Value("data").Object().Value("Commerce_Checkout_ActivePlaceOrder").Boolean().False()
 
 	// let the process wait in iframe status
-	prepareCartWithPaymentSelection(t, e, domain.PaymentFlowActionShowIframe)
+	prepareCartWithPaymentSelection(t, e, domain.PaymentFlowActionShowIframe, nil)
 	assertStartPlaceOrderWithValidUUID(t, e)
 	// wait for goroutine to be finished
 	assertRefreshPlaceOrder(t, e, true)
@@ -423,7 +423,7 @@ func Test_GetCurrentState(t *testing.T) {
 	request.Expect().JSON().Object().Value("errors").Array().First().Object().Value("message").String().Equal("ErrNoPlaceOrderProcess")
 
 	// prepare start and wait
-	prepareCartWithPaymentSelection(t, e, domain.PaymentFlowActionShowIframe)
+	prepareCartWithPaymentSelection(t, e, domain.PaymentFlowActionShowIframe, nil)
 	_, uuid := assertStartPlaceOrderWithValidUUID(t, e)
 	result, uuid2 := assertRefreshPlaceOrder(t, e, true)
 	assert.Equal(t, uuid, uuid2)
