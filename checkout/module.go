@@ -62,6 +62,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	injector.BindMap(new(process.State), new(states.New).Name()).To(states.New{})
 	injector.BindMap(new(process.State), new(states.PrepareCart).Name()).To(states.PrepareCart{})
 	injector.BindMap(new(process.State), new(states.ValidateCart).Name()).To(states.ValidateCart{})
+	injector.BindMap(new(process.State), new(states.ValidatePaymentSelection).Name()).To(states.ValidatePaymentSelection{})
 	injector.BindMap(new(process.State), new(states.CreatePayment).Name()).To(states.CreatePayment{})
 	injector.BindMap(new(process.State), new(states.CompleteCart).Name()).To(states.CompleteCart{})
 	injector.BindMap(new(process.State), new(states.CompletePayment).Name()).To(states.CompletePayment{})
@@ -79,6 +80,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	injector.BindMap(new(dto.State), new(states.New).Name()).To(dto.Wait{})
 	injector.BindMap(new(dto.State), new(states.PrepareCart).Name()).To(dto.Wait{})
 	injector.BindMap(new(dto.State), new(states.ValidateCart).Name()).To(dto.Wait{})
+	injector.BindMap(new(dto.State), new(states.ValidatePaymentSelection).Name()).To(dto.Wait{})
 	injector.BindMap(new(dto.State), new(states.CreatePayment).Name()).To(dto.Wait{})
 	injector.BindMap(new(dto.State), new(states.CompleteCart).Name()).To(dto.Wait{})
 	injector.BindMap(new(dto.State), new(states.CompletePayment).Name()).To(dto.Wait{})
@@ -162,25 +164,25 @@ func (r *routes) Inject(controller *controller.CheckoutController) {
 func (r *routes) Routes(registry *web.RouterRegistry) {
 	// routes
 	registry.HandleAny("checkout.start", r.controller.StartAction)
-	registry.Route("/checkout/start", "checkout.start")
+	registry.MustRoute("/checkout/start", "checkout.start")
 
 	registry.HandleAny("checkout.review", r.controller.ReviewAction)
-	registry.Route("/checkout/review", `checkout.review`)
+	registry.MustRoute("/checkout/review", `checkout.review`)
 
 	registry.HandleAny("checkout", r.controller.SubmitCheckoutAction)
-	registry.Route("/checkout", "checkout")
+	registry.MustRoute("/checkout", "checkout")
 
 	registry.HandleAny("checkout.payment", r.controller.PaymentAction)
-	registry.Route("/checkout/payment", "checkout.payment")
+	registry.MustRoute("/checkout/payment", "checkout.payment")
 
 	registry.HandleAny("checkout.success", r.controller.SuccessAction)
-	registry.Route("/checkout/success", "checkout.success")
+	registry.MustRoute("/checkout/success", "checkout.success")
 
 	registry.HandleAny("checkout.expired", r.controller.ExpiredAction)
-	registry.Route("/checkout/expired", "checkout.expired")
+	registry.MustRoute("/checkout/expired", "checkout.expired")
 
 	registry.HandleAny("checkout.placeorder", r.controller.PlaceOrderAction)
-	registry.Route("/checkout/placeorder", "checkout.placeorder")
+	registry.MustRoute("/checkout/placeorder", "checkout.placeorder")
 }
 
 // Depends on other modules
@@ -201,17 +203,17 @@ func (r *apiRoutes) Inject(apiController *controller.APIController) {
 }
 
 func (r *apiRoutes) Routes(registry *web.RouterRegistry) {
-	registry.Route("/api/v1/checkout/placeorder", "checkout.api.placeorder")
+	registry.MustRoute("/api/v1/checkout/placeorder", "checkout.api.placeorder")
 	registry.HandleGet("checkout.api.placeorder", r.apiController.CurrentPlaceOrderContextAction)
 	registry.HandlePut("checkout.api.placeorder", r.apiController.StartPlaceOrderAction)
 	registry.HandleDelete("checkout.api.placeorder", r.apiController.ClearPlaceOrderAction)
 
-	registry.Route("/api/v1/checkout/placeorder/cancel", "checkout.api.placeorder.cancel")
+	registry.MustRoute("/api/v1/checkout/placeorder/cancel", "checkout.api.placeorder.cancel")
 	registry.HandlePost("checkout.api.placeorder.cancel", r.apiController.CancelPlaceOrderAction)
 
-	registry.Route("/api/v1/checkout/placeorder/refresh", "checkout.api.placeorder.refresh")
+	registry.MustRoute("/api/v1/checkout/placeorder/refresh", "checkout.api.placeorder.refresh")
 	registry.HandlePost("checkout.api.placeorder.refresh", r.apiController.RefreshPlaceOrderAction)
 
-	registry.Route("/api/v1/checkout/placeorder/refreshblocking", "checkout.api.placeorder.refreshblocking")
+	registry.MustRoute("/api/v1/checkout/placeorder/refreshblocking", "checkout.api.placeorder.refreshblocking")
 	registry.HandlePost("checkout.api.placeorder.refreshblocking", r.apiController.RefreshPlaceOrderBlockingAction)
 }

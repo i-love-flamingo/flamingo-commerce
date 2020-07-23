@@ -16,6 +16,7 @@ state CreatePayment: Commerce_Checkout_PlaceOrderState_State_Wait
 state CompleteCart: Commerce_Checkout_PlaceOrderState_State_Wait
 state PlaceOrder: Commerce_Checkout_PlaceOrderState_State_Wait
 state ValidatePayment: Commerce_Checkout_PlaceOrderState_State_Wait
+state ValidatePaymentSelection: Commerce_Checkout_PlaceOrderState_State_Wait
 
 
 state Failed: Commerce_Checkout_PlaceOrderState_State_Failed
@@ -44,8 +45,10 @@ end note
 New -r-> PrepareCart
 PrepareCart -d-> ValidateCart
 PrepareCart -d-> Failed
-ValidateCart -d-> CreatePayment
+ValidateCart -d-> ValidatePaymentSelection
 ValidateCart -r-> Failed
+ValidatePaymentSelection -d-> CreatePayment
+ValidatePaymentSelection -r-> Failed
 CreatePayment -d-> CompleteCart
 CreatePayment -r-> Failed
 CompleteCart -d-> PlaceOrder
