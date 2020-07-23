@@ -41,7 +41,7 @@ func (ValidatePaymentSelection) Name() string {
 
 // Run the state operations
 func (v ValidatePaymentSelection) Run(ctx context.Context, p *process.Process) process.RunResult {
-	ctx, span := trace.StartSpan(ctx, "placeorder/state/ValidatePaymentSelection/Run")
+	_, span := trace.StartSpan(ctx, "placeorder/state/ValidatePaymentSelection/Run")
 	defer span.End()
 
 	paymentSelection := p.Context().Cart.PaymentSelection
