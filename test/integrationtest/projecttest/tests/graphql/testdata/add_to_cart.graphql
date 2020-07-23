@@ -1,6 +1,6 @@
 mutation {
     Commerce_AddToCart(
-        marketplaceCode: "fake_simple"
+        marketplaceCode: "###MARKETPLACECODE###"
         qty: 1
         deliveryCode: "delivery"
     ) {

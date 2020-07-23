@@ -15,17 +15,19 @@ func Test_CartSummary(t *testing.T) {
 	tests := []struct {
 		name                 string
 		gatewayMethod        string
+		marketPlaceCode      string
 		expectedState        map[string]interface{}
 		expectedGraphQLState string
 	}{
 		{
-			name:          "sumPaymentSelectionCartSplitValueAmountByMethods",
-			gatewayMethod: "creditcard",
+			name:            "sumPaymentSelectionCartSplitValueAmountByMethods",
+			gatewayMethod:   "creditcard",
+			marketPlaceCode: "fake_simple_with_fixed_price",
 			expectedState: map[string]interface{}{
 				"Commerce_Cart": map[string]interface{}{
 					"cartSummary": map[string]interface{}{
 						"total": map[string]interface{}{
-							"amount":   14.49,
+							"amount":   10.49,
 							"currency": "€",
 						},
 					},
@@ -37,9 +39,9 @@ func Test_CartSummary(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			e := integrationtest.NewHTTPExpect(t, baseURL)
-			prepareCartWithPaymentSelection(t, e, tt.gatewayMethod)
+			prepareCartWithPaymentSelection(t, e, tt.gatewayMethod, &tt.marketPlaceCode)
 
-			response := helper.GraphQlRequest(t, e, loadGraphQL(t, "cart_summary", nil)).Expect().Status(http.StatusOK)
+			response := helper.GraphQlRequest(t, e, loadGraphQL(t, "cart_summary", map[string]string{"METHOD": tt.gatewayMethod})).Expect().Status(http.StatusOK)
 			response.Status(http.StatusOK)
 
 			assertResponseForExpectedState(t, e, response, tt.expectedState)

@@ -61,9 +61,15 @@ func prepareCart(t *testing.T, e *httpexpect.Expect) {
 }
 
 // prepareCartWithPaymentSelection adds a simple product via graphQl
-func prepareCartWithPaymentSelection(t *testing.T, e *httpexpect.Expect, paymentMethod string) {
+func prepareCartWithPaymentSelection(t *testing.T, e *httpexpect.Expect, paymentMethod string, marketPlaceCode *string) {
 	t.Helper()
-	helper.GraphQlRequest(t, e, loadGraphQL(t, "add_to_cart", nil)).Expect().Status(http.StatusOK)
+
+	code := "fake_simple"
+	if marketPlaceCode != nil {
+		code = *marketPlaceCode
+	}
+
+	helper.GraphQlRequest(t, e, loadGraphQL(t, "add_to_cart", map[string]string{"MARKETPLACECODE": code})).Expect().Status(http.StatusOK)
 	helper.GraphQlRequest(t, e, loadGraphQL(t, "update_payment_selection", map[string]string{"PAYMENT_METHOD": paymentMethod})).Expect().Status(http.StatusOK)
 }
 
@@ -161,7 +167,8 @@ func assertResponseForExpectedState(t *testing.T, e *httpexpect.Expect, response
 	data = theData.(map[string]interface{})
 
 	if diff := cmp.Diff(data, expectedState); diff != "" {
-		return fmt.Errorf("diff mismatch (-want +got):\\n%s", diff)
+		fmt.Printf("diff mismatch (-want +got):\\n%s", diff)
+		t.Fail()
 	}
 
 	return nil

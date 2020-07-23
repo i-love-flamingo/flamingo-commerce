@@ -112,6 +112,9 @@ func (ps *ProductService) Get(_ context.Context, marketplaceCode string) (domain
 	case "fake_simple":
 		return ps.FakeSimple(marketplaceCode, false, false, false, true, false), nil
 
+	case "fake_simple_with_fixed_price":
+		return ps.FakeSimple(marketplaceCode, false, false, false, true, true), nil
+
 	case "fake_fixed_simple_without_discounts":
 		return ps.FakeSimple(marketplaceCode, false, false, false, false, true), nil
 
