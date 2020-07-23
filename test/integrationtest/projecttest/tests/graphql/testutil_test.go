@@ -155,20 +155,19 @@ func getArray(response *httpexpect.Response, queryName string) *httpexpect.Array
 	return response.JSON().Object().Value("data").Object().Value(queryName).Array()
 }
 
-func assertResponseForExpectedState(t *testing.T, e *httpexpect.Expect, response *httpexpect.Response, expectedState map[string]interface{}) {
+func assertResponseForExpectedState(t *testing.T, response *httpexpect.Response, expectedState map[string]interface{}) {
 	t.Helper()
 	data := make(map[string]interface{})
 	require.NoError(t, json.Unmarshal([]byte(response.Body().Raw()), &data))
 	var theData interface{}
 	var ok bool
 	if theData, ok = data["data"]; !ok || theData == nil {
-		t.Errorf("no data in response: %s", response.Body().Raw())
-		t.Fail()
+		t.Fatalf("no data in response: %s", response.Body().Raw())
+		return
 	}
 	data = theData.(map[string]interface{})
 
 	if diff := cmp.Diff(data, expectedState); diff != "" {
 		t.Errorf("diff mismatch (-want +got):\\n%s", diff)
-		t.Fail()
 	}
 }

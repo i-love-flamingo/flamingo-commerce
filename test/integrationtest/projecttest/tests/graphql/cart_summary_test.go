@@ -3,10 +3,11 @@
 package graphql_test
 
 import (
-	"flamingo.me/flamingo-commerce/v3/test/integrationtest"
-	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/helper"
 	"net/http"
 	"testing"
+
+	"flamingo.me/flamingo-commerce/v3/test/integrationtest"
+	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/helper"
 )
 
 func Test_CartSummary(t *testing.T) {
@@ -45,7 +46,7 @@ func Test_CartSummary(t *testing.T) {
 			response := helper.GraphQlRequest(t, e, loadGraphQL(t, "cart_summary", map[string]string{"METHOD": tt.gatewayMethod})).Expect().Status(http.StatusOK)
 			response.Status(http.StatusOK)
 
-			assertResponseForExpectedState(t, e, response, tt.expectedState)
+			assertResponseForExpectedState(t, response, tt.expectedState)
 		})
 	}
 }
