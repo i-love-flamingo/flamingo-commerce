@@ -57,7 +57,7 @@ func loginTestCustomer(t *testing.T, e *httpexpect.Expect) {
 // prepareCart adds a simple product via graphQl
 func prepareCart(t *testing.T, e *httpexpect.Expect) {
 	t.Helper()
-	helper.GraphQlRequest(t, e, loadGraphQL(t, "add_to_cart", nil)).Expect().Status(http.StatusOK)
+	helper.GraphQlRequest(t, e, loadGraphQL(t, "add_to_cart", map[string]string{"MARKETPLACECODE": "fake_simple"})).Expect().Status(http.StatusOK)
 }
 
 // prepareCartWithPaymentSelection adds a simple product via graphQl
@@ -155,21 +155,20 @@ func getArray(response *httpexpect.Response, queryName string) *httpexpect.Array
 	return response.JSON().Object().Value("data").Object().Value(queryName).Array()
 }
 
-func assertResponseForExpectedState(t *testing.T, e *httpexpect.Expect, response *httpexpect.Response, expectedState map[string]interface{}) error {
+func assertResponseForExpectedState(t *testing.T, e *httpexpect.Expect, response *httpexpect.Response, expectedState map[string]interface{}) {
 	t.Helper()
 	data := make(map[string]interface{})
 	require.NoError(t, json.Unmarshal([]byte(response.Body().Raw()), &data))
 	var theData interface{}
 	var ok bool
 	if theData, ok = data["data"]; !ok || theData == nil {
-		return fmt.Errorf("no data in response: %s", response.Body().Raw())
+		t.Errorf("no data in response: %s", response.Body().Raw())
+		t.Fail()
 	}
 	data = theData.(map[string]interface{})
 
 	if diff := cmp.Diff(data, expectedState); diff != "" {
-		fmt.Printf("diff mismatch (-want +got):\\n%s", diff)
+		t.Errorf("diff mismatch (-want +got):\\n%s", diff)
 		t.Fail()
 	}
-
-	return nil
 }
