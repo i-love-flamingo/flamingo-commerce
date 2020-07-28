@@ -6,16 +6,16 @@ import (
 	"go.opencensus.io/trace"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 )
 
 type (
-	// PaymentSelectionValidator decides if the PaymentSelection is valid
-	PaymentSelectionValidator func(selection cart.PaymentSelection) error
-
 	// ValidatePaymentSelection state
 	ValidatePaymentSelection struct {
-		validator PaymentSelectionValidator
+		validator            validation.PaymentSelectionValidator
+		cartDecoratorFactory *decorator.DecoratedCartFactory
 	}
 )
 
@@ -23,10 +23,12 @@ var _ process.State = ValidatePaymentSelection{}
 
 // Inject dependencies
 func (v *ValidatePaymentSelection) Inject(
+	cartDecoratorFactory *decorator.DecoratedCartFactory,
 	opts *struct {
-		Validator PaymentSelectionValidator `inject:",optional"`
+		Validator validation.PaymentSelectionValidator `inject:",optional"`
 	},
 ) *ValidatePaymentSelection {
+	v.cartDecoratorFactory = cartDecoratorFactory
 	if opts != nil {
 		v.validator = opts.Validator
 	}
@@ -47,17 +49,18 @@ func (v ValidatePaymentSelection) Run(ctx context.Context, p *process.Process) p
 	paymentSelection := p.Context().Cart.PaymentSelection
 	if paymentSelection == nil {
 		return process.RunResult{
-			Failed: process.ErrorOccurredReason{
-				Error: "no payment selection on cart",
+			Failed: process.PaymentErrorOccurredReason{
+				Error: cart.ErrPaymentSelectionNotSet.Error(),
 			},
 		}
 	}
 
 	if v.validator != nil {
-		err := v.validator(paymentSelection)
+		decoratedCart := v.cartDecoratorFactory.Create(ctx, p.Context().Cart)
+		err := v.validator.Validate(ctx, decoratedCart, paymentSelection)
 		if err != nil {
 			return process.RunResult{
-				Failed: process.ErrorOccurredReason{
+				Failed: process.PaymentErrorOccurredReason{
 					Error: err.Error(),
 				},
 			}

@@ -208,7 +208,7 @@ func Test_StartPlaceOrder(t *testing.T) {
 		actualState := getValue(response, "Commerce_Checkout_RefreshPlaceOrderBlocking", "state")
 		reason := actualState.Object().Value("reason").Object()
 		reason.Value("__typename").Equal("Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError")
-		reason.Value("reason").Equal("PaymentSelection not set")
+		reason.Value("reason").Equal("paymentSelection not set")
 	})
 
 	t.Run("already running process", func(t *testing.T) {
