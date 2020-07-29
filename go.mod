@@ -6,9 +6,9 @@ require (
 	flamingo.me/dingo v0.2.9
 	flamingo.me/flamingo/v3 v3.2.1-0.20200331091700-03bb354d2ab5
 	flamingo.me/form v1.0.1
-	flamingo.me/graphql v1.0.2
+	flamingo.me/graphql v1.1.0
 	flamingo.me/pugtemplate v1.1.3
-	github.com/99designs/gqlgen v0.9.0
+	github.com/99designs/gqlgen v0.11.4-0.20200726064323-39a12e0f1b6d
 	github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78 // indirect
 	github.com/Microsoft/go-winio v0.4.14 // indirect
 	github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 // indirect
@@ -21,6 +21,7 @@ require (
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/fzipp/gocyclo v0.0.0-20150627053110-6acd4345c835 // indirect
 	github.com/gavv/httpexpect/v2 v2.0.2
+	github.com/go-bindata/go-bindata v3.1.2+incompatible // indirect
 	github.com/go-openapi/jsonreference v0.19.3 // indirect
 	github.com/go-openapi/spec v0.19.8 // indirect
 	github.com/go-openapi/swag v0.19.9 // indirect
@@ -46,12 +47,11 @@ require (
 	github.com/urfave/cli v1.22.4 // indirect
 	github.com/urfave/cli/v2 v2.2.0 // indirect
 	github.com/valyala/fasthttp v1.6.0 // indirect
-	github.com/vektah/gqlparser v1.1.2
+	github.com/vektah/gqlparser v1.3.1
+	github.com/vektah/gqlparser/v2 v2.0.1
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
 	go.opencensus.io v0.22.3
-	golang.org/x/net v0.0.0-20200602114024-627f9648deb9 // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
-	golang.org/x/tools v0.0.0-20200603170713-0310561d584d // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1
 	gopkg.in/square/go-jose.v2 v2.3.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect

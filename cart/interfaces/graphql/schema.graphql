@@ -7,7 +7,7 @@ type Commerce_DecoratedCart {
 }
 
 type Commerce_Cart_Summary {
-    discounts: Commerce_CartAppliedDiscounts
+    discounts: Commerce_CartAppliedDiscounts!
     sumAppliedDiscounts: Commerce_Price
     sumAppliedGiftCards: Commerce_Price
     sumGrandTotalWithGiftCards: Commerce_Price
@@ -224,7 +224,7 @@ type Commerce_CartItem {
     singlePriceNet: Commerce_Price!
     rowPriceGross: Commerce_Price!
     rowPriceNet: Commerce_Price!
-    appliedDiscounts: Commerce_CartAppliedDiscounts
+    appliedDiscounts: Commerce_CartAppliedDiscounts!
     #    rowTaxes: Commerce_Taxes!
 }
 
