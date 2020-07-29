@@ -2,12 +2,12 @@ package states
 
 import (
 	"context"
-	"errors"
 
 	"flamingo.me/flamingo/v3/framework/web"
 	"go.opencensus.io/trace"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 )
 
@@ -39,26 +39,26 @@ func (v PrepareCart) Run(ctx context.Context, p *process.Process) process.RunRes
 	ctx, span := trace.StartSpan(ctx, "placeorder/state/PrepareCart/Run")
 	defer span.End()
 
-	cart, err := v.cartService.ForceReserveOrderIDAndSave(ctx, web.SessionFromContext(ctx))
+	c, err := v.cartService.ForceReserveOrderIDAndSave(ctx, web.SessionFromContext(ctx))
 	if err != nil {
 		return process.RunResult{
 			Failed: process.ErrorOccurredReason{Error: err.Error()},
 		}
 	}
 
-	if cart.GrandTotal().IsZero() {
+	if c.GrandTotal().IsZero() {
 		p.UpdateState(ValidateCart{}.Name(), nil)
-		p.UpdateCart(*cart)
+		p.UpdateCart(*c)
 		return process.RunResult{}
 	}
 
-	if cart.PaymentSelection == nil {
+	if c.PaymentSelection == nil {
 		return process.RunResult{
-			Failed: process.PaymentErrorOccurredReason{Error: errors.New("PaymentSelection not set").Error()},
+			Failed: process.PaymentErrorOccurredReason{Error: cart.ErrPaymentSelectionNotSet.Error()},
 		}
 	}
 
-	paymentSelection, err := cart.PaymentSelection.GenerateNewIdempotencyKey()
+	paymentSelection, err := c.PaymentSelection.GenerateNewIdempotencyKey()
 	if err != nil {
 		return process.RunResult{
 			Failed: process.ErrorOccurredReason{Error: err.Error()},
@@ -73,7 +73,7 @@ func (v PrepareCart) Run(ctx context.Context, p *process.Process) process.RunRes
 	}
 
 	p.UpdateState(ValidateCart{}.Name(), nil)
-	p.UpdateCart(*cart)
+	p.UpdateCart(*c)
 	return process.RunResult{}
 }
 

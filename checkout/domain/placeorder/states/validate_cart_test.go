@@ -54,7 +54,7 @@ func TestValidateCart_Run(t *testing.T) {
 			name:             "Valid cart that requires payment",
 			isValid:          true,
 			isGrandTotalZero: false,
-			expectedState:    states.CreatePayment{}.Name(),
+			expectedState:    states.ValidatePaymentSelection{}.Name(),
 			expectedResult:   process.RunResult{},
 		},
 		{

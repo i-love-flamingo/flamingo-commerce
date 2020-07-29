@@ -4,17 +4,20 @@ package graphql_test
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/gavv/httpexpect/v2"
+	"github.com/stretchr/testify/assert"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/states"
 	"flamingo.me/flamingo-commerce/v3/payment/domain"
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest"
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/helper"
+	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/modules/cart"
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/modules/placeorder"
-	"github.com/gavv/httpexpect/v2"
-	"github.com/stretchr/testify/assert"
 )
 
 func Test_PlaceOrderWithPaymentService(t *testing.T) {
@@ -208,7 +211,22 @@ func Test_StartPlaceOrder(t *testing.T) {
 		actualState := getValue(response, "Commerce_Checkout_RefreshPlaceOrderBlocking", "state")
 		reason := actualState.Object().Value("reason").Object()
 		reason.Value("__typename").Equal("Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError")
-		reason.Value("reason").Equal("PaymentSelection not set")
+		reason.Value("reason").Equal("paymentSelection not set")
+	})
+
+	t.Run("payment selection invalid", func(t *testing.T) {
+		e := integrationtest.NewHTTPExpectWithCookies(t, baseURL, map[string]string{cart.FakePaymentSelectionValidatorCookie: ""})
+
+		prepareCartWithPaymentSelection(t, e, domain.PaymentFlowActionShowIframe, nil)
+		assertStartPlaceOrderWithValidUUID(t, e)
+
+		response, _ := assertRefreshPlaceOrder(t, e, true)
+
+		actualState := getValue(response, "Commerce_Checkout_RefreshPlaceOrderBlocking", "state")
+		fmt.Println(actualState.Raw())
+		reason := actualState.Object().Value("reason").Object()
+		reason.Value("__typename").Equal("Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError")
+		reason.Value("reason").Equal("fake payment selection validator error")
 	})
 
 	t.Run("already running process", func(t *testing.T) {

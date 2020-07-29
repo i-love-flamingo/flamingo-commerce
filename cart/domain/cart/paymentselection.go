@@ -90,6 +90,9 @@ var (
 
 	// ErrSplitGiftCardsNoChargeTypeMapping indicates that there is no mapping from the gift card charge type to an actual payment method
 	ErrSplitGiftCardsNoChargeTypeMapping = fmt.Errorf("payment method for charge type %q not defined", price.ChargeTypeGiftCard)
+
+	// ErrPaymentSelectionNotSet is used for nil PaymentSelection on cart
+	ErrPaymentSelectionNotSet = errors.New("paymentSelection not set")
 )
 
 // NewDefaultPaymentSelection returns a PaymentSelection that can be used to update the cart

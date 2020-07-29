@@ -58,7 +58,7 @@ func (v ValidateCart) Run(ctx context.Context, p *process.Process) process.RunRe
 		return process.RunResult{}
 	}
 
-	p.UpdateState(CreatePayment{}.Name(), nil)
+	p.UpdateState(ValidatePaymentSelection{}.Name(), nil)
 	return process.RunResult{}
 }
 

@@ -48,6 +48,7 @@
     * flamingo_commerce_checkout_placeorder_starts
     * flamingo_commerce_checkout_placeorder_state_run_count
     * flamingo_commerce_checkout_placeorder_state_failed_count
+   * Add a step to validate the payment selection if needed. The step provides a port to be implemented if needed.
 * Expose placeorder endpoints also via rest
 * Checkout controller, update to the error handling:
   * In case of a payment error the checkout controller will now redirect to the checkout/review action instead of just rendering the matching template on the current route.
