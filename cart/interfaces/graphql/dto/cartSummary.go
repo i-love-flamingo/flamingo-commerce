@@ -14,14 +14,14 @@ type (
 
 // Discounts collects up discounts of cart based on its deliveries
 // All discounts with the same campaign code are aggregated and returned as one with a summed price
-func (cs *CartSummary) Discounts() *cart.AppliedDiscounts {
+func (cs *CartSummary) Discounts() *CartAppliedDiscounts {
 	result, err := cs.cart.MergeDiscounts()
 
 	if err != nil {
 		return nil
 	}
 
-	return &result
+	return &CartAppliedDiscounts{discounts: result}
 }
 
 // HasAppliedDiscounts check whether there are any discounts currently applied to the cart
