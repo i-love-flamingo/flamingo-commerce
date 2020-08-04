@@ -454,7 +454,7 @@ func (cob *InMemoryBehaviour) GetCart(_ context.Context, cartID string) (*domain
 		}
 	}
 
-	return nil, fmt.Errorf("cart.infrastructure.InMemoryBehaviour: Cannot get - Guestcart with id %v not existent", cartID)
+	return nil, fmt.Errorf("cart.infrastructure.InMemoryBehaviour: Cannot get cart with id %v", cartID)
 }
 
 // storeCart in the memory

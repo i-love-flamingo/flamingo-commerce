@@ -27,9 +27,23 @@ func (gcs *InMemoryCustomerCartService) Inject(
 }
 
 // GetCart gets a customer cart from the in memory customer cart service
-func (gcs *InMemoryCustomerCartService) GetCart(ctx context.Context, identity auth.Identity, cartID string) (*cart.Cart, error) {
-	cart, err := gcs.inMemoryBehaviour.GetCart(ctx, cartID)
-	return cart, err
+func (gcs *InMemoryCustomerCartService) GetCart(ctx context.Context, identity auth.Identity, _ string) (*cart.Cart, error) {
+	id := identity.Subject()
+	customerCart, err := gcs.inMemoryBehaviour.GetCart(ctx, id)
+	if err != nil {
+		return gcs.getNewCart(id)
+	}
+	return customerCart, err
+}
+
+// GetNewCart gets a new cart from the in memory guest cart service
+func (gcs *InMemoryCustomerCartService) getNewCart(id string) (*cart.Cart, error) {
+	customerCart := &cart.Cart{
+		ID: id,
+	}
+
+	err := gcs.inMemoryBehaviour.storeCart(customerCart)
+	return customerCart, err
 }
 
 // GetModifyBehaviour gets the cart order behaviour of the service
