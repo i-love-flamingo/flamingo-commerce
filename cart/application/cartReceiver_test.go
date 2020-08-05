@@ -8,7 +8,6 @@ import (
 
 	"flamingo.me/flamingo/v3/core/auth"
 	authMock "flamingo.me/flamingo/v3/core/auth/mock"
-	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/pkg/errors"
@@ -559,10 +558,6 @@ func TestCartReceiverService_DecorateCart(t *testing.T) {
 }
 
 func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
-	authmanager := &authApplication.AuthManager{}
-	authmanager.Inject(flamingo.NullLogger{}, nil, nil)
-	userservice := &authApplication.UserService{}
-	userservice.Inject(authmanager, nil)
 	type fields struct {
 		GuestCartService     cartDomain.GuestCartService
 		CustomerCartService  cartDomain.CustomerCartService
@@ -700,10 +695,6 @@ func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 }
 
 func TestCartReceiverService_RestoreCart(t *testing.T) {
-	authmanager := &authApplication.AuthManager{}
-	authmanager.Inject(flamingo.NullLogger{}, nil, nil)
-	userservice := &authApplication.UserService{}
-	userservice.Inject(authmanager, nil)
 	type fields struct {
 		guestCartService     cartDomain.GuestCartService
 		customerCartService  cartDomain.CustomerCartService
