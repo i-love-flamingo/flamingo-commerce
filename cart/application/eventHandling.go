@@ -66,7 +66,7 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 				return
 			}
 			identity := e.webIdentityService.Identify(ctx, currentEvent.Request)
-			if identity != nil {
+			if identity == nil {
 				e.logger.WithContext(ctx).Error("Received WebLoginEvent but user is not logged in!")
 				return
 			}
