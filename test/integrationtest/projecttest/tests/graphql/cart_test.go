@@ -116,7 +116,7 @@ func Test_CommerceCartUpdateDeliveryShippingOptions(t *testing.T) {
 	deliveries.Element(1).Object().Value("deliveryInfo").Object().Value("carrier").String().Equal("bar-carrier")
 	deliveries.Element(1).Object().Value("deliveryInfo").Object().Value("method").String().Equal("bar-method")
 }
-func Test_CommerceCartClean(t*testing.T) {
+func Test_CommerceCartClean(t *testing.T) {
 	baseURL := "http://" + FlamingoURL
 	e := integrationtest.NewHTTPExpect(t, baseURL)
 
