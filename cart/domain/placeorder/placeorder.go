@@ -5,19 +5,19 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	price "flamingo.me/flamingo-commerce/v3/price/domain"
-	oauth "flamingo.me/flamingo/v3/core/oauth/domain"
+	"flamingo.me/flamingo/v3/core/auth"
 )
 
 type (
 	// Service  interface - Secondary PORT
 	Service interface {
 		PlaceGuestCart(ctx context.Context, cart *cart.Cart, payment *Payment) (PlacedOrderInfos, error)
-		PlaceCustomerCart(ctx context.Context, auth oauth.Auth, cart *cart.Cart, payment *Payment) (PlacedOrderInfos, error)
+		PlaceCustomerCart(ctx context.Context, identity auth.Identity, cart *cart.Cart, payment *Payment) (PlacedOrderInfos, error)
 		ReserveOrderID(ctx context.Context, cart *cart.Cart) (string, error)
 		// CancelGuestOrder cancels a previously placed guest order and returns the used cart
 		CancelGuestOrder(ctx context.Context, orderInfos PlacedOrderInfos) error
 		// CancelCustomerOrder cancels a previously placed guest order and returns the used cart
-		CancelCustomerOrder(ctx context.Context, orderInfos PlacedOrderInfos, auth oauth.Auth) error
+		CancelCustomerOrder(ctx context.Context, orderInfos PlacedOrderInfos, identity auth.Identity) error
 	}
 	// Payment represents all payments done for the cart and which items have been purchased by what method
 	Payment struct {

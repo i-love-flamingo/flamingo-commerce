@@ -10,11 +10,11 @@ import (
 
 	"flamingo.me/form/application"
 
-	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
-	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
+
+	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
+	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 )
 
 type (
@@ -26,7 +26,6 @@ type (
 
 	// SimplePaymentFormService implements Form(Data)Provider interface of form package
 	SimplePaymentFormService struct {
-		userService                    *authApplication.UserService
 		applicationCartReceiverService *cartApplication.CartReceiverService
 		giftCardPaymentMethod          string
 	}
@@ -46,13 +45,11 @@ type (
 
 // Inject dependencies
 func (p *SimplePaymentFormService) Inject(
-	userService *authApplication.UserService,
 	applicationCartReceiverService *cartApplication.CartReceiverService,
 	config *struct {
 		GiftCardPaymentMethod string `inject:"config:commerce.cart.simplePaymentForm.giftCardPaymentMethod"`
 	},
 ) {
-	p.userService = userService
 	p.applicationCartReceiverService = applicationCartReceiverService
 	if config != nil {
 		p.giftCardPaymentMethod = config.GiftCardPaymentMethod
@@ -85,7 +82,8 @@ func (c *SimplePaymentFormController) Inject(responder *web.Responder,
 	applicationCartReceiverService *cartApplication.CartReceiverService,
 	logger flamingo.Logger,
 	formHandlerFactory application.FormHandlerFactory,
-	simplePaymentFormService *SimplePaymentFormService) {
+	simplePaymentFormService *SimplePaymentFormService,
+) {
 	c.responder = responder
 	c.applicationCartReceiverService = applicationCartReceiverService
 	c.applicationCartService = applicationCartService

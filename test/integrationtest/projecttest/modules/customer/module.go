@@ -13,6 +13,5 @@ type (
 
 // Configure module
 func (m *Module) Configure(injector *dingo.Injector) {
-	injector.Bind(new(domain.CustomerService)).To(new(FakeService))
 	injector.Bind(new(domain.CustomerIdentityService)).To(new(FakeService))
 }

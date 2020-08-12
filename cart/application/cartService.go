@@ -5,9 +5,9 @@ import (
 	"encoding/gob"
 	"fmt"
 
+	"flamingo.me/flamingo/v3/core/auth"
 	"github.com/pkg/errors"
 
-	OAuthDomain "flamingo.me/flamingo/v3/core/oauth/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 
@@ -24,7 +24,7 @@ type (
 	// CartService provides methods to modify the cart
 	CartService struct {
 		cartReceiverService *CartReceiverService
-		authManager         AuthManagerInterface
+		webIdentityService  *auth.WebIdentityService
 		productService      productDomain.ProductService
 		eventPublisher      events.EventPublisher
 		eventRouter         flamingo.EventRouter
@@ -38,11 +38,6 @@ type (
 		itemValidator     validation.ItemValidator
 		cartCache         CartCache
 		placeOrderService placeorder.Service
-	}
-
-	// AuthManagerInterface is the interface required to get Auth infos for CustomerCart handling
-	AuthManagerInterface interface {
-		Auth(c context.Context, session *web.Session) (OAuthDomain.Auth, error)
 	}
 
 	// RestrictionError error enriched with result of restrictions
@@ -87,7 +82,7 @@ func (cs *CartService) Inject(
 	eventRouter flamingo.EventRouter,
 	deliveryInfoBuilder cartDomain.DeliveryInfoBuilder,
 	restrictionService *validation.RestrictionService,
-	authManager AuthManagerInterface,
+	webIdentityService *auth.WebIdentityService,
 	logger flamingo.Logger,
 	config *struct {
 		DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
@@ -106,7 +101,7 @@ func (cs *CartService) Inject(
 	cs.eventRouter = eventRouter
 	cs.deliveryInfoBuilder = deliveryInfoBuilder
 	cs.restrictionService = restrictionService
-	cs.authManager = authManager
+	cs.webIdentityService = webIdentityService
 	cs.logger = logger.WithField("module", "cart").WithField("category", "application.cartService")
 	if config != nil {
 		cs.defaultDeliveryCode = config.DefaultDeliveryCode
@@ -997,12 +992,11 @@ func (cs *CartService) placeOrder(ctx context.Context, session *web.Session, car
 	}
 	var placeOrderInfos placeorder.PlacedOrderInfos
 	var errPlaceOrder error
-	if cs.cartReceiverService.IsLoggedIn(ctx, session) {
-		auth, err := cs.authManager.Auth(ctx, session)
-		if err != nil {
-			return nil, err
-		}
-		placeOrderInfos, errPlaceOrder = cs.placeOrderService.PlaceCustomerCart(ctx, auth, cart, payment)
+
+	identity := cs.webIdentityService.Identify(ctx, web.RequestFromContext(ctx))
+
+	if identity != nil {
+		placeOrderInfos, errPlaceOrder = cs.placeOrderService.PlaceCustomerCart(ctx, identity, cart, payment)
 	} else {
 		placeOrderInfos, errPlaceOrder = cs.placeOrderService.PlaceGuestCart(ctx, cart, payment)
 	}
@@ -1042,12 +1036,9 @@ func (cs *CartService) cancelOrder(ctx context.Context, session *web.Session, or
 
 	var cancelErr error
 
-	if cs.cartReceiverService.IsLoggedIn(ctx, session) {
-		auth, err := cs.authManager.Auth(ctx, session)
-		if err != nil {
-			return err
-		}
-		cancelErr = cs.placeOrderService.CancelCustomerOrder(ctx, orderInfos, auth)
+	identitiy := cs.webIdentityService.Identify(ctx, web.RequestFromContext(ctx))
+	if identitiy != nil {
+		cancelErr = cs.placeOrderService.CancelCustomerOrder(ctx, orderInfos, identitiy)
 	} else {
 		cancelErr = cs.placeOrderService.CancelGuestOrder(ctx, orderInfos)
 	}

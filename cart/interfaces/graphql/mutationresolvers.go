@@ -242,6 +242,16 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryShippingOptions
 	return result, nil
 }
 
+// CartClean clears users cart
+func (r *CommerceCartMutationResolver) CartClean(ctx context.Context) (bool, error) {
+	err := r.cartService.Clean(ctx, web.SessionFromContext(ctx))
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
 func mapCommerceDeliveryAddressForm(form *domain.Form, success bool) (dto.DeliveryAddressForm, error) {
 	formData, ok := form.Data.(cartForms.DeliveryForm)
 	if !ok {

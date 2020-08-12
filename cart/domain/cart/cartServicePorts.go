@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
-	"flamingo.me/flamingo/v3/core/oauth/domain"
+	"flamingo.me/flamingo/v3/core/auth"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 
 	"github.com/pkg/errors"
@@ -27,12 +27,12 @@ type (
 	// CustomerCartService interface - Secondary PORT
 	CustomerCartService interface {
 		// GetModifyBehaviour gets the behaviour for the customer cart service
-		GetModifyBehaviour(context.Context, domain.Auth) (ModifyBehaviour, error)
-		GetCart(ctx context.Context, auth domain.Auth, cartID string) (*Cart, error)
+		GetModifyBehaviour(context.Context, auth.Identity) (ModifyBehaviour, error)
+		GetCart(ctx context.Context, identity auth.Identity, cartID string) (*Cart, error)
 		// RestoreCart restores a previously used customer cart with all its content.
 		// Depending on the used adapter this can lead to a new Cart.ID
 		// Deprecated: Implement CompleteBehaviour instead
-		RestoreCart(ctx context.Context, auth domain.Auth, cart Cart) (*Cart, error)
+		RestoreCart(ctx context.Context, identity auth.Identity, cart Cart) (*Cart, error)
 	}
 
 	// DeferEvents represents events that should be dispatched after a cart modify call

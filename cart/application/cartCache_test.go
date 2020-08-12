@@ -170,7 +170,7 @@ func TestCartSessionCache_GetCart(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &application.CartSessionCache{}
-			c.Inject(nil, nil, flamingo.NullLogger{}, nil)
+			c.Inject(flamingo.NullLogger{}, nil, nil)
 
 			got, err := c.GetCart(tt.args.ctx, tt.args.session, tt.args.id)
 			if (err != nil) != tt.wantErr {
@@ -254,7 +254,7 @@ func TestCartSessionCache_CacheCart(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &application.CartSessionCache{}
-			c.Inject(nil, nil, flamingo.NullLogger{}, nil)
+			c.Inject(flamingo.NullLogger{}, nil, nil)
 
 			err := c.CacheCart(tt.args.ctx, tt.args.session, tt.args.id, tt.args.cartForCache)
 			if (err != nil) != tt.wantErr {
@@ -273,9 +273,8 @@ func TestCartSessionCache_CacheCart(t *testing.T) {
 func TestCartSessionCache_CartExpiry(t *testing.T) {
 	c := &application.CartSessionCache{}
 	c.Inject(
-		nil,
-		nil,
 		flamingo.NullLogger{},
+		nil,
 		&struct {
 			LifetimeSeconds float64 `inject:"config:commerce.cart.cacheLifetime"` // in seconds
 		}{
@@ -364,7 +363,7 @@ func TestCartSessionCache_Invalidate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &application.CartSessionCache{}
-			c.Inject(nil, nil, flamingo.NullLogger{}, nil)
+			c.Inject(flamingo.NullLogger{}, nil, nil)
 
 			err := c.Invalidate(tt.args.ctx, tt.args.session, tt.args.id)
 
@@ -446,7 +445,7 @@ func TestCartSessionCache_Delete(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &application.CartSessionCache{}
-			c.Inject(nil, nil, flamingo.NullLogger{}, nil)
+			c.Inject(flamingo.NullLogger{}, nil, nil)
 
 			err := c.Delete(tt.args.ctx, tt.args.session, tt.args.id)
 
@@ -508,7 +507,7 @@ func TestCartSessionCache_DeleteAll(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &application.CartSessionCache{}
-			c.Inject(nil, nil, flamingo.NullLogger{}, nil)
+			c.Inject(flamingo.NullLogger{}, nil, nil)
 
 			err := c.DeleteAll(tt.args.ctx, tt.args.session)
 

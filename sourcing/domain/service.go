@@ -37,7 +37,7 @@ type (
 	// ItemAllocations represents the allocated Qtys per itemID
 	ItemAllocations map[ItemID]ItemAllocation
 
-	//ItemAllocation info
+	// ItemAllocation info
 	ItemAllocation struct {
 		AllocatedQtys AllocatedQtys
 		Error         error
@@ -89,7 +89,7 @@ var (
 	ErrNeedMoreDetailsSourceCannotBeDetected = errors.New("Source cannot be detected")
 )
 
-//Inject the dependencies
+// Inject the dependencies
 func (d *DefaultSourcingService) Inject(
 	logger flamingo.Logger,
 	dep *struct {
@@ -166,7 +166,7 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 		return nil, errors.New("Cart not given")
 	}
 
-	// productSourcestock holds the availablestock per product and source.
+	// productSourcestock holds the available stock per product and source.
 	// During allocation the initial retrieved available stock is reduced according to used allocation
 	var productSourcestock = map[string]map[Source]int{}
 
@@ -311,7 +311,7 @@ func (s AvailableSources) Reduce(reducedBy AllocatedQtys) AvailableSources {
 	return newAvailableSources
 }
 
-//min returns minimum of 2 ints
+// min returns minimum of 2 ints
 func min(a int, b int) int {
 	if a < b {
 		return a

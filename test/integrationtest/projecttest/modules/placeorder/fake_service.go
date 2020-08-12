@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"sync"
 
-	authDomain "flamingo.me/flamingo/v3/core/oauth/domain"
+	"flamingo.me/flamingo/v3/core/auth"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
@@ -47,7 +47,7 @@ func (f *FakeAdapter) PlaceGuestCart(_ context.Context, cart *cartDomain.Cart, _
 }
 
 // PlaceCustomerCart places a customer cart
-func (f *FakeAdapter) PlaceCustomerCart(_ context.Context, _ authDomain.Auth, cart *cartDomain.Cart, _ *placeorder.Payment) (placeorder.PlacedOrderInfos, error) {
+func (f *FakeAdapter) PlaceCustomerCart(_ context.Context, _ auth.Identity, cart *cartDomain.Cart, _ *placeorder.Payment) (placeorder.PlacedOrderInfos, error) {
 	return f.placeCart(cart)
 }
 
@@ -92,7 +92,7 @@ func (f *FakeAdapter) CancelGuestOrder(_ context.Context, orderInfos placeorder.
 }
 
 // CancelCustomerOrder cancels a customer order
-func (f *FakeAdapter) CancelCustomerOrder(_ context.Context, orderInfos placeorder.PlacedOrderInfos, _ authDomain.Auth) error {
+func (f *FakeAdapter) CancelCustomerOrder(_ context.Context, orderInfos placeorder.PlacedOrderInfos, _ auth.Identity) error {
 	return f.cancelOrder(orderInfos)
 }
 

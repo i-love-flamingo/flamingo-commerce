@@ -7,17 +7,20 @@ import (
 	"testing"
 
 	"flamingo.me/dingo"
+	"flamingo.me/flamingo/v3/core/auth"
+	"flamingo.me/flamingo/v3/core/auth/fake"
+
+	"flamingo.me/flamingo/v3/framework/config"
 
 	"flamingo.me/flamingo-commerce/v3/checkout"
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest"
-	"flamingo.me/flamingo/v3/core/oauth"
-	"flamingo.me/flamingo/v3/framework/config"
 )
 
 func Test_CheckoutStartPage(t *testing.T) {
 	info := integrationtest.Bootup(
 		[]dingo.Module{
-			new(oauth.Module),
+			new(auth.WebModule),
+			new(fake.Module),
 			new(checkout.Module),
 		},
 		"",
@@ -26,10 +29,19 @@ func Test_CheckoutStartPage(t *testing.T) {
 			"commerce.product.fakeservice.enabled":    true,
 			"commerce.cart.emailAdapter.emailAddress": "test@test.de",
 			"commerce.customer.useNilCustomerAdapter": true,
-			// Waiting for refactor of auth module to avoid this dependency
-			"core.oauth.secret":   "test",
-			"core.oauth.server":   "https://accounts.google.com",
-			"core.oauth.clientid": "test",
+			"core.auth.web": config.Map{
+				"debugController": true,
+				"broker": config.Slice{
+					config.Map{
+						"broker":                       "fake",
+						"typ":                          "fake",
+						"userConfig.username.password": "password",
+						"validatePassword":             true,
+						"usernameFieldId":              "username",
+						"passwordFieldId":              "password",
+					},
+				},
+			},
 		},
 	)
 	defer info.ShutdownFunc()

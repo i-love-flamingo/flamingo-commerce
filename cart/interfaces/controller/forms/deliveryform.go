@@ -4,23 +4,20 @@ import (
 	"context"
 	"errors"
 
-	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-
-	"flamingo.me/form/domain"
-
-	"flamingo.me/form/application"
-
-	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
-	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
+	"flamingo.me/form/application"
+	"flamingo.me/form/domain"
+
+	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
+	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 )
 
 type (
-	//DeliveryForm - the form for billing address
+	// DeliveryForm the form for billing address
 	DeliveryForm struct {
 		DeliveryAddress AddressForm `form:"deliveryAddress"`
-		//UseBillingAddress - the address should be taken from billing (only relevant for type address)
+		// UseBillingAddress - the address should be taken from billing (only relevant for type address)
 		UseBillingAddress bool   `form:"useBillingAddress"`
 		ShippingMethod    string `form:"shippingMethod"`
 		ShippingCarrier   string `form:"shippingCarrier"`
@@ -32,12 +29,11 @@ type (
 		applicationCartReceiverService *cartApplication.CartReceiverService
 	}
 
-	// DeliveryFormController - the (mini) MVC
+	// DeliveryFormController the (mini) MVC
 	DeliveryFormController struct {
 		responder                      *web.Responder
 		applicationCartService         *cartApplication.CartService
 		applicationCartReceiverService *cartApplication.CartReceiverService
-		userService                    *authApplication.UserService
 		logger                         flamingo.Logger
 		formHandlerFactory             application.FormHandlerFactory
 		billingAddressFormProvider     *BillingAddressFormService
@@ -105,24 +101,22 @@ func (p *DeliveryFormService) Validate(ctx context.Context, req *web.Request, va
 	return &validationInfo, nil
 }
 
-//Inject - Inject
+// Inject dependencies
 func (c *DeliveryFormController) Inject(responder *web.Responder,
 	applicationCartService *cartApplication.CartService,
 	applicationCartReceiverService *cartApplication.CartReceiverService,
-	userService *authApplication.UserService,
 	logger flamingo.Logger,
 	formHandlerFactory application.FormHandlerFactory,
 	billingAddressFormProvider *BillingAddressFormService) {
 	c.responder = responder
 	c.applicationCartReceiverService = applicationCartReceiverService
 	c.applicationCartService = applicationCartService
-	c.userService = userService
 	c.formHandlerFactory = formHandlerFactory
 	c.logger = logger.WithField(flamingo.LogKeyModule, "cart").WithField(flamingo.LogKeyCategory, "deliveryform")
 	c.billingAddressFormProvider = billingAddressFormProvider
 }
 
-// GetUnsubmittedForm - returns the form with deliveryform data - without validation
+// GetUnsubmittedForm returns the form with deliveryform data - without validation
 func (c *DeliveryFormController) GetUnsubmittedForm(ctx context.Context, r *web.Request) (*domain.Form, error) {
 	formHandler, err := c.getFormHandler()
 	if err != nil {
@@ -141,8 +135,8 @@ func (c *DeliveryFormController) getFormHandler() (domain.FormHandler, error) {
 	return formHandlerBuilder.Build(), nil
 }
 
-//HandleFormAction - handles submitted form and saves to cart
-func (c *DeliveryFormController) HandleFormAction(ctx context.Context, r *web.Request) (form *domain.Form, actionSuccessFull bool, err error) {
+// HandleFormAction handles submitted form and saves to cart
+func (c *DeliveryFormController) HandleFormAction(ctx context.Context, r *web.Request) (form *domain.Form, actionSuccessful bool, err error) {
 	session := web.SessionFromContext(ctx)
 
 	deliverycode := r.Params["deliveryCode"]

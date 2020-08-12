@@ -12,6 +12,7 @@
 * fake: add loyalty pricing for `fake_simple` product, introduced `fake_fixed_simple_without_discounts` product
 
 **cart**
+* **Breaking**: Moved to new flamingo auth module, breaks several interfaces which previously relied on the oauth module
 * **Breaking**
   * Cart item validation now requires the decorated cart to be passed to assure that validators don't rely on a cart from any other source (e.g. session)
   * Session added as parameter to interface method `MaxQuantityRestrictor.Restrict`
@@ -21,8 +22,9 @@
 * GraphQL
   * Add new mutation to set / update one or multiple delivery addresses `Commerce_Cart_UpdateDeliveryAddresses`
   * Add new mutation to update the shipping options (carrier / method) of an existing delivery `Commerce_Cart_UpdateDeliveryShippingOptions`
+  * Add new mutation to clean current users cart `Commerce_Cart_Clean`
   * Add new query to check if a product is restricted in terms of the allowed quantity `Commerce_Cart_QtyRestriction`
-  * Add new field `sumPaymentSelectionCartSplitValueAmountByMethods` to the `Commerce_Cart_Summary` which sums up cart split amounts of the payment selection by the provided methods. 
+  * Add new field `sumPaymentSelectionCartSplitValueAmountByMethods` to the `Commerce_Cart_Summary` which sums up cart split amounts of the payment selection by the provided methods.   
   * Expose PaymentSelection.CartSplit() via GraphQL, add new types `Commerce_Cart_PaymentSelection_Split` and `Commerce_Cart_PaymentSelection_SplitQualifier`
   * **Breaking**: renamed the following GraphQL types
     * type `Commerce_Cart_BillingAddressFormData` is now `Commerce_Cart_AddressForm`
@@ -35,7 +37,7 @@
 **customer**
 * **Breaking**: renamed `GetId` to `GetID` in `domain.Customer` interface
 * introduced new `CustomerIdentityService` to retrieve authenticated customers by `auth.Identity` 
-* deprecated `CustomerService` as it will be replaced by `CustomerIdentityService`
+* **Breaking**: removed `CustomerService` please use `CustomerIdentityService`
 * GraphQL: Add new customer queries:
   * `Commerce_Customer_Status` returns the customer's login status
   * `Commerce_Customer` returns the logged-in customer
@@ -71,6 +73,13 @@
 * Add Swagger/OpenAPI 2.0 specification to project, using [swaggo/swag](https://github.com/swaggo/swag)
 **sourcing**
 * Add new "sourcing" module that can be used standalone. See sourcing/Readme.md for more details
+
+**w3cdatalayer**
+* **Breaking**: Switch from flamingo `oauth` module to the new `auth` module, to keep w3cdatalayer working please configure the new `auth` module accordingly
+
+**order**
+* **Breaking**: removed interface `CustomerOrderService` please use `CustomerIdentityOrderService`
+* Update config path: `order.useFakeAdapters` to `commerce.order.useFakeAdapter`
 
 ## v3.2.0
 **w3cdatalayer**

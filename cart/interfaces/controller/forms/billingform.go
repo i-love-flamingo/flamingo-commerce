@@ -4,29 +4,26 @@ import (
 	"context"
 	"errors"
 
-	"flamingo.me/form/domain"
-
+	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/web"
 	"flamingo.me/form/application"
+	"flamingo.me/form/domain"
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
 	customerApplication "flamingo.me/flamingo-commerce/v3/customer/application"
-	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
-	"flamingo.me/flamingo/v3/framework/flamingo"
-	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (
-	//BillingAddressForm - the form for billing address
+	// BillingAddressForm the form for billing address
 	BillingAddressForm AddressForm
 
 	// BillingAddressFormService implements Form(Data)Provider interface of form package
 	BillingAddressFormService struct {
 		customerApplicationService     *customerApplication.Service
-		userService                    *authApplication.UserService
 		applicationCartReceiverService *cartApplication.CartReceiverService
 	}
 
-	// BillingAddressFormController - the (mini) MVC
+	// BillingAddressFormController the (mini) MVC
 	BillingAddressFormController struct {
 		responder                      *web.Responder
 		applicationCartService         *cartApplication.CartService
@@ -36,29 +33,26 @@ type (
 	}
 )
 
-// Inject - dependencies
+// Inject dependencies
 func (p *BillingAddressFormService) Inject(
-	userService *authApplication.UserService,
 	applicationCartReceiverService *cartApplication.CartReceiverService,
 	customerApplicationService *customerApplication.Service) {
 	p.customerApplicationService = customerApplicationService
-	p.userService = userService
 	p.applicationCartReceiverService = applicationCartReceiverService
 }
 
-// GetFormData from data provider
+// GetFormData provides form data
 func (p *BillingAddressFormService) GetFormData(ctx context.Context, req *web.Request) (interface{}, error) {
-	session := web.SessionFromContext(ctx)
 	billingAddressForm := AddressForm{}
-	if p.userService.IsLoggedIn(ctx, session) && p.customerApplicationService != nil {
-		customer, err := p.customerApplicationService.GetForAuthenticatedUser(ctx, session)
-		if err == nil {
-			billingAddress := customer.GetDefaultBillingAddress()
-			if billingAddress != nil {
-				billingAddressForm.LoadFromCustomerAddress(*billingAddress)
-			}
+
+	customer, err := p.customerApplicationService.GetForIdentity(ctx, req)
+	if err == nil {
+		billingAddress := customer.GetDefaultBillingAddress()
+		if billingAddress != nil {
+			billingAddressForm.LoadFromCustomerAddress(*billingAddress)
 		}
 	}
+
 	cart, err := p.applicationCartReceiverService.ViewCart(ctx, req.Session())
 	if err == nil {
 		if cart.BillingAddress != nil {
@@ -68,13 +62,14 @@ func (p *BillingAddressFormService) GetFormData(ctx context.Context, req *web.Re
 	return BillingAddressForm(billingAddressForm), nil
 }
 
-//Inject - injector
-func (c *BillingAddressFormController) Inject(responder *web.Responder,
+// Inject dependencies
+func (c *BillingAddressFormController) Inject(
+	responder *web.Responder,
 	applicationCartService *cartApplication.CartService,
 	applicationCartReceiverService *cartApplication.CartReceiverService,
 	logger flamingo.Logger,
 	formHandlerFactory application.FormHandlerFactory,
-	billingAddressFormService *BillingAddressFormService) {
+) {
 	c.responder = responder
 	c.applicationCartReceiverService = applicationCartReceiverService
 	c.applicationCartService = applicationCartService
@@ -91,7 +86,7 @@ func (c *BillingAddressFormController) getFormHandler() (domain.FormHandler, err
 	return builder.Build(), nil
 }
 
-//GetUnsubmittedForm - returns unsubmitted
+// GetUnsubmittedForm returns unsubmitted form
 func (c *BillingAddressFormController) GetUnsubmittedForm(ctx context.Context, r *web.Request) (*domain.Form, error) {
 	formHandler, err := c.getFormHandler()
 	if err != nil {
@@ -100,8 +95,8 @@ func (c *BillingAddressFormController) GetUnsubmittedForm(ctx context.Context, r
 	return formHandler.HandleUnsubmittedForm(ctx, r)
 }
 
-//HandleFormAction - return the form or error. If the form was submitted the action is performed
-func (c *BillingAddressFormController) HandleFormAction(ctx context.Context, r *web.Request) (form *domain.Form, actionSuccessFull bool, err error) {
+// HandleFormAction return the form or error. If the form was submitted the action is performed
+func (c *BillingAddressFormController) HandleFormAction(ctx context.Context, r *web.Request) (form *domain.Form, actionSuccessful bool, err error) {
 	session := web.SessionFromContext(ctx)
 	formHandler, err := c.getFormHandler()
 	if err != nil {
@@ -122,7 +117,7 @@ func (c *BillingAddressFormController) HandleFormAction(ctx context.Context, r *
 	addressForm := AddressForm(billingAddressForm)
 	billingAddress := addressForm.MapToDomainAddress()
 
-	//update Billing
+	// update Billing
 	err = c.applicationCartService.UpdateBillingAddress(ctx, session, &billingAddress)
 	if err != nil {
 		c.logger.WithContext(ctx).Error("BillingAddressFormController UpdateBillingAddress Error %v", err)

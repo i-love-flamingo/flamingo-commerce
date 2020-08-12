@@ -353,7 +353,7 @@ func Test_ClearPlaceOrder(t *testing.T) {
 				assertRefreshPlaceOrder(t, e, true)
 			}
 
-			request := helper.GraphQlRequest(t, e, loadGraphQL(t, "clear", nil))
+			request := helper.GraphQlRequest(t, e, loadGraphQL(t, "clear_place_order", nil))
 			response := request.Expect().JSON().Object()
 			tt.validator(t, response)
 

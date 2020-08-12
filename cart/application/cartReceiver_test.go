@@ -6,15 +6,14 @@ import (
 	"reflect"
 	"testing"
 
-	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
-	"flamingo.me/flamingo/v3/core/oauth/domain"
+	"flamingo.me/flamingo/v3/core/auth"
+	authMock "flamingo.me/flamingo/v3/core/auth/mock"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
-	"github.com/coreos/go-oidc"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"golang.org/x/oauth2"
+	"github.com/stretchr/testify/require"
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -27,7 +26,9 @@ import (
 
 type (
 	// MockGuestCartServiceAdapter
-	MockGuestCartServiceAdapter struct{}
+	MockGuestCartServiceAdapter struct {
+		Behaviour cartDomain.ModifyBehaviour
+	}
 )
 
 var (
@@ -48,7 +49,7 @@ func (m *MockGuestCartServiceAdapter) GetNewCart(ctx context.Context) (*cartDoma
 }
 
 func (m *MockGuestCartServiceAdapter) GetModifyBehaviour(context.Context) (cartDomain.ModifyBehaviour, error) {
-	return new(cartInfrastructure.InMemoryBehaviour), nil
+	return m.Behaviour, nil
 }
 
 func (m *MockGuestCartServiceAdapter) RestoreCart(ctx context.Context, cart cartDomain.Cart) (*cartDomain.Cart, error) {
@@ -76,6 +77,7 @@ func (m *MockGuestCartServiceAdapterError) GetNewCart(ctx context.Context) (*car
 }
 
 func (m *MockGuestCartServiceAdapterError) GetModifyBehaviour(context.Context) (cartDomain.ModifyBehaviour, error) {
+	// get guest behaviour
 	return new(cartInfrastructure.InMemoryBehaviour), nil
 }
 
@@ -86,7 +88,9 @@ func (m *MockGuestCartServiceAdapterError) RestoreCart(ctx context.Context, cart
 // MockCustomerCartService
 
 type (
-	MockCustomerCartService struct{}
+	MockCustomerCartService struct {
+		Behaviour cartDomain.ModifyBehaviour
+	}
 )
 
 var (
@@ -94,17 +98,18 @@ var (
 	_ cartDomain.CustomerCartService = (*MockCustomerCartService)(nil)
 )
 
-func (m *MockCustomerCartService) GetModifyBehaviour(context.Context, domain.Auth) (cartDomain.ModifyBehaviour, error) {
-	return new(cartInfrastructure.InMemoryBehaviour), nil
+func (m *MockCustomerCartService) GetModifyBehaviour(context.Context, auth.Identity) (cartDomain.ModifyBehaviour, error) {
+	// customer behaviour
+	return m.Behaviour, nil
 }
 
-func (m *MockCustomerCartService) GetCart(ctx context.Context, auth domain.Auth, cartID string) (*cartDomain.Cart, error) {
+func (m *MockCustomerCartService) GetCart(ctx context.Context, identity auth.Identity, cartID string) (*cartDomain.Cart, error) {
 	return &cartDomain.Cart{
 		ID: "mock_customer_cart",
 	}, nil
 }
 
-func (m *MockCustomerCartService) RestoreCart(ctx context.Context, auth domain.Auth, cart cartDomain.Cart) (*cartDomain.Cart, error) {
+func (m *MockCustomerCartService) RestoreCart(ctx context.Context, identity auth.Identity, cart cartDomain.Cart) (*cartDomain.Cart, error) {
 	panic("implement me")
 }
 
@@ -188,50 +193,6 @@ func (m *MockDeliveryInfoBuilder) BuildByDeliveryCode(deliveryCode string) (*car
 }
 
 type (
-	MockUserService struct {
-		LoggedIn bool
-	}
-)
-
-var _ authApplication.UserServiceInterface = (*MockUserService)(nil)
-
-func (m *MockUserService) GetUser(ctx context.Context, session *web.Session) *domain.User {
-	return &domain.User{
-		Name: "Test",
-	}
-}
-
-func (m *MockUserService) IsLoggedIn(ctx context.Context, session *web.Session) bool {
-	return m.LoggedIn
-}
-
-type (
-	MockAuthManager struct {
-		ShouldReturnError bool
-	}
-	MockTokenSource struct {
-	}
-)
-
-var _ cartApplication.AuthManagerInterface = &MockAuthManager{}
-var _ oauth2.TokenSource = &MockTokenSource{}
-
-func (m MockTokenSource) Token() (*oauth2.Token, error) {
-	return &oauth2.Token{}, nil
-}
-
-func (m MockAuthManager) Auth(_ context.Context, _ *web.Session) (domain.Auth, error) {
-	if m.ShouldReturnError {
-		return domain.Auth{}, errors.New("generic auth error")
-	}
-
-	return domain.Auth{
-		TokenSource: &MockTokenSource{},
-		IDToken:     &oidc.IDToken{},
-	}, nil
-}
-
-type (
 	MockEventRouter struct {
 		mock.Mock
 	}
@@ -253,8 +214,6 @@ func TestCartReceiverService_ShouldHaveGuestCart(t *testing.T) {
 		GuestCartService     cartDomain.GuestCartService
 		CustomerCartService  cartDomain.CustomerCartService
 		CartDecoratorFactory *decorator.DecoratedCartFactory
-		AuthManager          *authApplication.AuthManager
-		UserService          *authApplication.UserService
 		Logger               flamingo.Logger
 		CartCache            cartApplication.CartCache
 	}
@@ -281,10 +240,8 @@ func TestCartReceiverService_ShouldHaveGuestCart(t *testing.T) {
 
 					return result
 				}(),
-				AuthManager: &authApplication.AuthManager{},
-				UserService: &authApplication.UserService{},
-				Logger:      flamingo.NullLogger{},
-				CartCache:   new(MockCartCache),
+				Logger:    flamingo.NullLogger{},
+				CartCache: new(MockCartCache),
 			},
 			args: args{
 				session: web.EmptySession().Store(cartApplication.GuestCartSessionKey, struct{}{}),
@@ -304,10 +261,8 @@ func TestCartReceiverService_ShouldHaveGuestCart(t *testing.T) {
 
 					return result
 				}(),
-				AuthManager: &authApplication.AuthManager{},
-				UserService: &authApplication.UserService{},
-				Logger:      flamingo.NullLogger{},
-				CartCache:   new(MockCartCache),
+				Logger:    flamingo.NullLogger{},
+				CartCache: new(MockCartCache),
 			},
 			args: args{
 				session: web.EmptySession().Store("arbitrary_and_wrong_key", struct{}{}),
@@ -324,8 +279,7 @@ func TestCartReceiverService_ShouldHaveGuestCart(t *testing.T) {
 				tt.fields.GuestCartService,
 				tt.fields.CustomerCartService,
 				tt.fields.CartDecoratorFactory,
-				tt.fields.AuthManager,
-				tt.fields.UserService,
+				nil,
 				tt.fields.Logger,
 				nil,
 				&struct {
@@ -349,8 +303,6 @@ func TestCartReceiverService_ViewGuestCart(t *testing.T) {
 		GuestCartService     cartDomain.GuestCartService
 		CustomerCartService  cartDomain.CustomerCartService
 		CartDecoratorFactory *decorator.DecoratedCartFactory
-		AuthManager          *authApplication.AuthManager
-		UserService          *authApplication.UserService
 		Logger               flamingo.Logger
 		CartCache            cartApplication.CartCache
 	}
@@ -380,10 +332,8 @@ func TestCartReceiverService_ViewGuestCart(t *testing.T) {
 
 					return result
 				}(),
-				AuthManager: &authApplication.AuthManager{},
-				UserService: &authApplication.UserService{},
-				Logger:      flamingo.NullLogger{},
-				CartCache:   new(MockCartCache),
+				Logger:    flamingo.NullLogger{},
+				CartCache: new(MockCartCache),
 			},
 			args: args{
 				ctx:     context.Background(),
@@ -406,10 +356,8 @@ func TestCartReceiverService_ViewGuestCart(t *testing.T) {
 
 					return result
 				}(),
-				AuthManager: &authApplication.AuthManager{},
-				UserService: &authApplication.UserService{},
-				Logger:      flamingo.NullLogger{},
-				CartCache:   new(MockCartCache),
+				Logger:    flamingo.NullLogger{},
+				CartCache: new(MockCartCache),
 			},
 			args: args{
 				ctx:     context.Background(),
@@ -432,10 +380,8 @@ func TestCartReceiverService_ViewGuestCart(t *testing.T) {
 
 					return result
 				}(),
-				AuthManager: &authApplication.AuthManager{},
-				UserService: &authApplication.UserService{},
-				Logger:      flamingo.NullLogger{},
-				CartCache:   new(MockCartCache),
+				Logger:    flamingo.NullLogger{},
+				CartCache: new(MockCartCache),
 			},
 			args: args{
 				ctx:     context.Background(),
@@ -456,8 +402,7 @@ func TestCartReceiverService_ViewGuestCart(t *testing.T) {
 				tt.fields.GuestCartService,
 				tt.fields.CustomerCartService,
 				tt.fields.CartDecoratorFactory,
-				tt.fields.AuthManager,
-				tt.fields.UserService,
+				nil,
 				tt.fields.Logger,
 				nil,
 				&struct {
@@ -492,8 +437,6 @@ func TestCartReceiverService_DecorateCart(t *testing.T) {
 		GuestCartService     cartDomain.GuestCartService
 		CustomerCartService  cartDomain.CustomerCartService
 		CartDecoratorFactory *decorator.DecoratedCartFactory
-		AuthManager          *authApplication.AuthManager
-		UserService          *authApplication.UserService
 		Logger               flamingo.Logger
 		CartCache            cartApplication.CartCache
 	}
@@ -524,10 +467,8 @@ func TestCartReceiverService_DecorateCart(t *testing.T) {
 
 					return result
 				}(),
-				AuthManager: &authApplication.AuthManager{},
-				UserService: &authApplication.UserService{},
-				Logger:      flamingo.NullLogger{},
-				CartCache:   new(MockCartCache),
+				Logger:    flamingo.NullLogger{},
+				CartCache: new(MockCartCache),
 			},
 			args: args{
 				ctx:  context.Background(),
@@ -550,10 +491,8 @@ func TestCartReceiverService_DecorateCart(t *testing.T) {
 
 					return result
 				}(),
-				AuthManager: &authApplication.AuthManager{},
-				UserService: &authApplication.UserService{},
-				Logger:      flamingo.NullLogger{},
-				CartCache:   new(MockCartCache),
+				Logger:    flamingo.NullLogger{},
+				CartCache: new(MockCartCache),
 			},
 			args: args{
 				ctx: context.Background(),
@@ -583,8 +522,7 @@ func TestCartReceiverService_DecorateCart(t *testing.T) {
 				tt.fields.GuestCartService,
 				tt.fields.CustomerCartService,
 				tt.fields.CartDecoratorFactory,
-				tt.fields.AuthManager,
-				tt.fields.UserService,
+				nil,
 				tt.fields.Logger,
 				nil,
 				&struct {
@@ -620,16 +558,10 @@ func TestCartReceiverService_DecorateCart(t *testing.T) {
 }
 
 func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
-	authmanager := &authApplication.AuthManager{}
-	authmanager.Inject(flamingo.NullLogger{}, nil, nil)
-	userservice := &authApplication.UserService{}
-	userservice.Inject(authmanager, nil)
 	type fields struct {
 		GuestCartService     cartDomain.GuestCartService
 		CustomerCartService  cartDomain.CustomerCartService
 		CartDecoratorFactory *decorator.DecoratedCartFactory
-		AuthManager          *authApplication.AuthManager
-		UserService          *authApplication.UserService
 		Logger               flamingo.Logger
 		CartCache            cartApplication.CartCache
 	}
@@ -638,12 +570,12 @@ func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 		session *web.Session
 	}
 	tests := []struct {
-		name      string
-		fields    fields
-		args      args
-		wantType0 *decorator.DecoratedCart
-		wantType1 cartDomain.ModifyBehaviour
-		wantErr   bool
+		name          string
+		fields        fields
+		args          args
+		want          *decorator.DecoratedCart
+		wantBehaviour cartDomain.ModifyBehaviour
+		wantErr       bool
 	}{
 		{
 			name: "decorated cart not found",
@@ -659,22 +591,20 @@ func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 
 					return result
 				}(),
-				AuthManager: authmanager,
-				UserService: userservice,
-				Logger:      flamingo.NullLogger{},
-				CartCache:   new(MockCartCache),
+				Logger:    flamingo.NullLogger{},
+				CartCache: new(MockCartCache),
 			},
 			args: args{
 				ctx:     context.Background(),
 				session: web.EmptySession().Store("some_nonvalid_key", "some_guest_id"),
 			},
-			wantType0: nil,
-			wantType1: nil,
-			wantErr:   true,
+			want:          nil,
+			wantBehaviour: nil,
+			wantErr:       true,
 		}, {
 			name: "decorated cart found",
 			fields: fields{
-				GuestCartService:    new(MockGuestCartServiceAdapter),
+				GuestCartService:    &MockGuestCartServiceAdapter{Behaviour: &cartInfrastructure.InMemoryBehaviour{}},
 				CustomerCartService: new(MockCustomerCartService),
 				CartDecoratorFactory: func() *decorator.DecoratedCartFactory {
 					result := &decorator.DecoratedCartFactory{}
@@ -685,18 +615,16 @@ func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 
 					return result
 				}(),
-				AuthManager: authmanager,
-				UserService: userservice,
-				Logger:      flamingo.NullLogger{},
-				CartCache:   new(MockCartCache),
+				Logger:    flamingo.NullLogger{},
+				CartCache: new(MockCartCache),
 			},
 			args: args{
 				ctx:     context.Background(),
 				session: web.EmptySession().Store("some_nonvalid_key", "some_guest_id"),
 			},
-			wantType0: &decorator.DecoratedCart{},
-			wantType1: &cartInfrastructure.InMemoryBehaviour{},
-			wantErr:   false,
+			want:          &decorator.DecoratedCart{},
+			wantBehaviour: &cartInfrastructure.InMemoryBehaviour{},
+			wantErr:       false,
 		},
 	}
 
@@ -707,8 +635,7 @@ func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 				tt.fields.GuestCartService,
 				tt.fields.CustomerCartService,
 				tt.fields.CartDecoratorFactory,
-				tt.fields.AuthManager,
-				tt.fields.UserService,
+				nil,
 				tt.fields.Logger,
 				nil,
 				&struct {
@@ -718,7 +645,7 @@ func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 				},
 			)
 
-			got, got1, err := cs.GetDecoratedCart(tt.args.ctx, tt.args.session)
+			got, gotBehaviour, err := cs.GetDecoratedCart(tt.args.ctx, tt.args.session)
 
 			if (err != nil) != tt.wantErr {
 				t.Errorf("CartReceiverService.GetDecoratedCart() error = %v, wantErr %v", err, tt.wantErr)
@@ -726,40 +653,40 @@ func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 				return
 			}
 
-			if tt.wantType0 == nil {
-				if !reflect.DeepEqual(got, tt.wantType0) {
-					t.Errorf("CartReceiverService.GetDecoratedCart() got = %v, wantType0 %v", got, tt.wantType0)
+			if tt.want == nil {
+				if !reflect.DeepEqual(got, tt.want) {
+					t.Errorf("CartReceiverService.GetDecoratedCart() got = %v, want %v", got, tt.want)
 
 					return
 				}
 			} else {
 				gotType := reflect.TypeOf(got).Elem()
-				wantType := reflect.TypeOf(tt.wantType0).Elem()
+				wantType := reflect.TypeOf(tt.want).Elem()
 				if wantType != gotType {
-					t.Error("Return Type for wantType0 doesn't match")
+					t.Error("Return Type for want doesn't match")
 
 					return
 				}
 			}
 
-			if tt.wantType1 == nil {
-				if !reflect.DeepEqual(got1, tt.wantType1) {
-					t.Errorf("CartReceiverService.GetDecoratedCart() got = %v, wantType0 %v", got1, tt.wantType1)
+			if tt.wantBehaviour == nil {
+				if !reflect.DeepEqual(gotBehaviour, tt.wantBehaviour) {
+					t.Errorf("CartReceiverService.GetDecoratedCart() gotBehaviour = %v, wantBehaviour %v", gotBehaviour, tt.wantBehaviour)
 
 					return
 				}
 			} else {
-				gotType1 := reflect.TypeOf(got1).Elem()
-				wantType1 := reflect.TypeOf(tt.wantType1).Elem()
+				gotType1 := reflect.TypeOf(gotBehaviour).Elem()
+				wantType1 := reflect.TypeOf(tt.wantBehaviour).Elem()
 				if wantType1 != gotType1 {
-					t.Errorf("Return Type for wantType0 doesn't match, got = %v, want = %v", gotType1, wantType1)
+					t.Errorf("Return Type for want doesn't match, got = %v, want = %v", gotType1, wantType1)
 
 					return
 				}
 			}
 
-			if !reflect.DeepEqual(got1, tt.wantType1) {
-				t.Errorf("CartReceiverService.GetDecoratedCart() got1 = %v, wantType0 %v", got1, tt.wantType1)
+			if !reflect.DeepEqual(gotBehaviour, tt.wantBehaviour) {
+				t.Errorf("CartReceiverService.GetDecoratedCart() gotBehaviour = %v, wantBehaviour %v", gotBehaviour, tt.wantBehaviour)
 
 				return
 			}
@@ -768,16 +695,10 @@ func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 }
 
 func TestCartReceiverService_RestoreCart(t *testing.T) {
-	authmanager := &authApplication.AuthManager{}
-	authmanager.Inject(flamingo.NullLogger{}, nil, nil)
-	userservice := &authApplication.UserService{}
-	userservice.Inject(authmanager, nil)
 	type fields struct {
 		guestCartService     cartDomain.GuestCartService
 		customerCartService  cartDomain.CustomerCartService
 		cartDecoratorFactory *decorator.DecoratedCartFactory
-		authManager          *authApplication.AuthManager
-		userService          authApplication.UserServiceInterface
 		eventRouter          flamingo.EventRouter
 		logger               flamingo.Logger
 		cartCache            cartApplication.CartCache
@@ -800,10 +721,8 @@ func TestCartReceiverService_RestoreCart(t *testing.T) {
 			name: "restore guest cart without error",
 			fields: fields{
 				guestCartService: &MockGuestCartServiceAdapter{},
-				userService:      userservice,
 				logger:           &flamingo.NullLogger{},
 				cartCache:        &MockCartCache{},
-				authManager:      authmanager,
 			},
 			args: args{
 				ctx:     web.ContextWithSession(context.Background(), web.EmptySession()),
@@ -873,10 +792,9 @@ func TestCartReceiverService_RestoreCart(t *testing.T) {
 			name: "restore guest cart with error",
 			fields: fields{
 				guestCartService: &MockGuestCartServiceAdapterError{},
-				userService:      userservice,
-				logger:           &flamingo.NullLogger{},
-				cartCache:        &MockCartCache{},
-				authManager:      authmanager,
+
+				logger:    &flamingo.NullLogger{},
+				cartCache: &MockCartCache{},
 			},
 			args: args{
 				ctx:     web.ContextWithSession(context.Background(), web.EmptySession()),
@@ -923,8 +841,7 @@ func TestCartReceiverService_RestoreCart(t *testing.T) {
 				tt.fields.guestCartService,
 				tt.fields.customerCartService,
 				tt.fields.cartDecoratorFactory,
-				tt.fields.authManager,
-				tt.fields.userService,
+				nil,
 				tt.fields.logger,
 				nil,
 				&struct {
@@ -965,13 +882,13 @@ func TestCartReceiverService_RestoreCart(t *testing.T) {
 
 func TestCartReceiverService_ModifyBehaviour(t *testing.T) {
 	t.Run("get guest behaviour", func(t *testing.T) {
+		mockBehaviour := &cartInfrastructure.InMemoryBehaviour{}
 		cs := &cartApplication.CartReceiverService{}
 		cs.Inject(
-			&MockGuestCartServiceAdapter{},
+			&MockGuestCartServiceAdapter{Behaviour: mockBehaviour},
 			&MockCustomerCartService{},
 			&decorator.DecoratedCartFactory{},
-			&MockAuthManager{},
-			&MockUserService{LoggedIn: false},
+			&auth.WebIdentityService{},
 			flamingo.NullLogger{},
 			nil,
 			&struct {
@@ -984,17 +901,23 @@ func TestCartReceiverService_ModifyBehaviour(t *testing.T) {
 		behaviour, err := cs.ModifyBehaviour(context.Background())
 
 		assert.NoError(t, err)
-		assert.IsType(t, behaviour, &cartInfrastructure.InMemoryBehaviour{})
+		require.NotNil(t, behaviour)
+		assert.Same(t, behaviour, mockBehaviour)
 	})
 
 	t.Run("get customer behaviour", func(t *testing.T) {
+		mockIdentifier := new(authMock.Identifier).SetIdentifyMethod(
+			func(identifier *authMock.Identifier, ctx context.Context, request *web.Request) (auth.Identity, error) {
+				return &authMock.Identity{Sub: "foo"}, nil
+			},
+		)
 		cs := &cartApplication.CartReceiverService{}
+		mockBehaviour := &cartInfrastructure.InMemoryBehaviour{}
 		cs.Inject(
 			&MockGuestCartServiceAdapter{},
-			&MockCustomerCartService{},
+			&MockCustomerCartService{Behaviour: mockBehaviour},
 			&decorator.DecoratedCartFactory{},
-			&MockAuthManager{},
-			&MockUserService{LoggedIn: true},
+			new(auth.WebIdentityService).Inject([]auth.RequestIdentifier{mockIdentifier}, nil, nil, nil),
 			flamingo.NullLogger{},
 			nil,
 			&struct {
@@ -1007,29 +930,7 @@ func TestCartReceiverService_ModifyBehaviour(t *testing.T) {
 		behaviour, err := cs.ModifyBehaviour(context.Background())
 
 		assert.NoError(t, err)
-		assert.IsType(t, behaviour, &cartInfrastructure.InMemoryBehaviour{})
-	})
-
-	t.Run("error during customer auth should lead to error", func(t *testing.T) {
-		cs := &cartApplication.CartReceiverService{}
-		cs.Inject(
-			&MockGuestCartServiceAdapter{},
-			&MockCustomerCartService{},
-			&decorator.DecoratedCartFactory{},
-			&MockAuthManager{ShouldReturnError: true},
-			&MockUserService{LoggedIn: true},
-			flamingo.NullLogger{},
-			nil,
-			&struct {
-				CartCache cartApplication.CartCache `inject:",optional"`
-			}{
-				CartCache: &MockCartCache{},
-			},
-		)
-
-		behaviour, err := cs.ModifyBehaviour(context.Background())
-
-		assert.Error(t, err)
-		assert.Nil(t, behaviour)
+		require.NotNil(t, behaviour)
+		assert.Same(t, behaviour, mockBehaviour)
 	})
 }

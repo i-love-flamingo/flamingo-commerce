@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"time"
 
-	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
 	"flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
@@ -45,7 +44,6 @@ type (
 		applicationCartReceiverService  *cartApplication.CartReceiverService
 		defaultPersonalDataFormProvider DefaultPersonalDataFormProvider
 		customerApplicationService      *customerApplication.Service
-		userService                     *authApplication.UserService
 		additionalFormFieldsCfg         config.Slice
 		dateOfBirthRequired             bool
 		minAge                          int
@@ -69,7 +67,6 @@ type (
 func (p *DefaultPersonalDataFormService) Inject(
 	applicationCartReceiverService *cartApplication.CartReceiverService,
 	defaultPersonalDataFormProvider DefaultPersonalDataFormProvider,
-	userService *authApplication.UserService,
 	customerApplicationService *customerApplication.Service,
 	cfg *struct {
 		AdditionalFormValues    config.Slice `inject:"config:commerce.cart.personalDataForm.additionalFormFields,optional"`
@@ -82,7 +79,6 @@ func (p *DefaultPersonalDataFormService) Inject(
 	p.applicationCartReceiverService = applicationCartReceiverService
 	p.defaultPersonalDataFormProvider = defaultPersonalDataFormProvider
 	p.customerApplicationService = customerApplicationService
-	p.userService = userService
 	if cfg != nil {
 		p.additionalFormFieldsCfg = cfg.AdditionalFormValues
 		p.dateOfBirthRequired = cfg.DateOfBirthRequired
@@ -103,12 +99,10 @@ func (p *DefaultPersonalDataFormService) GetFormData(ctx context.Context, req *w
 		return *formData, nil
 	}
 
-	if p.userService.IsLoggedIn(ctx, req.Session()) {
-		customer, err := p.customerApplicationService.GetForAuthenticatedUser(ctx, req.Session())
-		if err == nil {
-			personalData := customer.GetPersonalData()
-			formData.DateOfBirth = personalData.Birthday.Format("2006-01-02")
-		}
+	customer, err := p.customerApplicationService.GetForIdentity(ctx, req)
+	if err == nil {
+		personalData := customer.GetPersonalData()
+		formData.DateOfBirth = personalData.Birthday.Format("2006-01-02")
 	}
 
 	if cart.Purchaser != nil {
@@ -211,7 +205,7 @@ func validateMinimumAge(value string, minimumAge int) bool {
 	return date.Add(-time.Minute).Before(required)
 }
 
-// Inject - Inject
+// Inject dependencies
 func (c *PersonalDataFormController) Inject(
 	responder *web.Responder,
 	applicationCartService *cartApplication.CartService,
@@ -229,7 +223,7 @@ func (c *PersonalDataFormController) Inject(
 	return c
 }
 
-// GetUnsubmittedForm - returns a Unsubmitted form - using the registered FormService
+// GetUnsubmittedForm returns a Unsubmitted form - using the registered FormService
 func (c *PersonalDataFormController) GetUnsubmittedForm(ctx context.Context, r *web.Request) (*domain.Form, error) {
 	formHandler, err := c.getFormHandler()
 	if err != nil {
@@ -238,7 +232,7 @@ func (c *PersonalDataFormController) GetUnsubmittedForm(ctx context.Context, r *
 	return formHandler.HandleUnsubmittedForm(ctx, r)
 }
 
-// HandleFormAction - handles post of personal data and updates cart
+// HandleFormAction handles post of personal data and updates cart
 func (c *PersonalDataFormController) HandleFormAction(ctx context.Context, r *web.Request) (form *domain.Form, actionSuccessFull bool, err error) {
 	session := web.SessionFromContext(ctx)
 	formHandler, err := c.getFormHandler()

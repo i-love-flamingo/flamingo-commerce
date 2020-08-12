@@ -10,7 +10,8 @@ import (
 	"strconv"
 	"strings"
 
-	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
+	customerDomain "flamingo.me/flamingo-commerce/v3/customer/domain"
+	"flamingo.me/flamingo/v3/core/auth"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/pkg/errors"
@@ -24,11 +25,12 @@ import (
 type (
 	// Factory is used to build new datalayers
 	Factory struct {
-		router            *web.Router
-		logger            flamingo.Logger
-		datalayerProvider domain.DatalayerProvider
-		userService       *authApplication.UserService
-		hashEncoder       encoder
+		router                  *web.Router
+		logger                  flamingo.Logger
+		datalayerProvider       domain.DatalayerProvider
+		webIdentityService      *auth.WebIdentityService
+		customerIdentityService customerDomain.CustomerIdentityService
+		hashEncoder             encoder
 
 		pageInstanceIDPrefix           string
 		pageInstanceIDStage            string
@@ -60,7 +62,8 @@ func (s *Factory) Inject(
 	router2 *web.Router,
 	logger flamingo.Logger,
 	provider domain.DatalayerProvider,
-	userService *authApplication.UserService,
+	webIdentityService *auth.WebIdentityService,
+	customerIdentityService customerDomain.CustomerIdentityService,
 	config *struct {
 		PageInstanceIDPrefix           string `inject:"config:commerce.w3cDatalayer.pageInstanceIDPrefix,optional"`
 		PageInstanceIDStage            string `inject:"config:commerce.w3cDatalayer.pageInstanceIDStage,optional"`
@@ -78,7 +81,8 @@ func (s *Factory) Inject(
 	s.router = router2
 	s.logger = logger.WithField(flamingo.LogKeyModule, "w3cdatalayer")
 	s.datalayerProvider = provider
-	s.userService = userService
+	s.webIdentityService = webIdentityService
+	s.customerIdentityService = customerIdentityService
 
 	s.pageInstanceIDPrefix = config.PageInstanceIDPrefix
 	s.pageInstanceIDStage = config.PageInstanceIDStage
@@ -150,24 +154,35 @@ func (s Factory) BuildForCurrentRequest(ctx context.Context, request *web.Reques
 
 	layer.PageInstanceID = s.pageInstanceIDPrefix + s.pageInstanceIDStage
 
-	//Handle User
+	// Handle User
 	layer.Page.Attributes["loggedIn"] = false
-	if s.userService.IsLoggedIn(ctx, request.Session()) {
+	layer.Page.Attributes["logintype"] = "guest"
+
+	identity := s.webIdentityService.Identify(ctx, request)
+	if identity != nil {
+		// logged in
 		layer.Page.Attributes["loggedIn"] = true
 		layer.Page.Attributes["logintype"] = "external"
-		userData := s.getUser(ctx, request.Session())
+		userData := s.getUserFromIdentity(ctx, identity)
 		if userData != nil {
 			layer.User = append(layer.User, *userData)
 		}
-	} else {
-		layer.Page.Attributes["logintype"] = "guest"
 	}
+
 	return *layer
 }
 
-func (s Factory) getUser(ctx context.Context, session *web.Session) *domain.User {
+func (s Factory) getUserFromIdentity(ctx context.Context, identity auth.Identity) *domain.User {
+	if identity == nil {
+		return nil
+	}
 
-	dataLayerProfile := s.getUserProfileForCurrentUser(ctx, session)
+	customer, err := s.customerIdentityService.GetByIdentity(ctx, identity)
+	if err != nil {
+		return nil
+	}
+
+	dataLayerProfile := s.getUserProfile(customer.GetPersonalData().MainEmail, identity.Subject())
 	if dataLayerProfile == nil {
 		return nil
 	}
@@ -175,14 +190,6 @@ func (s Factory) getUser(ctx context.Context, session *web.Session) *domain.User
 	dataLayerUser := domain.User{}
 	dataLayerUser.Profile = append(dataLayerUser.Profile, *dataLayerProfile)
 	return &dataLayerUser
-}
-
-func (s Factory) getUserProfileForCurrentUser(ctx context.Context, session *web.Session) *domain.UserProfile {
-	user := s.userService.GetUser(ctx, session)
-	if user == nil {
-		return nil
-	}
-	return s.getUserProfile(user.Email, user.Sub)
 }
 
 func (s Factory) getUserProfile(email string, sub string) *domain.UserProfile {
@@ -226,12 +233,14 @@ func (s Factory) BuildCartData(cart decorator.DecoratedCart) *domain.Cart {
 
 // BuildTransactionData builds the domain transaction data
 func (s Factory) BuildTransactionData(ctx context.Context, cart decorator.DecoratedCart, decoratedItems []decorator.DecoratedCartItem, orderID string, email string) *domain.Transaction {
-	var profile *domain.UserProfile
-	session := web.SessionFromContext(ctx)
-	if s.userService.IsLoggedIn(ctx, session) {
-		profile = s.getUserProfileForCurrentUser(ctx, session)
-	} else {
-		profile = s.getUserProfile(email, "")
+	identity := s.webIdentityService.Identify(ctx, web.RequestFromContext(ctx))
+	profile := s.getUserProfile(email, "")
+
+	if identity != nil {
+		user := s.getUserFromIdentity(ctx, identity)
+		if user != nil {
+			profile = &user.Profile[0]
+		}
 	}
 
 	transactionData := domain.Transaction{
@@ -353,7 +362,7 @@ func (s Factory) getProductInfo(product productDomain.BasicProduct) domain.Produ
 
 	productName := s.regex.ReplaceAllString(baseData.Title, "-")
 
-	//Handle Variants if it is a Configurable
+	// Handle Variants if it is a Configurable
 	var parentIDRef *string
 	var variantSelectedAttributeRef *string
 	if product.Type() == productDomain.TypeConfigurableWithActiveVariant {
@@ -445,9 +454,9 @@ func (s Factory) getProductImageURL(baseData productDomain.BasicProductData) str
 func (s Factory) hashWithSHA512(value string) string {
 	newHash := sha512.New()
 	newHash.Write([]byte(value))
-	//the hash is a byte array
+	// the hash is a byte array
 	result := newHash.Sum(nil)
-	//since we want to use it in a variable we base64 encode it (other alternative would be Hexadecimal representation "% x", h.Sum(nil)
+	// since we want to use it in a variable we base64 encode it (other alternative would be Hexadecimal representation "% x", h.Sum(nil)
 	return s.hashEncoder.EncodeToString(result)
 }
 

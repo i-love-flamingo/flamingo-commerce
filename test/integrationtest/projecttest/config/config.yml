@@ -1,18 +1,10 @@
 # Flamingo framework related configurations:
 core:
   zap.loglevel: Warn
-  oauth:
-    server: 'https://accounts.google.com'
-    secret: '%%ENV:OAUTH_SECRET%%'
-    clientid: flamingo
-    myhost: '%%ENV:FLAMINGO_HOSTNAME%%'
-    disableOfflineToken: true
-    enabled: false
   auth:
     web:
       debugController: true
       broker:
-        - # empty entry will be filled by oauth modules default config
         -
           broker: "fake"
           typ: "fake"
@@ -44,16 +36,13 @@ flamingo:
       enable: true
       serviceAddr: ":10000"
 
-order:
-  useFakeAdapters: true
-
-
-
 graphql:
   introspectionEnabled: true
 
 # Configs for flamingo-commerce modules
 commerce:
+  order:
+    useFakeAdapter: true
   payment:
     # Include the basic payment gateway adapter that provides "offline" payment methods
     enableOfflinePaymentGateway: true

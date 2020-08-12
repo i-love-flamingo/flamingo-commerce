@@ -4,8 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"flamingo.me/flamingo-commerce/v3/price/domain"
-	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/go-test/deep"
@@ -20,6 +18,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/states"
+	"flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
 type (
@@ -96,12 +95,7 @@ func TestValidateCart_Run(t *testing.T) {
 
 			return result
 		}(),
-		new(authApplication.AuthManager),
-		func() authApplication.UserServiceInterface {
-			us := new(authApplication.UserService)
-			us.Inject(new(authApplication.AuthManager), nil)
-			return us
-		}(),
+		nil,
 		new(flamingo.NullLogger),
 		nil,
 		nil,

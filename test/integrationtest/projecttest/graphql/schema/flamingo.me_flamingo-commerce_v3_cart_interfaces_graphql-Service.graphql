@@ -455,4 +455,6 @@ extend type Mutation {
     Commerce_Cart_UpdateDeliveryAddresses(deliveryAdresses: [Commerce_Cart_DeliveryAddressInput!]): [Commerce_Cart_DeliveryAddressForm]!
     "Adds/Updates one/multiple Delivery Addresses"
     Commerce_Cart_UpdateDeliveryShippingOptions(shippingOptions: [Commerce_Cart_DeliveryShippingOption!]): [Commerce_Cart_DeliveryAddressForm]!
+    "Cleans current cart"
+    Commerce_Cart_Clean: Boolean!
 }
