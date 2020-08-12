@@ -98,6 +98,7 @@ func (*Service) Types(types *graphql.Types) {
 	types.Resolve("Mutation", "Commerce_Cart_RemoveCouponCode", CommerceCartMutationResolver{}, "CommerceCartRemoveCouponCode")
 	types.Resolve("Mutation", "Commerce_Cart_UpdateDeliveryAddresses", CommerceCartMutationResolver{}, "CommerceCartUpdateDeliveryAddresses")
 	types.Resolve("Mutation", "Commerce_Cart_UpdateDeliveryShippingOptions", CommerceCartMutationResolver{}, "CommerceCartUpdateDeliveryShippingOptions")
+	types.Resolve("Mutation", "Commerce_Cart_Clean", CommerceCartMutationResolver{}, "CartClean")
 }
 
 // Resolver helper

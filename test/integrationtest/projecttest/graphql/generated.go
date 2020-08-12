@@ -860,6 +860,7 @@ type ComplexityRoot struct {
 	Mutation struct {
 		CommerceAddToCart                         func(childComplexity int, marketplaceCode string, qty int, deliveryCode string) int
 		CommerceCartApplyCouponCodeOrGiftCard     func(childComplexity int, code string) int
+		CommerceCartClean                         func(childComplexity int) int
 		CommerceCartRemoveCouponCode              func(childComplexity int, couponCode string) int
 		CommerceCartRemoveGiftCard                func(childComplexity int, giftCardCode string) int
 		CommerceCartUpdateBillingAddress          func(childComplexity int, addressForm *forms.AddressForm) int
@@ -921,6 +922,7 @@ type MutationResolver interface {
 	CommerceCartRemoveCouponCode(ctx context.Context, couponCode string) (*dto.DecoratedCart, error)
 	CommerceCartUpdateDeliveryAddresses(ctx context.Context, deliveryAdresses []*forms.DeliveryForm) ([]*dto.DeliveryAddressForm, error)
 	CommerceCartUpdateDeliveryShippingOptions(ctx context.Context, shippingOptions []*dto.DeliveryShippingOption) ([]*dto.DeliveryAddressForm, error)
+	CommerceCartClean(ctx context.Context) (bool, error)
 	CommerceCheckoutStartPlaceOrder(ctx context.Context, returnURL string) (*dto1.StartPlaceOrderResult, error)
 	CommerceCheckoutCancelPlaceOrder(ctx context.Context) (bool, error)
 	CommerceCheckoutClearPlaceOrder(ctx context.Context) (bool, error)
@@ -4514,6 +4516,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CommerceCartApplyCouponCodeOrGiftCard(childComplexity, args["code"].(string)), true
 
+	case "Mutation.Commerce_Cart_Clean":
+		if e.complexity.Mutation.CommerceCartClean == nil {
+			break
+		}
+
+		return e.complexity.Mutation.CommerceCartClean(childComplexity), true
+
 	case "Mutation.Commerce_Cart_RemoveCouponCode":
 		if e.complexity.Mutation.CommerceCartRemoveCouponCode == nil {
 			break
@@ -5694,6 +5703,8 @@ extend type Mutation {
     Commerce_Cart_UpdateDeliveryAddresses(deliveryAdresses: [Commerce_Cart_DeliveryAddressInput!]): [Commerce_Cart_DeliveryAddressForm]!
     "Adds/Updates one/multiple Delivery Addresses"
     Commerce_Cart_UpdateDeliveryShippingOptions(shippingOptions: [Commerce_Cart_DeliveryShippingOption!]): [Commerce_Cart_DeliveryAddressForm]!
+    "Cleans current cart"
+    Commerce_Cart_Clean: Boolean!
 }
 `, BuiltIn: false},
 	{Name: "graphql/schema/flamingo.me_flamingo-commerce_v3_checkout_interfaces_graphql-Service.graphql", Input: `type Commerce_Checkout_StartPlaceOrder_Result {
@@ -22066,6 +22077,37 @@ func (ec *executionContext) _Mutation_Commerce_Cart_UpdateDeliveryShippingOption
 	return ec.marshalNCommerce_Cart_DeliveryAddressForm2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAddressForm(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_Commerce_Cart_Clean(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CommerceCartClean(rctx)
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_Commerce_Checkout_StartPlaceOrder(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -28521,6 +28563,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "Commerce_Cart_UpdateDeliveryShippingOptions":
 			out.Values[i] = ec._Mutation_Commerce_Cart_UpdateDeliveryShippingOptions(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "Commerce_Cart_Clean":
+			out.Values[i] = ec._Mutation_Commerce_Cart_Clean(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

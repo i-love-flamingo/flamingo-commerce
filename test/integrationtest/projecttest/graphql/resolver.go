@@ -162,6 +162,7 @@ type rootResolverMutation struct {
 	resolveCommerceCartRemoveCouponCode              func(ctx context.Context, couponCode string) (*dto.DecoratedCart, error)
 	resolveCommerceCartUpdateDeliveryAddresses       func(ctx context.Context, deliveryAdresses []*forms.DeliveryForm) ([]*dto.DeliveryAddressForm, error)
 	resolveCommerceCartUpdateDeliveryShippingOptions func(ctx context.Context, shippingOptions []*dto.DeliveryShippingOption) ([]*dto.DeliveryAddressForm, error)
+	resolveCommerceCartClean                         func(ctx context.Context) (bool, error)
 	resolveCommerceCheckoutStartPlaceOrder           func(ctx context.Context, returnURL string) (*dto1.StartPlaceOrderResult, error)
 	resolveCommerceCheckoutCancelPlaceOrder          func(ctx context.Context) (bool, error)
 	resolveCommerceCheckoutClearPlaceOrder           func(ctx context.Context) (bool, error)
@@ -182,6 +183,7 @@ func (r *rootResolverMutation) Inject(
 	mutationCommerceCartRemoveCouponCode *graphql1.CommerceCartMutationResolver,
 	mutationCommerceCartUpdateDeliveryAddresses *graphql1.CommerceCartMutationResolver,
 	mutationCommerceCartUpdateDeliveryShippingOptions *graphql1.CommerceCartMutationResolver,
+	mutationCommerceCartClean *graphql1.CommerceCartMutationResolver,
 	mutationCommerceCheckoutStartPlaceOrder *graphql4.CommerceCheckoutMutationResolver,
 	mutationCommerceCheckoutCancelPlaceOrder *graphql4.CommerceCheckoutMutationResolver,
 	mutationCommerceCheckoutClearPlaceOrder *graphql4.CommerceCheckoutMutationResolver,
@@ -200,6 +202,7 @@ func (r *rootResolverMutation) Inject(
 	r.resolveCommerceCartRemoveCouponCode = mutationCommerceCartRemoveCouponCode.CommerceCartRemoveCouponCode
 	r.resolveCommerceCartUpdateDeliveryAddresses = mutationCommerceCartUpdateDeliveryAddresses.CommerceCartUpdateDeliveryAddresses
 	r.resolveCommerceCartUpdateDeliveryShippingOptions = mutationCommerceCartUpdateDeliveryShippingOptions.CommerceCartUpdateDeliveryShippingOptions
+	r.resolveCommerceCartClean = mutationCommerceCartClean.CartClean
 	r.resolveCommerceCheckoutStartPlaceOrder = mutationCommerceCheckoutStartPlaceOrder.CommerceCheckoutStartPlaceOrder
 	r.resolveCommerceCheckoutCancelPlaceOrder = mutationCommerceCheckoutCancelPlaceOrder.CommerceCheckoutCancelPlaceOrder
 	r.resolveCommerceCheckoutClearPlaceOrder = mutationCommerceCheckoutClearPlaceOrder.CommerceCheckoutClearPlaceOrder
@@ -242,6 +245,9 @@ func (r *rootResolverMutation) CommerceCartUpdateDeliveryAddresses(ctx context.C
 }
 func (r *rootResolverMutation) CommerceCartUpdateDeliveryShippingOptions(ctx context.Context, shippingOptions []*dto.DeliveryShippingOption) ([]*dto.DeliveryAddressForm, error) {
 	return r.resolveCommerceCartUpdateDeliveryShippingOptions(ctx, shippingOptions)
+}
+func (r *rootResolverMutation) CommerceCartClean(ctx context.Context) (bool, error) {
+	return r.resolveCommerceCartClean(ctx)
 }
 func (r *rootResolverMutation) CommerceCheckoutStartPlaceOrder(ctx context.Context, returnURL string) (*dto1.StartPlaceOrderResult, error) {
 	return r.resolveCommerceCheckoutStartPlaceOrder(ctx, returnURL)
