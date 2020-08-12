@@ -243,7 +243,7 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryShippingOptions
 }
 
 // ClearCart clears users cart
-func(r *CommerceCartMutationResolver) CartClean(ctx context.Context) (bool, error) {
+func (r *CommerceCartMutationResolver) CartClean(ctx context.Context) (bool, error) {
 	err := r.cartService.Clean(ctx, web.SessionFromContext(ctx))
 	if err != nil {
 		return false, err
