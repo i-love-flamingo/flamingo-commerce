@@ -1,5 +1,8 @@
 # Changelog
-## v3.3.0 [upcoming]
+## v3.4.0 [upcoming]
+
+
+## v3.3.0
 **product**
 * Switch module config to CUE
 * Extended product model with loyalty earnings
