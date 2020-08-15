@@ -46,6 +46,7 @@ func (gcs *DefaultGuestCartService) GetModifyBehaviour(context.Context) (cart.Mo
 }
 
 // RestoreCart restores a previously used guest cart
+// Deprecated: (deprecated in the interface)
 func (gcs *DefaultGuestCartService) RestoreCart(ctx context.Context, cart cart.Cart) (*cart.Cart, error) {
 	// RestoreCart restores a previously used cart
 	gcs.logger.Warn("RestoreCart depricated")

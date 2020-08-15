@@ -66,6 +66,7 @@ func (cs *DefaultCustomerCartService) GetModifyBehaviour(context.Context, domain
 }
 
 // RestoreCart restores a previously used cart
+// Deprecated: (deprecated in the interface)
 func (cs *DefaultCustomerCartService) RestoreCart(ctx context.Context, auth domain.Auth, cart cart.Cart) (*cart.Cart, error) {
 	cs.logger.Warn("RestoreCart depricated")
 	return &cart, nil
