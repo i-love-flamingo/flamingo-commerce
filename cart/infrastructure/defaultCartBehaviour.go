@@ -363,7 +363,7 @@ func (cob *DefaultCartBehaviour) UpdatePurchaser(ctx context.Context, cart *doma
 
 	err := cob.cartStorage.StoreCart(ctx, cart)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "cart.infrastructure.InMemoryBehaviour: error on saving cart")
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
 	}
 
 	return cart, nil, nil
