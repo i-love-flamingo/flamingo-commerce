@@ -1,5 +1,8 @@
 # Changelog
-## v3.3.0 [upcoming]
+## v3.4.0 [upcoming]
+
+
+## v3.3.0
 **product**
 * Switch module config to CUE
 * Extended product model with loyalty earnings
@@ -7,18 +10,24 @@
 * GraphQL
   * Added values field of Attribute to schema
   * exposed loyalty earnings
+  * Added facets to fake search service
 * Expose unit of product variant attributes
+* fake: add loyalty pricing for `fake_simple` product, introduced `fake_fixed_simple_without_discounts` product
 
 **cart**
+* **Breaking**: Moved to new flamingo auth module, breaks several interfaces which previously relied on the oauth module
 * **Breaking**
   * Cart item validation now requires the decorated cart to be passed to assure that validators don't rely on a cart from any other source (e.g. session)
   * Session added as parameter to interface method `MaxQuantityRestrictor.Restrict`
   * Session added as parameter to `RestrictionService.RestrictQty`
+  * Changed no cache entry found error for cartCache `Invalidate`, `Delete` and `DeleteAll` to `ErrNoCacheEntry`
 * Switch module config to CUE
 * GraphQL
   * Add new mutation to set / update one or multiple delivery addresses `Commerce_Cart_UpdateDeliveryAddresses`
   * Add new mutation to update the shipping options (carrier / method) of an existing delivery `Commerce_Cart_UpdateDeliveryShippingOptions`
+  * Add new mutation to clean current users cart `Commerce_Cart_Clean`
   * Add new query to check if a product is restricted in terms of the allowed quantity `Commerce_Cart_QtyRestriction`
+  * Add new field `sumPaymentSelectionCartSplitValueAmountByMethods` to the `Commerce_Cart_Summary` which sums up cart split amounts of the payment selection by the provided methods.   
   * Expose PaymentSelection.CartSplit() via GraphQL, add new types `Commerce_Cart_PaymentSelection_Split` and `Commerce_Cart_PaymentSelection_SplitQualifier`
   * **Breaking**: renamed the following GraphQL types
     * type `Commerce_Cart_BillingAddressFormData` is now `Commerce_Cart_AddressForm`
@@ -26,11 +35,12 @@
     * type `Commerce_Charge` is now `Commerce_Price_Charge`
     * type `Commerce_ChargeQualifier` is now `Commerce_Price_ChargeQualifier`
     * input `Commerce_ChargeQualifierInput` is now `Commerce_Price_ChargeQualifierInput`
+* Adjusted log level for cache entry not found error when trying to delete the cached cart   
 
 **customer**
 * **Breaking**: renamed `GetId` to `GetID` in `domain.Customer` interface
 * introduced new `CustomerIdentityService` to retrieve authenticated customers by `auth.Identity` 
-* deprecated `CustomerService` as it will be replaced by `CustomerIdentityService`
+* **Breaking**: removed `CustomerService` please use `CustomerIdentityService`
 * GraphQL: Add new customer queries:
   * `Commerce_Customer_Status` returns the customer's login status
   * `Commerce_Customer` returns the logged-in customer
@@ -43,22 +53,36 @@
     * flamingo_commerce_checkout_placeorder_starts
     * flamingo_commerce_checkout_placeorder_state_run_count
     * flamingo_commerce_checkout_placeorder_state_failed_count
+   * Add a step to validate the payment selection if needed. The step provides a port to be implemented if needed.
 * Expose placeorder endpoints also via rest
 * Checkout controller, update to the error handling:
   * In case of a payment error the checkout controller will now redirect to the checkout/review action instead of just rendering the matching template on the current route.
   * Same applies in case of an error during place order, the checkout controller will now redirect to the checkout step.
   * In both cases the error will be stored as a flash message in the session before redirecting, the target action will then receive it and pass it to the template view data. 
-    
+ 
 **search**
 * Switch module config to CUE
 * Update `pagination` module configuration. Use `commerce.pagination` namespace for configuration now.
 * GraphQL
   * **Breaking** simplified Commerce_Search_SortOption type
+  * **Breaking** use GraphQL specific search result type
+  * Added facets resolver
+  
+**category**
+* GraphQL
+  * **Breaking** moved GraphQL `dto` package to `categorydto`
 
 **docs**
 * Add Swagger/OpenAPI 2.0 specification to project, using [swaggo/swag](https://github.com/swaggo/swag)
 **sourcing**
 * Add new "sourcing" module that can be used standalone. See sourcing/Readme.md for more details
+
+**w3cdatalayer**
+* **Breaking**: Switch from flamingo `oauth` module to the new `auth` module, to keep w3cdatalayer working please configure the new `auth` module accordingly
+
+**order**
+* **Breaking**: removed interface `CustomerOrderService` please use `CustomerIdentityOrderService`
+* Update config path: `order.useFakeAdapters` to `commerce.order.useFakeAdapter`
 
 ## v3.2.0
 **w3cdatalayer**

@@ -14,14 +14,14 @@ type (
 
 // Discounts collects up discounts of cart based on its deliveries
 // All discounts with the same campaign code are aggregated and returned as one with a summed price
-func (cs *CartSummary) Discounts() *cart.AppliedDiscounts {
+func (cs *CartSummary) Discounts() *CartAppliedDiscounts {
 	result, err := cs.cart.MergeDiscounts()
 
 	if err != nil {
 		return nil
 	}
 
-	return &result
+	return &CartAppliedDiscounts{discounts: result}
 }
 
 // HasAppliedDiscounts check whether there are any discounts currently applied to the cart
@@ -85,4 +85,43 @@ func (cs CartSummary) SumTaxes() *Taxes {
 	}
 
 	return &Taxes{Items: taxes}
+}
+
+// SumPaymentSelectionCartSplitValueAmountByMethods – sum
+func (cs CartSummary) SumPaymentSelectionCartSplitValueAmountByMethods(methods []string) *domain.Price {
+	if cs.cart.PaymentSelection == nil {
+		return nil
+	}
+
+	prices := make([]domain.Price, 0, len(methods))
+
+	for qualifier, charge := range cs.cart.PaymentSelection.CartSplit() {
+		found := contains(methods, qualifier.Method)
+		if !found {
+			continue
+		}
+
+		prices = append(prices, charge.Value)
+	}
+
+	if len(prices) == 0 {
+		return nil
+	}
+
+	price, err := domain.SumAll(prices...)
+	if err != nil {
+		return nil
+	}
+
+	return &price
+}
+
+// Contains tells whether a contains x.
+func contains(a []string, x string) bool {
+	for _, n := range a {
+		if x == n {
+			return true
+		}
+	}
+	return false
 }

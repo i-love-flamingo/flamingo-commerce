@@ -1,6 +1,9 @@
 
 # Flamingo Commerce
-[![Go Report Card](https://goreportcard.com/badge/github.com/i-love-flamingo/flamingo-commerce)](https://goreportcard.com/report/github.com/i-love-flamingo/flamingo-commerce) [![Build Status](https://travis-ci.org/i-love-flamingo/flamingo-commerce.svg)](https://travis-ci.org/i-love-flamingo/flamingo-commerce)
+[![Go Report Card](https://goreportcard.com/badge/github.com/i-love-flamingo/flamingo-commerce)](https://goreportcard.com/report/github.com/i-love-flamingo/flamingo-commerce)
+[![Build Status](https://travis-ci.org/i-love-flamingo/flamingo-commerce.svg?branch=master)](https://travis-ci.org/i-love-flamingo/flamingo-commerce?branch=master)
+[![Release](https://img.shields.io/github/release/i-love-flamingo/flamingo-commerce?style=flat-square)](https://github.com/i-love-flamingo/flamingo-commerce/releases)
+
 
 With "Flamingo Commerce" you get your toolkit for building fast and flexible commerce experience applications.
 

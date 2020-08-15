@@ -11,7 +11,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/modules/payment"
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/modules/placeorder"
 
-	"gotest.tools/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_Checkout_SubmitCheckoutAction(t *testing.T) {

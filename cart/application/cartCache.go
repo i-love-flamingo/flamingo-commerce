@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
+	"flamingo.me/flamingo/v3/core/auth"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/pkg/errors"
@@ -34,10 +34,9 @@ type (
 
 	// CartSessionCache defines a Cart Cache
 	CartSessionCache struct {
-		authManager     *authApplication.AuthManager
-		userService     *authApplication.UserService
-		logger          flamingo.Logger
-		lifetimeSeconds float64
+		logger             flamingo.Logger
+		webIdentityService *auth.WebIdentityService
+		lifetimeSeconds    float64
 	}
 
 	// CachedCartEntry defines a single Cart Cache Entry
@@ -57,7 +56,7 @@ var (
 	_ CartCache = (*CartSessionCache)(nil)
 	// ErrCacheIsInvalid sets generalized invalid Cache Error
 	ErrCacheIsInvalid = errors.New("cache is invalid")
-	// ErrNoCacheEntry - used if cahce is not found
+	// ErrNoCacheEntry - used if cache is not found
 	ErrNoCacheEntry = errors.New("cache entry not found")
 )
 
@@ -97,15 +96,13 @@ func BuildIdentifierFromCart(cart *cart.Cart) (*CartCacheIdentifier, error) {
 
 // Inject the dependencies
 func (cs *CartSessionCache) Inject(
-	authManager *authApplication.AuthManager,
-	userService *authApplication.UserService,
 	logger flamingo.Logger,
+	webIdentityService *auth.WebIdentityService,
 	config *struct {
 		LifetimeSeconds float64 `inject:"config:commerce.cart.cacheLifetime"` // in seconds
 	},
 ) {
-	cs.authManager = authManager
-	cs.userService = userService
+	cs.webIdentityService = webIdentityService
 	cs.logger = logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").WithField(flamingo.LogKeyModule, "cart")
 	if config != nil {
 		cs.lifetimeSeconds = config.LifetimeSeconds
@@ -114,14 +111,10 @@ func (cs *CartSessionCache) Inject(
 
 // BuildIdentifier creates a CartCacheIdentifier based on the login state
 func (cs *CartSessionCache) BuildIdentifier(ctx context.Context, session *web.Session) (CartCacheIdentifier, error) {
-
-	if cs.userService.IsLoggedIn(ctx, session) {
-		auth, err := cs.authManager.Auth(ctx, session)
-		if err != nil {
-			return CartCacheIdentifier{}, err
-		}
+	identity := cs.webIdentityService.Identify(ctx, web.RequestFromContext(ctx))
+	if identity != nil {
 		return CartCacheIdentifier{
-			CustomerID:     auth.IDToken.Subject,
+			CustomerID:     identity.Subject(),
 			IsCustomerCart: true,
 		}, nil
 	}
@@ -196,7 +189,7 @@ func (cs *CartSessionCache) Invalidate(ctx context.Context, session *web.Session
 		}
 	}
 
-	return errors.New("not found for invalidate")
+	return ErrNoCacheEntry
 }
 
 // Delete a Cache entry
@@ -208,7 +201,7 @@ func (cs *CartSessionCache) Delete(ctx context.Context, session *web.Session, id
 		return nil
 	}
 
-	return errors.New("not found for delete")
+	return ErrNoCacheEntry
 }
 
 // DeleteAll empties the Cache
@@ -228,5 +221,5 @@ func (cs *CartSessionCache) DeleteAll(ctx context.Context, session *web.Session)
 		return nil
 	}
 
-	return errors.New("not found for delete")
+	return ErrNoCacheEntry
 }

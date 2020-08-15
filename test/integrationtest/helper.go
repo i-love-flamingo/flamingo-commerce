@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 	"sync"
@@ -53,7 +54,7 @@ func (t *testModule) Configure(i *dingo.Injector) {
 }
 
 // Notify gets notified by event router
-func (t *testModule) Notify(ctx context.Context, event flamingoFramework.Event) {
+func (t *testModule) Notify(_ context.Context, event flamingoFramework.Event) {
 	switch event.(type) {
 	case *flamingoFramework.ShutdownEvent:
 		log.Printf("ShutdownEvent event received...")
@@ -145,11 +146,31 @@ func Bootup(modules []dingo.Module, configDir string, config config.Map) BootupI
 	}
 }
 
-// NewHTTPExpect returns a new Expect object without printer
-func NewHTTPExpect(t httpexpect.LoggerReporter, baseURL string) *httpexpect.Expect {
+// NewHTTPExpectWithCookies returns a new Expect object without printer with preset cookies to the base URL
+func NewHTTPExpectWithCookies(t httpexpect.LoggerReporter, baseURL string, cookies map[string]string) *httpexpect.Expect {
+	cookieJar := httpexpect.NewJar()
+	parse, err := url.Parse(baseURL)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	theCookies := make([]*http.Cookie, 0, len(cookies))
+	for key, value := range cookies {
+		theCookies = append(theCookies, &http.Cookie{Name: key, Value: value})
+	}
+
+	cookieJar.SetCookies(parse, theCookies)
+
 	return httpexpect.WithConfig(httpexpect.Config{
-		BaseURL:  baseURL,
+		BaseURL: baseURL,
+		Client: &http.Client{
+			Jar: cookieJar,
+		},
 		Reporter: httpexpect.NewAssertReporter(t),
 		Printers: nil,
 	})
+}
+
+// NewHTTPExpect returns a new Expect object without printer
+func NewHTTPExpect(t httpexpect.LoggerReporter, baseURL string) *httpexpect.Expect {
+	return NewHTTPExpectWithCookies(t, baseURL, nil)
 }

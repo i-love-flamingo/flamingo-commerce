@@ -3,7 +3,9 @@ package application_test
 import (
 	"context"
 	"fmt"
+	"testing"
 
+	"flamingo.me/flamingo/v3/core/auth"
 	"github.com/go-test/deep"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -15,15 +17,12 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 
-	"testing"
+	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/web"
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
-	authApplication "flamingo.me/flamingo/v3/core/oauth/application"
-	oauth "flamingo.me/flamingo/v3/core/oauth/domain"
-	"flamingo.me/flamingo/v3/framework/flamingo"
-	"flamingo.me/flamingo/v3/framework/web"
 )
 
 func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
@@ -69,8 +68,7 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 
 							return result
 						}(),
-						&authApplication.AuthManager{},
-						&authApplication.UserService{},
+						nil,
 						flamingo.NullLogger{},
 						new(MockEventRouter),
 						&struct {
@@ -105,11 +103,6 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cs := &cartApplication.CartService{}
-			authmanager := &authApplication.AuthManager{}
-			authmanager.Inject(
-				flamingo.NullLogger{},
-				nil, nil,
-			)
 			cs.Inject(
 				tt.fields.CartReceiverService,
 				tt.fields.ProductService,
@@ -117,7 +110,7 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 				tt.fields.EventRouter,
 				tt.fields.DeliveryInfoBuilder,
 				tt.fields.RestrictionService,
-				authmanager,
+				nil,
 				tt.fields.Logger,
 				tt.fields.config,
 				nil,
@@ -141,10 +134,6 @@ func TestCartService_DeleteSavedSessionGuestCartID(t *testing.T) {
 }
 
 func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
-	authmanager := &authApplication.AuthManager{}
-	authmanager.Inject(&flamingo.NullLogger{}, nil, nil)
-	userservice := &authApplication.UserService{}
-	userservice.Inject(authmanager, nil)
 	type fields struct {
 		CartReceiverService *cartApplication.CartReceiverService
 		ProductService      productDomain.ProductService
@@ -187,8 +176,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 
 							return result
 						}(),
-						authmanager,
-						userservice,
+						nil,
 						flamingo.NullLogger{},
 						new(MockEventRouter),
 						&struct {
@@ -245,8 +233,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 
 							return result
 						}(),
-						authmanager,
-						userservice,
+						nil,
 						flamingo.NullLogger{},
 						new(MockEventRouter),
 						&struct {
@@ -319,8 +306,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 
 							return result
 						}(),
-						authmanager,
-						userservice,
+						nil,
 						flamingo.NullLogger{},
 						new(MockEventRouter),
 						&struct {
@@ -388,7 +374,7 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 				tt.fields.EventRouter,
 				tt.fields.DeliveryInfoBuilder,
 				tt.fields.RestrictionService,
-				authmanager,
+				nil,
 				tt.fields.Logger,
 				tt.fields.config,
 				nil,
@@ -404,10 +390,6 @@ func TestCartService_AdjustItemsToRestrictedQty(t *testing.T) {
 }
 
 func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
-	authmanager := &authApplication.AuthManager{}
-	authmanager.Inject(&flamingo.NullLogger{}, nil, nil)
-	userservice := &authApplication.UserService{}
-	userservice.Inject(authmanager, nil)
 	type fields struct {
 		CartReceiverService *cartApplication.CartReceiverService
 		ProductService      productDomain.ProductService
@@ -452,8 +434,7 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 
 							return result
 						}(),
-						authmanager,
-						userservice,
+						nil,
 						flamingo.NullLogger{},
 						new(MockEventRouter),
 						&struct {
@@ -503,8 +484,7 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 
 							return result
 						}(),
-						authmanager,
-						userservice,
+						nil,
 						flamingo.NullLogger{},
 						new(MockEventRouter),
 						&struct {
@@ -549,7 +529,7 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 				tt.fields.EventRouter,
 				tt.fields.DeliveryInfoBuilder,
 				tt.fields.RestrictionService,
-				authmanager,
+				nil,
 				tt.fields.Logger,
 				tt.fields.config,
 				&struct {
@@ -573,10 +553,6 @@ func TestCartService_ReserveOrderIDAndSave(t *testing.T) {
 }
 
 func TestCartService_ForceReserveOrderIDAndSave(t *testing.T) {
-	authmanager := &authApplication.AuthManager{}
-	authmanager.Inject(&flamingo.NullLogger{}, nil, nil)
-	userservice := &authApplication.UserService{}
-	userservice.Inject(authmanager, nil)
 	type fields struct {
 		CartReceiverService *cartApplication.CartReceiverService
 		ProductService      productDomain.ProductService
@@ -621,8 +597,7 @@ func TestCartService_ForceReserveOrderIDAndSave(t *testing.T) {
 
 							return result
 						}(),
-						authmanager,
-						userservice,
+						nil,
 						flamingo.NullLogger{},
 						new(MockEventRouter),
 						&struct {
@@ -672,8 +647,7 @@ func TestCartService_ForceReserveOrderIDAndSave(t *testing.T) {
 
 							return result
 						}(),
-						authmanager,
-						userservice,
+						nil,
 						flamingo.NullLogger{},
 						new(MockEventRouter),
 						&struct {
@@ -718,7 +692,7 @@ func TestCartService_ForceReserveOrderIDAndSave(t *testing.T) {
 				tt.fields.EventRouter,
 				tt.fields.DeliveryInfoBuilder,
 				tt.fields.RestrictionService,
-				authmanager,
+				nil,
 				tt.fields.Logger,
 				tt.fields.config,
 				&struct {
@@ -925,7 +899,7 @@ func (mpos *MockPlaceOrderService) PlaceGuestCart(ctx context.Context, cart *car
 	return nil, nil
 }
 
-func (mpos *MockPlaceOrderService) PlaceCustomerCart(ctx context.Context, auth oauth.Auth, cart *cartDomain.Cart, payment *placeorder.Payment) (placeorder.PlacedOrderInfos, error) {
+func (mpos *MockPlaceOrderService) PlaceCustomerCart(ctx context.Context, identity auth.Identity, cart *cartDomain.Cart, payment *placeorder.Payment) (placeorder.PlacedOrderInfos, error) {
 	return nil, nil
 }
 
@@ -937,16 +911,12 @@ func (mpos *MockPlaceOrderService) CancelGuestOrder(ctx context.Context, orderIn
 	return nil
 }
 
-func (mpos *MockPlaceOrderService) CancelCustomerOrder(ctx context.Context, orderInfos placeorder.PlacedOrderInfos, auth oauth.Auth) error {
+func (mpos *MockPlaceOrderService) CancelCustomerOrder(ctx context.Context, orderInfos placeorder.PlacedOrderInfos, identity auth.Identity) error {
 	return nil
 }
 
 func TestCartService_CartInEvent(t *testing.T) {
 	// bootstrap cart service
-	authmanager := &authApplication.AuthManager{}
-	authmanager.Inject(&flamingo.NullLogger{}, nil, nil)
-	userservice := &authApplication.UserService{}
-	userservice.Inject(authmanager, nil)
 	cartReceiverService := func() *cartApplication.CartReceiverService {
 		result := &cartApplication.CartReceiverService{}
 		result.Inject(
@@ -961,8 +931,7 @@ func TestCartService_CartInEvent(t *testing.T) {
 
 				return result
 			}(),
-			authmanager,
-			userservice,
+			nil,
 			flamingo.NullLogger{},
 			new(MockEventRouter),
 			&struct {
@@ -1005,7 +974,7 @@ func TestCartService_CartInEvent(t *testing.T) {
 		eventRouter,
 		deliveryInfoBuilder,
 		restrictionService,
-		authmanager,
+		nil,
 		logger,
 		config,
 		nil,

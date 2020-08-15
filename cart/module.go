@@ -1,31 +1,26 @@
 package cart
 
 import (
-	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
-	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql"
-	"flamingo.me/flamingo-commerce/v3/customer"
-	"flamingo.me/flamingo-commerce/v3/product"
-	oauthApplication "flamingo.me/flamingo/v3/core/oauth/application"
-	flamingographql "flamingo.me/graphql"
-
-	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
-
-	formDomain "flamingo.me/form/domain"
-
-	"flamingo.me/form"
-
-	placeorderAdapter "flamingo.me/flamingo-commerce/v3/cart/infrastructure/placeorder"
-
 	"flamingo.me/dingo"
-	"flamingo.me/flamingo-commerce/v3/cart/application"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	"flamingo.me/flamingo-commerce/v3/cart/infrastructure"
-	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller"
-	"flamingo.me/flamingo-commerce/v3/cart/interfaces/templatefunctions"
-	"flamingo.me/flamingo/v3/core/oauth"
+	"flamingo.me/flamingo-commerce/v3/cart/infrastructure/email"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
+	"flamingo.me/form"
+	formDomain "flamingo.me/form/domain"
+	flamingographql "flamingo.me/graphql"
+
+	"flamingo.me/flamingo-commerce/v3/cart/application"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
+	"flamingo.me/flamingo-commerce/v3/cart/infrastructure"
+	placeorderAdapter "flamingo.me/flamingo-commerce/v3/cart/infrastructure/placeorder"
+	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller"
+	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
+	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql"
+	"flamingo.me/flamingo-commerce/v3/cart/interfaces/templatefunctions"
+	"flamingo.me/flamingo-commerce/v3/customer"
+	"flamingo.me/flamingo-commerce/v3/product"
 )
 
 type (
@@ -70,8 +65,6 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	// Register Default EventPublisher
 	injector.Bind((*events.EventPublisher)(nil)).To(events.DefaultEventPublisher{})
 
-	injector.Bind((*application.AuthManagerInterface)(nil)).To(oauthApplication.AuthManager{})
-
 	// Event
 	flamingo.BindEventSubscriber(injector).To(application.EventReceiver{})
 
@@ -104,6 +97,17 @@ func (*Module) CueConfig() string {
 	return `
 commerce: {
 	cart: {
+		defaultCartAdapter: {
+			enabled: bool | *true
+			storage: "inmemory"
+			defaultTaxRate?: number
+		}
+		placeOrderLogger: {
+			enabled: bool | *true
+			useFlamingoLog: bool | *true
+			logAsFile: bool | *true
+			logDirectory: string | *"./orders/"
+		}
 		enableCartCache: bool | *true
 		cacheLifetime: number | *1200
 		defaultUseBillingAddress: bool | *false
@@ -121,25 +125,22 @@ commerce: {
 		simplePaymentForm: {
 			giftCardPaymentMethod: string | *"voucher"
 		}
-		defaultCartAdapter: {
-			enabled: bool | *true
-			storage: "inmemory"
-			defaultTaxRate?: number
-		}
-		placeOrderLogger: {
-			enabled: bool | *true
-			useFlamingoLog: bool | *true
-			logAsFile: bool | *true
-			logDirectory: string | *"./orders/"
-		}
 	}
 }`
+}
+
+// FlamingoLegacyConfigAlias mapping
+func (*Module) FlamingoLegacyConfigAlias() map[string]string {
+	return map[string]string{
+		"commerce.cart.useEmailPlaceOrderAdapter":                 "commerce.cart.placeOrderLogger.enabled",
+		"commerce.cart.useInMemoryCartServiceAdapters":            "commerce.cart.defaultCartAdapter.enabled",
+		"commerce.cart.inMemoryCartServiceAdapter.defaultTaxRate": "commerce.cart.defaultCartAdapter.defaultTaxRate",
+	}
 }
 
 // Depends on other modules
 func (m *Module) Depends() []dingo.Module {
 	return []dingo.Module{
-		new(oauth.Module),
 		new(product.Module),
 		new(form.Module),
 		new(customer.Module),
@@ -183,15 +184,6 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 	r.apiRoutes(registry)
 }
 
-// FlamingoLegacyConfigAlias mapping
-func (*Module) FlamingoLegacyConfigAlias() map[string]string {
-	return map[string]string{
-		"commerce.cart.useEmailPlaceOrderAdapter":                 "commerce.cart.placeOrderLogger.enabled",
-		"commerce.cart.useInMemoryCartServiceAdapters":            "commerce.cart.defaultCartAdapter.enabled",
-		"commerce.cart.inMemoryCartServiceAdapter.defaultTaxRate": "commerce.cart.defaultCartAdapter.defaultTaxRate",
-	}
-}
-
 func (r *routes) apiRoutes(registry *web.RouterRegistry) {
 
 	registry.Route("/api/cart", "cart.api.get")
@@ -199,7 +191,7 @@ func (r *routes) apiRoutes(registry *web.RouterRegistry) {
 	registry.HandleDelete("cart.api.get", r.apiController.DeleteCartAction)
 	registry.HandleGet("cart.api.get", r.apiController.GetAction)
 
-	//add command under the delivery:
+	// add command under the delivery:
 	registry.Route("/api/cart/delivery/:deliveryCode/additem", `cart.api.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryCode?="")`)
 	registry.Route("/api/v1/cart/delivery/:deliveryCode/additem", `cart.api.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryCode?="")`)
 
@@ -245,6 +237,6 @@ func (r *routes) apiRoutes(registry *web.RouterRegistry) {
 	registry.Route("/api/v1/cart/updatepaymentselection", `cart.api.updatepaymentselection`)
 	registry.HandlePut("cart.api.updatepaymentselection", r.apiController.UpdatePaymentSelectionAction)
 
-	//registry.Route("/api/cart/delivery/:shipping", `cart.api.shipping(deliveryCode?="")`)
-	//TODO registry.HandleDelete("cart.api.delivery", r.apiController.DeleteDelivery)
+	// registry.Route("/api/cart/delivery/:shipping", `cart.api.shipping(deliveryCode?="")`)
+	// TODO registry.HandleDelete("cart.api.delivery", r.apiController.DeleteDelivery)
 }

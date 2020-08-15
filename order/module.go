@@ -11,7 +11,7 @@ import (
 type (
 	// Module definition of the order module
 	Module struct {
-		useFakeAdapters    bool
+		useFakeAdapter     bool
 		useInMemoryService bool
 	}
 )
@@ -24,19 +24,19 @@ const (
 // Inject dependencies
 func (m *Module) Inject(
 	config *struct {
-		UseFakeAdapters bool `inject:"config:order.useFakeAdapters,optional"`
+		UseFakeAdapter bool `inject:"config:commerce.order.useFakeAdapter,optional"`
 	},
 ) {
 	if config != nil {
-		m.useFakeAdapters = config.UseFakeAdapters
+		m.useFakeAdapter = config.UseFakeAdapter
 	}
 }
 
 // Configure DI
 func (m *Module) Configure(injector *dingo.Injector) {
 
-	if m.useFakeAdapters {
-		injector.Bind((*domain.CustomerOrderService)(nil)).To(fake.CustomerOrders{})
+	if m.useFakeAdapter {
+		injector.Bind((*domain.CustomerIdentityOrderService)(nil)).To(fake.CustomerOrders{})
 	}
 
 	injector.Bind((*domain.OrderDecoratorInterface)(nil)).To(domain.OrderDecorator{})
@@ -53,4 +53,11 @@ func (r *routes) Inject(controller *controller.DataControllerCustomerOrders) {
 
 func (r *routes) Routes(registry *web.RouterRegistry) {
 	registry.HandleData("customerorders", r.controller.Data)
+}
+
+// FlamingoLegacyConfigAlias maps legacy config entries to new ones
+func (m *Module) FlamingoLegacyConfigAlias() map[string]string {
+	return map[string]string{
+		"order.useFakeAdapters": "commerce.order.useFakeAdapter",
+	}
 }

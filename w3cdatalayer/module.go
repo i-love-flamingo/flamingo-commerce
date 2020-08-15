@@ -9,7 +9,7 @@ import (
 )
 
 type (
-	// Module registers our profiler
+	// Module represents our w3cdatalayer module
 	Module struct{}
 )
 

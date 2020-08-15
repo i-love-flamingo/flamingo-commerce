@@ -116,3 +116,18 @@ func Test_CommerceCartUpdateDeliveryShippingOptions(t *testing.T) {
 	deliveries.Element(1).Object().Value("deliveryInfo").Object().Value("carrier").String().Equal("bar-carrier")
 	deliveries.Element(1).Object().Value("deliveryInfo").Object().Value("method").String().Equal("bar-method")
 }
+func Test_CommerceCartClean(t *testing.T) {
+	baseURL := "http://" + FlamingoURL
+	e := integrationtest.NewHTTPExpect(t, baseURL)
+
+	prepareCart(t, e)
+
+	response := helper.GraphQlRequest(t, e, loadGraphQL(t, "cart", nil)).Expect()
+	response.Status(http.StatusOK)
+	getValue(response, "Commerce_Cart", "cart").Object().Value("itemCount").Equal(1)
+
+	helper.GraphQlRequest(t, e, loadGraphQL(t, "cart_clear", nil)).Expect().Status(http.StatusOK)
+
+	response = helper.GraphQlRequest(t, e, loadGraphQL(t, "cart", nil)).Expect().Status(http.StatusOK)
+	getValue(response, "Commerce_Cart", "cart").Object().Value("itemCount").Equal(0)
+}

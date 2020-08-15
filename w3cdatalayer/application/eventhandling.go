@@ -2,13 +2,14 @@ package application
 
 import (
 	"context"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
+	"flamingo.me/flamingo/v3/core/auth"
 
 	"flamingo.me/flamingo/v3/framework/web"
 
 	"flamingo.me/flamingo-commerce/v3/w3cdatalayer/domain"
-	authDomain "flamingo.me/flamingo/v3/core/oauth/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 )
 
@@ -65,8 +66,8 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 			)
 
 		}
-	case *authDomain.LoginEvent:
-		e.logger.WithContext(ctx).WithField("category", "w3cDatalayer").Debug("Receive Event LoginEvent")
+	case *auth.WebLoginEvent:
+		e.logger.WithContext(ctx).WithField("category", "w3cDatalayer").Debug("Receive Event WebLoginEvent")
 		session := web.SessionFromContext(ctx)
 		if session != nil {
 

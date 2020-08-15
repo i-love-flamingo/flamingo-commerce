@@ -1,0 +1,10 @@
+query {
+    Commerce_Cart {
+        cartSummary {
+            total: sumPaymentSelectionCartSplitValueAmountByMethods(methods: ["###METHOD###"]) {
+                amount
+                currency
+            }
+        }
+    }
+}

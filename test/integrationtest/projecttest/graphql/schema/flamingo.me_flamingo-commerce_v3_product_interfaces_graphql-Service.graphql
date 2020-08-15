@@ -182,9 +182,10 @@ type Commerce_ProductPriceInfo {
 
 type Commerce_Product_SearchResult {
     products: [Commerce_Product!]
-    # Facets searchdomain.FacetCollection
+    facets: [Commerce_Search_Facet!]!
     suggestions: [Commerce_Search_Suggestion!]
     searchMeta: Commerce_Search_Meta!
+    hasSelectedFacet: Boolean!
 }
 
 extend type Query {

@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"flamingo.me/flamingo/v3/core/auth"
-	"flamingo.me/flamingo/v3/core/oauth/domain"
 )
 
 type (
@@ -47,13 +46,6 @@ type (
 		Firstname              string
 		Lastname               string
 		Email                  string
-	}
-
-	// CustomerService to retrieve customers
-	// Deprecated: use CustomerIdentityService and core/auth module instead
-	CustomerService interface {
-		// GetByAuth - returns Customer by the provided Auth infos
-		GetByAuth(ctx context.Context, auth domain.Auth) (Customer, error)
 	}
 
 	// CustomerIdentityService to retrieve customers by Identity

@@ -1,11 +1,10 @@
-package dto
+package searchdto
 
 // CommerceSearchRequest - search request structure for GraphQL
 type CommerceSearchRequest struct {
 	PageSize        int
 	Page            int
 	SortBy          string
-	SortDirection   string
 	KeyValueFilters []CommerceSearchKeyValueFilter
 	Query           string
 }

@@ -17,7 +17,7 @@ func Test_CartValidator(t *testing.T) {
 	baseURL := "http://" + FlamingoURL
 	e := integrationtest.NewHTTPExpect(t, baseURL)
 
-	helper.GraphQlRequest(t, e, loadGraphQL(t, "add_to_cart", nil)).Expect().Status(http.StatusOK)
+	prepareCart(t, e)
 
 	response := helper.GraphQlRequest(t, e, loadGraphQL(t, "validate_cart", nil)).Expect()
 	response.Status(http.StatusOK)

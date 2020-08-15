@@ -10,18 +10,15 @@ The module offers a data controller "customerorders" to get all orders of the cu
 `orders = data("customerorders")`
 
 ## Ports
-The module offers a port that needs to be implemented to fetch the orders.
+The module offers a port that needs to be implemented to fetch customer orders `CustomerIdentityOrderService`.
 
-The module comes with 2 possible Adapters for the port:
+The module comes with an adapter for the port:
 * FakeAdapter: Just returns some dummy orders - useful for local testing
-* EmailAdapters: Used to send mails
 
 ### possible configurations
 
-!WIP
-
 ```yaml
   order:
-    # use fake adapters for order fetching
-    useFakeAdapters: true
+    # use fake adapter for order fetching
+    useFakeAdapter: true
 ```

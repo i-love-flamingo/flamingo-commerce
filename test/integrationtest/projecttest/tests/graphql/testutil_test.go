@@ -57,13 +57,19 @@ func loginTestCustomer(t *testing.T, e *httpexpect.Expect) {
 // prepareCart adds a simple product via graphQl
 func prepareCart(t *testing.T, e *httpexpect.Expect) {
 	t.Helper()
-	helper.GraphQlRequest(t, e, loadGraphQL(t, "add_to_cart", nil)).Expect().Status(http.StatusOK)
+	helper.GraphQlRequest(t, e, loadGraphQL(t, "add_to_cart", map[string]string{"MARKETPLACECODE": "fake_simple"})).Expect().Status(http.StatusOK)
 }
 
 // prepareCartWithPaymentSelection adds a simple product via graphQl
-func prepareCartWithPaymentSelection(t *testing.T, e *httpexpect.Expect, paymentMethod string) {
+func prepareCartWithPaymentSelection(t *testing.T, e *httpexpect.Expect, paymentMethod string, marketPlaceCode *string) {
 	t.Helper()
-	helper.GraphQlRequest(t, e, loadGraphQL(t, "add_to_cart", nil)).Expect().Status(http.StatusOK)
+
+	code := "fake_simple"
+	if marketPlaceCode != nil {
+		code = *marketPlaceCode
+	}
+
+	helper.GraphQlRequest(t, e, loadGraphQL(t, "add_to_cart", map[string]string{"MARKETPLACECODE": code})).Expect().Status(http.StatusOK)
 	helper.GraphQlRequest(t, e, loadGraphQL(t, "update_payment_selection", map[string]string{"PAYMENT_METHOD": paymentMethod})).Expect().Status(http.StatusOK)
 }
 
@@ -147,4 +153,21 @@ func getValue(response *httpexpect.Response, queryName, key string) *httpexpect.
 
 func getArray(response *httpexpect.Response, queryName string) *httpexpect.Array {
 	return response.JSON().Object().Value("data").Object().Value(queryName).Array()
+}
+
+func assertResponseForExpectedState(t *testing.T, response *httpexpect.Response, expectedState map[string]interface{}) {
+	t.Helper()
+	data := make(map[string]interface{})
+	require.NoError(t, json.Unmarshal([]byte(response.Body().Raw()), &data))
+	var theData interface{}
+	var ok bool
+	if theData, ok = data["data"]; !ok || theData == nil {
+		t.Fatalf("no data in response: %s", response.Body().Raw())
+		return
+	}
+	data = theData.(map[string]interface{})
+
+	if diff := cmp.Diff(data, expectedState); diff != "" {
+		t.Errorf("diff mismatch (-want +got):\\n%s", diff)
+	}
 }
