@@ -6,7 +6,7 @@ import (
 	"errors"
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
-	authDomain "flamingo.me/flamingo/v3/core/oauth/domain"
+	"flamingo.me/flamingo/v3/core/auth"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"fmt"
 	"golang.org/x/mod/modfile"
@@ -51,7 +51,7 @@ func (e *PlaceOrderLoggerAdapter) PlaceGuestCart(ctx context.Context, cart *cart
 }
 
 // PlaceCustomerCart places a customer cart as order email
-func (e *PlaceOrderLoggerAdapter) PlaceCustomerCart(ctx context.Context, auth authDomain.Auth, cart *cartDomain.Cart, payment *placeorder.Payment) (placeorder.PlacedOrderInfos, error) {
+func (e *PlaceOrderLoggerAdapter) PlaceCustomerCart(ctx context.Context, auth auth.Identity, cart *cartDomain.Cart, payment *placeorder.Payment) (placeorder.PlacedOrderInfos, error) {
 	return e.placeCart(cart, payment)
 }
 
@@ -144,7 +144,7 @@ func (e *PlaceOrderLoggerAdapter) CancelGuestOrder(ctx context.Context, orderInf
 }
 
 // CancelCustomerOrder cancels a customer order
-func (e *PlaceOrderLoggerAdapter) CancelCustomerOrder(ctx context.Context, orderInfos placeorder.PlacedOrderInfos, auth authDomain.Auth) error {
+func (e *PlaceOrderLoggerAdapter) CancelCustomerOrder(ctx context.Context, orderInfos placeorder.PlacedOrderInfos, auth auth.Identity) error {
 	// since we don't actual place orders we just return nil here
 	return nil
 }

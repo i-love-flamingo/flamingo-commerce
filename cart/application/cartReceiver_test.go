@@ -78,7 +78,7 @@ func (m *MockGuestCartServiceAdapterError) GetNewCart(ctx context.Context) (*car
 
 func (m *MockGuestCartServiceAdapterError) GetModifyBehaviour(context.Context) (cartDomain.ModifyBehaviour, error) {
 	// get guest behaviour
-	return new(cartInfrastructure.InMemoryBehaviour), nil
+	return new(cartInfrastructure.DefaultCartBehaviour), nil
 }
 
 func (m *MockGuestCartServiceAdapterError) RestoreCart(ctx context.Context, cart cartDomain.Cart) (*cartDomain.Cart, error) {
@@ -604,7 +604,7 @@ func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 		}, {
 			name: "decorated cart found",
 			fields: fields{
-				GuestCartService:    &MockGuestCartServiceAdapter{Behaviour: &cartInfrastructure.InMemoryBehaviour{}},
+				GuestCartService:    &MockGuestCartServiceAdapter{Behaviour: &cartInfrastructure.DefaultCartBehaviour{}},
 				CustomerCartService: new(MockCustomerCartService),
 				CartDecoratorFactory: func() *decorator.DecoratedCartFactory {
 					result := &decorator.DecoratedCartFactory{}
@@ -623,7 +623,7 @@ func TestCartReceiverService_GetDecoratedCart(t *testing.T) {
 				session: web.EmptySession().Store("some_nonvalid_key", "some_guest_id"),
 			},
 			want:          &decorator.DecoratedCart{},
-			wantBehaviour: &cartInfrastructure.InMemoryBehaviour{},
+			wantBehaviour: &cartInfrastructure.DefaultCartBehaviour{},
 			wantErr:       false,
 		},
 	}
@@ -882,7 +882,7 @@ func TestCartReceiverService_RestoreCart(t *testing.T) {
 
 func TestCartReceiverService_ModifyBehaviour(t *testing.T) {
 	t.Run("get guest behaviour", func(t *testing.T) {
-		mockBehaviour := &cartInfrastructure.InMemoryBehaviour{}
+		mockBehaviour := &cartInfrastructure.DefaultCartBehaviour{}
 		cs := &cartApplication.CartReceiverService{}
 		cs.Inject(
 			&MockGuestCartServiceAdapter{Behaviour: mockBehaviour},
@@ -912,7 +912,7 @@ func TestCartReceiverService_ModifyBehaviour(t *testing.T) {
 			},
 		)
 		cs := &cartApplication.CartReceiverService{}
-		mockBehaviour := &cartInfrastructure.InMemoryBehaviour{}
+		mockBehaviour := &cartInfrastructure.DefaultCartBehaviour{}
 		cs.Inject(
 			&MockGuestCartServiceAdapter{},
 			&MockCustomerCartService{Behaviour: mockBehaviour},

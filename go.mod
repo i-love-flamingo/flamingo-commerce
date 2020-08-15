@@ -42,6 +42,7 @@ require (
 	github.com/vektah/gqlparser/v2 v2.0.1
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
 	go.opencensus.io v0.22.3
+	golang.org/x/mod v0.3.0
 	gopkg.in/go-playground/assert.v1 v1.2.1
 	gopkg.in/square/go-jose.v2 v2.3.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
