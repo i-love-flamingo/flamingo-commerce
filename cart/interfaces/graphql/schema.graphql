@@ -420,6 +420,9 @@ type Commerce_Cart_DeliveryAddressForm {
     method: String
     "Shipping Carrier"
     carrier: String
+    "Optional desired delivery date / time"
+    desiredTime: Time
+
     "Validation of supplied delivery address, empty if address is valid"
     validationInfo: Commerce_Cart_Form_ValidationInfo
     "Shows if the request was successfully processed"

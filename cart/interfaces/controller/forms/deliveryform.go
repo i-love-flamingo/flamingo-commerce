@@ -19,11 +19,11 @@ type (
 	DeliveryForm struct {
 		DeliveryAddress AddressForm `form:"deliveryAddress"`
 		// UseBillingAddress - the address should be taken from billing (only relevant for type address)
-		UseBillingAddress bool   `form:"useBillingAddress"`
-		ShippingMethod    string `form:"shippingMethod"`
-		ShippingCarrier   string `form:"shippingCarrier"`
-		LocationCode      string `form:"locationCode"`
-		DesiredTime       time.Time `form:"desiredTime" validate:"dateformat"`
+		UseBillingAddress bool      `form:"useBillingAddress"`
+		ShippingMethod    string    `form:"shippingMethod"`
+		ShippingCarrier   string    `form:"shippingCarrier"`
+		LocationCode      string    `form:"locationCode"`
+		DesiredTime       time.Time `form:"desiredTime"`
 	}
 
 	// DeliveryFormService implements Form(Data)Provider interface of form package

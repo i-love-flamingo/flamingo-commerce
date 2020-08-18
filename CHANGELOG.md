@@ -1,6 +1,9 @@
 # Changelog
 ## v3.4.0 [upcoming]
-
+**cart**
+*  Added desired time to DeliveryForm
+* GraphQL
+    * Updated schema and resolver regarding desired time
 
 ## v3.3.0
 **product**

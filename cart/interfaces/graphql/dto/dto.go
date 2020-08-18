@@ -2,6 +2,9 @@ package dto
 
 import (
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
+
+	"time"
+
 	formDomain "flamingo.me/form/domain"
 )
 
@@ -22,6 +25,7 @@ type (
 		DeliveryCode      string
 		Method            string
 		Carrier           string
+		DesiredTime       time.Time
 	}
 
 	// DeliveryShippingOption used to update shipping method/carrier for a specific delivery
