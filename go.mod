@@ -47,3 +47,5 @@ require (
 	gopkg.in/square/go-jose.v2 v2.3.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 )
+
+replace flamingo.me/flamingo/v3 => ../flamingo

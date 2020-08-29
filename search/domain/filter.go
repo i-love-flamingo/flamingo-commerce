@@ -115,6 +115,11 @@ func (f *SortFilter) Direction() string {
 	return f.direction
 }
 
+// Is Descending
+func (f *SortFilter) Descending() bool {
+	return f.direction == SortDirectionDescending
+}
+
 // NewQueryFilter factory
 func NewQueryFilter(query string) *QueryFilter {
 	return &QueryFilter{
