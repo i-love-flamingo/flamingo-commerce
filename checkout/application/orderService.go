@@ -342,17 +342,6 @@ func (os *OrderService) CartPlaceOrder(ctx context.Context, decoratedCart *decor
 	return info, err
 }
 
-// GetContactMail returns the contact mail from the shipping address with fall back to the billing address
-func (os *OrderService) GetContactMail(cart cart.Cart) string {
-	// Get Email from either the cart
-	shippingEmail := cart.GetMainShippingEMail()
-	if shippingEmail == "" && cart.BillingAddress != nil {
-		shippingEmail = cart.BillingAddress.Email
-	}
-
-	return shippingEmail
-}
-
 // storeLastPlacedOrder stores the last placed order/cart in the session
 func (os *OrderService) storeLastPlacedOrder(ctx context.Context, info *PlaceOrderInfo) {
 	session := web.SessionFromContext(ctx)
@@ -505,7 +494,7 @@ func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, dec
 }
 
 func (os *OrderService) preparePlaceOrderInfo(_ context.Context, currentCart cart.Cart, placedOrderInfos placeorder.PlacedOrderInfos, cartPayment placeorder.Payment) *PlaceOrderInfo {
-	email := os.GetContactMail(currentCart)
+	email := currentCart.GetContactMail()
 
 	placeOrderInfo := &PlaceOrderInfo{
 		ContactEmail: email,

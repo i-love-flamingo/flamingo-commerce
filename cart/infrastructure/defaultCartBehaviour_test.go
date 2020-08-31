@@ -10,7 +10,6 @@ import (
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/go-test/deep"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestInMemoryBehaviour_CleanCart(t *testing.T) {
@@ -32,7 +31,7 @@ func TestInMemoryBehaviour_CleanCart(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cob := &InMemoryBehaviour{}
+			cob := &DefaultCartBehaviour{}
 			cob.Inject(
 				&InMemoryCartStorage{},
 				nil,
@@ -62,7 +61,7 @@ func TestInMemoryBehaviour_CleanCart(t *testing.T) {
 				},
 			}
 
-			if err := cob.cartStorage.StoreCart(cart); err != nil {
+			if err := cob.cartStorage.StoreCart(context.Background(), cart); err != nil {
 				t.Fatalf("cart could not be initialized")
 			}
 
@@ -159,7 +158,7 @@ func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cob := &InMemoryBehaviour{}
+			cob := &DefaultCartBehaviour{}
 			cob.Inject(
 				&InMemoryCartStorage{},
 				nil,
@@ -177,7 +176,7 @@ func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
 				nil,
 				nil,
 			)
-			if err := cob.cartStorage.StoreCart(tt.args.cart); err != nil {
+			if err := cob.cartStorage.StoreCart(context.Background(), tt.args.cart); err != nil {
 				t.Fatalf("cart could not be initialized")
 			}
 
@@ -234,7 +233,7 @@ func TestInMemoryBehaviour_ApplyVoucher(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cob := &InMemoryBehaviour{}
+			cob := &DefaultCartBehaviour{}
 			cob.Inject(
 				&InMemoryCartStorage{},
 				nil,
@@ -248,11 +247,11 @@ func TestInMemoryBehaviour_ApplyVoucher(t *testing.T) {
 			)
 			got, _, err := cob.ApplyVoucher(context.Background(), tt.args.cart, tt.args.voucherCode)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("InMemoryBehaviour.ApplyVoucher() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("DefaultCartBehaviour.ApplyVoucher() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("InMemoryBehaviour.ApplyVoucher() got = %v, want %v", got, tt.want)
+				t.Errorf("DefaultCartBehaviour.ApplyVoucher() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -322,7 +321,7 @@ func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cob := &InMemoryBehaviour{}
+			cob := &DefaultCartBehaviour{}
 			cob.Inject(
 				&InMemoryCartStorage{},
 				nil,
@@ -341,13 +340,13 @@ func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 				nil,
 			)
 
-			if err := cob.cartStorage.StoreCart(tt.args.cart); err != nil {
+			if err := cob.cartStorage.StoreCart(context.Background(), tt.args.cart); err != nil {
 				t.Fatalf("cart could not be initialized")
 			}
 
 			got, _, _ := cob.RemoveVoucher(tt.args.ctx, tt.args.cart, tt.args.couponCodeToRemove)
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("InMemoryBehaviour.RemoveVoucher() got = %v, want %v", got, tt.want)
+				t.Errorf("DefaultCartBehaviour.RemoveVoucher() got = %v, want %v", got, tt.want)
 			}
 
 		})
@@ -394,7 +393,7 @@ func TestInMemoryBehaviour_ApplyGiftCard(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cob := &InMemoryBehaviour{}
+			cob := &DefaultCartBehaviour{}
 			cob.Inject(
 				&InMemoryCartStorage{},
 				nil,
@@ -408,11 +407,11 @@ func TestInMemoryBehaviour_ApplyGiftCard(t *testing.T) {
 			)
 			got, _, err := cob.ApplyGiftCard(context.Background(), tt.args.cart, tt.args.giftCardCode)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("InMemoryBehaviour.ApplyGiftCard() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("DefaultCartBehaviour.ApplyGiftCard() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("InMemoryBehaviour.ApplyGiftCard() got = %v, want %v", got, tt.want)
+				t.Errorf("DefaultCartBehaviour.ApplyGiftCard() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -462,7 +461,7 @@ func TestInMemoryBehaviour_RemoveGiftCard(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cob := &InMemoryBehaviour{}
+			cob := &DefaultCartBehaviour{}
 			cob.Inject(
 				&InMemoryCartStorage{},
 				nil,
@@ -476,11 +475,11 @@ func TestInMemoryBehaviour_RemoveGiftCard(t *testing.T) {
 			)
 			got, _, err := cob.RemoveGiftCard(context.Background(), tt.args.cart, tt.args.giftCardCode)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("InMemoryBehaviour.ApplyGiftCard() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("DefaultCartBehaviour.ApplyGiftCard() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("InMemoryBehaviour.ApplyGiftCard() got = %v, want %v", got, tt.want)
+				t.Errorf("DefaultCartBehaviour.ApplyGiftCard() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -488,7 +487,7 @@ func TestInMemoryBehaviour_RemoveGiftCard(t *testing.T) {
 
 func TestInMemoryBehaviour_Complete(t *testing.T) {
 	t.Run("happy path", func(t *testing.T) {
-		cob := &InMemoryBehaviour{}
+		cob := &DefaultCartBehaviour{}
 		cob.Inject(
 			&InMemoryCartStorage{},
 			nil,
@@ -500,8 +499,8 @@ func TestInMemoryBehaviour_Complete(t *testing.T) {
 			nil,
 			nil,
 		)
-		cart := &domaincart.Cart{ID: "test-id"}
-		require.NoError(t, cob.storeCart(cart))
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{ID: "test-id"})
+		assert.NoError(t, err)
 
 		got, _, err := cob.Complete(context.Background(), cart)
 		assert.NoError(t, err)
@@ -514,7 +513,7 @@ func TestInMemoryBehaviour_Complete(t *testing.T) {
 
 func TestInMemoryBehaviour_Restore(t *testing.T) {
 	t.Run("happy path", func(t *testing.T) {
-		cob := &InMemoryBehaviour{}
+		cob := &DefaultCartBehaviour{}
 		cob.Inject(
 			&InMemoryCartStorage{},
 			nil,

@@ -12,7 +12,7 @@ The cart module is one of the main modules in Flamingo Commerce. It offers:
 * *interface layer* Controllers and Actions to render the carrt pages. Also a flexible to use Ajax API that can be used to modify the cart.
 * *infrastructure layer* 
     * Sample adapter for the secondary ports that maneges the cart in memory.
-    * Sample adapter that will send an email when placing the cart (not functional at the moment)
+    * Sample adapter that will log a json file with every for placing an order
 
 There will be additional Flamingo modules that provide adapters for the secondary ports against common e-commerce APIs like Magento 2.
 The cart module and its services are used by the checkout module.
@@ -21,6 +21,10 @@ The cart module and its services are used by the checkout module.
 
 ### Configurations
 
+For all possible configurations you can check the `module.go` (CueConfig function)
+As always you can also dump the current configuration with the "config" Flamingo command.
+
+Here is a typical configuration
 ```yaml
   commerce.cart:
     # enable the secondary adapters for the cart services.  (e.g. for testing or development mode)
@@ -29,12 +33,6 @@ The cart module and its services are used by the checkout module.
     enableCartCache: true
     # set the default delivery code that is used if no other is given
     defaultDeliveryCode: "delivery"
-    # enable the secondary adapter for the order service:
-    useEmailPlaceOrderAdapter: true
-    # enable the deletion of an empty delivery when deleting an item, or adding an item failed
-    deleteEmptyDelivery: false
-    # enables the usage of billing address as shipping address, default is set to false
-    defaultUseBillingAddress: false
 ```
 
 ## Domain Model Details
