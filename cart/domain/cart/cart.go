@@ -170,6 +170,17 @@ func (c Cart) GetMainShippingEMail() string {
 	return ""
 }
 
+// GetContactMail returns the contact mail from the shipping address with fall back to the billing address
+func (c Cart) GetContactMail() string {
+	// Get Email from either the cart
+	shippingEmail := c.GetMainShippingEMail()
+	if shippingEmail == "" && c.BillingAddress != nil {
+		shippingEmail = c.BillingAddress.Email
+	}
+
+	return shippingEmail
+}
+
 // IsEmpty - returns true if cart is empty
 func (c Cart) IsEmpty() bool {
 	return c.GetCartTeaser().ItemCount == 0

@@ -15,6 +15,7 @@ type (
 	GuestCartService interface {
 		// GetModifyBehaviour gets the behaviour for the guest cart service
 		GetModifyBehaviour(context.Context) (ModifyBehaviour, error)
+		//GetCart for guest by unique cart id
 		GetCart(ctx context.Context, cartID string) (*Cart, error)
 		// GetNewCart - should return a new guest cart (including the id of the cart)
 		GetNewCart(ctx context.Context) (*Cart, error)
@@ -28,6 +29,7 @@ type (
 	CustomerCartService interface {
 		// GetModifyBehaviour gets the behaviour for the customer cart service
 		GetModifyBehaviour(context.Context, auth.Identity) (ModifyBehaviour, error)
+		//GetCart for authenticated user and optional cartid
 		GetCart(ctx context.Context, identity auth.Identity, cartID string) (*Cart, error)
 		// RestoreCart restores a previously used customer cart with all its content.
 		// Depending on the used adapter this can lead to a new Cart.ID
