@@ -633,3 +633,11 @@ func (a Attributes) AttributesByKey(keys []string) []Attribute {
 
 	return res
 }
+
+//CPath returns the constructed Path from this category to the root - splitted by /
+func (c *CategoryTeaser) CPath() string {
+	if c.Parent == nil || c.Parent == c {
+		return c.Code
+	}
+	return c.Parent.CPath() + "/" + c.Code
+}
