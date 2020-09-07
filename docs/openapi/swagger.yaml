@@ -1156,7 +1156,12 @@ paths:
       - description: locationCode
         in: formData
         name: locationCode
-        type: boolean
+        type: string
+      - description: desired date/time in RFC3339
+        format: date-time
+        in: formData
+        name: desiredTime
+        type: string
       produces:
       - application/json
       responses:

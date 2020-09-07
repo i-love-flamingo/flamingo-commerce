@@ -338,7 +338,8 @@ func (cc *CartAPIController) BillingAction(ctx context.Context, r *web.Request) 
 // @Param useBillingAddress formData bool false "useBillingAddress"
 // @Param shippingMethod formData string false "shippingMethod"
 // @Param shippingCarrier formData string false "shippingCarrier"
-// @Param locationCode formData bool string "locationCode"
+// @Param locationCode formData string false "locationCode"
+// @Param desiredTime formData string false "desired date/time in RFC3339" format(date-time)
 // @Router /api/v1/cart/delivery/{deliveryCode}/deliveryinfo [post]
 func (cc *CartAPIController) UpdateDeliveryInfoAction(ctx context.Context, r *web.Request) web.Result {
 	result := newResult()
