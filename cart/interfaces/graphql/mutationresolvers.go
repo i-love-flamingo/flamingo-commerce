@@ -269,6 +269,7 @@ func mapCommerceDeliveryAddressForm(form *domain.Form, success bool) (dto.Delive
 		DeliveryCode:      formData.LocationCode,
 		Method:            formData.ShippingMethod,
 		Carrier:           formData.ShippingCarrier,
+		DesiredTime:       formData.DesiredTime,
 	}, nil
 }
 

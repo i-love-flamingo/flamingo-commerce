@@ -331,6 +331,7 @@ type ComplexityRoot struct {
 	CommerceCartDeliveryAddressForm struct {
 		Carrier           func(childComplexity int) int
 		DeliveryCode      func(childComplexity int) int
+		DesiredTime       func(childComplexity int) int
 		FormData          func(childComplexity int) int
 		Method            func(childComplexity int) int
 		Processed         func(childComplexity int) int
@@ -2360,6 +2361,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceCartDeliveryAddressForm.DeliveryCode(childComplexity), true
+
+	case "Commerce_Cart_DeliveryAddressForm.desiredTime":
+		if e.complexity.CommerceCartDeliveryAddressForm.DesiredTime == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryAddressForm.DesiredTime(childComplexity), true
 
 	case "Commerce_Cart_DeliveryAddressForm.formData":
 		if e.complexity.CommerceCartDeliveryAddressForm.FormData == nil {
@@ -5653,6 +5661,8 @@ input Commerce_Cart_DeliveryAddressInput {
     method: String
     "Optional Shipping Method"
     carrier: String
+    "Optional desired delivery date / time"
+    desiredTime: Time
 }
 
 type Commerce_Cart_DeliveryAddressForm {
@@ -5666,6 +5676,9 @@ type Commerce_Cart_DeliveryAddressForm {
     method: String
     "Shipping Carrier"
     carrier: String
+    "Optional desired delivery date / time"
+    desiredTime: Time
+
     "Validation of supplied delivery address, empty if address is valid"
     validationInfo: Commerce_Cart_Form_ValidationInfo
     "Shows if the request was successfully processed"
@@ -12788,6 +12801,34 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_carrier(ctx conte
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_desiredTime(ctx context.Context, field graphql.CollectedField, obj *dto.DeliveryAddressForm) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_DeliveryAddressForm",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DesiredTime, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalOTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_validationInfo(ctx context.Context, field graphql.CollectedField, obj *dto.DeliveryAddressForm) (ret graphql.Marshaler) {
@@ -23894,6 +23935,14 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx
 			if err != nil {
 				return it, err
 			}
+		case "desiredTime":
+			var err error
+
+			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("desiredTime"))
+			it.DesiredTime, err = ec.unmarshalOTime2timeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -25591,6 +25640,8 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm(ctx context.Conte
 			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_method(ctx, field, obj)
 		case "carrier":
 			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_carrier(ctx, field, obj)
+		case "desiredTime":
+			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_desiredTime(ctx, field, obj)
 		case "validationInfo":
 			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_validationInfo(ctx, field, obj)
 		case "processed":

@@ -608,9 +608,16 @@ var doc = `{
                         "in": "formData"
                     },
                     {
-                        "type": "boolean",
+                        "type": "string",
                         "description": "locationCode",
                         "name": "locationCode",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "desired date/time in RFC3339",
+                        "name": "desiredTime",
                         "in": "formData"
                     }
                 ],

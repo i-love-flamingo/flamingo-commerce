@@ -3,6 +3,7 @@ package forms
 import (
 	"context"
 	"errors"
+	"time"
 
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
@@ -18,10 +19,11 @@ type (
 	DeliveryForm struct {
 		DeliveryAddress AddressForm `form:"deliveryAddress"`
 		// UseBillingAddress - the address should be taken from billing (only relevant for type address)
-		UseBillingAddress bool   `form:"useBillingAddress"`
-		ShippingMethod    string `form:"shippingMethod"`
-		ShippingCarrier   string `form:"shippingCarrier"`
-		LocationCode      string `form:"locationCode"`
+		UseBillingAddress bool      `form:"useBillingAddress"`
+		ShippingMethod    string    `form:"shippingMethod"`
+		ShippingCarrier   string    `form:"shippingCarrier"`
+		LocationCode      string    `form:"locationCode"`
+		DesiredTime       time.Time `form:"desiredTime"`
 	}
 
 	// DeliveryFormService implements Form(Data)Provider interface of form package
@@ -48,6 +50,7 @@ func (d *DeliveryForm) MapToDeliveryInfo(currentInfo cartDomain.DeliveryInfo) ca
 	currentInfo.DeliveryLocation.Code = d.LocationCode
 	currentInfo.Method = d.ShippingMethod
 	currentInfo.Carrier = d.ShippingCarrier
+	currentInfo.DesiredTime = d.DesiredTime
 	return currentInfo
 }
 
