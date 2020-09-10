@@ -4,6 +4,7 @@ import (
 	"context"
 	productApplication "flamingo.me/flamingo-commerce/v3/product/application"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
+	productDto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
 	"flamingo.me/flamingo-commerce/v3/search/application"
 	searchDomain "flamingo.me/flamingo-commerce/v3/search/domain"
 	"flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/searchdto"
@@ -26,8 +27,20 @@ func (r *CommerceProductQueryResolver) Inject(
 }
 
 // CommerceProduct returns a product with the given marketplaceCode from productService
-func (r *CommerceProductQueryResolver) CommerceProduct(ctx context.Context, marketplaceCode string) (domain.BasicProduct, error) {
-	return r.productService.Get(ctx, marketplaceCode)
+func (r *CommerceProductQueryResolver) CommerceProduct(ctx context.Context, marketplaceCode string) (productDto.Product, error) {
+	product, err := r.productService.Get(ctx, marketplaceCode)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if product.Type() == domain.TypeConfigurable {
+		configurableProduct := product.(domain.ConfigurableProduct)
+		return productDto.MapProductToConfigurableProductDto(configurableProduct), nil
+	} else {
+		simpleProduct := product.(domain.SimpleProduct)
+		return productDto.MapProductToSimpleProductDto(simpleProduct), nil
+	}
 }
 
 // CommerceProductSearch returns a search result of products based on the given search request

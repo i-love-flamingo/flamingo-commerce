@@ -2,6 +2,7 @@ package graphql
 
 import (
 	"flamingo.me/flamingo-commerce/v3/product/domain"
+	productDto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
 	"flamingo.me/graphql"
 )
 
@@ -19,19 +20,16 @@ func (*Service) Schema() []byte {
 
 // Types configures the GraphQL to Go resolvers
 func (*Service) Types(types *graphql.Types) {
-	types.Map("Commerce_Product", new(domain.BasicProduct))
-	types.GoField("Commerce_Product", "specifications", "GetSpecifications")
-	types.Map("Commerce_SimpleProduct", domain.SimpleProduct{})
-	types.GoField("Commerce_SimpleProduct", "specifications", "GetSpecifications")
-	types.Map("Commerce_ConfigurableProduct", domain.ConfigurableProduct{})
-	types.GoField("Commerce_ConfigurableProduct", "specifications", "GetSpecifications")
+	types.Map("Commerce_Product", new(productDto.Product))
+	types.Map("Commerce_SimpleProduct", productDto.SimpleProduct{})
+	types.Map("Commerce_ConfigurableProduct", productDto.ConfigurableProduct{})
+	types.Map("Commerce_ProductCategories", productDto.Categories{})
+	types.Map("Commerce_ProductMeta", productDto.Meta{})
+	types.Map("Commerce_ProductLoyalty", productDto.Loyalty{})
+	//types.Map("Commerce_BasicProductData", domain.BasicProductData{})
+	//types.Map("Commerce_ProductTeaserData", domain.TeaserData{})
 	types.Map("Commerce_Product_Variant", domain.Variant{})
-	types.Map("Commerce_BasicProductData", domain.BasicProductData{})
-	types.Map("Commerce_ProductTeaserData", domain.TeaserData{})
-	types.Map("Commerce_ProductSpecifications", domain.Specifications{})
-	types.Map("Commerce_ProductSpecificationGroup", domain.SpecificationGroup{})
-	types.Map("Commerce_ProductSpecificationEntry", domain.SpecificationEntry{})
-	types.Map("Commerce_ProductSaleable", domain.Saleable{})
+
 	types.Map("Commerce_ProductMedia", domain.Media{})
 	types.Map("Commerce_ProductAttributes", domain.Attributes{})
 	types.GoField("Commerce_ProductAttributes", "getAttribute", "Attribute")

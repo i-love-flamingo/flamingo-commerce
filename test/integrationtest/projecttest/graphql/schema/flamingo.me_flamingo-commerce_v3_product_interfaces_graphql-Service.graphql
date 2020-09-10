@@ -1,87 +1,55 @@
 interface Commerce_Product {
-    baseData: Commerce_BasicProductData!
-    teaserData: Commerce_ProductTeaserData!
-    specifications: Commerce_ProductSpecifications!
-    isSaleable: Boolean!
-    saleableData: Commerce_ProductSaleable!
-    type: String!
-    getIdentifier: String!
-    hasMedia(group: String!, usage: String!): Boolean!
-    getMedia(group: String!, usage: String!): Commerce_ProductMedia!
+    marketPlaceCode: String!
+    media: [Commerce_ProductMedia!],
+    price: Commerce_ProductPriceInfo!,
+    title: String!
+    categories: Commerce_ProductCategories!
+    description: String!
+    meta: Commerce_ProductMeta!
+    loyalty: Commerce_ProductLoyalty!
+    attributes: Commerce_ProductAttributes!
 }
 
+
 type Commerce_SimpleProduct implements Commerce_Product {
-    baseData: Commerce_BasicProductData!
-    teaserData: Commerce_ProductTeaserData!
-    specifications: Commerce_ProductSpecifications!
-    isSaleable: Boolean!
-    saleableData: Commerce_ProductSaleable!
-    type: String!
-    getIdentifier: String!
-    hasMedia(group: String!, usage: String!): Boolean!
-    getMedia(group: String!, usage: String!): Commerce_ProductMedia!
+    marketPlaceCode: String!
+    media: [Commerce_ProductMedia!],
+    price: Commerce_ProductPriceInfo!,
+    title: String!
+    categories: Commerce_ProductCategories!
+    description: String!
+    meta: Commerce_ProductMeta!
+    loyalty: Commerce_ProductLoyalty!
+    attributes: Commerce_ProductAttributes!
 }
 
 
 type Commerce_ConfigurableProduct implements Commerce_Product {
-    baseData: Commerce_BasicProductData!
-    teaserData: Commerce_ProductTeaserData!
-    specifications: Commerce_ProductSpecifications!
-    isSaleable: Boolean!
-    saleableData: Commerce_ProductSaleable!
-    type: String!
-    getIdentifier: String!
-    hasMedia(group: String!, usage: String!): Boolean!
-    getMedia(group: String!, usage: String!): Commerce_ProductMedia!
-    variants: [Commerce_Product_Variant!]
-    variantVariationAttributes: [String!]
-}
-
-type Commerce_Product_Variant {
-    baseData: Commerce_BasicProductData!
-    saleableData: Commerce_ProductSaleable!
-}
-
-type Commerce_BasicProductData {
-    title:            String!
-    attributes:       Commerce_ProductAttributes
-    shortDescription: String!
-    description:      String!
-    media:            [Commerce_ProductMedia!]
-
     marketPlaceCode: String!
-    retailerCode:    String!
-    retailerSku:     String!
-    retailerName:    String!
-
-    createdAt:   Time
-    updatedAt:   Time
-    visibleFrom: Time
-    visibleTo:   Time
-
-    Categories:   [Commerce_CategoryTeaser!]
-    MainCategory: Commerce_CategoryTeaser!
-
-    categoryToCodeMapping: [String!]
-
-    stockLevel: String!
-
-    keywords: [String!]
-    isNew:    Boolean!
+    media: [Commerce_ProductMedia!],
+    price: Commerce_ProductPriceInfo!,
+    title: String!
+    categories: Commerce_ProductCategories!
+    description: String!
+    meta: Commerce_ProductMeta!
+    loyalty: Commerce_ProductLoyalty!
+    attributes: Commerce_ProductAttributes!
 }
 
-type Commerce_ProductTeaserData {
-    shortTitle: String
-    shortDescription: String
-    teaserPrice : Commerce_ProductPriceInfo
-    teaserPriceIsFromPrice: Boolean
-    preSelectedVariantSku: String
-    media : [Commerce_ProductMedia!]
-    marketPlaceCode: String
-    teaserAvailablePrices : [Commerce_ProductPriceInfo!]
-    teaserLoyaltyPriceInfo: Commerce_ProductLoyaltyPriceInfo
-    "teaserLoyaltyEarningInfo for the current product"
-    teaserLoyaltyEarningInfo: Commerce_ProductLoyaltyEarningInfo
+type Commerce_ProductCategories {
+    categories:   [Commerce_CategoryTeaser!]
+    mainCategory: Commerce_CategoryTeaser!
+}
+
+type Commerce_ProductMeta {
+    description:    String!
+    title:		    String!
+    keywords:	    [String!]
+}
+
+type Commerce_ProductLoyalty {
+    price:      Commerce_ProductLoyaltyPriceInfo!
+    earning:    Commerce_ProductLoyaltyEarningInfo!
 }
 
 type Commerce_ProductLoyaltyPriceInfo {
@@ -109,30 +77,6 @@ type Commerce_PriceContext {
     locale: String!
 }
 
-type Commerce_ProductSpecifications {
-    groups: [Commerce_ProductSpecificationGroup!]
-}
-
-type Commerce_ProductSpecificationGroup {
-    title: String!
-    entries: [Commerce_ProductSpecificationEntry!]
-}
-
-type Commerce_ProductSpecificationEntry {
-    label: String!
-    values: [String!]
-}
-
-type Commerce_ProductSaleable {
-    isSaleable: Boolean!
-    saleableFrom: Time
-    saleableTo: Time
-    activePrice: Commerce_ProductPriceInfo
-    availablePrices: [Commerce_ProductPriceInfo!]
-    loyaltyPrices: [Commerce_ProductLoyaltyPriceInfo!]
-    "loyaltyEarningInfo for the current product"
-    loyaltyEarnings: [Commerce_ProductLoyaltyEarningInfo!]
-}
 
 type Commerce_ProductMedia {
     type:      String!
@@ -177,7 +121,6 @@ type Commerce_ProductPriceInfo {
     denyMoreDiscounts: Boolean
     #    context: Commerce_PriceContext
     taxClass: String!
-
 }
 
 type Commerce_Product_SearchResult {
