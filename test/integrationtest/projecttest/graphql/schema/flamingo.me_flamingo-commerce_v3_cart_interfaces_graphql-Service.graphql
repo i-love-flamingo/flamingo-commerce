@@ -137,7 +137,6 @@ type Commerce_Cart_DefaultPaymentSelection implements Commerce_Cart_PaymentSelec
 type Commerce_CartDecoratedDelivery {
     delivery: Commerce_CartDelivery!
     decoratedItems: [Commerce_CartDecoratedItem!]
-    getDecoratedCartItemById(id: ID!): Commerce_CartDecoratedItem
 }
 
 type Commerce_CartDelivery {

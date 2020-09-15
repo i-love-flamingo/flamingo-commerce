@@ -1,4 +1,4 @@
-package dto
+package graphqlProductDto
 
 import (
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
@@ -283,7 +283,7 @@ func (pm ProductMedia) GetMedia(usage string) *productDomain.Media {
 	return nil
 }
 
-func MapProductToConfigurableProductDto(cp productDomain.ConfigurableProduct) *ConfigurableProduct {
+func mapProductToConfigurableProductDto(cp productDomain.ConfigurableProduct) *ConfigurableProduct {
 	return &ConfigurableProduct{
 		marketPlaceCode: cp.BaseData().MarketPlaceCode,
 		media:           ProductMedia{All: cp.TeaserData().Media},
@@ -299,7 +299,7 @@ func MapProductToConfigurableProductDto(cp productDomain.ConfigurableProduct) *C
 	}
 }
 
-func MapProductToSimpleProductDto(sp productDomain.SimpleProduct) *SimpleProduct {
+func mapProductToSimpleProductDto(sp productDomain.SimpleProduct) *SimpleProduct {
 	return &SimpleProduct{
 		marketPlaceCode: sp.BaseData().MarketPlaceCode,
 		media:           ProductMedia{All: sp.TeaserData().Media},
@@ -313,4 +313,14 @@ func MapProductToSimpleProductDto(sp productDomain.SimpleProduct) *SimpleProduct
 			Keywords: sp.BaseData().Keywords,
 		},
 	}
+}
+
+func MapProductToGraphqlProductDto(product productDomain.BasicProduct) Product {
+	if product.Type() == productDomain.TypeConfigurable {
+		configurableProduct := product.(productDomain.ConfigurableProduct)
+		return mapProductToConfigurableProductDto(configurableProduct)
+	}
+
+	simpleProduct := product.(productDomain.SimpleProduct)
+	return mapProductToSimpleProductDto(simpleProduct)
 }

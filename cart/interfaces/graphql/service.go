@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
@@ -31,7 +30,7 @@ func (*Service) Types(types *graphql.Types) {
 	types.Map("Commerce_Cart", cart.Cart{})
 	types.Resolve("Commerce_Cart", "getDeliveryByCode", Resolver{}, "GetDeliveryByCodeWithoutBool")
 	types.Map("Commerce_Cart_Summary", dto.CartSummary{})
-	types.Map("Commerce_CartDecoratedDelivery", decorator.DecoratedDelivery{})
+	types.Map("Commerce_CartDecoratedDelivery", dto.DecoratedDelivery{})
 	types.Map("Commerce_CartDelivery", cart.Delivery{})
 	types.Map("Commerce_CartDeliveryInfo", cart.DeliveryInfo{})
 	types.Map("Commerce_CartDeliveryLocation", cart.DeliveryLocation{})
@@ -43,7 +42,7 @@ func (*Service) Types(types *graphql.Types) {
 	types.Map("Commerce_CartAdditionalData", cart.AdditionalData{})
 	types.Map("Commerce_CartShippingItem", cart.ShippingItem{})
 	types.Resolve("Commerce_CartShippingItem", "appliedDiscounts", dto.CartAppliedDiscountsResolver{}, "ForShippingItem")
-	types.Map("Commerce_CartDecoratedItem", decorator.DecoratedCartItem{})
+	types.Map("Commerce_CartDecoratedItem", dto.DecoratedCartItem{})
 	types.Map("Commerce_CartItem", cart.Item{})
 	types.Resolve("Commerce_CartItem", "appliedDiscounts", dto.CartAppliedDiscountsResolver{}, "ForItem")
 	types.Map("Commerce_CartAddress", cart.Address{})
