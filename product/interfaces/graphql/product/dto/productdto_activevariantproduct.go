@@ -5,9 +5,14 @@ import productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 type (
 	// A Product variant that reflects one possible configuration of a configurable
 	ActiveVariantProduct struct {
-		product productDomain.BasicProduct
+		product productDomain.ConfigurableProductWithActiveVariant
 	}
 )
+
+//getActiveVariant
+func (avp ActiveVariantProduct) getActiveVariant() productDomain.Variant {
+	return avp.product.ActiveVariant
+}
 
 //Type
 func (avp ActiveVariantProduct) Type() string {
@@ -21,47 +26,55 @@ func (avp ActiveVariantProduct) Product() productDomain.BasicProduct {
 
 //MarketPlaceCode
 func (avp ActiveVariantProduct) MarketPlaceCode() string {
-	panic("implement me")
+	return avp.getActiveVariant().BaseData().MarketPlaceCode
 }
 
 //Media
 func (avp ActiveVariantProduct) Media() ProductMedia {
-	panic("implement me")
+	return ProductMedia{All: avp.getActiveVariant().BaseData().Media}
 }
 
 //Price
 func (avp ActiveVariantProduct) Price() productDomain.PriceInfo {
-	panic("implement me")
+	return avp.product.TeaserData().TeaserPrice
 }
 
 //Title
 func (avp ActiveVariantProduct) Title() string {
-	panic("implement me")
+	return avp.getActiveVariant().BaseData().Title
 }
 
 //ProductCategories
 func (avp ActiveVariantProduct) Categories() ProductCategories {
-	panic("implement me")
+	return ProductCategories{
+		Main: avp.getActiveVariant().BaseData().MainCategory,
+		All:  avp.getActiveVariant().BaseData().Categories,
+	}
 }
 
 //Description
 func (avp ActiveVariantProduct) Description() string {
-	panic("implement me")
+	return avp.getActiveVariant().BaseData().Description
 }
 
 //ProductMeta
 func (avp ActiveVariantProduct) Meta() ProductMeta {
-	panic("implement me")
+	return ProductMeta{
+		Keywords: avp.getActiveVariant().BaseData().Keywords,
+	}
 }
 
 //ProductLoyalty
 func (avp ActiveVariantProduct) Loyalty() ProductLoyalty {
-	panic("implement me")
+	return ProductLoyalty{
+		Price:   avp.product.TeaserData().TeaserLoyaltyPriceInfo,
+		Earning: avp.product.TeaserData().TeaserLoyaltyEarningInfo,
+	}
 }
 
 //Attributes
 func (avp ActiveVariantProduct) Attributes() productDomain.Attributes {
-	panic("implement me")
+	return avp.getActiveVariant().BaseData().Attributes
 }
 
 func (avp ActiveVariantProduct) VariationSelections() []VariationSelection {
