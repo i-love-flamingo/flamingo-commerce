@@ -72,5 +72,6 @@ func (cp ConfigurableProduct) Attributes() productDomain.Attributes {
 }
 
 func (cp ConfigurableProduct) VariationSelections() []VariationSelection {
-	panic("implement me")
+	mapper := NewVariantsToVariationSelectionsMapper(cp.Product())
+	return mapper.Map()
 }

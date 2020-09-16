@@ -69,7 +69,6 @@ type Commerce_Product_ActiveVariationSelection {
 }
 
 type Commerce_Product_VariationSelection_Option {
-    code: String!
     label: String!
     state: Commerce_Product_VariationSelection_OptionState!
     variantMarketPlaceCode: String!,

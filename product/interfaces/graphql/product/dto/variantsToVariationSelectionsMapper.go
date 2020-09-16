@@ -13,7 +13,7 @@ type (
 		// Variants that have all required variation attributes
 		variantsWithMatchingAttributes []domain.Variant
 		// A group of attributes that have the same code
-		attributeGroups map[string]*AttributeGroup
+		attributeGroups map[string]AttributeGroup
 	}
 
 	AttributeGroup struct {
@@ -29,7 +29,7 @@ type (
 )
 
 // Create a new mapper based on product type
-func New(p domain.BasicProduct) VariantsToVariationSelectionsMapper {
+func NewVariantsToVariationSelectionsMapper(p domain.BasicProduct) VariantsToVariationSelectionsMapper {
 	if p.Type() == domain.TypeConfigurableWithActiveVariant {
 		configurableWithActiveVariant := p.(domain.ConfigurableProductWithActiveVariant)
 
@@ -73,7 +73,7 @@ func (m *VariantsToVariationSelectionsMapper) pickVariantsWithMatchingAttributes
 }
 
 func (m *VariantsToVariationSelectionsMapper) groupAttributes() {
-	m.attributeGroups = make(map[string]*AttributeGroup)
+	m.attributeGroups = make(map[string]AttributeGroup)
 
 	for _, variant := range m.variantsWithMatchingAttributes {
 		for _, attributeCode := range m.variationAttributes {
@@ -84,10 +84,9 @@ func (m *VariantsToVariationSelectionsMapper) groupAttributes() {
 	}
 }
 
-func (m *VariantsToVariationSelectionsMapper) ensureGroupExists(attribute domain.Attribute) *AttributeGroup {
+func (m *VariantsToVariationSelectionsMapper) ensureGroupExists(attribute domain.Attribute) AttributeGroup {
 	if _, ok := m.attributeGroups[attribute.Code]; !ok {
-		g := NewAttributeGroup(attribute)
-		m.attributeGroups[attribute.Code] = &g
+		m.attributeGroups[attribute.Code] = NewAttributeGroup(attribute)
 	}
 
 	return m.attributeGroups[attribute.Code]
@@ -124,7 +123,7 @@ func (m *VariantsToVariationSelectionsMapper) buildVariationSelections() []Varia
 	return variationSelections
 }
 
-func (m *VariantsToVariationSelectionsMapper) buildVariationSelectionOptions(attributeGroup *AttributeGroup) []VariationSelectionOption {
+func (m *VariantsToVariationSelectionsMapper) buildVariationSelectionOptions(attributeGroup AttributeGroup) []VariationSelectionOption {
 	var options []VariationSelectionOption
 	for _, key := range attributeGroup.AttributesOrder {
 		var state VariationSelectionOptionState

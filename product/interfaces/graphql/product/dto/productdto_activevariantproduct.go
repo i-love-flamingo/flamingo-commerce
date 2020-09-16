@@ -78,7 +78,8 @@ func (avp ActiveVariantProduct) Attributes() productDomain.Attributes {
 }
 
 func (avp ActiveVariantProduct) VariationSelections() []VariationSelection {
-	panic("implement me")
+	mapper := NewVariantsToVariationSelectionsMapper(avp.Product())
+	return mapper.Map()
 }
 
 func (avp ActiveVariantProduct) VariantMarketPlaceCode() string {

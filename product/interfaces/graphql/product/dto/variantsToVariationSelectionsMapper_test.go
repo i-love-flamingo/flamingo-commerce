@@ -13,7 +13,7 @@ var (
 
 func TestMapSimpleProduct(t *testing.T) {
 	simpleProduct, _ := fakeService.Get(nil, "fake_simple")
-	mapper := New(simpleProduct)
+	mapper := NewVariantsToVariationSelectionsMapper(simpleProduct)
 	variationSelection := mapper.Map()
 
 	t.Run("should have empty variationSelection", func(t *testing.T) {
@@ -27,7 +27,7 @@ func TestMapConfigurable(t *testing.T) {
 
 	t.Run("should map variationSelection for one variation attribute", func(t *testing.T) {
 		configurable.VariantVariationAttributes = []string{"color"}
-		mapper := New(configurable)
+		mapper := NewVariantsToVariationSelectionsMapper(configurable)
 		variationSelection := mapper.Map()
 		assert.Equal(t, []VariationSelection{
 			{
@@ -57,7 +57,7 @@ func TestMapConfigurable(t *testing.T) {
 	t.Run("should map variationSelection for two variation attributes", func(t *testing.T) {
 		configurable.VariantVariationAttributes = []string{"color", "size"}
 
-		mapper := New(configurable)
+		mapper := NewVariantsToVariationSelectionsMapper(configurable)
 		variationSelection := mapper.Map()
 		assert.Equal(t, []VariationSelection{
 			{
@@ -106,7 +106,7 @@ func TestMapConfigurableWithActiveVariant(t *testing.T) {
 
 	t.Run("should map variationSelection for one variation attribute with active variant", func(t *testing.T) {
 		configurable.VariantVariationAttributes = []string{"color"}
-		mapper := New(configurable)
+		mapper := NewVariantsToVariationSelectionsMapper(configurable)
 		variationSelection := mapper.Map()
 		assert.Equal(t, []VariationSelection{
 			{
@@ -136,7 +136,7 @@ func TestMapConfigurableWithActiveVariant(t *testing.T) {
 	t.Run("should map variationSelection for two variation attributes with active variant", func(t *testing.T) {
 		configurable.VariantVariationAttributes = []string{"color", "size"}
 
-		mapper := New(configurable)
+		mapper := NewVariantsToVariationSelectionsMapper(configurable)
 		variationSelection := mapper.Map()
 		assert.Equal(t, []VariationSelection{
 			{
