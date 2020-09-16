@@ -82,13 +82,9 @@ func (avp ActiveVariantProduct) VariationSelections() []VariationSelection {
 }
 
 func (avp ActiveVariantProduct) VariantMarketPlaceCode() string {
-	panic("implement me")
+	return avp.getActiveVariant().MarketPlaceCode
 }
 
 func (avp ActiveVariantProduct) ActiveVariationSelections() []ActiveVariationSelection {
-	panic("implement me")
-}
-
-func (avp ActiveVariantProduct) BaseConfigurableProduct() ConfigurableProduct {
 	panic("implement me")
 }
