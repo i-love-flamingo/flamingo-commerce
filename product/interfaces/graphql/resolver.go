@@ -34,7 +34,7 @@ func (r *CommerceProductQueryResolver) CommerceProduct(ctx context.Context, mark
 		return nil, err
 	}
 
-	return productDto.MapProductToGraphqlProductDto(product), nil
+	return productDto.NewGraphqlProductDto(product), nil
 }
 
 // CommerceProductSearch returns a search result of products based on the given search request
