@@ -45,69 +45,10 @@ func (ps *ProductService) Inject(
 func (ps *ProductService) Get(_ context.Context, marketplaceCode string) (domain.BasicProduct, error) {
 	switch marketplaceCode {
 	case "fake_configurable":
-		product := ps.getFakeConfigurable(marketplaceCode)
-		product.RetailerCode = "retailer"
+		return ps.getFakeConfigurableWithVariants(marketplaceCode), nil
 
-		product.VariantVariationAttributes = []string{"color", "size", "manufacturerColor", "manufacturerColorCode"}
-
-		variants := []struct {
-			marketplaceCode string
-			title           string
-			attributes      domain.Attributes
-			stockLevel      string
-		}{
-			{"shirt-red-s", "Shirt Red S", domain.Attributes{
-				"size":                  domain.Attribute{RawValue: "S", Code: "s", CodeLabel: "Size", Label: "S"},
-				"manufacturerColor":     domain.Attribute{RawValue: "red", Code: "red", CodeLabel: "Manufacturer Color", Label: "Red"},
-				"manufacturerColorCode": domain.Attribute{RawValue: "#ff0000", Code: "#ff0000", CodeLabel: "Manufacturer Color Code", Label: "BloodRed"}},
-				"high",
-			},
-			{"shirt-white-s", "Shirt White S", domain.Attributes{
-				"size":                  domain.Attribute{RawValue: "S", Code: "s", CodeLabel: "Size", Label: "S"},
-				"manufacturerColor":     domain.Attribute{RawValue: "white", Code: "white", CodeLabel: "Manufacturer Color", Label: "White"},
-				"manufacturerColorCode": domain.Attribute{RawValue: "#ffffff", Code: "#ffffff", CodeLabel: "Manufacturer Color Code", Label: "SnowWhite"}},
-				"high",
-			},
-			{"shirt-white-m", "Shirt White M", domain.Attributes{
-				"size":  domain.Attribute{RawValue: "M", Code: "m", CodeLabel: "Size", Label: "M"},
-				"color": domain.Attribute{RawValue: "white", Code: "white", CodeLabel: "Color", Label: "White"}},
-				"high",
-			},
-			{"shirt-black-m", "Shirt Black M", domain.Attributes{
-				"size":                  domain.Attribute{RawValue: "M", Code: "m", CodeLabel: "Size", Label: "M"},
-				"manufacturerColor":     domain.Attribute{RawValue: "blue", Code: "blue", CodeLabel: "Manufacturer Color", Label: "Blue"},
-				"manufacturerColorCode": domain.Attribute{RawValue: "#0000ff", Code: "#0000ff", CodeLabel: "Manufacturer Color Code", Label: "SkyBlue"}},
-				"high",
-			},
-			{"shirt-black-l", "Shirt Black L", domain.Attributes{
-				"size":  domain.Attribute{RawValue: "L", Code: "l", CodeLabel: "Size", Label: "L"},
-				"color": domain.Attribute{RawValue: "black", Code: "black", CodeLabel: "Color", Label: "Black"}},
-				"high",
-			},
-			{"shirt-red-l", "Shirt Red L", domain.Attributes{
-				"size":  domain.Attribute{RawValue: "L", Code: "l", CodeLabel: "Size", Label: "L"},
-				"color": domain.Attribute{RawValue: "red", Code: "red", CodeLabel: "Color", Label: "Red"}},
-				"out",
-			},
-		}
-
-		for _, variant := range variants {
-			simpleVariant := ps.fakeVariant(variant.marketplaceCode)
-			simpleVariant.Title = variant.title
-			simpleVariant.Attributes = variant.attributes
-			simpleVariant.StockLevel = variant.stockLevel
-
-			// Give new images for variants with custom colors
-			if simpleVariant.Attributes.HasAttribute("manufacturerColorCode") {
-				manufacturerColorCode := simpleVariant.Attributes["manufacturerColorCode"].Value()
-				manufacturerColorCode = strings.TrimPrefix(manufacturerColorCode, "#")
-				simpleVariant.Media[0] = domain.Media{Type: "image-external", Reference: "http://dummyimage.com/1024x768/000/" + manufacturerColorCode, Usage: "detail"}
-			}
-
-			product.Variants = append(product.Variants, simpleVariant)
-		}
-
-		return product, nil
+	case "fake_configurable_with_active_variant":
+		return ps.getFakeConfigurableWithActiveVariant(marketplaceCode), nil
 
 	case "fake_simple":
 		return ps.FakeSimple(marketplaceCode, false, false, false, true, false), nil
@@ -214,6 +155,85 @@ func (ps *ProductService) getFakeConfigurable(marketplaceCode string) domain.Con
 	ps.addBasicData(&product.BasicProductData)
 	product.MarketPlaceCode = marketplaceCode
 
+	return product
+}
+
+func (ps *ProductService) getFakeConfigurableWithVariants(marketplaceCode string) domain.ConfigurableProduct {
+	product := ps.getFakeConfigurable(marketplaceCode)
+	product.RetailerCode = "retailer"
+
+	product.VariantVariationAttributes = []string{"color", "size", "manufacturerColor", "manufacturerColorCode"}
+
+	variants := []struct {
+		marketplaceCode string
+		title           string
+		attributes      domain.Attributes
+		stockLevel      string
+	}{
+		{"shirt-red-s", "Shirt Red S", domain.Attributes{
+			"size":                  domain.Attribute{RawValue: "S", Code: "s", CodeLabel: "Size", Label: "S"},
+			"manufacturerColor":     domain.Attribute{RawValue: "red", Code: "red", CodeLabel: "Manufacturer Color", Label: "Red"},
+			"manufacturerColorCode": domain.Attribute{RawValue: "#ff0000", Code: "#ff0000", CodeLabel: "Manufacturer Color Code", Label: "BloodRed"}},
+			"high",
+		},
+		{"shirt-white-s", "Shirt White S", domain.Attributes{
+			"size":                  domain.Attribute{RawValue: "S", Code: "s", CodeLabel: "Size", Label: "S"},
+			"manufacturerColor":     domain.Attribute{RawValue: "white", Code: "white", CodeLabel: "Manufacturer Color", Label: "White"},
+			"manufacturerColorCode": domain.Attribute{RawValue: "#ffffff", Code: "#ffffff", CodeLabel: "Manufacturer Color Code", Label: "SnowWhite"}},
+			"high",
+		},
+		{"shirt-white-m", "Shirt White M", domain.Attributes{
+			"size":  domain.Attribute{RawValue: "M", Code: "m", CodeLabel: "Size", Label: "M"},
+			"color": domain.Attribute{RawValue: "white", Code: "white", CodeLabel: "Color", Label: "White"}},
+			"high",
+		},
+		{"shirt-black-m", "Shirt Black M", domain.Attributes{
+			"size":                  domain.Attribute{RawValue: "M", Code: "m", CodeLabel: "Size", Label: "M"},
+			"manufacturerColor":     domain.Attribute{RawValue: "blue", Code: "blue", CodeLabel: "Manufacturer Color", Label: "Blue"},
+			"manufacturerColorCode": domain.Attribute{RawValue: "#0000ff", Code: "#0000ff", CodeLabel: "Manufacturer Color Code", Label: "SkyBlue"}},
+			"high",
+		},
+		{"shirt-black-l", "Shirt Black L", domain.Attributes{
+			"size":  domain.Attribute{RawValue: "L", Code: "l", CodeLabel: "Size", Label: "L"},
+			"color": domain.Attribute{RawValue: "black", Code: "black", CodeLabel: "Color", Label: "Black"}},
+			"high",
+		},
+		{"shirt-red-l", "Shirt Red L", domain.Attributes{
+			"size":  domain.Attribute{RawValue: "L", Code: "l", CodeLabel: "Size", Label: "L"},
+			"color": domain.Attribute{RawValue: "red", Code: "red", CodeLabel: "Color", Label: "Red"}},
+			"out",
+		},
+	}
+
+	for _, variant := range variants {
+		simpleVariant := ps.fakeVariant(variant.marketplaceCode)
+		simpleVariant.Title = variant.title
+		simpleVariant.Attributes = variant.attributes
+		simpleVariant.StockLevel = variant.stockLevel
+
+		// Give new images for variants with custom colors
+		if simpleVariant.Attributes.HasAttribute("manufacturerColorCode") {
+			manufacturerColorCode := simpleVariant.Attributes["manufacturerColorCode"].Value()
+			manufacturerColorCode = strings.TrimPrefix(manufacturerColorCode, "#")
+			simpleVariant.Media[0] = domain.Media{Type: "image-external", Reference: "http://dummyimage.com/1024x768/000/" + manufacturerColorCode, Usage: "detail"}
+		}
+
+		product.Variants = append(product.Variants, simpleVariant)
+	}
+
+	return product
+}
+
+func (ps *ProductService) getFakeConfigurableWithActiveVariant(marketplaceCode string) domain.ConfigurableProductWithActiveVariant {
+	configurable := ps.getFakeConfigurableWithVariants(marketplaceCode)
+	product := domain.ConfigurableProductWithActiveVariant{
+		Identifier:                 configurable.Identifier,
+		BasicProductData:           configurable.BasicProductData,
+		Teaser:                     configurable.Teaser,
+		VariantVariationAttributes: configurable.VariantVariationAttributes,
+		Variants:                   configurable.Variants,
+		ActiveVariant:              ps.fakeVariant("shirt-black-l"),
+	}
 	return product
 }
 

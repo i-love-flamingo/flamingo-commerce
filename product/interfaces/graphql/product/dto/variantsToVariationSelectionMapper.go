@@ -11,6 +11,7 @@ type (
 		// The currently active variant
 		ActiveVariantMarketPlaceCode *string
 		matchingVariants             []domain.Variant
+		activeVariant                *domain.Variant
 		attributesByKey              map[string]*Attribute
 	}
 
@@ -57,17 +58,10 @@ func New(p domain.BasicProduct) VariantsToVariationSelectionMapper {
 
 func (m *VariantsToVariationSelectionMapper) Map() []VariationSelection {
 	m.findMatchingVariants()
+	m.findActiveVariant()
 	m.groupAttributes()
-	return m.buildVariationSelections()
-}
 
-func (m *VariantsToVariationSelectionMapper) variantHasAllAttributes(variant domain.Variant) bool {
-	for _, attributeKey := range m.VariationAttributes {
-		if !variant.HasAttribute(attributeKey) {
-			return false
-		}
-	}
-	return true
+	return m.buildVariationSelections()
 }
 
 func (m *VariantsToVariationSelectionMapper) findMatchingVariants() {
@@ -105,6 +99,39 @@ func (m *VariantsToVariationSelectionMapper) groupAttributes() {
 	}
 }
 
+func (m *VariantsToVariationSelectionMapper) findActiveVariant() {
+	if m.ActiveVariantMarketPlaceCode != nil {
+		for _, variant := range m.Variants {
+			if &variant.MarketPlaceCode == m.ActiveVariantMarketPlaceCode {
+				m.activeVariant = &variant
+				return
+			}
+		}
+	}
+}
+
+func (m *VariantsToVariationSelectionMapper) hasActiveVariant() bool {
+	return m.activeVariant != nil
+}
+
+//func (m *VariantsToVariationSelectionMapper) hasActiveVariant() bool {
+//	m.activeVariantAttributes = make(map[string]string)
+//	m.matchingVariants = append(m.matchingVariants, variant)
+//	for _, attributeKey := range m.VariationAttributes {
+//		m.activeVariantAttributes[attributeKey] = variant.Attribute(attributeKey).Code
+//	}
+//}
+
+
+func (m *VariantsToVariationSelectionMapper) variantHasAllAttributes(variant domain.Variant) bool {
+	for _, attributeKey := range m.VariationAttributes {
+		if !variant.HasAttribute(attributeKey) {
+			return false
+		}
+	}
+	return true
+}
+
 func (m *VariantsToVariationSelectionMapper) buildVariationSelections() []VariationSelection {
 	var variationSelections []VariationSelection
 	for _, attributeKey := range m.VariationAttributes {
@@ -128,18 +155,28 @@ func (m *VariantsToVariationSelectionMapper) buildVariationSelectionOptions(attr
 		options = append(options, VariationSelectionOption{
 			Code:                   value.Code,
 			Label:                  value.Label,
-			State:                  VariationSelectionOptionStateNoMatch,
-			VariantMarketPlaceCode: m.getMatchingVariant(attribute, value),
+			State:                  VariationSelectionOptionStateMatch,
+			VariantMarketPlaceCode: m.getBestMatchingVariantMarketPlaceCode(attribute, value.Code),
 		})
 	}
 
 	return options
 }
 
-func (m *VariantsToVariationSelectionMapper) getMatchingVariant(attribute *Attribute, attributeValue *AttributeValue) string {
+func (m *VariantsToVariationSelectionMapper) getBestMatchingVariantMarketPlaceCode(attribute *Attribute, attributeCode string) string {
+
+	if m.hasActiveVariant() {
+		// TODO
+	}
+
+	return m.getFirstMatchingVariantMarketPlaceCode(attribute, attributeCode)
+}
+
+
+func (m *VariantsToVariationSelectionMapper) getFirstMatchingVariantMarketPlaceCode(attribute *Attribute, attributeCode string) string {
 	for _, variant := range m.matchingVariants {
 		attribute := variant.Attribute(attribute.Code)
-		if attribute.Code == attributeValue.Code {
+		if attribute.Code == attributeCode {
 			return variant.MarketPlaceCode
 		}
 	}

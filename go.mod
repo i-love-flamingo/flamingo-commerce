@@ -47,5 +47,5 @@ require (
 	gopkg.in/go-playground/assert.v1 v1.2.1
 	gopkg.in/square/go-jose.v2 v2.3.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
-	gotest.tools v2.2.0+incompatible // indirect
+	gotest.tools v2.2.0+incompatible
 )
