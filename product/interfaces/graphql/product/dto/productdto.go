@@ -58,7 +58,6 @@ type (
 
 	// One possible variation for the Product
 	VariationSelectionOption struct {
-		Code                   string
 		Label                  string
 		State                  VariationSelectionOptionState
 		VariantMarketPlaceCode string
