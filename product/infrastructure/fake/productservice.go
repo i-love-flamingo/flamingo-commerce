@@ -232,7 +232,7 @@ func (ps *ProductService) getFakeConfigurableWithActiveVariant(marketplaceCode s
 		Teaser:                     configurable.Teaser,
 		VariantVariationAttributes: configurable.VariantVariationAttributes,
 		Variants:                   configurable.Variants,
-		ActiveVariant:              ps.fakeVariant("shirt-black-l"),
+		ActiveVariant:              configurable.Variants[4], // shirt-black-l
 	}
 	return product
 }

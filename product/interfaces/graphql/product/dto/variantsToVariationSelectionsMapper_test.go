@@ -25,7 +25,6 @@ func TestMapConfigurable(t *testing.T) {
 	fakeConfigurable, _ := fakeService.Get(nil, "fake_configurable")
 	configurable := fakeConfigurable.(domain.ConfigurableProduct)
 
-
 	t.Run("should map variationSelection for one variation attribute", func(t *testing.T) {
 		configurable.VariantVariationAttributes = []string{"color"}
 		mapper := New(configurable)
@@ -101,12 +100,11 @@ func TestMapConfigurable(t *testing.T) {
 	})
 }
 
-
 func TestMapConfigurableWithActiveVariant(t *testing.T) {
 	fakeConfigurable, _ := fakeService.Get(nil, "fake_configurable_with_active_variant")
 	configurable := fakeConfigurable.(domain.ConfigurableProductWithActiveVariant)
 
-	t.Run("should map variationSelection for one variation attribute", func(t *testing.T) {
+	t.Run("should map variationSelection for one variation attribute with active variant", func(t *testing.T) {
 		configurable.VariantVariationAttributes = []string{"color"}
 		mapper := New(configurable)
 		variationSelection := mapper.Map()
@@ -135,7 +133,7 @@ func TestMapConfigurableWithActiveVariant(t *testing.T) {
 		}, variationSelection)
 	})
 
-	t.Run("should map variationSelection for two variation attributes", func(t *testing.T) {
+	t.Run("should map variationSelection for two variation attributes with active variant", func(t *testing.T) {
 		configurable.VariantVariationAttributes = []string{"color", "size"}
 
 		mapper := New(configurable)
