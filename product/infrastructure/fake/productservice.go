@@ -57,36 +57,36 @@ func (ps *ProductService) Get(_ context.Context, marketplaceCode string) (domain
 			stockLevel      string
 		}{
 			{"shirt-red-s", "Shirt Red S", domain.Attributes{
-				"size":                  domain.Attribute{RawValue: "S"},
-				"manufacturerColor":     domain.Attribute{RawValue: "red"},
-				"manufacturerColorCode": domain.Attribute{RawValue: "#ff0000"}},
+				"size":                  domain.Attribute{RawValue: "S", Code: "s", CodeLabel: "Size", Label: "S"},
+				"manufacturerColor":     domain.Attribute{RawValue: "red", Code: "red", CodeLabel: "Manufacturer Color", Label: "Red"},
+				"manufacturerColorCode": domain.Attribute{RawValue: "#ff0000", Code: "#ff0000", CodeLabel: "Manufacturer Color Code", Label: "BloodRed"}},
 				"high",
 			},
 			{"shirt-white-s", "Shirt White S", domain.Attributes{
-				"size":                  domain.Attribute{RawValue: "S"},
-				"manufacturerColor":     domain.Attribute{RawValue: "white"},
-				"manufacturerColorCode": domain.Attribute{RawValue: "#ffffff"}},
+				"size":                  domain.Attribute{RawValue: "S", Code: "s", CodeLabel: "Size", Label: "S"},
+				"manufacturerColor":     domain.Attribute{RawValue: "white", Code: "white", CodeLabel: "Manufacturer Color", Label: "White"},
+				"manufacturerColorCode": domain.Attribute{RawValue: "#ffffff", Code: "#ffffff", CodeLabel: "Manufacturer Color Code", Label: "SnowWhite"}},
 				"high",
 			},
 			{"shirt-white-m", "Shirt White M", domain.Attributes{
-				"size":  domain.Attribute{RawValue: "M"},
-				"color": domain.Attribute{RawValue: "white"}},
+				"size":  domain.Attribute{RawValue: "M", Code: "m", CodeLabel: "Size", Label: "M"},
+				"color": domain.Attribute{RawValue: "white", Code: "white", CodeLabel: "Color", Label: "White"}},
 				"high",
 			},
 			{"shirt-black-m", "Shirt Black M", domain.Attributes{
-				"size":                  domain.Attribute{RawValue: "M"},
-				"manufacturerColor":     domain.Attribute{RawValue: "blue"},
-				"manufacturerColorCode": domain.Attribute{RawValue: "#0000ff"}},
+				"size":                  domain.Attribute{RawValue: "M", Code: "m", CodeLabel: "Size", Label: "M"},
+				"manufacturerColor":     domain.Attribute{RawValue: "blue", Code: "blue", CodeLabel: "Manufacturer Color", Label: "Blue"},
+				"manufacturerColorCode": domain.Attribute{RawValue: "#0000ff", Code: "#0000ff", CodeLabel: "Manufacturer Color Code", Label: "SkyBlue"}},
 				"high",
 			},
 			{"shirt-black-l", "Shirt Black L", domain.Attributes{
-				"size":  domain.Attribute{RawValue: "L"},
-				"color": domain.Attribute{RawValue: "black"}},
+				"size":  domain.Attribute{RawValue: "L", Code: "l", CodeLabel: "Size", Label: "L"},
+				"color": domain.Attribute{RawValue: "black", Code: "black", CodeLabel: "Color", Label: "Black"}},
 				"high",
 			},
 			{"shirt-red-l", "Shirt Red L", domain.Attributes{
-				"size":  domain.Attribute{RawValue: "L"},
-				"color": domain.Attribute{RawValue: "red"}},
+				"size":  domain.Attribute{RawValue: "L", Code: "l", CodeLabel: "Size", Label: "L"},
+				"color": domain.Attribute{RawValue: "red", Code: "red", CodeLabel: "Color", Label: "Red"}},
 				"out",
 			},
 		}
