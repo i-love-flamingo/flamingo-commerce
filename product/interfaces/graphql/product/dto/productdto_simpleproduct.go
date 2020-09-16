@@ -11,7 +11,7 @@ type (
 
 //Type
 func (sp SimpleProduct) Type() string {
-	return "configurable"
+	return productDomain.TypeSimple
 }
 
 func (sp SimpleProduct) Product() productDomain.BasicProduct {

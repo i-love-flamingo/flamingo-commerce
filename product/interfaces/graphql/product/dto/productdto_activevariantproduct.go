@@ -3,7 +3,6 @@ package graphqlProductDto
 import productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 
 type (
-
 	// A Product variant that reflects one possible configuration of a configurable
 	ActiveVariantProduct struct {
 		product productDomain.BasicProduct
@@ -12,7 +11,7 @@ type (
 
 //Type
 func (avp ActiveVariantProduct) Type() string {
-	return "activeVariant"
+	return productDomain.TypeConfigurableWithActiveVariant
 }
 
 //Product

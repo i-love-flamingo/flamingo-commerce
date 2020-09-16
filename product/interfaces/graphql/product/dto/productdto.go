@@ -98,6 +98,13 @@ func NewGraphqlProductDto(product productDomain.BasicProduct) Product {
 		}
 	}
 
+	if product.Type() == productDomain.TypeConfigurableWithActiveVariant {
+		configurableProduct := product.(productDomain.ConfigurableProductWithActiveVariant)
+		return ActiveVariantProduct{
+			product: configurableProduct,
+		}
+	}
+
 	simpleProduct := product.(productDomain.SimpleProduct)
 	return SimpleProduct{
 		product: simpleProduct,
