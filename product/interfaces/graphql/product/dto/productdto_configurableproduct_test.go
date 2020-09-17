@@ -183,5 +183,5 @@ func TestConfigurableProduct_Title(t *testing.T) {
 
 func TestConfigurableProduct_Type(t *testing.T) {
 	product := getConfigurableProduct()
-	assert.Equal(t, productDomain.TypeSimple, product.Type())
+	assert.Equal(t, productDomain.TypeConfigurable, product.Type())
 }

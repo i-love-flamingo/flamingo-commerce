@@ -103,6 +103,7 @@ func TestMapConfigurable(t *testing.T) {
 	t.Run("should return empty variation selection if no product has matching attributes", func(t *testing.T) {
 		fakeConfigurable, _ := fakeService.Get(nil, "fake_configurable")
 		configurable := fakeConfigurable.(domain.ConfigurableProduct)
+		configurable.VariantVariationAttributes = []string{"foobar"}
 		mapper := NewVariantsToVariationSelectionsMapper(configurable)
 		variationSelection := mapper.Map()
 		assert.Equal(t, []VariationSelection(nil), variationSelection)

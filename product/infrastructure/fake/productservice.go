@@ -162,7 +162,7 @@ func (ps *ProductService) getFakeConfigurableWithVariants(marketplaceCode string
 	product := ps.getFakeConfigurable(marketplaceCode)
 	product.RetailerCode = "retailer"
 
-	product.VariantVariationAttributes = []string{"color", "size", "manufacturerColor", "manufacturerColorCode"}
+	product.VariantVariationAttributes = []string{"color", "size"}
 
 	variants := []struct {
 		marketplaceCode string

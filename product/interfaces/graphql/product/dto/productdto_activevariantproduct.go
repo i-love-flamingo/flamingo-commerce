@@ -87,5 +87,18 @@ func (avp ActiveVariantProduct) VariantMarketPlaceCode() string {
 }
 
 func (avp ActiveVariantProduct) ActiveVariationSelections() []ActiveVariationSelection {
-	panic("implement me")
+	variationSelections := avp.VariationSelections()
+	var activeVariationSelections []ActiveVariationSelection
+	for _, variationSelection := range variationSelections {
+		for _, option := range variationSelection.Options {
+			if option.State == VariationSelectionOptionStateActive {
+				activeVariationSelections = append(activeVariationSelections, ActiveVariationSelection{
+					AttributeLabel: variationSelection.Label,
+					OptionLabel:    option.Label,
+				})
+			}
+		}
+	}
+
+	return activeVariationSelections
 }
