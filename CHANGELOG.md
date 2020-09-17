@@ -4,7 +4,11 @@
 *  Added desired time to DeliveryForm
 * GraphQL
     * Updated schema and resolver regarding desired time
-
+    * _Breaking_: New schema for products:
+      * `Commerce_Product` has been restructured and now has three subtypes: `Commerce_Product_SimpleProduct`, `Commerce_Product_ConfigurableProduct`, `Commerce_Product_ActiveVariantProduct`
+      * Product variant data, that has previously been burried in `Commerce_ConfigurableProduct.variants`, has been mapped to the toplevel of each product and can be accessed directly.
+      * Both `ActiveVariantProduct` and `ConfigurableProduct` provide a new property named `variationSelections` which exposes a list of possible attribute combinations for the configurable.
+      
 ## v3.3.0
 **product**
 * Switch module config to CUE
