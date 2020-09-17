@@ -13,8 +13,7 @@ var (
 
 func TestMapSimpleProduct(t *testing.T) {
 	simpleProduct, _ := fakeService.Get(nil, "fake_simple")
-	mapper := NewVariantsToVariationSelectionsMapper(simpleProduct)
-	variationSelection := mapper.Map()
+	variationSelection := NewVariantsToVariationSelections(simpleProduct)
 
 	t.Run("should have empty variationSelection", func(t *testing.T) {
 		assert.Equal(t, 0, len(variationSelection))
@@ -26,8 +25,7 @@ func TestMapConfigurable(t *testing.T) {
 		fakeConfigurable, _ := fakeService.Get(nil, "fake_configurable")
 		configurable := fakeConfigurable.(domain.ConfigurableProduct)
 		configurable.VariantVariationAttributes = []string{"color"}
-		mapper := NewVariantsToVariationSelectionsMapper(configurable)
-		variationSelection := mapper.Map()
+		variationSelection := NewVariantsToVariationSelections(configurable)
 		assert.Equal(t, []VariationSelection{
 			{
 				Code:  "color",
@@ -58,8 +56,7 @@ func TestMapConfigurable(t *testing.T) {
 		configurable := fakeConfigurable.(domain.ConfigurableProduct)
 		configurable.VariantVariationAttributes = []string{"color", "size"}
 
-		mapper := NewVariantsToVariationSelectionsMapper(configurable)
-		variationSelection := mapper.Map()
+		variationSelection := NewVariantsToVariationSelections(configurable)
 		assert.Equal(t, []VariationSelection{
 			{
 				Code:  "color",
@@ -104,8 +101,7 @@ func TestMapConfigurable(t *testing.T) {
 		fakeConfigurable, _ := fakeService.Get(nil, "fake_configurable")
 		configurable := fakeConfigurable.(domain.ConfigurableProduct)
 		configurable.VariantVariationAttributes = []string{"foobar"}
-		mapper := NewVariantsToVariationSelectionsMapper(configurable)
-		variationSelection := mapper.Map()
+		variationSelection := NewVariantsToVariationSelections(configurable)
 		assert.Equal(t, []VariationSelection(nil), variationSelection)
 	})
 }
@@ -115,8 +111,7 @@ func TestMapConfigurableWithActiveVariant(t *testing.T) {
 		fakeConfigurable, _ := fakeService.Get(nil, "fake_configurable_with_active_variant")
 		configurable := fakeConfigurable.(domain.ConfigurableProductWithActiveVariant)
 		configurable.VariantVariationAttributes = []string{"color"}
-		mapper := NewVariantsToVariationSelectionsMapper(configurable)
-		variationSelection := mapper.Map()
+		variationSelection := NewVariantsToVariationSelections(configurable)
 		assert.Equal(t, []VariationSelection{
 			{
 				Code:  "color",
@@ -147,8 +142,7 @@ func TestMapConfigurableWithActiveVariant(t *testing.T) {
 		configurable := fakeConfigurable.(domain.ConfigurableProductWithActiveVariant)
 		configurable.VariantVariationAttributes = []string{"color", "size"}
 
-		mapper := NewVariantsToVariationSelectionsMapper(configurable)
-		variationSelection := mapper.Map()
+		variationSelection := NewVariantsToVariationSelections(configurable)
 		assert.Equal(t, []VariationSelection{
 			{
 				Code:  "color",

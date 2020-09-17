@@ -307,17 +307,6 @@ func (bpd BasicProductData) HasAllAttributes(keys []string) bool {
 	return true
 }
 
-// MatchesAllAttributes returns true, if all provided attributes match
-func (bpd BasicProductData) MatchesAllAttributes(attributes []Attribute) bool {
-	for _, attribute := range attributes {
-		currentAttribute := bpd.Attribute(attribute.Code)
-		if currentAttribute.Label != attribute.Label {
-			return false
-		}
-	}
-	return true
-}
-
 // Attribute get Attribute by key
 func (bpd BasicProductData) Attribute(key string) Attribute {
 	return bpd.Attributes[key]

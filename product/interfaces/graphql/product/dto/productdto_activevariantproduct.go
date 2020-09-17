@@ -1,6 +1,8 @@
 package graphqlProductDto
 
-import productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
+import (
+	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
+)
 
 type (
 	// A Product variant that reflects one possible configuration of a configurable
@@ -78,8 +80,7 @@ func (avp ActiveVariantProduct) Attributes() productDomain.Attributes {
 }
 
 func (avp ActiveVariantProduct) VariationSelections() []VariationSelection {
-	mapper := NewVariantsToVariationSelectionsMapper(avp.Product())
-	return mapper.Map()
+	return NewVariantsToVariationSelections(avp.Product())
 }
 
 func (avp ActiveVariantProduct) VariantMarketPlaceCode() string {

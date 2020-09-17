@@ -9,7 +9,7 @@ type (
 		// The attributes that are configurable
 		variationAttributes []string
 		// The currently active variant
-		activeVariant                  *domain.Variant
+		activeVariant *domain.Variant
 		// Variants that have all required variation attributes
 		variantsWithMatchingAttributes []domain.Variant
 		// A group of attributes that have the same code
@@ -18,43 +18,45 @@ type (
 
 	AttributeGroup struct {
 		// Code of the group
-		Code            string
+		Code string
 		// The label of the group
-		Label           string
-		// Attributes order containing the Attribute.Label
-		AttributesOrder []string
-		// A map of Attribute.Label to the attribute
-		Attributes      map[string]domain.Attribute
+		Label string
+		// unique Attributes matching the group code
+		Attributes []domain.Attribute
 	}
 )
 
 // Create a new mapper based on product type
-func NewVariantsToVariationSelectionsMapper(p domain.BasicProduct) VariantsToVariationSelectionsMapper {
+func NewVariantsToVariationSelections(p domain.BasicProduct) []VariationSelection {
 	if p.Type() == domain.TypeConfigurableWithActiveVariant {
 		configurableWithActiveVariant := p.(domain.ConfigurableProductWithActiveVariant)
 
-		return VariantsToVariationSelectionsMapper{
+		mapper := VariantsToVariationSelectionsMapper{
 			variants:            configurableWithActiveVariant.Variants,
 			variationAttributes: configurableWithActiveVariant.VariantVariationAttributes,
 			activeVariant:       &configurableWithActiveVariant.ActiveVariant,
 		}
+		return mapper.Map()
 	}
 
 	if p.Type() == domain.TypeConfigurable {
 		configurable := p.(domain.ConfigurableProduct)
 
-		return VariantsToVariationSelectionsMapper{
+		mapper := VariantsToVariationSelectionsMapper{
 			variants:            configurable.Variants,
 			variationAttributes: configurable.VariantVariationAttributes,
 			activeVariant:       nil,
 		}
+
+		return mapper.Map()
 	}
 
-	return VariantsToVariationSelectionsMapper{
+	mapper := VariantsToVariationSelectionsMapper{
 		variants:            []domain.Variant{},
 		variationAttributes: nil,
 		activeVariant:       nil,
 	}
+	return mapper.Map()
 }
 
 func (m *VariantsToVariationSelectionsMapper) Map() []VariationSelection {
@@ -79,14 +81,14 @@ func (m *VariantsToVariationSelectionsMapper) groupAttributes() {
 		for _, variant := range m.variantsWithMatchingAttributes {
 			for _, attributeCode := range m.variationAttributes {
 				attribute := variant.Attribute(attributeCode)
-				group := m.ensureGroupExists(attribute)
-				group.addAttribute(attribute)
+				group := m.createGroupIfNotExisting(attribute)
+				group.addAttributeIfNotExisting(attribute)
 			}
 		}
 	}
 }
 
-func (m *VariantsToVariationSelectionsMapper) ensureGroupExists(attribute domain.Attribute) *AttributeGroup {
+func (m *VariantsToVariationSelectionsMapper) createGroupIfNotExisting(attribute domain.Attribute) *AttributeGroup {
 	if _, ok := m.attributeGroups[attribute.Code]; !ok {
 		m.attributeGroups[attribute.Code] = NewAttributeGroup(attribute)
 	}
@@ -103,7 +105,6 @@ func (m *VariantsToVariationSelectionsMapper) unsetActiveVariantIfInvalid() {
 		}
 		m.activeVariant = nil
 	}
-
 }
 
 func (m *VariantsToVariationSelectionsMapper) hasActiveVariant() bool {
@@ -134,13 +135,13 @@ func (m *VariantsToVariationSelectionsMapper) hasVariantsWithMatchingAttributes(
 
 func (m *VariantsToVariationSelectionsMapper) buildVariationSelectionOptions(attributeGroup *AttributeGroup) []VariationSelectionOption {
 	var options []VariationSelectionOption
-	for _, key := range attributeGroup.AttributesOrder {
+	for _, attribute := range attributeGroup.Attributes {
 		var state VariationSelectionOptionState
 		var marketPlaceCode string
 
 		attribute := domain.Attribute{
 			Code:  attributeGroup.Code,
-			Label: attributeGroup.Attributes[key].Label,
+			Label: attribute.Label,
 		}
 
 		if m.hasActiveVariant() {
@@ -184,14 +185,25 @@ func (m *VariantsToVariationSelectionsMapper) buildVariationSelectionOptions(att
 
 func (m *VariantsToVariationSelectionsMapper) findMatchingVariant(attributes []domain.Attribute) *domain.Variant {
 	for _, variant := range m.variantsWithMatchingAttributes {
-		if variant.MatchesAllAttributes(attributes) {
+		if m.VariantMatchesAllAttributes(variant, attributes) {
 			return &variant
 		}
 	}
 	return nil
 }
 
-func (m *VariantsToVariationSelectionsMapper) getActiveAttributesWithOverwrite(overwrite domain.Attribute) []domain.Attribute {
+// VariantMatchesAllAttributes returns true, if a variant has all given attributes
+func (m *VariantsToVariationSelectionsMapper) VariantMatchesAllAttributes(variant domain.Variant, attributes []domain.Attribute) bool {
+	for _, attribute := range attributes {
+		currentAttribute := variant.Attribute(attribute.Code)
+		if currentAttribute.Label != attribute.Label {
+			return false
+		}
+	}
+	return true
+}
+
+func (m *VariantsToVariationSelectionsMapper) getActiveAttributesWithOverwrite(attributeOverwrite domain.Attribute) []domain.Attribute {
 	var attributes []domain.Attribute
 
 	for _, attributeCode := range m.variationAttributes {
@@ -201,8 +213,8 @@ func (m *VariantsToVariationSelectionsMapper) getActiveAttributesWithOverwrite(o
 			Label: attribute.Label,
 		}
 
-		if overwrite.Code == attribute.Code {
-			resultingAttribute.Label = overwrite.Label
+		if attribute.Code == attributeOverwrite.Code {
+			resultingAttribute.Label = attributeOverwrite.Label
 		}
 
 		attributes = append(attributes, resultingAttribute)
@@ -215,16 +227,27 @@ func NewAttributeGroup(a domain.Attribute) *AttributeGroup {
 	return &AttributeGroup{
 		Code:            a.Code,
 		Label:           a.CodeLabel,
-		AttributesOrder: nil,
-		Attributes:      make(map[string]domain.Attribute),
+		Attributes:      nil,
 	}
 }
 
 func (ag *AttributeGroup) addAttribute(attribute domain.Attribute) {
-	if _, ok := ag.Attributes[attribute.Label]; !ok {
-		ag.AttributesOrder = append(ag.AttributesOrder, attribute.Label)
-		ag.Attributes[attribute.Label] = attribute
-	}
+	ag.Attributes = append(ag.Attributes, attribute)
 }
 
+func (ag *AttributeGroup) hasAttribute(attribute domain.Attribute) bool {
+	for _, currentAttribute := range ag.Attributes {
+		if currentAttribute.Label == attribute.Label {
+			return true
+		}
+	}
+	return false
+}
+
+
+func (ag *AttributeGroup) addAttributeIfNotExisting(attribute domain.Attribute) {
+	if !ag.hasAttribute(attribute) {
+		ag.addAttribute(attribute)
+	}
+}
 

@@ -1,6 +1,8 @@
 package graphqlProductDto
 
-import productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
+import (
+	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
+)
 
 type (
 	// A configurable without active variant
@@ -72,6 +74,5 @@ func (cp ConfigurableProduct) Attributes() productDomain.Attributes {
 }
 
 func (cp ConfigurableProduct) VariationSelections() []VariationSelection {
-	mapper := NewVariantsToVariationSelectionsMapper(cp.Product())
-	return mapper.Map()
+	return NewVariantsToVariationSelections(cp.Product())
 }
