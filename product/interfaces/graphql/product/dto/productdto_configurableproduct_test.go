@@ -1,12 +1,13 @@
 package graphqlproductdto_test
 
 import (
+	"math/big"
+	"testing"
+
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	graphqlProductDto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
 	"gotest.tools/assert"
-	"math/big"
-	"testing"
 )
 
 func getProductDomainConfigurableProduct() productDomain.ConfigurableProduct {
@@ -54,6 +55,33 @@ func getProductDomainConfigurableProduct() productDomain.ConfigurableProduct {
 					RawValue:  nil,
 					UnitCode:  "attribute_b_unitCode",
 				},
+			},
+		},
+		VariantVariationAttributes: []string{
+			"attribute_a_code",
+		},
+		Variants: []productDomain.Variant{
+			{
+				BasicProductData: productDomain.BasicProductData{
+					MarketPlaceCode: "variant_product_code",
+					Attributes: productDomain.Attributes{
+						"attribute_a_code": {
+							Code:      "attribute_a_code",
+							CodeLabel: "attribute_a_codeLabel",
+							Label:     "attribute_a_variantLabel",
+							RawValue:  nil,
+							UnitCode:  "attribute_a_unitCode",
+						},
+						"attribute_b_code": {
+							Code:      "attribute_b_code",
+							CodeLabel: "attribute_b_codeLabel",
+							Label:     "attribute_b_variantLabel",
+							RawValue:  nil,
+							UnitCode:  "attribute_b_unitCode",
+						},
+					},
+				},
+				Saleable: productDomain.Saleable{},
 			},
 		},
 		Teaser: productDomain.TeaserData{
@@ -184,4 +212,21 @@ func TestConfigurableProduct_Title(t *testing.T) {
 func TestConfigurableProduct_Type(t *testing.T) {
 	product := getConfigurableProduct()
 	assert.Equal(t, productDomain.TypeConfigurable, product.Type())
+}
+
+func TestConfigurableProduct_VariationSelections(t *testing.T) {
+	product := getConfigurableProduct().(graphqlProductDto.ConfigurableProduct)
+	assert.DeepEqual(t, []graphqlProductDto.VariationSelection{
+		{
+			Code:  "attribute_a_code",
+			Label: "attribute_a_codeLabel",
+			Options: []graphqlProductDto.VariationSelectionOption{
+				{
+					Label:                  "attribute_a_variantLabel",
+					State:                  graphqlProductDto.VariationSelectionOptionStateMatch,
+					VariantMarketPlaceCode: "variant_product_code",
+				},
+			},
+		},
+	}, product.VariationSelections())
 }
