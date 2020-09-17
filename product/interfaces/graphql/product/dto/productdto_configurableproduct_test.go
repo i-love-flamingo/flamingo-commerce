@@ -1,4 +1,4 @@
-package graphqlProductDto_test
+package graphqlproductdto_test
 
 import (
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"

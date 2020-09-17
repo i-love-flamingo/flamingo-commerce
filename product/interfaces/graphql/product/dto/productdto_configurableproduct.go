@@ -1,46 +1,47 @@
-package graphqlProductDto
+package graphqlproductdto
 
 import (
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
 type (
-	// A configurable without active variant
+	// ConfigurableProduct is a configurable without active variant
 	ConfigurableProduct struct {
 		product productDomain.BasicProduct
 	}
 )
 
-//Type
+//Type of the configurable
 func (cp ConfigurableProduct) Type() string {
 	return productDomain.TypeConfigurable
 }
 
+//Product the base product
 func (cp ConfigurableProduct) Product() productDomain.BasicProduct {
 	return cp.product
 }
 
-//MarketPlaceCode
+//MarketPlaceCode of the configurable
 func (cp ConfigurableProduct) MarketPlaceCode() string {
 	return cp.product.BaseData().MarketPlaceCode
 }
 
-//Media
+//Media of the configurable
 func (cp ConfigurableProduct) Media() ProductMedia {
 	return ProductMedia{All: cp.product.TeaserData().Media}
 }
 
-//Price
+//Price of the configurable
 func (cp ConfigurableProduct) Price() productDomain.PriceInfo {
 	return cp.product.TeaserData().TeaserPrice
 }
 
-//Title
+//Title of the configurable
 func (cp ConfigurableProduct) Title() string {
 	return cp.product.BaseData().Title
 }
 
-//ProductCategories
+//Categories of the configurable
 func (cp ConfigurableProduct) Categories() ProductCategories {
 	return ProductCategories{
 		Main: cp.product.BaseData().MainCategory,
@@ -48,19 +49,19 @@ func (cp ConfigurableProduct) Categories() ProductCategories {
 	}
 }
 
-//Description
+//Description of the configurable
 func (cp ConfigurableProduct) Description() string {
 	return cp.product.BaseData().Description
 }
 
-//ProductMeta
+//Meta metadata of the configurable
 func (cp ConfigurableProduct) Meta() ProductMeta {
 	return ProductMeta{
 		Keywords: cp.product.BaseData().Keywords,
 	}
 }
 
-//ProductLoyalty
+//Loyalty information about the configurable
 func (cp ConfigurableProduct) Loyalty() ProductLoyalty {
 	return ProductLoyalty{
 		Price:   cp.product.TeaserData().TeaserLoyaltyPriceInfo,
@@ -68,11 +69,12 @@ func (cp ConfigurableProduct) Loyalty() ProductLoyalty {
 	}
 }
 
-//Attributes
+//Attributes of the configurable
 func (cp ConfigurableProduct) Attributes() productDomain.Attributes {
 	return cp.product.BaseData().Attributes
 }
 
+//VariationSelections contains possible variations for all variants
 func (cp ConfigurableProduct) VariationSelections() []VariationSelection {
 	return NewVariantsToVariationSelections(cp.Product())
 }

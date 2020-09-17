@@ -1,13 +1,16 @@
-package graphqlProductDto
+package graphqlproductdto
 
 import (
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
 const (
-	VariationSelectionOptionStateActive  VariationSelectionOptionState = "ACTIVE"   // Option is currently active
-	VariationSelectionOptionStateMatch   VariationSelectionOptionState = "MATCH"    // Product exists for this option
-	VariationSelectionOptionStateNoMatch VariationSelectionOptionState = "NO_MATCH" // Product does not exists for this option
+	// VariationSelectionOptionStateActive signals, that option is currently active because the active product has this attribute
+	VariationSelectionOptionStateActive VariationSelectionOptionState = "ACTIVE"
+	// VariationSelectionOptionStateMatch signals, that product exists for this option but is not the active variant
+	VariationSelectionOptionStateMatch VariationSelectionOptionState = "MATCH"
+	// VariationSelectionOptionStateNoMatch signals, that product does not exists for this option, fallback is used
+	VariationSelectionOptionStateNoMatch VariationSelectionOptionState = "NO_MATCH"
 )
 
 // Product contains normalized Product information regardless of being a variant or simple Product
@@ -28,45 +31,46 @@ type (
 		Attributes() productDomain.Attributes
 	}
 
-	// All loyalty related information
+	// ProductLoyalty contains all loyalty related information
 	ProductLoyalty struct {
 		Price   *productDomain.LoyaltyPriceInfo
 		Earning *productDomain.LoyaltyEarningInfo
 	}
 
+	// ProductMedia returns media for the product
 	ProductMedia struct {
 		All []productDomain.Media
 	}
 
-	// ProductCategories
+	// ProductCategories wrapper for categories
 	ProductCategories struct {
 		Main productDomain.CategoryTeaser
 		All  []productDomain.CategoryTeaser
 	}
 
-	// Normalized ProductMeta data
+	// ProductMeta contains meta information about the product
 	ProductMeta struct {
 		Keywords []string
 	}
 
-	// A selection for a Product variation
+	// VariationSelection represents possible combinations for attached variants
 	VariationSelection struct {
 		Code    string
 		Label   string
 		Options []VariationSelectionOption
 	}
 
-	// One possible variation for the Product
+	// VariationSelectionOption one possible variation option
 	VariationSelectionOption struct {
 		Label                  string
 		State                  VariationSelectionOptionState
 		VariantMarketPlaceCode string
 	}
 
-	// Possible state of option depending on active variant
+	// VariationSelectionOptionState state of the option
 	VariationSelectionOptionState string
 
-	// The variation for the currently active variant
+	// ActiveVariationSelection The variation for the currently active variant
 	ActiveVariationSelection struct {
 		AttributeLabel string
 		OptionLabel    string
@@ -89,6 +93,7 @@ func (pm ProductMedia) GetMedia(usage string) *productDomain.Media {
 	return nil
 }
 
+// NewGraphqlProductDto returns a new Product dto
 func NewGraphqlProductDto(product productDomain.BasicProduct) Product {
 	if product.Type() == productDomain.TypeConfigurable {
 		configurableProduct := product.(productDomain.ConfigurableProduct)

@@ -1,52 +1,52 @@
-package graphqlProductDto
+package graphqlproductdto
 
 import (
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
 type (
-	// A Product variant that reflects one possible configuration of a configurable
+	// ActiveVariantProduct is a Product variant that reflects one possible configuration of a configurable
 	ActiveVariantProduct struct {
 		product productDomain.ConfigurableProductWithActiveVariant
 	}
 )
 
-//getActiveVariant
+//getActiveVariant returns the active product variant
 func (avp ActiveVariantProduct) getActiveVariant() productDomain.Variant {
 	return avp.product.ActiveVariant
 }
 
-//Type
+//Type of the product
 func (avp ActiveVariantProduct) Type() string {
 	return productDomain.TypeConfigurableWithActiveVariant
 }
 
-//Product
+//Product the basic product domain object
 func (avp ActiveVariantProduct) Product() productDomain.BasicProduct {
 	return avp.product
 }
 
-//MarketPlaceCode
+//MarketPlaceCode of the active variant
 func (avp ActiveVariantProduct) MarketPlaceCode() string {
 	return avp.getActiveVariant().BaseData().MarketPlaceCode
 }
 
-//Media
+//Media of the active variant
 func (avp ActiveVariantProduct) Media() ProductMedia {
 	return ProductMedia{All: avp.getActiveVariant().BaseData().Media}
 }
 
-//Price
+//Price of the active variant
 func (avp ActiveVariantProduct) Price() productDomain.PriceInfo {
 	return avp.product.TeaserData().TeaserPrice
 }
 
-//Title
+//Title of the active variant
 func (avp ActiveVariantProduct) Title() string {
 	return avp.getActiveVariant().BaseData().Title
 }
 
-//ProductCategories
+//Categories of the active variant
 func (avp ActiveVariantProduct) Categories() ProductCategories {
 	return ProductCategories{
 		Main: avp.getActiveVariant().BaseData().MainCategory,
@@ -54,19 +54,19 @@ func (avp ActiveVariantProduct) Categories() ProductCategories {
 	}
 }
 
-//Description
+//Description of the active variant
 func (avp ActiveVariantProduct) Description() string {
 	return avp.getActiveVariant().BaseData().Description
 }
 
-//ProductMeta
+//Meta contains meta information from the active variant
 func (avp ActiveVariantProduct) Meta() ProductMeta {
 	return ProductMeta{
 		Keywords: avp.getActiveVariant().BaseData().Keywords,
 	}
 }
 
-//ProductLoyalty
+//Loyalty contains loyalty information of the active variant
 func (avp ActiveVariantProduct) Loyalty() ProductLoyalty {
 	return ProductLoyalty{
 		Price:   avp.product.TeaserData().TeaserLoyaltyPriceInfo,
@@ -74,19 +74,22 @@ func (avp ActiveVariantProduct) Loyalty() ProductLoyalty {
 	}
 }
 
-//Attributes
+//Attributes of the active variant
 func (avp ActiveVariantProduct) Attributes() productDomain.Attributes {
 	return avp.getActiveVariant().BaseData().Attributes
 }
 
+//VariationSelections contains information about the available variations for the product
 func (avp ActiveVariantProduct) VariationSelections() []VariationSelection {
 	return NewVariantsToVariationSelections(avp.Product())
 }
 
+//VariantMarketPlaceCode of the active variant
 func (avp ActiveVariantProduct) VariantMarketPlaceCode() string {
 	return avp.getActiveVariant().MarketPlaceCode
 }
 
+//ActiveVariationSelections helper to easily access active variant attributes
 func (avp ActiveVariantProduct) ActiveVariationSelections() []ActiveVariationSelection {
 	variationSelections := avp.VariationSelections()
 	var activeVariationSelections []ActiveVariationSelection

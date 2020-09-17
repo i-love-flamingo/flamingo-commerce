@@ -1,44 +1,45 @@
-package graphqlProductDto
+package graphqlproductdto
 
 import productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 
 type (
-	// A simple Product without variants
+	// SimpleProduct A simple Product without variants
 	SimpleProduct struct {
 		product productDomain.BasicProduct
 	}
 )
 
-//Type
+//Type the product type
 func (sp SimpleProduct) Type() string {
 	return productDomain.TypeSimple
 }
 
+//Product the basic product information
 func (sp SimpleProduct) Product() productDomain.BasicProduct {
 	return sp.product
 }
 
-//MarketPlaceCode
+//MarketPlaceCode of the product
 func (sp SimpleProduct) MarketPlaceCode() string {
 	return sp.product.BaseData().MarketPlaceCode
 }
 
-//Media
+//Media of the product
 func (sp SimpleProduct) Media() ProductMedia {
 	return ProductMedia{All: sp.product.TeaserData().Media}
 }
 
-//Price
+//Price of the product
 func (sp SimpleProduct) Price() productDomain.PriceInfo {
 	return sp.product.TeaserData().TeaserPrice
 }
 
-//Title
+//Title of the product
 func (sp SimpleProduct) Title() string {
 	return sp.product.BaseData().Title
 }
 
-//ProductCategories
+//Categories of the product
 func (sp SimpleProduct) Categories() ProductCategories {
 	return ProductCategories{
 		Main: sp.product.BaseData().MainCategory,
@@ -46,19 +47,19 @@ func (sp SimpleProduct) Categories() ProductCategories {
 	}
 }
 
-//Description
+//Description of the product
 func (sp SimpleProduct) Description() string {
 	return sp.product.BaseData().Description
 }
 
-//ProductMeta
+//Meta of the product
 func (sp SimpleProduct) Meta() ProductMeta {
 	return ProductMeta{
 		Keywords: sp.product.BaseData().Keywords,
 	}
 }
 
-//ProductLoyalty
+//Loyalty of the product
 func (sp SimpleProduct) Loyalty() ProductLoyalty {
 	return ProductLoyalty{
 		Price:   sp.product.TeaserData().TeaserLoyaltyPriceInfo,
@@ -66,7 +67,7 @@ func (sp SimpleProduct) Loyalty() ProductLoyalty {
 	}
 }
 
-//Attributes
+//Attributes of the product
 func (sp SimpleProduct) Attributes() productDomain.Attributes {
 	return sp.product.BaseData().Attributes
 }
