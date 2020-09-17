@@ -20,7 +20,7 @@ import (
 	graphql6 "flamingo.me/flamingo-commerce/v3/customer/interfaces/graphql"
 	"flamingo.me/flamingo-commerce/v3/customer/interfaces/graphql/dtocustomer"
 	graphql5 "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql"
-	graphqlProductDto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
+	graphqlproductdto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
 	"flamingo.me/flamingo-commerce/v3/search/domain"
 	graphql2 "flamingo.me/flamingo-commerce/v3/search/interfaces/graphql"
 	"flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/searchdto"
@@ -267,7 +267,7 @@ func (r *rootResolverMutation) CommerceCheckoutRefreshPlaceOrderBlocking(ctx con
 
 type rootResolverQuery struct {
 	resolveFlamingo                         func(ctx context.Context) (*string, error)
-	resolveCommerceProduct                  func(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode *string) (graphqlProductDto.Product, error)
+	resolveCommerceProduct                  func(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode *string) (graphqlproductdto.Product, error)
 	resolveCommerceProductSearch            func(ctx context.Context, searchRequest *searchdto.CommerceSearchRequest) (*graphql5.SearchResultDTO, error)
 	resolveCommerceCustomerStatus           func(ctx context.Context) (*dtocustomer.CustomerStatusResult, error)
 	resolveCommerceCustomer                 func(ctx context.Context) (*dtocustomer.CustomerResult, error)
@@ -311,7 +311,7 @@ func (r *rootResolverQuery) Inject(
 func (r *rootResolverQuery) Flamingo(ctx context.Context) (*string, error) {
 	return r.resolveFlamingo(ctx)
 }
-func (r *rootResolverQuery) CommerceProduct(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode *string) (graphqlProductDto.Product, error) {
+func (r *rootResolverQuery) CommerceProduct(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode *string) (graphqlproductdto.Product, error) {
 	return r.resolveCommerceProduct(ctx, marketPlaceCode, variantMarketPlaceCode)
 }
 func (r *rootResolverQuery) CommerceProductSearch(ctx context.Context, searchRequest *searchdto.CommerceSearchRequest) (*graphql5.SearchResultDTO, error) {

@@ -28,7 +28,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/price/domain"
 	domain5 "flamingo.me/flamingo-commerce/v3/product/domain"
 	graphql1 "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql"
-	graphqlProductDto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
+	graphqlproductdto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
 	domain1 "flamingo.me/flamingo-commerce/v3/search/domain"
 	"flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/searchdto"
 	domain3 "flamingo.me/form/domain"
@@ -920,7 +920,7 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	Flamingo(ctx context.Context) (*string, error)
-	CommerceProduct(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode *string) (graphqlProductDto.Product, error)
+	CommerceProduct(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode *string) (graphqlproductdto.Product, error)
 	CommerceProductSearch(ctx context.Context, searchRequest *searchdto.CommerceSearchRequest) (*graphql1.SearchResultDTO, error)
 	CommerceCustomerStatus(ctx context.Context) (*dtocustomer.CustomerStatusResult, error)
 	CommerceCustomer(ctx context.Context) (*dtocustomer.CustomerResult, error)
@@ -9247,7 +9247,7 @@ func (ec *executionContext) _Commerce_CartDecoratedItem_product(ctx context.Cont
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(graphqlProductDto.Product)
+	res := resTmp.(graphqlproductdto.Product)
 	fc.Result = res
 	return ec.marshalOCommerce_Product2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProduct(ctx, field.Selections, res)
 }
@@ -16728,7 +16728,7 @@ func (ec *executionContext) _Commerce_Price_Charges_getByTypeForced(ctx context.
 	return ec.marshalOCommerce_Price_Charge2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐCharge(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_type(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ActiveVariantProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_type(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -16759,7 +16759,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_type(ctx cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_marketPlaceCode(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ActiveVariantProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_marketPlaceCode(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -16790,7 +16790,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_marketPlaceCo
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_media(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ActiveVariantProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_media(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -16816,12 +16816,12 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_media(ctx con
 		}
 		return graphql.Null
 	}
-	res := resTmp.(graphqlProductDto.ProductMedia)
+	res := resTmp.(graphqlproductdto.ProductMedia)
 	fc.Result = res
 	return ec.marshalNCommerce_Product_Media2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductMedia(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_price(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ActiveVariantProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_price(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -16852,7 +16852,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_price(ctx con
 	return ec.marshalNCommerce_Product_PriceInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfo(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_title(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ActiveVariantProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_title(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -16883,7 +16883,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_title(ctx con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_categories(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ActiveVariantProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_categories(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -16909,12 +16909,12 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_categories(ct
 		}
 		return graphql.Null
 	}
-	res := resTmp.(graphqlProductDto.ProductCategories)
+	res := resTmp.(graphqlproductdto.ProductCategories)
 	fc.Result = res
 	return ec.marshalNCommerce_Product_Categories2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductCategories(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_description(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ActiveVariantProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_description(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -16945,7 +16945,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_description(c
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_meta(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ActiveVariantProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_meta(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -16971,12 +16971,12 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_meta(ctx cont
 		}
 		return graphql.Null
 	}
-	res := resTmp.(graphqlProductDto.ProductMeta)
+	res := resTmp.(graphqlproductdto.ProductMeta)
 	fc.Result = res
 	return ec.marshalNCommerce_Product_Meta2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductMeta(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_loyalty(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ActiveVariantProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_loyalty(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -17002,12 +17002,12 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_loyalty(ctx c
 		}
 		return graphql.Null
 	}
-	res := resTmp.(graphqlProductDto.ProductLoyalty)
+	res := resTmp.(graphqlproductdto.ProductLoyalty)
 	fc.Result = res
 	return ec.marshalNCommerce_Product_Loyalty2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductLoyalty(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_attributes(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ActiveVariantProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_attributes(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -17038,7 +17038,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_attributes(ct
 	return ec.marshalNCommerce_Product_Attributes2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐAttributes(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_variantMarketPlaceCode(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ActiveVariantProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_variantMarketPlaceCode(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -17069,7 +17069,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_variantMarket
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_variationSelections(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ActiveVariantProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_variationSelections(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -17092,12 +17092,12 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_variationSele
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]graphqlProductDto.VariationSelection)
+	res := resTmp.([]graphqlproductdto.VariationSelection)
 	fc.Result = res
 	return ec.marshalOCommerce_Product_VariationSelection2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_activeVariationSelections(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ActiveVariantProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_activeVariationSelections(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -17120,12 +17120,12 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_activeVariati
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]graphqlProductDto.ActiveVariationSelection)
+	res := resTmp.([]graphqlproductdto.ActiveVariationSelection)
 	fc.Result = res
 	return ec.marshalOCommerce_Product_ActiveVariationSelection2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐActiveVariationSelectionᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_attributeLabel(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ActiveVariationSelection) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_attributeLabel(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariationSelection) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -17156,7 +17156,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_attribute
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_optionLabel(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ActiveVariationSelection) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_optionLabel(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariationSelection) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -17500,7 +17500,7 @@ func (ec *executionContext) _Commerce_Product_Attributes_getAttributesByKey(ctx 
 	return ec.marshalOCommerce_Product_Attribute2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐAttributeᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_Categories_main(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ProductCategories) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_Categories_main(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ProductCategories) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -17531,7 +17531,7 @@ func (ec *executionContext) _Commerce_Product_Categories_main(ctx context.Contex
 	return ec.marshalNCommerce_Product_CategoryTeaser2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐCategoryTeaser(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_Categories_all(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ProductCategories) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_Categories_all(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ProductCategories) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -17680,7 +17680,7 @@ func (ec *executionContext) _Commerce_Product_CategoryTeaser_parent(ctx context.
 	return ec.marshalOCommerce_Product_CategoryTeaser2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐCategoryTeaser(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ConfigurableProduct_type(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ConfigurableProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ConfigurableProduct_type(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -17711,7 +17711,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_type(ctx conte
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ConfigurableProduct_marketPlaceCode(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ConfigurableProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ConfigurableProduct_marketPlaceCode(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -17742,7 +17742,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_marketPlaceCod
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ConfigurableProduct_media(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ConfigurableProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ConfigurableProduct_media(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -17768,12 +17768,12 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_media(ctx cont
 		}
 		return graphql.Null
 	}
-	res := resTmp.(graphqlProductDto.ProductMedia)
+	res := resTmp.(graphqlproductdto.ProductMedia)
 	fc.Result = res
 	return ec.marshalNCommerce_Product_Media2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductMedia(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ConfigurableProduct_price(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ConfigurableProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ConfigurableProduct_price(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -17804,7 +17804,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_price(ctx cont
 	return ec.marshalNCommerce_Product_PriceInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfo(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ConfigurableProduct_title(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ConfigurableProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ConfigurableProduct_title(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -17835,7 +17835,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_title(ctx cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ConfigurableProduct_categories(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ConfigurableProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ConfigurableProduct_categories(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -17861,12 +17861,12 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_categories(ctx
 		}
 		return graphql.Null
 	}
-	res := resTmp.(graphqlProductDto.ProductCategories)
+	res := resTmp.(graphqlproductdto.ProductCategories)
 	fc.Result = res
 	return ec.marshalNCommerce_Product_Categories2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductCategories(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ConfigurableProduct_description(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ConfigurableProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ConfigurableProduct_description(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -17897,7 +17897,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_description(ct
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ConfigurableProduct_meta(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ConfigurableProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ConfigurableProduct_meta(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -17923,12 +17923,12 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_meta(ctx conte
 		}
 		return graphql.Null
 	}
-	res := resTmp.(graphqlProductDto.ProductMeta)
+	res := resTmp.(graphqlproductdto.ProductMeta)
 	fc.Result = res
 	return ec.marshalNCommerce_Product_Meta2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductMeta(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ConfigurableProduct_loyalty(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ConfigurableProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ConfigurableProduct_loyalty(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -17954,12 +17954,12 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_loyalty(ctx co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(graphqlProductDto.ProductLoyalty)
+	res := resTmp.(graphqlproductdto.ProductLoyalty)
 	fc.Result = res
 	return ec.marshalNCommerce_Product_Loyalty2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductLoyalty(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ConfigurableProduct_attributes(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ConfigurableProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ConfigurableProduct_attributes(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -17990,7 +17990,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_attributes(ctx
 	return ec.marshalNCommerce_Product_Attributes2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐAttributes(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ConfigurableProduct_variationSelections(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ConfigurableProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ConfigurableProduct_variationSelections(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -18013,12 +18013,12 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_variationSelec
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]graphqlProductDto.VariationSelection)
+	res := resTmp.([]graphqlproductdto.VariationSelection)
 	fc.Result = res
 	return ec.marshalOCommerce_Product_VariationSelection2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_Loyalty_price(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ProductLoyalty) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_Loyalty_price(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ProductLoyalty) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -18046,7 +18046,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_price(ctx context.Context,
 	return ec.marshalOCommerce_Product_Loyalty_PriceInfo2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐLoyaltyPriceInfo(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_Loyalty_earning(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ProductLoyalty) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_Loyalty_earning(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ProductLoyalty) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -18384,7 +18384,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_context(ctx cont
 	return ec.marshalNCommerce_Product_PriceContext2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceContext(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_Media_all(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ProductMedia) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_Media_all(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ProductMedia) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -18412,7 +18412,7 @@ func (ec *executionContext) _Commerce_Product_Media_all(ctx context.Context, fie
 	return ec.marshalOCommerce_Product_MediaItem2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐMediaᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_Media_getMedia(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ProductMedia) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_Media_getMedia(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ProductMedia) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -18605,7 +18605,7 @@ func (ec *executionContext) _Commerce_Product_MediaItem_reference(ctx context.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_Meta_keywords(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.ProductMeta) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_Meta_keywords(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ProductMeta) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -19041,7 +19041,7 @@ func (ec *executionContext) _Commerce_Product_SearchResult_products(ctx context.
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]graphqlProductDto.Product)
+	res := resTmp.([]graphqlproductdto.Product)
 	fc.Result = res
 	return ec.marshalOCommerce_Product2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductᚄ(ctx, field.Selections, res)
 }
@@ -19167,7 +19167,7 @@ func (ec *executionContext) _Commerce_Product_SearchResult_hasSelectedFacet(ctx 
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_SimpleProduct_type(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.SimpleProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_SimpleProduct_type(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -19198,7 +19198,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_type(ctx context.Con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_SimpleProduct_marketPlaceCode(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.SimpleProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_SimpleProduct_marketPlaceCode(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -19229,7 +19229,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_marketPlaceCode(ctx 
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_SimpleProduct_media(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.SimpleProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_SimpleProduct_media(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -19255,12 +19255,12 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_media(ctx context.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(graphqlProductDto.ProductMedia)
+	res := resTmp.(graphqlproductdto.ProductMedia)
 	fc.Result = res
 	return ec.marshalNCommerce_Product_Media2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductMedia(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_SimpleProduct_price(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.SimpleProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_SimpleProduct_price(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -19291,7 +19291,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_price(ctx context.Co
 	return ec.marshalNCommerce_Product_PriceInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfo(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_SimpleProduct_title(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.SimpleProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_SimpleProduct_title(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -19322,7 +19322,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_title(ctx context.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_SimpleProduct_categories(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.SimpleProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_SimpleProduct_categories(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -19348,12 +19348,12 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_categories(ctx conte
 		}
 		return graphql.Null
 	}
-	res := resTmp.(graphqlProductDto.ProductCategories)
+	res := resTmp.(graphqlproductdto.ProductCategories)
 	fc.Result = res
 	return ec.marshalNCommerce_Product_Categories2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductCategories(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_SimpleProduct_description(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.SimpleProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_SimpleProduct_description(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -19384,7 +19384,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_description(ctx cont
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_SimpleProduct_meta(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.SimpleProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_SimpleProduct_meta(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -19410,12 +19410,12 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_meta(ctx context.Con
 		}
 		return graphql.Null
 	}
-	res := resTmp.(graphqlProductDto.ProductMeta)
+	res := resTmp.(graphqlproductdto.ProductMeta)
 	fc.Result = res
 	return ec.marshalNCommerce_Product_Meta2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductMeta(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_SimpleProduct_loyalty(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.SimpleProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_SimpleProduct_loyalty(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -19441,12 +19441,12 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_loyalty(ctx context.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(graphqlProductDto.ProductLoyalty)
+	res := resTmp.(graphqlproductdto.ProductLoyalty)
 	fc.Result = res
 	return ec.marshalNCommerce_Product_Loyalty2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductLoyalty(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_SimpleProduct_attributes(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.SimpleProduct) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_SimpleProduct_attributes(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -19477,7 +19477,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_attributes(ctx conte
 	return ec.marshalNCommerce_Product_Attributes2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐAttributes(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_VariationSelection_code(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.VariationSelection) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_VariationSelection_code(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariationSelection) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -19508,7 +19508,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_code(ctx contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_VariationSelection_label(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.VariationSelection) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_VariationSelection_label(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariationSelection) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -19539,7 +19539,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_label(ctx conte
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_VariationSelection_options(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.VariationSelection) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_VariationSelection_options(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariationSelection) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -19562,12 +19562,12 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_options(ctx con
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]graphqlProductDto.VariationSelectionOption)
+	res := resTmp.([]graphqlproductdto.VariationSelectionOption)
 	fc.Result = res
 	return ec.marshalOCommerce_Product_VariationSelection_Option2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionOption(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_VariationSelection_Option_label(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.VariationSelectionOption) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_VariationSelection_Option_label(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariationSelectionOption) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -19598,7 +19598,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_Option_label(ct
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_VariationSelection_Option_state(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.VariationSelectionOption) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_VariationSelection_Option_state(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariationSelectionOption) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -19624,12 +19624,12 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_Option_state(ct
 		}
 		return graphql.Null
 	}
-	res := resTmp.(graphqlProductDto.VariationSelectionOptionState)
+	res := resTmp.(graphqlproductdto.VariationSelectionOptionState)
 	fc.Result = res
 	return ec.marshalNCommerce_Product_VariationSelection_OptionState2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionOptionState(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_VariationSelection_Option_variantMarketPlaceCode(ctx context.Context, field graphql.CollectedField, obj *graphqlProductDto.VariationSelectionOption) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_VariationSelection_Option_variantMarketPlaceCode(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariationSelectionOption) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -21706,7 +21706,7 @@ func (ec *executionContext) _Query_Commerce_Product(ctx context.Context, field g
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(graphqlProductDto.Product)
+	res := resTmp.(graphqlproductdto.Product)
 	fc.Result = res
 	return ec.marshalOCommerce_Product2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProduct(ctx, field.Selections, res)
 }
@@ -23559,27 +23559,27 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 	}
 }
 
-func (ec *executionContext) _Commerce_Product(ctx context.Context, sel ast.SelectionSet, obj graphqlProductDto.Product) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Product(ctx context.Context, sel ast.SelectionSet, obj graphqlproductdto.Product) graphql.Marshaler {
 	switch obj := (obj).(type) {
 	case nil:
 		return graphql.Null
-	case graphqlProductDto.SimpleProduct:
+	case graphqlproductdto.SimpleProduct:
 		return ec._Commerce_Product_SimpleProduct(ctx, sel, &obj)
-	case *graphqlProductDto.SimpleProduct:
+	case *graphqlproductdto.SimpleProduct:
 		if obj == nil {
 			return graphql.Null
 		}
 		return ec._Commerce_Product_SimpleProduct(ctx, sel, obj)
-	case graphqlProductDto.ConfigurableProduct:
+	case graphqlproductdto.ConfigurableProduct:
 		return ec._Commerce_Product_ConfigurableProduct(ctx, sel, &obj)
-	case *graphqlProductDto.ConfigurableProduct:
+	case *graphqlproductdto.ConfigurableProduct:
 		if obj == nil {
 			return graphql.Null
 		}
 		return ec._Commerce_Product_ConfigurableProduct(ctx, sel, obj)
-	case graphqlProductDto.ActiveVariantProduct:
+	case graphqlproductdto.ActiveVariantProduct:
 		return ec._Commerce_Product_ActiveVariantProduct(ctx, sel, &obj)
-	case *graphqlProductDto.ActiveVariantProduct:
+	case *graphqlproductdto.ActiveVariantProduct:
 		if obj == nil {
 			return graphql.Null
 		}
@@ -26666,7 +26666,7 @@ func (ec *executionContext) _Commerce_Price_Charges(ctx context.Context, sel ast
 
 var commerce_Product_ActiveVariantProductImplementors = []string{"Commerce_Product_ActiveVariantProduct", "Commerce_Product"}
 
-func (ec *executionContext) _Commerce_Product_ActiveVariantProduct(ctx context.Context, sel ast.SelectionSet, obj *graphqlProductDto.ActiveVariantProduct) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Product_ActiveVariantProduct(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.ActiveVariantProduct) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_ActiveVariantProductImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -26747,7 +26747,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct(ctx context.C
 
 var commerce_Product_ActiveVariationSelectionImplementors = []string{"Commerce_Product_ActiveVariationSelection"}
 
-func (ec *executionContext) _Commerce_Product_ActiveVariationSelection(ctx context.Context, sel ast.SelectionSet, obj *graphqlProductDto.ActiveVariationSelection) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Product_ActiveVariationSelection(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.ActiveVariationSelection) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_ActiveVariationSelectionImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -26855,7 +26855,7 @@ func (ec *executionContext) _Commerce_Product_Attributes(ctx context.Context, se
 
 var commerce_Product_CategoriesImplementors = []string{"Commerce_Product_Categories"}
 
-func (ec *executionContext) _Commerce_Product_Categories(ctx context.Context, sel ast.SelectionSet, obj *graphqlProductDto.ProductCategories) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Product_Categories(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.ProductCategories) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_CategoriesImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -26923,7 +26923,7 @@ func (ec *executionContext) _Commerce_Product_CategoryTeaser(ctx context.Context
 
 var commerce_Product_ConfigurableProductImplementors = []string{"Commerce_Product_ConfigurableProduct", "Commerce_Product"}
 
-func (ec *executionContext) _Commerce_Product_ConfigurableProduct(ctx context.Context, sel ast.SelectionSet, obj *graphqlProductDto.ConfigurableProduct) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Product_ConfigurableProduct(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.ConfigurableProduct) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_ConfigurableProductImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -26997,7 +26997,7 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct(ctx context.Co
 
 var commerce_Product_LoyaltyImplementors = []string{"Commerce_Product_Loyalty"}
 
-func (ec *executionContext) _Commerce_Product_Loyalty(ctx context.Context, sel ast.SelectionSet, obj *graphqlProductDto.ProductLoyalty) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Product_Loyalty(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.ProductLoyalty) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_LoyaltyImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -27117,7 +27117,7 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo(ctx context.Cont
 
 var commerce_Product_MediaImplementors = []string{"Commerce_Product_Media"}
 
-func (ec *executionContext) _Commerce_Product_Media(ctx context.Context, sel ast.SelectionSet, obj *graphqlProductDto.ProductMedia) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Product_Media(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.ProductMedia) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_MediaImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -27193,7 +27193,7 @@ func (ec *executionContext) _Commerce_Product_MediaItem(ctx context.Context, sel
 
 var commerce_Product_MetaImplementors = []string{"Commerce_Product_Meta"}
 
-func (ec *executionContext) _Commerce_Product_Meta(ctx context.Context, sel ast.SelectionSet, obj *graphqlProductDto.ProductMeta) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Product_Meta(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.ProductMeta) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_MetaImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -27349,7 +27349,7 @@ func (ec *executionContext) _Commerce_Product_SearchResult(ctx context.Context, 
 
 var commerce_Product_SimpleProductImplementors = []string{"Commerce_Product_SimpleProduct", "Commerce_Product"}
 
-func (ec *executionContext) _Commerce_Product_SimpleProduct(ctx context.Context, sel ast.SelectionSet, obj *graphqlProductDto.SimpleProduct) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Product_SimpleProduct(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.SimpleProduct) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_SimpleProductImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -27421,7 +27421,7 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct(ctx context.Context,
 
 var commerce_Product_VariationSelectionImplementors = []string{"Commerce_Product_VariationSelection"}
 
-func (ec *executionContext) _Commerce_Product_VariationSelection(ctx context.Context, sel ast.SelectionSet, obj *graphqlProductDto.VariationSelection) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Product_VariationSelection(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariationSelection) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariationSelectionImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -27455,7 +27455,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection(ctx context.Con
 
 var commerce_Product_VariationSelection_OptionImplementors = []string{"Commerce_Product_VariationSelection_Option"}
 
-func (ec *executionContext) _Commerce_Product_VariationSelection_Option(ctx context.Context, sel ast.SelectionSet, obj *graphqlProductDto.VariationSelectionOption) graphql.Marshaler {
+func (ec *executionContext) _Commerce_Product_VariationSelection_Option(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariationSelectionOption) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariationSelection_OptionImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -28881,7 +28881,7 @@ func (ec *executionContext) marshalNCommerce_Price_Charges2flamingoᚗmeᚋflami
 	return ec._Commerce_Price_Charges(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Product2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProduct(ctx context.Context, sel ast.SelectionSet, v graphqlProductDto.Product) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Product2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProduct(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.Product) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -28891,7 +28891,7 @@ func (ec *executionContext) marshalNCommerce_Product2flamingoᚗmeᚋflamingoᚑ
 	return ec._Commerce_Product(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNCommerce_Product_ActiveVariationSelection2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐActiveVariationSelection(ctx context.Context, sel ast.SelectionSet, v graphqlProductDto.ActiveVariationSelection) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Product_ActiveVariationSelection2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐActiveVariationSelection(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.ActiveVariationSelection) graphql.Marshaler {
 	return ec._Commerce_Product_ActiveVariationSelection(ctx, sel, &v)
 }
 
@@ -28909,7 +28909,7 @@ func (ec *executionContext) marshalNCommerce_Product_Attributes2flamingoᚗmeᚋ
 	return ec._Commerce_Product_Attributes(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNCommerce_Product_Categories2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductCategories(ctx context.Context, sel ast.SelectionSet, v graphqlProductDto.ProductCategories) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Product_Categories2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductCategories(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.ProductCategories) graphql.Marshaler {
 	return ec._Commerce_Product_Categories(ctx, sel, &v)
 }
 
@@ -28917,11 +28917,11 @@ func (ec *executionContext) marshalNCommerce_Product_CategoryTeaser2flamingoᚗm
 	return ec._Commerce_Product_CategoryTeaser(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Product_Loyalty2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductLoyalty(ctx context.Context, sel ast.SelectionSet, v graphqlProductDto.ProductLoyalty) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Product_Loyalty2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductLoyalty(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.ProductLoyalty) graphql.Marshaler {
 	return ec._Commerce_Product_Loyalty(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Product_Media2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductMedia(ctx context.Context, sel ast.SelectionSet, v graphqlProductDto.ProductMedia) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Product_Media2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductMedia(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.ProductMedia) graphql.Marshaler {
 	return ec._Commerce_Product_Media(ctx, sel, &v)
 }
 
@@ -28939,7 +28939,7 @@ func (ec *executionContext) marshalNCommerce_Product_MediaItem2ᚖflamingoᚗme�
 	return ec._Commerce_Product_MediaItem(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNCommerce_Product_Meta2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductMeta(ctx context.Context, sel ast.SelectionSet, v graphqlProductDto.ProductMeta) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Product_Meta2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductMeta(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.ProductMeta) graphql.Marshaler {
 	return ec._Commerce_Product_Meta(ctx, sel, &v)
 }
 
@@ -28965,16 +28965,16 @@ func (ec *executionContext) marshalNCommerce_Product_SearchResult2ᚖflamingoᚗ
 	return ec._Commerce_Product_SearchResult(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNCommerce_Product_VariationSelection2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelection(ctx context.Context, sel ast.SelectionSet, v graphqlProductDto.VariationSelection) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Product_VariationSelection2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelection(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.VariationSelection) graphql.Marshaler {
 	return ec._Commerce_Product_VariationSelection(ctx, sel, &v)
 }
 
-func (ec *executionContext) unmarshalNCommerce_Product_VariationSelection_OptionState2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionOptionState(ctx context.Context, v interface{}) (graphqlProductDto.VariationSelectionOptionState, error) {
+func (ec *executionContext) unmarshalNCommerce_Product_VariationSelection_OptionState2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionOptionState(ctx context.Context, v interface{}) (graphqlproductdto.VariationSelectionOptionState, error) {
 	tmp, err := graphql.UnmarshalString(v)
-	return graphqlProductDto.VariationSelectionOptionState(tmp), graphql.WrapErrorWithInputPath(ctx, err)
+	return graphqlproductdto.VariationSelectionOptionState(tmp), graphql.WrapErrorWithInputPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNCommerce_Product_VariationSelection_OptionState2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionOptionState(ctx context.Context, sel ast.SelectionSet, v graphqlProductDto.VariationSelectionOptionState) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Product_VariationSelection_OptionState2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionOptionState(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.VariationSelectionOptionState) graphql.Marshaler {
 	res := graphql.MarshalString(string(v))
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -30698,14 +30698,14 @@ func (ec *executionContext) marshalOCommerce_Price_Charge2ᚕflamingoᚗmeᚋfla
 	return ret
 }
 
-func (ec *executionContext) marshalOCommerce_Product2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProduct(ctx context.Context, sel ast.SelectionSet, v graphqlProductDto.Product) graphql.Marshaler {
+func (ec *executionContext) marshalOCommerce_Product2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProduct(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.Product) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._Commerce_Product(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOCommerce_Product2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlProductDto.Product) graphql.Marshaler {
+func (ec *executionContext) marshalOCommerce_Product2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.Product) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -30745,7 +30745,7 @@ func (ec *executionContext) marshalOCommerce_Product2ᚕflamingoᚗmeᚋflamingo
 	return ret
 }
 
-func (ec *executionContext) marshalOCommerce_Product_ActiveVariationSelection2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐActiveVariationSelectionᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlProductDto.ActiveVariationSelection) graphql.Marshaler {
+func (ec *executionContext) marshalOCommerce_Product_ActiveVariationSelection2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐActiveVariationSelectionᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.ActiveVariationSelection) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -30942,7 +30942,7 @@ func (ec *executionContext) marshalOCommerce_Product_MediaItem2ᚕflamingoᚗme�
 	return ret
 }
 
-func (ec *executionContext) marshalOCommerce_Product_VariationSelection2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlProductDto.VariationSelection) graphql.Marshaler {
+func (ec *executionContext) marshalOCommerce_Product_VariationSelection2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.VariationSelection) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -30982,11 +30982,11 @@ func (ec *executionContext) marshalOCommerce_Product_VariationSelection2ᚕflami
 	return ret
 }
 
-func (ec *executionContext) marshalOCommerce_Product_VariationSelection_Option2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionOption(ctx context.Context, sel ast.SelectionSet, v graphqlProductDto.VariationSelectionOption) graphql.Marshaler {
+func (ec *executionContext) marshalOCommerce_Product_VariationSelection_Option2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionOption(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.VariationSelectionOption) graphql.Marshaler {
 	return ec._Commerce_Product_VariationSelection_Option(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalOCommerce_Product_VariationSelection_Option2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionOption(ctx context.Context, sel ast.SelectionSet, v []graphqlProductDto.VariationSelectionOption) graphql.Marshaler {
+func (ec *executionContext) marshalOCommerce_Product_VariationSelection_Option2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionOption(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.VariationSelectionOption) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
