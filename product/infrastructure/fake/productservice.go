@@ -63,7 +63,7 @@ func (ps *ProductService) Get(_ context.Context, marketplaceCode string) (domain
 		return ps.FakeSimple(marketplaceCode, false, false, true, true, false), nil
 	}
 
-	return nil, domain.ProductNotFound{MarketplaceCode: "Code " + marketplaceCode + " Not implemented in FAKE: Only code 'fake_configurable' or 'fake_simple' or 'fake_simple_with_fixed_price' or 'fake_simple_out_of_stock' or 'fake_fixed_simple_without_discounts' should be used"}
+	return nil, domain.ProductNotFound{MarketplaceCode: "Code " + marketplaceCode + " Not implemented in FAKE: Only code 'fake_configurable' or 'fake_configurable_with_active_variant' or 'fake_simple' or 'fake_simple_with_fixed_price' or 'fake_simple_out_of_stock' or 'fake_fixed_simple_without_discounts' should be used"}
 }
 
 // FakeSimple generates a simple fake product
@@ -154,6 +154,7 @@ func (ps *ProductService) getFakeConfigurable(marketplaceCode string) domain.Con
 	product.Title = "TypeConfigurable product"
 	ps.addBasicData(&product.BasicProductData)
 	product.MarketPlaceCode = marketplaceCode
+	product.Teaser.TeaserPrice = ps.getPrice(30.99+float64(rand.Intn(10)), 20.49+float64(rand.Intn(10)))
 
 	return product
 }
@@ -209,6 +210,7 @@ func (ps *ProductService) getFakeConfigurableWithVariants(marketplaceCode string
 		simpleVariant := ps.fakeVariant(variant.marketplaceCode)
 		simpleVariant.Title = variant.title
 		simpleVariant.Attributes = variant.attributes
+		simpleVariant.BasicProductData.Attributes = variant.attributes
 		simpleVariant.StockLevel = variant.stockLevel
 
 		// Give new images for variants with custom colors
@@ -234,6 +236,9 @@ func (ps *ProductService) getFakeConfigurableWithActiveVariant(marketplaceCode s
 		Variants:                   configurable.Variants,
 		ActiveVariant:              configurable.Variants[4], // shirt-black-l
 	}
+
+	product.Teaser.TeaserPrice = product.ActiveVariant.ActivePrice
+
 	return product
 }
 
@@ -253,6 +258,8 @@ func (ps *ProductService) fakeVariant(marketplaceCode string) domain.Variant {
 func (ps *ProductService) addBasicData(product *domain.BasicProductData) {
 	product.ShortDescription = "Short Description"
 	product.Description = "Description"
+	product.Keywords = []string{"keywords"}
+
 	product.Media = append(product.Media, domain.Media{Type: "image-external", Reference: "http://dummyimage.com/1024x768/000/fff", Usage: "detail"})
 	product.Media = append(product.Media, domain.Media{Type: "image-external", Reference: "http://dummyimage.com/200x200/000/fff", Usage: "list"})
 
