@@ -13,7 +13,7 @@ type (
 		// Variants that have all required variation attributes
 		variantsWithMatchingAttributes []domain.Variant
 		// A group of attributes that have the same code
-		attributeGroups map[string]AttributeGroup
+		attributeGroups map[string]*AttributeGroup
 	}
 
 	AttributeGroup struct {
@@ -73,18 +73,20 @@ func (m *VariantsToVariationSelectionsMapper) pickVariantsWithMatchingAttributes
 }
 
 func (m *VariantsToVariationSelectionsMapper) groupAttributes() {
-	m.attributeGroups = make(map[string]AttributeGroup)
+	if m.hasVariantsWithMatchingAttributes() {
+		m.attributeGroups = make(map[string]*AttributeGroup)
 
-	for _, variant := range m.variantsWithMatchingAttributes {
-		for _, attributeCode := range m.variationAttributes {
-			attribute := variant.Attribute(attributeCode)
-			group := m.ensureGroupExists(attribute)
-			group.addAttribute(attribute)
+		for _, variant := range m.variantsWithMatchingAttributes {
+			for _, attributeCode := range m.variationAttributes {
+				attribute := variant.Attribute(attributeCode)
+				group := m.ensureGroupExists(attribute)
+				group.addAttribute(attribute)
+			}
 		}
 	}
 }
 
-func (m *VariantsToVariationSelectionsMapper) ensureGroupExists(attribute domain.Attribute) AttributeGroup {
+func (m *VariantsToVariationSelectionsMapper) ensureGroupExists(attribute domain.Attribute) *AttributeGroup {
 	if _, ok := m.attributeGroups[attribute.Code]; !ok {
 		m.attributeGroups[attribute.Code] = NewAttributeGroup(attribute)
 	}
@@ -110,20 +112,27 @@ func (m *VariantsToVariationSelectionsMapper) hasActiveVariant() bool {
 
 func (m *VariantsToVariationSelectionsMapper) buildVariationSelections() []VariationSelection {
 	var variationSelections []VariationSelection
-	for _, attributeCode := range m.variationAttributes {
-		attribute := m.attributeGroups[attributeCode]
 
-		variationSelections = append(variationSelections, VariationSelection{
-			Code:    attribute.Code,
-			Label:   attribute.Label,
-			Options: m.buildVariationSelectionOptions(attribute),
-		})
+	if m.hasVariantsWithMatchingAttributes() {
+		for _, attributeCode := range m.variationAttributes {
+			attributeGroup := m.attributeGroups[attributeCode]
+
+			variationSelections = append(variationSelections, VariationSelection{
+				Code:    attributeGroup.Code,
+				Label:   attributeGroup.Label,
+				Options: m.buildVariationSelectionOptions(attributeGroup),
+			})
+		}
 	}
 
 	return variationSelections
 }
 
-func (m *VariantsToVariationSelectionsMapper) buildVariationSelectionOptions(attributeGroup AttributeGroup) []VariationSelectionOption {
+func (m *VariantsToVariationSelectionsMapper) hasVariantsWithMatchingAttributes() bool {
+	return m.variantsWithMatchingAttributes != nil
+}
+
+func (m *VariantsToVariationSelectionsMapper) buildVariationSelectionOptions(attributeGroup *AttributeGroup) []VariationSelectionOption {
 	var options []VariationSelectionOption
 	for _, key := range attributeGroup.AttributesOrder {
 		var state VariationSelectionOptionState
@@ -202,8 +211,8 @@ func (m *VariantsToVariationSelectionsMapper) getActiveAttributesWithOverwrite(o
 	return attributes
 }
 
-func NewAttributeGroup(a domain.Attribute) AttributeGroup {
-	return AttributeGroup{
+func NewAttributeGroup(a domain.Attribute) *AttributeGroup {
+	return &AttributeGroup{
 		Code:            a.Code,
 		Label:           a.CodeLabel,
 		AttributesOrder: nil,
