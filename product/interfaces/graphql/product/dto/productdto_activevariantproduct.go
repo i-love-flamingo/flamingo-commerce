@@ -28,7 +28,7 @@ func (avp ActiveVariantProduct) Product() productDomain.BasicProduct {
 
 //MarketPlaceCode of the active variant
 func (avp ActiveVariantProduct) MarketPlaceCode() string {
-	return avp.getActiveVariant().BaseData().MarketPlaceCode
+	return avp.product.BasicProductData.MarketPlaceCode
 }
 
 //Media of the active variant

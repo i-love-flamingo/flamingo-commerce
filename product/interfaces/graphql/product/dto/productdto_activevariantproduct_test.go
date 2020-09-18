@@ -23,7 +23,7 @@ func getProductDomainConfigurableWithActiveVariantProduct() productDomain.Config
 				Keywords: []string{
 					"keywords",
 				},
-				MarketPlaceCode:  "active_variant_product_code",
+				MarketPlaceCode:  "active_variant_product_code_a",
 				Description:      "product_description",
 				ShortDescription: "product_description_short",
 				MainCategory: productDomain.CategoryTeaser{
@@ -82,7 +82,29 @@ func getProductDomainConfigurableWithActiveVariantProduct() productDomain.Config
 		Variants: []productDomain.Variant{
 			{
 				BasicProductData: productDomain.BasicProductData{
-					MarketPlaceCode: "active_variant_product_code",
+					MarketPlaceCode: "active_variant_product_code_a",
+					Attributes: productDomain.Attributes{
+						"attribute_a_code": {
+							Code:      "attribute_a_code",
+							CodeLabel: "attribute_a_codeLabel",
+							Label:     "attribute_a_variantLabel",
+							RawValue:  nil,
+							UnitCode:  "attribute_a_unitCode",
+						},
+						"attribute_b_code": {
+							Code:      "attribute_b_code",
+							CodeLabel: "attribute_b_codeLabel",
+							Label:     "attribute_b_variantLabel",
+							RawValue:  nil,
+							UnitCode:  "attribute_b_unitCode",
+						},
+					},
+				},
+				Saleable: productDomain.Saleable{},
+			},
+			{
+				BasicProductData: productDomain.BasicProductData{
+					MarketPlaceCode: "active_variant_product_code_b",
 					Attributes: productDomain.Attributes{
 						"attribute_a_code": {
 							Code:      "attribute_a_code",
@@ -136,13 +158,14 @@ func getProductDomainConfigurableWithActiveVariantProduct() productDomain.Config
 					Reference: "teaser",
 				},
 			},
+			PreSelectedVariantSku: "active_variant_product_code_a",
 		},
 	}
 }
 
 func getActiveVariantProduct() graphqlProductDto.Product {
 	product := getProductDomainConfigurableWithActiveVariantProduct()
-	return graphqlProductDto.NewGraphqlProductDto(product)
+	return graphqlProductDto.NewGraphqlProductDto(product, nil)
 }
 
 func TestActiveVariantProduct_Attributes(t *testing.T) {
@@ -199,7 +222,7 @@ func TestActiveVariantProduct_Loyalty(t *testing.T) {
 func TestActiveVariantProduct_MarketPlaceCode(t *testing.T) {
 	product := getActiveVariantProduct()
 
-	assert.Equal(t, "active_variant_product_code", product.MarketPlaceCode())
+	assert.Equal(t, "active_variant_product_code_a", product.MarketPlaceCode())
 }
 
 func TestActiveVariantProduct_Media(t *testing.T) {
@@ -226,7 +249,7 @@ func TestActiveVariantProduct_Price(t *testing.T) {
 
 func TestActiveVariantProduct_Product(t *testing.T) {
 	product := getActiveVariantProduct()
-	assert.DeepEqual(t, "active_variant_product_code", product.Product().BaseData().MarketPlaceCode)
+	assert.DeepEqual(t, "active_variant_product_code_a", product.Product().BaseData().MarketPlaceCode)
 }
 
 func TestActiveVariantProduct_Title(t *testing.T) {
@@ -249,7 +272,7 @@ func TestActiveVariantProduct_VariationSelections(t *testing.T) {
 				{
 					Label:                  "attribute_a_variantLabel",
 					State:                  graphqlProductDto.VariationSelectionOptionStateActive,
-					VariantMarketPlaceCode: "active_variant_product_code",
+					VariantMarketPlaceCode: "active_variant_product_code_a",
 				},
 			},
 		},

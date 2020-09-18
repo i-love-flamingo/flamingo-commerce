@@ -96,7 +96,7 @@ func getProductDomainSimpleProduct() productDomain.SimpleProduct {
 
 func getSimpleProduct() graphqlProductDto.Product {
 	product := getProductDomainSimpleProduct()
-	return graphqlProductDto.NewGraphqlProductDto(product)
+	return graphqlProductDto.NewGraphqlProductDto(product, nil)
 }
 
 func TestSimpleProduct_Attributes(t *testing.T) {

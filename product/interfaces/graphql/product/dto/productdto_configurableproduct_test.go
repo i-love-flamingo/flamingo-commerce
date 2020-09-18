@@ -123,7 +123,7 @@ func getProductDomainConfigurableProduct() productDomain.ConfigurableProduct {
 
 func getConfigurableProduct() graphqlProductDto.Product {
 	product := getProductDomainConfigurableProduct()
-	return graphqlProductDto.NewGraphqlProductDto(product)
+	return graphqlProductDto.NewGraphqlProductDto(product, nil)
 }
 
 func TestConfigurableProduct_Attributes(t *testing.T) {

@@ -45,7 +45,7 @@ func TestProductMedia_GetMedia(t *testing.T) {
 		VariantVariationAttributes:        nil,
 		Variants:                          nil,
 		VariantVariationAttributesSorting: nil,
-	})
+	}, nil)
 
 	assert.DeepEqual(t, &domain.Media{
 		Type:      "teaser",
@@ -73,7 +73,7 @@ func TestNewGraphqlProductDto(t *testing.T) {
 		Teaser:           domain.TeaserData{},
 	}
 
-	graphqlSimpleProduct := graphqlProductDto.NewGraphqlProductDto(simpleProduct)
+	graphqlSimpleProduct := graphqlProductDto.NewGraphqlProductDto(simpleProduct, nil)
 	assert.Equal(t, simpleProduct.Type(), graphqlSimpleProduct.Type())
 
 	configurableProduct := domain.SimpleProduct{
@@ -83,7 +83,7 @@ func TestNewGraphqlProductDto(t *testing.T) {
 		Teaser:           domain.TeaserData{},
 	}
 
-	graphqlConfigurableProduct := graphqlProductDto.NewGraphqlProductDto(configurableProduct)
+	graphqlConfigurableProduct := graphqlProductDto.NewGraphqlProductDto(configurableProduct, nil)
 	assert.Equal(t, configurableProduct.Type(), graphqlConfigurableProduct.Type())
 
 	activeVariantProduct := domain.SimpleProduct{
@@ -93,6 +93,6 @@ func TestNewGraphqlProductDto(t *testing.T) {
 		Teaser:           domain.TeaserData{},
 	}
 
-	graphqlActiveVariantProduct := graphqlProductDto.NewGraphqlProductDto(activeVariantProduct)
+	graphqlActiveVariantProduct := graphqlProductDto.NewGraphqlProductDto(activeVariantProduct, nil)
 	assert.Equal(t, activeVariantProduct.Type(), graphqlActiveVariantProduct.Type())
 }

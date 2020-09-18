@@ -95,9 +95,30 @@ func (pm ProductMedia) GetMedia(usage string) *productDomain.Media {
 }
 
 // NewGraphqlProductDto returns a new Product dto
-func NewGraphqlProductDto(product productDomain.BasicProduct) Product {
+func NewGraphqlProductDto(product productDomain.BasicProduct, preSelectedVariantSku *string) Product {
 	if product.Type() == productDomain.TypeConfigurable {
 		configurableProduct := product.(productDomain.ConfigurableProduct)
+
+		variantSku := ""
+
+		if configurableProduct.Teaser.PreSelectedVariantSku != "" {
+			variantSku = configurableProduct.Teaser.PreSelectedVariantSku
+		}
+
+		if preSelectedVariantSku != nil {
+			variantSku = *preSelectedVariantSku
+		}
+
+		if variantSku != "" {
+			configurableProductWithActiveVariant, err := configurableProduct.GetConfigurableWithActiveVariant(variantSku)
+
+			if err == nil {
+				return ActiveVariantProduct{
+					product: configurableProductWithActiveVariant,
+				}
+			}
+		}
+
 		return ConfigurableProduct{
 			product: configurableProduct,
 		}
