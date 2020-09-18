@@ -63,6 +63,10 @@ func NewDecoratedCart(dc *decorator.DecoratedCart) *DecoratedCart {
 
 // mapDecoratedDeliveries
 func mapDecoratedDeliveries(decoratedDeliveries []decorator.DecoratedDelivery) []DecoratedDelivery {
+	if len(decoratedDeliveries) == 0 {
+		return nil
+	}
+
 	deliveries := make([]DecoratedDelivery, 0, len(decoratedDeliveries))
 
 	for _, dd := range decoratedDeliveries {
