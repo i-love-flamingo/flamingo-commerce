@@ -59,6 +59,11 @@ func (avp ActiveVariantProduct) Description() string {
 	return avp.getActiveVariant().BaseData().Description
 }
 
+//ShortDescription of the product
+func (avp ActiveVariantProduct) ShortDescription() string {
+	return avp.product.BaseData().Description
+}
+
 //Meta contains meta information from the active variant
 func (avp ActiveVariantProduct) Meta() ProductMeta {
 	return ProductMeta{
@@ -81,7 +86,7 @@ func (avp ActiveVariantProduct) Attributes() productDomain.Attributes {
 
 //VariationSelections contains information about the available variations for the product
 func (avp ActiveVariantProduct) VariationSelections() []VariationSelection {
-	return NewVariantsToVariationSelections(avp.Product())
+	return NewVariantsToVariationSelections(avp.product)
 }
 
 //VariantMarketPlaceCode of the active variant

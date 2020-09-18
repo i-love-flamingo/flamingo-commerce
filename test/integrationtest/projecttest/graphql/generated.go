@@ -632,6 +632,7 @@ type ComplexityRoot struct {
 		Media                     func(childComplexity int) int
 		Meta                      func(childComplexity int) int
 		Price                     func(childComplexity int) int
+		ShortDescription          func(childComplexity int) int
 		Title                     func(childComplexity int) int
 		Type                      func(childComplexity int) int
 		VariantMarketPlaceCode    func(childComplexity int) int
@@ -680,6 +681,7 @@ type ComplexityRoot struct {
 		Media               func(childComplexity int) int
 		Meta                func(childComplexity int) int
 		Price               func(childComplexity int) int
+		ShortDescription    func(childComplexity int) int
 		Title               func(childComplexity int) int
 		Type                func(childComplexity int) int
 		VariationSelections func(childComplexity int) int
@@ -751,16 +753,17 @@ type ComplexityRoot struct {
 	}
 
 	CommerceProductSimpleProduct struct {
-		Attributes      func(childComplexity int) int
-		Categories      func(childComplexity int) int
-		Description     func(childComplexity int) int
-		Loyalty         func(childComplexity int) int
-		MarketPlaceCode func(childComplexity int) int
-		Media           func(childComplexity int) int
-		Meta            func(childComplexity int) int
-		Price           func(childComplexity int) int
-		Title           func(childComplexity int) int
-		Type            func(childComplexity int) int
+		Attributes       func(childComplexity int) int
+		Categories       func(childComplexity int) int
+		Description      func(childComplexity int) int
+		Loyalty          func(childComplexity int) int
+		MarketPlaceCode  func(childComplexity int) int
+		Media            func(childComplexity int) int
+		Meta             func(childComplexity int) int
+		Price            func(childComplexity int) int
+		ShortDescription func(childComplexity int) int
+		Title            func(childComplexity int) int
+		Type             func(childComplexity int) int
 	}
 
 	CommerceProductVariationSelection struct {
@@ -3426,6 +3429,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceProductActiveVariantProduct.Price(childComplexity), true
 
+	case "Commerce_Product_ActiveVariantProduct.shortDescription":
+		if e.complexity.CommerceProductActiveVariantProduct.ShortDescription == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductActiveVariantProduct.ShortDescription(childComplexity), true
+
 	case "Commerce_Product_ActiveVariantProduct.title":
 		if e.complexity.CommerceProductActiveVariantProduct.Title == nil {
 			break
@@ -3650,6 +3660,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceProductConfigurableProduct.Price(childComplexity), true
+
+	case "Commerce_Product_ConfigurableProduct.shortDescription":
+		if e.complexity.CommerceProductConfigurableProduct.ShortDescription == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductConfigurableProduct.ShortDescription(childComplexity), true
 
 	case "Commerce_Product_ConfigurableProduct.title":
 		if e.complexity.CommerceProductConfigurableProduct.Title == nil {
@@ -3998,6 +4015,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceProductSimpleProduct.Price(childComplexity), true
+
+	case "Commerce_Product_SimpleProduct.shortDescription":
+		if e.complexity.CommerceProductSimpleProduct.ShortDescription == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductSimpleProduct.ShortDescription(childComplexity), true
 
 	case "Commerce_Product_SimpleProduct.title":
 		if e.complexity.CommerceProductSimpleProduct.Title == nil {
@@ -4879,6 +4903,7 @@ type Commerce_Search_Suggestion {
     title: String!
     categories: Commerce_Product_Categories!
     description: String!
+    shortDescription: String!
     meta: Commerce_Product_Meta!
     loyalty: Commerce_Product_Loyalty!
     attributes: Commerce_Product_Attributes!
@@ -4893,6 +4918,7 @@ type Commerce_Product_SimpleProduct implements Commerce_Product {
     title: String!
     categories: Commerce_Product_Categories!
     description: String!
+    shortDescription: String!
     meta: Commerce_Product_Meta!
     loyalty: Commerce_Product_Loyalty!
     attributes: Commerce_Product_Attributes!
@@ -4907,6 +4933,7 @@ type Commerce_Product_ConfigurableProduct implements Commerce_Product {
     title: String!
     categories: Commerce_Product_Categories!
     description: String!
+    shortDescription: String!
     meta: Commerce_Product_Meta!
     loyalty: Commerce_Product_Loyalty!
     attributes: Commerce_Product_Attributes!
@@ -4922,6 +4949,7 @@ type Commerce_Product_ActiveVariantProduct implements Commerce_Product {
     title: String!
     categories: Commerce_Product_Categories!
     description: String!
+    shortDescription: String!
     meta: Commerce_Product_Meta!
     loyalty: Commerce_Product_Loyalty!
     attributes: Commerce_Product_Attributes!
@@ -16945,6 +16973,37 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_description(c
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_shortDescription(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Product_ActiveVariantProduct",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ShortDescription(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_meta(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -17884,6 +17943,37 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_description(ct
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Description(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Product_ConfigurableProduct_shortDescription(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Product_ConfigurableProduct",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ShortDescription(), nil
 	})
 
 	if resTmp == nil {
@@ -19371,6 +19461,37 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_description(ctx cont
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Description(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Product_SimpleProduct_shortDescription(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Product_SimpleProduct",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ShortDescription(), nil
 	})
 
 	if resTmp == nil {
@@ -26710,6 +26831,11 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct(ctx context.C
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "shortDescription":
+			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_shortDescription(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "meta":
 			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_meta(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -26964,6 +27090,11 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct(ctx context.Co
 			}
 		case "description":
 			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_description(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "shortDescription":
+			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_shortDescription(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -27390,6 +27521,11 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct(ctx context.Context,
 			}
 		case "description":
 			out.Values[i] = ec._Commerce_Product_SimpleProduct_description(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "shortDescription":
+			out.Values[i] = ec._Commerce_Product_SimpleProduct_shortDescription(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

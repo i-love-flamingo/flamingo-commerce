@@ -17,8 +17,9 @@ func getProductDomainSimpleProduct() productDomain.SimpleProduct {
 			Keywords: []string{
 				"keywords",
 			},
-			MarketPlaceCode: "simple_product_code",
-			Description:     "product_description",
+			MarketPlaceCode:  "simple_product_code",
+			Description:      "product_description",
+			ShortDescription: "product_description_short",
 			MainCategory: productDomain.CategoryTeaser{
 				Code:   "main_category",
 				Path:   "main_category",
@@ -135,6 +136,11 @@ func TestSimpleProduct_Categories(t *testing.T) {
 func TestSimpleProduct_Description(t *testing.T) {
 	product := getSimpleProduct()
 	assert.Equal(t, "product_description", product.Description())
+}
+
+func TestSimpleProduct_ShortDescription(t *testing.T) {
+	product := getSimpleProduct()
+	assert.Equal(t, "product_description_short", product.ShortDescription())
 }
 
 func TestSimpleProduct_Loyalty(t *testing.T) {

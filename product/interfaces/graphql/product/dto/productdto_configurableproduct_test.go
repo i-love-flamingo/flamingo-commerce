@@ -18,8 +18,9 @@ func getProductDomainConfigurableProduct() productDomain.ConfigurableProduct {
 			Keywords: []string{
 				"keywords",
 			},
-			MarketPlaceCode: "configurable_product_code",
-			Description:     "product_description",
+			MarketPlaceCode:  "configurable_product_code",
+			Description:      "product_description",
+			ShortDescription: "product_description_short",
 			MainCategory: productDomain.CategoryTeaser{
 				Code:   "main_category",
 				Path:   "main_category",
@@ -162,6 +163,11 @@ func TestConfigurableProduct_Categories(t *testing.T) {
 func TestConfigurableProduct_Description(t *testing.T) {
 	product := getConfigurableProduct()
 	assert.Equal(t, "product_description", product.Description())
+}
+
+func TestConfigurableProduct_ShortDescription(t *testing.T) {
+	product := getConfigurableProduct()
+	assert.Equal(t, "product_description_short", product.ShortDescription())
 }
 
 func TestConfigurableProduct_Loyalty(t *testing.T) {

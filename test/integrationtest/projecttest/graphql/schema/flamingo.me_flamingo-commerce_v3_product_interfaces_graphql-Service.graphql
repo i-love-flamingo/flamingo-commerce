@@ -6,6 +6,7 @@ interface Commerce_Product {
     title: String!
     categories: Commerce_Product_Categories!
     description: String!
+    shortDescription: String!
     meta: Commerce_Product_Meta!
     loyalty: Commerce_Product_Loyalty!
     attributes: Commerce_Product_Attributes!
@@ -20,6 +21,7 @@ type Commerce_Product_SimpleProduct implements Commerce_Product {
     title: String!
     categories: Commerce_Product_Categories!
     description: String!
+    shortDescription: String!
     meta: Commerce_Product_Meta!
     loyalty: Commerce_Product_Loyalty!
     attributes: Commerce_Product_Attributes!
@@ -34,6 +36,7 @@ type Commerce_Product_ConfigurableProduct implements Commerce_Product {
     title: String!
     categories: Commerce_Product_Categories!
     description: String!
+    shortDescription: String!
     meta: Commerce_Product_Meta!
     loyalty: Commerce_Product_Loyalty!
     attributes: Commerce_Product_Attributes!
@@ -49,6 +52,7 @@ type Commerce_Product_ActiveVariantProduct implements Commerce_Product {
     title: String!
     categories: Commerce_Product_Categories!
     description: String!
+    shortDescription: String!
     meta: Commerce_Product_Meta!
     loyalty: Commerce_Product_Loyalty!
     attributes: Commerce_Product_Attributes!

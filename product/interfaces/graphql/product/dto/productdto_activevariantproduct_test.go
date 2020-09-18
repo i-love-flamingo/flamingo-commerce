@@ -23,8 +23,9 @@ func getProductDomainConfigurableWithActiveVariantProduct() productDomain.Config
 				Keywords: []string{
 					"keywords",
 				},
-				MarketPlaceCode: "active_variant_product_code",
-				Description:     "product_description",
+				MarketPlaceCode:  "active_variant_product_code",
+				Description:      "product_description",
+				ShortDescription: "product_description_short",
 				MainCategory: productDomain.CategoryTeaser{
 					Code:   "main_category",
 					Path:   "main_category",
@@ -181,6 +182,11 @@ func TestActiveVariantProduct_Categories(t *testing.T) {
 func TestActiveVariantProduct_Description(t *testing.T) {
 	product := getActiveVariantProduct()
 	assert.Equal(t, "product_description", product.Description())
+}
+
+func TestActiveVariantProduct_ShortDescription(t *testing.T) {
+	product := getActiveVariantProduct()
+	assert.Equal(t, "product_description_short", product.ShortDescription())
 }
 
 func TestActiveVariantProduct_Loyalty(t *testing.T) {

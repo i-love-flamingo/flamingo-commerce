@@ -26,6 +26,7 @@ type (
 		Title() string
 		Categories() ProductCategories
 		Description() string
+		ShortDescription() string
 		Meta() ProductMeta
 		Loyalty() ProductLoyalty
 		Attributes() productDomain.Attributes
