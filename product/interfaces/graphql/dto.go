@@ -35,7 +35,7 @@ func (obj *SearchResultDTO) Suggestions() []searchdomain.Suggestion {
 
 // Products get products
 func (obj *SearchResultDTO) Products() []graphqlProductDto.Product {
-	products := make([]graphqlProductDto.Product, len(obj.result.Products))
+	products := make([]graphqlProductDto.Product, 0, len(obj.result.Products))
 	for _, p := range obj.result.Products {
 		products = append(products, graphqlProductDto.NewGraphqlProductDto(p))
 	}
