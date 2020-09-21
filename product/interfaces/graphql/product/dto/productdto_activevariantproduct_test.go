@@ -7,7 +7,7 @@ import (
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	graphqlProductDto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
-	"gotest.tools/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func getProductDomainConfigurableWithActiveVariantProduct() productDomain.ConfigurableProductWithActiveVariant {
@@ -186,7 +186,7 @@ func TestActiveVariantProduct_Categories(t *testing.T) {
 		Parent: nil,
 	}, product.Categories().Main)
 
-	assert.DeepEqual(t, []productDomain.CategoryTeaser{
+	assert.Equal(t, []productDomain.CategoryTeaser{
 		{
 			Code:   "category_a",
 			Path:   "category_a",
@@ -240,7 +240,7 @@ func TestActiveVariantProduct_Identifier(t *testing.T) {
 func TestActiveVariantProduct_Media(t *testing.T) {
 	product := getActiveVariantProduct()
 
-	assert.DeepEqual(t, &productDomain.Media{
+	assert.Equal(t, &productDomain.Media{
 		Type:      "teaser",
 		MimeType:  "teaser",
 		Usage:     "teaser",
@@ -251,7 +251,7 @@ func TestActiveVariantProduct_Media(t *testing.T) {
 
 func TestActiveVariantProduct_Meta(t *testing.T) {
 	product := getActiveVariantProduct()
-	assert.DeepEqual(t, []string{"keywords"}, product.Meta().Keywords)
+	assert.Equal(t, []string{"keywords"}, product.Meta().Keywords)
 }
 
 func TestActiveVariantProduct_Price(t *testing.T) {
@@ -261,7 +261,7 @@ func TestActiveVariantProduct_Price(t *testing.T) {
 
 func TestActiveVariantProduct_Product(t *testing.T) {
 	product := getActiveVariantProduct()
-	assert.DeepEqual(t, "active_variant_product_code_a", product.Product().BaseData().MarketPlaceCode)
+	assert.Equal(t, "active_variant_product_code_a", product.Product().BaseData().MarketPlaceCode)
 }
 
 func TestActiveVariantProduct_Title(t *testing.T) {
@@ -276,7 +276,7 @@ func TestActiveVariantProduct_Type(t *testing.T) {
 
 func TestActiveVariantProduct_VariationSelections(t *testing.T) {
 	product := getActiveVariantProduct()
-	assert.DeepEqual(t, []graphqlProductDto.VariationSelection{
+	assert.Equal(t, []graphqlProductDto.VariationSelection{
 		{
 			Code:  "attribute_a_code",
 			Label: "attribute_a_codeLabel",
@@ -294,7 +294,7 @@ func TestActiveVariantProduct_VariationSelections(t *testing.T) {
 func TestActiveVariantProduct_ActiveVariationSelections(t *testing.T) {
 	product := getActiveVariantProduct()
 
-	assert.DeepEqual(t, []graphqlProductDto.ActiveVariationSelection{{
+	assert.Equal(t, []graphqlProductDto.ActiveVariationSelection{{
 		AttributeLabel: "attribute_a_codeLabel",
 		OptionLabel:    "attribute_a_variantLabel",
 	}}, product.ActiveVariationSelections())

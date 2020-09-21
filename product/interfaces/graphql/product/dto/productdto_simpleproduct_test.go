@@ -4,7 +4,7 @@ import (
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	graphqlProductDto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
-	"gotest.tools/assert"
+	"github.com/stretchr/testify/assert"
 	"math/big"
 	"testing"
 )
@@ -117,7 +117,7 @@ func TestSimpleProduct_Categories(t *testing.T) {
 		Parent: nil,
 	}, product.Categories().Main)
 
-	assert.DeepEqual(t, []productDomain.CategoryTeaser{
+	assert.Equal(t, []productDomain.CategoryTeaser{
 		{
 			Code:   "category_a",
 			Path:   "category_a",
@@ -165,7 +165,7 @@ func TestSimpleProduct_Identifier(t *testing.T) {
 func TestSimpleProduct_Media(t *testing.T) {
 	product := getSimpleProduct()
 
-	assert.DeepEqual(t, &productDomain.Media{
+	assert.Equal(t, &productDomain.Media{
 		Type:      "teaser",
 		MimeType:  "teaser",
 		Usage:     "teaser",
@@ -176,7 +176,7 @@ func TestSimpleProduct_Media(t *testing.T) {
 
 func TestSimpleProduct_Meta(t *testing.T) {
 	product := getSimpleProduct()
-	assert.DeepEqual(t, []string{"keywords"}, product.Meta().Keywords)
+	assert.Equal(t, []string{"keywords"}, product.Meta().Keywords)
 }
 
 func TestSimpleProduct_Price(t *testing.T) {
@@ -186,7 +186,7 @@ func TestSimpleProduct_Price(t *testing.T) {
 
 func TestSimpleProduct_Product(t *testing.T) {
 	product := getSimpleProduct()
-	assert.DeepEqual(t, getProductDomainSimpleProduct().MarketPlaceCode, product.Product().BaseData().MarketPlaceCode)
+	assert.Equal(t, getProductDomainSimpleProduct().MarketPlaceCode, product.Product().BaseData().MarketPlaceCode)
 }
 
 func TestSimpleProduct_Title(t *testing.T) {

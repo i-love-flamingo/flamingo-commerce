@@ -3,7 +3,7 @@ package graphqlproductdto_test
 import (
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	graphqlProductDto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
-	"gotest.tools/assert"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -47,7 +47,7 @@ func TestProductMedia_GetMedia(t *testing.T) {
 		VariantVariationAttributesSorting: nil,
 	}, nil)
 
-	assert.DeepEqual(t, &domain.Media{
+	assert.Equal(t, &domain.Media{
 		Type:      "teaser",
 		MimeType:  "teaser",
 		Usage:     "teaser",
@@ -55,7 +55,7 @@ func TestProductMedia_GetMedia(t *testing.T) {
 		Reference: "teaser",
 	}, product.Media().GetMedia("teaser"))
 
-	assert.DeepEqual(t, &domain.Media{
+	assert.Equal(t, &domain.Media{
 		Type:      "detail",
 		MimeType:  "detail",
 		Usage:     "detail",
