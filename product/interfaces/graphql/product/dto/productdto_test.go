@@ -66,33 +66,84 @@ func TestProductMedia_GetMedia(t *testing.T) {
 }
 
 func TestNewGraphqlProductDto(t *testing.T) {
+	// simple input
 	simpleProduct := domain.SimpleProduct{
 		Identifier:       "simple",
 		BasicProductData: domain.BasicProductData{},
 		Saleable:         domain.Saleable{},
 		Teaser:           domain.TeaserData{},
 	}
-
 	graphqlSimpleProduct := graphqlProductDto.NewGraphqlProductDto(simpleProduct, nil)
-	assert.Equal(t, simpleProduct.Type(), graphqlSimpleProduct.Type())
+	assert.Equal(t, "simple", graphqlSimpleProduct.Type())
 
-	configurableProduct := domain.SimpleProduct{
+	// Configurable input
+	configurableProduct := domain.ConfigurableProduct{
 		Identifier:       "configurable",
 		BasicProductData: domain.BasicProductData{},
-		Saleable:         domain.Saleable{},
 		Teaser:           domain.TeaserData{},
 	}
-
 	graphqlConfigurableProduct := graphqlProductDto.NewGraphqlProductDto(configurableProduct, nil)
-	assert.Equal(t, configurableProduct.Type(), graphqlConfigurableProduct.Type())
+	assert.Equal(t, "configurable", graphqlConfigurableProduct.Type())
 
-	activeVariantProduct := domain.SimpleProduct{
+	// Configurable input with active variant preselected
+	configurableWithPreselectedVariantProduct := domain.ConfigurableProduct{
+		Identifier: "configurable",
+		BasicProductData: domain.BasicProductData{
+			MarketPlaceCode: "configurable_code",
+		},
+		Teaser: domain.TeaserData{
+			PreSelectedVariantSku: "active_variant_code",
+		},
+		Variants: []domain.Variant{
+			{
+				BasicProductData: domain.BasicProductData{
+					MarketPlaceCode: "active_variant_code",
+				},
+				Saleable: domain.Saleable{},
+			},
+		},
+	}
+	graphqlConfigurableWithPreselectedVariantProduct := graphqlProductDto.NewGraphqlProductDto(configurableWithPreselectedVariantProduct, nil).(graphqlProductDto.ActiveVariantProduct)
+	assert.Equal(t, "configurable_with_activevariant", graphqlConfigurableWithPreselectedVariantProduct.Type())
+	assert.Equal(t, "configurable_code", graphqlConfigurableWithPreselectedVariantProduct.MarketPlaceCode())
+	assert.Equal(t, "active_variant_code", graphqlConfigurableWithPreselectedVariantProduct.VariantMarketPlaceCode())
+
+	// Configurable input with active variant override
+	configurableWithManualPreselectedVariantProduct := domain.ConfigurableProduct{
+		Identifier: "configurable",
+		BasicProductData: domain.BasicProductData{
+			MarketPlaceCode: "configurable_code",
+		},
+		Teaser: domain.TeaserData{
+			PreSelectedVariantSku: "variant_code",
+		},
+		Variants: []domain.Variant{
+			{
+				BasicProductData: domain.BasicProductData{
+					MarketPlaceCode: "variant_code",
+				},
+				Saleable: domain.Saleable{},
+			},
+			{
+				BasicProductData: domain.BasicProductData{
+					MarketPlaceCode: "second_active_variant_code",
+				},
+				Saleable: domain.Saleable{},
+			},
+		},
+	}
+	customVariantCode := "second_active_variant_code"
+	graphqlConfigurableWithManualPreselectedVariantProduct := graphqlProductDto.NewGraphqlProductDto(configurableWithManualPreselectedVariantProduct, &customVariantCode).(graphqlProductDto.ActiveVariantProduct)
+	assert.Equal(t, "configurable_with_activevariant", graphqlConfigurableWithManualPreselectedVariantProduct.Type())
+	assert.Equal(t, "configurable_code", graphqlConfigurableWithManualPreselectedVariantProduct.MarketPlaceCode())
+	assert.Equal(t, customVariantCode, graphqlConfigurableWithManualPreselectedVariantProduct.VariantMarketPlaceCode())
+
+	// Active variant input
+	activeVariantProduct := domain.ConfigurableProductWithActiveVariant{
 		Identifier:       "activeVariant",
 		BasicProductData: domain.BasicProductData{},
-		Saleable:         domain.Saleable{},
 		Teaser:           domain.TeaserData{},
 	}
-
 	graphqlActiveVariantProduct := graphqlProductDto.NewGraphqlProductDto(activeVariantProduct, nil)
-	assert.Equal(t, activeVariantProduct.Type(), graphqlActiveVariantProduct.Type())
+	assert.Equal(t, "configurable_with_activevariant", graphqlActiveVariantProduct.Type())
 }
