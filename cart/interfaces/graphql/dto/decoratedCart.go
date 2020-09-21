@@ -80,7 +80,7 @@ func mapDecoratedDeliveries(decoratedDeliveries []decorator.DecoratedDelivery) [
 }
 
 func mapDecoratedItems(decoratedItems []decorator.DecoratedCartItem) []DecoratedCartItem {
-	items := make([]DecoratedCartItem, len(decoratedItems))
+	items := make([]DecoratedCartItem, 0, len(decoratedItems))
 
 	for _, di := range decoratedItems {
 		items = append(items, DecoratedCartItem{
