@@ -295,7 +295,8 @@ func TestActiveVariantProduct_ActiveVariationSelections(t *testing.T) {
 	product := getActiveVariantProduct()
 
 	assert.Equal(t, []graphqlProductDto.ActiveVariationSelection{{
-		AttributeLabel: "attribute_a_codeLabel",
-		OptionLabel:    "attribute_a_variantLabel",
+		Code:  "attribute_a_code",
+		Label: "attribute_a_codeLabel",
+		Value: "attribute_a_variantLabel",
 	}}, product.ActiveVariationSelections())
 }

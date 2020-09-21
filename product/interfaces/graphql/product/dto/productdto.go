@@ -74,8 +74,9 @@ type (
 
 	// ActiveVariationSelection The variation for the currently active variant
 	ActiveVariationSelection struct {
-		AttributeLabel string
-		OptionLabel    string
+		Code  string
+		Label string
+		Value string
 	}
 )
 

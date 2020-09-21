@@ -87,8 +87,9 @@ type Commerce_Product_VariationSelection {
 
 "Easy-to-access property to display attribute information about an active variant"
 type Commerce_Product_ActiveVariationSelection {
-    attributeLabel: String!
-    optionLabel: String!
+    code: String!
+    label: String!
+    value: String!
 }
 
 "An option for a group of attributes"
@@ -121,7 +122,7 @@ type Commerce_Product_Categories {
 
 "Meta information about the product"
 type Commerce_Product_Meta {
-    keywords:	    [String!]
+    keywords:        [String!]
 }
 
 "Loyalty information about this product"

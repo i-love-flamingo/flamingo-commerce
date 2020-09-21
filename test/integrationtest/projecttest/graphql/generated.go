@@ -641,8 +641,9 @@ type ComplexityRoot struct {
 	}
 
 	CommerceProductActiveVariationSelection struct {
-		AttributeLabel func(childComplexity int) int
-		OptionLabel    func(childComplexity int) int
+		Code  func(childComplexity int) int
+		Label func(childComplexity int) int
+		Value func(childComplexity int) int
 	}
 
 	CommerceProductAttribute struct {
@@ -3474,19 +3475,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceProductActiveVariantProduct.VariationSelections(childComplexity), true
 
-	case "Commerce_Product_ActiveVariationSelection.attributeLabel":
-		if e.complexity.CommerceProductActiveVariationSelection.AttributeLabel == nil {
+	case "Commerce_Product_ActiveVariationSelection.code":
+		if e.complexity.CommerceProductActiveVariationSelection.Code == nil {
 			break
 		}
 
-		return e.complexity.CommerceProductActiveVariationSelection.AttributeLabel(childComplexity), true
+		return e.complexity.CommerceProductActiveVariationSelection.Code(childComplexity), true
 
-	case "Commerce_Product_ActiveVariationSelection.optionLabel":
-		if e.complexity.CommerceProductActiveVariationSelection.OptionLabel == nil {
+	case "Commerce_Product_ActiveVariationSelection.label":
+		if e.complexity.CommerceProductActiveVariationSelection.Label == nil {
 			break
 		}
 
-		return e.complexity.CommerceProductActiveVariationSelection.OptionLabel(childComplexity), true
+		return e.complexity.CommerceProductActiveVariationSelection.Label(childComplexity), true
+
+	case "Commerce_Product_ActiveVariationSelection.value":
+		if e.complexity.CommerceProductActiveVariationSelection.Value == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductActiveVariationSelection.Value(childComplexity), true
 
 	case "Commerce_Product_Attribute.code":
 		if e.complexity.CommerceProductAttribute.Code == nil {
@@ -5008,8 +5016,9 @@ type Commerce_Product_VariationSelection {
 
 "Easy-to-access property to display attribute information about an active variant"
 type Commerce_Product_ActiveVariationSelection {
-    attributeLabel: String!
-    optionLabel: String!
+    code: String!
+    label: String!
+    value: String!
 }
 
 "An option for a group of attributes"
@@ -5042,7 +5051,7 @@ type Commerce_Product_Categories {
 
 "Meta information about the product"
 type Commerce_Product_Meta {
-    keywords:	    [String!]
+    keywords:        [String!]
 }
 
 "Loyalty information about this product"
@@ -17271,7 +17280,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_activeVariati
 	return ec.marshalOCommerce_Product_ActiveVariationSelection2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐActiveVariationSelectionᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_attributeLabel(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariationSelection) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_code(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariationSelection) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -17288,7 +17297,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_attribute
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.AttributeLabel, nil
+		return obj.Code, nil
 	})
 
 	if resTmp == nil {
@@ -17302,7 +17311,7 @@ func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_attribute
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_optionLabel(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariationSelection) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_label(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariationSelection) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -17319,7 +17328,38 @@ func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_optionLab
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.OptionLabel, nil
+		return obj.Label, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_value(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariationSelection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Product_ActiveVariationSelection",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Value, nil
 	})
 
 	if resTmp == nil {
@@ -27036,13 +27076,18 @@ func (ec *executionContext) _Commerce_Product_ActiveVariationSelection(ctx conte
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_ActiveVariationSelection")
-		case "attributeLabel":
-			out.Values[i] = ec._Commerce_Product_ActiveVariationSelection_attributeLabel(ctx, field, obj)
+		case "code":
+			out.Values[i] = ec._Commerce_Product_ActiveVariationSelection_code(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "optionLabel":
-			out.Values[i] = ec._Commerce_Product_ActiveVariationSelection_optionLabel(ctx, field, obj)
+		case "label":
+			out.Values[i] = ec._Commerce_Product_ActiveVariationSelection_label(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "value":
+			out.Values[i] = ec._Commerce_Product_ActiveVariationSelection_value(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

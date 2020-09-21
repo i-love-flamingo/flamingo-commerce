@@ -107,8 +107,9 @@ func (avp ActiveVariantProduct) ActiveVariationSelections() []ActiveVariationSel
 		for _, option := range variationSelection.Options {
 			if option.State == VariationSelectionOptionStateActive {
 				activeVariationSelections = append(activeVariationSelections, ActiveVariationSelection{
-					AttributeLabel: variationSelection.Label,
-					OptionLabel:    option.Label,
+					Code:  variationSelection.Code,
+					Label: variationSelection.Label,
+					Value: option.Label,
 				})
 			}
 		}
