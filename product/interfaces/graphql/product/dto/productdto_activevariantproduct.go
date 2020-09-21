@@ -66,7 +66,7 @@ func (avp ActiveVariantProduct) Description() string {
 
 //ShortDescription of the product
 func (avp ActiveVariantProduct) ShortDescription() string {
-	return avp.product.BaseData().Description
+	return avp.product.BaseData().ShortDescription
 }
 
 //Meta contains meta information from the active variant

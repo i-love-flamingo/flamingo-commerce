@@ -163,9 +163,9 @@ func getProductDomainConfigurableWithActiveVariantProduct() productDomain.Config
 	}
 }
 
-func getActiveVariantProduct() graphqlProductDto.Product {
+func getActiveVariantProduct() graphqlProductDto.ActiveVariantProduct {
 	product := getProductDomainConfigurableWithActiveVariantProduct()
-	return graphqlProductDto.NewGraphqlProductDto(product, nil)
+	return graphqlProductDto.NewGraphqlProductDto(product, nil).(graphqlProductDto.ActiveVariantProduct)
 }
 
 func TestActiveVariantProduct_Attributes(t *testing.T) {
@@ -222,7 +222,13 @@ func TestActiveVariantProduct_Loyalty(t *testing.T) {
 func TestActiveVariantProduct_MarketPlaceCode(t *testing.T) {
 	product := getActiveVariantProduct()
 
-	assert.Equal(t, "active_variant_product_code_a", product.MarketPlaceCode())
+	assert.Equal(t, "configurable_with_active_variant_product", product.MarketPlaceCode())
+}
+
+func TestActiveVariantProduct_VariantMarketPlaceCode(t *testing.T) {
+	product := getActiveVariantProduct()
+
+	assert.Equal(t, "active_variant_product_code_a", product.VariantMarketPlaceCode())
 }
 
 func TestActiveVariantProduct_Identifier(t *testing.T) {
@@ -269,7 +275,7 @@ func TestActiveVariantProduct_Type(t *testing.T) {
 }
 
 func TestActiveVariantProduct_VariationSelections(t *testing.T) {
-	product := getActiveVariantProduct().(graphqlProductDto.ActiveVariantProduct)
+	product := getActiveVariantProduct()
 	assert.DeepEqual(t, []graphqlProductDto.VariationSelection{
 		{
 			Code:  "attribute_a_code",
@@ -286,7 +292,7 @@ func TestActiveVariantProduct_VariationSelections(t *testing.T) {
 }
 
 func TestActiveVariantProduct_ActiveVariationSelections(t *testing.T) {
-	product := getActiveVariantProduct().(graphqlProductDto.ActiveVariantProduct)
+	product := getActiveVariantProduct()
 
 	assert.DeepEqual(t, []graphqlProductDto.ActiveVariationSelection{{
 		AttributeLabel: "attribute_a_codeLabel",
