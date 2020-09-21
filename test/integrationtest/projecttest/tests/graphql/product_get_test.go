@@ -39,8 +39,8 @@ func Test_CommerceProductGet(t *testing.T) {
 				map[string]interface{}{"code": string("size"), "label": string("Size")},
 			},
 			"activeVariationSelections": []interface{}{
-				map[string]interface{}{"attributeLabel": string("Color"), "optionLabel": string("Black")},
-				map[string]interface{}{"attributeLabel": string("Size"), "optionLabel": string("L")},
+				map[string]interface{}{"code": string("color"), "label": string("Color"), "value": string("Black")},
+				map[string]interface{}{"code": string("size"), "label": string("Size"), "value": string("L")},
 			},
 		},
 	}

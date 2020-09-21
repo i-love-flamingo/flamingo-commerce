@@ -37,8 +37,9 @@ query {
                 label
             }
             activeVariationSelections {
-                attributeLabel
-                optionLabel
+                code
+                label
+                value
             }
         }
     }
