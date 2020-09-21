@@ -59,7 +59,7 @@ func (sp SimpleProduct) Description() string {
 
 //ShortDescription of the product
 func (sp SimpleProduct) ShortDescription() string {
-	return sp.product.BaseData().Description
+	return sp.product.BaseData().ShortDescription
 }
 
 //Meta of the product
