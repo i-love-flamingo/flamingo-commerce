@@ -13,7 +13,9 @@ interface Commerce_Product {
     attributes: Commerce_Product_Attributes!
 }
 
-
+"""
+A simple product, that has no variable attributes and therefore no relation to other products
+"""
 type Commerce_Product_SimpleProduct implements Commerce_Product {
     type: String!
     marketPlaceCode: String!
@@ -29,7 +31,10 @@ type Commerce_Product_SimpleProduct implements Commerce_Product {
     attributes: Commerce_Product_Attributes!
 }
 
-
+"""
+A configurable product defines the possible variations of a product. It only contains
+information about product variants but has no active variant itself.
+"""
 type Commerce_Product_ConfigurableProduct implements Commerce_Product {
     type: String!
     marketPlaceCode: String!
@@ -46,9 +51,13 @@ type Commerce_Product_ConfigurableProduct implements Commerce_Product {
     variationSelections: [Commerce_Product_VariationSelection!]
 }
 
-
+"""
+An active variant is one of many concrete variants that a configurable provides. All data relates to one active variant
+and not the the configurable. It also contains information about it´s siblings (other variants on the same configurable)
+"""
 type Commerce_Product_ActiveVariantProduct implements Commerce_Product {
     type: String!
+    "The marketPlaceCode of the 'configurable' product. See also 'variantMarketPlaceCode' for the variant marketPlaceCode"
     marketPlaceCode: String!
     identifier: String!
     media: Commerce_Product_Media!,
@@ -60,43 +69,62 @@ type Commerce_Product_ActiveVariantProduct implements Commerce_Product {
     meta: Commerce_Product_Meta!
     loyalty: Commerce_Product_Loyalty!
     attributes: Commerce_Product_Attributes!
+    "The marketPlaceCode of the actual variant"
     variantMarketPlaceCode: String!
+    "Contains information about other available product variations"
     variationSelections: [Commerce_Product_VariationSelection!]
+    "Convenience property to access the active variant labels easily"
     activeVariationSelections: [Commerce_Product_ActiveVariationSelection!]
 }
 
+"A group of attributes. E.g. 'size'"
 type Commerce_Product_VariationSelection {
     code: String!
     label: String!
+    "All possiblie variations for that attribute. E.g. 'M', 'L', 'XL'"
     options: [Commerce_Product_VariationSelection_Option]
 }
 
+"Easy-to-access property to display attribute information about an active variant"
 type Commerce_Product_ActiveVariationSelection {
     attributeLabel: String!
     optionLabel: String!
 }
 
+"An option for a group of attributes"
 type Commerce_Product_VariationSelection_Option {
     label: String!
     state: Commerce_Product_VariationSelection_OptionState!
+    """
+    Contains the marketPlaceCode of an product that matches this option.
+    Depending on if there is an active variant or not, it tries to include the marketPlaceCode
+    for the variant, that best matches the current option.
+    """
     variantMarketPlaceCode: String!,
 }
 
+"The state of an option related to the currently active variant"
 enum Commerce_Product_VariationSelection_OptionState {
+    "The currently active variant has this exact attribute + all other active variant attributes"
     ACTIVE
+    "A variant (other than the active variant) exists, that matches this exact attribute + all other active variant attributes"
     MATCH
+    "No variant exists, that matches this exact attribute + all other active variant attributes."
     NO_MATCH
 }
 
+"Wrapper that includes main category and all categories"
 type Commerce_Product_Categories {
     main: Commerce_Product_CategoryTeaser!
     all:   [Commerce_Product_CategoryTeaser!]
 }
 
+"Meta information about the product"
 type Commerce_Product_Meta {
     keywords:	    [String!]
 }
 
+"Loyalty information about this product"
 type Commerce_Product_Loyalty {
     price:      Commerce_Product_Loyalty_PriceInfo
     earning:    Commerce_Product_Loyalty_EarningInfo
@@ -113,7 +141,7 @@ type Commerce_Product_Loyalty_PriceInfo {
     context: Commerce_Product_PriceContext!
 }
 
-"LoyaltyEarningInfo shows the type and the points earned"
+"Shows the type and the points earned"
 type Commerce_Product_Loyalty_EarningInfo {
     "The type of the LoyaltyEarningInfo, e.g. MilesAndMore"
     type: String!
