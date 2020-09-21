@@ -106,7 +106,7 @@ func NewGraphqlProductDto(product productDomain.BasicProduct, preSelectedVariant
 			variantSku = configurableProduct.Teaser.PreSelectedVariantSku
 		}
 
-		if preSelectedVariantSku != nil {
+		if preSelectedVariantSku != nil && *preSelectedVariantSku != "" {
 			variantSku = *preSelectedVariantSku
 		}
 
