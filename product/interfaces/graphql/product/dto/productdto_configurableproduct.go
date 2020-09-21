@@ -61,7 +61,7 @@ func (cp ConfigurableProduct) Description() string {
 
 //ShortDescription of the product
 func (cp ConfigurableProduct) ShortDescription() string {
-	return cp.product.BaseData().Description
+	return cp.product.BaseData().ShortDescription
 }
 
 //Meta metadata of the configurable
