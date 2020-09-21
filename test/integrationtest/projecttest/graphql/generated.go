@@ -627,6 +627,7 @@ type ComplexityRoot struct {
 		Attributes                func(childComplexity int) int
 		Categories                func(childComplexity int) int
 		Description               func(childComplexity int) int
+		Identifier                func(childComplexity int) int
 		Loyalty                   func(childComplexity int) int
 		MarketPlaceCode           func(childComplexity int) int
 		Media                     func(childComplexity int) int
@@ -676,6 +677,7 @@ type ComplexityRoot struct {
 		Attributes          func(childComplexity int) int
 		Categories          func(childComplexity int) int
 		Description         func(childComplexity int) int
+		Identifier          func(childComplexity int) int
 		Loyalty             func(childComplexity int) int
 		MarketPlaceCode     func(childComplexity int) int
 		Media               func(childComplexity int) int
@@ -756,6 +758,7 @@ type ComplexityRoot struct {
 		Attributes       func(childComplexity int) int
 		Categories       func(childComplexity int) int
 		Description      func(childComplexity int) int
+		Identifier       func(childComplexity int) int
 		Loyalty          func(childComplexity int) int
 		MarketPlaceCode  func(childComplexity int) int
 		Media            func(childComplexity int) int
@@ -3394,6 +3397,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceProductActiveVariantProduct.Description(childComplexity), true
 
+	case "Commerce_Product_ActiveVariantProduct.identifier":
+		if e.complexity.CommerceProductActiveVariantProduct.Identifier == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductActiveVariantProduct.Identifier(childComplexity), true
+
 	case "Commerce_Product_ActiveVariantProduct.loyalty":
 		if e.complexity.CommerceProductActiveVariantProduct.Loyalty == nil {
 			break
@@ -3625,6 +3635,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceProductConfigurableProduct.Description(childComplexity), true
+
+	case "Commerce_Product_ConfigurableProduct.identifier":
+		if e.complexity.CommerceProductConfigurableProduct.Identifier == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductConfigurableProduct.Identifier(childComplexity), true
 
 	case "Commerce_Product_ConfigurableProduct.loyalty":
 		if e.complexity.CommerceProductConfigurableProduct.Loyalty == nil {
@@ -3980,6 +3997,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceProductSimpleProduct.Description(childComplexity), true
+
+	case "Commerce_Product_SimpleProduct.identifier":
+		if e.complexity.CommerceProductSimpleProduct.Identifier == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductSimpleProduct.Identifier(childComplexity), true
 
 	case "Commerce_Product_SimpleProduct.loyalty":
 		if e.complexity.CommerceProductSimpleProduct.Loyalty == nil {
@@ -4898,6 +4922,7 @@ type Commerce_Search_Suggestion {
 	{Name: "graphql/schema/flamingo.me_flamingo-commerce_v3_product_interfaces_graphql-Service.graphql", Input: `interface Commerce_Product {
     type: String!
     marketPlaceCode: String!
+    identifier: String!
     media: Commerce_Product_Media!,
     price: Commerce_Product_PriceInfo!,
     title: String!
@@ -4913,6 +4938,7 @@ type Commerce_Search_Suggestion {
 type Commerce_Product_SimpleProduct implements Commerce_Product {
     type: String!
     marketPlaceCode: String!
+    identifier: String!
     media: Commerce_Product_Media!,
     price: Commerce_Product_PriceInfo!,
     title: String!
@@ -4928,6 +4954,7 @@ type Commerce_Product_SimpleProduct implements Commerce_Product {
 type Commerce_Product_ConfigurableProduct implements Commerce_Product {
     type: String!
     marketPlaceCode: String!
+    identifier: String!
     media: Commerce_Product_Media!,
     price: Commerce_Product_PriceInfo!,
     title: String!
@@ -4944,6 +4971,7 @@ type Commerce_Product_ConfigurableProduct implements Commerce_Product {
 type Commerce_Product_ActiveVariantProduct implements Commerce_Product {
     type: String!
     marketPlaceCode: String!
+    identifier: String!
     media: Commerce_Product_Media!,
     price: Commerce_Product_PriceInfo!,
     title: String!
@@ -16818,6 +16846,37 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_marketPlaceCo
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_identifier(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Product_ActiveVariantProduct",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Identifier(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_media(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -17788,6 +17847,37 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_marketPlaceCod
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.MarketPlaceCode(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Product_ConfigurableProduct_identifier(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Product_ConfigurableProduct",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Identifier(), nil
 	})
 
 	if resTmp == nil {
@@ -19306,6 +19396,37 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_marketPlaceCode(ctx 
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.MarketPlaceCode(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Product_SimpleProduct_identifier(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Product_SimpleProduct",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Identifier(), nil
 	})
 
 	if resTmp == nil {
@@ -26806,6 +26927,11 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct(ctx context.C
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "identifier":
+			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_identifier(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "media":
 			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_media(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -27065,6 +27191,11 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct(ctx context.Co
 			}
 		case "marketPlaceCode":
 			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_marketPlaceCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "identifier":
+			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_identifier(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -27496,6 +27627,11 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct(ctx context.Context,
 			}
 		case "marketPlaceCode":
 			out.Values[i] = ec._Commerce_Product_SimpleProduct_marketPlaceCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "identifier":
+			out.Values[i] = ec._Commerce_Product_SimpleProduct_identifier(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

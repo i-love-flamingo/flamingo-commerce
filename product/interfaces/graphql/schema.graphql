@@ -1,6 +1,7 @@
 interface Commerce_Product {
     type: String!
     marketPlaceCode: String!
+    identifier: String!
     media: Commerce_Product_Media!,
     price: Commerce_Product_PriceInfo!,
     title: String!
@@ -16,6 +17,7 @@ interface Commerce_Product {
 type Commerce_Product_SimpleProduct implements Commerce_Product {
     type: String!
     marketPlaceCode: String!
+    identifier: String!
     media: Commerce_Product_Media!,
     price: Commerce_Product_PriceInfo!,
     title: String!
@@ -31,6 +33,7 @@ type Commerce_Product_SimpleProduct implements Commerce_Product {
 type Commerce_Product_ConfigurableProduct implements Commerce_Product {
     type: String!
     marketPlaceCode: String!
+    identifier: String!
     media: Commerce_Product_Media!,
     price: Commerce_Product_PriceInfo!,
     title: String!
@@ -47,6 +50,7 @@ type Commerce_Product_ConfigurableProduct implements Commerce_Product {
 type Commerce_Product_ActiveVariantProduct implements Commerce_Product {
     type: String!
     marketPlaceCode: String!
+    identifier: String!
     media: Commerce_Product_Media!,
     price: Commerce_Product_PriceInfo!,
     title: String!

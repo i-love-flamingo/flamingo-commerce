@@ -24,6 +24,11 @@ func (sp SimpleProduct) MarketPlaceCode() string {
 	return sp.product.BaseData().MarketPlaceCode
 }
 
+//Identifier of the product
+func (sp SimpleProduct) Identifier() string {
+	return sp.product.GetIdentifier()
+}
+
 //Media of the product
 func (sp SimpleProduct) Media() ProductMedia {
 	return ProductMedia{All: sp.product.TeaserData().Media}

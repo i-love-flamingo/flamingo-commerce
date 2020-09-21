@@ -154,6 +154,7 @@ func (ps *ProductService) getFakeConfigurable(marketplaceCode string) domain.Con
 	product.Title = "TypeConfigurable product"
 	ps.addBasicData(&product.BasicProductData)
 	product.MarketPlaceCode = marketplaceCode
+	product.Identifier = marketplaceCode + "_identifier"
 	product.Teaser.TeaserPrice = ps.getPrice(30.99+float64(rand.Intn(10)), 20.49+float64(rand.Intn(10)))
 
 	return product

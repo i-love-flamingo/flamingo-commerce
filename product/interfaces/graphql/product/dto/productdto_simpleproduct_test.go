@@ -156,6 +156,12 @@ func TestSimpleProduct_MarketPlaceCode(t *testing.T) {
 	assert.Equal(t, "simple_product_code", product.MarketPlaceCode())
 }
 
+func TestSimpleProduct_Identifier(t *testing.T) {
+	product := getSimpleProduct()
+
+	assert.Equal(t, "simple_product", product.Identifier())
+}
+
 func TestSimpleProduct_Media(t *testing.T) {
 	product := getSimpleProduct()
 

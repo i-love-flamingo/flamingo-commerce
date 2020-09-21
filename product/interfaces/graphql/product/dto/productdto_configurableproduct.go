@@ -26,6 +26,11 @@ func (cp ConfigurableProduct) MarketPlaceCode() string {
 	return cp.product.BaseData().MarketPlaceCode
 }
 
+//Identifier of the configurable
+func (cp ConfigurableProduct) Identifier() string {
+	return cp.product.GetIdentifier()
+}
+
 //Media of the configurable
 func (cp ConfigurableProduct) Media() ProductMedia {
 	return ProductMedia{All: cp.product.TeaserData().Media}

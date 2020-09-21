@@ -225,6 +225,12 @@ func TestActiveVariantProduct_MarketPlaceCode(t *testing.T) {
 	assert.Equal(t, "active_variant_product_code_a", product.MarketPlaceCode())
 }
 
+func TestActiveVariantProduct_Identifier(t *testing.T) {
+	product := getActiveVariantProduct()
+
+	assert.Equal(t, "configurable_with_active_variant_product", product.Identifier())
+}
+
 func TestActiveVariantProduct_Media(t *testing.T) {
 	product := getActiveVariantProduct()
 

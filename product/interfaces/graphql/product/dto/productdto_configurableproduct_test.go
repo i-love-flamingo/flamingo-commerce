@@ -183,6 +183,12 @@ func TestConfigurableProduct_MarketPlaceCode(t *testing.T) {
 	assert.Equal(t, "configurable_product_code", product.MarketPlaceCode())
 }
 
+func TestConfigurableProduct_Identifier(t *testing.T) {
+	product := getConfigurableProduct()
+
+	assert.Equal(t, "configurable_product", product.Identifier())
+}
+
 func TestConfigurableProduct_Media(t *testing.T) {
 	product := getConfigurableProduct()
 

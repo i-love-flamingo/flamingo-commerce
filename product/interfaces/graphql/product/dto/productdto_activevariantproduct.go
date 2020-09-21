@@ -31,6 +31,11 @@ func (avp ActiveVariantProduct) MarketPlaceCode() string {
 	return avp.product.BasicProductData.MarketPlaceCode
 }
 
+//Identifier of the active variant
+func (avp ActiveVariantProduct) Identifier() string {
+	return avp.product.GetIdentifier()
+}
+
 //Media of the active variant
 func (avp ActiveVariantProduct) Media() ProductMedia {
 	return ProductMedia{All: avp.getActiveVariant().BaseData().Media}

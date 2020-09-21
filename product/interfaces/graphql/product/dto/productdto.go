@@ -21,6 +21,7 @@ type (
 		Product() productDomain.BasicProduct
 		Type() string
 		MarketPlaceCode() string
+		Identifier() string
 		Media() ProductMedia
 		Price() productDomain.PriceInfo
 		Title() string
