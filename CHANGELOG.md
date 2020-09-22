@@ -1,7 +1,7 @@
 # Changelog
 ## v3.4.0 [upcoming]
 **cart**
-*  Added desired time to DeliveryForm
+* Added desired time to DeliveryForm
 * GraphQL
   * Updated schema and resolver regarding desired time
 
@@ -12,7 +12,8 @@
     * Product variant data, that has previously been buried in `Commerce_ConfigurableProduct.variants`, has been mapped to the toplevel of each product and can be accessed directly.
     * Both `ActiveVariantProduct` and `ConfigurableProduct` provide a new property named `variationSelections` which exposes a list of possible attribute combinations for the configurable.
 * fake: The product fake search service is now able to return products with an active variant via `fake_configurable_with_active_variant`. Variation attributes have been changed to only include `color` and `size`.
-      
+* Expose `VariantVariationAttributesSorting` on `domain.ConfigurableProductWithActiveVariant`
+
 ## v3.3.0
 **product**
 * Switch module config to CUE

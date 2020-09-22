@@ -135,9 +135,11 @@ func (m *variantsToVariationSelectionsMapper) hasVariantsWithMatchingAttributes(
 func (m *variantsToVariationSelectionsMapper) buildVariationSelectionOptions(attributeGroup *attributeGroup) []VariationSelectionOption {
 	var options []VariationSelectionOption
 	attributeLabelsInOrder, sortKeyExists := m.variationAttributesSorting[attributeGroup.Code]
+
 	if sortKeyExists {
 		for _, attributeLabel := range attributeLabelsInOrder {
 			attribute := attributeGroup.getAttributeByLabel(attributeLabel)
+
 			if attribute != nil {
 				var state VariationSelectionOptionState
 				var marketPlaceCode string
