@@ -1,10 +1,11 @@
 package graphqlproductdto
 
 import (
+	"testing"
+
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo-commerce/v3/product/infrastructure/fake"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 var (
@@ -163,7 +164,6 @@ func TestMapConfigurableWithActiveVariant(t *testing.T) {
 						State:                  VariationSelectionOptionStateActive,
 						VariantMarketPlaceCode: "shirt-black-l",
 					},
-
 				},
 			}, {
 				Code:  "size",

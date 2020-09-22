@@ -31,8 +31,8 @@ type ProductService struct {
 // Inject dependencies
 func (ps *ProductService) Inject(
 	c *struct {
-	CurrencyCode string `inject:"config:commerce.product.fakeservice.currency,optional"`
-},
+		CurrencyCode string `inject:"config:commerce.product.fakeservice.currency,optional"`
+	},
 ) *ProductService {
 	if c != nil {
 		ps.currencyCode = c.CurrencyCode
