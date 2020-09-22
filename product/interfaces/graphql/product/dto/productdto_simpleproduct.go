@@ -9,42 +9,42 @@ type (
 	}
 )
 
-//Type the product type
+// Type the product type
 func (sp SimpleProduct) Type() string {
 	return productDomain.TypeSimple
 }
 
-//Product the basic product information
+// Product the basic product information
 func (sp SimpleProduct) Product() productDomain.BasicProduct {
 	return sp.product
 }
 
-//MarketPlaceCode of the product
+// MarketPlaceCode of the product
 func (sp SimpleProduct) MarketPlaceCode() string {
 	return sp.product.BaseData().MarketPlaceCode
 }
 
-//Identifier of the product
+// Identifier of the product
 func (sp SimpleProduct) Identifier() string {
 	return sp.product.GetIdentifier()
 }
 
-//Media of the product
+// Media of the product
 func (sp SimpleProduct) Media() ProductMedia {
 	return ProductMedia{All: sp.product.TeaserData().Media}
 }
 
-//Price of the product
+// Price of the product
 func (sp SimpleProduct) Price() productDomain.PriceInfo {
 	return sp.product.TeaserData().TeaserPrice
 }
 
-//Title of the product
+// Title of the product
 func (sp SimpleProduct) Title() string {
 	return sp.product.BaseData().Title
 }
 
-//Categories of the product
+// Categories of the product
 func (sp SimpleProduct) Categories() ProductCategories {
 	return ProductCategories{
 		Main: sp.product.BaseData().MainCategory,
@@ -52,24 +52,24 @@ func (sp SimpleProduct) Categories() ProductCategories {
 	}
 }
 
-//Description of the product
+// Description of the product
 func (sp SimpleProduct) Description() string {
 	return sp.product.BaseData().Description
 }
 
-//ShortDescription of the product
+// ShortDescription of the product
 func (sp SimpleProduct) ShortDescription() string {
 	return sp.product.BaseData().ShortDescription
 }
 
-//Meta of the product
+// Meta of the product
 func (sp SimpleProduct) Meta() ProductMeta {
 	return ProductMeta{
 		Keywords: sp.product.BaseData().Keywords,
 	}
 }
 
-//Loyalty of the product
+// Loyalty of the product
 func (sp SimpleProduct) Loyalty() ProductLoyalty {
 	return ProductLoyalty{
 		Price:   sp.product.TeaserData().TeaserLoyaltyPriceInfo,
@@ -77,7 +77,7 @@ func (sp SimpleProduct) Loyalty() ProductLoyalty {
 	}
 }
 
-//Attributes of the product
+// Attributes of the product
 func (sp SimpleProduct) Attributes() productDomain.Attributes {
 	return sp.product.BaseData().Attributes
 }

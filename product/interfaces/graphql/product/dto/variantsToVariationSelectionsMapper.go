@@ -28,7 +28,7 @@ type (
 	}
 )
 
-//NewVariantsToVariationSelections Converts a product to variation selections
+// NewVariantsToVariationSelections Converts a product to variation selections
 func NewVariantsToVariationSelections(p domain.BasicProduct) []VariationSelection {
 	if p.Type() == domain.TypeConfigurableWithActiveVariant {
 		configurableWithActiveVariant := p.(domain.ConfigurableProductWithActiveVariant)

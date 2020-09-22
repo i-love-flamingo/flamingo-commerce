@@ -11,42 +11,42 @@ type (
 	}
 )
 
-//Type of the configurable
+// Type of the configurable
 func (cp ConfigurableProduct) Type() string {
 	return productDomain.TypeConfigurable
 }
 
-//Product the base product
+// Product the base product
 func (cp ConfigurableProduct) Product() productDomain.BasicProduct {
 	return cp.product
 }
 
-//MarketPlaceCode of the configurable
+// MarketPlaceCode of the configurable
 func (cp ConfigurableProduct) MarketPlaceCode() string {
 	return cp.product.BaseData().MarketPlaceCode
 }
 
-//Identifier of the configurable
+// Identifier of the configurable
 func (cp ConfigurableProduct) Identifier() string {
 	return cp.product.GetIdentifier()
 }
 
-//Media of the configurable
+// Media of the configurable
 func (cp ConfigurableProduct) Media() ProductMedia {
 	return ProductMedia{All: cp.product.TeaserData().Media}
 }
 
-//Price of the configurable
+// Price of the configurable
 func (cp ConfigurableProduct) Price() productDomain.PriceInfo {
 	return cp.product.TeaserData().TeaserPrice
 }
 
-//Title of the configurable
+// Title of the configurable
 func (cp ConfigurableProduct) Title() string {
 	return cp.product.BaseData().Title
 }
 
-//Categories of the configurable
+// Categories of the configurable
 func (cp ConfigurableProduct) Categories() ProductCategories {
 	return ProductCategories{
 		Main: cp.product.BaseData().MainCategory,
@@ -54,24 +54,24 @@ func (cp ConfigurableProduct) Categories() ProductCategories {
 	}
 }
 
-//Description of the configurable
+// Description of the configurable
 func (cp ConfigurableProduct) Description() string {
 	return cp.product.BaseData().Description
 }
 
-//ShortDescription of the product
+// ShortDescription of the product
 func (cp ConfigurableProduct) ShortDescription() string {
 	return cp.product.BaseData().ShortDescription
 }
 
-//Meta metadata of the configurable
+// Meta metadata of the configurable
 func (cp ConfigurableProduct) Meta() ProductMeta {
 	return ProductMeta{
 		Keywords: cp.product.BaseData().Keywords,
 	}
 }
 
-//Loyalty information about the configurable
+// Loyalty information about the configurable
 func (cp ConfigurableProduct) Loyalty() ProductLoyalty {
 	return ProductLoyalty{
 		Price:   cp.product.TeaserData().TeaserLoyaltyPriceInfo,
@@ -79,12 +79,12 @@ func (cp ConfigurableProduct) Loyalty() ProductLoyalty {
 	}
 }
 
-//Attributes of the configurable
+// Attributes of the configurable
 func (cp ConfigurableProduct) Attributes() productDomain.Attributes {
 	return cp.product.BaseData().Attributes
 }
 
-//VariationSelections contains possible variations for all variants
+// VariationSelections contains possible variations for all variants
 func (cp ConfigurableProduct) VariationSelections() []VariationSelection {
 	return NewVariantsToVariationSelections(cp.Product())
 }
