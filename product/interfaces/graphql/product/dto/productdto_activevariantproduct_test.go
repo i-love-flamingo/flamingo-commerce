@@ -79,6 +79,13 @@ func getProductDomainConfigurableWithActiveVariantProduct() productDomain.Config
 			"attribute_a_code",
 		},
 
+		VariantVariationAttributesSorting: map[string][]string{
+			"attribute_a_code": {
+				"attribute_a_variantLabel",
+				"attribute_b_variantLabel",
+			},
+		},
+
 		Variants: []productDomain.Variant{
 			{
 				BasicProductData: productDomain.BasicProductData{

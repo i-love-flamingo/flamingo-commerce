@@ -36,10 +36,11 @@ type (
 	ConfigurableProductWithActiveVariant struct {
 		Identifier string
 		BasicProductData
-		Teaser                     TeaserData
-		VariantVariationAttributes []string
-		Variants                   []Variant
-		ActiveVariant              Variant
+		Teaser                            TeaserData
+		VariantVariationAttributes        []string
+		Variants                          []Variant
+		VariantVariationAttributesSorting map[string][]string
+		ActiveVariant                     Variant
 	}
 
 	// Variant is a concrete kind of a product
@@ -76,12 +77,13 @@ func (p ConfigurableProduct) GetConfigurableWithActiveVariant(variantMarketplace
 		return ConfigurableProductWithActiveVariant{}, err
 	}
 	return ConfigurableProductWithActiveVariant{
-		Identifier:                 p.Identifier,
-		BasicProductData:           p.BasicProductData,
-		Teaser:                     p.Teaser,
-		VariantVariationAttributes: p.VariantVariationAttributes,
-		Variants:                   p.Variants,
-		ActiveVariant:              *variant,
+		Identifier:                        p.Identifier,
+		BasicProductData:                  p.BasicProductData,
+		Teaser:                            p.Teaser,
+		VariantVariationAttributes:        p.VariantVariationAttributes,
+		VariantVariationAttributesSorting: p.VariantVariationAttributesSorting,
+		Variants:                          p.Variants,
+		ActiveVariant:                     *variant,
 	}, nil
 }
 

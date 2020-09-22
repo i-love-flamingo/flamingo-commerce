@@ -27,6 +27,7 @@ require (
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/go-cmp v0.4.0
 	github.com/google/uuid v1.1.1
+	github.com/gordonklaus/ineffassign v0.0.0-20200809085317-e36bfde3bb78 // indirect
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/leekchan/accounting v0.0.0-20191104051123-0b9b0bd19c36

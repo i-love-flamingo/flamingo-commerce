@@ -8,6 +8,8 @@ type (
 		variants []domain.Variant
 		// The attributes that are configurable
 		variationAttributes []string
+		// The preferred sorting of attributes
+		variationAttributesSorting map[string][]string
 		// The currently active variant
 		activeVariant *domain.Variant
 		// Variants that have all required variation attributes
@@ -22,7 +24,7 @@ type (
 		// The label of the group
 		Label string
 		// unique Attributes matching the group code
-		Attributes []domain.Attribute
+		Attributes map[string]domain.Attribute
 	}
 )
 
@@ -32,9 +34,10 @@ func NewVariantsToVariationSelections(p domain.BasicProduct) []VariationSelectio
 		configurableWithActiveVariant := p.(domain.ConfigurableProductWithActiveVariant)
 
 		mapper := variantsToVariationSelectionsMapper{
-			variants:            configurableWithActiveVariant.Variants,
-			variationAttributes: configurableWithActiveVariant.VariantVariationAttributes,
-			activeVariant:       &configurableWithActiveVariant.ActiveVariant,
+			variants:                   configurableWithActiveVariant.Variants,
+			variationAttributes:        configurableWithActiveVariant.VariantVariationAttributes,
+			variationAttributesSorting: configurableWithActiveVariant.VariantVariationAttributesSorting,
+			activeVariant:              &configurableWithActiveVariant.ActiveVariant,
 		}
 		return mapper.Map()
 	}
@@ -43,20 +46,16 @@ func NewVariantsToVariationSelections(p domain.BasicProduct) []VariationSelectio
 		configurable := p.(domain.ConfigurableProduct)
 
 		mapper := variantsToVariationSelectionsMapper{
-			variants:            configurable.Variants,
-			variationAttributes: configurable.VariantVariationAttributes,
-			activeVariant:       nil,
+			variants:                   configurable.Variants,
+			variationAttributes:        configurable.VariantVariationAttributes,
+			variationAttributesSorting: configurable.VariantVariationAttributesSorting,
+			activeVariant:              nil,
 		}
 
 		return mapper.Map()
 	}
 
-	mapper := variantsToVariationSelectionsMapper{
-		variants:            []domain.Variant{},
-		variationAttributes: nil,
-		activeVariant:       nil,
-	}
-	return mapper.Map()
+	return []VariationSelection{}
 }
 
 func (m *variantsToVariationSelectionsMapper) Map() []VariationSelection {
@@ -135,49 +134,50 @@ func (m *variantsToVariationSelectionsMapper) hasVariantsWithMatchingAttributes(
 
 func (m *variantsToVariationSelectionsMapper) buildVariationSelectionOptions(attributeGroup *attributeGroup) []VariationSelectionOption {
 	var options []VariationSelectionOption
-	for _, attribute := range attributeGroup.Attributes {
-		var state VariationSelectionOptionState
-		var marketPlaceCode string
+	attributeLabelsInOrder, sortKeyExists := m.variationAttributesSorting[attributeGroup.Code]
+	if sortKeyExists {
+		for _, attributeLabel := range attributeLabelsInOrder {
+			attribute := attributeGroup.getAttributeByLabel(attributeLabel)
+			if attribute != nil {
+				var state VariationSelectionOptionState
+				var marketPlaceCode string
 
-		attribute := domain.Attribute{
-			Code:  attributeGroup.Code,
-			Label: attribute.Label,
-		}
+				if m.hasActiveVariant() {
+					mergedAttributes := m.getActiveAttributesWithOverwrite(*attribute)
+					exactMatchingVariant := m.findMatchingVariant(mergedAttributes)
 
-		if m.hasActiveVariant() {
-			mergedAttributes := m.getActiveAttributesWithOverwrite(attribute)
-			exactMatchingVariant := m.findMatchingVariant(mergedAttributes)
+					if exactMatchingVariant != nil {
+						if exactMatchingVariant.MarketPlaceCode == m.activeVariant.MarketPlaceCode {
+							state = VariationSelectionOptionStateActive
+							marketPlaceCode = exactMatchingVariant.MarketPlaceCode
+						} else {
+							state = VariationSelectionOptionStateMatch
+							marketPlaceCode = exactMatchingVariant.MarketPlaceCode
+						}
+					} else {
+						fallbackVariant := m.findMatchingVariant([]domain.Attribute{*attribute})
 
-			if exactMatchingVariant != nil {
-				if exactMatchingVariant.MarketPlaceCode == m.activeVariant.MarketPlaceCode {
-					state = VariationSelectionOptionStateActive
-					marketPlaceCode = exactMatchingVariant.MarketPlaceCode
+						if fallbackVariant != nil {
+							state = VariationSelectionOptionStateNoMatch
+							marketPlaceCode = fallbackVariant.MarketPlaceCode
+						}
+					}
 				} else {
-					state = VariationSelectionOptionStateMatch
-					marketPlaceCode = exactMatchingVariant.MarketPlaceCode
-				}
-			} else {
-				fallbackVariant := m.findMatchingVariant([]domain.Attribute{attribute})
+					fallbackVariant := m.findMatchingVariant([]domain.Attribute{*attribute})
 
-				if fallbackVariant != nil {
-					state = VariationSelectionOptionStateNoMatch
-					marketPlaceCode = fallbackVariant.MarketPlaceCode
+					if fallbackVariant != nil {
+						state = VariationSelectionOptionStateMatch
+						marketPlaceCode = fallbackVariant.MarketPlaceCode
+					}
 				}
-			}
-		} else {
-			fallbackVariant := m.findMatchingVariant([]domain.Attribute{attribute})
 
-			if fallbackVariant != nil {
-				state = VariationSelectionOptionStateMatch
-				marketPlaceCode = fallbackVariant.MarketPlaceCode
+				options = append(options, VariationSelectionOption{
+					Label:                  attribute.Label,
+					State:                  state,
+					VariantMarketPlaceCode: marketPlaceCode,
+				})
 			}
 		}
-
-		options = append(options, VariationSelectionOption{
-			Label:                  attribute.Label,
-			State:                  state,
-			VariantMarketPlaceCode: marketPlaceCode,
-		})
 	}
 
 	return options
@@ -227,25 +227,28 @@ func newAttributeGroup(a domain.Attribute) *attributeGroup {
 	return &attributeGroup{
 		Code:       a.Code,
 		Label:      a.CodeLabel,
-		Attributes: nil,
+		Attributes: map[string]domain.Attribute{},
 	}
 }
 
 func (ag *attributeGroup) addAttribute(attribute domain.Attribute) {
-	ag.Attributes = append(ag.Attributes, attribute)
+	ag.Attributes[attribute.Label] = attribute
 }
 
 func (ag *attributeGroup) hasAttribute(attribute domain.Attribute) bool {
-	for _, currentAttribute := range ag.Attributes {
-		if currentAttribute.Label == attribute.Label {
-			return true
-		}
-	}
-	return false
+	_, ok := ag.Attributes[attribute.Label]
+	return ok
 }
 
 func (ag *attributeGroup) addAttributeIfNotExisting(attribute domain.Attribute) {
 	if !ag.hasAttribute(attribute) {
 		ag.addAttribute(attribute)
 	}
+}
+
+func (ag *attributeGroup) getAttributeByLabel(label string) *domain.Attribute {
+	if attribute, ok := ag.Attributes[label]; ok {
+		return &attribute
+	}
+	return nil
 }

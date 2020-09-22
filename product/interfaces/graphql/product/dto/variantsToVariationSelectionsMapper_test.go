@@ -32,6 +32,11 @@ func TestMapConfigurable(t *testing.T) {
 				Label: "Color",
 				Options: []VariationSelectionOption{
 					{
+						Label:                  "Red",
+						State:                  VariationSelectionOptionStateMatch,
+						VariantMarketPlaceCode: "shirt-red-l",
+					},
+					{
 						Label:                  "White",
 						State:                  VariationSelectionOptionStateMatch,
 						VariantMarketPlaceCode: "shirt-white-m",
@@ -40,11 +45,6 @@ func TestMapConfigurable(t *testing.T) {
 						Label:                  "Black",
 						State:                  VariationSelectionOptionStateMatch,
 						VariantMarketPlaceCode: "shirt-black-l",
-					},
-					{
-						Label:                  "Red",
-						State:                  VariationSelectionOptionStateMatch,
-						VariantMarketPlaceCode: "shirt-red-l",
 					},
 				},
 			},
@@ -63,6 +63,11 @@ func TestMapConfigurable(t *testing.T) {
 				Label: "Color",
 				Options: []VariationSelectionOption{
 					{
+						Label:                  "Red",
+						State:                  VariationSelectionOptionStateMatch,
+						VariantMarketPlaceCode: "shirt-red-l",
+					},
+					{
 						Label:                  "White",
 						State:                  VariationSelectionOptionStateMatch,
 						VariantMarketPlaceCode: "shirt-white-m",
@@ -71,11 +76,6 @@ func TestMapConfigurable(t *testing.T) {
 						Label:                  "Black",
 						State:                  VariationSelectionOptionStateMatch,
 						VariantMarketPlaceCode: "shirt-black-l",
-					},
-					{
-						Label:                  "Red",
-						State:                  VariationSelectionOptionStateMatch,
-						VariantMarketPlaceCode: "shirt-red-l",
 					},
 				},
 			}, {
@@ -118,6 +118,11 @@ func TestMapConfigurableWithActiveVariant(t *testing.T) {
 				Label: "Color",
 				Options: []VariationSelectionOption{
 					{
+						Label:                  "Red",
+						State:                  VariationSelectionOptionStateMatch,
+						VariantMarketPlaceCode: "shirt-red-l",
+					},
+					{
 						Label:                  "White",
 						State:                  VariationSelectionOptionStateMatch,
 						VariantMarketPlaceCode: "shirt-white-m",
@@ -126,11 +131,6 @@ func TestMapConfigurableWithActiveVariant(t *testing.T) {
 						Label:                  "Black",
 						State:                  VariationSelectionOptionStateActive,
 						VariantMarketPlaceCode: "shirt-black-l",
-					},
-					{
-						Label:                  "Red",
-						State:                  VariationSelectionOptionStateMatch,
-						VariantMarketPlaceCode: "shirt-red-l",
 					},
 				},
 			},
@@ -149,6 +149,11 @@ func TestMapConfigurableWithActiveVariant(t *testing.T) {
 				Label: "Color",
 				Options: []VariationSelectionOption{
 					{
+						Label:                  "Red",
+						State:                  VariationSelectionOptionStateMatch,
+						VariantMarketPlaceCode: "shirt-red-l",
+					},
+					{
 						Label:                  "White",
 						State:                  VariationSelectionOptionStateNoMatch,
 						VariantMarketPlaceCode: "shirt-white-m",
@@ -158,11 +163,7 @@ func TestMapConfigurableWithActiveVariant(t *testing.T) {
 						State:                  VariationSelectionOptionStateActive,
 						VariantMarketPlaceCode: "shirt-black-l",
 					},
-					{
-						Label:                  "Red",
-						State:                  VariationSelectionOptionStateMatch,
-						VariantMarketPlaceCode: "shirt-red-l",
-					},
+
 				},
 			}, {
 				Code:  "size",

@@ -31,8 +31,8 @@ type ProductService struct {
 // Inject dependencies
 func (ps *ProductService) Inject(
 	c *struct {
-		CurrencyCode string `inject:"config:commerce.product.fakeservice.currency,optional"`
-	},
+	CurrencyCode string `inject:"config:commerce.product.fakeservice.currency,optional"`
+},
 ) *ProductService {
 	if c != nil {
 		ps.currencyCode = c.CurrencyCode
@@ -156,6 +156,11 @@ func (ps *ProductService) getFakeConfigurable(marketplaceCode string) domain.Con
 	product.MarketPlaceCode = marketplaceCode
 	product.Identifier = marketplaceCode + "_identifier"
 	product.Teaser.TeaserPrice = ps.getPrice(30.99+float64(rand.Intn(10)), 20.49+float64(rand.Intn(10)))
+	product.VariantVariationAttributes = []string{"color", "size"}
+	product.VariantVariationAttributesSorting = map[string][]string{
+		"size":  {"M", "L"},
+		"color": {"Red", "White", "Black"},
+	}
 
 	return product
 }
@@ -163,8 +168,6 @@ func (ps *ProductService) getFakeConfigurable(marketplaceCode string) domain.Con
 func (ps *ProductService) getFakeConfigurableWithVariants(marketplaceCode string) domain.ConfigurableProduct {
 	product := ps.getFakeConfigurable(marketplaceCode)
 	product.RetailerCode = "retailer"
-
-	product.VariantVariationAttributes = []string{"color", "size"}
 
 	variants := []struct {
 		marketplaceCode string
@@ -230,12 +233,13 @@ func (ps *ProductService) getFakeConfigurableWithVariants(marketplaceCode string
 func (ps *ProductService) getFakeConfigurableWithActiveVariant(marketplaceCode string) domain.ConfigurableProductWithActiveVariant {
 	configurable := ps.getFakeConfigurableWithVariants(marketplaceCode)
 	product := domain.ConfigurableProductWithActiveVariant{
-		Identifier:                 configurable.Identifier,
-		BasicProductData:           configurable.BasicProductData,
-		Teaser:                     configurable.Teaser,
-		VariantVariationAttributes: configurable.VariantVariationAttributes,
-		Variants:                   configurable.Variants,
-		ActiveVariant:              configurable.Variants[4], // shirt-black-l
+		Identifier:                        configurable.Identifier,
+		BasicProductData:                  configurable.BasicProductData,
+		Teaser:                            configurable.Teaser,
+		VariantVariationAttributes:        configurable.VariantVariationAttributes,
+		VariantVariationAttributesSorting: configurable.VariantVariationAttributesSorting,
+		Variants:                          configurable.Variants,
+		ActiveVariant:                     configurable.Variants[4], // shirt-black-l
 	}
 
 	product.Teaser.TeaserPrice = product.ActiveVariant.ActivePrice
