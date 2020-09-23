@@ -1,6 +1,9 @@
 package graphqlproductdto
 
-import "flamingo.me/flamingo-commerce/v3/product/domain"
+import (
+	"flamingo.me/flamingo-commerce/v3/product/domain"
+	"sort"
+)
 
 type (
 	variantsToVariationSelectionsMapper struct {
@@ -25,6 +28,13 @@ type (
 		Label string
 		// unique Attributes matching the group code
 		Attributes map[string]domain.Attribute
+	}
+
+	variantSortingComparer struct {
+		attributes        []string
+		attributesSorting map[string][]string
+		a                 domain.Variant
+		b                 domain.Variant
 	}
 )
 
@@ -61,6 +71,7 @@ func NewVariantsToVariationSelections(p domain.BasicProduct) []VariationSelectio
 func (m *variantsToVariationSelectionsMapper) Map() []VariationSelection {
 	m.pickVariantsWithMatchingAttributes()
 	m.unsetActiveVariantIfInvalid()
+	m.sortVariantsWithMatchingAttributes()
 	m.groupAttributes()
 	return m.buildVariationSelections()
 }
@@ -70,6 +81,20 @@ func (m *variantsToVariationSelectionsMapper) pickVariantsWithMatchingAttributes
 		if variant.HasAllAttributes(m.variationAttributes) {
 			m.variantsWithMatchingAttributes = append(m.variantsWithMatchingAttributes, variant)
 		}
+	}
+}
+
+func (m *variantsToVariationSelectionsMapper) sortVariantsWithMatchingAttributes() {
+	if m.hasVariantsWithMatchingAttributes() {
+		sort.Slice(m.variantsWithMatchingAttributes, func(i, j int) bool {
+			comparer := variantSortingComparer{
+				attributes:        m.variationAttributes,
+				attributesSorting: m.variationAttributesSorting,
+				a:                 m.variantsWithMatchingAttributes[i],
+				b:                 m.variantsWithMatchingAttributes[j],
+			}
+			return comparer.compareSortingIndex()
+		})
 	}
 }
 
@@ -253,4 +278,27 @@ func (ag *attributeGroup) getAttributeByLabel(label string) *domain.Attribute {
 		return &attribute
 	}
 	return nil
+}
+
+func (c *variantSortingComparer) compareSortingIndex() bool {
+	for _, attributeCode := range c.attributes {
+		indexA := c.getSortingIndex(attributeCode, c.a)
+		indexB := c.getSortingIndex(attributeCode, c.b)
+
+		if indexA == indexB {
+			continue
+		}
+		return indexA < indexB
+	}
+	return false
+}
+
+func (c *variantSortingComparer) getSortingIndex(code string, variant domain.Variant) int {
+	sorting := c.attributesSorting[code]
+	for index, label := range sorting {
+		if variant.Attribute(code).Label == label {
+			return index
+		}
+	}
+	return -1 // we should not get here, our variants under tests have all required attributes
 }

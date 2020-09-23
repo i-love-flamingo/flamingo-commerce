@@ -66,7 +66,7 @@ func TestMapConfigurable(t *testing.T) {
 					{
 						Label:                  "Red",
 						State:                  VariationSelectionOptionStateMatch,
-						VariantMarketPlaceCode: "shirt-red-l",
+						VariantMarketPlaceCode: "shirt-red-m",
 					},
 					{
 						Label:                  "White",
@@ -86,12 +86,12 @@ func TestMapConfigurable(t *testing.T) {
 					{
 						Label:                  "M",
 						State:                  VariationSelectionOptionStateMatch,
-						VariantMarketPlaceCode: "shirt-white-m",
+						VariantMarketPlaceCode: "shirt-red-m",
 					},
 					{
 						Label:                  "L",
 						State:                  VariationSelectionOptionStateMatch,
-						VariantMarketPlaceCode: "shirt-black-l",
+						VariantMarketPlaceCode: "shirt-red-l",
 					},
 				},
 			},
@@ -142,7 +142,6 @@ func TestMapConfigurableWithActiveVariant(t *testing.T) {
 		fakeConfigurable, _ := fakeService.Get(nil, "fake_configurable_with_active_variant")
 		configurable := fakeConfigurable.(domain.ConfigurableProductWithActiveVariant)
 		configurable.VariantVariationAttributes = []string{"color", "size"}
-
 		variationSelection := NewVariantsToVariationSelections(configurable)
 		assert.Equal(t, []VariationSelection{
 			{
@@ -172,7 +171,7 @@ func TestMapConfigurableWithActiveVariant(t *testing.T) {
 					{
 						Label:                  "M",
 						State:                  VariationSelectionOptionStateNoMatch,
-						VariantMarketPlaceCode: "shirt-white-m",
+						VariantMarketPlaceCode: "shirt-red-m",
 					},
 					{
 						Label:                  "L",
