@@ -297,6 +297,16 @@ func (bpd BasicProductData) HasAttribute(key string) bool {
 	return false
 }
 
+// HasAllAttributes returns true, if all attributes are set
+func (bpd BasicProductData) HasAllAttributes(keys []string) bool {
+	for _, key := range keys {
+		if !bpd.HasAttribute(key) {
+			return false
+		}
+	}
+	return true
+}
+
 // Attribute get Attribute by key
 func (bpd BasicProductData) Attribute(key string) Attribute {
 	return bpd.Attributes[key]

@@ -1,90 +1,137 @@
 interface Commerce_Product {
-    baseData: Commerce_BasicProductData!
-    teaserData: Commerce_ProductTeaserData!
-    specifications: Commerce_ProductSpecifications!
-    isSaleable: Boolean!
-    saleableData: Commerce_ProductSaleable!
     type: String!
-    getIdentifier: String!
-    hasMedia(group: String!, usage: String!): Boolean!
-    getMedia(group: String!, usage: String!): Commerce_ProductMedia!
-}
-
-type Commerce_SimpleProduct implements Commerce_Product {
-    baseData: Commerce_BasicProductData!
-    teaserData: Commerce_ProductTeaserData!
-    specifications: Commerce_ProductSpecifications!
-    isSaleable: Boolean!
-    saleableData: Commerce_ProductSaleable!
-    type: String!
-    getIdentifier: String!
-    hasMedia(group: String!, usage: String!): Boolean!
-    getMedia(group: String!, usage: String!): Commerce_ProductMedia!
-}
-
-
-type Commerce_ConfigurableProduct implements Commerce_Product {
-    baseData: Commerce_BasicProductData!
-    teaserData: Commerce_ProductTeaserData!
-    specifications: Commerce_ProductSpecifications!
-    isSaleable: Boolean!
-    saleableData: Commerce_ProductSaleable!
-    type: String!
-    getIdentifier: String!
-    hasMedia(group: String!, usage: String!): Boolean!
-    getMedia(group: String!, usage: String!): Commerce_ProductMedia!
-    variants: [Commerce_Product_Variant!]
-    variantVariationAttributes: [String!]
-}
-
-type Commerce_Product_Variant {
-    baseData: Commerce_BasicProductData!
-    saleableData: Commerce_ProductSaleable!
-}
-
-type Commerce_BasicProductData {
-    title:            String!
-    attributes:       Commerce_ProductAttributes
-    shortDescription: String!
-    description:      String!
-    media:            [Commerce_ProductMedia!]
-
     marketPlaceCode: String!
-    retailerCode:    String!
-    retailerSku:     String!
-    retailerName:    String!
-
-    createdAt:   Time
-    updatedAt:   Time
-    visibleFrom: Time
-    visibleTo:   Time
-
-    Categories:   [Commerce_CategoryTeaser!]
-    MainCategory: Commerce_CategoryTeaser!
-
-    categoryToCodeMapping: [String!]
-
-    stockLevel: String!
-
-    keywords: [String!]
-    isNew:    Boolean!
+    identifier: String!
+    media: Commerce_Product_Media!,
+    price: Commerce_Product_PriceInfo!,
+    title: String!
+    categories: Commerce_Product_Categories!
+    description: String!
+    shortDescription: String!
+    meta: Commerce_Product_Meta!
+    loyalty: Commerce_Product_Loyalty!
+    attributes: Commerce_Product_Attributes!
 }
 
-type Commerce_ProductTeaserData {
-    shortTitle: String
-    shortDescription: String
-    teaserPrice : Commerce_ProductPriceInfo
-    teaserPriceIsFromPrice: Boolean
-    preSelectedVariantSku: String
-    media : [Commerce_ProductMedia!]
-    marketPlaceCode: String
-    teaserAvailablePrices : [Commerce_ProductPriceInfo!]
-    teaserLoyaltyPriceInfo: Commerce_ProductLoyaltyPriceInfo
-    "teaserLoyaltyEarningInfo for the current product"
-    teaserLoyaltyEarningInfo: Commerce_ProductLoyaltyEarningInfo
+"""
+A simple product, that has no variable attributes and therefore no relation to other products
+"""
+type Commerce_Product_SimpleProduct implements Commerce_Product {
+    type: String!
+    marketPlaceCode: String!
+    identifier: String!
+    media: Commerce_Product_Media!,
+    price: Commerce_Product_PriceInfo!,
+    title: String!
+    categories: Commerce_Product_Categories!
+    description: String!
+    shortDescription: String!
+    meta: Commerce_Product_Meta!
+    loyalty: Commerce_Product_Loyalty!
+    attributes: Commerce_Product_Attributes!
 }
 
-type Commerce_ProductLoyaltyPriceInfo {
+"""
+A configurable product defines the possible variations of a product. It only contains
+information about product variants but has no active variant itself.
+"""
+type Commerce_Product_ConfigurableProduct implements Commerce_Product {
+    type: String!
+    marketPlaceCode: String!
+    identifier: String!
+    media: Commerce_Product_Media!,
+    price: Commerce_Product_PriceInfo!,
+    title: String!
+    categories: Commerce_Product_Categories!
+    description: String!
+    shortDescription: String!
+    meta: Commerce_Product_Meta!
+    loyalty: Commerce_Product_Loyalty!
+    attributes: Commerce_Product_Attributes!
+    variationSelections: [Commerce_Product_VariationSelection!]
+}
+
+"""
+An active variant is one of many concrete variants that a configurable provides. All data relates to one active variant
+and not the the configurable. It also contains information about it´s siblings (other variants on the same configurable)
+"""
+type Commerce_Product_ActiveVariantProduct implements Commerce_Product {
+    type: String!
+    "The marketPlaceCode of the 'configurable' product. See also 'variantMarketPlaceCode' for the variant marketPlaceCode"
+    marketPlaceCode: String!
+    identifier: String!
+    media: Commerce_Product_Media!,
+    price: Commerce_Product_PriceInfo!,
+    title: String!
+    categories: Commerce_Product_Categories!
+    description: String!
+    shortDescription: String!
+    meta: Commerce_Product_Meta!
+    loyalty: Commerce_Product_Loyalty!
+    attributes: Commerce_Product_Attributes!
+    "The marketPlaceCode of the actual variant"
+    variantMarketPlaceCode: String!
+    "Contains information about other available product variations"
+    variationSelections: [Commerce_Product_VariationSelection!]
+    "Convenience property to access the active variant labels easily"
+    activeVariationSelections: [Commerce_Product_ActiveVariationSelection!]
+}
+
+"A group of attributes. E.g. 'size'"
+type Commerce_Product_VariationSelection {
+    code: String!
+    label: String!
+    "All possiblie variations for that attribute. E.g. 'M', 'L', 'XL'"
+    options: [Commerce_Product_VariationSelection_Option]
+}
+
+"Easy-to-access property to display attribute information about an active variant"
+type Commerce_Product_ActiveVariationSelection {
+    code: String!
+    label: String!
+    value: String!
+}
+
+"An option for a group of attributes"
+type Commerce_Product_VariationSelection_Option {
+    label: String!
+    state: Commerce_Product_VariationSelection_OptionState!
+    """
+    Contains the marketPlaceCode of an product that matches this option.
+    Depending on if there is an active variant or not, it tries to include the marketPlaceCode
+    for the variant, that best matches the current option.
+    """
+    variantMarketPlaceCode: String!,
+}
+
+"The state of an option related to the currently active variant"
+enum Commerce_Product_VariationSelection_OptionState {
+    "The currently active variant has this exact attribute + all other active variant attributes"
+    ACTIVE
+    "A variant (other than the active variant) exists, that matches this exact attribute + all other active variant attributes"
+    MATCH
+    "No variant exists, that matches this exact attribute + all other active variant attributes."
+    NO_MATCH
+}
+
+"Wrapper that includes main category and all categories"
+type Commerce_Product_Categories {
+    main: Commerce_Product_CategoryTeaser!
+    all:   [Commerce_Product_CategoryTeaser!]
+}
+
+"Meta information about the product"
+type Commerce_Product_Meta {
+    keywords:        [String!]
+}
+
+"Loyalty information about this product"
+type Commerce_Product_Loyalty {
+    price:      Commerce_Product_Loyalty_PriceInfo
+    earning:    Commerce_Product_Loyalty_EarningInfo
+}
+
+type Commerce_Product_Loyalty_PriceInfo {
     type: String!
     default: Commerce_Price!
     isDiscounted: Boolean!
@@ -92,49 +139,29 @@ type Commerce_ProductLoyaltyPriceInfo {
     discountText: String!
     minPointsToSpent: Float!
     maxPointsToSpent: Float!
-    context: Commerce_PriceContext!
+    context: Commerce_Product_PriceContext!
 }
 
-"LoyaltyEarningInfo shows the type and the points earned"
-type Commerce_ProductLoyaltyEarningInfo {
+"Shows the type and the points earned"
+type Commerce_Product_Loyalty_EarningInfo {
     "The type of the LoyaltyEarningInfo, e.g. MilesAndMore"
     type: String!
     "The value of the LoyaltyEarningInfo, currency can be e.g. points or miles"
     default: Commerce_Price!
 }
 
-type Commerce_PriceContext {
+type Commerce_Product_PriceContext {
     customerGroup: String!
     channelCode: String!
     locale: String!
 }
 
-type Commerce_ProductSpecifications {
-    groups: [Commerce_ProductSpecificationGroup!]
+type Commerce_Product_Media {
+    all: [Commerce_Product_MediaItem!]
+    getMedia(usage: String!): Commerce_Product_MediaItem!
 }
 
-type Commerce_ProductSpecificationGroup {
-    title: String!
-    entries: [Commerce_ProductSpecificationEntry!]
-}
-
-type Commerce_ProductSpecificationEntry {
-    label: String!
-    values: [String!]
-}
-
-type Commerce_ProductSaleable {
-    isSaleable: Boolean!
-    saleableFrom: Time
-    saleableTo: Time
-    activePrice: Commerce_ProductPriceInfo
-    availablePrices: [Commerce_ProductPriceInfo!]
-    loyaltyPrices: [Commerce_ProductLoyaltyPriceInfo!]
-    "loyaltyEarningInfo for the current product"
-    loyaltyEarnings: [Commerce_ProductLoyaltyEarningInfo!]
-}
-
-type Commerce_ProductMedia {
+type Commerce_Product_MediaItem {
     type:      String!
     mimeType:  String!
     usage:     String!
@@ -142,15 +169,15 @@ type Commerce_ProductMedia {
     reference: String!
 }
 
-type Commerce_ProductAttributes {
+type Commerce_Product_Attributes {
     attributeKeys: [String!]
-    attributes: [Commerce_ProductAttribute!]
+    attributes: [Commerce_Product_Attribute!]
     hasAttribute(key: String!): Boolean
-    getAttribute(key: String!): Commerce_ProductAttribute
-    getAttributesByKey(keys: [String!]): [Commerce_ProductAttribute!]
+    getAttribute(key: String!): Commerce_Product_Attribute
+    getAttributesByKey(keys: [String!]): [Commerce_Product_Attribute!]
 }
 
-type Commerce_ProductAttribute {
+type Commerce_Product_Attribute {
     code: String!
     codeLabel: String!
     label: String!
@@ -158,14 +185,14 @@ type Commerce_ProductAttribute {
     values: [String!]
 }
 
-type Commerce_CategoryTeaser {
+type Commerce_Product_CategoryTeaser {
     code: String!
     path: String!
     name: String!
-    parent: Commerce_CategoryTeaser
+    parent: Commerce_Product_CategoryTeaser
 }
 
-type Commerce_ProductPriceInfo {
+type Commerce_Product_PriceInfo {
     default: Commerce_Price
     discounted: Commerce_Price
     discountText: String!
@@ -175,9 +202,8 @@ type Commerce_ProductPriceInfo {
     isDiscounted: Boolean
     campaignRules: [String!]
     denyMoreDiscounts: Boolean
-    #    context: Commerce_PriceContext
+    #    context: Commerce_Product_PriceContext
     taxClass: String!
-
 }
 
 type Commerce_Product_SearchResult {
@@ -189,6 +215,6 @@ type Commerce_Product_SearchResult {
 }
 
 extend type Query {
-    Commerce_Product(marketplaceCode: String!): Commerce_Product
+    Commerce_Product(marketPlaceCode: String!, variantMarketPlaceCode: String): Commerce_Product
     Commerce_Product_Search(searchRequest: Commerce_Search_Request): Commerce_Product_SearchResult!
 }

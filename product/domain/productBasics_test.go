@@ -118,6 +118,15 @@ func TestBasicProductHasAttribute(t *testing.T) {
 	assert.False(t, b.HasAttribute("Code"))
 }
 
+func TestBasicProductHasAllAttributes(t *testing.T) {
+	b := BasicProductData{}
+	assert.False(t, b.HasAllAttributes([]string{"code", "color"}))
+
+	b.Attributes = map[string]Attribute{"code": {Code: "code"}, "color": {Code: "color"}}
+	assert.True(t, b.HasAllAttributes([]string{"code", "color"}))
+	assert.False(t, b.HasAllAttributes([]string{"Code", "Color"}))
+}
+
 func TestBasicProductHasGetAttributesByKey(t *testing.T) {
 	b := BasicProductData{}
 	b.Attributes = map[string]Attribute{

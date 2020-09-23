@@ -2,7 +2,7 @@ package graphql
 
 import (
 	"flamingo.me/flamingo-commerce/v3/product/application"
-	"flamingo.me/flamingo-commerce/v3/product/domain"
+	graphqlProductDto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
 	searchdomain "flamingo.me/flamingo-commerce/v3/search/domain"
 	"flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/searchdto"
 	"flamingo.me/flamingo-commerce/v3/search/utils"
@@ -34,8 +34,13 @@ func (obj *SearchResultDTO) Suggestions() []searchdomain.Suggestion {
 }
 
 // Products get products
-func (obj *SearchResultDTO) Products() []domain.BasicProduct {
-	return obj.result.Products
+func (obj *SearchResultDTO) Products() []graphqlProductDto.Product {
+	products := make([]graphqlProductDto.Product, 0, len(obj.result.Products))
+	for _, p := range obj.result.Products {
+		products = append(products, graphqlProductDto.NewGraphqlProductDto(p, nil))
+	}
+
+	return products
 }
 
 // SearchMeta get search meta

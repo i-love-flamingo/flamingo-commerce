@@ -58,12 +58,13 @@ commerce:
         - "reserve-order-id-error"
     defaultDeliveryCode: "delivery"
     enableCartCache: false
-    useInMemoryCartServiceAdapters: true
+    defaultCartAdapter:
+      enabled: true
+      defaultTaxRate: 19
     emailAdapter:
       emailAddress: "test@test.de"
-    useEmailPlaceOrderAdapter: false
-    inMemoryCartServiceAdapter:
-      defaultTaxRate: 19
+    placeOrderLogger:
+      enabled: false
   checkout:
     showEmptyCartPageIfNoItems: true
     usePersonalDataForm: true

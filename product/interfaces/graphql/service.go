@@ -2,6 +2,7 @@ package graphql
 
 import (
 	"flamingo.me/flamingo-commerce/v3/product/domain"
+	graphqlProductDto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
 	"flamingo.me/graphql"
 )
 
@@ -19,31 +20,30 @@ func (*Service) Schema() []byte {
 
 // Types configures the GraphQL to Go resolvers
 func (*Service) Types(types *graphql.Types) {
-	types.Map("Commerce_Product", new(domain.BasicProduct))
-	types.GoField("Commerce_Product", "specifications", "GetSpecifications")
-	types.Map("Commerce_SimpleProduct", domain.SimpleProduct{})
-	types.GoField("Commerce_SimpleProduct", "specifications", "GetSpecifications")
-	types.Map("Commerce_ConfigurableProduct", domain.ConfigurableProduct{})
-	types.GoField("Commerce_ConfigurableProduct", "specifications", "GetSpecifications")
-	types.Map("Commerce_Product_Variant", domain.Variant{})
-	types.Map("Commerce_BasicProductData", domain.BasicProductData{})
-	types.Map("Commerce_ProductTeaserData", domain.TeaserData{})
-	types.Map("Commerce_ProductSpecifications", domain.Specifications{})
-	types.Map("Commerce_ProductSpecificationGroup", domain.SpecificationGroup{})
-	types.Map("Commerce_ProductSpecificationEntry", domain.SpecificationEntry{})
-	types.Map("Commerce_ProductSaleable", domain.Saleable{})
-	types.Map("Commerce_ProductMedia", domain.Media{})
-	types.Map("Commerce_ProductAttributes", domain.Attributes{})
-	types.GoField("Commerce_ProductAttributes", "getAttribute", "Attribute")
-	types.GoField("Commerce_ProductAttributes", "getAttributes", "Attributes")
-	types.GoField("Commerce_ProductAttributes", "getAttributeKeys", "AttributeKeys")
-	types.GoField("Commerce_ProductAttributes", "getAttributesByKey", "AttributesByKey")
-	types.Map("Commerce_ProductAttribute", domain.Attribute{})
-	types.Map("Commerce_CategoryTeaser", domain.CategoryTeaser{})
-	types.Map("Commerce_ProductPriceInfo", domain.PriceInfo{})
-	types.Map("Commerce_ProductLoyaltyPriceInfo", domain.LoyaltyPriceInfo{})
-	types.Map("Commerce_ProductLoyaltyEarningInfo", domain.LoyaltyEarningInfo{})
-	types.Map("Commerce_PriceContext", domain.PriceContext{})
+	types.Map("Commerce_Product", new(graphqlProductDto.Product))
+	types.Map("Commerce_Product_SimpleProduct", graphqlProductDto.SimpleProduct{})
+	types.Map("Commerce_Product_ConfigurableProduct", graphqlProductDto.ConfigurableProduct{})
+	types.Map("Commerce_Product_ActiveVariantProduct", graphqlProductDto.ActiveVariantProduct{})
+	types.Map("Commerce_Product_VariationSelection", graphqlProductDto.VariationSelection{})
+	types.Map("Commerce_Product_ActiveVariationSelection", graphqlProductDto.ActiveVariationSelection{})
+	types.Map("Commerce_Product_VariationSelection_Option", graphqlProductDto.VariationSelectionOption{})
+	types.Map("Commerce_Product_VariationSelection_OptionState", new(graphqlProductDto.VariationSelectionOptionState))
+	types.Map("Commerce_Product_Categories", graphqlProductDto.ProductCategories{})
+	types.Map("Commerce_Product_Meta", graphqlProductDto.ProductMeta{})
+	types.Map("Commerce_Product_Loyalty", graphqlProductDto.ProductLoyalty{})
+	types.Map("Commerce_Product_Loyalty_PriceInfo", domain.LoyaltyPriceInfo{})
+	types.Map("Commerce_Product_Loyalty_EarningInfo", domain.LoyaltyEarningInfo{})
+	types.Map("Commerce_Product_PriceContext", domain.PriceContext{})
+	types.Map("Commerce_Product_Media", graphqlProductDto.ProductMedia{})
+	types.Map("Commerce_Product_MediaItem", domain.Media{})
+	types.Map("Commerce_Product_Attributes", domain.Attributes{})
+	types.GoField("Commerce_Product_Attributes", "getAttribute", "Attribute")
+	types.GoField("Commerce_Product_Attributes", "getAttributes", "Attributes")
+	types.GoField("Commerce_Product_Attributes", "getAttributeKeys", "AttributeKeys")
+	types.GoField("Commerce_Product_Attributes", "getAttributesByKey", "AttributesByKey")
+	types.Map("Commerce_Product_Attribute", domain.Attribute{})
+	types.Map("Commerce_Product_CategoryTeaser", domain.CategoryTeaser{})
+	types.Map("Commerce_Product_PriceInfo", domain.PriceInfo{})
 	types.Map("Commerce_Product_SearchResult", SearchResultDTO{})
 
 	types.Resolve("Query", "Commerce_Product", CommerceProductQueryResolver{}, "CommerceProduct")
