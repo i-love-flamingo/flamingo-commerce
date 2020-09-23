@@ -702,6 +702,17 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 			cc.orderService.ClearLastPlacedOrder(ctx)
 		}
 
+		// mark payment selection as new payment to allow the user to retry
+		newPaymentSelection, err := decoratedCart.Cart.PaymentSelection.GenerateNewIdempotencyKey()
+		if err != nil {
+			cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.paymentaction: Error during GenerateNewIdempotencyKey:", err)
+		} else {
+			err = cc.applicationCartService.UpdatePaymentSelection(ctx, session, newPaymentSelection)
+			if err != nil {
+				cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.paymentaction: Error during UpdatePaymentSelection:", err)
+			}
+		}
+
 		err = flowStatus.Error
 		if flowStatus.Error == nil {
 			// fallback if payment gateway didn't respond with a proper error
@@ -716,17 +727,6 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 					ErrorCode:    paymentDomain.PaymentErrorCodeFailed,
 					ErrorMessage: paymentDomain.PaymentErrorCodeFailed,
 				}
-			}
-		}
-
-		// mark payment selection as new payment to allow the user to retry
-		newPaymentSelection, err := decoratedCart.Cart.PaymentSelection.GenerateNewIdempotencyKey()
-		if err != nil {
-			cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.paymentaction: Error during GenerateNewIdempotencyKey:", err)
-		} else {
-			err = cc.applicationCartService.UpdatePaymentSelection(ctx, session, newPaymentSelection)
-			if err != nil {
-				cc.logger.WithContext(ctx).Error("cart.checkoutcontroller.paymentaction: Error during UpdatePaymentSelection:", err)
 			}
 		}
 
