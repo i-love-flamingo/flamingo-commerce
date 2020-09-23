@@ -14,6 +14,10 @@
 * fake: The product fake search service is now able to return products with an active variant via `fake_configurable_with_active_variant`. Variation attributes have been changed to only include `color` and `size`.
 * Expose `VariantVariationAttributesSorting` on `domain.ConfigurableProductWithActiveVariant`
 
+**checkout**
+* Checkout Controller, update handling of aborted/canceled payments:
+  * Cancel the order / restore the cart before generating the new idempotency key of the payment selection
+
 ## v3.3.0
 **product**
 * Switch module config to CUE
