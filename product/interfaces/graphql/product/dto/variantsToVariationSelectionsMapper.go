@@ -1,8 +1,9 @@
 package graphqlproductdto
 
 import (
-	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"sort"
+
+	"flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
 type (
@@ -32,11 +33,16 @@ type (
 		AttributesSorting []string
 	}
 
+	// variantSortingComparer compares the sorting of two variants
 	variantSortingComparer struct {
-		attributes        []string
+		// Relevant attributes for comparison
+		attributeCodes []string
+		// A map of ordered labels for an attribute code
 		attributesSorting map[string][]string
-		a                 domain.Variant
-		b                 domain.Variant
+		// First variant for comparison
+		variantA domain.Variant
+		// Second variant for comparison
+		variantB domain.Variant
 	}
 )
 
@@ -90,12 +96,12 @@ func (m *variantsToVariationSelectionsMapper) sortVariants() {
 	if m.hasVariantsWithMatchingAttributes() {
 		sort.Slice(m.variantsWithMatchingAttributes, func(i, j int) bool {
 			comparer := variantSortingComparer{
-				attributes:        m.variationAttributes,
+				attributeCodes:    m.variationAttributes,
 				attributesSorting: m.variationAttributesSorting,
-				a:                 m.variantsWithMatchingAttributes[i],
-				b:                 m.variantsWithMatchingAttributes[j],
+				variantA:          m.variantsWithMatchingAttributes[i],
+				variantB:          m.variantsWithMatchingAttributes[j],
 			}
-			return comparer.compareSortingIndex()
+			return comparer.compare()
 		})
 	}
 }
@@ -285,10 +291,10 @@ func (ag *attributeGroup) getAttributeByLabel(label string) *domain.Attribute {
 	return nil
 }
 
-func (c *variantSortingComparer) compareSortingIndex() bool {
-	for _, attributeCode := range c.attributes {
-		indexA := c.getSortingIndex(attributeCode, c.a)
-		indexB := c.getSortingIndex(attributeCode, c.b)
+func (c *variantSortingComparer) compare() bool {
+	for _, attributeCode := range c.attributeCodes {
+		indexA := c.getSortingIndex(attributeCode, c.variantA)
+		indexB := c.getSortingIndex(attributeCode, c.variantB)
 
 		if indexA == indexB {
 			continue
@@ -299,8 +305,8 @@ func (c *variantSortingComparer) compareSortingIndex() bool {
 }
 
 func (c *variantSortingComparer) getSortingIndex(code string, variant domain.Variant) int {
-	sorting := c.attributesSorting[code]
-	for index, label := range sorting {
+	sortedLabels := c.attributesSorting[code]
+	for index, label := range sortedLabels {
 		if variant.Attribute(code).Label == label {
 			return index
 		}
