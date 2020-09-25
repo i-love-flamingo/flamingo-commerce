@@ -170,7 +170,7 @@ func (m *variantsToVariationSelectionsMapper) buildVariationSelectionOptions(att
 
 	attributeGroup.eachAttributeInOrder(func(attribute *domain.Attribute) {
 		var state VariationSelectionOptionState
-		var marketPlaceCode string
+		var variant VariationSelectionOptionVariant
 
 		if m.hasActiveVariant() {
 			mergedAttributes := m.getActiveAttributesWithOverwrite(*attribute)
@@ -179,17 +179,17 @@ func (m *variantsToVariationSelectionsMapper) buildVariationSelectionOptions(att
 			if exactMatchingVariant != nil {
 				if exactMatchingVariant.MarketPlaceCode == m.activeVariant.MarketPlaceCode {
 					state = VariationSelectionOptionStateActive
-					marketPlaceCode = exactMatchingVariant.MarketPlaceCode
+					variant = VariationSelectionOptionVariant{MarketPlaceCode: exactMatchingVariant.MarketPlaceCode}
 				} else {
 					state = VariationSelectionOptionStateMatch
-					marketPlaceCode = exactMatchingVariant.MarketPlaceCode
+					variant = VariationSelectionOptionVariant{MarketPlaceCode: exactMatchingVariant.MarketPlaceCode}
 				}
 			} else {
 				fallbackVariant := m.findMatchingVariant([]domain.Attribute{*attribute})
 
 				if fallbackVariant != nil {
 					state = VariationSelectionOptionStateNoMatch
-					marketPlaceCode = fallbackVariant.MarketPlaceCode
+					variant = VariationSelectionOptionVariant{MarketPlaceCode: fallbackVariant.MarketPlaceCode}
 				}
 			}
 		} else {
@@ -197,14 +197,14 @@ func (m *variantsToVariationSelectionsMapper) buildVariationSelectionOptions(att
 
 			if fallbackVariant != nil {
 				state = VariationSelectionOptionStateMatch
-				marketPlaceCode = fallbackVariant.MarketPlaceCode
+				variant = VariationSelectionOptionVariant{MarketPlaceCode: fallbackVariant.MarketPlaceCode}
 			}
 		}
 
 		options = append(options, VariationSelectionOption{
-			Label:                  attribute.Label,
-			State:                  state,
-			VariantMarketPlaceCode: marketPlaceCode,
+			Label:   attribute.Label,
+			State:   state,
+			Variant: variant,
 		})
 	})
 

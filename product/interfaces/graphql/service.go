@@ -28,6 +28,7 @@ func (*Service) Types(types *graphql.Types) {
 	types.Map("Commerce_Product_ActiveVariationSelection", graphqlProductDto.ActiveVariationSelection{})
 	types.Map("Commerce_Product_VariationSelection_Option", graphqlProductDto.VariationSelectionOption{})
 	types.Map("Commerce_Product_VariationSelection_OptionState", new(graphqlProductDto.VariationSelectionOptionState))
+	types.Map("Commerce_Product_VariationSelection_OptionVariant", graphqlProductDto.VariationSelectionOptionVariant{})
 	types.Map("Commerce_Product_Categories", graphqlProductDto.ProductCategories{})
 	types.Map("Commerce_Product_Meta", graphqlProductDto.ProductMeta{})
 	types.Map("Commerce_Product_Loyalty", graphqlProductDto.ProductLoyalty{})

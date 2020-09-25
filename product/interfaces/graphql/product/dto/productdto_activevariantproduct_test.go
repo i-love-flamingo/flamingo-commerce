@@ -289,9 +289,9 @@ func TestActiveVariantProduct_VariationSelections(t *testing.T) {
 			Label: "attribute_a_codeLabel",
 			Options: []graphqlProductDto.VariationSelectionOption{
 				{
-					Label:                  "attribute_a_variantLabel",
-					State:                  graphqlProductDto.VariationSelectionOptionStateActive,
-					VariantMarketPlaceCode: "active_variant_product_code_a",
+					Label:   "attribute_a_variantLabel",
+					State:   graphqlProductDto.VariationSelectionOptionStateActive,
+					Variant: graphqlProductDto.VariationSelectionOptionVariant{MarketPlaceCode: "active_variant_product_code_a"},
 				},
 			},
 		},

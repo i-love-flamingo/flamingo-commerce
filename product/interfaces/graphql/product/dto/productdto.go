@@ -64,9 +64,9 @@ type (
 
 	// VariationSelectionOption one possible variation option
 	VariationSelectionOption struct {
-		Label                  string
-		State                  VariationSelectionOptionState
-		VariantMarketPlaceCode string
+		Label   string
+		State   VariationSelectionOptionState
+		Variant VariationSelectionOptionVariant
 	}
 
 	// VariationSelectionOptionState state of the option
@@ -77,6 +77,11 @@ type (
 		Code  string
 		Label string
 		Value string
+	}
+
+	// VariationSelectionOptionVariant Information about the underlying variant
+	VariationSelectionOptionVariant struct {
+		MarketPlaceCode string
 	}
 )
 
