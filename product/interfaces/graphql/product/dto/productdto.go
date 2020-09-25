@@ -81,8 +81,7 @@ type (
 
 	// VariationSelectionOptionVariant Information about the underlying variant
 	VariationSelectionOptionVariant struct {
-		Variant         productDomain.Variant
-		MarketPlaceCode string
+		variant productDomain.Variant
 	}
 )
 
@@ -143,4 +142,19 @@ func NewGraphqlProductDto(product productDomain.BasicProduct, preSelectedVariant
 	return SimpleProduct{
 		product: simpleProduct,
 	}
+}
+
+// NewVariationSelectionOptionVariant Creates a new option variant from the domain variant
+func NewVariationSelectionOptionVariant(variant productDomain.Variant) VariationSelectionOptionVariant {
+	return VariationSelectionOptionVariant{variant}
+}
+
+// MarketPlaceCode returns the marketPlaceCode of the variant
+func (v *VariationSelectionOptionVariant) MarketPlaceCode() string {
+	return v.variant.MarketPlaceCode
+}
+
+// BaseData of the variant
+func (v *VariationSelectionOptionVariant) BaseData() productDomain.BasicProductData {
+	return v.variant.BaseData()
 }

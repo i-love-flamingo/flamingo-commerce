@@ -205,8 +205,7 @@ func (m *variantsToVariationSelectionsMapper) buildVariationSelectionOptions(att
 			Label: attribute.Label,
 			State: state,
 			Variant: VariationSelectionOptionVariant{
-				Variant:         matchingVariant,
-				MarketPlaceCode: matchingVariant.MarketPlaceCode,
+				variant: matchingVariant,
 			},
 		})
 	})

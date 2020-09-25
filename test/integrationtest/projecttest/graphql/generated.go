@@ -19997,13 +19997,13 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_OptionVariant_m
 		Object:   "Commerce_Product_VariationSelection_OptionVariant",
 		Field:    field,
 		Args:     nil,
-		IsMethod: false,
+		IsMethod: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.MarketPlaceCode, nil
+		return obj.MarketPlaceCode(), nil
 	})
 
 	if resTmp == nil {

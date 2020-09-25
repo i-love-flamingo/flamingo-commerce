@@ -15,20 +15,14 @@ var (
 func getOptionVariantByMarketPlaceCode(variants []domain.Variant, marketPlaceCode string) VariationSelectionOptionVariant {
 	for _, variant := range variants {
 		if variant.MarketPlaceCode == marketPlaceCode {
-			return VariationSelectionOptionVariant{
-				Variant:         variant,
-				MarketPlaceCode: variant.MarketPlaceCode,
-			}
+			return NewVariationSelectionOptionVariant(variant)
 		}
 	}
 
-	return VariationSelectionOptionVariant{
-		Variant: domain.Variant{
-			BasicProductData: domain.BasicProductData{},
-			Saleable:         domain.Saleable{},
-		},
-		MarketPlaceCode: "",
-	}
+	return NewVariationSelectionOptionVariant(domain.Variant{
+		BasicProductData: domain.BasicProductData{},
+		Saleable:         domain.Saleable{},
+	})
 }
 
 func TestMapSimpleProduct(t *testing.T) {
