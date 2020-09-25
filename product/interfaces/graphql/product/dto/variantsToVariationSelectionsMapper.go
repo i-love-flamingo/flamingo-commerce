@@ -170,7 +170,7 @@ func (m *variantsToVariationSelectionsMapper) buildVariationSelectionOptions(att
 
 	attributeGroup.eachAttributeInOrder(func(attribute *domain.Attribute) {
 		var state VariationSelectionOptionState
-		var variant VariationSelectionOptionVariant
+		var matchingVariant domain.Variant
 
 		if m.hasActiveVariant() {
 			mergedAttributes := m.getActiveAttributesWithOverwrite(*attribute)
@@ -179,17 +179,17 @@ func (m *variantsToVariationSelectionsMapper) buildVariationSelectionOptions(att
 			if exactMatchingVariant != nil {
 				if exactMatchingVariant.MarketPlaceCode == m.activeVariant.MarketPlaceCode {
 					state = VariationSelectionOptionStateActive
-					variant = VariationSelectionOptionVariant{MarketPlaceCode: exactMatchingVariant.MarketPlaceCode}
+					matchingVariant = *exactMatchingVariant
 				} else {
 					state = VariationSelectionOptionStateMatch
-					variant = VariationSelectionOptionVariant{MarketPlaceCode: exactMatchingVariant.MarketPlaceCode}
+					matchingVariant = *exactMatchingVariant
 				}
 			} else {
 				fallbackVariant := m.findMatchingVariant([]domain.Attribute{*attribute})
 
 				if fallbackVariant != nil {
 					state = VariationSelectionOptionStateNoMatch
-					variant = VariationSelectionOptionVariant{MarketPlaceCode: fallbackVariant.MarketPlaceCode}
+					matchingVariant = *fallbackVariant
 				}
 			}
 		} else {
@@ -197,14 +197,17 @@ func (m *variantsToVariationSelectionsMapper) buildVariationSelectionOptions(att
 
 			if fallbackVariant != nil {
 				state = VariationSelectionOptionStateMatch
-				variant = VariationSelectionOptionVariant{MarketPlaceCode: fallbackVariant.MarketPlaceCode}
+				matchingVariant = *fallbackVariant
 			}
 		}
 
 		options = append(options, VariationSelectionOption{
-			Label:   attribute.Label,
-			State:   state,
-			Variant: variant,
+			Label: attribute.Label,
+			State: state,
+			Variant: VariationSelectionOptionVariant{
+				Variant:         matchingVariant,
+				MarketPlaceCode: matchingVariant.MarketPlaceCode,
+			},
 		})
 	})
 

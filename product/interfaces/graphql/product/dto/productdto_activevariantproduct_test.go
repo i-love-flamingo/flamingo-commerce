@@ -282,6 +282,7 @@ func TestActiveVariantProduct_Type(t *testing.T) {
 }
 
 func TestActiveVariantProduct_VariationSelections(t *testing.T) {
+	configurableProduct := getProductDomainConfigurableWithActiveVariantProduct()
 	product := getActiveVariantProduct()
 	assert.Equal(t, []graphqlProductDto.VariationSelection{
 		{
@@ -291,7 +292,7 @@ func TestActiveVariantProduct_VariationSelections(t *testing.T) {
 				{
 					Label:   "attribute_a_variantLabel",
 					State:   graphqlProductDto.VariationSelectionOptionStateActive,
-					Variant: graphqlProductDto.VariationSelectionOptionVariant{MarketPlaceCode: "active_variant_product_code_a"},
+					Variant: graphqlProductDto.VariationSelectionOptionVariant{MarketPlaceCode: "active_variant_product_code_a", Variant: configurableProduct.Variants[0]},
 				},
 			},
 		},

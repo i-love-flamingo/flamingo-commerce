@@ -81,6 +81,7 @@ type (
 
 	// VariationSelectionOptionVariant Information about the underlying variant
 	VariationSelectionOptionVariant struct {
+		Variant         productDomain.Variant
 		MarketPlaceCode string
 	}
 )
