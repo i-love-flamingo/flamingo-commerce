@@ -72,7 +72,21 @@ func getProductDomainConfigurableWithActiveVariantProduct() productDomain.Config
 					},
 				},
 			},
-			Saleable: productDomain.Saleable{},
+			Saleable: productDomain.Saleable{
+				ActivePrice: productDomain.PriceInfo{
+					Default:           priceDomain.NewFromFloat(23.23, "EUR"),
+					Discounted:        priceDomain.Price{},
+					DiscountText:      "",
+					ActiveBase:        big.Float{},
+					ActiveBaseAmount:  big.Float{},
+					ActiveBaseUnit:    "",
+					IsDiscounted:      false,
+					CampaignRules:     nil,
+					DenyMoreDiscounts: false,
+					Context:           productDomain.PriceContext{},
+					TaxClass:          "",
+				},
+			},
 		},
 
 		VariantVariationAttributes: []string{
@@ -134,19 +148,6 @@ func getProductDomainConfigurableWithActiveVariantProduct() productDomain.Config
 		},
 
 		Teaser: productDomain.TeaserData{
-			TeaserPrice: productDomain.PriceInfo{
-				Default:           priceDomain.NewFromFloat(23.23, "EUR"),
-				Discounted:        priceDomain.Price{},
-				DiscountText:      "",
-				ActiveBase:        big.Float{},
-				ActiveBaseAmount:  big.Float{},
-				ActiveBaseUnit:    "",
-				IsDiscounted:      false,
-				CampaignRules:     nil,
-				DenyMoreDiscounts: false,
-				Context:           productDomain.PriceContext{},
-				TaxClass:          "",
-			},
 			TeaserLoyaltyPriceInfo: &productDomain.LoyaltyPriceInfo{
 				Type:    "AwesomeLoyaltyProgram",
 				Default: priceDomain.NewFromFloat(500, "BonusPoints"),

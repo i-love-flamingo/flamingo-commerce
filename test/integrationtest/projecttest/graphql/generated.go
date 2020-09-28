@@ -16987,9 +16987,9 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_price(ctx con
 		}
 		return graphql.Null
 	}
-	res := resTmp.(domain5.PriceInfo)
+	res := resTmp.(*domain5.PriceInfo)
 	fc.Result = res
-	return ec.marshalNCommerce_Product_PriceInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfo(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Product_PriceInfo2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfo(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_title(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
@@ -18032,9 +18032,9 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_price(ctx cont
 		}
 		return graphql.Null
 	}
-	res := resTmp.(domain5.PriceInfo)
+	res := resTmp.(*domain5.PriceInfo)
 	fc.Result = res
-	return ec.marshalNCommerce_Product_PriceInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfo(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Product_PriceInfo2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfo(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Product_ConfigurableProduct_title(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
@@ -19581,9 +19581,9 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_price(ctx context.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(domain5.PriceInfo)
+	res := resTmp.(*domain5.PriceInfo)
 	fc.Result = res
-	return ec.marshalNCommerce_Product_PriceInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfo(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Product_PriceInfo2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfo(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Product_SimpleProduct_title(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
@@ -29368,6 +29368,16 @@ func (ec *executionContext) marshalNCommerce_Product_PriceContext2flamingoᚗme�
 
 func (ec *executionContext) marshalNCommerce_Product_PriceInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfo(ctx context.Context, sel ast.SelectionSet, v domain5.PriceInfo) graphql.Marshaler {
 	return ec._Commerce_Product_PriceInfo(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Product_PriceInfo2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfo(ctx context.Context, sel ast.SelectionSet, v *domain5.PriceInfo) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Commerce_Product_PriceInfo(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNCommerce_Product_SearchResult2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚐSearchResultDTO(ctx context.Context, sel ast.SelectionSet, v graphql1.SearchResultDTO) graphql.Marshaler {
