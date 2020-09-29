@@ -169,48 +169,64 @@ func (m *variantsToVariationSelectionsMapper) buildVariationSelectionOptions(att
 	var options []VariationSelectionOption
 
 	attributeGroup.eachAttributeInOrder(func(attribute *domain.Attribute) {
-		var state VariationSelectionOptionState
-		var matchingVariant domain.Variant
+		var option *VariationSelectionOption
 
 		if m.hasActiveVariant() {
-			mergedAttributes := m.getActiveAttributesWithOverwrite(*attribute)
-			exactMatchingVariant := m.findMatchingVariant(mergedAttributes)
-
-			if exactMatchingVariant != nil {
-				if exactMatchingVariant.MarketPlaceCode == m.activeVariant.MarketPlaceCode {
-					state = VariationSelectionOptionStateActive
-					matchingVariant = *exactMatchingVariant
-				} else {
-					state = VariationSelectionOptionStateMatch
-					matchingVariant = *exactMatchingVariant
-				}
-			} else {
-				fallbackVariant := m.findMatchingVariant([]domain.Attribute{*attribute})
-
-				if fallbackVariant != nil {
-					state = VariationSelectionOptionStateNoMatch
-					matchingVariant = *fallbackVariant
-				}
-			}
+			option = m.createOptionWithActiveVariant(*attribute)
 		} else {
-			fallbackVariant := m.findMatchingVariant([]domain.Attribute{*attribute})
-
-			if fallbackVariant != nil {
-				state = VariationSelectionOptionStateMatch
-				matchingVariant = *fallbackVariant
-			}
+			option = m.createOptionWithoutActiveVariant(*attribute)
 		}
 
-		options = append(options, VariationSelectionOption{
-			Label: attribute.Label,
-			State: state,
-			Variant: VariationSelectionOptionVariant{
-				variant: matchingVariant,
-			},
-		})
+		if option != nil {
+			options = append(options, *option)
+		}
 	})
 
 	return options
+}
+
+func (m *variantsToVariationSelectionsMapper) createOptionWithActiveVariant(attribute domain.Attribute) *VariationSelectionOption {
+	mergedAttributes := m.getActiveAttributesWithOverwrite(attribute)
+	exactMatchingOption := m.createOption(mergedAttributes, VariationSelectionOption{
+		Label: attribute.Label,
+		State: VariationSelectionOptionStateMatch,
+	})
+
+	if exactMatchingOption != nil {
+		if exactMatchingOption.Variant.MarketPlaceCode() == m.activeVariant.MarketPlaceCode {
+			exactMatchingOption.State = VariationSelectionOptionStateActive
+		}
+
+		return exactMatchingOption
+	} else {
+		return m.createOption([]domain.Attribute{attribute}, VariationSelectionOption{
+			Label: attribute.Label,
+			State: VariationSelectionOptionStateNoMatch,
+		})
+	}
+}
+
+func (m *variantsToVariationSelectionsMapper) createOptionWithoutActiveVariant(attribute domain.Attribute) *VariationSelectionOption {
+	return m.createOption([]domain.Attribute{attribute}, VariationSelectionOption{
+		Label: attribute.Label,
+		State: VariationSelectionOptionStateMatch,
+	})
+}
+
+func (m *variantsToVariationSelectionsMapper) createOption(attributes []domain.Attribute, props VariationSelectionOption) *VariationSelectionOption {
+	fallbackVariant := m.findMatchingVariant(attributes)
+
+	if fallbackVariant != nil {
+		return &VariationSelectionOption{
+			Variant: VariationSelectionOptionVariant{
+				variant: *fallbackVariant,
+			},
+			Label: props.Label,
+			State: props.State,
+		}
+	}
+
+	return nil
 }
 
 func (m *variantsToVariationSelectionsMapper) findMatchingVariant(attributes []domain.Attribute) *domain.Variant {
