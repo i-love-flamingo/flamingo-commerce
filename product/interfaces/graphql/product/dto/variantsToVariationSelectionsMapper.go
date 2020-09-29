@@ -169,12 +169,10 @@ func (m *variantsToVariationSelectionsMapper) buildVariationSelectionOptions(att
 	var options []VariationSelectionOption
 
 	attributeGroup.eachAttributeInOrder(func(attribute *domain.Attribute) {
-		var option *VariationSelectionOption
+		option := m.createOptionWithoutActiveVariant(*attribute)
 
 		if m.hasActiveVariant() {
 			option = m.createOptionWithActiveVariant(*attribute)
-		} else {
-			option = m.createOptionWithoutActiveVariant(*attribute)
 		}
 
 		if option != nil {
