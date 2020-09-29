@@ -198,12 +198,12 @@ func (m *variantsToVariationSelectionsMapper) createOptionWithActiveVariant(attr
 		}
 
 		return exactMatchingOption
-	} else {
-		return m.createOption([]domain.Attribute{attribute}, VariationSelectionOption{
-			Label: attribute.Label,
-			State: VariationSelectionOptionStateNoMatch,
-		})
 	}
+
+	return m.createOption([]domain.Attribute{attribute}, VariationSelectionOption{
+		Label: attribute.Label,
+		State: VariationSelectionOptionStateNoMatch,
+	})
 }
 
 func (m *variantsToVariationSelectionsMapper) createOptionWithoutActiveVariant(attribute domain.Attribute) *VariationSelectionOption {
