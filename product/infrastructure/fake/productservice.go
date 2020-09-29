@@ -208,6 +208,11 @@ func (ps *ProductService) getFakeConfigurableWithVariants(marketplaceCode string
 			"color": domain.Attribute{RawValue: "red", Code: "color", CodeLabel: "Color", Label: "Red"}},
 			"out",
 		},
+		{"shirt-red-m", "Shirt Red M", domain.Attributes{
+			"size":  domain.Attribute{RawValue: "M", Code: "size", CodeLabel: "Size", Label: "M"},
+			"color": domain.Attribute{RawValue: "red", Code: "color", CodeLabel: "Color", Label: "Red"}},
+			"out",
+		},
 	}
 
 	for _, variant := range variants {

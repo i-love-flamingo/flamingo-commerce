@@ -43,7 +43,7 @@ func (avp ActiveVariantProduct) Media() ProductMedia {
 
 // Price of the active variant
 func (avp ActiveVariantProduct) Price() productDomain.PriceInfo {
-	return avp.product.TeaserData().TeaserPrice
+	return avp.product.ActiveVariant.ActivePrice
 }
 
 // Title of the active variant

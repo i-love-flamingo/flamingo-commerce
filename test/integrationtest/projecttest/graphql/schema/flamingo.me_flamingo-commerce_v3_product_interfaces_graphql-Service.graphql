@@ -97,11 +97,16 @@ type Commerce_Product_VariationSelection_Option {
     label: String!
     state: Commerce_Product_VariationSelection_OptionState!
     """
-    Contains the marketPlaceCode of an product that matches this option.
-    Depending on if there is an active variant or not, it tries to include the marketPlaceCode
-    for the variant, that best matches the current option.
+    Contains information about a product that matches this option.
+    Depending on if there is an active variant or not, it tries to include the variant,
+    that best matches the current option.
     """
-    variantMarketPlaceCode: String!,
+    variant: Commerce_Product_VariationSelection_OptionVariant!,
+}
+
+"Information about the underlying variant"
+type Commerce_Product_VariationSelection_OptionVariant {
+    marketPlaceCode: String!
 }
 
 "The state of an option related to the currently active variant"

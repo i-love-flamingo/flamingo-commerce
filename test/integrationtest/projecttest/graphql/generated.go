@@ -777,9 +777,13 @@ type ComplexityRoot struct {
 	}
 
 	CommerceProductVariationSelectionOption struct {
-		Label                  func(childComplexity int) int
-		State                  func(childComplexity int) int
-		VariantMarketPlaceCode func(childComplexity int) int
+		Label   func(childComplexity int) int
+		State   func(childComplexity int) int
+		Variant func(childComplexity int) int
+	}
+
+	CommerceProductVariationSelectionOptionVariant struct {
+		MarketPlaceCode func(childComplexity int) int
 	}
 
 	CommerceSearchListFacet struct {
@@ -4104,12 +4108,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceProductVariationSelectionOption.State(childComplexity), true
 
-	case "Commerce_Product_VariationSelection_Option.variantMarketPlaceCode":
-		if e.complexity.CommerceProductVariationSelectionOption.VariantMarketPlaceCode == nil {
+	case "Commerce_Product_VariationSelection_Option.variant":
+		if e.complexity.CommerceProductVariationSelectionOption.Variant == nil {
 			break
 		}
 
-		return e.complexity.CommerceProductVariationSelectionOption.VariantMarketPlaceCode(childComplexity), true
+		return e.complexity.CommerceProductVariationSelectionOption.Variant(childComplexity), true
+
+	case "Commerce_Product_VariationSelection_OptionVariant.marketPlaceCode":
+		if e.complexity.CommerceProductVariationSelectionOptionVariant.MarketPlaceCode == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductVariationSelectionOptionVariant.MarketPlaceCode(childComplexity), true
 
 	case "Commerce_Search_ListFacet.hasSelectedItem":
 		if e.complexity.CommerceSearchListFacet.HasSelectedItem == nil {
@@ -5026,11 +5037,16 @@ type Commerce_Product_VariationSelection_Option {
     label: String!
     state: Commerce_Product_VariationSelection_OptionState!
     """
-    Contains the marketPlaceCode of an product that matches this option.
-    Depending on if there is an active variant or not, it tries to include the marketPlaceCode
-    for the variant, that best matches the current option.
+    Contains information about a product that matches this option.
+    Depending on if there is an active variant or not, it tries to include the variant,
+    that best matches the current option.
     """
-    variantMarketPlaceCode: String!,
+    variant: Commerce_Product_VariationSelection_OptionVariant!,
+}
+
+"Information about the underlying variant"
+type Commerce_Product_VariationSelection_OptionVariant {
+    marketPlaceCode: String!
 }
 
 "The state of an option related to the currently active variant"
@@ -19939,7 +19955,7 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_Option_state(ct
 	return ec.marshalNCommerce_Product_VariationSelection_OptionState2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionOptionState(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_VariationSelection_Option_variantMarketPlaceCode(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariationSelectionOption) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_VariationSelection_Option_variant(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariationSelectionOption) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -19956,7 +19972,38 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_Option_variantM
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.VariantMarketPlaceCode, nil
+		return obj.Variant, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(graphqlproductdto.VariationSelectionOptionVariant)
+	fc.Result = res
+	return ec.marshalNCommerce_Product_VariationSelection_OptionVariant2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionOptionVariant(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Product_VariationSelection_OptionVariant_marketPlaceCode(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariationSelectionOptionVariant) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Product_VariationSelection_OptionVariant",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MarketPlaceCode(), nil
 	})
 
 	if resTmp == nil {
@@ -27819,8 +27866,35 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_Option(ctx cont
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "variantMarketPlaceCode":
-			out.Values[i] = ec._Commerce_Product_VariationSelection_Option_variantMarketPlaceCode(ctx, field, obj)
+		case "variant":
+			out.Values[i] = ec._Commerce_Product_VariationSelection_Option_variant(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Product_VariationSelection_OptionVariantImplementors = []string{"Commerce_Product_VariationSelection_OptionVariant"}
+
+func (ec *executionContext) _Commerce_Product_VariationSelection_OptionVariant(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariationSelectionOptionVariant) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariationSelection_OptionVariantImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Product_VariationSelection_OptionVariant")
+		case "marketPlaceCode":
+			out.Values[i] = ec._Commerce_Product_VariationSelection_OptionVariant_marketPlaceCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -29327,6 +29401,10 @@ func (ec *executionContext) marshalNCommerce_Product_VariationSelection_OptionSt
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNCommerce_Product_VariationSelection_OptionVariant2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionOptionVariant(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.VariationSelectionOptionVariant) graphql.Marshaler {
+	return ec._Commerce_Product_VariationSelection_OptionVariant(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNCommerce_Search_Facet2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchFacet(ctx context.Context, sel ast.SelectionSet, v searchdto.CommerceSearchFacet) graphql.Marshaler {

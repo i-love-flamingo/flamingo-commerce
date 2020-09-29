@@ -72,7 +72,21 @@ func getProductDomainConfigurableWithActiveVariantProduct() productDomain.Config
 					},
 				},
 			},
-			Saleable: productDomain.Saleable{},
+			Saleable: productDomain.Saleable{
+				ActivePrice: productDomain.PriceInfo{
+					Default:           priceDomain.NewFromFloat(23.23, "EUR"),
+					Discounted:        priceDomain.Price{},
+					DiscountText:      "",
+					ActiveBase:        big.Float{},
+					ActiveBaseAmount:  big.Float{},
+					ActiveBaseUnit:    "",
+					IsDiscounted:      false,
+					CampaignRules:     nil,
+					DenyMoreDiscounts: false,
+					Context:           productDomain.PriceContext{},
+					TaxClass:          "",
+				},
+			},
 		},
 
 		VariantVariationAttributes: []string{
@@ -134,19 +148,6 @@ func getProductDomainConfigurableWithActiveVariantProduct() productDomain.Config
 		},
 
 		Teaser: productDomain.TeaserData{
-			TeaserPrice: productDomain.PriceInfo{
-				Default:           priceDomain.NewFromFloat(23.23, "EUR"),
-				Discounted:        priceDomain.Price{},
-				DiscountText:      "",
-				ActiveBase:        big.Float{},
-				ActiveBaseAmount:  big.Float{},
-				ActiveBaseUnit:    "",
-				IsDiscounted:      false,
-				CampaignRules:     nil,
-				DenyMoreDiscounts: false,
-				Context:           productDomain.PriceContext{},
-				TaxClass:          "",
-			},
 			TeaserLoyaltyPriceInfo: &productDomain.LoyaltyPriceInfo{
 				Type:    "AwesomeLoyaltyProgram",
 				Default: priceDomain.NewFromFloat(500, "BonusPoints"),
@@ -282,6 +283,7 @@ func TestActiveVariantProduct_Type(t *testing.T) {
 }
 
 func TestActiveVariantProduct_VariationSelections(t *testing.T) {
+	configurableProduct := getProductDomainConfigurableWithActiveVariantProduct()
 	product := getActiveVariantProduct()
 	assert.Equal(t, []graphqlProductDto.VariationSelection{
 		{
@@ -289,9 +291,9 @@ func TestActiveVariantProduct_VariationSelections(t *testing.T) {
 			Label: "attribute_a_codeLabel",
 			Options: []graphqlProductDto.VariationSelectionOption{
 				{
-					Label:                  "attribute_a_variantLabel",
-					State:                  graphqlProductDto.VariationSelectionOptionStateActive,
-					VariantMarketPlaceCode: "active_variant_product_code_a",
+					Label:   "attribute_a_variantLabel",
+					State:   graphqlProductDto.VariationSelectionOptionStateActive,
+					Variant: graphqlProductDto.NewVariationSelectionOptionVariant(configurableProduct.Variants[0]),
 				},
 			},
 		},

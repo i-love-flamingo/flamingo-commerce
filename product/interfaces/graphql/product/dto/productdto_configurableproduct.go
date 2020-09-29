@@ -7,7 +7,7 @@ import (
 type (
 	// ConfigurableProduct is a configurable without active variant
 	ConfigurableProduct struct {
-		product productDomain.BasicProduct
+		product productDomain.ConfigurableProduct
 	}
 )
 
@@ -38,7 +38,7 @@ func (cp ConfigurableProduct) Media() ProductMedia {
 
 // Price of the configurable
 func (cp ConfigurableProduct) Price() productDomain.PriceInfo {
-	return cp.product.TeaserData().TeaserPrice
+	return productDomain.PriceInfo{} // Price info is always empty for configurable products because they are not saleable
 }
 
 // Title of the configurable

@@ -5,7 +5,7 @@ import productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 type (
 	// SimpleProduct A simple Product without variants
 	SimpleProduct struct {
-		product productDomain.BasicProduct
+		product productDomain.SimpleProduct
 	}
 )
 
@@ -36,7 +36,7 @@ func (sp SimpleProduct) Media() ProductMedia {
 
 // Price of the product
 func (sp SimpleProduct) Price() productDomain.PriceInfo {
-	return sp.product.TeaserData().TeaserPrice
+	return sp.product.Saleable.ActivePrice
 }
 
 // Title of the product

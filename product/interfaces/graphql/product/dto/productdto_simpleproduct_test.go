@@ -57,9 +57,8 @@ func getProductDomainSimpleProduct() productDomain.SimpleProduct {
 				},
 			},
 		},
-		Saleable: productDomain.Saleable{},
-		Teaser: productDomain.TeaserData{
-			TeaserPrice: productDomain.PriceInfo{
+		Saleable: productDomain.Saleable{
+			ActivePrice: productDomain.PriceInfo{
 				Default:           priceDomain.NewFromFloat(23.23, "EUR"),
 				Discounted:        priceDomain.Price{},
 				DiscountText:      "",
@@ -72,6 +71,8 @@ func getProductDomainSimpleProduct() productDomain.SimpleProduct {
 				Context:           productDomain.PriceContext{},
 				TaxClass:          "",
 			},
+		},
+		Teaser: productDomain.TeaserData{
 			TeaserLoyaltyPriceInfo: &productDomain.LoyaltyPriceInfo{
 				Type:    "AwesomeLoyaltyProgram",
 				Default: priceDomain.NewFromFloat(500, "BonusPoints"),
