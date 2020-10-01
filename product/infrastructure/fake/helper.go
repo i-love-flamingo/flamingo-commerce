@@ -24,6 +24,7 @@ func registerTestData(folder string) map[string]string {
 	return testDataFiles
 }
 
+//unmarshalJSONProduct
 func unmarshalJSONProduct(productRaw []byte) (domain.BasicProduct, error) {
 	product := &map[string]interface{}{}
 	err := json.Unmarshal(productRaw, product)
@@ -36,16 +37,6 @@ func unmarshalJSONProduct(productRaw []byte) (domain.BasicProduct, error) {
 
 	if !ok {
 		return nil, errors.New("Type is not specified")
-	}
-
-	if productType == domain.TypeConfigurableWithActiveVariant {
-		configurableProductWithActiveVariant := &domain.ConfigurableProductWithActiveVariant{}
-
-		err = json.Unmarshal(productRaw, configurableProductWithActiveVariant)
-
-		if err == nil {
-			return *configurableProductWithActiveVariant, nil
-		}
 	}
 
 	if productType == domain.TypeConfigurable {

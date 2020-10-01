@@ -75,16 +75,7 @@ func (ps *ProductService) Get(_ context.Context, marketplaceCode string) (domain
 		return jsonProduct, nil
 	}
 
-	marketPlaceCodes := []string{
-		"fake_configurable",
-		"fake_configurable_with_active_variant",
-		"fake_simple",
-		"fake_simple_with_fixed_price",
-		"fake_simple_out_of_stock",
-		"fake_fixed_simple_without_discounts",
-	}
-
-	marketPlaceCodes = append(marketPlaceCodes, ps.jsonProductCodes()...)
+	marketPlaceCodes := ps.GetMarketPlaceCodes()
 
 	return nil, domain.ProductNotFound{
 		MarketplaceCode: "Code " + marketplaceCode + " Not implemented in FAKE: Only following codes should be used" + strings.Join(marketPlaceCodes, ", "),
@@ -172,6 +163,19 @@ func (ps *ProductService) FakeSimple(marketplaceCode string, isNew bool, isExclu
 	}
 
 	return product
+}
+
+func (ps *ProductService) GetMarketPlaceCodes() []string {
+	marketPlaceCodes := []string{
+		"fake_configurable",
+		"fake_configurable_with_active_variant",
+		"fake_simple",
+		"fake_simple_with_fixed_price",
+		"fake_simple_out_of_stock",
+		"fake_fixed_simple_without_discounts",
+	}
+
+	return append(marketPlaceCodes, ps.jsonProductCodes()...)
 }
 
 func (ps *ProductService) getFakeConfigurable(marketplaceCode string) domain.ConfigurableProduct {
