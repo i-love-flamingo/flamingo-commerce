@@ -135,7 +135,10 @@ func TestPaymentSplit_UnmarshalJSON(t *testing.T) {
 			want: func() cart.PaymentSplit {
 				result := cart.PaymentSplit{}
 				charge := domain.Charge{
-					Type: "t1",
+					Price:     price.NewZero(""),
+					Value:     price.NewZero(""),
+					Type:      "t1",
+					Reference: "",
 				}
 				firstQualifier := cart.SplitQualifier{
 					Method:     "m1",
