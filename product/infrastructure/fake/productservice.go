@@ -3,6 +3,7 @@ package fake
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"math/big"
 	"math/rand"
 	"strconv"
@@ -25,17 +26,20 @@ var (
 
 // ProductService is just mocking stuff
 type ProductService struct {
-	currencyCode string
+	currencyCode  string
+	testDataFiles map[string]string
 }
 
 // Inject dependencies
 func (ps *ProductService) Inject(
 	c *struct {
-		CurrencyCode string `inject:"config:commerce.product.fakeservice.currency,optional"`
+		CurrencyCode   string `inject:"config:commerce.product.fakeservice.currency,optional"`
+		TestDataFolder string `inject:"config:commerce.product.fakeservice.jsonTestDataFolder,optional"`
 	},
 ) *ProductService {
 	if c != nil {
 		ps.currencyCode = c.CurrencyCode
+		ps.testDataFiles = registerTestData(c.TestDataFolder)
 	}
 
 	return ps
@@ -63,7 +67,28 @@ func (ps *ProductService) Get(_ context.Context, marketplaceCode string) (domain
 		return ps.FakeSimple(marketplaceCode, false, false, true, true, false), nil
 	}
 
-	return nil, domain.ProductNotFound{MarketplaceCode: "Code " + marketplaceCode + " Not implemented in FAKE: Only code 'fake_configurable' or 'fake_configurable_with_active_variant' or 'fake_simple' or 'fake_simple_with_fixed_price' or 'fake_simple_out_of_stock' or 'fake_fixed_simple_without_discounts' should be used"}
+	jsonProduct, err := ps.getProductFromJSON(marketplaceCode)
+	if err != nil {
+		return nil, err
+	}
+	if jsonProduct != nil {
+		return jsonProduct, nil
+	}
+
+	marketPlaceCodes := []string{
+		"fake_configurable",
+		"fake_configurable_with_active_variant",
+		"fake_simple",
+		"fake_simple_with_fixed_price",
+		"fake_simple_out_of_stock",
+		"fake_fixed_simple_without_discounts",
+	}
+
+	marketPlaceCodes = append(marketPlaceCodes, ps.jsonProductCodes()...)
+
+	return nil, domain.ProductNotFound{
+		MarketplaceCode: "Code " + marketplaceCode + " Not implemented in FAKE: Only following codes should be used" + strings.Join(marketPlaceCodes, ", "),
+	}
 }
 
 // FakeSimple generates a simple fake product
@@ -319,4 +344,30 @@ func (ps *ProductService) getPrice(defaultP float64, discounted float64) domain.
 	price.ActiveBaseAmount = *big.NewFloat(10)
 	price.ActiveBaseUnit = "ml"
 	return price
+}
+
+func (ps *ProductService) getProductFromJSON(code string) (domain.BasicProduct, error) {
+	file, ok := ps.testDataFiles[code]
+
+	if !ok {
+		return nil, nil
+	}
+
+	jsonBytes, err := ioutil.ReadFile(file)
+	if err != nil {
+		return nil, err
+	}
+
+	return unmarshalJSONProduct(jsonBytes)
+}
+
+// jsonProductCodes
+func (ps *ProductService) jsonProductCodes() []string {
+	productCodes := make([]string, 0, len(ps.testDataFiles))
+
+	for key, _ := range ps.testDataFiles {
+		productCodes = append(productCodes, key)
+	}
+
+	return productCodes
 }

@@ -75,7 +75,8 @@ commerce: {
 		slugAttributeCode: string | *"urlSlug"
 		fakeservice: {
 			enabled: bool | *false
-			currency: *"€" | !=""  
+			currency: *"€" | !=""
+			jsonTestDataFolder: *"testdata/products" | !=""
 		}
 		api: {
 			enabled: bool | *true
