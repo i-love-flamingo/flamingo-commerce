@@ -165,6 +165,7 @@ func (ps *ProductService) FakeSimple(marketplaceCode string, isNew bool, isExclu
 	return product
 }
 
+//GetMarketPlaceCodes returns list of available marketplace code which are supported by this fakeservice
 func (ps *ProductService) GetMarketPlaceCodes() []string {
 	marketPlaceCodes := []string{
 		"fake_configurable",
@@ -369,7 +370,7 @@ func (ps *ProductService) getProductFromJSON(code string) (domain.BasicProduct, 
 func (ps *ProductService) jsonProductCodes() []string {
 	productCodes := make([]string, 0, len(ps.testDataFiles))
 
-	for key, _ := range ps.testDataFiles {
+	for key := range ps.testDataFiles {
 		productCodes = append(productCodes, key)
 	}
 
