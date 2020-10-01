@@ -536,7 +536,7 @@
       "Parent": null
     },
     {
-      "Code": "online_tabacco",
+      "Code": "online_tobacco",
       "Path": "Tobacco",
       "Name": "",
       "Parent": null
@@ -568,7 +568,7 @@
     "Liquors:online_liquors",
     "Liquors/Spirits:online_liqours_spirits",
     "Liquors/Wine \u0026 Champagne:online_liquors_wineChampagne",
-    "Tobacco:online_tabacco"
+    "Tobacco:online_tobacco"
   ],
   "StockLevel": "",
   "Keywords": [],
