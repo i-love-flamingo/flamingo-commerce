@@ -76,7 +76,7 @@ commerce: {
 		fakeservice: {
 			enabled: bool | *false
 			currency: *"€" | !=""
-			jsonTestDataFolder: *"testdata/products" | !=""
+			jsonTestDataFolder?: !=""
 		}
 		api: {
 			enabled: bool | *true

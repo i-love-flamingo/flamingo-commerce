@@ -3,28 +3,32 @@ package fake
 import (
 	"encoding/json"
 	"errors"
+
+	"flamingo.me/flamingo/v3/framework/flamingo"
+
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
 )
 
-// registerTestData
-func registerTestData(folder string) map[string]string {
+// registerTestData returns files of given folder
+func registerTestData(folder string, logger flamingo.Logger) map[string]string {
 	testDataFiles := make(map[string]string)
 	files, err := ioutil.ReadDir(folder)
-	if err == nil {
-		for _, file := range files {
-			if !file.IsDir() && strings.HasSuffix(file.Name(), ".json") {
-				base := filepath.Base(file.Name())[:len(file.Name())-5]
-				testDataFiles[base] = filepath.Join(folder, file.Name())
-			}
+	if err != nil {
+		logger.Error(err)
+	}
+	for _, file := range files {
+		if !file.IsDir() && strings.HasSuffix(file.Name(), ".json") {
+			base := filepath.Base(file.Name())[:len(file.Name())-len(".json")]
+			testDataFiles[base] = filepath.Join(folder, file.Name())
 		}
 	}
 	return testDataFiles
 }
 
-//unmarshalJSONProduct
+// unmarshalJSONProduct unmarshals product based on type
 func unmarshalJSONProduct(productRaw []byte) (domain.BasicProduct, error) {
 	product := &map[string]interface{}{}
 	err := json.Unmarshal(productRaw, product)
@@ -36,7 +40,7 @@ func unmarshalJSONProduct(productRaw []byte) (domain.BasicProduct, error) {
 	productType, ok := (*product)["Type"]
 
 	if !ok {
-		return nil, errors.New("Type is not specified")
+		return nil, errors.New("type is not specified")
 	}
 
 	if productType == domain.TypeConfigurable {
