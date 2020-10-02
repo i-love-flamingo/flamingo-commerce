@@ -43,7 +43,7 @@ func (s *SearchService) Search(ctx context.Context, filter ...searchDomain.Filte
 				OriginalQuery:  "",
 				Page:           1,
 				NumPages:       1,
-				NumResults:     2,
+				NumResults:     len(hits),
 				SelectedFacets: nil,
 				SortOptions:    nil,
 			},
