@@ -3,7 +3,6 @@ package fake
 import (
 	"encoding/json"
 	"errors"
-
 	"flamingo.me/flamingo/v3/framework/flamingo"
 
 	"flamingo.me/flamingo-commerce/v3/product/domain"
@@ -17,8 +16,10 @@ func registerTestData(folder string, logger flamingo.Logger) map[string]string {
 	testDataFiles := make(map[string]string)
 	files, err := ioutil.ReadDir(folder)
 	if err != nil {
-		logger.Error(err)
+		logger.Info(err)
+		return testDataFiles
 	}
+
 	for _, file := range files {
 		if !file.IsDir() && strings.HasSuffix(file.Name(), ".json") {
 			base := filepath.Base(file.Name())[:len(file.Name())-len(".json")]

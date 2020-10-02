@@ -374,15 +374,10 @@ func (ps *ProductService) getProductFromJSON(code string) (domain.BasicProduct, 
 
 // jsonProductCodes returns an ordered list of the json product codes
 func (ps *ProductService) jsonProductCodes() []string {
-	productCodes := make([]string, 0, len(ps.testDataFiles))
 	keys := make([]string, 0, len(ps.testDataFiles))
 	for k := range ps.testDataFiles {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
-	for _, k := range keys {
-		productCodes = append(productCodes, k)
-	}
-
-	return productCodes
+	return keys
 }
