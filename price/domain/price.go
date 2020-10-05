@@ -487,6 +487,11 @@ func (p *Price) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
+// UnmarshalJSON – implements encode Unmarshaler
+func (p *Price) UnmarshalJSON(data []byte) error {
+	return p.UnmarshalBinary(data)
+}
+
 // Add - Adds the given Charge to the current Charge and returns a new Charge
 func (p Charge) Add(add Charge) (Charge, error) {
 	if p.Type != add.Type {

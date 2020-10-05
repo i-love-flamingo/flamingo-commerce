@@ -71,6 +71,8 @@ commerce:
   product:
     fakeservice:
       enabled: true
+      jsonTestDataFolder: "graphql/testdata/products"
+
     priceIsGross: true
   customer:
     useNilCustomerAdapter: false

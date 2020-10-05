@@ -3,14 +3,17 @@ package fake
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"math/big"
 	"math/rand"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
 
-	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 
+	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
@@ -25,17 +28,24 @@ var (
 
 // ProductService is just mocking stuff
 type ProductService struct {
-	currencyCode string
+	currencyCode  string
+	testDataFiles map[string]string
+	logger        flamingo.Logger
 }
 
 // Inject dependencies
-func (ps *ProductService) Inject(
+func (ps *ProductService) Inject(logger flamingo.Logger,
 	c *struct {
-		CurrencyCode string `inject:"config:commerce.product.fakeservice.currency,optional"`
+		CurrencyCode   string `inject:"config:commerce.product.fakeservice.currency,optional"`
+		TestDataFolder string `inject:"config:commerce.product.fakeservice.jsonTestDataFolder,optional"`
 	},
 ) *ProductService {
+	ps.logger = logger
 	if c != nil {
 		ps.currencyCode = c.CurrencyCode
+		if len(c.TestDataFolder) > 0 {
+			ps.testDataFiles = registerTestData(c.TestDataFolder, ps.logger)
+		}
 	}
 
 	return ps
@@ -61,9 +71,21 @@ func (ps *ProductService) Get(_ context.Context, marketplaceCode string) (domain
 
 	case "fake_simple_out_of_stock":
 		return ps.FakeSimple(marketplaceCode, false, false, true, true, false), nil
+	default:
+		jsonProduct, err := ps.getProductFromJSON(marketplaceCode)
+		if err != nil {
+			if _, isProductNotFoundError := err.(domain.ProductNotFound); !isProductNotFoundError {
+				return nil, err
+			}
+		} else {
+			return jsonProduct, nil
+		}
 	}
 
-	return nil, domain.ProductNotFound{MarketplaceCode: "Code " + marketplaceCode + " Not implemented in FAKE: Only code 'fake_configurable' or 'fake_configurable_with_active_variant' or 'fake_simple' or 'fake_simple_with_fixed_price' or 'fake_simple_out_of_stock' or 'fake_fixed_simple_without_discounts' should be used"}
+	marketPlaceCodes := ps.GetMarketPlaceCodes()
+	return nil, domain.ProductNotFound{
+		MarketplaceCode: "Code " + marketplaceCode + " Not implemented in FAKE: Only following codes should be used" + strings.Join(marketPlaceCodes, ", "),
+	}
 }
 
 // FakeSimple generates a simple fake product
@@ -147,6 +169,20 @@ func (ps *ProductService) FakeSimple(marketplaceCode string, isNew bool, isExclu
 	}
 
 	return product
+}
+
+// GetMarketPlaceCodes returns list of available marketplace codes which are supported by this fakeservice
+func (ps *ProductService) GetMarketPlaceCodes() []string {
+	marketPlaceCodes := []string{
+		"fake_configurable",
+		"fake_configurable_with_active_variant",
+		"fake_simple",
+		"fake_simple_with_fixed_price",
+		"fake_simple_out_of_stock",
+		"fake_fixed_simple_without_discounts",
+	}
+
+	return append(marketPlaceCodes, ps.jsonProductCodes()...)
 }
 
 func (ps *ProductService) getFakeConfigurable(marketplaceCode string) domain.ConfigurableProduct {
@@ -319,4 +355,29 @@ func (ps *ProductService) getPrice(defaultP float64, discounted float64) domain.
 	price.ActiveBaseAmount = *big.NewFloat(10)
 	price.ActiveBaseUnit = "ml"
 	return price
+}
+
+func (ps *ProductService) getProductFromJSON(code string) (domain.BasicProduct, error) {
+	file, ok := ps.testDataFiles[code]
+
+	if !ok {
+		return nil, &domain.ProductNotFound{MarketplaceCode: code}
+	}
+
+	jsonBytes, err := ioutil.ReadFile(file)
+	if err != nil {
+		return nil, err
+	}
+
+	return unmarshalJSONProduct(jsonBytes)
+}
+
+// jsonProductCodes returns an ordered list of the json product codes
+func (ps *ProductService) jsonProductCodes() []string {
+	keys := make([]string, 0, len(ps.testDataFiles))
+	for k := range ps.testDataFiles {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return keys
 }

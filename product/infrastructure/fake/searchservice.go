@@ -24,13 +24,16 @@ func (s *SearchService) Inject(
 
 //Search returns Products based on given Filters
 func (s *SearchService) Search(ctx context.Context, filter ...searchDomain.Filter) (*domain.SearchResult, error) {
-	p1, err := s.productService.Get(ctx, "fake_configurable")
-	if err != nil {
-		return nil, err
-	}
-	p2, err := s.productService.Get(ctx, "fake_simple")
-	if err != nil {
-		return nil, err
+	documents := make([]searchDomain.Document, 0)
+	hits := make([]domain.BasicProduct, 0)
+
+	for _, marketPlaceCode := range s.productService.GetMarketPlaceCodes() {
+		product, _ := s.productService.Get(ctx, marketPlaceCode)
+		if product == nil {
+			continue
+		}
+		documents = append(documents, product)
+		hits = append(hits, product)
 	}
 
 	return &domain.SearchResult{
@@ -40,11 +43,11 @@ func (s *SearchService) Search(ctx context.Context, filter ...searchDomain.Filte
 				OriginalQuery:  "",
 				Page:           1,
 				NumPages:       1,
-				NumResults:     2,
+				NumResults:     len(hits),
 				SelectedFacets: nil,
 				SortOptions:    nil,
 			},
-			Hits:       []searchDomain.Document{p1, p2},
+			Hits:       documents,
 			Suggestion: []searchDomain.Suggestion{},
 			Facets: map[string]searchDomain.Facet{"brandCode": {
 				Type:  string(searchDomain.ListFacet),
@@ -73,7 +76,7 @@ func (s *SearchService) Search(ctx context.Context, filter ...searchDomain.Filte
 					Position: 0,
 				}},
 		},
-		Hits: []domain.BasicProduct{p1, p2},
+		Hits: hits,
 	}, nil
 
 }

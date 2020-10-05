@@ -1,0 +1,755 @@
+{
+  "Identifier": "simple",
+  "Title": "This should be the best test product",
+  "Type": "simple",
+  "Attributes": {
+    "alwaysInStock": {
+      "Code": "alwaysInStock",
+      "CodeLabel": "Always In Stock",
+      "Label": "Yes",
+      "RawValue": "true",
+      "UnitCode": ""
+    },
+    "alwaysInStock_codeLabel": {
+      "Code": "alwaysInStock_codeLabel",
+      "CodeLabel": "",
+      "Label": "Always In Stock",
+      "RawValue": "Always In Stock",
+      "UnitCode": ""
+    },
+    "loyalty": {
+      "Code": "loyalty",
+      "CodeLabel": "Loyalty earning",
+      "Label": "1000",
+      "RawValue": "1000",
+      "UnitCode": ""
+    },
+    "loyalty_codeLabel": {
+      "Code": "loyalty_codeLabel",
+      "CodeLabel": "",
+      "Label": "Loyalty earning",
+      "RawValue": "Loyalty earning",
+      "UnitCode": ""
+    },
+    "brandCode": {
+      "Code": "brandCode",
+      "CodeLabel": "Brand",
+      "Label": "johnnie-walker",
+      "RawValue": "johnnie-walker",
+      "UnitCode": ""
+    },
+    "brandCode_codeLabel": {
+      "Code": "brandCode_codeLabel",
+      "CodeLabel": "",
+      "Label": "Brand",
+      "RawValue": "Brand",
+      "UnitCode": ""
+    },
+    "brandForeignId": {
+      "Code": "brandForeignId",
+      "CodeLabel": "",
+      "Label": "johnnie-walker-en_US-online",
+      "RawValue": "johnnie-walker-en_US-online",
+      "UnitCode": ""
+    },
+    "brandName": {
+      "Code": "brandName",
+      "CodeLabel": "",
+      "Label": "JOHNNIE WALKER",
+      "RawValue": "JOHNNIE WALKER",
+      "UnitCode": ""
+    },
+    "brandToCodeMapping": {
+      "Code": "brandToCodeMapping",
+      "CodeLabel": "",
+      "Label": "JOHNNIE WALKER:johnnie-walker",
+      "RawValue": "JOHNNIE WALKER:johnnie-walker",
+      "UnitCode": ""
+    },
+    "brandToForeignIdMapping": {
+      "Code": "brandToForeignIdMapping",
+      "CodeLabel": "",
+      "Label": "JOHNNIE WALKER:johnnie-walker-en_US-online",
+      "RawValue": "JOHNNIE WALKER:johnnie-walker-en_US-online",
+      "UnitCode": ""
+    },
+    "brandType": {
+      "Code": "brandType",
+      "CodeLabel": "",
+      "Label": "default",
+      "RawValue": "default",
+      "UnitCode": ""
+    },
+    "deliveryOptions": {
+      "Code": "deliveryOptions",
+      "CodeLabel": "Delivery options",
+      "Label": "[delivery____domestichome delivery____internationalhome inflight ispu]",
+      "RawValue": [
+        "delivery____domestichome",
+        "delivery____internationalhome",
+        "inflight",
+        "ispu"
+      ],
+      "UnitCode": ""
+    },
+    "deliveryOptions_codeLabel": {
+      "Code": "deliveryOptions_codeLabel",
+      "CodeLabel": "",
+      "Label": "Delivery options",
+      "RawValue": "Delivery options",
+      "UnitCode": ""
+    },
+    "discountGroup": {
+      "Code": "discountGroup",
+      "CodeLabel": "Discount Group",
+      "Label": "Non discountable",
+      "RawValue": "0",
+      "UnitCode": ""
+    },
+    "discountGroup_codeLabel": {
+      "Code": "discountGroup_codeLabel",
+      "CodeLabel": "",
+      "Label": "Discount Group",
+      "RawValue": "Discount Group",
+      "UnitCode": ""
+    },
+    "itemType": {
+      "Code": "itemType",
+      "CodeLabel": "Item Type",
+      "Label": "IP",
+      "RawValue": "IP",
+      "UnitCode": ""
+    },
+    "itemType_codeLabel": {
+      "Code": "itemType_codeLabel",
+      "CodeLabel": "",
+      "Label": "Item Type",
+      "RawValue": "Item Type",
+      "UnitCode": ""
+    },
+    "manufacturerColor": {
+      "Code": "manufacturerColor",
+      "CodeLabel": "Manufacturer color",
+      "Label": "Manufacturer Color green",
+      "RawValue": "Manufacturer Color green",
+      "UnitCode": ""
+    },
+    "manufacturerColor_codeLabel": {
+      "Code": "manufacturerColor_codeLabel",
+      "CodeLabel": "",
+      "Label": "Manufacturer color",
+      "RawValue": "Manufacturer color",
+      "UnitCode": ""
+    },
+    "manufacturerSeriesname": {
+      "Code": "manufacturerSeriesname",
+      "CodeLabel": "Vendor style number",
+      "Label": "Product Series BEST (English)",
+      "RawValue": "Product Series BEST (English)",
+      "UnitCode": ""
+    },
+    "manufacturerSeriesname_codeLabel": {
+      "Code": "manufacturerSeriesname_codeLabel",
+      "CodeLabel": "",
+      "Label": "Vendor style number",
+      "RawValue": "Vendor style number",
+      "UnitCode": ""
+    },
+    "manufacturersData": {
+      "Code": "manufacturersData",
+      "CodeLabel": "Manufacturers data",
+      "Label": "Manufacturers Data test",
+      "RawValue": "Manufacturers Data test",
+      "UnitCode": ""
+    },
+    "manufacturersData_codeLabel": {
+      "Code": "manufacturersData_codeLabel",
+      "CodeLabel": "",
+      "Label": "Manufacturers data",
+      "RawValue": "Manufacturers data",
+      "UnitCode": ""
+    },
+    "metaDescription": {
+      "Code": "metaDescription",
+      "CodeLabel": "Meta Description",
+      "Label": "This is the meta description of the product.",
+      "RawValue": "This is the meta description of the product.",
+      "UnitCode": ""
+    },
+    "metaDescription_codeLabel": {
+      "Code": "metaDescription_codeLabel",
+      "CodeLabel": "",
+      "Label": "Meta Description",
+      "RawValue": "Meta Description",
+      "UnitCode": ""
+    },
+    "metaTitle": {
+      "Code": "metaTitle",
+      "CodeLabel": "Meta Title",
+      "Label": "This is the meta title",
+      "RawValue": "This is the meta title",
+      "UnitCode": ""
+    },
+    "metaTitle_codeLabel": {
+      "Code": "metaTitle_codeLabel",
+      "CodeLabel": "",
+      "Label": "Meta Title",
+      "RawValue": "Meta Title",
+      "UnitCode": ""
+    },
+    "netWeight": {
+      "Code": "netWeight",
+      "CodeLabel": "Net weight",
+      "Label": "99999.0000",
+      "RawValue": "99999.0000",
+      "UnitCode": "KILOGRAM"
+    },
+    "netWeight_codeLabel": {
+      "Code": "netWeight_codeLabel",
+      "CodeLabel": "",
+      "Label": "Net weight",
+      "RawValue": "Net weight",
+      "UnitCode": ""
+    },
+    "p60": {
+      "Code": "p60",
+      "CodeLabel": "P-60 Product",
+      "Label": "0",
+      "RawValue": "0",
+      "UnitCode": ""
+    },
+    "p60_codeLabel": {
+      "Code": "p60_codeLabel",
+      "CodeLabel": "",
+      "Label": "P-60 Product",
+      "RawValue": "P-60 Product",
+      "UnitCode": ""
+    },
+    "poGenerate": {
+      "Code": "poGenerate",
+      "CodeLabel": "PO Generate",
+      "Label": "Yes",
+      "RawValue": "true",
+      "UnitCode": ""
+    },
+    "poGenerate_codeLabel": {
+      "Code": "poGenerate_codeLabel",
+      "CodeLabel": "",
+      "Label": "PO Generate",
+      "RawValue": "PO Generate",
+      "UnitCode": ""
+    },
+    "pointRatio": {
+      "Code": "pointRatio",
+      "CodeLabel": "Points ratio",
+      "Label": "125.0000",
+      "RawValue": "125.0000",
+      "UnitCode": ""
+    },
+    "pointRatio_codeLabel": {
+      "Code": "pointRatio_codeLabel",
+      "CodeLabel": "",
+      "Label": "Points ratio",
+      "RawValue": "Points ratio",
+      "UnitCode": ""
+    },
+    "pointsPayment": {
+      "Code": "pointsPayment",
+      "CodeLabel": "Payment by Points",
+      "Label": "Yes",
+      "RawValue": "true",
+      "UnitCode": ""
+    },
+    "pointsPayment_codeLabel": {
+      "Code": "pointsPayment_codeLabel",
+      "CodeLabel": "",
+      "Label": "Payment by Points",
+      "RawValue": "Payment by Points",
+      "UnitCode": ""
+    },
+    "rrp": {
+      "Code": "rrp",
+      "CodeLabel": "Recommended Retail Price",
+      "Label": "95.00",
+      "RawValue": "95.00",
+      "UnitCode": ""
+    },
+    "rrp_codeLabel": {
+      "Code": "rrp_codeLabel",
+      "CodeLabel": "",
+      "Label": "Recommended Retail Price",
+      "RawValue": "Recommended Retail Price",
+      "UnitCode": ""
+    },
+    "supplierSkuCode": {
+      "Code": "supplierSkuCode",
+      "CodeLabel": "Supplier SKU Code",
+      "Label": "Maximum-features",
+      "RawValue": "Maximum-features",
+      "UnitCode": ""
+    },
+    "supplierSkuCode_codeLabel": {
+      "Code": "supplierSkuCode_codeLabel",
+      "CodeLabel": "",
+      "Label": "Supplier SKU Code",
+      "RawValue": "Supplier SKU Code",
+      "UnitCode": ""
+    },
+    "travelExclusive": {
+      "Code": "travelExclusive",
+      "CodeLabel": "Travel Exclusive Item",
+      "Label": "0",
+      "RawValue": "0",
+      "UnitCode": ""
+    },
+    "travelExclusive_codeLabel": {
+      "Code": "travelExclusive_codeLabel",
+      "CodeLabel": "",
+      "Label": "Travel Exclusive Item",
+      "RawValue": "Travel Exclusive Item",
+      "UnitCode": ""
+    },
+    "urlSlug": {
+      "Code": "urlSlug",
+      "CodeLabel": "URL slug",
+      "Label": "this-should-be-the-best-test-product",
+      "RawValue": "this-should-be-the-best-test-product",
+      "UnitCode": ""
+    },
+    "urlSlug_codeLabel": {
+      "Code": "urlSlug_codeLabel",
+      "CodeLabel": "",
+      "Label": "URL slug",
+      "RawValue": "URL slug",
+      "UnitCode": ""
+    },
+    "urlTitle": {
+      "Code": "urlTitle",
+      "CodeLabel": "URL title",
+      "Label": "This should be the best test product",
+      "RawValue": "This should be the best test product",
+      "UnitCode": ""
+    },
+    "urlTitle_codeLabel": {
+      "Code": "urlTitle_codeLabel",
+      "CodeLabel": "",
+      "Label": "URL title",
+      "RawValue": "URL title",
+      "UnitCode": ""
+    },
+    "volume": {
+      "Code": "volume",
+      "CodeLabel": "Volume",
+      "Label": "99999.9900",
+      "RawValue": "99999.9900",
+      "UnitCode": "LITER"
+    },
+    "volume_codeLabel": {
+      "Code": "volume_codeLabel",
+      "CodeLabel": "",
+      "Label": "Volume",
+      "RawValue": "Volume",
+      "UnitCode": ""
+    }
+  },
+  "ShortDescription": "This is the short description.",
+  "Description": "DO NOT CHANGE THIS PRODUCT! It is used for integration tests! This product tries to make it as easy as possible to test as much as possible with this one product. \nSo it has attributes, a long description, a special price, multiple images, belongs to multiple categories and so one. \nPlease ask your local tester if you miss something. ",
+  "Media": [
+    {
+      "Type": "image-api",
+      "MimeType": "image/jpeg",
+      "Usage": "detail",
+      "Title": "",
+      "Reference": "a/3/c/3/a3c381fcaf8f121aff8badbb1b88f3cc_best.jpg"
+    },
+    {
+      "Type": "image-api",
+      "MimeType": "image/jpeg",
+      "Usage": "gallery",
+      "Title": "",
+      "Reference": "c/c/0/8/cc08a6e84ab1caa3ad2741700a797992_OM3_800.jpg"
+    },
+    {
+      "Type": "image-api",
+      "MimeType": "image/jpeg",
+      "Usage": "gallery",
+      "Title": "",
+      "Reference": "a/3/c/3/a3c381fcaf8f121aff8badbb1b88f3cc_best.jpg"
+    },
+    {
+      "Type": "image-api",
+      "MimeType": "image/jpeg",
+      "Usage": "gallery",
+      "Title": "",
+      "Reference": "c/c/0/8/cc08a6e84ab1caa3ad2741700a797992_OM3_800.jpg"
+    },
+    {
+      "Type": "image-api",
+      "MimeType": "image/jpeg",
+      "Usage": "gallery",
+      "Title": "",
+      "Reference": "8/a/a/d/8aad6052669b5c02c1c008b645c4dec9__1000x1000__ITEM__DEFAULT__THUMB__100205AX_.jpg"
+    },
+    {
+      "Type": "image-api",
+      "MimeType": "image/jpeg",
+      "Usage": "gallery",
+      "Title": "",
+      "Reference": "7/3/2/4/7324ff69e205fc530db335c94a22edd1__1000x1000__ITEM__DEFAULT__THUMB__100261AX_.jpg"
+    },
+    {
+      "Type": "image-api",
+      "MimeType": "image/jpeg",
+      "Usage": "list",
+      "Title": "",
+      "Reference": "9/1/9/2/9192c5d2802e3e4e43cbf5cfc23c6126__1000x1000__ITEM__DEFAULT__THUMB__100017AX_.jpg"
+    },
+    {
+      "Type": "image-api",
+      "MimeType": "image/jpeg",
+      "Usage": "thumbnail",
+      "Title": "",
+      "Reference": "9/1/9/2/9192c5d2802e3e4e43cbf5cfc23c6126__1000x1000__ITEM__DEFAULT__THUMB__100017AX_.jpg"
+    }
+  ],
+  "MarketPlaceCode": "54aff082da3fe516",
+  "RetailerCode": "retailer",
+  "RetailerSku": "maximum-features",
+  "RetailerName": "Retailer Duty Free \u0026 More",
+  "CreatedAt": "2019-11-06T09:57:51-05:00",
+  "UpdatedAt": "2020-09-24T05:49:35-05:00",
+  "VisibleFrom": "0001-01-01T00:00:00Z",
+  "VisibleTo": "0001-01-01T00:00:00Z",
+  "Categories": [
+    {
+      "Code": "online_beauty",
+      "Path": "Beauty",
+      "Name": "",
+      "Parent": null
+    },
+    {
+      "Code": "online_beauty_makeup",
+      "Path": "Beauty/Makeup",
+      "Name": "",
+      "Parent": null
+    },
+    {
+      "Code": "online_beauty_skincare",
+      "Path": "Beauty/Skincare",
+      "Name": "",
+      "Parent": null
+    },
+    {
+      "Code": "online_fragrance",
+      "Path": "Fragrances",
+      "Name": "",
+      "Parent": null
+    },
+    {
+      "Code": "online_fragrance_mens",
+      "Path": "Fragrances/Men’s",
+      "Name": "",
+      "Parent": null
+    },
+    {
+      "Code": "online_fragrance_unisex",
+      "Path": "Fragrances/Unisex",
+      "Name": "",
+      "Parent": null
+    },
+    {
+      "Code": "online_fragrance_womens",
+      "Path": "Fragrances/Women’s",
+      "Name": "",
+      "Parent": null
+    },
+    {
+      "Code": "online_gadgets",
+      "Path": "Gadgets",
+      "Name": "",
+      "Parent": null
+    },
+    {
+      "Code": "online_gadgets_accessories",
+      "Path": "Gadgets/Accessories",
+      "Name": "",
+      "Parent": null
+    },
+    {
+      "Code": "online_gadgets_gifts",
+      "Path": "Gadgets/Gifts",
+      "Name": "",
+      "Parent": null
+    },
+    {
+      "Code": "online_gadgets_travelEssentials",
+      "Path": "Gadgets/Travel Essentials",
+      "Name": "",
+      "Parent": null
+    },
+    {
+      "Code": "online_jewelry",
+      "Path": "Jewelry",
+      "Name": "",
+      "Parent": null
+    },
+    {
+      "Code": "online_jewelry_costumeJewelry",
+      "Path": "Jewelry/Costume Jewelry",
+      "Name": "",
+      "Parent": null
+    },
+    {
+      "Code": "online_kidsSnacks",
+      "Path": "Kid’s \u0026 Snacks",
+      "Name": "",
+      "Parent": null
+    },
+    {
+      "Code": "online_kidsSnacks_confectionary",
+      "Path": "Kid’s \u0026 Snacks/Confectionary",
+      "Name": "",
+      "Parent": null
+    },
+    {
+      "Code": "online_kidsSnacks_toys",
+      "Path": "Kid’s \u0026 Snacks/Toys",
+      "Name": "",
+      "Parent": null
+    },
+    {
+      "Code": "online_liquors",
+      "Path": "Liquors/Spirits",
+      "Name": "",
+      "Parent": null
+    },
+    {
+      "Code": "online_liqours_spirits",
+      "Path": "Liquors",
+      "Name": "",
+      "Parent": null
+    },
+    {
+      "Code": "online_liquors_wineChampagne",
+      "Path": "Liquors/Wine \u0026 Champagne",
+      "Name": "",
+      "Parent": null
+    },
+    {
+      "Code": "online_tobacco",
+      "Path": "Tobacco",
+      "Name": "",
+      "Parent": null
+    }
+  ],
+  "MainCategory": {
+    "Code": "online_beauty",
+    "Path": "Beauty",
+    "Name": "",
+    "Parent": null
+  },
+  "CategoryToCodeMapping": [
+    "Beauty:online_beauty",
+    "Beauty/Makeup:online_beauty_makeup",
+    "Beauty/Skincare:online_beauty_skincare",
+    "Fragrances:online_fragrance",
+    "Fragrances/Men’s:online_fragrance_mens",
+    "Fragrances/Unisex:online_fragrance_unisex",
+    "Fragrances/Women’s:online_fragrance_womens",
+    "Gadgets:online_gadgets",
+    "Gadgets/Accessories:online_gadgets_accessories",
+    "Gadgets/Gifts:online_gadgets_gifts",
+    "Gadgets/Travel Essentials:online_gadgets_travelEssentials",
+    "Jewelry:online_jewelry",
+    "Jewelry/Costume Jewelry:online_jewelry_costumeJewelry",
+    "Kid’s \u0026 Snacks:online_kidsSnacks",
+    "Kid’s \u0026 Snacks/Confectionary:online_kidsSnacks_confectionary",
+    "Kid’s \u0026 Snacks/Toys:online_kidsSnacks_toys",
+    "Liquors:online_liquors",
+    "Liquors/Spirits:online_liqours_spirits",
+    "Liquors/Wine \u0026 Champagne:online_liquors_wineChampagne",
+    "Tobacco:online_tobacco"
+  ],
+  "StockLevel": "",
+  "Keywords": [],
+  "IsNew": false,
+  "IsSaleable": true,
+  "SaleableFrom": "0001-01-01T00:00:00Z",
+  "SaleableTo": "0001-01-01T00:00:00Z",
+  "ActivePrice": {
+    "Default": {
+      "Amount": "1.23456789e+06",
+      "Currency": "USD"
+    },
+    "Discounted": {
+      "Amount": "25",
+      "Currency": "USD"
+    },
+    "DiscountText": "special_price",
+    "ActiveBase": "0.0",
+    "ActiveBaseAmount": "0.0",
+    "ActiveBaseUnit": "",
+    "IsDiscounted": true,
+    "CampaignRules": [
+      "SpecialPriceRule"
+    ],
+    "DenyMoreDiscounts": false,
+    "Context": {
+      "CustomerGroup": "",
+      "ChannelCode": "",
+      "Locale": "en_US"
+    },
+    "TaxClass": "fullTax"
+  },
+  "AvailablePrices": [],
+  "LoyaltyPrices": [
+    {
+      "Type": "Loyalty",
+      "Default": {
+        "Amount": "1.54320986e+08",
+        "Currency": "Loyalty"
+      },
+      "IsDiscounted": true,
+      "Discounted": {
+        "Amount": "3124",
+        "Currency": "Loyalty"
+      },
+      "DiscountText": "special_price",
+      "MinPointsToSpent": "0",
+      "MaxPointsToSpent": null,
+      "Context": {
+        "CustomerGroup": "",
+        "ChannelCode": "",
+        "Locale": ""
+      }
+    }
+  ],
+  "LoyaltyEarnings": [
+    {
+      "Type": "Loyalty",
+      "Default": {
+        "Amount": "25",
+        "Currency": "Loyalty"
+      }
+    }
+  ],
+  "Teaser": {
+    "ShortTitle": "This should be the best test product",
+    "ShortDescription": "This is the short description.",
+    "URLSlug": "this-should-be-the-best-test-product",
+    "TeaserPrice": {
+      "Default": {
+        "Amount": "1.23456789e+06",
+        "Currency": "USD"
+      },
+      "Discounted": {
+        "Amount": "25",
+        "Currency": "USD"
+      },
+      "DiscountText": "special_price",
+      "ActiveBase": "0.0",
+      "ActiveBaseAmount": "0.0",
+      "ActiveBaseUnit": "",
+      "IsDiscounted": true,
+      "CampaignRules": [
+        "SpecialPriceRule"
+      ],
+      "DenyMoreDiscounts": false,
+      "Context": {
+        "CustomerGroup": "",
+        "ChannelCode": "",
+        "Locale": "en_US"
+      },
+      "TaxClass": "fullTax"
+    },
+    "TeaserPriceIsFromPrice": false,
+    "PreSelectedVariantSku": "",
+    "Media": [
+      {
+        "Type": "image-api",
+        "MimeType": "image/jpeg",
+        "Usage": "detail",
+        "Title": "",
+        "Reference": "a/3/c/3/a3c381fcaf8f121aff8badbb1b88f3cc_best.jpg"
+      },
+      {
+        "Type": "image-api",
+        "MimeType": "image/jpeg",
+        "Usage": "gallery",
+        "Title": "",
+        "Reference": "c/c/0/8/cc08a6e84ab1caa3ad2741700a797992_OM3_800.jpg"
+      },
+      {
+        "Type": "image-api",
+        "MimeType": "image/jpeg",
+        "Usage": "gallery",
+        "Title": "",
+        "Reference": "a/3/c/3/a3c381fcaf8f121aff8badbb1b88f3cc_best.jpg"
+      },
+      {
+        "Type": "image-api",
+        "MimeType": "image/jpeg",
+        "Usage": "gallery",
+        "Title": "",
+        "Reference": "c/c/0/8/cc08a6e84ab1caa3ad2741700a797992_OM3_800.jpg"
+      },
+      {
+        "Type": "image-api",
+        "MimeType": "image/jpeg",
+        "Usage": "gallery",
+        "Title": "",
+        "Reference": "8/a/a/d/8aad6052669b5c02c1c008b645c4dec9__1000x1000__ITEM__DEFAULT__THUMB__100205AX_.jpg"
+      },
+      {
+        "Type": "image-api",
+        "MimeType": "image/jpeg",
+        "Usage": "gallery",
+        "Title": "",
+        "Reference": "7/3/2/4/7324ff69e205fc530db335c94a22edd1__1000x1000__ITEM__DEFAULT__THUMB__100261AX_.jpg"
+      },
+      {
+        "Type": "image-api",
+        "MimeType": "image/jpeg",
+        "Usage": "list",
+        "Title": "",
+        "Reference": "9/1/9/2/9192c5d2802e3e4e43cbf5cfc23c6126__1000x1000__ITEM__DEFAULT__THUMB__100017AX_.jpg"
+      },
+      {
+        "Type": "image-api",
+        "MimeType": "image/jpeg",
+        "Usage": "thumbnail",
+        "Title": "",
+        "Reference": "9/1/9/2/9192c5d2802e3e4e43cbf5cfc23c6126__1000x1000__ITEM__DEFAULT__THUMB__100017AX_.jpg"
+      }
+    ],
+    "MarketPlaceCode": "54aff082da3fe516",
+    "TeaserAvailablePrices": [],
+    "TeaserLoyaltyPriceInfo": {
+      "Type": "Loyalty",
+      "Default": {
+        "Amount": "1.54320986e+08",
+        "Currency": "Loyalty"
+      },
+      "IsDiscounted": true,
+      "Discounted": {
+        "Amount": "3124",
+        "Currency": "Loyalty"
+      },
+      "DiscountText": "special_price",
+      "MinPointsToSpent": "0",
+      "MaxPointsToSpent": null,
+      "Context": {
+        "CustomerGroup": "",
+        "ChannelCode": "",
+        "Locale": ""
+      }
+    },
+    "TeaserLoyaltyEarningInfo": {
+      "Type": "Loyalty",
+      "Default": {
+        "Amount": "25",
+        "Currency": "Loyalty"
+      }
+    }
+  }
+}
