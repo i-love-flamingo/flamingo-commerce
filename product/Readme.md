@@ -157,5 +157,22 @@ will modify the result of the two lists accordingly - while
 will not.
 
 
+## FakeService
+
+With enabled fake services `domain.ProductService` and `domain.SearchService` are responding with preconfigured fake products on invocation.   
+
+````yaml
+commerce: 
+	product: 
+		fakeservice: 
+			enabled: true # boolean: enables fakservices
+			currency: *"€" | !="" # string: currency for the fakeservices
+			jsonTestDataFolder: string | *"testdata/products"
+````
+
+The configuration option `jsonTestDataFolder` tells fakeservices to look for json files with product data in the defined folder. 
+Json files represent MarketPlaceCodes with their filename and `domain.BasicProduct` within the contents.
+You can find an example product under: `test/integrationtest/projecttest/tests/graphql/testdata/products/json_simple.json`
+
 ## Dependencies:
-* search package: the product.SearchService uses the search Result and Filter objects
+* search package: the product.SearchService uses the search Result and Filter objects.

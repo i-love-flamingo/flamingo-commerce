@@ -14,6 +14,7 @@
 * FakeService
     * The product fake search service is now able to return products with an active variant via `fake_configurable_with_active_variant`. Variation attributes have been changed to only include `color` and `size`.
     * Added configuration option `jsonTestDataFolder` to use json files as fake products. You can find an example product under: `test/integrationtest/projecttest/tests/graphql/testdata/products/json_simple.json`
+    * Added fakservice documentation to the product module.  
 * Expose `VariantVariationAttributesSorting` on `domain.ConfigurableProductWithActiveVariant`
 
 **checkout**
