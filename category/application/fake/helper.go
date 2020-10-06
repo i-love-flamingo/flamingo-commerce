@@ -38,6 +38,36 @@ func LoadCategoryTree(testDataFiles map[string]string, logger flamingo.Logger) [
 	return tree
 }
 
+// LoadCategory returns category data from file
+func LoadCategory(categoryCode string, testDataFiles map[string]string, logger flamingo.Logger) domain.Category {
+	var categoryData *domain.CategoryData
+
+	if categoryTreeFile, ok := testDataFiles[categoryCode]; ok {
+		data, err := ioutil.ReadFile(categoryTreeFile)
+		if err != nil {
+			logger.Warn(err)
+			return nil
+		}
+		err = json.Unmarshal(data, &categoryData)
+		if err != nil {
+			logger.Warn(err)
+			return nil
+		}
+	} else {
+		jsonFile, err := Asset(categoryCode + ".json")
+		if err != nil {
+			logger.Warn(err)
+			return nil
+		}
+		err = json.Unmarshal(jsonFile, &categoryData)
+		if err != nil {
+			logger.Warn(err)
+			return nil
+		}
+	}
+	return categoryData
+}
+
 // RegisterTestData returns files of given folder
 func RegisterTestData(folder string, logger flamingo.Logger) map[string]string {
 	testDataFiles := make(map[string]string)

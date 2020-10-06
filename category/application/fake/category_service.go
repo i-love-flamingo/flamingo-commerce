@@ -10,6 +10,7 @@ import (
 
 //go:generate go run github.com/go-bindata/go-bindata/v3/go-bindata -nometadata -pkg fake -prefix mock/ mock/
 
+// CategoryService returns category test data
 type CategoryService struct {
 	testDataFiles map[string]string
 	logger        flamingo.Logger
@@ -17,8 +18,9 @@ type CategoryService struct {
 
 var _ domain.CategoryService = new(CategoryService)
 
+// Inject dependencies
 func (f *CategoryService) Inject(logger flamingo.Logger, config *struct {
-	TestDataFolder string `inject:"config:commerce.category.testDataFolder,optional"`
+	TestDataFolder string `inject:"config:commerce.category.fakeService.testDataFolder,optional"`
 }) {
 	f.logger = logger.WithField(flamingo.LogKeyModule, "category")
 	if config != nil {
@@ -28,6 +30,7 @@ func (f *CategoryService) Inject(logger flamingo.Logger, config *struct {
 	}
 }
 
+// Tree returns the tree the given category belongs to
 func (f CategoryService) Tree(_ context.Context, activeCategoryCode string) (domain.Tree, error) {
 	categoryTree := LoadCategoryTree(f.testDataFiles, f.logger)
 	index := findTreeRootIndex(activeCategoryCode, categoryTree)
@@ -37,8 +40,13 @@ func (f CategoryService) Tree(_ context.Context, activeCategoryCode string) (dom
 	return categoryTree[index], nil
 }
 
+// Get the category of the given category code
 func (f CategoryService) Get(_ context.Context, categoryCode string) (domain.Category, error) {
-	panic("Implement me")
+	category := LoadCategory(categoryCode, f.testDataFiles, f.logger)
+	if category == nil {
+		return nil, domain.ErrNotFound
+	}
+	return category, nil
 }
 
 func findTreeRootIndex(categoryCode string, trees []*domain.TreeData) int {

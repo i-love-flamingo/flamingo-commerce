@@ -12,12 +12,12 @@
       {
         "CategoryCode":       "headphones",
         "CategoryName":       "Headphones",
-        "CategoryPath":       "Electronics/Flat Screens & TV",
+        "CategoryPath":       "Electronics/Headphones",
         "SubTreesData": [
           {
             "CategoryCode":       "headphone_accessories",
             "CategoryName":       "Accessories",
-            "CategoryPath":       "Electronics/Accessories"
+            "CategoryPath":       "Electronics/Headphones/Accessories"
           }
         ]
       },
