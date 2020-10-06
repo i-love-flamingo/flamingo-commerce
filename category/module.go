@@ -7,6 +7,7 @@ import (
 	flamingographql "flamingo.me/graphql"
 
 	"flamingo.me/flamingo-commerce/v3/category/application"
+	"flamingo.me/flamingo-commerce/v3/category/application/fake"
 	"flamingo.me/flamingo-commerce/v3/category/domain"
 	"flamingo.me/flamingo-commerce/v3/category/infrastructure"
 	"flamingo.me/flamingo-commerce/v3/category/interfaces/controller"
@@ -19,6 +20,7 @@ import (
 // Module registers our profiler
 type Module struct {
 	useCategoryFixedAdapter bool
+	useCategoryFakeAdapter  bool
 }
 
 // URL to category
@@ -36,10 +38,12 @@ func (m *Module) Inject(
 	routerRegistry *web.RouterRegistry,
 	config *struct {
 		UseCategoryFixedAdapter bool `inject:"config:commerce.category.useCategoryFixedAdapter,optional"`
+		UseCategoryFakeAdapter  bool `inject:"config:commerce.category.useCategoryFakeAdapter,optional"`
 	},
 ) {
 	if config != nil {
 		m.useCategoryFixedAdapter = config.UseCategoryFixedAdapter
+		m.useCategoryFakeAdapter = config.UseCategoryFakeAdapter
 	}
 }
 
@@ -50,7 +54,9 @@ func (m *Module) Configure(injector *dingo.Injector) {
 
 	if m.useCategoryFixedAdapter {
 		injector.Bind((*domain.CategoryService)(nil)).To(infrastructure.CategoryServiceFixed{})
-
+	}
+	if m.useCategoryFakeAdapter {
+		injector.Bind((*domain.CategoryService)(nil)).To(fake.CategoryService{}).In(dingo.ChildSingleton)
 	}
 	web.BindRoutes(injector, new(routes))
 	injector.Bind(new(application.RouterRouter)).To(new(web.Router))
