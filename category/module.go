@@ -20,7 +20,7 @@ import (
 // Module registers our profiler
 type Module struct {
 	useCategoryFixedAdapter bool
-	useCategoryFakeAdapter  bool
+	useFakeService          bool
 }
 
 // URL to category
@@ -38,12 +38,12 @@ func (m *Module) Inject(
 	routerRegistry *web.RouterRegistry,
 	config *struct {
 		UseCategoryFixedAdapter bool `inject:"config:commerce.category.useCategoryFixedAdapter,optional"`
-		UseCategoryFakeAdapter  bool `inject:"config:commerce.category.useCategoryFakeAdapter,optional"`
+		UseFakeService          bool `inject:"config:commerce.category.fakeService.enabled,optional"`
 	},
 ) {
 	if config != nil {
 		m.useCategoryFixedAdapter = config.UseCategoryFixedAdapter
-		m.useCategoryFakeAdapter = config.UseCategoryFakeAdapter
+		m.useFakeService = config.UseFakeService
 	}
 }
 
@@ -55,7 +55,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	if m.useCategoryFixedAdapter {
 		injector.Bind((*domain.CategoryService)(nil)).To(infrastructure.CategoryServiceFixed{})
 	}
-	if m.useCategoryFakeAdapter {
+	if m.useFakeService {
 		injector.Bind((*domain.CategoryService)(nil)).To(fake.CategoryService{}).In(dingo.ChildSingleton)
 	}
 	web.BindRoutes(injector, new(routes))
