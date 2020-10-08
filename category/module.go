@@ -7,9 +7,9 @@ import (
 	flamingographql "flamingo.me/graphql"
 
 	"flamingo.me/flamingo-commerce/v3/category/application"
-	"flamingo.me/flamingo-commerce/v3/category/application/fake"
 	"flamingo.me/flamingo-commerce/v3/category/domain"
 	"flamingo.me/flamingo-commerce/v3/category/infrastructure"
+	"flamingo.me/flamingo-commerce/v3/category/infrastructure/fake"
 	"flamingo.me/flamingo-commerce/v3/category/interfaces/controller"
 	categoryGraphql "flamingo.me/flamingo-commerce/v3/category/interfaces/graphql"
 	"flamingo.me/flamingo-commerce/v3/product"
@@ -99,4 +99,24 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 
 	registry.HandleData("category.tree", r.tree.Data)
 	registry.HandleData("category", r.entity.Data)
+}
+
+// CueConfig defines the category module configuration
+func (*Module) CueConfig() string {
+	return `
+commerce: {
+	category: {
+		view:  {
+			template: *"category/category" | !=""
+			teaserTemplate: *"category/teaser" | !=""
+		}
+		useCategoryFixedAdapter: bool | *false
+		fakeService: {
+			enabled: bool | *false
+			if enabled {
+			  testDataFolder?: string | !=""
+			}
+		}
+	}
+}`
 }

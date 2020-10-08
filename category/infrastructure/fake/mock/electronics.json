@@ -1,0 +1,35 @@
+{
+  "CategoryCode": "electronics",
+  "CategoryName": "Electronics",
+  "CategoryPath": "Electronics",
+  "CategoryTypeCode": "promotion",
+  "IsPromoted":   true,
+  "CategoryMedia": [
+    {
+      "MediaType": "image",
+      "MediaMimeType": "image/png",
+      "MediaUsage": "promotion",
+      "MediaTitle": "Electronics",
+      "MediaReference": "electronics.png"
+    }
+  ],
+  "CategoryAttributes": {
+    "promo": {
+      "Code":   "promo",
+      "Label":  "Promotion"
+    }
+  },
+  "Promotion": {
+    "LinkType": "application/pdf",
+    "LinkTarget": "blank",
+    "Media": [
+      {
+        "MediaType": "pdf",
+        "MediaMimeType": "application/pdf",
+        "MediaUsage": "promotion",
+        "MediaTitle": "Electronics",
+        "MediaReference": "electronics.pdf"
+      }
+    ]
+  }
+}

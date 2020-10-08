@@ -103,5 +103,98 @@ commerce:
           sort: 2
 ```
 
+## Categories and category tree from json files
 
+The module comes with another Adapter for the "CategoryService" which can be activated by setting `commerce.category.fakeService.enabled: true`
+Per default the category tree and the extended data for the electronics category you can see below will be returned.
+
+Default categoryTree.json:
+```json
+[
+  {
+    "CategoryCode":       "electronics",
+    "CategoryName":       "Electronics",
+    "CategoryPath":       "Electronics",
+    "SubTreesData": [
+      {
+        "CategoryCode":       "flat-screen_tvs",
+        "CategoryName":       "Flat Screens & TV",
+        "CategoryPath":       "Electronics/Flat Screens & TV"
+      },
+      {
+        "CategoryCode":       "headphones",
+        "CategoryName":       "Headphones",
+        "CategoryPath":       "Electronics/Headphones",
+        "SubTreesData": [
+          {
+            "CategoryCode":       "headphone_accessories",
+            "CategoryName":       "Accessories",
+            "CategoryPath":       "Electronics/Headphones/Accessories"
+          }
+        ]
+      },
+      {
+        "CategoryCode":       "tablets",
+        "CategoryName":       "Tablets",
+        "CategoryPath":       "Electronics/Tablets"
+      }
+    ]
+  },
+  {
+    "CategoryCode":       "clothing",
+    "CategoryName":       "Clothes & Fashion",
+    "CategoryPath":       "Clothes & Fashion",
+    "SubTreesData": [
+      {
+        "CategoryCode":       "jumpsuits",
+        "CategoryName":       "Jumpsuits",
+        "CategoryPath":       "Clothes & Fashion/Jumpsuits"
+      }
+    ]
+  }
+]
+```
+Default electronics.json:
+```json
+{
+  "CategoryCode": "electronics",
+  "CategoryName": "Electronics",
+  "CategoryPath": "Electronics",
+  "CategoryTypeCode": "promotion",
+  "IsPromoted":   true,
+  "CategoryMedia": [
+    {
+      "MediaType": "image",
+      "MediaMimeType": "image/png",
+      "MediaUsage": "promotion",
+      "MediaTitle": "Electronics",
+      "MediaReference": "electronics.png"
+    }
+  ],
+  "CategoryAttributes": {
+    "promo": {
+      "Code":   "promo",
+      "Label":  "Promotion"
+    }
+  },
+  "Promotion": {
+    "LinkType": "application/pdf",
+    "LinkTarget": "blank",
+    "Media": [
+      {
+        "MediaType": "pdf",
+        "MediaMimeType": "application/pdf",
+        "MediaUsage": "promotion",
+        "MediaTitle": "Electronics",
+        "MediaReference": "electronics.pdf"
+      }
+    ]
+  }
+}
+```
+
+You can provide a path for json files that include the data for the categories and the tree via `commerce.category.fakeService.testDataFolder`.
+The json file for the category tree has to be named `categoryTree.json`. Files that represent a category have to be named after the code of the category.
+The json file for the category with the code `electronics` for example has to be named `electronics.json`.
+If you do not offer a json file for a category the basic data for the category will be taken from the `categoryTree.json` instead.
 
