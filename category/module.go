@@ -2,7 +2,6 @@ package category
 
 import (
 	"flamingo.me/dingo"
-	"flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/web"
 	flamingographql "flamingo.me/graphql"
 
@@ -61,14 +60,6 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	web.BindRoutes(injector, new(routes))
 	injector.Bind(new(application.RouterRouter)).To(new(web.Router))
 	injector.BindMulti(new(flamingographql.Service)).To(categoryGraphql.Service{})
-}
-
-// DefaultConfig for this module
-func (m *Module) DefaultConfig() config.Map {
-	return config.Map{
-		"commerce.category.view.template":       "category/category",
-		"commerce.category.view.teaserTemplate": "category/teaser",
-	}
 }
 
 // Depends on other modules
