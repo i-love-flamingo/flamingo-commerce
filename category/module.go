@@ -2,13 +2,13 @@ package category
 
 import (
 	"flamingo.me/dingo"
-	"flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/web"
 	flamingographql "flamingo.me/graphql"
 
 	"flamingo.me/flamingo-commerce/v3/category/application"
 	"flamingo.me/flamingo-commerce/v3/category/domain"
 	"flamingo.me/flamingo-commerce/v3/category/infrastructure"
+	"flamingo.me/flamingo-commerce/v3/category/infrastructure/fake"
 	"flamingo.me/flamingo-commerce/v3/category/interfaces/controller"
 	categoryGraphql "flamingo.me/flamingo-commerce/v3/category/interfaces/graphql"
 	"flamingo.me/flamingo-commerce/v3/product"
@@ -19,6 +19,7 @@ import (
 // Module registers our profiler
 type Module struct {
 	useCategoryFixedAdapter bool
+	useFakeService          bool
 }
 
 // URL to category
@@ -36,10 +37,12 @@ func (m *Module) Inject(
 	routerRegistry *web.RouterRegistry,
 	config *struct {
 		UseCategoryFixedAdapter bool `inject:"config:commerce.category.useCategoryFixedAdapter,optional"`
+		UseFakeService          bool `inject:"config:commerce.category.fakeService.enabled,optional"`
 	},
 ) {
 	if config != nil {
 		m.useCategoryFixedAdapter = config.UseCategoryFixedAdapter
+		m.useFakeService = config.UseFakeService
 	}
 }
 
@@ -50,19 +53,13 @@ func (m *Module) Configure(injector *dingo.Injector) {
 
 	if m.useCategoryFixedAdapter {
 		injector.Bind((*domain.CategoryService)(nil)).To(infrastructure.CategoryServiceFixed{})
-
+	}
+	if m.useFakeService {
+		injector.Bind((*domain.CategoryService)(nil)).To(fake.CategoryService{}).In(dingo.ChildSingleton)
 	}
 	web.BindRoutes(injector, new(routes))
 	injector.Bind(new(application.RouterRouter)).To(new(web.Router))
 	injector.BindMulti(new(flamingographql.Service)).To(categoryGraphql.Service{})
-}
-
-// DefaultConfig for this module
-func (m *Module) DefaultConfig() config.Map {
-	return config.Map{
-		"commerce.category.view.template":       "category/category",
-		"commerce.category.view.teaserTemplate": "category/teaser",
-	}
 }
 
 // Depends on other modules
@@ -93,4 +90,39 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 
 	registry.HandleData("category.tree", r.tree.Data)
 	registry.HandleData("category", r.entity.Data)
+}
+
+// CueConfig defines the category module configuration
+func (*Module) CueConfig() string {
+	return `
+commerce: {
+	CategoryTree :: {
+		[string]: CategoryTreeNode
+	}
+	CategoryTreeNode :: {
+		code: string
+		name: string
+		sort?: number
+		childs?: CategoryTree
+	}
+
+	category: {
+		view:  {
+			template: *"category/category" | !=""
+			teaserTemplate: *"category/teaser" | !=""
+		}
+		useCategoryFixedAdapter: bool | *false
+		if useCategoryFixedAdapter {
+			categoryServiceFixed: {
+      			tree: CategoryTree
+			}
+		}
+		fakeService: {
+			enabled: bool | *false
+			if enabled {
+			  testDataFolder?: string | !=""
+			}
+		}
+	}
+}`
 }

@@ -1,0 +1,43 @@
+[
+  {
+    "CategoryCode":       "electronics",
+    "CategoryName":       "Electronics",
+    "CategoryPath":       "Electronics",
+    "SubTreesData": [
+      {
+        "CategoryCode":       "flat-screen_tvs",
+        "CategoryName":       "Flat Screens & TV",
+        "CategoryPath":       "Electronics/Flat Screens & TV"
+      },
+      {
+        "CategoryCode":       "headphones",
+        "CategoryName":       "Headphones",
+        "CategoryPath":       "Electronics/Headphones",
+        "SubTreesData": [
+          {
+            "CategoryCode":       "headphone_accessories",
+            "CategoryName":       "Accessories",
+            "CategoryPath":       "Electronics/Headphones/Accessories"
+          }
+        ]
+      },
+      {
+        "CategoryCode":       "tablets",
+        "CategoryName":       "Tablets",
+        "CategoryPath":       "Electronics/Tablets"
+      }
+    ]
+  },
+  {
+    "CategoryCode":       "clothing",
+    "CategoryName":       "Clothes & Fashion",
+    "CategoryPath":       "Clothes & Fashion",
+    "SubTreesData": [
+      {
+        "CategoryCode":       "jumpsuits",
+        "CategoryName":       "Jumpsuits",
+        "CategoryPath":       "Clothes & Fashion/Jumpsuits"
+      }
+    ]
+  }
+]

@@ -5,6 +5,17 @@
 * GraphQL
   * Updated schema and resolver regarding desired time
 
+**category**
+* Added cue config to module
+* Updated documentation of the module regarding the fake service
+* FakeService
+    * The category fake service was added which can return a project specific category tree and categories
+    * Added configuration options are `fakeService.enabled` and `fakeService.testDataFolder` to enable the fake category service and to use json files as fake categories and tree. You can find examples in the documentation of the module
+
+**checkout**
+* Checkout Controller, update handling of aborted/canceled payments:
+  * Cancel the order / restore the cart before generating the new idempotency key of the payment selection
+
 **product**
 * GraphQL
   * **Breaking** New schema for products:
@@ -16,10 +27,6 @@
     * Added configuration option `jsonTestDataFolder` to use json files as fake products. You can find an example product under: `test/integrationtest/projecttest/tests/graphql/testdata/products/json_simple.json`
     * Added fakservice documentation to the product module.  
 * Expose `VariantVariationAttributesSorting` on `domain.ConfigurableProductWithActiveVariant`
-
-**checkout**
-* Checkout Controller, update handling of aborted/canceled payments:
-  * Cancel the order / restore the cart before generating the new idempotency key of the payment selection
 
 ## v3.3.0
 **product**
