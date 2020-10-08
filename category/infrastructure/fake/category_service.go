@@ -22,7 +22,7 @@ var _ domain.CategoryService = new(CategoryService)
 func (f *CategoryService) Inject(logger flamingo.Logger, config *struct {
 	TestDataFolder string `inject:"config:commerce.category.fakeService.testDataFolder,optional"`
 }) {
-	f.logger = logger.WithField(flamingo.LogKeyCategory, "fakeService")
+	f.logger = logger.WithField(flamingo.LogKeyModule, "category").WithField(flamingo.LogKeyCategory, "fakeService")
 	if config != nil {
 		if len(config.TestDataFolder) > 0 {
 			f.testDataFiles = RegisterTestData(config.TestDataFolder, f.logger)
