@@ -33,6 +33,12 @@ func (f *CategoryService) Inject(logger flamingo.Logger, config *struct {
 // Tree returns the tree the given category belongs to
 func (f CategoryService) Tree(_ context.Context, activeCategoryCode string) (domain.Tree, error) {
 	categoryTree := LoadCategoryTree(f.testDataFiles, f.logger)
+	if len(activeCategoryCode) == 0 {
+		return &domain.TreeData{
+			IsActive:     true,
+			SubTreesData: categoryTree,
+		}, nil
+	}
 	index := findTreeRootIndex(activeCategoryCode, categoryTree)
 	if index == -1 {
 		return nil, domain.ErrNotFound

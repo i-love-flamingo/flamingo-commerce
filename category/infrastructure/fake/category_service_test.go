@@ -21,6 +21,19 @@ func TestCategoryService_Tree(t *testing.T) {
 			assert.Equal(t, err, domain.ErrNotFound)
 		}
 	})
+	t.Run("empty category should return all", func(t *testing.T) {
+		tree, err := service.Tree(context.Background(), "")
+		if assert.Nil(t, err) {
+			assert.Equal(t, "", tree.Code())
+			assert.Equal(t, true, tree.Active())
+			if assert.Equal(t, len(tree.SubTrees()), 2) {
+				electronicsTree := tree.SubTrees()[0]
+				assert.Equal(t, "electronics", electronicsTree.Code())
+				clothingTree := tree.SubTrees()[1]
+				assert.Equal(t, "clothing", clothingTree.Code())
+			}
+		}
+	})
 	t.Run("category electronics", func(t *testing.T) {
 		tree, err := service.Tree(context.Background(), "electronics")
 		if assert.Nil(t, err) {
