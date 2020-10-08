@@ -96,12 +96,27 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 func (*Module) CueConfig() string {
 	return `
 commerce: {
+	CategoryTree :: {
+		[string]: CategoryTreeNode
+	}
+	CategoryTreeNode :: {
+		code: string
+		name: string
+		sort?: number
+		childs?: CategoryTree
+	}
+
 	category: {
 		view:  {
 			template: *"category/category" | !=""
 			teaserTemplate: *"category/teaser" | !=""
 		}
 		useCategoryFixedAdapter: bool | *false
+		if useCategoryFixedAdapter {
+			categoryServiceFixed: {
+      			tree: CategoryTree
+			}
+		}
 		fakeService: {
 			enabled: bool | *false
 			if enabled {
