@@ -267,7 +267,10 @@ func (ps *ProductService) getFakeConfigurableWithVariants(marketplaceCode string
 		if simpleVariant.Attributes.HasAttribute("manufacturerColorCode") {
 			manufacturerColorCode := simpleVariant.Attributes["manufacturerColorCode"].Value()
 			manufacturerColorCode = strings.TrimPrefix(manufacturerColorCode, "#")
-			simpleVariant.Media[0] = domain.Media{Type: "image-external", Reference: "http://dummyimage.com/1024x768/000/" + manufacturerColorCode, Usage: "detail"}
+			image := domain.Media{Type: "image-external", Reference: "http://dummyimage.com/1024x768/000/" + manufacturerColorCode, Usage: "detail"}
+			simpleVariant.Media[0] = image
+			product.Media = []domain.Media{image}
+			product.Teaser.Media = []domain.Media{image}
 		}
 
 		product.Variants = append(product.Variants, simpleVariant)
