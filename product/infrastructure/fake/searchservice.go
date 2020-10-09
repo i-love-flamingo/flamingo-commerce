@@ -39,14 +39,55 @@ func (s *SearchService) Search(ctx context.Context, filters ...searchDomain.Filt
 
 	currentPage := 1
 
-	for _, filter := range filters {
-		filterKey, filterValues := filter.Value()
-		if filterKey == "page" {
-			page, err := strconv.Atoi(filterValues[0])
-			if err == nil {
-				currentPage = page
-			}
+	if page, found := s.filterValue(filters, "page"); found {
+		page, err := strconv.Atoi(page[0])
+		if err == nil {
+			currentPage = page
 		}
+	}
+
+	var selectedFacets []searchDomain.Facet
+
+	facets := map[string]searchDomain.Facet{
+		"brandCode": {
+			Type:  string(searchDomain.ListFacet),
+			Name:  "brandCode",
+			Label: "Brand",
+			Items: []*searchDomain.FacetItem{{
+				Label:    "Apple",
+				Value:    "apple",
+				Active:   false,
+				Selected: false,
+				Count:    2,
+			}},
+			Position: 0,
+		},
+
+		"retailerCode": {
+			Type:  string(searchDomain.ListFacet),
+			Name:  "retailerCode",
+			Label: "Retailer",
+			Items: []*searchDomain.FacetItem{{
+				Label:    "Test Retailer",
+				Value:    "retailer",
+				Active:   false,
+				Selected: false,
+				Count:    2,
+			}},
+			Position: 0,
+		},
+	}
+
+	if s.hasFilterWithValue(filters, "brandCode", "apple") != false {
+		facets["brandCode"].Items[0].Active = true
+		facets["brandCode"].Items[0].Selected = true
+		selectedFacets = append(selectedFacets, facets["brandCode"])
+	}
+
+	if s.hasFilterWithValue(filters, "retailerCode", "retailer") != false {
+		facets["retailerCode"].Items[0].Active = true
+		facets["retailerCode"].Items[0].Selected = true
+		selectedFacets = append(selectedFacets, facets["retailerCode"])
 	}
 
 	return &domain.SearchResult{
@@ -62,36 +103,35 @@ func (s *SearchService) Search(ctx context.Context, filters ...searchDomain.Filt
 			},
 			Hits:       documents,
 			Suggestion: []searchDomain.Suggestion{},
-			Facets: map[string]searchDomain.Facet{"brandCode": {
-				Type:  string(searchDomain.ListFacet),
-				Name:  "brandCode",
-				Label: "Brand",
-				Items: []*searchDomain.FacetItem{{
-					Label:    "Apple",
-					Value:    "apple",
-					Active:   false,
-					Selected: false,
-					Count:    2,
-				}},
-				Position: 0,
-			},
-				"retailerCode": {
-					Type:  string(searchDomain.ListFacet),
-					Name:  "retailerCode",
-					Label: "Retailer",
-					Items: []*searchDomain.FacetItem{{
-						Label:    "Test Retailer",
-						Value:    "retailer",
-						Active:   false,
-						Selected: false,
-						Count:    2,
-					}},
-					Position: 0,
-				}},
+			Facets:     facets,
 		},
 		Hits: hits,
 	}, nil
+}
 
+func (s *SearchService) filterValue(filters []searchDomain.Filter, key string) ([]string, bool) {
+	for _, filter := range filters {
+		filterKey, filterValues := filter.Value()
+		if filterKey == key {
+			return filterValues, true
+		}
+	}
+	return []string{}, false
+}
+
+func (s *SearchService) hasFilterWithValue(filters []searchDomain.Filter, key string, value string) bool {
+	filterValues, found := s.filterValue(filters, key)
+	if !found {
+		return false
+	}
+
+	for _, filterValue := range filterValues {
+		if value == filterValue {
+			return true
+		}
+	}
+
+	return false
 }
 
 // SearchBy returns Products prefiltered by the given attribute (also based on additional given Filters)
