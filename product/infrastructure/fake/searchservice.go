@@ -2,6 +2,7 @@ package fake
 
 import (
 	"context"
+	"strconv"
 
 	searchDomain "flamingo.me/flamingo-commerce/v3/search/domain"
 
@@ -23,7 +24,7 @@ func (s *SearchService) Inject(
 }
 
 //Search returns Products based on given Filters
-func (s *SearchService) Search(ctx context.Context, filter ...searchDomain.Filter) (*domain.SearchResult, error) {
+func (s *SearchService) Search(ctx context.Context, filters ...searchDomain.Filter) (*domain.SearchResult, error) {
 	documents := make([]searchDomain.Document, 0)
 	hits := make([]domain.BasicProduct, 0)
 
@@ -36,13 +37,25 @@ func (s *SearchService) Search(ctx context.Context, filter ...searchDomain.Filte
 		hits = append(hits, product)
 	}
 
+	currentPage := 1
+
+	for _, filter := range filters {
+		filterKey, filterValues := filter.Value()
+		if filterKey == "page" {
+			page, err := strconv.Atoi(filterValues[0])
+			if err == nil {
+				currentPage = page
+			}
+		}
+	}
+
 	return &domain.SearchResult{
 		Result: searchDomain.Result{
 			SearchMeta: searchDomain.SearchMeta{
 				Query:          "",
 				OriginalQuery:  "",
-				Page:           1,
-				NumPages:       1,
+				Page:           currentPage,
+				NumPages:       10,
 				NumResults:     len(hits),
 				SelectedFacets: nil,
 				SortOptions:    nil,
