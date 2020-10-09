@@ -2,6 +2,7 @@ package fake
 
 import (
 	"context"
+	"flamingo.me/flamingo/v3/framework/web"
 	"fmt"
 	"io/ioutil"
 	"math/big"
@@ -254,15 +255,22 @@ func (ps *ProductService) getFakeConfigurableWithVariants(marketplaceCode string
 	for _, variant := range variants {
 		simpleVariant := ps.fakeVariant(variant.marketplaceCode)
 		simpleVariant.Title = variant.title
-		simpleVariant.Attributes = variant.attributes
-		simpleVariant.BasicProductData.Attributes = variant.attributes
+
+		for key, attr := range variant.attributes {
+			simpleVariant.Attributes[key] = attr
+			simpleVariant.BasicProductData.Attributes[key] = attr
+		}
+
 		simpleVariant.StockLevel = variant.stockLevel
 
 		// Give new images for variants with custom colors
 		if simpleVariant.Attributes.HasAttribute("manufacturerColorCode") {
 			manufacturerColorCode := simpleVariant.Attributes["manufacturerColorCode"].Value()
 			manufacturerColorCode = strings.TrimPrefix(manufacturerColorCode, "#")
-			simpleVariant.Media[0] = domain.Media{Type: "image-external", Reference: "http://dummyimage.com/1024x768/000/" + manufacturerColorCode, Usage: "detail"}
+			image := domain.Media{Type: "image-external", Reference: "http://dummyimage.com/1024x768/000/" + manufacturerColorCode, Usage: "detail"}
+			simpleVariant.Media[0] = image
+			product.Media = []domain.Media{image}
+			product.Teaser.Media = []domain.Media{image}
 		}
 
 		product.Variants = append(product.Variants, simpleVariant)
@@ -309,11 +317,13 @@ func (ps *ProductService) addBasicData(product *domain.BasicProductData) {
 	product.Media = append(product.Media, domain.Media{Type: "image-external", Reference: "http://dummyimage.com/1024x768/000/fff", Usage: "detail"})
 	product.Media = append(product.Media, domain.Media{Type: "image-external", Reference: "http://dummyimage.com/200x200/000/fff", Usage: "list"})
 
+	brand := brands[rand.Intn(len(brands))]
+	brandValue := web.URLTitle(brand)
 	product.Attributes = domain.Attributes{
-		"brandCode":        domain.Attribute{RawValue: brands[rand.Intn(len(brands))]},
-		"brandName":        domain.Attribute{RawValue: brands[rand.Intn(len(brands))]},
-		"collectionOption": domain.Attribute{RawValue: []interface{}{"departure", "arrival"}},
-		"urlSlug":          domain.Attribute{RawValue: "product-slug"},
+		"brandCode":        domain.Attribute{Code: "brandCode", Label: brand, RawValue: brandValue},
+		"brandName":        domain.Attribute{Code: "brandName", Label: brand, RawValue: brandValue},
+		"collectionOption": domain.Attribute{Code: "collectionOption", Label: "Collection option", RawValue: []interface{}{"departure", "arrival"}},
+		"urlSlug":          domain.Attribute{Code: "urlSlug", Label: "product-slug", RawValue: "product-slug"},
 	}
 
 	product.RetailerCode = "retailer"
