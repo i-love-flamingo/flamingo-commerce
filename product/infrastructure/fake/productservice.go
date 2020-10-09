@@ -309,11 +309,12 @@ func (ps *ProductService) addBasicData(product *domain.BasicProductData) {
 	product.Media = append(product.Media, domain.Media{Type: "image-external", Reference: "http://dummyimage.com/1024x768/000/fff", Usage: "detail"})
 	product.Media = append(product.Media, domain.Media{Type: "image-external", Reference: "http://dummyimage.com/200x200/000/fff", Usage: "list"})
 
+	brand := brands[rand.Intn(len(brands))]
 	product.Attributes = domain.Attributes{
-		"brandCode":        domain.Attribute{RawValue: brands[rand.Intn(len(brands))]},
-		"brandName":        domain.Attribute{RawValue: brands[rand.Intn(len(brands))]},
+		"brandCode":        domain.Attribute{Code: "brandCode", Label: brand, RawValue: brand},
+		"brandName":        domain.Attribute{Code: "brandName", Label: brand, RawValue: brand},
 		"collectionOption": domain.Attribute{RawValue: []interface{}{"departure", "arrival"}},
-		"urlSlug":          domain.Attribute{RawValue: "product-slug"},
+		"urlSlug":          domain.Attribute{Code: "urlSlug", Label: "product-slug", RawValue: "product-slug"},
 	}
 
 	product.RetailerCode = "retailer"
