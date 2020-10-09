@@ -46,7 +46,7 @@ func (s *SearchService) Search(ctx context.Context, filters ...searchDomain.Filt
 		}
 	}
 
-	var selectedFacets []searchDomain.Facet
+	selectedFacets := make([]searchDomain.Facet, 0)
 
 	facets := map[string]searchDomain.Facet{
 		"brandCode": {
@@ -98,7 +98,7 @@ func (s *SearchService) Search(ctx context.Context, filters ...searchDomain.Filt
 				Page:           currentPage,
 				NumPages:       10,
 				NumResults:     len(hits),
-				SelectedFacets: nil,
+				SelectedFacets: selectedFacets,
 				SortOptions:    nil,
 			},
 			Hits:       documents,
