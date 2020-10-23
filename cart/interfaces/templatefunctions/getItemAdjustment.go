@@ -28,6 +28,7 @@ type (
 		DeliveryCode string
 		PrevQty      int
 		CurrQty      int
+		Reason       string
 	}
 )
 
@@ -47,6 +48,7 @@ func (gdm *GetQuantityAdjustmentDeletedItemsMessages) Func(ctx context.Context) 
 							DeliveryCode: a.DeliveryCode,
 							PrevQty:      a.NewQty - a.RestrictionResult.RemainingDifference,
 							CurrQty:      a.NewQty,
+							Reason:       a.RestrictionResult.RestrictorName,
 						})
 					}
 				}
@@ -71,6 +73,7 @@ func (gum *GetQuantityAdjustmentUpdatedItemsMessage) Func(ctx context.Context) i
 							DeliveryCode: a.DeliveryCode,
 							PrevQty:      a.NewQty - a.RestrictionResult.RemainingDifference,
 							CurrQty:      a.NewQty,
+							Reason:       a.RestrictionResult.RestrictorName,
 						}
 					}
 				}

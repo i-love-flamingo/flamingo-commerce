@@ -63,6 +63,7 @@ func TestGetQuantityAdjustmentDeletedItemsMessages_Func(t *testing.T) {
 							WasDeleted:   true,
 							RestrictionResult: &validation.RestrictionResult{
 								RemainingDifference: -2,
+								RestrictorName:      "restrictor",
 							},
 							NewQty: 0,
 						},
@@ -79,6 +80,7 @@ func TestGetQuantityAdjustmentDeletedItemsMessages_Func(t *testing.T) {
 					DeliveryCode: "deliveryCode",
 					PrevQty:      2,
 					CurrQty:      0,
+					Reason:       "restrictor",
 				},
 			},
 		},
@@ -96,6 +98,7 @@ func TestGetQuantityAdjustmentDeletedItemsMessages_Func(t *testing.T) {
 							WasDeleted:   false,
 							RestrictionResult: &validation.RestrictionResult{
 								RemainingDifference: -2,
+								RestrictorName:      "restrictor-A",
 							},
 							NewQty: 1,
 						},
@@ -107,6 +110,7 @@ func TestGetQuantityAdjustmentDeletedItemsMessages_Func(t *testing.T) {
 							WasDeleted:   true,
 							RestrictionResult: &validation.RestrictionResult{
 								RemainingDifference: -4,
+								RestrictorName:      "restrictor-B",
 							},
 							NewQty: 0,
 						},
@@ -123,6 +127,7 @@ func TestGetQuantityAdjustmentDeletedItemsMessages_Func(t *testing.T) {
 					DeliveryCode: "deliveryCode-B",
 					PrevQty:      4,
 					CurrQty:      0,
+					Reason:       "restrictor-B",
 				},
 			},
 		},
@@ -214,6 +219,7 @@ func TestGetQuantityAdjustmentUpdatedItemsMessage_Func(t *testing.T) {
 								IsRestricted:        true,
 								MaxAllowed:          1,
 								RemainingDifference: -2,
+								RestrictorName:      "restrictor",
 							},
 							NewQty: 1,
 						},
@@ -234,6 +240,7 @@ func TestGetQuantityAdjustmentUpdatedItemsMessage_Func(t *testing.T) {
 				DeliveryCode: "deliveryCode",
 				PrevQty:      3,
 				CurrQty:      1,
+				Reason:       "restrictor",
 			},
 		},
 	}
