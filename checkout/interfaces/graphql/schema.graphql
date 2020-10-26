@@ -78,7 +78,7 @@ type Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment implements Commer
     options: String!
     "Optional endpoint used for obtaining a merchant session, not set if the wallet payment doesn't require a merchant validation"
     merchant_validation_url: String
-    "Enpoint to sent completed payment to"
+    "Endpoint to sent completed payment to"
     handle_payment_response_url: String!
 }
 
