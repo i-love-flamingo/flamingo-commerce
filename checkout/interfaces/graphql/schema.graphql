@@ -68,6 +68,8 @@ type Commerce_Checkout_PlaceOrderState_State_Redirect implements Commerce_Checko
 
 type Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment implements Commerce_Checkout_PlaceOrderState_State {
     name: String!
+    "Wallet payment method that was choosen previously"
+    payment_method: String!
     "Contains the JSON encoded method data for the PaymentRequest API"
     method_data: String!
     "Contains the JSON encoded details for the PaymentRequest API"
