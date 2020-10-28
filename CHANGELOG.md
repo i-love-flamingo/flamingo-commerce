@@ -16,6 +16,9 @@
 * Checkout Controller, update handling of aborted/canceled payments:
   * Cancel the order / restore the cart before generating the new idempotency key of the payment selection
 
+**payment**
+* Introduced wallet payment method 
+
 **product**
 * GraphQL
   * **Breaking** New schema for products:
