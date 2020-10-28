@@ -4,9 +4,7 @@ name: Go
 # events but only for the master branch
 on:
   push:
-    branches: [ $default-branch ]
   pull_request:
-    branches: [ $default-branch ]
 
 jobs:
   build:
