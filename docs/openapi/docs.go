@@ -1756,6 +1756,9 @@ var doc = `{
                 "URL": {
                     "description": "URL is used to pass URL data to the user if the current state needs some",
                     "type": "string"
+                },
+                "WalletDetails": {
+                    "$ref": "#/definitions/domain.WalletDetails"
                 }
             }
         },
@@ -1831,6 +1834,26 @@ var doc = `{
                 },
                 "Type": {
                     "description": "Type - Name( or Type) of the Loyalty program",
+                    "type": "string"
+                }
+            }
+        },
+        "domain.PaymentRequestAPI": {
+            "type": "object",
+            "properties": {
+                "CompleteURL": {
+                    "type": "string"
+                },
+                "Details": {
+                    "type": "string"
+                },
+                "MerchantValidationURL": {
+                    "type": "string"
+                },
+                "Methods": {
+                    "type": "string"
+                },
+                "Options": {
                     "type": "string"
                 }
             }
@@ -2052,6 +2075,17 @@ var doc = `{
                     "type": "boolean"
                 },
                 "URLSlug": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.WalletDetails": {
+            "type": "object",
+            "properties": {
+                "PaymentRequestAPI": {
+                    "$ref": "#/definitions/domain.PaymentRequestAPI"
+                },
+                "UsedPaymentMethod": {
                     "type": "string"
                 }
             }

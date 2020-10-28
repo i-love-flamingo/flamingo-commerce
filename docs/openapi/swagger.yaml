@@ -514,6 +514,8 @@ definitions:
       URL:
         description: URL is used to pass URL data to the user if the current state needs some
         type: string
+      WalletDetails:
+        $ref: '#/definitions/domain.WalletDetails'
     type: object
   domain.FlowStatus:
     properties:
@@ -564,6 +566,19 @@ definitions:
         type: string
       Type:
         description: Type - Name( or Type) of the Loyalty program
+        type: string
+    type: object
+  domain.PaymentRequestAPI:
+    properties:
+      CompleteURL:
+        type: string
+      Details:
+        type: string
+      MerchantValidationURL:
+        type: string
+      Methods:
+        type: string
+      Options:
         type: string
     type: object
   domain.Price:
@@ -713,6 +728,13 @@ definitions:
         description: TeaserPriceIsFromPrice - is set to true in cases where a product might have different prices (e.g. configurable)
         type: boolean
       URLSlug:
+        type: string
+    type: object
+  domain.WalletDetails:
+    properties:
+      PaymentRequestAPI:
+        $ref: '#/definitions/domain.PaymentRequestAPI'
+      UsedPaymentMethod:
         type: string
     type: object
   paymentResultError:

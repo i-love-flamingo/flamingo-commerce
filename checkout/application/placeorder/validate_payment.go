@@ -13,6 +13,8 @@ import (
 const (
 	// ValidatePaymentErrorNoActionURL used for errors when the needed URL is missing from the ActionData struct
 	ValidatePaymentErrorNoActionURL = "no url set for action"
+	// ValidatePaymentErrorNoWalletDetails used for errors when the needed URL is missing from the ActionData struct
+	ValidatePaymentErrorNoWalletDetails = "no wallet details set for action"
 	// ValidatePaymentErrorNoActionDisplayData used for errors when the needed DisplayData/HTML is missing from the ActionData struct
 	ValidatePaymentErrorNoActionDisplayData = "no display data / html set for action"
 )
@@ -50,6 +52,13 @@ func PaymentValidator(ctx context.Context, p *process.Process, paymentService *a
 				}
 			}
 			p.UpdateState(states.PostRedirect{}.Name(), states.NewPostRedirectStateData(flowStatus.ActionData.URL, formFields))
+		case paymentDomain.PaymentFlowActionShowWalletPayment:
+			if flowStatus.ActionData.WalletDetails == nil {
+				return process.RunResult{
+					Failed: process.PaymentErrorOccurredReason{Error: ValidatePaymentErrorNoWalletDetails},
+				}
+			}
+			p.UpdateState(states.ShowWalletPayment{}.Name(), states.NewShowWalletPaymentStateData(states.ShowWalletPaymentData(*flowStatus.ActionData.WalletDetails)))
 		case paymentDomain.PaymentFlowActionRedirect:
 			if flowStatus.ActionData.URL == nil {
 				return process.RunResult{

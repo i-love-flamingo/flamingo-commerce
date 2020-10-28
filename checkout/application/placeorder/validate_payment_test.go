@@ -213,6 +213,55 @@ func TestPaymentValidator(t *testing.T) {
 			},
 		},
 		{
+			name: "status: unapproved, action: show wallet payment",
+			flowStatus: flowStatusResult{
+				flowStatus: &domain.FlowStatus{
+					Status: domain.PaymentFlowStatusUnapproved,
+					Action: domain.PaymentFlowActionShowWalletPayment,
+					ActionData: domain.FlowActionData{
+						WalletDetails: &domain.WalletDetails{
+							UsedPaymentMethod: "ApplePay",
+							PaymentRequestAPI: domain.PaymentRequestAPI{
+								Methods: `{
+									"supportedMethods": "https://apple.com/apple-pay",
+									"data": {
+										"version": 3,
+										"merchantIdentifier": "merchant.com.aoe.om3.kso",
+										"merchantCapabilities": ["supports3DS"],
+										"supportedNetworks": ["asterCard", "visa", "discover", "amex"],
+										"countryCode": "DE"
+									}
+								}
+								`,
+								MerchantValidationURL: &url.URL{Scheme: "https", Host: "validate.example.com"},
+							},
+						},
+					},
+				},
+			},
+			want: want{
+				runResult: process.RunResult{Failed: nil},
+				state:     states.ShowWalletPayment{}.Name(),
+				stateData: process.StateData(states.ShowWalletPaymentData{
+					UsedPaymentMethod: "ApplePay",
+					PaymentRequestAPI: domain.PaymentRequestAPI{
+						Methods: `{
+									"supportedMethods": "https://apple.com/apple-pay",
+									"data": {
+										"version": 3,
+										"merchantIdentifier": "merchant.com.aoe.om3.kso",
+										"merchantCapabilities": ["supports3DS"],
+										"supportedNetworks": ["asterCard", "visa", "discover", "amex"],
+										"countryCode": "DE"
+									}
+								}
+								`,
+						MerchantValidationURL: &url.URL{Scheme: "https", Host: "validate.example.com"},
+					},
+				}),
+			},
+		},
+		{
 			name: "status: unapproved, action: post redirect - URL missing",
 			flowStatus: flowStatusResult{
 				flowStatus: &domain.FlowStatus{

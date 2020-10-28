@@ -53,8 +53,8 @@ type (
 		Methods               string
 		Details               string
 		Options               string
-		MerchantValidationURL *url.URL
-		CompleteURL           *url.URL
+		MerchantValidationURL *url.URL `swaggertype:"string"`
+		CompleteURL           *url.URL `swaggertype:"string"`
 	}
 
 	// FormField contains form fields

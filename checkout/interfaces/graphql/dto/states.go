@@ -65,6 +65,22 @@ type (
 		Key   string
 		Value []string
 	}
+
+	// ShowWalletPayment state
+	ShowWalletPayment struct {
+		Name              string
+		PaymentMethod     string
+		PaymentRequestAPI PaymentRequestAPI
+	}
+
+	// PaymentRequestAPI holds all data needed to create a PaymentRequest
+	PaymentRequestAPI struct {
+		MethodData            string
+		Details               string
+		Options               string
+		MerchantValidationURL *string
+		CompleteURL           string
+	}
 )
 
 var (
@@ -76,12 +92,39 @@ var (
 	_ State = new(ShowHTML)
 	_ State = new(Redirect)
 	_ State = new(PostRedirect)
+	_ State = new(ShowWalletPayment)
 )
 
 // MapFrom the internal process state to the graphQL state fields
 func (s *Failed) MapFrom(pctx process.Context) {
 	s.Name = pctx.CurrentStateName
 	s.Reason = pctx.FailedReason
+}
+
+// MapFrom the internal process state to the graphQL state fields
+func (s *ShowWalletPayment) MapFrom(pctx process.Context) {
+	s.Name = pctx.CurrentStateName
+	if stateData, ok := pctx.CurrentStateData.(states.ShowWalletPaymentData); ok {
+		s.PaymentMethod = stateData.UsedPaymentMethod
+		s.PaymentRequestAPI = PaymentRequestAPI{
+			CompleteURL: func() string {
+				if stateData.PaymentRequestAPI.CompleteURL == nil {
+					return ""
+				}
+				return stateData.PaymentRequestAPI.CompleteURL.String()
+			}(),
+			MerchantValidationURL: func() *string {
+				if stateData.PaymentRequestAPI.MerchantValidationURL == nil {
+					return nil
+				}
+				result := stateData.PaymentRequestAPI.MerchantValidationURL.String()
+				return &result
+			}(),
+			Details:    stateData.PaymentRequestAPI.Details,
+			Options:    stateData.PaymentRequestAPI.Options,
+			MethodData: stateData.PaymentRequestAPI.Methods,
+		}
+	}
 }
 
 // MapFrom the internal process state to the graphQL state fields

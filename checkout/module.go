@@ -73,6 +73,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	injector.BindMap(new(process.State), new(states.Failed).Name()).To(states.Failed{})
 	injector.BindMap(new(process.State), new(states.ShowIframe).Name()).To(states.ShowIframe{})
 	injector.BindMap(new(process.State), new(states.ShowHTML).Name()).To(states.ShowHTML{})
+	injector.BindMap(new(process.State), new(states.ShowWalletPayment).Name()).To(states.ShowWalletPayment{})
 	injector.BindMap(new(process.State), new(states.Redirect).Name()).To(states.Redirect{})
 	injector.BindMap(new(process.State), new(states.PostRedirect).Name()).To(states.PostRedirect{})
 
@@ -90,6 +91,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	injector.BindMap(new(dto.State), new(states.Success).Name()).To(dto.Success{})
 	injector.BindMap(new(dto.State), new(states.Failed).Name()).To(dto.Failed{})
 	injector.BindMap(new(dto.State), new(states.ShowHTML).Name()).To(dto.ShowHTML{})
+	injector.BindMap(new(dto.State), new(states.ShowWalletPayment).Name()).To(dto.ShowWalletPayment{})
 	injector.BindMap(new(dto.State), new(states.ShowIframe).Name()).To(dto.ShowIframe{})
 	injector.BindMap(new(dto.State), new(states.Redirect).Name()).To(dto.Redirect{})
 	injector.BindMap(new(dto.State), new(states.PostRedirect).Name()).To(dto.PostRedirect{})
