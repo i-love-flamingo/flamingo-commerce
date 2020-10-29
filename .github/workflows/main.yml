@@ -1,0 +1,27 @@
+name: Go
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Setup Go environment
+        uses: actions/setup-go@v2.1.2
+        with:
+          go-version: 1.*
+          stable: true
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+
+      - name: Get dependencies
+        run: go get -v -t -d ./...
+
+      - name: Test
+        run: go test -race -vet=all ./...
