@@ -5820,7 +5820,7 @@ type Commerce_Checkout_PlaceOrderState_State_Redirect implements Commerce_Checko
 
 type Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment implements Commerce_Checkout_PlaceOrderState_State {
     name: String!
-    "Wallet payment method that was choosen previously"
+    "Wallet payment method that was chosen previously"
     paymentMethod: String!
     "Information needed to create a payment using the PaymentRequest API"
     paymentRequestAPI: Commerce_Checkout_PlaceOrderState_PaymentRequestAPI!
