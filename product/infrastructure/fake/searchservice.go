@@ -23,29 +23,70 @@ func (s *SearchService) Inject(
 	return s
 }
 
-//Search returns Products based on given Filters
+// Search returns Products based on given Filters
 func (s *SearchService) Search(ctx context.Context, filters ...searchDomain.Filter) (*domain.SearchResult, error) {
-	documents := make([]searchDomain.Document, 0)
-	hits := make([]domain.BasicProduct, 0)
+	hits := s.findProducts(ctx, filters)
+	currentPage := s.findCurrentPage(filters)
+	facets, selectedFacets := s.createFacets(filters)
 
-	for _, marketPlaceCode := range s.productService.GetMarketPlaceCodes() {
-		product, _ := s.productService.Get(ctx, marketPlaceCode)
-		if product == nil {
-			continue
-		}
-		documents = append(documents, product)
-		hits = append(hits, product)
+	documents := make([]searchDomain.Document, len(hits))
+	for i, hit := range hits {
+		documents[i] = hit
 	}
 
+	return &domain.SearchResult{
+		Result: searchDomain.Result{
+			SearchMeta: searchDomain.SearchMeta{
+				Query:          "",
+				OriginalQuery:  "",
+				Page:           currentPage,
+				NumPages:       10,
+				NumResults:     len(hits),
+				SelectedFacets: selectedFacets,
+				SortOptions:    nil,
+			},
+			Hits:       documents,
+			Suggestion: []searchDomain.Suggestion{},
+			Facets:     facets,
+		},
+		Hits: hits,
+	}, nil
+}
+
+// SearchBy returns Products prefiltered by the given attribute (also based on additional given Filters)
+func (s *SearchService) SearchBy(ctx context.Context, _ string, _ []string, _ ...searchDomain.Filter) (*domain.SearchResult, error) {
+	return s.Search(ctx)
+}
+
+func (s *SearchService) findProducts(ctx context.Context, filters []searchDomain.Filter) []domain.BasicProduct {
+	products := make([]domain.BasicProduct, 0)
+
+	// - try finding product by marketPlaceCode given in query
+	if query, found := s.filterValue(filters, "q"); found {
+		if len(query) > 0 {
+			product, _ := s.productService.Get(ctx, query[0])
+			if product != nil {
+				products = append(products, product)
+			}
+		}
+	}
+
+	return products
+}
+
+func (s *SearchService) findCurrentPage(filters []searchDomain.Filter) int {
 	currentPage := 1
 
 	if page, found := s.filterValue(filters, "page"); found {
-		page, err := strconv.Atoi(page[0])
-		if err == nil {
+		if page, err := strconv.Atoi(page[0]); err == nil {
 			currentPage = page
 		}
 	}
 
+	return currentPage
+}
+
+func (s *SearchService) createFacets(filters []searchDomain.Filter) (map[string]searchDomain.Facet, []searchDomain.Facet) {
 	selectedFacets := make([]searchDomain.Facet, 0)
 
 	facets := map[string]searchDomain.Facet{
@@ -90,23 +131,7 @@ func (s *SearchService) Search(ctx context.Context, filters ...searchDomain.Filt
 		selectedFacets = append(selectedFacets, facets["retailerCode"])
 	}
 
-	return &domain.SearchResult{
-		Result: searchDomain.Result{
-			SearchMeta: searchDomain.SearchMeta{
-				Query:          "",
-				OriginalQuery:  "",
-				Page:           currentPage,
-				NumPages:       10,
-				NumResults:     len(hits),
-				SelectedFacets: selectedFacets,
-				SortOptions:    nil,
-			},
-			Hits:       documents,
-			Suggestion: []searchDomain.Suggestion{},
-			Facets:     facets,
-		},
-		Hits: hits,
-	}, nil
+	return facets, selectedFacets
 }
 
 func (s *SearchService) filterValue(filters []searchDomain.Filter, key string) ([]string, bool) {
@@ -116,25 +141,18 @@ func (s *SearchService) filterValue(filters []searchDomain.Filter, key string) (
 			return filterValues, true
 		}
 	}
+
 	return []string{}, false
 }
 
 func (s *SearchService) hasFilterWithValue(filters []searchDomain.Filter, key string, value string) bool {
-	filterValues, found := s.filterValue(filters, key)
-	if !found {
-		return false
-	}
-
-	for _, filterValue := range filterValues {
-		if value == filterValue {
-			return true
+	if filterValues, found := s.filterValue(filters, key); found {
+		for _, filterValue := range filterValues {
+			if value == filterValue {
+				return true
+			}
 		}
 	}
 
 	return false
-}
-
-// SearchBy returns Products prefiltered by the given attribute (also based on additional given Filters)
-func (s *SearchService) SearchBy(ctx context.Context, attribute string, values []string, filter ...searchDomain.Filter) (*domain.SearchResult, error) {
-	return s.Search(ctx)
 }
