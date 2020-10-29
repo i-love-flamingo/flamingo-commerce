@@ -49,10 +49,13 @@ func TestRedis_TryLockDocker(t *testing.T) {
 	address := fmt.Sprintf("%s:%s", "127.0.0.1", res.GetPort("6379/tcp"))
 
 	require.NoError(t, pool.Retry(func() error {
-		_, err := redis.Dial("tcp", address)
+		conn, err := redis.Dial("tcp", address)
+		if err != nil {
+			return err
+		}
+		_, err = conn.Do("PING")
 		return err
-	}),
-	)
+	}))
 
 	redisLocker := getRedisLocker("tcp", address)
 	runTestCases(t, redisLocker)
