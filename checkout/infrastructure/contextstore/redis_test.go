@@ -77,7 +77,15 @@ func startUpDockerRedis(t *testing.T) (func(), string, redis.Conn) {
 	address := fmt.Sprintf("%s:%s", "127.0.0.1", res.GetPort("6379/tcp"))
 
 	var conn redis.Conn
-	require.NoError(t, pool.Retry(func() error { conn, err = redis.Dial("tcp", address); return err }))
+	require.NoError(t, pool.Retry(func() error {
+		conn, err = redis.Dial("tcp", address)
+		if err != nil {
+			return err
+		}
+
+		_, err = conn.Do("PING")
+		return err
+	}))
 
 	prepareData(t, conn)
 
