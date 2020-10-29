@@ -63,22 +63,12 @@ func (s *SearchService) findProducts(ctx context.Context, filters []searchDomain
 
 	// - try finding product by marketPlaceCode given in query
 	if query, found := s.filterValue(filters, "q"); found {
-		var product domain.BasicProduct
 		if len(query) > 0 {
-			product, _ = s.productService.Get(ctx, query[0])
-		}
-		if product != nil {
-			products = append(products, product)
-		}
-	}
-
-	// - get default products if no product found by marketPlaceCode
-	if len(products) == 0 {
-		for _, marketPlaceCode := range s.productService.GetMarketPlaceCodes() {
-			product, _ := s.productService.Get(ctx, marketPlaceCode)
-			if product != nil {
-				products = append(products, product)
+			product, _ := s.productService.Get(ctx, query[0])
+			if product == nil {
+				return nil
 			}
+			products = append(products, product)
 		}
 	}
 
