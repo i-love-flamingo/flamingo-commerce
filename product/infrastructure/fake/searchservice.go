@@ -65,10 +65,9 @@ func (s *SearchService) findProducts(ctx context.Context, filters []searchDomain
 	if query, found := s.filterValue(filters, "q"); found {
 		if len(query) > 0 {
 			product, _ := s.productService.Get(ctx, query[0])
-			if product == nil {
-				return nil
+			if product != nil {
+				products = append(products, product)
 			}
-			products = append(products, product)
 		}
 	}
 
