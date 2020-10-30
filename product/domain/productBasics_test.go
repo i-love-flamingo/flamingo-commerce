@@ -80,16 +80,19 @@ func TestAttributeValues(t *testing.T) {
 	a := Attribute{RawValue: "some string"}
 	result := a.Values()
 	assert.IsType(t, []string{}, result)
-	assert.Empty(t, result)
+	assert.Len(t, result, 1)
+	assert.Equal(t, "some string", result[0])
 
 	var rawValue []interface{}
-	for _, val := range []string{"some", "string"} {
+	for _, val := range []string{"some", "  string    "} {
 		rawValue = append(rawValue, val)
 	}
 	a.RawValue = rawValue
 	result = a.Values()
 	assert.IsType(t, []string{}, result)
 	assert.Len(t, result, 2)
+	assert.Equal(t, "some", result[0])
+	assert.Equal(t, "string", result[1])
 }
 
 func TestAttributeHasUnit(t *testing.T) {

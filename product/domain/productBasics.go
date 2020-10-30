@@ -260,14 +260,16 @@ func (at Attribute) HasMultipleValues() bool {
 	return ok
 }
 
-// Values builds a list of product attribute values
+// Values builds a list of product attribute values - in case the raw value is a slice
 func (at Attribute) Values() []string {
 	var result []string
 	list, ok := at.RawValue.([]interface{})
 	if ok {
 		for _, entry := range list {
-			result = append(result, fmt.Sprintf("%v", entry))
+			result = append(result, strings.Trim(fmt.Sprintf("%v", entry), " "))
 		}
+	} else {
+		result = append(result, at.Value())
 	}
 	return result
 }
