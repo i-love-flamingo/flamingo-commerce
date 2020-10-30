@@ -174,5 +174,17 @@ The configuration option `jsonTestDataFolder` tells fakeservices to look for jso
 Json files represent MarketPlaceCodes with their filename and `domain.BasicProduct` within the contents.
 You can find an example product under: `test/integrationtest/projecttest/tests/graphql/testdata/products/json_simple.json`
 
+### SearchService
+The fake service returns specific products if the query matches their marketplace code. This corresponds to the file name of the products in your project. There are also available default products with the marketplace codes:
+- fake_configurable
+- fake_configurable_with_active_variant
+- fake_simple
+- fake_simple_with_fixed_price
+- fake_simple_out_of_stock
+- fake_fixed_simple_without_discounts
+
+If you query the fake service with `no-results` no products are returned.
+In case no product with the given query is found and `no-results` is not used all preconfigured fake products are returned.
+
 ## Dependencies:
 * search package: the product.SearchService uses the search Result and Filter objects.
