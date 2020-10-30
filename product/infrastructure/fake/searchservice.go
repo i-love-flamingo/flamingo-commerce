@@ -61,7 +61,7 @@ func (s *SearchService) SearchBy(ctx context.Context, _ string, _ []string, _ ..
 func (s *SearchService) findProducts(ctx context.Context, filters []searchDomain.Filter) []domain.BasicProduct {
 	products := make([]domain.BasicProduct, 0)
 
-	// - try finding product by marketPlaceCode given in query or return nothing if query is not-found
+	// - try finding product by marketPlaceCode given in query or return nothing if query is no-results
 	if query, found := s.filterValue(filters, "q"); found {
 		if len(query) > 0 {
 			if query[0] == "no-results" {
