@@ -18,6 +18,7 @@ require (
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
+	github.com/fzipp/gocyclo v0.3.1 // indirect
 	github.com/gavv/httpexpect/v2 v2.0.2
 	github.com/go-openapi/spec v0.19.8 // indirect
 	github.com/go-openapi/swag v0.19.9 // indirect
