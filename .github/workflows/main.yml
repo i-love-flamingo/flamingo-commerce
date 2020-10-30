@@ -3,10 +3,10 @@ name: Tests
 on:
   push:
     branches:
-      - master
+      - $default-branch
   pull_request:
     branches:
-      - master
+      - $default-branch
 
 jobs:
   run-tests:
