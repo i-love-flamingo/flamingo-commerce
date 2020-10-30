@@ -65,7 +65,7 @@ func (s *SearchService) findProducts(ctx context.Context, filters []searchDomain
 	if query, found := s.filterValue(filters, "q"); found {
 		if len(query) > 0 {
 			if query[0] == "no-results" {
-				return nil
+				return products
 			}
 			product, _ := s.productService.Get(ctx, query[0])
 			if product != nil {
