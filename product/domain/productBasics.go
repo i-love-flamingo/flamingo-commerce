@@ -268,8 +268,6 @@ func (at Attribute) Values() []string {
 		for _, entry := range list {
 			result = append(result, strings.Trim(fmt.Sprintf("%v", entry), " "))
 		}
-	} else {
-		result = append(result, at.Value())
 	}
 	return result
 }
