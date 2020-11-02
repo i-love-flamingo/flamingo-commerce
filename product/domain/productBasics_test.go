@@ -80,8 +80,7 @@ func TestAttributeValues(t *testing.T) {
 	a := Attribute{RawValue: "some string"}
 	result := a.Values()
 	assert.IsType(t, []string{}, result)
-	assert.Len(t, result, 1)
-	assert.Equal(t, "some string", result[0])
+	assert.Len(t, result, 0)
 
 	var rawValue []interface{}
 	for _, val := range []string{"some", "  string    "} {
