@@ -481,6 +481,14 @@ type ComplexityRoot struct {
 		Value func(childComplexity int) int
 	}
 
+	CommerceCheckoutPlaceOrderStatePaymentRequestAPI struct {
+		CompleteURL           func(childComplexity int) int
+		Details               func(childComplexity int) int
+		MerchantValidationURL func(childComplexity int) int
+		MethodData            func(childComplexity int) int
+		Options               func(childComplexity int) int
+	}
+
 	CommerceCheckoutPlaceOrderStateStateFailed struct {
 		Name   func(childComplexity int) int
 		Reason func(childComplexity int) int
@@ -526,6 +534,12 @@ type ComplexityRoot struct {
 	CommerceCheckoutPlaceOrderStateStateShowIframe struct {
 		Name func(childComplexity int) int
 		URL  func(childComplexity int) int
+	}
+
+	CommerceCheckoutPlaceOrderStateStateShowWalletPayment struct {
+		Name              func(childComplexity int) int
+		PaymentMethod     func(childComplexity int) int
+		PaymentRequestAPI func(childComplexity int) int
 	}
 
 	CommerceCheckoutPlaceOrderStateStateSuccess struct {
@@ -2866,6 +2880,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCheckoutPlaceOrderStateFormParameter.Value(childComplexity), true
 
+	case "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI.completeURL":
+		if e.complexity.CommerceCheckoutPlaceOrderStatePaymentRequestAPI.CompleteURL == nil {
+			break
+		}
+
+		return e.complexity.CommerceCheckoutPlaceOrderStatePaymentRequestAPI.CompleteURL(childComplexity), true
+
+	case "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI.details":
+		if e.complexity.CommerceCheckoutPlaceOrderStatePaymentRequestAPI.Details == nil {
+			break
+		}
+
+		return e.complexity.CommerceCheckoutPlaceOrderStatePaymentRequestAPI.Details(childComplexity), true
+
+	case "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI.merchantValidationURL":
+		if e.complexity.CommerceCheckoutPlaceOrderStatePaymentRequestAPI.MerchantValidationURL == nil {
+			break
+		}
+
+		return e.complexity.CommerceCheckoutPlaceOrderStatePaymentRequestAPI.MerchantValidationURL(childComplexity), true
+
+	case "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI.methodData":
+		if e.complexity.CommerceCheckoutPlaceOrderStatePaymentRequestAPI.MethodData == nil {
+			break
+		}
+
+		return e.complexity.CommerceCheckoutPlaceOrderStatePaymentRequestAPI.MethodData(childComplexity), true
+
+	case "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI.options":
+		if e.complexity.CommerceCheckoutPlaceOrderStatePaymentRequestAPI.Options == nil {
+			break
+		}
+
+		return e.complexity.CommerceCheckoutPlaceOrderStatePaymentRequestAPI.Options(childComplexity), true
+
 	case "Commerce_Checkout_PlaceOrderState_State_Failed.name":
 		if e.complexity.CommerceCheckoutPlaceOrderStateStateFailed.Name == nil {
 			break
@@ -2984,6 +3033,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceCheckoutPlaceOrderStateStateShowIframe.URL(childComplexity), true
+
+	case "Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment.name":
+		if e.complexity.CommerceCheckoutPlaceOrderStateStateShowWalletPayment.Name == nil {
+			break
+		}
+
+		return e.complexity.CommerceCheckoutPlaceOrderStateStateShowWalletPayment.Name(childComplexity), true
+
+	case "Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment.paymentMethod":
+		if e.complexity.CommerceCheckoutPlaceOrderStateStateShowWalletPayment.PaymentMethod == nil {
+			break
+		}
+
+		return e.complexity.CommerceCheckoutPlaceOrderStateStateShowWalletPayment.PaymentMethod(childComplexity), true
+
+	case "Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment.paymentRequestAPI":
+		if e.complexity.CommerceCheckoutPlaceOrderStateStateShowWalletPayment.PaymentRequestAPI == nil {
+			break
+		}
+
+		return e.complexity.CommerceCheckoutPlaceOrderStateStateShowWalletPayment.PaymentRequestAPI(childComplexity), true
 
 	case "Commerce_Checkout_PlaceOrderState_State_Success.name":
 		if e.complexity.CommerceCheckoutPlaceOrderStateStateSuccess.Name == nil {
@@ -5746,6 +5816,27 @@ type Commerce_Checkout_PlaceOrderState_State_ShowHTML implements Commerce_Checko
 type Commerce_Checkout_PlaceOrderState_State_Redirect implements Commerce_Checkout_PlaceOrderState_State {
     name: String!
     URL: String!
+}
+
+type Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment implements Commerce_Checkout_PlaceOrderState_State {
+    name: String!
+    "Wallet payment method that was chosen previously"
+    paymentMethod: String!
+    "Information needed to create a payment using the PaymentRequest API"
+    paymentRequestAPI: Commerce_Checkout_PlaceOrderState_PaymentRequestAPI!
+}
+
+type Commerce_Checkout_PlaceOrderState_PaymentRequestAPI {
+    "Contains the JSON encoded method data for the PaymentRequest API"
+    methodData: String!
+    "Contains the JSON encoded details for the PaymentRequest API"
+    details: String!
+    "Contains the JSON encoded options for the PaymentRequest API"
+    options: String!
+    "Optional endpoint used for obtaining a merchant session, not set if the wallet payment doesn't require a merchant validation"
+    merchantValidationURL: String
+    "Endpoint to sent completed payment to"
+    completeURL: String!
 }
 
 type Commerce_Checkout_PlaceOrderState_State_PostRedirect implements Commerce_Checkout_PlaceOrderState_State {
@@ -14717,6 +14808,158 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_Form_Parameter_va
 	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_methodData(ctx context.Context, field graphql.CollectedField, obj *dto1.PaymentRequestAPI) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MethodData, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_details(ctx context.Context, field graphql.CollectedField, obj *dto1.PaymentRequestAPI) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Details, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_options(ctx context.Context, field graphql.CollectedField, obj *dto1.PaymentRequestAPI) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Options, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_merchantValidationURL(ctx context.Context, field graphql.CollectedField, obj *dto1.PaymentRequestAPI) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MerchantValidationURL, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_completeURL(ctx context.Context, field graphql.CollectedField, obj *dto1.PaymentRequestAPI) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CompleteURL, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed_name(ctx context.Context, field graphql.CollectedField, obj *dto1.Failed) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -15224,6 +15467,99 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe_
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment_name(ctx context.Context, field graphql.CollectedField, obj *dto1.ShowWalletPayment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment_paymentMethod(ctx context.Context, field graphql.CollectedField, obj *dto1.ShowWalletPayment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PaymentMethod, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment_paymentRequestAPI(ctx context.Context, field graphql.CollectedField, obj *dto1.ShowWalletPayment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PaymentRequestAPI, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(dto1.PaymentRequestAPI)
+	fc.Result = res
+	return ec.marshalNCommerce_Checkout_PlaceOrderState_PaymentRequestAPI2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPaymentRequestAPI(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Success_name(ctx context.Context, field graphql.CollectedField, obj *dto1.Success) (ret graphql.Marshaler) {
@@ -23862,6 +24198,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State(ctx context
 			return graphql.Null
 		}
 		return ec._Commerce_Checkout_PlaceOrderState_State_Redirect(ctx, sel, obj)
+	case *dto1.ShowWalletPayment:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment(ctx, sel, obj)
 	case *dto1.PostRedirect:
 		if obj == nil {
 			return graphql.Null
@@ -26202,6 +26543,50 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_Form_Parameter(ct
 	return out
 }
 
+var commerce_Checkout_PlaceOrderState_PaymentRequestAPIImplementors = []string{"Commerce_Checkout_PlaceOrderState_PaymentRequestAPI"}
+
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI(ctx context.Context, sel ast.SelectionSet, obj *dto1.PaymentRequestAPI) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_PaymentRequestAPIImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_PaymentRequestAPI")
+		case "methodData":
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_methodData(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "details":
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_details(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "options":
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_options(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "merchantValidationURL":
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_merchantValidationURL(ctx, field, obj)
+		case "completeURL":
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_completeURL(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var commerce_Checkout_PlaceOrderState_State_FailedImplementors = []string{"Commerce_Checkout_PlaceOrderState_State_Failed", "Commerce_Checkout_PlaceOrderState_State"}
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed(ctx context.Context, sel ast.SelectionSet, obj *dto1.Failed) graphql.Marshaler {
@@ -26475,6 +26860,43 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe(
 			}
 		case "URL":
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_ShowIframe_URL(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Checkout_PlaceOrderState_State_ShowWalletPaymentImplementors = []string{"Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment", "Commerce_Checkout_PlaceOrderState_State"}
+
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment(ctx context.Context, sel ast.SelectionSet, obj *dto1.ShowWalletPayment) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_ShowWalletPaymentImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment")
+		case "name":
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "paymentMethod":
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment_paymentMethod(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "paymentRequestAPI":
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment_paymentRequestAPI(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -29225,6 +29647,10 @@ func (ec *executionContext) marshalNCommerce_Checkout_PlaceOrderPaymentInfo2flam
 
 func (ec *executionContext) marshalNCommerce_Checkout_PlaceOrderState_Form_Parameter2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐFormParameter(ctx context.Context, sel ast.SelectionSet, v dto1.FormParameter) graphql.Marshaler {
 	return ec._Commerce_Checkout_PlaceOrderState_Form_Parameter(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Checkout_PlaceOrderState_PaymentRequestAPI2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPaymentRequestAPI(ctx context.Context, sel ast.SelectionSet, v dto1.PaymentRequestAPI) graphql.Marshaler {
+	return ec._Commerce_Checkout_PlaceOrderState_PaymentRequestAPI(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNCommerce_Checkout_PlaceOrderState_State2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐState(ctx context.Context, sel ast.SelectionSet, v dto1.State) graphql.Marshaler {

@@ -39,6 +39,22 @@ type (
 		// DisplayData holds data, normally HTML to be displayed to the user
 		DisplayData   string
 		FormParameter map[string]FormField
+		WalletDetails *WalletDetails
+	}
+
+	// WalletDetails for handling wallet payments in the frontend
+	WalletDetails struct {
+		UsedPaymentMethod string
+		PaymentRequestAPI PaymentRequestAPI
+	}
+
+	// PaymentRequestAPI parameters
+	PaymentRequestAPI struct {
+		Methods               string
+		Details               string
+		Options               string
+		MerchantValidationURL *url.URL `swaggertype:"string"`
+		CompleteURL           *url.URL `swaggertype:"string"`
 	}
 
 	// FormField contains form fields
@@ -90,6 +106,8 @@ const (
 	PaymentFlowActionRedirect = "redirect"
 	// PaymentFlowActionPostRedirect signals the frontend to do a post redirect to a hosted payment page
 	PaymentFlowActionPostRedirect = "post_redirect"
+	// PaymentFlowActionShowWalletPayment signals the frontend to start a wallet payment
+	PaymentFlowActionShowWalletPayment = "show_wallet_payment"
 )
 
 // Error getter

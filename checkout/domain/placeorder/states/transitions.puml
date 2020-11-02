@@ -25,6 +25,8 @@ state Success: Commerce_Checkout_PlaceOrderState_State_Success
 state Validate {
 	state PostRedirect: Commerce_Checkout_PlaceOrderState_State_PostRedirect
 	--
+	state ShowWalletPayment: Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment
+	--
 	state Redirect: Commerce_Checkout_PlaceOrderState_State_Redirect
 	--
 	state ShowHTML: Commerce_Checkout_PlaceOrderState_State_ShowHTML

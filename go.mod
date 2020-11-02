@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	flamingo.me/dingo v0.2.9
-	flamingo.me/flamingo/v3 v3.2.1-0.20200812074650-142034e9fe96
+	flamingo.me/flamingo/v3 v3.2.1
 	flamingo.me/form v1.0.1
 	flamingo.me/graphql v1.1.0
 	flamingo.me/pugtemplate v1.1.3

@@ -114,6 +114,21 @@ var (
 				},
 			},
 		},
+		domain.PaymentFlowActionShowWalletPayment: {
+			Title: "Payment unapproved, wallet",
+			Status: &domain.FlowStatus{
+				Status: domain.PaymentFlowStatusUnapproved,
+				Action: domain.PaymentFlowActionShowWalletPayment,
+				ActionData: domain.FlowActionData{
+					WalletDetails: &domain.WalletDetails{
+						UsedPaymentMethod: "ApplePay",
+						PaymentRequestAPI: domain.PaymentRequestAPI{
+							Methods: `{"a": "b"}`,
+						},
+					},
+				},
+			},
+		},
 		"unknown": {
 			Title: "Payment unapproved, unknown",
 			Status: &domain.FlowStatus{

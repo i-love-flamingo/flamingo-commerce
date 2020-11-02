@@ -127,6 +127,15 @@ func Test_PlaceOrderWithPaymentService(t *testing.T) {
 			},
 		},
 		{
+			name:          "Payment Unapproved, Show Wallet Payment",
+			gatewayMethod: domain.PaymentFlowActionShowWalletPayment,
+			expectedState: map[string]interface{}{
+				"name":          states.ShowWalletPayment{}.Name(),
+				"__typename":    "Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment",
+				"paymentMethod": "ApplePay",
+			},
+		},
+		{
 			name:          "Payment Unapproved, Unknown",
 			gatewayMethod: "unknown",
 			expectedState: map[string]interface{}{

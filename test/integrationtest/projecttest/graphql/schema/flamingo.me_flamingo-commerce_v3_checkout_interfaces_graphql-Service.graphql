@@ -66,6 +66,27 @@ type Commerce_Checkout_PlaceOrderState_State_Redirect implements Commerce_Checko
     URL: String!
 }
 
+type Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment implements Commerce_Checkout_PlaceOrderState_State {
+    name: String!
+    "Wallet payment method that was chosen previously"
+    paymentMethod: String!
+    "Information needed to create a payment using the PaymentRequest API"
+    paymentRequestAPI: Commerce_Checkout_PlaceOrderState_PaymentRequestAPI!
+}
+
+type Commerce_Checkout_PlaceOrderState_PaymentRequestAPI {
+    "Contains the JSON encoded method data for the PaymentRequest API"
+    methodData: String!
+    "Contains the JSON encoded details for the PaymentRequest API"
+    details: String!
+    "Contains the JSON encoded options for the PaymentRequest API"
+    options: String!
+    "Optional endpoint used for obtaining a merchant session, not set if the wallet payment doesn't require a merchant validation"
+    merchantValidationURL: String
+    "Endpoint to sent completed payment to"
+    completeURL: String!
+}
+
 type Commerce_Checkout_PlaceOrderState_State_PostRedirect implements Commerce_Checkout_PlaceOrderState_State {
     name: String!
     URL: String!
