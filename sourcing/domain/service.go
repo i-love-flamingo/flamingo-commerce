@@ -72,7 +72,7 @@ type (
 
 	// StockProvider interface for DefaultSourcingService
 	StockProvider interface {
-		GetStock(ctx context.Context, product domain.BasicProduct, source Source) (int, error)
+		GetStock(ctx context.Context, product domain.BasicProduct, source Source, deliveryInfo *cartDomain.DeliveryInfo) (int, error)
 	}
 )
 
@@ -121,7 +121,7 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 	var lastStockError error
 	availableSources := AvailableSources{}
 	for _, source := range sources {
-		qty, err := d.stockProvider.GetStock(ctx, product, source)
+		qty, err := d.stockProvider.GetStock(ctx, product, source, deliveryInfo)
 		if err != nil {
 			d.logger.Error(err)
 			lastStockError = err
@@ -249,7 +249,7 @@ func (d *DefaultSourcingService) allocateItem(ctx context.Context, productSource
 	for _, source := range sources {
 		// if we have no stock given for source and productid we fetch it initially
 		if _, exists := remainingSourcestock[productID][source]; !exists {
-			sourceStock, err := d.stockProvider.GetStock(ctx, decoratedItem.Product, source)
+			sourceStock, err := d.stockProvider.GetStock(ctx, decoratedItem.Product, source, &deliveryInfo)
 			if err != nil {
 				d.logger.Error(err)
 				continue

@@ -41,11 +41,11 @@ func (a availableSourcesProviderMock) GetPossibleSources(_ context.Context, _ pr
 	return a.Sources, a.Error
 }
 
-func (s stockProviderMock) GetStock(_ context.Context, _ productDomain.BasicProduct, _ domain.Source) (int, error) {
+func (s stockProviderMock) GetStock(_ context.Context, _ productDomain.BasicProduct, _ domain.Source, _ *cart.DeliveryInfo) (int, error) {
 	return s.Qty, s.Error
 }
 
-func (s stockBySourceAndProductProviderMock) GetStock(_ context.Context, product productDomain.BasicProduct, source domain.Source) (int, error) {
+func (s stockBySourceAndProductProviderMock) GetStock(_ context.Context, product productDomain.BasicProduct, source domain.Source, _ *cart.DeliveryInfo) (int, error) {
 	return s.Qty[source.LocationCode][product.GetIdentifier()], s.Error
 }
 
