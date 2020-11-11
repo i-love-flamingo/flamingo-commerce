@@ -33,6 +33,11 @@
     * The product fake search service returns no products if it is queried with `no-results`
 * Expose `VariantVariationAttributesSorting` on `domain.ConfigurableProductWithActiveVariant`
 
+**sourcing**
+* **Breaking**
+  * Optional pointer `DeliveryInfo` added as parameter to `StockProvider.GetStock`
+
+
 ## v3.3.0
 **product**
 * Switch module config to CUE
