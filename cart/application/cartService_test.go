@@ -735,6 +735,8 @@ func (m *MockGuestCartServiceWithModifyBehaviour) GetModifyBehaviour(context.Con
 	cob := &infrastructure.DefaultCartBehaviour{}
 
 	storage := &infrastructure.InMemoryCartStorage{}
+	storage.Inject()
+
 	cart := cartDomain.Cart{
 		ID: "mock_guest_cart",
 		Deliveries: []cartDomain.Delivery{

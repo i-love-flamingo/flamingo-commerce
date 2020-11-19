@@ -13,6 +13,7 @@ import (
 )
 
 func TestInMemoryBehaviour_CleanCart(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name       string
 		want       *domaincart.Cart
@@ -33,7 +34,7 @@ func TestInMemoryBehaviour_CleanCart(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			cob := &DefaultCartBehaviour{}
 			cob.Inject(
-				&InMemoryCartStorage{},
+				newInMemoryStorage(),
 				nil,
 				flamingo.NullLogger{},
 				func() *domaincart.ItemBuilder {
@@ -81,7 +82,7 @@ func TestInMemoryBehaviour_CleanCart(t *testing.T) {
 }
 
 func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
-
+	t.Parallel()
 	type args struct {
 		cart         *domaincart.Cart
 		deliveryCode string
@@ -160,7 +161,7 @@ func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			cob := &DefaultCartBehaviour{}
 			cob.Inject(
-				&InMemoryCartStorage{},
+				newInMemoryStorage(),
 				nil,
 				flamingo.NullLogger{},
 				func() *domaincart.ItemBuilder {
@@ -196,6 +197,7 @@ func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
 }
 
 func TestInMemoryBehaviour_ApplyVoucher(t *testing.T) {
+	t.Parallel()
 	type args struct {
 		cart        *domaincart.Cart
 		voucherCode string
@@ -235,7 +237,7 @@ func TestInMemoryBehaviour_ApplyVoucher(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			cob := &DefaultCartBehaviour{}
 			cob.Inject(
-				&InMemoryCartStorage{},
+				newInMemoryStorage(),
 				nil,
 				flamingo.NullLogger{},
 				nil,
@@ -258,6 +260,7 @@ func TestInMemoryBehaviour_ApplyVoucher(t *testing.T) {
 }
 
 func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
+	t.Parallel()
 	type args struct {
 		ctx                context.Context
 		cart               *domaincart.Cart
@@ -323,7 +326,7 @@ func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			cob := &DefaultCartBehaviour{}
 			cob.Inject(
-				&InMemoryCartStorage{},
+				newInMemoryStorage(),
 				nil,
 				flamingo.NullLogger{},
 				func() *domaincart.ItemBuilder {
@@ -354,6 +357,7 @@ func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 }
 
 func TestInMemoryBehaviour_ApplyGiftCard(t *testing.T) {
+	t.Parallel()
 	type args struct {
 		cart         *domaincart.Cart
 		giftCardCode string
@@ -395,7 +399,7 @@ func TestInMemoryBehaviour_ApplyGiftCard(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			cob := &DefaultCartBehaviour{}
 			cob.Inject(
-				&InMemoryCartStorage{},
+				newInMemoryStorage(),
 				nil,
 				flamingo.NullLogger{},
 				nil,
@@ -418,6 +422,7 @@ func TestInMemoryBehaviour_ApplyGiftCard(t *testing.T) {
 }
 
 func TestInMemoryBehaviour_RemoveGiftCard(t *testing.T) {
+	t.Parallel()
 	type args struct {
 		cart         *domaincart.Cart
 		giftCardCode string
@@ -463,7 +468,7 @@ func TestInMemoryBehaviour_RemoveGiftCard(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			cob := &DefaultCartBehaviour{}
 			cob.Inject(
-				&InMemoryCartStorage{},
+				newInMemoryStorage(),
 				nil,
 				flamingo.NullLogger{},
 				nil,
@@ -486,10 +491,11 @@ func TestInMemoryBehaviour_RemoveGiftCard(t *testing.T) {
 }
 
 func TestInMemoryBehaviour_Complete(t *testing.T) {
+	t.Parallel()
 	t.Run("happy path", func(t *testing.T) {
 		cob := &DefaultCartBehaviour{}
 		cob.Inject(
-			&InMemoryCartStorage{},
+			newInMemoryStorage(),
 			nil,
 			flamingo.NullLogger{},
 			nil,
@@ -512,10 +518,11 @@ func TestInMemoryBehaviour_Complete(t *testing.T) {
 }
 
 func TestInMemoryBehaviour_Restore(t *testing.T) {
+	t.Parallel()
 	t.Run("happy path", func(t *testing.T) {
 		cob := &DefaultCartBehaviour{}
 		cob.Inject(
-			&InMemoryCartStorage{},
+			newInMemoryStorage(),
 			nil,
 			flamingo.NullLogger{},
 			nil,
@@ -533,4 +540,11 @@ func TestInMemoryBehaviour_Restore(t *testing.T) {
 		_, err = cob.GetCart(context.Background(), got.ID)
 		assert.Nil(t, err)
 	})
+}
+
+func newInMemoryStorage() *InMemoryCartStorage {
+	result := &InMemoryCartStorage{}
+	result.Inject()
+
+	return result
 }

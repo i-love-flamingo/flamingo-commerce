@@ -2,6 +2,7 @@
 ## v3.4.0 [upcoming]
 **cart**
 * Added desired time to DeliveryForm
+* InMemoryCartStorage: initialize lock and storage already in Inject() to avoid potential race conditions  
 * GraphQL
   * Updated schema and resolver regarding desired time
 
