@@ -23,6 +23,7 @@ type Commerce_Customer_PersonData {
 }
 
 type Commerce_Customer_Address {
+    id: ID!
     additionalAddressLines: [String!]
     city:                   String!
     company:                String!
