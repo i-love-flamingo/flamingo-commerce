@@ -32,8 +32,8 @@ type Commerce_Customer_Address {
     defaultBilling:         Boolean!
     "Flag if this address should be used as the default shipping address"
     defaultShipping:        Boolean!
-    firstname:              String!
-    lastname:               String!
+    firstName:              String!
+    lastName:               String!
     postCode:               String!
     prefix:                 String!
     regionCode:             String!
