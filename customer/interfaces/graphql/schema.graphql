@@ -44,6 +44,7 @@ type Commerce_Customer_Address {
     street:                 String!
     streetNumber:           String!
     telephone:              String!
+    email:                  String!
 }
 
 extend type Query {
