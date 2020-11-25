@@ -5,10 +5,14 @@ type Commerce_Customer_Status_Result {
 
 type Commerce_Customer_Result {
     id: String!
+    "Customers personal data"
     personalData: Commerce_Customer_PersonData!
+    "Addresses that the customer provided, can be used for billing / shipping"
     addresses: [Commerce_Customer_Address!]
-    defaultShippingAddress: Commerce_Customer_Address!
-    defaultBillingAddress: Commerce_Customer_Address!
+    "The default shipping address of the customer, null if there is none"
+    defaultShippingAddress: Commerce_Customer_Address
+    "The default billing address of the customer, null if there is none"
+    defaultBillingAddress: Commerce_Customer_Address
 }
 
 type Commerce_Customer_PersonData {
@@ -23,17 +27,23 @@ type Commerce_Customer_PersonData {
 }
 
 type Commerce_Customer_Address {
-    regionCode:             String!
-    countryCode:            String!
-    company:                String!
-    street:                 String!
-    streetNr:               String!
+    id: ID!
     additionalAddressLines: [String!]
-    telephone:              String!
-    postCode:               String!
     city:                   String!
-    firstname:              String!
-    lastname:               String!
+    company:                String!
+    countryCode:            String!
+    "Flag if this address should be used as the default billing address"
+    defaultBilling:         Boolean!
+    "Flag if this address should be used as the default shipping address"
+    defaultShipping:        Boolean!
+    firstName:              String!
+    lastName:               String!
+    postCode:               String!
+    prefix:                 String!
+    regionCode:             String!
+    street:                 String!
+    streetNumber:           String!
+    telephone:              String!
     email:                  String!
 }
 

@@ -25,6 +25,7 @@ func (*Service) Types(types *graphql.Types) {
 	types.Map("Commerce_Customer_Result", dtocustomer.CustomerResult{})
 	types.Map("Commerce_Customer_PersonData", domain.PersonData{})
 	types.Map("Commerce_Customer_Address", domain.Address{})
+	types.GoField("Commerce_Customer_Address", "streetNumber", "StreetNr")
 	types.Resolve("Query", "Commerce_Customer_Status", CustomerResolver{}, "CommerceCustomerStatus")
 	types.Resolve("Query", "Commerce_Customer", CustomerResolver{}, "CommerceCustomer")
 }
