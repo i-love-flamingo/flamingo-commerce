@@ -17,6 +17,13 @@
 * Checkout Controller, update handling of aborted/canceled payments:
   * Cancel the order / restore the cart before generating the new idempotency key of the payment selection
 
+**customer**
+* GraphQL
+  * Extend `Commerce_Customer_Address` with some useful fields
+  * **Breaking**:
+    * `Commerce_Customer_Address`: rename field `StreetNr` to `StreetNumber`, `lastname` to `lastName` and `firstname` to `firstName` 
+    * `Commerce_Customer_Result`: `defaultShippingAddress` and `defaultBillingAddress` now can return null if there is no default address
+
 **payment**
 * Introduced wallet payment method 
 

@@ -5265,9 +5265,13 @@ extend type Query {
 
 type Commerce_Customer_Result {
     id: String!
+    "Customers personal data"
     personalData: Commerce_Customer_PersonData!
+    "Addresses that the customer provided, can be used for billing / shipping"
     addresses: [Commerce_Customer_Address!]
+    "The default shipping address of the customer, null if there is none"
     defaultShippingAddress: Commerce_Customer_Address
+    "The default billing address of the customer, null if there is none"
     defaultBillingAddress: Commerce_Customer_Address
 }
 
