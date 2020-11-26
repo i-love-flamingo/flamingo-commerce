@@ -7,6 +7,8 @@ type Commerce_Customer_Result {
     id: String!
     "Customers personal data"
     personalData: Commerce_Customer_PersonData!
+    "Get a specific address from the customer"
+    getAddress(id: ID!): Commerce_Customer_Address
     "Addresses that the customer provided, can be used for billing / shipping"
     addresses: [Commerce_Customer_Address!]
     "The default shipping address of the customer, null if there is none"
