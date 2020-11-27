@@ -598,6 +598,7 @@ type ComplexityRoot struct {
 		Addresses              func(childComplexity int) int
 		DefaultBillingAddress  func(childComplexity int) int
 		DefaultShippingAddress func(childComplexity int) int
+		GetAddress             func(childComplexity int, id string) int
 		ID                     func(childComplexity int) int
 		PersonalData           func(childComplexity int) int
 	}
@@ -3297,6 +3298,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCustomerResult.DefaultShippingAddress(childComplexity), true
 
+	case "Commerce_Customer_Result.getAddress":
+		if e.complexity.CommerceCustomerResult.GetAddress == nil {
+			break
+		}
+
+		args, err := ec.field_Commerce_Customer_Result_getAddress_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.CommerceCustomerResult.GetAddress(childComplexity, args["id"].(string)), true
+
 	case "Commerce_Customer_Result.id":
 		if e.complexity.CommerceCustomerResult.ID == nil {
 			break
@@ -5275,6 +5288,8 @@ type Commerce_Customer_Result {
     id: String!
     "Customers personal data"
     personalData: Commerce_Customer_PersonData!
+    "Get a specific address from the customer"
+    getAddress(id: ID!): Commerce_Customer_Address
     "Addresses that the customer provided, can be used for billing / shipping"
     addresses: [Commerce_Customer_Address!]
     "The default shipping address of the customer, null if there is none"
@@ -6300,6 +6315,21 @@ func (ec *executionContext) field_Commerce_Category_Attributes_has_args(ctx cont
 		}
 	}
 	args["code"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Commerce_Customer_Result_getAddress_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("id"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
 	return args, nil
 }
 
@@ -16613,6 +16643,41 @@ func (ec *executionContext) _Commerce_Customer_Result_personalData(ctx context.C
 	res := resTmp.(domain4.PersonData)
 	fc.Result = res
 	return ec.marshalNCommerce_Customer_PersonData2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋdomainᚐPersonData(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_Result_getAddress(ctx context.Context, field graphql.CollectedField, obj *dtocustomer.CustomerResult) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Customer_Result",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Commerce_Customer_Result_getAddress_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GetAddress(args["id"].(string))
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*domain4.Address)
+	fc.Result = res
+	return ec.marshalOCommerce_Customer_Address2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋdomainᚐAddress(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Customer_Result_addresses(ctx context.Context, field graphql.CollectedField, obj *dtocustomer.CustomerResult) (ret graphql.Marshaler) {
@@ -27386,6 +27451,8 @@ func (ec *executionContext) _Commerce_Customer_Result(ctx context.Context, sel a
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "getAddress":
+			out.Values[i] = ec._Commerce_Customer_Result_getAddress(ctx, field, obj)
 		case "addresses":
 			out.Values[i] = ec._Commerce_Customer_Result_addresses(ctx, field, obj)
 		case "defaultShippingAddress":
@@ -31614,6 +31681,13 @@ func (ec *executionContext) marshalOCommerce_Customer_Address2ᚕflamingoᚗme�
 	}
 	wg.Wait()
 	return ret
+}
+
+func (ec *executionContext) marshalOCommerce_Customer_Address2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋdomainᚐAddress(ctx context.Context, sel ast.SelectionSet, v *domain4.Address) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Commerce_Customer_Address(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOCommerce_Customer_Result2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋinterfacesᚋgraphqlᚋdtocustomerᚐCustomerResult(ctx context.Context, sel ast.SelectionSet, v dtocustomer.CustomerResult) graphql.Marshaler {

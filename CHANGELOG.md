@@ -20,6 +20,7 @@
 **customer**
 * GraphQL
   * Extend `Commerce_Customer_Address` with some useful fields
+  * Extend `Commerce_Customer_Result` with a field for querying a specific address
   * **Breaking**:
     * `Commerce_Customer_Address`: rename field `StreetNr` to `StreetNumber`, `lastname` to `lastName` and `firstname` to `firstName` 
     * `Commerce_Customer_Result`: `defaultShippingAddress` and `defaultBillingAddress` now can return null if there is no default address
