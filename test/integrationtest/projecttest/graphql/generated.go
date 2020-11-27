@@ -5290,7 +5290,7 @@ type Commerce_Customer_PersonData {
     middleName: String!
     mainEmail:  String!
     prefix:      String!
-    birthday:    Time!
+    birthday:    Time
     nationality: String!
 }
 
@@ -16515,14 +16515,11 @@ func (ec *executionContext) _Commerce_Customer_PersonData_birthday(ctx context.C
 	})
 
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+	return ec.marshalOTime2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Customer_PersonData_nationality(ctx context.Context, field graphql.CollectedField, obj *domain4.PersonData) (ret graphql.Marshaler) {
@@ -27352,9 +27349,6 @@ func (ec *executionContext) _Commerce_Customer_PersonData(ctx context.Context, s
 			}
 		case "birthday":
 			out.Values[i] = ec._Commerce_Customer_PersonData_birthday(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "nationality":
 			out.Values[i] = ec._Commerce_Customer_PersonData_nationality(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -30311,21 +30305,6 @@ func (ec *executionContext) unmarshalNString2string(ctx context.Context, v inter
 
 func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	res := graphql.MarshalString(v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-	}
-	return res
-}
-
-func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
-	res, err := graphql.UnmarshalTime(v)
-	return res, graphql.WrapErrorWithInputPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
-	res := graphql.MarshalTime(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")

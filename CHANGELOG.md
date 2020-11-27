@@ -23,6 +23,7 @@
   * **Breaking**:
     * `Commerce_Customer_Address`: rename field `StreetNr` to `StreetNumber`, `lastname` to `lastName` and `firstname` to `firstName` 
     * `Commerce_Customer_Result`: `defaultShippingAddress` and `defaultBillingAddress` now can return null if there is no default address
+    * `Commerce_Customer_PersonData`: field `birthday` is now nullable. 
 
 **payment**
 * Introduced wallet payment method 
