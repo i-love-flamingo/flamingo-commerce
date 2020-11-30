@@ -7,7 +7,7 @@ require (
 	flamingo.me/dingo v0.2.9
 	flamingo.me/flamingo/v3 v3.2.1
 	flamingo.me/form v1.0.1
-	flamingo.me/graphql v1.1.1-0.20201130123457-c077200e754c
+	flamingo.me/graphql v1.2.0
 	flamingo.me/pugtemplate v1.1.3
 	github.com/99designs/gqlgen v0.11.4-0.20200726064323-39a12e0f1b6d
 	github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78 // indirect
@@ -35,7 +35,7 @@ require (
 	github.com/leekchan/accounting v0.0.0-20191104051123-0b9b0bd19c36
 	github.com/lib/pq v1.1.1 // indirect
 	github.com/mailru/easyjson v0.7.1 // indirect
-	github.com/nrfta/go-graphql-scalars v0.2.0
+	github.com/onsi/ginkgo v1.12.2 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/opencontainers/runc v0.1.1 // indirect
 	github.com/ory/dockertest v3.3.5+incompatible
@@ -50,6 +50,5 @@ require (
 	golang.org/x/mod v0.3.0
 	gopkg.in/go-playground/assert.v1 v1.2.1
 	gopkg.in/square/go-jose.v2 v2.3.0 // indirect
-	gopkg.in/yaml.v2 v2.3.0 // indirect
 	gotest.tools v2.2.0+incompatible // indirect
 )
