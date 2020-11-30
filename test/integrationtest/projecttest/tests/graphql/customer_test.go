@@ -81,7 +81,7 @@ func Test_CommerceCustomer(t *testing.T) {
 				personalData := getValue(response, "Commerce_Customer", "personalData").Object()
 				personalData.Value("firstName").Equal("Flamingo")
 				personalData.Value("lastName").Equal("Commerce")
-				personalData.Value("birthday").Equal("2019-04-02T00:00:00Z")
+				personalData.Value("birthday").Equal("2019-04-02")
 			},
 		},
 	}

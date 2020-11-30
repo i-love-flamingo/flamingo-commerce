@@ -3,10 +3,11 @@ module flamingo.me/flamingo-commerce/v3
 go 1.13
 
 require (
+	dmitri.shuralyov.com/go/generated v0.0.0-20170818220700-b1254a446363 // indirect
 	flamingo.me/dingo v0.2.9
 	flamingo.me/flamingo/v3 v3.2.1
 	flamingo.me/form v1.0.1
-	flamingo.me/graphql v1.1.0
+	flamingo.me/graphql v1.2.0
 	flamingo.me/pugtemplate v1.1.3
 	github.com/99designs/gqlgen v0.11.4-0.20200726064323-39a12e0f1b6d
 	github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78 // indirect
@@ -28,12 +29,13 @@ require (
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/go-cmp v0.4.0
 	github.com/google/uuid v1.1.1
-	github.com/gordonklaus/ineffassign v0.0.0-20200809085317-e36bfde3bb78 // indirect
+	github.com/gordonklaus/ineffassign v0.0.0-20201107091007-3b93a8888063 // indirect
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/leekchan/accounting v0.0.0-20191104051123-0b9b0bd19c36
 	github.com/lib/pq v1.1.1 // indirect
 	github.com/mailru/easyjson v0.7.1 // indirect
+	github.com/onsi/ginkgo v1.12.2 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/opencontainers/runc v0.1.1 // indirect
 	github.com/ory/dockertest v3.3.5+incompatible
@@ -48,6 +50,5 @@ require (
 	golang.org/x/mod v0.3.0
 	gopkg.in/go-playground/assert.v1 v1.2.1
 	gopkg.in/square/go-jose.v2 v2.3.0 // indirect
-	gopkg.in/yaml.v2 v2.3.0 // indirect
-	gotest.tools v2.2.0+incompatible
+	gotest.tools v2.2.0+incompatible // indirect
 )
