@@ -10,6 +10,8 @@ contrib.go.opencensus.io/exporter/zipkin v0.1.1 h1:PR+1zWqY8ceXs1qDQQIlgXe+sdiwC
 contrib.go.opencensus.io/exporter/zipkin v0.1.1/go.mod h1:GMvdSl3eJ2gapOaLKzTKE3qDgUkJ86k9k3yY2eqwkzc=
 cuelang.org/go v0.0.15 h1:rpZtf1ZGYfZwbMHLwIif5Gczil+HF7rHAU7MFNOGV/A=
 cuelang.org/go v0.0.15/go.mod h1:gehQASsTv+lFZknWIG0hANGVSBiHD7HyKWmAdEZL3No=
+dmitri.shuralyov.com/go/generated v0.0.0-20170818220700-b1254a446363 h1:o4lAkfETerCnr1kF9/qwkwjICnU+YLHNDCM8h2xj7as=
+dmitri.shuralyov.com/go/generated v0.0.0-20170818220700-b1254a446363/go.mod h1:WG7q7swWsS2f9PYpt5DoEP/EBYWx8We5UoRltn9vJl8=
 flamingo.me/dingo v0.1.6 h1:8P2t2wbJjzn1qI84ARRBkJlBxtTwGKulXc6oj+heUOw=
 flamingo.me/dingo v0.1.6/go.mod h1:jLnqSPkxqE113eKreQ4uBx1fnwluGuaK3rjRi9041wU=
 flamingo.me/dingo v0.2.9 h1:HL7YV4iv3F6xLcUPvIBEzdkbhBSb6PukkZdoOZ8H+Eo=
@@ -131,6 +133,8 @@ github.com/friendsofgo/errors v0.9.2/go.mod h1:yCvFW5AkDIL9qn7suHVLiI/gH228n7PC4
 github.com/fsnotify/fsnotify v1.4.7 h1:IXs+QLmnXW2CcXuY+8Mzv/fWEsPGWxqefPtCP5CnV9I=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
 github.com/fsnotify/fsnotify v1.4.9/go.mod h1:znqG4EE+3YCdAaPaxE2ZRY/06pZUdp0tY4IgpuI1SZQ=
+github.com/fzipp/gocyclo v0.3.1 h1:A9UeX3HJSXTBzvHzhqoYVuE0eAhe+aM8XBCCwsPMZOc=
+github.com/fzipp/gocyclo v0.3.1/go.mod h1:DJHO6AUmbdqj2ET4Z9iArSuwWgYDRryYt2wASxc7x3E=
 github.com/gavv/httpexpect/v2 v2.0.2 h1:ipn0rcmB2Ffd/rVpG6gvKJUY9TbJHtYZ4HIy9lOSI0M=
 github.com/gavv/httpexpect/v2 v2.0.2/go.mod h1:LAoDcy8I/EXEtKJV6wMEJvOMAZVo0MfEk5u4NfiNQa4=
 github.com/ghodss/yaml v1.0.0 h1:wQHKEahhL6wmXdzwWG11gIVCkOv05bNOh+Rxn0yngAk=
@@ -236,6 +240,8 @@ github.com/google/uuid v1.1.1 h1:Gkbcsh/GbpXz7lPftLA3P6TYMwjCLYm83jiFQZF/3gY=
 github.com/google/uuid v1.1.1/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/googleapis/gax-go/v2 v2.0.4/go.mod h1:0Wqv26UfaUD9n4G6kQubkQ+KchISgw+vpHVxEJEs9eg=
 github.com/googleapis/gax-go/v2 v2.0.5/go.mod h1:DWXyrwAJ9X0FpwwEdw+IPEYBICEFu5mhpdKc/us6bOk=
+github.com/gordonklaus/ineffassign v0.0.0-20201107091007-3b93a8888063 h1:dKprcOvlsvqfWn/iGvz+oYuC2axESeSMuF8dDrWMNsE=
+github.com/gordonklaus/ineffassign v0.0.0-20201107091007-3b93a8888063/go.mod h1:cuNKsD1zp2v6XfE/orVX2QE1LC+i254ceGcVeDT3pTU=
 github.com/gorilla/context v0.0.0-20160226214623-1ea25387ff6f/go.mod h1:kBGZzfjB9CEq2AlWe17Uuf7NDRt0dE0s8S51q0aT7Yg=
 github.com/gorilla/context v1.1.1 h1:AWwleXJkX/nhcU9bZSnZoi3h/qGYqQAGhq6zZe/aQW8=
 github.com/gorilla/context v1.1.1/go.mod h1:kBGZzfjB9CEq2AlWe17Uuf7NDRt0dE0s8S51q0aT7Yg=
