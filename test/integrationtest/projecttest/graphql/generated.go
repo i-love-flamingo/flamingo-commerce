@@ -35,6 +35,7 @@ import (
 	graphql2 "flamingo.me/graphql"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
+	"github.com/nrfta/go-graphql-scalars"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -4907,7 +4908,9 @@ var sources = []*ast.Source{
 	{Name: "graphql/schema/schema.graphql", Input: `type Query { flamingo: String }
 type Mutation { flamingo: String }
 scalar Time
-scalar Map`, BuiltIn: false},
+scalar Map
+scalar Date
+scalar DateTime`, BuiltIn: false},
 	{Name: "graphql/schema/flamingo.me_flamingo-commerce_v3_price_interfaces_graphql-Service.graphql", Input: `type Commerce_Price{
     amount: Float
     currency: String!
@@ -5305,7 +5308,7 @@ type Commerce_Customer_PersonData {
     middleName: String!
     mainEmail:  String!
     prefix:      String!
-    birthday:    Time
+    birthday:    Date
     nationality: String!
 }
 
@@ -16549,7 +16552,7 @@ func (ec *executionContext) _Commerce_Customer_PersonData_birthday(ctx context.C
 	}
 	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalOTime2timeᚐTime(ctx, field.Selections, res)
+	return ec.marshalODate2timeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Customer_PersonData_nationality(ctx context.Context, field graphql.CollectedField, obj *domain4.PersonData) (ret graphql.Marshaler) {
@@ -32308,6 +32311,15 @@ func (ec *executionContext) marshalOCommerce_Tree2ᚕflamingoᚗmeᚋflamingoᚑ
 	}
 	wg.Wait()
 	return ret
+}
+
+func (ec *executionContext) unmarshalODate2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
+	res, err := scalars.UnmarshalDate(v)
+	return res, graphql.WrapErrorWithInputPath(ctx, err)
+}
+
+func (ec *executionContext) marshalODate2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
+	return scalars.MarshalDate(v)
 }
 
 func (ec *executionContext) unmarshalOFloat2float64(ctx context.Context, v interface{}) (float64, error) {

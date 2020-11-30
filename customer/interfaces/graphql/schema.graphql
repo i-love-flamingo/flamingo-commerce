@@ -24,7 +24,7 @@ type Commerce_Customer_PersonData {
     middleName: String!
     mainEmail:  String!
     prefix:      String!
-    birthday:    Time
+    birthday:    Date
     nationality: String!
 }
 
