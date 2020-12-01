@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stvp/tempredis"
+	"go.uber.org/goleak"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/infrastructure/locker"
 )
@@ -38,6 +39,7 @@ func getRedisLocker(network, address string) *locker.Redis {
 }
 
 func TestRedis_TryLockDocker(t *testing.T) {
+	defer goleak.VerifyNone(t, goleak.IgnoreCurrent())
 	pool, err := dockertest.NewPool("")
 	if err != nil {
 		t.Skip("docker not installed")
@@ -62,6 +64,8 @@ func TestRedis_TryLockDocker(t *testing.T) {
 }
 
 func TestRedis_TryLock(t *testing.T) {
+	defer goleak.VerifyNone(t, goleak.IgnoreCurrent())
+
 	if _, err := exec.LookPath("redis-server"); err != nil {
 		t.Skip("redis-server not installed")
 	}
