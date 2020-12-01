@@ -48,8 +48,8 @@ func (m *Module) Configure(injector *dingo.Injector) {
 
 	injector.BindMulti(new(graphql.Service)).To(new(productgraphql.Service))
 	if m.fakeService {
-		injector.Bind((*domain.ProductService)(nil)).To(fake.ProductService{}).In(dingo.ChildSingleton)
-		injector.Bind((*domain.SearchService)(nil)).To(fake.SearchService{}).In(dingo.ChildSingleton)
+		injector.Override((*domain.ProductService)(nil), "").To(fake.ProductService{}).In(dingo.ChildSingleton)
+		injector.Override((*domain.SearchService)(nil), "").To(fake.SearchService{}).In(dingo.ChildSingleton)
 	}
 
 }

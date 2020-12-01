@@ -34,6 +34,7 @@ type (
 
 	// Address data of a customer
 	Address struct {
+		ID                     string
 		RegionCode             string
 		CountryCode            string
 		Company                string
@@ -46,6 +47,9 @@ type (
 		Firstname              string
 		Lastname               string
 		Email                  string
+		Prefix                 string
+		DefaultBilling         bool
+		DefaultShipping        bool
 	}
 
 	// CustomerIdentityService to retrieve customers by Identity

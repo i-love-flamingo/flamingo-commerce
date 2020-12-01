@@ -2,6 +2,7 @@
 ## v3.4.0 [upcoming]
 **cart**
 * Added desired time to DeliveryForm
+* InMemoryCartStorage: initialize lock and storage already in Inject() to avoid potential race conditions  
 * GraphQL
   * Updated schema and resolver regarding desired time
 
@@ -15,6 +16,15 @@
 **checkout**
 * Checkout Controller, update handling of aborted/canceled payments:
   * Cancel the order / restore the cart before generating the new idempotency key of the payment selection
+
+**customer**
+* GraphQL
+  * Extend `Commerce_Customer_Address` with some useful fields
+  * Extend `Commerce_Customer_Result` with a field for querying a specific address
+  * **Breaking**:
+    * `Commerce_Customer_Address`: rename field `StreetNr` to `StreetNumber`, `lastname` to `lastName` and `firstname` to `firstName` 
+    * `Commerce_Customer_Result`: `defaultShippingAddress` and `defaultBillingAddress` now can return null if there is no default address
+    * `Commerce_Customer_PersonData`: field `birthday` is now nullable and of type `Date`. 
 
 **payment**
 * Introduced wallet payment method 

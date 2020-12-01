@@ -12,11 +12,12 @@ query {
             nationality
         }
         addresses {
+            id
             company
-            firstname
-            lastname
+            firstName
+            lastName
             street
-            streetNr
+            streetNumber
             additionalAddressLines
             postCode
             city
@@ -24,13 +25,15 @@ query {
             countryCode
             telephone
             email
+            defaultBilling
+            defaultShipping
         }
         defaultShippingAddress {
             company
-            firstname
-            lastname
+            firstName
+            lastName
             street
-            streetNr
+            streetNumber
             additionalAddressLines
             postCode
             city
@@ -41,10 +44,10 @@ query {
         }
         defaultBillingAddress {
             company
-            firstname
-            lastname
+            firstName
+            lastName
             street
-            streetNr
+            streetNumber
             additionalAddressLines
             postCode
             city

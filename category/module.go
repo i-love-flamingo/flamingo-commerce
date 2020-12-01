@@ -55,7 +55,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 		injector.Bind((*domain.CategoryService)(nil)).To(infrastructure.CategoryServiceFixed{})
 	}
 	if m.useFakeService {
-		injector.Bind((*domain.CategoryService)(nil)).To(fake.CategoryService{}).In(dingo.ChildSingleton)
+		injector.Override((*domain.CategoryService)(nil), "").To(fake.CategoryService{}).In(dingo.ChildSingleton)
 	}
 	web.BindRoutes(injector, new(routes))
 	injector.Bind(new(application.RouterRouter)).To(new(web.Router))

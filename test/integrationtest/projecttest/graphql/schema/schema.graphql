@@ -2,3 +2,4 @@ type Query { flamingo: String }
 type Mutation { flamingo: String }
 scalar Time
 scalar Map
+scalar Date
