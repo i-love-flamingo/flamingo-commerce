@@ -16,6 +16,7 @@
 **checkout**
 * Checkout Controller, update handling of aborted/canceled payments:
   * Cancel the order / restore the cart before generating the new idempotency key of the payment selection
+* Resolve goroutine leak in redis locker
 
 **customer**
 * GraphQL
