@@ -5,11 +5,12 @@ import (
 	"errors"
 	"time"
 
-	"flamingo.me/flamingo-commerce/v3/checkout/application/placeorder"
 	"flamingo.me/flamingo/v3/core/healthcheck/domain/healthcheck"
 	"github.com/go-redsync/redsync"
 	"github.com/gomodule/redigo/redis"
 	"go.opencensus.io/trace"
+
+	"flamingo.me/flamingo-commerce/v3/checkout/application/placeorder"
 )
 
 type (
@@ -89,13 +90,20 @@ func (r *Redis) TryLock(ctx context.Context, key string, maxlockduration time.Du
 		return nil, placeorder.ErrLockTaken
 	}
 	ticker := time.NewTicker(maxlockduration / 3)
+	done := make(chan struct{})
 	go func() {
-		for range ticker.C {
-			mutex.Extend()
+		for {
+			select {
+			case <-done:
+				return
+			case <-ticker.C:
+				mutex.Extend()
+			}
 		}
 	}()
 
 	return func() error {
+		close(done)
 		ticker.Stop()
 		ok := mutex.Unlock()
 		if !ok {
