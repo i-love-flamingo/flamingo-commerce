@@ -22,6 +22,7 @@ func (h *Handler) Inject(
 
 // StartPlaceOrder handles start place order command
 func (h *Handler) StartPlaceOrder(ctx context.Context, command StartPlaceOrderCommand) (*process.Context, error) {
+	_ = h.coordinator.ClearLastProcess(ctx)
 	return h.coordinator.New(ctx, command.Cart, command.ReturnURL)
 }
 

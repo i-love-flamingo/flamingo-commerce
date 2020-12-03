@@ -108,8 +108,8 @@ flamingo.session.saveMode: "OnWrite"
 The checkout module exposes the following Mutations and Queries:
 
 * `mutation Commerce_Checkout_StartPlaceOrder`
-  starts a place order process and returns the process' UUID. The call is idempotent: if there is already a running process,
-  the same UUID is returned. The processing is started in background and continues after the return of the mutation until an
+  starts a place order process and returns the process' UUID. If there is already a running process, it will be replaced by the new one.
+  The processing is started in background and continues after the return of the mutation until an
   action is required or a final state (error or success) is reached.
 * `mutation Commerce_Checkout_RefreshPlaceOrder`
   refreshes the process and tries to start the background processing again if it is not running anymore. The result is the state
@@ -120,7 +120,7 @@ The checkout module exposes the following Mutations and Queries:
 * `mutation Commerce_Checkout_CancelPlaceOrder` 
   cancels the running process if it is not yet in a final state.
 * `mutation Commerce_Checkout_ClearPlaceOrder` 
-  clears the last stored process if it is in a final state.
+  clears the last stored process. (Non-operational if there is no last process)
 * `query Commerce_Checkout_ActivePlaceOrder`
   checks if there is a place order process in a non-final state.
 * `query Commerce_Checkout_CurrentContext`
