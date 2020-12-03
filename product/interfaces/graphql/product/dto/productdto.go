@@ -31,6 +31,7 @@ type (
 		Meta() ProductMeta
 		Loyalty() ProductLoyalty
 		Attributes() productDomain.Attributes
+		Badges() ProductBadges
 	}
 
 	// ProductLoyalty contains all loyalty related information
@@ -53,6 +54,11 @@ type (
 	// ProductMeta contains meta information about the product
 	ProductMeta struct {
 		Keywords []string
+	}
+
+	// ProductBadges wrapper for badges of the product
+	ProductBadges struct {
+		All []productDomain.Badge
 	}
 
 	// VariationSelection represents possible combinations for attached variants

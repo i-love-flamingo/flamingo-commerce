@@ -1,12 +1,13 @@
 package graphqlproductdto_test
 
 import (
+	"math/big"
+	"testing"
+
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	graphqlProductDto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
 	"github.com/stretchr/testify/assert"
-	"math/big"
-	"testing"
 )
 
 func getProductDomainSimpleProduct() productDomain.SimpleProduct {
@@ -54,6 +55,12 @@ func getProductDomainSimpleProduct() productDomain.SimpleProduct {
 					Label:     "attribute_b_label",
 					RawValue:  nil,
 					UnitCode:  "attribute_b_unitCode",
+				},
+			},
+			Badges: []productDomain.Badge{
+				{
+					Code:  "hot",
+					Label: "Hot Product",
 				},
 			},
 		},
@@ -198,4 +205,18 @@ func TestSimpleProduct_Title(t *testing.T) {
 func TestSimpleProduct_Type(t *testing.T) {
 	product := getSimpleProduct()
 	assert.Equal(t, productDomain.TypeSimple, product.Type())
+}
+
+func TestSimpleProduct_Badges(t *testing.T) {
+	p := getSimpleProduct()
+	assert.Equal(
+		t,
+		[]productDomain.Badge{
+			{
+				Code:  "hot",
+				Label: "Hot Product",
+			},
+		},
+		p.Badges().All,
+	)
 }
