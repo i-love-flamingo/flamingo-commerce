@@ -31,6 +31,7 @@
 * Introduced wallet payment method 
 
 **product**
+* Add support for product badges
 * GraphQL
   * **Breaking** New schema for products:
     * `Commerce_Product` has been restructured and now has three subtypes: `Commerce_Product_SimpleProduct`, `Commerce_Product_ConfigurableProduct`, `Commerce_Product_ActiveVariantProduct`

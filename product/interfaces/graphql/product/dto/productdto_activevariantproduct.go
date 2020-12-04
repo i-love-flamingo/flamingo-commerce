@@ -117,3 +117,10 @@ func (avp ActiveVariantProduct) ActiveVariationSelections() []ActiveVariationSel
 
 	return activeVariationSelections
 }
+
+// Badges of the active variant
+func (avp ActiveVariantProduct) Badges() ProductBadges {
+	return ProductBadges{
+		All: avp.getActiveVariant().BaseData().Badges,
+	}
+}

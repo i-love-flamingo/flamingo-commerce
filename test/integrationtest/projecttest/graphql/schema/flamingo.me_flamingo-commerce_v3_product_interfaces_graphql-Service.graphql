@@ -11,6 +11,7 @@ interface Commerce_Product {
     meta: Commerce_Product_Meta!
     loyalty: Commerce_Product_Loyalty!
     attributes: Commerce_Product_Attributes!
+    badges: Commerce_Product_Badges!
 }
 
 """
@@ -29,6 +30,7 @@ type Commerce_Product_SimpleProduct implements Commerce_Product {
     meta: Commerce_Product_Meta!
     loyalty: Commerce_Product_Loyalty!
     attributes: Commerce_Product_Attributes!
+    badges: Commerce_Product_Badges!
 }
 
 """
@@ -49,6 +51,7 @@ type Commerce_Product_ConfigurableProduct implements Commerce_Product {
     loyalty: Commerce_Product_Loyalty!
     attributes: Commerce_Product_Attributes!
     variationSelections: [Commerce_Product_VariationSelection!]
+    badges: Commerce_Product_Badges!
 }
 
 """
@@ -75,6 +78,7 @@ type Commerce_Product_ActiveVariantProduct implements Commerce_Product {
     variationSelections: [Commerce_Product_VariationSelection!]
     "Convenience property to access the active variant labels easily"
     activeVariationSelections: [Commerce_Product_ActiveVariationSelection!]
+    badges: Commerce_Product_Badges!
 }
 
 "A group of attributes. E.g. 'size'"
@@ -217,6 +221,15 @@ type Commerce_Product_SearchResult {
     suggestions: [Commerce_Search_Suggestion!]
     searchMeta: Commerce_Search_Meta!
     hasSelectedFacet: Boolean!
+}
+
+type Commerce_Product_Badges {
+    all: [Commerce_Product_Badge!]
+}
+
+type Commerce_Product_Badge {
+    code:  String!
+    label: String!
 }
 
 extend type Query {
