@@ -1709,6 +1709,17 @@ var doc = `{
                 }
             }
         },
+        "domain.Badge": {
+            "type": "object",
+            "properties": {
+                "Code": {
+                    "type": "string"
+                },
+                "Label": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.BasicProduct": {
             "type": "object"
         },
@@ -1931,6 +1942,12 @@ var doc = `{
                         "$ref": "#/definitions/domain.PriceInfo"
                     }
                 },
+                "Badges": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Badge"
+                    }
+                },
                 "Categories": {
                     "type": "array",
                     "items": {
@@ -2031,6 +2048,13 @@ var doc = `{
         "domain.TeaserData": {
             "type": "object",
             "properties": {
+                "Badges": {
+                    "description": "Badges optional slice of badges to teaser a product",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Badge"
+                    }
+                },
                 "MarketPlaceCode": {
                     "description": "The sku that should be used to link from Teasers",
                     "type": "string"

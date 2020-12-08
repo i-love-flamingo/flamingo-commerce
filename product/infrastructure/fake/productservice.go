@@ -2,7 +2,6 @@ package fake
 
 import (
 	"context"
-	"flamingo.me/flamingo/v3/framework/web"
 	"fmt"
 	"io/ioutil"
 	"math/big"
@@ -11,6 +10,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"flamingo.me/flamingo/v3/framework/web"
 
 	"flamingo.me/flamingo/v3/framework/flamingo"
 
@@ -151,6 +152,7 @@ func (ps *ProductService) FakeSimple(marketplaceCode string, isNew bool, isExclu
 			Type:    "AwesomeLoyaltyProgram",
 			Default: priceDomain.NewFromFloat(23.23, "BonusPoints"),
 		},
+		Badges: product.Badges,
 	}
 
 	if isNew {
@@ -193,6 +195,7 @@ func (ps *ProductService) getFakeConfigurable(marketplaceCode string) domain.Con
 	product.MarketPlaceCode = marketplaceCode
 	product.Identifier = marketplaceCode + "_identifier"
 	product.Teaser.TeaserPrice = ps.getPrice(30.99+float64(rand.Intn(10)), 20.49+float64(rand.Intn(10)))
+	product.Teaser.Badges = product.Badges
 	product.VariantVariationAttributes = []string{"color", "size"}
 	product.VariantVariationAttributesSorting = map[string][]string{
 		"size":  {"M", "L"},
@@ -211,44 +214,52 @@ func (ps *ProductService) getFakeConfigurableWithVariants(marketplaceCode string
 		title           string
 		attributes      domain.Attributes
 		stockLevel      string
+		badges          []domain.Badge
 	}{
 		{"shirt-red-s", "Shirt Red S", domain.Attributes{
 			"size":                  domain.Attribute{RawValue: "S", Code: "size", CodeLabel: "Size", Label: "S"},
 			"manufacturerColor":     domain.Attribute{RawValue: "red", Code: "manufacturerColor", CodeLabel: "Manufacturer Color", Label: "Red"},
 			"manufacturerColorCode": domain.Attribute{RawValue: "#ff0000", Code: "manufacturerColorCode", CodeLabel: "Manufacturer Color Code", Label: "BloodRed"}},
 			"high",
+			[]domain.Badge{{Code: "new", Label: "New"}},
 		},
 		{"shirt-white-s", "Shirt White S", domain.Attributes{
 			"size":                  domain.Attribute{RawValue: "S", Code: "size", CodeLabel: "Size", Label: "S"},
 			"manufacturerColor":     domain.Attribute{RawValue: "white", Code: "manufacturerColor", CodeLabel: "Manufacturer Color", Label: "White"},
 			"manufacturerColorCode": domain.Attribute{RawValue: "#ffffff", Code: "manufacturerColorCode", CodeLabel: "Manufacturer Color Code", Label: "SnowWhite"}},
 			"high",
+			nil,
 		},
 		{"shirt-white-m", "Shirt White M", domain.Attributes{
 			"size":  domain.Attribute{RawValue: "M", Code: "size", CodeLabel: "Size", Label: "M"},
 			"color": domain.Attribute{RawValue: "white", Code: "color", CodeLabel: "Color", Label: "White"}},
 			"high",
+			nil,
 		},
 		{"shirt-black-m", "Shirt Black M", domain.Attributes{
 			"size":                  domain.Attribute{RawValue: "M", Code: "size", CodeLabel: "Size", Label: "M"},
 			"manufacturerColor":     domain.Attribute{RawValue: "blue", Code: "manufacturerColor", CodeLabel: "Manufacturer Color", Label: "Blue"},
 			"manufacturerColorCode": domain.Attribute{RawValue: "#0000ff", Code: "manufacturerColorCode", CodeLabel: "Manufacturer Color Code", Label: "SkyBlue"}},
 			"high",
+			nil,
 		},
 		{"shirt-black-l", "Shirt Black L", domain.Attributes{
 			"size":  domain.Attribute{RawValue: "L", Code: "size", CodeLabel: "Size", Label: "L"},
 			"color": domain.Attribute{RawValue: "black", Code: "color", CodeLabel: "Color", Label: "Black"}},
 			"high",
+			nil,
 		},
 		{"shirt-red-l", "Shirt Red L", domain.Attributes{
 			"size":  domain.Attribute{RawValue: "L", Code: "size", CodeLabel: "Size", Label: "L"},
 			"color": domain.Attribute{RawValue: "red", Code: "color", CodeLabel: "Color", Label: "Red"}},
 			"out",
+			nil,
 		},
 		{"shirt-red-m", "Shirt Red M", domain.Attributes{
 			"size":  domain.Attribute{RawValue: "M", Code: "size", CodeLabel: "Size", Label: "M"},
 			"color": domain.Attribute{RawValue: "red", Code: "color", CodeLabel: "Color", Label: "Red"}},
 			"out",
+			nil,
 		},
 	}
 
@@ -272,6 +283,7 @@ func (ps *ProductService) getFakeConfigurableWithVariants(marketplaceCode string
 			product.Media = []domain.Media{image}
 			product.Teaser.Media = []domain.Media{image}
 		}
+		simpleVariant.Badges = variant.badges
 
 		product.Variants = append(product.Variants, simpleVariant)
 	}
@@ -340,9 +352,16 @@ func (ps *ProductService) addBasicData(product *domain.BasicProductData) {
 		Name: "Configurable",
 		Code: "configurable",
 	}
+	badges := []domain.Badge{
+		{
+			Code:  "new",
+			Label: "New",
+		},
+	}
 	product.Categories = append(product.Categories, categoryTeaser1)
 	product.Categories = append(product.Categories, categoryTeaser2)
 	product.MainCategory = categoryTeaser1
+	product.Badges = badges
 }
 
 func (ps *ProductService) getPrice(defaultP float64, discounted float64) domain.PriceInfo {

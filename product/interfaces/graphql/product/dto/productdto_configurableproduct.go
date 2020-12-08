@@ -88,3 +88,10 @@ func (cp ConfigurableProduct) Attributes() productDomain.Attributes {
 func (cp ConfigurableProduct) VariationSelections() []VariationSelection {
 	return NewVariantsToVariationSelections(cp.Product())
 }
+
+// Badges of the configurable product
+func (cp ConfigurableProduct) Badges() ProductBadges {
+	return ProductBadges{
+		All: cp.product.BaseData().Badges,
+	}
+}

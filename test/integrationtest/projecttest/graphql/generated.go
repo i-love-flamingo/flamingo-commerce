@@ -644,6 +644,7 @@ type ComplexityRoot struct {
 	CommerceProductActiveVariantProduct struct {
 		ActiveVariationSelections func(childComplexity int) int
 		Attributes                func(childComplexity int) int
+		Badges                    func(childComplexity int) int
 		Categories                func(childComplexity int) int
 		Description               func(childComplexity int) int
 		Identifier                func(childComplexity int) int
@@ -681,6 +682,15 @@ type ComplexityRoot struct {
 		HasAttribute    func(childComplexity int, key string) int
 	}
 
+	CommerceProductBadge struct {
+		Code  func(childComplexity int) int
+		Label func(childComplexity int) int
+	}
+
+	CommerceProductBadges struct {
+		All func(childComplexity int) int
+	}
+
 	CommerceProductCategories struct {
 		All  func(childComplexity int) int
 		Main func(childComplexity int) int
@@ -695,6 +705,7 @@ type ComplexityRoot struct {
 
 	CommerceProductConfigurableProduct struct {
 		Attributes          func(childComplexity int) int
+		Badges              func(childComplexity int) int
 		Categories          func(childComplexity int) int
 		Description         func(childComplexity int) int
 		Identifier          func(childComplexity int) int
@@ -776,6 +787,7 @@ type ComplexityRoot struct {
 
 	CommerceProductSimpleProduct struct {
 		Attributes       func(childComplexity int) int
+		Badges           func(childComplexity int) int
 		Categories       func(childComplexity int) int
 		Description      func(childComplexity int) int
 		Identifier       func(childComplexity int) int
@@ -3503,6 +3515,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceProductActiveVariantProduct.Attributes(childComplexity), true
 
+	case "Commerce_Product_ActiveVariantProduct.badges":
+		if e.complexity.CommerceProductActiveVariantProduct.Badges == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductActiveVariantProduct.Badges(childComplexity), true
+
 	case "Commerce_Product_ActiveVariantProduct.categories":
 		if e.complexity.CommerceProductActiveVariantProduct.Categories == nil {
 			break
@@ -3700,6 +3719,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceProductAttributes.HasAttribute(childComplexity, args["key"].(string)), true
 
+	case "Commerce_Product_Badge.code":
+		if e.complexity.CommerceProductBadge.Code == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductBadge.Code(childComplexity), true
+
+	case "Commerce_Product_Badge.label":
+		if e.complexity.CommerceProductBadge.Label == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductBadge.Label(childComplexity), true
+
+	case "Commerce_Product_Badges.all":
+		if e.complexity.CommerceProductBadges.All == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductBadges.All(childComplexity), true
+
 	case "Commerce_Product_Categories.all":
 		if e.complexity.CommerceProductCategories.All == nil {
 			break
@@ -3748,6 +3788,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceProductConfigurableProduct.Attributes(childComplexity), true
+
+	case "Commerce_Product_ConfigurableProduct.badges":
+		if e.complexity.CommerceProductConfigurableProduct.Badges == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductConfigurableProduct.Badges(childComplexity), true
 
 	case "Commerce_Product_ConfigurableProduct.categories":
 		if e.complexity.CommerceProductConfigurableProduct.Categories == nil {
@@ -4110,6 +4157,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceProductSimpleProduct.Attributes(childComplexity), true
+
+	case "Commerce_Product_SimpleProduct.badges":
+		if e.complexity.CommerceProductSimpleProduct.Badges == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductSimpleProduct.Badges(childComplexity), true
 
 	case "Commerce_Product_SimpleProduct.categories":
 		if e.complexity.CommerceProductSimpleProduct.Categories == nil {
@@ -5067,6 +5121,7 @@ type Commerce_Search_Suggestion {
     meta: Commerce_Product_Meta!
     loyalty: Commerce_Product_Loyalty!
     attributes: Commerce_Product_Attributes!
+    badges: Commerce_Product_Badges!
 }
 
 """
@@ -5085,6 +5140,7 @@ type Commerce_Product_SimpleProduct implements Commerce_Product {
     meta: Commerce_Product_Meta!
     loyalty: Commerce_Product_Loyalty!
     attributes: Commerce_Product_Attributes!
+    badges: Commerce_Product_Badges!
 }
 
 """
@@ -5105,6 +5161,7 @@ type Commerce_Product_ConfigurableProduct implements Commerce_Product {
     loyalty: Commerce_Product_Loyalty!
     attributes: Commerce_Product_Attributes!
     variationSelections: [Commerce_Product_VariationSelection!]
+    badges: Commerce_Product_Badges!
 }
 
 """
@@ -5131,6 +5188,7 @@ type Commerce_Product_ActiveVariantProduct implements Commerce_Product {
     variationSelections: [Commerce_Product_VariationSelection!]
     "Convenience property to access the active variant labels easily"
     activeVariationSelections: [Commerce_Product_ActiveVariationSelection!]
+    badges: Commerce_Product_Badges!
 }
 
 "A group of attributes. E.g. 'size'"
@@ -5273,6 +5331,15 @@ type Commerce_Product_SearchResult {
     suggestions: [Commerce_Search_Suggestion!]
     searchMeta: Commerce_Search_Meta!
     hasSelectedFacet: Boolean!
+}
+
+type Commerce_Product_Badges {
+    all: [Commerce_Product_Badge!]
+}
+
+type Commerce_Product_Badge {
+    code:  String!
+    label: String!
 }
 
 extend type Query {
@@ -17855,6 +17922,37 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_activeVariati
 	return ec.marshalOCommerce_Product_ActiveVariationSelection2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐActiveVariationSelectionᚄ(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_badges(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Product_ActiveVariantProduct",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Badges(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(graphqlproductdto.ProductBadges)
+	fc.Result = res
+	return ec.marshalNCommerce_Product_Badges2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductBadges(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_code(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariationSelection) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -18259,6 +18357,96 @@ func (ec *executionContext) _Commerce_Product_Attributes_getAttributesByKey(ctx 
 	res := resTmp.([]domain5.Attribute)
 	fc.Result = res
 	return ec.marshalOCommerce_Product_Attribute2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐAttributeᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Product_Badge_code(ctx context.Context, field graphql.CollectedField, obj *domain5.Badge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Product_Badge",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Product_Badge_label(ctx context.Context, field graphql.CollectedField, obj *domain5.Badge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Product_Badge",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Label, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Product_Badges_all(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ProductBadges) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Product_Badges",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.All, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]domain5.Badge)
+	fc.Result = res
+	return ec.marshalOCommerce_Product_Badge2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐBadgeᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Product_Categories_main(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ProductCategories) (ret graphql.Marshaler) {
@@ -18839,6 +19027,37 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_variationSelec
 	res := resTmp.([]graphqlproductdto.VariationSelection)
 	fc.Result = res
 	return ec.marshalOCommerce_Product_VariationSelection2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Product_ConfigurableProduct_badges(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Product_ConfigurableProduct",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Badges(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(graphqlproductdto.ProductBadges)
+	fc.Result = res
+	return ec.marshalNCommerce_Product_Badges2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductBadges(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Product_Loyalty_price(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ProductLoyalty) (ret graphql.Marshaler) {
@@ -20360,6 +20579,37 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_attributes(ctx conte
 	res := resTmp.(domain5.Attributes)
 	fc.Result = res
 	return ec.marshalNCommerce_Product_Attributes2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐAttributes(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Product_SimpleProduct_badges(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Product_SimpleProduct",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Badges(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(graphqlproductdto.ProductBadges)
+	fc.Result = res
+	return ec.marshalNCommerce_Product_Badges2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductBadges(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Product_VariationSelection_code(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariationSelection) (ret graphql.Marshaler) {
@@ -27759,6 +28009,11 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct(ctx context.C
 			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_variationSelections(ctx, field, obj)
 		case "activeVariationSelections":
 			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_activeVariationSelections(ctx, field, obj)
+		case "badges":
+			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_badges(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -27872,6 +28127,62 @@ func (ec *executionContext) _Commerce_Product_Attributes(ctx context.Context, se
 			out.Values[i] = ec._Commerce_Product_Attributes_getAttribute(ctx, field, obj)
 		case "getAttributesByKey":
 			out.Values[i] = ec._Commerce_Product_Attributes_getAttributesByKey(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Product_BadgeImplementors = []string{"Commerce_Product_Badge"}
+
+func (ec *executionContext) _Commerce_Product_Badge(ctx context.Context, sel ast.SelectionSet, obj *domain5.Badge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_BadgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Product_Badge")
+		case "code":
+			out.Values[i] = ec._Commerce_Product_Badge_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "label":
+			out.Values[i] = ec._Commerce_Product_Badge_label(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Product_BadgesImplementors = []string{"Commerce_Product_Badges"}
+
+func (ec *executionContext) _Commerce_Product_Badges(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.ProductBadges) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_BadgesImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Product_Badges")
+		case "all":
+			out.Values[i] = ec._Commerce_Product_Badges_all(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -28024,6 +28335,11 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct(ctx context.Co
 			}
 		case "variationSelections":
 			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_variationSelections(ctx, field, obj)
+		case "badges":
+			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_badges(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -28455,6 +28771,11 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct(ctx context.Context,
 			}
 		case "attributes":
 			out.Values[i] = ec._Commerce_Product_SimpleProduct_attributes(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "badges":
+			out.Values[i] = ec._Commerce_Product_SimpleProduct_badges(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -29988,6 +30309,14 @@ func (ec *executionContext) marshalNCommerce_Product_Attributes2flamingoᚗmeᚋ
 		return graphql.Null
 	}
 	return ec._Commerce_Product_Attributes(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNCommerce_Product_Badge2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐBadge(ctx context.Context, sel ast.SelectionSet, v domain5.Badge) graphql.Marshaler {
+	return ec._Commerce_Product_Badge(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Product_Badges2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductBadges(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.ProductBadges) graphql.Marshaler {
+	return ec._Commerce_Product_Badges(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNCommerce_Product_Categories2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductCategories(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.ProductCategories) graphql.Marshaler {
@@ -31898,6 +32227,46 @@ func (ec *executionContext) marshalOCommerce_Product_Attribute2ᚕflamingoᚗme�
 				defer wg.Done()
 			}
 			ret[i] = ec.marshalNCommerce_Product_Attribute2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐAttribute(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalOCommerce_Product_Badge2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐBadgeᚄ(ctx context.Context, sel ast.SelectionSet, v []domain5.Badge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCommerce_Product_Badge2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐBadge(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)

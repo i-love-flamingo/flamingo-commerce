@@ -15,6 +15,12 @@ func getProductDomainConfigurableWithActiveVariantProduct() productDomain.Config
 		Identifier: "configurable_with_active_variant_product",
 		BasicProductData: productDomain.BasicProductData{
 			MarketPlaceCode: "configurable_with_active_variant_product",
+			Badges: []productDomain.Badge{
+				{
+					Code:  "hot",
+					Label: "Hot Product",
+				},
+			},
 		},
 
 		ActiveVariant: productDomain.Variant{
@@ -69,6 +75,12 @@ func getProductDomainConfigurableWithActiveVariantProduct() productDomain.Config
 						Usage:     "teaser",
 						Title:     "teaser",
 						Reference: "teaser",
+					},
+				},
+				Badges: []productDomain.Badge{
+					{
+						Code:  "hotvariant",
+						Label: "Hot Variant Product",
 					},
 				},
 			},
@@ -167,6 +179,12 @@ func getProductDomainConfigurableWithActiveVariantProduct() productDomain.Config
 				},
 			},
 			PreSelectedVariantSku: "active_variant_product_code_a",
+			Badges: []productDomain.Badge{
+				{
+					Code:  "new",
+					Label: "New Product",
+				},
+			},
 		},
 	}
 }
@@ -308,4 +326,18 @@ func TestActiveVariantProduct_ActiveVariationSelections(t *testing.T) {
 		Label: "attribute_a_codeLabel",
 		Value: "attribute_a_variantLabel",
 	}}, product.ActiveVariationSelections())
+}
+
+func TestActiveVariantProduct_Badges(t *testing.T) {
+	product := getActiveVariantProduct()
+	assert.Equal(
+		t,
+		[]productDomain.Badge{
+			{
+				Code:  "hotvariant",
+				Label: "Hot Variant Product",
+			},
+		},
+		product.Badges().All,
+	)
 }

@@ -81,3 +81,10 @@ func (sp SimpleProduct) Loyalty() ProductLoyalty {
 func (sp SimpleProduct) Attributes() productDomain.Attributes {
 	return sp.product.BaseData().Attributes
 }
+
+// Badges of the product
+func (sp SimpleProduct) Badges() ProductBadges {
+	return ProductBadges{
+		All: sp.product.BaseData().Badges,
+	}
+}

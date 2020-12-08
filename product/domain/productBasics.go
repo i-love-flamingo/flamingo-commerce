@@ -47,6 +47,7 @@ type (
 		ShortDescription string
 		Description      string
 		Media            []Media
+		Badges           []Badge
 
 		MarketPlaceCode string
 		RetailerCode    string
@@ -155,6 +156,8 @@ type (
 		TeaserLoyaltyPriceInfo *LoyaltyPriceInfo
 		// TeaserLoyaltyEarning optional teaser for the loyalty earning used in grid / list view
 		TeaserLoyaltyEarningInfo *LoyaltyEarningInfo
+		// Badges optional slice of badges to teaser a product
+		Badges []Badge
 	}
 
 	// Media holds product media information
@@ -211,6 +214,17 @@ type (
 	//WishedToPay - list of prices by type
 	WishedToPay struct {
 		priceByType map[string]priceDomain.Price
+	}
+
+	// Badge for a product
+	// Example:
+	// Badge {
+	//   Code: "new",
+	//   Label: "New Product",
+	// }
+	Badge struct {
+		Code  string
+		Label string
 	}
 )
 

@@ -56,6 +56,12 @@ func getProductDomainConfigurableProduct() productDomain.ConfigurableProduct {
 					UnitCode:  "attribute_b_unitCode",
 				},
 			},
+			Badges: []productDomain.Badge{
+				{
+					Code:  "hot",
+					Label: "Hot Product",
+				},
+			},
 		},
 		VariantVariationAttributes: []string{
 			"attribute_a_code",
@@ -84,6 +90,12 @@ func getProductDomainConfigurableProduct() productDomain.ConfigurableProduct {
 							Label:     "attribute_b_variantLabel",
 							RawValue:  nil,
 							UnitCode:  "attribute_b_unitCode",
+						},
+					},
+					Badges: []productDomain.Badge{
+						{
+							Code:  "newvariant",
+							Label: "New Variant Product",
 						},
 					},
 				},
@@ -234,4 +246,18 @@ func TestConfigurableProduct_VariationSelections(t *testing.T) {
 			},
 		},
 	}, product.VariationSelections())
+}
+
+func TestConfigurableProduct_Badges(t *testing.T) {
+	product := getConfigurableProduct()
+	assert.Equal(
+		t,
+		[]productDomain.Badge{
+			{
+				Code:  "hot",
+				Label: "Hot Product",
+			},
+		},
+		product.Badges().All,
+	)
 }

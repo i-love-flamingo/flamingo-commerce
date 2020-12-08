@@ -481,6 +481,13 @@ definitions:
       Delivery:
         $ref: '#/definitions/cart.Delivery'
     type: object
+  domain.Badge:
+    properties:
+      Code:
+        type: string
+      Label:
+        type: string
+    type: object
   domain.BasicProduct:
     type: object
   domain.CategoryTeaser:
@@ -629,6 +636,10 @@ definitions:
         items:
           $ref: '#/definitions/domain.PriceInfo'
         type: array
+      Badges:
+        items:
+          $ref: '#/definitions/domain.Badge'
+        type: array
       Categories:
         items:
           $ref: '#/definitions/domain.CategoryTeaser'
@@ -696,6 +707,11 @@ definitions:
     type: object
   domain.TeaserData:
     properties:
+      Badges:
+        description: Badges optional slice of badges to teaser a product
+        items:
+          $ref: '#/definitions/domain.Badge'
+        type: array
       MarketPlaceCode:
         description: The sku that should be used to link from Teasers
         type: string
