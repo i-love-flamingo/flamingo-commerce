@@ -131,11 +131,11 @@ extend type Query {
 }
 
 extend type Mutation {
-    # Only possible if state machine not active or in a final state, otherwise returns the current running process
+    # Starts a new process and will replace existing ones
     Commerce_Checkout_StartPlaceOrder(returnUrl: String!): Commerce_Checkout_StartPlaceOrder_Result!
     # Cancels to current running place order process, possible if state is not final
     Commerce_Checkout_CancelPlaceOrder: Boolean!
-    # Clears the last stored place order process, possible if state is final
+    # Clears the last stored place order process
     Commerce_Checkout_ClearPlaceOrder: Boolean!
     # Gets the last stored place order state and ensures that the state machine proceeds, non blocking
     Commerce_Checkout_RefreshPlaceOrder: Commerce_Checkout_PlaceOrderContext!

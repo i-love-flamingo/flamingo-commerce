@@ -100,15 +100,6 @@ func (r *CommerceCheckoutMutationResolver) CommerceCheckoutStartPlaceOrder(ctx c
 	}
 	startPlaceOrderCommand := placeorder.StartPlaceOrderCommand{Cart: *cart, ReturnURL: returnURL}
 	pctx, err := r.placeorderHandler.StartPlaceOrder(ctx, startPlaceOrderCommand)
-	if err == placeorder.ErrAnotherPlaceOrderProcessRunning {
-		dtopctx, err := r.CommerceCheckoutRefreshPlaceOrder(ctx)
-		if err != nil {
-			return nil, err
-		}
-		return &dto.StartPlaceOrderResult{
-			UUID: dtopctx.UUID,
-		}, nil
-	}
 	if err != nil {
 		return nil, err
 	}

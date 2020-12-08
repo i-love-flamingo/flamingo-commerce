@@ -274,32 +274,14 @@ func (c *Coordinator) Cancel(ctx context.Context) error {
 	return returnErr
 }
 
-// ClearLastProcess removes last stored process if in final state
+// ClearLastProcess removes last stored process
 func (c *Coordinator) ClearLastProcess(ctx context.Context) error {
 	ctx, span := trace.StartSpan(ctx, "placeorder/coordinator/Clear")
 	defer span.End()
 
 	var returnErr error
 	web.RunWithDetachedContext(ctx, func(ctx context.Context) {
-		p, err := c.LastProcess(ctx)
-		if err != nil {
-			returnErr = err
-			return
-		}
-
-		currentState, err := p.CurrentState()
-		if err != nil {
-			returnErr = err
-			return
-		}
-
-		if !currentState.IsFinal() {
-			err = errors.New("process not in final state, clearing not possible")
-			returnErr = err
-			return
-		}
-
-		err = c.clearProcessContext(ctx)
+		err := c.clearProcessContext(ctx)
 		if err != nil {
 			returnErr = err
 		}

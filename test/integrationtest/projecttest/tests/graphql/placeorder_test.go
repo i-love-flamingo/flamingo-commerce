@@ -238,7 +238,7 @@ func Test_StartPlaceOrder(t *testing.T) {
 		reason.Value("reason").Equal("fake payment selection validator error")
 	})
 
-	t.Run("already running process", func(t *testing.T) {
+	t.Run("replace already running process", func(t *testing.T) {
 		e := integrationtest.NewHTTPExpect(t, baseURL)
 		prepareCartWithPaymentSelection(t, e, domain.PaymentFlowActionShowIframe, nil)
 
@@ -249,7 +249,7 @@ func Test_StartPlaceOrder(t *testing.T) {
 
 		_, secondUUID := assertStartPlaceOrderWithValidUUID(t, e)
 
-		assert.Equal(t, firstUUID, secondUUID)
+		assert.NotEqual(t, firstUUID, secondUUID, "already running process should be replaced by a new one")
 	})
 
 }
@@ -314,42 +314,24 @@ func Test_ClearPlaceOrder(t *testing.T) {
 	t.Parallel()
 	baseURL := "http://" + FlamingoURL
 	tests := []struct {
-		name                  string
-		gatewayMethod         string
-		prepareAndRun         bool
-		validator             func(*testing.T, *httpexpect.Object)
-		shouldLeadToNoProcess bool
+		name          string
+		gatewayMethod string
+		prepareAndRun bool
 	}{
 		{
 			name:          "final",
 			gatewayMethod: domain.PaymentFlowStatusCompleted,
 			prepareAndRun: true,
-			validator: func(t *testing.T, response *httpexpect.Object) {
-				response.Value("data").Object().Value("Commerce_Checkout_ClearPlaceOrder").Boolean().True()
-			},
-			shouldLeadToNoProcess: true,
 		},
 		{
 			name:          "not final",
 			gatewayMethod: domain.PaymentFlowActionShowIframe,
 			prepareAndRun: true,
-			validator: func(t *testing.T, response *httpexpect.Object) {
-				err := response.Value("errors").Array().First().Object()
-				err.Value("message").Equal("process not in final state, clearing not possible")
-				err.Value("path").Array().First().Equal("Commerce_Checkout_ClearPlaceOrder")
-			},
-			shouldLeadToNoProcess: false,
 		},
 		{
 			name:          "no process",
 			gatewayMethod: domain.PaymentFlowStatusCompleted,
 			prepareAndRun: false,
-			validator: func(t *testing.T, response *httpexpect.Object) {
-				err := response.Value("errors").Array().First().Object()
-				err.Value("message").Equal("ErrNoPlaceOrderProcess")
-				err.Value("path").Array().First().Equal("Commerce_Checkout_ClearPlaceOrder")
-			},
-			shouldLeadToNoProcess: false,
 		},
 	}
 
@@ -364,15 +346,13 @@ func Test_ClearPlaceOrder(t *testing.T) {
 
 			request := helper.GraphQlRequest(t, e, loadGraphQL(t, "clear_place_order", nil))
 			response := request.Expect().JSON().Object()
-			tt.validator(t, response)
+			response.Value("data").Object().Value("Commerce_Checkout_ClearPlaceOrder").Boolean().True()
 
-			if tt.shouldLeadToNoProcess {
-				request = helper.GraphQlRequest(t, e, loadGraphQL(t, "refresh_blocking", nil))
-				response = request.Expect().JSON().Object()
-				err := response.Value("errors").Array().First().Object()
-				err.Value("message").Equal("ErrNoPlaceOrderProcess")
-				err.Value("path").Array().First().Equal("Commerce_Checkout_RefreshPlaceOrderBlocking")
-			}
+			request = helper.GraphQlRequest(t, e, loadGraphQL(t, "refresh_blocking", nil))
+			response = request.Expect().JSON().Object()
+			err := response.Value("errors").Array().First().Object()
+			err.Value("message").Equal("ErrNoPlaceOrderProcess")
+			err.Value("path").Array().First().Equal("Commerce_Checkout_RefreshPlaceOrderBlocking")
 		})
 	}
 }

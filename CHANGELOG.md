@@ -17,6 +17,8 @@
 * Checkout Controller, update handling of aborted/canceled payments:
   * Cancel the order / restore the cart before generating the new idempotency key of the payment selection
 * Resolve goroutine leak in redis locker
+* **Breaking** Change StartPlaceOrder behaviour to always start a new one.
+* **Breaking** Change ClearPlaceOrderProcess behaviour to be always possible (no matter on which state)
 
 **customer**
 * GraphQL
