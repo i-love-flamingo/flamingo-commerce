@@ -47,7 +47,7 @@ type (
 		ShortDescription string
 		Description      string
 		Media            []Media
-		Badges           []Badge
+		Badges           Badges
 
 		MarketPlaceCode string
 		RetailerCode    string
@@ -157,7 +157,7 @@ type (
 		// TeaserLoyaltyEarning optional teaser for the loyalty earning used in grid / list view
 		TeaserLoyaltyEarningInfo *LoyaltyEarningInfo
 		// Badges optional slice of badges to teaser a product
-		Badges []Badge
+		Badges Badges
 	}
 
 	// Media holds product media information
@@ -226,6 +226,9 @@ type (
 		Code  string
 		Label string
 	}
+
+	// Badges slice of Badge
+	Badges []Badge
 )
 
 //Stock Level Values
@@ -664,4 +667,18 @@ func (c *CategoryTeaser) CPath() string {
 		return c.Code
 	}
 	return c.Parent.CPath() + "/" + c.Code
+}
+
+// GetFirst of the badges, returns nil if there is no first badge
+func (b Badges) GetFirst() *Badge {
+	if nil == b {
+		return nil
+	}
+
+	if 0 == len(b) {
+		return nil
+	}
+
+	result := b[0]
+	return &result
 }
