@@ -182,6 +182,28 @@ func TestBasicProductGetMedia(t *testing.T) {
 	assert.Equal(t, "list", result.Usage, "list media returned if exists")
 }
 
+func TestBasicProductBadgesGetFirst(t *testing.T) {
+	t.Parallel()
+	var badges Badges
+
+	assert.Nil(t, badges.First(), "get nil if badges are nil - don't fail")
+
+	badges = Badges{}
+	assert.Nil(t, badges.First(), "get nil if badges are empty")
+
+	badges = Badges{
+		{
+			Code:  "first",
+			Label: "First",
+		},
+		{
+			Code:  "second",
+			Label: "Second",
+		},
+	}
+	assert.Equal(t, &Badge{Code: "first", Label: "First"}, badges.First(), "get the first badge")
+}
+
 func TestIsSaleableNow(t *testing.T) {
 	s := Saleable{}
 	assert.False(t, s.IsSaleableNow(), "not saleable now if nothing is set")

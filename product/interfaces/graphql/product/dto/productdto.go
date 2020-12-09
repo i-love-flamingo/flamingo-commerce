@@ -164,3 +164,10 @@ func (v *VariationSelectionOptionVariant) MarketPlaceCode() string {
 func (v *VariationSelectionOptionVariant) BaseData() productDomain.BasicProductData {
 	return v.variant.BaseData()
 }
+
+// First badge of all badges, returns nil if there is no first badge
+func (b *ProductBadges) First() *productDomain.Badge {
+	badges := productDomain.Badges(b.All)
+
+	return badges.First()
+}

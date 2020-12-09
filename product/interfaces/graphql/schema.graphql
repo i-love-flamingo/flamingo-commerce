@@ -225,6 +225,7 @@ type Commerce_Product_SearchResult {
 
 type Commerce_Product_Badges {
     all: [Commerce_Product_Badge!]
+    first: Commerce_Product_Badge
 }
 
 type Commerce_Product_Badge {

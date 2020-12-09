@@ -1,10 +1,11 @@
 package graphqlproductdto_test
 
 import (
+	"testing"
+
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	graphqlProductDto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestProductMedia_GetMedia(t *testing.T) {
@@ -146,4 +147,28 @@ func TestNewGraphqlProductDto(t *testing.T) {
 	}
 	graphqlActiveVariantProduct := graphqlProductDto.NewGraphqlProductDto(activeVariantProduct, nil)
 	assert.Equal(t, "configurable_with_activevariant", graphqlActiveVariantProduct.Type())
+}
+
+func TestProductBadges_GetFirst(t *testing.T) {
+	t.Parallel()
+
+	var b graphqlProductDto.ProductBadges
+	assert.Nil(t, b.First(), "get first on nil badges does not fail")
+
+	b = graphqlProductDto.ProductBadges{}
+	assert.Nil(t, b.First(), "get nil first badge on empty badges")
+
+	b = graphqlProductDto.ProductBadges{
+		domain.Badges{
+			{
+				Code:  "first",
+				Label: "First",
+			},
+			{
+				Code:  "second",
+				Label: "Secons",
+			},
+		},
+	}
+	assert.Equal(t, &domain.Badge{Code: "first", Label: "First"}, b.First(), "got the first badge")
 }
