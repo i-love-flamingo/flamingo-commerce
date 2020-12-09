@@ -669,12 +669,8 @@ func (c *CategoryTeaser) CPath() string {
 	return c.Parent.CPath() + "/" + c.Code
 }
 
-// GetFirst of the badges, returns nil if there is no first badge
-func (b Badges) GetFirst() *Badge {
-	if nil == b {
-		return nil
-	}
-
+// First of the badges, returns nil if there is no first badge
+func (b Badges) First() *Badge {
 	if 0 == len(b) {
 		return nil
 	}

@@ -186,10 +186,10 @@ func TestBasicProductBadgesGetFirst(t *testing.T) {
 	t.Parallel()
 	var badges Badges
 
-	assert.Nil(t, badges.GetFirst(), "get nil if badges are nil - don't fail")
+	assert.Nil(t, badges.First(), "get nil if badges are nil - don't fail")
 
 	badges = Badges{}
-	assert.Nil(t, badges.GetFirst(), "get nil if badges are empty")
+	assert.Nil(t, badges.First(), "get nil if badges are empty")
 
 	badges = Badges{
 		{
@@ -201,7 +201,7 @@ func TestBasicProductBadgesGetFirst(t *testing.T) {
 			Label: "Second",
 		},
 	}
-	assert.Equal(t, &Badge{Code: "first", Label: "First"}, badges.GetFirst(), "get the first badge")
+	assert.Equal(t, &Badge{Code: "first", Label: "First"}, badges.First(), "get the first badge")
 }
 
 func TestIsSaleableNow(t *testing.T) {

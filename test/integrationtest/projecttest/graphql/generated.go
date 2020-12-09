@@ -688,8 +688,8 @@ type ComplexityRoot struct {
 	}
 
 	CommerceProductBadges struct {
-		All      func(childComplexity int) int
-		GetFirst func(childComplexity int) int
+		All   func(childComplexity int) int
+		First func(childComplexity int) int
 	}
 
 	CommerceProductCategories struct {
@@ -3741,12 +3741,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceProductBadges.All(childComplexity), true
 
-	case "Commerce_Product_Badges.getFirst":
-		if e.complexity.CommerceProductBadges.GetFirst == nil {
+	case "Commerce_Product_Badges.first":
+		if e.complexity.CommerceProductBadges.First == nil {
 			break
 		}
 
-		return e.complexity.CommerceProductBadges.GetFirst(childComplexity), true
+		return e.complexity.CommerceProductBadges.First(childComplexity), true
 
 	case "Commerce_Product_Categories.all":
 		if e.complexity.CommerceProductCategories.All == nil {
@@ -5343,7 +5343,7 @@ type Commerce_Product_SearchResult {
 
 type Commerce_Product_Badges {
     all: [Commerce_Product_Badge!]
-    getFirst: Commerce_Product_Badge
+    first: Commerce_Product_Badge
 }
 
 type Commerce_Product_Badge {
@@ -18458,7 +18458,7 @@ func (ec *executionContext) _Commerce_Product_Badges_all(ctx context.Context, fi
 	return ec.marshalOCommerce_Product_Badge2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐBadgeᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Product_Badges_getFirst(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ProductBadges) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Product_Badges_first(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ProductBadges) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -18475,7 +18475,7 @@ func (ec *executionContext) _Commerce_Product_Badges_getFirst(ctx context.Contex
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.GetFirst(), nil
+		return obj.First(), nil
 	})
 
 	if resTmp == nil {
@@ -28220,8 +28220,8 @@ func (ec *executionContext) _Commerce_Product_Badges(ctx context.Context, sel as
 			out.Values[i] = graphql.MarshalString("Commerce_Product_Badges")
 		case "all":
 			out.Values[i] = ec._Commerce_Product_Badges_all(ctx, field, obj)
-		case "getFirst":
-			out.Values[i] = ec._Commerce_Product_Badges_getFirst(ctx, field, obj)
+		case "first":
+			out.Values[i] = ec._Commerce_Product_Badges_first(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

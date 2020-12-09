@@ -153,10 +153,10 @@ func TestProductBadges_GetFirst(t *testing.T) {
 	t.Parallel()
 
 	var b graphqlProductDto.ProductBadges
-	assert.Nil(t, b.GetFirst(), "get first on nil badges does not fail")
+	assert.Nil(t, b.First(), "get first on nil badges does not fail")
 
 	b = graphqlProductDto.ProductBadges{}
-	assert.Nil(t, b.GetFirst(), "get nil first badge on empty badges")
+	assert.Nil(t, b.First(), "get nil first badge on empty badges")
 
 	b = graphqlProductDto.ProductBadges{
 		domain.Badges{
@@ -170,5 +170,5 @@ func TestProductBadges_GetFirst(t *testing.T) {
 			},
 		},
 	}
-	assert.Equal(t, &domain.Badge{Code: "first", Label: "First"}, b.GetFirst(), "got the first badge")
+	assert.Equal(t, &domain.Badge{Code: "first", Label: "First"}, b.First(), "got the first badge")
 }

@@ -165,9 +165,9 @@ func (v *VariationSelectionOptionVariant) BaseData() productDomain.BasicProductD
 	return v.variant.BaseData()
 }
 
-// GetFirst badge of all badges, returns nil if there is no first badge
-func (b *ProductBadges) GetFirst() *productDomain.Badge {
+// First badge of all badges, returns nil if there is no first badge
+func (b *ProductBadges) First() *productDomain.Badge {
 	badges := productDomain.Badges(b.All)
 
-	return badges.GetFirst()
+	return badges.First()
 }
