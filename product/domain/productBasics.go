@@ -540,9 +540,18 @@ func findMediaInProduct(p BasicProduct, group string, usage string) *Media {
 	return nil
 }
 
+// IsAlwaysInStock checks if the product is marked to be "alwaysInStock"
+func (bpd BasicProductData) IsAlwaysInStock() bool {
+	if bpd.HasAttribute("alwaysInStock") && bpd.Attributes["alwaysInStock"].Value() == "true" {
+		return true
+	}
+
+	return false
+}
+
 // IsInStock returns information if current product whether in stock or not
 func (bpd BasicProductData) IsInStock() bool {
-	if bpd.HasAttribute("alwaysInStock") && bpd.Attributes["alwaysInStock"].Value() == "true" {
+	if bpd.IsAlwaysInStock() {
 		return true
 	}
 
