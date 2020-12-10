@@ -46,6 +46,7 @@
     * The product fake search service is now able to return a specific product if the given query matches the marketplace code / name of the json file of the product  
     * The product fake search service returns no products if it is queried with `no-results`
 * Expose `VariantVariationAttributesSorting` on `domain.ConfigurableProductWithActiveVariant`
+* **Breaking**: Update stock handling: Remove magic alwaysInStock product attribute. Just Rely BasicProductData.StockLevel field instead.
 
 **sourcing**
 * **Breaking**
