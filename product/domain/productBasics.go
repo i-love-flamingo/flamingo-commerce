@@ -17,25 +17,24 @@ const (
 )
 
 type (
-	// BasicProduct interface - Need to be implements by all Product Types!
+	// BasicProduct interface need to be implemented by all Product Types!
 	BasicProduct interface {
-		//BaseData gives you basic product informations
+		// BaseData gives you basic product information
 		// like attributes, title, media, marketplacecode etc
 		BaseData() BasicProductData
-		//TeaserData gives you basic information to typically show in list views - including a teaser prices
+		// TeaserData gives you basic information to typically show in list views - including a teaser prices
 		TeaserData() TeaserData
-		//GetSpecifications return grouped specifications - typically used for comparisons
+		// GetSpecifications return grouped specifications - typically used for comparisons
 		GetSpecifications() Specifications
-		//IsSaleable - indicates if that product type can be purchased in general
+		// IsSaleable indicates if that product type can be purchased in general
 		IsSaleable() bool
-		//SaleableData - returns information required to purchase - like the definite price informations.
-		//	makes only sense to call if IsSaleable() returns true
+		// SaleableData returns information required to purchase - like the definite price information
+		// makes only sense to call if IsSaleable() returns true
 		SaleableData() Saleable
-		//Type returns product type
+		// Type returns product type
 		Type() string
-		//GetIdentifier returns an idendifier for the product instance
+		// GetIdentifier returns an identifier for the product instance
 		GetIdentifier() string
-		//HasMedia
 		HasMedia(group string, usage string) bool
 		GetMedia(group string, usage string) Media
 	}
@@ -70,15 +69,15 @@ type (
 		IsNew    bool
 	}
 
-	//CategoryTeaser - Represents some Teaser infos for Category
+	// CategoryTeaser represents some Teaser infos for Category
 	CategoryTeaser struct {
-		//Code the idendifier of the Category
+		// Code the identifier of the Category
 		Code string
-		//The Path (root to leaf) for this Category - separated by "/"
+		// The Path (root to leaf) for this Category - separated by "/"
 		Path string
-		//Name - speaking name of the category
+		// Name is the speaking name of the category
 		Name string
-		//Optional link to parent teaser
+		// Parent is an optional link to parent teaser
 		Parent *CategoryTeaser `swaggerignore:"true"`
 	}
 
@@ -89,9 +88,9 @@ type (
 		SaleableTo      time.Time
 		ActivePrice     PriceInfo
 		AvailablePrices []PriceInfo
-		//LoyaltyPrices - Optional infos for products that can be paid in a loyalty program
+		// LoyaltyPrices holds optional infos for products that can be paid in a loyalty program
 		LoyaltyPrices []LoyaltyPriceInfo
-		// LoyaltyEarnings optional infos about potential loyalty earnings
+		// LoyaltyEarnings jolds optional infos about potential loyalty earnings
 		LoyaltyEarnings []LoyaltyEarningInfo
 	}
 
@@ -110,9 +109,9 @@ type (
 		TaxClass          string
 	}
 
-	//LoyaltyPriceInfo - contains info used for product with
+	// LoyaltyPriceInfo contains info used for product with
 	LoyaltyPriceInfo struct {
-		//Type - Name( or Type) of the Loyalty program
+		// Type or Name of the Loyalty program
 		Type             string
 		Default          priceDomain.Price
 		IsDiscounted     bool
@@ -141,20 +140,20 @@ type (
 		ShortTitle       string
 		ShortDescription string
 		URLSlug          string
-		//TeaserPrice is the price that should be shown in teasers (listview)
+		// TeaserPrice is the price that should be shown in teasers (listview)
 		TeaserPrice PriceInfo
-		//TeaserPriceIsFromPrice - is set to true in cases where a product might have different prices (e.g. configurable)
+		// TeaserPriceIsFromPrice is set to true in cases where a product might have different prices (e.g. configurable)
 		TeaserPriceIsFromPrice bool
-		//PreSelectedVariantSku - might be set for configurables to give a hint to link to a variant of a configurable (That might be the case if a user filters for an attribute and in the teaser the variant with that attribute is shown)
+		// PreSelectedVariantSku might be set for configurables to give a hint to link to a variant of a configurable (That might be the case if a user filters for an attribute and in the teaser the variant with that attribute is shown)
 		PreSelectedVariantSku string
-		//Media
+		// Media
 		Media []Media
-		//The sku that should be used to link from Teasers
+		// The sku that should be used to link from Teasers
 		MarketPlaceCode       string
 		TeaserAvailablePrices []PriceInfo
-		//TeaserLoyaltyPriceInfo - optional the Loyaltyprice that can be used for teaser (e.g. on listing views)
+		// TeaserLoyaltyPriceInfo is the loyalty price that can be used for teaser (e.g. on listing views)
 		TeaserLoyaltyPriceInfo *LoyaltyPriceInfo
-		// TeaserLoyaltyEarning optional teaser for the loyalty earning used in grid / list view
+		// TeaserLoyaltyEarning is the teaser for the loyalty earning used in grid / list view
 		TeaserLoyaltyEarningInfo *LoyaltyEarningInfo
 		// Badges optional slice of badges to teaser a product
 		Badges Badges
@@ -167,10 +166,10 @@ type (
 		Usage     string
 		Title     string
 		Reference string
-	} //@name ProductMedia
+	} // @name ProductMedia
 
 	// Attributes describe a product attributes map
-	Attributes map[string]Attribute //@name ProductAttributes
+	Attributes map[string]Attribute // @name ProductAttributes
 
 	// Attribute for product attributes
 	// Example:
@@ -192,7 +191,7 @@ type (
 		RawValue interface{}
 		// UnitCode is the internal code of the attribute values measuring unit
 		UnitCode string
-	} //@name ProductAttribute
+	} // @name ProductAttribute
 
 	// Specifications of a product
 	Specifications struct {
@@ -211,7 +210,7 @@ type (
 		Values []string
 	}
 
-	//WishedToPay - list of prices by type
+	// WishedToPay is the list of prices by type
 	WishedToPay struct {
 		priceByType map[string]priceDomain.Price
 	}
@@ -231,7 +230,7 @@ type (
 	Badges []Badge
 )
 
-//Stock Level Values
+// Stock Level values
 const (
 	StockLevelOutOfStock = "out"
 	StockLevelInStock    = "in"
@@ -243,7 +242,7 @@ func (at Attribute) Value() string {
 	return strings.Trim(fmt.Sprintf("%v", at.RawValue), " ")
 }
 
-// IsEnabledValue returns true if the value can be seen as a toogle and is enabled
+// IsEnabledValue returns true if the value can be seen as a toggle and is enabled
 func (at Attribute) IsEnabledValue() bool {
 	switch at.RawValue {
 	case "Yes", "yes":
@@ -257,7 +256,7 @@ func (at Attribute) IsEnabledValue() bool {
 	}
 }
 
-// IsDisabledValue returns true if the value can be seen as a disable toggle/swicth value
+// IsDisabledValue returns true if the value can be seen as a disable toggle/switch value
 func (at Attribute) IsDisabledValue() bool {
 	switch at.RawValue {
 	case "No", "no":
@@ -277,7 +276,7 @@ func (at Attribute) HasMultipleValues() bool {
 	return ok
 }
 
-// Values builds a list of product attribute values - in case the raw value is a slice
+// Values builds a list of product attribute values in case the raw value is a slice
 func (at Attribute) Values() []string {
 	var result []string
 	list, ok := at.RawValue.([]interface{})
@@ -362,13 +361,13 @@ func (bpd BasicProductData) GetMedia(usage string) Media {
 	return emptyMedia
 }
 
-// IsSaleableNow  checks flag and time
+// IsSaleableNow checks flag and time
 func (p Saleable) IsSaleableNow() bool {
 	if p.IsSaleable == false {
 		return false
 	}
 
-	//For some reasons IsZero does not always work - thats why we check for 1970
+	// For some reasons IsZero does not always work - thats why we check for 1970
 	if (p.SaleableFrom.IsZero() || p.SaleableFrom.Year() == 1970 || p.SaleableFrom.Before(time.Now())) &&
 		(p.SaleableTo.IsZero() || p.SaleableTo.Year() == 1970 || p.SaleableTo.After(time.Now())) {
 		return true
@@ -377,7 +376,7 @@ func (p Saleable) IsSaleableNow() bool {
 	return false
 }
 
-// GetLoyaltyPriceByType - returns the loyaltyentry that matches the type
+// GetLoyaltyPriceByType returns the loyaltyentry that matches the type
 func (p Saleable) GetLoyaltyPriceByType(ltype string) (*LoyaltyPriceInfo, bool) {
 	for _, lp := range p.LoyaltyPrices {
 		if lp.Type == ltype {
@@ -405,7 +404,7 @@ func (p Saleable) generateLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price
 	requiredCharges := make(map[string]priceDomain.Charge)
 	remainingMainChargeValue := valuedPriceToPay.Amount()
 
-	//getLoyaltyCharge - private func that returns the loyaltyCharge of the given type. making sure the currentlyRemainingMainChargeValue is not exceeded
+	// getLoyaltyCharge - private func that returns the loyaltyCharge of the given type. making sure the currentlyRemainingMainChargeValue is not exceeded
 	getValidLoyaltyCharge := func(loyaltyAmountWishedToSpent big.Float, loyaltyPrice LoyaltyPriceInfo, chargeType string, currentlyRemainingMainChargeValue *big.Float) priceDomain.Charge {
 		loyaltyCurrency := loyaltyPrice.GetFinalPrice().Currency()
 		rateLoyaltyFinalPriceToRealFinalPrice := loyaltyPrice.GetRate(p.ActivePrice.GetFinalPrice())
@@ -421,7 +420,7 @@ func (p Saleable) generateLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price
 		}
 		valuedLoyalityPrice := priceDomain.NewFromBigFloat(*new(big.Float).Mul(&rateLoyaltyFinalPriceToRealFinalPrice, &loyaltyAmountWishedToSpent), valuedPriceToPay.Currency()).GetPayable()
 		if maximumPossibleLoyaltyPrice.Amount().Cmp(&loyaltyAmountWishedToSpent) == 0 {
-			//If the wish equals the rounded maximum - we need to use the complete remaining value
+			// If the wish equals the rounded maximum - we need to use the complete remaining value
 			valuedLoyalityPrice = priceDomain.NewFromBigFloat(*currentlyRemainingMainChargeValue, valuedPriceToPay.Currency())
 		}
 		return priceDomain.Charge{
@@ -441,7 +440,7 @@ func (p Saleable) generateLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price
 			continue
 		}
 
-		//loyaltyAmountToSpent - set as default without potential wish the minimum
+		// loyaltyAmountToSpent - set as default without potential wish the minimum
 		loyaltyAmountToSpent := loyaltyPrice.getMin(qty)
 
 		// check if the minimum points should be ignored, if so minimum will be set to 0
@@ -450,20 +449,20 @@ func (p Saleable) generateLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price
 		}
 
 		if loyaltyPointsWishedToPay != nil {
-			//if a loyaltyPointsWishedToPay is passed evaluate it within min and max and update loyaltyAmountToSpent:
+			// if a loyaltyPointsWishedToPay is passed evaluate it within min and max and update loyaltyAmountToSpent:
 			wishedPrice := loyaltyPointsWishedToPay.GetByType(chargeType)
 
 			if wishedPrice != nil && wishedPrice.Currency() == loyaltyPrice.GetFinalPrice().Currency() {
 				wishedPriceRounded := wishedPrice.GetPayable()
 
-				//if wish is bigger than min we using the wish
+				// if wish is bigger than min we using the wish
 				if loyaltyAmountToSpent.Cmp(wishedPriceRounded.Amount()) <= 0 {
 					loyaltyAmountToSpent = *wishedPriceRounded.Amount()
 				}
-				//evaluate max
+				// evaluate max
 				max := loyaltyPrice.getMax(qty)
 				if max != nil {
-					//more then max - return max
+					// more then max - return max
 					if max.Cmp(wishedPrice.Amount()) == -1 {
 						loyaltyAmountToSpent = *max
 					}
@@ -477,7 +476,7 @@ func (p Saleable) generateLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price
 			continue
 		}
 
-		//Add the loyalty charge and at the same time reduce the remainingValue
+		// Add the loyalty charge and at the same time reduce the remainingValue
 		remainingMainChargeValue = new(big.Float).Sub(remainingMainChargeValue, loyaltyCharge.Value.Amount())
 		requiredCharges[chargeType] = loyaltyCharge
 	}
@@ -491,7 +490,7 @@ func (p Saleable) generateLoyaltyChargeSplit(valuedPriceToPay *priceDomain.Price
 	return *priceDomain.NewCharges(requiredCharges)
 }
 
-// GetLoyaltyChargeSplit  Gets the Charges that need to be paid by type:
+// GetLoyaltyChargeSplit gets the Charges that need to be paid by type:
 // Type "main" is the remaining charge in the main currency and the other charges returned are the loyalty price charges that need to be paid.
 // The method takes the min, max and the calculated loyalty conversion rate into account
 //
@@ -507,12 +506,12 @@ func (p Saleable) GetLoyaltyChargeSplitIgnoreMin(valuedPriceToPay *priceDomain.P
 	return p.generateLoyaltyChargeSplit(valuedPriceToPay, loyaltyPointsWishedToPay, qty, true)
 }
 
-//getMin - returns minimum points to spend - scaled by qty
+// getMin returns minimum points to spend - scaled by qty
 func (l LoyaltyPriceInfo) getMin(qty int) big.Float {
 	return *new(big.Float).Mul(&l.MinPointsToSpent, big.NewFloat(float64(qty)))
 }
 
-//getMax - returns max points to spend - scaled by qty. If no max set returns nil
+// getMax returns max points to spend - scaled by qty. If no max set returns nil
 func (l LoyaltyPriceInfo) getMax(qty int) *big.Float {
 	if !l.HasMax() {
 		return nil
@@ -542,10 +541,6 @@ func findMediaInProduct(p BasicProduct, group string, usage string) *Media {
 
 // IsInStock returns information if current product whether in stock or not
 func (bpd BasicProductData) IsInStock() bool {
-	if bpd.HasAttribute("alwaysInStock") && bpd.Attributes["alwaysInStock"].Value() == "true" {
-		return true
-	}
-
 	if bpd.StockLevel == "" || bpd.StockLevel == StockLevelOutOfStock {
 		return false
 	}
@@ -553,14 +548,14 @@ func (bpd BasicProductData) IsInStock() bool {
 	return true
 }
 
-//NewWishedToPay - factory to get new WishedToPay struct
+// NewWishedToPay returns a new WishedToPay struct
 func NewWishedToPay() WishedToPay {
 	return WishedToPay{
 		priceByType: make(map[string]priceDomain.Price),
 	}
 }
 
-//Add - returns new WishedToPay instance with the given wish added
+// Add returns new WishedToPay instance with the given wish added
 func (w WishedToPay) Add(ctype string, price priceDomain.Price) WishedToPay {
 	if w.priceByType == nil {
 		w.priceByType = make(map[string]priceDomain.Price)
@@ -569,7 +564,7 @@ func (w WishedToPay) Add(ctype string, price priceDomain.Price) WishedToPay {
 	return w
 }
 
-//GetByType - returns the wihsed price for the given type or nil
+// GetByType returns the wished price for the given type or nil
 func (w WishedToPay) GetByType(ctype string) *priceDomain.Price {
 	if price, ok := w.priceByType[ctype]; ok {
 		return &price
@@ -577,7 +572,7 @@ func (w WishedToPay) GetByType(ctype string) *priceDomain.Price {
 	return nil
 }
 
-//GetRate - get the currency conversion rate of the current loyaltyprice final price - in relation to the passed value
+// GetRate returns the currency conversion rate of the current loyaltyprice final price in relation to the passed value
 func (l LoyaltyPriceInfo) GetRate(valuedPrice priceDomain.Price) big.Float {
 	if !l.GetFinalPrice().IsPositive() {
 		return *big.NewFloat(0)
@@ -585,12 +580,12 @@ func (l LoyaltyPriceInfo) GetRate(valuedPrice priceDomain.Price) big.Float {
 	return *new(big.Float).Quo(valuedPrice.Amount(), l.GetFinalPrice().Amount())
 }
 
-//HasMax - checks if product has a maximum (points to spend) restriction
+// HasMax checks if product has a maximum (points to spend) restriction
 func (l LoyaltyPriceInfo) HasMax() bool {
 	return l.MaxPointsToSpent != nil
 }
 
-//GetFinalPrice - gets either the Default or the Discounted Loyaltyprice
+// GetFinalPrice gets either the Default or the Discounted Loyaltyprice
 func (l LoyaltyPriceInfo) GetFinalPrice() priceDomain.Price {
 	if l.IsDiscounted && l.Discounted.IsLessThen(l.Default) {
 		return l.Discounted
@@ -598,14 +593,14 @@ func (l LoyaltyPriceInfo) GetFinalPrice() priceDomain.Price {
 	return l.Default
 }
 
-//Split - splits the given WishedToPay in payable childs
+// Split splits the given WishedToPay in payable childs
 func (w WishedToPay) Split(count int) []WishedToPay {
-	//init slice
+	// init slice
 	result := make([]WishedToPay, count)
 	for k := range result {
 		result[k] = NewWishedToPay()
 	}
-	//fill slice with splitted
+	// fill slice with splitted
 	for chargeType, v := range w.priceByType {
 		valuesSplitted, _ := v.SplitInPayables(count)
 		for i, splittedValue := range valuesSplitted {
@@ -661,7 +656,7 @@ func (a Attributes) AttributesByKey(keys []string) []Attribute {
 	return res
 }
 
-//CPath returns the constructed Path from this category to the root - splitted by /
+// CPath returns the constructed Path from this category to the root - splitted by /
 func (c *CategoryTeaser) CPath() string {
 	if c.Parent == nil || c.Parent == c {
 		return c.Code

@@ -3,20 +3,6 @@
   "Title": "This should be the best test product",
   "Type": "simple",
   "Attributes": {
-    "alwaysInStock": {
-      "Code": "alwaysInStock",
-      "CodeLabel": "Always In Stock",
-      "Label": "Yes",
-      "RawValue": "true",
-      "UnitCode": ""
-    },
-    "alwaysInStock_codeLabel": {
-      "Code": "alwaysInStock_codeLabel",
-      "CodeLabel": "",
-      "Label": "Always In Stock",
-      "RawValue": "Always In Stock",
-      "UnitCode": ""
-    },
     "loyalty": {
       "Code": "loyalty",
       "CodeLabel": "Loyalty earning",
