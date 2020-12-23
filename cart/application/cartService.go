@@ -271,7 +271,13 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 
 	qtyBefore := item.Qty
 	if qty < 1 {
-		return cs.DeleteItem(ctx, session, itemID, deliveryCode)
+		err := cs.DeleteItem(ctx, session, itemID, deliveryCode)
+		if err != nil {
+			return err
+		}
+		// retrieve cart to update cache in defers
+		cart, err = cs.cartReceiverService.ViewCart(ctx, session)
+		return err
 	}
 
 	product, err := cs.productService.Get(ctx, item.MarketplaceCode)
