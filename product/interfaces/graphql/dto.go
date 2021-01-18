@@ -71,6 +71,15 @@ func (obj *SearchResultDTO) Facets() []searchdto.CommerceSearchFacet {
 	return res
 }
 
+// Promotion returns possible promotion data
+func (obj *SearchResultDTO) Promotion() *searchdomain.Promotion {
+	if len(obj.result.Promotions) > 0 {
+		return &obj.result.Promotions[0]
+	}
+
+	return nil
+}
+
 func mapFacet(facet searchdomain.Facet, logger flamingo.Logger) searchdto.CommerceSearchFacet {
 	switch searchdomain.FacetType(facet.Type) {
 	case searchdomain.ListFacet:

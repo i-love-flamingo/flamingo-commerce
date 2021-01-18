@@ -30,6 +30,7 @@ type (
 		Hits       []Document
 		Suggestion []Suggestion
 		Facets     FacetCollection
+		Promotions []Promotion
 	}
 
 	// SearchMeta data
@@ -100,6 +101,14 @@ type (
 		Text                 string
 		Highlight            string
 		AdditionalAttributes map[string]string
+	}
+
+	// Promotion result during search
+	Promotion struct {
+		Title   string
+		Content string
+		URL     string
+		// Media []string
 	}
 
 	// Document holds a search result document

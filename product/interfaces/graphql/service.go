@@ -3,6 +3,7 @@ package graphql
 import (
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	graphqlProductDto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
+	searchDomain "flamingo.me/flamingo-commerce/v3/search/domain"
 	"flamingo.me/graphql"
 )
 
@@ -48,6 +49,7 @@ func (*Service) Types(types *graphql.Types) {
 	types.Map("Commerce_Product_SearchResult", SearchResultDTO{})
 	types.Map("Commerce_Product_Badges", graphqlProductDto.ProductBadges{})
 	types.Map("Commerce_Product_Badge", domain.Badge{})
+	types.Map("Commerce_Product_SearchPromotion", searchDomain.Promotion{})
 
 	types.Resolve("Query", "Commerce_Product", CommerceProductQueryResolver{}, "CommerceProduct")
 	types.Resolve("Query", "Commerce_Product_Search", CommerceProductQueryResolver{}, "CommerceProductSearch")

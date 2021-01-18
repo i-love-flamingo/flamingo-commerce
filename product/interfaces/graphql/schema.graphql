@@ -215,12 +215,25 @@ type Commerce_Product_PriceInfo {
     taxClass: String!
 }
 
+#type Commerce_Product_SearchPromotionMedia {
+#  getSignedUrl(size: Int!): String!
+#  title: String!
+#}
+
+type Commerce_Product_SearchPromotion {
+    title: String!
+    content: String!
+    url: String!
+    #  media: Commerce_Product_SearchPromotionMedia!
+}
+
 type Commerce_Product_SearchResult {
     products: [Commerce_Product!]
     facets: [Commerce_Search_Facet!]!
     suggestions: [Commerce_Search_Suggestion!]
     searchMeta: Commerce_Search_Meta!
     hasSelectedFacet: Boolean!
+    promotion: Commerce_Product_SearchPromotion
 }
 
 type Commerce_Product_Badges {
