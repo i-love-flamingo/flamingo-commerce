@@ -72,9 +72,9 @@ func (obj *SearchResultDTO) Facets() []searchdto.CommerceSearchFacet {
 }
 
 // Promotion returns possible promotion data
-func (obj *SearchResultDTO) Promotion() *searchdomain.Promotion {
+func (obj *SearchResultDTO) Promotion() *searchdto.PromotionDTO {
 	if len(obj.result.Promotions) > 0 {
-		return &obj.result.Promotions[0]
+		return searchdto.WrapPromotion(&obj.result.Promotions[0])
 	}
 
 	return nil

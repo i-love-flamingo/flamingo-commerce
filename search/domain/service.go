@@ -105,10 +105,20 @@ type (
 
 	// Promotion result during search
 	Promotion struct {
-		Title   string
-		Content string
-		URL     string
-		// Media []string
+		Title                string
+		Content              string
+		URL                  string
+		Media                []Media
+		AdditionalAttributes map[string]interface{}
+	}
+
+	// Media contains promotion media data
+	Media struct {
+		Type      string
+		MimeType  string
+		Usage     string
+		Title     string
+		Reference string
 	}
 
 	// Document holds a search result document
