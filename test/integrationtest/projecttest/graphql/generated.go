@@ -782,6 +782,7 @@ type ComplexityRoot struct {
 		Facets           func(childComplexity int) int
 		HasSelectedFacet func(childComplexity int) int
 		Products         func(childComplexity int) int
+		Promotion        func(childComplexity int) int
 		SearchMeta       func(childComplexity int) int
 		Suggestions      func(childComplexity int) int
 	}
@@ -840,6 +841,21 @@ type ComplexityRoot struct {
 		Page          func(childComplexity int) int
 		Query         func(childComplexity int) int
 		SortOptions   func(childComplexity int) int
+	}
+
+	CommerceSearchPromotion struct {
+		Content func(childComplexity int) int
+		Media   func(childComplexity int) int
+		Title   func(childComplexity int) int
+		URL     func(childComplexity int) int
+	}
+
+	CommerceSearchPromotionMedia struct {
+		MimeType  func(childComplexity int) int
+		Reference func(childComplexity int) int
+		Title     func(childComplexity int) int
+		Type      func(childComplexity int) int
+		Usage     func(childComplexity int) int
 	}
 
 	CommerceSearchRangeFacet struct {
@@ -921,7 +937,7 @@ type ComplexityRoot struct {
 		CommerceCustomer                 func(childComplexity int) int
 		CommerceCustomerStatus           func(childComplexity int) int
 		CommerceProduct                  func(childComplexity int, marketPlaceCode string, variantMarketPlaceCode *string) int
-		CommerceProductSearch            func(childComplexity int, searchRequest *searchdto.CommerceSearchRequest) int
+		CommerceProductSearch            func(childComplexity int, searchRequest searchdto.CommerceSearchRequest) int
 		Flamingo                         func(childComplexity int) int
 	}
 }
@@ -964,7 +980,7 @@ type MutationResolver interface {
 type QueryResolver interface {
 	Flamingo(ctx context.Context) (*string, error)
 	CommerceProduct(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode *string) (graphqlproductdto.Product, error)
-	CommerceProductSearch(ctx context.Context, searchRequest *searchdto.CommerceSearchRequest) (*graphql1.SearchResultDTO, error)
+	CommerceProductSearch(ctx context.Context, searchRequest searchdto.CommerceSearchRequest) (*graphql1.SearchResultDTO, error)
 	CommerceCustomerStatus(ctx context.Context) (*dtocustomer.CustomerStatusResult, error)
 	CommerceCustomer(ctx context.Context) (*dtocustomer.CustomerResult, error)
 	CommerceCart(ctx context.Context) (*dto.DecoratedCart, error)
@@ -4145,6 +4161,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceProductSearchResult.Products(childComplexity), true
 
+	case "Commerce_Product_SearchResult.promotion":
+		if e.complexity.CommerceProductSearchResult.Promotion == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductSearchResult.Promotion(childComplexity), true
+
 	case "Commerce_Product_SearchResult.searchMeta":
 		if e.complexity.CommerceProductSearchResult.SearchMeta == nil {
 			break
@@ -4403,6 +4426,69 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceSearchMeta.SortOptions(childComplexity), true
+
+	case "Commerce_Search_Promotion.content":
+		if e.complexity.CommerceSearchPromotion.Content == nil {
+			break
+		}
+
+		return e.complexity.CommerceSearchPromotion.Content(childComplexity), true
+
+	case "Commerce_Search_Promotion.media":
+		if e.complexity.CommerceSearchPromotion.Media == nil {
+			break
+		}
+
+		return e.complexity.CommerceSearchPromotion.Media(childComplexity), true
+
+	case "Commerce_Search_Promotion.title":
+		if e.complexity.CommerceSearchPromotion.Title == nil {
+			break
+		}
+
+		return e.complexity.CommerceSearchPromotion.Title(childComplexity), true
+
+	case "Commerce_Search_Promotion.url":
+		if e.complexity.CommerceSearchPromotion.URL == nil {
+			break
+		}
+
+		return e.complexity.CommerceSearchPromotion.URL(childComplexity), true
+
+	case "Commerce_Search_PromotionMedia.mimeType":
+		if e.complexity.CommerceSearchPromotionMedia.MimeType == nil {
+			break
+		}
+
+		return e.complexity.CommerceSearchPromotionMedia.MimeType(childComplexity), true
+
+	case "Commerce_Search_PromotionMedia.reference":
+		if e.complexity.CommerceSearchPromotionMedia.Reference == nil {
+			break
+		}
+
+		return e.complexity.CommerceSearchPromotionMedia.Reference(childComplexity), true
+
+	case "Commerce_Search_PromotionMedia.title":
+		if e.complexity.CommerceSearchPromotionMedia.Title == nil {
+			break
+		}
+
+		return e.complexity.CommerceSearchPromotionMedia.Title(childComplexity), true
+
+	case "Commerce_Search_PromotionMedia.type":
+		if e.complexity.CommerceSearchPromotionMedia.Type == nil {
+			break
+		}
+
+		return e.complexity.CommerceSearchPromotionMedia.Type(childComplexity), true
+
+	case "Commerce_Search_PromotionMedia.usage":
+		if e.complexity.CommerceSearchPromotionMedia.Usage == nil {
+			break
+		}
+
+		return e.complexity.CommerceSearchPromotionMedia.Usage(childComplexity), true
 
 	case "Commerce_Search_RangeFacet.hasSelectedItem":
 		if e.complexity.CommerceSearchRangeFacet.HasSelectedItem == nil {
@@ -4893,7 +4979,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.CommerceProductSearch(childComplexity, args["searchRequest"].(*searchdto.CommerceSearchRequest)), true
+		return e.complexity.Query.CommerceProductSearch(childComplexity, args["searchRequest"].(searchdto.CommerceSearchRequest)), true
 
 	case "Query.flamingo":
 		if e.complexity.Query.Flamingo == nil {
@@ -5101,6 +5187,21 @@ type Commerce_Search_RangeFacetItem implements Commerce_Search_FacetItem {
 type Commerce_Search_Suggestion {
     text:      String!
     highlight: String!
+}
+
+type Commerce_Search_Promotion {
+    title: String!
+    content: String!
+    url: String!
+    media: Commerce_Search_PromotionMedia
+}
+
+type Commerce_Search_PromotionMedia {
+    type:      String!
+    mimeType:  String!
+    usage:     String!
+    title:     String!
+    reference: String!
 }
 
 #type Commerce_Search_Result {
@@ -5333,12 +5434,14 @@ type Commerce_Product_PriceInfo {
     taxClass: String!
 }
 
+
 type Commerce_Product_SearchResult {
     products: [Commerce_Product!]
     facets: [Commerce_Search_Facet!]!
     suggestions: [Commerce_Search_Suggestion!]
     searchMeta: Commerce_Search_Meta!
     hasSelectedFacet: Boolean!
+    promotion: Commerce_Search_Promotion
 }
 
 type Commerce_Product_Badges {
@@ -5353,7 +5456,7 @@ type Commerce_Product_Badge {
 
 extend type Query {
     Commerce_Product(marketPlaceCode: String!, variantMarketPlaceCode: String): Commerce_Product
-    Commerce_Product_Search(searchRequest: Commerce_Search_Request): Commerce_Product_SearchResult!
+    Commerce_Product_Search(searchRequest: Commerce_Search_Request!): Commerce_Product_SearchResult!
 }
 `, BuiltIn: false},
 	{Name: "graphql/schema/flamingo.me_flamingo-commerce_v3_customer_interfaces_graphql-Service.graphql", Input: `type Commerce_Customer_Status_Result {
@@ -6854,10 +6957,10 @@ func (ec *executionContext) field_Query_Commerce_Category_args(ctx context.Conte
 func (ec *executionContext) field_Query_Commerce_Product_Search_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *searchdto.CommerceSearchRequest
+	var arg0 searchdto.CommerceSearchRequest
 	if tmp, ok := rawArgs["searchRequest"]; ok {
 		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("searchRequest"))
-		arg0, err = ec.unmarshalOCommerce_Search_Request2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRequest(ctx, tmp)
+		arg0, err = ec.unmarshalNCommerce_Search_Request2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRequest(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -20246,6 +20349,34 @@ func (ec *executionContext) _Commerce_Product_SearchResult_hasSelectedFacet(ctx 
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_Product_SearchResult_promotion(ctx context.Context, field graphql.CollectedField, obj *graphql1.SearchResultDTO) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Product_SearchResult",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Promotion(), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*searchdto.PromotionDTO)
+	fc.Result = res
+	return ec.marshalOCommerce_Search_Promotion2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐPromotionDTO(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_Product_SimpleProduct_type(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -21323,6 +21454,282 @@ func (ec *executionContext) _Commerce_Search_Meta_sortOptions(ctx context.Contex
 	res := resTmp.([]*searchdto.CommerceSearchSortOption)
 	fc.Result = res
 	return ec.marshalOCommerce_Search_SortOption2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchSortOptionᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Search_Promotion_title(ctx context.Context, field graphql.CollectedField, obj *searchdto.PromotionDTO) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Search_Promotion",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Title(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Search_Promotion_content(ctx context.Context, field graphql.CollectedField, obj *searchdto.PromotionDTO) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Search_Promotion",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Content(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Search_Promotion_url(ctx context.Context, field graphql.CollectedField, obj *searchdto.PromotionDTO) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Search_Promotion",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.URL(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Search_Promotion_media(ctx context.Context, field graphql.CollectedField, obj *searchdto.PromotionDTO) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Search_Promotion",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Media(), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*domain1.Media)
+	fc.Result = res
+	return ec.marshalOCommerce_Search_PromotionMedia2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐMedia(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Search_PromotionMedia_type(ctx context.Context, field graphql.CollectedField, obj *domain1.Media) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Search_PromotionMedia",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Search_PromotionMedia_mimeType(ctx context.Context, field graphql.CollectedField, obj *domain1.Media) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Search_PromotionMedia",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MimeType, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Search_PromotionMedia_usage(ctx context.Context, field graphql.CollectedField, obj *domain1.Media) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Search_PromotionMedia",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Usage, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Search_PromotionMedia_title(ctx context.Context, field graphql.CollectedField, obj *domain1.Media) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Search_PromotionMedia",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Title, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Search_PromotionMedia_reference(ctx context.Context, field graphql.CollectedField, obj *domain1.Media) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Search_PromotionMedia",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Reference, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Search_RangeFacet_name(ctx context.Context, field graphql.CollectedField, obj *searchdto.CommerceSearchRangeFacet) (ret graphql.Marshaler) {
@@ -22938,7 +23345,7 @@ func (ec *executionContext) _Query_Commerce_Product_Search(ctx context.Context, 
 	fc.Args = args
 	resTmp := ec._fieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().CommerceProductSearch(rctx, args["searchRequest"].(*searchdto.CommerceSearchRequest))
+		return ec.resolvers.Query().CommerceProductSearch(rctx, args["searchRequest"].(searchdto.CommerceSearchRequest))
 	})
 
 	if resTmp == nil {
@@ -28731,6 +29138,8 @@ func (ec *executionContext) _Commerce_Product_SearchResult(ctx context.Context, 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "promotion":
+			out.Values[i] = ec._Commerce_Product_SearchResult_promotion(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -29063,6 +29472,92 @@ func (ec *executionContext) _Commerce_Search_Meta(ctx context.Context, sel ast.S
 				res = ec._Commerce_Search_Meta_sortOptions(ctx, field, obj)
 				return res
 			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Search_PromotionImplementors = []string{"Commerce_Search_Promotion"}
+
+func (ec *executionContext) _Commerce_Search_Promotion(ctx context.Context, sel ast.SelectionSet, obj *searchdto.PromotionDTO) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_PromotionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Search_Promotion")
+		case "title":
+			out.Values[i] = ec._Commerce_Search_Promotion_title(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "content":
+			out.Values[i] = ec._Commerce_Search_Promotion_content(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "url":
+			out.Values[i] = ec._Commerce_Search_Promotion_url(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "media":
+			out.Values[i] = ec._Commerce_Search_Promotion_media(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Search_PromotionMediaImplementors = []string{"Commerce_Search_PromotionMedia"}
+
+func (ec *executionContext) _Commerce_Search_PromotionMedia(ctx context.Context, sel ast.SelectionSet, obj *domain1.Media) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_PromotionMediaImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Search_PromotionMedia")
+		case "type":
+			out.Values[i] = ec._Commerce_Search_PromotionMedia_type(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "mimeType":
+			out.Values[i] = ec._Commerce_Search_PromotionMedia_mimeType(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "usage":
+			out.Values[i] = ec._Commerce_Search_PromotionMedia_usage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "title":
+			out.Values[i] = ec._Commerce_Search_PromotionMedia_title(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "reference":
+			out.Values[i] = ec._Commerce_Search_PromotionMedia_reference(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -30593,6 +31088,11 @@ func (ec *executionContext) marshalNCommerce_Search_RangeFacetItem2ᚖflamingo�
 		return graphql.Null
 	}
 	return ec._Commerce_Search_RangeFacetItem(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNCommerce_Search_Request2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRequest(ctx context.Context, v interface{}) (searchdto.CommerceSearchRequest, error) {
+	res, err := ec.unmarshalInputCommerce_Search_Request(ctx, v)
+	return res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNCommerce_Search_SortOption2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchSortOption(ctx context.Context, sel ast.SelectionSet, v searchdto.CommerceSearchSortOption) graphql.Marshaler {
@@ -32548,6 +33048,28 @@ func (ec *executionContext) unmarshalOCommerce_Search_KeyValueFilter2ᚕflamingo
 		}
 	}
 	return res, nil
+}
+
+func (ec *executionContext) marshalOCommerce_Search_Promotion2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐPromotionDTO(ctx context.Context, sel ast.SelectionSet, v searchdto.PromotionDTO) graphql.Marshaler {
+	return ec._Commerce_Search_Promotion(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOCommerce_Search_Promotion2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐPromotionDTO(ctx context.Context, sel ast.SelectionSet, v *searchdto.PromotionDTO) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Commerce_Search_Promotion(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOCommerce_Search_PromotionMedia2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐMedia(ctx context.Context, sel ast.SelectionSet, v domain1.Media) graphql.Marshaler {
+	return ec._Commerce_Search_PromotionMedia(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOCommerce_Search_PromotionMedia2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐMedia(ctx context.Context, sel ast.SelectionSet, v *domain1.Media) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Commerce_Search_PromotionMedia(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOCommerce_Search_Request2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRequest(ctx context.Context, v interface{}) (searchdto.CommerceSearchRequest, error) {

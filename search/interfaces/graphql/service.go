@@ -36,4 +36,6 @@ func (*Service) Types(types *graphql.Types) {
 	types.Map("Commerce_Search_ListFacetItem", searchdto.CommerceSearchListFacetItem{})
 	types.Map("Commerce_Search_TreeFacetItem", searchdto.CommerceSearchTreeFacetItem{})
 	types.Map("Commerce_Search_RangeFacetItem", searchdto.CommerceSearchRangeFacetItem{})
+	types.Map("Commerce_Search_Promotion", searchdto.PromotionDTO{})
+	types.Map("Commerce_Search_PromotionMedia", domain.Media{})
 }
