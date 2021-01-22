@@ -128,5 +128,6 @@ func (s *ProductSearchService) FindBy(ctx context.Context, attributeCode string,
 		Suggestions:    result.Suggestion,
 		Products:       result.Hits,
 		PaginationInfo: paginationInfo,
+		Promotions:     result.Result.Promotions,
 	}, nil
 }
