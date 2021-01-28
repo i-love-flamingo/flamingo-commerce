@@ -28,6 +28,7 @@ type (
 		SearchMeta     searchdomain.SearchMeta
 		Facets         searchdomain.FacetCollection
 		PaginationInfo utils.PaginationInfo
+		Promotions     []searchdomain.Promotion
 	}
 )
 
@@ -77,6 +78,7 @@ func (s *ProductSearchService) Find(ctx context.Context, searchRequest *applicat
 		Suggestions:    result.Suggestion,
 		Products:       result.Hits,
 		PaginationInfo: paginationInfo,
+		Promotions:     result.Promotions,
 	}, nil
 }
 
@@ -126,5 +128,6 @@ func (s *ProductSearchService) FindBy(ctx context.Context, attributeCode string,
 		Suggestions:    result.Suggestion,
 		Products:       result.Hits,
 		PaginationInfo: paginationInfo,
+		Promotions:     result.Result.Promotions,
 	}, nil
 }

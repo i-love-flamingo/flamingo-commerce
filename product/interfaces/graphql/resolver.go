@@ -39,7 +39,7 @@ func (r *CommerceProductQueryResolver) CommerceProduct(ctx context.Context, mark
 }
 
 // CommerceProductSearch returns a search result of products based on the given search request
-func (r *CommerceProductQueryResolver) CommerceProductSearch(ctx context.Context, request *searchdto.CommerceSearchRequest) (*SearchResultDTO, error) {
+func (r *CommerceProductQueryResolver) CommerceProductSearch(ctx context.Context, request searchdto.CommerceSearchRequest) (*SearchResultDTO, error) {
 
 	var filters []searchDomain.Filter
 	for _, filter := range request.KeyValueFilters {

@@ -101,6 +101,21 @@ type Commerce_Search_Suggestion {
     highlight: String!
 }
 
+type Commerce_Search_Promotion {
+    title: String!
+    content: String!
+    url: String!
+    media: Commerce_Search_PromotionMedia
+}
+
+type Commerce_Search_PromotionMedia {
+    type:      String!
+    mimeType:  String!
+    usage:     String!
+    title:     String!
+    reference: String!
+}
+
 #type Commerce_Search_Result {
 #    hits: []Commerce_Search_Document  / Or maybe we dont need hits and the modules need to add a edge to this object... we will see
 #    searchMeta:     Commerce_Search_Meta!

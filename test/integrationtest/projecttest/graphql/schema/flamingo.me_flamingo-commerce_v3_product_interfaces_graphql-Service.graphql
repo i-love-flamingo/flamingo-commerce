@@ -215,12 +215,14 @@ type Commerce_Product_PriceInfo {
     taxClass: String!
 }
 
+
 type Commerce_Product_SearchResult {
     products: [Commerce_Product!]
     facets: [Commerce_Search_Facet!]!
     suggestions: [Commerce_Search_Suggestion!]
     searchMeta: Commerce_Search_Meta!
     hasSelectedFacet: Boolean!
+    promotion: Commerce_Search_Promotion
 }
 
 type Commerce_Product_Badges {
@@ -235,5 +237,5 @@ type Commerce_Product_Badge {
 
 extend type Query {
     Commerce_Product(marketPlaceCode: String!, variantMarketPlaceCode: String): Commerce_Product
-    Commerce_Product_Search(searchRequest: Commerce_Search_Request): Commerce_Product_SearchResult!
+    Commerce_Product_Search(searchRequest: Commerce_Search_Request!): Commerce_Product_SearchResult!
 }
