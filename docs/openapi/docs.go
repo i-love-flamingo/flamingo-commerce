@@ -788,12 +788,6 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/controller.startPlaceOrderResult"
-                        }
-                    },
                     "201": {
                         "description": "201 if new process was started",
                         "schema": {
@@ -1727,11 +1721,11 @@ var doc = `{
             "type": "object",
             "properties": {
                 "Code": {
-                    "description": "Code the idendifier of the Category",
+                    "description": "Code the identifier of the Category",
                     "type": "string"
                 },
                 "Name": {
-                    "description": "Name - speaking name of the category",
+                    "description": "Name is the speaking name of the category",
                     "type": "string"
                 },
                 "Path": {
@@ -1844,7 +1838,7 @@ var doc = `{
                     "type": "string"
                 },
                 "Type": {
-                    "description": "Type - Name( or Type) of the Loyalty program",
+                    "description": "Type or Name of the Loyalty program",
                     "type": "string"
                 }
             }
@@ -1982,14 +1976,14 @@ var doc = `{
                     }
                 },
                 "LoyaltyEarnings": {
-                    "description": "LoyaltyEarnings optional infos about potential loyalty earnings",
+                    "description": "LoyaltyEarnings jolds optional infos about potential loyalty earnings",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/domain.LoyaltyEarningInfo"
                     }
                 },
                 "LoyaltyPrices": {
-                    "description": "LoyaltyPrices - Optional infos for products that can be paid in a loyalty program",
+                    "description": "LoyaltyPrices holds optional infos for products that can be paid in a loyalty program",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/domain.LoyaltyPriceInfo"
@@ -2067,7 +2061,7 @@ var doc = `{
                     }
                 },
                 "PreSelectedVariantSku": {
-                    "description": "PreSelectedVariantSku - might be set for configurables to give a hint to link to a variant of a configurable (That might be the case if a user filters for an attribute and in the teaser the variant with that attribute is shown)",
+                    "description": "PreSelectedVariantSku might be set for configurables to give a hint to link to a variant of a configurable (That might be the case if a user filters for an attribute and in the teaser the variant with that attribute is shown)",
                     "type": "string"
                 },
                 "ShortDescription": {
@@ -2083,11 +2077,11 @@ var doc = `{
                     }
                 },
                 "TeaserLoyaltyEarningInfo": {
-                    "description": "TeaserLoyaltyEarning optional teaser for the loyalty earning used in grid / list view",
+                    "description": "TeaserLoyaltyEarning is the teaser for the loyalty earning used in grid / list view",
                     "$ref": "#/definitions/domain.LoyaltyEarningInfo"
                 },
                 "TeaserLoyaltyPriceInfo": {
-                    "description": "TeaserLoyaltyPriceInfo - optional the Loyaltyprice that can be used for teaser (e.g. on listing views)",
+                    "description": "TeaserLoyaltyPriceInfo is the loyalty price that can be used for teaser (e.g. on listing views)",
                     "$ref": "#/definitions/domain.LoyaltyPriceInfo"
                 },
                 "TeaserPrice": {
@@ -2095,7 +2089,7 @@ var doc = `{
                     "$ref": "#/definitions/domain.PriceInfo"
                 },
                 "TeaserPriceIsFromPrice": {
-                    "description": "TeaserPriceIsFromPrice - is set to true in cases where a product might have different prices (e.g. configurable)",
+                    "description": "TeaserPriceIsFromPrice is set to true in cases where a product might have different prices (e.g. configurable)",
                     "type": "boolean"
                 },
                 "URLSlug": {

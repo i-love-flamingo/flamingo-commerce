@@ -493,10 +493,10 @@ definitions:
   domain.CategoryTeaser:
     properties:
       Code:
-        description: Code the idendifier of the Category
+        description: Code the identifier of the Category
         type: string
       Name:
-        description: Name - speaking name of the category
+        description: Name is the speaking name of the category
         type: string
       Path:
         description: The Path (root to leaf) for this Category - separated by "/"
@@ -572,7 +572,7 @@ definitions:
       MinPointsToSpent:
         type: string
       Type:
-        description: Type - Name( or Type) of the Loyalty program
+        description: Type or Name of the Loyalty program
         type: string
     type: object
   domain.PaymentRequestAPI:
@@ -663,12 +663,12 @@ definitions:
           type: string
         type: array
       LoyaltyEarnings:
-        description: LoyaltyEarnings optional infos about potential loyalty earnings
+        description: LoyaltyEarnings jolds optional infos about potential loyalty earnings
         items:
           $ref: '#/definitions/domain.LoyaltyEarningInfo'
         type: array
       LoyaltyPrices:
-        description: LoyaltyPrices - Optional infos for products that can be paid in a loyalty program
+        description: LoyaltyPrices holds optional infos for products that can be paid in a loyalty program
         items:
           $ref: '#/definitions/domain.LoyaltyPriceInfo'
         type: array
@@ -721,7 +721,7 @@ definitions:
           $ref: '#/definitions/ProductMedia'
         type: array
       PreSelectedVariantSku:
-        description: PreSelectedVariantSku - might be set for configurables to give a hint to link to a variant of a configurable (That might be the case if a user filters for an attribute and in the teaser the variant with that attribute is shown)
+        description: PreSelectedVariantSku might be set for configurables to give a hint to link to a variant of a configurable (That might be the case if a user filters for an attribute and in the teaser the variant with that attribute is shown)
         type: string
       ShortDescription:
         type: string
@@ -733,15 +733,15 @@ definitions:
         type: array
       TeaserLoyaltyEarningInfo:
         $ref: '#/definitions/domain.LoyaltyEarningInfo'
-        description: TeaserLoyaltyEarning optional teaser for the loyalty earning used in grid / list view
+        description: TeaserLoyaltyEarning is the teaser for the loyalty earning used in grid / list view
       TeaserLoyaltyPriceInfo:
         $ref: '#/definitions/domain.LoyaltyPriceInfo'
-        description: TeaserLoyaltyPriceInfo - optional the Loyaltyprice that can be used for teaser (e.g. on listing views)
+        description: TeaserLoyaltyPriceInfo is the loyalty price that can be used for teaser (e.g. on listing views)
       TeaserPrice:
         $ref: '#/definitions/domain.PriceInfo'
         description: TeaserPrice is the price that should be shown in teasers (listview)
       TeaserPriceIsFromPrice:
-        description: TeaserPriceIsFromPrice - is set to true in cases where a product might have different prices (e.g. configurable)
+        description: TeaserPriceIsFromPrice is set to true in cases where a product might have different prices (e.g. configurable)
         type: boolean
       URLSlug:
         type: string
@@ -1326,10 +1326,6 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.startPlaceOrderResult'
         "201":
           description: 201 if new process was started
           schema:
