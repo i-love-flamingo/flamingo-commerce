@@ -106,9 +106,9 @@ func (cc *CartAPIController) GetAction(ctx context.Context, r *web.Request) web.
 // @Produce json
 // @Success 200 {object} CartAPIResult{data=cart.Cart}
 // @Failure 500 {object} CartAPIResult
-// @Param deliveryCode path string true "the idendifier for the delivery in the cart"
-// @Param marketplaceCode query string true "the product idendifier that should be added"
-// @Param variantMarketplaceCode query string false "optional the product idendifier of the variant (for configurable products) that should be added"
+// @Param deliveryCode path string true "the identifier for the delivery in the cart"
+// @Param marketplaceCode query string true "the product identifier that should be added"
+// @Param variantMarketplaceCode query string false "optional the product identifier of the variant (for configurable products) that should be added"
 // @Param qty query integer false "optional the qty that should be added"
 // @Router /api/v1/cart/delivery/{deliveryCode}/additem [post]
 func (cc *CartAPIController) AddAction(ctx context.Context, r *web.Request) web.Result {
@@ -189,7 +189,7 @@ func (cc *CartAPIController) DeleteCartAction(ctx context.Context, r *web.Reques
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
-// @Param couponCode query string true "the couponCode that should be applied as giftcart"
+// @Param couponCode query string true "the gift card code"
 // @Router /api/v1/cart/applygiftcard [post]
 // @Router /api/v1/cart/applygiftcard [put]
 func (cc *CartAPIController) ApplyGiftCardAndGetAction(ctx context.Context, r *web.Request) web.Result {
@@ -198,13 +198,13 @@ func (cc *CartAPIController) ApplyGiftCardAndGetAction(ctx context.Context, r *w
 
 // ApplyCombinedVoucherGift applies a given code (which might be either a voucher or a Gift Card code) to the
 // cartService and returns the cart
-// @Summary Apply Gift Card or Voucher (autodetected)
+// @Summary Apply Gift Card or Voucher (auto detected)
 // @Description Use this if you have one user input and that input can be used to either enter a voucher or a gift card
 // @Tags v1 Cart ajax API
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
-// @Param couponCode query string true "the couponCode that should be applied as giftcart or voucher"
+// @Param couponCode query string true "the couponCode that should be applied as gift card or voucher"
 // @Router /api/v1/cart/applycombinedvouchergift [post]
 func (cc *CartAPIController) ApplyCombinedVoucherGift(ctx context.Context, r *web.Request) web.Result {
 	return cc.handlePromotionAction(ctx, r, "applyany_error", cc.cartService.ApplyAny)
@@ -246,7 +246,7 @@ func (cc *CartAPIController) handlePromotionAction(ctx context.Context, r *web.R
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
-// @Param deliveryCode path string true "the idendifier for the delivery in the cart"
+// @Param deliveryCode path string true "the identifier for the delivery in the cart"
 // @Router /api/v1/cart/delivery/{deliveryCode} [delete]
 func (cc *CartAPIController) DeleteDelivery(ctx context.Context, r *web.Request) web.Result {
 	result := newResult()
@@ -313,7 +313,7 @@ func (cc *CartAPIController) BillingAction(ctx context.Context, r *web.Request) 
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
-// @Param deliveryCode path string true "the idendifier for the delivery in the cart"
+// @Param deliveryCode path string true "the identifier for the delivery in the cart"
 // @Param deliveryAddress.vat formData string false "vat"
 // @Param deliveryAddress.firstname formData string true "firstname"
 // @Param deliveryAddress.lastname formData string true "lastname"
