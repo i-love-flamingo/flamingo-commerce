@@ -493,10 +493,10 @@ definitions:
   domain.CategoryTeaser:
     properties:
       Code:
-        description: Code the idendifier of the Category
+        description: Code the identifier of the Category
         type: string
       Name:
-        description: Name - speaking name of the category
+        description: Name is the speaking name of the category
         type: string
       Path:
         description: The Path (root to leaf) for this Category - separated by "/"
@@ -572,7 +572,7 @@ definitions:
       MinPointsToSpent:
         type: string
       Type:
-        description: Type - Name( or Type) of the Loyalty program
+        description: Type or Name of the Loyalty program
         type: string
     type: object
   domain.PaymentRequestAPI:
@@ -663,12 +663,12 @@ definitions:
           type: string
         type: array
       LoyaltyEarnings:
-        description: LoyaltyEarnings optional infos about potential loyalty earnings
+        description: LoyaltyEarnings jolds optional infos about potential loyalty earnings
         items:
           $ref: '#/definitions/domain.LoyaltyEarningInfo'
         type: array
       LoyaltyPrices:
-        description: LoyaltyPrices - Optional infos for products that can be paid in a loyalty program
+        description: LoyaltyPrices holds optional infos for products that can be paid in a loyalty program
         items:
           $ref: '#/definitions/domain.LoyaltyPriceInfo'
         type: array
@@ -721,7 +721,7 @@ definitions:
           $ref: '#/definitions/ProductMedia'
         type: array
       PreSelectedVariantSku:
-        description: PreSelectedVariantSku - might be set for configurables to give a hint to link to a variant of a configurable (That might be the case if a user filters for an attribute and in the teaser the variant with that attribute is shown)
+        description: PreSelectedVariantSku might be set for configurables to give a hint to link to a variant of a configurable (That might be the case if a user filters for an attribute and in the teaser the variant with that attribute is shown)
         type: string
       ShortDescription:
         type: string
@@ -733,15 +733,15 @@ definitions:
         type: array
       TeaserLoyaltyEarningInfo:
         $ref: '#/definitions/domain.LoyaltyEarningInfo'
-        description: TeaserLoyaltyEarning optional teaser for the loyalty earning used in grid / list view
+        description: TeaserLoyaltyEarning is the teaser for the loyalty earning used in grid / list view
       TeaserLoyaltyPriceInfo:
         $ref: '#/definitions/domain.LoyaltyPriceInfo'
-        description: TeaserLoyaltyPriceInfo - optional the Loyaltyprice that can be used for teaser (e.g. on listing views)
+        description: TeaserLoyaltyPriceInfo is the loyalty price that can be used for teaser (e.g. on listing views)
       TeaserPrice:
         $ref: '#/definitions/domain.PriceInfo'
         description: TeaserPrice is the price that should be shown in teasers (listview)
       TeaserPriceIsFromPrice:
-        description: TeaserPriceIsFromPrice - is set to true in cases where a product might have different prices (e.g. configurable)
+        description: TeaserPriceIsFromPrice is set to true in cases where a product might have different prices (e.g. configurable)
         type: boolean
       URLSlug:
         type: string
@@ -847,75 +847,8 @@ paths:
       summary: Get the current cart
       tags:
       - v1 Cart ajax API
-  /api/v1/cart/applycombinedvouchergift:
-    post:
-      description: Use this if you have one user input and that input can be used to either enter a voucher or a gift card
-      parameters:
-      - description: the couponCode that should be applied as giftcart or voucher
-        in: query
-        name: couponCode
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.CartAPIResult'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/controller.CartAPIResult'
-      summary: Apply Gift Card or Voucher (autodetected)
-      tags:
-      - v1 Cart ajax API
-  /api/v1/cart/applygiftcard:
-    put:
-      parameters:
-      - description: the couponCode that should be applied as giftcart
-        in: query
-        name: couponCode
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.CartAPIResult'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/controller.CartAPIResult'
-      summary: Apply Gift Card
-      tags:
-      - v1 Cart ajax API
-  /api/v1/cart/applyvoucher:
-    put:
-      parameters:
-      - description: the couponCode that should be applied
-        in: query
-        name: couponCode
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.CartAPIResult'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/controller.CartAPIResult'
-      summary: Apply Voucher Code
-      tags:
-      - v1 Cart ajax API
   /api/v1/cart/billing:
-    post:
+    put:
       consumes:
       - application/x-www-form-urlencoded
       parameters:
@@ -1023,7 +956,7 @@ paths:
   /api/v1/cart/delivery/{deliveryCode}:
     delete:
       parameters:
-      - description: the idendifier for the delivery in the cart
+      - description: the identifier for the delivery in the cart
         in: path
         name: deliveryCode
         required: true
@@ -1042,52 +975,11 @@ paths:
       summary: Cleans the given delivery from the cart
       tags:
       - v1 Cart ajax API
-  /api/v1/cart/delivery/{deliveryCode}/additem:
-    post:
-      parameters:
-      - description: the idendifier for the delivery in the cart
-        in: path
-        name: deliveryCode
-        required: true
-        type: string
-      - description: the product idendifier that should be added
-        in: query
-        name: marketplaceCode
-        required: true
-        type: string
-      - description: optional the product idendifier of the variant (for configurable products) that should be added
-        in: query
-        name: variantMarketplaceCode
-        type: string
-      - description: optional the qty that should be added
-        in: query
-        name: qty
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/controller.CartAPIResult'
-            - properties:
-                data:
-                  $ref: '#/definitions/cart.Cart'
-              type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/controller.CartAPIResult'
-      summary: Add Item to cart
-      tags:
-      - v1 Cart ajax API
-  /api/v1/cart/delivery/{deliveryCode}/deliveryinfo:
-    post:
+    put:
       consumes:
       - application/x-www-form-urlencoded
       parameters:
-      - description: the idendifier for the delivery in the cart
+      - description: the identifier for the delivery in the cart
         in: path
         name: deliveryCode
         required: true
@@ -1214,8 +1106,115 @@ paths:
       summary: Adds delivery infos, such as shipping address to the delivery for the cart
       tags:
       - v1 Cart ajax API
-  /api/v1/cart/removegiftcard:
+  /api/v1/cart/delivery/{deliveryCode}/item:
+    delete:
+      parameters:
+      - description: the identifier for the delivery in the cart
+        in: path
+        name: deliveryCode
+        required: true
+        type: string
+      - description: the item that should be deleted
+        in: query
+        name: itemID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controller.CartAPIResult'
+            - properties:
+                data:
+                  $ref: '#/definitions/cart.Cart'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.CartAPIResult'
+      summary: Delete item from cart
+      tags:
+      - v1 Cart ajax API
     post:
+      parameters:
+      - description: the identifier for the delivery in the cart
+        in: path
+        name: deliveryCode
+        required: true
+        type: string
+      - description: the product identifier that should be added
+        in: query
+        name: marketplaceCode
+        required: true
+        type: string
+      - description: optional the product identifier of the variant (for configurable products) that should be added
+        in: query
+        name: variantMarketplaceCode
+        type: string
+      - description: optional the qty that should be added
+        in: query
+        name: qty
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controller.CartAPIResult'
+            - properties:
+                data:
+                  $ref: '#/definitions/cart.Cart'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.CartAPIResult'
+      summary: Add Item to cart
+      tags:
+      - v1 Cart ajax API
+    put:
+      parameters:
+      - description: the identifier for the delivery in the cart
+        in: path
+        name: deliveryCode
+        required: true
+        type: string
+      - description: the item that should be updated
+        in: query
+        name: itemID
+        required: true
+        type: string
+      - description: the new qty
+        in: query
+        name: qty
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/controller.CartAPIResult'
+            - properties:
+                data:
+                  $ref: '#/definitions/cart.Cart'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.CartAPIResult'
+      summary: Update item in the cart
+      tags:
+      - v1 Cart ajax API
+  /api/v1/cart/gift-card:
+    delete:
       parameters:
       - description: the couponCode that should be deleted as gift card
         in: query
@@ -1236,10 +1235,9 @@ paths:
       summary: Remove Gift Card
       tags:
       - v1 Cart ajax API
-  /api/v1/cart/removevoucher:
-    delete:
+    post:
       parameters:
-      - description: the couponCode that should be applied
+      - description: the gift card code
         in: query
         name: couponCode
         required: true
@@ -1255,10 +1253,10 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/controller.CartAPIResult'
-      summary: Remove Voucher Code
+      summary: Apply Gift Card
       tags:
       - v1 Cart ajax API
-  /api/v1/cart/updatepaymentselection:
+  /api/v1/cart/payment-selection:
     put:
       parameters:
       - description: name of the payment gateway - e.g. 'offline'
@@ -1283,6 +1281,72 @@ paths:
           schema:
             $ref: '#/definitions/controller.CartAPIResult'
       summary: Update/set the PaymentSelection for the current cart
+      tags:
+      - v1 Cart ajax API
+  /api/v1/cart/voucher:
+    delete:
+      parameters:
+      - description: the couponCode that should be applied
+        in: query
+        name: couponCode
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.CartAPIResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.CartAPIResult'
+      summary: Remove Voucher Code
+      tags:
+      - v1 Cart ajax API
+    post:
+      parameters:
+      - description: the couponCode that should be applied
+        in: query
+        name: couponCode
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.CartAPIResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.CartAPIResult'
+      summary: Apply Voucher Code
+      tags:
+      - v1 Cart ajax API
+  /api/v1/cart/voucher-gift-card:
+    post:
+      description: Use this if you have one user input and that input can be used to either enter a voucher or a gift card
+      parameters:
+      - description: the couponCode that should be applied as gift card or voucher
+        in: query
+        name: couponCode
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.CartAPIResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.CartAPIResult'
+      summary: Apply Gift Card or Voucher (auto detected)
       tags:
       - v1 Cart ajax API
   /api/v1/checkout/placeorder:

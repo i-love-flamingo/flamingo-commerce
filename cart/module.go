@@ -184,55 +184,70 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 }
 
 func (r *routes) apiRoutes(registry *web.RouterRegistry) {
+	// v1 Routes:
+	registry.MustRoute("/api/v1/cart", "cart.api.cart")
+	registry.HandleDelete("cart.api.cart", r.apiController.DeleteCartAction)
+	registry.HandleGet("cart.api.cart", r.apiController.GetAction)
 
+	registry.MustRoute("/api/v1/cart/billing", `cart.api.billing`)
+	registry.HandlePut("cart.api.billing", r.apiController.BillingAction)
+
+	registry.MustRoute("/api/v1/cart/payment-selection", `cart.api.payment-selection`)
+	registry.HandlePut("cart.api.payment-selection", r.apiController.UpdatePaymentSelectionAction)
+
+	registry.MustRoute("/api/v1/cart/delivery/:deliveryCode", `cart.api.delivery`)
+	registry.HandleDelete("cart.api.delivery", r.apiController.DeleteDelivery)
+	registry.HandlePut("cart.api.delivery", r.apiController.UpdateDeliveryInfoAction)
+
+	registry.MustRoute("/api/v1/cart/delivery/:deliveryCode/item", `cart.api.item(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryCode?="")`)
+	registry.HandlePost("cart.api.item", r.apiController.AddAction)
+	registry.HandleDelete("cart.api.item", r.apiController.DeleteItemAction)
+	registry.HandlePut("cart.api.item", r.apiController.UpdateItemAction)
+
+	registry.MustRoute("/api/v1/cart/voucher", `cart.api.voucher(couponCode)`)
+	registry.HandlePost("cart.api.voucher", r.apiController.ApplyVoucherAndGetAction)
+	registry.HandleDelete("cart.api.voucher", r.apiController.RemoveVoucherAndGetAction)
+
+	registry.MustRoute("/api/v1/cart/gift-card", `cart.api.gift-card(couponCode)`)
+	registry.HandlePost("cart.api.gift-card", r.apiController.ApplyGiftCardAndGetAction)
+	registry.HandleDelete("cart.api.gift-card", r.apiController.RemoveGiftCardAndGetAction)
+
+	registry.MustRoute("/api/v1/cart/voucher-gift-card", `cart.api.voucher-gift-card(couponCode)`)
+	registry.HandlePost("cart.api.voucher-gift-card", r.apiController.ApplyCombinedVoucherGift)
+
+	// Legacy Routes:
 	registry.MustRoute("/api/cart", "cart.api.get")
-	registry.MustRoute("/api/v1/cart", "cart.api.get")
 	registry.HandleDelete("cart.api.get", r.apiController.DeleteCartAction)
 	registry.HandleGet("cart.api.get", r.apiController.GetAction)
 
-	// add command under the delivery:
 	registry.MustRoute("/api/cart/delivery/:deliveryCode/additem", `cart.api.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryCode?="")`)
-	registry.MustRoute("/api/v1/cart/delivery/:deliveryCode/additem", `cart.api.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryCode?="")`)
-
 	registry.HandlePost("cart.api.add", r.apiController.AddAction)
 
 	registry.MustRoute("/api/cart/applyvoucher", `cart.api.applyVoucher(couponCode)`)
-	registry.MustRoute("/api/v1/cart/applyvoucher", `cart.api.applyVoucher(couponCode)`)
-
 	registry.HandlePost("cart.api.applyVoucher", r.apiController.ApplyVoucherAndGetAction)
 	registry.HandlePut("cart.api.applyVoucher", r.apiController.ApplyVoucherAndGetAction)
 
 	registry.MustRoute("/api/cart/removevoucher", `cart.api.removeVoucher(couponCode)`)
-	registry.MustRoute("/api/v1/cart/removevoucher", `cart.api.removeVoucher(couponCode)`)
 	registry.HandlePost("cart.api.removeVoucher", r.apiController.RemoveVoucherAndGetAction)
 	registry.HandleDelete("cart.api.removeVoucher", r.apiController.RemoveVoucherAndGetAction)
 
 	registry.MustRoute("/api/cart/applygiftcard", `cart.api.applyGiftCard(couponCode)`)
-	registry.MustRoute("/api/v1/cart/applygiftcard", `cart.api.applyGiftCard(couponCode)`)
 	registry.HandlePost("cart.api.applyGiftCard", r.apiController.ApplyGiftCardAndGetAction)
 	registry.HandlePut("cart.api.applyGiftCard", r.apiController.ApplyGiftCardAndGetAction)
 
 	registry.MustRoute("/api/cart/removegiftcard", `cart.api.removeGiftCard(couponCode)`)
-	registry.MustRoute("/api/v1/cart/removegiftcard", `cart.api.removeGiftCard(couponCode)`)
 	registry.HandlePost("cart.api.removeGiftCard", r.apiController.RemoveGiftCardAndGetAction)
 	registry.HandleDelete("cart.api.removeGiftCard", r.apiController.RemoveGiftCardAndGetAction)
 
 	registry.MustRoute("/api/cart/applycombinedvouchergift", `cart.api.applyCombinedVoucherGift(couponCode)`)
-	registry.MustRoute("/api/v1/cart/applycombinedvouchergift", `cart.api.applyCombinedVoucherGift(couponCode)`)
 	registry.HandlePost("cart.api.applyCombinedVoucherGift", r.apiController.ApplyCombinedVoucherGift)
 
 	registry.MustRoute("/api/cart/billing", `cart.api.billing`)
-	registry.MustRoute("/api/v1/cart/billing", `cart.api.billing`)
 	registry.HandlePost("cart.api.billing", r.apiController.BillingAction)
 
 	registry.MustRoute("/api/cart/delivery/:deliveryCode", `cart.api.delivery.delete`)
-	registry.MustRoute("/api/v1/cart/delivery/:deliveryCode", `cart.api.delivery.delete`)
 	registry.HandleDelete("cart.api.delivery.delete", r.apiController.DeleteDelivery)
 
 	registry.MustRoute("/api/cart/delivery/:deliveryCode/deliveryinfo", `cart.api.delivery.update`)
-	registry.MustRoute("/api/v1/cart/delivery/:deliveryCode/deliveryinfo", `cart.api.delivery.update`)
 	registry.HandlePost("cart.api.delivery.update", r.apiController.UpdateDeliveryInfoAction)
-
-	registry.MustRoute("/api/v1/cart/updatepaymentselection", `cart.api.updatepaymentselection`)
-	registry.HandlePut("cart.api.updatepaymentselection", r.apiController.UpdatePaymentSelectionAction)
 }

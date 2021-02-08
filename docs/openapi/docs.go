@@ -79,111 +79,8 @@ var doc = `{
                 }
             }
         },
-        "/api/v1/cart/applycombinedvouchergift": {
-            "post": {
-                "description": "Use this if you have one user input and that input can be used to either enter a voucher or a gift card",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "v1 Cart ajax API"
-                ],
-                "summary": "Apply Gift Card or Voucher (autodetected)",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "the couponCode that should be applied as giftcart or voucher",
-                        "name": "couponCode",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/controller.CartAPIResult"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/controller.CartAPIResult"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/cart/applygiftcard": {
-            "put": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "v1 Cart ajax API"
-                ],
-                "summary": "Apply Gift Card",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "the couponCode that should be applied as giftcart",
-                        "name": "couponCode",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/controller.CartAPIResult"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/controller.CartAPIResult"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/cart/applyvoucher": {
-            "put": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "v1 Cart ajax API"
-                ],
-                "summary": "Apply Voucher Code",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "the couponCode that should be applied",
-                        "name": "couponCode",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/controller.CartAPIResult"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/controller.CartAPIResult"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/cart/billing": {
-            "post": {
+            "put": {
                 "consumes": [
                     "application/x-www-form-urlencoded"
                 ],
@@ -342,106 +239,7 @@ var doc = `{
             }
         },
         "/api/v1/cart/delivery/{deliveryCode}": {
-            "delete": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "v1 Cart ajax API"
-                ],
-                "summary": "Cleans the given delivery from the cart",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "the idendifier for the delivery in the cart",
-                        "name": "deliveryCode",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/controller.CartAPIResult"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/controller.CartAPIResult"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/cart/delivery/{deliveryCode}/additem": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "v1 Cart ajax API"
-                ],
-                "summary": "Add Item to cart",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "the idendifier for the delivery in the cart",
-                        "name": "deliveryCode",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "the product idendifier that should be added",
-                        "name": "marketplaceCode",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "optional the product idendifier of the variant (for configurable products) that should be added",
-                        "name": "variantMarketplaceCode",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "optional the qty that should be added",
-                        "name": "qty",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/controller.CartAPIResult"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/cart.Cart"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/controller.CartAPIResult"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/cart/delivery/{deliveryCode}/deliveryinfo": {
-            "post": {
+            "put": {
                 "consumes": [
                     "application/x-www-form-urlencoded"
                 ],
@@ -455,7 +253,7 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "the idendifier for the delivery in the cart",
+                        "description": "the identifier for the delivery in the cart",
                         "name": "deliveryCode",
                         "in": "path",
                         "required": true
@@ -635,10 +433,248 @@ var doc = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 Cart ajax API"
+                ],
+                "summary": "Cleans the given delivery from the cart",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the identifier for the delivery in the cart",
+                        "name": "deliveryCode",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    }
+                }
             }
         },
-        "/api/v1/cart/removegiftcard": {
+        "/api/v1/cart/delivery/{deliveryCode}/item": {
+            "put": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 Cart ajax API"
+                ],
+                "summary": "Update item in the cart",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the identifier for the delivery in the cart",
+                        "name": "deliveryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the item that should be updated",
+                        "name": "itemID",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "the new qty",
+                        "name": "qty",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controller.CartAPIResult"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/cart.Cart"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    }
+                }
+            },
             "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 Cart ajax API"
+                ],
+                "summary": "Add Item to cart",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the identifier for the delivery in the cart",
+                        "name": "deliveryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the product identifier that should be added",
+                        "name": "marketplaceCode",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "optional the product identifier of the variant (for configurable products) that should be added",
+                        "name": "variantMarketplaceCode",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "optional the qty that should be added",
+                        "name": "qty",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controller.CartAPIResult"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/cart.Cart"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 Cart ajax API"
+                ],
+                "summary": "Delete item from cart",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the identifier for the delivery in the cart",
+                        "name": "deliveryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "the item that should be deleted",
+                        "name": "itemID",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/controller.CartAPIResult"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/cart.Cart"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cart/gift-card": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 Cart ajax API"
+                ],
+                "summary": "Apply Gift Card",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the gift card code",
+                        "name": "couponCode",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    }
+                }
+            },
+            "delete": {
                 "produces": [
                     "application/json"
                 ],
@@ -671,7 +707,80 @@ var doc = `{
                 }
             }
         },
-        "/api/v1/cart/removevoucher": {
+        "/api/v1/cart/payment-selection": {
+            "put": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 Cart ajax API"
+                ],
+                "summary": "Update/set the PaymentSelection for the current cart",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "name of the payment gateway - e.g. 'offline'",
+                        "name": "gateway",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name of the payment method - e.g. 'offlinepayment_cashondelivery'",
+                        "name": "method",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cart/voucher": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "v1 Cart ajax API"
+                ],
+                "summary": "Apply Voucher Code",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "the couponCode that should be applied",
+                        "name": "couponCode",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "produces": [
                     "application/json"
@@ -705,27 +814,21 @@ var doc = `{
                 }
             }
         },
-        "/api/v1/cart/updatepaymentselection": {
-            "put": {
+        "/api/v1/cart/voucher-gift-card": {
+            "post": {
+                "description": "Use this if you have one user input and that input can be used to either enter a voucher or a gift card",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "v1 Cart ajax API"
                 ],
-                "summary": "Update/set the PaymentSelection for the current cart",
+                "summary": "Apply Gift Card or Voucher (auto detected)",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "name of the payment gateway - e.g. 'offline'",
-                        "name": "gateway",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "name of the payment method - e.g. 'offlinepayment_cashondelivery'",
-                        "name": "method",
+                        "description": "the couponCode that should be applied as gift card or voucher",
+                        "name": "couponCode",
                         "in": "query",
                         "required": true
                     }
@@ -1727,11 +1830,11 @@ var doc = `{
             "type": "object",
             "properties": {
                 "Code": {
-                    "description": "Code the idendifier of the Category",
+                    "description": "Code the identifier of the Category",
                     "type": "string"
                 },
                 "Name": {
-                    "description": "Name - speaking name of the category",
+                    "description": "Name is the speaking name of the category",
                     "type": "string"
                 },
                 "Path": {
@@ -1844,7 +1947,7 @@ var doc = `{
                     "type": "string"
                 },
                 "Type": {
-                    "description": "Type - Name( or Type) of the Loyalty program",
+                    "description": "Type or Name of the Loyalty program",
                     "type": "string"
                 }
             }
@@ -1982,14 +2085,14 @@ var doc = `{
                     }
                 },
                 "LoyaltyEarnings": {
-                    "description": "LoyaltyEarnings optional infos about potential loyalty earnings",
+                    "description": "LoyaltyEarnings jolds optional infos about potential loyalty earnings",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/domain.LoyaltyEarningInfo"
                     }
                 },
                 "LoyaltyPrices": {
-                    "description": "LoyaltyPrices - Optional infos for products that can be paid in a loyalty program",
+                    "description": "LoyaltyPrices holds optional infos for products that can be paid in a loyalty program",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/domain.LoyaltyPriceInfo"
@@ -2067,7 +2170,7 @@ var doc = `{
                     }
                 },
                 "PreSelectedVariantSku": {
-                    "description": "PreSelectedVariantSku - might be set for configurables to give a hint to link to a variant of a configurable (That might be the case if a user filters for an attribute and in the teaser the variant with that attribute is shown)",
+                    "description": "PreSelectedVariantSku might be set for configurables to give a hint to link to a variant of a configurable (That might be the case if a user filters for an attribute and in the teaser the variant with that attribute is shown)",
                     "type": "string"
                 },
                 "ShortDescription": {
@@ -2083,11 +2186,11 @@ var doc = `{
                     }
                 },
                 "TeaserLoyaltyEarningInfo": {
-                    "description": "TeaserLoyaltyEarning optional teaser for the loyalty earning used in grid / list view",
+                    "description": "TeaserLoyaltyEarning is the teaser for the loyalty earning used in grid / list view",
                     "$ref": "#/definitions/domain.LoyaltyEarningInfo"
                 },
                 "TeaserLoyaltyPriceInfo": {
-                    "description": "TeaserLoyaltyPriceInfo - optional the Loyaltyprice that can be used for teaser (e.g. on listing views)",
+                    "description": "TeaserLoyaltyPriceInfo is the loyalty price that can be used for teaser (e.g. on listing views)",
                     "$ref": "#/definitions/domain.LoyaltyPriceInfo"
                 },
                 "TeaserPrice": {
@@ -2095,7 +2198,7 @@ var doc = `{
                     "$ref": "#/definitions/domain.PriceInfo"
                 },
                 "TeaserPriceIsFromPrice": {
-                    "description": "TeaserPriceIsFromPrice - is set to true in cases where a product might have different prices (e.g. configurable)",
+                    "description": "TeaserPriceIsFromPrice is set to true in cases where a product might have different prices (e.g. configurable)",
                     "type": "boolean"
                 },
                 "URLSlug": {
