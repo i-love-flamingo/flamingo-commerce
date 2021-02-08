@@ -80,7 +80,7 @@ func (cc *CartAPIController) Inject(
 
 // GetAction Get JSON Format of API
 // @Summary Get the current cart
-// @Tags v1 Cart ajax API
+// @Tags  Cart
 // @Produce json
 // @Success 200 {object} getCartResult
 // @Failure 500 {object} CartAPIResult
@@ -102,7 +102,7 @@ func (cc *CartAPIController) GetAction(ctx context.Context, r *web.Request) web.
 
 // AddAction Add Item to cart
 // @Summary Add Item to cart
-// @Tags v1 Cart ajax API
+// @Tags  Cart
 // @Produce json
 // @Success 200 {object} CartAPIResult{data=cart.Cart}
 // @Failure 500 {object} CartAPIResult
@@ -139,7 +139,7 @@ func (cc *CartAPIController) AddAction(ctx context.Context, r *web.Request) web.
 
 // DeleteItemAction deletes an item from the cart
 // @Summary Delete item from cart
-// @Tags v1 Cart ajax API
+// @Tags  Cart
 // @Produce json
 // @Success 200 {object} CartAPIResult{data=cart.Cart}
 // @Failure 500 {object} CartAPIResult
@@ -167,7 +167,7 @@ func (cc *CartAPIController) DeleteItemAction(ctx context.Context, r *web.Reques
 
 // UpdateItemAction updates the item qty in the current cart
 // @Summary Update item in the cart
-// @Tags v1 Cart ajax API
+// @Tags  Cart
 // @Produce json
 // @Success 200 {object} CartAPIResult{data=cart.Cart}
 // @Failure 500 {object} CartAPIResult
@@ -201,7 +201,7 @@ func (cc *CartAPIController) UpdateItemAction(ctx context.Context, r *web.Reques
 
 // ApplyVoucherAndGetAction applies the given voucher and returns the cart
 // @Summary Apply Voucher Code
-// @Tags v1 Cart ajax API
+// @Tags  Cart
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
@@ -213,7 +213,7 @@ func (cc *CartAPIController) ApplyVoucherAndGetAction(ctx context.Context, r *we
 
 // RemoveVoucherAndGetAction removes the given voucher and returns the cart
 // @Summary Remove Voucher Code
-// @Tags v1 Cart ajax API
+// @Tags  Cart
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
@@ -225,7 +225,7 @@ func (cc *CartAPIController) RemoveVoucherAndGetAction(ctx context.Context, r *w
 
 // DeleteCartAction cleans the cart and returns the cleaned cart
 // @Summary Cleans the cart and returns the cleaned cart
-// @Tags v1 Cart ajax API
+// @Tags  Cart
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
@@ -245,7 +245,7 @@ func (cc *CartAPIController) DeleteCartAction(ctx context.Context, r *web.Reques
 // ApplyGiftCardAndGetAction applies the given gift card and returns the cart
 // the request needs a query string param "couponCode" which includes the corresponding gift card code
 // @Summary Apply Gift Card
-// @Tags v1 Cart ajax API
+// @Tags  Cart
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
@@ -259,7 +259,7 @@ func (cc *CartAPIController) ApplyGiftCardAndGetAction(ctx context.Context, r *w
 // cartService and returns the cart
 // @Summary Apply Gift Card or Voucher (auto detected)
 // @Description Use this if you have one user input and that input can be used to either enter a voucher or a gift card
-// @Tags v1 Cart ajax API
+// @Tags  Cart
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
@@ -272,7 +272,7 @@ func (cc *CartAPIController) ApplyCombinedVoucherGift(ctx context.Context, r *we
 // RemoveGiftCardAndGetAction removes the given gift card and returns the cart
 // the request needs a query string param "couponCode" which includes the corresponding gift card code
 // @Summary Remove Gift Card
-// @Tags v1 Cart ajax API
+// @Tags  Cart
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
@@ -301,7 +301,7 @@ func (cc *CartAPIController) handlePromotionAction(ctx context.Context, r *web.R
 
 // DeleteDelivery cleans the given delivery from the cart and returns the cleaned cart
 // @Summary Cleans the given delivery from the cart
-// @Tags v1 Cart ajax API
+// @Tags  Cart
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
@@ -321,7 +321,7 @@ func (cc *CartAPIController) DeleteDelivery(ctx context.Context, r *web.Request)
 
 // BillingAction adds billing infos
 // @Summary Adds billing infos to the current cart
-// @Tags v1 Cart ajax API
+// @Tags  Cart
 // @Accept x-www-form-urlencoded
 // @Produce json
 // @Success 200 {object} CartAPIResult
@@ -367,7 +367,7 @@ func (cc *CartAPIController) BillingAction(ctx context.Context, r *web.Request) 
 
 // UpdateDeliveryInfoAction updates the delivery info
 // @Summary Adds delivery infos, such as shipping address to the delivery for the cart
-// @Tags v1 Cart ajax API
+// @Tags  Cart
 // @Accept x-www-form-urlencoded
 // @Produce json
 // @Success 200 {object} CartAPIResult
@@ -418,7 +418,7 @@ func (cc *CartAPIController) UpdateDeliveryInfoAction(ctx context.Context, r *we
 
 // UpdatePaymentSelectionAction to set / update the cart payment selection
 // @Summary Update/set the PaymentSelection for the current cart
-// @Tags v1 Cart ajax API
+// @Tags  Cart
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
