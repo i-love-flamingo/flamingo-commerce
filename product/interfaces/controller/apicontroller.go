@@ -42,7 +42,7 @@ func (c *APIController) Inject(responder *web.Responder,
 
 // Get Response for Product matching marketplacecode param
 // @Summary Gets the requested product
-// @Tags v1 Product API
+// @Tags  Product
 // @Produce json
 // @Success 200 {object} APIResult{product=domain.SimpleProduct}
 // @Failure 500 {object} APIResult

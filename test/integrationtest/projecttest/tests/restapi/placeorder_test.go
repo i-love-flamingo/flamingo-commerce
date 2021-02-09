@@ -14,19 +14,19 @@ func Test_Checkout_SimplePlaceOrderProcess(t *testing.T) {
 
 	e := integrationtest.NewHTTPExpect(t, "http://"+FlamingoURL)
 	// add something to the cart
-	response := e.POST("/api/v1/cart/delivery/delivery/additem").WithQuery("deliveryCode", "delivery").WithQuery("marketplaceCode", "fake_simple").Expect()
+	response := e.POST("/api/v1/cart/delivery/delivery/item").WithQuery("deliveryCode", "delivery").WithQuery("marketplaceCode", "fake_simple").Expect()
 	response.Status(200).JSON().Object().Value("Success").Boolean().Equal(true)
 
 	// add billing
-	response = e.POST("/api/v1/cart/billing").WithFormField("firstname", "Max").WithFormField("lastname", "Mustermann").WithFormField("email", "test@test.de").Expect()
+	response = e.PUT("/api/v1/cart/billing").WithFormField("firstname", "Max").WithFormField("lastname", "Mustermann").WithFormField("email", "test@test.de").Expect()
 	response.Status(200).JSON().Object().Value("Success").Boolean().Equal(true)
 
 	// add shipping
-	response = e.POST("/api/v1/cart/delivery/delivery/deliveryinfo").WithFormField("deliveryAddress.firstname", "Max").WithFormField("deliveryAddress.lastname", "Mustermann").WithFormField("deliveryAddress.email", "test@test.de").Expect()
+	response = e.PUT("/api/v1/cart/delivery/delivery/").WithFormField("deliveryAddress.firstname", "Max").WithFormField("deliveryAddress.lastname", "Mustermann").WithFormField("deliveryAddress.email", "test@test.de").Expect()
 	response.Status(200).JSON().Object().Value("Success").Boolean().Equal(true)
 
 	// add payment selection
-	response = e.PUT("/api/v1/cart/updatepaymentselection").WithQuery("gateway", "fake_payment_gateway").WithQuery("method", "payment_waiting_for_customer").Expect()
+	response = e.PUT("/api/v1/cart/payment-selection").WithQuery("gateway", "fake_payment_gateway").WithQuery("method", "payment_waiting_for_customer").Expect()
 	response.Status(200).JSON().Object().Value("Success").Boolean().Equal(true)
 
 	// start place order
@@ -55,7 +55,7 @@ func Test_Checkout_SimplePlaceOrderProcess(t *testing.T) {
 	response.Status(500).JSON().Object().Value("Message").String().Equal(placeorder.ErrNoPlaceOrderProcess.Error())
 
 	// set payment selection to a working one
-	response = e.PUT("/api/v1/cart/updatepaymentselection").WithQuery("gateway", "fake_payment_gateway").WithQuery("method", "payment_completed").Expect()
+	response = e.PUT("/api/v1/cart/payment-selection").WithQuery("gateway", "fake_payment_gateway").WithQuery("method", "payment_completed").Expect()
 	response.Status(200).JSON().Object().Value("Success").Boolean().Equal(true)
 
 	// start place order again
@@ -65,7 +65,7 @@ func Test_Checkout_SimplePlaceOrderProcess(t *testing.T) {
 	// refresh place order
 	response = e.POST("/api/v1/checkout/placeorder/refresh").Expect()
 	response.Status(200).JSON().Object().Value("State").String().NotEmpty()
-	response = e.POST("/api/v1/checkout/placeorder/refreshblocking").Expect()
+	response = e.POST("/api/v1/checkout/placeorder/refresh-blocking").Expect()
 	response.Status(200).JSON().Object().Value("State").String().NotEmpty()
 
 	// get last place order context
