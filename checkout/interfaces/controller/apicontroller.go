@@ -73,11 +73,10 @@ func (c *APIController) Inject(
 	c.logger = logger.WithField(flamingo.LogKeyModule, "checkout").WithField(flamingo.LogKeyCategory, "apicontroller")
 }
 
-// StartPlaceOrderAction starts a new process (if not running)
+// StartPlaceOrderAction starts a new process
 // @Summary Starts the place order process, which is a background process handling payment and rollbacks if required.
 // @Tags Checkout
 // @Produce json
-// @Success 200 {object} startPlaceOrderResult
 // @Success 201 {object} startPlaceOrderResult "201 if new process was started"
 // @Failure 500 {object} errorResponse
 // @Failure 400 {object} errorResponse
@@ -107,18 +106,6 @@ func (c *APIController) StartPlaceOrderAction(ctx context.Context, r *web.Reques
 
 	startPlaceOrderCommand := placeorder.StartPlaceOrderCommand{Cart: *cart, ReturnURL: returnURL}
 	pctx, err := c.placeorderHandler.StartPlaceOrder(ctx, startPlaceOrderCommand)
-	if err == placeorder.ErrAnotherPlaceOrderProcessRunning {
-		dtopctx, err := c.placeorderHandler.RefreshPlaceOrder(ctx, placeorder.RefreshPlaceOrderCommand{})
-		if err != nil {
-			response := c.responder.Data(errorResponse{Code: "500", Message: err.Error()})
-			response.Status(http.StatusInternalServerError)
-			return response
-		}
-		return c.responder.Data(startPlaceOrderResult{
-			UUID: dtopctx.UUID,
-		})
-
-	}
 	if err != nil {
 		response := c.responder.Data(errorResponse{Code: "500", Message: err.Error()})
 		response.Status(http.StatusInternalServerError)

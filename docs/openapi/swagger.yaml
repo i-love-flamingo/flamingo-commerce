@@ -1390,10 +1390,6 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.startPlaceOrderResult'
         "201":
           description: 201 if new process was started
           schema:
@@ -1441,7 +1437,7 @@ paths:
       summary: Returns the current place order context and proceeds the process in a non blocking way
       tags:
       - Checkout
-  /api/v1/checkout/placeorder/refreshblocking:
+  /api/v1/checkout/placeorder/refresh-blocking:
     post:
       description: This is useful to get the most recent place order context, for example after returning from an external payment provider
       produces:

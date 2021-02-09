@@ -891,12 +891,6 @@ var doc = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/controller.startPlaceOrderResult"
-                        }
-                    },
                     "201": {
                         "description": "201 if new process was started",
                         "schema": {
@@ -991,7 +985,7 @@ var doc = `{
                 }
             }
         },
-        "/api/v1/checkout/placeorder/refreshblocking": {
+        "/api/v1/checkout/placeorder/refresh-blocking": {
             "post": {
                 "description": "This is useful to get the most recent place order context, for example after returning from an external payment provider",
                 "produces": [
