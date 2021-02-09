@@ -216,6 +216,6 @@ func (r *apiRoutes) Routes(registry *web.RouterRegistry) {
 	registry.MustRoute("/api/v1/checkout/placeorder/refresh", "checkout.api.placeorder.refresh")
 	registry.HandlePost("checkout.api.placeorder.refresh", r.apiController.RefreshPlaceOrderAction)
 
-	registry.MustRoute("/api/v1/checkout/placeorder/refreshblocking", "checkout.api.placeorder.refreshblocking")
+	registry.MustRoute("/api/v1/checkout/placeorder/refresh-blocking", "checkout.api.placeorder.refreshblocking")
 	registry.HandlePost("checkout.api.placeorder.refreshblocking", r.apiController.RefreshPlaceOrderBlockingAction)
 }

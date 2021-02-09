@@ -2,11 +2,12 @@ package controller
 
 import (
 	"context"
-	//cart type is referenced in swag comment and requires empty import
-	_ "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	//domain type is referenced in swag comment and requires empty import
-	_ "flamingo.me/flamingo-commerce/v3/payment/domain"
 	"fmt"
+
+	// cart type is referenced in swag comment and requires empty import
+	_ "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	// domain type is referenced in swag comment and requires empty import
+	_ "flamingo.me/flamingo-commerce/v3/payment/domain"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/application"
 
@@ -25,7 +26,7 @@ type (
 	resultError struct {
 		Message string
 		Code    string
-	} //@name paymentResultError
+	} // @name paymentResultError
 )
 
 // Inject dependencies
@@ -41,7 +42,7 @@ func (pc *PaymentAPIController) Inject(
 
 // Status Get Payment Status
 // @Summary Get the payment status of current cart (or last placed cart)
-// @Tags v1 Payment ajax API
+// @Tags Payment
 // @Produce json
 // @Success 200 {object} domain.FlowStatus{data=cart.Cart}
 // @Failure 500 {object} resultError

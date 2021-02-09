@@ -75,7 +75,7 @@ func (c *APIController) Inject(
 
 // StartPlaceOrderAction starts a new process
 // @Summary Starts the place order process, which is a background process handling payment and rollbacks if required.
-// @Tags v1 Checkout ajax API
+// @Tags Checkout
 // @Produce json
 // @Success 201 {object} startPlaceOrderResult "201 if new process was started"
 // @Failure 500 {object} errorResponse
@@ -120,7 +120,7 @@ func (c *APIController) StartPlaceOrderAction(ctx context.Context, r *web.Reques
 
 // CancelPlaceOrderAction cancels a running place order process
 // @Summary Cancels a running place order process
-// @Tags v1 Checkout ajax API
+// @Tags Checkout
 // @Produce json
 // @Success 200 {boolean} boolean
 // @Failure 500 {object} errorResponse
@@ -137,7 +137,7 @@ func (c *APIController) CancelPlaceOrderAction(ctx context.Context, r *web.Reque
 
 // ClearPlaceOrderAction clears the last place order if in final state
 // @Summary Clears the last placed order if in final state
-// @Tags v1 Checkout ajax API
+// @Tags Checkout
 // @Produce json
 // @Success 200 {boolean} boolean
 // @Failure 500 {object} errorResponse
@@ -154,7 +154,7 @@ func (c *APIController) ClearPlaceOrderAction(ctx context.Context, r *web.Reques
 
 // CurrentPlaceOrderContextAction returns the last saved context
 // @Summary Returns the last saved context
-// @Tags v1 Checkout ajax API
+// @Tags Checkout
 // @Produce json
 // @Success 200 {object} placeOrderContext
 // @Failure 500 {object} errorResponse
@@ -197,7 +197,7 @@ func (c *APIController) getPlaceOrderContext(ctx context.Context, pctx *process.
 
 // RefreshPlaceOrderAction returns the current place order context and proceeds the process in a non blocking way
 // @Summary Returns the current place order context and proceeds the process in a non blocking way
-// @Tags v1 Checkout ajax API
+// @Tags Checkout
 // @Produce json
 // @Success 200 {object} placeOrderContext
 // @Failure 500 {object} errorResponse
@@ -215,11 +215,11 @@ func (c *APIController) RefreshPlaceOrderAction(ctx context.Context, r *web.Requ
 // RefreshPlaceOrderBlockingAction proceeds the process and returns the place order context afterwards (blocking)
 // @Summary Proceeds the process and returns the place order context afterwards (blocking)
 // @Description This is useful to get the most recent place order context, for example after returning from an external payment provider
-// @Tags v1 Checkout ajax API
+// @Tags Checkout
 // @Produce json
 // @Success 200 {object} placeOrderContext
 // @Failure 500 {object} errorResponse
-// @Router /api/v1/checkout/placeorder/refreshblocking [post]
+// @Router /api/v1/checkout/placeorder/refresh-blocking [post]
 func (c *APIController) RefreshPlaceOrderBlockingAction(ctx context.Context, r *web.Request) web.Result {
 	pctx, err := c.placeorderHandler.RefreshPlaceOrderBlocking(ctx, placeorder.RefreshPlaceOrderCommand{})
 	if err != nil {
