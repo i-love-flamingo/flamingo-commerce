@@ -102,7 +102,7 @@ func (cs *CartService) Inject(
 	cs.deliveryInfoBuilder = deliveryInfoBuilder
 	cs.restrictionService = restrictionService
 	cs.webIdentityService = webIdentityService
-	cs.logger = logger.WithField("module", "cart").WithField("category", "application.cartService")
+	cs.logger = logger.WithField(flamingo.LogKeyModule, "cart").WithField(flamingo.LogKeyCategory, "application.cartService")
 	if config != nil {
 		cs.defaultDeliveryCode = config.DefaultDeliveryCode
 		cs.deleteEmptyDelivery = config.DeleteEmptyDelivery
@@ -158,7 +158,7 @@ func (cs *CartService) UpdatePaymentSelection(ctx context.Context, session *web.
 	cart, defers, err = behaviour.UpdatePaymentSelection(ctx, cart, paymentSelection)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
-		cs.logger.WithContext(ctx).WithField("subCategory", "UpdatePaymentSelection").Error(err)
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "UpdatePaymentSelection").Error(err)
 
 		return err
 	}
@@ -185,7 +185,7 @@ func (cs *CartService) UpdateBillingAddress(ctx context.Context, session *web.Se
 	cart, defers, err = behaviour.UpdateBillingAddress(ctx, cart, *billingAddress)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
-		cs.logger.WithContext(ctx).WithField("subCategory", "UpdateBillingAddress").Error(err)
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "UpdateBillingAddress").Error(err)
 
 		return err
 	}
@@ -213,7 +213,7 @@ func (cs *CartService) UpdateDeliveryInfo(ctx context.Context, session *web.Sess
 	cart, defers, err = behaviour.UpdateDeliveryInfo(ctx, cart, deliveryCode, deliveryInfo)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
-		cs.logger.WithContext(ctx).WithField("subCategory", "UpdateDeliveryInfo").Error(err)
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "UpdateDeliveryInfo").Error(err)
 
 		return err
 	}
@@ -237,7 +237,7 @@ func (cs *CartService) UpdatePurchaser(ctx context.Context, session *web.Session
 	cart, defers, err = behaviour.UpdatePurchaser(ctx, cart, purchaser, additionalData)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
-		cs.logger.WithContext(ctx).WithField("subCategory", "UpdatePurchaser").Error(err)
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "UpdatePurchaser").Error(err)
 
 		return err
 	}
@@ -247,6 +247,11 @@ func (cs *CartService) UpdatePurchaser(ctx context.Context, session *web.Session
 
 // UpdateItemQty updates a single cart item qty
 func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, itemID string, deliveryCode string, qty int) error {
+	if qty < 1 {
+		// item needs to be removed, let DeleteItem handle caching/events
+		return cs.DeleteItem(ctx, session, itemID, deliveryCode)
+	}
+
 	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return err
@@ -264,19 +269,16 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 
 	item, err := cart.GetByItemID(itemID)
 	if err != nil {
-		cs.logger.WithContext(ctx).WithField("subCategory", "UpdateItemQty").Error(err)
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "UpdateItemQty").Error(err)
 
 		return err
 	}
 
 	qtyBefore := item.Qty
-	if qty < 1 {
-		return cs.DeleteItem(ctx, session, itemID, deliveryCode)
-	}
 
 	product, err := cs.productService.Get(ctx, item.MarketplaceCode)
 	if err != nil {
-		cs.logger.WithContext(ctx).WithField("subCategory", "UpdateItemQty").Error(err)
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "UpdateItemQty").Error(err)
 
 		return err
 	}
@@ -288,7 +290,7 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 
 	err = cs.checkProductQtyRestrictions(ctx, session, product, cart, qty-qtyBefore, deliveryCode, itemID)
 	if err != nil {
-		cs.logger.WithContext(ctx).WithField("subCategory", "UpdateItemQty").Info(err)
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "UpdateItemQty").Info(err)
 
 		return err
 	}
@@ -302,7 +304,7 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 	cart, defers, err = behaviour.UpdateItem(ctx, cart, itemUpdate)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
-		cs.logger.WithContext(ctx).WithField("subCategory", "UpdateItemQty").Error(err)
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "UpdateItemQty").Error(err)
 
 		return err
 	}
@@ -337,7 +339,7 @@ func (cs *CartService) UpdateItemSourceID(ctx context.Context, session *web.Sess
 
 	_, err = cart.GetByItemID(itemID)
 	if err != nil {
-		cs.logger.WithContext(ctx).WithField("subCategory", "UpdateItemSourceId").Error(err)
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "UpdateItemSourceId").Error(err)
 
 		return err
 	}
@@ -350,7 +352,7 @@ func (cs *CartService) UpdateItemSourceID(ctx context.Context, session *web.Sess
 	cart, defers, err = behaviour.UpdateItem(ctx, cart, itemUpdate)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
-		cs.logger.WithContext(ctx).WithField("subCategory", "UpdateItemSourceId").Error(err)
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "UpdateItemSourceId").Error(err)
 
 		return err
 	}
@@ -382,7 +384,7 @@ func (cs *CartService) UpdateItems(ctx context.Context, session *web.Session, up
 	cart, defers, err = behaviour.UpdateItems(ctx, cart, updateCommands)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
-		cs.logger.WithContext(ctx).WithField("subCategory", "UpdateItemSourceId").Error(err)
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "UpdateItemSourceId").Error(err)
 
 		return err
 	}
@@ -411,7 +413,7 @@ func (cs *CartService) DeleteItem(ctx context.Context, session *web.Session, ite
 
 	item, err := cart.GetByItemID(itemID)
 	if err != nil {
-		cs.logger.WithContext(ctx).WithField("subCategory", "DeleteItem").Error(err)
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "DeleteItem").Error(err)
 
 		return err
 	}
@@ -420,7 +422,7 @@ func (cs *CartService) DeleteItem(ctx context.Context, session *web.Session, ite
 	cart, defers, err = behaviour.DeleteItem(ctx, cart, itemID, deliveryCode)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
-		cs.logger.WithContext(ctx).WithField("subCategory", "DeleteItem").Error(errors.Wrap(err, "Trying to delete SKU :"+item.MarketplaceCode))
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "DeleteItem").Error(errors.Wrap(err, "Trying to delete SKU :"+item.MarketplaceCode))
 
 		return err
 	}
@@ -471,7 +473,7 @@ func (cs *CartService) DeleteAllItems(ctx context.Context, session *web.Session)
 			cart, defers, err = behaviour.DeleteItem(ctx, cart, item.ID, delivery.DeliveryInfo.Code)
 			if err != nil {
 				cs.handleCartNotFound(session, err)
-				cs.logger.WithContext(ctx).WithField("subCategory", "DeleteAllItems").Error(err)
+				cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "DeleteAllItems").Error(err)
 
 				return err
 			}
@@ -588,7 +590,7 @@ func (cs *CartService) Clean(ctx context.Context, session *web.Session) error {
 
 	cart, defers, err = behaviour.CleanCart(ctx, cart)
 	if err != nil {
-		cs.logger.WithContext(ctx).WithField("subCategory", "DeleteAllItems").Error(err)
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "DeleteAllItems").Error(err)
 		return err
 	}
 	// append deferred events of behaviour with changed qty events for every deleted item
@@ -631,7 +633,7 @@ func (cs *CartService) DeleteDelivery(ctx context.Context, session *web.Session,
 
 	cart, defers, err = behaviour.CleanDelivery(ctx, cart, deliveryCode)
 	if err != nil {
-		cs.logger.WithContext(ctx).WithField("subCategory", "DeleteAllItems").Error(err)
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "DeleteAllItems").Error(err)
 		return nil, err
 	}
 
@@ -707,7 +709,7 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 	cart, defers, err = behaviour.AddToCart(ctx, cart, deliveryCode, addRequest)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
-		cs.logger.WithContext(ctx).WithField("subCategory", "AddProduct").Error(err)
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "AddProduct").Error(err)
 
 		return nil, err
 	}
@@ -1081,7 +1083,7 @@ func (cs *CartService) handleEmptyDelivery(ctx context.Context, session *web.Ses
 
 	_, err := cs.DeleteDelivery(ctx, session, deliveryCode)
 	if err != nil {
-		cs.logger.WithContext(ctx).WithField("subCategory", "handleEmptyDelivery").Error(err)
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "handleEmptyDelivery").Error(err)
 		return
 	}
 }
