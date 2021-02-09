@@ -199,7 +199,7 @@ func (r *routes) apiRoutes(registry *web.RouterRegistry) {
 	registry.HandleDelete("cart.api.delivery", r.apiController.DeleteDelivery)
 	registry.HandlePut("cart.api.delivery", r.apiController.UpdateDeliveryInfoAction)
 
-	registry.MustRoute("/api/v1/cart/delivery/:deliveryCode/item", `cart.api.item(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryCode?="")`)
+	registry.MustRoute("/api/v1/cart/delivery/:deliveryCode/item", `cart.api.item(marketplaceCode?="",variantMarketplaceCode?="",qty?="1",deliveryCode?="")`)
 	registry.HandlePost("cart.api.item", r.apiController.AddAction)
 	registry.HandleDelete("cart.api.item", r.apiController.DeleteItemAction)
 	registry.HandlePut("cart.api.item", r.apiController.UpdateItemAction)
