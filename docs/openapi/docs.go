@@ -37,7 +37,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "v1 Cart ajax API"
+                    "Cart"
                 ],
                 "summary": "Get the current cart",
                 "responses": {
@@ -60,7 +60,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "v1 Cart ajax API"
+                    "Cart"
                 ],
                 "summary": "Cleans the cart and returns the cleaned cart",
                 "responses": {
@@ -88,7 +88,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "v1 Cart ajax API"
+                    "Cart"
                 ],
                 "summary": "Adds billing infos to the current cart",
                 "parameters": [
@@ -247,7 +247,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "v1 Cart ajax API"
+                    "Cart"
                 ],
                 "summary": "Adds delivery infos, such as shipping address to the delivery for the cart",
                 "parameters": [
@@ -439,7 +439,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "v1 Cart ajax API"
+                    "Cart"
                 ],
                 "summary": "Cleans the given delivery from the cart",
                 "parameters": [
@@ -473,7 +473,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "v1 Cart ajax API"
+                    "Cart"
                 ],
                 "summary": "Update item in the cart",
                 "parameters": [
@@ -531,7 +531,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "v1 Cart ajax API"
+                    "Cart"
                 ],
                 "summary": "Add Item to cart",
                 "parameters": [
@@ -594,7 +594,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "v1 Cart ajax API"
+                    "Cart"
                 ],
                 "summary": "Delete item from cart",
                 "parameters": [
@@ -647,7 +647,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "v1 Cart ajax API"
+                    "Cart"
                 ],
                 "summary": "Apply Gift Card",
                 "parameters": [
@@ -679,7 +679,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "v1 Cart ajax API"
+                    "Cart"
                 ],
                 "summary": "Remove Gift Card",
                 "parameters": [
@@ -713,7 +713,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "v1 Cart ajax API"
+                    "Cart"
                 ],
                 "summary": "Update/set the PaymentSelection for the current cart",
                 "parameters": [
@@ -754,7 +754,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "v1 Cart ajax API"
+                    "Cart"
                 ],
                 "summary": "Apply Voucher Code",
                 "parameters": [
@@ -786,7 +786,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "v1 Cart ajax API"
+                    "Cart"
                 ],
                 "summary": "Remove Voucher Code",
                 "parameters": [
@@ -821,7 +821,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "v1 Cart ajax API"
+                    "Cart"
                 ],
                 "summary": "Apply Gift Card or Voucher (auto detected)",
                 "parameters": [
@@ -855,7 +855,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "v1 Checkout ajax API"
+                    "Checkout"
                 ],
                 "summary": "Returns the last saved context",
                 "responses": {
@@ -878,7 +878,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "v1 Checkout ajax API"
+                    "Checkout"
                 ],
                 "summary": "Starts the place order process, which is a background process handling payment and rollbacks if required.",
                 "parameters": [
@@ -922,7 +922,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "v1 Checkout ajax API"
+                    "Checkout"
                 ],
                 "summary": "Clears the last placed order if in final state",
                 "responses": {
@@ -947,7 +947,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "v1 Checkout ajax API"
+                    "Checkout"
                 ],
                 "summary": "Cancels a running place order process",
                 "responses": {
@@ -972,7 +972,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "v1 Checkout ajax API"
+                    "Checkout"
                 ],
                 "summary": "Returns the current place order context and proceeds the process in a non blocking way",
                 "responses": {
@@ -998,7 +998,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "v1 Checkout ajax API"
+                    "Checkout"
                 ],
                 "summary": "Proceeds the process and returns the place order context afterwards (blocking)",
                 "responses": {
@@ -1023,7 +1023,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "v1 Payment ajax API"
+                    "Payment"
                 ],
                 "summary": "Get the payment status of current cart (or last placed cart)",
                 "responses": {
@@ -1060,7 +1060,7 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "v1 Product API"
+                    "Product"
                 ],
                 "summary": "Gets the requested product",
                 "parameters": [
@@ -2301,16 +2301,20 @@ var doc = `{
     },
     "tags": [
         {
-            "description": "This Cart APIs are most suitable to be called from a browser, because they rely on the session and cookie headers.",
-            "name": "v1 Cart ajax API"
+            "description": "All Cart related APIs endpoints, most suitable to be called from a browser, because they rely on the session and cookie headers.",
+            "name": "Cart"
         },
         {
-            "description": "This Payment APIs are most suitable to be called from a browser, because they rely on the session and cookie headers.",
-            "name": "v1 Payment ajax API"
+            "description": "All Payment related APIs endpoints, most suitable to be called from a browser, because they rely on the session and cookie headers.",
+            "name": "Payment"
         },
         {
-            "description": "Product API.",
-            "name": "v1 Product API"
+            "description": "All Product related APIs endpoints.",
+            "name": "Product"
+        },
+        {
+            "description": "All Checkout related APIs endpoints, most suitable to be called from a browser, because they rely on the session and cookie headers.",
+            "name": "Checkout"
         }
     ]
 }`
