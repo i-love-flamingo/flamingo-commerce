@@ -2,7 +2,22 @@
 ## v3.4.0 [upcoming]
 **cart**
 * Added desired time to DeliveryForm
-* InMemoryCartStorage: initialize lock and storage already in Inject() to avoid potential race conditions  
+* InMemoryCartStorage: initialize lock and storage already in Inject() to avoid potential race conditions
+* API
+  * Add endpoints for deleting / updating a item in the cart (DELETE/PUT: /api/v1/cart/delivery/{deliveryCode}/item)
+  * **Breaking**: Affects v1 prefixed routes, switched to a more RESTful naming and use of the correct HTTP verbs to mark idempotent operations
+    * | old HTTP verb | old route                                          | new HTTP verb | new route                                  |
+      |--------------:|----------------------------------------------------|---------------|--------------------------------------------|
+      |          POST | /api/v1/cart/delivery/{deliveryCode}/additem       | POST          | /api/v1/cart/delivery/{deliveryCode}/item  |
+      |      POST/PUT | /api/v1/cart/applyvoucher                          | POST          | /api/v1/cart/voucher                       |
+      |   POST/DELETE | /api/v1/cart/removevoucher                         | DELETE        | /api/v1/cart/voucher                       |
+      |      POST/PUT | /api/v1/cart/applygiftcard                         | POST          | /api/v1/cart/gift-card                     |
+      |          POST | /api/v1/cart/applycombinedvouchergift              | POST          | /api/v1/cart/voucher-gift-card             |
+      |          POST | /api/v1/cart/removegiftcard                        | DELETE        | /api/v1/cart/gift-card                     |
+      |          POST | /api/v1/cart/billing                               | PUT           | /api/v1/cart/billing                       |
+      |          POST | /api/v1/cart/delivery/{deliveryCode}/deliveryinfo  | PUT           | /api/v1/cart/delivery/{deliveryCode}       |
+      |           PUT | /api/v1/cart/updatepaymentselection                | PUT           | /api/v1/cart/payment-selection             |
+  * Embed swagger.json via go-bindata so it can be used from the outside
 * GraphQL
   * Updated schema and resolver regarding desired time
 
@@ -19,7 +34,11 @@
 * Resolve goroutine leak in redis locker
 * **Breaking** Change StartPlaceOrder behaviour to always start a new one.
 * **Breaking** Change ClearPlaceOrderProcess behaviour to be always possible (no matter on which state)
-
+* API
+  * **Breaking**: Affects v1 prefixed routes, switched to a more RESTful naming and use of the correct HTTP verbs to mark idempotent operations
+    * | old HTTP verb | old route                                     | new HTTP verb | new route                                     |
+      |--------------:|-----------------------------------------------|---------------|-----------------------------------------------|
+      |          POST | /api/v1/checkout/placeorder/refreshblocking   | POST          | /api/v1/checkout/placeorder/refresh-blocking  |
 **customer**
 * GraphQL
   * Extend `Commerce_Customer_Address` with some useful fields

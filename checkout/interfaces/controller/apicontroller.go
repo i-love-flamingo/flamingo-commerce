@@ -232,7 +232,7 @@ func (c *APIController) RefreshPlaceOrderAction(ctx context.Context, r *web.Requ
 // @Produce json
 // @Success 200 {object} placeOrderContext
 // @Failure 500 {object} errorResponse
-// @Router /api/v1/checkout/placeorder/refreshblocking [post]
+// @Router /api/v1/checkout/placeorder/refresh-blocking [post]
 func (c *APIController) RefreshPlaceOrderBlockingAction(ctx context.Context, r *web.Request) web.Result {
 	pctx, err := c.placeorderHandler.RefreshPlaceOrderBlocking(ctx, placeorder.RefreshPlaceOrderCommand{})
 	if err != nil {
