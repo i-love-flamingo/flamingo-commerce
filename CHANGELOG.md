@@ -1,5 +1,8 @@
 # Changelog
-## v3.4.0 [upcoming]
+## v3.5.0 [upcoming]
+
+
+## v3.4.0
 **cart**
 * Added desired time to DeliveryForm
 * InMemoryCartStorage: initialize lock and storage already in Inject() to avoid potential race conditions
@@ -17,13 +20,13 @@
       |          POST | /api/v1/cart/billing                               | PUT           | /api/v1/cart/billing                       |
       |          POST | /api/v1/cart/delivery/{deliveryCode}/deliveryinfo  | PUT           | /api/v1/cart/delivery/{deliveryCode}       |
       |           PUT | /api/v1/cart/updatepaymentselection                | PUT           | /api/v1/cart/payment-selection             |
-  * Embed swagger.json via go-bindata so it can be used from the outside
+  
 * GraphQL
-  * Updated schema and resolver regarding desired time
+  * Update schema and resolver regarding desired time
 
 **category**
 * Added cue config to module
-* Updated documentation of the module regarding the fake service
+* Update fake service documentation
 * FakeService
     * The category fake service was added which can return a project specific category tree and categories
     * Added configuration options are `fakeService.enabled` and `fakeService.testDataFolder` to enable the fake category service and to use json files as fake categories and tree. You can find examples in the documentation of the module
@@ -39,6 +42,7 @@
     * | old HTTP verb | old route                                     | new HTTP verb | new route                                     |
       |--------------:|-----------------------------------------------|---------------|-----------------------------------------------|
       |          POST | /api/v1/checkout/placeorder/refreshblocking   | POST          | /api/v1/checkout/placeorder/refresh-blocking  |
+
 **customer**
 * GraphQL
   * Extend `Commerce_Customer_Address` with some useful fields
@@ -70,6 +74,9 @@
 **sourcing**
 * **Breaking**
   * Optional pointer `DeliveryInfo` added as parameter to `StockProvider.GetStock`
+  
+**docs**
+* Embed swagger.json via go-bindata, so it can be used from the outside
 
 
 ## v3.3.0
