@@ -195,6 +195,9 @@ func (r *routes) apiRoutes(registry *web.RouterRegistry) {
 	registry.MustRoute("/api/v1/cart/payment-selection", `cart.api.payment-selection`)
 	registry.HandlePut("cart.api.payment-selection", r.apiController.UpdatePaymentSelectionAction)
 
+	registry.MustRoute("/api/v1/cart/deliveries/items", "cart.api.deliveries.items")
+	registry.HandleDelete("cart.api.deliveries.items", r.apiController.DeleteAllItemsAction)
+
 	registry.MustRoute("/api/v1/cart/delivery/:deliveryCode", `cart.api.delivery`)
 	registry.HandleDelete("cart.api.delivery", r.apiController.DeleteDelivery)
 	registry.HandlePut("cart.api.delivery", r.apiController.UpdateDeliveryInfoAction)
@@ -217,7 +220,7 @@ func (r *routes) apiRoutes(registry *web.RouterRegistry) {
 
 	// Legacy Routes:
 	registry.MustRoute("/api/cart", "cart.api.get")
-	registry.HandleDelete("cart.api.get", r.apiController.DeleteCartAction)
+	registry.HandleDelete("cart.api.get", r.apiController.DeleteAllItemsAction)
 	registry.HandleGet("cart.api.get", r.apiController.GetAction)
 
 	registry.MustRoute("/api/cart/delivery/:deliveryCode/additem", `cart.api.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryCode?="")`)

@@ -829,7 +829,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/controller.CartAPIResult'
-      summary: Cleans the cart and returns the cleaned cart
+      summary: Remove all stored cart information e.g. items, deliveries, billing address and returns the empty cart.
       tags:
       - Cart
     get:
@@ -951,6 +951,22 @@ paths:
           schema:
             $ref: '#/definitions/controller.CartAPIResult'
       summary: Adds billing infos to the current cart
+      tags:
+      - Cart
+  /api/v1/cart/deliveries/items:
+    delete:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.CartAPIResult'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.CartAPIResult'
+      summary: Remove all cart items from all deliveries and return the cart, keeps the delivery info untouched.
       tags:
       - Cart
   /api/v1/cart/delivery/{deliveryCode}:
@@ -1125,12 +1141,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/controller.CartAPIResult'
-            - properties:
-                data:
-                  $ref: '#/definitions/cart.Cart'
-              type: object
+            $ref: '#/definitions/controller.CartAPIResult'
         "500":
           description: Internal Server Error
           schema:
@@ -1164,12 +1175,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/controller.CartAPIResult'
-            - properties:
-                data:
-                  $ref: '#/definitions/cart.Cart'
-              type: object
+            $ref: '#/definitions/controller.CartAPIResult'
         "500":
           description: Internal Server Error
           schema:
@@ -1200,12 +1206,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/controller.CartAPIResult'
-            - properties:
-                data:
-                  $ref: '#/definitions/cart.Cart'
-              type: object
+            $ref: '#/definitions/controller.CartAPIResult'
         "500":
           description: Internal Server Error
           schema:

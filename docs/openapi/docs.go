@@ -62,7 +62,7 @@ var doc = `{
                 "tags": [
                     "Cart"
                 ],
-                "summary": "Cleans the cart and returns the cleaned cart",
+                "summary": "Remove all stored cart information e.g. items, deliveries, billing address and returns the empty cart.",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -222,6 +222,31 @@ var doc = `{
                         "required": true
                     }
                 ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CartAPIResult"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/cart/deliveries/items": {
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Remove all cart items from all deliveries and return the cart, keeps the delivery info untouched.",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -503,19 +528,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/controller.CartAPIResult"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/cart.Cart"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/controller.CartAPIResult"
                         }
                     },
                     "500": {
@@ -566,19 +579,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/controller.CartAPIResult"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/cart.Cart"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/controller.CartAPIResult"
                         }
                     },
                     "500": {
@@ -617,19 +618,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/controller.CartAPIResult"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/cart.Cart"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/controller.CartAPIResult"
                         }
                     },
                     "500": {

@@ -80,7 +80,7 @@ func (cc *CartAPIController) Inject(
 
 // GetAction Get JSON Format of API
 // @Summary Get the current cart
-// @Tags  Cart
+// @Tags Cart
 // @Produce json
 // @Success 200 {object} getCartResult
 // @Failure 500 {object} CartAPIResult
@@ -100,11 +100,34 @@ func (cc *CartAPIController) GetAction(ctx context.Context, r *web.Request) web.
 	})
 }
 
+// DeleteCartAction removes all cart content and returns a blank cart
+// @Summary Remove all stored cart information e.g. items, deliveries, billing address and returns the empty cart.
+// @Tags Cart
+// @Produce json
+// @Success 200 {object} CartAPIResult
+// @Failure 500 {object} CartAPIResult
+// @Router /api/v1/cart [delete]
+func (cc *CartAPIController) DeleteCartAction(ctx context.Context, r *web.Request) web.Result {
+	err := cc.cartService.Clean(ctx, r.Session())
+
+	result := newResult()
+	if err != nil {
+		cc.logger.WithContext(ctx).Error("cart.cartapicontroller.delete: %v", err.Error())
+
+		result.SetError(err, "delete_cart_error")
+		response := cc.responder.Data(result)
+		response.Status(500)
+		return response
+	}
+	cc.enrichResultWithCartInfos(ctx, &result)
+	return cc.responder.Data(result)
+}
+
 // AddAction Add Item to cart
 // @Summary Add Item to cart
-// @Tags  Cart
+// @Tags Cart
 // @Produce json
-// @Success 200 {object} CartAPIResult{data=cart.Cart}
+// @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
 // @Param deliveryCode path string true "the identifier for the delivery in the cart"
 // @Param marketplaceCode query string true "the product identifier that should be added"
@@ -139,9 +162,9 @@ func (cc *CartAPIController) AddAction(ctx context.Context, r *web.Request) web.
 
 // DeleteItemAction deletes an item from the cart
 // @Summary Delete item from cart
-// @Tags  Cart
+// @Tags Cart
 // @Produce json
-// @Success 200 {object} CartAPIResult{data=cart.Cart}
+// @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
 // @Param deliveryCode path string true "the identifier for the delivery in the cart"
 // @Param itemID query string true "the item that should be deleted"
@@ -167,9 +190,9 @@ func (cc *CartAPIController) DeleteItemAction(ctx context.Context, r *web.Reques
 
 // UpdateItemAction updates the item qty in the current cart
 // @Summary Update item in the cart
-// @Tags  Cart
+// @Tags Cart
 // @Produce json
-// @Success 200 {object} CartAPIResult{data=cart.Cart}
+// @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
 // @Param deliveryCode path string true "the identifier for the delivery in the cart"
 // @Param itemID query string true "the item that should be updated"
@@ -201,7 +224,7 @@ func (cc *CartAPIController) UpdateItemAction(ctx context.Context, r *web.Reques
 
 // ApplyVoucherAndGetAction applies the given voucher and returns the cart
 // @Summary Apply Voucher Code
-// @Tags  Cart
+// @Tags Cart
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
@@ -213,7 +236,7 @@ func (cc *CartAPIController) ApplyVoucherAndGetAction(ctx context.Context, r *we
 
 // RemoveVoucherAndGetAction removes the given voucher and returns the cart
 // @Summary Remove Voucher Code
-// @Tags  Cart
+// @Tags Cart
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
@@ -223,14 +246,14 @@ func (cc *CartAPIController) RemoveVoucherAndGetAction(ctx context.Context, r *w
 	return cc.handlePromotionAction(ctx, r, "voucher_error", cc.cartService.RemoveVoucher)
 }
 
-// DeleteCartAction cleans the cart and returns the cleaned cart
-// @Summary Cleans the cart and returns the cleaned cart
-// @Tags  Cart
+// DeleteAllItemsAction removes all cart items and returns the cart
+// @Summary Remove all cart items from all deliveries and return the cart, keeps the delivery info untouched.
+// @Tags Cart
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
-// @Router /api/v1/cart [delete]
-func (cc *CartAPIController) DeleteCartAction(ctx context.Context, r *web.Request) web.Result {
+// @Router /api/v1/cart/deliveries/items [delete]
+func (cc *CartAPIController) DeleteAllItemsAction(ctx context.Context, r *web.Request) web.Result {
 	err := cc.cartService.DeleteAllItems(ctx, r.Session())
 	result := newResult()
 	if err != nil {
@@ -245,7 +268,7 @@ func (cc *CartAPIController) DeleteCartAction(ctx context.Context, r *web.Reques
 // ApplyGiftCardAndGetAction applies the given gift card and returns the cart
 // the request needs a query string param "couponCode" which includes the corresponding gift card code
 // @Summary Apply Gift Card
-// @Tags  Cart
+// @Tags Cart
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
@@ -259,7 +282,7 @@ func (cc *CartAPIController) ApplyGiftCardAndGetAction(ctx context.Context, r *w
 // cartService and returns the cart
 // @Summary Apply Gift Card or Voucher (auto detected)
 // @Description Use this if you have one user input and that input can be used to either enter a voucher or a gift card
-// @Tags  Cart
+// @Tags Cart
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
@@ -272,7 +295,7 @@ func (cc *CartAPIController) ApplyCombinedVoucherGift(ctx context.Context, r *we
 // RemoveGiftCardAndGetAction removes the given gift card and returns the cart
 // the request needs a query string param "couponCode" which includes the corresponding gift card code
 // @Summary Remove Gift Card
-// @Tags  Cart
+// @Tags Cart
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
@@ -301,7 +324,7 @@ func (cc *CartAPIController) handlePromotionAction(ctx context.Context, r *web.R
 
 // DeleteDelivery cleans the given delivery from the cart and returns the cleaned cart
 // @Summary Cleans the given delivery from the cart
-// @Tags  Cart
+// @Tags Cart
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
@@ -321,7 +344,7 @@ func (cc *CartAPIController) DeleteDelivery(ctx context.Context, r *web.Request)
 
 // BillingAction adds billing infos
 // @Summary Adds billing infos to the current cart
-// @Tags  Cart
+// @Tags Cart
 // @Accept x-www-form-urlencoded
 // @Produce json
 // @Success 200 {object} CartAPIResult
@@ -367,7 +390,7 @@ func (cc *CartAPIController) BillingAction(ctx context.Context, r *web.Request) 
 
 // UpdateDeliveryInfoAction updates the delivery info
 // @Summary Adds delivery infos, such as shipping address to the delivery for the cart
-// @Tags  Cart
+// @Tags Cart
 // @Accept x-www-form-urlencoded
 // @Produce json
 // @Success 200 {object} CartAPIResult
@@ -418,7 +441,7 @@ func (cc *CartAPIController) UpdateDeliveryInfoAction(ctx context.Context, r *we
 
 // UpdatePaymentSelectionAction to set / update the cart payment selection
 // @Summary Update/set the PaymentSelection for the current cart
-// @Tags  Cart
+// @Tags Cart
 // @Produce json
 // @Success 200 {object} CartAPIResult
 // @Failure 500 {object} CartAPIResult
