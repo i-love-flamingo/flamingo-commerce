@@ -11,32 +11,32 @@ import (
 type (
 	// Delivery - represents the DeliveryInfo and the assigned Items
 	Delivery struct {
-		//DeliveryInfo - The details for this delivery - normally completed during checkout
+		// DeliveryInfo contains details for this delivery e.g. how and where the delivery should be delivered to
 		DeliveryInfo DeliveryInfo
-		//Cartitems - list of cartitems
+		// Cartitems is the list of items belonging to this delivery
 		Cartitems []Item
-		//ShippingItem	- The Shipping Costs that may be involved in this delivery
+		// ShippingItem	represent the shipping cost that may be involved in this delivery
 		ShippingItem ShippingItem
 	}
 
 	// DeliveryInfo - represents the Delivery
 	DeliveryInfo struct {
-		// Code - is a project specific identifier for the Delivery - you need it for the AddToCart Request for example
-		// The code can follow the convention in the Readme: Type_Method_LocationType_LocationCode
+		// Code is a project specific identifier for the Delivery - you need it for the AddToCart Request for example
+		// the code can follow the convention in the Readme: Type_Method_LocationType_LocationCode
 		Code string
-		//Type - The Type of the Delivery - e.g. delivery or pickup - this might trigger different workflows
+		// Workflow of the Delivery e.g. delivery or pickup, see DeliveryWorkflowPickup, DeliveryWorkflowDelivery or DeliveryWorkflowUnspecified
 		Workflow string
-		//Method - The shippingmethod something that is project specific and that can mean different delivery qualities with different deliverycosts
+		// Method is the shipping method something that is project specific and that can mean different delivery qualities with different delivery costs
 		Method string
-		//Carrier - Optional the name of the Carrier that should be responsible for executing the delivery
+		// Carrier optional name of the Carrier that should be responsible for executing the delivery
 		Carrier string
-		//DeliveryLocation The target Location for the delivery
+		// DeliveryLocation is the target location for the delivery
 		DeliveryLocation DeliveryLocation
-		//DesiredTime - Optional - the desired time of the delivery
+		// DesiredTime is an optional desired time for the delivery
 		DesiredTime time.Time
-		//AdditionalData  - Possibility for key value based information on the delivery - can be used flexible by each project
+		// AdditionalData can be used to store project specific information on the delivery
 		AdditionalData map[string]string
-		//AdditionalDeliveryInfos - similar to AdditionalData this can be used to store "any" other object on a delivery encoded as json.RawMessage
+		// AdditionalDeliveryInfos is similar to AdditionalData but can be used to store "any" other object on a delivery encoded as json.RawMessage
 		AdditionalDeliveryInfos map[string]json.RawMessage `swaggerignore:"true"`
 	}
 
@@ -48,7 +48,7 @@ type (
 		AppliedDiscounts AppliedDiscounts
 	}
 
-	//AdditionalDeliverInfo is an interface that allows to store "any" additional objects on the cart
+	// AdditionalDeliverInfo is an interface that allows to store "any" additional objects on the cart
 	// see DeliveryInfoUpdateCommand
 	AdditionalDeliverInfo interface {
 		Marshal() (json.RawMessage, error)
@@ -57,17 +57,17 @@ type (
 
 	// DeliveryLocation value object
 	DeliveryLocation struct {
-		//Type - the type of the delivery - use some of the constant defined in the package like DeliverylocationTypeAddress
+		// Type is the type of the delivery - use some of the constant defined in the package like DeliverylocationTypeAddress
 		Type string
-		//Address -  (only relevant for type address)
+		// Address contains the address of the delivery location, maybe not relevant if the type is not address
 		Address *Address
-		//UseBillingAddress - the address should be taken from billing (only relevant for type address)
+		// UseBillingAddress if the address should be taken from billing (only relevant for type address)
 		UseBillingAddress bool
-		//Code - optional identifier of this location/destination - is used in special destination Types
+		// Code is an optional identifier of this location/destination
 		Code string
 	}
 
-	//DeliveryBuilder - the Builder (factory) to build new deliveries by making sure the invariants are ok
+	// DeliveryBuilder is the Builder (factory) to build new deliveries by making sure the invariants are ok
 	DeliveryBuilder struct {
 		deliveryInBuilding *Delivery
 	}
@@ -77,26 +77,26 @@ type (
 )
 
 const (
-	//DeliveryWorkflowPickup - constant for common delivery workflows
+	// DeliveryWorkflowPickup constant for pickup delivery workflow
 	DeliveryWorkflowPickup = "pickup"
-	//DeliveryWorkflowDelivery - workflow constant
+	// DeliveryWorkflowDelivery constant for delivery delivery workflow
 	DeliveryWorkflowDelivery = "delivery"
-	//DeliveryWorkflowUnspecified - workflow constant
+	// DeliveryWorkflowUnspecified constant for an unspecified delivery workflow
 	DeliveryWorkflowUnspecified = "unspecified"
 
-	//DeliverylocationTypeUnspecified - constant
+	// DeliverylocationTypeUnspecified constant for an unspecified delivery location type
 	DeliverylocationTypeUnspecified = "unspecified"
-	//DeliverylocationTypeCollectionpoint - constant
+	// DeliverylocationTypeCollectionpoint constant for collection points
 	DeliverylocationTypeCollectionpoint = "collection-point"
-	//DeliverylocationTypeStore - constant
+	// DeliverylocationTypeStore constant for store delivery
 	DeliverylocationTypeStore = "store"
-	//DeliverylocationTypeAddress - constant
+	// DeliverylocationTypeAddress constant for deliveries to an address
 	DeliverylocationTypeAddress = "address"
-	//DeliverylocationTypeFreightstation - constant
+	// DeliverylocationTypeFreightstation constant for deliveries to an freight station
 	DeliverylocationTypeFreightstation = "freight-station"
 )
 
-//LoadAdditionalInfo - returns the additional Data
+// LoadAdditionalInfo returns the additional Data
 func (di *DeliveryInfo) LoadAdditionalInfo(key string, info AdditionalDeliverInfo) error {
 
 	if di.AdditionalDeliveryInfos == nil {
@@ -108,7 +108,7 @@ func (di *DeliveryInfo) LoadAdditionalInfo(key string, info AdditionalDeliverInf
 	return ErrAdditionalInfosNotFound
 }
 
-//SubTotalGross - returns SubTotalGross
+// SubTotalGross returns sub total of all items including the taxes for the delivery
 func (d Delivery) SubTotalGross() priceDomain.Price {
 	prices := make([]priceDomain.Price, 0, len(d.Cartitems))
 
@@ -120,7 +120,7 @@ func (d Delivery) SubTotalGross() priceDomain.Price {
 	return result
 }
 
-//GrandTotal - returns SubTotalGross including shipping and discounts - for the Delivery
+// GrandTotal returns the sub total of all items, shipping costs and potential discounts including taxes for the delivery
 func (d Delivery) GrandTotal() priceDomain.Price {
 	// we need a capacity of cartitems + 2
 	prices := make([]priceDomain.Price, 0, len(d.Cartitems)+2)
@@ -140,7 +140,7 @@ func (d Delivery) GrandTotal() priceDomain.Price {
 	return result
 }
 
-//SumRowTaxes - returns SumRowTaxes
+// SumRowTaxes returns all taxes applied to items of this delivery
 func (d Delivery) SumRowTaxes() Taxes {
 	var taxes Taxes
 	for _, item := range d.Cartitems {
@@ -151,7 +151,7 @@ func (d Delivery) SumRowTaxes() Taxes {
 	return taxes
 }
 
-//SumTotalTaxAmount - returns SumTotalTaxAmount
+// SumTotalTaxAmount returns the sum of all applied item taxes
 func (d Delivery) SumTotalTaxAmount() priceDomain.Price {
 	prices := make([]priceDomain.Price, 0, len(d.Cartitems))
 
@@ -163,7 +163,7 @@ func (d Delivery) SumTotalTaxAmount() priceDomain.Price {
 	return result
 }
 
-//SubTotalNet - returns SubTotalNet
+// SubTotalNet returns sub total of all items excluding the taxes for the delivery
 func (d Delivery) SubTotalNet() priceDomain.Price {
 	prices := make([]priceDomain.Price, 0, len(d.Cartitems))
 
@@ -175,7 +175,7 @@ func (d Delivery) SubTotalNet() priceDomain.Price {
 	return result
 }
 
-//SumTotalDiscountAmount - returns SumTotalDiscountAmount
+// SumTotalDiscountAmount returns the total applied discounts of the items of the delivery
 func (d Delivery) SumTotalDiscountAmount() priceDomain.Price {
 	prices := make([]priceDomain.Price, 0, len(d.Cartitems))
 
@@ -187,7 +187,7 @@ func (d Delivery) SumTotalDiscountAmount() priceDomain.Price {
 	return result
 }
 
-//SumNonItemRelatedDiscountAmount returns SumNonItemRelatedDiscountAmount
+// SumNonItemRelatedDiscountAmount returns the total applied discounts that are not item related
 func (d Delivery) SumNonItemRelatedDiscountAmount() priceDomain.Price {
 	prices := make([]priceDomain.Price, 0, len(d.Cartitems))
 
@@ -199,7 +199,7 @@ func (d Delivery) SumNonItemRelatedDiscountAmount() priceDomain.Price {
 	return result
 }
 
-//SumItemRelatedDiscountAmount - returns SumItemRelatedDiscountAmount
+// SumItemRelatedDiscountAmount returns the total applied discounts that are item related
 func (d Delivery) SumItemRelatedDiscountAmount() priceDomain.Price {
 	prices := make([]priceDomain.Price, 0, len(d.Cartitems))
 
@@ -211,26 +211,26 @@ func (d Delivery) SumItemRelatedDiscountAmount() priceDomain.Price {
 	return result
 }
 
-//SubTotalGrossWithDiscounts returns SubTotalGrossWithDiscounts
+// SubTotalGrossWithDiscounts returns sub total of all items including the taxes and applied discounts for the delivery
 func (d Delivery) SubTotalGrossWithDiscounts() priceDomain.Price {
 	price, _ := d.SubTotalGross().Add(d.SumTotalDiscountAmount())
 
 	return price
 }
 
-//SubTotalNetWithDiscounts - returns SubTotalNet With Discounts
+// SubTotalNetWithDiscounts returns sub total of all items excluding the taxes and applied discounts for the delivery
 func (d Delivery) SubTotalNetWithDiscounts() priceDomain.Price {
 	price, _ := d.SubTotalNet().Add(d.SumTotalDiscountAmount())
 
 	return price
 }
 
-//HasItems - returns true if there are items under the delivery
+// HasItems returns true if there are items under the delivery
 func (d Delivery) HasItems() bool {
 	return len(d.Cartitems) > 0
 }
 
-//Copy - use to set the values for the new delivery from an existing delivery by copying it
+// Copy can be used to set the values for the new delivery from an existing delivery by copying it
 func (f *DeliveryBuilder) Copy(d *Delivery) *DeliveryBuilder {
 	f.init()
 	f.deliveryInBuilding.Cartitems = d.Cartitems
@@ -240,35 +240,35 @@ func (f *DeliveryBuilder) Copy(d *Delivery) *DeliveryBuilder {
 	return f
 }
 
-//AddItem adds an item to the delivery
+// AddItem adds an item to the delivery
 func (f *DeliveryBuilder) AddItem(i Item) *DeliveryBuilder {
 	f.init()
 	f.deliveryInBuilding.Cartitems = append(f.deliveryInBuilding.Cartitems, i)
 	return f
 }
 
-//SetShippingItem - sets the delivery ShippingItem
+// SetShippingItem sets the delivery ShippingItem
 func (f *DeliveryBuilder) SetShippingItem(i ShippingItem) *DeliveryBuilder {
 	f.init()
 	f.deliveryInBuilding.ShippingItem = i
 	return f
 }
 
-//SetDeliveryInfo - sets DeliveryInfo
+// SetDeliveryInfo sets DeliveryInfo
 func (f *DeliveryBuilder) SetDeliveryInfo(i DeliveryInfo) *DeliveryBuilder {
 	f.init()
 	f.deliveryInBuilding.DeliveryInfo = i
 	return f
 }
 
-//SetDeliveryCode - sets the deliverycode (dont need to be called if SetDeliveryInfo has a code set already)
+// SetDeliveryCode sets the deliveryCode (dont need to be called if SetDeliveryInfo has a code set already)
 func (f *DeliveryBuilder) SetDeliveryCode(code string) *DeliveryBuilder {
 	f.init()
 	f.deliveryInBuilding.DeliveryInfo.Code = code
 	return f
 }
 
-//Build - main Factory method
+// Build is the main Factory method
 func (f *DeliveryBuilder) Build() (*Delivery, error) {
 	if f.deliveryInBuilding == nil {
 		return nil, errors.New("Nothing in building")
@@ -290,7 +290,7 @@ func (f *DeliveryBuilder) reset() {
 	f.deliveryInBuilding = nil
 }
 
-// TotalWithDiscountInclTax - the price the customer need to pay for the shipping
+// TotalWithDiscountInclTax is the price the customer need to pay for the shipping
 func (s ShippingItem) TotalWithDiscountInclTax() priceDomain.Price {
 	price, _ := s.PriceNet.Add(s.TaxAmount)
 	discounts, _ := s.AppliedDiscounts.Sum()
@@ -298,7 +298,7 @@ func (s ShippingItem) TotalWithDiscountInclTax() priceDomain.Price {
 	return price.GetPayable()
 }
 
-// Tax - the Tax of the shipping
+// Tax is the Tax of the shipping
 func (s ShippingItem) Tax() Tax {
 	return Tax{
 		Type:   "tax",

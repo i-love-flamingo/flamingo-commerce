@@ -3,22 +3,23 @@ package events
 import (
 	"context"
 
+	"flamingo.me/flamingo/v3/framework/flamingo"
+
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
-	"flamingo.me/flamingo/v3/framework/flamingo"
 )
 
 type (
 
-	//EventPublisher - technology free interface to publish events that might be interesting for outside (Publish)
+	// EventPublisher technology free interface to publish events that might be interesting for outside (Publish)
 	EventPublisher interface {
 		PublishAddToCartEvent(ctx context.Context, cart *cartDomain.Cart, marketPlaceCode string, variantMarketPlaceCode string, qty int)
 		PublishChangedQtyInCartEvent(ctx context.Context, cart *cartDomain.Cart, item *cartDomain.Item, qtyBefore int, qtyAfter int)
 		PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos placeorder.PlacedOrderInfos)
 	}
 
-	//DefaultEventPublisher implements the event publisher of the domain and uses the framework event router
+	// DefaultEventPublisher implements the event publisher of the domain and uses the framework event router
 	DefaultEventPublisher struct {
 		logger         flamingo.Logger
 		productService productDomain.ProductService
@@ -89,6 +90,6 @@ func (d *DefaultEventPublisher) PublishOrderPlacedEvent(ctx context.Context, car
 
 	d.logger.WithContext(ctx).Info("Publish Event OrderPlacedEvent for Order: ", placedOrderInfos)
 
-	//For now we publish only to Flamingo default Event Router
+	// For now we publish only to Flamingo default Event Router
 	d.eventRouter.Dispatch(ctx, &eventObject)
 }
