@@ -305,13 +305,20 @@ func (cob *DefaultCartBehaviour) buildItemForCart(ctx context.Context, addReques
 	return itemBuilder.Build()
 }
 
-// CleanCart removes all deliveries and their items from the cart
+// CleanCart removes everything from the cart, e.g. deliveries, billing address, etc
 func (cob *DefaultCartBehaviour) CleanCart(ctx context.Context, cart *domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	if !cob.cartStorage.HasCart(ctx, cart.ID) {
 		return nil, nil, fmt.Errorf("cart.infrastructure.DefaultCartBehaviour: Cannot delete - Guestcart with id %v not existent", cart.ID)
 	}
 
 	cart.Deliveries = []domaincart.Delivery{}
+	cart.AppliedCouponCodes = nil
+	cart.AppliedGiftCards = nil
+	cart.PaymentSelection = nil
+	cart.AdditionalData = domaincart.AdditionalData{}
+	cart.Purchaser = nil
+	cart.BillingAddress = nil
+	cart.Totalitems = nil
 
 	err := cob.cartStorage.StoreCart(ctx, cart)
 	if err != nil {
