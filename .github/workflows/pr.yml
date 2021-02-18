@@ -1,0 +1,21 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches:
+      - master
+jobs:
+  vulnerability-scan:
+    name: Vulnerability scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+      - name: Set up Go 1.x in order to write go.list file
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.13
+      - name: WriteGoList
+        run: go list -json -m all > go.list
+      - name: Nancy
+        uses: sonatype-nexus-community/nancy-github-action@main
