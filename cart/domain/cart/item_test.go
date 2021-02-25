@@ -2,9 +2,10 @@ package cart_test
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/require"
 	"math/big"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 
 	"github.com/stretchr/testify/assert"
 
@@ -88,9 +89,9 @@ func TestItemSplitter_SplitGrossBased(t *testing.T) {
 	}
 	splitter := &cartDomain.ItemSplitter{}
 	splitter.Inject(provider, &struct {
-		UseGrosPrice bool `inject:"config:commerce.product.priceIsGross,optional"`
+		UseGrossPrice bool `inject:"config:commerce.product.priceIsGross,optional"`
 	}{
-		UseGrosPrice: true,
+		UseGrossPrice: true,
 	})
 
 	builder := provider()
