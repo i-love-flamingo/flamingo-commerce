@@ -16,44 +16,47 @@ type (
 	// Provider should be used to create the cart Value objects
 	provider func() *Cart
 
-	// Cart Value Object (immutable data - because the cartservice is responsible to return a cart).
+	// Cart Value Object (immutable data - because the CartService is responsible to return a cart).
 	Cart struct {
-		//ID is the main identifier of the cart
+		// ID is the main identifier of the cart
 		ID string
-		//EntityID is a second identifier that may be used by some backends
+		// EntityID is a second identifier that may be used by some backends
 		EntityID string
 
-		//BillingAddress - the main billing address (relevant for all payments/invoices)
+		// BillingAddress is the main billing address (relevant for all payments/invoices)
 		BillingAddress *Address
 
-		//Purchaser - additional infos for the legal contact person in this order
+		// Purchaser hold additional infos for the legal contact person in this order
 		Purchaser *Person
 
-		//Deliveries - list of desired Deliveries (or Shipments) involved in this cart
+		// Deliveries contains a list of desired Deliveries (or Shipments) involved in this cart
 		Deliveries []Delivery
 
-		//AdditionalData   can be used for Custom attributes
+		// AdditionalData can be used for Custom attributes
 		AdditionalData AdditionalData
 
-		//PaymentSelection - the saved PaymentSelection (saves "how" the customer want to pay)
+		// PaymentSelection is used to store information on "how" the customer wants to pay
 		PaymentSelection PaymentSelection
 
-		//BelongsToAuthenticatedUser - false = Guest Cart true = cart from the authenticated user
+		// BelongsToAuthenticatedUser displays if the cart is guest cart (false) or from an authenticated user (true)
 		BelongsToAuthenticatedUser bool
-		AuthenticatedUserID        string
 
+		// AuthenticatedUserID holds the potential customer ID
+		AuthenticatedUserID string
+
+		// AppliedCouponCodes hold the coupons or discount codes that are applied to the cart
 		AppliedCouponCodes []CouponCode
 
 		DefaultCurrency string
 
-		//Additional non taxable totals
+		// Additional non taxable totals
 		Totalitems []Totalitem
 
-		//List of applied gift cards
+		// AppliedGiftCards is a list of applied gift cards
 		AppliedGiftCards []AppliedGiftCard
 	}
 
-	// Teaser - represents some teaser infos for cart
+	// Teaser represents some teaser infos for cart
 	Teaser struct {
 		ProductCount  int
 		ItemCount     int
@@ -74,13 +77,13 @@ type (
 	Person struct {
 		Address         *Address
 		PersonalDetails PersonalDetails
-		//ExistingCustomerData if the current purchaser is an existing customer - this contains infos about existing customer
+		// ExistingCustomerData if the current purchaser is an existing customer - this contains infos about existing customer
 		ExistingCustomerData *ExistingCustomerData
 	}
 
 	// ExistingCustomerData value object
 	ExistingCustomerData struct {
-		//ID of the customer
+		// ID of the customer
 		ID string
 	}
 
@@ -92,10 +95,10 @@ type (
 		Nationality     string
 	}
 
-	//Taxes is a list of Tax
+	// Taxes is a list of Tax
 	Taxes []Tax
 
-	//Tax - it the Tax represented by an Amount and Optional the Rate.
+	// Tax is the Tax represented by an Amount and optional the Rate.
 	Tax struct {
 		Amount domain.Price
 		Type   string
@@ -117,20 +120,21 @@ type (
 
 	// AdditionalData defines the supplementary cart data
 	AdditionalData struct {
-		//CustomAttributes list of key values
+		// CustomAttributes list of key values
 		CustomAttributes map[string]string
 		// ReservedOrderID is an ID already known by the Cart of the future order ID
 		ReservedOrderID string
 	}
 
-	//Builder - the main builder for a cart
+	// Builder is the main builder for a cart
 	Builder struct {
 		cartInBuilding *Cart
 	}
+
 	// BuilderProvider should be used to create the cart by using the Builder
 	BuilderProvider func() *Builder
 
-	//PricedItems - value object that contains items of the different possible types, that have a price
+	// PricedItems - value object that contains items of the different possible types, that have a price
 	PricedItems struct {
 		cartItems     map[string]domain.Price
 		shippingItems map[string]domain.Price
@@ -181,7 +185,7 @@ func (c Cart) GetContactMail() string {
 	return shippingEmail
 }
 
-// IsEmpty - returns true if cart is empty
+// IsEmpty returns true if cart is empty
 func (c Cart) IsEmpty() bool {
 	return c.GetCartTeaser().ItemCount == 0
 }
@@ -275,7 +279,7 @@ func (c Cart) GetByExternalReference(ref string) (*Item, error) {
 	return nil, errors.Errorf("uitemID %v in cart not existing", ref)
 }
 
-// ItemCount - returns amount of Cartitems
+// ItemCount returns amount of cart items in the current cart
 func (c Cart) ItemCount() int {
 	count := 0
 	for _, delivery := range c.Deliveries {
@@ -310,7 +314,7 @@ func (c Cart) ProductCountUnique() int {
 	return len(marketplaceCodes)
 }
 
-// IsPaymentSelected - returns true if a valid payment is selected
+// IsPaymentSelected returns true if a valid payment is selected
 func (c Cart) IsPaymentSelected() bool {
 	return c.PaymentSelection != nil
 }
@@ -336,12 +340,12 @@ func (c Cart) GetVoucherSavings() domain.Price {
 	return price
 }
 
-// GrandTotal - Final sum (Valued price) that need to be paid: GrandTotal = SubTotal + TaxAmount - DiscountAmount + SOME of Totalitems = (Sum of Items RowTotalWithDiscountInclTax) + SOME of Totalitems
+// GrandTotal is the final sum (Valued price) that need to be paid: GrandTotal = SubTotal + TaxAmount - DiscountAmount + sum of Totalitems = (Sum of Items RowTotalWithDiscountInclTax) + sum of Totalitems
 func (c Cart) GrandTotal() domain.Price {
 	return c.GetAllPaymentRequiredItems().Sum()
 }
 
-// GetAllPaymentRequiredItems - returns all the Items (Cartitem, ShippingItem, TotalItems) that need to be paid with the final gross price
+// GetAllPaymentRequiredItems  returns all the Items (Cartitem, ShippingItem, TotalItems) that need to be paid with the final gross price
 func (c Cart) GetAllPaymentRequiredItems() PricedItems {
 	pricedItems := PricedItems{
 		cartItems:     make(map[string]domain.Price),
@@ -362,7 +366,7 @@ func (c Cart) GetAllPaymentRequiredItems() PricedItems {
 	return pricedItems
 }
 
-// SumShippingNet - returns net sum price of deliveries ShippingItems
+// SumShippingNet returns net sum price of deliveries ShippingItems
 func (c Cart) SumShippingNet() domain.Price {
 	prices := make([]domain.Price, 0, len(c.Deliveries))
 
@@ -375,7 +379,7 @@ func (c Cart) SumShippingNet() domain.Price {
 	return price
 }
 
-// SumShippingNetWithDiscounts - returns net sum price of deliveries ShippingItems with discounts
+// SumShippingNetWithDiscounts returns net sum price of deliveries ShippingItems with discounts
 func (c Cart) SumShippingNetWithDiscounts() domain.Price {
 	prices := make([]domain.Price, 0, len(c.Deliveries))
 
@@ -389,12 +393,12 @@ func (c Cart) SumShippingNetWithDiscounts() domain.Price {
 	return price
 }
 
-// HasShippingCosts - returns true if cart HasShippingCosts
+// HasShippingCosts returns true if cart HasShippingCosts
 func (c Cart) HasShippingCosts() bool {
 	return c.SumShippingNet().IsPositive()
 }
 
-// AllShippingTitles - returns all ShippingItem titles
+// AllShippingTitles returns all ShippingItem titles
 func (c Cart) AllShippingTitles() []string {
 	label := make([]string, 0, len(c.Deliveries))
 
@@ -405,7 +409,7 @@ func (c Cart) AllShippingTitles() []string {
 	return label
 }
 
-// SubTotalGross - returns sum price of deliveries SubTotalGross
+// SubTotalGross returns sum price of deliveries SubTotalGross
 func (c Cart) SubTotalGross() domain.Price {
 	prices := make([]domain.Price, 0, len(c.Deliveries))
 
@@ -418,7 +422,7 @@ func (c Cart) SubTotalGross() domain.Price {
 	return price
 }
 
-// SumTaxes - returns sum of deliveries SumRowTaxes
+// SumTaxes returns sum of deliveries SumRowTaxes
 func (c Cart) SumTaxes() Taxes {
 	newTaxes := Taxes{}
 
@@ -432,12 +436,12 @@ func (c Cart) SumTaxes() Taxes {
 	return newTaxes
 }
 
-// SumTotalTaxAmount - returns sum price of deliveries Taxes as total amount
+// SumTotalTaxAmount returns sum price of deliveries Taxes as total amount
 func (c Cart) SumTotalTaxAmount() domain.Price {
 	return c.SumTaxes().TotalAmount()
 }
 
-// SubTotalNet - returns sum price of deliveries SubTotalNet
+// SubTotalNet returns sum price of deliveries SubTotalNet
 func (c Cart) SubTotalNet() domain.Price {
 	prices := make([]domain.Price, 0, len(c.Deliveries))
 
@@ -450,7 +454,7 @@ func (c Cart) SubTotalNet() domain.Price {
 	return price
 }
 
-// SubTotalGrossWithDiscounts - returns sum price of deliveries SubTotalGrossWithDiscounts
+// SubTotalGrossWithDiscounts returns sum price of deliveries SubTotalGrossWithDiscounts
 func (c Cart) SubTotalGrossWithDiscounts() domain.Price {
 	prices := make([]domain.Price, 0, len(c.Deliveries))
 
@@ -463,7 +467,7 @@ func (c Cart) SubTotalGrossWithDiscounts() domain.Price {
 	return price
 }
 
-// SubTotalNetWithDiscounts - returns sum price of deliveries SubTotalNetWithDiscounts
+// SubTotalNetWithDiscounts returns sum price of deliveries SubTotalNetWithDiscounts
 func (c Cart) SubTotalNetWithDiscounts() domain.Price {
 	prices := make([]domain.Price, 0, len(c.Deliveries))
 
@@ -475,7 +479,7 @@ func (c Cart) SubTotalNetWithDiscounts() domain.Price {
 	return price
 }
 
-// SumTotalDiscountAmount - returns sum price of deliveries SumTotalDiscountAmount
+// SumTotalDiscountAmount returns sum price of deliveries SumTotalDiscountAmount
 func (c Cart) SumTotalDiscountAmount() domain.Price {
 	prices := make([]domain.Price, 0, len(c.Deliveries))
 
@@ -488,7 +492,7 @@ func (c Cart) SumTotalDiscountAmount() domain.Price {
 	return price
 }
 
-// SumNonItemRelatedDiscountAmount - returns sum price of deliveries SumNonItemRelatedDiscountAmount
+// SumNonItemRelatedDiscountAmount returns sum price of deliveries SumNonItemRelatedDiscountAmount
 func (c Cart) SumNonItemRelatedDiscountAmount() domain.Price {
 	prices := make([]domain.Price, 0, len(c.Deliveries))
 
@@ -501,7 +505,7 @@ func (c Cart) SumNonItemRelatedDiscountAmount() domain.Price {
 	return price
 }
 
-// SumItemRelatedDiscountAmount - returns sum price of deliveries SumItemRelatedDiscountAmount
+// SumItemRelatedDiscountAmount returns sum price of deliveries SumItemRelatedDiscountAmount
 func (c Cart) SumItemRelatedDiscountAmount() domain.Price {
 	prices := make([]domain.Price, 0, len(c.Deliveries))
 
@@ -528,7 +532,7 @@ func (c Cart) GetCartTeaser() *Teaser {
 	}
 }
 
-// GetPaymentReference - Returns a string that can be used as reference to pass to payment gateway. You may want to use it. It returns either the reserved Order id or the cart id/entityid
+// GetPaymentReference returns a string that can be used as reference to pass to payment gateway. You may want to use it. It returns either the reserved Order id or the cart id/entityid
 func (c Cart) GetPaymentReference() string {
 	if c.AdditionalData.ReservedOrderID != "" {
 		return c.AdditionalData.ReservedOrderID
@@ -536,7 +540,7 @@ func (c Cart) GetPaymentReference() string {
 	return fmt.Sprintf("%v-%v", c.ID, c.EntityID)
 }
 
-// GetTotalItemsByType gets a slice of all Totalitems by typeCode
+// GetTotalItemsByType returns a slice of all Totalitems by typeCode
 func (c Cart) GetTotalItemsByType(typeCode string) []Totalitem {
 	totalitems := make([]Totalitem, 0, len(c.Totalitems))
 
@@ -549,12 +553,12 @@ func (c Cart) GetTotalItemsByType(typeCode string) []Totalitem {
 	return totalitems
 }
 
-// GrandTotalCharges - Final sum that need to be paid - splitted by the charges that need to be paid
+// GrandTotalCharges is the final sum that need to be paid - split by the charges that need to be paid
 func (c Cart) GrandTotalCharges() domain.Charges {
 	// Check if a specific split was saved:
 	if c.PaymentSelection != nil {
 		charges := c.PaymentSelection.CartSplit().ChargesByType()
-		//make sure we have valid main charge currency
+		// make sure we have valid main charge currency
 		return charges.AddCharge(domain.Charge{
 			Value: domain.NewFromInt(0, 1, c.DefaultCurrency),
 			Price: domain.NewFromInt(0, 1, c.DefaultCurrency),
@@ -562,7 +566,7 @@ func (c Cart) GrandTotalCharges() domain.Charges {
 		})
 	}
 
-	// else return the grandtotal as main charge
+	// else return the grand total as main charge
 	charges := domain.Charges{}
 	mainCharge := domain.Charge{
 		Value: c.GrandTotal(),
@@ -604,7 +608,7 @@ func (t Taxes) AddTaxWithMerge(taxToAddOrMerge Tax) Taxes {
 	return newTaxes
 }
 
-// AddTaxesWithMerge - returns new Taxes with the given Taxes all added or merged in
+// AddTaxesWithMerge returns new Taxes with the given Taxes all added or merged in
 func (t Taxes) AddTaxesWithMerge(taxes Taxes) Taxes {
 	newTaxes := Taxes(t)
 
@@ -615,7 +619,7 @@ func (t Taxes) AddTaxesWithMerge(taxes Taxes) Taxes {
 	return newTaxes
 }
 
-// TotalAmount - returns the sum of all taxes as price
+// TotalAmount returns the sum of all taxes as price
 func (t Taxes) TotalAmount() domain.Price {
 	prices := make([]domain.Price, 0, len(t))
 
@@ -628,14 +632,12 @@ func (t Taxes) TotalAmount() domain.Price {
 	return result
 }
 
-// ###################
-
-// Build - main factory method
+// Build is the main factory method
 func (b *Builder) Build() (*Cart, error) {
 	return b.reset(nil)
 }
 
-// SetIds - sets the cart ids
+// SetIds sets the cart ids
 func (b *Builder) SetIds(id string, entityID string) *Builder {
 	b.init()
 	b.cartInBuilding.ID = id
@@ -644,7 +646,7 @@ func (b *Builder) SetIds(id string, entityID string) *Builder {
 	return b
 }
 
-// SetReservedOrderID - optional
+// SetReservedOrderID sets the optional order id
 func (b *Builder) SetReservedOrderID(id string) *Builder {
 	b.init()
 	b.cartInBuilding.AdditionalData.ReservedOrderID = id
@@ -652,7 +654,7 @@ func (b *Builder) SetReservedOrderID(id string) *Builder {
 	return b
 }
 
-// SetBillingAddress - optional
+// SetBillingAddress sets the optional billing address
 func (b *Builder) SetBillingAddress(a Address) *Builder {
 	b.init()
 	b.cartInBuilding.BillingAddress = &a
@@ -660,7 +662,7 @@ func (b *Builder) SetBillingAddress(a Address) *Builder {
 	return b
 }
 
-// SetPurchaser - optional
+// SetPurchaser sets the optional purchaser
 func (b *Builder) SetPurchaser(p Person) *Builder {
 	b.init()
 	b.cartInBuilding.Purchaser = &p
@@ -668,7 +670,7 @@ func (b *Builder) SetPurchaser(p Person) *Builder {
 	return b
 }
 
-// AddDelivery - add a delivery subobject - use the DeliveryBuilder
+// AddDelivery adds a delivery - use the DeliveryBuilder to create one
 // todo Make sure that item id is unique over the whole cart (that is an invariant so we need to ensure that invalid cart objects cannot be build)
 func (b *Builder) AddDelivery(d Delivery) *Builder {
 	b.init()
@@ -677,7 +679,7 @@ func (b *Builder) AddDelivery(d Delivery) *Builder {
 	return b
 }
 
-// SetAdditionalData - to add additional data
+// SetAdditionalData can be used to add additional data
 func (b *Builder) SetAdditionalData(d AdditionalData) *Builder {
 	b.init()
 	b.cartInBuilding.AdditionalData = d
@@ -685,7 +687,7 @@ func (b *Builder) SetAdditionalData(d AdditionalData) *Builder {
 	return b
 }
 
-// SetPaymentSelection - to add additional data
+// SetPaymentSelection sets the payment selection
 func (b *Builder) SetPaymentSelection(d PaymentSelection) *Builder {
 	b.init()
 	b.cartInBuilding.PaymentSelection = d
@@ -693,7 +695,7 @@ func (b *Builder) SetPaymentSelection(d PaymentSelection) *Builder {
 	return b
 }
 
-// SetAuthenticatedUserID - to mark the art as authenticated users cart
+// SetAuthenticatedUserID used to mark the cart as authenticated users cart
 func (b *Builder) SetAuthenticatedUserID(id string) *Builder {
 	b.init()
 	b.cartInBuilding.AuthenticatedUserID = id
@@ -702,7 +704,7 @@ func (b *Builder) SetAuthenticatedUserID(id string) *Builder {
 	return b
 }
 
-// SetBelongsToAuthenticatedUser -  mark the art as authenticated users cart
+// SetBelongsToAuthenticatedUser mark the cart as authenticated users cart
 func (b *Builder) SetBelongsToAuthenticatedUser(v bool) *Builder {
 	b.init()
 	b.cartInBuilding.BelongsToAuthenticatedUser = v
@@ -710,7 +712,7 @@ func (b *Builder) SetBelongsToAuthenticatedUser(v bool) *Builder {
 	return b
 }
 
-// AddAppliedCouponCode - optional - add the coupon that is applied for the  cart
+// AddAppliedCouponCode add the optional coupon that is applied for the cart
 func (b *Builder) AddAppliedCouponCode(code CouponCode) *Builder {
 	b.init()
 	b.cartInBuilding.AppliedCouponCodes = append(b.cartInBuilding.AppliedCouponCodes, code)
@@ -718,7 +720,7 @@ func (b *Builder) AddAppliedCouponCode(code CouponCode) *Builder {
 	return b
 }
 
-// SetAppliedGiftCards - optional - sets the applied gift cards
+// SetAppliedGiftCards sets the optional applied gift cards
 func (b *Builder) SetAppliedGiftCards(gc []AppliedGiftCard) *Builder {
 	b.init()
 	b.cartInBuilding.AppliedGiftCards = gc
@@ -726,7 +728,7 @@ func (b *Builder) SetAppliedGiftCards(gc []AppliedGiftCard) *Builder {
 	return b
 }
 
-// SetDefaultCurrency - sets the default currency
+// SetDefaultCurrency sets the default currency
 func (b *Builder) SetDefaultCurrency(d string) *Builder {
 	b.init()
 	b.cartInBuilding.DefaultCurrency = d
@@ -734,7 +736,7 @@ func (b *Builder) SetDefaultCurrency(d string) *Builder {
 	return b
 }
 
-// AddTotalitem - adds nontaxable extra totals on cartlevel
+// AddTotalitem adds nontaxable extra totals on cart level
 func (b *Builder) AddTotalitem(totali Totalitem) *Builder {
 	b.init()
 	b.cartInBuilding.Totalitems = append(b.cartInBuilding.Totalitems, totali)
@@ -755,7 +757,7 @@ func (b *Builder) reset(err error) (*Cart, error) {
 	return cart, err
 }
 
-//Sum - returns Sum of all items in this struct
+// Sum returns Sum of all items in this struct
 func (p PricedItems) Sum() domain.Price {
 	prices := make([]domain.Price, 0, len(p.cartItems)+len(p.shippingItems)+len(p.totalItems))
 
@@ -773,22 +775,22 @@ func (p PricedItems) Sum() domain.Price {
 	return sum
 }
 
-//TotalItems - returns the Price per Totalitem - map key is total type
+// TotalItems returns the Price per Totalitem - map key is total type
 func (p PricedItems) TotalItems() map[string]domain.Price {
 	return p.totalItems
 }
 
-// ShippingItems - returns the Price per ShippingItems - map key is deliverycode
+// ShippingItems returns the Price per ShippingItems - map key is delivery code
 func (p PricedItems) ShippingItems() map[string]domain.Price {
 	return p.shippingItems
 }
 
-// CartItems - returns the Price per cartItems - map key is cartitem ID
+// CartItems returns the Price per cartItems - map key is cart item ID
 func (p PricedItems) CartItems() map[string]domain.Price {
 	return p.cartItems
 }
 
-//ContainedIn - returns if the coupon codes are contained in couponCodesToCompare
+// ContainedIn returns if the coupon codes are contained in couponCodesToCompare
 func (acc AppliedCouponCodes) ContainedIn(couponCodesToCompare AppliedCouponCodes) bool {
 	for _, couponCode := range acc {
 		contained := false

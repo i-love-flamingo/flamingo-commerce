@@ -15,7 +15,7 @@ type (
 	GuestCartService interface {
 		// GetModifyBehaviour gets the behaviour for the guest cart service
 		GetModifyBehaviour(context.Context) (ModifyBehaviour, error)
-		//GetCart for guest by unique cart id
+		// GetCart for guest by unique cart id
 		GetCart(ctx context.Context, cartID string) (*Cart, error)
 		// GetNewCart - should return a new guest cart (including the id of the cart)
 		GetNewCart(ctx context.Context) (*Cart, error)
@@ -29,7 +29,7 @@ type (
 	CustomerCartService interface {
 		// GetModifyBehaviour gets the behaviour for the customer cart service
 		GetModifyBehaviour(context.Context, auth.Identity) (ModifyBehaviour, error)
-		//GetCart for authenticated user and optional cartid
+		// GetCart for authenticated user and optional cartid
 		GetCart(ctx context.Context, identity auth.Identity, cartID string) (*Cart, error)
 		// RestoreCart restores a previously used customer cart with all its content.
 		// Depending on the used adapter this can lead to a new Cart.ID
@@ -68,13 +68,13 @@ type (
 		Restore(context.Context, *Cart) (*Cart, DeferEvents, error)
 	}
 
-	//GiftCardBehaviour - additional interface that can be implemented to support GiftCard features
+	// GiftCardBehaviour - additional interface that can be implemented to support GiftCard features
 	GiftCardBehaviour interface {
 		ApplyGiftCard(ctx context.Context, cart *Cart, giftCardCode string) (*Cart, DeferEvents, error)
 		RemoveGiftCard(ctx context.Context, cart *Cart, giftCardCode string) (*Cart, DeferEvents, error)
 	}
 
-	//GiftCardAndVoucherBehaviour - additional interface that can be implemented to support generic code entry (which can either be voucher or giftcard)
+	// GiftCardAndVoucherBehaviour - additional interface that can be implemented to support generic code entry (which can either be voucher or giftcard)
 	GiftCardAndVoucherBehaviour interface {
 		ApplyAny(ctx context.Context, cart *Cart, anyCode string) (*Cart, DeferEvents, error)
 	}
@@ -115,7 +115,7 @@ var (
 	ErrDeliveryCodeNotFound = errors.New("Delivery not found")
 )
 
-//CreateDeliveryInfoUpdateCommand - factory to get the update command based on the given deliveryInfos (which might come from cart)
+// CreateDeliveryInfoUpdateCommand - factory to get the update command based on the given deliveryInfos (which might come from cart)
 func CreateDeliveryInfoUpdateCommand(info DeliveryInfo) DeliveryInfoUpdateCommand {
 	uc := DeliveryInfoUpdateCommand{
 		DeliveryInfo: info,

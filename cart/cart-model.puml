@@ -1,0 +1,128 @@
+see http://plantuml.com/
+
+@startuml
+
+Cart o-- Delivery : Deliveries
+Delivery --> DeliveryInfo
+Delivery --> ShippingItem
+Delivery o-- Item : CartItems
+ShippingItem o-- AppliedDiscount : AppliedDiscounts
+Item o-- AppliedDiscount : AppliedDiscounts
+DeliveryInfo --> DeliveryLocation
+DeliveryLocation --> Address
+
+Cart --> CartTotals
+CartTotals o-- TotalItem : TotalItems
+Cart --> Address : BillingAddress
+Cart --> Person : Purchaser
+Person --> Address
+Person --> PersonalDetails
+
+Cart --> PaymentSelection
+
+Cart o-- AppliedGiftCard : AppliedGiftCards
+Cart o-- CouponCode : AppliedCouponCodes
+
+class Cart {
++ ID
++ EntityID
++ BillingAddress
++ Purchaser
++ Deliveries
++ AdditionalData
++ PaymentSelection
++ BelongsToAuthenticatedUser
++ AuthenticatedUserID
++ DefaultCurrency
++ Totalitems
++ AppliedCouponCodes
++ AppliedGiftCards
++ GrandTotal(): Price
+}
+
+class Item {
++ ID
++ ExternalReference
++ MarketplaceCode
++ VariantMarketPlaceCode
++ ProductName
++ SourceID
++ Qty
++ AdditionalData
++ SinglePriceGross
++ SinglePriceNet
++ RowPriceGross
++ RowPriceNet
++ RowTaxes
++ AppliedDiscounts
+}
+
+class CartTotals {
++ TotalShippingItem
++ GrandTotal
++ SubTotal
+}
+
+class AppliedGiftCard  {
++ Code
++ Applied
++ Remaining
+}
+
+class CouponCode  {
++ Code
+}
+
+class Address {
++ Vat
++ Firstname
++ Lastname
++ MiddleName
++ Title
++ Salutation
++ Street
++ StreetNr
++ AdditionalAddressLines
++ Company
++ City
++ PostCode
++ State
++ RegionCode
++ Country
++ CountryCode
++ Telephone
++ Email
+}
+
+class Delivery {
++ DeliveryInfo
++ Cartitems
++ ShippingItem
++ GrandTotal(): Price
+}
+
+class DeliveryInfo {
++ Code
++ Workflow
++ Method
++ Carrier
++ DeliveryLocation
++ DesiredTime
++ AdditionalData
+}
+
+class ShippingItem  {
++ Title
++ PriceNet
++ TaxAmount
++ AppliedDiscounts
+}
+
+class DeliveryLocation {
++ Type
++ Address
++ UseBillingAddress
++ Code
+}
+
+@enduml

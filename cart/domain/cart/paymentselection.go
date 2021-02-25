@@ -236,22 +236,22 @@ func NewPaymentSelection(gateway string, chargedItems PaymentSplitByItem) Paymen
 	return selection
 }
 
-// Gateway - returns the selected Gateway code
+// Gateway returns the selected Gateway code
 func (d DefaultPaymentSelection) Gateway() string {
 	return d.GatewayProp
 }
 
-// CartSplit - the selected split per ChargeType and PaymentMethod
+// CartSplit returns the selected split per ChargeType and PaymentMethod
 func (d DefaultPaymentSelection) CartSplit() PaymentSplit {
 	return d.ChargedItemsProp.Sum()
 }
 
-// ItemSplit - the selected split per ChargeType and PaymentMethod
+// ItemSplit returns the selected split per ChargeType and PaymentMethod
 func (d DefaultPaymentSelection) ItemSplit() PaymentSplitByItem {
 	return d.ChargedItemsProp
 }
 
-// TotalValue - returns Valued price sum
+// TotalValue returns returns Valued price sum
 func (d DefaultPaymentSelection) TotalValue() price.Price {
 	return d.ChargedItemsProp.Sum().TotalValue()
 }
@@ -284,7 +284,7 @@ func (d DefaultPaymentSelection) MarshalJSON() ([]byte, error) {
 	})
 }
 
-// Sum - the resulting Split after sum all the included item split
+// Sum returns the resulting Split after sum all the included item split
 func (c PaymentSplitByItem) Sum() PaymentSplit {
 	sum := make(PaymentSplit)
 	addToSum := func(splits PaymentSplit) {
@@ -371,7 +371,7 @@ func (s *PaymentSplit) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// AddCartItem - adds a cartitems charge to the PaymentSplitByItem
+// AddCartItem adds a cart items charge to the PaymentSplitByItem
 func (pb *PaymentSplitByItemBuilder) AddCartItem(id string, method string, charge price.Charge) *PaymentSplitByItemBuilder {
 	pb.init()
 	if pb.inBuilding.CartItems[id] == nil {
@@ -385,7 +385,7 @@ func (pb *PaymentSplitByItemBuilder) AddCartItem(id string, method string, charg
 	return pb
 }
 
-// AddShippingItem - adds shipping charge
+// AddShippingItem adds shipping charge
 func (pb *PaymentSplitByItemBuilder) AddShippingItem(deliveryCode string, method string, charge price.Charge) *PaymentSplitByItemBuilder {
 	pb.init()
 	if pb.inBuilding.ShippingItems[deliveryCode] == nil {
@@ -399,7 +399,7 @@ func (pb *PaymentSplitByItemBuilder) AddShippingItem(deliveryCode string, method
 	return pb
 }
 
-// AddTotalItem - adds totalitem charge
+// AddTotalItem adds total item charge
 func (pb *PaymentSplitByItemBuilder) AddTotalItem(totalType string, method string, charge price.Charge) *PaymentSplitByItemBuilder {
 	pb.init()
 	if pb.inBuilding.TotalItems[totalType] == nil {
@@ -413,7 +413,7 @@ func (pb *PaymentSplitByItemBuilder) AddTotalItem(totalType string, method strin
 	return pb
 }
 
-// Build - returns the instance of PaymentSplitByItem
+// Build returns the instance of PaymentSplitByItem
 func (pb *PaymentSplitByItemBuilder) Build() PaymentSplitByItem {
 	pb.init()
 	return *pb.inBuilding

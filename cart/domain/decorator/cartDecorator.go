@@ -6,9 +6,10 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 
+	"flamingo.me/flamingo/v3/framework/flamingo"
+
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
-	"flamingo.me/flamingo/v3/framework/flamingo"
 )
 
 type (
@@ -80,14 +81,14 @@ func (df *DecoratedCartFactory) CreateDecorateCartItems(ctx context.Context, ite
 	return decoratedItems
 }
 
-//decorateCartItem factory method
+// decorateCartItem factory method
 func (df *DecoratedCartFactory) decorateCartItem(ctx context.Context, cartitem cart.Item) DecoratedCartItem {
 	decorateditem := DecoratedCartItem{Item: cartitem, logger: df.logger}
 	product, e := df.productService.Get(ctx, cartitem.MarketplaceCode)
 	if e != nil {
 		df.logger.WithContext(ctx).Error("cart.decorator - no product for item", e)
 		if product == nil {
-			//To avoid errors if consumers want to access the product data
+			// To avoid errors if consumers want to access the product data
 			product = domain.SimpleProduct{
 				BasicProductData: domain.BasicProductData{
 					Title: cartitem.ProductName + "[outdated]",
@@ -246,7 +247,7 @@ func (dc DecoratedDelivery) GetGroupedBy(group string, sortGroup bool, params ..
 		}
 	}
 
-	//sort before return
+	// sort before return
 	if sortGroup {
 		direction := ""
 		if len(params) > 0 {

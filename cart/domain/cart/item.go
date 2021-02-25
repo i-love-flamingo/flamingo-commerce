@@ -29,10 +29,10 @@ type (
 
 		AdditionalData map[string]string
 
-		// SinglePriceGross brutto (gross) for single product
+		// SinglePriceGross gross price (incl. taxes) for a single product
 		SinglePriceGross priceDomain.Price
 
-		// SinglePriceNet net price for single product
+		// SinglePriceNet net price (excl. taxes) for a single product
 		SinglePriceNet priceDomain.Price
 
 		// RowPriceGross
@@ -66,7 +66,7 @@ type (
 	}
 )
 
-// TotalTaxAmount - returns total tax amount as price
+// TotalTaxAmount returns total tax amount as price
 func (i Item) TotalTaxAmount() priceDomain.Price {
 	return i.RowTaxes.TotalAmount()
 }
@@ -78,7 +78,7 @@ func (i Item) TotalDiscountAmount() priceDomain.Price {
 	return result
 }
 
-// ItemRelatedDiscountAmount = Sum of AppliedDiscounts where IsItemRelated = True
+// ItemRelatedDiscountAmount is the sum of AppliedDiscounts where IsItemRelated = true
 func (i Item) ItemRelatedDiscountAmount() priceDomain.Price {
 	prices := make([]priceDomain.Price, 0, len(i.AppliedDiscounts))
 
@@ -94,7 +94,7 @@ func (i Item) ItemRelatedDiscountAmount() priceDomain.Price {
 	return result.GetPayable()
 }
 
-// NonItemRelatedDiscountAmount = Sum of AppliedDiscounts where IsItemRelated = false
+// NonItemRelatedDiscountAmount is the sum of AppliedDiscounts where IsItemRelated = false
 func (i Item) NonItemRelatedDiscountAmount() priceDomain.Price {
 	prices := make([]priceDomain.Price, 0, len(i.AppliedDiscounts))
 
@@ -173,7 +173,7 @@ func (i Item) GetAdditionalData(key string) string {
 	return attribute
 }
 
-// Inject - called by dingo
+// Inject dependencies
 func (f *ItemBuilder) Inject(config *struct {
 	UseGrosPrice bool `inject:"config:commerce.product.priceIsGross,optional"`
 }) {
@@ -182,21 +182,21 @@ func (f *ItemBuilder) Inject(config *struct {
 	}
 }
 
-// SetID - sets the id
+// SetID sets the id
 func (f *ItemBuilder) SetID(id string) *ItemBuilder {
 	f.init()
 	f.itemInBuilding.ID = id
 	return f
 }
 
-// SetExternalReference - sets the ExternalReference
+// SetExternalReference sets the ExternalReference
 func (f *ItemBuilder) SetExternalReference(ref string) *ItemBuilder {
 	f.init()
 	f.itemInBuilding.ExternalReference = ref
 	return f
 }
 
-// SetFromItem - sets the data in builder from existing item - useful to get a updated item based from existing. Its not setting Taxes (use Calculate)
+// SetFromItem sets the data in builder from existing item - useful to get a updated item based from existing. Its not setting Taxes (use Calculate)
 func (f *ItemBuilder) SetFromItem(item Item) *ItemBuilder {
 	f.init()
 	f.SetProductData(item.MarketplaceCode, item.VariantMarketPlaceCode, item.ProductName)
@@ -217,28 +217,28 @@ func (f *ItemBuilder) SetVariantMarketPlaceCode(id string) *ItemBuilder {
 	return f
 }
 
-// SetSourceID - optional
+// SetSourceID sets optional source ID
 func (f *ItemBuilder) SetSourceID(id string) *ItemBuilder {
 	f.init()
 	f.itemInBuilding.SourceID = id
 	return f
 }
 
-// SetAdditionalData - optional
+// SetAdditionalData sets optional additional data
 func (f *ItemBuilder) SetAdditionalData(d map[string]string) *ItemBuilder {
 	f.init()
 	f.itemInBuilding.AdditionalData = d
 	return f
 }
 
-// SetQty - optional (default 1)
+// SetQty sets the qty (defaults to 1)
 func (f *ItemBuilder) SetQty(q int) *ItemBuilder {
 	f.init()
 	f.itemInBuilding.Qty = q
 	return f
 }
 
-// SetSinglePriceGross - set by gross price
+// SetSinglePriceGross set by gross price
 func (f *ItemBuilder) SetSinglePriceGross(grossPrice priceDomain.Price) *ItemBuilder {
 	f.init()
 	if !grossPrice.IsPayable() {
@@ -249,7 +249,7 @@ func (f *ItemBuilder) SetSinglePriceGross(grossPrice priceDomain.Price) *ItemBui
 	return f
 }
 
-// SetSinglePriceNet - set by net
+// SetSinglePriceNet set by net price
 func (f *ItemBuilder) SetSinglePriceNet(price priceDomain.Price) *ItemBuilder {
 	f.init()
 	if !price.IsPayable() {
@@ -260,7 +260,7 @@ func (f *ItemBuilder) SetSinglePriceNet(price priceDomain.Price) *ItemBuilder {
 	return f
 }
 
-// AddTaxInfo - add a tax info - at least taxRate OR taxAmount need to be given. The taxAmount can be calculated
+// AddTaxInfo add a tax info - at least taxRate OR taxAmount need to be given. the tax amount can be calculated
 func (f *ItemBuilder) AddTaxInfo(taxType string, taxRate *big.Float, taxAmount *priceDomain.Price) *ItemBuilder {
 	f.init()
 	if taxRate == nil && taxAmount == nil {
@@ -281,7 +281,7 @@ func (f *ItemBuilder) AddTaxInfo(taxType string, taxRate *big.Float, taxAmount *
 	return f
 }
 
-// AddDiscount - adds a discount
+// AddDiscount adds a discount
 func (f *ItemBuilder) AddDiscount(discount AppliedDiscount) *ItemBuilder {
 	f.init()
 	if !discount.Applied.IsPayable() {
@@ -295,7 +295,7 @@ func (f *ItemBuilder) AddDiscount(discount AppliedDiscount) *ItemBuilder {
 	return f
 }
 
-// AddDiscounts - adds a discount
+// AddDiscounts adds a list of discounts
 func (f *ItemBuilder) AddDiscounts(discounts ...AppliedDiscount) *ItemBuilder {
 	for _, discount := range discounts {
 		f.AddDiscount(discount)
@@ -303,7 +303,7 @@ func (f *ItemBuilder) AddDiscounts(discounts ...AppliedDiscount) *ItemBuilder {
 	return f
 }
 
-// CalculatePricesAndTaxAmountsFromSinglePriceNet - Vertikal Tax Calculation - based from current SinglePriceNet, Qty and the RowTax Infos given
+// CalculatePricesAndTaxAmountsFromSinglePriceNet handles the vertical tax calculation - based from current SinglePriceNet, Qty and the RowTax Infos given
 // Sets RowPriceNet, missing tax.Amount and RowPriceGross
 func (f *ItemBuilder) CalculatePricesAndTaxAmountsFromSinglePriceNet() *ItemBuilder {
 	priceNet := f.itemInBuilding.SinglePriceNet
@@ -326,7 +326,7 @@ func (f *ItemBuilder) CalculatePricesAndTaxAmountsFromSinglePriceNet() *ItemBuil
 	return f
 }
 
-// CalculatePricesAndTax - reads the config flag and reculculates Total and Tax
+// CalculatePricesAndTax reads the config flag and recalculates Total and Tax
 func (f *ItemBuilder) CalculatePricesAndTax() *ItemBuilder {
 	if f.configUseGrossPrice {
 		return f.CalculatePricesAndTaxAmountsFromSinglePriceGross()
@@ -334,7 +334,7 @@ func (f *ItemBuilder) CalculatePricesAndTax() *ItemBuilder {
 	return f.CalculatePricesAndTaxAmountsFromSinglePriceNet()
 }
 
-// CalculatePricesAndTaxAmountsFromSinglePriceGross - Vertical Tax Calculation - based from current SinglePriceNet, Qty and the RowTax Infos given
+// CalculatePricesAndTaxAmountsFromSinglePriceGross handles the vertical tax calculation - based from current SinglePriceNet, Qty and the RowTax Infos given
 // Sets RowPriceNet, missing tax.Amount and RowPriceGross
 func (f *ItemBuilder) CalculatePricesAndTaxAmountsFromSinglePriceGross() *ItemBuilder {
 	priceGross := f.itemInBuilding.SinglePriceGross
@@ -352,7 +352,7 @@ func (f *ItemBuilder) CalculatePricesAndTaxAmountsFromSinglePriceGross() *ItemBu
 	return f
 }
 
-// SetProductData - set product data: MarketplaceCode,VariantMarketPlaceCode,ProductName
+// SetProductData set product data: MarketplaceCode, VariantMarketPlaceCode, ProductName
 func (f *ItemBuilder) SetProductData(marketplace string, vc string, name string) *ItemBuilder {
 	f.init()
 	f.itemInBuilding.MarketplaceCode = marketplace
@@ -361,7 +361,7 @@ func (f *ItemBuilder) SetProductData(marketplace string, vc string, name string)
 	return f
 }
 
-// SetByProduct - gets a product and calculates also prices
+// SetByProduct gets a product and calculates also prices
 func (f *ItemBuilder) SetByProduct(product domain.BasicProduct) *ItemBuilder {
 	if !product.IsSaleable() {
 		f.invariantError = errors.New("Product is not saleable")
@@ -439,24 +439,24 @@ func (f *ItemBuilder) reset(err error) (*Item, error) {
 	return item, err
 }
 
-//Inject of ItemSplitter
+// Inject dependencies
 func (s *ItemSplitter) Inject(itemBuilderProvider ItemBuilderProvider, config *struct {
-	UseGrosPrice bool `inject:"config:commerce.product.priceIsGross,optional"`
+	UseGrossPrice bool `inject:"config:commerce.product.priceIsGross,optional"`
 }) {
 	s.itemBuilderProvider = itemBuilderProvider
 	if config != nil {
-		s.configUseGrossPrice = config.UseGrosPrice
+		s.configUseGrossPrice = config.UseGrossPrice
 	}
 }
 
-//SplitInSingleQtyItems the given item into multiple items with Qty 1 and make sure the sum of the items prices matches by using SplitInPayables
+// SplitInSingleQtyItems the given item into multiple items with Qty 1 and make sure the sum of the items prices matches by using SplitInPayables
 func (s *ItemSplitter) SplitInSingleQtyItems(givenItem Item) ([]Item, error) {
 	var items []Item
-	//configUseGrossPrice true then:
+	// configUseGrossPrice true then:
 	// Given: SinglePriceGross / all AppliedDiscounts  / All Taxes
 	// Calculated: SinglePriceNet / RowPriceGross / RowPriceNet / SinglePriceNet
 
-	//configUseGrossPrice false then:
+	// configUseGrossPrice false then:
 	// Given: SinglePriceNez / all AppliedDiscounts  / All Taxes
 	// Calculated: SinglePriceGross / RowPriceGross / RowPriceNet / SinglePriceGross
 	for x := 0; x < givenItem.Qty; x++ {
