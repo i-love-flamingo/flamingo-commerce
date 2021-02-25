@@ -24,7 +24,7 @@ type (
 	}
 )
 
-// FullName - return Firstname Lastname
+// FullName return Firstname Lastname
 func (a Address) FullName() string {
 	return a.Firstname + " " + a.Lastname
 }

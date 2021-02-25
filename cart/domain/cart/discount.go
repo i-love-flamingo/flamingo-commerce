@@ -77,7 +77,7 @@ func (d *Delivery) MergeDiscounts() (AppliedDiscounts, error) {
 			return nil, err
 		}
 	}
-	//collect different discounts for shipping cost
+	// collect different discounts for shipping cost
 	collection, err = mapDiscounts(collection, &d.ShippingItem)
 	if err != nil {
 		return nil, err
