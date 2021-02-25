@@ -11,10 +11,11 @@ import (
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/go-test/deep"
 	"github.com/gomodule/redigo/redis"
-	"github.com/ory/dockertest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stvp/tempredis"
+	"github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go/wait"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo-commerce/v3/checkout/infrastructure/contextstore"
@@ -67,29 +68,34 @@ func startUpLocalRedis(t *testing.T) (*tempredis.Server, redis.Conn) {
 }
 
 func startUpDockerRedis(t *testing.T) (func(), string, redis.Conn) {
-	pool, err := dockertest.NewPool("")
-	if err != nil {
-		t.Skip("docker not installed")
+	ctx := context.Background()
+	req := testcontainers.ContainerRequest{
+		Image:        "redis:latest",
+		ExposedPorts: []string{"6379/tcp"},
+		WaitingFor:   wait.ForLog("Ready to accept connections"),
 	}
+	redisC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
+		ContainerRequest: req,
+		Started:          true,
+	})
+	require.NoError(t, err)
 
-	res, err := pool.Run("redis", "5.0", nil)
-	require.NoError(t, err, "failed to run redis docker image")
-	address := fmt.Sprintf("%s:%s", "127.0.0.1", res.GetPort("6379/tcp"))
+	port, err := redisC.MappedPort(ctx, "6379")
+	require.NoError(t, err)
 
-	var conn redis.Conn
-	require.NoError(t, pool.Retry(func() error {
-		conn, err = redis.Dial("tcp", address)
-		if err != nil {
-			return err
-		}
+	host, err := redisC.Host(ctx)
+	require.NoError(t, err)
+	address := fmt.Sprintf("%s:%s", host, port.Port())
 
-		_, err = conn.Do("PING")
-		return err
-	}))
+	conn, err := redis.Dial("tcp", address)
+	require.NoError(t, err)
+
+	_, err = conn.Do("PING")
+	require.NoError(t, err)
 
 	prepareData(t, conn)
 
-	return func() { _ = pool.Purge(res) }, address, conn
+	return func() { _ = redisC.Terminate(ctx) }, address, conn
 }
 
 func TestRedis_Get(t *testing.T) {

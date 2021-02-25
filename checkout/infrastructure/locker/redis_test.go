@@ -7,11 +7,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gomodule/redigo/redis"
-	"github.com/ory/dockertest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stvp/tempredis"
+	"github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go/wait"
 	"go.uber.org/goleak"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/infrastructure/locker"
@@ -39,28 +39,30 @@ func getRedisLocker(network, address string) *locker.Redis {
 }
 
 func TestRedis_TryLockDocker(t *testing.T) {
-	defer goleak.VerifyNone(t, goleak.IgnoreCurrent())
-	pool, err := dockertest.NewPool("")
-	if err != nil {
-		t.Skip("docker not installed")
+	ctx := context.Background()
+	req := testcontainers.ContainerRequest{
+		Image:        "redis:latest",
+		ExposedPorts: []string{"6379/tcp"},
+		WaitingFor:   wait.ForLog("Ready to accept connections"),
 	}
+	redisC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
+		ContainerRequest: req,
+		Started:          true,
+	})
+	require.NoError(t, err)
+	defer func() { _ = redisC.Terminate(ctx) }()
+	defer goleak.VerifyNone(t, goleak.IgnoreCurrent())
 
-	res, err := pool.Run("redis", "5.0", nil)
-	require.NoError(t, err, "failed to run redis docker image")
-	defer func() { _ = pool.Purge(res) }()
-	address := fmt.Sprintf("%s:%s", "127.0.0.1", res.GetPort("6379/tcp"))
+	port, err := redisC.MappedPort(ctx, "6379")
+	require.NoError(t, err)
 
-	require.NoError(t, pool.Retry(func() error {
-		conn, err := redis.Dial("tcp", address)
-		if err != nil {
-			return err
-		}
-		_, err = conn.Do("PING")
-		return err
-	}))
+	host, err := redisC.Host(ctx)
+	require.NoError(t, err)
+	address := fmt.Sprintf("%s:%s", host, port.Port())
 
 	redisLocker := getRedisLocker("tcp", address)
 	runTestCases(t, redisLocker)
+
 }
 
 func TestRedis_TryLock(t *testing.T) {
