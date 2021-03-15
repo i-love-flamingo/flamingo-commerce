@@ -42,7 +42,7 @@ A demoshop using the standalone adapters is online here https://demoshop.flaming
 
 **Flamingo Commerce is build on top of the Flamingo Framework so it makes sense that you read through the Flamingo docs also**
 
-Read more under [docs.flamingo.me](https://docs.flamingo.me/4.%20Flamingo%20Commerce/1.%20Introduction/About%20Flamingo%20Commerce.html)
+Read more under [docs.flamingo.me](https://docs.flamingo.me/1.%20Introduction/1.%20Getting%20Started.html)
 
 ## Commerce Modules:
 
