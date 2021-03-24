@@ -1301,38 +1301,40 @@ var doc = `{
             "type": "object",
             "properties": {
                 "AdditionalData": {
-                    "description": "AdditionalData   can be used for Custom attributes",
+                    "description": "AdditionalData can be used for Custom attributes",
                     "$ref": "#/definitions/cart.AdditionalData"
                 },
                 "AppliedCouponCodes": {
+                    "description": "AppliedCouponCodes hold the coupons or discount codes that are applied to the cart",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/cart.CouponCode"
                     }
                 },
                 "AppliedGiftCards": {
-                    "description": "List of applied gift cards",
+                    "description": "AppliedGiftCards is a list of applied gift cards",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/cart.AppliedGiftCard"
                     }
                 },
                 "AuthenticatedUserID": {
+                    "description": "AuthenticatedUserID holds the potential customer ID",
                     "type": "string"
                 },
                 "BelongsToAuthenticatedUser": {
-                    "description": "BelongsToAuthenticatedUser - false = Guest Cart true = cart from the authenticated user",
+                    "description": "BelongsToAuthenticatedUser displays if the cart is guest cart (false) or from an authenticated user (true)",
                     "type": "boolean"
                 },
                 "BillingAddress": {
-                    "description": "BillingAddress - the main billing address (relevant for all payments/invoices)",
+                    "description": "BillingAddress is the main billing address (relevant for all payments/invoices)",
                     "$ref": "#/definitions/cart.Address"
                 },
                 "DefaultCurrency": {
                     "type": "string"
                 },
                 "Deliveries": {
-                    "description": "Deliveries - list of desired Deliveries (or Shipments) involved in this cart",
+                    "description": "Deliveries contains a list of desired Deliveries (or Shipments) involved in this cart",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/cart.Delivery"
@@ -1347,11 +1349,11 @@ var doc = `{
                     "type": "string"
                 },
                 "PaymentSelection": {
-                    "description": "PaymentSelection - the saved PaymentSelection (saves \"how\" the customer want to pay)",
+                    "description": "PaymentSelection is used to store information on \"how\" the customer wants to pay",
                     "$ref": "#/definitions/cart.PaymentSelection"
                 },
                 "Purchaser": {
-                    "description": "Purchaser - additional infos for the legal contact person in this order",
+                    "description": "Purchaser hold additional infos for the legal contact person in this order",
                     "$ref": "#/definitions/cart.Person"
                 },
                 "Totalitems": {
@@ -1380,18 +1382,18 @@ var doc = `{
             "type": "object",
             "properties": {
                 "Cartitems": {
-                    "description": "Cartitems - list of cartitems",
+                    "description": "Cartitems is the list of items belonging to this delivery",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/cart.Item"
                     }
                 },
                 "DeliveryInfo": {
-                    "description": "DeliveryInfo - The details for this delivery - normally completed during checkout",
+                    "description": "DeliveryInfo contains details for this delivery e.g. how and where the delivery should be delivered to",
                     "$ref": "#/definitions/cart.DeliveryInfo"
                 },
                 "ShippingItem": {
-                    "description": "ShippingItem\t- The Shipping Costs that may be involved in this delivery",
+                    "description": "ShippingItem\trepresent the shipping cost that may be involved in this delivery",
                     "$ref": "#/definitions/cart.ShippingItem"
                 }
             }
@@ -1400,34 +1402,34 @@ var doc = `{
             "type": "object",
             "properties": {
                 "AdditionalData": {
-                    "description": "AdditionalData  - Possibility for key value based information on the delivery - can be used flexible by each project",
+                    "description": "AdditionalData can be used to store project specific information on the delivery",
                     "type": "object",
                     "additionalProperties": {
                         "type": "string"
                     }
                 },
                 "Carrier": {
-                    "description": "Carrier - Optional the name of the Carrier that should be responsible for executing the delivery",
+                    "description": "Carrier optional name of the Carrier that should be responsible for executing the delivery",
                     "type": "string"
                 },
                 "Code": {
-                    "description": "Code - is a project specific identifier for the Delivery - you need it for the AddToCart Request for example\nThe code can follow the convention in the Readme: Type_Method_LocationType_LocationCode",
+                    "description": "Code is a project specific identifier for the Delivery - you need it for the AddToCart Request for example\nthe code can follow the convention in the Readme: Type_Method_LocationType_LocationCode",
                     "type": "string"
                 },
                 "DeliveryLocation": {
-                    "description": "DeliveryLocation The target Location for the delivery",
+                    "description": "DeliveryLocation is the target location for the delivery",
                     "$ref": "#/definitions/cart.DeliveryLocation"
                 },
                 "DesiredTime": {
-                    "description": "DesiredTime - Optional - the desired time of the delivery",
+                    "description": "DesiredTime is an optional desired time for the delivery",
                     "type": "string"
                 },
                 "Method": {
-                    "description": "Method - The shippingmethod something that is project specific and that can mean different delivery qualities with different deliverycosts",
+                    "description": "Method is the shipping method something that is project specific and that can mean different delivery qualities with different delivery costs",
                     "type": "string"
                 },
                 "Workflow": {
-                    "description": "Type - The Type of the Delivery - e.g. delivery or pickup - this might trigger different workflows",
+                    "description": "Workflow of the Delivery e.g. delivery or pickup, see DeliveryWorkflowPickup, DeliveryWorkflowDelivery or DeliveryWorkflowUnspecified",
                     "type": "string"
                 }
             }
@@ -1436,19 +1438,19 @@ var doc = `{
             "type": "object",
             "properties": {
                 "Address": {
-                    "description": "Address -  (only relevant for type address)",
+                    "description": "Address contains the address of the delivery location, maybe not relevant if the type is not address",
                     "$ref": "#/definitions/cart.Address"
                 },
                 "Code": {
-                    "description": "Code - optional identifier of this location/destination - is used in special destination Types",
+                    "description": "Code is an optional identifier of this location/destination",
                     "type": "string"
                 },
                 "Type": {
-                    "description": "Type - the type of the delivery - use some of the constant defined in the package like DeliverylocationTypeAddress",
+                    "description": "Type is the type of the delivery - use some of the constant defined in the package like DeliverylocationTypeAddress",
                     "type": "string"
                 },
                 "UseBillingAddress": {
-                    "description": "UseBillingAddress - the address should be taken from billing (only relevant for type address)",
+                    "description": "UseBillingAddress if the address should be taken from billing (only relevant for type address)",
                     "type": "boolean"
                 }
             }
@@ -1511,11 +1513,11 @@ var doc = `{
                     }
                 },
                 "SinglePriceGross": {
-                    "description": "SinglePriceGross brutto (gross) for single product",
+                    "description": "SinglePriceGross gross price (incl. taxes) for a single product",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "SinglePriceNet": {
-                    "description": "SinglePriceNet net price for single product",
+                    "description": "SinglePriceNet net price (excl. taxes) for a single product",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "SourceID": {
