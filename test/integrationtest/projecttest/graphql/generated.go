@@ -115,6 +115,7 @@ type ComplexityRoot struct {
 		SubTotalNetWithDiscounts        func(childComplexity int) int
 		SumItemRelatedDiscountAmount    func(childComplexity int) int
 		SumNonItemRelatedDiscountAmount func(childComplexity int) int
+		SumShippingGrossWithDiscounts   func(childComplexity int) int
 		SumShippingNet                  func(childComplexity int) int
 		SumShippingNetWithDiscounts     func(childComplexity int) int
 		SumTotalDiscountAmount          func(childComplexity int) int
@@ -1328,6 +1329,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceCart.SumNonItemRelatedDiscountAmount(childComplexity), true
+
+	case "Commerce_Cart.sumShippingGrossWithDiscounts":
+		if e.complexity.CommerceCart.SumShippingGrossWithDiscounts == nil {
+			break
+		}
+
+		return e.complexity.CommerceCart.SumShippingGrossWithDiscounts(childComplexity), true
 
 	case "Commerce_Cart.sumShippingNet":
 		if e.complexity.CommerceCart.SumShippingNet == nil {
@@ -5578,6 +5586,8 @@ type Commerce_Cart {
 
     sumShippingNet: Commerce_Price!
     sumShippingNetWithDiscounts: Commerce_Price!
+    sumShippingGrossWithDiscounts: Commerce_Price!
+
     hasShippingCosts: Boolean!
     allShippingTitles: [String!]
 
@@ -8079,6 +8089,37 @@ func (ec *executionContext) _Commerce_Cart_sumShippingNetWithDiscounts(ctx conte
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.SumShippingNetWithDiscounts(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_sumShippingGrossWithDiscounts(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SumShippingGrossWithDiscounts(), nil
 	})
 
 	if resTmp == nil {
@@ -25419,6 +25460,11 @@ func (ec *executionContext) _Commerce_Cart(ctx context.Context, sel ast.Selectio
 			}
 		case "sumShippingNetWithDiscounts":
 			out.Values[i] = ec._Commerce_Cart_sumShippingNetWithDiscounts(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "sumShippingGrossWithDiscounts":
+			out.Values[i] = ec._Commerce_Cart_sumShippingGrossWithDiscounts(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}

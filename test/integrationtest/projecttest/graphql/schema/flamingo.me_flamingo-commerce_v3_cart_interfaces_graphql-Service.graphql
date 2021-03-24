@@ -54,6 +54,8 @@ type Commerce_Cart {
 
     sumShippingNet: Commerce_Price!
     sumShippingNetWithDiscounts: Commerce_Price!
+    sumShippingGrossWithDiscounts: Commerce_Price!
+
     hasShippingCosts: Boolean!
     allShippingTitles: [String!]
 
