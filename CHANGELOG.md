@@ -4,6 +4,8 @@
 * API
   * **Breaking**: Update `DELETE /api/v1/cart` to actually clean the whole cart not only removing the cart items (introduces new route for the previous behaviour, see below)
   * Add new endpoint `DELETE /api/v1/cart/deliveries/items` to be able to remove all cart items from all deliveries but keeping delivery info and other cart data untouched
+* Added new method `SumShippingGrossWithDiscounts` to the cart domain which returns gross shipping costs for the cart.
+* GraphQL: Added new method `sumShippingGrossWithDiscounts` to the `Commerce_DecoratedCart` type.
 
 ## v3.4.0
 **cart**
