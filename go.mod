@@ -1,6 +1,6 @@
 module flamingo.me/flamingo-commerce/v3
 
-go 1.13
+go 1.15
 
 require (
 	flamingo.me/dingo v0.2.9
