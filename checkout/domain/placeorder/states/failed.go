@@ -4,17 +4,34 @@ import (
 	"context"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 	"go.opencensus.io/trace"
 )
 
 type (
 	// Failed state
 	Failed struct {
-		Reason process.FailedReason
+		Reason      process.FailedReason
+		eventRouter flamingo.EventRouter
+	}
+
+	// FailedEvent is dispatched when the final failed state runs
+	FailedEvent struct {
+		Reason         process.FailedReason
+		ProcessContext process.Context
 	}
 )
 
 var _ process.State = Failed{}
+
+// Inject dependencies
+func (f *Failed) Inject(
+	eventRouter flamingo.EventRouter,
+) *Failed {
+	f.eventRouter = eventRouter
+
+	return f
+}
 
 // Name get state name
 func (f Failed) Name() string {
@@ -22,9 +39,14 @@ func (f Failed) Name() string {
 }
 
 // Run the state operations
-func (f Failed) Run(ctx context.Context, _ *process.Process) process.RunResult {
+func (f Failed) Run(ctx context.Context, p *process.Process) process.RunResult {
 	_, span := trace.StartSpan(ctx, "placeorder/state/Failed/Run")
 	defer span.End()
+
+	f.eventRouter.Dispatch(ctx, &FailedEvent{
+		Reason:         f.Reason,
+		ProcessContext: p.Context(),
+	})
 
 	return process.RunResult{}
 }
