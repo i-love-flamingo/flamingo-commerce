@@ -49,7 +49,7 @@ func (s Success) Run(ctx context.Context, p *process.Process) process.RunResult 
 }
 
 // Rollback the state operations
-func (s Success) Rollback(ctx context.Context, _ process.RollbackData) error {
+func (s Success) Rollback(_ context.Context, _ process.RollbackData) error {
 	return nil
 }
 
