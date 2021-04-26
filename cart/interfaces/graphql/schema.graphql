@@ -164,12 +164,7 @@ type Commerce_CartDeliveryInfo {
     carrier: String!
     deliveryLocation: Commerce_CartDeliveryLocation
     desiredTime: Time
-    getAdditionalData(key: String!): String!
-    additionalDataKeys: [String!]
-    #    additionalDeliveryInfos: map[string]json.RawMessage
-    #    additionalDeliveryInfos: Map
-    #    getAdditionalDeliveryInfo(key: String!): Map!
-    additionalDeliveryInfoKeys: [String!]
+    additionalData: Commerce_Cart_CustomAttributes!
 }
 
 type Commerce_CartDeliveryLocation  {
@@ -268,8 +263,27 @@ type Commerce_CartPersonalDetails {
 }
 
 type Commerce_CartAdditionalData {
-    #    customAttributes: Map
+    customAttributes: Commerce_Cart_CustomAttributes!
     reservedOrderID: String!
+}
+
+type Commerce_Cart_CustomAttributes {
+    "Get specific attribute by key"
+    get(key: String!): Commerce_Cart_CustomAttribute
+}
+
+interface Commerce_Cart_CustomAttribute {
+    key: String!
+}
+
+type Commerce_Cart_CustomAttributeBoolean implements Commerce_Cart_CustomAttribute {
+    key: String!
+    value: Boolean!
+}
+
+type Commerce_Cart_CustomAttributeString implements Commerce_Cart_CustomAttribute {
+    key: String!
+    value: String!
 }
 
 type Commerce_CartTotalitem {
@@ -463,4 +477,8 @@ extend type Mutation {
     Commerce_Cart_UpdateDeliveryShippingOptions(shippingOptions: [Commerce_Cart_DeliveryShippingOption!]): [Commerce_Cart_DeliveryAddressForm]!
     "Cleans current cart"
     Commerce_Cart_Clean: Boolean!
+    "Sets additional data for the cart"
+    Commerce_Cart_SetAdditionalData(key: String!, value: String!): Commerce_DecoratedCart!
+    "Sets additional data for the delivery"
+    Commerce_Cart_SetAdditionalDataForDelivery(deliveryCode: String!, key: String!, value: String!): Commerce_DecoratedCart!
 }

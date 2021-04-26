@@ -58,6 +58,8 @@ type Config struct {
 
 type ResolverRoot interface {
 	Commerce_Cart() Commerce_CartResolver
+	Commerce_CartAdditionalData() Commerce_CartAdditionalDataResolver
+	Commerce_CartDeliveryInfo() Commerce_CartDeliveryInfoResolver
 	Commerce_CartItem() Commerce_CartItemResolver
 	Commerce_CartShippingItem() Commerce_CartShippingItemResolver
 	Commerce_Cart_DefaultPaymentSelection() Commerce_Cart_DefaultPaymentSelectionResolver
@@ -124,7 +126,8 @@ type ComplexityRoot struct {
 	}
 
 	CommerceCartAdditionalData struct {
-		ReservedOrderID func(childComplexity int) int
+		CustomAttributes func(childComplexity int) int
+		ReservedOrderID  func(childComplexity int) int
 	}
 
 	CommerceCartAddress struct {
@@ -202,15 +205,13 @@ type ComplexityRoot struct {
 	}
 
 	CommerceCartDeliveryInfo struct {
-		AdditionalDataKeys         func(childComplexity int) int
-		AdditionalDeliveryInfoKeys func(childComplexity int) int
-		Carrier                    func(childComplexity int) int
-		Code                       func(childComplexity int) int
-		DeliveryLocation           func(childComplexity int) int
-		DesiredTime                func(childComplexity int) int
-		GetAdditionalData          func(childComplexity int, key string) int
-		Method                     func(childComplexity int) int
-		Workflow                   func(childComplexity int) int
+		AdditionalData   func(childComplexity int) int
+		Carrier          func(childComplexity int) int
+		Code             func(childComplexity int) int
+		DeliveryLocation func(childComplexity int) int
+		DesiredTime      func(childComplexity int) int
+		Method           func(childComplexity int) int
+		Workflow         func(childComplexity int) int
 	}
 
 	CommerceCartDeliveryLocation struct {
@@ -292,6 +293,20 @@ type ComplexityRoot struct {
 		StreetNr     func(childComplexity int) int
 		Title        func(childComplexity int) int
 		Vat          func(childComplexity int) int
+	}
+
+	CommerceCartAttributeBoolean struct {
+		Key   func(childComplexity int) int
+		Value func(childComplexity int) int
+	}
+
+	CommerceCartAttributeString struct {
+		Key   func(childComplexity int) int
+		Value func(childComplexity int) int
+	}
+
+	CommerceCartAttributes struct {
+		Get func(childComplexity int, key string) int
 	}
 
 	CommerceCartBillingAddressForm struct {
@@ -946,6 +961,12 @@ type ComplexityRoot struct {
 type Commerce_CartResolver interface {
 	GetDeliveryByCode(ctx context.Context, obj *cart.Cart, deliveryCode string) (*cart.Delivery, error)
 }
+type Commerce_CartAdditionalDataResolver interface {
+	CustomAttributes(ctx context.Context, obj *cart.AdditionalData) (*dto.Attributes, error)
+}
+type Commerce_CartDeliveryInfoResolver interface {
+	AdditionalData(ctx context.Context, obj *cart.DeliveryInfo) (*dto.Attributes, error)
+}
 type Commerce_CartItemResolver interface {
 	AppliedDiscounts(ctx context.Context, obj *cart.Item) (*dto.CartAppliedDiscounts, error)
 }
@@ -1372,6 +1393,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCart.Totalitems(childComplexity), true
 
+	case "Commerce_CartAdditionalData.customAttributes":
+		if e.complexity.CommerceCartAdditionalData.CustomAttributes == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartAdditionalData.CustomAttributes(childComplexity), true
+
 	case "Commerce_CartAdditionalData.reservedOrderID":
 		if e.complexity.CommerceCartAdditionalData.ReservedOrderID == nil {
 			break
@@ -1739,19 +1767,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCartDelivery.SumTotalTaxAmount(childComplexity), true
 
-	case "Commerce_CartDeliveryInfo.additionalDataKeys":
-		if e.complexity.CommerceCartDeliveryInfo.AdditionalDataKeys == nil {
+	case "Commerce_CartDeliveryInfo.additionalData":
+		if e.complexity.CommerceCartDeliveryInfo.AdditionalData == nil {
 			break
 		}
 
-		return e.complexity.CommerceCartDeliveryInfo.AdditionalDataKeys(childComplexity), true
-
-	case "Commerce_CartDeliveryInfo.additionalDeliveryInfoKeys":
-		if e.complexity.CommerceCartDeliveryInfo.AdditionalDeliveryInfoKeys == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDeliveryInfo.AdditionalDeliveryInfoKeys(childComplexity), true
+		return e.complexity.CommerceCartDeliveryInfo.AdditionalData(childComplexity), true
 
 	case "Commerce_CartDeliveryInfo.carrier":
 		if e.complexity.CommerceCartDeliveryInfo.Carrier == nil {
@@ -1780,18 +1801,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceCartDeliveryInfo.DesiredTime(childComplexity), true
-
-	case "Commerce_CartDeliveryInfo.getAdditionalData":
-		if e.complexity.CommerceCartDeliveryInfo.GetAdditionalData == nil {
-			break
-		}
-
-		args, err := ec.field_Commerce_CartDeliveryInfo_getAdditionalData_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.CommerceCartDeliveryInfo.GetAdditionalData(childComplexity, args["key"].(string)), true
 
 	case "Commerce_CartDeliveryInfo.method":
 		if e.complexity.CommerceCartDeliveryInfo.Method == nil {
@@ -2215,6 +2224,46 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceCartAddressForm.Vat(childComplexity), true
+
+	case "Commerce_Cart_AttributeBoolean.key":
+		if e.complexity.CommerceCartAttributeBoolean.Key == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartAttributeBoolean.Key(childComplexity), true
+
+	case "Commerce_Cart_AttributeBoolean.value":
+		if e.complexity.CommerceCartAttributeBoolean.Value == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartAttributeBoolean.Value(childComplexity), true
+
+	case "Commerce_Cart_AttributeString.key":
+		if e.complexity.CommerceCartAttributeString.Key == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartAttributeString.Key(childComplexity), true
+
+	case "Commerce_Cart_AttributeString.value":
+		if e.complexity.CommerceCartAttributeString.Value == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartAttributeString.Value(childComplexity), true
+
+	case "Commerce_Cart_Attributes.get":
+		if e.complexity.CommerceCartAttributes.Get == nil {
+			break
+		}
+
+		args, err := ec.field_Commerce_Cart_Attributes_get_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.CommerceCartAttributes.Get(childComplexity, args["key"].(string)), true
 
 	case "Commerce_Cart_BillingAddressForm.formData":
 		if e.complexity.CommerceCartBillingAddressForm.FormData == nil {
@@ -5696,13 +5745,16 @@ type Commerce_CartDeliveryInfo {
     carrier: String!
     deliveryLocation: Commerce_CartDeliveryLocation
     desiredTime: Time
-    getAdditionalData(key: String!): String!
-    additionalDataKeys: [String!]
-    #    additionalDeliveryInfos: map[string]json.RawMessage
-    #    additionalDeliveryInfos: Map
-    #    getAdditionalDeliveryInfo(key: String!): Map!
-    additionalDeliveryInfoKeys: [String!]
+    additionalData: Commerce_Cart_Attributes!
+    #getAdditionalData(key: String!): String!
+    #additionalDataKeys: [String!]
+    #additionalDeliveryInfoKeys: [String!]
+    #additionalDeliveryInfos(key: String!): Commerce_CartCustomAttribute
 }
+
+#type Commerce_Cart_DeliveryInfoAdditionalData {
+#    get(key: String!): Commerce_Cart_Attribute
+#}
 
 type Commerce_CartDeliveryLocation  {
     type: String!
@@ -5800,8 +5852,30 @@ type Commerce_CartPersonalDetails {
 }
 
 type Commerce_CartAdditionalData {
-    #    customAttributes: Map
+    customAttributes: Commerce_Cart_Attributes!
     reservedOrderID: String!
+}
+
+#type Commerce_Cart_CartCustomAttributes {
+#    get(key: String!): Commerce_Cart_Attribute
+#}
+
+type Commerce_Cart_Attributes {
+    get(key: String!): Commerce_Cart_Attribute
+}
+
+interface Commerce_Cart_Attribute {
+    key: String!
+}
+
+type Commerce_Cart_AttributeBoolean implements Commerce_Cart_Attribute {
+    key: String!
+    value: Boolean!
+}
+
+type Commerce_Cart_AttributeString implements Commerce_Cart_Attribute {
+    key: String!
+    value: String!
 }
 
 type Commerce_CartTotalitem {
@@ -6289,21 +6363,6 @@ func (ec *executionContext) field_Commerce_CartAppliedDiscounts_byType_args(ctx 
 	return args, nil
 }
 
-func (ec *executionContext) field_Commerce_CartDeliveryInfo_getAdditionalData_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["key"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("key"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["key"] = arg0
-	return args, nil
-}
-
 func (ec *executionContext) field_Commerce_CartItem_getAdditionalData_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -6320,6 +6379,21 @@ func (ec *executionContext) field_Commerce_CartItem_getAdditionalData_args(ctx c
 }
 
 func (ec *executionContext) field_Commerce_CartItem_hasAdditionalDataKey_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["key"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("key"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["key"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Commerce_Cart_Attributes_get_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -8568,6 +8642,37 @@ func (ec *executionContext) _Commerce_Cart_hasRemainingGiftCards(ctx context.Con
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_CartAdditionalData_customAttributes(ctx context.Context, field graphql.CollectedField, obj *cart.AdditionalData) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_CartAdditionalData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Commerce_CartAdditionalData().CustomAttributes(rctx, obj)
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*dto.Attributes)
+	fc.Result = res
+	return ec.marshalNCommerce_Cart_Attributes2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐAttributes(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_CartAdditionalData_reservedOrderID(ctx context.Context, field graphql.CollectedField, obj *cart.AdditionalData) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -10295,7 +10400,7 @@ func (ec *executionContext) _Commerce_CartDeliveryInfo_desiredTime(ctx context.C
 	return ec.marshalOTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_CartDeliveryInfo_getAdditionalData(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_CartDeliveryInfo_additionalData(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -10310,16 +10415,9 @@ func (ec *executionContext) _Commerce_CartDeliveryInfo_getAdditionalData(ctx con
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Commerce_CartDeliveryInfo_getAdditionalData_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.GetAdditionalData(args["key"].(string)), nil
+		return ec.resolvers.Commerce_CartDeliveryInfo().AdditionalData(rctx, obj)
 	})
 
 	if resTmp == nil {
@@ -10328,65 +10426,9 @@ func (ec *executionContext) _Commerce_CartDeliveryInfo_getAdditionalData(ctx con
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*dto.Attributes)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDeliveryInfo_additionalDataKeys(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDeliveryInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.AdditionalDataKeys(), nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]string)
-	fc.Result = res
-	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDeliveryInfo_additionalDeliveryInfoKeys(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDeliveryInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.AdditionalDeliveryInfoKeys(), nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]string)
-	fc.Result = res
-	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Cart_Attributes2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐAttributes(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_CartDeliveryLocation_type(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryLocation) (ret graphql.Marshaler) {
@@ -12141,6 +12183,165 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_email(ctx context.Context
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_AttributeBoolean_key(ctx context.Context, field graphql.CollectedField, obj *dto.CustomAttributeBoolean) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_AttributeBoolean",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Key(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_AttributeBoolean_value(ctx context.Context, field graphql.CollectedField, obj *dto.CustomAttributeBoolean) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_AttributeBoolean",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Value, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_AttributeString_key(ctx context.Context, field graphql.CollectedField, obj *dto.CustomAttributeString) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_AttributeString",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Key(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_AttributeString_value(ctx context.Context, field graphql.CollectedField, obj *dto.CustomAttributeString) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_AttributeString",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Value, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Attributes_get(ctx context.Context, field graphql.CollectedField, obj *dto.Attributes) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Attributes",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Commerce_Cart_Attributes_get_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Get(args["key"].(string)), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(dto.CustomAttribute)
+	fc.Result = res
+	return ec.marshalOCommerce_Cart_Attribute2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCustomAttribute(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Cart_BillingAddressForm_formData(ctx context.Context, field graphql.CollectedField, obj *dto.BillingAddressForm) (ret graphql.Marshaler) {
@@ -25085,6 +25286,25 @@ func (ec *executionContext) unmarshalInputCommerce_Search_Request(ctx context.Co
 
 // region    ************************** interface.gotpl ***************************
 
+func (ec *executionContext) _Commerce_Cart_Attribute(ctx context.Context, sel ast.SelectionSet, obj dto.CustomAttribute) graphql.Marshaler {
+	switch obj := (obj).(type) {
+	case nil:
+		return graphql.Null
+	case *dto.CustomAttributeBoolean:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._Commerce_Cart_AttributeBoolean(ctx, sel, obj)
+	case *dto.CustomAttributeString:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._Commerce_Cart_AttributeString(ctx, sel, obj)
+	default:
+		panic(fmt.Errorf("unexpected type %T", obj))
+	}
+}
+
 func (ec *executionContext) _Commerce_Cart_PaymentSelection(ctx context.Context, sel ast.SelectionSet, obj cart.PaymentSelection) graphql.Marshaler {
 	switch obj := (obj).(type) {
 	case nil:
@@ -25554,10 +25774,24 @@ func (ec *executionContext) _Commerce_CartAdditionalData(ctx context.Context, se
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_CartAdditionalData")
+		case "customAttributes":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Commerce_CartAdditionalData_customAttributes(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "reservedOrderID":
 			out.Values[i] = ec._Commerce_CartAdditionalData_reservedOrderID(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
@@ -25962,36 +26196,41 @@ func (ec *executionContext) _Commerce_CartDeliveryInfo(ctx context.Context, sel 
 		case "code":
 			out.Values[i] = ec._Commerce_CartDeliveryInfo_code(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "workflow":
 			out.Values[i] = ec._Commerce_CartDeliveryInfo_workflow(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "method":
 			out.Values[i] = ec._Commerce_CartDeliveryInfo_method(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "carrier":
 			out.Values[i] = ec._Commerce_CartDeliveryInfo_carrier(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "deliveryLocation":
 			out.Values[i] = ec._Commerce_CartDeliveryInfo_deliveryLocation(ctx, field, obj)
 		case "desiredTime":
 			out.Values[i] = ec._Commerce_CartDeliveryInfo_desiredTime(ctx, field, obj)
-		case "getAdditionalData":
-			out.Values[i] = ec._Commerce_CartDeliveryInfo_getAdditionalData(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "additionalDataKeys":
-			out.Values[i] = ec._Commerce_CartDeliveryInfo_additionalDataKeys(ctx, field, obj)
-		case "additionalDeliveryInfoKeys":
-			out.Values[i] = ec._Commerce_CartDeliveryInfo_additionalDeliveryInfoKeys(ctx, field, obj)
+		case "additionalData":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Commerce_CartDeliveryInfo_additionalData(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -26444,6 +26683,94 @@ func (ec *executionContext) _Commerce_Cart_AddressForm(ctx context.Context, sel 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Cart_AttributeBooleanImplementors = []string{"Commerce_Cart_AttributeBoolean", "Commerce_Cart_Attribute"}
+
+func (ec *executionContext) _Commerce_Cart_AttributeBoolean(ctx context.Context, sel ast.SelectionSet, obj *dto.CustomAttributeBoolean) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_AttributeBooleanImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_AttributeBoolean")
+		case "key":
+			out.Values[i] = ec._Commerce_Cart_AttributeBoolean_key(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "value":
+			out.Values[i] = ec._Commerce_Cart_AttributeBoolean_value(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Cart_AttributeStringImplementors = []string{"Commerce_Cart_AttributeString", "Commerce_Cart_Attribute"}
+
+func (ec *executionContext) _Commerce_Cart_AttributeString(ctx context.Context, sel ast.SelectionSet, obj *dto.CustomAttributeString) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_AttributeStringImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_AttributeString")
+		case "key":
+			out.Values[i] = ec._Commerce_Cart_AttributeString_key(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "value":
+			out.Values[i] = ec._Commerce_Cart_AttributeString_value(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Cart_AttributesImplementors = []string{"Commerce_Cart_Attributes"}
+
+func (ec *executionContext) _Commerce_Cart_Attributes(ctx context.Context, sel ast.SelectionSet, obj *dto.Attributes) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_AttributesImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_Attributes")
+		case "get":
+			out.Values[i] = ec._Commerce_Cart_Attributes_get(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -30514,6 +30841,20 @@ func (ec *executionContext) marshalNCommerce_CartTotalitem2flamingoᚗmeᚋflami
 	return ec._Commerce_CartTotalitem(ctx, sel, &v)
 }
 
+func (ec *executionContext) marshalNCommerce_Cart_Attributes2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐAttributes(ctx context.Context, sel ast.SelectionSet, v dto.Attributes) graphql.Marshaler {
+	return ec._Commerce_Cart_Attributes(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Cart_Attributes2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐAttributes(ctx context.Context, sel ast.SelectionSet, v *dto.Attributes) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Commerce_Cart_Attributes(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNCommerce_Cart_BillingAddressForm2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐBillingAddressForm(ctx context.Context, sel ast.SelectionSet, v dto.BillingAddressForm) graphql.Marshaler {
 	return ec._Commerce_Cart_BillingAddressForm(ctx, sel, &v)
 }
@@ -31954,6 +32295,13 @@ func (ec *executionContext) unmarshalOCommerce_Cart_AddressFormInput2ᚖflamingo
 	}
 	res, err := ec.unmarshalOCommerce_Cart_AddressFormInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐAddressForm(ctx, v)
 	return &res, graphql.WrapErrorWithInputPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_Attribute2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCustomAttribute(ctx context.Context, sel ast.SelectionSet, v dto.CustomAttribute) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Commerce_Cart_Attribute(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOCommerce_Cart_DeliveryAddressForm2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAddressForm(ctx context.Context, sel ast.SelectionSet, v dto.DeliveryAddressForm) graphql.Marshaler {

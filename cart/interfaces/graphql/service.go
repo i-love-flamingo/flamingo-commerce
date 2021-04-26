@@ -26,6 +26,7 @@ func (*Service) Schema() []byte {
 
 // Types configures the GraphQL to Go resolvers
 func (*Service) Types(types *graphql.Types) {
+	types.Map("Commerce_Cart_CustomAttributes", dto.CustomAttributes{})
 	types.Map("Commerce_DecoratedCart", dto.DecoratedCart{})
 	types.Map("Commerce_Cart", cart.Cart{})
 	types.Resolve("Commerce_Cart", "getDeliveryByCode", Resolver{}, "GetDeliveryByCodeWithoutBool")
@@ -33,6 +34,7 @@ func (*Service) Types(types *graphql.Types) {
 	types.Map("Commerce_CartDecoratedDelivery", dto.DecoratedDelivery{})
 	types.Map("Commerce_CartDelivery", cart.Delivery{})
 	types.Map("Commerce_CartDeliveryInfo", cart.DeliveryInfo{})
+	types.Resolve("Commerce_CartDeliveryInfo", "additionalData", CommerceCartDeliveryInfoResolver{}, "AdditionalData")
 	types.Map("Commerce_CartDeliveryLocation", cart.DeliveryLocation{})
 	types.Map("Commerce_CartTotalitem", cart.Totalitem{})
 	types.Map("Commerce_Cart_Tax", cart.Tax{})
@@ -40,6 +42,10 @@ func (*Service) Types(types *graphql.Types) {
 	types.Map("Commerce_Cart_Teaser", cart.Teaser{})
 	types.Map("Commerce_CartCouponCode", cart.CouponCode{})
 	types.Map("Commerce_CartAdditionalData", cart.AdditionalData{})
+	types.Resolve("Commerce_CartAdditionalData", "customAttributes", CommerceCartAdditionalDataResolver{}, "CustomAttributes")
+	types.Map("Commerce_Cart_CustomAttribute", new(dto.CustomAttribute))
+	types.Map("Commerce_Cart_CustomAttributeBoolean", dto.CustomAttributeBoolean{})
+	types.Map("Commerce_Cart_CustomAttributeString", dto.CustomAttributeString{})
 	types.Map("Commerce_CartShippingItem", cart.ShippingItem{})
 	types.Resolve("Commerce_CartShippingItem", "appliedDiscounts", dto.CartAppliedDiscountsResolver{}, "ForShippingItem")
 	types.Map("Commerce_CartDecoratedItem", dto.DecoratedCartItem{})
@@ -98,6 +104,8 @@ func (*Service) Types(types *graphql.Types) {
 	types.Resolve("Mutation", "Commerce_Cart_UpdateDeliveryAddresses", CommerceCartMutationResolver{}, "CommerceCartUpdateDeliveryAddresses")
 	types.Resolve("Mutation", "Commerce_Cart_UpdateDeliveryShippingOptions", CommerceCartMutationResolver{}, "CommerceCartUpdateDeliveryShippingOptions")
 	types.Resolve("Mutation", "Commerce_Cart_Clean", CommerceCartMutationResolver{}, "CartClean")
+	types.Resolve("Mutation", "Commerce_Cart_SetAdditionalData", CommerceCartMutationResolver{}, "SetAdditionalData")
+	types.Resolve("Mutation", "Commerce_Cart_SetAdditionalDataForDelivery", CommerceCartMutationResolver{}, "SetAdditionalDataForDelivery")
 }
 
 // Resolver helper

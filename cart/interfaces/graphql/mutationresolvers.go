@@ -252,6 +252,28 @@ func (r *CommerceCartMutationResolver) CartClean(ctx context.Context) (bool, err
 	return true, nil
 }
 
+// SetAdditionalData of cart
+func (r *CommerceCartMutationResolver) SetAdditionalData(ctx context.Context, key string, value string) (*dto.DecoratedCart, error) {
+	session := web.SessionFromContext(ctx)
+	_, err := r.cartService.SetAdditionalData(ctx, session, key, value)
+	if err != nil {
+		return nil, err
+	}
+
+	return r.q.CommerceCart(ctx)
+}
+
+// SetAdditionalDataForDelivery of delivery info
+func (r *CommerceCartMutationResolver) SetAdditionalDataForDelivery(ctx context.Context, deliveryCode string, key string, value string) (*dto.DecoratedCart, error) {
+	session := web.SessionFromContext(ctx)
+	_, err := r.cartService.SetAdditionalDataForDelivery(ctx, session, deliveryCode, key, value)
+	if err != nil {
+		return nil, err
+	}
+
+	return r.q.CommerceCart(ctx)
+}
+
 func mapCommerceDeliveryAddressForm(form *domain.Form, success bool) (dto.DeliveryAddressForm, error) {
 	formData, ok := form.Data.(cartForms.DeliveryForm)
 	if !ok {

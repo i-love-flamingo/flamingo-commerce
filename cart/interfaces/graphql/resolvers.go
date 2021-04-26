@@ -99,3 +99,19 @@ func (r *CommerceCartQueryResolver) CartSplit(_ context.Context, paymentSelectio
 
 	return paymentSelectionSplit, nil
 }
+
+// CommerceCartAdditionalDataResolver resolver for custom attributes of cart
+type CommerceCartAdditionalDataResolver struct{}
+
+// CustomAttributes of cart
+func (r *CommerceCartAdditionalDataResolver) CustomAttributes(_ context.Context, obj *cart.AdditionalData) (*dto.CustomAttributes, error) {
+	return &dto.CustomAttributes{Attributes: obj.CustomAttributes}, nil
+}
+
+// CommerceCartDeliveryInfoResolver resolver for additional data of delivery info
+type CommerceCartDeliveryInfoResolver struct{}
+
+// AdditionalData of delivery info
+func (r *CommerceCartDeliveryInfoResolver) AdditionalData(_ context.Context, obj *cart.DeliveryInfo) (*dto.CustomAttributes, error) {
+	return &dto.CustomAttributes{Attributes: obj.AdditionalData}, nil
+}

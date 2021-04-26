@@ -1200,3 +1200,55 @@ func (qar QtyAdjustmentResults) HasRemovedCouponCodes() bool {
 
 	return false
 }
+
+// SetAdditionalData of cart
+func (cs *CartService) SetAdditionalData(ctx context.Context, session *web.Session, key string, value string) (*cartDomain.Cart, error) {
+	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
+	if err != nil {
+		return nil, err
+	}
+
+	additionalData := cart.AdditionalData
+	if additionalData.CustomAttributes == nil {
+		additionalData.CustomAttributes = map[string]string{}
+	}
+	additionalData.CustomAttributes[key] = value
+
+	cart, defers, err := behaviour.UpdateAdditionalData(ctx, cart, &additionalData)
+	defer func() {
+		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
+		cs.dispatchAllEvents(ctx, defers)
+	}()
+	return cart, err
+}
+
+// SetAdditionalDataForDelivery of cart
+func (cs *CartService) SetAdditionalDataForDelivery(ctx context.Context, session *web.Session, deliveryCode string, key string, value string) (*cartDomain.Cart, error) {
+	cart, _, err := cs.cartReceiverService.GetCart(ctx, session)
+	if err != nil {
+		return nil, err
+	}
+
+	var deliveryInfo *cartDomain.DeliveryInfo
+	for _, delivery := range cart.Deliveries {
+		if delivery.DeliveryInfo.Code == deliveryCode {
+			deliveryInfo = &delivery.DeliveryInfo
+		}
+	}
+
+	if deliveryInfo == nil {
+		return cart, nil
+	}
+
+	if deliveryInfo.AdditionalData == nil {
+		deliveryInfo.AdditionalData = map[string]string{}
+	}
+	deliveryInfo.AdditionalData[key] = value
+	newDeliveryInfoUpdateCommand := cartDomain.CreateDeliveryInfoUpdateCommand(*deliveryInfo)
+	err = cs.UpdateDeliveryInfo(ctx, session, deliveryCode, newDeliveryInfoUpdateCommand)
+	if err != nil {
+		return nil, err
+	}
+
+	return cart, nil
+}

@@ -31,6 +31,8 @@ var _ ResolverRoot = new(rootResolver)
 
 type rootResolver struct {
 	rootResolverCommerce_Cart                         *rootResolverCommerce_Cart
+	rootResolverCommerce_CartAdditionalData           *rootResolverCommerce_CartAdditionalData
+	rootResolverCommerce_CartDeliveryInfo             *rootResolverCommerce_CartDeliveryInfo
 	rootResolverCommerce_CartItem                     *rootResolverCommerce_CartItem
 	rootResolverCommerce_CartShippingItem             *rootResolverCommerce_CartShippingItem
 	rootResolverCommerce_Cart_DefaultPaymentSelection *rootResolverCommerce_Cart_DefaultPaymentSelection
@@ -41,6 +43,8 @@ type rootResolver struct {
 
 func (r *rootResolver) Inject(
 	rootResolverCommerce_Cart *rootResolverCommerce_Cart,
+	rootResolverCommerce_CartAdditionalData *rootResolverCommerce_CartAdditionalData,
+	rootResolverCommerce_CartDeliveryInfo *rootResolverCommerce_CartDeliveryInfo,
 	rootResolverCommerce_CartItem *rootResolverCommerce_CartItem,
 	rootResolverCommerce_CartShippingItem *rootResolverCommerce_CartShippingItem,
 	rootResolverCommerce_Cart_DefaultPaymentSelection *rootResolverCommerce_Cart_DefaultPaymentSelection,
@@ -49,6 +53,8 @@ func (r *rootResolver) Inject(
 	rootResolverQuery *rootResolverQuery,
 ) {
 	r.rootResolverCommerce_Cart = rootResolverCommerce_Cart
+	r.rootResolverCommerce_CartAdditionalData = rootResolverCommerce_CartAdditionalData
+	r.rootResolverCommerce_CartDeliveryInfo = rootResolverCommerce_CartDeliveryInfo
 	r.rootResolverCommerce_CartItem = rootResolverCommerce_CartItem
 	r.rootResolverCommerce_CartShippingItem = rootResolverCommerce_CartShippingItem
 	r.rootResolverCommerce_Cart_DefaultPaymentSelection = rootResolverCommerce_Cart_DefaultPaymentSelection
@@ -59,6 +65,12 @@ func (r *rootResolver) Inject(
 
 func (r *rootResolver) Commerce_Cart() Commerce_CartResolver {
 	return r.rootResolverCommerce_Cart
+}
+func (r *rootResolver) Commerce_CartAdditionalData() Commerce_CartAdditionalDataResolver {
+	return r.rootResolverCommerce_CartAdditionalData
+}
+func (r *rootResolver) Commerce_CartDeliveryInfo() Commerce_CartDeliveryInfoResolver {
+	return r.rootResolverCommerce_CartDeliveryInfo
 }
 func (r *rootResolver) Commerce_CartItem() Commerce_CartItemResolver {
 	return r.rootResolverCommerce_CartItem
@@ -91,6 +103,34 @@ func (r *rootResolverCommerce_Cart) Inject(
 
 func (r *rootResolverCommerce_Cart) GetDeliveryByCode(ctx context.Context, obj *cart.Cart, deliveryCode string) (*cart.Delivery, error) {
 	return r.resolveGetDeliveryByCode(ctx, obj, deliveryCode)
+}
+
+type rootResolverCommerce_CartAdditionalData struct {
+	resolveCustomAttributes func(ctx context.Context, obj *cart.AdditionalData) (*dto.Attributes, error)
+}
+
+func (r *rootResolverCommerce_CartAdditionalData) Inject(
+	commerce_CartAdditionalDataCustomAttributes *graphql1.CommerceCartAdditionalDataResolver,
+) {
+	r.resolveCustomAttributes = commerce_CartAdditionalDataCustomAttributes.CustomAttributes
+}
+
+func (r *rootResolverCommerce_CartAdditionalData) CustomAttributes(ctx context.Context, obj *cart.AdditionalData) (*dto.Attributes, error) {
+	return r.resolveCustomAttributes(ctx, obj)
+}
+
+type rootResolverCommerce_CartDeliveryInfo struct {
+	resolveAdditionalData func(ctx context.Context, obj *cart.DeliveryInfo) (*dto.Attributes, error)
+}
+
+func (r *rootResolverCommerce_CartDeliveryInfo) Inject(
+	commerce_CartDeliveryInfoAdditionalData *graphql1.CommerceCartDeliveryInfoResolver,
+) {
+	r.resolveAdditionalData = commerce_CartDeliveryInfoAdditionalData.AdditionalData
+}
+
+func (r *rootResolverCommerce_CartDeliveryInfo) AdditionalData(ctx context.Context, obj *cart.DeliveryInfo) (*dto.Attributes, error) {
+	return r.resolveAdditionalData(ctx, obj)
 }
 
 type rootResolverCommerce_CartItem struct {

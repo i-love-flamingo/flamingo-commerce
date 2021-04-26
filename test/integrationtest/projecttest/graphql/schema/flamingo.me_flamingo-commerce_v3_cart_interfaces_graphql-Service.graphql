@@ -164,13 +164,16 @@ type Commerce_CartDeliveryInfo {
     carrier: String!
     deliveryLocation: Commerce_CartDeliveryLocation
     desiredTime: Time
-    getAdditionalData(key: String!): String!
-    additionalDataKeys: [String!]
-    #    additionalDeliveryInfos: map[string]json.RawMessage
-    #    additionalDeliveryInfos: Map
-    #    getAdditionalDeliveryInfo(key: String!): Map!
-    additionalDeliveryInfoKeys: [String!]
+    additionalData: Commerce_Cart_Attributes!
+    #getAdditionalData(key: String!): String!
+    #additionalDataKeys: [String!]
+    #additionalDeliveryInfoKeys: [String!]
+    #additionalDeliveryInfos(key: String!): Commerce_CartCustomAttribute
 }
+
+#type Commerce_Cart_DeliveryInfoAdditionalData {
+#    get(key: String!): Commerce_Cart_Attribute
+#}
 
 type Commerce_CartDeliveryLocation  {
     type: String!
@@ -268,8 +271,30 @@ type Commerce_CartPersonalDetails {
 }
 
 type Commerce_CartAdditionalData {
-    #    customAttributes: Map
+    customAttributes: Commerce_Cart_Attributes!
     reservedOrderID: String!
+}
+
+#type Commerce_Cart_CartCustomAttributes {
+#    get(key: String!): Commerce_Cart_Attribute
+#}
+
+type Commerce_Cart_Attributes {
+    get(key: String!): Commerce_Cart_Attribute
+}
+
+interface Commerce_Cart_Attribute {
+    key: String!
+}
+
+type Commerce_Cart_AttributeBoolean implements Commerce_Cart_Attribute {
+    key: String!
+    value: Boolean!
+}
+
+type Commerce_Cart_AttributeString implements Commerce_Cart_Attribute {
+    key: String!
+    value: String!
 }
 
 type Commerce_CartTotalitem {
