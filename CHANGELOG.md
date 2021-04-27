@@ -7,6 +7,9 @@
 * Added new method `SumShippingGrossWithDiscounts` to the cart domain which returns gross shipping costs for the cart.
 * GraphQL: Added new method `sumShippingGrossWithDiscounts` to the `Commerce_DecoratedCart` type.
 
+**checkout**
+* Introducing Flamingo events on final states of the place order process
+
 ## v3.4.0
 **cart**
 * Added desired time to DeliveryForm
