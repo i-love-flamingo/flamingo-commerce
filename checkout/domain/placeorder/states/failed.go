@@ -11,13 +11,11 @@ import (
 type (
 	// Failed state
 	Failed struct {
-		Reason      process.FailedReason
 		eventRouter flamingo.EventRouter
 	}
 
 	// FailedEvent is dispatched when the final failed state runs
 	FailedEvent struct {
-		Reason         process.FailedReason
 		ProcessContext process.Context
 	}
 )
@@ -44,7 +42,6 @@ func (f Failed) Run(ctx context.Context, p *process.Process) process.RunResult {
 	defer span.End()
 
 	f.eventRouter.Dispatch(ctx, &FailedEvent{
-		Reason:         f.Reason,
 		ProcessContext: p.Context(),
 	})
 

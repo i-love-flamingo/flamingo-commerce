@@ -32,9 +32,7 @@ func TestFailed_Run(t *testing.T) {
 		validator: func(event flamingo.Event) {
 			require.IsType(t, &states.FailedEvent{}, event)
 			assert.Equal(t, event.(*states.FailedEvent).ProcessContext, p.Context())
-			assert.Equal(t, event.(*states.FailedEvent).Reason, &process.ErrorOccurredReason{})
 		},
 	})
-	s.Reason = &process.ErrorOccurredReason{}
 	assert.Equal(t, s.Run(context.Background(), &process.Process{}), process.RunResult{})
 }
