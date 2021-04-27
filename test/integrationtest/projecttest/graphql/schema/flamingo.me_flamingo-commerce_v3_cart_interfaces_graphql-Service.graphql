@@ -164,16 +164,8 @@ type Commerce_CartDeliveryInfo {
     carrier: String!
     deliveryLocation: Commerce_CartDeliveryLocation
     desiredTime: Time
-    additionalData: Commerce_Cart_Attributes!
-    #getAdditionalData(key: String!): String!
-    #additionalDataKeys: [String!]
-    #additionalDeliveryInfoKeys: [String!]
-    #additionalDeliveryInfos(key: String!): Commerce_CartCustomAttribute
+    additionalData: Commerce_Cart_CustomAttributes!
 }
-
-#type Commerce_Cart_DeliveryInfoAdditionalData {
-#    get(key: String!): Commerce_Cart_Attribute
-#}
 
 type Commerce_CartDeliveryLocation  {
     type: String!
@@ -271,28 +263,25 @@ type Commerce_CartPersonalDetails {
 }
 
 type Commerce_CartAdditionalData {
-    customAttributes: Commerce_Cart_Attributes!
+    customAttributes: Commerce_Cart_CustomAttributes!
     reservedOrderID: String!
 }
 
-#type Commerce_Cart_CartCustomAttributes {
-#    get(key: String!): Commerce_Cart_Attribute
-#}
-
-type Commerce_Cart_Attributes {
-    get(key: String!): Commerce_Cart_Attribute
+type Commerce_Cart_CustomAttributes {
+    "Get specific attribute by key"
+    get(key: String!): Commerce_Cart_CustomAttribute
 }
 
-interface Commerce_Cart_Attribute {
+interface Commerce_Cart_CustomAttribute {
     key: String!
 }
 
-type Commerce_Cart_AttributeBoolean implements Commerce_Cart_Attribute {
+type Commerce_Cart_CustomAttributeBoolean implements Commerce_Cart_CustomAttribute {
     key: String!
     value: Boolean!
 }
 
-type Commerce_Cart_AttributeString implements Commerce_Cart_Attribute {
+type Commerce_Cart_CustomAttributeString implements Commerce_Cart_CustomAttribute {
     key: String!
     value: String!
 }
@@ -464,6 +453,16 @@ input Commerce_Cart_DeliveryShippingOption {
     carrier: String!
 }
 
+input Commerce_Cart_KeyValue {
+    key: String!
+    value: String!
+}
+
+input Commerce_Cart_DeliveryAdditionalData {
+    deliveryCode: String!
+    additionalData: [Commerce_Cart_KeyValue!]!
+}
+
 extend type Query {
     Commerce_Cart: Commerce_DecoratedCart!
     Commerce_Cart_Validator: Commerce_Cart_ValidationResult!
@@ -488,4 +487,8 @@ extend type Mutation {
     Commerce_Cart_UpdateDeliveryShippingOptions(shippingOptions: [Commerce_Cart_DeliveryShippingOption!]): [Commerce_Cart_DeliveryAddressForm]!
     "Cleans current cart"
     Commerce_Cart_Clean: Boolean!
+    "Adds/Updates additional data for the cart"
+    Commerce_Cart_UpdateAdditionalData(additionalData: [Commerce_Cart_KeyValue!]!): Commerce_DecoratedCart!
+    "Adds/Updates additional data for the given deliveries"
+    Commerce_Cart_UpdateAdditionalDataForDeliveries(data: [Commerce_Cart_DeliveryAdditionalData!]!): Commerce_DecoratedCart!
 }

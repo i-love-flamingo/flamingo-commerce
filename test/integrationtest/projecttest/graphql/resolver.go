@@ -106,7 +106,7 @@ func (r *rootResolverCommerce_Cart) GetDeliveryByCode(ctx context.Context, obj *
 }
 
 type rootResolverCommerce_CartAdditionalData struct {
-	resolveCustomAttributes func(ctx context.Context, obj *cart.AdditionalData) (*dto.Attributes, error)
+	resolveCustomAttributes func(ctx context.Context, obj *cart.AdditionalData) (*dto.CustomAttributes, error)
 }
 
 func (r *rootResolverCommerce_CartAdditionalData) Inject(
@@ -115,12 +115,12 @@ func (r *rootResolverCommerce_CartAdditionalData) Inject(
 	r.resolveCustomAttributes = commerce_CartAdditionalDataCustomAttributes.CustomAttributes
 }
 
-func (r *rootResolverCommerce_CartAdditionalData) CustomAttributes(ctx context.Context, obj *cart.AdditionalData) (*dto.Attributes, error) {
+func (r *rootResolverCommerce_CartAdditionalData) CustomAttributes(ctx context.Context, obj *cart.AdditionalData) (*dto.CustomAttributes, error) {
 	return r.resolveCustomAttributes(ctx, obj)
 }
 
 type rootResolverCommerce_CartDeliveryInfo struct {
-	resolveAdditionalData func(ctx context.Context, obj *cart.DeliveryInfo) (*dto.Attributes, error)
+	resolveAdditionalData func(ctx context.Context, obj *cart.DeliveryInfo) (*dto.CustomAttributes, error)
 }
 
 func (r *rootResolverCommerce_CartDeliveryInfo) Inject(
@@ -129,7 +129,7 @@ func (r *rootResolverCommerce_CartDeliveryInfo) Inject(
 	r.resolveAdditionalData = commerce_CartDeliveryInfoAdditionalData.AdditionalData
 }
 
-func (r *rootResolverCommerce_CartDeliveryInfo) AdditionalData(ctx context.Context, obj *cart.DeliveryInfo) (*dto.Attributes, error) {
+func (r *rootResolverCommerce_CartDeliveryInfo) AdditionalData(ctx context.Context, obj *cart.DeliveryInfo) (*dto.CustomAttributes, error) {
 	return r.resolveAdditionalData(ctx, obj)
 }
 
@@ -190,24 +190,26 @@ func (r *rootResolverCommerce_Search_Meta) SortOptions(ctx context.Context, obj 
 }
 
 type rootResolverMutation struct {
-	resolveFlamingo                                  func(ctx context.Context) (*string, error)
-	resolveCommerceAddToCart                         func(ctx context.Context, marketplaceCode string, qty int, deliveryCode string) (*dto.DecoratedCart, error)
-	resolveCommerceDeleteCartDelivery                func(ctx context.Context, deliveryCode string) (*dto.DecoratedCart, error)
-	resolveCommerceDeleteItem                        func(ctx context.Context, itemID string, deliveryCode string) (*dto.DecoratedCart, error)
-	resolveCommerceUpdateItemQty                     func(ctx context.Context, itemID string, deliveryCode string, qty int) (*dto.DecoratedCart, error)
-	resolveCommerceCartUpdateBillingAddress          func(ctx context.Context, addressForm *forms.AddressForm) (*dto.BillingAddressForm, error)
-	resolveCommerceCartUpdateSelectedPayment         func(ctx context.Context, gateway string, method string) (*dto.SelectedPaymentResult, error)
-	resolveCommerceCartApplyCouponCodeOrGiftCard     func(ctx context.Context, code string) (*dto.DecoratedCart, error)
-	resolveCommerceCartRemoveGiftCard                func(ctx context.Context, giftCardCode string) (*dto.DecoratedCart, error)
-	resolveCommerceCartRemoveCouponCode              func(ctx context.Context, couponCode string) (*dto.DecoratedCart, error)
-	resolveCommerceCartUpdateDeliveryAddresses       func(ctx context.Context, deliveryAdresses []*forms.DeliveryForm) ([]*dto.DeliveryAddressForm, error)
-	resolveCommerceCartUpdateDeliveryShippingOptions func(ctx context.Context, shippingOptions []*dto.DeliveryShippingOption) ([]*dto.DeliveryAddressForm, error)
-	resolveCommerceCartClean                         func(ctx context.Context) (bool, error)
-	resolveCommerceCheckoutStartPlaceOrder           func(ctx context.Context, returnURL string) (*dto1.StartPlaceOrderResult, error)
-	resolveCommerceCheckoutCancelPlaceOrder          func(ctx context.Context) (bool, error)
-	resolveCommerceCheckoutClearPlaceOrder           func(ctx context.Context) (bool, error)
-	resolveCommerceCheckoutRefreshPlaceOrder         func(ctx context.Context) (*dto1.PlaceOrderContext, error)
-	resolveCommerceCheckoutRefreshPlaceOrderBlocking func(ctx context.Context) (*dto1.PlaceOrderContext, error)
+	resolveFlamingo                                      func(ctx context.Context) (*string, error)
+	resolveCommerceAddToCart                             func(ctx context.Context, marketplaceCode string, qty int, deliveryCode string) (*dto.DecoratedCart, error)
+	resolveCommerceDeleteCartDelivery                    func(ctx context.Context, deliveryCode string) (*dto.DecoratedCart, error)
+	resolveCommerceDeleteItem                            func(ctx context.Context, itemID string, deliveryCode string) (*dto.DecoratedCart, error)
+	resolveCommerceUpdateItemQty                         func(ctx context.Context, itemID string, deliveryCode string, qty int) (*dto.DecoratedCart, error)
+	resolveCommerceCartUpdateBillingAddress              func(ctx context.Context, addressForm *forms.AddressForm) (*dto.BillingAddressForm, error)
+	resolveCommerceCartUpdateSelectedPayment             func(ctx context.Context, gateway string, method string) (*dto.SelectedPaymentResult, error)
+	resolveCommerceCartApplyCouponCodeOrGiftCard         func(ctx context.Context, code string) (*dto.DecoratedCart, error)
+	resolveCommerceCartRemoveGiftCard                    func(ctx context.Context, giftCardCode string) (*dto.DecoratedCart, error)
+	resolveCommerceCartRemoveCouponCode                  func(ctx context.Context, couponCode string) (*dto.DecoratedCart, error)
+	resolveCommerceCartUpdateDeliveryAddresses           func(ctx context.Context, deliveryAdresses []*forms.DeliveryForm) ([]*dto.DeliveryAddressForm, error)
+	resolveCommerceCartUpdateDeliveryShippingOptions     func(ctx context.Context, shippingOptions []*dto.DeliveryShippingOption) ([]*dto.DeliveryAddressForm, error)
+	resolveCommerceCartClean                             func(ctx context.Context) (bool, error)
+	resolveCommerceCartUpdateAdditionalData              func(ctx context.Context, additionalData []*dto.KeyValue) (*dto.DecoratedCart, error)
+	resolveCommerceCartUpdateAdditionalDataForDeliveries func(ctx context.Context, data []*dto.DeliveryAdditionalData) (*dto.DecoratedCart, error)
+	resolveCommerceCheckoutStartPlaceOrder               func(ctx context.Context, returnURL string) (*dto1.StartPlaceOrderResult, error)
+	resolveCommerceCheckoutCancelPlaceOrder              func(ctx context.Context) (bool, error)
+	resolveCommerceCheckoutClearPlaceOrder               func(ctx context.Context) (bool, error)
+	resolveCommerceCheckoutRefreshPlaceOrder             func(ctx context.Context) (*dto1.PlaceOrderContext, error)
+	resolveCommerceCheckoutRefreshPlaceOrderBlocking     func(ctx context.Context) (*dto1.PlaceOrderContext, error)
 }
 
 func (r *rootResolverMutation) Inject(
@@ -224,6 +226,8 @@ func (r *rootResolverMutation) Inject(
 	mutationCommerceCartUpdateDeliveryAddresses *graphql1.CommerceCartMutationResolver,
 	mutationCommerceCartUpdateDeliveryShippingOptions *graphql1.CommerceCartMutationResolver,
 	mutationCommerceCartClean *graphql1.CommerceCartMutationResolver,
+	mutationCommerceCartUpdateAdditionalData *graphql1.CommerceCartMutationResolver,
+	mutationCommerceCartUpdateAdditionalDataForDeliveries *graphql1.CommerceCartMutationResolver,
 	mutationCommerceCheckoutStartPlaceOrder *graphql4.CommerceCheckoutMutationResolver,
 	mutationCommerceCheckoutCancelPlaceOrder *graphql4.CommerceCheckoutMutationResolver,
 	mutationCommerceCheckoutClearPlaceOrder *graphql4.CommerceCheckoutMutationResolver,
@@ -243,6 +247,8 @@ func (r *rootResolverMutation) Inject(
 	r.resolveCommerceCartUpdateDeliveryAddresses = mutationCommerceCartUpdateDeliveryAddresses.CommerceCartUpdateDeliveryAddresses
 	r.resolveCommerceCartUpdateDeliveryShippingOptions = mutationCommerceCartUpdateDeliveryShippingOptions.CommerceCartUpdateDeliveryShippingOptions
 	r.resolveCommerceCartClean = mutationCommerceCartClean.CartClean
+	r.resolveCommerceCartUpdateAdditionalData = mutationCommerceCartUpdateAdditionalData.UpdateAdditionalData
+	r.resolveCommerceCartUpdateAdditionalDataForDeliveries = mutationCommerceCartUpdateAdditionalDataForDeliveries.UpdateAdditionalDataForDeliveries
 	r.resolveCommerceCheckoutStartPlaceOrder = mutationCommerceCheckoutStartPlaceOrder.CommerceCheckoutStartPlaceOrder
 	r.resolveCommerceCheckoutCancelPlaceOrder = mutationCommerceCheckoutCancelPlaceOrder.CommerceCheckoutCancelPlaceOrder
 	r.resolveCommerceCheckoutClearPlaceOrder = mutationCommerceCheckoutClearPlaceOrder.CommerceCheckoutClearPlaceOrder
@@ -288,6 +294,12 @@ func (r *rootResolverMutation) CommerceCartUpdateDeliveryShippingOptions(ctx con
 }
 func (r *rootResolverMutation) CommerceCartClean(ctx context.Context) (bool, error) {
 	return r.resolveCommerceCartClean(ctx)
+}
+func (r *rootResolverMutation) CommerceCartUpdateAdditionalData(ctx context.Context, additionalData []*dto.KeyValue) (*dto.DecoratedCart, error) {
+	return r.resolveCommerceCartUpdateAdditionalData(ctx, additionalData)
+}
+func (r *rootResolverMutation) CommerceCartUpdateAdditionalDataForDeliveries(ctx context.Context, data []*dto.DeliveryAdditionalData) (*dto.DecoratedCart, error) {
+	return r.resolveCommerceCartUpdateAdditionalDataForDeliveries(ctx, data)
 }
 func (r *rootResolverMutation) CommerceCheckoutStartPlaceOrder(ctx context.Context, returnURL string) (*dto1.StartPlaceOrderResult, error) {
 	return r.resolveCommerceCheckoutStartPlaceOrder(ctx, returnURL)

@@ -58,4 +58,16 @@ type (
 		//ValidationInfo
 		ValidationInfo ValidationInfo
 	}
+
+	// KeyValue for cart and delivery
+	KeyValue struct {
+		Key   string
+		Value string
+	}
+
+	// DeliveryAdditionalData of delivery
+	DeliveryAdditionalData struct {
+		DeliveryCode   string
+		AdditionalData []KeyValue
+	}
 )

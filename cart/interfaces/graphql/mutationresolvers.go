@@ -252,23 +252,29 @@ func (r *CommerceCartMutationResolver) CartClean(ctx context.Context) (bool, err
 	return true, nil
 }
 
-// SetAdditionalData of cart
-func (r *CommerceCartMutationResolver) SetAdditionalData(ctx context.Context, key string, value string) (*dto.DecoratedCart, error) {
+// UpdateAdditionalData of cart
+func (r *CommerceCartMutationResolver) UpdateAdditionalData(ctx context.Context, additionalDataList []*dto.KeyValue) (*dto.DecoratedCart, error) {
 	session := web.SessionFromContext(ctx)
-	_, err := r.cartService.SetAdditionalData(ctx, session, key, value)
-	if err != nil {
-		return nil, err
+	for _, additionalData := range additionalDataList {
+		_, err := r.cartService.UpdateAdditionalData(ctx, session, additionalData.Key, additionalData.Value)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return r.q.CommerceCart(ctx)
 }
 
-// SetAdditionalDataForDelivery of delivery info
-func (r *CommerceCartMutationResolver) SetAdditionalDataForDelivery(ctx context.Context, deliveryCode string, key string, value string) (*dto.DecoratedCart, error) {
+// UpdateAdditionalDataForDeliveries of delivery info
+func (r *CommerceCartMutationResolver) UpdateAdditionalDataForDeliveries(ctx context.Context, additionalDataList []*dto.DeliveryAdditionalData) (*dto.DecoratedCart, error) {
 	session := web.SessionFromContext(ctx)
-	_, err := r.cartService.SetAdditionalDataForDelivery(ctx, session, deliveryCode, key, value)
-	if err != nil {
-		return nil, err
+	for _, additionalData := range additionalDataList {
+		for _, deliveryAdditionalData := range additionalData.AdditionalData {
+			_, err := r.cartService.UpdateAdditionalDataForDelivery(ctx, session, additionalData.DeliveryCode, deliveryAdditionalData.Key, deliveryAdditionalData.Value)
+			if err != nil {
+				return nil, err
+			}
+		}
 	}
 
 	return r.q.CommerceCart(ctx)

@@ -10,8 +10,8 @@
   * Add `SetAdditionalDataForDelivery` to be able to set additional data to the delivery info
 * GraphQL: 
   * Add new method `sumShippingGrossWithDiscounts` to the `Commerce_DecoratedCart` type
-  * Add new mutation `Commerce_Cart_SetAdditionalData`
-  * Add new mutation `Commerce_Cart_SetAdditionalDataForDelivery`
+  * Add new mutation `Commerce_Cart_UpdateAdditionalData`
+  * Add new mutation `Commerce_Cart_UpdateAdditionalDataForDeliveries`
   * Add new field `customAttributes` to the `Commerce_CartAdditionalData` type
   * Add new field `additionalData` to the `Commerce_CartDeliveryInfo` type
   * Remove the fields `getAdditionalData, additionalDataKeys, additionalDeliveryInfoKeys` from the `Commerce_CartDeliveryInfo` type

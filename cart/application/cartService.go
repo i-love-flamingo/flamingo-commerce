@@ -1201,8 +1201,8 @@ func (qar QtyAdjustmentResults) HasRemovedCouponCodes() bool {
 	return false
 }
 
-// SetAdditionalData of cart
-func (cs *CartService) SetAdditionalData(ctx context.Context, session *web.Session, key string, value string) (*cartDomain.Cart, error) {
+// UpdateAdditionalData of cart
+func (cs *CartService) UpdateAdditionalData(ctx context.Context, session *web.Session, key string, value string) (*cartDomain.Cart, error) {
 	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return nil, err
@@ -1222,8 +1222,8 @@ func (cs *CartService) SetAdditionalData(ctx context.Context, session *web.Sessi
 	return cart, err
 }
 
-// SetAdditionalDataForDelivery of cart
-func (cs *CartService) SetAdditionalDataForDelivery(ctx context.Context, session *web.Session, deliveryCode string, key string, value string) (*cartDomain.Cart, error) {
+// UpdateAdditionalDataForDelivery of cart
+func (cs *CartService) UpdateAdditionalDataForDelivery(ctx context.Context, session *web.Session, deliveryCode string, key string, value string) (*cartDomain.Cart, error) {
 	cart, _, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return nil, err

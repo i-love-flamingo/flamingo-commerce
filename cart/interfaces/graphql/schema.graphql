@@ -453,6 +453,16 @@ input Commerce_Cart_DeliveryShippingOption {
     carrier: String!
 }
 
+input Commerce_Cart_KeyValue {
+    key: String!
+    value: String!
+}
+
+input Commerce_Cart_DeliveryAdditionalData {
+    deliveryCode: String!
+    additionalData: [Commerce_Cart_KeyValue!]!
+}
+
 extend type Query {
     Commerce_Cart: Commerce_DecoratedCart!
     Commerce_Cart_Validator: Commerce_Cart_ValidationResult!
@@ -477,8 +487,8 @@ extend type Mutation {
     Commerce_Cart_UpdateDeliveryShippingOptions(shippingOptions: [Commerce_Cart_DeliveryShippingOption!]): [Commerce_Cart_DeliveryAddressForm]!
     "Cleans current cart"
     Commerce_Cart_Clean: Boolean!
-    "Sets additional data for the cart"
-    Commerce_Cart_SetAdditionalData(key: String!, value: String!): Commerce_DecoratedCart!
-    "Sets additional data for the delivery"
-    Commerce_Cart_SetAdditionalDataForDelivery(deliveryCode: String!, key: String!, value: String!): Commerce_DecoratedCart!
+    "Adds/Updates additional data for the cart"
+    Commerce_Cart_UpdateAdditionalData(additionalData: [Commerce_Cart_KeyValue!]!): Commerce_DecoratedCart!
+    "Adds/Updates additional data for the given deliveries"
+    Commerce_Cart_UpdateAdditionalDataForDeliveries(data: [Commerce_Cart_DeliveryAdditionalData!]!): Commerce_DecoratedCart!
 }

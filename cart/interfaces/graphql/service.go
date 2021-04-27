@@ -27,6 +27,8 @@ func (*Service) Schema() []byte {
 // Types configures the GraphQL to Go resolvers
 func (*Service) Types(types *graphql.Types) {
 	types.Map("Commerce_Cart_CustomAttributes", dto.CustomAttributes{})
+	types.Map("Commerce_Cart_KeyValue", dto.KeyValue{})
+	types.Map("Commerce_Cart_DeliveryAdditionalData", dto.DeliveryAdditionalData{})
 	types.Map("Commerce_DecoratedCart", dto.DecoratedCart{})
 	types.Map("Commerce_Cart", cart.Cart{})
 	types.Resolve("Commerce_Cart", "getDeliveryByCode", Resolver{}, "GetDeliveryByCodeWithoutBool")
@@ -104,8 +106,8 @@ func (*Service) Types(types *graphql.Types) {
 	types.Resolve("Mutation", "Commerce_Cart_UpdateDeliveryAddresses", CommerceCartMutationResolver{}, "CommerceCartUpdateDeliveryAddresses")
 	types.Resolve("Mutation", "Commerce_Cart_UpdateDeliveryShippingOptions", CommerceCartMutationResolver{}, "CommerceCartUpdateDeliveryShippingOptions")
 	types.Resolve("Mutation", "Commerce_Cart_Clean", CommerceCartMutationResolver{}, "CartClean")
-	types.Resolve("Mutation", "Commerce_Cart_SetAdditionalData", CommerceCartMutationResolver{}, "SetAdditionalData")
-	types.Resolve("Mutation", "Commerce_Cart_SetAdditionalDataForDelivery", CommerceCartMutationResolver{}, "SetAdditionalDataForDelivery")
+	types.Resolve("Mutation", "Commerce_Cart_UpdateAdditionalData", CommerceCartMutationResolver{}, "UpdateAdditionalData")
+	types.Resolve("Mutation", "Commerce_Cart_UpdateAdditionalDataForDeliveries", CommerceCartMutationResolver{}, "UpdateAdditionalDataForDeliveries")
 }
 
 // Resolver helper
