@@ -4,8 +4,18 @@
 * API
   * **Breaking**: Update `DELETE /api/v1/cart` to actually clean the whole cart not only removing the cart items (introduces new route for the previous behaviour, see below)
   * Add new endpoint `DELETE /api/v1/cart/deliveries/items` to be able to remove all cart items from all deliveries but keeping delivery info and other cart data untouched
-* Added new method `SumShippingGrossWithDiscounts` to the cart domain which returns gross shipping costs for the cart.
-* GraphQL: Added new method `sumShippingGrossWithDiscounts` to the `Commerce_DecoratedCart` type.
+* Add new method `SumShippingGrossWithDiscounts` to the cart domain which returns gross shipping costs for the cart
+* CartService:
+  * Add `SetAdditionalData` to be able to set additional data to cart
+  * Add `SetAdditionalDataForDelivery` to be able to set additional data to the delivery info
+* GraphQL: 
+  * Add new method `sumShippingGrossWithDiscounts` to the `Commerce_DecoratedCart` type
+  * Add new mutation `Commerce_Cart_SetAdditionalData`
+  * Add new mutation `Commerce_Cart_SetAdditionalDataForDelivery`
+  * Add new field `customAttributes` to the `Commerce_CartAdditionalData` type
+  * Add new field `additionalData` to the `Commerce_CartDeliveryInfo` type
+  * Remove the fields `getAdditionalData, additionalDataKeys, additionalDeliveryInfoKeys` from the `Commerce_CartDeliveryInfo` type
+  * Add new type `Commerce_Cart_CustomAttributes` for generic key value maps
 
 **checkout**
 * Introducing Flamingo events on final states of the place order process
