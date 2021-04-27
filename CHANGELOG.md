@@ -6,8 +6,8 @@
   * Add new endpoint `DELETE /api/v1/cart/deliveries/items` to be able to remove all cart items from all deliveries but keeping delivery info and other cart data untouched
 * Add new method `SumShippingGrossWithDiscounts` to the cart domain which returns gross shipping costs for the cart
 * CartService:
-  * Add `SetAdditionalData` to be able to set additional data to cart
-  * Add `SetAdditionalDataForDelivery` to be able to set additional data to the delivery info
+  * Add `UpdateAdditionalData` to be able to set additional data to cart
+  * Add `UpdateAdditionalDataForDelivery` to be able to set additional data to the delivery info
 * GraphQL: 
   * Add new method `sumShippingGrossWithDiscounts` to the `Commerce_DecoratedCart` type
   * Add new mutation `Commerce_Cart_UpdateAdditionalData`
