@@ -1,0 +1,31 @@
+mutation {
+    Commerce_Cart_UpdateDeliveriesAdditionalData(data: [
+        {deliveryCode: "delivery1", additionalData: [{key: "foo" value: "bar"}, {key: "biz" value: "baz"}]}
+        {deliveryCode: "delivery2", additionalData: [{key: "one" value: "two"}, {key: "three" value: "four"}]}
+    ]) {
+        cart {
+            deliveries {
+                deliveryInfo {
+                    additionalData {
+                        foo: get(key: "foo") {
+                            key
+                            value
+                        }
+                        biz: get(key: "biz") {
+                            key
+                            value
+                        }
+                        one: get(key: "one") {
+                            key
+                            value
+                        }
+                        three: get(key: "three") {
+                            key
+                            value
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

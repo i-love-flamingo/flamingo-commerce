@@ -14,8 +14,9 @@
   * Add new mutation `Commerce_Cart_UpdateDeliveriesAdditionalData`
   * Add new field `customAttributes` to the `Commerce_CartAdditionalData` type
   * Add new field `additionalData` to the `Commerce_CartDeliveryInfo` type
-  * Remove the fields `getAdditionalData, additionalDataKeys, additionalDeliveryInfoKeys` from the `Commerce_CartDeliveryInfo` type
-  * Add new type `Commerce_Cart_CustomAttributes` for generic key value maps
+  * Add new type `Commerce_Cart_CustomAttributes` with method for getting key/value pairs
+  * **Breaking**: Make naming convention consistent in graphql schema `Commerce_Cart_*`
+  * **Breaking**: Remove the fields `getAdditionalData, additionalDataKeys, additionalDeliveryInfoKeys` from the `Commerce_CartDeliveryInfo` type
 
 **checkout**
 * Introducing Flamingo events on final states of the place order process

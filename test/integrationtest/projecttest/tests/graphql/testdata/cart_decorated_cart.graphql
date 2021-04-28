@@ -1,5 +1,5 @@
 query {
-    Commerce_Cart {
+    Commerce_Cart_DecoratedCart {
         cart {
             itemCount
             billingAddress {
