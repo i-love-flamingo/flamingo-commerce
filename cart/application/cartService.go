@@ -1232,7 +1232,7 @@ func (cs *CartService) UpdateDeliveryAdditionalData(ctx context.Context, session
 		return nil, err
 	}
 
-	delivery, found := getDeliveryByCode(cart, deliveryCode)
+	delivery, found := cart.GetDeliveryByCode(deliveryCode)
 	if !found {
 		return cart, nil
 	}
@@ -1252,13 +1252,4 @@ func (cs *CartService) UpdateDeliveryAdditionalData(ctx context.Context, session
 	}
 
 	return cart, nil
-}
-
-func getDeliveryByCode(cart *cartDomain.Cart, deliveryCode string) (cartDomain.Delivery, bool) {
-	for _, delivery := range cart.Deliveries {
-		if delivery.DeliveryInfo.Code == deliveryCode {
-			return delivery, true
-		}
-	}
-	return cartDomain.Delivery{}, false
 }
