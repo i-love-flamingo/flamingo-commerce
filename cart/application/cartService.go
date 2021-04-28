@@ -1229,26 +1229,30 @@ func (cs *CartService) UpdateAdditionalDataForDelivery(ctx context.Context, sess
 		return nil, err
 	}
 
-	var deliveryInfo *cartDomain.DeliveryInfo
-	for _, delivery := range cart.Deliveries {
-		if delivery.DeliveryInfo.Code == deliveryCode {
-			deliveryInfo = &delivery.DeliveryInfo
-		}
-	}
-
-	if deliveryInfo == nil {
+	delivery := getDeliveryByCode(cart, deliveryCode)
+	if delivery == nil {
 		return cart, nil
 	}
 
-	if deliveryInfo.AdditionalData == nil {
-		deliveryInfo.AdditionalData = map[string]string{}
+	if delivery.DeliveryInfo.AdditionalData == nil {
+		delivery.DeliveryInfo.AdditionalData = map[string]string{}
 	}
-	deliveryInfo.AdditionalData[key] = value
-	newDeliveryInfoUpdateCommand := cartDomain.CreateDeliveryInfoUpdateCommand(*deliveryInfo)
+	delivery.DeliveryInfo.AdditionalData[key] = value
+	newDeliveryInfoUpdateCommand := cartDomain.CreateDeliveryInfoUpdateCommand(delivery.DeliveryInfo)
+
 	err = cs.UpdateDeliveryInfo(ctx, session, deliveryCode, newDeliveryInfoUpdateCommand)
 	if err != nil {
 		return nil, err
 	}
 
 	return cart, nil
+}
+
+func getDeliveryByCode(cart *cartDomain.Cart, deliveryCode string) *cartDomain.Delivery {
+	for _, delivery := range cart.Deliveries {
+		if delivery.DeliveryInfo.Code == deliveryCode {
+			return &delivery
+		}
+	}
+	return nil
 }
