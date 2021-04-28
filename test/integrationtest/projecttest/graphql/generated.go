@@ -57,10 +57,12 @@ type Config struct {
 }
 
 type ResolverRoot interface {
-	Commerce_Cart() Commerce_CartResolver
-	Commerce_CartItem() Commerce_CartItemResolver
-	Commerce_CartShippingItem() Commerce_CartShippingItemResolver
+	Commerce_Cart_AdditionalData() Commerce_Cart_AdditionalDataResolver
+	Commerce_Cart_Cart() Commerce_Cart_CartResolver
 	Commerce_Cart_DefaultPaymentSelection() Commerce_Cart_DefaultPaymentSelectionResolver
+	Commerce_Cart_DeliveryInfo() Commerce_Cart_DeliveryInfoResolver
+	Commerce_Cart_Item() Commerce_Cart_ItemResolver
+	Commerce_Cart_ShippingItem() Commerce_Cart_ShippingItemResolver
 	Commerce_Search_Meta() Commerce_Search_MetaResolver
 	Mutation() MutationResolver
 	Query() QueryResolver
@@ -73,7 +75,84 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
-	CommerceCart struct {
+	CommerceCartAdditionalData struct {
+		CustomAttributes func(childComplexity int) int
+		ReservedOrderID  func(childComplexity int) int
+	}
+
+	CommerceCartAddress struct {
+		AdditionalAddressLines func(childComplexity int) int
+		City                   func(childComplexity int) int
+		Company                func(childComplexity int) int
+		Country                func(childComplexity int) int
+		CountryCode            func(childComplexity int) int
+		Email                  func(childComplexity int) int
+		Firstname              func(childComplexity int) int
+		Lastname               func(childComplexity int) int
+		MiddleName             func(childComplexity int) int
+		PostCode               func(childComplexity int) int
+		RegionCode             func(childComplexity int) int
+		Salutation             func(childComplexity int) int
+		State                  func(childComplexity int) int
+		Street                 func(childComplexity int) int
+		StreetNr               func(childComplexity int) int
+		Telephone              func(childComplexity int) int
+		Title                  func(childComplexity int) int
+		Vat                    func(childComplexity int) int
+	}
+
+	CommerceCartAddressForm struct {
+		AddressLine1 func(childComplexity int) int
+		AddressLine2 func(childComplexity int) int
+		City         func(childComplexity int) int
+		Company      func(childComplexity int) int
+		Country      func(childComplexity int) int
+		CountryCode  func(childComplexity int) int
+		Email        func(childComplexity int) int
+		Firstname    func(childComplexity int) int
+		Lastname     func(childComplexity int) int
+		MiddleName   func(childComplexity int) int
+		PhoneNumber  func(childComplexity int) int
+		PostCode     func(childComplexity int) int
+		RegionCode   func(childComplexity int) int
+		Salutation   func(childComplexity int) int
+		State        func(childComplexity int) int
+		Street       func(childComplexity int) int
+		StreetNr     func(childComplexity int) int
+		Title        func(childComplexity int) int
+		Vat          func(childComplexity int) int
+	}
+
+	CommerceCartAppliedDiscount struct {
+		Applied       func(childComplexity int) int
+		CampaignCode  func(childComplexity int) int
+		CouponCode    func(childComplexity int) int
+		IsItemRelated func(childComplexity int) int
+		Label         func(childComplexity int) int
+		SortOrder     func(childComplexity int) int
+		Type          func(childComplexity int) int
+	}
+
+	CommerceCartAppliedDiscounts struct {
+		ByCampaignCode func(childComplexity int, campaignCode string) int
+		ByType         func(childComplexity int, filterType string) int
+		Items          func(childComplexity int) int
+	}
+
+	CommerceCartAppliedGiftCard struct {
+		Applied      func(childComplexity int) int
+		Code         func(childComplexity int) int
+		HasRemaining func(childComplexity int) int
+		Remaining    func(childComplexity int) int
+	}
+
+	CommerceCartBillingAddressForm struct {
+		FormData       func(childComplexity int) int
+		Processed      func(childComplexity int) int
+		ValidationInfo func(childComplexity int) int
+	}
+
+	CommerceCartCart struct {
 		AdditionalData                  func(childComplexity int) int
 		AllShippingTitles               func(childComplexity int) int
 		AppliedCouponCodes              func(childComplexity int) int
@@ -123,56 +202,20 @@ type ComplexityRoot struct {
 		Totalitems                      func(childComplexity int) int
 	}
 
-	CommerceCartAdditionalData struct {
-		ReservedOrderID func(childComplexity int) int
-	}
-
-	CommerceCartAddress struct {
-		AdditionalAddressLines func(childComplexity int) int
-		City                   func(childComplexity int) int
-		Company                func(childComplexity int) int
-		Country                func(childComplexity int) int
-		CountryCode            func(childComplexity int) int
-		Email                  func(childComplexity int) int
-		Firstname              func(childComplexity int) int
-		Lastname               func(childComplexity int) int
-		MiddleName             func(childComplexity int) int
-		PostCode               func(childComplexity int) int
-		RegionCode             func(childComplexity int) int
-		Salutation             func(childComplexity int) int
-		State                  func(childComplexity int) int
-		Street                 func(childComplexity int) int
-		StreetNr               func(childComplexity int) int
-		Telephone              func(childComplexity int) int
-		Title                  func(childComplexity int) int
-		Vat                    func(childComplexity int) int
-	}
-
-	CommerceCartAppliedDiscount struct {
-		Applied       func(childComplexity int) int
-		CampaignCode  func(childComplexity int) int
-		CouponCode    func(childComplexity int) int
-		IsItemRelated func(childComplexity int) int
-		Label         func(childComplexity int) int
-		SortOrder     func(childComplexity int) int
-		Type          func(childComplexity int) int
-	}
-
-	CommerceCartAppliedDiscounts struct {
-		ByCampaignCode func(childComplexity int, campaignCode string) int
-		ByType         func(childComplexity int, filterType string) int
-		Items          func(childComplexity int) int
-	}
-
-	CommerceCartAppliedGiftCard struct {
-		Applied      func(childComplexity int) int
-		Code         func(childComplexity int) int
-		HasRemaining func(childComplexity int) int
-		Remaining    func(childComplexity int) int
-	}
-
 	CommerceCartCouponCode struct {
 		Code func(childComplexity int) int
+	}
+
+	CommerceCartCustomAttributes struct {
+		Get func(childComplexity int, key string) int
+	}
+
+	CommerceCartDecoratedCart struct {
+		Cart                       func(childComplexity int) int
+		CartSummary                func(childComplexity int) int
+		DecoratedDeliveries        func(childComplexity int) int
+		GetAllPaymentRequiredItems func(childComplexity int) int
+		GetDecoratedDeliveryByCode func(childComplexity int, deliveryCode string) int
 	}
 
 	CommerceCartDecoratedDelivery struct {
@@ -183,6 +226,12 @@ type ComplexityRoot struct {
 	CommerceCartDecoratedItem struct {
 		Item    func(childComplexity int) int
 		Product func(childComplexity int) int
+	}
+
+	CommerceCartDefaultPaymentSelection struct {
+		CartSplit  func(childComplexity int) int
+		Gateway    func(childComplexity int) int
+		TotalValue func(childComplexity int) int
 	}
 
 	CommerceCartDelivery struct {
@@ -201,16 +250,25 @@ type ComplexityRoot struct {
 		SumTotalTaxAmount               func(childComplexity int) int
 	}
 
+	CommerceCartDeliveryAddressForm struct {
+		Carrier           func(childComplexity int) int
+		DeliveryCode      func(childComplexity int) int
+		DesiredTime       func(childComplexity int) int
+		FormData          func(childComplexity int) int
+		Method            func(childComplexity int) int
+		Processed         func(childComplexity int) int
+		UseBillingAddress func(childComplexity int) int
+		ValidationInfo    func(childComplexity int) int
+	}
+
 	CommerceCartDeliveryInfo struct {
-		AdditionalDataKeys         func(childComplexity int) int
-		AdditionalDeliveryInfoKeys func(childComplexity int) int
-		Carrier                    func(childComplexity int) int
-		Code                       func(childComplexity int) int
-		DeliveryLocation           func(childComplexity int) int
-		DesiredTime                func(childComplexity int) int
-		GetAdditionalData          func(childComplexity int, key string) int
-		Method                     func(childComplexity int) int
-		Workflow                   func(childComplexity int) int
+		AdditionalData   func(childComplexity int) int
+		Carrier          func(childComplexity int) int
+		Code             func(childComplexity int) int
+		DeliveryLocation func(childComplexity int) int
+		DesiredTime      func(childComplexity int) int
+		Method           func(childComplexity int) int
+		Workflow         func(childComplexity int) int
 	}
 
 	CommerceCartDeliveryLocation struct {
@@ -222,6 +280,22 @@ type ComplexityRoot struct {
 
 	CommerceCartExistingCustomerData struct {
 		ID func(childComplexity int) int
+	}
+
+	CommerceCartFormError struct {
+		DefaultLabel func(childComplexity int) int
+		MessageKey   func(childComplexity int) int
+	}
+
+	CommerceCartFormFieldError struct {
+		DefaultLabel func(childComplexity int) int
+		FieldName    func(childComplexity int) int
+		MessageKey   func(childComplexity int) int
+	}
+
+	CommerceCartFormValidationInfo struct {
+		FieldErrors   func(childComplexity int) int
+		GeneralErrors func(childComplexity int) int
 	}
 
 	CommerceCartItem struct {
@@ -243,99 +317,14 @@ type ComplexityRoot struct {
 		VariantMarketPlaceCode func(childComplexity int) int
 	}
 
-	CommerceCartPerson struct {
-		Address              func(childComplexity int) int
-		ExistingCustomerData func(childComplexity int) int
-		PersonalDetails      func(childComplexity int) int
-	}
-
-	CommerceCartPersonalDetails struct {
-		DateOfBirth     func(childComplexity int) int
-		Nationality     func(childComplexity int) int
-		PassportCountry func(childComplexity int) int
-		PassportNumber  func(childComplexity int) int
-	}
-
-	CommerceCartShippingItem struct {
-		AppliedDiscounts         func(childComplexity int) int
-		PriceNet                 func(childComplexity int) int
-		Tax                      func(childComplexity int) int
-		TaxAmount                func(childComplexity int) int
-		Title                    func(childComplexity int) int
-		TotalWithDiscountInclTax func(childComplexity int) int
-	}
-
-	CommerceCartTotalitem struct {
-		Code  func(childComplexity int) int
-		Price func(childComplexity int) int
-		Title func(childComplexity int) int
-		Type  func(childComplexity int) int
-	}
-
-	CommerceCartAddressForm struct {
-		AddressLine1 func(childComplexity int) int
-		AddressLine2 func(childComplexity int) int
-		City         func(childComplexity int) int
-		Company      func(childComplexity int) int
-		Country      func(childComplexity int) int
-		CountryCode  func(childComplexity int) int
-		Email        func(childComplexity int) int
-		Firstname    func(childComplexity int) int
-		Lastname     func(childComplexity int) int
-		MiddleName   func(childComplexity int) int
-		PhoneNumber  func(childComplexity int) int
-		PostCode     func(childComplexity int) int
-		RegionCode   func(childComplexity int) int
-		Salutation   func(childComplexity int) int
-		State        func(childComplexity int) int
-		Street       func(childComplexity int) int
-		StreetNr     func(childComplexity int) int
-		Title        func(childComplexity int) int
-		Vat          func(childComplexity int) int
-	}
-
-	CommerceCartBillingAddressForm struct {
-		FormData       func(childComplexity int) int
-		Processed      func(childComplexity int) int
-		ValidationInfo func(childComplexity int) int
-	}
-
-	CommerceCartDefaultPaymentSelection struct {
-		CartSplit  func(childComplexity int) int
-		Gateway    func(childComplexity int) int
-		TotalValue func(childComplexity int) int
-	}
-
-	CommerceCartDeliveryAddressForm struct {
-		Carrier           func(childComplexity int) int
-		DeliveryCode      func(childComplexity int) int
-		DesiredTime       func(childComplexity int) int
-		FormData          func(childComplexity int) int
-		Method            func(childComplexity int) int
-		Processed         func(childComplexity int) int
-		UseBillingAddress func(childComplexity int) int
-		ValidationInfo    func(childComplexity int) int
-	}
-
-	CommerceCartFormError struct {
-		DefaultLabel func(childComplexity int) int
-		MessageKey   func(childComplexity int) int
-	}
-
-	CommerceCartFormFieldError struct {
-		DefaultLabel func(childComplexity int) int
-		FieldName    func(childComplexity int) int
-		MessageKey   func(childComplexity int) int
-	}
-
-	CommerceCartFormValidationInfo struct {
-		FieldErrors   func(childComplexity int) int
-		GeneralErrors func(childComplexity int) int
-	}
-
 	CommerceCartItemValidationError struct {
 		ErrorMessageKey func(childComplexity int) int
 		ItemID          func(childComplexity int) int
+	}
+
+	CommerceCartKeyValue struct {
+		Key   func(childComplexity int) int
+		Value func(childComplexity int) int
 	}
 
 	CommerceCartPaymentSelectionSplit struct {
@@ -347,6 +336,19 @@ type ComplexityRoot struct {
 		ChargeReference func(childComplexity int) int
 		ChargeType      func(childComplexity int) int
 		Method          func(childComplexity int) int
+	}
+
+	CommerceCartPerson struct {
+		Address              func(childComplexity int) int
+		ExistingCustomerData func(childComplexity int) int
+		PersonalDetails      func(childComplexity int) int
+	}
+
+	CommerceCartPersonalDetails struct {
+		DateOfBirth     func(childComplexity int) int
+		Nationality     func(childComplexity int) int
+		PassportCountry func(childComplexity int) int
+		PassportNumber  func(childComplexity int) int
 	}
 
 	CommerceCartPlacedOrderInfo struct {
@@ -387,6 +389,15 @@ type ComplexityRoot struct {
 		ValidationInfo func(childComplexity int) int
 	}
 
+	CommerceCartShippingItem struct {
+		AppliedDiscounts         func(childComplexity int) int
+		PriceNet                 func(childComplexity int) int
+		Tax                      func(childComplexity int) int
+		TaxAmount                func(childComplexity int) int
+		Title                    func(childComplexity int) int
+		TotalWithDiscountInclTax func(childComplexity int) int
+	}
+
 	CommerceCartSummary struct {
 		Discounts                                        func(childComplexity int) int
 		HasAppliedDiscounts                              func(childComplexity int) int
@@ -413,6 +424,13 @@ type ComplexityRoot struct {
 		DeliveryCodes func(childComplexity int) int
 		ItemCount     func(childComplexity int) int
 		ProductCount  func(childComplexity int) int
+	}
+
+	CommerceCartTotalitem struct {
+		Code  func(childComplexity int) int
+		Price func(childComplexity int) int
+		Title func(childComplexity int) int
+		Type  func(childComplexity int) int
 	}
 
 	CommerceCartValidationResult struct {
@@ -607,14 +625,6 @@ type ComplexityRoot struct {
 	CommerceCustomerStatusResult struct {
 		IsLoggedIn func(childComplexity int) int
 		UserID     func(childComplexity int) int
-	}
-
-	CommerceDecoratedCart struct {
-		Cart                       func(childComplexity int) int
-		CartSummary                func(childComplexity int) int
-		DecoratedDeliveries        func(childComplexity int) int
-		GetAllPaymentRequiredItems func(childComplexity int) int
-		GetDecoratedDeliveryByCode func(childComplexity int, deliveryCode string) int
 	}
 
 	CommercePrice struct {
@@ -907,28 +917,30 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CommerceAddToCart                         func(childComplexity int, marketplaceCode string, qty int, deliveryCode string) int
-		CommerceCartApplyCouponCodeOrGiftCard     func(childComplexity int, code string) int
-		CommerceCartClean                         func(childComplexity int) int
-		CommerceCartRemoveCouponCode              func(childComplexity int, couponCode string) int
-		CommerceCartRemoveGiftCard                func(childComplexity int, giftCardCode string) int
-		CommerceCartUpdateBillingAddress          func(childComplexity int, addressForm *forms.AddressForm) int
-		CommerceCartUpdateDeliveryAddresses       func(childComplexity int, deliveryAdresses []*forms.DeliveryForm) int
-		CommerceCartUpdateDeliveryShippingOptions func(childComplexity int, shippingOptions []*dto.DeliveryShippingOption) int
-		CommerceCartUpdateSelectedPayment         func(childComplexity int, gateway string, method string) int
-		CommerceCheckoutCancelPlaceOrder          func(childComplexity int) int
-		CommerceCheckoutClearPlaceOrder           func(childComplexity int) int
-		CommerceCheckoutRefreshPlaceOrder         func(childComplexity int) int
-		CommerceCheckoutRefreshPlaceOrderBlocking func(childComplexity int) int
-		CommerceCheckoutStartPlaceOrder           func(childComplexity int, returnURL string) int
-		CommerceDeleteCartDelivery                func(childComplexity int, deliveryCode string) int
-		CommerceDeleteItem                        func(childComplexity int, itemID string, deliveryCode string) int
-		CommerceUpdateItemQty                     func(childComplexity int, itemID string, deliveryCode string, qty int) int
-		Flamingo                                  func(childComplexity int) int
+		CommerceCartAddToCart                      func(childComplexity int, marketplaceCode string, qty int, deliveryCode string) int
+		CommerceCartApplyCouponCodeOrGiftCard      func(childComplexity int, code string) int
+		CommerceCartClean                          func(childComplexity int) int
+		CommerceCartDeleteCartDelivery             func(childComplexity int, deliveryCode string) int
+		CommerceCartDeleteItem                     func(childComplexity int, itemID string, deliveryCode string) int
+		CommerceCartRemoveCouponCode               func(childComplexity int, couponCode string) int
+		CommerceCartRemoveGiftCard                 func(childComplexity int, giftCardCode string) int
+		CommerceCartUpdateAdditionalData           func(childComplexity int, additionalData []*dto.KeyValue) int
+		CommerceCartUpdateBillingAddress           func(childComplexity int, addressForm *forms.AddressForm) int
+		CommerceCartUpdateDeliveriesAdditionalData func(childComplexity int, data []*dto.DeliveryAdditionalData) int
+		CommerceCartUpdateDeliveryAddresses        func(childComplexity int, deliveryAdresses []*forms.DeliveryForm) int
+		CommerceCartUpdateDeliveryShippingOptions  func(childComplexity int, shippingOptions []*dto.DeliveryShippingOption) int
+		CommerceCartUpdateItemQty                  func(childComplexity int, itemID string, deliveryCode string, qty int) int
+		CommerceCartUpdateSelectedPayment          func(childComplexity int, gateway string, method string) int
+		CommerceCheckoutCancelPlaceOrder           func(childComplexity int) int
+		CommerceCheckoutClearPlaceOrder            func(childComplexity int) int
+		CommerceCheckoutRefreshPlaceOrder          func(childComplexity int) int
+		CommerceCheckoutRefreshPlaceOrderBlocking  func(childComplexity int) int
+		CommerceCheckoutStartPlaceOrder            func(childComplexity int, returnURL string) int
+		Flamingo                                   func(childComplexity int) int
 	}
 
 	Query struct {
-		CommerceCart                     func(childComplexity int) int
+		CommerceCartDecoratedCart        func(childComplexity int) int
 		CommerceCartQtyRestriction       func(childComplexity int, marketplaceCode string, variantCode *string, deliveryCode string) int
 		CommerceCartValidator            func(childComplexity int) int
 		CommerceCategory                 func(childComplexity int, categoryCode string, categorySearchRequest *searchdto.CommerceSearchRequest) int
@@ -943,27 +955,33 @@ type ComplexityRoot struct {
 	}
 }
 
-type Commerce_CartResolver interface {
+type Commerce_Cart_AdditionalDataResolver interface {
+	CustomAttributes(ctx context.Context, obj *cart.AdditionalData) (*dto.CustomAttributes, error)
+}
+type Commerce_Cart_CartResolver interface {
 	GetDeliveryByCode(ctx context.Context, obj *cart.Cart, deliveryCode string) (*cart.Delivery, error)
-}
-type Commerce_CartItemResolver interface {
-	AppliedDiscounts(ctx context.Context, obj *cart.Item) (*dto.CartAppliedDiscounts, error)
-}
-type Commerce_CartShippingItemResolver interface {
-	AppliedDiscounts(ctx context.Context, obj *cart.ShippingItem) (*dto.CartAppliedDiscounts, error)
 }
 type Commerce_Cart_DefaultPaymentSelectionResolver interface {
 	CartSplit(ctx context.Context, obj *cart.DefaultPaymentSelection) ([]*dto.PaymentSelectionSplit, error)
+}
+type Commerce_Cart_DeliveryInfoResolver interface {
+	AdditionalData(ctx context.Context, obj *cart.DeliveryInfo) (*dto.CustomAttributes, error)
+}
+type Commerce_Cart_ItemResolver interface {
+	AppliedDiscounts(ctx context.Context, obj *cart.Item) (*dto.CartAppliedDiscounts, error)
+}
+type Commerce_Cart_ShippingItemResolver interface {
+	AppliedDiscounts(ctx context.Context, obj *cart.ShippingItem) (*dto.CartAppliedDiscounts, error)
 }
 type Commerce_Search_MetaResolver interface {
 	SortOptions(ctx context.Context, obj *domain1.SearchMeta) ([]*searchdto.CommerceSearchSortOption, error)
 }
 type MutationResolver interface {
 	Flamingo(ctx context.Context) (*string, error)
-	CommerceAddToCart(ctx context.Context, marketplaceCode string, qty int, deliveryCode string) (*dto.DecoratedCart, error)
-	CommerceDeleteCartDelivery(ctx context.Context, deliveryCode string) (*dto.DecoratedCart, error)
-	CommerceDeleteItem(ctx context.Context, itemID string, deliveryCode string) (*dto.DecoratedCart, error)
-	CommerceUpdateItemQty(ctx context.Context, itemID string, deliveryCode string, qty int) (*dto.DecoratedCart, error)
+	CommerceCartAddToCart(ctx context.Context, marketplaceCode string, qty int, deliveryCode string) (*dto.DecoratedCart, error)
+	CommerceCartDeleteCartDelivery(ctx context.Context, deliveryCode string) (*dto.DecoratedCart, error)
+	CommerceCartDeleteItem(ctx context.Context, itemID string, deliveryCode string) (*dto.DecoratedCart, error)
+	CommerceCartUpdateItemQty(ctx context.Context, itemID string, deliveryCode string, qty int) (*dto.DecoratedCart, error)
 	CommerceCartUpdateBillingAddress(ctx context.Context, addressForm *forms.AddressForm) (*dto.BillingAddressForm, error)
 	CommerceCartUpdateSelectedPayment(ctx context.Context, gateway string, method string) (*dto.SelectedPaymentResult, error)
 	CommerceCartApplyCouponCodeOrGiftCard(ctx context.Context, code string) (*dto.DecoratedCart, error)
@@ -972,6 +990,8 @@ type MutationResolver interface {
 	CommerceCartUpdateDeliveryAddresses(ctx context.Context, deliveryAdresses []*forms.DeliveryForm) ([]*dto.DeliveryAddressForm, error)
 	CommerceCartUpdateDeliveryShippingOptions(ctx context.Context, shippingOptions []*dto.DeliveryShippingOption) ([]*dto.DeliveryAddressForm, error)
 	CommerceCartClean(ctx context.Context) (bool, error)
+	CommerceCartUpdateAdditionalData(ctx context.Context, additionalData []*dto.KeyValue) (*dto.DecoratedCart, error)
+	CommerceCartUpdateDeliveriesAdditionalData(ctx context.Context, data []*dto.DeliveryAdditionalData) (*dto.DecoratedCart, error)
 	CommerceCheckoutStartPlaceOrder(ctx context.Context, returnURL string) (*dto1.StartPlaceOrderResult, error)
 	CommerceCheckoutCancelPlaceOrder(ctx context.Context) (bool, error)
 	CommerceCheckoutClearPlaceOrder(ctx context.Context) (bool, error)
@@ -984,7 +1004,7 @@ type QueryResolver interface {
 	CommerceProductSearch(ctx context.Context, searchRequest searchdto.CommerceSearchRequest) (*graphql1.SearchResultDTO, error)
 	CommerceCustomerStatus(ctx context.Context) (*dtocustomer.CustomerStatusResult, error)
 	CommerceCustomer(ctx context.Context) (*dtocustomer.CustomerResult, error)
-	CommerceCart(ctx context.Context) (*dto.DecoratedCart, error)
+	CommerceCartDecoratedCart(ctx context.Context) (*dto.DecoratedCart, error)
 	CommerceCartValidator(ctx context.Context) (*validation.Result, error)
 	CommerceCartQtyRestriction(ctx context.Context, marketplaceCode string, variantCode *string, deliveryCode string) (*validation.RestrictionResult, error)
 	CommerceCheckoutActivePlaceOrder(ctx context.Context) (bool, error)
@@ -1008,1080 +1028,145 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
-	case "Commerce_Cart.additionalData":
-		if e.complexity.CommerceCart.AdditionalData == nil {
+	case "Commerce_Cart_AdditionalData.customAttributes":
+		if e.complexity.CommerceCartAdditionalData.CustomAttributes == nil {
 			break
 		}
 
-		return e.complexity.CommerceCart.AdditionalData(childComplexity), true
+		return e.complexity.CommerceCartAdditionalData.CustomAttributes(childComplexity), true
 
-	case "Commerce_Cart.allShippingTitles":
-		if e.complexity.CommerceCart.AllShippingTitles == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.AllShippingTitles(childComplexity), true
-
-	case "Commerce_Cart.appliedCouponCodes":
-		if e.complexity.CommerceCart.AppliedCouponCodes == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.AppliedCouponCodes(childComplexity), true
-
-	case "Commerce_Cart.appliedGiftCards":
-		if e.complexity.CommerceCart.AppliedGiftCards == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.AppliedGiftCards(childComplexity), true
-
-	case "Commerce_Cart.authenticatedUserID":
-		if e.complexity.CommerceCart.AuthenticatedUserID == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.AuthenticatedUserID(childComplexity), true
-
-	case "Commerce_Cart.belongsToAuthenticatedUser":
-		if e.complexity.CommerceCart.BelongsToAuthenticatedUser == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.BelongsToAuthenticatedUser(childComplexity), true
-
-	case "Commerce_Cart.billingAddress":
-		if e.complexity.CommerceCart.BillingAddress == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.BillingAddress(childComplexity), true
-
-	case "Commerce_Cart.defaultCurrency":
-		if e.complexity.CommerceCart.DefaultCurrency == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.DefaultCurrency(childComplexity), true
-
-	case "Commerce_Cart.deliveries":
-		if e.complexity.CommerceCart.Deliveries == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.Deliveries(childComplexity), true
-
-	case "Commerce_Cart.entityID":
-		if e.complexity.CommerceCart.EntityID == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.EntityID(childComplexity), true
-
-	case "Commerce_Cart.getByExternalReference":
-		if e.complexity.CommerceCart.GetByExternalReference == nil {
-			break
-		}
-
-		args, err := ec.field_Commerce_Cart_getByExternalReference_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.CommerceCart.GetByExternalReference(childComplexity, args["ref"].(string)), true
-
-	case "Commerce_Cart.getByItemID":
-		if e.complexity.CommerceCart.GetByItemID == nil {
-			break
-		}
-
-		args, err := ec.field_Commerce_Cart_getByItemID_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.CommerceCart.GetByItemID(childComplexity, args["itemID"].(string)), true
-
-	case "Commerce_Cart.getCartTeaser":
-		if e.complexity.CommerceCart.GetCartTeaser == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.GetCartTeaser(childComplexity), true
-
-	case "Commerce_Cart.getDeliveryByCode":
-		if e.complexity.CommerceCart.GetDeliveryByCode == nil {
-			break
-		}
-
-		args, err := ec.field_Commerce_Cart_getDeliveryByCode_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.CommerceCart.GetDeliveryByCode(childComplexity, args["deliveryCode"].(string)), true
-
-	case "Commerce_Cart.getDeliveryByItemID":
-		if e.complexity.CommerceCart.GetDeliveryByItemID == nil {
-			break
-		}
-
-		args, err := ec.field_Commerce_Cart_getDeliveryByItemID_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.CommerceCart.GetDeliveryByItemID(childComplexity, args["itemID"].(string)), true
-
-	case "Commerce_Cart.getDeliveryCodes":
-		if e.complexity.CommerceCart.GetDeliveryCodes == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.GetDeliveryCodes(childComplexity), true
-
-	case "Commerce_Cart.getMainShippingEMail":
-		if e.complexity.CommerceCart.GetMainShippingEMail == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.GetMainShippingEMail(childComplexity), true
-
-	case "Commerce_Cart.getPaymentReference":
-		if e.complexity.CommerceCart.GetPaymentReference == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.GetPaymentReference(childComplexity), true
-
-	case "Commerce_Cart.getTotalItemsByType":
-		if e.complexity.CommerceCart.GetTotalItemsByType == nil {
-			break
-		}
-
-		args, err := ec.field_Commerce_Cart_getTotalItemsByType_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.CommerceCart.GetTotalItemsByType(childComplexity, args["typeCode"].(string)), true
-
-	case "Commerce_Cart.getTotalQty":
-		if e.complexity.CommerceCart.GetTotalQty == nil {
-			break
-		}
-
-		args, err := ec.field_Commerce_Cart_getTotalQty_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.CommerceCart.GetTotalQty(childComplexity, args["marketPlaceCode"].(string), args["variantCode"].(string)), true
-
-	case "Commerce_Cart.getVoucherSavings":
-		if e.complexity.CommerceCart.GetVoucherSavings == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.GetVoucherSavings(childComplexity), true
-
-	case "Commerce_Cart.grandTotal":
-		if e.complexity.CommerceCart.GrandTotal == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.GrandTotal(childComplexity), true
-
-	case "Commerce_Cart.grandTotalCharges":
-		if e.complexity.CommerceCart.GrandTotalCharges == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.GrandTotalCharges(childComplexity), true
-
-	case "Commerce_Cart.hasAppliedCouponCode":
-		if e.complexity.CommerceCart.HasAppliedCouponCode == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.HasAppliedCouponCode(childComplexity), true
-
-	case "Commerce_Cart.hasAppliedGiftCards":
-		if e.complexity.CommerceCart.HasAppliedGiftCards == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.HasAppliedGiftCards(childComplexity), true
-
-	case "Commerce_Cart.hasDeliveryForCode":
-		if e.complexity.CommerceCart.HasDeliveryForCode == nil {
-			break
-		}
-
-		args, err := ec.field_Commerce_Cart_hasDeliveryForCode_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.CommerceCart.HasDeliveryForCode(childComplexity, args["deliveryCode"].(string)), true
-
-	case "Commerce_Cart.hasRemainingGiftCards":
-		if e.complexity.CommerceCart.HasRemainingGiftCards == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.HasRemainingGiftCards(childComplexity), true
-
-	case "Commerce_Cart.hasShippingCosts":
-		if e.complexity.CommerceCart.HasShippingCosts == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.HasShippingCosts(childComplexity), true
-
-	case "Commerce_Cart.id":
-		if e.complexity.CommerceCart.ID == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.ID(childComplexity), true
-
-	case "Commerce_Cart.isEmpty":
-		if e.complexity.CommerceCart.IsEmpty == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.IsEmpty(childComplexity), true
-
-	case "Commerce_Cart.isPaymentSelected":
-		if e.complexity.CommerceCart.IsPaymentSelected == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.IsPaymentSelected(childComplexity), true
-
-	case "Commerce_Cart.itemCount":
-		if e.complexity.CommerceCart.ItemCount == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.ItemCount(childComplexity), true
-
-	case "Commerce_Cart.paymentSelection":
-		if e.complexity.CommerceCart.PaymentSelection == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.PaymentSelection(childComplexity), true
-
-	case "Commerce_Cart.productCount":
-		if e.complexity.CommerceCart.ProductCount == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.ProductCount(childComplexity), true
-
-	case "Commerce_Cart.purchaser":
-		if e.complexity.CommerceCart.Purchaser == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.Purchaser(childComplexity), true
-
-	case "Commerce_Cart.subTotalGross":
-		if e.complexity.CommerceCart.SubTotalGross == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.SubTotalGross(childComplexity), true
-
-	case "Commerce_Cart.subTotalGrossWithDiscounts":
-		if e.complexity.CommerceCart.SubTotalGrossWithDiscounts == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.SubTotalGrossWithDiscounts(childComplexity), true
-
-	case "Commerce_Cart.subTotalNet":
-		if e.complexity.CommerceCart.SubTotalNet == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.SubTotalNet(childComplexity), true
-
-	case "Commerce_Cart.subTotalNetWithDiscounts":
-		if e.complexity.CommerceCart.SubTotalNetWithDiscounts == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.SubTotalNetWithDiscounts(childComplexity), true
-
-	case "Commerce_Cart.sumItemRelatedDiscountAmount":
-		if e.complexity.CommerceCart.SumItemRelatedDiscountAmount == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.SumItemRelatedDiscountAmount(childComplexity), true
-
-	case "Commerce_Cart.sumNonItemRelatedDiscountAmount":
-		if e.complexity.CommerceCart.SumNonItemRelatedDiscountAmount == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.SumNonItemRelatedDiscountAmount(childComplexity), true
-
-	case "Commerce_Cart.sumShippingGrossWithDiscounts":
-		if e.complexity.CommerceCart.SumShippingGrossWithDiscounts == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.SumShippingGrossWithDiscounts(childComplexity), true
-
-	case "Commerce_Cart.sumShippingNet":
-		if e.complexity.CommerceCart.SumShippingNet == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.SumShippingNet(childComplexity), true
-
-	case "Commerce_Cart.sumShippingNetWithDiscounts":
-		if e.complexity.CommerceCart.SumShippingNetWithDiscounts == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.SumShippingNetWithDiscounts(childComplexity), true
-
-	case "Commerce_Cart.sumTotalDiscountAmount":
-		if e.complexity.CommerceCart.SumTotalDiscountAmount == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.SumTotalDiscountAmount(childComplexity), true
-
-	case "Commerce_Cart.sumTotalTaxAmount":
-		if e.complexity.CommerceCart.SumTotalTaxAmount == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.SumTotalTaxAmount(childComplexity), true
-
-	case "Commerce_Cart.totalitems":
-		if e.complexity.CommerceCart.Totalitems == nil {
-			break
-		}
-
-		return e.complexity.CommerceCart.Totalitems(childComplexity), true
-
-	case "Commerce_CartAdditionalData.reservedOrderID":
+	case "Commerce_Cart_AdditionalData.reservedOrderID":
 		if e.complexity.CommerceCartAdditionalData.ReservedOrderID == nil {
 			break
 		}
 
 		return e.complexity.CommerceCartAdditionalData.ReservedOrderID(childComplexity), true
 
-	case "Commerce_CartAddress.additionalAddressLines":
+	case "Commerce_Cart_Address.additionalAddressLines":
 		if e.complexity.CommerceCartAddress.AdditionalAddressLines == nil {
 			break
 		}
 
 		return e.complexity.CommerceCartAddress.AdditionalAddressLines(childComplexity), true
 
-	case "Commerce_CartAddress.city":
+	case "Commerce_Cart_Address.city":
 		if e.complexity.CommerceCartAddress.City == nil {
 			break
 		}
 
 		return e.complexity.CommerceCartAddress.City(childComplexity), true
 
-	case "Commerce_CartAddress.company":
+	case "Commerce_Cart_Address.company":
 		if e.complexity.CommerceCartAddress.Company == nil {
 			break
 		}
 
 		return e.complexity.CommerceCartAddress.Company(childComplexity), true
 
-	case "Commerce_CartAddress.country":
+	case "Commerce_Cart_Address.country":
 		if e.complexity.CommerceCartAddress.Country == nil {
 			break
 		}
 
 		return e.complexity.CommerceCartAddress.Country(childComplexity), true
 
-	case "Commerce_CartAddress.countryCode":
+	case "Commerce_Cart_Address.countryCode":
 		if e.complexity.CommerceCartAddress.CountryCode == nil {
 			break
 		}
 
 		return e.complexity.CommerceCartAddress.CountryCode(childComplexity), true
 
-	case "Commerce_CartAddress.email":
+	case "Commerce_Cart_Address.email":
 		if e.complexity.CommerceCartAddress.Email == nil {
 			break
 		}
 
 		return e.complexity.CommerceCartAddress.Email(childComplexity), true
 
-	case "Commerce_CartAddress.firstname":
+	case "Commerce_Cart_Address.firstname":
 		if e.complexity.CommerceCartAddress.Firstname == nil {
 			break
 		}
 
 		return e.complexity.CommerceCartAddress.Firstname(childComplexity), true
 
-	case "Commerce_CartAddress.lastname":
+	case "Commerce_Cart_Address.lastname":
 		if e.complexity.CommerceCartAddress.Lastname == nil {
 			break
 		}
 
 		return e.complexity.CommerceCartAddress.Lastname(childComplexity), true
 
-	case "Commerce_CartAddress.middleName":
+	case "Commerce_Cart_Address.middleName":
 		if e.complexity.CommerceCartAddress.MiddleName == nil {
 			break
 		}
 
 		return e.complexity.CommerceCartAddress.MiddleName(childComplexity), true
 
-	case "Commerce_CartAddress.postCode":
+	case "Commerce_Cart_Address.postCode":
 		if e.complexity.CommerceCartAddress.PostCode == nil {
 			break
 		}
 
 		return e.complexity.CommerceCartAddress.PostCode(childComplexity), true
 
-	case "Commerce_CartAddress.regionCode":
+	case "Commerce_Cart_Address.regionCode":
 		if e.complexity.CommerceCartAddress.RegionCode == nil {
 			break
 		}
 
 		return e.complexity.CommerceCartAddress.RegionCode(childComplexity), true
 
-	case "Commerce_CartAddress.salutation":
+	case "Commerce_Cart_Address.salutation":
 		if e.complexity.CommerceCartAddress.Salutation == nil {
 			break
 		}
 
 		return e.complexity.CommerceCartAddress.Salutation(childComplexity), true
 
-	case "Commerce_CartAddress.state":
+	case "Commerce_Cart_Address.state":
 		if e.complexity.CommerceCartAddress.State == nil {
 			break
 		}
 
 		return e.complexity.CommerceCartAddress.State(childComplexity), true
 
-	case "Commerce_CartAddress.street":
+	case "Commerce_Cart_Address.street":
 		if e.complexity.CommerceCartAddress.Street == nil {
 			break
 		}
 
 		return e.complexity.CommerceCartAddress.Street(childComplexity), true
 
-	case "Commerce_CartAddress.streetNr":
+	case "Commerce_Cart_Address.streetNr":
 		if e.complexity.CommerceCartAddress.StreetNr == nil {
 			break
 		}
 
 		return e.complexity.CommerceCartAddress.StreetNr(childComplexity), true
 
-	case "Commerce_CartAddress.telephone":
+	case "Commerce_Cart_Address.telephone":
 		if e.complexity.CommerceCartAddress.Telephone == nil {
 			break
 		}
 
 		return e.complexity.CommerceCartAddress.Telephone(childComplexity), true
 
-	case "Commerce_CartAddress.title":
+	case "Commerce_Cart_Address.title":
 		if e.complexity.CommerceCartAddress.Title == nil {
 			break
 		}
 
 		return e.complexity.CommerceCartAddress.Title(childComplexity), true
 
-	case "Commerce_CartAddress.vat":
+	case "Commerce_Cart_Address.vat":
 		if e.complexity.CommerceCartAddress.Vat == nil {
 			break
 		}
 
 		return e.complexity.CommerceCartAddress.Vat(childComplexity), true
-
-	case "Commerce_CartAppliedDiscount.applied":
-		if e.complexity.CommerceCartAppliedDiscount.Applied == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartAppliedDiscount.Applied(childComplexity), true
-
-	case "Commerce_CartAppliedDiscount.campaignCode":
-		if e.complexity.CommerceCartAppliedDiscount.CampaignCode == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartAppliedDiscount.CampaignCode(childComplexity), true
-
-	case "Commerce_CartAppliedDiscount.couponCode":
-		if e.complexity.CommerceCartAppliedDiscount.CouponCode == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartAppliedDiscount.CouponCode(childComplexity), true
-
-	case "Commerce_CartAppliedDiscount.isItemRelated":
-		if e.complexity.CommerceCartAppliedDiscount.IsItemRelated == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartAppliedDiscount.IsItemRelated(childComplexity), true
-
-	case "Commerce_CartAppliedDiscount.label":
-		if e.complexity.CommerceCartAppliedDiscount.Label == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartAppliedDiscount.Label(childComplexity), true
-
-	case "Commerce_CartAppliedDiscount.sortOrder":
-		if e.complexity.CommerceCartAppliedDiscount.SortOrder == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartAppliedDiscount.SortOrder(childComplexity), true
-
-	case "Commerce_CartAppliedDiscount.type":
-		if e.complexity.CommerceCartAppliedDiscount.Type == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartAppliedDiscount.Type(childComplexity), true
-
-	case "Commerce_CartAppliedDiscounts.byCampaignCode":
-		if e.complexity.CommerceCartAppliedDiscounts.ByCampaignCode == nil {
-			break
-		}
-
-		args, err := ec.field_Commerce_CartAppliedDiscounts_byCampaignCode_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.CommerceCartAppliedDiscounts.ByCampaignCode(childComplexity, args["campaignCode"].(string)), true
-
-	case "Commerce_CartAppliedDiscounts.byType":
-		if e.complexity.CommerceCartAppliedDiscounts.ByType == nil {
-			break
-		}
-
-		args, err := ec.field_Commerce_CartAppliedDiscounts_byType_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.CommerceCartAppliedDiscounts.ByType(childComplexity, args["filterType"].(string)), true
-
-	case "Commerce_CartAppliedDiscounts.items":
-		if e.complexity.CommerceCartAppliedDiscounts.Items == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartAppliedDiscounts.Items(childComplexity), true
-
-	case "Commerce_CartAppliedGiftCard.applied":
-		if e.complexity.CommerceCartAppliedGiftCard.Applied == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartAppliedGiftCard.Applied(childComplexity), true
-
-	case "Commerce_CartAppliedGiftCard.code":
-		if e.complexity.CommerceCartAppliedGiftCard.Code == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartAppliedGiftCard.Code(childComplexity), true
-
-	case "Commerce_CartAppliedGiftCard.hasRemaining":
-		if e.complexity.CommerceCartAppliedGiftCard.HasRemaining == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartAppliedGiftCard.HasRemaining(childComplexity), true
-
-	case "Commerce_CartAppliedGiftCard.remaining":
-		if e.complexity.CommerceCartAppliedGiftCard.Remaining == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartAppliedGiftCard.Remaining(childComplexity), true
-
-	case "Commerce_CartCouponCode.code":
-		if e.complexity.CommerceCartCouponCode.Code == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartCouponCode.Code(childComplexity), true
-
-	case "Commerce_CartDecoratedDelivery.decoratedItems":
-		if e.complexity.CommerceCartDecoratedDelivery.DecoratedItems == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDecoratedDelivery.DecoratedItems(childComplexity), true
-
-	case "Commerce_CartDecoratedDelivery.delivery":
-		if e.complexity.CommerceCartDecoratedDelivery.Delivery == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDecoratedDelivery.Delivery(childComplexity), true
-
-	case "Commerce_CartDecoratedItem.item":
-		if e.complexity.CommerceCartDecoratedItem.Item == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDecoratedItem.Item(childComplexity), true
-
-	case "Commerce_CartDecoratedItem.product":
-		if e.complexity.CommerceCartDecoratedItem.Product == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDecoratedItem.Product(childComplexity), true
-
-	case "Commerce_CartDelivery.cartitems":
-		if e.complexity.CommerceCartDelivery.Cartitems == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDelivery.Cartitems(childComplexity), true
-
-	case "Commerce_CartDelivery.deliveryInfo":
-		if e.complexity.CommerceCartDelivery.DeliveryInfo == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDelivery.DeliveryInfo(childComplexity), true
-
-	case "Commerce_CartDelivery.grandTotal":
-		if e.complexity.CommerceCartDelivery.GrandTotal == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDelivery.GrandTotal(childComplexity), true
-
-	case "Commerce_CartDelivery.hasItems":
-		if e.complexity.CommerceCartDelivery.HasItems == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDelivery.HasItems(childComplexity), true
-
-	case "Commerce_CartDelivery.shippingItem":
-		if e.complexity.CommerceCartDelivery.ShippingItem == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDelivery.ShippingItem(childComplexity), true
-
-	case "Commerce_CartDelivery.subTotalGross":
-		if e.complexity.CommerceCartDelivery.SubTotalGross == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDelivery.SubTotalGross(childComplexity), true
-
-	case "Commerce_CartDelivery.subTotalGrossWithDiscounts":
-		if e.complexity.CommerceCartDelivery.SubTotalGrossWithDiscounts == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDelivery.SubTotalGrossWithDiscounts(childComplexity), true
-
-	case "Commerce_CartDelivery.subTotalNet":
-		if e.complexity.CommerceCartDelivery.SubTotalNet == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDelivery.SubTotalNet(childComplexity), true
-
-	case "Commerce_CartDelivery.subTotalNetWithDiscounts":
-		if e.complexity.CommerceCartDelivery.SubTotalNetWithDiscounts == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDelivery.SubTotalNetWithDiscounts(childComplexity), true
-
-	case "Commerce_CartDelivery.sumItemRelatedDiscountAmount":
-		if e.complexity.CommerceCartDelivery.SumItemRelatedDiscountAmount == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDelivery.SumItemRelatedDiscountAmount(childComplexity), true
-
-	case "Commerce_CartDelivery.sumNonItemRelatedDiscountAmount":
-		if e.complexity.CommerceCartDelivery.SumNonItemRelatedDiscountAmount == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDelivery.SumNonItemRelatedDiscountAmount(childComplexity), true
-
-	case "Commerce_CartDelivery.sumTotalDiscountAmount":
-		if e.complexity.CommerceCartDelivery.SumTotalDiscountAmount == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDelivery.SumTotalDiscountAmount(childComplexity), true
-
-	case "Commerce_CartDelivery.sumTotalTaxAmount":
-		if e.complexity.CommerceCartDelivery.SumTotalTaxAmount == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDelivery.SumTotalTaxAmount(childComplexity), true
-
-	case "Commerce_CartDeliveryInfo.additionalDataKeys":
-		if e.complexity.CommerceCartDeliveryInfo.AdditionalDataKeys == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDeliveryInfo.AdditionalDataKeys(childComplexity), true
-
-	case "Commerce_CartDeliveryInfo.additionalDeliveryInfoKeys":
-		if e.complexity.CommerceCartDeliveryInfo.AdditionalDeliveryInfoKeys == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDeliveryInfo.AdditionalDeliveryInfoKeys(childComplexity), true
-
-	case "Commerce_CartDeliveryInfo.carrier":
-		if e.complexity.CommerceCartDeliveryInfo.Carrier == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDeliveryInfo.Carrier(childComplexity), true
-
-	case "Commerce_CartDeliveryInfo.code":
-		if e.complexity.CommerceCartDeliveryInfo.Code == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDeliveryInfo.Code(childComplexity), true
-
-	case "Commerce_CartDeliveryInfo.deliveryLocation":
-		if e.complexity.CommerceCartDeliveryInfo.DeliveryLocation == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDeliveryInfo.DeliveryLocation(childComplexity), true
-
-	case "Commerce_CartDeliveryInfo.desiredTime":
-		if e.complexity.CommerceCartDeliveryInfo.DesiredTime == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDeliveryInfo.DesiredTime(childComplexity), true
-
-	case "Commerce_CartDeliveryInfo.getAdditionalData":
-		if e.complexity.CommerceCartDeliveryInfo.GetAdditionalData == nil {
-			break
-		}
-
-		args, err := ec.field_Commerce_CartDeliveryInfo_getAdditionalData_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.CommerceCartDeliveryInfo.GetAdditionalData(childComplexity, args["key"].(string)), true
-
-	case "Commerce_CartDeliveryInfo.method":
-		if e.complexity.CommerceCartDeliveryInfo.Method == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDeliveryInfo.Method(childComplexity), true
-
-	case "Commerce_CartDeliveryInfo.workflow":
-		if e.complexity.CommerceCartDeliveryInfo.Workflow == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDeliveryInfo.Workflow(childComplexity), true
-
-	case "Commerce_CartDeliveryLocation.address":
-		if e.complexity.CommerceCartDeliveryLocation.Address == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDeliveryLocation.Address(childComplexity), true
-
-	case "Commerce_CartDeliveryLocation.code":
-		if e.complexity.CommerceCartDeliveryLocation.Code == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDeliveryLocation.Code(childComplexity), true
-
-	case "Commerce_CartDeliveryLocation.type":
-		if e.complexity.CommerceCartDeliveryLocation.Type == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDeliveryLocation.Type(childComplexity), true
-
-	case "Commerce_CartDeliveryLocation.useBillingAddress":
-		if e.complexity.CommerceCartDeliveryLocation.UseBillingAddress == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartDeliveryLocation.UseBillingAddress(childComplexity), true
-
-	case "Commerce_CartExistingCustomerData.id":
-		if e.complexity.CommerceCartExistingCustomerData.ID == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartExistingCustomerData.ID(childComplexity), true
-
-	case "Commerce_CartItem.additionalDataKeys":
-		if e.complexity.CommerceCartItem.AdditionalDataKeys == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartItem.AdditionalDataKeys(childComplexity), true
-
-	case "Commerce_CartItem.additionalDataValues":
-		if e.complexity.CommerceCartItem.AdditionalDataValues == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartItem.AdditionalDataValues(childComplexity), true
-
-	case "Commerce_CartItem.appliedDiscounts":
-		if e.complexity.CommerceCartItem.AppliedDiscounts == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartItem.AppliedDiscounts(childComplexity), true
-
-	case "Commerce_CartItem.externalReference":
-		if e.complexity.CommerceCartItem.ExternalReference == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartItem.ExternalReference(childComplexity), true
-
-	case "Commerce_CartItem.getAdditionalData":
-		if e.complexity.CommerceCartItem.GetAdditionalData == nil {
-			break
-		}
-
-		args, err := ec.field_Commerce_CartItem_getAdditionalData_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.CommerceCartItem.GetAdditionalData(childComplexity, args["key"].(string)), true
-
-	case "Commerce_CartItem.hasAdditionalDataKey":
-		if e.complexity.CommerceCartItem.HasAdditionalDataKey == nil {
-			break
-		}
-
-		args, err := ec.field_Commerce_CartItem_hasAdditionalDataKey_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.CommerceCartItem.HasAdditionalDataKey(childComplexity, args["key"].(string)), true
-
-	case "Commerce_CartItem.id":
-		if e.complexity.CommerceCartItem.ID == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartItem.ID(childComplexity), true
-
-	case "Commerce_CartItem.marketplaceCode":
-		if e.complexity.CommerceCartItem.MarketplaceCode == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartItem.MarketplaceCode(childComplexity), true
-
-	case "Commerce_CartItem.productName":
-		if e.complexity.CommerceCartItem.ProductName == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartItem.ProductName(childComplexity), true
-
-	case "Commerce_CartItem.qty":
-		if e.complexity.CommerceCartItem.Qty == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartItem.Qty(childComplexity), true
-
-	case "Commerce_CartItem.rowPriceGross":
-		if e.complexity.CommerceCartItem.RowPriceGross == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartItem.RowPriceGross(childComplexity), true
-
-	case "Commerce_CartItem.rowPriceNet":
-		if e.complexity.CommerceCartItem.RowPriceNet == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartItem.RowPriceNet(childComplexity), true
-
-	case "Commerce_CartItem.singlePriceGross":
-		if e.complexity.CommerceCartItem.SinglePriceGross == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartItem.SinglePriceGross(childComplexity), true
-
-	case "Commerce_CartItem.singlePriceNet":
-		if e.complexity.CommerceCartItem.SinglePriceNet == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartItem.SinglePriceNet(childComplexity), true
-
-	case "Commerce_CartItem.sourceID":
-		if e.complexity.CommerceCartItem.SourceID == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartItem.SourceID(childComplexity), true
-
-	case "Commerce_CartItem.variantMarketPlaceCode":
-		if e.complexity.CommerceCartItem.VariantMarketPlaceCode == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartItem.VariantMarketPlaceCode(childComplexity), true
-
-	case "Commerce_CartPerson.address":
-		if e.complexity.CommerceCartPerson.Address == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartPerson.Address(childComplexity), true
-
-	case "Commerce_CartPerson.existingCustomerData":
-		if e.complexity.CommerceCartPerson.ExistingCustomerData == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartPerson.ExistingCustomerData(childComplexity), true
-
-	case "Commerce_CartPerson.personalDetails":
-		if e.complexity.CommerceCartPerson.PersonalDetails == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartPerson.PersonalDetails(childComplexity), true
-
-	case "Commerce_CartPersonalDetails.dateOfBirth":
-		if e.complexity.CommerceCartPersonalDetails.DateOfBirth == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartPersonalDetails.DateOfBirth(childComplexity), true
-
-	case "Commerce_CartPersonalDetails.nationality":
-		if e.complexity.CommerceCartPersonalDetails.Nationality == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartPersonalDetails.Nationality(childComplexity), true
-
-	case "Commerce_CartPersonalDetails.passportCountry":
-		if e.complexity.CommerceCartPersonalDetails.PassportCountry == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartPersonalDetails.PassportCountry(childComplexity), true
-
-	case "Commerce_CartPersonalDetails.passportNumber":
-		if e.complexity.CommerceCartPersonalDetails.PassportNumber == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartPersonalDetails.PassportNumber(childComplexity), true
-
-	case "Commerce_CartShippingItem.appliedDiscounts":
-		if e.complexity.CommerceCartShippingItem.AppliedDiscounts == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartShippingItem.AppliedDiscounts(childComplexity), true
-
-	case "Commerce_CartShippingItem.priceNet":
-		if e.complexity.CommerceCartShippingItem.PriceNet == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartShippingItem.PriceNet(childComplexity), true
-
-	case "Commerce_CartShippingItem.tax":
-		if e.complexity.CommerceCartShippingItem.Tax == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartShippingItem.Tax(childComplexity), true
-
-	case "Commerce_CartShippingItem.taxAmount":
-		if e.complexity.CommerceCartShippingItem.TaxAmount == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartShippingItem.TaxAmount(childComplexity), true
-
-	case "Commerce_CartShippingItem.title":
-		if e.complexity.CommerceCartShippingItem.Title == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartShippingItem.Title(childComplexity), true
-
-	case "Commerce_CartShippingItem.totalWithDiscountInclTax":
-		if e.complexity.CommerceCartShippingItem.TotalWithDiscountInclTax == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartShippingItem.TotalWithDiscountInclTax(childComplexity), true
-
-	case "Commerce_CartTotalitem.code":
-		if e.complexity.CommerceCartTotalitem.Code == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartTotalitem.Code(childComplexity), true
-
-	case "Commerce_CartTotalitem.price":
-		if e.complexity.CommerceCartTotalitem.Price == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartTotalitem.Price(childComplexity), true
-
-	case "Commerce_CartTotalitem.title":
-		if e.complexity.CommerceCartTotalitem.Title == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartTotalitem.Title(childComplexity), true
-
-	case "Commerce_CartTotalitem.type":
-		if e.complexity.CommerceCartTotalitem.Type == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartTotalitem.Type(childComplexity), true
 
 	case "Commerce_Cart_AddressForm.addressLine1":
 		if e.complexity.CommerceCartAddressForm.AddressLine1 == nil {
@@ -2216,6 +1301,114 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCartAddressForm.Vat(childComplexity), true
 
+	case "Commerce_Cart_AppliedDiscount.applied":
+		if e.complexity.CommerceCartAppliedDiscount.Applied == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartAppliedDiscount.Applied(childComplexity), true
+
+	case "Commerce_Cart_AppliedDiscount.campaignCode":
+		if e.complexity.CommerceCartAppliedDiscount.CampaignCode == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartAppliedDiscount.CampaignCode(childComplexity), true
+
+	case "Commerce_Cart_AppliedDiscount.couponCode":
+		if e.complexity.CommerceCartAppliedDiscount.CouponCode == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartAppliedDiscount.CouponCode(childComplexity), true
+
+	case "Commerce_Cart_AppliedDiscount.isItemRelated":
+		if e.complexity.CommerceCartAppliedDiscount.IsItemRelated == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartAppliedDiscount.IsItemRelated(childComplexity), true
+
+	case "Commerce_Cart_AppliedDiscount.label":
+		if e.complexity.CommerceCartAppliedDiscount.Label == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartAppliedDiscount.Label(childComplexity), true
+
+	case "Commerce_Cart_AppliedDiscount.sortOrder":
+		if e.complexity.CommerceCartAppliedDiscount.SortOrder == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartAppliedDiscount.SortOrder(childComplexity), true
+
+	case "Commerce_Cart_AppliedDiscount.type":
+		if e.complexity.CommerceCartAppliedDiscount.Type == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartAppliedDiscount.Type(childComplexity), true
+
+	case "Commerce_Cart_AppliedDiscounts.byCampaignCode":
+		if e.complexity.CommerceCartAppliedDiscounts.ByCampaignCode == nil {
+			break
+		}
+
+		args, err := ec.field_Commerce_Cart_AppliedDiscounts_byCampaignCode_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.CommerceCartAppliedDiscounts.ByCampaignCode(childComplexity, args["campaignCode"].(string)), true
+
+	case "Commerce_Cart_AppliedDiscounts.byType":
+		if e.complexity.CommerceCartAppliedDiscounts.ByType == nil {
+			break
+		}
+
+		args, err := ec.field_Commerce_Cart_AppliedDiscounts_byType_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.CommerceCartAppliedDiscounts.ByType(childComplexity, args["filterType"].(string)), true
+
+	case "Commerce_Cart_AppliedDiscounts.items":
+		if e.complexity.CommerceCartAppliedDiscounts.Items == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartAppliedDiscounts.Items(childComplexity), true
+
+	case "Commerce_Cart_AppliedGiftCard.applied":
+		if e.complexity.CommerceCartAppliedGiftCard.Applied == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartAppliedGiftCard.Applied(childComplexity), true
+
+	case "Commerce_Cart_AppliedGiftCard.code":
+		if e.complexity.CommerceCartAppliedGiftCard.Code == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartAppliedGiftCard.Code(childComplexity), true
+
+	case "Commerce_Cart_AppliedGiftCard.hasRemaining":
+		if e.complexity.CommerceCartAppliedGiftCard.HasRemaining == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartAppliedGiftCard.HasRemaining(childComplexity), true
+
+	case "Commerce_Cart_AppliedGiftCard.remaining":
+		if e.complexity.CommerceCartAppliedGiftCard.Remaining == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartAppliedGiftCard.Remaining(childComplexity), true
+
 	case "Commerce_Cart_BillingAddressForm.formData":
 		if e.complexity.CommerceCartBillingAddressForm.FormData == nil {
 			break
@@ -2237,6 +1430,457 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCartBillingAddressForm.ValidationInfo(childComplexity), true
 
+	case "Commerce_Cart_Cart.additionalData":
+		if e.complexity.CommerceCartCart.AdditionalData == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.AdditionalData(childComplexity), true
+
+	case "Commerce_Cart_Cart.allShippingTitles":
+		if e.complexity.CommerceCartCart.AllShippingTitles == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.AllShippingTitles(childComplexity), true
+
+	case "Commerce_Cart_Cart.appliedCouponCodes":
+		if e.complexity.CommerceCartCart.AppliedCouponCodes == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.AppliedCouponCodes(childComplexity), true
+
+	case "Commerce_Cart_Cart.appliedGiftCards":
+		if e.complexity.CommerceCartCart.AppliedGiftCards == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.AppliedGiftCards(childComplexity), true
+
+	case "Commerce_Cart_Cart.authenticatedUserID":
+		if e.complexity.CommerceCartCart.AuthenticatedUserID == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.AuthenticatedUserID(childComplexity), true
+
+	case "Commerce_Cart_Cart.belongsToAuthenticatedUser":
+		if e.complexity.CommerceCartCart.BelongsToAuthenticatedUser == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.BelongsToAuthenticatedUser(childComplexity), true
+
+	case "Commerce_Cart_Cart.billingAddress":
+		if e.complexity.CommerceCartCart.BillingAddress == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.BillingAddress(childComplexity), true
+
+	case "Commerce_Cart_Cart.defaultCurrency":
+		if e.complexity.CommerceCartCart.DefaultCurrency == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.DefaultCurrency(childComplexity), true
+
+	case "Commerce_Cart_Cart.deliveries":
+		if e.complexity.CommerceCartCart.Deliveries == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.Deliveries(childComplexity), true
+
+	case "Commerce_Cart_Cart.entityID":
+		if e.complexity.CommerceCartCart.EntityID == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.EntityID(childComplexity), true
+
+	case "Commerce_Cart_Cart.getByExternalReference":
+		if e.complexity.CommerceCartCart.GetByExternalReference == nil {
+			break
+		}
+
+		args, err := ec.field_Commerce_Cart_Cart_getByExternalReference_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.CommerceCartCart.GetByExternalReference(childComplexity, args["ref"].(string)), true
+
+	case "Commerce_Cart_Cart.getByItemID":
+		if e.complexity.CommerceCartCart.GetByItemID == nil {
+			break
+		}
+
+		args, err := ec.field_Commerce_Cart_Cart_getByItemID_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.CommerceCartCart.GetByItemID(childComplexity, args["itemID"].(string)), true
+
+	case "Commerce_Cart_Cart.getCartTeaser":
+		if e.complexity.CommerceCartCart.GetCartTeaser == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.GetCartTeaser(childComplexity), true
+
+	case "Commerce_Cart_Cart.getDeliveryByCode":
+		if e.complexity.CommerceCartCart.GetDeliveryByCode == nil {
+			break
+		}
+
+		args, err := ec.field_Commerce_Cart_Cart_getDeliveryByCode_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.CommerceCartCart.GetDeliveryByCode(childComplexity, args["deliveryCode"].(string)), true
+
+	case "Commerce_Cart_Cart.getDeliveryByItemID":
+		if e.complexity.CommerceCartCart.GetDeliveryByItemID == nil {
+			break
+		}
+
+		args, err := ec.field_Commerce_Cart_Cart_getDeliveryByItemID_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.CommerceCartCart.GetDeliveryByItemID(childComplexity, args["itemID"].(string)), true
+
+	case "Commerce_Cart_Cart.getDeliveryCodes":
+		if e.complexity.CommerceCartCart.GetDeliveryCodes == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.GetDeliveryCodes(childComplexity), true
+
+	case "Commerce_Cart_Cart.getMainShippingEMail":
+		if e.complexity.CommerceCartCart.GetMainShippingEMail == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.GetMainShippingEMail(childComplexity), true
+
+	case "Commerce_Cart_Cart.getPaymentReference":
+		if e.complexity.CommerceCartCart.GetPaymentReference == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.GetPaymentReference(childComplexity), true
+
+	case "Commerce_Cart_Cart.getTotalItemsByType":
+		if e.complexity.CommerceCartCart.GetTotalItemsByType == nil {
+			break
+		}
+
+		args, err := ec.field_Commerce_Cart_Cart_getTotalItemsByType_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.CommerceCartCart.GetTotalItemsByType(childComplexity, args["typeCode"].(string)), true
+
+	case "Commerce_Cart_Cart.getTotalQty":
+		if e.complexity.CommerceCartCart.GetTotalQty == nil {
+			break
+		}
+
+		args, err := ec.field_Commerce_Cart_Cart_getTotalQty_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.CommerceCartCart.GetTotalQty(childComplexity, args["marketPlaceCode"].(string), args["variantCode"].(string)), true
+
+	case "Commerce_Cart_Cart.getVoucherSavings":
+		if e.complexity.CommerceCartCart.GetVoucherSavings == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.GetVoucherSavings(childComplexity), true
+
+	case "Commerce_Cart_Cart.grandTotal":
+		if e.complexity.CommerceCartCart.GrandTotal == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.GrandTotal(childComplexity), true
+
+	case "Commerce_Cart_Cart.grandTotalCharges":
+		if e.complexity.CommerceCartCart.GrandTotalCharges == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.GrandTotalCharges(childComplexity), true
+
+	case "Commerce_Cart_Cart.hasAppliedCouponCode":
+		if e.complexity.CommerceCartCart.HasAppliedCouponCode == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.HasAppliedCouponCode(childComplexity), true
+
+	case "Commerce_Cart_Cart.hasAppliedGiftCards":
+		if e.complexity.CommerceCartCart.HasAppliedGiftCards == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.HasAppliedGiftCards(childComplexity), true
+
+	case "Commerce_Cart_Cart.hasDeliveryForCode":
+		if e.complexity.CommerceCartCart.HasDeliveryForCode == nil {
+			break
+		}
+
+		args, err := ec.field_Commerce_Cart_Cart_hasDeliveryForCode_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.CommerceCartCart.HasDeliveryForCode(childComplexity, args["deliveryCode"].(string)), true
+
+	case "Commerce_Cart_Cart.hasRemainingGiftCards":
+		if e.complexity.CommerceCartCart.HasRemainingGiftCards == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.HasRemainingGiftCards(childComplexity), true
+
+	case "Commerce_Cart_Cart.hasShippingCosts":
+		if e.complexity.CommerceCartCart.HasShippingCosts == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.HasShippingCosts(childComplexity), true
+
+	case "Commerce_Cart_Cart.id":
+		if e.complexity.CommerceCartCart.ID == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.ID(childComplexity), true
+
+	case "Commerce_Cart_Cart.isEmpty":
+		if e.complexity.CommerceCartCart.IsEmpty == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.IsEmpty(childComplexity), true
+
+	case "Commerce_Cart_Cart.isPaymentSelected":
+		if e.complexity.CommerceCartCart.IsPaymentSelected == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.IsPaymentSelected(childComplexity), true
+
+	case "Commerce_Cart_Cart.itemCount":
+		if e.complexity.CommerceCartCart.ItemCount == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.ItemCount(childComplexity), true
+
+	case "Commerce_Cart_Cart.paymentSelection":
+		if e.complexity.CommerceCartCart.PaymentSelection == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.PaymentSelection(childComplexity), true
+
+	case "Commerce_Cart_Cart.productCount":
+		if e.complexity.CommerceCartCart.ProductCount == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.ProductCount(childComplexity), true
+
+	case "Commerce_Cart_Cart.purchaser":
+		if e.complexity.CommerceCartCart.Purchaser == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.Purchaser(childComplexity), true
+
+	case "Commerce_Cart_Cart.subTotalGross":
+		if e.complexity.CommerceCartCart.SubTotalGross == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.SubTotalGross(childComplexity), true
+
+	case "Commerce_Cart_Cart.subTotalGrossWithDiscounts":
+		if e.complexity.CommerceCartCart.SubTotalGrossWithDiscounts == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.SubTotalGrossWithDiscounts(childComplexity), true
+
+	case "Commerce_Cart_Cart.subTotalNet":
+		if e.complexity.CommerceCartCart.SubTotalNet == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.SubTotalNet(childComplexity), true
+
+	case "Commerce_Cart_Cart.subTotalNetWithDiscounts":
+		if e.complexity.CommerceCartCart.SubTotalNetWithDiscounts == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.SubTotalNetWithDiscounts(childComplexity), true
+
+	case "Commerce_Cart_Cart.sumItemRelatedDiscountAmount":
+		if e.complexity.CommerceCartCart.SumItemRelatedDiscountAmount == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.SumItemRelatedDiscountAmount(childComplexity), true
+
+	case "Commerce_Cart_Cart.sumNonItemRelatedDiscountAmount":
+		if e.complexity.CommerceCartCart.SumNonItemRelatedDiscountAmount == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.SumNonItemRelatedDiscountAmount(childComplexity), true
+
+	case "Commerce_Cart_Cart.sumShippingGrossWithDiscounts":
+		if e.complexity.CommerceCartCart.SumShippingGrossWithDiscounts == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.SumShippingGrossWithDiscounts(childComplexity), true
+
+	case "Commerce_Cart_Cart.sumShippingNet":
+		if e.complexity.CommerceCartCart.SumShippingNet == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.SumShippingNet(childComplexity), true
+
+	case "Commerce_Cart_Cart.sumShippingNetWithDiscounts":
+		if e.complexity.CommerceCartCart.SumShippingNetWithDiscounts == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.SumShippingNetWithDiscounts(childComplexity), true
+
+	case "Commerce_Cart_Cart.sumTotalDiscountAmount":
+		if e.complexity.CommerceCartCart.SumTotalDiscountAmount == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.SumTotalDiscountAmount(childComplexity), true
+
+	case "Commerce_Cart_Cart.sumTotalTaxAmount":
+		if e.complexity.CommerceCartCart.SumTotalTaxAmount == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.SumTotalTaxAmount(childComplexity), true
+
+	case "Commerce_Cart_Cart.totalitems":
+		if e.complexity.CommerceCartCart.Totalitems == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.Totalitems(childComplexity), true
+
+	case "Commerce_Cart_CouponCode.code":
+		if e.complexity.CommerceCartCouponCode.Code == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCouponCode.Code(childComplexity), true
+
+	case "Commerce_Cart_CustomAttributes.get":
+		if e.complexity.CommerceCartCustomAttributes.Get == nil {
+			break
+		}
+
+		args, err := ec.field_Commerce_Cart_CustomAttributes_get_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.CommerceCartCustomAttributes.Get(childComplexity, args["key"].(string)), true
+
+	case "Commerce_Cart_DecoratedCart.cart":
+		if e.complexity.CommerceCartDecoratedCart.Cart == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDecoratedCart.Cart(childComplexity), true
+
+	case "Commerce_Cart_DecoratedCart.cartSummary":
+		if e.complexity.CommerceCartDecoratedCart.CartSummary == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDecoratedCart.CartSummary(childComplexity), true
+
+	case "Commerce_Cart_DecoratedCart.decoratedDeliveries":
+		if e.complexity.CommerceCartDecoratedCart.DecoratedDeliveries == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDecoratedCart.DecoratedDeliveries(childComplexity), true
+
+	case "Commerce_Cart_DecoratedCart.getAllPaymentRequiredItems":
+		if e.complexity.CommerceCartDecoratedCart.GetAllPaymentRequiredItems == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDecoratedCart.GetAllPaymentRequiredItems(childComplexity), true
+
+	case "Commerce_Cart_DecoratedCart.getDecoratedDeliveryByCode":
+		if e.complexity.CommerceCartDecoratedCart.GetDecoratedDeliveryByCode == nil {
+			break
+		}
+
+		args, err := ec.field_Commerce_Cart_DecoratedCart_getDecoratedDeliveryByCode_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.CommerceCartDecoratedCart.GetDecoratedDeliveryByCode(childComplexity, args["deliveryCode"].(string)), true
+
+	case "Commerce_Cart_DecoratedDelivery.decoratedItems":
+		if e.complexity.CommerceCartDecoratedDelivery.DecoratedItems == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDecoratedDelivery.DecoratedItems(childComplexity), true
+
+	case "Commerce_Cart_DecoratedDelivery.delivery":
+		if e.complexity.CommerceCartDecoratedDelivery.Delivery == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDecoratedDelivery.Delivery(childComplexity), true
+
+	case "Commerce_Cart_DecoratedItem.item":
+		if e.complexity.CommerceCartDecoratedItem.Item == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDecoratedItem.Item(childComplexity), true
+
+	case "Commerce_Cart_DecoratedItem.product":
+		if e.complexity.CommerceCartDecoratedItem.Product == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDecoratedItem.Product(childComplexity), true
+
 	case "Commerce_Cart_DefaultPaymentSelection.cartSplit":
 		if e.complexity.CommerceCartDefaultPaymentSelection.CartSplit == nil {
 			break
@@ -2257,6 +1901,97 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceCartDefaultPaymentSelection.TotalValue(childComplexity), true
+
+	case "Commerce_Cart_Delivery.cartitems":
+		if e.complexity.CommerceCartDelivery.Cartitems == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDelivery.Cartitems(childComplexity), true
+
+	case "Commerce_Cart_Delivery.deliveryInfo":
+		if e.complexity.CommerceCartDelivery.DeliveryInfo == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDelivery.DeliveryInfo(childComplexity), true
+
+	case "Commerce_Cart_Delivery.grandTotal":
+		if e.complexity.CommerceCartDelivery.GrandTotal == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDelivery.GrandTotal(childComplexity), true
+
+	case "Commerce_Cart_Delivery.hasItems":
+		if e.complexity.CommerceCartDelivery.HasItems == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDelivery.HasItems(childComplexity), true
+
+	case "Commerce_Cart_Delivery.shippingItem":
+		if e.complexity.CommerceCartDelivery.ShippingItem == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDelivery.ShippingItem(childComplexity), true
+
+	case "Commerce_Cart_Delivery.subTotalGross":
+		if e.complexity.CommerceCartDelivery.SubTotalGross == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDelivery.SubTotalGross(childComplexity), true
+
+	case "Commerce_Cart_Delivery.subTotalGrossWithDiscounts":
+		if e.complexity.CommerceCartDelivery.SubTotalGrossWithDiscounts == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDelivery.SubTotalGrossWithDiscounts(childComplexity), true
+
+	case "Commerce_Cart_Delivery.subTotalNet":
+		if e.complexity.CommerceCartDelivery.SubTotalNet == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDelivery.SubTotalNet(childComplexity), true
+
+	case "Commerce_Cart_Delivery.subTotalNetWithDiscounts":
+		if e.complexity.CommerceCartDelivery.SubTotalNetWithDiscounts == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDelivery.SubTotalNetWithDiscounts(childComplexity), true
+
+	case "Commerce_Cart_Delivery.sumItemRelatedDiscountAmount":
+		if e.complexity.CommerceCartDelivery.SumItemRelatedDiscountAmount == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDelivery.SumItemRelatedDiscountAmount(childComplexity), true
+
+	case "Commerce_Cart_Delivery.sumNonItemRelatedDiscountAmount":
+		if e.complexity.CommerceCartDelivery.SumNonItemRelatedDiscountAmount == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDelivery.SumNonItemRelatedDiscountAmount(childComplexity), true
+
+	case "Commerce_Cart_Delivery.sumTotalDiscountAmount":
+		if e.complexity.CommerceCartDelivery.SumTotalDiscountAmount == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDelivery.SumTotalDiscountAmount(childComplexity), true
+
+	case "Commerce_Cart_Delivery.sumTotalTaxAmount":
+		if e.complexity.CommerceCartDelivery.SumTotalTaxAmount == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDelivery.SumTotalTaxAmount(childComplexity), true
 
 	case "Commerce_Cart_DeliveryAddressForm.carrier":
 		if e.complexity.CommerceCartDeliveryAddressForm.Carrier == nil {
@@ -2314,6 +2049,90 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCartDeliveryAddressForm.ValidationInfo(childComplexity), true
 
+	case "Commerce_Cart_DeliveryInfo.additionalData":
+		if e.complexity.CommerceCartDeliveryInfo.AdditionalData == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryInfo.AdditionalData(childComplexity), true
+
+	case "Commerce_Cart_DeliveryInfo.carrier":
+		if e.complexity.CommerceCartDeliveryInfo.Carrier == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryInfo.Carrier(childComplexity), true
+
+	case "Commerce_Cart_DeliveryInfo.code":
+		if e.complexity.CommerceCartDeliveryInfo.Code == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryInfo.Code(childComplexity), true
+
+	case "Commerce_Cart_DeliveryInfo.deliveryLocation":
+		if e.complexity.CommerceCartDeliveryInfo.DeliveryLocation == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryInfo.DeliveryLocation(childComplexity), true
+
+	case "Commerce_Cart_DeliveryInfo.desiredTime":
+		if e.complexity.CommerceCartDeliveryInfo.DesiredTime == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryInfo.DesiredTime(childComplexity), true
+
+	case "Commerce_Cart_DeliveryInfo.method":
+		if e.complexity.CommerceCartDeliveryInfo.Method == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryInfo.Method(childComplexity), true
+
+	case "Commerce_Cart_DeliveryInfo.workflow":
+		if e.complexity.CommerceCartDeliveryInfo.Workflow == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryInfo.Workflow(childComplexity), true
+
+	case "Commerce_Cart_DeliveryLocation.address":
+		if e.complexity.CommerceCartDeliveryLocation.Address == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryLocation.Address(childComplexity), true
+
+	case "Commerce_Cart_DeliveryLocation.code":
+		if e.complexity.CommerceCartDeliveryLocation.Code == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryLocation.Code(childComplexity), true
+
+	case "Commerce_Cart_DeliveryLocation.type":
+		if e.complexity.CommerceCartDeliveryLocation.Type == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryLocation.Type(childComplexity), true
+
+	case "Commerce_Cart_DeliveryLocation.useBillingAddress":
+		if e.complexity.CommerceCartDeliveryLocation.UseBillingAddress == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartDeliveryLocation.UseBillingAddress(childComplexity), true
+
+	case "Commerce_Cart_ExistingCustomerData.id":
+		if e.complexity.CommerceCartExistingCustomerData.ID == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartExistingCustomerData.ID(childComplexity), true
+
 	case "Commerce_Cart_Form_Error.defaultLabel":
 		if e.complexity.CommerceCartFormError.DefaultLabel == nil {
 			break
@@ -2363,6 +2182,128 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCartFormValidationInfo.GeneralErrors(childComplexity), true
 
+	case "Commerce_Cart_Item.additionalDataKeys":
+		if e.complexity.CommerceCartItem.AdditionalDataKeys == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartItem.AdditionalDataKeys(childComplexity), true
+
+	case "Commerce_Cart_Item.additionalDataValues":
+		if e.complexity.CommerceCartItem.AdditionalDataValues == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartItem.AdditionalDataValues(childComplexity), true
+
+	case "Commerce_Cart_Item.appliedDiscounts":
+		if e.complexity.CommerceCartItem.AppliedDiscounts == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartItem.AppliedDiscounts(childComplexity), true
+
+	case "Commerce_Cart_Item.externalReference":
+		if e.complexity.CommerceCartItem.ExternalReference == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartItem.ExternalReference(childComplexity), true
+
+	case "Commerce_Cart_Item.getAdditionalData":
+		if e.complexity.CommerceCartItem.GetAdditionalData == nil {
+			break
+		}
+
+		args, err := ec.field_Commerce_Cart_Item_getAdditionalData_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.CommerceCartItem.GetAdditionalData(childComplexity, args["key"].(string)), true
+
+	case "Commerce_Cart_Item.hasAdditionalDataKey":
+		if e.complexity.CommerceCartItem.HasAdditionalDataKey == nil {
+			break
+		}
+
+		args, err := ec.field_Commerce_Cart_Item_hasAdditionalDataKey_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.CommerceCartItem.HasAdditionalDataKey(childComplexity, args["key"].(string)), true
+
+	case "Commerce_Cart_Item.id":
+		if e.complexity.CommerceCartItem.ID == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartItem.ID(childComplexity), true
+
+	case "Commerce_Cart_Item.marketplaceCode":
+		if e.complexity.CommerceCartItem.MarketplaceCode == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartItem.MarketplaceCode(childComplexity), true
+
+	case "Commerce_Cart_Item.productName":
+		if e.complexity.CommerceCartItem.ProductName == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartItem.ProductName(childComplexity), true
+
+	case "Commerce_Cart_Item.qty":
+		if e.complexity.CommerceCartItem.Qty == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartItem.Qty(childComplexity), true
+
+	case "Commerce_Cart_Item.rowPriceGross":
+		if e.complexity.CommerceCartItem.RowPriceGross == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartItem.RowPriceGross(childComplexity), true
+
+	case "Commerce_Cart_Item.rowPriceNet":
+		if e.complexity.CommerceCartItem.RowPriceNet == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartItem.RowPriceNet(childComplexity), true
+
+	case "Commerce_Cart_Item.singlePriceGross":
+		if e.complexity.CommerceCartItem.SinglePriceGross == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartItem.SinglePriceGross(childComplexity), true
+
+	case "Commerce_Cart_Item.singlePriceNet":
+		if e.complexity.CommerceCartItem.SinglePriceNet == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartItem.SinglePriceNet(childComplexity), true
+
+	case "Commerce_Cart_Item.sourceID":
+		if e.complexity.CommerceCartItem.SourceID == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartItem.SourceID(childComplexity), true
+
+	case "Commerce_Cart_Item.variantMarketPlaceCode":
+		if e.complexity.CommerceCartItem.VariantMarketPlaceCode == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartItem.VariantMarketPlaceCode(childComplexity), true
+
 	case "Commerce_Cart_ItemValidationError.errorMessageKey":
 		if e.complexity.CommerceCartItemValidationError.ErrorMessageKey == nil {
 			break
@@ -2376,6 +2317,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceCartItemValidationError.ItemID(childComplexity), true
+
+	case "Commerce_Cart_KeyValue.key":
+		if e.complexity.CommerceCartKeyValue.Key == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartKeyValue.Key(childComplexity), true
+
+	case "Commerce_Cart_KeyValue.value":
+		if e.complexity.CommerceCartKeyValue.Value == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartKeyValue.Value(childComplexity), true
 
 	case "Commerce_Cart_PaymentSelection_Split.charge":
 		if e.complexity.CommerceCartPaymentSelectionSplit.Charge == nil {
@@ -2411,6 +2366,55 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceCartPaymentSelectionSplitQualifier.Method(childComplexity), true
+
+	case "Commerce_Cart_Person.address":
+		if e.complexity.CommerceCartPerson.Address == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartPerson.Address(childComplexity), true
+
+	case "Commerce_Cart_Person.existingCustomerData":
+		if e.complexity.CommerceCartPerson.ExistingCustomerData == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartPerson.ExistingCustomerData(childComplexity), true
+
+	case "Commerce_Cart_Person.personalDetails":
+		if e.complexity.CommerceCartPerson.PersonalDetails == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartPerson.PersonalDetails(childComplexity), true
+
+	case "Commerce_Cart_PersonalDetails.dateOfBirth":
+		if e.complexity.CommerceCartPersonalDetails.DateOfBirth == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartPersonalDetails.DateOfBirth(childComplexity), true
+
+	case "Commerce_Cart_PersonalDetails.nationality":
+		if e.complexity.CommerceCartPersonalDetails.Nationality == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartPersonalDetails.Nationality(childComplexity), true
+
+	case "Commerce_Cart_PersonalDetails.passportCountry":
+		if e.complexity.CommerceCartPersonalDetails.PassportCountry == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartPersonalDetails.PassportCountry(childComplexity), true
+
+	case "Commerce_Cart_PersonalDetails.passportNumber":
+		if e.complexity.CommerceCartPersonalDetails.PassportNumber == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartPersonalDetails.PassportNumber(childComplexity), true
 
 	case "Commerce_Cart_PlacedOrderInfo.deliveryCode":
 		if e.complexity.CommerceCartPlacedOrderInfo.DeliveryCode == nil {
@@ -2530,6 +2534,48 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceCartSelectedPaymentResult.ValidationInfo(childComplexity), true
+
+	case "Commerce_Cart_ShippingItem.appliedDiscounts":
+		if e.complexity.CommerceCartShippingItem.AppliedDiscounts == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartShippingItem.AppliedDiscounts(childComplexity), true
+
+	case "Commerce_Cart_ShippingItem.priceNet":
+		if e.complexity.CommerceCartShippingItem.PriceNet == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartShippingItem.PriceNet(childComplexity), true
+
+	case "Commerce_Cart_ShippingItem.tax":
+		if e.complexity.CommerceCartShippingItem.Tax == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartShippingItem.Tax(childComplexity), true
+
+	case "Commerce_Cart_ShippingItem.taxAmount":
+		if e.complexity.CommerceCartShippingItem.TaxAmount == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartShippingItem.TaxAmount(childComplexity), true
+
+	case "Commerce_Cart_ShippingItem.title":
+		if e.complexity.CommerceCartShippingItem.Title == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartShippingItem.Title(childComplexity), true
+
+	case "Commerce_Cart_ShippingItem.totalWithDiscountInclTax":
+		if e.complexity.CommerceCartShippingItem.TotalWithDiscountInclTax == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartShippingItem.TotalWithDiscountInclTax(childComplexity), true
 
 	case "Commerce_Cart_Summary.discounts":
 		if e.complexity.CommerceCartSummary.Discounts == nil {
@@ -2652,6 +2698,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceCartTeaser.ProductCount(childComplexity), true
+
+	case "Commerce_Cart_Totalitem.code":
+		if e.complexity.CommerceCartTotalitem.Code == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartTotalitem.Code(childComplexity), true
+
+	case "Commerce_Cart_Totalitem.price":
+		if e.complexity.CommerceCartTotalitem.Price == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartTotalitem.Price(childComplexity), true
+
+	case "Commerce_Cart_Totalitem.title":
+		if e.complexity.CommerceCartTotalitem.Title == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartTotalitem.Title(childComplexity), true
+
+	case "Commerce_Cart_Totalitem.type":
+		if e.complexity.CommerceCartTotalitem.Type == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartTotalitem.Type(childComplexity), true
 
 	case "Commerce_Cart_ValidationResult.commonErrorMessageKey":
 		if e.complexity.CommerceCartValidationResult.CommonErrorMessageKey == nil {
@@ -3374,46 +3448,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceCustomerStatusResult.UserID(childComplexity), true
-
-	case "Commerce_DecoratedCart.cart":
-		if e.complexity.CommerceDecoratedCart.Cart == nil {
-			break
-		}
-
-		return e.complexity.CommerceDecoratedCart.Cart(childComplexity), true
-
-	case "Commerce_DecoratedCart.cartSummary":
-		if e.complexity.CommerceDecoratedCart.CartSummary == nil {
-			break
-		}
-
-		return e.complexity.CommerceDecoratedCart.CartSummary(childComplexity), true
-
-	case "Commerce_DecoratedCart.decoratedDeliveries":
-		if e.complexity.CommerceDecoratedCart.DecoratedDeliveries == nil {
-			break
-		}
-
-		return e.complexity.CommerceDecoratedCart.DecoratedDeliveries(childComplexity), true
-
-	case "Commerce_DecoratedCart.getAllPaymentRequiredItems":
-		if e.complexity.CommerceDecoratedCart.GetAllPaymentRequiredItems == nil {
-			break
-		}
-
-		return e.complexity.CommerceDecoratedCart.GetAllPaymentRequiredItems(childComplexity), true
-
-	case "Commerce_DecoratedCart.getDecoratedDeliveryByCode":
-		if e.complexity.CommerceDecoratedCart.GetDecoratedDeliveryByCode == nil {
-			break
-		}
-
-		args, err := ec.field_Commerce_DecoratedCart_getDecoratedDeliveryByCode_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.CommerceDecoratedCart.GetDecoratedDeliveryByCode(childComplexity, args["deliveryCode"].(string)), true
 
 	case "Commerce_Price.currency":
 		if e.complexity.CommercePrice.Currency == nil {
@@ -4701,17 +4735,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceSearchTreeFacetItem.Value(childComplexity), true
 
-	case "Mutation.Commerce_AddToCart":
-		if e.complexity.Mutation.CommerceAddToCart == nil {
+	case "Mutation.Commerce_Cart_AddToCart":
+		if e.complexity.Mutation.CommerceCartAddToCart == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_Commerce_AddToCart_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_Commerce_Cart_AddToCart_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CommerceAddToCart(childComplexity, args["marketplaceCode"].(string), args["qty"].(int), args["deliveryCode"].(string)), true
+		return e.complexity.Mutation.CommerceCartAddToCart(childComplexity, args["marketplaceCode"].(string), args["qty"].(int), args["deliveryCode"].(string)), true
 
 	case "Mutation.Commerce_Cart_ApplyCouponCodeOrGiftCard":
 		if e.complexity.Mutation.CommerceCartApplyCouponCodeOrGiftCard == nil {
@@ -4731,6 +4765,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CommerceCartClean(childComplexity), true
+
+	case "Mutation.Commerce_Cart_DeleteCartDelivery":
+		if e.complexity.Mutation.CommerceCartDeleteCartDelivery == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_Commerce_Cart_DeleteCartDelivery_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CommerceCartDeleteCartDelivery(childComplexity, args["deliveryCode"].(string)), true
+
+	case "Mutation.Commerce_Cart_DeleteItem":
+		if e.complexity.Mutation.CommerceCartDeleteItem == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_Commerce_Cart_DeleteItem_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CommerceCartDeleteItem(childComplexity, args["itemID"].(string), args["deliveryCode"].(string)), true
 
 	case "Mutation.Commerce_Cart_RemoveCouponCode":
 		if e.complexity.Mutation.CommerceCartRemoveCouponCode == nil {
@@ -4756,6 +4814,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CommerceCartRemoveGiftCard(childComplexity, args["giftCardCode"].(string)), true
 
+	case "Mutation.Commerce_Cart_UpdateAdditionalData":
+		if e.complexity.Mutation.CommerceCartUpdateAdditionalData == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_Commerce_Cart_UpdateAdditionalData_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CommerceCartUpdateAdditionalData(childComplexity, args["additionalData"].([]*dto.KeyValue)), true
+
 	case "Mutation.Commerce_Cart_UpdateBillingAddress":
 		if e.complexity.Mutation.CommerceCartUpdateBillingAddress == nil {
 			break
@@ -4767,6 +4837,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CommerceCartUpdateBillingAddress(childComplexity, args["addressForm"].(*forms.AddressForm)), true
+
+	case "Mutation.Commerce_Cart_UpdateDeliveriesAdditionalData":
+		if e.complexity.Mutation.CommerceCartUpdateDeliveriesAdditionalData == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_Commerce_Cart_UpdateDeliveriesAdditionalData_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CommerceCartUpdateDeliveriesAdditionalData(childComplexity, args["data"].([]*dto.DeliveryAdditionalData)), true
 
 	case "Mutation.Commerce_Cart_UpdateDeliveryAddresses":
 		if e.complexity.Mutation.CommerceCartUpdateDeliveryAddresses == nil {
@@ -4791,6 +4873,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CommerceCartUpdateDeliveryShippingOptions(childComplexity, args["shippingOptions"].([]*dto.DeliveryShippingOption)), true
+
+	case "Mutation.Commerce_Cart_UpdateItemQty":
+		if e.complexity.Mutation.CommerceCartUpdateItemQty == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_Commerce_Cart_UpdateItemQty_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CommerceCartUpdateItemQty(childComplexity, args["itemID"].(string), args["deliveryCode"].(string), args["qty"].(int)), true
 
 	case "Mutation.Commerce_Cart_UpdateSelectedPayment":
 		if e.complexity.Mutation.CommerceCartUpdateSelectedPayment == nil {
@@ -4844,42 +4938,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CommerceCheckoutStartPlaceOrder(childComplexity, args["returnUrl"].(string)), true
 
-	case "Mutation.Commerce_DeleteCartDelivery":
-		if e.complexity.Mutation.CommerceDeleteCartDelivery == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_Commerce_DeleteCartDelivery_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.CommerceDeleteCartDelivery(childComplexity, args["deliveryCode"].(string)), true
-
-	case "Mutation.Commerce_DeleteItem":
-		if e.complexity.Mutation.CommerceDeleteItem == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_Commerce_DeleteItem_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.CommerceDeleteItem(childComplexity, args["itemID"].(string), args["deliveryCode"].(string)), true
-
-	case "Mutation.Commerce_UpdateItemQty":
-		if e.complexity.Mutation.CommerceUpdateItemQty == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_Commerce_UpdateItemQty_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.CommerceUpdateItemQty(childComplexity, args["itemID"].(string), args["deliveryCode"].(string), args["qty"].(int)), true
-
 	case "Mutation.flamingo":
 		if e.complexity.Mutation.Flamingo == nil {
 			break
@@ -4887,12 +4945,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.Flamingo(childComplexity), true
 
-	case "Query.Commerce_Cart":
-		if e.complexity.Query.CommerceCart == nil {
+	case "Query.Commerce_Cart_DecoratedCart":
+		if e.complexity.Query.CommerceCartDecoratedCart == nil {
 			break
 		}
 
-		return e.complexity.Query.CommerceCart(childComplexity), true
+		return e.complexity.Query.CommerceCartDecoratedCart(childComplexity), true
 
 	case "Query.Commerce_Cart_QtyRestriction":
 		if e.complexity.Query.CommerceCartQtyRestriction == nil {
@@ -5530,16 +5588,16 @@ extend type Query {
     Commerce_Customer: Commerce_Customer_Result
 }
 `, BuiltIn: false},
-	{Name: "graphql/schema/flamingo.me_flamingo-commerce_v3_cart_interfaces_graphql-Service.graphql", Input: `type Commerce_DecoratedCart {
-    cart: Commerce_Cart!
-    decoratedDeliveries: [Commerce_CartDecoratedDelivery!]
-    getDecoratedDeliveryByCode(deliveryCode: String!): Commerce_CartDecoratedDelivery
+	{Name: "graphql/schema/flamingo.me_flamingo-commerce_v3_cart_interfaces_graphql-Service.graphql", Input: `type Commerce_Cart_DecoratedCart {
+    cart: Commerce_Cart_Cart!
+    decoratedDeliveries: [Commerce_Cart_DecoratedDelivery!]
+    getDecoratedDeliveryByCode(deliveryCode: String!): Commerce_Cart_DecoratedDelivery
     getAllPaymentRequiredItems: Commerce_Cart_PricedItems!
     cartSummary: Commerce_Cart_Summary!
 }
 
 type Commerce_Cart_Summary {
-    discounts: Commerce_CartAppliedDiscounts!
+    discounts: Commerce_Cart_AppliedDiscounts!
     sumAppliedDiscounts: Commerce_Price
     sumAppliedGiftCards: Commerce_Price
     sumGrandTotalWithGiftCards: Commerce_Price
@@ -5549,37 +5607,37 @@ type Commerce_Cart_Summary {
     sumPaymentSelectionCartSplitValueAmountByMethods(methods: [String!]): Commerce_Price
 }
 
-type Commerce_Cart {
+type Commerce_Cart_Cart {
     id: ID!
     entityID: String!
-    billingAddress: Commerce_CartAddress
-    purchaser: Commerce_CartPerson
-    deliveries: [Commerce_CartDelivery!]
-    additionalData: Commerce_CartAdditionalData!
+    billingAddress: Commerce_Cart_Address
+    purchaser: Commerce_Cart_Person
+    deliveries: [Commerce_Cart_Delivery!]
+    additionalData: Commerce_Cart_AdditionalData!
     paymentSelection: Commerce_Cart_PaymentSelection
     belongsToAuthenticatedUser: Boolean!
     authenticatedUserID: String!
-    appliedCouponCodes: [Commerce_CartCouponCode!]
+    appliedCouponCodes: [Commerce_Cart_CouponCode!]
     defaultCurrency: String!
-    totalitems: [Commerce_CartTotalitem!]
+    totalitems: [Commerce_Cart_Totalitem!]
     itemCount: Int!
     productCount: Int!
     isPaymentSelected: Boolean!
     grandTotal: Commerce_Price!
     sumTotalTaxAmount: Commerce_Price!
     subTotalNet: Commerce_Price!
-    appliedGiftCards: [Commerce_CartAppliedGiftCard!]
-    getDeliveryByCode(deliveryCode: String!): Commerce_CartDelivery
+    appliedGiftCards: [Commerce_Cart_AppliedGiftCard!]
+    getDeliveryByCode(deliveryCode: String!): Commerce_Cart_Delivery
     getDeliveryCodes: [String!]
 
     getMainShippingEMail: String!
     isEmpty: Boolean!
     hasDeliveryForCode(deliveryCode: String!): Boolean!
 
-    getDeliveryByItemID(itemID: String!): Commerce_CartDelivery!
-    getByItemID(itemID: String!): Commerce_CartItem!
+    getDeliveryByItemID(itemID: String!): Commerce_Cart_Delivery!
+    getByItemID(itemID: String!): Commerce_Cart_Item!
     getTotalQty(marketPlaceCode: String!, variantCode: String!): Int
-    getByExternalReference(ref: String!): Commerce_CartItem!
+    getByExternalReference(ref: String!): Commerce_Cart_Item!
 
     getVoucherSavings: Commerce_Price!
     getCartTeaser: Commerce_Cart_Teaser!
@@ -5600,7 +5658,7 @@ type Commerce_Cart {
     hasAppliedCouponCode: Boolean!
 
     getPaymentReference: String!
-    getTotalItemsByType(typeCode: String!): [Commerce_CartTotalitem!]
+    getTotalItemsByType(typeCode: String!): [Commerce_Cart_Totalitem!]
     grandTotalCharges: Commerce_Price_Charges!
 
     hasAppliedGiftCards: Boolean!
@@ -5668,15 +5726,15 @@ type Commerce_Cart_DefaultPaymentSelection implements Commerce_Cart_PaymentSelec
     cartSplit: [Commerce_Cart_PaymentSelection_Split!]
 }
 
-type Commerce_CartDecoratedDelivery {
-    delivery: Commerce_CartDelivery!
-    decoratedItems: [Commerce_CartDecoratedItem!]
+type Commerce_Cart_DecoratedDelivery {
+    delivery: Commerce_Cart_Delivery!
+    decoratedItems: [Commerce_Cart_DecoratedItem!]
 }
 
-type Commerce_CartDelivery {
-    deliveryInfo: Commerce_CartDeliveryInfo
-    cartitems: [Commerce_CartItem!]
-    shippingItem: Commerce_CartShippingItem
+type Commerce_Cart_Delivery {
+    deliveryInfo: Commerce_Cart_DeliveryInfo
+    cartitems: [Commerce_Cart_Item!]
+    shippingItem: Commerce_Cart_ShippingItem
     subTotalGross: Commerce_Price
     grandTotal: Commerce_Price
     sumTotalTaxAmount: Commerce_Price
@@ -5689,44 +5747,39 @@ type Commerce_CartDelivery {
     hasItems: Boolean!
 }
 
-type Commerce_CartDeliveryInfo {
+type Commerce_Cart_DeliveryInfo {
     code: String!
     workflow: String!
     method: String!
     carrier: String!
-    deliveryLocation: Commerce_CartDeliveryLocation
+    deliveryLocation: Commerce_Cart_DeliveryLocation
     desiredTime: Time
-    getAdditionalData(key: String!): String!
-    additionalDataKeys: [String!]
-    #    additionalDeliveryInfos: map[string]json.RawMessage
-    #    additionalDeliveryInfos: Map
-    #    getAdditionalDeliveryInfo(key: String!): Map!
-    additionalDeliveryInfoKeys: [String!]
+    additionalData: Commerce_Cart_CustomAttributes!
 }
 
-type Commerce_CartDeliveryLocation  {
+type Commerce_Cart_DeliveryLocation  {
     type: String!
-    address: Commerce_CartAddress
+    address: Commerce_Cart_Address
     useBillingAddress: Boolean!
     code: String!
 }
 
-type Commerce_CartShippingItem {
+type Commerce_Cart_ShippingItem {
     title: String!
     priceNet: Commerce_Price
     taxAmount: Commerce_Price
-    appliedDiscounts: Commerce_CartAppliedDiscounts!
+    appliedDiscounts: Commerce_Cart_AppliedDiscounts!
     totalWithDiscountInclTax: Commerce_Price!
     tax: Commerce_Cart_Tax!
 }
 
-type Commerce_CartAppliedDiscounts {
-    items: [Commerce_CartAppliedDiscount!]
-    byCampaignCode(campaignCode: String):  Commerce_CartAppliedDiscounts!
-    byType(filterType: String): Commerce_CartAppliedDiscounts!
+type Commerce_Cart_AppliedDiscounts {
+    items: [Commerce_Cart_AppliedDiscount!]
+    byCampaignCode(campaignCode: String):  Commerce_Cart_AppliedDiscounts!
+    byType(filterType: String): Commerce_Cart_AppliedDiscounts!
 }
 
-type Commerce_CartAppliedDiscount {
+type Commerce_Cart_AppliedDiscount {
     campaignCode:  String!
     couponCode:    String!
     label:         String!
@@ -5736,12 +5789,12 @@ type Commerce_CartAppliedDiscount {
     sortOrder:     Int!
 }
 
-type Commerce_CartDecoratedItem {
-    item: Commerce_CartItem
+type Commerce_Cart_DecoratedItem {
+    item: Commerce_Cart_Item
     product: Commerce_Product
 }
 
-type Commerce_CartItem {
+type Commerce_Cart_Item {
     id: ID!
     externalReference: String!
     marketplaceCode: String!
@@ -5757,11 +5810,11 @@ type Commerce_CartItem {
     singlePriceNet: Commerce_Price!
     rowPriceGross: Commerce_Price!
     rowPriceNet: Commerce_Price!
-    appliedDiscounts: Commerce_CartAppliedDiscounts!
+    appliedDiscounts: Commerce_Cart_AppliedDiscounts!
     #    rowTaxes: Commerce_Taxes!
 }
 
-type Commerce_CartAddress {
+type Commerce_Cart_Address {
     vat:                    String!
     firstname:              String!
     lastname:               String!
@@ -5782,40 +5835,50 @@ type Commerce_CartAddress {
     email:                  String!
 }
 
-type Commerce_CartPerson {
-    address: Commerce_CartAddress
-    personalDetails: Commerce_CartPersonalDetails!
-    existingCustomerData: Commerce_CartExistingCustomerData
+type Commerce_Cart_Person {
+    address: Commerce_Cart_Address
+    personalDetails: Commerce_Cart_PersonalDetails!
+    existingCustomerData: Commerce_Cart_ExistingCustomerData
 }
 
-type Commerce_CartExistingCustomerData {
+type Commerce_Cart_ExistingCustomerData {
     id: ID!
 }
 
-type Commerce_CartPersonalDetails {
+type Commerce_Cart_PersonalDetails {
     dateOfBirth: String!
     passportCountry: String!
     passportNumber: String!
     nationality: String!
 }
 
-type Commerce_CartAdditionalData {
-    #    customAttributes: Map
+type Commerce_Cart_AdditionalData {
+    customAttributes: Commerce_Cart_CustomAttributes!
     reservedOrderID: String!
 }
 
-type Commerce_CartTotalitem {
+type Commerce_Cart_CustomAttributes {
+    "Get specific attribute by key"
+    get(key: String!): Commerce_Cart_KeyValue
+}
+
+type Commerce_Cart_KeyValue {
+    key: String!
+    value: String!
+}
+
+type Commerce_Cart_Totalitem {
     code: String!
     title: String!
     price: Commerce_Price!
     type: String!
 }
 
-type Commerce_CartCouponCode {
+type Commerce_Cart_CouponCode {
     code: String!
 }
 
-type Commerce_CartAppliedGiftCard {
+type Commerce_Cart_AppliedGiftCard {
     code: String!
     applied: Commerce_Price!
     remaining: Commerce_Price!
@@ -5962,7 +6025,7 @@ type Commerce_Cart_DeliveryAddressForm {
     processed: Boolean
 }
 
-input Commerce_Cart_DeliveryShippingOption {
+input Commerce_Cart_DeliveryShippingOptionInput {
     "Unique delivery code to identify an **existing** delivery"
     deliveryCode: String!
     "Shipping Method"
@@ -5971,30 +6034,44 @@ input Commerce_Cart_DeliveryShippingOption {
     carrier: String!
 }
 
+input Commerce_Cart_KeyValueInput {
+    key: String!
+    value: String!
+}
+
+input Commerce_Cart_DeliveryAdditionalDataInput {
+    deliveryCode: String!
+    additionalData: [Commerce_Cart_KeyValueInput!]!
+}
+
 extend type Query {
-    Commerce_Cart: Commerce_DecoratedCart!
+    Commerce_Cart_DecoratedCart: Commerce_Cart_DecoratedCart!
     Commerce_Cart_Validator: Commerce_Cart_ValidationResult!
     "Commerce_Cart_QtyRestriction returns if the product is restricted in terms of the allowed quantity for the current cart and the given delivery"
     Commerce_Cart_QtyRestriction(marketplaceCode: String!, variantCode: String, deliveryCode: String!): Commerce_Cart_QtyRestrictionResult!
 }
 
 extend type Mutation {
-    Commerce_AddToCart(marketplaceCode: ID!, qty: Int!, deliveryCode: String!): Commerce_DecoratedCart!
-    Commerce_DeleteCartDelivery(deliveryCode: String!): Commerce_DecoratedCart!
-    Commerce_DeleteItem(itemID: ID!, deliveryCode: String!): Commerce_DecoratedCart!
-    Commerce_UpdateItemQty(itemID: ID!, deliveryCode: String!, qty: Int!): Commerce_DecoratedCart!
+    Commerce_Cart_AddToCart(marketplaceCode: ID!, qty: Int!, deliveryCode: String!): Commerce_Cart_DecoratedCart!
+    Commerce_Cart_DeleteCartDelivery(deliveryCode: String!): Commerce_Cart_DecoratedCart!
+    Commerce_Cart_DeleteItem(itemID: ID!, deliveryCode: String!): Commerce_Cart_DecoratedCart!
+    Commerce_Cart_UpdateItemQty(itemID: ID!, deliveryCode: String!, qty: Int!): Commerce_Cart_DecoratedCart!
     "Adds/Updates the Billing Address of the current cart"
     Commerce_Cart_UpdateBillingAddress(addressForm: Commerce_Cart_AddressFormInput): Commerce_Cart_BillingAddressForm!
     Commerce_Cart_UpdateSelectedPayment(gateway: String!, method: String!): Commerce_Cart_SelectedPaymentResult!
-    Commerce_Cart_ApplyCouponCodeOrGiftCard(code: String!): Commerce_DecoratedCart
-    Commerce_Cart_RemoveGiftCard(giftCardCode: String!): Commerce_DecoratedCart
-    Commerce_Cart_RemoveCouponCode(couponCode: String!): Commerce_DecoratedCart
+    Commerce_Cart_ApplyCouponCodeOrGiftCard(code: String!): Commerce_Cart_DecoratedCart
+    Commerce_Cart_RemoveGiftCard(giftCardCode: String!): Commerce_Cart_DecoratedCart
+    Commerce_Cart_RemoveCouponCode(couponCode: String!): Commerce_Cart_DecoratedCart
     "Adds/Updates one/multiple Delivery Addresses"
     Commerce_Cart_UpdateDeliveryAddresses(deliveryAdresses: [Commerce_Cart_DeliveryAddressInput!]): [Commerce_Cart_DeliveryAddressForm]!
     "Adds/Updates one/multiple Delivery Addresses"
-    Commerce_Cart_UpdateDeliveryShippingOptions(shippingOptions: [Commerce_Cart_DeliveryShippingOption!]): [Commerce_Cart_DeliveryAddressForm]!
+    Commerce_Cart_UpdateDeliveryShippingOptions(shippingOptions: [Commerce_Cart_DeliveryShippingOptionInput!]): [Commerce_Cart_DeliveryAddressForm]!
     "Cleans current cart"
     Commerce_Cart_Clean: Boolean!
+    "Adds/Updates additional data for the cart"
+    Commerce_Cart_UpdateAdditionalData(additionalData: [Commerce_Cart_KeyValueInput!]!): Commerce_Cart_DecoratedCart!
+    "Adds/Updates additional data for the given deliveries"
+    Commerce_Cart_UpdateDeliveriesAdditionalData(data: [Commerce_Cart_DeliveryAdditionalDataInput!]!): Commerce_Cart_DecoratedCart!
 }
 `, BuiltIn: false},
 	{Name: "graphql/schema/flamingo.me_flamingo-commerce_v3_checkout_interfaces_graphql-Service.graphql", Input: `type Commerce_Checkout_StartPlaceOrder_Result {
@@ -6003,7 +6080,7 @@ extend type Mutation {
 # Commerce_Checkout_PlaceOrderContext represents the result of the current (running) place order mutation
 type Commerce_Checkout_PlaceOrderContext {
     # The Cart that is going to be placed
-    cart: Commerce_DecoratedCart
+    cart: Commerce_Cart_DecoratedCart
     # The placed order in case order is already placed
     orderInfos: Commerce_Checkout_PlacedOrderInfos
     # State depending on the state of payment and place order - state may contain additional infos
@@ -6259,7 +6336,7 @@ func (ec *executionContext) dir_skip_args(ctx context.Context, rawArgs map[strin
 	return args, nil
 }
 
-func (ec *executionContext) field_Commerce_CartAppliedDiscounts_byCampaignCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Cart_AppliedDiscounts_byCampaignCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -6274,7 +6351,7 @@ func (ec *executionContext) field_Commerce_CartAppliedDiscounts_byCampaignCode_a
 	return args, nil
 }
 
-func (ec *executionContext) field_Commerce_CartAppliedDiscounts_byType_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Cart_AppliedDiscounts_byType_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -6289,7 +6366,121 @@ func (ec *executionContext) field_Commerce_CartAppliedDiscounts_byType_args(ctx 
 	return args, nil
 }
 
-func (ec *executionContext) field_Commerce_CartDeliveryInfo_getAdditionalData_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Cart_Cart_getByExternalReference_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["ref"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("ref"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["ref"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Commerce_Cart_Cart_getByItemID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["itemID"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("itemID"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["itemID"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Commerce_Cart_Cart_getDeliveryByCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["deliveryCode"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryCode"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["deliveryCode"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Commerce_Cart_Cart_getDeliveryByItemID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["itemID"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("itemID"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["itemID"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Commerce_Cart_Cart_getTotalItemsByType_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["typeCode"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("typeCode"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["typeCode"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Commerce_Cart_Cart_getTotalQty_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["marketPlaceCode"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("marketPlaceCode"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["marketPlaceCode"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["variantCode"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("variantCode"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["variantCode"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Commerce_Cart_Cart_hasDeliveryForCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["deliveryCode"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryCode"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["deliveryCode"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Commerce_Cart_CustomAttributes_get_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -6304,7 +6495,22 @@ func (ec *executionContext) field_Commerce_CartDeliveryInfo_getAdditionalData_ar
 	return args, nil
 }
 
-func (ec *executionContext) field_Commerce_CartItem_getAdditionalData_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Cart_DecoratedCart_getDecoratedDeliveryByCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["deliveryCode"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryCode"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["deliveryCode"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Commerce_Cart_Item_getAdditionalData_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -6319,7 +6525,7 @@ func (ec *executionContext) field_Commerce_CartItem_getAdditionalData_args(ctx c
 	return args, nil
 }
 
-func (ec *executionContext) field_Commerce_CartItem_hasAdditionalDataKey_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Commerce_Cart_Item_hasAdditionalDataKey_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -6361,120 +6567,6 @@ func (ec *executionContext) field_Commerce_Cart_Taxes_getByType_args(ctx context
 		}
 	}
 	args["taxType"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Commerce_Cart_getByExternalReference_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["ref"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("ref"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["ref"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Commerce_Cart_getByItemID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["itemID"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("itemID"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["itemID"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Commerce_Cart_getDeliveryByCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["deliveryCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryCode"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["deliveryCode"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Commerce_Cart_getDeliveryByItemID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["itemID"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("itemID"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["itemID"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Commerce_Cart_getTotalItemsByType_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["typeCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("typeCode"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["typeCode"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Commerce_Cart_getTotalQty_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["marketPlaceCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("marketPlaceCode"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["marketPlaceCode"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["variantCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("variantCode"))
-		arg1, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["variantCode"] = arg1
-	return args, nil
-}
-
-func (ec *executionContext) field_Commerce_Cart_hasDeliveryForCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["deliveryCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryCode"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["deliveryCode"] = arg0
 	return args, nil
 }
 
@@ -6520,21 +6612,6 @@ func (ec *executionContext) field_Commerce_Customer_Result_getAddress_args(ctx c
 		}
 	}
 	args["id"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Commerce_DecoratedCart_getDecoratedDeliveryByCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["deliveryCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryCode"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["deliveryCode"] = arg0
 	return args, nil
 }
 
@@ -6658,7 +6735,7 @@ func (ec *executionContext) field_Commerce_Product_Media_getMedia_args(ctx conte
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_Commerce_AddToCart_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_Commerce_Cart_AddToCart_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -6706,6 +6783,45 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_ApplyCouponCodeOrGiftCa
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_Commerce_Cart_DeleteCartDelivery_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["deliveryCode"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryCode"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["deliveryCode"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_Commerce_Cart_DeleteItem_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["itemID"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("itemID"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["itemID"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["deliveryCode"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryCode"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["deliveryCode"] = arg1
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_Commerce_Cart_RemoveCouponCode_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -6736,6 +6852,21 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_RemoveGiftCard_args(ctx
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateAdditionalData_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 []*dto.KeyValue
+	if tmp, ok := rawArgs["additionalData"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("additionalData"))
+		arg0, err = ec.unmarshalNCommerce_Cart_KeyValueInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValueᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["additionalData"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateBillingAddress_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -6748,6 +6879,21 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateBillingAddress_ar
 		}
 	}
 	args["addressForm"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveriesAdditionalData_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 []*dto.DeliveryAdditionalData
+	if tmp, ok := rawArgs["data"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("data"))
+		arg0, err = ec.unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalDataᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["data"] = arg0
 	return args, nil
 }
 
@@ -6772,12 +6918,45 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveryShippingO
 	var arg0 []*dto.DeliveryShippingOption
 	if tmp, ok := rawArgs["shippingOptions"]; ok {
 		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("shippingOptions"))
-		arg0, err = ec.unmarshalOCommerce_Cart_DeliveryShippingOption2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryShippingOptionᚄ(ctx, tmp)
+		arg0, err = ec.unmarshalOCommerce_Cart_DeliveryShippingOptionInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryShippingOptionᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
 	args["shippingOptions"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemQty_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["itemID"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("itemID"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["itemID"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["deliveryCode"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryCode"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["deliveryCode"] = arg1
+	var arg2 int
+	if tmp, ok := rawArgs["qty"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("qty"))
+		arg2, err = ec.unmarshalNInt2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["qty"] = arg2
 	return args, nil
 }
 
@@ -6817,78 +6996,6 @@ func (ec *executionContext) field_Mutation_Commerce_Checkout_StartPlaceOrder_arg
 		}
 	}
 	args["returnUrl"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_Commerce_DeleteCartDelivery_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["deliveryCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryCode"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["deliveryCode"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_Commerce_DeleteItem_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["itemID"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("itemID"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["itemID"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["deliveryCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryCode"))
-		arg1, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["deliveryCode"] = arg1
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_Commerce_UpdateItemQty_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["itemID"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("itemID"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["itemID"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["deliveryCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryCode"))
-		arg1, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["deliveryCode"] = arg1
-	var arg2 int
-	if tmp, ok := rawArgs["qty"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("qty"))
-		arg2, err = ec.unmarshalNInt2int(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["qty"] = arg2
 	return args, nil
 }
 
@@ -7098,7 +7205,7 @@ func (ec *executionContext) _fieldMiddleware(ctx context.Context, obj interface{
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _Commerce_Cart_id(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Cart_AdditionalData_customAttributes(ctx context.Context, field graphql.CollectedField, obj *cart.AdditionalData) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -7106,361 +7213,7 @@ func (ec *executionContext) _Commerce_Cart_id(ctx context.Context, field graphql
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_entityID(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.EntityID, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_billingAddress(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.BillingAddress, nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*cart.Address)
-	fc.Result = res
-	return ec.marshalOCommerce_CartAddress2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAddress(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_purchaser(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Purchaser, nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*cart.Person)
-	fc.Result = res
-	return ec.marshalOCommerce_CartPerson2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐPerson(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_deliveries(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Deliveries, nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]cart.Delivery)
-	fc.Result = res
-	return ec.marshalOCommerce_CartDelivery2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDeliveryᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_additionalData(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.AdditionalData, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(cart.AdditionalData)
-	fc.Result = res
-	return ec.marshalNCommerce_CartAdditionalData2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAdditionalData(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_paymentSelection(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.PaymentSelection, nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(cart.PaymentSelection)
-	fc.Result = res
-	return ec.marshalOCommerce_Cart_PaymentSelection2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐPaymentSelection(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_belongsToAuthenticatedUser(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.BelongsToAuthenticatedUser, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_authenticatedUserID(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.AuthenticatedUserID, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_appliedCouponCodes(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.AppliedCouponCodes, nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]cart.CouponCode)
-	fc.Result = res
-	return ec.marshalOCommerce_CartCouponCode2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐCouponCodeᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_defaultCurrency(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.DefaultCurrency, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_totalitems(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Totalitems, nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]cart.Totalitem)
-	fc.Result = res
-	return ec.marshalOCommerce_CartTotalitem2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐTotalitemᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_itemCount(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
+		Object:   "Commerce_Cart_AdditionalData",
 		Field:    field,
 		Args:     nil,
 		IsMethod: true,
@@ -7469,7 +7222,7 @@ func (ec *executionContext) _Commerce_Cart_itemCount(ctx context.Context, field 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ItemCount(), nil
+		return ec.resolvers.Commerce_Cart_AdditionalData().CustomAttributes(rctx, obj)
 	})
 
 	if resTmp == nil {
@@ -7478,12 +7231,12 @@ func (ec *executionContext) _Commerce_Cart_itemCount(ctx context.Context, field 
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(*dto.CustomAttributes)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Cart_CustomAttributes2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCustomAttributes(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Cart_productCount(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Cart_AdditionalData_reservedOrderID(ctx context.Context, field graphql.CollectedField, obj *cart.AdditionalData) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -7491,1092 +7244,7 @@ func (ec *executionContext) _Commerce_Cart_productCount(ctx context.Context, fie
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ProductCount(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int)
-	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_isPaymentSelected(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.IsPaymentSelected(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_grandTotal(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.GrandTotal(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_sumTotalTaxAmount(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SumTotalTaxAmount(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_subTotalNet(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SubTotalNet(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_appliedGiftCards(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.AppliedGiftCards, nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]cart.AppliedGiftCard)
-	fc.Result = res
-	return ec.marshalOCommerce_CartAppliedGiftCard2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAppliedGiftCardᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_getDeliveryByCode(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Commerce_Cart_getDeliveryByCode_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Commerce_Cart().GetDeliveryByCode(rctx, obj, args["deliveryCode"].(string))
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*cart.Delivery)
-	fc.Result = res
-	return ec.marshalOCommerce_CartDelivery2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDelivery(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_getDeliveryCodes(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.GetDeliveryCodes(), nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]string)
-	fc.Result = res
-	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_getMainShippingEMail(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.GetMainShippingEMail(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_isEmpty(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.IsEmpty(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_hasDeliveryForCode(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Commerce_Cart_hasDeliveryForCode_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.HasDeliveryForCode(args["deliveryCode"].(string)), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_getDeliveryByItemID(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Commerce_Cart_getDeliveryByItemID_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.GetDeliveryByItemID(args["itemID"].(string))
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*cart.Delivery)
-	fc.Result = res
-	return ec.marshalNCommerce_CartDelivery2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDelivery(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_getByItemID(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Commerce_Cart_getByItemID_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.GetByItemID(args["itemID"].(string))
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*cart.Item)
-	fc.Result = res
-	return ec.marshalNCommerce_CartItem2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐItem(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_getTotalQty(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Commerce_Cart_getTotalQty_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.GetTotalQty(args["marketPlaceCode"].(string), args["variantCode"].(string)), nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(int)
-	fc.Result = res
-	return ec.marshalOInt2int(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_getByExternalReference(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Commerce_Cart_getByExternalReference_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.GetByExternalReference(args["ref"].(string))
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*cart.Item)
-	fc.Result = res
-	return ec.marshalNCommerce_CartItem2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐItem(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_getVoucherSavings(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.GetVoucherSavings(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_getCartTeaser(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.GetCartTeaser(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*cart.Teaser)
-	fc.Result = res
-	return ec.marshalNCommerce_Cart_Teaser2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐTeaser(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_sumShippingNet(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SumShippingNet(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_sumShippingNetWithDiscounts(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SumShippingNetWithDiscounts(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_sumShippingGrossWithDiscounts(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SumShippingGrossWithDiscounts(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_hasShippingCosts(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.HasShippingCosts(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_allShippingTitles(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.AllShippingTitles(), nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]string)
-	fc.Result = res
-	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_subTotalGross(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SubTotalGross(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_subTotalGrossWithDiscounts(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SubTotalGrossWithDiscounts(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_subTotalNetWithDiscounts(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SubTotalNetWithDiscounts(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_sumTotalDiscountAmount(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SumTotalDiscountAmount(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_sumNonItemRelatedDiscountAmount(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SumNonItemRelatedDiscountAmount(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_sumItemRelatedDiscountAmount(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SumItemRelatedDiscountAmount(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_hasAppliedCouponCode(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.HasAppliedCouponCode(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_getPaymentReference(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.GetPaymentReference(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_getTotalItemsByType(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Commerce_Cart_getTotalItemsByType_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.GetTotalItemsByType(args["typeCode"].(string)), nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]cart.Totalitem)
-	fc.Result = res
-	return ec.marshalOCommerce_CartTotalitem2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐTotalitemᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_grandTotalCharges(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.GrandTotalCharges(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(domain.Charges)
-	fc.Result = res
-	return ec.marshalNCommerce_Price_Charges2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐCharges(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_hasAppliedGiftCards(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.HasAppliedGiftCards(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_hasRemainingGiftCards(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.HasRemainingGiftCards(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartAdditionalData_reservedOrderID(ctx context.Context, field graphql.CollectedField, obj *cart.AdditionalData) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAdditionalData",
+		Object:   "Commerce_Cart_AdditionalData",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -8599,7 +7267,7 @@ func (ec *executionContext) _Commerce_CartAdditionalData_reservedOrderID(ctx con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_CartAddress_vat(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Cart_Address_vat(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -8607,7 +7275,7 @@ func (ec *executionContext) _Commerce_CartAddress_vat(ctx context.Context, field
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAddress",
+		Object:   "Commerce_Cart_Address",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -8630,7 +7298,7 @@ func (ec *executionContext) _Commerce_CartAddress_vat(ctx context.Context, field
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_CartAddress_firstname(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Cart_Address_firstname(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -8638,7 +7306,7 @@ func (ec *executionContext) _Commerce_CartAddress_firstname(ctx context.Context,
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAddress",
+		Object:   "Commerce_Cart_Address",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -8661,7 +7329,7 @@ func (ec *executionContext) _Commerce_CartAddress_firstname(ctx context.Context,
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_CartAddress_lastname(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Cart_Address_lastname(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -8669,7 +7337,7 @@ func (ec *executionContext) _Commerce_CartAddress_lastname(ctx context.Context, 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAddress",
+		Object:   "Commerce_Cart_Address",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -8692,7 +7360,7 @@ func (ec *executionContext) _Commerce_CartAddress_lastname(ctx context.Context, 
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_CartAddress_middleName(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Cart_Address_middleName(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -8700,7 +7368,7 @@ func (ec *executionContext) _Commerce_CartAddress_middleName(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAddress",
+		Object:   "Commerce_Cart_Address",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -8723,7 +7391,7 @@ func (ec *executionContext) _Commerce_CartAddress_middleName(ctx context.Context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_CartAddress_title(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Cart_Address_title(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -8731,7 +7399,7 @@ func (ec *executionContext) _Commerce_CartAddress_title(ctx context.Context, fie
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAddress",
+		Object:   "Commerce_Cart_Address",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -8754,7 +7422,7 @@ func (ec *executionContext) _Commerce_CartAddress_title(ctx context.Context, fie
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_CartAddress_salutation(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Cart_Address_salutation(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -8762,7 +7430,7 @@ func (ec *executionContext) _Commerce_CartAddress_salutation(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAddress",
+		Object:   "Commerce_Cart_Address",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -8785,7 +7453,7 @@ func (ec *executionContext) _Commerce_CartAddress_salutation(ctx context.Context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_CartAddress_street(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Cart_Address_street(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -8793,7 +7461,7 @@ func (ec *executionContext) _Commerce_CartAddress_street(ctx context.Context, fi
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAddress",
+		Object:   "Commerce_Cart_Address",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -8816,7 +7484,7 @@ func (ec *executionContext) _Commerce_CartAddress_street(ctx context.Context, fi
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_CartAddress_streetNr(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Cart_Address_streetNr(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -8824,7 +7492,7 @@ func (ec *executionContext) _Commerce_CartAddress_streetNr(ctx context.Context, 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAddress",
+		Object:   "Commerce_Cart_Address",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -8847,7 +7515,7 @@ func (ec *executionContext) _Commerce_CartAddress_streetNr(ctx context.Context, 
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_CartAddress_additionalAddressLines(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Cart_Address_additionalAddressLines(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -8855,7 +7523,7 @@ func (ec *executionContext) _Commerce_CartAddress_additionalAddressLines(ctx con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAddress",
+		Object:   "Commerce_Cart_Address",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -8875,7 +7543,7 @@ func (ec *executionContext) _Commerce_CartAddress_additionalAddressLines(ctx con
 	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_CartAddress_company(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Cart_Address_company(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -8883,7 +7551,7 @@ func (ec *executionContext) _Commerce_CartAddress_company(ctx context.Context, f
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAddress",
+		Object:   "Commerce_Cart_Address",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -8906,7 +7574,7 @@ func (ec *executionContext) _Commerce_CartAddress_company(ctx context.Context, f
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_CartAddress_city(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Cart_Address_city(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -8914,7 +7582,7 @@ func (ec *executionContext) _Commerce_CartAddress_city(ctx context.Context, fiel
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAddress",
+		Object:   "Commerce_Cart_Address",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -8937,7 +7605,7 @@ func (ec *executionContext) _Commerce_CartAddress_city(ctx context.Context, fiel
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_CartAddress_postCode(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Cart_Address_postCode(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -8945,7 +7613,7 @@ func (ec *executionContext) _Commerce_CartAddress_postCode(ctx context.Context, 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAddress",
+		Object:   "Commerce_Cart_Address",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -8968,7 +7636,7 @@ func (ec *executionContext) _Commerce_CartAddress_postCode(ctx context.Context, 
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_CartAddress_state(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Cart_Address_state(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -8976,7 +7644,7 @@ func (ec *executionContext) _Commerce_CartAddress_state(ctx context.Context, fie
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAddress",
+		Object:   "Commerce_Cart_Address",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -8999,7 +7667,7 @@ func (ec *executionContext) _Commerce_CartAddress_state(ctx context.Context, fie
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_CartAddress_regionCode(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Cart_Address_regionCode(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -9007,7 +7675,7 @@ func (ec *executionContext) _Commerce_CartAddress_regionCode(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAddress",
+		Object:   "Commerce_Cart_Address",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -9030,7 +7698,7 @@ func (ec *executionContext) _Commerce_CartAddress_regionCode(ctx context.Context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_CartAddress_country(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Cart_Address_country(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -9038,7 +7706,7 @@ func (ec *executionContext) _Commerce_CartAddress_country(ctx context.Context, f
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAddress",
+		Object:   "Commerce_Cart_Address",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -9061,7 +7729,7 @@ func (ec *executionContext) _Commerce_CartAddress_country(ctx context.Context, f
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_CartAddress_countryCode(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Cart_Address_countryCode(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -9069,7 +7737,7 @@ func (ec *executionContext) _Commerce_CartAddress_countryCode(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAddress",
+		Object:   "Commerce_Cart_Address",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -9092,7 +7760,7 @@ func (ec *executionContext) _Commerce_CartAddress_countryCode(ctx context.Contex
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_CartAddress_telephone(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Cart_Address_telephone(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -9100,7 +7768,7 @@ func (ec *executionContext) _Commerce_CartAddress_telephone(ctx context.Context,
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAddress",
+		Object:   "Commerce_Cart_Address",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -9123,7 +7791,7 @@ func (ec *executionContext) _Commerce_CartAddress_telephone(ctx context.Context,
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_CartAddress_email(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Cart_Address_email(ctx context.Context, field graphql.CollectedField, obj *cart.Address) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -9131,7 +7799,7 @@ func (ec *executionContext) _Commerce_CartAddress_email(ctx context.Context, fie
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAddress",
+		Object:   "Commerce_Cart_Address",
 		Field:    field,
 		Args:     nil,
 		IsMethod: false,
@@ -9141,2406 +7809,6 @@ func (ec *executionContext) _Commerce_CartAddress_email(ctx context.Context, fie
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Email, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartAppliedDiscount_campaignCode(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedDiscount) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAppliedDiscount",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.CampaignCode, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartAppliedDiscount_couponCode(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedDiscount) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAppliedDiscount",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.CouponCode, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartAppliedDiscount_label(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedDiscount) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAppliedDiscount",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Label, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartAppliedDiscount_applied(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedDiscount) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAppliedDiscount",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Applied, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartAppliedDiscount_type(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedDiscount) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAppliedDiscount",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Type, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartAppliedDiscount_isItemRelated(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedDiscount) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAppliedDiscount",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.IsItemRelated, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartAppliedDiscount_sortOrder(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedDiscount) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAppliedDiscount",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SortOrder, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int)
-	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartAppliedDiscounts_items(ctx context.Context, field graphql.CollectedField, obj *dto.CartAppliedDiscounts) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAppliedDiscounts",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Items(), nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]cart.AppliedDiscount)
-	fc.Result = res
-	return ec.marshalOCommerce_CartAppliedDiscount2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAppliedDiscountᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartAppliedDiscounts_byCampaignCode(ctx context.Context, field graphql.CollectedField, obj *dto.CartAppliedDiscounts) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAppliedDiscounts",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Commerce_CartAppliedDiscounts_byCampaignCode_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ByCampaignCode(args["campaignCode"].(string)), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*dto.CartAppliedDiscounts)
-	fc.Result = res
-	return ec.marshalNCommerce_CartAppliedDiscounts2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCartAppliedDiscounts(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartAppliedDiscounts_byType(ctx context.Context, field graphql.CollectedField, obj *dto.CartAppliedDiscounts) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAppliedDiscounts",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Commerce_CartAppliedDiscounts_byType_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ByType(args["filterType"].(string)), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*dto.CartAppliedDiscounts)
-	fc.Result = res
-	return ec.marshalNCommerce_CartAppliedDiscounts2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCartAppliedDiscounts(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartAppliedGiftCard_code(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedGiftCard) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAppliedGiftCard",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Code, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartAppliedGiftCard_applied(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedGiftCard) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAppliedGiftCard",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Applied, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartAppliedGiftCard_remaining(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedGiftCard) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAppliedGiftCard",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Remaining, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartAppliedGiftCard_hasRemaining(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedGiftCard) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartAppliedGiftCard",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.HasRemaining(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartCouponCode_code(ctx context.Context, field graphql.CollectedField, obj *cart.CouponCode) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartCouponCode",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Code, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDecoratedDelivery_delivery(ctx context.Context, field graphql.CollectedField, obj *dto.DecoratedDelivery) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDecoratedDelivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Delivery, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(cart.Delivery)
-	fc.Result = res
-	return ec.marshalNCommerce_CartDelivery2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDelivery(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDecoratedDelivery_decoratedItems(ctx context.Context, field graphql.CollectedField, obj *dto.DecoratedDelivery) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDecoratedDelivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.DecoratedItems, nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]dto.DecoratedCartItem)
-	fc.Result = res
-	return ec.marshalOCommerce_CartDecoratedItem2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCartItemᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDecoratedItem_item(ctx context.Context, field graphql.CollectedField, obj *dto.DecoratedCartItem) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDecoratedItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Item, nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(cart.Item)
-	fc.Result = res
-	return ec.marshalOCommerce_CartItem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐItem(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDecoratedItem_product(ctx context.Context, field graphql.CollectedField, obj *dto.DecoratedCartItem) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDecoratedItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Product, nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(graphqlproductdto.Product)
-	fc.Result = res
-	return ec.marshalOCommerce_Product2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProduct(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDelivery_deliveryInfo(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDelivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.DeliveryInfo, nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(cart.DeliveryInfo)
-	fc.Result = res
-	return ec.marshalOCommerce_CartDeliveryInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDeliveryInfo(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDelivery_cartitems(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDelivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Cartitems, nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]cart.Item)
-	fc.Result = res
-	return ec.marshalOCommerce_CartItem2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐItemᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDelivery_shippingItem(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDelivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ShippingItem, nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(cart.ShippingItem)
-	fc.Result = res
-	return ec.marshalOCommerce_CartShippingItem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐShippingItem(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDelivery_subTotalGross(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDelivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SubTotalGross(), nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDelivery_grandTotal(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDelivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.GrandTotal(), nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDelivery_sumTotalTaxAmount(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDelivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SumTotalTaxAmount(), nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDelivery_subTotalNet(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDelivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SubTotalNet(), nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDelivery_sumTotalDiscountAmount(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDelivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SumTotalDiscountAmount(), nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDelivery_sumNonItemRelatedDiscountAmount(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDelivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SumNonItemRelatedDiscountAmount(), nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDelivery_sumItemRelatedDiscountAmount(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDelivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SumItemRelatedDiscountAmount(), nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDelivery_subTotalGrossWithDiscounts(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDelivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SubTotalGrossWithDiscounts(), nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDelivery_subTotalNetWithDiscounts(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDelivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SubTotalNetWithDiscounts(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDelivery_hasItems(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDelivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.HasItems(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDeliveryInfo_code(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDeliveryInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Code, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDeliveryInfo_workflow(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDeliveryInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Workflow, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDeliveryInfo_method(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDeliveryInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Method, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDeliveryInfo_carrier(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDeliveryInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Carrier, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDeliveryInfo_deliveryLocation(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDeliveryInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.DeliveryLocation, nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(cart.DeliveryLocation)
-	fc.Result = res
-	return ec.marshalOCommerce_CartDeliveryLocation2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDeliveryLocation(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDeliveryInfo_desiredTime(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDeliveryInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.DesiredTime, nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(time.Time)
-	fc.Result = res
-	return ec.marshalOTime2timeᚐTime(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDeliveryInfo_getAdditionalData(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDeliveryInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Commerce_CartDeliveryInfo_getAdditionalData_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.GetAdditionalData(args["key"].(string)), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDeliveryInfo_additionalDataKeys(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDeliveryInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.AdditionalDataKeys(), nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]string)
-	fc.Result = res
-	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDeliveryInfo_additionalDeliveryInfoKeys(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDeliveryInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.AdditionalDeliveryInfoKeys(), nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]string)
-	fc.Result = res
-	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDeliveryLocation_type(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryLocation) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDeliveryLocation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Type, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDeliveryLocation_address(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryLocation) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDeliveryLocation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Address, nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*cart.Address)
-	fc.Result = res
-	return ec.marshalOCommerce_CartAddress2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAddress(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDeliveryLocation_useBillingAddress(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryLocation) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDeliveryLocation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.UseBillingAddress, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartDeliveryLocation_code(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryLocation) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartDeliveryLocation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Code, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartExistingCustomerData_id(ctx context.Context, field graphql.CollectedField, obj *cart.ExistingCustomerData) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartExistingCustomerData",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartItem_id(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartItem_externalReference(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ExternalReference, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartItem_marketplaceCode(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.MarketplaceCode, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartItem_variantMarketPlaceCode(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.VariantMarketPlaceCode, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartItem_productName(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ProductName, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartItem_sourceID(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SourceID, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartItem_qty(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Qty, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int)
-	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartItem_additionalDataKeys(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.AdditionalDataKeys(), nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]string)
-	fc.Result = res
-	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartItem_additionalDataValues(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.AdditionalDataValues(), nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]string)
-	fc.Result = res
-	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartItem_getAdditionalData(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Commerce_CartItem_getAdditionalData_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.GetAdditionalData(args["key"].(string)), nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalOString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartItem_hasAdditionalDataKey(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Commerce_CartItem_hasAdditionalDataKey_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.HasAdditionalDataKey(args["key"].(string)), nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartItem_singlePriceGross(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SinglePriceGross, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartItem_singlePriceNet(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.SinglePriceNet, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartItem_rowPriceGross(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.RowPriceGross, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartItem_rowPriceNet(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.RowPriceNet, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartItem_appliedDiscounts(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Commerce_CartItem().AppliedDiscounts(rctx, obj)
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*dto.CartAppliedDiscounts)
-	fc.Result = res
-	return ec.marshalNCommerce_CartAppliedDiscounts2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCartAppliedDiscounts(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartPerson_address(ctx context.Context, field graphql.CollectedField, obj *cart.Person) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartPerson",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Address, nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*cart.Address)
-	fc.Result = res
-	return ec.marshalOCommerce_CartAddress2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAddress(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartPerson_personalDetails(ctx context.Context, field graphql.CollectedField, obj *cart.Person) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartPerson",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.PersonalDetails, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(cart.PersonalDetails)
-	fc.Result = res
-	return ec.marshalNCommerce_CartPersonalDetails2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐPersonalDetails(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartPerson_existingCustomerData(ctx context.Context, field graphql.CollectedField, obj *cart.Person) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartPerson",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ExistingCustomerData, nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*cart.ExistingCustomerData)
-	fc.Result = res
-	return ec.marshalOCommerce_CartExistingCustomerData2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐExistingCustomerData(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartPersonalDetails_dateOfBirth(ctx context.Context, field graphql.CollectedField, obj *cart.PersonalDetails) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartPersonalDetails",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.DateOfBirth, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartPersonalDetails_passportCountry(ctx context.Context, field graphql.CollectedField, obj *cart.PersonalDetails) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartPersonalDetails",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.PassportCountry, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartPersonalDetails_passportNumber(ctx context.Context, field graphql.CollectedField, obj *cart.PersonalDetails) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartPersonalDetails",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.PassportNumber, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartPersonalDetails_nationality(ctx context.Context, field graphql.CollectedField, obj *cart.PersonalDetails) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartPersonalDetails",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Nationality, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartShippingItem_title(ctx context.Context, field graphql.CollectedField, obj *cart.ShippingItem) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartShippingItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Title, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartShippingItem_priceNet(ctx context.Context, field graphql.CollectedField, obj *cart.ShippingItem) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartShippingItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.PriceNet, nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartShippingItem_taxAmount(ctx context.Context, field graphql.CollectedField, obj *cart.ShippingItem) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartShippingItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.TaxAmount, nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartShippingItem_appliedDiscounts(ctx context.Context, field graphql.CollectedField, obj *cart.ShippingItem) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartShippingItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Commerce_CartShippingItem().AppliedDiscounts(rctx, obj)
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*dto.CartAppliedDiscounts)
-	fc.Result = res
-	return ec.marshalNCommerce_CartAppliedDiscounts2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCartAppliedDiscounts(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartShippingItem_totalWithDiscountInclTax(ctx context.Context, field graphql.CollectedField, obj *cart.ShippingItem) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartShippingItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.TotalWithDiscountInclTax(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartShippingItem_tax(ctx context.Context, field graphql.CollectedField, obj *cart.ShippingItem) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartShippingItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Tax(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(cart.Tax)
-	fc.Result = res
-	return ec.marshalNCommerce_Cart_Tax2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐTax(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartTotalitem_code(ctx context.Context, field graphql.CollectedField, obj *cart.Totalitem) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartTotalitem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Code, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartTotalitem_title(ctx context.Context, field graphql.CollectedField, obj *cart.Totalitem) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartTotalitem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Title, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartTotalitem_price(ctx context.Context, field graphql.CollectedField, obj *cart.Totalitem) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartTotalitem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Price, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(domain.Price)
-	fc.Result = res
-	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_CartTotalitem_type(ctx context.Context, field graphql.CollectedField, obj *cart.Totalitem) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_CartTotalitem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Type, nil
 	})
 
 	if resTmp == nil {
@@ -12143,6 +8411,451 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_email(ctx context.Context
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_Cart_AppliedDiscount_campaignCode(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedDiscount) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_AppliedDiscount",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CampaignCode, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_AppliedDiscount_couponCode(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedDiscount) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_AppliedDiscount",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CouponCode, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_AppliedDiscount_label(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedDiscount) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_AppliedDiscount",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Label, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_AppliedDiscount_applied(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedDiscount) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_AppliedDiscount",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Applied, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_AppliedDiscount_type(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedDiscount) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_AppliedDiscount",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_AppliedDiscount_isItemRelated(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedDiscount) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_AppliedDiscount",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsItemRelated, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_AppliedDiscount_sortOrder(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedDiscount) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_AppliedDiscount",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SortOrder, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_AppliedDiscounts_items(ctx context.Context, field graphql.CollectedField, obj *dto.CartAppliedDiscounts) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_AppliedDiscounts",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Items(), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]cart.AppliedDiscount)
+	fc.Result = res
+	return ec.marshalOCommerce_Cart_AppliedDiscount2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAppliedDiscountᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_AppliedDiscounts_byCampaignCode(ctx context.Context, field graphql.CollectedField, obj *dto.CartAppliedDiscounts) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_AppliedDiscounts",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Commerce_Cart_AppliedDiscounts_byCampaignCode_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ByCampaignCode(args["campaignCode"].(string)), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*dto.CartAppliedDiscounts)
+	fc.Result = res
+	return ec.marshalNCommerce_Cart_AppliedDiscounts2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCartAppliedDiscounts(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_AppliedDiscounts_byType(ctx context.Context, field graphql.CollectedField, obj *dto.CartAppliedDiscounts) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_AppliedDiscounts",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Commerce_Cart_AppliedDiscounts_byType_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ByType(args["filterType"].(string)), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*dto.CartAppliedDiscounts)
+	fc.Result = res
+	return ec.marshalNCommerce_Cart_AppliedDiscounts2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCartAppliedDiscounts(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_AppliedGiftCard_code(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedGiftCard) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_AppliedGiftCard",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_AppliedGiftCard_applied(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedGiftCard) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_AppliedGiftCard",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Applied, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_AppliedGiftCard_remaining(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedGiftCard) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_AppliedGiftCard",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Remaining, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_AppliedGiftCard_hasRemaining(ctx context.Context, field graphql.CollectedField, obj *cart.AppliedGiftCard) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_AppliedGiftCard",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HasRemaining(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_Cart_BillingAddressForm_formData(ctx context.Context, field graphql.CollectedField, obj *dto.BillingAddressForm) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -12225,6 +8938,1813 @@ func (ec *executionContext) _Commerce_Cart_BillingAddressForm_processed(ctx cont
 	res := resTmp.(bool)
 	fc.Result = res
 	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_id(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_entityID(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EntityID, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_billingAddress(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BillingAddress, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*cart.Address)
+	fc.Result = res
+	return ec.marshalOCommerce_Cart_Address2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAddress(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_purchaser(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Purchaser, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*cart.Person)
+	fc.Result = res
+	return ec.marshalOCommerce_Cart_Person2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐPerson(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_deliveries(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Deliveries, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]cart.Delivery)
+	fc.Result = res
+	return ec.marshalOCommerce_Cart_Delivery2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDeliveryᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_additionalData(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AdditionalData, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(cart.AdditionalData)
+	fc.Result = res
+	return ec.marshalNCommerce_Cart_AdditionalData2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAdditionalData(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_paymentSelection(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PaymentSelection, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(cart.PaymentSelection)
+	fc.Result = res
+	return ec.marshalOCommerce_Cart_PaymentSelection2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐPaymentSelection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_belongsToAuthenticatedUser(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BelongsToAuthenticatedUser, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_authenticatedUserID(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AuthenticatedUserID, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_appliedCouponCodes(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AppliedCouponCodes, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]cart.CouponCode)
+	fc.Result = res
+	return ec.marshalOCommerce_Cart_CouponCode2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐCouponCodeᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_defaultCurrency(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DefaultCurrency, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_totalitems(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Totalitems, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]cart.Totalitem)
+	fc.Result = res
+	return ec.marshalOCommerce_Cart_Totalitem2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐTotalitemᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_itemCount(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ItemCount(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_productCount(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ProductCount(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_isPaymentSelected(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsPaymentSelected(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_grandTotal(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GrandTotal(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_sumTotalTaxAmount(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SumTotalTaxAmount(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_subTotalNet(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SubTotalNet(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_appliedGiftCards(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AppliedGiftCards, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]cart.AppliedGiftCard)
+	fc.Result = res
+	return ec.marshalOCommerce_Cart_AppliedGiftCard2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAppliedGiftCardᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_getDeliveryByCode(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Commerce_Cart_Cart_getDeliveryByCode_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Commerce_Cart_Cart().GetDeliveryByCode(rctx, obj, args["deliveryCode"].(string))
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*cart.Delivery)
+	fc.Result = res
+	return ec.marshalOCommerce_Cart_Delivery2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDelivery(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_getDeliveryCodes(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GetDeliveryCodes(), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_getMainShippingEMail(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GetMainShippingEMail(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_isEmpty(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsEmpty(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_hasDeliveryForCode(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Commerce_Cart_Cart_hasDeliveryForCode_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HasDeliveryForCode(args["deliveryCode"].(string)), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_getDeliveryByItemID(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Commerce_Cart_Cart_getDeliveryByItemID_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GetDeliveryByItemID(args["itemID"].(string))
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*cart.Delivery)
+	fc.Result = res
+	return ec.marshalNCommerce_Cart_Delivery2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDelivery(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_getByItemID(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Commerce_Cart_Cart_getByItemID_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GetByItemID(args["itemID"].(string))
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*cart.Item)
+	fc.Result = res
+	return ec.marshalNCommerce_Cart_Item2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐItem(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_getTotalQty(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Commerce_Cart_Cart_getTotalQty_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GetTotalQty(args["marketPlaceCode"].(string), args["variantCode"].(string)), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalOInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_getByExternalReference(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Commerce_Cart_Cart_getByExternalReference_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GetByExternalReference(args["ref"].(string))
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*cart.Item)
+	fc.Result = res
+	return ec.marshalNCommerce_Cart_Item2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐItem(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_getVoucherSavings(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GetVoucherSavings(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_getCartTeaser(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GetCartTeaser(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*cart.Teaser)
+	fc.Result = res
+	return ec.marshalNCommerce_Cart_Teaser2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐTeaser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_sumShippingNet(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SumShippingNet(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_sumShippingNetWithDiscounts(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SumShippingNetWithDiscounts(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_sumShippingGrossWithDiscounts(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SumShippingGrossWithDiscounts(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_hasShippingCosts(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HasShippingCosts(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_allShippingTitles(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AllShippingTitles(), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_subTotalGross(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SubTotalGross(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_subTotalGrossWithDiscounts(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SubTotalGrossWithDiscounts(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_subTotalNetWithDiscounts(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SubTotalNetWithDiscounts(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_sumTotalDiscountAmount(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SumTotalDiscountAmount(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_sumNonItemRelatedDiscountAmount(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SumNonItemRelatedDiscountAmount(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_sumItemRelatedDiscountAmount(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SumItemRelatedDiscountAmount(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_hasAppliedCouponCode(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HasAppliedCouponCode(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_getPaymentReference(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GetPaymentReference(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_getTotalItemsByType(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Commerce_Cart_Cart_getTotalItemsByType_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GetTotalItemsByType(args["typeCode"].(string)), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]cart.Totalitem)
+	fc.Result = res
+	return ec.marshalOCommerce_Cart_Totalitem2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐTotalitemᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_grandTotalCharges(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GrandTotalCharges(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Charges)
+	fc.Result = res
+	return ec.marshalNCommerce_Price_Charges2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐCharges(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_hasAppliedGiftCards(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HasAppliedGiftCards(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Cart_hasRemainingGiftCards(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HasRemainingGiftCards(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_CouponCode_code(ctx context.Context, field graphql.CollectedField, obj *cart.CouponCode) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_CouponCode",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_CustomAttributes_get(ctx context.Context, field graphql.CollectedField, obj *dto.CustomAttributes) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_CustomAttributes",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Commerce_Cart_CustomAttributes_get_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Get(args["key"].(string)), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*dto.KeyValue)
+	fc.Result = res
+	return ec.marshalOCommerce_Cart_KeyValue2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DecoratedCart_cart(ctx context.Context, field graphql.CollectedField, obj *dto.DecoratedCart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_DecoratedCart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cart(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(cart.Cart)
+	fc.Result = res
+	return ec.marshalNCommerce_Cart_Cart2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐCart(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DecoratedCart_decoratedDeliveries(ctx context.Context, field graphql.CollectedField, obj *dto.DecoratedCart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_DecoratedCart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DecoratedDeliveries(), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]dto.DecoratedDelivery)
+	fc.Result = res
+	return ec.marshalOCommerce_Cart_DecoratedDelivery2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedDeliveryᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DecoratedCart_getDecoratedDeliveryByCode(ctx context.Context, field graphql.CollectedField, obj *dto.DecoratedCart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_DecoratedCart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Commerce_Cart_DecoratedCart_getDecoratedDeliveryByCode_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GetDecoratedDeliveryByCode(args["deliveryCode"].(string)), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*dto.DecoratedDelivery)
+	fc.Result = res
+	return ec.marshalOCommerce_Cart_DecoratedDelivery2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedDelivery(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DecoratedCart_getAllPaymentRequiredItems(ctx context.Context, field graphql.CollectedField, obj *dto.DecoratedCart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_DecoratedCart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GetAllPaymentRequiredItems(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(dto.PricedItems)
+	fc.Result = res
+	return ec.marshalNCommerce_Cart_PricedItems2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐPricedItems(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DecoratedCart_cartSummary(ctx context.Context, field graphql.CollectedField, obj *dto.DecoratedCart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_DecoratedCart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CartSummary(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(dto.CartSummary)
+	fc.Result = res
+	return ec.marshalNCommerce_Cart_Summary2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCartSummary(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DecoratedDelivery_delivery(ctx context.Context, field graphql.CollectedField, obj *dto.DecoratedDelivery) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_DecoratedDelivery",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Delivery, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(cart.Delivery)
+	fc.Result = res
+	return ec.marshalNCommerce_Cart_Delivery2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDelivery(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DecoratedDelivery_decoratedItems(ctx context.Context, field graphql.CollectedField, obj *dto.DecoratedDelivery) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_DecoratedDelivery",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DecoratedItems, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]dto.DecoratedCartItem)
+	fc.Result = res
+	return ec.marshalOCommerce_Cart_DecoratedItem2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCartItemᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DecoratedItem_item(ctx context.Context, field graphql.CollectedField, obj *dto.DecoratedCartItem) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_DecoratedItem",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Item, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(cart.Item)
+	fc.Result = res
+	return ec.marshalOCommerce_Cart_Item2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐItem(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DecoratedItem_product(ctx context.Context, field graphql.CollectedField, obj *dto.DecoratedCartItem) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_DecoratedItem",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Product, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(graphqlproductdto.Product)
+	fc.Result = res
+	return ec.marshalOCommerce_Product2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProduct(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Cart_DefaultPaymentSelection_gateway(ctx context.Context, field graphql.CollectedField, obj *cart.DefaultPaymentSelection) (ret graphql.Marshaler) {
@@ -12315,6 +10835,376 @@ func (ec *executionContext) _Commerce_Cart_DefaultPaymentSelection_cartSplit(ctx
 	res := resTmp.([]*dto.PaymentSelectionSplit)
 	fc.Result = res
 	return ec.marshalOCommerce_Cart_PaymentSelection_Split2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐPaymentSelectionSplitᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Delivery_deliveryInfo(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Delivery",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DeliveryInfo, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(cart.DeliveryInfo)
+	fc.Result = res
+	return ec.marshalOCommerce_Cart_DeliveryInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDeliveryInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Delivery_cartitems(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Delivery",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cartitems, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]cart.Item)
+	fc.Result = res
+	return ec.marshalOCommerce_Cart_Item2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐItemᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Delivery_shippingItem(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Delivery",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ShippingItem, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(cart.ShippingItem)
+	fc.Result = res
+	return ec.marshalOCommerce_Cart_ShippingItem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐShippingItem(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Delivery_subTotalGross(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Delivery",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SubTotalGross(), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Delivery_grandTotal(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Delivery",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GrandTotal(), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Delivery_sumTotalTaxAmount(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Delivery",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SumTotalTaxAmount(), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Delivery_subTotalNet(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Delivery",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SubTotalNet(), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Delivery_sumTotalDiscountAmount(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Delivery",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SumTotalDiscountAmount(), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Delivery_sumNonItemRelatedDiscountAmount(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Delivery",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SumNonItemRelatedDiscountAmount(), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Delivery_sumItemRelatedDiscountAmount(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Delivery",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SumItemRelatedDiscountAmount(), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Delivery_subTotalGrossWithDiscounts(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Delivery",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SubTotalGrossWithDiscounts(), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Delivery_subTotalNetWithDiscounts(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Delivery",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SubTotalNetWithDiscounts(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Delivery_hasItems(ctx context.Context, field graphql.CollectedField, obj *cart.Delivery) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Delivery",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HasItems(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_deliveryCode(ctx context.Context, field graphql.CollectedField, obj *dto.DeliveryAddressForm) (ret graphql.Marshaler) {
@@ -12547,6 +11437,369 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_processed(ctx con
 	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_Cart_DeliveryInfo_code(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_DeliveryInfo",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryInfo_workflow(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_DeliveryInfo",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Workflow, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryInfo_method(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_DeliveryInfo",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Method, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryInfo_carrier(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_DeliveryInfo",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Carrier, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryInfo_deliveryLocation(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_DeliveryInfo",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DeliveryLocation, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(cart.DeliveryLocation)
+	fc.Result = res
+	return ec.marshalOCommerce_Cart_DeliveryLocation2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDeliveryLocation(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryInfo_desiredTime(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_DeliveryInfo",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DesiredTime, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalOTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryInfo_additionalData(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_DeliveryInfo",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Commerce_Cart_DeliveryInfo().AdditionalData(rctx, obj)
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*dto.CustomAttributes)
+	fc.Result = res
+	return ec.marshalNCommerce_Cart_CustomAttributes2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCustomAttributes(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryLocation_type(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryLocation) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_DeliveryLocation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryLocation_address(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryLocation) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_DeliveryLocation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Address, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*cart.Address)
+	fc.Result = res
+	return ec.marshalOCommerce_Cart_Address2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAddress(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryLocation_useBillingAddress(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryLocation) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_DeliveryLocation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UseBillingAddress, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryLocation_code(ctx context.Context, field graphql.CollectedField, obj *cart.DeliveryLocation) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_DeliveryLocation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_ExistingCustomerData_id(ctx context.Context, field graphql.CollectedField, obj *cart.ExistingCustomerData) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_ExistingCustomerData",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_Cart_Form_Error_messageKey(ctx context.Context, field graphql.CollectedField, obj *domain3.Error) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -12758,6 +12011,504 @@ func (ec *executionContext) _Commerce_Cart_Form_ValidationInfo_generalErrors(ctx
 	return ec.marshalOCommerce_Cart_Form_Error2ᚕflamingoᚗmeᚋformᚋdomainᚐErrorᚄ(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_Cart_Item_id(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Item",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_externalReference(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Item",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ExternalReference, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_marketplaceCode(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Item",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MarketplaceCode, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_variantMarketPlaceCode(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Item",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.VariantMarketPlaceCode, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_productName(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Item",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ProductName, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_sourceID(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Item",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SourceID, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_qty(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Item",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Qty, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_additionalDataKeys(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Item",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AdditionalDataKeys(), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_additionalDataValues(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Item",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AdditionalDataValues(), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_getAdditionalData(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Item",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Commerce_Cart_Item_getAdditionalData_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GetAdditionalData(args["key"].(string)), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_hasAdditionalDataKey(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Item",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Commerce_Cart_Item_hasAdditionalDataKey_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HasAdditionalDataKey(args["key"].(string)), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_singlePriceGross(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Item",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SinglePriceGross, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_singlePriceNet(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Item",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SinglePriceNet, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_rowPriceGross(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Item",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RowPriceGross, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_rowPriceNet(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Item",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RowPriceNet, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_appliedDiscounts(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Item",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Commerce_Cart_Item().AppliedDiscounts(rctx, obj)
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*dto.CartAppliedDiscounts)
+	fc.Result = res
+	return ec.marshalNCommerce_Cart_AppliedDiscounts2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCartAppliedDiscounts(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_Cart_ItemValidationError_itemID(ctx context.Context, field graphql.CollectedField, obj *validation.ItemValidationError) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -12807,6 +12558,68 @@ func (ec *executionContext) _Commerce_Cart_ItemValidationError_errorMessageKey(c
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ErrorMessageKey, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_KeyValue_key(ctx context.Context, field graphql.CollectedField, obj *dto.KeyValue) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_KeyValue",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Key, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_KeyValue_value(ctx context.Context, field graphql.CollectedField, obj *dto.KeyValue) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_KeyValue",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Value, nil
 	})
 
 	if resTmp == nil {
@@ -12962,6 +12775,217 @@ func (ec *executionContext) _Commerce_Cart_PaymentSelection_SplitQualifier_refer
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ChargeReference, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Person_address(ctx context.Context, field graphql.CollectedField, obj *cart.Person) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Person",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Address, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*cart.Address)
+	fc.Result = res
+	return ec.marshalOCommerce_Cart_Address2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAddress(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Person_personalDetails(ctx context.Context, field graphql.CollectedField, obj *cart.Person) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Person",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PersonalDetails, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(cart.PersonalDetails)
+	fc.Result = res
+	return ec.marshalNCommerce_Cart_PersonalDetails2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐPersonalDetails(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Person_existingCustomerData(ctx context.Context, field graphql.CollectedField, obj *cart.Person) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Person",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ExistingCustomerData, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*cart.ExistingCustomerData)
+	fc.Result = res
+	return ec.marshalOCommerce_Cart_ExistingCustomerData2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐExistingCustomerData(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_PersonalDetails_dateOfBirth(ctx context.Context, field graphql.CollectedField, obj *cart.PersonalDetails) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_PersonalDetails",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DateOfBirth, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_PersonalDetails_passportCountry(ctx context.Context, field graphql.CollectedField, obj *cart.PersonalDetails) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_PersonalDetails",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PassportCountry, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_PersonalDetails_passportNumber(ctx context.Context, field graphql.CollectedField, obj *cart.PersonalDetails) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_PersonalDetails",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PassportNumber, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_PersonalDetails_nationality(ctx context.Context, field graphql.CollectedField, obj *cart.PersonalDetails) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_PersonalDetails",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Nationality, nil
 	})
 
 	if resTmp == nil {
@@ -13487,6 +13511,186 @@ func (ec *executionContext) _Commerce_Cart_SelectedPaymentResult_processed(ctx c
 	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_Cart_ShippingItem_title(ctx context.Context, field graphql.CollectedField, obj *cart.ShippingItem) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_ShippingItem",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Title, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_ShippingItem_priceNet(ctx context.Context, field graphql.CollectedField, obj *cart.ShippingItem) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_ShippingItem",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PriceNet, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_ShippingItem_taxAmount(ctx context.Context, field graphql.CollectedField, obj *cart.ShippingItem) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_ShippingItem",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TaxAmount, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_ShippingItem_appliedDiscounts(ctx context.Context, field graphql.CollectedField, obj *cart.ShippingItem) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_ShippingItem",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Commerce_Cart_ShippingItem().AppliedDiscounts(rctx, obj)
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*dto.CartAppliedDiscounts)
+	fc.Result = res
+	return ec.marshalNCommerce_Cart_AppliedDiscounts2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCartAppliedDiscounts(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_ShippingItem_totalWithDiscountInclTax(ctx context.Context, field graphql.CollectedField, obj *cart.ShippingItem) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_ShippingItem",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalWithDiscountInclTax(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_ShippingItem_tax(ctx context.Context, field graphql.CollectedField, obj *cart.ShippingItem) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_ShippingItem",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Tax(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(cart.Tax)
+	fc.Result = res
+	return ec.marshalNCommerce_Cart_Tax2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐTax(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_Cart_Summary_discounts(ctx context.Context, field graphql.CollectedField, obj *dto.CartSummary) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -13515,7 +13719,7 @@ func (ec *executionContext) _Commerce_Cart_Summary_discounts(ctx context.Context
 	}
 	res := resTmp.(*dto.CartAppliedDiscounts)
 	fc.Result = res
-	return ec.marshalNCommerce_CartAppliedDiscounts2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCartAppliedDiscounts(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Cart_AppliedDiscounts2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCartAppliedDiscounts(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Cart_Summary_sumAppliedDiscounts(ctx context.Context, field graphql.CollectedField, obj *dto.CartSummary) (ret graphql.Marshaler) {
@@ -13965,6 +14169,130 @@ func (ec *executionContext) _Commerce_Cart_Teaser_DeliveryCodes(ctx context.Cont
 	res := resTmp.([]string)
 	fc.Result = res
 	return ec.marshalOString2ᚕstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Totalitem_code(ctx context.Context, field graphql.CollectedField, obj *cart.Totalitem) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Totalitem",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Totalitem_title(ctx context.Context, field graphql.CollectedField, obj *cart.Totalitem) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Totalitem",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Title, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Totalitem_price(ctx context.Context, field graphql.CollectedField, obj *cart.Totalitem) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Totalitem",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Price, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_Totalitem_type(ctx context.Context, field graphql.CollectedField, obj *cart.Totalitem) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Totalitem",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Cart_ValidationResult_hasCommonError(ctx context.Context, field graphql.CollectedField, obj *validation.Result) (ret graphql.Marshaler) {
@@ -14794,7 +15122,7 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_cart(ctx contex
 	}
 	res := resTmp.(*dto.DecoratedCart)
 	fc.Result = res
-	return ec.marshalOCommerce_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
+	return ec.marshalOCommerce_Cart_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_orderInfos(ctx context.Context, field graphql.CollectedField, obj *dto1.PlaceOrderContext) (ret graphql.Marshaler) {
@@ -17045,162 +17373,6 @@ func (ec *executionContext) _Commerce_Customer_Status_Result_userID(ctx context.
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_DecoratedCart_cart(ctx context.Context, field graphql.CollectedField, obj *dto.DecoratedCart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_DecoratedCart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Cart(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(cart.Cart)
-	fc.Result = res
-	return ec.marshalNCommerce_Cart2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐCart(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_DecoratedCart_decoratedDeliveries(ctx context.Context, field graphql.CollectedField, obj *dto.DecoratedCart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_DecoratedCart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.DecoratedDeliveries(), nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]dto.DecoratedDelivery)
-	fc.Result = res
-	return ec.marshalOCommerce_CartDecoratedDelivery2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedDeliveryᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_DecoratedCart_getDecoratedDeliveryByCode(ctx context.Context, field graphql.CollectedField, obj *dto.DecoratedCart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_DecoratedCart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Commerce_DecoratedCart_getDecoratedDeliveryByCode_args(ctx, rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	fc.Args = args
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.GetDecoratedDeliveryByCode(args["deliveryCode"].(string)), nil
-	})
-
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*dto.DecoratedDelivery)
-	fc.Result = res
-	return ec.marshalOCommerce_CartDecoratedDelivery2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedDelivery(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_DecoratedCart_getAllPaymentRequiredItems(ctx context.Context, field graphql.CollectedField, obj *dto.DecoratedCart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_DecoratedCart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.GetAllPaymentRequiredItems(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(dto.PricedItems)
-	fc.Result = res
-	return ec.marshalNCommerce_Cart_PricedItems2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐPricedItems(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_DecoratedCart_cartSummary(ctx context.Context, field graphql.CollectedField, obj *dto.DecoratedCart) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_DecoratedCart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.CartSummary(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(dto.CartSummary)
-	fc.Result = res
-	return ec.marshalNCommerce_Cart_Summary2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCartSummary(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Price_amount(ctx context.Context, field graphql.CollectedField, obj *domain.Price) (ret graphql.Marshaler) {
@@ -22697,7 +22869,7 @@ func (ec *executionContext) _Mutation_flamingo(ctx context.Context, field graphq
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_Commerce_AddToCart(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_Commerce_Cart_AddToCart(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -22713,7 +22885,7 @@ func (ec *executionContext) _Mutation_Commerce_AddToCart(ctx context.Context, fi
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_Commerce_AddToCart_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_Commerce_Cart_AddToCart_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -22721,7 +22893,7 @@ func (ec *executionContext) _Mutation_Commerce_AddToCart(ctx context.Context, fi
 	fc.Args = args
 	resTmp := ec._fieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CommerceAddToCart(rctx, args["marketplaceCode"].(string), args["qty"].(int), args["deliveryCode"].(string))
+		return ec.resolvers.Mutation().CommerceCartAddToCart(rctx, args["marketplaceCode"].(string), args["qty"].(int), args["deliveryCode"].(string))
 	})
 
 	if resTmp == nil {
@@ -22732,10 +22904,10 @@ func (ec *executionContext) _Mutation_Commerce_AddToCart(ctx context.Context, fi
 	}
 	res := resTmp.(*dto.DecoratedCart)
 	fc.Result = res
-	return ec.marshalNCommerce_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Cart_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_Commerce_DeleteCartDelivery(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_Commerce_Cart_DeleteCartDelivery(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -22751,7 +22923,7 @@ func (ec *executionContext) _Mutation_Commerce_DeleteCartDelivery(ctx context.Co
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_Commerce_DeleteCartDelivery_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_Commerce_Cart_DeleteCartDelivery_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -22759,7 +22931,7 @@ func (ec *executionContext) _Mutation_Commerce_DeleteCartDelivery(ctx context.Co
 	fc.Args = args
 	resTmp := ec._fieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CommerceDeleteCartDelivery(rctx, args["deliveryCode"].(string))
+		return ec.resolvers.Mutation().CommerceCartDeleteCartDelivery(rctx, args["deliveryCode"].(string))
 	})
 
 	if resTmp == nil {
@@ -22770,10 +22942,10 @@ func (ec *executionContext) _Mutation_Commerce_DeleteCartDelivery(ctx context.Co
 	}
 	res := resTmp.(*dto.DecoratedCart)
 	fc.Result = res
-	return ec.marshalNCommerce_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Cart_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_Commerce_DeleteItem(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_Commerce_Cart_DeleteItem(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -22789,7 +22961,7 @@ func (ec *executionContext) _Mutation_Commerce_DeleteItem(ctx context.Context, f
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_Commerce_DeleteItem_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_Commerce_Cart_DeleteItem_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -22797,7 +22969,7 @@ func (ec *executionContext) _Mutation_Commerce_DeleteItem(ctx context.Context, f
 	fc.Args = args
 	resTmp := ec._fieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CommerceDeleteItem(rctx, args["itemID"].(string), args["deliveryCode"].(string))
+		return ec.resolvers.Mutation().CommerceCartDeleteItem(rctx, args["itemID"].(string), args["deliveryCode"].(string))
 	})
 
 	if resTmp == nil {
@@ -22808,10 +22980,10 @@ func (ec *executionContext) _Mutation_Commerce_DeleteItem(ctx context.Context, f
 	}
 	res := resTmp.(*dto.DecoratedCart)
 	fc.Result = res
-	return ec.marshalNCommerce_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Cart_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_Commerce_UpdateItemQty(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_Commerce_Cart_UpdateItemQty(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -22827,7 +22999,7 @@ func (ec *executionContext) _Mutation_Commerce_UpdateItemQty(ctx context.Context
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_Commerce_UpdateItemQty_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_Commerce_Cart_UpdateItemQty_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -22835,7 +23007,7 @@ func (ec *executionContext) _Mutation_Commerce_UpdateItemQty(ctx context.Context
 	fc.Args = args
 	resTmp := ec._fieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CommerceUpdateItemQty(rctx, args["itemID"].(string), args["deliveryCode"].(string), args["qty"].(int))
+		return ec.resolvers.Mutation().CommerceCartUpdateItemQty(rctx, args["itemID"].(string), args["deliveryCode"].(string), args["qty"].(int))
 	})
 
 	if resTmp == nil {
@@ -22846,7 +23018,7 @@ func (ec *executionContext) _Mutation_Commerce_UpdateItemQty(ctx context.Context
 	}
 	res := resTmp.(*dto.DecoratedCart)
 	fc.Result = res
-	return ec.marshalNCommerce_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Cart_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_Commerce_Cart_UpdateBillingAddress(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -22957,7 +23129,7 @@ func (ec *executionContext) _Mutation_Commerce_Cart_ApplyCouponCodeOrGiftCard(ct
 	}
 	res := resTmp.(*dto.DecoratedCart)
 	fc.Result = res
-	return ec.marshalOCommerce_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
+	return ec.marshalOCommerce_Cart_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_Commerce_Cart_RemoveGiftCard(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -22992,7 +23164,7 @@ func (ec *executionContext) _Mutation_Commerce_Cart_RemoveGiftCard(ctx context.C
 	}
 	res := resTmp.(*dto.DecoratedCart)
 	fc.Result = res
-	return ec.marshalOCommerce_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
+	return ec.marshalOCommerce_Cart_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_Commerce_Cart_RemoveCouponCode(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -23027,7 +23199,7 @@ func (ec *executionContext) _Mutation_Commerce_Cart_RemoveCouponCode(ctx context
 	}
 	res := resTmp.(*dto.DecoratedCart)
 	fc.Result = res
-	return ec.marshalOCommerce_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
+	return ec.marshalOCommerce_Cart_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_Commerce_Cart_UpdateDeliveryAddresses(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -23135,6 +23307,82 @@ func (ec *executionContext) _Mutation_Commerce_Cart_Clean(ctx context.Context, f
 	res := resTmp.(bool)
 	fc.Result = res
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_Commerce_Cart_UpdateAdditionalData(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_Commerce_Cart_UpdateAdditionalData_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp := ec._fieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CommerceCartUpdateAdditionalData(rctx, args["additionalData"].([]*dto.KeyValue))
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*dto.DecoratedCart)
+	fc.Result = res
+	return ec.marshalNCommerce_Cart_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_Commerce_Cart_UpdateDeliveriesAdditionalData(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_Commerce_Cart_UpdateDeliveriesAdditionalData_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp := ec._fieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CommerceCartUpdateDeliveriesAdditionalData(rctx, args["data"].([]*dto.DeliveryAdditionalData))
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*dto.DecoratedCart)
+	fc.Result = res
+	return ec.marshalNCommerce_Cart_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_Commerce_Checkout_StartPlaceOrder(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -23456,7 +23704,7 @@ func (ec *executionContext) _Query_Commerce_Customer(ctx context.Context, field 
 	return ec.marshalOCommerce_Customer_Result2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋinterfacesᚋgraphqlᚋdtocustomerᚐCustomerResult(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_Commerce_Cart(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_Commerce_Cart_DecoratedCart(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -23473,7 +23721,7 @@ func (ec *executionContext) _Query_Commerce_Cart(ctx context.Context, field grap
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().CommerceCart(rctx)
+		return ec.resolvers.Query().CommerceCartDecoratedCart(rctx)
 	})
 
 	if resTmp == nil {
@@ -23484,7 +23732,7 @@ func (ec *executionContext) _Query_Commerce_Cart(ctx context.Context, field grap
 	}
 	res := resTmp.(*dto.DecoratedCart)
 	fc.Result = res
-	return ec.marshalNCommerce_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Cart_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_Commerce_Cart_Validator(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -24877,6 +25125,34 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAdditionalDataInput(ctx context.Context, obj interface{}) (dto.DeliveryAdditionalData, error) {
+	var it dto.DeliveryAdditionalData
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "deliveryCode":
+			var err error
+
+			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryCode"))
+			it.DeliveryCode, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "additionalData":
+			var err error
+
+			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("additionalData"))
+			it.AdditionalData, err = ec.unmarshalNCommerce_Cart_KeyValueInput2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValueᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx context.Context, obj interface{}) (forms.DeliveryForm, error) {
 	var it forms.DeliveryForm
 	var asMap = obj.(map[string]interface{})
@@ -24937,7 +25213,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryShippingOption(ctx context.Context, obj interface{}) (dto.DeliveryShippingOption, error) {
+func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryShippingOptionInput(ctx context.Context, obj interface{}) (dto.DeliveryShippingOption, error) {
 	var it dto.DeliveryShippingOption
 	var asMap = obj.(map[string]interface{})
 
@@ -24964,6 +25240,34 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryShippingOption(c
 
 			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("carrier"))
 			it.Carrier, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCommerce_Cart_KeyValueInput(ctx context.Context, obj interface{}) (dto.KeyValue, error) {
+	var it dto.KeyValue
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "key":
+			var err error
+
+			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("key"))
+			it.Key, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "value":
+			var err error
+
+			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("value"))
+			it.Value, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -25313,92 +25617,18 @@ func (ec *executionContext) _Commerce_Tree(ctx context.Context, sel ast.Selectio
 
 // region    **************************** object.gotpl ****************************
 
-var commerce_CartImplementors = []string{"Commerce_Cart"}
+var commerce_Cart_AdditionalDataImplementors = []string{"Commerce_Cart_AdditionalData"}
 
-func (ec *executionContext) _Commerce_Cart(ctx context.Context, sel ast.SelectionSet, obj *cart.Cart) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_CartImplementors)
+func (ec *executionContext) _Commerce_Cart_AdditionalData(ctx context.Context, sel ast.SelectionSet, obj *cart.AdditionalData) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_AdditionalDataImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_Cart")
-		case "id":
-			out.Values[i] = ec._Commerce_Cart_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "entityID":
-			out.Values[i] = ec._Commerce_Cart_entityID(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "billingAddress":
-			out.Values[i] = ec._Commerce_Cart_billingAddress(ctx, field, obj)
-		case "purchaser":
-			out.Values[i] = ec._Commerce_Cart_purchaser(ctx, field, obj)
-		case "deliveries":
-			out.Values[i] = ec._Commerce_Cart_deliveries(ctx, field, obj)
-		case "additionalData":
-			out.Values[i] = ec._Commerce_Cart_additionalData(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "paymentSelection":
-			out.Values[i] = ec._Commerce_Cart_paymentSelection(ctx, field, obj)
-		case "belongsToAuthenticatedUser":
-			out.Values[i] = ec._Commerce_Cart_belongsToAuthenticatedUser(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "authenticatedUserID":
-			out.Values[i] = ec._Commerce_Cart_authenticatedUserID(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "appliedCouponCodes":
-			out.Values[i] = ec._Commerce_Cart_appliedCouponCodes(ctx, field, obj)
-		case "defaultCurrency":
-			out.Values[i] = ec._Commerce_Cart_defaultCurrency(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "totalitems":
-			out.Values[i] = ec._Commerce_Cart_totalitems(ctx, field, obj)
-		case "itemCount":
-			out.Values[i] = ec._Commerce_Cart_itemCount(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "productCount":
-			out.Values[i] = ec._Commerce_Cart_productCount(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "isPaymentSelected":
-			out.Values[i] = ec._Commerce_Cart_isPaymentSelected(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "grandTotal":
-			out.Values[i] = ec._Commerce_Cart_grandTotal(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "sumTotalTaxAmount":
-			out.Values[i] = ec._Commerce_Cart_sumTotalTaxAmount(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "subTotalNet":
-			out.Values[i] = ec._Commerce_Cart_subTotalNet(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "appliedGiftCards":
-			out.Values[i] = ec._Commerce_Cart_appliedGiftCards(ctx, field, obj)
-		case "getDeliveryByCode":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_AdditionalData")
+		case "customAttributes":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -25406,158 +25636,16 @@ func (ec *executionContext) _Commerce_Cart(ctx context.Context, sel ast.Selectio
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Commerce_Cart_getDeliveryByCode(ctx, field, obj)
+				res = ec._Commerce_Cart_AdditionalData_customAttributes(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
 				return res
 			})
-		case "getDeliveryCodes":
-			out.Values[i] = ec._Commerce_Cart_getDeliveryCodes(ctx, field, obj)
-		case "getMainShippingEMail":
-			out.Values[i] = ec._Commerce_Cart_getMainShippingEMail(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "isEmpty":
-			out.Values[i] = ec._Commerce_Cart_isEmpty(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "hasDeliveryForCode":
-			out.Values[i] = ec._Commerce_Cart_hasDeliveryForCode(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "getDeliveryByItemID":
-			out.Values[i] = ec._Commerce_Cart_getDeliveryByItemID(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "getByItemID":
-			out.Values[i] = ec._Commerce_Cart_getByItemID(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "getTotalQty":
-			out.Values[i] = ec._Commerce_Cart_getTotalQty(ctx, field, obj)
-		case "getByExternalReference":
-			out.Values[i] = ec._Commerce_Cart_getByExternalReference(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "getVoucherSavings":
-			out.Values[i] = ec._Commerce_Cart_getVoucherSavings(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "getCartTeaser":
-			out.Values[i] = ec._Commerce_Cart_getCartTeaser(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "sumShippingNet":
-			out.Values[i] = ec._Commerce_Cart_sumShippingNet(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "sumShippingNetWithDiscounts":
-			out.Values[i] = ec._Commerce_Cart_sumShippingNetWithDiscounts(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "sumShippingGrossWithDiscounts":
-			out.Values[i] = ec._Commerce_Cart_sumShippingGrossWithDiscounts(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "hasShippingCosts":
-			out.Values[i] = ec._Commerce_Cart_hasShippingCosts(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "allShippingTitles":
-			out.Values[i] = ec._Commerce_Cart_allShippingTitles(ctx, field, obj)
-		case "subTotalGross":
-			out.Values[i] = ec._Commerce_Cart_subTotalGross(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "subTotalGrossWithDiscounts":
-			out.Values[i] = ec._Commerce_Cart_subTotalGrossWithDiscounts(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "subTotalNetWithDiscounts":
-			out.Values[i] = ec._Commerce_Cart_subTotalNetWithDiscounts(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "sumTotalDiscountAmount":
-			out.Values[i] = ec._Commerce_Cart_sumTotalDiscountAmount(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "sumNonItemRelatedDiscountAmount":
-			out.Values[i] = ec._Commerce_Cart_sumNonItemRelatedDiscountAmount(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "sumItemRelatedDiscountAmount":
-			out.Values[i] = ec._Commerce_Cart_sumItemRelatedDiscountAmount(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "hasAppliedCouponCode":
-			out.Values[i] = ec._Commerce_Cart_hasAppliedCouponCode(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "getPaymentReference":
-			out.Values[i] = ec._Commerce_Cart_getPaymentReference(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "getTotalItemsByType":
-			out.Values[i] = ec._Commerce_Cart_getTotalItemsByType(ctx, field, obj)
-		case "grandTotalCharges":
-			out.Values[i] = ec._Commerce_Cart_grandTotalCharges(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "hasAppliedGiftCards":
-			out.Values[i] = ec._Commerce_Cart_hasAppliedGiftCards(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "hasRemainingGiftCards":
-			out.Values[i] = ec._Commerce_Cart_hasRemainingGiftCards(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var commerce_CartAdditionalDataImplementors = []string{"Commerce_CartAdditionalData"}
-
-func (ec *executionContext) _Commerce_CartAdditionalData(ctx context.Context, sel ast.SelectionSet, obj *cart.AdditionalData) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_CartAdditionalDataImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_CartAdditionalData")
 		case "reservedOrderID":
-			out.Values[i] = ec._Commerce_CartAdditionalData_reservedOrderID(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Cart_AdditionalData_reservedOrderID(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
@@ -25570,760 +25658,101 @@ func (ec *executionContext) _Commerce_CartAdditionalData(ctx context.Context, se
 	return out
 }
 
-var commerce_CartAddressImplementors = []string{"Commerce_CartAddress"}
+var commerce_Cart_AddressImplementors = []string{"Commerce_Cart_Address"}
 
-func (ec *executionContext) _Commerce_CartAddress(ctx context.Context, sel ast.SelectionSet, obj *cart.Address) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_CartAddressImplementors)
+func (ec *executionContext) _Commerce_Cart_Address(ctx context.Context, sel ast.SelectionSet, obj *cart.Address) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_AddressImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_CartAddress")
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_Address")
 		case "vat":
-			out.Values[i] = ec._Commerce_CartAddress_vat(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Cart_Address_vat(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "firstname":
-			out.Values[i] = ec._Commerce_CartAddress_firstname(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Cart_Address_firstname(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "lastname":
-			out.Values[i] = ec._Commerce_CartAddress_lastname(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Cart_Address_lastname(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "middleName":
-			out.Values[i] = ec._Commerce_CartAddress_middleName(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Cart_Address_middleName(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "title":
-			out.Values[i] = ec._Commerce_CartAddress_title(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Cart_Address_title(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "salutation":
-			out.Values[i] = ec._Commerce_CartAddress_salutation(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Cart_Address_salutation(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "street":
-			out.Values[i] = ec._Commerce_CartAddress_street(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Cart_Address_street(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "streetNr":
-			out.Values[i] = ec._Commerce_CartAddress_streetNr(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Cart_Address_streetNr(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "additionalAddressLines":
-			out.Values[i] = ec._Commerce_CartAddress_additionalAddressLines(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Cart_Address_additionalAddressLines(ctx, field, obj)
 		case "company":
-			out.Values[i] = ec._Commerce_CartAddress_company(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Cart_Address_company(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "city":
-			out.Values[i] = ec._Commerce_CartAddress_city(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Cart_Address_city(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "postCode":
-			out.Values[i] = ec._Commerce_CartAddress_postCode(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Cart_Address_postCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "state":
-			out.Values[i] = ec._Commerce_CartAddress_state(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Cart_Address_state(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "regionCode":
-			out.Values[i] = ec._Commerce_CartAddress_regionCode(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Cart_Address_regionCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "country":
-			out.Values[i] = ec._Commerce_CartAddress_country(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Cart_Address_country(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "countryCode":
-			out.Values[i] = ec._Commerce_CartAddress_countryCode(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Cart_Address_countryCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "telephone":
-			out.Values[i] = ec._Commerce_CartAddress_telephone(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Cart_Address_telephone(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "email":
-			out.Values[i] = ec._Commerce_CartAddress_email(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var commerce_CartAppliedDiscountImplementors = []string{"Commerce_CartAppliedDiscount"}
-
-func (ec *executionContext) _Commerce_CartAppliedDiscount(ctx context.Context, sel ast.SelectionSet, obj *cart.AppliedDiscount) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_CartAppliedDiscountImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_CartAppliedDiscount")
-		case "campaignCode":
-			out.Values[i] = ec._Commerce_CartAppliedDiscount_campaignCode(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "couponCode":
-			out.Values[i] = ec._Commerce_CartAppliedDiscount_couponCode(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "label":
-			out.Values[i] = ec._Commerce_CartAppliedDiscount_label(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "applied":
-			out.Values[i] = ec._Commerce_CartAppliedDiscount_applied(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "type":
-			out.Values[i] = ec._Commerce_CartAppliedDiscount_type(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "isItemRelated":
-			out.Values[i] = ec._Commerce_CartAppliedDiscount_isItemRelated(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "sortOrder":
-			out.Values[i] = ec._Commerce_CartAppliedDiscount_sortOrder(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var commerce_CartAppliedDiscountsImplementors = []string{"Commerce_CartAppliedDiscounts"}
-
-func (ec *executionContext) _Commerce_CartAppliedDiscounts(ctx context.Context, sel ast.SelectionSet, obj *dto.CartAppliedDiscounts) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_CartAppliedDiscountsImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_CartAppliedDiscounts")
-		case "items":
-			out.Values[i] = ec._Commerce_CartAppliedDiscounts_items(ctx, field, obj)
-		case "byCampaignCode":
-			out.Values[i] = ec._Commerce_CartAppliedDiscounts_byCampaignCode(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "byType":
-			out.Values[i] = ec._Commerce_CartAppliedDiscounts_byType(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var commerce_CartAppliedGiftCardImplementors = []string{"Commerce_CartAppliedGiftCard"}
-
-func (ec *executionContext) _Commerce_CartAppliedGiftCard(ctx context.Context, sel ast.SelectionSet, obj *cart.AppliedGiftCard) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_CartAppliedGiftCardImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_CartAppliedGiftCard")
-		case "code":
-			out.Values[i] = ec._Commerce_CartAppliedGiftCard_code(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "applied":
-			out.Values[i] = ec._Commerce_CartAppliedGiftCard_applied(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "remaining":
-			out.Values[i] = ec._Commerce_CartAppliedGiftCard_remaining(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "hasRemaining":
-			out.Values[i] = ec._Commerce_CartAppliedGiftCard_hasRemaining(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var commerce_CartCouponCodeImplementors = []string{"Commerce_CartCouponCode"}
-
-func (ec *executionContext) _Commerce_CartCouponCode(ctx context.Context, sel ast.SelectionSet, obj *cart.CouponCode) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_CartCouponCodeImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_CartCouponCode")
-		case "code":
-			out.Values[i] = ec._Commerce_CartCouponCode_code(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var commerce_CartDecoratedDeliveryImplementors = []string{"Commerce_CartDecoratedDelivery"}
-
-func (ec *executionContext) _Commerce_CartDecoratedDelivery(ctx context.Context, sel ast.SelectionSet, obj *dto.DecoratedDelivery) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_CartDecoratedDeliveryImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_CartDecoratedDelivery")
-		case "delivery":
-			out.Values[i] = ec._Commerce_CartDecoratedDelivery_delivery(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "decoratedItems":
-			out.Values[i] = ec._Commerce_CartDecoratedDelivery_decoratedItems(ctx, field, obj)
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var commerce_CartDecoratedItemImplementors = []string{"Commerce_CartDecoratedItem"}
-
-func (ec *executionContext) _Commerce_CartDecoratedItem(ctx context.Context, sel ast.SelectionSet, obj *dto.DecoratedCartItem) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_CartDecoratedItemImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_CartDecoratedItem")
-		case "item":
-			out.Values[i] = ec._Commerce_CartDecoratedItem_item(ctx, field, obj)
-		case "product":
-			out.Values[i] = ec._Commerce_CartDecoratedItem_product(ctx, field, obj)
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var commerce_CartDeliveryImplementors = []string{"Commerce_CartDelivery"}
-
-func (ec *executionContext) _Commerce_CartDelivery(ctx context.Context, sel ast.SelectionSet, obj *cart.Delivery) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_CartDeliveryImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_CartDelivery")
-		case "deliveryInfo":
-			out.Values[i] = ec._Commerce_CartDelivery_deliveryInfo(ctx, field, obj)
-		case "cartitems":
-			out.Values[i] = ec._Commerce_CartDelivery_cartitems(ctx, field, obj)
-		case "shippingItem":
-			out.Values[i] = ec._Commerce_CartDelivery_shippingItem(ctx, field, obj)
-		case "subTotalGross":
-			out.Values[i] = ec._Commerce_CartDelivery_subTotalGross(ctx, field, obj)
-		case "grandTotal":
-			out.Values[i] = ec._Commerce_CartDelivery_grandTotal(ctx, field, obj)
-		case "sumTotalTaxAmount":
-			out.Values[i] = ec._Commerce_CartDelivery_sumTotalTaxAmount(ctx, field, obj)
-		case "subTotalNet":
-			out.Values[i] = ec._Commerce_CartDelivery_subTotalNet(ctx, field, obj)
-		case "sumTotalDiscountAmount":
-			out.Values[i] = ec._Commerce_CartDelivery_sumTotalDiscountAmount(ctx, field, obj)
-		case "sumNonItemRelatedDiscountAmount":
-			out.Values[i] = ec._Commerce_CartDelivery_sumNonItemRelatedDiscountAmount(ctx, field, obj)
-		case "sumItemRelatedDiscountAmount":
-			out.Values[i] = ec._Commerce_CartDelivery_sumItemRelatedDiscountAmount(ctx, field, obj)
-		case "subTotalGrossWithDiscounts":
-			out.Values[i] = ec._Commerce_CartDelivery_subTotalGrossWithDiscounts(ctx, field, obj)
-		case "subTotalNetWithDiscounts":
-			out.Values[i] = ec._Commerce_CartDelivery_subTotalNetWithDiscounts(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "hasItems":
-			out.Values[i] = ec._Commerce_CartDelivery_hasItems(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var commerce_CartDeliveryInfoImplementors = []string{"Commerce_CartDeliveryInfo"}
-
-func (ec *executionContext) _Commerce_CartDeliveryInfo(ctx context.Context, sel ast.SelectionSet, obj *cart.DeliveryInfo) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_CartDeliveryInfoImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_CartDeliveryInfo")
-		case "code":
-			out.Values[i] = ec._Commerce_CartDeliveryInfo_code(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "workflow":
-			out.Values[i] = ec._Commerce_CartDeliveryInfo_workflow(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "method":
-			out.Values[i] = ec._Commerce_CartDeliveryInfo_method(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "carrier":
-			out.Values[i] = ec._Commerce_CartDeliveryInfo_carrier(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "deliveryLocation":
-			out.Values[i] = ec._Commerce_CartDeliveryInfo_deliveryLocation(ctx, field, obj)
-		case "desiredTime":
-			out.Values[i] = ec._Commerce_CartDeliveryInfo_desiredTime(ctx, field, obj)
-		case "getAdditionalData":
-			out.Values[i] = ec._Commerce_CartDeliveryInfo_getAdditionalData(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "additionalDataKeys":
-			out.Values[i] = ec._Commerce_CartDeliveryInfo_additionalDataKeys(ctx, field, obj)
-		case "additionalDeliveryInfoKeys":
-			out.Values[i] = ec._Commerce_CartDeliveryInfo_additionalDeliveryInfoKeys(ctx, field, obj)
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var commerce_CartDeliveryLocationImplementors = []string{"Commerce_CartDeliveryLocation"}
-
-func (ec *executionContext) _Commerce_CartDeliveryLocation(ctx context.Context, sel ast.SelectionSet, obj *cart.DeliveryLocation) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_CartDeliveryLocationImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_CartDeliveryLocation")
-		case "type":
-			out.Values[i] = ec._Commerce_CartDeliveryLocation_type(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "address":
-			out.Values[i] = ec._Commerce_CartDeliveryLocation_address(ctx, field, obj)
-		case "useBillingAddress":
-			out.Values[i] = ec._Commerce_CartDeliveryLocation_useBillingAddress(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "code":
-			out.Values[i] = ec._Commerce_CartDeliveryLocation_code(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var commerce_CartExistingCustomerDataImplementors = []string{"Commerce_CartExistingCustomerData"}
-
-func (ec *executionContext) _Commerce_CartExistingCustomerData(ctx context.Context, sel ast.SelectionSet, obj *cart.ExistingCustomerData) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_CartExistingCustomerDataImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_CartExistingCustomerData")
-		case "id":
-			out.Values[i] = ec._Commerce_CartExistingCustomerData_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var commerce_CartItemImplementors = []string{"Commerce_CartItem"}
-
-func (ec *executionContext) _Commerce_CartItem(ctx context.Context, sel ast.SelectionSet, obj *cart.Item) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_CartItemImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_CartItem")
-		case "id":
-			out.Values[i] = ec._Commerce_CartItem_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "externalReference":
-			out.Values[i] = ec._Commerce_CartItem_externalReference(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "marketplaceCode":
-			out.Values[i] = ec._Commerce_CartItem_marketplaceCode(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "variantMarketPlaceCode":
-			out.Values[i] = ec._Commerce_CartItem_variantMarketPlaceCode(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "productName":
-			out.Values[i] = ec._Commerce_CartItem_productName(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "sourceID":
-			out.Values[i] = ec._Commerce_CartItem_sourceID(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "qty":
-			out.Values[i] = ec._Commerce_CartItem_qty(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "additionalDataKeys":
-			out.Values[i] = ec._Commerce_CartItem_additionalDataKeys(ctx, field, obj)
-		case "additionalDataValues":
-			out.Values[i] = ec._Commerce_CartItem_additionalDataValues(ctx, field, obj)
-		case "getAdditionalData":
-			out.Values[i] = ec._Commerce_CartItem_getAdditionalData(ctx, field, obj)
-		case "hasAdditionalDataKey":
-			out.Values[i] = ec._Commerce_CartItem_hasAdditionalDataKey(ctx, field, obj)
-		case "singlePriceGross":
-			out.Values[i] = ec._Commerce_CartItem_singlePriceGross(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "singlePriceNet":
-			out.Values[i] = ec._Commerce_CartItem_singlePriceNet(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "rowPriceGross":
-			out.Values[i] = ec._Commerce_CartItem_rowPriceGross(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "rowPriceNet":
-			out.Values[i] = ec._Commerce_CartItem_rowPriceNet(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "appliedDiscounts":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Commerce_CartItem_appliedDiscounts(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var commerce_CartPersonImplementors = []string{"Commerce_CartPerson"}
-
-func (ec *executionContext) _Commerce_CartPerson(ctx context.Context, sel ast.SelectionSet, obj *cart.Person) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_CartPersonImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_CartPerson")
-		case "address":
-			out.Values[i] = ec._Commerce_CartPerson_address(ctx, field, obj)
-		case "personalDetails":
-			out.Values[i] = ec._Commerce_CartPerson_personalDetails(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "existingCustomerData":
-			out.Values[i] = ec._Commerce_CartPerson_existingCustomerData(ctx, field, obj)
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var commerce_CartPersonalDetailsImplementors = []string{"Commerce_CartPersonalDetails"}
-
-func (ec *executionContext) _Commerce_CartPersonalDetails(ctx context.Context, sel ast.SelectionSet, obj *cart.PersonalDetails) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_CartPersonalDetailsImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_CartPersonalDetails")
-		case "dateOfBirth":
-			out.Values[i] = ec._Commerce_CartPersonalDetails_dateOfBirth(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "passportCountry":
-			out.Values[i] = ec._Commerce_CartPersonalDetails_passportCountry(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "passportNumber":
-			out.Values[i] = ec._Commerce_CartPersonalDetails_passportNumber(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "nationality":
-			out.Values[i] = ec._Commerce_CartPersonalDetails_nationality(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var commerce_CartShippingItemImplementors = []string{"Commerce_CartShippingItem"}
-
-func (ec *executionContext) _Commerce_CartShippingItem(ctx context.Context, sel ast.SelectionSet, obj *cart.ShippingItem) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_CartShippingItemImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_CartShippingItem")
-		case "title":
-			out.Values[i] = ec._Commerce_CartShippingItem_title(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "priceNet":
-			out.Values[i] = ec._Commerce_CartShippingItem_priceNet(ctx, field, obj)
-		case "taxAmount":
-			out.Values[i] = ec._Commerce_CartShippingItem_taxAmount(ctx, field, obj)
-		case "appliedDiscounts":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Commerce_CartShippingItem_appliedDiscounts(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
-		case "totalWithDiscountInclTax":
-			out.Values[i] = ec._Commerce_CartShippingItem_totalWithDiscountInclTax(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "tax":
-			out.Values[i] = ec._Commerce_CartShippingItem_tax(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var commerce_CartTotalitemImplementors = []string{"Commerce_CartTotalitem"}
-
-func (ec *executionContext) _Commerce_CartTotalitem(ctx context.Context, sel ast.SelectionSet, obj *cart.Totalitem) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_CartTotalitemImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_CartTotalitem")
-		case "code":
-			out.Values[i] = ec._Commerce_CartTotalitem_code(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "title":
-			out.Values[i] = ec._Commerce_CartTotalitem_title(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "price":
-			out.Values[i] = ec._Commerce_CartTotalitem_price(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "type":
-			out.Values[i] = ec._Commerce_CartTotalitem_type(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Cart_Address_email(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -26455,6 +25884,139 @@ func (ec *executionContext) _Commerce_Cart_AddressForm(ctx context.Context, sel 
 	return out
 }
 
+var commerce_Cart_AppliedDiscountImplementors = []string{"Commerce_Cart_AppliedDiscount"}
+
+func (ec *executionContext) _Commerce_Cart_AppliedDiscount(ctx context.Context, sel ast.SelectionSet, obj *cart.AppliedDiscount) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_AppliedDiscountImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_AppliedDiscount")
+		case "campaignCode":
+			out.Values[i] = ec._Commerce_Cart_AppliedDiscount_campaignCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "couponCode":
+			out.Values[i] = ec._Commerce_Cart_AppliedDiscount_couponCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "label":
+			out.Values[i] = ec._Commerce_Cart_AppliedDiscount_label(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "applied":
+			out.Values[i] = ec._Commerce_Cart_AppliedDiscount_applied(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "type":
+			out.Values[i] = ec._Commerce_Cart_AppliedDiscount_type(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "isItemRelated":
+			out.Values[i] = ec._Commerce_Cart_AppliedDiscount_isItemRelated(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "sortOrder":
+			out.Values[i] = ec._Commerce_Cart_AppliedDiscount_sortOrder(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Cart_AppliedDiscountsImplementors = []string{"Commerce_Cart_AppliedDiscounts"}
+
+func (ec *executionContext) _Commerce_Cart_AppliedDiscounts(ctx context.Context, sel ast.SelectionSet, obj *dto.CartAppliedDiscounts) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_AppliedDiscountsImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_AppliedDiscounts")
+		case "items":
+			out.Values[i] = ec._Commerce_Cart_AppliedDiscounts_items(ctx, field, obj)
+		case "byCampaignCode":
+			out.Values[i] = ec._Commerce_Cart_AppliedDiscounts_byCampaignCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "byType":
+			out.Values[i] = ec._Commerce_Cart_AppliedDiscounts_byType(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Cart_AppliedGiftCardImplementors = []string{"Commerce_Cart_AppliedGiftCard"}
+
+func (ec *executionContext) _Commerce_Cart_AppliedGiftCard(ctx context.Context, sel ast.SelectionSet, obj *cart.AppliedGiftCard) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_AppliedGiftCardImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_AppliedGiftCard")
+		case "code":
+			out.Values[i] = ec._Commerce_Cart_AppliedGiftCard_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "applied":
+			out.Values[i] = ec._Commerce_Cart_AppliedGiftCard_applied(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "remaining":
+			out.Values[i] = ec._Commerce_Cart_AppliedGiftCard_remaining(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "hasRemaining":
+			out.Values[i] = ec._Commerce_Cart_AppliedGiftCard_hasRemaining(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var commerce_Cart_BillingAddressFormImplementors = []string{"Commerce_Cart_BillingAddressForm"}
 
 func (ec *executionContext) _Commerce_Cart_BillingAddressForm(ctx context.Context, sel ast.SelectionSet, obj *dto.BillingAddressForm) graphql.Marshaler {
@@ -26472,6 +26034,383 @@ func (ec *executionContext) _Commerce_Cart_BillingAddressForm(ctx context.Contex
 			out.Values[i] = ec._Commerce_Cart_BillingAddressForm_validationInfo(ctx, field, obj)
 		case "processed":
 			out.Values[i] = ec._Commerce_Cart_BillingAddressForm_processed(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Cart_CartImplementors = []string{"Commerce_Cart_Cart"}
+
+func (ec *executionContext) _Commerce_Cart_Cart(ctx context.Context, sel ast.SelectionSet, obj *cart.Cart) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_CartImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_Cart")
+		case "id":
+			out.Values[i] = ec._Commerce_Cart_Cart_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "entityID":
+			out.Values[i] = ec._Commerce_Cart_Cart_entityID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "billingAddress":
+			out.Values[i] = ec._Commerce_Cart_Cart_billingAddress(ctx, field, obj)
+		case "purchaser":
+			out.Values[i] = ec._Commerce_Cart_Cart_purchaser(ctx, field, obj)
+		case "deliveries":
+			out.Values[i] = ec._Commerce_Cart_Cart_deliveries(ctx, field, obj)
+		case "additionalData":
+			out.Values[i] = ec._Commerce_Cart_Cart_additionalData(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "paymentSelection":
+			out.Values[i] = ec._Commerce_Cart_Cart_paymentSelection(ctx, field, obj)
+		case "belongsToAuthenticatedUser":
+			out.Values[i] = ec._Commerce_Cart_Cart_belongsToAuthenticatedUser(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "authenticatedUserID":
+			out.Values[i] = ec._Commerce_Cart_Cart_authenticatedUserID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "appliedCouponCodes":
+			out.Values[i] = ec._Commerce_Cart_Cart_appliedCouponCodes(ctx, field, obj)
+		case "defaultCurrency":
+			out.Values[i] = ec._Commerce_Cart_Cart_defaultCurrency(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "totalitems":
+			out.Values[i] = ec._Commerce_Cart_Cart_totalitems(ctx, field, obj)
+		case "itemCount":
+			out.Values[i] = ec._Commerce_Cart_Cart_itemCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "productCount":
+			out.Values[i] = ec._Commerce_Cart_Cart_productCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "isPaymentSelected":
+			out.Values[i] = ec._Commerce_Cart_Cart_isPaymentSelected(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "grandTotal":
+			out.Values[i] = ec._Commerce_Cart_Cart_grandTotal(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "sumTotalTaxAmount":
+			out.Values[i] = ec._Commerce_Cart_Cart_sumTotalTaxAmount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "subTotalNet":
+			out.Values[i] = ec._Commerce_Cart_Cart_subTotalNet(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "appliedGiftCards":
+			out.Values[i] = ec._Commerce_Cart_Cart_appliedGiftCards(ctx, field, obj)
+		case "getDeliveryByCode":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Commerce_Cart_Cart_getDeliveryByCode(ctx, field, obj)
+				return res
+			})
+		case "getDeliveryCodes":
+			out.Values[i] = ec._Commerce_Cart_Cart_getDeliveryCodes(ctx, field, obj)
+		case "getMainShippingEMail":
+			out.Values[i] = ec._Commerce_Cart_Cart_getMainShippingEMail(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "isEmpty":
+			out.Values[i] = ec._Commerce_Cart_Cart_isEmpty(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "hasDeliveryForCode":
+			out.Values[i] = ec._Commerce_Cart_Cart_hasDeliveryForCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "getDeliveryByItemID":
+			out.Values[i] = ec._Commerce_Cart_Cart_getDeliveryByItemID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "getByItemID":
+			out.Values[i] = ec._Commerce_Cart_Cart_getByItemID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "getTotalQty":
+			out.Values[i] = ec._Commerce_Cart_Cart_getTotalQty(ctx, field, obj)
+		case "getByExternalReference":
+			out.Values[i] = ec._Commerce_Cart_Cart_getByExternalReference(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "getVoucherSavings":
+			out.Values[i] = ec._Commerce_Cart_Cart_getVoucherSavings(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "getCartTeaser":
+			out.Values[i] = ec._Commerce_Cart_Cart_getCartTeaser(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "sumShippingNet":
+			out.Values[i] = ec._Commerce_Cart_Cart_sumShippingNet(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "sumShippingNetWithDiscounts":
+			out.Values[i] = ec._Commerce_Cart_Cart_sumShippingNetWithDiscounts(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "sumShippingGrossWithDiscounts":
+			out.Values[i] = ec._Commerce_Cart_Cart_sumShippingGrossWithDiscounts(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "hasShippingCosts":
+			out.Values[i] = ec._Commerce_Cart_Cart_hasShippingCosts(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "allShippingTitles":
+			out.Values[i] = ec._Commerce_Cart_Cart_allShippingTitles(ctx, field, obj)
+		case "subTotalGross":
+			out.Values[i] = ec._Commerce_Cart_Cart_subTotalGross(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "subTotalGrossWithDiscounts":
+			out.Values[i] = ec._Commerce_Cart_Cart_subTotalGrossWithDiscounts(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "subTotalNetWithDiscounts":
+			out.Values[i] = ec._Commerce_Cart_Cart_subTotalNetWithDiscounts(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "sumTotalDiscountAmount":
+			out.Values[i] = ec._Commerce_Cart_Cart_sumTotalDiscountAmount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "sumNonItemRelatedDiscountAmount":
+			out.Values[i] = ec._Commerce_Cart_Cart_sumNonItemRelatedDiscountAmount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "sumItemRelatedDiscountAmount":
+			out.Values[i] = ec._Commerce_Cart_Cart_sumItemRelatedDiscountAmount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "hasAppliedCouponCode":
+			out.Values[i] = ec._Commerce_Cart_Cart_hasAppliedCouponCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "getPaymentReference":
+			out.Values[i] = ec._Commerce_Cart_Cart_getPaymentReference(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "getTotalItemsByType":
+			out.Values[i] = ec._Commerce_Cart_Cart_getTotalItemsByType(ctx, field, obj)
+		case "grandTotalCharges":
+			out.Values[i] = ec._Commerce_Cart_Cart_grandTotalCharges(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "hasAppliedGiftCards":
+			out.Values[i] = ec._Commerce_Cart_Cart_hasAppliedGiftCards(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "hasRemainingGiftCards":
+			out.Values[i] = ec._Commerce_Cart_Cart_hasRemainingGiftCards(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Cart_CouponCodeImplementors = []string{"Commerce_Cart_CouponCode"}
+
+func (ec *executionContext) _Commerce_Cart_CouponCode(ctx context.Context, sel ast.SelectionSet, obj *cart.CouponCode) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_CouponCodeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_CouponCode")
+		case "code":
+			out.Values[i] = ec._Commerce_Cart_CouponCode_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Cart_CustomAttributesImplementors = []string{"Commerce_Cart_CustomAttributes"}
+
+func (ec *executionContext) _Commerce_Cart_CustomAttributes(ctx context.Context, sel ast.SelectionSet, obj *dto.CustomAttributes) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_CustomAttributesImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_CustomAttributes")
+		case "get":
+			out.Values[i] = ec._Commerce_Cart_CustomAttributes_get(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Cart_DecoratedCartImplementors = []string{"Commerce_Cart_DecoratedCart"}
+
+func (ec *executionContext) _Commerce_Cart_DecoratedCart(ctx context.Context, sel ast.SelectionSet, obj *dto.DecoratedCart) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_DecoratedCartImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_DecoratedCart")
+		case "cart":
+			out.Values[i] = ec._Commerce_Cart_DecoratedCart_cart(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "decoratedDeliveries":
+			out.Values[i] = ec._Commerce_Cart_DecoratedCart_decoratedDeliveries(ctx, field, obj)
+		case "getDecoratedDeliveryByCode":
+			out.Values[i] = ec._Commerce_Cart_DecoratedCart_getDecoratedDeliveryByCode(ctx, field, obj)
+		case "getAllPaymentRequiredItems":
+			out.Values[i] = ec._Commerce_Cart_DecoratedCart_getAllPaymentRequiredItems(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "cartSummary":
+			out.Values[i] = ec._Commerce_Cart_DecoratedCart_cartSummary(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Cart_DecoratedDeliveryImplementors = []string{"Commerce_Cart_DecoratedDelivery"}
+
+func (ec *executionContext) _Commerce_Cart_DecoratedDelivery(ctx context.Context, sel ast.SelectionSet, obj *dto.DecoratedDelivery) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_DecoratedDeliveryImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_DecoratedDelivery")
+		case "delivery":
+			out.Values[i] = ec._Commerce_Cart_DecoratedDelivery_delivery(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "decoratedItems":
+			out.Values[i] = ec._Commerce_Cart_DecoratedDelivery_decoratedItems(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Cart_DecoratedItemImplementors = []string{"Commerce_Cart_DecoratedItem"}
+
+func (ec *executionContext) _Commerce_Cart_DecoratedItem(ctx context.Context, sel ast.SelectionSet, obj *dto.DecoratedCartItem) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_DecoratedItemImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_DecoratedItem")
+		case "item":
+			out.Values[i] = ec._Commerce_Cart_DecoratedItem_item(ctx, field, obj)
+		case "product":
+			out.Values[i] = ec._Commerce_Cart_DecoratedItem_product(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -26526,6 +26465,60 @@ func (ec *executionContext) _Commerce_Cart_DefaultPaymentSelection(ctx context.C
 	return out
 }
 
+var commerce_Cart_DeliveryImplementors = []string{"Commerce_Cart_Delivery"}
+
+func (ec *executionContext) _Commerce_Cart_Delivery(ctx context.Context, sel ast.SelectionSet, obj *cart.Delivery) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_DeliveryImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_Delivery")
+		case "deliveryInfo":
+			out.Values[i] = ec._Commerce_Cart_Delivery_deliveryInfo(ctx, field, obj)
+		case "cartitems":
+			out.Values[i] = ec._Commerce_Cart_Delivery_cartitems(ctx, field, obj)
+		case "shippingItem":
+			out.Values[i] = ec._Commerce_Cart_Delivery_shippingItem(ctx, field, obj)
+		case "subTotalGross":
+			out.Values[i] = ec._Commerce_Cart_Delivery_subTotalGross(ctx, field, obj)
+		case "grandTotal":
+			out.Values[i] = ec._Commerce_Cart_Delivery_grandTotal(ctx, field, obj)
+		case "sumTotalTaxAmount":
+			out.Values[i] = ec._Commerce_Cart_Delivery_sumTotalTaxAmount(ctx, field, obj)
+		case "subTotalNet":
+			out.Values[i] = ec._Commerce_Cart_Delivery_subTotalNet(ctx, field, obj)
+		case "sumTotalDiscountAmount":
+			out.Values[i] = ec._Commerce_Cart_Delivery_sumTotalDiscountAmount(ctx, field, obj)
+		case "sumNonItemRelatedDiscountAmount":
+			out.Values[i] = ec._Commerce_Cart_Delivery_sumNonItemRelatedDiscountAmount(ctx, field, obj)
+		case "sumItemRelatedDiscountAmount":
+			out.Values[i] = ec._Commerce_Cart_Delivery_sumItemRelatedDiscountAmount(ctx, field, obj)
+		case "subTotalGrossWithDiscounts":
+			out.Values[i] = ec._Commerce_Cart_Delivery_subTotalGrossWithDiscounts(ctx, field, obj)
+		case "subTotalNetWithDiscounts":
+			out.Values[i] = ec._Commerce_Cart_Delivery_subTotalNetWithDiscounts(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "hasItems":
+			out.Values[i] = ec._Commerce_Cart_Delivery_hasItems(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var commerce_Cart_DeliveryAddressFormImplementors = []string{"Commerce_Cart_DeliveryAddressForm"}
 
 func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm(ctx context.Context, sel ast.SelectionSet, obj *dto.DeliveryAddressForm) graphql.Marshaler {
@@ -26559,6 +26552,132 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm(ctx context.Conte
 			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_validationInfo(ctx, field, obj)
 		case "processed":
 			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_processed(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Cart_DeliveryInfoImplementors = []string{"Commerce_Cart_DeliveryInfo"}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryInfo(ctx context.Context, sel ast.SelectionSet, obj *cart.DeliveryInfo) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_DeliveryInfoImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_DeliveryInfo")
+		case "code":
+			out.Values[i] = ec._Commerce_Cart_DeliveryInfo_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "workflow":
+			out.Values[i] = ec._Commerce_Cart_DeliveryInfo_workflow(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "method":
+			out.Values[i] = ec._Commerce_Cart_DeliveryInfo_method(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "carrier":
+			out.Values[i] = ec._Commerce_Cart_DeliveryInfo_carrier(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "deliveryLocation":
+			out.Values[i] = ec._Commerce_Cart_DeliveryInfo_deliveryLocation(ctx, field, obj)
+		case "desiredTime":
+			out.Values[i] = ec._Commerce_Cart_DeliveryInfo_desiredTime(ctx, field, obj)
+		case "additionalData":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Commerce_Cart_DeliveryInfo_additionalData(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Cart_DeliveryLocationImplementors = []string{"Commerce_Cart_DeliveryLocation"}
+
+func (ec *executionContext) _Commerce_Cart_DeliveryLocation(ctx context.Context, sel ast.SelectionSet, obj *cart.DeliveryLocation) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_DeliveryLocationImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_DeliveryLocation")
+		case "type":
+			out.Values[i] = ec._Commerce_Cart_DeliveryLocation_type(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "address":
+			out.Values[i] = ec._Commerce_Cart_DeliveryLocation_address(ctx, field, obj)
+		case "useBillingAddress":
+			out.Values[i] = ec._Commerce_Cart_DeliveryLocation_useBillingAddress(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "code":
+			out.Values[i] = ec._Commerce_Cart_DeliveryLocation_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Cart_ExistingCustomerDataImplementors = []string{"Commerce_Cart_ExistingCustomerData"}
+
+func (ec *executionContext) _Commerce_Cart_ExistingCustomerData(ctx context.Context, sel ast.SelectionSet, obj *cart.ExistingCustomerData) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_ExistingCustomerDataImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_ExistingCustomerData")
+		case "id":
+			out.Values[i] = ec._Commerce_Cart_ExistingCustomerData_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -26665,6 +26784,105 @@ func (ec *executionContext) _Commerce_Cart_Form_ValidationInfo(ctx context.Conte
 	return out
 }
 
+var commerce_Cart_ItemImplementors = []string{"Commerce_Cart_Item"}
+
+func (ec *executionContext) _Commerce_Cart_Item(ctx context.Context, sel ast.SelectionSet, obj *cart.Item) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_ItemImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_Item")
+		case "id":
+			out.Values[i] = ec._Commerce_Cart_Item_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "externalReference":
+			out.Values[i] = ec._Commerce_Cart_Item_externalReference(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "marketplaceCode":
+			out.Values[i] = ec._Commerce_Cart_Item_marketplaceCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "variantMarketPlaceCode":
+			out.Values[i] = ec._Commerce_Cart_Item_variantMarketPlaceCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "productName":
+			out.Values[i] = ec._Commerce_Cart_Item_productName(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "sourceID":
+			out.Values[i] = ec._Commerce_Cart_Item_sourceID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "qty":
+			out.Values[i] = ec._Commerce_Cart_Item_qty(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "additionalDataKeys":
+			out.Values[i] = ec._Commerce_Cart_Item_additionalDataKeys(ctx, field, obj)
+		case "additionalDataValues":
+			out.Values[i] = ec._Commerce_Cart_Item_additionalDataValues(ctx, field, obj)
+		case "getAdditionalData":
+			out.Values[i] = ec._Commerce_Cart_Item_getAdditionalData(ctx, field, obj)
+		case "hasAdditionalDataKey":
+			out.Values[i] = ec._Commerce_Cart_Item_hasAdditionalDataKey(ctx, field, obj)
+		case "singlePriceGross":
+			out.Values[i] = ec._Commerce_Cart_Item_singlePriceGross(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "singlePriceNet":
+			out.Values[i] = ec._Commerce_Cart_Item_singlePriceNet(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "rowPriceGross":
+			out.Values[i] = ec._Commerce_Cart_Item_rowPriceGross(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "rowPriceNet":
+			out.Values[i] = ec._Commerce_Cart_Item_rowPriceNet(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "appliedDiscounts":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Commerce_Cart_Item_appliedDiscounts(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var commerce_Cart_ItemValidationErrorImplementors = []string{"Commerce_Cart_ItemValidationError"}
 
 func (ec *executionContext) _Commerce_Cart_ItemValidationError(ctx context.Context, sel ast.SelectionSet, obj *validation.ItemValidationError) graphql.Marshaler {
@@ -26683,6 +26901,38 @@ func (ec *executionContext) _Commerce_Cart_ItemValidationError(ctx context.Conte
 			}
 		case "errorMessageKey":
 			out.Values[i] = ec._Commerce_Cart_ItemValidationError_errorMessageKey(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Cart_KeyValueImplementors = []string{"Commerce_Cart_KeyValue"}
+
+func (ec *executionContext) _Commerce_Cart_KeyValue(ctx context.Context, sel ast.SelectionSet, obj *dto.KeyValue) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_KeyValueImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_KeyValue")
+		case "key":
+			out.Values[i] = ec._Commerce_Cart_KeyValue_key(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "value":
+			out.Values[i] = ec._Commerce_Cart_KeyValue_value(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -26752,6 +27002,79 @@ func (ec *executionContext) _Commerce_Cart_PaymentSelection_SplitQualifier(ctx c
 			}
 		case "reference":
 			out.Values[i] = ec._Commerce_Cart_PaymentSelection_SplitQualifier_reference(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Cart_PersonImplementors = []string{"Commerce_Cart_Person"}
+
+func (ec *executionContext) _Commerce_Cart_Person(ctx context.Context, sel ast.SelectionSet, obj *cart.Person) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_PersonImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_Person")
+		case "address":
+			out.Values[i] = ec._Commerce_Cart_Person_address(ctx, field, obj)
+		case "personalDetails":
+			out.Values[i] = ec._Commerce_Cart_Person_personalDetails(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "existingCustomerData":
+			out.Values[i] = ec._Commerce_Cart_Person_existingCustomerData(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Cart_PersonalDetailsImplementors = []string{"Commerce_Cart_PersonalDetails"}
+
+func (ec *executionContext) _Commerce_Cart_PersonalDetails(ctx context.Context, sel ast.SelectionSet, obj *cart.PersonalDetails) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_PersonalDetailsImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_PersonalDetails")
+		case "dateOfBirth":
+			out.Values[i] = ec._Commerce_Cart_PersonalDetails_dateOfBirth(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "passportCountry":
+			out.Values[i] = ec._Commerce_Cart_PersonalDetails_passportCountry(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "passportNumber":
+			out.Values[i] = ec._Commerce_Cart_PersonalDetails_passportNumber(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "nationality":
+			out.Values[i] = ec._Commerce_Cart_PersonalDetails_nationality(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -26990,6 +27313,61 @@ func (ec *executionContext) _Commerce_Cart_SelectedPaymentResult(ctx context.Con
 	return out
 }
 
+var commerce_Cart_ShippingItemImplementors = []string{"Commerce_Cart_ShippingItem"}
+
+func (ec *executionContext) _Commerce_Cart_ShippingItem(ctx context.Context, sel ast.SelectionSet, obj *cart.ShippingItem) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_ShippingItemImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_ShippingItem")
+		case "title":
+			out.Values[i] = ec._Commerce_Cart_ShippingItem_title(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "priceNet":
+			out.Values[i] = ec._Commerce_Cart_ShippingItem_priceNet(ctx, field, obj)
+		case "taxAmount":
+			out.Values[i] = ec._Commerce_Cart_ShippingItem_taxAmount(ctx, field, obj)
+		case "appliedDiscounts":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Commerce_Cart_ShippingItem_appliedDiscounts(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "totalWithDiscountInclTax":
+			out.Values[i] = ec._Commerce_Cart_ShippingItem_totalWithDiscountInclTax(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "tax":
+			out.Values[i] = ec._Commerce_Cart_ShippingItem_tax(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var commerce_Cart_SummaryImplementors = []string{"Commerce_Cart_Summary"}
 
 func (ec *executionContext) _Commerce_Cart_Summary(ctx context.Context, sel ast.SelectionSet, obj *dto.CartSummary) graphql.Marshaler {
@@ -27117,6 +27495,48 @@ func (ec *executionContext) _Commerce_Cart_Teaser(ctx context.Context, sel ast.S
 			out.Values[i] = ec._Commerce_Cart_Teaser_ItemCount(ctx, field, obj)
 		case "DeliveryCodes":
 			out.Values[i] = ec._Commerce_Cart_Teaser_DeliveryCodes(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Cart_TotalitemImplementors = []string{"Commerce_Cart_Totalitem"}
+
+func (ec *executionContext) _Commerce_Cart_Totalitem(ctx context.Context, sel ast.SelectionSet, obj *cart.Totalitem) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_TotalitemImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_Totalitem")
+		case "code":
+			out.Values[i] = ec._Commerce_Cart_Totalitem_code(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "title":
+			out.Values[i] = ec._Commerce_Cart_Totalitem_title(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "price":
+			out.Values[i] = ec._Commerce_Cart_Totalitem_price(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "type":
+			out.Values[i] = ec._Commerce_Cart_Totalitem_type(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -28229,47 +28649,6 @@ func (ec *executionContext) _Commerce_Customer_Status_Result(ctx context.Context
 			}
 		case "userID":
 			out.Values[i] = ec._Commerce_Customer_Status_Result_userID(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var commerce_DecoratedCartImplementors = []string{"Commerce_DecoratedCart"}
-
-func (ec *executionContext) _Commerce_DecoratedCart(ctx context.Context, sel ast.SelectionSet, obj *dto.DecoratedCart) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_DecoratedCartImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_DecoratedCart")
-		case "cart":
-			out.Values[i] = ec._Commerce_DecoratedCart_cart(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "decoratedDeliveries":
-			out.Values[i] = ec._Commerce_DecoratedCart_decoratedDeliveries(ctx, field, obj)
-		case "getDecoratedDeliveryByCode":
-			out.Values[i] = ec._Commerce_DecoratedCart_getDecoratedDeliveryByCode(ctx, field, obj)
-		case "getAllPaymentRequiredItems":
-			out.Values[i] = ec._Commerce_DecoratedCart_getAllPaymentRequiredItems(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "cartSummary":
-			out.Values[i] = ec._Commerce_DecoratedCart_cartSummary(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -29906,23 +30285,23 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = graphql.MarshalString("Mutation")
 		case "flamingo":
 			out.Values[i] = ec._Mutation_flamingo(ctx, field)
-		case "Commerce_AddToCart":
-			out.Values[i] = ec._Mutation_Commerce_AddToCart(ctx, field)
+		case "Commerce_Cart_AddToCart":
+			out.Values[i] = ec._Mutation_Commerce_Cart_AddToCart(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "Commerce_DeleteCartDelivery":
-			out.Values[i] = ec._Mutation_Commerce_DeleteCartDelivery(ctx, field)
+		case "Commerce_Cart_DeleteCartDelivery":
+			out.Values[i] = ec._Mutation_Commerce_Cart_DeleteCartDelivery(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "Commerce_DeleteItem":
-			out.Values[i] = ec._Mutation_Commerce_DeleteItem(ctx, field)
+		case "Commerce_Cart_DeleteItem":
+			out.Values[i] = ec._Mutation_Commerce_Cart_DeleteItem(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "Commerce_UpdateItemQty":
-			out.Values[i] = ec._Mutation_Commerce_UpdateItemQty(ctx, field)
+		case "Commerce_Cart_UpdateItemQty":
+			out.Values[i] = ec._Mutation_Commerce_Cart_UpdateItemQty(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -29954,6 +30333,16 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "Commerce_Cart_Clean":
 			out.Values[i] = ec._Mutation_Commerce_Cart_Clean(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "Commerce_Cart_UpdateAdditionalData":
+			out.Values[i] = ec._Mutation_Commerce_Cart_UpdateAdditionalData(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "Commerce_Cart_UpdateDeliveriesAdditionalData":
+			out.Values[i] = ec._Mutation_Commerce_Cart_UpdateDeliveriesAdditionalData(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -30066,7 +30455,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				res = ec._Query_Commerce_Customer(ctx, field)
 				return res
 			})
-		case "Commerce_Cart":
+		case "Commerce_Cart_DecoratedCart":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -30074,7 +30463,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_Commerce_Cart(ctx, field)
+				res = ec._Query_Commerce_Cart_DecoratedCart(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -30436,82 +30825,30 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNCommerce_Cart2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐCart(ctx context.Context, sel ast.SelectionSet, v cart.Cart) graphql.Marshaler {
-	return ec._Commerce_Cart(ctx, sel, &v)
+func (ec *executionContext) marshalNCommerce_Cart_AdditionalData2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAdditionalData(ctx context.Context, sel ast.SelectionSet, v cart.AdditionalData) graphql.Marshaler {
+	return ec._Commerce_Cart_AdditionalData(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_CartAdditionalData2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAdditionalData(ctx context.Context, sel ast.SelectionSet, v cart.AdditionalData) graphql.Marshaler {
-	return ec._Commerce_CartAdditionalData(ctx, sel, &v)
+func (ec *executionContext) marshalNCommerce_Cart_AppliedDiscount2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAppliedDiscount(ctx context.Context, sel ast.SelectionSet, v cart.AppliedDiscount) graphql.Marshaler {
+	return ec._Commerce_Cart_AppliedDiscount(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_CartAppliedDiscount2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAppliedDiscount(ctx context.Context, sel ast.SelectionSet, v cart.AppliedDiscount) graphql.Marshaler {
-	return ec._Commerce_CartAppliedDiscount(ctx, sel, &v)
+func (ec *executionContext) marshalNCommerce_Cart_AppliedDiscounts2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCartAppliedDiscounts(ctx context.Context, sel ast.SelectionSet, v dto.CartAppliedDiscounts) graphql.Marshaler {
+	return ec._Commerce_Cart_AppliedDiscounts(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_CartAppliedDiscounts2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCartAppliedDiscounts(ctx context.Context, sel ast.SelectionSet, v dto.CartAppliedDiscounts) graphql.Marshaler {
-	return ec._Commerce_CartAppliedDiscounts(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNCommerce_CartAppliedDiscounts2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCartAppliedDiscounts(ctx context.Context, sel ast.SelectionSet, v *dto.CartAppliedDiscounts) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Cart_AppliedDiscounts2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCartAppliedDiscounts(ctx context.Context, sel ast.SelectionSet, v *dto.CartAppliedDiscounts) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
 		}
 		return graphql.Null
 	}
-	return ec._Commerce_CartAppliedDiscounts(ctx, sel, v)
+	return ec._Commerce_Cart_AppliedDiscounts(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNCommerce_CartAppliedGiftCard2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAppliedGiftCard(ctx context.Context, sel ast.SelectionSet, v cart.AppliedGiftCard) graphql.Marshaler {
-	return ec._Commerce_CartAppliedGiftCard(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNCommerce_CartCouponCode2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐCouponCode(ctx context.Context, sel ast.SelectionSet, v cart.CouponCode) graphql.Marshaler {
-	return ec._Commerce_CartCouponCode(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNCommerce_CartDecoratedDelivery2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedDelivery(ctx context.Context, sel ast.SelectionSet, v dto.DecoratedDelivery) graphql.Marshaler {
-	return ec._Commerce_CartDecoratedDelivery(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNCommerce_CartDecoratedItem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCartItem(ctx context.Context, sel ast.SelectionSet, v dto.DecoratedCartItem) graphql.Marshaler {
-	return ec._Commerce_CartDecoratedItem(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNCommerce_CartDelivery2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDelivery(ctx context.Context, sel ast.SelectionSet, v cart.Delivery) graphql.Marshaler {
-	return ec._Commerce_CartDelivery(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNCommerce_CartDelivery2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDelivery(ctx context.Context, sel ast.SelectionSet, v *cart.Delivery) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._Commerce_CartDelivery(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNCommerce_CartItem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐItem(ctx context.Context, sel ast.SelectionSet, v cart.Item) graphql.Marshaler {
-	return ec._Commerce_CartItem(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNCommerce_CartItem2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐItem(ctx context.Context, sel ast.SelectionSet, v *cart.Item) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._Commerce_CartItem(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNCommerce_CartPersonalDetails2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐPersonalDetails(ctx context.Context, sel ast.SelectionSet, v cart.PersonalDetails) graphql.Marshaler {
-	return ec._Commerce_CartPersonalDetails(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNCommerce_CartTotalitem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐTotalitem(ctx context.Context, sel ast.SelectionSet, v cart.Totalitem) graphql.Marshaler {
-	return ec._Commerce_CartTotalitem(ctx, sel, &v)
+func (ec *executionContext) marshalNCommerce_Cart_AppliedGiftCard2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAppliedGiftCard(ctx context.Context, sel ast.SelectionSet, v cart.AppliedGiftCard) graphql.Marshaler {
+	return ec._Commerce_Cart_AppliedGiftCard(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNCommerce_Cart_BillingAddressForm2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐBillingAddressForm(ctx context.Context, sel ast.SelectionSet, v dto.BillingAddressForm) graphql.Marshaler {
@@ -30526,6 +30863,95 @@ func (ec *executionContext) marshalNCommerce_Cart_BillingAddressForm2ᚖflamingo
 		return graphql.Null
 	}
 	return ec._Commerce_Cart_BillingAddressForm(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNCommerce_Cart_Cart2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐCart(ctx context.Context, sel ast.SelectionSet, v cart.Cart) graphql.Marshaler {
+	return ec._Commerce_Cart_Cart(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Cart_CouponCode2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐCouponCode(ctx context.Context, sel ast.SelectionSet, v cart.CouponCode) graphql.Marshaler {
+	return ec._Commerce_Cart_CouponCode(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Cart_CustomAttributes2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCustomAttributes(ctx context.Context, sel ast.SelectionSet, v dto.CustomAttributes) graphql.Marshaler {
+	return ec._Commerce_Cart_CustomAttributes(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Cart_CustomAttributes2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCustomAttributes(ctx context.Context, sel ast.SelectionSet, v *dto.CustomAttributes) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Commerce_Cart_CustomAttributes(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNCommerce_Cart_DecoratedCart2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx context.Context, sel ast.SelectionSet, v dto.DecoratedCart) graphql.Marshaler {
+	return ec._Commerce_Cart_DecoratedCart(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Cart_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx context.Context, sel ast.SelectionSet, v *dto.DecoratedCart) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Commerce_Cart_DecoratedCart(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNCommerce_Cart_DecoratedDelivery2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedDelivery(ctx context.Context, sel ast.SelectionSet, v dto.DecoratedDelivery) graphql.Marshaler {
+	return ec._Commerce_Cart_DecoratedDelivery(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Cart_DecoratedItem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCartItem(ctx context.Context, sel ast.SelectionSet, v dto.DecoratedCartItem) graphql.Marshaler {
+	return ec._Commerce_Cart_DecoratedItem(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Cart_Delivery2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDelivery(ctx context.Context, sel ast.SelectionSet, v cart.Delivery) graphql.Marshaler {
+	return ec._Commerce_Cart_Delivery(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Cart_Delivery2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDelivery(ctx context.Context, sel ast.SelectionSet, v *cart.Delivery) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Commerce_Cart_Delivery(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalData(ctx context.Context, v interface{}) (dto.DeliveryAdditionalData, error) {
+	res, err := ec.unmarshalInputCommerce_Cart_DeliveryAdditionalDataInput(ctx, v)
+	return res, graphql.WrapErrorWithInputPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalDataᚄ(ctx context.Context, v interface{}) ([]*dto.DeliveryAdditionalData, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*dto.DeliveryAdditionalData, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithIndex(i))
+		res[i], err = ec.unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalData(ctx, vSlice[i])
+		if err != nil {
+			return nil, graphql.WrapErrorWithInputPath(ctx, err)
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalData(ctx context.Context, v interface{}) (*dto.DeliveryAdditionalData, error) {
+	res, err := ec.unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalData(ctx, v)
+	return &res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNCommerce_Cart_DeliveryAddressForm2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAddressForm(ctx context.Context, sel ast.SelectionSet, v []*dto.DeliveryAddressForm) graphql.Marshaler {
@@ -30575,13 +31001,13 @@ func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAddressInput2ᚖflam
 	return &res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryShippingOption2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryShippingOption(ctx context.Context, v interface{}) (dto.DeliveryShippingOption, error) {
-	res, err := ec.unmarshalInputCommerce_Cart_DeliveryShippingOption(ctx, v)
+func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryShippingOptionInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryShippingOption(ctx context.Context, v interface{}) (dto.DeliveryShippingOption, error) {
+	res, err := ec.unmarshalInputCommerce_Cart_DeliveryShippingOptionInput(ctx, v)
 	return res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryShippingOption2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryShippingOption(ctx context.Context, v interface{}) (*dto.DeliveryShippingOption, error) {
-	res, err := ec.unmarshalNCommerce_Cart_DeliveryShippingOption2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryShippingOption(ctx, v)
+func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryShippingOptionInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryShippingOption(ctx context.Context, v interface{}) (*dto.DeliveryShippingOption, error) {
+	res, err := ec.unmarshalNCommerce_Cart_DeliveryShippingOptionInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryShippingOption(ctx, v)
 	return &res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
@@ -30593,8 +31019,74 @@ func (ec *executionContext) marshalNCommerce_Cart_Form_FieldError2flamingoᚗme�
 	return ec._Commerce_Cart_Form_FieldError(ctx, sel, &v)
 }
 
+func (ec *executionContext) marshalNCommerce_Cart_Item2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐItem(ctx context.Context, sel ast.SelectionSet, v cart.Item) graphql.Marshaler {
+	return ec._Commerce_Cart_Item(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Cart_Item2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐItem(ctx context.Context, sel ast.SelectionSet, v *cart.Item) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Commerce_Cart_Item(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNCommerce_Cart_ItemValidationError2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐItemValidationError(ctx context.Context, sel ast.SelectionSet, v validation.ItemValidationError) graphql.Marshaler {
 	return ec._Commerce_Cart_ItemValidationError(ctx, sel, &v)
+}
+
+func (ec *executionContext) unmarshalNCommerce_Cart_KeyValueInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx context.Context, v interface{}) (dto.KeyValue, error) {
+	res, err := ec.unmarshalInputCommerce_Cart_KeyValueInput(ctx, v)
+	return res, graphql.WrapErrorWithInputPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCommerce_Cart_KeyValueInput2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValueᚄ(ctx context.Context, v interface{}) ([]dto.KeyValue, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]dto.KeyValue, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithIndex(i))
+		res[i], err = ec.unmarshalNCommerce_Cart_KeyValueInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx, vSlice[i])
+		if err != nil {
+			return nil, graphql.WrapErrorWithInputPath(ctx, err)
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalNCommerce_Cart_KeyValueInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValueᚄ(ctx context.Context, v interface{}) ([]*dto.KeyValue, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*dto.KeyValue, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithIndex(i))
+		res[i], err = ec.unmarshalNCommerce_Cart_KeyValueInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx, vSlice[i])
+		if err != nil {
+			return nil, graphql.WrapErrorWithInputPath(ctx, err)
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalNCommerce_Cart_KeyValueInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx context.Context, v interface{}) (*dto.KeyValue, error) {
+	res, err := ec.unmarshalNCommerce_Cart_KeyValueInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx, v)
+	return &res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNCommerce_Cart_PaymentSelection_Split2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐPaymentSelectionSplit(ctx context.Context, sel ast.SelectionSet, v dto.PaymentSelectionSplit) graphql.Marshaler {
@@ -30613,6 +31105,10 @@ func (ec *executionContext) marshalNCommerce_Cart_PaymentSelection_Split2ᚖflam
 
 func (ec *executionContext) marshalNCommerce_Cart_PaymentSelection_SplitQualifier2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐSplitQualifier(ctx context.Context, sel ast.SelectionSet, v cart.SplitQualifier) graphql.Marshaler {
 	return ec._Commerce_Cart_PaymentSelection_SplitQualifier(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Cart_PersonalDetails2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐPersonalDetails(ctx context.Context, sel ast.SelectionSet, v cart.PersonalDetails) graphql.Marshaler {
+	return ec._Commerce_Cart_PersonalDetails(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNCommerce_Cart_PlacedOrderInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋplaceorderᚐPlacedOrderInfo(ctx context.Context, sel ast.SelectionSet, v placeorder.PlacedOrderInfo) graphql.Marshaler {
@@ -30720,6 +31216,10 @@ func (ec *executionContext) marshalNCommerce_Cart_Teaser2ᚖflamingoᚗmeᚋflam
 		return graphql.Null
 	}
 	return ec._Commerce_Cart_Teaser(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNCommerce_Cart_Totalitem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐTotalitem(ctx context.Context, sel ast.SelectionSet, v cart.Totalitem) graphql.Marshaler {
+	return ec._Commerce_Cart_Totalitem(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNCommerce_Cart_ValidationResult2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐResult(ctx context.Context, sel ast.SelectionSet, v validation.Result) graphql.Marshaler {
@@ -30830,20 +31330,6 @@ func (ec *executionContext) marshalNCommerce_Customer_Address2flamingoᚗmeᚋfl
 
 func (ec *executionContext) marshalNCommerce_Customer_PersonData2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋdomainᚐPersonData(ctx context.Context, sel ast.SelectionSet, v domain4.PersonData) graphql.Marshaler {
 	return ec._Commerce_Customer_PersonData(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNCommerce_DecoratedCart2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx context.Context, sel ast.SelectionSet, v dto.DecoratedCart) graphql.Marshaler {
-	return ec._Commerce_DecoratedCart(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNCommerce_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx context.Context, sel ast.SelectionSet, v *dto.DecoratedCart) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	return ec._Commerce_DecoratedCart(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx context.Context, sel ast.SelectionSet, v domain.Price) graphql.Marshaler {
@@ -31548,395 +32034,15 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return ec.marshalOBoolean2bool(ctx, sel, *v)
 }
 
-func (ec *executionContext) marshalOCommerce_CartAddress2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAddress(ctx context.Context, sel ast.SelectionSet, v cart.Address) graphql.Marshaler {
-	return ec._Commerce_CartAddress(ctx, sel, &v)
+func (ec *executionContext) marshalOCommerce_Cart_Address2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAddress(ctx context.Context, sel ast.SelectionSet, v cart.Address) graphql.Marshaler {
+	return ec._Commerce_Cart_Address(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalOCommerce_CartAddress2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAddress(ctx context.Context, sel ast.SelectionSet, v *cart.Address) graphql.Marshaler {
+func (ec *executionContext) marshalOCommerce_Cart_Address2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAddress(ctx context.Context, sel ast.SelectionSet, v *cart.Address) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	return ec._Commerce_CartAddress(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOCommerce_CartAppliedDiscount2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAppliedDiscountᚄ(ctx context.Context, sel ast.SelectionSet, v []cart.AppliedDiscount) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNCommerce_CartAppliedDiscount2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAppliedDiscount(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
-}
-
-func (ec *executionContext) marshalOCommerce_CartAppliedGiftCard2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAppliedGiftCardᚄ(ctx context.Context, sel ast.SelectionSet, v []cart.AppliedGiftCard) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNCommerce_CartAppliedGiftCard2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAppliedGiftCard(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
-}
-
-func (ec *executionContext) marshalOCommerce_CartCouponCode2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐCouponCodeᚄ(ctx context.Context, sel ast.SelectionSet, v []cart.CouponCode) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNCommerce_CartCouponCode2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐCouponCode(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
-}
-
-func (ec *executionContext) marshalOCommerce_CartDecoratedDelivery2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedDelivery(ctx context.Context, sel ast.SelectionSet, v dto.DecoratedDelivery) graphql.Marshaler {
-	return ec._Commerce_CartDecoratedDelivery(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalOCommerce_CartDecoratedDelivery2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedDeliveryᚄ(ctx context.Context, sel ast.SelectionSet, v []dto.DecoratedDelivery) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNCommerce_CartDecoratedDelivery2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedDelivery(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
-}
-
-func (ec *executionContext) marshalOCommerce_CartDecoratedDelivery2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedDelivery(ctx context.Context, sel ast.SelectionSet, v *dto.DecoratedDelivery) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Commerce_CartDecoratedDelivery(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOCommerce_CartDecoratedItem2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCartItemᚄ(ctx context.Context, sel ast.SelectionSet, v []dto.DecoratedCartItem) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNCommerce_CartDecoratedItem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCartItem(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
-}
-
-func (ec *executionContext) marshalOCommerce_CartDelivery2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDelivery(ctx context.Context, sel ast.SelectionSet, v cart.Delivery) graphql.Marshaler {
-	return ec._Commerce_CartDelivery(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalOCommerce_CartDelivery2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDeliveryᚄ(ctx context.Context, sel ast.SelectionSet, v []cart.Delivery) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNCommerce_CartDelivery2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDelivery(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
-}
-
-func (ec *executionContext) marshalOCommerce_CartDelivery2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDelivery(ctx context.Context, sel ast.SelectionSet, v *cart.Delivery) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Commerce_CartDelivery(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOCommerce_CartDeliveryInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDeliveryInfo(ctx context.Context, sel ast.SelectionSet, v cart.DeliveryInfo) graphql.Marshaler {
-	return ec._Commerce_CartDeliveryInfo(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalOCommerce_CartDeliveryLocation2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDeliveryLocation(ctx context.Context, sel ast.SelectionSet, v cart.DeliveryLocation) graphql.Marshaler {
-	return ec._Commerce_CartDeliveryLocation(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalOCommerce_CartExistingCustomerData2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐExistingCustomerData(ctx context.Context, sel ast.SelectionSet, v cart.ExistingCustomerData) graphql.Marshaler {
-	return ec._Commerce_CartExistingCustomerData(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalOCommerce_CartExistingCustomerData2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐExistingCustomerData(ctx context.Context, sel ast.SelectionSet, v *cart.ExistingCustomerData) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Commerce_CartExistingCustomerData(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOCommerce_CartItem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐItem(ctx context.Context, sel ast.SelectionSet, v cart.Item) graphql.Marshaler {
-	return ec._Commerce_CartItem(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalOCommerce_CartItem2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐItemᚄ(ctx context.Context, sel ast.SelectionSet, v []cart.Item) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNCommerce_CartItem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐItem(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
-}
-
-func (ec *executionContext) marshalOCommerce_CartPerson2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐPerson(ctx context.Context, sel ast.SelectionSet, v cart.Person) graphql.Marshaler {
-	return ec._Commerce_CartPerson(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalOCommerce_CartPerson2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐPerson(ctx context.Context, sel ast.SelectionSet, v *cart.Person) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Commerce_CartPerson(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOCommerce_CartShippingItem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐShippingItem(ctx context.Context, sel ast.SelectionSet, v cart.ShippingItem) graphql.Marshaler {
-	return ec._Commerce_CartShippingItem(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalOCommerce_CartTotalitem2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐTotalitemᚄ(ctx context.Context, sel ast.SelectionSet, v []cart.Totalitem) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNCommerce_CartTotalitem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐTotalitem(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
+	return ec._Commerce_Cart_Address(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOCommerce_Cart_AddressForm2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐAddressForm(ctx context.Context, sel ast.SelectionSet, v forms.AddressForm) graphql.Marshaler {
@@ -31954,6 +32060,279 @@ func (ec *executionContext) unmarshalOCommerce_Cart_AddressFormInput2ᚖflamingo
 	}
 	res, err := ec.unmarshalOCommerce_Cart_AddressFormInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐAddressForm(ctx, v)
 	return &res, graphql.WrapErrorWithInputPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_AppliedDiscount2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAppliedDiscountᚄ(ctx context.Context, sel ast.SelectionSet, v []cart.AppliedDiscount) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCommerce_Cart_AppliedDiscount2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAppliedDiscount(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_AppliedGiftCard2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAppliedGiftCardᚄ(ctx context.Context, sel ast.SelectionSet, v []cart.AppliedGiftCard) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCommerce_Cart_AppliedGiftCard2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAppliedGiftCard(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_CouponCode2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐCouponCodeᚄ(ctx context.Context, sel ast.SelectionSet, v []cart.CouponCode) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCommerce_Cart_CouponCode2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐCouponCode(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_DecoratedCart2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx context.Context, sel ast.SelectionSet, v dto.DecoratedCart) graphql.Marshaler {
+	return ec._Commerce_Cart_DecoratedCart(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx context.Context, sel ast.SelectionSet, v *dto.DecoratedCart) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Commerce_Cart_DecoratedCart(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_DecoratedDelivery2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedDelivery(ctx context.Context, sel ast.SelectionSet, v dto.DecoratedDelivery) graphql.Marshaler {
+	return ec._Commerce_Cart_DecoratedDelivery(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_DecoratedDelivery2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedDeliveryᚄ(ctx context.Context, sel ast.SelectionSet, v []dto.DecoratedDelivery) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCommerce_Cart_DecoratedDelivery2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedDelivery(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_DecoratedDelivery2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedDelivery(ctx context.Context, sel ast.SelectionSet, v *dto.DecoratedDelivery) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Commerce_Cart_DecoratedDelivery(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_DecoratedItem2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCartItemᚄ(ctx context.Context, sel ast.SelectionSet, v []dto.DecoratedCartItem) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCommerce_Cart_DecoratedItem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCartItem(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_Delivery2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDelivery(ctx context.Context, sel ast.SelectionSet, v cart.Delivery) graphql.Marshaler {
+	return ec._Commerce_Cart_Delivery(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_Delivery2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDeliveryᚄ(ctx context.Context, sel ast.SelectionSet, v []cart.Delivery) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCommerce_Cart_Delivery2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDelivery(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_Delivery2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDelivery(ctx context.Context, sel ast.SelectionSet, v *cart.Delivery) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Commerce_Cart_Delivery(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOCommerce_Cart_DeliveryAddressForm2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAddressForm(ctx context.Context, sel ast.SelectionSet, v dto.DeliveryAddressForm) graphql.Marshaler {
@@ -31991,7 +32370,15 @@ func (ec *executionContext) unmarshalOCommerce_Cart_DeliveryAddressInput2ᚕᚖf
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalOCommerce_Cart_DeliveryShippingOption2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryShippingOptionᚄ(ctx context.Context, v interface{}) ([]*dto.DeliveryShippingOption, error) {
+func (ec *executionContext) marshalOCommerce_Cart_DeliveryInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDeliveryInfo(ctx context.Context, sel ast.SelectionSet, v cart.DeliveryInfo) graphql.Marshaler {
+	return ec._Commerce_Cart_DeliveryInfo(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_DeliveryLocation2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDeliveryLocation(ctx context.Context, sel ast.SelectionSet, v cart.DeliveryLocation) graphql.Marshaler {
+	return ec._Commerce_Cart_DeliveryLocation(ctx, sel, &v)
+}
+
+func (ec *executionContext) unmarshalOCommerce_Cart_DeliveryShippingOptionInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryShippingOptionᚄ(ctx context.Context, v interface{}) ([]*dto.DeliveryShippingOption, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -32007,12 +32394,23 @@ func (ec *executionContext) unmarshalOCommerce_Cart_DeliveryShippingOption2ᚕ�
 	res := make([]*dto.DeliveryShippingOption, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithIndex(i))
-		res[i], err = ec.unmarshalNCommerce_Cart_DeliveryShippingOption2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryShippingOption(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNCommerce_Cart_DeliveryShippingOptionInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryShippingOption(ctx, vSlice[i])
 		if err != nil {
 			return nil, graphql.WrapErrorWithInputPath(ctx, err)
 		}
 	}
 	return res, nil
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_ExistingCustomerData2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐExistingCustomerData(ctx context.Context, sel ast.SelectionSet, v cart.ExistingCustomerData) graphql.Marshaler {
+	return ec._Commerce_Cart_ExistingCustomerData(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_ExistingCustomerData2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐExistingCustomerData(ctx context.Context, sel ast.SelectionSet, v *cart.ExistingCustomerData) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Commerce_Cart_ExistingCustomerData(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOCommerce_Cart_Form_Error2ᚕflamingoᚗmeᚋformᚋdomainᚐErrorᚄ(ctx context.Context, sel ast.SelectionSet, v []domain3.Error) graphql.Marshaler {
@@ -32099,6 +32497,50 @@ func (ec *executionContext) marshalOCommerce_Cart_Form_ValidationInfo2flamingo�
 	return ec._Commerce_Cart_Form_ValidationInfo(ctx, sel, &v)
 }
 
+func (ec *executionContext) marshalOCommerce_Cart_Item2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐItem(ctx context.Context, sel ast.SelectionSet, v cart.Item) graphql.Marshaler {
+	return ec._Commerce_Cart_Item(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_Item2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐItemᚄ(ctx context.Context, sel ast.SelectionSet, v []cart.Item) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCommerce_Cart_Item2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐItem(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
 func (ec *executionContext) marshalOCommerce_Cart_ItemValidationError2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐItemValidationErrorᚄ(ctx context.Context, sel ast.SelectionSet, v []validation.ItemValidationError) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -32137,6 +32579,17 @@ func (ec *executionContext) marshalOCommerce_Cart_ItemValidationError2ᚕflaming
 	}
 	wg.Wait()
 	return ret
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_KeyValue2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx context.Context, sel ast.SelectionSet, v dto.KeyValue) graphql.Marshaler {
+	return ec._Commerce_Cart_KeyValue(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_KeyValue2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx context.Context, sel ast.SelectionSet, v *dto.KeyValue) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Commerce_Cart_KeyValue(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOCommerce_Cart_PaymentSelection2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐPaymentSelection(ctx context.Context, sel ast.SelectionSet, v cart.PaymentSelection) graphql.Marshaler {
@@ -32184,6 +32637,17 @@ func (ec *executionContext) marshalOCommerce_Cart_PaymentSelection_Split2ᚕᚖf
 	}
 	wg.Wait()
 	return ret
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_Person2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐPerson(ctx context.Context, sel ast.SelectionSet, v cart.Person) graphql.Marshaler {
+	return ec._Commerce_Cart_Person(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_Person2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐPerson(ctx context.Context, sel ast.SelectionSet, v *cart.Person) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Commerce_Cart_Person(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOCommerce_Cart_PlacedOrderInfo2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋplaceorderᚐPlacedOrderInfoᚄ(ctx context.Context, sel ast.SelectionSet, v []placeorder.PlacedOrderInfo) graphql.Marshaler {
@@ -32346,6 +32810,10 @@ func (ec *executionContext) marshalOCommerce_Cart_PricedTotalItem2ᚕflamingoᚗ
 	return ret
 }
 
+func (ec *executionContext) marshalOCommerce_Cart_ShippingItem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐShippingItem(ctx context.Context, sel ast.SelectionSet, v cart.ShippingItem) graphql.Marshaler {
+	return ec._Commerce_Cart_ShippingItem(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalOCommerce_Cart_Tax2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐTax(ctx context.Context, sel ast.SelectionSet, v cart.Tax) graphql.Marshaler {
 	return ec._Commerce_Cart_Tax(ctx, sel, &v)
 }
@@ -32359,6 +32827,46 @@ func (ec *executionContext) marshalOCommerce_Cart_Taxes2ᚖflamingoᚗmeᚋflami
 		return graphql.Null
 	}
 	return ec._Commerce_Cart_Taxes(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_Totalitem2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐTotalitemᚄ(ctx context.Context, sel ast.SelectionSet, v []cart.Totalitem) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCommerce_Cart_Totalitem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐTotalitem(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
 }
 
 func (ec *executionContext) marshalOCommerce_Category_Attribute2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcategoryᚋdomainᚐAttribute(ctx context.Context, sel ast.SelectionSet, v domain2.Attribute) graphql.Marshaler {
@@ -32625,17 +33133,6 @@ func (ec *executionContext) marshalOCommerce_Customer_Status_Result2ᚖflamingo�
 		return graphql.Null
 	}
 	return ec._Commerce_Customer_Status_Result(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOCommerce_DecoratedCart2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx context.Context, sel ast.SelectionSet, v dto.DecoratedCart) graphql.Marshaler {
-	return ec._Commerce_DecoratedCart(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalOCommerce_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx context.Context, sel ast.SelectionSet, v *dto.DecoratedCart) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Commerce_DecoratedCart(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx context.Context, sel ast.SelectionSet, v domain.Price) graphql.Marshaler {

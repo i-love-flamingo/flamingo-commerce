@@ -25,7 +25,7 @@ func Test_CartSummary(t *testing.T) {
 			gatewayMethod:   "creditcard",
 			marketPlaceCode: "fake_simple_with_fixed_price",
 			expectedState: map[string]interface{}{
-				"Commerce_Cart": map[string]interface{}{
+				"Commerce_Cart_DecoratedCart": map[string]interface{}{
 					"cartSummary": map[string]interface{}{
 						"total": map[string]interface{}{
 							"amount":   10.49,

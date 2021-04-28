@@ -1,5 +1,5 @@
 query {
-    Commerce_Cart {
+    Commerce_Cart_DecoratedCart {
         cartSummary {
             total: sumPaymentSelectionCartSplitValueAmountByMethods(methods: ["###METHOD###"]) {
                 amount

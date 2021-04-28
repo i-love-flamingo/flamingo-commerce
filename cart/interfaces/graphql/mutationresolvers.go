@@ -252,6 +252,40 @@ func (r *CommerceCartMutationResolver) CartClean(ctx context.Context) (bool, err
 	return true, nil
 }
 
+// UpdateAdditionalData of cart
+func (r *CommerceCartMutationResolver) UpdateAdditionalData(ctx context.Context, additionalDataList []*dto.KeyValue) (*dto.DecoratedCart, error) {
+	session := web.SessionFromContext(ctx)
+	additionalDataMap := map[string]string{}
+	for _, additionalData := range additionalDataList {
+		additionalDataMap[additionalData.Key] = additionalData.Value
+	}
+
+	_, err := r.cartService.UpdateAdditionalData(ctx, session, additionalDataMap)
+	if err != nil {
+		return nil, err
+	}
+
+	return r.q.CommerceCart(ctx)
+}
+
+// UpdateDeliveriesAdditionalData of cart
+func (r *CommerceCartMutationResolver) UpdateDeliveriesAdditionalData(ctx context.Context, additionalDataList []*dto.DeliveryAdditionalData) (*dto.DecoratedCart, error) {
+	session := web.SessionFromContext(ctx)
+	for _, additionalData := range additionalDataList {
+		additionalDataMap := map[string]string{}
+		for _, deliveryAdditionalData := range additionalData.AdditionalData {
+			additionalDataMap[deliveryAdditionalData.Key] = deliveryAdditionalData.Value
+		}
+
+		_, err := r.cartService.UpdateDeliveryAdditionalData(ctx, session, additionalData.DeliveryCode, additionalDataMap)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return r.q.CommerceCart(ctx)
+}
+
 func mapCommerceDeliveryAddressForm(form *domain.Form, success bool) (dto.DeliveryAddressForm, error) {
 	formData, ok := form.Data.(cartForms.DeliveryForm)
 	if !ok {
