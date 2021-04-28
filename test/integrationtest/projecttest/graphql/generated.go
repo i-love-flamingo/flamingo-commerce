@@ -301,16 +301,6 @@ type ComplexityRoot struct {
 		ValidationInfo func(childComplexity int) int
 	}
 
-	CommerceCartCustomAttributeBoolean struct {
-		Key   func(childComplexity int) int
-		Value func(childComplexity int) int
-	}
-
-	CommerceCartCustomAttributeString struct {
-		Key   func(childComplexity int) int
-		Value func(childComplexity int) int
-	}
-
 	CommerceCartCustomAttributes struct {
 		Get func(childComplexity int, key string) int
 	}
@@ -351,6 +341,11 @@ type ComplexityRoot struct {
 	CommerceCartItemValidationError struct {
 		ErrorMessageKey func(childComplexity int) int
 		ItemID          func(childComplexity int) int
+	}
+
+	CommerceCartKeyValue struct {
+		Key   func(childComplexity int) int
+		Value func(childComplexity int) int
 	}
 
 	CommerceCartPaymentSelectionSplit struct {
@@ -2250,34 +2245,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCartBillingAddressForm.ValidationInfo(childComplexity), true
 
-	case "Commerce_Cart_CustomAttributeBoolean.key":
-		if e.complexity.CommerceCartCustomAttributeBoolean.Key == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartCustomAttributeBoolean.Key(childComplexity), true
-
-	case "Commerce_Cart_CustomAttributeBoolean.value":
-		if e.complexity.CommerceCartCustomAttributeBoolean.Value == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartCustomAttributeBoolean.Value(childComplexity), true
-
-	case "Commerce_Cart_CustomAttributeString.key":
-		if e.complexity.CommerceCartCustomAttributeString.Key == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartCustomAttributeString.Key(childComplexity), true
-
-	case "Commerce_Cart_CustomAttributeString.value":
-		if e.complexity.CommerceCartCustomAttributeString.Value == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartCustomAttributeString.Value(childComplexity), true
-
 	case "Commerce_Cart_CustomAttributes.get":
 		if e.complexity.CommerceCartCustomAttributes.Get == nil {
 			break
@@ -2429,6 +2396,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceCartItemValidationError.ItemID(childComplexity), true
+
+	case "Commerce_Cart_KeyValue.key":
+		if e.complexity.CommerceCartKeyValue.Key == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartKeyValue.Key(childComplexity), true
+
+	case "Commerce_Cart_KeyValue.value":
+		if e.complexity.CommerceCartKeyValue.Value == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartKeyValue.Value(childComplexity), true
 
 	case "Commerce_Cart_PaymentSelection_Split.charge":
 		if e.complexity.CommerceCartPaymentSelectionSplit.Charge == nil {
@@ -5878,19 +5859,10 @@ type Commerce_CartAdditionalData {
 
 type Commerce_Cart_CustomAttributes {
     "Get specific attribute by key"
-    get(key: String!): Commerce_Cart_CustomAttribute
+    get(key: String!): Commerce_Cart_KeyValue
 }
 
-interface Commerce_Cart_CustomAttribute {
-    key: String!
-}
-
-type Commerce_Cart_CustomAttributeBoolean implements Commerce_Cart_CustomAttribute {
-    key: String!
-    value: Boolean!
-}
-
-type Commerce_Cart_CustomAttributeString implements Commerce_Cart_CustomAttribute {
+type Commerce_Cart_KeyValue {
     key: String!
     value: String!
 }
@@ -6062,14 +6034,14 @@ input Commerce_Cart_DeliveryShippingOption {
     carrier: String!
 }
 
-input Commerce_Cart_KeyValue {
+input Commerce_Cart_KeyValueInput {
     key: String!
     value: String!
 }
 
-input Commerce_Cart_DeliveryAdditionalData {
+input Commerce_Cart_DeliveryAdditionalDataInput {
     deliveryCode: String!
-    additionalData: [Commerce_Cart_KeyValue!]!
+    additionalData: [Commerce_Cart_KeyValueInput!]!
 }
 
 extend type Query {
@@ -6097,9 +6069,9 @@ extend type Mutation {
     "Cleans current cart"
     Commerce_Cart_Clean: Boolean!
     "Adds/Updates additional data for the cart"
-    Commerce_Cart_UpdateAdditionalData(additionalData: [Commerce_Cart_KeyValue!]!): Commerce_DecoratedCart!
+    Commerce_Cart_UpdateAdditionalData(additionalData: [Commerce_Cart_KeyValueInput!]!): Commerce_DecoratedCart!
     "Adds/Updates additional data for the given deliveries"
-    Commerce_Cart_UpdateDeliveriesAdditionalData(data: [Commerce_Cart_DeliveryAdditionalData!]!): Commerce_DecoratedCart!
+    Commerce_Cart_UpdateDeliveriesAdditionalData(data: [Commerce_Cart_DeliveryAdditionalDataInput!]!): Commerce_DecoratedCart!
 }
 `, BuiltIn: false},
 	{Name: "graphql/schema/flamingo.me_flamingo-commerce_v3_checkout_interfaces_graphql-Service.graphql", Input: `type Commerce_Checkout_StartPlaceOrder_Result {
@@ -6847,7 +6819,7 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateAdditionalData_ar
 	var arg0 []*dto.KeyValue
 	if tmp, ok := rawArgs["additionalData"]; ok {
 		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("additionalData"))
-		arg0, err = ec.unmarshalNCommerce_Cart_KeyValue2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValueᚄ(ctx, tmp)
+		arg0, err = ec.unmarshalNCommerce_Cart_KeyValueInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValueᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -6877,7 +6849,7 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveriesAdditio
 	var arg0 []*dto.DeliveryAdditionalData
 	if tmp, ok := rawArgs["data"]; ok {
 		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("data"))
-		arg0, err = ec.unmarshalNCommerce_Cart_DeliveryAdditionalData2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalDataᚄ(ctx, tmp)
+		arg0, err = ec.unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalDataᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -12330,130 +12302,6 @@ func (ec *executionContext) _Commerce_Cart_BillingAddressForm_processed(ctx cont
 	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Cart_CustomAttributeBoolean_key(ctx context.Context, field graphql.CollectedField, obj *dto.CustomAttributeBoolean) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_CustomAttributeBoolean",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Key(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_CustomAttributeBoolean_value(ctx context.Context, field graphql.CollectedField, obj *dto.CustomAttributeBoolean) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_CustomAttributeBoolean",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Value, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	fc.Result = res
-	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_CustomAttributeString_key(ctx context.Context, field graphql.CollectedField, obj *dto.CustomAttributeString) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_CustomAttributeString",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Key(), nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Commerce_Cart_CustomAttributeString_value(ctx context.Context, field graphql.CollectedField, obj *dto.CustomAttributeString) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_CustomAttributeString",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Value, nil
-	})
-
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
 func (ec *executionContext) _Commerce_Cart_CustomAttributes_get(ctx context.Context, field graphql.CollectedField, obj *dto.CustomAttributes) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -12484,9 +12332,9 @@ func (ec *executionContext) _Commerce_Cart_CustomAttributes_get(ctx context.Cont
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(dto.CustomAttribute)
+	res := resTmp.(*dto.KeyValue)
 	fc.Result = res
-	return ec.marshalOCommerce_Cart_CustomAttribute2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCustomAttribute(ctx, field.Selections, res)
+	return ec.marshalOCommerce_Cart_KeyValue2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Cart_DefaultPaymentSelection_gateway(ctx context.Context, field graphql.CollectedField, obj *cart.DefaultPaymentSelection) (ret graphql.Marshaler) {
@@ -13069,6 +12917,68 @@ func (ec *executionContext) _Commerce_Cart_ItemValidationError_errorMessageKey(c
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ErrorMessageKey, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_KeyValue_key(ctx context.Context, field graphql.CollectedField, obj *dto.KeyValue) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_KeyValue",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Key, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_KeyValue_value(ctx context.Context, field graphql.CollectedField, obj *dto.KeyValue) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_KeyValue",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Value, nil
 	})
 
 	if resTmp == nil {
@@ -25215,7 +25125,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAdditionalData(ctx context.Context, obj interface{}) (dto.DeliveryAdditionalData, error) {
+func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAdditionalDataInput(ctx context.Context, obj interface{}) (dto.DeliveryAdditionalData, error) {
 	var it dto.DeliveryAdditionalData
 	var asMap = obj.(map[string]interface{})
 
@@ -25233,7 +25143,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAdditionalData(c
 			var err error
 
 			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("additionalData"))
-			it.AdditionalData, err = ec.unmarshalNCommerce_Cart_KeyValue2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValueᚄ(ctx, v)
+			it.AdditionalData, err = ec.unmarshalNCommerce_Cart_KeyValueInput2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValueᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -25339,7 +25249,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryShippingOption(c
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCommerce_Cart_KeyValue(ctx context.Context, obj interface{}) (dto.KeyValue, error) {
+func (ec *executionContext) unmarshalInputCommerce_Cart_KeyValueInput(ctx context.Context, obj interface{}) (dto.KeyValue, error) {
 	var it dto.KeyValue
 	var asMap = obj.(map[string]interface{})
 
@@ -25478,25 +25388,6 @@ func (ec *executionContext) unmarshalInputCommerce_Search_Request(ctx context.Co
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
-
-func (ec *executionContext) _Commerce_Cart_CustomAttribute(ctx context.Context, sel ast.SelectionSet, obj dto.CustomAttribute) graphql.Marshaler {
-	switch obj := (obj).(type) {
-	case nil:
-		return graphql.Null
-	case *dto.CustomAttributeBoolean:
-		if obj == nil {
-			return graphql.Null
-		}
-		return ec._Commerce_Cart_CustomAttributeBoolean(ctx, sel, obj)
-	case *dto.CustomAttributeString:
-		if obj == nil {
-			return graphql.Null
-		}
-		return ec._Commerce_Cart_CustomAttributeString(ctx, sel, obj)
-	default:
-		panic(fmt.Errorf("unexpected type %T", obj))
-	}
-}
 
 func (ec *executionContext) _Commerce_Cart_PaymentSelection(ctx context.Context, sel ast.SelectionSet, obj cart.PaymentSelection) graphql.Marshaler {
 	switch obj := (obj).(type) {
@@ -26915,70 +26806,6 @@ func (ec *executionContext) _Commerce_Cart_BillingAddressForm(ctx context.Contex
 	return out
 }
 
-var commerce_Cart_CustomAttributeBooleanImplementors = []string{"Commerce_Cart_CustomAttributeBoolean", "Commerce_Cart_CustomAttribute"}
-
-func (ec *executionContext) _Commerce_Cart_CustomAttributeBoolean(ctx context.Context, sel ast.SelectionSet, obj *dto.CustomAttributeBoolean) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_CustomAttributeBooleanImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_Cart_CustomAttributeBoolean")
-		case "key":
-			out.Values[i] = ec._Commerce_Cart_CustomAttributeBoolean_key(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "value":
-			out.Values[i] = ec._Commerce_Cart_CustomAttributeBoolean_value(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var commerce_Cart_CustomAttributeStringImplementors = []string{"Commerce_Cart_CustomAttributeString", "Commerce_Cart_CustomAttribute"}
-
-func (ec *executionContext) _Commerce_Cart_CustomAttributeString(ctx context.Context, sel ast.SelectionSet, obj *dto.CustomAttributeString) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_CustomAttributeStringImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_Cart_CustomAttributeString")
-		case "key":
-			out.Values[i] = ec._Commerce_Cart_CustomAttributeString_key(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "value":
-			out.Values[i] = ec._Commerce_Cart_CustomAttributeString_value(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
 var commerce_Cart_CustomAttributesImplementors = []string{"Commerce_Cart_CustomAttributes"}
 
 func (ec *executionContext) _Commerce_Cart_CustomAttributes(ctx context.Context, sel ast.SelectionSet, obj *dto.CustomAttributes) graphql.Marshaler {
@@ -27203,6 +27030,38 @@ func (ec *executionContext) _Commerce_Cart_ItemValidationError(ctx context.Conte
 			}
 		case "errorMessageKey":
 			out.Values[i] = ec._Commerce_Cart_ItemValidationError_errorMessageKey(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Cart_KeyValueImplementors = []string{"Commerce_Cart_KeyValue"}
+
+func (ec *executionContext) _Commerce_Cart_KeyValue(ctx context.Context, sel ast.SelectionSet, obj *dto.KeyValue) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_KeyValueImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_KeyValue")
+		case "key":
+			out.Values[i] = ec._Commerce_Cart_KeyValue_key(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "value":
+			out.Values[i] = ec._Commerce_Cart_KeyValue_value(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -31072,12 +30931,12 @@ func (ec *executionContext) marshalNCommerce_Cart_CustomAttributes2ᚖflamingo�
 	return ec._Commerce_Cart_CustomAttributes(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAdditionalData2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalData(ctx context.Context, v interface{}) (dto.DeliveryAdditionalData, error) {
-	res, err := ec.unmarshalInputCommerce_Cart_DeliveryAdditionalData(ctx, v)
+func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalData(ctx context.Context, v interface{}) (dto.DeliveryAdditionalData, error) {
+	res, err := ec.unmarshalInputCommerce_Cart_DeliveryAdditionalDataInput(ctx, v)
 	return res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAdditionalData2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalDataᚄ(ctx context.Context, v interface{}) ([]*dto.DeliveryAdditionalData, error) {
+func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalDataᚄ(ctx context.Context, v interface{}) ([]*dto.DeliveryAdditionalData, error) {
 	var vSlice []interface{}
 	if v != nil {
 		if tmp1, ok := v.([]interface{}); ok {
@@ -31090,7 +30949,7 @@ func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAdditionalData2ᚕ�
 	res := make([]*dto.DeliveryAdditionalData, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithIndex(i))
-		res[i], err = ec.unmarshalNCommerce_Cart_DeliveryAdditionalData2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalData(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalData(ctx, vSlice[i])
 		if err != nil {
 			return nil, graphql.WrapErrorWithInputPath(ctx, err)
 		}
@@ -31098,8 +30957,8 @@ func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAdditionalData2ᚕ�
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAdditionalData2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalData(ctx context.Context, v interface{}) (*dto.DeliveryAdditionalData, error) {
-	res, err := ec.unmarshalNCommerce_Cart_DeliveryAdditionalData2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalData(ctx, v)
+func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalData(ctx context.Context, v interface{}) (*dto.DeliveryAdditionalData, error) {
+	res, err := ec.unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalData(ctx, v)
 	return &res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
@@ -31172,12 +31031,12 @@ func (ec *executionContext) marshalNCommerce_Cart_ItemValidationError2flamingo�
 	return ec._Commerce_Cart_ItemValidationError(ctx, sel, &v)
 }
 
-func (ec *executionContext) unmarshalNCommerce_Cart_KeyValue2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx context.Context, v interface{}) (dto.KeyValue, error) {
-	res, err := ec.unmarshalInputCommerce_Cart_KeyValue(ctx, v)
+func (ec *executionContext) unmarshalNCommerce_Cart_KeyValueInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx context.Context, v interface{}) (dto.KeyValue, error) {
+	res, err := ec.unmarshalInputCommerce_Cart_KeyValueInput(ctx, v)
 	return res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNCommerce_Cart_KeyValue2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValueᚄ(ctx context.Context, v interface{}) ([]dto.KeyValue, error) {
+func (ec *executionContext) unmarshalNCommerce_Cart_KeyValueInput2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValueᚄ(ctx context.Context, v interface{}) ([]dto.KeyValue, error) {
 	var vSlice []interface{}
 	if v != nil {
 		if tmp1, ok := v.([]interface{}); ok {
@@ -31190,7 +31049,7 @@ func (ec *executionContext) unmarshalNCommerce_Cart_KeyValue2ᚕflamingoᚗmeᚋ
 	res := make([]dto.KeyValue, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithIndex(i))
-		res[i], err = ec.unmarshalNCommerce_Cart_KeyValue2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNCommerce_Cart_KeyValueInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx, vSlice[i])
 		if err != nil {
 			return nil, graphql.WrapErrorWithInputPath(ctx, err)
 		}
@@ -31198,7 +31057,7 @@ func (ec *executionContext) unmarshalNCommerce_Cart_KeyValue2ᚕflamingoᚗmeᚋ
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalNCommerce_Cart_KeyValue2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValueᚄ(ctx context.Context, v interface{}) ([]*dto.KeyValue, error) {
+func (ec *executionContext) unmarshalNCommerce_Cart_KeyValueInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValueᚄ(ctx context.Context, v interface{}) ([]*dto.KeyValue, error) {
 	var vSlice []interface{}
 	if v != nil {
 		if tmp1, ok := v.([]interface{}); ok {
@@ -31211,7 +31070,7 @@ func (ec *executionContext) unmarshalNCommerce_Cart_KeyValue2ᚕᚖflamingoᚗme
 	res := make([]*dto.KeyValue, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithIndex(i))
-		res[i], err = ec.unmarshalNCommerce_Cart_KeyValue2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNCommerce_Cart_KeyValueInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx, vSlice[i])
 		if err != nil {
 			return nil, graphql.WrapErrorWithInputPath(ctx, err)
 		}
@@ -31219,8 +31078,8 @@ func (ec *executionContext) unmarshalNCommerce_Cart_KeyValue2ᚕᚖflamingoᚗme
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalNCommerce_Cart_KeyValue2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx context.Context, v interface{}) (*dto.KeyValue, error) {
-	res, err := ec.unmarshalNCommerce_Cart_KeyValue2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx, v)
+func (ec *executionContext) unmarshalNCommerce_Cart_KeyValueInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx context.Context, v interface{}) (*dto.KeyValue, error) {
+	res, err := ec.unmarshalNCommerce_Cart_KeyValueInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx, v)
 	return &res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
@@ -32583,13 +32442,6 @@ func (ec *executionContext) unmarshalOCommerce_Cart_AddressFormInput2ᚖflamingo
 	return &res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOCommerce_Cart_CustomAttribute2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCustomAttribute(ctx context.Context, sel ast.SelectionSet, v dto.CustomAttribute) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._Commerce_Cart_CustomAttribute(ctx, sel, v)
-}
-
 func (ec *executionContext) marshalOCommerce_Cart_DeliveryAddressForm2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAddressForm(ctx context.Context, sel ast.SelectionSet, v dto.DeliveryAddressForm) graphql.Marshaler {
 	return ec._Commerce_Cart_DeliveryAddressForm(ctx, sel, &v)
 }
@@ -32771,6 +32623,17 @@ func (ec *executionContext) marshalOCommerce_Cart_ItemValidationError2ᚕflaming
 	}
 	wg.Wait()
 	return ret
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_KeyValue2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx context.Context, sel ast.SelectionSet, v dto.KeyValue) graphql.Marshaler {
+	return ec._Commerce_Cart_KeyValue(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_KeyValue2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx context.Context, sel ast.SelectionSet, v *dto.KeyValue) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Commerce_Cart_KeyValue(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOCommerce_Cart_PaymentSelection2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐPaymentSelection(ctx context.Context, sel ast.SelectionSet, v cart.PaymentSelection) graphql.Marshaler {

@@ -8,57 +8,23 @@ import (
 )
 
 func TestAttributes_Get(t *testing.T) {
-	t.Run("should return boolean value", func(t *testing.T) {
+	t.Run("should return entry of map as key value pair value or nil if not found", func(t *testing.T) {
 		var tests = []struct {
-			in  string
-			out *dto.CustomAttributeBoolean
+			inMap map[string]string
+			inKey string
+			out   *dto.KeyValue
 		}{
-			{"true", &dto.CustomAttributeBoolean{Value: true}},
-			{"True", &dto.CustomAttributeBoolean{Value: true}},
-			{"false", &dto.CustomAttributeBoolean{Value: false}},
-			{"False", &dto.CustomAttributeBoolean{Value: false}},
+			{map[string]string{"key": "true"}, "key", &dto.KeyValue{Key: "key", Value: "true"}},
+			{map[string]string{"foo": "bar"}, "foo", &dto.KeyValue{Key: "foo", Value: "bar"}},
+			{map[string]string{"foo": "bar"}, "bar", nil},
+			{map[string]string{"key": "true"}, "notfound", nil},
 		}
 
 		for _, tt := range tests {
-			t.Run(tt.in, func(t *testing.T) {
-				key := "key"
-				attr := dto.CustomAttributes{Attributes: map[string]string{key: tt.in}}
-				value := attr.Get(key)
-				customAttribute, success := value.(*dto.CustomAttributeBoolean)
-				assert.True(t, success)
-				if customAttribute.Key() != key {
-					t.Errorf("got %q, want %q", customAttribute.Key(), key)
-				}
-				if customAttribute.Value != tt.out.Value {
-					t.Errorf("got %v, want %v", customAttribute.Value, tt.out.Value)
-				}
-			})
-		}
-	})
-
-	t.Run("should return string value", func(t *testing.T) {
-		var tests = []struct {
-			in  string
-			out *dto.CustomAttributeString
-		}{
-			{"0", &dto.CustomAttributeString{Value: "0"}},
-			{"1", &dto.CustomAttributeString{Value: "1"}},
-			{"bla", &dto.CustomAttributeString{Value: "bla"}},
-		}
-
-		for _, tt := range tests {
-			t.Run(tt.in, func(t *testing.T) {
-				key := "key"
-				attr := dto.CustomAttributes{Attributes: map[string]string{key: tt.in}}
-				value := attr.Get(key)
-				customAttribute, success := value.(*dto.CustomAttributeString)
-				assert.True(t, success)
-				if customAttribute.Key() != key {
-					t.Errorf("got %q, want %q", customAttribute.Key(), key)
-				}
-				if customAttribute.Value != tt.out.Value {
-					t.Errorf("got %v, want %v", customAttribute.Value, tt.out.Value)
-				}
+			t.Run("", func(t *testing.T) {
+				attr := dto.CustomAttributes{Attributes: tt.inMap}
+				value := attr.Get(tt.inKey)
+				assert.Equal(t, tt.out, value)
 			})
 		}
 	})

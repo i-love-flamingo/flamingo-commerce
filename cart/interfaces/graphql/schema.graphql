@@ -269,19 +269,10 @@ type Commerce_CartAdditionalData {
 
 type Commerce_Cart_CustomAttributes {
     "Get specific attribute by key"
-    get(key: String!): Commerce_Cart_CustomAttribute
+    get(key: String!): Commerce_Cart_KeyValue
 }
 
-interface Commerce_Cart_CustomAttribute {
-    key: String!
-}
-
-type Commerce_Cart_CustomAttributeBoolean implements Commerce_Cart_CustomAttribute {
-    key: String!
-    value: Boolean!
-}
-
-type Commerce_Cart_CustomAttributeString implements Commerce_Cart_CustomAttribute {
+type Commerce_Cart_KeyValue {
     key: String!
     value: String!
 }
@@ -453,14 +444,14 @@ input Commerce_Cart_DeliveryShippingOption {
     carrier: String!
 }
 
-input Commerce_Cart_KeyValue {
+input Commerce_Cart_KeyValueInput {
     key: String!
     value: String!
 }
 
-input Commerce_Cart_DeliveryAdditionalData {
+input Commerce_Cart_DeliveryAdditionalDataInput {
     deliveryCode: String!
-    additionalData: [Commerce_Cart_KeyValue!]!
+    additionalData: [Commerce_Cart_KeyValueInput!]!
 }
 
 extend type Query {
@@ -488,7 +479,7 @@ extend type Mutation {
     "Cleans current cart"
     Commerce_Cart_Clean: Boolean!
     "Adds/Updates additional data for the cart"
-    Commerce_Cart_UpdateAdditionalData(additionalData: [Commerce_Cart_KeyValue!]!): Commerce_DecoratedCart!
+    Commerce_Cart_UpdateAdditionalData(additionalData: [Commerce_Cart_KeyValueInput!]!): Commerce_DecoratedCart!
     "Adds/Updates additional data for the given deliveries"
-    Commerce_Cart_UpdateDeliveriesAdditionalData(data: [Commerce_Cart_DeliveryAdditionalData!]!): Commerce_DecoratedCart!
+    Commerce_Cart_UpdateDeliveriesAdditionalData(data: [Commerce_Cart_DeliveryAdditionalDataInput!]!): Commerce_DecoratedCart!
 }
