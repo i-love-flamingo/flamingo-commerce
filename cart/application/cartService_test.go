@@ -1057,9 +1057,10 @@ func createCartServiceWithDependencies() *cartApplication.CartService {
 func TestCartService_SetAdditionalData(t *testing.T) {
 	cs := createCartServiceWithDependencies()
 
-	cart, err := cs.UpdateAdditionalData(context.Background(), web.EmptySession(), "test", "data")
+	cart, err := cs.UpdateAdditionalData(context.Background(), web.EmptySession(), map[string]string{"test": "data", "foo": "bar"})
 	assert.NoError(t, err)
 	assert.Equal(t, "data", cart.AdditionalData.CustomAttributes["test"])
+	assert.Equal(t, "bar", cart.AdditionalData.CustomAttributes["foo"])
 }
 
 func TestCartService_SetAdditionalDataForDelivery(t *testing.T) {
@@ -1073,7 +1074,7 @@ func TestCartService_SetAdditionalDataForDelivery(t *testing.T) {
 	}
 	_, err := cs.AddProduct(ctx, session, "default_delivery_code", addRequest)
 	assert.Nil(t, err)
-	cart, err := cs.UpdateAdditionalDataForDelivery(ctx, session, "default_delivery_code", "test", "data")
+	cart, err := cs.UpdateDeliveryAdditionalData(ctx, session, "default_delivery_code", map[string]string{"test": "data", "foo": "bar"})
 	assert.NoError(t, err)
 	var deliveryInfo *cartDomain.DeliveryInfo
 	for _, delivery := range cart.Deliveries {
@@ -1084,4 +1085,5 @@ func TestCartService_SetAdditionalDataForDelivery(t *testing.T) {
 
 	require.NotNil(t, deliveryInfo)
 	assert.Equal(t, "data", deliveryInfo.AdditionalData["test"])
+	assert.Equal(t, "bar", deliveryInfo.AdditionalData["foo"])
 }

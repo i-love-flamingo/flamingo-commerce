@@ -922,26 +922,26 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CommerceAddToCart                             func(childComplexity int, marketplaceCode string, qty int, deliveryCode string) int
-		CommerceCartApplyCouponCodeOrGiftCard         func(childComplexity int, code string) int
-		CommerceCartClean                             func(childComplexity int) int
-		CommerceCartRemoveCouponCode                  func(childComplexity int, couponCode string) int
-		CommerceCartRemoveGiftCard                    func(childComplexity int, giftCardCode string) int
-		CommerceCartUpdateAdditionalData              func(childComplexity int, additionalData []*dto.KeyValue) int
-		CommerceCartUpdateAdditionalDataForDeliveries func(childComplexity int, data []*dto.DeliveryAdditionalData) int
-		CommerceCartUpdateBillingAddress              func(childComplexity int, addressForm *forms.AddressForm) int
-		CommerceCartUpdateDeliveryAddresses           func(childComplexity int, deliveryAdresses []*forms.DeliveryForm) int
-		CommerceCartUpdateDeliveryShippingOptions     func(childComplexity int, shippingOptions []*dto.DeliveryShippingOption) int
-		CommerceCartUpdateSelectedPayment             func(childComplexity int, gateway string, method string) int
-		CommerceCheckoutCancelPlaceOrder              func(childComplexity int) int
-		CommerceCheckoutClearPlaceOrder               func(childComplexity int) int
-		CommerceCheckoutRefreshPlaceOrder             func(childComplexity int) int
-		CommerceCheckoutRefreshPlaceOrderBlocking     func(childComplexity int) int
-		CommerceCheckoutStartPlaceOrder               func(childComplexity int, returnURL string) int
-		CommerceDeleteCartDelivery                    func(childComplexity int, deliveryCode string) int
-		CommerceDeleteItem                            func(childComplexity int, itemID string, deliveryCode string) int
-		CommerceUpdateItemQty                         func(childComplexity int, itemID string, deliveryCode string, qty int) int
-		Flamingo                                      func(childComplexity int) int
+		CommerceAddToCart                          func(childComplexity int, marketplaceCode string, qty int, deliveryCode string) int
+		CommerceCartApplyCouponCodeOrGiftCard      func(childComplexity int, code string) int
+		CommerceCartClean                          func(childComplexity int) int
+		CommerceCartRemoveCouponCode               func(childComplexity int, couponCode string) int
+		CommerceCartRemoveGiftCard                 func(childComplexity int, giftCardCode string) int
+		CommerceCartUpdateAdditionalData           func(childComplexity int, additionalData []*dto.KeyValue) int
+		CommerceCartUpdateBillingAddress           func(childComplexity int, addressForm *forms.AddressForm) int
+		CommerceCartUpdateDeliveriesAdditionalData func(childComplexity int, data []*dto.DeliveryAdditionalData) int
+		CommerceCartUpdateDeliveryAddresses        func(childComplexity int, deliveryAdresses []*forms.DeliveryForm) int
+		CommerceCartUpdateDeliveryShippingOptions  func(childComplexity int, shippingOptions []*dto.DeliveryShippingOption) int
+		CommerceCartUpdateSelectedPayment          func(childComplexity int, gateway string, method string) int
+		CommerceCheckoutCancelPlaceOrder           func(childComplexity int) int
+		CommerceCheckoutClearPlaceOrder            func(childComplexity int) int
+		CommerceCheckoutRefreshPlaceOrder          func(childComplexity int) int
+		CommerceCheckoutRefreshPlaceOrderBlocking  func(childComplexity int) int
+		CommerceCheckoutStartPlaceOrder            func(childComplexity int, returnURL string) int
+		CommerceDeleteCartDelivery                 func(childComplexity int, deliveryCode string) int
+		CommerceDeleteItem                         func(childComplexity int, itemID string, deliveryCode string) int
+		CommerceUpdateItemQty                      func(childComplexity int, itemID string, deliveryCode string, qty int) int
+		Flamingo                                   func(childComplexity int) int
 	}
 
 	Query struct {
@@ -996,7 +996,7 @@ type MutationResolver interface {
 	CommerceCartUpdateDeliveryShippingOptions(ctx context.Context, shippingOptions []*dto.DeliveryShippingOption) ([]*dto.DeliveryAddressForm, error)
 	CommerceCartClean(ctx context.Context) (bool, error)
 	CommerceCartUpdateAdditionalData(ctx context.Context, additionalData []*dto.KeyValue) (*dto.DecoratedCart, error)
-	CommerceCartUpdateAdditionalDataForDeliveries(ctx context.Context, data []*dto.DeliveryAdditionalData) (*dto.DecoratedCart, error)
+	CommerceCartUpdateDeliveriesAdditionalData(ctx context.Context, data []*dto.DeliveryAdditionalData) (*dto.DecoratedCart, error)
 	CommerceCheckoutStartPlaceOrder(ctx context.Context, returnURL string) (*dto1.StartPlaceOrderResult, error)
 	CommerceCheckoutCancelPlaceOrder(ctx context.Context) (bool, error)
 	CommerceCheckoutClearPlaceOrder(ctx context.Context) (bool, error)
@@ -4821,18 +4821,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CommerceCartUpdateAdditionalData(childComplexity, args["additionalData"].([]*dto.KeyValue)), true
 
-	case "Mutation.Commerce_Cart_UpdateAdditionalDataForDeliveries":
-		if e.complexity.Mutation.CommerceCartUpdateAdditionalDataForDeliveries == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_Commerce_Cart_UpdateAdditionalDataForDeliveries_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.CommerceCartUpdateAdditionalDataForDeliveries(childComplexity, args["data"].([]*dto.DeliveryAdditionalData)), true
-
 	case "Mutation.Commerce_Cart_UpdateBillingAddress":
 		if e.complexity.Mutation.CommerceCartUpdateBillingAddress == nil {
 			break
@@ -4844,6 +4832,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CommerceCartUpdateBillingAddress(childComplexity, args["addressForm"].(*forms.AddressForm)), true
+
+	case "Mutation.Commerce_Cart_UpdateDeliveriesAdditionalData":
+		if e.complexity.Mutation.CommerceCartUpdateDeliveriesAdditionalData == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_Commerce_Cart_UpdateDeliveriesAdditionalData_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CommerceCartUpdateDeliveriesAdditionalData(childComplexity, args["data"].([]*dto.DeliveryAdditionalData)), true
 
 	case "Mutation.Commerce_Cart_UpdateDeliveryAddresses":
 		if e.complexity.Mutation.CommerceCartUpdateDeliveryAddresses == nil {
@@ -6099,7 +6099,7 @@ extend type Mutation {
     "Adds/Updates additional data for the cart"
     Commerce_Cart_UpdateAdditionalData(additionalData: [Commerce_Cart_KeyValue!]!): Commerce_DecoratedCart!
     "Adds/Updates additional data for the given deliveries"
-    Commerce_Cart_UpdateAdditionalDataForDeliveries(data: [Commerce_Cart_DeliveryAdditionalData!]!): Commerce_DecoratedCart!
+    Commerce_Cart_UpdateDeliveriesAdditionalData(data: [Commerce_Cart_DeliveryAdditionalData!]!): Commerce_DecoratedCart!
 }
 `, BuiltIn: false},
 	{Name: "graphql/schema/flamingo.me_flamingo-commerce_v3_checkout_interfaces_graphql-Service.graphql", Input: `type Commerce_Checkout_StartPlaceOrder_Result {
@@ -6841,21 +6841,6 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_RemoveGiftCard_args(ctx
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateAdditionalDataForDeliveries_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 []*dto.DeliveryAdditionalData
-	if tmp, ok := rawArgs["data"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("data"))
-		arg0, err = ec.unmarshalNCommerce_Cart_DeliveryAdditionalData2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalDataᚄ(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["data"] = arg0
-	return args, nil
-}
-
 func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateAdditionalData_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -6883,6 +6868,21 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateBillingAddress_ar
 		}
 	}
 	args["addressForm"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveriesAdditionalData_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 []*dto.DeliveryAdditionalData
+	if tmp, ok := rawArgs["data"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("data"))
+		arg0, err = ec.unmarshalNCommerce_Cart_DeliveryAdditionalData2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalDataᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["data"] = arg0
 	return args, nil
 }
 
@@ -23437,7 +23437,7 @@ func (ec *executionContext) _Mutation_Commerce_Cart_UpdateAdditionalData(ctx con
 	return ec.marshalNCommerce_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_Commerce_Cart_UpdateAdditionalDataForDeliveries(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_Commerce_Cart_UpdateDeliveriesAdditionalData(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -23453,7 +23453,7 @@ func (ec *executionContext) _Mutation_Commerce_Cart_UpdateAdditionalDataForDeliv
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_Commerce_Cart_UpdateAdditionalDataForDeliveries_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_Commerce_Cart_UpdateDeliveriesAdditionalData_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -23461,7 +23461,7 @@ func (ec *executionContext) _Mutation_Commerce_Cart_UpdateAdditionalDataForDeliv
 	fc.Args = args
 	resTmp := ec._fieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CommerceCartUpdateAdditionalDataForDeliveries(rctx, args["data"].([]*dto.DeliveryAdditionalData))
+		return ec.resolvers.Mutation().CommerceCartUpdateDeliveriesAdditionalData(rctx, args["data"].([]*dto.DeliveryAdditionalData))
 	})
 
 	if resTmp == nil {
@@ -30482,8 +30482,8 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "Commerce_Cart_UpdateAdditionalDataForDeliveries":
-			out.Values[i] = ec._Mutation_Commerce_Cart_UpdateAdditionalDataForDeliveries(ctx, field)
+		case "Commerce_Cart_UpdateDeliveriesAdditionalData":
+			out.Values[i] = ec._Mutation_Commerce_Cart_UpdateDeliveriesAdditionalData(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

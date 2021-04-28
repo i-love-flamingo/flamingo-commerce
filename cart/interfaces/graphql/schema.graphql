@@ -490,5 +490,5 @@ extend type Mutation {
     "Adds/Updates additional data for the cart"
     Commerce_Cart_UpdateAdditionalData(additionalData: [Commerce_Cart_KeyValue!]!): Commerce_DecoratedCart!
     "Adds/Updates additional data for the given deliveries"
-    Commerce_Cart_UpdateAdditionalDataForDeliveries(data: [Commerce_Cart_DeliveryAdditionalData!]!): Commerce_DecoratedCart!
+    Commerce_Cart_UpdateDeliveriesAdditionalData(data: [Commerce_Cart_DeliveryAdditionalData!]!): Commerce_DecoratedCart!
 }

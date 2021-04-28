@@ -1202,19 +1202,22 @@ func (qar QtyAdjustmentResults) HasRemovedCouponCodes() bool {
 }
 
 // UpdateAdditionalData of cart
-func (cs *CartService) UpdateAdditionalData(ctx context.Context, session *web.Session, key string, value string) (*cartDomain.Cart, error) {
+func (cs *CartService) UpdateAdditionalData(ctx context.Context, session *web.Session, additionalData map[string]string) (*cartDomain.Cart, error) {
 	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return nil, err
 	}
 
-	additionalData := cart.AdditionalData
-	if additionalData.CustomAttributes == nil {
-		additionalData.CustomAttributes = map[string]string{}
+	cartAdditionalData := cart.AdditionalData
+	if cartAdditionalData.CustomAttributes == nil {
+		cartAdditionalData.CustomAttributes = map[string]string{}
 	}
-	additionalData.CustomAttributes[key] = value
 
-	cart, defers, err := behaviour.UpdateAdditionalData(ctx, cart, &additionalData)
+	for key, value := range additionalData {
+		cartAdditionalData.CustomAttributes[key] = value
+	}
+
+	cart, defers, err := behaviour.UpdateAdditionalData(ctx, cart, &cartAdditionalData)
 	defer func() {
 		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
 		cs.dispatchAllEvents(ctx, defers)
@@ -1222,22 +1225,25 @@ func (cs *CartService) UpdateAdditionalData(ctx context.Context, session *web.Se
 	return cart, err
 }
 
-// UpdateAdditionalDataForDelivery of cart
-func (cs *CartService) UpdateAdditionalDataForDelivery(ctx context.Context, session *web.Session, deliveryCode string, key string, value string) (*cartDomain.Cart, error) {
+// UpdateDeliveryAdditionalData of cart
+func (cs *CartService) UpdateDeliveryAdditionalData(ctx context.Context, session *web.Session, deliveryCode string, additionalData map[string]string) (*cartDomain.Cart, error) {
 	cart, _, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
 		return nil, err
 	}
 
-	delivery := getDeliveryByCode(cart, deliveryCode)
-	if delivery == nil {
+	delivery, found := getDeliveryByCode(cart, deliveryCode)
+	if !found {
 		return cart, nil
 	}
 
 	if delivery.DeliveryInfo.AdditionalData == nil {
 		delivery.DeliveryInfo.AdditionalData = map[string]string{}
 	}
-	delivery.DeliveryInfo.AdditionalData[key] = value
+
+	for key, value := range additionalData {
+		delivery.DeliveryInfo.AdditionalData[key] = value
+	}
 	newDeliveryInfoUpdateCommand := cartDomain.CreateDeliveryInfoUpdateCommand(delivery.DeliveryInfo)
 
 	err = cs.UpdateDeliveryInfo(ctx, session, deliveryCode, newDeliveryInfoUpdateCommand)
@@ -1248,11 +1254,11 @@ func (cs *CartService) UpdateAdditionalDataForDelivery(ctx context.Context, sess
 	return cart, nil
 }
 
-func getDeliveryByCode(cart *cartDomain.Cart, deliveryCode string) *cartDomain.Delivery {
+func getDeliveryByCode(cart *cartDomain.Cart, deliveryCode string) (cartDomain.Delivery, bool) {
 	for _, delivery := range cart.Deliveries {
 		if delivery.DeliveryInfo.Code == deliveryCode {
-			return &delivery
+			return delivery, true
 		}
 	}
-	return nil
+	return cartDomain.Delivery{}, false
 }
