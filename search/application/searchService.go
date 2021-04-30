@@ -7,6 +7,7 @@ package application
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/url"
 
 	"flamingo.me/flamingo-commerce/v3/search/domain"
@@ -54,7 +55,9 @@ func (s *SearchService) Inject(
 		DefaultPageSize float64              `inject:"config:commerce.pagination.defaultPageSize,optional"`
 	}) *SearchService {
 	s.paginationInfoFactory = paginationInfoFactory
-	s.logger = logger
+	s.logger = logger.
+		WithField(flamingo.LogKeyModule, "search").
+		WithField(flamingo.LogKeyCategory, "application.ProductSearchService")
 	if optionals != nil {
 		s.searchService = optionals.SearchService
 		s.defaultPageSize = optionals.DefaultPageSize
@@ -94,7 +97,8 @@ func (s *SearchService) FindBy(ctx context.Context, documentType string, searchR
 	//  10 pageSize * (3 pages* -1 ) + lastPageSize = 35 results*
 	if pageSize != 0 {
 		if err := result.SearchMeta.ValidatePageSize(pageSize); err != nil {
-			s.logger.WithContext(ctx).WithField("category", "application.ProductSearchService").Warn("The Searchservice seems to ignore pageSize Filter")
+			err = fmt.Errorf("the Searchservice seems to ignore pageSize filter, %w", err)
+			s.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "FindBy").Warn(err)
 		}
 	}
 
@@ -147,7 +151,8 @@ func (s *SearchService) Find(ctx context.Context, searchRequest SearchRequest) (
 	if pageSize != 0 {
 		for k, r := range result {
 			if err := r.SearchMeta.ValidatePageSize(pageSize); err != nil {
-				s.logger.WithContext(ctx).WithField("category", "application.ProductSearchService").Warn("The Searchservice seems to ignore pageSize Filter for document type ", k)
+				err = fmt.Errorf("the Searchservice seems to ignore pageSize filter for document type %q, %w", k, err)
+				s.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "Find").Warn(err)
 			}
 		}
 	}

@@ -187,9 +187,9 @@ func (sm *SearchMeta) ValidatePageSize(pageSize int) error {
 	if pageSize == 0 {
 		return errors.New("cannot validate - no expected pageSize given")
 	}
-	expectedNumPages := float64(sm.NumResults) / float64(pageSize)
-	if math.Ceil(expectedNumPages) != float64(sm.NumPages) {
-		return fmt.Errorf("Pagesize not valid expected ceil(%v) / given in result: %v", expectedNumPages, sm.NumPages)
+	expectedNumPages := math.Ceil(float64(sm.NumResults) / float64(pageSize))
+	if expectedNumPages != float64(sm.NumPages) {
+		return fmt.Errorf("pagesize not valid expected %f / given in result: %d", expectedNumPages, sm.NumPages)
 	}
 	return nil
 }
