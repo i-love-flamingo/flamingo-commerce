@@ -1,6 +1,6 @@
 query {
     Commerce_Cart_QtyRestriction(
-        marketplaceCode:"###MARKETPLACECODE###",
+        marketplaceCode:"###MARKETPLACE_CODE###",
         deliveryCode:"home") {
         isRestricted
         maxAllowed

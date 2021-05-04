@@ -9,6 +9,7 @@ import (
 	"github.com/go-test/deep"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 
 	"flamingo.me/flamingo-commerce/v3/cart/infrastructure"
 
@@ -996,4 +997,93 @@ func TestCartService_CartInEvent(t *testing.T) {
 	// white box test that ensures router has been called with expected parameter (add to cart event)
 	// with the expected marketplace code of the item
 	eventRouter.AssertCalled(t, "Dispatch", ctx, fmt.Sprintf("%T", new(events.AddToCartEvent)), addRequest.MarketplaceCode)
+}
+
+func createCartServiceWithDependencies() *cartApplication.CartService {
+	eventRouter := new(MockEventRouter)
+	eventRouter.On("Dispatch", mock.Anything, mock.Anything, mock.Anything).Return()
+
+	crs := &cartApplication.CartReceiverService{}
+	crs.Inject(new(MockGuestCartServiceWithModifyBehaviour),
+		nil,
+		func() *decorator.DecoratedCartFactory {
+			result := &decorator.DecoratedCartFactory{}
+			result.Inject(
+				&MockProductService{},
+				flamingo.NullLogger{},
+			)
+
+			return result
+		}(),
+		nil,
+		flamingo.NullLogger{},
+		eventRouter,
+		&struct {
+			CartCache cartApplication.CartCache `inject:",optional"`
+		}{
+			CartCache: new(MockCartCache),
+		})
+
+	cs := &cartApplication.CartService{}
+	cs.Inject(
+		crs,
+		&MockProductService{},
+		new(MockEventPublisher),
+		eventRouter,
+		new(MockDeliveryInfoBuilder),
+		func() *validation.RestrictionService {
+			rs := &validation.RestrictionService{}
+			rs.Inject(
+				[]validation.MaxQuantityRestrictor{
+					&MockRestrictor{},
+				},
+			)
+			return rs
+		}(),
+		nil,
+		flamingo.NullLogger{},
+		&struct {
+			DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
+			DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
+		}{
+			DefaultDeliveryCode: "default_delivery_code",
+			DeleteEmptyDelivery: false,
+		},
+		nil,
+	)
+	return cs
+}
+
+func TestCartService_SetAdditionalData(t *testing.T) {
+	cs := createCartServiceWithDependencies()
+
+	cart, err := cs.UpdateAdditionalData(context.Background(), web.EmptySession(), map[string]string{"test": "data", "foo": "bar"})
+	assert.NoError(t, err)
+	assert.Equal(t, "data", cart.AdditionalData.CustomAttributes["test"])
+	assert.Equal(t, "bar", cart.AdditionalData.CustomAttributes["foo"])
+}
+
+func TestCartService_SetAdditionalDataForDelivery(t *testing.T) {
+	cs := createCartServiceWithDependencies()
+
+	ctx := context.Background()
+	session := web.EmptySession()
+	addRequest := cartDomain.AddRequest{
+		MarketplaceCode: "code-1",
+		Qty:             1,
+	}
+	_, err := cs.AddProduct(ctx, session, "default_delivery_code", addRequest)
+	assert.Nil(t, err)
+	cart, err := cs.UpdateDeliveryAdditionalData(ctx, session, "default_delivery_code", map[string]string{"test": "data", "foo": "bar"})
+	assert.NoError(t, err)
+	var deliveryInfo *cartDomain.DeliveryInfo
+	for _, delivery := range cart.Deliveries {
+		if delivery.DeliveryInfo.Code == "default_delivery_code" {
+			deliveryInfo = &delivery.DeliveryInfo
+		}
+	}
+
+	require.NotNil(t, deliveryInfo)
+	assert.Equal(t, "data", deliveryInfo.AdditionalData["test"])
+	assert.Equal(t, "bar", deliveryInfo.AdditionalData["foo"])
 }

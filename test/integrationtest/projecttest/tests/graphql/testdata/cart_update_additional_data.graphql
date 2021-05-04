@@ -1,0 +1,18 @@
+mutation {
+    Commerce_Cart_UpdateAdditionalData(additionalData: [{key: "foo" value: "bar"}, {key: "biz" value: "baz"}]) {
+        cart {
+            additionalData {
+                customAttributes {
+                    foo: get(key: "foo") {
+                        key
+                        value
+                    }
+                    biz: get(key: "biz") {
+                        key
+                        value
+                    }
+                }
+            }
+        }
+    }
+}

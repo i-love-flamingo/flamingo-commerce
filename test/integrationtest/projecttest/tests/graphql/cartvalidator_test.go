@@ -30,19 +30,19 @@ func Test_CartRestrictor(t *testing.T) {
 	e := integrationtest.NewHTTPExpect(t, baseURL)
 
 	t.Run("restricted product", func(t *testing.T) {
-		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "validate_restrictor", map[string]string{"MARKETPLACECODE": "fake_simple"})).Expect()
+		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "validate_restrictor", map[string]string{"MARKETPLACE_CODE": "fake_simple"})).Expect()
 		response.Status(http.StatusOK)
 		getValue(response, "Commerce_Cart_QtyRestriction", "isRestricted").Boolean().True()
 	})
 
 	t.Run("unrestricted product", func(t *testing.T) {
-		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "validate_restrictor", map[string]string{"MARKETPLACECODE": "fake_configurable"})).Expect()
+		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "validate_restrictor", map[string]string{"MARKETPLACE_CODE": "fake_configurable"})).Expect()
 		response.Status(http.StatusOK)
 		getValue(response, "Commerce_Cart_QtyRestriction", "isRestricted").Boolean().False()
 	})
 
 	t.Run("404 product", func(t *testing.T) {
-		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "validate_restrictor", map[string]string{"MARKETPLACECODE": "some"})).Expect()
+		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "validate_restrictor", map[string]string{"MARKETPLACE_CODE": "some"})).Expect()
 		response.Status(http.StatusOK)
 		response.JSON().Object().Value("errors").NotNull()
 	})
