@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"fmt"
 	"net/url"
 
 	"flamingo.me/flamingo-commerce/v3/product/domain"
@@ -15,10 +16,10 @@ import (
 type (
 	// ProductSearchService - Application service that offers a more explicit way to search for  product results - on top of the domain.ProductSearchService
 	ProductSearchService struct {
-		SearchService         domain.SearchService         `inject:""`
-		PaginationInfoFactory *utils.PaginationInfoFactory `inject:""`
-		DefaultPageSize       float64                      `inject:"config:commerce.product.pagination.defaultPageSize,optional"`
-		Logger                flamingo.Logger              `inject:""`
+		searchService         domain.SearchService
+		paginationInfoFactory *utils.PaginationInfoFactory
+		defaultPageSize       float64
+		logger                flamingo.Logger
 	}
 
 	// SearchResult - much like the corresponding struct in search package, just that instead "Hits" we have a list of matching Products
@@ -31,6 +32,27 @@ type (
 		Promotions     []searchdomain.Promotion
 	}
 )
+
+// Inject dependencies
+func (s *ProductSearchService) Inject(
+	searchService domain.SearchService,
+	paginationInfoFactory *utils.PaginationInfoFactory,
+	logger flamingo.Logger,
+	cfg *struct {
+		DefaultPageSize float64 `inject:"config:commerce.product.pagination.defaultPageSize,optional"`
+	},
+) *ProductSearchService {
+	s.searchService = searchService
+	s.paginationInfoFactory = paginationInfoFactory
+	s.logger = logger.
+		WithField(flamingo.LogKeyModule, "product").
+		WithField(flamingo.LogKeyCategory, "application.ProductSearchService")
+	if cfg != nil {
+		s.defaultPageSize = cfg.DefaultPageSize
+	}
+
+	return s
+}
 
 // Find return SearchResult with matched products - based on given input
 func (s *ProductSearchService) Find(ctx context.Context, searchRequest *application.SearchRequest) (*SearchResult, error) {
@@ -48,21 +70,22 @@ func (s *ProductSearchService) Find(ctx context.Context, searchRequest *applicat
 	// pageSize can either be set in the request, or we use the configured default or if nothing set we rely on the ProductSearchService later
 	pageSize := searchRequest.PageSize
 	if pageSize == 0 {
-		pageSize = int(s.DefaultPageSize)
+		pageSize = int(s.defaultPageSize)
 	}
 
-	result, err := s.SearchService.Search(ctx, application.BuildFilters(*searchRequest, pageSize)...)
+	result, err := s.searchService.Search(ctx, application.BuildFilters(*searchRequest, pageSize)...)
 	if err != nil {
 		return nil, err
 	}
 
 	if searchRequest.PaginationConfig == nil {
-		searchRequest.PaginationConfig = s.PaginationInfoFactory.DefaultConfig
+		searchRequest.PaginationConfig = s.paginationInfoFactory.DefaultConfig
 	}
 
 	if pageSize != 0 {
 		if err := result.SearchMeta.ValidatePageSize(pageSize); err != nil {
-			s.Logger.WithContext(ctx).WithField("category", "application.ProductSearchService").Warn("The Searchservice seems to ignore pageSize Filter")
+			err = fmt.Errorf("the Searchservice seems to ignore pageSize filter, %w", err)
+			s.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "Find").Warn(err)
 		}
 	}
 	paginationInfo := utils.BuildWith(utils.CurrentResultInfos{
@@ -98,21 +121,22 @@ func (s *ProductSearchService) FindBy(ctx context.Context, attributeCode string,
 	// pageSize can either be set in the request, or we use the configured default or if nothing set we rely on the ProductSearchService later
 	pageSize := searchRequest.PageSize
 	if pageSize == 0 {
-		pageSize = int(s.DefaultPageSize)
+		pageSize = int(s.defaultPageSize)
 	}
 
-	result, err := s.SearchService.SearchBy(ctx, attributeCode, values, application.BuildFilters(*searchRequest, pageSize)...)
+	result, err := s.searchService.SearchBy(ctx, attributeCode, values, application.BuildFilters(*searchRequest, pageSize)...)
 	if err != nil {
 		return nil, err
 	}
 
 	if searchRequest.PaginationConfig == nil {
-		searchRequest.PaginationConfig = s.PaginationInfoFactory.DefaultConfig
+		searchRequest.PaginationConfig = s.paginationInfoFactory.DefaultConfig
 	}
 
 	if pageSize != 0 {
 		if err := result.SearchMeta.ValidatePageSize(pageSize); err != nil {
-			s.Logger.WithContext(ctx).WithField("category", "application.ProductSearchService").Warn("The Searchservice seems to ignore pageSize Filter")
+			err = fmt.Errorf("the Searchservice seems to ignore pageSize filter, %w", err)
+			s.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "FindBy").Warn(err)
 		}
 	}
 	paginationInfo := utils.BuildWith(utils.CurrentResultInfos{
