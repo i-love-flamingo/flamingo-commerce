@@ -19,8 +19,9 @@ type (
 
 	// CreatePaymentRollbackData needed for rollback
 	CreatePaymentRollbackData struct {
-		PaymentID string
-		Gateway   string
+		PaymentID          string
+		Gateway            string
+		RawTransactionData interface{}
 	}
 )
 
@@ -73,7 +74,11 @@ func (c CreatePayment) Run(ctx context.Context, p *process.Process) process.RunR
 
 	p.UpdateState(CompleteCart{}.Name(), nil)
 	return process.RunResult{
-		RollbackData: CreatePaymentRollbackData{PaymentID: payment.PaymentID, Gateway: payment.Gateway},
+		RollbackData: CreatePaymentRollbackData{
+			PaymentID:          payment.PaymentID,
+			Gateway:            payment.Gateway,
+			RawTransactionData: payment.RawTransactionData,
+		},
 	}
 }
 
@@ -92,7 +97,14 @@ func (c CreatePayment) Rollback(ctx context.Context, data process.RollbackData) 
 		return err
 	}
 
-	err = paymentGateway.CancelOrderPayment(ctx, &placeorder.Payment{Gateway: rollbackData.Gateway, PaymentID: rollbackData.PaymentID})
+	err = paymentGateway.CancelOrderPayment(
+		ctx,
+		&placeorder.Payment{
+			Gateway:            rollbackData.Gateway,
+			PaymentID:          rollbackData.PaymentID,
+			RawTransactionData: rollbackData.RawTransactionData,
+		},
+	)
 	if err != nil {
 		return err
 	}

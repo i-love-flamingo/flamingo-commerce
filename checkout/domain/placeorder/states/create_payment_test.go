@@ -21,6 +21,8 @@ import (
 	price "flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
+type rawTransactionData struct{}
+
 func TestCreatePayment_Run(t *testing.T) {
 	t.Run("happy path", func(t *testing.T) {
 		factory := provideProcessFactory(t)
@@ -30,7 +32,7 @@ func TestCreatePayment_Run(t *testing.T) {
 
 		state := states.CreatePayment{}
 
-		expectedPayment := &placeorder.Payment{Gateway: "test"}
+		expectedPayment := &placeorder.Payment{Gateway: "test", RawTransactionData: &rawTransactionData{}}
 		gateway := &mocks.WebCartPaymentGateway{}
 		gateway.On("StartFlow", mock.Anything, mock.Anything, p.Context().UUID, p.Context().ReturnURL).Return(&domain.FlowResult{EarlyPlaceOrder: true}, nil).Once()
 		gateway.On("OrderPaymentFromFlow", mock.Anything, mock.Anything, p.Context().UUID).Return(expectedPayment, nil).Once()
@@ -39,7 +41,11 @@ func TestCreatePayment_Run(t *testing.T) {
 		state.Inject(paymentService)
 
 		expectedResult := process.RunResult{
-			RollbackData: states.CreatePaymentRollbackData{Gateway: expectedPayment.Gateway, PaymentID: expectedPayment.PaymentID},
+			RollbackData: states.CreatePaymentRollbackData{
+				Gateway:            expectedPayment.Gateway,
+				PaymentID:          expectedPayment.PaymentID,
+				RawTransactionData: &rawTransactionData{},
+			},
 		}
 		result := state.Run(context.Background(), p)
 		assert.Equal(t, result, expectedResult)
@@ -165,11 +171,15 @@ func TestCreatePayment_Rollback(t *testing.T) {
 		payment := &placeorder.Payment{
 			Gateway:            "test",
 			Transactions:       nil,
-			RawTransactionData: nil,
+			RawTransactionData: &rawTransactionData{},
 			PaymentID:          "1234",
 		}
 
-		data = states.CreatePaymentRollbackData{Gateway: payment.Gateway, PaymentID: payment.PaymentID}
+		data = states.CreatePaymentRollbackData{
+			Gateway:            payment.Gateway,
+			PaymentID:          payment.PaymentID,
+			RawTransactionData: payment.RawTransactionData,
+		}
 
 		gateway := &mocks.WebCartPaymentGateway{}
 		gateway.On("CancelOrderPayment", mock.Anything, payment).Return(nil).Once()
@@ -193,10 +203,12 @@ func TestCreatePayment_Rollback(t *testing.T) {
 		var data interface{}
 
 		payment := &placeorder.Payment{
-			Gateway: "non-existing",
+			Gateway:            "non-existing",
+			RawTransactionData: &rawTransactionData{},
 		}
 
-		data = states.CreatePaymentRollbackData{Gateway: payment.Gateway, PaymentID: payment.PaymentID}
+		data = states.CreatePaymentRollbackData{
+			Gateway: payment.Gateway, PaymentID: payment.PaymentID, RawTransactionData: payment.RawTransactionData}
 
 		paymentService := paymentServiceHelper(t, nil)
 		state.Inject(paymentService)
@@ -211,11 +223,15 @@ func TestCreatePayment_Rollback(t *testing.T) {
 		payment := &placeorder.Payment{
 			Gateway:            "test",
 			Transactions:       nil,
-			RawTransactionData: nil,
+			RawTransactionData: &rawTransactionData{},
 			PaymentID:          "1234",
 		}
 
-		data = states.CreatePaymentRollbackData{Gateway: payment.Gateway, PaymentID: payment.PaymentID}
+		data = states.CreatePaymentRollbackData{
+			Gateway:            payment.Gateway,
+			PaymentID:          payment.PaymentID,
+			RawTransactionData: payment.RawTransactionData,
+		}
 
 		gateway := &mocks.WebCartPaymentGateway{}
 		expectedError := errors.New("generic payment error")
