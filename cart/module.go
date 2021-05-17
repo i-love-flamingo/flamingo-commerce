@@ -89,6 +89,8 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	web.BindRoutes(injector, new(routes))
 
 	injector.BindMulti(new(flamingographql.Service)).To(graphql.Service{})
+
+	injector.Bind(new(application.Service)).To(application.CartService{})
 }
 
 // CueConfig defines the cart module configuration
