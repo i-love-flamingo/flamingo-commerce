@@ -24,6 +24,7 @@ require (
 	github.com/swaggo/swag v1.6.6-0.20200603163350-20638f327979
 	github.com/testcontainers/testcontainers-go v0.9.0
 	github.com/vektah/gqlparser/v2 v2.0.1
+	github.com/vektra/mockery/v2 v2.7.5 // indirect
 	go.opencensus.io v0.22.3
 	go.uber.org/goleak v1.1.10
 	golang.org/x/mod v0.3.0
