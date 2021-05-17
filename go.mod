@@ -28,5 +28,6 @@ require (
 	go.opencensus.io v0.22.3
 	go.uber.org/goleak v1.1.10
 	golang.org/x/mod v0.3.0
+	google.golang.org/grpc v1.27.0 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1
 )
