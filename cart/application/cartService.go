@@ -74,6 +74,8 @@ func (e *RestrictionError) Error() string {
 	return e.message
 }
 
+var _ Service = &CartService{}
+
 // Inject dependencies
 func (cs *CartService) Inject(
 	cartReceiverService *CartReceiverService,

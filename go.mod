@@ -17,6 +17,7 @@ require (
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/google/go-cmp v0.4.0
 	github.com/google/uuid v1.1.2
+	github.com/gordonklaus/ineffassign v0.0.0-20201107091007-3b93a8888063 // indirect
 	github.com/leekchan/accounting v0.0.0-20191104051123-0b9b0bd19c36
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.6.1
@@ -24,8 +25,10 @@ require (
 	github.com/swaggo/swag v1.6.6-0.20200603163350-20638f327979
 	github.com/testcontainers/testcontainers-go v0.9.0
 	github.com/vektah/gqlparser/v2 v2.0.1
+	github.com/vektra/mockery/v2 v2.7.5 // indirect
 	go.opencensus.io v0.22.3
 	go.uber.org/goleak v1.1.10
 	golang.org/x/mod v0.3.0
+	google.golang.org/grpc v1.27.0 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1
 )
