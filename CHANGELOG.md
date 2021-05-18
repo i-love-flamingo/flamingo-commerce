@@ -5,9 +5,11 @@
   * **Breaking**: Update `DELETE /api/v1/cart` to actually clean the whole cart not only removing the cart items (introduces new route for the previous behaviour, see below)
   * Add new endpoint `DELETE /api/v1/cart/deliveries/items` to be able to remove all cart items from all deliveries but keeping delivery info and other cart data untouched
 * Add new method `SumShippingGrossWithDiscounts` to the cart domain which returns gross shipping costs for the cart
-* CartService:
+* `CartService`
   * Add `UpdateAdditionalData` to be able to set additional data to cart
   * Add `UpdateDeliveryAdditionalData` to be able to set additional data to the delivery info
+  * Introduce new [interface](cart/application/service.go) to be able to easier mock the whole `CartService`
+  * Add auto generated mockery mock for the `CartService`
 * GraphQL: 
   * Add new method `sumShippingGrossWithDiscounts` to the `Commerce_DecoratedCart` type
   * Add new mutation `Commerce_Cart_UpdateAdditionalData`
@@ -20,6 +22,10 @@
 
 **checkout**
 * Introducing Flamingo events on final states of the place order process
+
+**customer**
+* Add mockery mocks for both `Customer` / `CustomerIdentityService` for easier testing
+
 
 ## v3.4.0
 **cart**
