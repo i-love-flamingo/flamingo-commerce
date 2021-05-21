@@ -597,6 +597,7 @@ type ComplexityRoot struct {
 		PostCode               func(childComplexity int) int
 		Prefix                 func(childComplexity int) int
 		RegionCode             func(childComplexity int) int
+		State                  func(childComplexity int) int
 		Street                 func(childComplexity int) int
 		StreetNr               func(childComplexity int) int
 		Telephone              func(childComplexity int) int
@@ -3311,6 +3312,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCustomerAddress.RegionCode(childComplexity), true
 
+	case "Commerce_Customer_Address.state":
+		if e.complexity.CommerceCustomerAddress.State == nil {
+			break
+		}
+
+		return e.complexity.CommerceCustomerAddress.State(childComplexity), true
+
 	case "Commerce_Customer_Address.street":
 		if e.complexity.CommerceCustomerAddress.Street == nil {
 			break
@@ -5556,7 +5564,7 @@ type Commerce_Customer_PersonData {
 }
 
 type Commerce_Customer_Address {
-    id: ID!
+    id:                     ID!
     additionalAddressLines: [String!]
     city:                   String!
     company:                String!
@@ -5572,6 +5580,7 @@ type Commerce_Customer_Address {
     regionCode:             String!
     street:                 String!
     streetNumber:           String!
+    state:                  String!
     telephone:              String!
     email:                  String!
 }
@@ -16812,6 +16821,37 @@ func (ec *executionContext) _Commerce_Customer_Address_streetNumber(ctx context.
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.StreetNr, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Customer_Address_state(ctx context.Context, field graphql.CollectedField, obj *domain4.Address) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Customer_Address",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.State, nil
 	})
 
 	if resTmp == nil {
@@ -28508,6 +28548,11 @@ func (ec *executionContext) _Commerce_Customer_Address(ctx context.Context, sel 
 			}
 		case "streetNumber":
 			out.Values[i] = ec._Commerce_Customer_Address_streetNumber(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "state":
+			out.Values[i] = ec._Commerce_Customer_Address_state(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

@@ -25,6 +25,7 @@
 
 **customer**
 * Add mockery mocks for both `Customer` / `CustomerIdentityService` for easier testing
+* Add `State` field to customer address to be closer to cart address type, expose via GraphQL
 
 
 ## v3.4.0
