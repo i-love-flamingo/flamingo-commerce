@@ -43,6 +43,7 @@ type (
 		Company                string
 		Street                 string
 		StreetNr               string
+		State                  string
 		AdditionalAddressLines []string
 		Telephone              string
 		PostCode               string
