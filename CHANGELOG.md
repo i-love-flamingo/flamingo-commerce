@@ -19,6 +19,7 @@
   * Add new type `Commerce_Cart_CustomAttributes` with method for getting key/value pairs
   * **Breaking**: Make naming convention consistent in graphql schema `Commerce_Cart_*`
   * **Breaking**: Remove the fields `getAdditionalData, additionalDataKeys, additionalDeliveryInfoKeys` from the `Commerce_CartDeliveryInfo` type
+  * **Breaking**: `Commerce_Cart_UpdateDeliveryShippingOptions` mutation responded with slice of `Commerce_Cart_DeliveryAddressForm` which was incorrect as we don't process any form data within the mutation. It responds now rightly only with `processed` state.
 
 **checkout**
 * Introducing Flamingo events on final states of the place order process

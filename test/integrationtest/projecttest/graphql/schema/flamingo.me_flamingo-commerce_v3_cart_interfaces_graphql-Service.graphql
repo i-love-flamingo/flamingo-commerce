@@ -435,6 +435,11 @@ type Commerce_Cart_DeliveryAddressForm {
     processed: Boolean
 }
 
+type Commerce_Cart_UpdateDeliveryShippingOptions_Result {
+    "Shows if the request was successfully processed"
+    processed: Boolean
+}
+
 input Commerce_Cart_DeliveryShippingOptionInput {
     "Unique delivery code to identify an **existing** delivery"
     deliveryCode: String!
@@ -475,7 +480,7 @@ extend type Mutation {
     "Adds/Updates one/multiple Delivery Addresses"
     Commerce_Cart_UpdateDeliveryAddresses(deliveryAdresses: [Commerce_Cart_DeliveryAddressInput!]): [Commerce_Cart_DeliveryAddressForm]!
     "Adds/Updates one/multiple Delivery Addresses"
-    Commerce_Cart_UpdateDeliveryShippingOptions(shippingOptions: [Commerce_Cart_DeliveryShippingOptionInput!]): [Commerce_Cart_DeliveryAddressForm]!
+    Commerce_Cart_UpdateDeliveryShippingOptions(shippingOptions: [Commerce_Cart_DeliveryShippingOptionInput!]): Commerce_Cart_UpdateDeliveryShippingOptions_Result!
     "Cleans current cart"
     Commerce_Cart_Clean: Boolean!
     "Adds/Updates additional data for the cart"

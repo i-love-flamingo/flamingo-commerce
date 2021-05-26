@@ -58,4 +58,10 @@ type (
 		//ValidationInfo
 		ValidationInfo ValidationInfo
 	}
+
+	// UpdateShippingOptionsResult definition
+	UpdateShippingOptionsResult struct {
+		//Processed
+		Processed bool
+	}
 )
