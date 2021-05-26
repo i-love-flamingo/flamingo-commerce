@@ -11,27 +11,8 @@ mutation {
                 method: "bar-method"
                 carrier: "bar-carrier"
             }
-            {
-                deliveryCode: "non-existing"
-                method: "foo"
-                carrier: "bar"
-            }
         ]
     ) {
-        deliveryCode
-        carrier
-        method
         processed
-        validationInfo {
-            fieldErrors {
-                messageKey
-                defaultLabel
-                fieldName
-            }
-            generalErrors {
-                messageKey
-                defaultLabel
-            }
-        }
     }
 }
