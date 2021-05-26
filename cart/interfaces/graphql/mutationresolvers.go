@@ -209,7 +209,7 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryShippingOptions
 	for _, shippingOption := range shippingOptions {
 		delivery, found := cart.GetDeliveryByCode(shippingOption.DeliveryCode)
 		if !found {
-			return nil, errors.New("delivery not found")
+			return nil, cartDomain.ErrDeliveryCodeNotFound
 		}
 
 		deliveryInfo := delivery.DeliveryInfo
