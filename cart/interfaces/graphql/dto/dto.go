@@ -53,9 +53,12 @@ type (
 
 	// SelectedPaymentResult represents the selected payment
 	SelectedPaymentResult struct {
-		//Processed
-		Processed bool
-		//ValidationInfo
+		Processed      bool
 		ValidationInfo ValidationInfo
+	}
+
+	// UpdateShippingOptionsResult definition
+	UpdateShippingOptionsResult struct {
+		Processed bool
 	}
 )

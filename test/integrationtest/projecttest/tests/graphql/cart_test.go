@@ -78,35 +78,7 @@ func Test_CommerceCartUpdateDeliveryShippingOptions(t *testing.T) {
 	// update shipping options
 	response = helper.GraphQlRequest(t, e, loadGraphQL(t, "update_delivery_shipping_options", nil)).Expect()
 	response.Status(http.StatusOK)
-	forms = getArray(response, "Commerce_Cart_UpdateDeliveryShippingOptions")
-	forms.Length().Equal(3)
-
-	address := forms.Element(0).Object()
-	address.Value("deliveryCode").String().Equal("foo")
-	address.Value("carrier").String().Equal("foo-carrier")
-	address.Value("method").String().Equal("foo-method")
-	address.Value("processed").Boolean().Equal(true)
-	validation := address.Value("validationInfo").Object()
-	validation.Value("generalErrors").Null()
-	validation.Value("fieldErrors").Null()
-
-	address = forms.Element(1).Object()
-	address.Value("deliveryCode").Equal("bar")
-	address.Value("carrier").String().Equal("bar-carrier")
-	address.Value("method").String().Equal("bar-method")
-	address.Value("processed").Boolean().Equal(true)
-	validation = address.Value("validationInfo").Object()
-	validation.Value("generalErrors").Null()
-	validation.Value("fieldErrors").Null()
-
-	address = forms.Element(2).Object()
-	address.Value("deliveryCode").Equal("non-existing")
-	address.Value("carrier").String().Equal("bar")
-	address.Value("method").String().Equal("foo")
-	address.Value("processed").Boolean().Equal(false)
-	validation = address.Value("validationInfo").Object()
-	validation.Value("generalErrors").NotNull()
-	validation.Value("fieldErrors").Null()
+	getValue(response, "Commerce_Cart_UpdateDeliveryShippingOptions", "processed").Boolean().Equal(true)
 
 	// check cart
 	response = helper.GraphQlRequest(t, e, loadGraphQL(t, "cart_decorated_cart", nil)).Expect()

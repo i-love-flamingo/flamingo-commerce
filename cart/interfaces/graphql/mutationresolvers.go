@@ -199,9 +199,7 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryAddresses(ctx c
 }
 
 // CommerceCartUpdateDeliveryShippingOptions updates the method/carrier of one or multiple existing deliveries
-func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryShippingOptions(ctx context.Context, shippingOptions []*dto.DeliveryShippingOption) ([]*dto.DeliveryAddressForm, error) {
-	result := make([]*dto.DeliveryAddressForm, 0, len(shippingOptions))
-
+func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryShippingOptions(ctx context.Context, shippingOptions []*dto.DeliveryShippingOption) (*dto.UpdateShippingOptionsResult, error) {
 	session := web.SessionFromContext(ctx)
 	cart, err := r.cartReceiverService.ViewCart(ctx, session)
 	if err != nil {
@@ -209,22 +207,9 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryShippingOptions
 	}
 
 	for _, shippingOption := range shippingOptions {
-		formResult := dto.DeliveryAddressForm{
-			Processed:    false,
-			DeliveryCode: shippingOption.DeliveryCode,
-			Method:       shippingOption.Method,
-			Carrier:      shippingOption.Carrier,
-		}
-
 		delivery, found := cart.GetDeliveryByCode(shippingOption.DeliveryCode)
 		if !found {
-			formResult.ValidationInfo.GeneralErrors = []domain.Error{
-				{
-					MessageKey: "delivery_not_found",
-				},
-			}
-			result = append(result, &formResult)
-			continue
+			return nil, cartDomain.ErrDeliveryCodeNotFound
 		}
 
 		deliveryInfo := delivery.DeliveryInfo
@@ -235,11 +220,9 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryShippingOptions
 		if err != nil {
 			return nil, err
 		}
-		formResult.Processed = true
-		result = append(result, &formResult)
 	}
 
-	return result, nil
+	return &dto.UpdateShippingOptionsResult{Processed: true}, nil
 }
 
 // CartClean clears users cart

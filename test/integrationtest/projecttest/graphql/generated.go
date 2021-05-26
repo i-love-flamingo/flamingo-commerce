@@ -433,6 +433,10 @@ type ComplexityRoot struct {
 		Type  func(childComplexity int) int
 	}
 
+	CommerceCartUpdateDeliveryShippingOptionsResult struct {
+		Processed func(childComplexity int) int
+	}
+
 	CommerceCartValidationResult struct {
 		CommonErrorMessageKey func(childComplexity int) int
 		HasCommonError        func(childComplexity int) int
@@ -989,7 +993,7 @@ type MutationResolver interface {
 	CommerceCartRemoveGiftCard(ctx context.Context, giftCardCode string) (*dto.DecoratedCart, error)
 	CommerceCartRemoveCouponCode(ctx context.Context, couponCode string) (*dto.DecoratedCart, error)
 	CommerceCartUpdateDeliveryAddresses(ctx context.Context, deliveryAdresses []*forms.DeliveryForm) ([]*dto.DeliveryAddressForm, error)
-	CommerceCartUpdateDeliveryShippingOptions(ctx context.Context, shippingOptions []*dto.DeliveryShippingOption) ([]*dto.DeliveryAddressForm, error)
+	CommerceCartUpdateDeliveryShippingOptions(ctx context.Context, shippingOptions []*dto.DeliveryShippingOption) (*dto.UpdateShippingOptionsResult, error)
 	CommerceCartClean(ctx context.Context) (bool, error)
 	CommerceCartUpdateAdditionalData(ctx context.Context, additionalData []*dto.KeyValue) (*dto.DecoratedCart, error)
 	CommerceCartUpdateDeliveriesAdditionalData(ctx context.Context, data []*dto.DeliveryAdditionalData) (*dto.DecoratedCart, error)
@@ -2727,6 +2731,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceCartTotalitem.Type(childComplexity), true
+
+	case "Commerce_Cart_UpdateDeliveryShippingOptions_Result.processed":
+		if e.complexity.CommerceCartUpdateDeliveryShippingOptionsResult.Processed == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartUpdateDeliveryShippingOptionsResult.Processed(childComplexity), true
 
 	case "Commerce_Cart_ValidationResult.commonErrorMessageKey":
 		if e.complexity.CommerceCartValidationResult.CommonErrorMessageKey == nil {
@@ -6034,6 +6045,11 @@ type Commerce_Cart_DeliveryAddressForm {
     processed: Boolean
 }
 
+type Commerce_Cart_UpdateDeliveryShippingOptions_Result {
+    "Shows if the request was successfully processed"
+    processed: Boolean
+}
+
 input Commerce_Cart_DeliveryShippingOptionInput {
     "Unique delivery code to identify an **existing** delivery"
     deliveryCode: String!
@@ -6074,7 +6090,7 @@ extend type Mutation {
     "Adds/Updates one/multiple Delivery Addresses"
     Commerce_Cart_UpdateDeliveryAddresses(deliveryAdresses: [Commerce_Cart_DeliveryAddressInput!]): [Commerce_Cart_DeliveryAddressForm]!
     "Adds/Updates one/multiple Delivery Addresses"
-    Commerce_Cart_UpdateDeliveryShippingOptions(shippingOptions: [Commerce_Cart_DeliveryShippingOptionInput!]): [Commerce_Cart_DeliveryAddressForm]!
+    Commerce_Cart_UpdateDeliveryShippingOptions(shippingOptions: [Commerce_Cart_DeliveryShippingOptionInput!]): Commerce_Cart_UpdateDeliveryShippingOptions_Result!
     "Cleans current cart"
     Commerce_Cart_Clean: Boolean!
     "Adds/Updates additional data for the cart"
@@ -14302,6 +14318,34 @@ func (ec *executionContext) _Commerce_Cart_Totalitem_type(ctx context.Context, f
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_UpdateDeliveryShippingOptions_Result_processed(ctx context.Context, field graphql.CollectedField, obj *dto.UpdateShippingOptionsResult) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_UpdateDeliveryShippingOptions_Result",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Processed, nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Cart_ValidationResult_hasCommonError(ctx context.Context, field graphql.CollectedField, obj *validation.Result) (ret graphql.Marshaler) {
@@ -23313,9 +23357,9 @@ func (ec *executionContext) _Mutation_Commerce_Cart_UpdateDeliveryShippingOption
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*dto.DeliveryAddressForm)
+	res := resTmp.(*dto.UpdateShippingOptionsResult)
 	fc.Result = res
-	return ec.marshalNCommerce_Cart_DeliveryAddressForm2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAddressForm(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Cart_UpdateDeliveryShippingOptions_Result2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐUpdateShippingOptionsResult(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_Commerce_Cart_Clean(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -27588,6 +27632,30 @@ func (ec *executionContext) _Commerce_Cart_Totalitem(ctx context.Context, sel as
 	return out
 }
 
+var commerce_Cart_UpdateDeliveryShippingOptions_ResultImplementors = []string{"Commerce_Cart_UpdateDeliveryShippingOptions_Result"}
+
+func (ec *executionContext) _Commerce_Cart_UpdateDeliveryShippingOptions_Result(ctx context.Context, sel ast.SelectionSet, obj *dto.UpdateShippingOptionsResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_UpdateDeliveryShippingOptions_ResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_UpdateDeliveryShippingOptions_Result")
+		case "processed":
+			out.Values[i] = ec._Commerce_Cart_UpdateDeliveryShippingOptions_Result_processed(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var commerce_Cart_ValidationResultImplementors = []string{"Commerce_Cart_ValidationResult"}
 
 func (ec *executionContext) _Commerce_Cart_ValidationResult(ctx context.Context, sel ast.SelectionSet, obj *validation.Result) graphql.Marshaler {
@@ -31265,6 +31333,20 @@ func (ec *executionContext) marshalNCommerce_Cart_Teaser2ᚖflamingoᚗmeᚋflam
 
 func (ec *executionContext) marshalNCommerce_Cart_Totalitem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐTotalitem(ctx context.Context, sel ast.SelectionSet, v cart.Totalitem) graphql.Marshaler {
 	return ec._Commerce_Cart_Totalitem(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Cart_UpdateDeliveryShippingOptions_Result2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐUpdateShippingOptionsResult(ctx context.Context, sel ast.SelectionSet, v dto.UpdateShippingOptionsResult) graphql.Marshaler {
+	return ec._Commerce_Cart_UpdateDeliveryShippingOptions_Result(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Cart_UpdateDeliveryShippingOptions_Result2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐUpdateShippingOptionsResult(ctx context.Context, sel ast.SelectionSet, v *dto.UpdateShippingOptionsResult) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Commerce_Cart_UpdateDeliveryShippingOptions_Result(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNCommerce_Cart_ValidationResult2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋvalidationᚐResult(ctx context.Context, sel ast.SelectionSet, v validation.Result) graphql.Marshaler {

@@ -201,7 +201,7 @@ type rootResolverMutation struct {
 	resolveCommerceCartRemoveGiftCard                 func(ctx context.Context, giftCardCode string) (*dto.DecoratedCart, error)
 	resolveCommerceCartRemoveCouponCode               func(ctx context.Context, couponCode string) (*dto.DecoratedCart, error)
 	resolveCommerceCartUpdateDeliveryAddresses        func(ctx context.Context, deliveryAdresses []*forms.DeliveryForm) ([]*dto.DeliveryAddressForm, error)
-	resolveCommerceCartUpdateDeliveryShippingOptions  func(ctx context.Context, shippingOptions []*dto.DeliveryShippingOption) ([]*dto.DeliveryAddressForm, error)
+	resolveCommerceCartUpdateDeliveryShippingOptions  func(ctx context.Context, shippingOptions []*dto.DeliveryShippingOption) (*dto.UpdateShippingOptionsResult, error)
 	resolveCommerceCartClean                          func(ctx context.Context) (bool, error)
 	resolveCommerceCartUpdateAdditionalData           func(ctx context.Context, additionalData []*dto.KeyValue) (*dto.DecoratedCart, error)
 	resolveCommerceCartUpdateDeliveriesAdditionalData func(ctx context.Context, data []*dto.DeliveryAdditionalData) (*dto.DecoratedCart, error)
@@ -289,7 +289,7 @@ func (r *rootResolverMutation) CommerceCartRemoveCouponCode(ctx context.Context,
 func (r *rootResolverMutation) CommerceCartUpdateDeliveryAddresses(ctx context.Context, deliveryAdresses []*forms.DeliveryForm) ([]*dto.DeliveryAddressForm, error) {
 	return r.resolveCommerceCartUpdateDeliveryAddresses(ctx, deliveryAdresses)
 }
-func (r *rootResolverMutation) CommerceCartUpdateDeliveryShippingOptions(ctx context.Context, shippingOptions []*dto.DeliveryShippingOption) ([]*dto.DeliveryAddressForm, error) {
+func (r *rootResolverMutation) CommerceCartUpdateDeliveryShippingOptions(ctx context.Context, shippingOptions []*dto.DeliveryShippingOption) (*dto.UpdateShippingOptionsResult, error) {
 	return r.resolveCommerceCartUpdateDeliveryShippingOptions(ctx, shippingOptions)
 }
 func (r *rootResolverMutation) CommerceCartClean(ctx context.Context) (bool, error) {

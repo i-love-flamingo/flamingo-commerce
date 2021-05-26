@@ -77,6 +77,8 @@ func (*Service) Types(types *graphql.Types) {
 	types.Resolve("Commerce_Cart_DefaultPaymentSelection", "cartSplit", CommerceCartQueryResolver{}, "CartSplit")
 	types.Map("Commerce_Cart_DeliveryAddressForm", dto.DeliveryAddressForm{})
 	types.Map("Commerce_Cart_DeliveryAddressInput", forms.DeliveryForm{})
+	types.Map("Commerce_Cart_UpdateDeliveryShippingOptions_Result", dto.UpdateShippingOptionsResult{})
+
 	types.GoField("Commerce_Cart_DeliveryAddressInput", "deliveryCode", "LocationCode")
 	types.GoField("Commerce_Cart_DeliveryAddressInput", "carrier", "ShippingCarrier")
 	types.GoField("Commerce_Cart_DeliveryAddressInput", "method", "ShippingMethod")
