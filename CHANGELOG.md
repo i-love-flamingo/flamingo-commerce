@@ -23,6 +23,13 @@
 
 **checkout**
 * Introducing Flamingo events on final states of the place order process
+* API
+  * In case of an invalid cart during place order process we now expose the cart validation result, affected endpoints:
+    ```
+    GET /api/v1/checkout/placeorder
+    POST /api/v1/checkout/placeorder/refresh
+    POST /api/v1/checkout/placeorder/refresh-blocking
+    ```
 
 **customer**
 * Add mockery mocks for both `Customer` / `CustomerIdentityService` for easier testing

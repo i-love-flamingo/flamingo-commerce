@@ -2,13 +2,14 @@ package validation
 
 import (
 	"context"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 
 	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (
-	//Result groups the validation result
+	// Result groups the validation result
 	Result struct {
 		HasCommonError        bool
 		CommonErrorMessageKey string
