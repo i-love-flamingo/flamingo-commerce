@@ -1710,6 +1710,9 @@ var doc = `{
                 "Cart": {
                     "$ref": "#/definitions/cart.Cart"
                 },
+                "CartValidationResult": {
+                    "$ref": "#/definitions/validation.Result"
+                },
                 "FailedReason": {
                     "type": "string"
                 },
