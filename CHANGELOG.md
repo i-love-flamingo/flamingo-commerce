@@ -4,7 +4,8 @@
 * API
   * **Breaking**: Update `DELETE /api/v1/cart` to actually clean the whole cart not only removing the cart items (introduces new route for the previous behaviour, see below)
   * Add new endpoint `DELETE /api/v1/cart/deliveries/items` to be able to remove all cart items from all deliveries but keeping delivery info and other cart data untouched
-* Add new method `SumShippingGrossWithDiscounts` to the cart domain which returns gross shipping costs for the cart
+* Add new method `SumShippingGrossWithDiscounts` to the cart domain which returns gross shipping costs for the cart 
+* When using the `ItemSplitter` to split items in items with single qty (`SplitInSingleQtyItems`) the split discounts are reversed to make splitting the row total stable.
 * `CartService`
   * Add `UpdateAdditionalData` to be able to set additional data to cart
   * Add `UpdateDeliveryAdditionalData` to be able to set additional data to the delivery info
