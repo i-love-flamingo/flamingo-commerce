@@ -11,7 +11,7 @@ A demoshop using the standalone adapters is online here https://demoshop.flaming
  
 ## What problems does Flamingo Commerce solve?
 
-* Modern Architecture: Break monolithic e-commerce architeture to allow scaling and maintainability. 
+* Modern Architecture: Break monolithic e-commerce architecture to allow scaling and maintainability. 
 * Modern Architecture: Use it to build commerce for headless commerce solutions
 * Real time commerce: Build personalized experiences - without the need to cache rendered pages
 
