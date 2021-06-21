@@ -418,6 +418,58 @@ func TestCart_SumShippingNetWithDiscounts(t *testing.T) {
 	}
 }
 
+func TestCart_SumShippingGrossWithDiscounts(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name string
+		cart cartDomain.Cart
+		want domain.Price
+	}{
+		{
+			name: "empty cart",
+			cart: cartDomain.Cart{},
+			want: domain.NewZero(""),
+		},
+		{
+			name: "cart with items with discounts but no shipping cost",
+			cart: func() cartDomain.Cart {
+				cart := &cartDomain.Cart{}
+				cart.Deliveries = append(cart.Deliveries, *testutils.BuildDeliveryWithDifferentDiscounts(t))
+				return *cart
+			}(),
+			want: domain.NewZero(""),
+		},
+		{
+			name: "cart with items and shipping cost, both with discounts",
+			cart: func() cartDomain.Cart {
+				cart := &cartDomain.Cart{}
+				cart.Deliveries = append(cart.Deliveries, *testutils.BuildDeliveryWithDifferentDiscountsAndShippingDiscounts(t))
+				return *cart
+			}(),
+			want: domain.NewFromFloat(7.0, "$"),
+		},
+		{
+			name: "cart with multiple deliveries with items and shipping cost, some with discounts",
+			cart: func() cartDomain.Cart {
+				cart := &cartDomain.Cart{}
+				cart.Deliveries = append(cart.Deliveries, *testutils.BuildDeliveryWithDifferentDiscountsAndShippingDiscounts(t))
+				cart.Deliveries = append(cart.Deliveries, *testutils.BuildDeliveryWithoutDiscountsAndShippingDiscounts(t))
+				return *cart
+			}(),
+			want: domain.NewFromFloat(14.0, "$"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.cart.SumShippingGrossWithDiscounts(); !got.Equal(tt.want) {
+				t.Errorf("Cart.SumShippingGrossWithDiscounts() = %v, want %v", got.Amount(), tt.want.Amount())
+			}
+		})
+	}
+}
+
 /*
 func TestCart_HasNoMixedCart(t *testing.T) {
 	var cart = new(Cart)

@@ -29,7 +29,7 @@ type Commerce_Customer_PersonData {
 }
 
 type Commerce_Customer_Address {
-    id: ID!
+    id:                     ID!
     additionalAddressLines: [String!]
     city:                   String!
     company:                String!
@@ -45,6 +45,7 @@ type Commerce_Customer_Address {
     regionCode:             String!
     street:                 String!
     streetNumber:           String!
+    state:                  String!
     telephone:              String!
     email:                  String!
 }

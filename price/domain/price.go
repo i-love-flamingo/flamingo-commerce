@@ -6,6 +6,7 @@ import (
 	"errors"
 	"math"
 	"math/big"
+	"strconv"
 	"strings"
 )
 
@@ -459,23 +460,29 @@ func SumAll(prices ...Price) (Price, error) {
 	return result, nil
 }
 
-// MarshalJSON - implements interface required by json marshal
+// MarshalJSON implements interface required by json marshal
 func (p Price) MarshalJSON() (data []byte, err error) {
-	pn := priceEncodeAble{
-		Amount:   p.amount,
+	type priceJSON struct {
+		Amount   string
+		Currency string
+	}
+
+	pn := priceJSON{
+		Amount:   strconv.FormatFloat(p.GetPayable().FloatAmount(), 'f', 2, 64),
 		Currency: p.currency,
 	}
+
 	r, e := json.Marshal(&pn)
 	return r, e
 }
 
-// MarshalBinary - implements interface required by gob
+// MarshalBinary implements interface required by gob
 func (p Price) MarshalBinary() (data []byte, err error) {
 	return json.Marshal(p)
 }
 
-// UnmarshalBinary - implements interface required by gob.
-// UnmarshalBinary - modifies the receiver so it must take a pointer receiver!
+// UnmarshalBinary implements interface required by gob.
+// Modifies the receiver so it must take a pointer receiver!
 func (p *Price) UnmarshalBinary(data []byte) error {
 	var pe priceEncodeAble
 	err := json.Unmarshal(data, &pe)

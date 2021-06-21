@@ -7,6 +7,7 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	placeorderDomain "flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	"flamingo.me/flamingo-commerce/v3/checkout/application"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 
@@ -35,12 +36,13 @@ type (
 
 	// placeOrderContext infos
 	placeOrderContext struct {
-		Cart         *cart.Cart
-		OrderInfos   *placedOrderInfos
-		State        string
-		StateData    process.StateData
-		UUID         string
-		FailedReason string
+		Cart                 *cart.Cart
+		OrderInfos           *placedOrderInfos
+		State                string
+		StateData            process.StateData
+		UUID                 string
+		FailedReason         string
+		CartValidationResult *validation.Result
 	}
 
 	// placedOrderInfos infos
@@ -181,17 +183,24 @@ func (c *APIController) getPlaceOrderContext(ctx context.Context, pctx *process.
 			PlacedDecoratedCart: decoratedCart,
 		}
 	}
+
+	var validationResult *validation.Result
 	var failedReason string
 	if pctx.FailedReason != nil {
 		failedReason = pctx.FailedReason.Reason()
+		if reason, ok := pctx.FailedReason.(process.CartValidationErrorReason); ok {
+			validationResult = &reason.ValidationResult
+		}
 	}
+
 	return placeOrderContext{
-		Cart:         &pctx.Cart,
-		OrderInfos:   orderInfos,
-		State:        pctx.CurrentStateName,
-		StateData:    pctx.CurrentStateData,
-		FailedReason: failedReason,
-		UUID:         pctx.UUID,
+		Cart:                 &pctx.Cart,
+		OrderInfos:           orderInfos,
+		State:                pctx.CurrentStateName,
+		StateData:            pctx.CurrentStateData,
+		FailedReason:         failedReason,
+		CartValidationResult: validationResult,
+		UUID:                 pctx.UUID,
 	}
 }
 

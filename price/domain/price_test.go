@@ -3,12 +3,14 @@ package domain_test
 import (
 	"bytes"
 	"encoding/gob"
+	"encoding/json"
 	"math"
 	"math/big"
 	"testing"
 
 	"flamingo.me/flamingo-commerce/v3/price/domain"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestPrice_IsLessThen(t *testing.T) {
@@ -89,7 +91,7 @@ func TestPrice_SplitInPayables(t *testing.T) {
 	for _, price := range payableSplitPrices {
 		sumPrice, _ = sumPrice.Add(price)
 	}
-	//sum of the splitted payable need to match original price payable
+	// sum of the splitted payable need to match original price payable
 	assert.Equal(t, originalPrice.GetPayable().Amount(), sumPrice.GetPayable().Amount())
 
 	originalPrice = domain.NewFromFloat(12.456, "EUR")
@@ -99,7 +101,7 @@ func TestPrice_SplitInPayables(t *testing.T) {
 	for _, price := range payableSplitPrices {
 		sumPrice, _ = sumPrice.Add(price)
 	}
-	//sum of the splitted payable need to match original price payable
+	// sum of the splitted payable need to match original price payable
 	assert.Equal(t, originalPrice.GetPayable().Amount(), sumPrice.GetPayable().Amount())
 
 	// edge case for negative input (happens when discounts are split)
@@ -116,7 +118,7 @@ func TestPrice_SplitInPayables(t *testing.T) {
 func TestPrice_Discounted(t *testing.T) {
 	originalPrice := domain.NewFromFloat(12.45, "EUR")
 	discountedPrice := originalPrice.Discounted(10).GetPayable()
-	//10% of - expected rounded value of 11.21
+	// 10% of - expected rounded value of 11.21
 	assert.Equal(t, domain.NewFromInt(1121, 100, "").Amount(), discountedPrice.Amount())
 }
 
@@ -137,14 +139,14 @@ func TestSumAll(t *testing.T) {
 }
 
 func TestPrice_TaxFromGross(t *testing.T) {
-	//119 €
+	// 119 €
 	price := domain.NewFromInt(119, 1, "EUR")
 	tax := price.TaxFromGross(*new(big.Float).SetInt64(19))
 	assert.Equal(t, tax, domain.NewFromInt(19, 1, "EUR"))
 }
 
 func TestPrice_TaxFromNet(t *testing.T) {
-	//100 €
+	// 100 €
 	price := domain.NewFromInt(100, 1, "EUR")
 	tax := price.TaxFromNet(*new(big.Float).SetInt64(19))
 	assert.Equal(t, tax, domain.NewFromInt(19, 1, "EUR"), "expect 19 € tax fromm 100€")
@@ -328,4 +330,30 @@ func TestCharges_GetByChargeQualifierForced(t *testing.T) {
 	charge = charges.GetByChargeQualifierForced(domain.ChargeQualifier{Type: domain.ChargeTypeMain, Reference: "SJHHQWAXX6HJSDZ82"})
 	assert.Equal(t, charge, domain.Charge{Type: domain.ChargeTypeMain, Reference: "SJHHQWAXX6HJSDZ82", Price: domain.NewFromInt(200, 1, "€")})
 
+}
+
+func TestPrice_MarshalJSON(t *testing.T) {
+	t.Run("JSON marshalling works", func(t *testing.T) {
+		price := domain.NewFromFloat(55.111111, "USD")
+
+		priceJSON, err := price.MarshalJSON()
+		require.NoError(t, err)
+		assert.Equal(t, `{"Amount":"55.11","Currency":"USD"}`, string(priceJSON))
+	})
+
+	t.Run("JSON price is rounded", func(t *testing.T) {
+		price := domain.NewFromFloat(55.119, "USD")
+
+		priceJSON, err := price.MarshalJSON()
+		require.NoError(t, err)
+		assert.Equal(t, `{"Amount":"55.12","Currency":"USD"}`, string(priceJSON))
+	})
+}
+
+func TestPrice_UnmarshalJSON(t *testing.T) {
+	var p domain.Price
+
+	err := json.Unmarshal([]byte(`{"Amount":"55.12","Currency":"USD"}`), &p)
+	require.NoError(t, err)
+	assert.Equal(t, domain.NewFromFloat(55.12, "USD").GetPayable(), p.GetPayable())
 }

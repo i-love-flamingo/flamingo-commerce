@@ -480,11 +480,13 @@ func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, dec
 	placeOrderInfo := os.preparePlaceOrderInfo(ctx, decoratedCart.Cart, placedOrderInfos, *cartPayment)
 	os.storeLastPlacedOrder(ctx, placeOrderInfo)
 
-	err = gateway.ConfirmResult(ctx, &decoratedCart.Cart, cartPayment)
-	if err != nil {
-		os.logger.WithContext(ctx).Error("Error during gateway.ConfirmResult: " + err.Error())
+	if flowStatus.Status != paymentDomain.PaymentFlowStatusCompleted {
+		err = gateway.ConfirmResult(ctx, &decoratedCart.Cart, cartPayment)
+		if err != nil {
+			os.logger.WithContext(ctx).Error("Error during gateway.ConfirmResult: " + err.Error())
 
-		return nil, err
+			return nil, err
+		}
 	}
 
 	// record placeOrderSuccessCount metric

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"sort"
 
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
@@ -468,6 +469,17 @@ func (s *ItemSplitter) SplitInSingleQtyItems(givenItem Item) ([]Item, error) {
 		itemBuilder.SetQty(1)
 		for _, ap := range givenItem.AppliedDiscounts {
 			apSplitted, err := ap.Applied.SplitInPayables(givenItem.Qty)
+			// The split adds the moving cents to the first ones, resulting in
+			// having the smallest prices at the end but since discounts are
+			// negative, we need to reverse it to ensure that a split of the row
+			// totals has the rounding cents at the same positions
+			sort.Slice(apSplitted, func(i, j int) bool {
+				return apSplitted[i].FloatAmount() > apSplitted[j].FloatAmount()
+			})
+			p := make([]float64, 0)
+			for _, i := range apSplitted {
+				p = append(p, i.FloatAmount())
+			}
 			if err != nil {
 				return nil, err
 			}

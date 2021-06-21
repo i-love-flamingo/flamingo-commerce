@@ -6,7 +6,9 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/states"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestFailed_IsFinal(t *testing.T) {
@@ -25,6 +27,12 @@ func TestFailed_Rollback(t *testing.T) {
 }
 
 func TestFailed_Run(t *testing.T) {
-	s := states.Failed{}
+	p := &process.Process{}
+	s := new(states.Failed).Inject(&eventRouter{
+		validator: func(event flamingo.Event) {
+			require.IsType(t, &states.FailedEvent{}, event)
+			assert.Equal(t, event.(*states.FailedEvent).ProcessContext, p.Context())
+		},
+	})
 	assert.Equal(t, s.Run(context.Background(), &process.Process{}), process.RunResult{})
 }

@@ -10,6 +10,7 @@ import (
 	"path"
 	"strings"
 	"testing"
+	"unicode"
 
 	"github.com/gavv/httpexpect/v2"
 	"github.com/google/go-cmp/cmp"
@@ -57,7 +58,7 @@ func loginTestCustomer(t *testing.T, e *httpexpect.Expect) {
 // prepareCart adds a simple product via graphQl
 func prepareCart(t *testing.T, e *httpexpect.Expect) {
 	t.Helper()
-	helper.GraphQlRequest(t, e, loadGraphQL(t, "add_to_cart", map[string]string{"MARKETPLACECODE": "fake_simple"})).Expect().Status(http.StatusOK)
+	helper.GraphQlRequest(t, e, loadGraphQL(t, "cart_add_to_cart", map[string]string{"MARKETPLACE_CODE": "fake_simple", "DELIVERY_CODE": "delivery"})).Expect().Status(http.StatusOK)
 }
 
 // prepareCartWithPaymentSelection adds a simple product via graphQl
@@ -69,7 +70,7 @@ func prepareCartWithPaymentSelection(t *testing.T, e *httpexpect.Expect, payment
 		code = *marketPlaceCode
 	}
 
-	helper.GraphQlRequest(t, e, loadGraphQL(t, "add_to_cart", map[string]string{"MARKETPLACECODE": code})).Expect().Status(http.StatusOK)
+	helper.GraphQlRequest(t, e, loadGraphQL(t, "cart_add_to_cart", map[string]string{"MARKETPLACE_CODE": code, "DELIVERY_CODE": "delivery"})).Expect().Status(http.StatusOK)
 	helper.GraphQlRequest(t, e, loadGraphQL(t, "update_payment_selection", map[string]string{"PAYMENT_METHOD": paymentMethod})).Expect().Status(http.StatusOK)
 }
 
@@ -170,4 +171,14 @@ func assertResponseForExpectedState(t *testing.T, response *httpexpect.Response,
 	if diff := cmp.Diff(data, expectedState); diff != "" {
 		t.Errorf("diff mismatch (-want +got):\\n%s", diff)
 	}
+}
+
+// spaceMap strips all whitespace from given string
+func spaceMap(str string) string {
+	return strings.Map(func(r rune) rune {
+		if unicode.IsSpace(r) {
+			return -1
+		}
+		return r
+	}, str)
 }
