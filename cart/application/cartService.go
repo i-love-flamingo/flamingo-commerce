@@ -1253,5 +1253,6 @@ func (cs *CartService) UpdateDeliveryAdditionalData(ctx context.Context, session
 		return nil, err
 	}
 
-	return cart, nil
+	cart, _, err = cs.cartReceiverService.GetCart(ctx, session)
+	return cart, err
 }
