@@ -1002,6 +1002,7 @@ func TestCartService_CartInEvent(t *testing.T) {
 func createCartServiceWithDependencies() *cartApplication.CartService {
 	eventRouter := new(MockEventRouter)
 	eventRouter.On("Dispatch", mock.Anything, mock.Anything, mock.Anything).Return()
+	cartCache := new(MockCartCache)
 
 	crs := &cartApplication.CartReceiverService{}
 	crs.Inject(new(MockGuestCartServiceWithModifyBehaviour),
@@ -1021,7 +1022,7 @@ func createCartServiceWithDependencies() *cartApplication.CartService {
 		&struct {
 			CartCache cartApplication.CartCache `inject:",optional"`
 		}{
-			CartCache: new(MockCartCache),
+			CartCache: cartCache,
 		})
 
 	cs := &cartApplication.CartService{}
@@ -1049,7 +1050,14 @@ func createCartServiceWithDependencies() *cartApplication.CartService {
 			DefaultDeliveryCode: "default_delivery_code",
 			DeleteEmptyDelivery: false,
 		},
-		nil,
+		&struct {
+			CartValidator     validation.Validator      `inject:",optional"`
+			ItemValidator     validation.ItemValidator  `inject:",optional"`
+			CartCache         cartApplication.CartCache `inject:",optional"`
+			PlaceOrderService placeorder.Service        `inject:",optional"`
+		}{
+			CartCache: cartCache,
+		},
 	)
 	return cs
 }
