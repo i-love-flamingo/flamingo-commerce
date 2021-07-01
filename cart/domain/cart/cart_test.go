@@ -1,18 +1,103 @@
 package cart_test
 
 import (
+	"encoding/json"
 	"math/big"
+	"reflect"
 	"testing"
 
-	"flamingo.me/flamingo-commerce/v3/cart/domain/testutils"
-
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/testutils"
+	"github.com/stretchr/testify/require"
 
 	"github.com/stretchr/testify/assert"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/price/domain"
 )
+
+func assertDeepClone(t testing.TB, orig, cloned reflect.Value) {
+	t.Helper()
+	require.Equal(t, orig.Type(), cloned.Type())
+	switch orig.Kind() {
+	case reflect.Struct:
+		for i := 0; i < orig.NumField(); i++ {
+			assertDeepClone(t, orig.Field(i), cloned.Field(i))
+		}
+	case reflect.Slice, reflect.Array:
+		if orig.IsNil() {
+			return
+		}
+		assert.NotEqual(t, orig.Pointer(), cloned.Pointer())
+		for i := 0; i < orig.Len(); i++ {
+			assertDeepClone(t, orig.Index(i), cloned.Index(i))
+		}
+	case reflect.Map:
+		if orig.IsNil() {
+			return
+		}
+		assert.NotEqual(t, orig.Pointer(), cloned.Pointer())
+		iter := orig.MapRange()
+		for iter.Next() {
+			assertDeepClone(t, iter.Value(), cloned.MapIndex(iter.Key()))
+		}
+	case reflect.Ptr:
+		if orig.IsNil() {
+			return
+		}
+		assert.NotEqual(t, orig.Pointer(), cloned.Pointer())
+		assertDeepClone(t, orig.Elem(), cloned.Elem())
+	default:
+	}
+
+}
+
+func TestCart_Clone(t *testing.T) {
+	t.Parallel()
+	cart := cartDomain.Cart{
+		ID:             "original",
+		BillingAddress: &cartDomain.Address{},
+		Purchaser: &cartDomain.Person{
+			Address:              &cartDomain.Address{},
+			PersonalDetails:      cartDomain.PersonalDetails{},
+			ExistingCustomerData: &cartDomain.ExistingCustomerData{ID: "1"},
+		},
+		Deliveries: []cartDomain.Delivery{
+			{
+				DeliveryInfo: cartDomain.DeliveryInfo{
+					Code: "code",
+					DeliveryLocation: cartDomain.DeliveryLocation{
+						Address:           &cartDomain.Address{},
+						UseBillingAddress: false,
+						Code:              "",
+					},
+					AdditionalData:          map[string]string{"hello": "you"},
+					AdditionalDeliveryInfos: map[string]json.RawMessage{"foo": json.RawMessage("test")},
+				},
+				Cartitems: []cartDomain.Item{
+					{
+						AdditionalData: map[string]string{"hello": "you"},
+					},
+				},
+				ShippingItem: cartDomain.ShippingItem{
+					Title: "",
+				},
+			},
+		},
+		AdditionalData: cartDomain.AdditionalData{CustomAttributes: map[string]string{"hello": "you"}},
+	}
+
+	cloned, err := cart.Clone()
+	require.NoError(t, err)
+
+	assert.True(t, reflect.DeepEqual(cart, cloned), "cloned cart should have same values")
+
+	assertDeepClone(t, reflect.ValueOf(cart), reflect.ValueOf(cloned))
+
+	// some alibi changes to check that it is really a clone
+	cloned.AdditionalData.CustomAttributes["hello"] = "bar"
+	assert.Equal(t, "you", cart.AdditionalData.CustomAttributes["hello"])
+}
 
 func TestCart_GetMainShippingEMail(t *testing.T) {
 	t.Parallel()

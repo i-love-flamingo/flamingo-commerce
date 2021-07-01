@@ -1,6 +1,7 @@
 package cart
 
 import (
+	"bytes"
 	"encoding/gob"
 	"fmt"
 	"math/big"
@@ -172,6 +173,23 @@ func (c Cart) GetMainShippingEMail() string {
 	}
 
 	return ""
+}
+
+// Clone the current cart
+func (c Cart) Clone() (Cart, error) {
+	cloned := Cart{}
+
+	b := new(bytes.Buffer)
+	err := gob.NewEncoder(b).Encode(c)
+	if err != nil {
+		return Cart{}, err
+	}
+	err = gob.NewDecoder(b).Decode(&cloned)
+	if err != nil {
+		return Cart{}, err
+	}
+
+	return cloned, nil
 }
 
 // GetContactMail returns the contact mail from the shipping address with fall back to the billing address
