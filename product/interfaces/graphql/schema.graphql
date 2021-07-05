@@ -205,7 +205,7 @@ type Commerce_Product_PriceInfo {
     default: Commerce_Price
     discounted: Commerce_Price
     discountText: String!
-    activeBase: Float!
+    activeBase: Commerce_Price
     activeBaseAmount: Float!
     activeBaseUnit: String
     isDiscounted: Boolean
