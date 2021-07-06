@@ -2,6 +2,7 @@ package graphql
 
 import (
 	"context"
+	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	productApplication "flamingo.me/flamingo-commerce/v3/product/application"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	productDto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
@@ -60,4 +61,10 @@ func (r *CommerceProductQueryResolver) CommerceProductSearch(ctx context.Context
 	}
 
 	return WrapSearchResult(result), nil
+}
+
+// ActiveBase resolves to price
+func (r *CommerceProductQueryResolver) ActiveBase(_ context.Context, priceInfo *domain.PriceInfo) (*priceDomain.Price, error) {
+	result := priceDomain.NewFromBigFloat(priceInfo.ActiveBase, priceInfo.Default.Currency())
+	return &result, nil
 }

@@ -20,6 +20,7 @@
   * Add new field `customAttributes` to the `Commerce_CartAdditionalData` type
   * Add new field `additionalData` to the `Commerce_CartDeliveryInfo` type
   * Add new type `Commerce_Cart_CustomAttributes` with method for getting key/value pairs
+  * **Breaking**: Change `activeBase` of `Commerce_Product_PriceInfo` from `Float` to `Commerce_Price`
   * **Breaking**: Make naming convention consistent in graphql schema `Commerce_Cart_*`
   * **Breaking**: Remove the fields `getAdditionalData, additionalDataKeys, additionalDeliveryInfoKeys` from the `Commerce_CartDeliveryInfo` type
   * **Breaking**: `Commerce_Cart_UpdateDeliveryShippingOptions` mutation responded with slice of `Commerce_Cart_DeliveryAddressForm` which was incorrect as we don't process any form data within the mutation. It responds now rightly only with `processed` state.

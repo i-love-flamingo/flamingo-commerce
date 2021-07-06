@@ -45,6 +45,7 @@ func (*Service) Types(types *graphql.Types) {
 	types.Map("Commerce_Product_Attribute", domain.Attribute{})
 	types.Map("Commerce_Product_CategoryTeaser", domain.CategoryTeaser{})
 	types.Map("Commerce_Product_PriceInfo", domain.PriceInfo{})
+	types.Resolve("Commerce_Product_PriceInfo", "activeBase", CommerceProductQueryResolver{}, "ActiveBase")
 	types.Map("Commerce_Product_SearchResult", SearchResultDTO{})
 	types.Map("Commerce_Product_Badges", graphqlProductDto.ProductBadges{})
 	types.Map("Commerce_Product_Badge", domain.Badge{})

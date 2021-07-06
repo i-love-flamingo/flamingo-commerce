@@ -12,19 +12,21 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
 	graphql1 "flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
-	domain1 "flamingo.me/flamingo-commerce/v3/category/domain"
+	domain3 "flamingo.me/flamingo-commerce/v3/category/domain"
 	graphql7 "flamingo.me/flamingo-commerce/v3/category/interfaces/graphql"
 	"flamingo.me/flamingo-commerce/v3/category/interfaces/graphql/categorydto"
-	graphql4 "flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql"
+	graphql5 "flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql"
 	dto1 "flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql/dto"
 	graphql6 "flamingo.me/flamingo-commerce/v3/customer/interfaces/graphql"
 	"flamingo.me/flamingo-commerce/v3/customer/interfaces/graphql/dtocustomer"
-	graphql5 "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql"
+	domain1 "flamingo.me/flamingo-commerce/v3/price/domain"
+	"flamingo.me/flamingo-commerce/v3/product/domain"
+	graphql2 "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql"
 	graphqlproductdto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
-	"flamingo.me/flamingo-commerce/v3/search/domain"
-	graphql2 "flamingo.me/flamingo-commerce/v3/search/interfaces/graphql"
+	domain2 "flamingo.me/flamingo-commerce/v3/search/domain"
+	graphql3 "flamingo.me/flamingo-commerce/v3/search/interfaces/graphql"
 	"flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/searchdto"
-	graphql3 "flamingo.me/graphql"
+	graphql4 "flamingo.me/graphql"
 )
 
 var _ ResolverRoot = new(rootResolver)
@@ -36,6 +38,7 @@ type rootResolver struct {
 	rootResolverCommerce_Cart_DeliveryInfo            *rootResolverCommerce_Cart_DeliveryInfo
 	rootResolverCommerce_Cart_Item                    *rootResolverCommerce_Cart_Item
 	rootResolverCommerce_Cart_ShippingItem            *rootResolverCommerce_Cart_ShippingItem
+	rootResolverCommerce_Product_PriceInfo            *rootResolverCommerce_Product_PriceInfo
 	rootResolverCommerce_Search_Meta                  *rootResolverCommerce_Search_Meta
 	rootResolverMutation                              *rootResolverMutation
 	rootResolverQuery                                 *rootResolverQuery
@@ -48,6 +51,7 @@ func (r *rootResolver) Inject(
 	rootResolverCommerce_Cart_DeliveryInfo *rootResolverCommerce_Cart_DeliveryInfo,
 	rootResolverCommerce_Cart_Item *rootResolverCommerce_Cart_Item,
 	rootResolverCommerce_Cart_ShippingItem *rootResolverCommerce_Cart_ShippingItem,
+	rootResolverCommerce_Product_PriceInfo *rootResolverCommerce_Product_PriceInfo,
 	rootResolverCommerce_Search_Meta *rootResolverCommerce_Search_Meta,
 	rootResolverMutation *rootResolverMutation,
 	rootResolverQuery *rootResolverQuery,
@@ -58,6 +62,7 @@ func (r *rootResolver) Inject(
 	r.rootResolverCommerce_Cart_DeliveryInfo = rootResolverCommerce_Cart_DeliveryInfo
 	r.rootResolverCommerce_Cart_Item = rootResolverCommerce_Cart_Item
 	r.rootResolverCommerce_Cart_ShippingItem = rootResolverCommerce_Cart_ShippingItem
+	r.rootResolverCommerce_Product_PriceInfo = rootResolverCommerce_Product_PriceInfo
 	r.rootResolverCommerce_Search_Meta = rootResolverCommerce_Search_Meta
 	r.rootResolverMutation = rootResolverMutation
 	r.rootResolverQuery = rootResolverQuery
@@ -80,6 +85,9 @@ func (r *rootResolver) Commerce_Cart_Item() Commerce_Cart_ItemResolver {
 }
 func (r *rootResolver) Commerce_Cart_ShippingItem() Commerce_Cart_ShippingItemResolver {
 	return r.rootResolverCommerce_Cart_ShippingItem
+}
+func (r *rootResolver) Commerce_Product_PriceInfo() Commerce_Product_PriceInfoResolver {
+	return r.rootResolverCommerce_Product_PriceInfo
 }
 func (r *rootResolver) Commerce_Search_Meta() Commerce_Search_MetaResolver {
 	return r.rootResolverCommerce_Search_Meta
@@ -175,17 +183,31 @@ func (r *rootResolverCommerce_Cart_ShippingItem) AppliedDiscounts(ctx context.Co
 	return r.resolveAppliedDiscounts(ctx, obj)
 }
 
+type rootResolverCommerce_Product_PriceInfo struct {
+	resolveActiveBase func(ctx context.Context, obj *domain.PriceInfo) (*domain1.Price, error)
+}
+
+func (r *rootResolverCommerce_Product_PriceInfo) Inject(
+	commerce_Product_PriceInfoActiveBase *graphql2.CommerceProductQueryResolver,
+) {
+	r.resolveActiveBase = commerce_Product_PriceInfoActiveBase.ActiveBase
+}
+
+func (r *rootResolverCommerce_Product_PriceInfo) ActiveBase(ctx context.Context, obj *domain.PriceInfo) (*domain1.Price, error) {
+	return r.resolveActiveBase(ctx, obj)
+}
+
 type rootResolverCommerce_Search_Meta struct {
-	resolveSortOptions func(ctx context.Context, obj *domain.SearchMeta) ([]*searchdto.CommerceSearchSortOption, error)
+	resolveSortOptions func(ctx context.Context, obj *domain2.SearchMeta) ([]*searchdto.CommerceSearchSortOption, error)
 }
 
 func (r *rootResolverCommerce_Search_Meta) Inject(
-	commerce_Search_MetaSortOptions *graphql2.CommerceSearchQueryResolver,
+	commerce_Search_MetaSortOptions *graphql3.CommerceSearchQueryResolver,
 ) {
 	r.resolveSortOptions = commerce_Search_MetaSortOptions.SortOptions
 }
 
-func (r *rootResolverCommerce_Search_Meta) SortOptions(ctx context.Context, obj *domain.SearchMeta) ([]*searchdto.CommerceSearchSortOption, error) {
+func (r *rootResolverCommerce_Search_Meta) SortOptions(ctx context.Context, obj *domain2.SearchMeta) ([]*searchdto.CommerceSearchSortOption, error) {
 	return r.resolveSortOptions(ctx, obj)
 }
 
@@ -213,7 +235,7 @@ type rootResolverMutation struct {
 }
 
 func (r *rootResolverMutation) Inject(
-	mutationFlamingo *graphql3.FlamingoQueryResolver,
+	mutationFlamingo *graphql4.FlamingoQueryResolver,
 	mutationCommerceCartAddToCart *graphql1.CommerceCartMutationResolver,
 	mutationCommerceCartDeleteCartDelivery *graphql1.CommerceCartMutationResolver,
 	mutationCommerceCartDeleteItem *graphql1.CommerceCartMutationResolver,
@@ -228,11 +250,11 @@ func (r *rootResolverMutation) Inject(
 	mutationCommerceCartClean *graphql1.CommerceCartMutationResolver,
 	mutationCommerceCartUpdateAdditionalData *graphql1.CommerceCartMutationResolver,
 	mutationCommerceCartUpdateDeliveriesAdditionalData *graphql1.CommerceCartMutationResolver,
-	mutationCommerceCheckoutStartPlaceOrder *graphql4.CommerceCheckoutMutationResolver,
-	mutationCommerceCheckoutCancelPlaceOrder *graphql4.CommerceCheckoutMutationResolver,
-	mutationCommerceCheckoutClearPlaceOrder *graphql4.CommerceCheckoutMutationResolver,
-	mutationCommerceCheckoutRefreshPlaceOrder *graphql4.CommerceCheckoutMutationResolver,
-	mutationCommerceCheckoutRefreshPlaceOrderBlocking *graphql4.CommerceCheckoutMutationResolver,
+	mutationCommerceCheckoutStartPlaceOrder *graphql5.CommerceCheckoutMutationResolver,
+	mutationCommerceCheckoutCancelPlaceOrder *graphql5.CommerceCheckoutMutationResolver,
+	mutationCommerceCheckoutClearPlaceOrder *graphql5.CommerceCheckoutMutationResolver,
+	mutationCommerceCheckoutRefreshPlaceOrder *graphql5.CommerceCheckoutMutationResolver,
+	mutationCommerceCheckoutRefreshPlaceOrderBlocking *graphql5.CommerceCheckoutMutationResolver,
 ) {
 	r.resolveFlamingo = mutationFlamingo.Flamingo
 	r.resolveCommerceCartAddToCart = mutationCommerceCartAddToCart.CommerceAddToCart
@@ -320,7 +342,7 @@ func (r *rootResolverMutation) CommerceCheckoutRefreshPlaceOrderBlocking(ctx con
 type rootResolverQuery struct {
 	resolveFlamingo                         func(ctx context.Context) (*string, error)
 	resolveCommerceProduct                  func(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode *string) (graphqlproductdto.Product, error)
-	resolveCommerceProductSearch            func(ctx context.Context, searchRequest searchdto.CommerceSearchRequest) (*graphql5.SearchResultDTO, error)
+	resolveCommerceProductSearch            func(ctx context.Context, searchRequest searchdto.CommerceSearchRequest) (*graphql2.SearchResultDTO, error)
 	resolveCommerceCustomerStatus           func(ctx context.Context) (*dtocustomer.CustomerStatusResult, error)
 	resolveCommerceCustomer                 func(ctx context.Context) (*dtocustomer.CustomerResult, error)
 	resolveCommerceCartDecoratedCart        func(ctx context.Context) (*dto.DecoratedCart, error)
@@ -328,21 +350,21 @@ type rootResolverQuery struct {
 	resolveCommerceCartQtyRestriction       func(ctx context.Context, marketplaceCode string, variantCode *string, deliveryCode string) (*validation.RestrictionResult, error)
 	resolveCommerceCheckoutActivePlaceOrder func(ctx context.Context) (bool, error)
 	resolveCommerceCheckoutCurrentContext   func(ctx context.Context) (*dto1.PlaceOrderContext, error)
-	resolveCommerceCategoryTree             func(ctx context.Context, activeCategoryCode string) (domain1.Tree, error)
+	resolveCommerceCategoryTree             func(ctx context.Context, activeCategoryCode string) (domain3.Tree, error)
 	resolveCommerceCategory                 func(ctx context.Context, categoryCode string, categorySearchRequest *searchdto.CommerceSearchRequest) (*categorydto.CategorySearchResult, error)
 }
 
 func (r *rootResolverQuery) Inject(
-	queryFlamingo *graphql3.FlamingoQueryResolver,
-	queryCommerceProduct *graphql5.CommerceProductQueryResolver,
-	queryCommerceProductSearch *graphql5.CommerceProductQueryResolver,
+	queryFlamingo *graphql4.FlamingoQueryResolver,
+	queryCommerceProduct *graphql2.CommerceProductQueryResolver,
+	queryCommerceProductSearch *graphql2.CommerceProductQueryResolver,
 	queryCommerceCustomerStatus *graphql6.CustomerResolver,
 	queryCommerceCustomer *graphql6.CustomerResolver,
 	queryCommerceCartDecoratedCart *graphql1.CommerceCartQueryResolver,
 	queryCommerceCartValidator *graphql1.CommerceCartQueryResolver,
 	queryCommerceCartQtyRestriction *graphql1.CommerceCartQueryResolver,
-	queryCommerceCheckoutActivePlaceOrder *graphql4.CommerceCheckoutQueryResolver,
-	queryCommerceCheckoutCurrentContext *graphql4.CommerceCheckoutQueryResolver,
+	queryCommerceCheckoutActivePlaceOrder *graphql5.CommerceCheckoutQueryResolver,
+	queryCommerceCheckoutCurrentContext *graphql5.CommerceCheckoutQueryResolver,
 	queryCommerceCategoryTree *graphql7.CommerceCategoryQueryResolver,
 	queryCommerceCategory *graphql7.CommerceCategoryQueryResolver,
 ) {
@@ -366,7 +388,7 @@ func (r *rootResolverQuery) Flamingo(ctx context.Context) (*string, error) {
 func (r *rootResolverQuery) CommerceProduct(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode *string) (graphqlproductdto.Product, error) {
 	return r.resolveCommerceProduct(ctx, marketPlaceCode, variantMarketPlaceCode)
 }
-func (r *rootResolverQuery) CommerceProductSearch(ctx context.Context, searchRequest searchdto.CommerceSearchRequest) (*graphql5.SearchResultDTO, error) {
+func (r *rootResolverQuery) CommerceProductSearch(ctx context.Context, searchRequest searchdto.CommerceSearchRequest) (*graphql2.SearchResultDTO, error) {
 	return r.resolveCommerceProductSearch(ctx, searchRequest)
 }
 func (r *rootResolverQuery) CommerceCustomerStatus(ctx context.Context) (*dtocustomer.CustomerStatusResult, error) {
@@ -390,7 +412,7 @@ func (r *rootResolverQuery) CommerceCheckoutActivePlaceOrder(ctx context.Context
 func (r *rootResolverQuery) CommerceCheckoutCurrentContext(ctx context.Context) (*dto1.PlaceOrderContext, error) {
 	return r.resolveCommerceCheckoutCurrentContext(ctx)
 }
-func (r *rootResolverQuery) CommerceCategoryTree(ctx context.Context, activeCategoryCode string) (domain1.Tree, error) {
+func (r *rootResolverQuery) CommerceCategoryTree(ctx context.Context, activeCategoryCode string) (domain3.Tree, error) {
 	return r.resolveCommerceCategoryTree(ctx, activeCategoryCode)
 }
 func (r *rootResolverQuery) CommerceCategory(ctx context.Context, categoryCode string, categorySearchRequest *searchdto.CommerceSearchRequest) (*categorydto.CategorySearchResult, error) {
