@@ -5,6 +5,12 @@ query {
         meta {
             keywords
         }
+        price {
+            activeBase {
+                amount
+                currency
+            }
+        }
     }
 
     configurable: Commerce_Product(marketPlaceCode: "fake_configurable") {
