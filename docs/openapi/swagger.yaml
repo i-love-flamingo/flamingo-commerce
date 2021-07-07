@@ -600,6 +600,8 @@ definitions:
         type: string
       CustomerGroup:
         type: string
+      DeliveryCode:
+        type: string
       Locale:
         type: string
     type: object
@@ -667,7 +669,7 @@ definitions:
           type: string
         type: array
       LoyaltyEarnings:
-        description: LoyaltyEarnings jolds optional infos about potential loyalty earnings
+        description: LoyaltyEarnings holds optional infos about potential loyalty earnings
         items:
           $ref: '#/definitions/domain.LoyaltyEarningInfo'
         type: array

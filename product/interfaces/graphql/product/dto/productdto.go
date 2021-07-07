@@ -24,6 +24,7 @@ type (
 		Identifier() string
 		Media() ProductMedia
 		Price() productDomain.PriceInfo
+		AvailablePrices() []productDomain.PriceInfo
 		Title() string
 		Categories() ProductCategories
 		Description() string

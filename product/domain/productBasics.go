@@ -90,7 +90,7 @@ type (
 		AvailablePrices []PriceInfo
 		// LoyaltyPrices holds optional infos for products that can be paid in a loyalty program
 		LoyaltyPrices []LoyaltyPriceInfo
-		// LoyaltyEarnings jolds optional infos about potential loyalty earnings
+		// LoyaltyEarnings holds optional infos about potential loyalty earnings
 		LoyaltyEarnings []LoyaltyEarningInfo
 	}
 
@@ -130,6 +130,7 @@ type (
 
 	// PriceContext defines the scope in which the price was calculated
 	PriceContext struct {
+		DeliveryCode  string
 		CustomerGroup string
 		ChannelCode   string
 		Locale        string

@@ -98,6 +98,10 @@ func getProductDomainConfigurableWithActiveVariantProduct() productDomain.Config
 					Context:           productDomain.PriceContext{},
 					TaxClass:          "",
 				},
+				AvailablePrices: []productDomain.PriceInfo{{
+					Default: priceDomain.NewFromFloat(10.00, "EUR"),
+					Context: productDomain.PriceContext{CustomerGroup: "gold-members"},
+				}},
 			},
 		},
 
@@ -283,6 +287,14 @@ func TestActiveVariantProduct_Meta(t *testing.T) {
 func TestActiveVariantProduct_Price(t *testing.T) {
 	product := getActiveVariantProduct()
 	assert.Equal(t, priceDomain.NewFromFloat(23.23, "EUR").FloatAmount(), product.Price().Default.GetPayable().FloatAmount())
+}
+
+func TestActiveVariantProduct_AvailablePrices(t *testing.T) {
+	product := getActiveVariantProduct()
+	assert.Equal(t, []productDomain.PriceInfo{{
+		Default: priceDomain.NewFromFloat(10.00, "EUR"),
+		Context: productDomain.PriceContext{CustomerGroup: "gold-members"},
+	}}, product.AvailablePrices())
 }
 
 func TestActiveVariantProduct_Product(t *testing.T) {

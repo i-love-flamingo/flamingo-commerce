@@ -39,6 +39,11 @@ func (sp SimpleProduct) Price() productDomain.PriceInfo {
 	return sp.product.Saleable.ActivePrice
 }
 
+// AvailablePrices of the product
+func (sp SimpleProduct) AvailablePrices() []productDomain.PriceInfo {
+	return sp.product.Saleable.AvailablePrices
+}
+
 // Title of the product
 func (sp SimpleProduct) Title() string {
 	return sp.product.BaseData().Title
