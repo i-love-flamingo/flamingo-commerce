@@ -78,6 +78,10 @@ func getProductDomainSimpleProduct() productDomain.SimpleProduct {
 				Context:           productDomain.PriceContext{},
 				TaxClass:          "",
 			},
+			AvailablePrices: []productDomain.PriceInfo{{
+				Default: priceDomain.NewFromFloat(10.00, "EUR"),
+				Context: productDomain.PriceContext{CustomerGroup: "gold-members"},
+			}},
 		},
 		Teaser: productDomain.TeaserData{
 			TeaserLoyaltyPriceInfo: &productDomain.LoyaltyPriceInfo{
@@ -190,6 +194,14 @@ func TestSimpleProduct_Meta(t *testing.T) {
 func TestSimpleProduct_Price(t *testing.T) {
 	product := getSimpleProduct()
 	assert.Equal(t, priceDomain.NewFromFloat(23.23, "EUR").FloatAmount(), product.Price().Default.GetPayable().FloatAmount())
+}
+
+func TestSimpleProduct_AvailablePrices(t *testing.T) {
+	product := getSimpleProduct()
+	assert.Equal(t, []productDomain.PriceInfo{{
+		Default: priceDomain.NewFromFloat(10.00, "EUR"),
+		Context: productDomain.PriceContext{CustomerGroup: "gold-members"},
+	}}, product.AvailablePrices())
 }
 
 func TestSimpleProduct_Product(t *testing.T) {

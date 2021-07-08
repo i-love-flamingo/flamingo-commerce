@@ -661,6 +661,7 @@ type ComplexityRoot struct {
 	CommerceProductActiveVariantProduct struct {
 		ActiveVariationSelections func(childComplexity int) int
 		Attributes                func(childComplexity int) int
+		AvailablePrices           func(childComplexity int) int
 		Badges                    func(childComplexity int) int
 		Categories                func(childComplexity int) int
 		Description               func(childComplexity int) int
@@ -723,6 +724,7 @@ type ComplexityRoot struct {
 
 	CommerceProductConfigurableProduct struct {
 		Attributes          func(childComplexity int) int
+		AvailablePrices     func(childComplexity int) int
 		Badges              func(childComplexity int) int
 		Categories          func(childComplexity int) int
 		Description         func(childComplexity int) int
@@ -779,6 +781,7 @@ type ComplexityRoot struct {
 	CommerceProductPriceContext struct {
 		ChannelCode   func(childComplexity int) int
 		CustomerGroup func(childComplexity int) int
+		DeliveryCode  func(childComplexity int) int
 		Locale        func(childComplexity int) int
 	}
 
@@ -787,6 +790,7 @@ type ComplexityRoot struct {
 		ActiveBaseAmount  func(childComplexity int) int
 		ActiveBaseUnit    func(childComplexity int) int
 		CampaignRules     func(childComplexity int) int
+		Context           func(childComplexity int) int
 		Default           func(childComplexity int) int
 		DenyMoreDiscounts func(childComplexity int) int
 		DiscountText      func(childComplexity int) int
@@ -806,6 +810,7 @@ type ComplexityRoot struct {
 
 	CommerceProductSimpleProduct struct {
 		Attributes       func(childComplexity int) int
+		AvailablePrices  func(childComplexity int) int
 		Badges           func(childComplexity int) int
 		Categories       func(childComplexity int) int
 		Description      func(childComplexity int) int
@@ -3597,6 +3602,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceProductActiveVariantProduct.Attributes(childComplexity), true
 
+	case "Commerce_Product_ActiveVariantProduct.availablePrices":
+		if e.complexity.CommerceProductActiveVariantProduct.AvailablePrices == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductActiveVariantProduct.AvailablePrices(childComplexity), true
+
 	case "Commerce_Product_ActiveVariantProduct.badges":
 		if e.complexity.CommerceProductActiveVariantProduct.Badges == nil {
 			break
@@ -3878,6 +3890,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceProductConfigurableProduct.Attributes(childComplexity), true
 
+	case "Commerce_Product_ConfigurableProduct.availablePrices":
+		if e.complexity.CommerceProductConfigurableProduct.AvailablePrices == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductConfigurableProduct.AvailablePrices(childComplexity), true
+
 	case "Commerce_Product_ConfigurableProduct.badges":
 		if e.complexity.CommerceProductConfigurableProduct.Badges == nil {
 			break
@@ -4128,6 +4147,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceProductPriceContext.CustomerGroup(childComplexity), true
 
+	case "Commerce_Product_PriceContext.deliveryCode":
+		if e.complexity.CommerceProductPriceContext.DeliveryCode == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductPriceContext.DeliveryCode(childComplexity), true
+
 	case "Commerce_Product_PriceContext.locale":
 		if e.complexity.CommerceProductPriceContext.Locale == nil {
 			break
@@ -4162,6 +4188,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceProductPriceInfo.CampaignRules(childComplexity), true
+
+	case "Commerce_Product_PriceInfo.context":
+		if e.complexity.CommerceProductPriceInfo.Context == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductPriceInfo.Context(childComplexity), true
 
 	case "Commerce_Product_PriceInfo.default":
 		if e.complexity.CommerceProductPriceInfo.Default == nil {
@@ -4253,6 +4286,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceProductSimpleProduct.Attributes(childComplexity), true
+
+	case "Commerce_Product_SimpleProduct.availablePrices":
+		if e.complexity.CommerceProductSimpleProduct.AvailablePrices == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductSimpleProduct.AvailablePrices(childComplexity), true
 
 	case "Commerce_Product_SimpleProduct.badges":
 		if e.complexity.CommerceProductSimpleProduct.Badges == nil {
@@ -5312,6 +5352,7 @@ type Commerce_Search_PromotionMedia {
     identifier: String!
     media: Commerce_Product_Media!,
     price: Commerce_Product_PriceInfo!,
+    availablePrices: [Commerce_Product_PriceInfo!],
     title: String!
     categories: Commerce_Product_Categories!
     description: String!
@@ -5331,6 +5372,7 @@ type Commerce_Product_SimpleProduct implements Commerce_Product {
     identifier: String!
     media: Commerce_Product_Media!,
     price: Commerce_Product_PriceInfo!,
+    availablePrices: [Commerce_Product_PriceInfo!],
     title: String!
     categories: Commerce_Product_Categories!
     description: String!
@@ -5351,6 +5393,7 @@ type Commerce_Product_ConfigurableProduct implements Commerce_Product {
     identifier: String!
     media: Commerce_Product_Media!,
     price: Commerce_Product_PriceInfo!,
+    availablePrices: [Commerce_Product_PriceInfo!],
     title: String!
     categories: Commerce_Product_Categories!
     description: String!
@@ -5373,6 +5416,7 @@ type Commerce_Product_ActiveVariantProduct implements Commerce_Product {
     identifier: String!
     media: Commerce_Product_Media!,
     price: Commerce_Product_PriceInfo!,
+    availablePrices: [Commerce_Product_PriceInfo!],
     title: String!
     categories: Commerce_Product_Categories!
     description: String!
@@ -5469,6 +5513,7 @@ type Commerce_Product_Loyalty_EarningInfo {
 
 type Commerce_Product_PriceContext {
     customerGroup: String!
+    deliveryCode: String!
     channelCode: String!
     locale: String!
 }
@@ -5510,16 +5555,16 @@ type Commerce_Product_CategoryTeaser {
 }
 
 type Commerce_Product_PriceInfo {
-    default: Commerce_Price
-    discounted: Commerce_Price
+    default: Commerce_Price!
+    discounted: Commerce_Price!
     discountText: String!
-    activeBase: Commerce_Price
+    activeBase: Commerce_Price!
     activeBaseAmount: Float!
-    activeBaseUnit: String
-    isDiscounted: Boolean
+    activeBaseUnit: String!
+    isDiscounted: Boolean!
     campaignRules: [String!]
-    denyMoreDiscounts: Boolean
-    #    context: Commerce_Product_PriceContext
+    denyMoreDiscounts: Boolean!
+    context: Commerce_Product_PriceContext!
     taxClass: String!
 }
 
@@ -18031,6 +18076,34 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_price(ctx con
 	return ec.marshalNCommerce_Product_PriceInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfo(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_availablePrices(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Product_ActiveVariantProduct",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AvailablePrices(), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]domain1.PriceInfo)
+	fc.Result = res
+	return ec.marshalOCommerce_Product_PriceInfo2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfoᚄ(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_title(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariantProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -19225,6 +19298,34 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_price(ctx cont
 	return ec.marshalNCommerce_Product_PriceInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfo(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_Product_ConfigurableProduct_availablePrices(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Product_ConfigurableProduct",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AvailablePrices(), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]domain1.PriceInfo)
+	fc.Result = res
+	return ec.marshalOCommerce_Product_PriceInfo2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfoᚄ(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_Product_ConfigurableProduct_title(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -20147,6 +20248,37 @@ func (ec *executionContext) _Commerce_Product_PriceContext_customerGroup(ctx con
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_Product_PriceContext_deliveryCode(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceContext) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Product_PriceContext",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DeliveryCode, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_Product_PriceContext_channelCode(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceContext) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -20230,11 +20362,14 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_default(ctx context.Cont
 	})
 
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.(domain.Price)
 	fc.Result = res
-	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Product_PriceInfo_discounted(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceInfo) (ret graphql.Marshaler) {
@@ -20258,11 +20393,14 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_discounted(ctx context.C
 	})
 
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.(domain.Price)
 	fc.Result = res
-	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Product_PriceInfo_discountText(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceInfo) (ret graphql.Marshaler) {
@@ -20317,11 +20455,14 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_activeBase(ctx context.C
 	})
 
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.(*domain.Price)
 	fc.Result = res
-	return ec.marshalOCommerce_Price2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Price2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Product_PriceInfo_activeBaseAmount(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceInfo) (ret graphql.Marshaler) {
@@ -20376,11 +20517,14 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_activeBaseUnit(ctx conte
 	})
 
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2string(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Product_PriceInfo_isDiscounted(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceInfo) (ret graphql.Marshaler) {
@@ -20404,11 +20548,14 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_isDiscounted(ctx context
 	})
 
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.(bool)
 	fc.Result = res
-	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Product_PriceInfo_campaignRules(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceInfo) (ret graphql.Marshaler) {
@@ -20460,11 +20607,45 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_denyMoreDiscounts(ctx co
 	})
 
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.(bool)
 	fc.Result = res
-	return ec.marshalOBoolean2bool(ctx, field.Selections, res)
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Product_PriceInfo_context(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceInfo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Product_PriceInfo",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Context, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain1.PriceContext)
+	fc.Result = res
+	return ec.marshalNCommerce_Product_PriceContext2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceContext(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Product_PriceInfo_taxClass(ctx context.Context, field graphql.CollectedField, obj *domain1.PriceInfo) (ret graphql.Marshaler) {
@@ -20828,6 +21009,34 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_price(ctx context.Co
 	res := resTmp.(domain1.PriceInfo)
 	fc.Result = res
 	return ec.marshalNCommerce_Product_PriceInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Product_SimpleProduct_availablePrices(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Product_SimpleProduct",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AvailablePrices(), nil
+	})
+
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]domain1.PriceInfo)
+	fc.Result = res
+	return ec.marshalOCommerce_Product_PriceInfo2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfoᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Product_SimpleProduct_title(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
@@ -28948,6 +29157,8 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct(ctx context.C
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "availablePrices":
+			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_availablePrices(ctx, field, obj)
 		case "title":
 			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_title(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -29283,6 +29494,8 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct(ctx context.Co
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "availablePrices":
+			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_availablePrices(ctx, field, obj)
 		case "title":
 			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_title(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -29572,6 +29785,11 @@ func (ec *executionContext) _Commerce_Product_PriceContext(ctx context.Context, 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "deliveryCode":
+			out.Values[i] = ec._Commerce_Product_PriceContext_deliveryCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "channelCode":
 			out.Values[i] = ec._Commerce_Product_PriceContext_channelCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -29606,8 +29824,14 @@ func (ec *executionContext) _Commerce_Product_PriceInfo(ctx context.Context, sel
 			out.Values[i] = graphql.MarshalString("Commerce_Product_PriceInfo")
 		case "default":
 			out.Values[i] = ec._Commerce_Product_PriceInfo_default(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "discounted":
 			out.Values[i] = ec._Commerce_Product_PriceInfo_discounted(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "discountText":
 			out.Values[i] = ec._Commerce_Product_PriceInfo_discountText(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -29622,6 +29846,9 @@ func (ec *executionContext) _Commerce_Product_PriceInfo(ctx context.Context, sel
 					}
 				}()
 				res = ec._Commerce_Product_PriceInfo_activeBase(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
 				return res
 			})
 		case "activeBaseAmount":
@@ -29631,12 +29858,26 @@ func (ec *executionContext) _Commerce_Product_PriceInfo(ctx context.Context, sel
 			}
 		case "activeBaseUnit":
 			out.Values[i] = ec._Commerce_Product_PriceInfo_activeBaseUnit(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "isDiscounted":
 			out.Values[i] = ec._Commerce_Product_PriceInfo_isDiscounted(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "campaignRules":
 			out.Values[i] = ec._Commerce_Product_PriceInfo_campaignRules(ctx, field, obj)
 		case "denyMoreDiscounts":
 			out.Values[i] = ec._Commerce_Product_PriceInfo_denyMoreDiscounts(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "context":
+			out.Values[i] = ec._Commerce_Product_PriceInfo_context(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "taxClass":
 			out.Values[i] = ec._Commerce_Product_PriceInfo_taxClass(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -29732,6 +29973,8 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct(ctx context.Context,
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "availablePrices":
+			out.Values[i] = ec._Commerce_Product_SimpleProduct_availablePrices(ctx, field, obj)
 		case "title":
 			out.Values[i] = ec._Commerce_Product_SimpleProduct_title(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -31468,6 +31711,16 @@ func (ec *executionContext) marshalNCommerce_Customer_PersonData2flamingoᚗme�
 
 func (ec *executionContext) marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx context.Context, sel ast.SelectionSet, v domain.Price) graphql.Marshaler {
 	return ec._Commerce_Price(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Price2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx context.Context, sel ast.SelectionSet, v *domain.Price) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Commerce_Price(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNCommerce_Price_Charge2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐCharge(ctx context.Context, sel ast.SelectionSet, v domain.Charge) graphql.Marshaler {
@@ -33607,6 +33860,46 @@ func (ec *executionContext) marshalOCommerce_Product_MediaItem2ᚕflamingoᚗme�
 				defer wg.Done()
 			}
 			ret[i] = ec.marshalNCommerce_Product_MediaItem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐMedia(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalOCommerce_Product_PriceInfo2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfoᚄ(ctx context.Context, sel ast.SelectionSet, v []domain1.PriceInfo) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCommerce_Product_PriceInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfo(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)

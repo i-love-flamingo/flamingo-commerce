@@ -46,6 +46,11 @@ func (avp ActiveVariantProduct) Price() productDomain.PriceInfo {
 	return avp.product.ActiveVariant.ActivePrice
 }
 
+// AvailablePrices of the active variant
+func (avp ActiveVariantProduct) AvailablePrices() []productDomain.PriceInfo {
+	return avp.product.ActiveVariant.AvailablePrices
+}
+
 // Title of the active variant
 func (avp ActiveVariantProduct) Title() string {
 	return avp.getActiveVariant().BaseData().Title

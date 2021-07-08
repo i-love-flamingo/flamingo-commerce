@@ -41,6 +41,11 @@ func (cp ConfigurableProduct) Price() productDomain.PriceInfo {
 	return productDomain.PriceInfo{} // Price info is always empty for configurable products because they are not saleable
 }
 
+// AvailablePrices of the configurable
+func (cp ConfigurableProduct) AvailablePrices() []productDomain.PriceInfo {
+	return nil // AvailablePrices is always empty for configurable products because they are not saleable
+}
+
 // Title of the configurable
 func (cp ConfigurableProduct) Title() string {
 	return cp.product.BaseData().Title

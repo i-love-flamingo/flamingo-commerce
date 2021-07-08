@@ -1972,6 +1972,9 @@ var doc = `{
                 "CustomerGroup": {
                     "type": "string"
                 },
+                "DeliveryCode": {
+                    "type": "string"
+                },
                 "Locale": {
                     "type": "string"
                 }
@@ -2073,7 +2076,7 @@ var doc = `{
                     }
                 },
                 "LoyaltyEarnings": {
-                    "description": "LoyaltyEarnings jolds optional infos about potential loyalty earnings",
+                    "description": "LoyaltyEarnings holds optional infos about potential loyalty earnings",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/domain.LoyaltyEarningInfo"

@@ -215,6 +215,11 @@ func TestConfigurableProduct_Price(t *testing.T) {
 	assert.Equal(t, productDomain.PriceInfo{}, product.Price())
 }
 
+func TestConfigurableProduct_AvailablePrices(t *testing.T) {
+	product := getConfigurableProduct()
+	assert.Nil(t, product.AvailablePrices())
+}
+
 func TestConfigurableProduct_Product(t *testing.T) {
 	product := getConfigurableProduct()
 	assert.Equal(t, getProductDomainConfigurableProduct().MarketPlaceCode, product.Product().BaseData().MarketPlaceCode)
