@@ -40,7 +40,8 @@ func getRedisStore(network, address string) *contextstore.Redis {
 			Network                 string `inject:"config:commerce.checkout.placeorder.contextstore.redis.network"`
 			Address                 string `inject:"config:commerce.checkout.placeorder.contextstore.redis.address"`
 			Database                int    `inject:"config:commerce.checkout.placeorder.contextstore.redis.database"`
-		}{MaxIdle: 3, IdleTimeoutMilliseconds: 240000, Network: network, Address: address, Database: 0})
+			TTL                     string `inject:"config:commerce.checkout.placeorder.contextstore.redis.ttl"`
+		}{MaxIdle: 3, IdleTimeoutMilliseconds: 240000, Network: network, Address: address, Database: 0, TTL: "2h"})
 }
 
 func prepareData(t *testing.T, conn redis.Conn) {
