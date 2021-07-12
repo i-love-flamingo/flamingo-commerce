@@ -22,6 +22,7 @@ type (
 	Redis struct {
 		pool   *redis.Pool
 		logger flamingo.Logger
+		ttl    time.Duration
 	}
 )
 
@@ -45,9 +46,16 @@ func (r *Redis) Inject(
 		Network                 string `inject:"config:commerce.checkout.placeorder.contextstore.redis.network"`
 		Address                 string `inject:"config:commerce.checkout.placeorder.contextstore.redis.address"`
 		Database                int    `inject:"config:commerce.checkout.placeorder.contextstore.redis.database"`
+		TTL                     string `inject:"config:commerce.checkout.placeorder.contextstore.redis.ttl"`
 	}) *Redis {
 	r.logger = logger
 	if cfg != nil {
+		var err error
+		r.ttl, err = time.ParseDuration(cfg.TTL)
+		if err != nil {
+			panic("can't parse commerce.checkout.placeorder.contextstore.redis.ttl")
+		}
+
 		r.pool = &redis.Pool{
 			MaxIdle:     cfg.MaxIdle,
 			IdleTimeout: time.Duration(cfg.IdleTimeoutMilliseconds) * time.Millisecond,
@@ -82,8 +90,9 @@ func (r *Redis) Store(ctx context.Context, key string, placeOrderContext process
 		return err
 	}
 	_, err = conn.Do(
-		"SET",
+		"SETEX",
 		key,
+		int(r.ttl.Round(time.Second).Seconds()),
 		buffer,
 	)
 
