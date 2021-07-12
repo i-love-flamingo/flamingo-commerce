@@ -112,7 +112,7 @@ commerce: checkout: {
 		network:                 string | *"tcp"
 		address:                 string | *"localhost:6379"
 		database:                number | *0
-		ttl:					 string | *"2h"
+		ttl:                     string | *"2h"
 	}
 	activateDeprecatedSourcing:		    bool | *false
 	useDeliveryForms:                 bool | *true
