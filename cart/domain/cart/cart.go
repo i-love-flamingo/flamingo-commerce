@@ -411,6 +411,19 @@ func (c Cart) SumShippingNetWithDiscounts() domain.Price {
 	return price
 }
 
+// SumShippingGross returns gross sum price of deliveries ShippingItems
+func (c Cart) SumShippingGross() domain.Price {
+	prices := make([]domain.Price, 0, len(c.Deliveries))
+
+	for _, del := range c.Deliveries {
+		prices = append(prices, del.ShippingItem.PriceGross())
+	}
+
+	price, _ := domain.SumAll(prices...)
+
+	return price
+}
+
 // SumShippingGrossWithDiscounts returns gross sum price of deliveries ShippingItems with discounts
 func (c Cart) SumShippingGrossWithDiscounts() domain.Price {
 	prices := make([]domain.Price, 0, len(c.Deliveries))

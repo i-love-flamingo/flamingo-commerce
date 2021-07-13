@@ -8,6 +8,7 @@
   * Add new endpoint `DELETE /api/v1/cart/deliveries/items` to be able to remove all cart items from all deliveries but keeping delivery info and other cart data untouched
 * Add new method `SumShippingGrossWithDiscounts` to the cart domain which returns gross shipping costs for the cart 
 * When using the `ItemSplitter` to split items in items with single qty (`SplitInSingleQtyItems`) the split discounts are reversed to make splitting the row total stable.
+* Delivery discount sum calculations now take disount on shipping costs into account
 * `CartService`
   * Add `UpdateAdditionalData` to be able to set additional data to cart
   * Add `UpdateDeliveryAdditionalData` to be able to set additional data to the delivery info
@@ -15,6 +16,8 @@
   * Add auto generated mockery mock for the `CartService`
 * GraphQL: 
   * Add new method `sumShippingGrossWithDiscounts` to the `Commerce_DecoratedCart` type
+  * Add new field `sumShippingGross` to the `Commerce_DecoratedCart` type
+  * Add new field `priceGross` to the `Commerce_Cart_ShippingItem` type
   * Add new mutation `Commerce_Cart_UpdateAdditionalData`
   * Add new mutation `Commerce_Cart_UpdateDeliveriesAdditionalData`
   * Add new field `customAttributes` to the `Commerce_CartAdditionalData` type
