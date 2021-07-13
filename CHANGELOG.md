@@ -8,7 +8,8 @@
   * Add new endpoint `DELETE /api/v1/cart/deliveries/items` to be able to remove all cart items from all deliveries but keeping delivery info and other cart data untouched
 * Add new method `SumShippingGrossWithDiscounts` to the cart domain which returns gross shipping costs for the cart 
 * When using the `ItemSplitter` to split items in items with single qty (`SplitInSingleQtyItems`) the split discounts are reversed to make splitting the row total stable.
-* Delivery discount sum calculations now take disount on shipping costs into account
+* **Breaking**: Delivery discount sum calculations `SumNonItemRelatedDiscountAmount`,`SumItemRelatedDiscountAmount` now take discount on shipping costs into account
+  * Old calculation is now in `SumSubTotalDiscountAmount`.
 * `CartService`
   * Add `UpdateAdditionalData` to be able to set additional data to cart
   * Add `UpdateDeliveryAdditionalData` to be able to set additional data to the delivery info
