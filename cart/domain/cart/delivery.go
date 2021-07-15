@@ -122,21 +122,7 @@ func (d Delivery) SubTotalGross() priceDomain.Price {
 
 // GrandTotal returns the sub total of all items, shipping costs and potential discounts including taxes for the delivery
 func (d Delivery) GrandTotal() priceDomain.Price {
-	// we need a capacity of cartitems + 2
-	prices := make([]priceDomain.Price, 0, len(d.Cartitems)+2)
-
-	for _, item := range d.Cartitems {
-		prices = append(prices, item.RowPriceGross)
-	}
-
-	prices = append(prices, d.SumTotalDiscountAmount())
-
-	if !d.ShippingItem.TotalWithDiscountInclTax().IsZero() {
-		prices = append(prices, d.ShippingItem.TotalWithDiscountInclTax())
-	}
-
-	result, _ := priceDomain.SumAll(prices...)
-
+	result, _ := priceDomain.SumAll(d.SubTotalGross(), d.ShippingItem.PriceGross(), d.SumTotalDiscountAmount())
 	return result
 }
 
@@ -153,7 +139,9 @@ func (d Delivery) SumRowTaxes() Taxes {
 
 // SumTotalTaxAmount returns the sum of all applied item taxes
 func (d Delivery) SumTotalTaxAmount() priceDomain.Price {
-	prices := make([]priceDomain.Price, 0, len(d.Cartitems))
+	prices := make([]priceDomain.Price, 0, len(d.Cartitems)+1)
+
+	prices = append(prices, d.ShippingItem.TaxAmount)
 
 	for _, item := range d.Cartitems {
 		prices = append(prices, item.TotalTaxAmount())
@@ -177,6 +165,16 @@ func (d Delivery) SubTotalNet() priceDomain.Price {
 
 // SumTotalDiscountAmount returns the total applied discounts of the items of the delivery
 func (d Delivery) SumTotalDiscountAmount() priceDomain.Price {
+	result := d.SumSubTotalDiscountAmount()
+
+	shippingDiscount, _ := d.ShippingItem.AppliedDiscounts.Sum()
+	result, _ = result.Add(shippingDiscount)
+
+	return result
+}
+
+// SumSubTotalDiscountAmount returns the total applied discounts of the items of the delivery
+func (d Delivery) SumSubTotalDiscountAmount() priceDomain.Price {
 	prices := make([]priceDomain.Price, 0, len(d.Cartitems))
 
 	for _, item := range d.Cartitems {
@@ -189,7 +187,13 @@ func (d Delivery) SumTotalDiscountAmount() priceDomain.Price {
 
 // SumNonItemRelatedDiscountAmount returns the total applied discounts that are not item related
 func (d Delivery) SumNonItemRelatedDiscountAmount() priceDomain.Price {
-	prices := make([]priceDomain.Price, 0, len(d.Cartitems))
+	prices := make([]priceDomain.Price, 0, len(d.Cartitems)+len(d.ShippingItem.AppliedDiscounts))
+
+	for _, discount := range d.ShippingItem.AppliedDiscounts {
+		if !discount.IsItemRelated {
+			prices = append(prices, discount.Applied)
+		}
+	}
 
 	for _, item := range d.Cartitems {
 		prices = append(prices, item.NonItemRelatedDiscountAmount())
@@ -201,7 +205,13 @@ func (d Delivery) SumNonItemRelatedDiscountAmount() priceDomain.Price {
 
 // SumItemRelatedDiscountAmount returns the total applied discounts that are item related
 func (d Delivery) SumItemRelatedDiscountAmount() priceDomain.Price {
-	prices := make([]priceDomain.Price, 0, len(d.Cartitems))
+	prices := make([]priceDomain.Price, 0, len(d.Cartitems)+len(d.ShippingItem.AppliedDiscounts))
+
+	for _, discount := range d.ShippingItem.AppliedDiscounts {
+		if discount.IsItemRelated {
+			prices = append(prices, discount.Applied)
+		}
+	}
 
 	for _, item := range d.Cartitems {
 		prices = append(prices, item.ItemRelatedDiscountAmount())
@@ -213,14 +223,14 @@ func (d Delivery) SumItemRelatedDiscountAmount() priceDomain.Price {
 
 // SubTotalGrossWithDiscounts returns sub total of all items including the taxes and applied discounts for the delivery
 func (d Delivery) SubTotalGrossWithDiscounts() priceDomain.Price {
-	price, _ := d.SubTotalGross().Add(d.SumTotalDiscountAmount())
+	price, _ := d.SubTotalGross().Add(d.SumSubTotalDiscountAmount())
 
 	return price
 }
 
 // SubTotalNetWithDiscounts returns sub total of all items excluding the taxes and applied discounts for the delivery
 func (d Delivery) SubTotalNetWithDiscounts() priceDomain.Price {
-	price, _ := d.SubTotalNet().Add(d.SumTotalDiscountAmount())
+	price, _ := d.SubTotalNet().Add(d.SumSubTotalDiscountAmount())
 
 	return price
 }
@@ -295,6 +305,13 @@ func (s ShippingItem) TotalWithDiscountInclTax() priceDomain.Price {
 	price, _ := s.PriceNet.Add(s.TaxAmount)
 	discounts, _ := s.AppliedDiscounts.Sum()
 	price, _ = price.Add(discounts)
+	return price.GetPayable()
+}
+
+// PriceGross is calculated by adding priceNet and taxAmount
+func (s ShippingItem) PriceGross() priceDomain.Price {
+	price, _ := s.PriceNet.Add(s.TaxAmount)
+
 	return price.GetPayable()
 }
 

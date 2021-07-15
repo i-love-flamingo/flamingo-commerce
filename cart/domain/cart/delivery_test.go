@@ -62,6 +62,17 @@ func TestDeliveryInfo_TotalCalculations(t *testing.T) {
 	)
 	df.AddItem(*item2)
 
+	df.SetShippingItem(ShippingItem{
+		Title:     "shipping",
+		PriceNet:  priceDomain.NewFromInt(500, 100, "$"),
+		TaxAmount: priceDomain.NewFromInt(55, 100, "$"),
+		AppliedDiscounts: AppliedDiscounts{
+			{
+				Applied: priceDomain.NewFromInt(-20, 100, "$"),
+			},
+		},
+	})
+
 	// Check totals
 	d, err := df.Build()
 	assert.NoError(t, err)
@@ -75,10 +86,10 @@ func TestDeliveryInfo_TotalCalculations(t *testing.T) {
 	assert.True(t, priceDomain.NewFromInt(9100, 100, "$").Equal(d.SubTotalNet()), "SubTotalNet wrong")
 
 	// SumTotalTaxAmount is the difference
-	assert.True(t, priceDomain.NewFromInt(462, 100, "$").Equal(d.SumTotalTaxAmount()), fmt.Sprintf("result wrong %f", d.SumTotalTaxAmount().FloatAmount()))
+	assert.True(t, priceDomain.NewFromInt(462+55, 100, "$").Equal(d.SumTotalTaxAmount()), fmt.Sprintf("result wrong %f", d.SumTotalTaxAmount().FloatAmount()))
 
 	// SumTotalDiscountAmount
-	assert.True(t, priceDomain.NewFromInt(-2500, 100, "$").Equal(d.SumTotalDiscountAmount()), "SumTotalDiscountAmount")
+	assert.True(t, priceDomain.NewFromInt(-2500-20, 100, "$").Equal(d.SumTotalDiscountAmount()), fmt.Sprintf("SumTotalDiscountAmount result wrong %f", d.SumTotalDiscountAmount().FloatAmount()))
 
 	// SubTotalNetWithDiscounts
 	assert.True(t, priceDomain.NewFromInt(9100-2500, 100, "$").Equal(d.SubTotalNetWithDiscounts()), fmt.Sprintf("SubTotalNetWithDiscounts result wrong %f", d.SubTotalNetWithDiscounts().FloatAmount()))
@@ -86,11 +97,16 @@ func TestDeliveryInfo_TotalCalculations(t *testing.T) {
 	// SubTotalGrossWithDiscounts
 	assertPricesWithLikelyEqual(t, priceDomain.NewFromInt(9562-2500, 100, "$"), d.SubTotalGrossWithDiscounts(), "SubTotalGrossWithDiscount")
 
+	assertPricesWithLikelyEqual(t, priceDomain.NewFromInt(-2500, 100, "$"), d.SumItemRelatedDiscountAmount(), "SumItemRelatedDiscountAmount")
+	assertPricesWithLikelyEqual(t, priceDomain.NewFromInt(-20, 100, "$"), d.SumNonItemRelatedDiscountAmount(), "SumNonItemRelatedDiscountAmount")
+	assertPricesWithLikelyEqual(t, priceDomain.NewFromInt(-2500-20, 100, "$"), d.SumTotalDiscountAmount(), "SumTotalDiscountAmount")
+
 	// Taxes check
 	taxes := d.SumRowTaxes()
 	assert.Equal(t, 1, len(taxes), "expected one merged tax")
 	assertPricesWithLikelyEqual(t, priceDomain.NewFromInt(462, 100, "$"), taxes.TotalAmount(), "taxes check wrong")
 
+	assertPricesWithLikelyEqual(t, priceDomain.NewFromInt(9562-2500+555-20, 100, "$"), d.GrandTotal(), "GrandTotal")
 }
 
 // assertPricesWithLikelyEqual - helper

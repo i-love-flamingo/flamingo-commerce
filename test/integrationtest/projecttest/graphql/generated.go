@@ -195,6 +195,7 @@ type ComplexityRoot struct {
 		SubTotalNetWithDiscounts        func(childComplexity int) int
 		SumItemRelatedDiscountAmount    func(childComplexity int) int
 		SumNonItemRelatedDiscountAmount func(childComplexity int) int
+		SumShippingGross                func(childComplexity int) int
 		SumShippingGrossWithDiscounts   func(childComplexity int) int
 		SumShippingNet                  func(childComplexity int) int
 		SumShippingNetWithDiscounts     func(childComplexity int) int
@@ -392,6 +393,7 @@ type ComplexityRoot struct {
 
 	CommerceCartShippingItem struct {
 		AppliedDiscounts         func(childComplexity int) int
+		PriceGross               func(childComplexity int) int
 		PriceNet                 func(childComplexity int) int
 		Tax                      func(childComplexity int) int
 		TaxAmount                func(childComplexity int) int
@@ -1766,6 +1768,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCartCart.SumNonItemRelatedDiscountAmount(childComplexity), true
 
+	case "Commerce_Cart_Cart.sumShippingGross":
+		if e.complexity.CommerceCartCart.SumShippingGross == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartCart.SumShippingGross(childComplexity), true
+
 	case "Commerce_Cart_Cart.sumShippingGrossWithDiscounts":
 		if e.complexity.CommerceCartCart.SumShippingGrossWithDiscounts == nil {
 			break
@@ -2555,6 +2564,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceCartShippingItem.AppliedDiscounts(childComplexity), true
+
+	case "Commerce_Cart_ShippingItem.priceGross":
+		if e.complexity.CommerceCartShippingItem.PriceGross == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartShippingItem.PriceGross(childComplexity), true
 
 	case "Commerce_Cart_ShippingItem.priceNet":
 		if e.complexity.CommerceCartShippingItem.PriceNet == nil {
@@ -5713,6 +5729,7 @@ type Commerce_Cart_Cart {
 
     sumShippingNet: Commerce_Price!
     sumShippingNetWithDiscounts: Commerce_Price!
+    sumShippingGross: Commerce_Price!
     sumShippingGrossWithDiscounts: Commerce_Price!
 
     hasShippingCosts: Boolean!
@@ -5835,8 +5852,9 @@ type Commerce_Cart_DeliveryLocation  {
 
 type Commerce_Cart_ShippingItem {
     title: String!
-    priceNet: Commerce_Price
-    taxAmount: Commerce_Price
+    priceNet: Commerce_Price!
+    taxAmount: Commerce_Price!
+    priceGross: Commerce_Price!
     appliedDiscounts: Commerce_Cart_AppliedDiscounts!
     totalWithDiscountInclTax: Commerce_Price!
     tax: Commerce_Cart_Tax!
@@ -10018,6 +10036,37 @@ func (ec *executionContext) _Commerce_Cart_Cart_sumShippingNetWithDiscounts(ctx 
 	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_Cart_Cart_sumShippingGross(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_Cart",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SumShippingGross(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_Cart_Cart_sumShippingGrossWithDiscounts(ctx context.Context, field graphql.CollectedField, obj *cart.Cart) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -13637,11 +13686,14 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_priceNet(ctx context.Con
 	})
 
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.(domain.Price)
 	fc.Result = res
-	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Cart_ShippingItem_taxAmount(ctx context.Context, field graphql.CollectedField, obj *cart.ShippingItem) (ret graphql.Marshaler) {
@@ -13665,11 +13717,45 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_taxAmount(ctx context.Co
 	})
 
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.(domain.Price)
 	fc.Result = res
-	return ec.marshalOCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Cart_ShippingItem_priceGross(ctx context.Context, field graphql.CollectedField, obj *cart.ShippingItem) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Commerce_Cart_ShippingItem",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PriceGross(), nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain.Price)
+	fc.Result = res
+	return ec.marshalNCommerce_Price2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Commerce_Cart_ShippingItem_appliedDiscounts(ctx context.Context, field graphql.CollectedField, obj *cart.ShippingItem) (ret graphql.Marshaler) {
@@ -26489,6 +26575,11 @@ func (ec *executionContext) _Commerce_Cart_Cart(ctx context.Context, sel ast.Sel
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "sumShippingGross":
+			out.Values[i] = ec._Commerce_Cart_Cart_sumShippingGross(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "sumShippingGrossWithDiscounts":
 			out.Values[i] = ec._Commerce_Cart_Cart_sumShippingGrossWithDiscounts(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -27625,8 +27716,19 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem(ctx context.Context, sel
 			}
 		case "priceNet":
 			out.Values[i] = ec._Commerce_Cart_ShippingItem_priceNet(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "taxAmount":
 			out.Values[i] = ec._Commerce_Cart_ShippingItem_taxAmount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "priceGross":
+			out.Values[i] = ec._Commerce_Cart_ShippingItem_priceGross(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "appliedDiscounts":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {

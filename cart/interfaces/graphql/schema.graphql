@@ -54,6 +54,7 @@ type Commerce_Cart_Cart {
 
     sumShippingNet: Commerce_Price!
     sumShippingNetWithDiscounts: Commerce_Price!
+    sumShippingGross: Commerce_Price!
     sumShippingGrossWithDiscounts: Commerce_Price!
 
     hasShippingCosts: Boolean!
@@ -176,8 +177,9 @@ type Commerce_Cart_DeliveryLocation  {
 
 type Commerce_Cart_ShippingItem {
     title: String!
-    priceNet: Commerce_Price
-    taxAmount: Commerce_Price
+    priceNet: Commerce_Price!
+    taxAmount: Commerce_Price!
+    priceGross: Commerce_Price!
     appliedDiscounts: Commerce_Cart_AppliedDiscounts!
     totalWithDiscountInclTax: Commerce_Price!
     tax: Commerce_Cart_Tax!
