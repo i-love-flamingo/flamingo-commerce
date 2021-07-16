@@ -416,7 +416,7 @@ func (c Cart) SumShippingGross() domain.Price {
 	prices := make([]domain.Price, 0, len(c.Deliveries))
 
 	for _, del := range c.Deliveries {
-		prices = append(prices, del.ShippingItem.PriceGross())
+		prices = append(prices, del.ShippingItem.PriceGross)
 	}
 
 	price, _ := domain.SumAll(prices...)
