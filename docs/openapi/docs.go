@@ -1574,6 +1574,9 @@ var doc = `{
                         "$ref": "#/definitions/cart.AppliedDiscount"
                     }
                 },
+                "PriceGross": {
+                    "$ref": "#/definitions/domain.Price"
+                },
                 "PriceNet": {
                     "$ref": "#/definitions/domain.Price"
                 },

@@ -122,9 +122,10 @@ func BuildItemWithDuplicateDiscounts(t *testing.T) *cart.Item {
 func BuildShippingItemWithDiscounts(t *testing.T) *cart.ShippingItem {
 	t.Helper()
 	return &cart.ShippingItem{
-		Title:     "",
-		PriceNet:  domain.NewFromFloat(20.0, "$"),
-		TaxAmount: domain.NewFromFloat(2.0, "$"),
+		Title:      "",
+		PriceNet:   domain.NewFromFloat(20.0, "$"),
+		TaxAmount:  domain.NewFromFloat(2.0, "$"),
+		PriceGross: domain.NewFromFloat(22.0, "$"),
 		AppliedDiscounts: cart.AppliedDiscounts{
 			cart.AppliedDiscount{
 				CampaignCode: "code-1",
@@ -148,9 +149,10 @@ func BuildShippingItemWithDiscounts(t *testing.T) *cart.ShippingItem {
 func BuildShippingItemWithAlternativeDiscounts(t *testing.T) *cart.ShippingItem {
 	t.Helper()
 	return &cart.ShippingItem{
-		Title:     "",
-		PriceNet:  domain.NewFromFloat(30.0, "$"),
-		TaxAmount: domain.NewFromFloat(2.0, "$"),
+		Title:      "",
+		PriceNet:   domain.NewFromFloat(30.0, "$"),
+		TaxAmount:  domain.NewFromFloat(2.0, "$"),
+		PriceGross: domain.NewFromFloat(32.0, "$"),
 		AppliedDiscounts: cart.AppliedDiscounts{
 			cart.AppliedDiscount{
 				CampaignCode: "code-3",
@@ -174,9 +176,10 @@ func BuildShippingItemWithAlternativeDiscounts(t *testing.T) *cart.ShippingItem 
 func BuildShippingItemWithDuplicateDiscounts(t *testing.T) *cart.ShippingItem {
 	t.Helper()
 	return &cart.ShippingItem{
-		Title:     "",
-		PriceNet:  domain.NewFromFloat(40.0, "$"),
-		TaxAmount: domain.NewFromFloat(2.0, "$"),
+		Title:      "",
+		PriceNet:   domain.NewFromFloat(40.0, "$"),
+		TaxAmount:  domain.NewFromFloat(2.0, "$"),
+		PriceGross: domain.NewFromFloat(42.0, "$"),
 		AppliedDiscounts: cart.AppliedDiscounts{
 			cart.AppliedDiscount{
 				CampaignCode: "code-1",

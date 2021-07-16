@@ -339,6 +339,8 @@ definitions:
         items:
           $ref: '#/definitions/cart.AppliedDiscount'
         type: array
+      PriceGross:
+        $ref: '#/definitions/domain.Price'
       PriceNet:
         $ref: '#/definitions/domain.Price'
       TaxAmount:
