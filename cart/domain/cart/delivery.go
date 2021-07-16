@@ -44,6 +44,7 @@ type (
 	ShippingItem struct {
 		Title            string
 		PriceNet         priceDomain.Price
+		PriceGross       priceDomain.Price
 		TaxAmount        priceDomain.Price
 		AppliedDiscounts AppliedDiscounts
 	}
@@ -122,7 +123,7 @@ func (d Delivery) SubTotalGross() priceDomain.Price {
 
 // GrandTotal returns the sub total of all items, shipping costs and potential discounts including taxes for the delivery
 func (d Delivery) GrandTotal() priceDomain.Price {
-	result, _ := priceDomain.SumAll(d.SubTotalGross(), d.ShippingItem.PriceGross(), d.SumTotalDiscountAmount())
+	result, _ := priceDomain.SumAll(d.SubTotalGross(), d.ShippingItem.PriceGross, d.SumTotalDiscountAmount())
 	return result
 }
 
@@ -302,16 +303,8 @@ func (f *DeliveryBuilder) reset() {
 
 // TotalWithDiscountInclTax is the price the customer need to pay for the shipping
 func (s ShippingItem) TotalWithDiscountInclTax() priceDomain.Price {
-	price, _ := s.PriceNet.Add(s.TaxAmount)
 	discounts, _ := s.AppliedDiscounts.Sum()
-	price, _ = price.Add(discounts)
-	return price.GetPayable()
-}
-
-// PriceGross is calculated by adding priceNet and taxAmount
-func (s ShippingItem) PriceGross() priceDomain.Price {
-	price, _ := s.PriceNet.Add(s.TaxAmount)
-
+	price, _ := s.PriceGross.Add(discounts)
 	return price.GetPayable()
 }
 

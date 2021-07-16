@@ -63,9 +63,10 @@ func TestDeliveryInfo_TotalCalculations(t *testing.T) {
 	df.AddItem(*item2)
 
 	df.SetShippingItem(ShippingItem{
-		Title:     "shipping",
-		PriceNet:  priceDomain.NewFromInt(500, 100, "$"),
-		TaxAmount: priceDomain.NewFromInt(55, 100, "$"),
+		Title:      "shipping",
+		PriceNet:   priceDomain.NewFromInt(500, 100, "$"),
+		TaxAmount:  priceDomain.NewFromInt(55, 100, "$"),
+		PriceGross: priceDomain.NewFromInt(555, 100, "$"),
 		AppliedDiscounts: AppliedDiscounts{
 			{
 				Applied: priceDomain.NewFromInt(-20, 100, "$"),

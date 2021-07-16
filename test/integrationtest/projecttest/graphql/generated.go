@@ -13738,13 +13738,13 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_priceGross(ctx context.C
 		Object:   "Commerce_Cart_ShippingItem",
 		Field:    field,
 		Args:     nil,
-		IsMethod: true,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.PriceGross(), nil
+		return obj.PriceGross, nil
 	})
 
 	if resTmp == nil {

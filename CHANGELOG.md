@@ -16,7 +16,7 @@
   * Add `UpdateDeliveryAdditionalData` to be able to set additional data to the delivery info
   * Introduce new [interface](cart/application/service.go) to be able to easier mock the whole `CartService`
   * Add auto generated mockery mock for the `CartService`
-  * Add new method `PriceGross()` of `shippingItem` to directly get the shipping cost incl tax
+  * Add new field `PriceGross` of `shippingItem` to directly get the shipping cost incl tax (must be filled by cart adapter)
 * GraphQL: 
   * Add new method `sumShippingGrossWithDiscounts` to the `Commerce_DecoratedCart` type
   * Add new field `sumShippingGross` to the `Commerce_DecoratedCart` type

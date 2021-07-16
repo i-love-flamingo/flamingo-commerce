@@ -207,7 +207,7 @@ The Key with "()" in the list are methods and it is assumed as an invariant, tha
 
 | Key                               | Desc                                                                         | Math                                                                   |
 |-----------------------------------|------------------------------------------------------------------------------|------------------------------------------------------------------------|
-| GrandTotal()                      | The final amount that need to be paid by the customer (Gross)                | SubTotalGross() + ShippingItem.PriceGross() + SumTotalDiscountAmount() |
+| GrandTotal()                      | The final amount that need to be paid by the customer (Gross)                | SubTotalGross() + ShippingItem.PriceGross + SumTotalDiscountAmount()   |
 | SubTotalGross()                   | Sum of items RowPriceGross                                                   |                                                                        |
 | SumRowTaxes()                     | List of the sum of the different RowTaxes (of cart items)                    |                                                                        |
 | SumTotalTaxAmount()               | Sum of all applied item taxes including shipping taxes                       |                                                                        |
