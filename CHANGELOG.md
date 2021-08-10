@@ -33,6 +33,7 @@
 **checkout**
 * Introducing Flamingo events on final states of the place order process
 * Introduce a max ttl for the checkout state machine to avoid polluting the redis with stale checkout processes, defaults to 2h
+* Checkout controller: force new order id reservation if an early place happened and there was a payment issue
 * API
   * In case of an invalid cart during place order process we now expose the cart validation result, affected endpoints:
     ```

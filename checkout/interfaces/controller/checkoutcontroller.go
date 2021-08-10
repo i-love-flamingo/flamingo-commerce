@@ -610,6 +610,8 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 
 			decoratedCart = cc.decoratedCartFactory.Create(ctx, *restoredCart)
 			cc.orderService.ClearLastPlacedOrder(ctx)
+
+			_, _ = cc.applicationCartService.ForceReserveOrderIDAndSave(ctx, r.Session())
 		}
 
 		return cc.redirectToCheckoutFormWithErrors(ctx, r, err)
@@ -663,6 +665,7 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 			}
 
 			cc.orderService.ClearLastPlacedOrder(ctx)
+			_, _ = cc.applicationCartService.ForceReserveOrderIDAndSave(ctx, r.Session())
 		}
 
 		// mark payment selection as new payment to allow the user to retry
@@ -700,6 +703,7 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 			}
 
 			cc.orderService.ClearLastPlacedOrder(ctx)
+			_, _ = cc.applicationCartService.ForceReserveOrderIDAndSave(ctx, r.Session())
 		}
 
 		// mark payment selection as new payment to allow the user to retry
