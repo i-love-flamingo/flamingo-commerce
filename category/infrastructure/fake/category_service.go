@@ -8,8 +8,6 @@ import (
 	"flamingo.me/flamingo-commerce/v3/category/domain"
 )
 
-//go:generate go run github.com/go-bindata/go-bindata/v3/go-bindata -nometadata -pkg fake -prefix mock/ mock/
-
 // CategoryService returns category test data
 type CategoryService struct {
 	testDataFiles map[string]string

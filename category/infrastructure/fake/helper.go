@@ -1,6 +1,7 @@
 package fake
 
 import (
+	"embed"
 	"encoding/json"
 	"io/ioutil"
 	"path/filepath"
@@ -10,6 +11,9 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/category/domain"
 )
+
+//go:embed mock
+var mock embed.FS
 
 // LoadCategoryTree returns tree data from file
 func LoadCategoryTree(testDataFiles map[string]string, logger flamingo.Logger) []*domain.TreeData {
@@ -25,7 +29,7 @@ func LoadCategoryTree(testDataFiles map[string]string, logger flamingo.Logger) [
 			logger.Warn(err)
 		}
 	} else {
-		jsonFile, err := Asset("categoryTree.json")
+		jsonFile, err := mock.ReadFile("mock/categoryTree.json")
 		if err != nil {
 			logger.Warn(err)
 			return tree
@@ -53,7 +57,7 @@ func LoadCategory(categoryCode string, testDataFiles map[string]string, logger f
 			return nil
 		}
 	} else {
-		jsonFile, err := Asset(categoryCode + ".json")
+		jsonFile, err := mock.ReadFile("mock/" + categoryCode + ".json")
 		if err != nil {
 			logger.Warn(err)
 			return nil

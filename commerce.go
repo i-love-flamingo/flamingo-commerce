@@ -7,7 +7,6 @@ package commerce
 
 //go:generate rm -rf docs/openapi
 //go:generate go run github.com/swaggo/swag/cmd/swag init -p pascalcase --generalInfo=commerce.go --dir=./ --output=docs/openapi
-//go:generate go run github.com/go-bindata/go-bindata/v3/go-bindata -nometadata -o docs/swagger.go -pkg docs docs/openapi/swagger.json
 
 // Swagger Documentation used for generator swag (https://github.com/swaggo/swag#declarative-comments-format)
 // @title Flamingo Commerce API Spec
