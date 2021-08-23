@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math"
 
@@ -13,23 +14,22 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
-	"github.com/pkg/errors"
 )
 
 type (
 	// SourcingService helps in retrieving item sources
 	// Deprecated: Sourcing moved to separate module
 	SourcingService interface {
-		//GetSourceID  returns one source location code where the product should be sourced
-		//@todo will be Deprecated in future in favor of SourcingServiceDetail interface
+		// GetSourceID  returns one source location code where the product should be sourced
+		// @todo will be Deprecated in future in favor of SourcingServiceDetail interface
 		GetSourceID(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart, deliveryCode string, item *decorator.DecoratedCartItem) (string, error)
 	}
 	// SourcingServiceDetail additional interface to return
 	// Deprecated: Sourcing moved to separate module
 	SourcingServiceDetail interface {
-		//GetSourcesForItem returns Sources for the given item in the cart
+		// GetSourcesForItem returns Sources for the given item in the cart
 		GetSourcesForItem(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart, deliveryCode string, item *decorator.DecoratedCartItem) (Sources, error)
-		//GetAvailableSources returns Sources for the product - containing the maximum possible qty per source
+		// GetAvailableSources returns Sources for the product - containing the maximum possible qty per source
 		GetAvailableSources(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart, deliveryCode string, product domain.BasicProduct) (Sources, error)
 	}
 
@@ -58,9 +58,9 @@ type (
 )
 
 var (
-	// ErrInsufficientSourceQty - use to indicate that the requested qty exceeds the available qty
+	// ErrInsufficientSourceQty should be used to indicate that the requested qty exceeds the available qty
 	ErrInsufficientSourceQty = errors.New("Available Source Qty insufficient")
-	// ErrNoSourceAvailable - use to indicate that no source for item is available at all
+	// ErrNoSourceAvailable should be used to indicate that no source for item is available at all
 	ErrNoSourceAvailable = errors.New("No Available Source Qty")
 )
 
@@ -97,7 +97,7 @@ func (s Sources) Next() (Source, Sources, error) {
 
 // QtySum returns the sum of all sourced items
 func (s Sources) QtySum() int {
-	qty := int(0)
+	qty := 0
 	for _, source := range s {
 		if source.Qty == math.MaxInt64 {
 			return math.MaxInt64
@@ -108,11 +108,11 @@ func (s Sources) QtySum() int {
 }
 
 // Reduce returns new Source
-func (s Sources) Reduce(reduceby Sources) Sources {
+func (s Sources) Reduce(reduceBy Sources) Sources {
 	for k, source := range s {
-		for _, reducebySource := range reduceby {
-			if source.LocationCode == reducebySource.LocationCode {
-				s[k].Qty = s[k].Qty - reducebySource.Qty
+		for _, reduceBySource := range reduceBy {
+			if source.LocationCode == reduceBySource.LocationCode {
+				s[k].Qty = s[k].Qty - reduceBySource.Qty
 			}
 		}
 	}
@@ -149,7 +149,7 @@ func (se *SourcingEngine) SetSourcesForCartItems(ctx context.Context, session *w
 
 	err := se.Cartservice.UpdateItems(ctx, session, itemUpdateCommands)
 	if err != nil {
-		return errors.Wrap(err, "Could not update cart items")
+		return fmt.Errorf("Could not update cart items: %w", err)
 	}
 
 	return nil

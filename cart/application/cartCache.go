@@ -3,6 +3,7 @@ package application
 import (
 	"context"
 	"encoding/gob"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -11,7 +12,6 @@ import (
 	"flamingo.me/flamingo/v3/core/auth"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
-	"github.com/pkg/errors"
 )
 
 type (
@@ -74,7 +74,7 @@ func (ci *CartCacheIdentifier) CacheKey() string {
 }
 
 // BuildIdentifierFromCart creates a Cache Identifier from Cart Data
-// DEPRICATED
+// DEPRECATED
 func BuildIdentifierFromCart(cart *cart.Cart) (*CartCacheIdentifier, error) {
 	if cart == nil {
 		return nil, errors.New("no cart")
@@ -158,7 +158,7 @@ func (cs *CartSessionCache) GetCart(ctx context.Context, session *web.Session, i
 
 		return nil, errors.New("cart cache contains invalid data at cache key")
 	}
-	cs.logger.WithContext(ctx).Debug("Did not Found cached cart %v", id.CacheKey())
+	cs.logger.WithContext(ctx).Debug("Did not find cached cart %v", id.CacheKey())
 
 	return nil, ErrNoCacheEntry
 }
@@ -179,7 +179,7 @@ func (cs *CartSessionCache) CacheCart(ctx context.Context, session *web.Session,
 }
 
 // Invalidate a Cache Entry
-func (cs *CartSessionCache) Invalidate(ctx context.Context, session *web.Session, id CartCacheIdentifier) error {
+func (cs *CartSessionCache) Invalidate(_ context.Context, session *web.Session, id CartCacheIdentifier) error {
 	if cache, ok := session.Load(CartSessionCacheCacheKeyPrefix + id.CacheKey()); ok {
 		if cachedCartsEntry, ok := cache.(CachedCartEntry); ok {
 			cachedCartsEntry.IsInvalid = true
@@ -193,7 +193,7 @@ func (cs *CartSessionCache) Invalidate(ctx context.Context, session *web.Session
 }
 
 // Delete a Cache entry
-func (cs *CartSessionCache) Delete(ctx context.Context, session *web.Session, id CartCacheIdentifier) error {
+func (cs *CartSessionCache) Delete(_ context.Context, session *web.Session, id CartCacheIdentifier) error {
 	if _, ok := session.Load(CartSessionCacheCacheKeyPrefix + id.CacheKey()); ok {
 		session.Delete(CartSessionCacheCacheKeyPrefix + id.CacheKey())
 
@@ -205,7 +205,7 @@ func (cs *CartSessionCache) Delete(ctx context.Context, session *web.Session, id
 }
 
 // DeleteAll empties the Cache
-func (cs *CartSessionCache) DeleteAll(ctx context.Context, session *web.Session) error {
+func (cs *CartSessionCache) DeleteAll(_ context.Context, session *web.Session) error {
 	deleted := false
 	for _, k := range session.Keys() {
 		if stringKey, ok := k.(string); ok {

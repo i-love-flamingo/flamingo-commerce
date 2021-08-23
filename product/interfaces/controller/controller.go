@@ -2,11 +2,11 @@ package controller
 
 import (
 	"context"
+	"errors"
 	"net/url"
 	"strings"
 
 	"flamingo.me/flamingo/v3/framework/web"
-	"github.com/pkg/errors"
 
 	"flamingo.me/flamingo-commerce/v3/product/application"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
@@ -90,7 +90,7 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 					combinationsOrder[attribute] = append(combinationsOrder[attribute], variant.Attributes[attribute].Value())
 				}
 
-				//titles[variant.Attributes[subattribute].Value()] = variant.Attributes[subattribute].Label
+				// titles[variant.Attributes[subattribute].Value()] = variant.Attributes[subattribute].Label
 				if subattribute != attribute {
 					if _, ok := variant.Attributes[subattribute]; ok {
 						if combinations[attribute][variant.Attributes[attribute].Value()][subattribute] == nil {
@@ -184,11 +184,11 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 // Get Response for Product matching sku param
 func (vc *View) Get(c context.Context, r *web.Request) web.Result {
 	product, err := vc.ProductService.Get(c, r.Params["marketplacecode"])
-	skipnamecheck, _ := r.Params["skipnamecheck"]
+	skipNameCheck, _ := r.Params["skipnamecheck"]
 
 	// catch error
 	if err != nil {
-		switch errors.Cause(err).(type) {
+		switch errors.Unwrap(err).(type) {
 		case domain.ProductNotFound:
 			return vc.Responder.NotFound(err)
 
@@ -208,8 +208,8 @@ func (vc *View) Get(c context.Context, r *web.Request) web.Result {
 		variantCode, ok := r.Params["variantcode"]
 
 		if !ok {
-			//Redirect if url is not canonical
-			redirect := vc.getRedirectIfRequired(configurableProduct, r, skipnamecheck)
+			// Redirect if url is not canonical
+			redirect := vc.getRedirectIfRequired(configurableProduct, r, skipNameCheck)
 			if redirect != nil {
 				return redirect
 			}
@@ -223,8 +223,8 @@ func (vc *View) Get(c context.Context, r *web.Request) web.Result {
 				return vc.Responder.NotFound(err)
 			}
 			activeVariant = &configurableProductWithActiveVariant.ActiveVariant
-			//Redirect if url is not canonical
-			redirect := vc.getRedirectIfRequired(configurableProductWithActiveVariant, r, skipnamecheck)
+			// Redirect if url is not canonical
+			redirect := vc.getRedirectIfRequired(configurableProductWithActiveVariant, r, skipNameCheck)
 			if redirect != nil {
 				return redirect
 			}
@@ -235,8 +235,8 @@ func (vc *View) Get(c context.Context, r *web.Request) web.Result {
 		viewData.VariantSelection = vc.variantSelection(configurableProduct, activeVariant)
 
 	} else {
-		//Redirect if url is not canonical
-		redirect := vc.getRedirectIfRequired(product, r, skipnamecheck)
+		// Redirect if url is not canonical
+		redirect := vc.getRedirectIfRequired(product, r, skipNameCheck)
 		if redirect != nil {
 			return redirect
 		}
@@ -264,7 +264,7 @@ func (vc *View) getRedirectIfRequired(product domain.BasicProduct, r *web.Reques
 	if skipnamecheck != "" {
 		return nil
 	}
-	//Redirect if url is not canonical
+	// Redirect if url is not canonical
 	if vc.URLService.GetNameParam(product, "") != currentNameParameter {
 		if redirectURL, err := vc.URLService.Get(product, ""); err == nil {
 			newURL, _ := url.Parse(redirectURL)

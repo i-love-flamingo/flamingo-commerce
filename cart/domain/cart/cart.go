@@ -3,10 +3,9 @@ package cart
 import (
 	"bytes"
 	"encoding/gob"
+	"errors"
 	"fmt"
 	"math/big"
-
-	"github.com/pkg/errors"
 
 	"flamingo.me/flamingo/v3/framework/web"
 
@@ -50,7 +49,7 @@ type (
 
 		DefaultCurrency string
 
-		// Additional non taxable totals
+		// Additional non-taxable totals
 		Totalitems []Totalitem
 
 		// AppliedGiftCards is a list of applied gift cards
@@ -255,7 +254,7 @@ func (c Cart) GetDeliveryByItemID(itemID string) (*Delivery, error) {
 		}
 	}
 
-	return nil, errors.Errorf("delivery not found for %q", itemID)
+	return nil, fmt.Errorf("delivery not found for %q", itemID)
 }
 
 // GetByItemID gets an item by its id
@@ -268,12 +267,12 @@ func (c Cart) GetByItemID(itemID string) (*Item, error) {
 		}
 	}
 
-	return nil, errors.Errorf("itemId %q in cart does not exist", itemID)
+	return nil, fmt.Errorf("itemId %q in cart does not exist", itemID)
 }
 
 // GetTotalQty for the product in the cart
 func (c Cart) GetTotalQty(marketPlaceCode string, variantCode string) int {
-	qty := int(0)
+	qty := 0
 	for _, delivery := range c.Deliveries {
 		for _, currentItem := range delivery.Cartitems {
 			if currentItem.MarketplaceCode == marketPlaceCode && currentItem.VariantMarketPlaceCode == variantCode {
@@ -294,7 +293,7 @@ func (c Cart) GetByExternalReference(ref string) (*Item, error) {
 		}
 	}
 
-	return nil, errors.Errorf("uitemID %v in cart not existing", ref)
+	return nil, fmt.Errorf("cart item with ExternalReference %q not found", ref)
 }
 
 // ItemCount returns amount of cart items in the current cart
@@ -576,7 +575,7 @@ func (c Cart) GetCartTeaser() *Teaser {
 	}
 }
 
-// GetPaymentReference returns a string that can be used as reference to pass to payment gateway. You may want to use it. It returns either the reserved Order id or the cart id/entityid
+// GetPaymentReference returns a string that can be used as reference to pass to payment gateway. You may want to use it. It returns either the reserved Order id or the cart id/entity id
 func (c Cart) GetPaymentReference() string {
 	if c.AdditionalData.ReservedOrderID != "" {
 		return c.AdditionalData.ReservedOrderID
@@ -625,7 +624,7 @@ func (c Cart) GrandTotalCharges() domain.Charges {
 
 // AddTax returns new Tax with this Tax added
 func (t Taxes) AddTax(tax Tax) Taxes {
-	newTaxes := Taxes(t)
+	newTaxes := t
 	newTaxes = append(newTaxes, tax)
 
 	return newTaxes
@@ -633,7 +632,7 @@ func (t Taxes) AddTax(tax Tax) Taxes {
 
 // AddTaxWithMerge returns new Taxes with this Tax added
 func (t Taxes) AddTaxWithMerge(taxToAddOrMerge Tax) Taxes {
-	newTaxes := Taxes(t)
+	newTaxes := t
 
 	for k, tax := range newTaxes {
 		if tax.Type == taxToAddOrMerge.Type {
@@ -654,7 +653,7 @@ func (t Taxes) AddTaxWithMerge(taxToAddOrMerge Tax) Taxes {
 
 // AddTaxesWithMerge returns new Taxes with the given Taxes all added or merged in
 func (t Taxes) AddTaxesWithMerge(taxes Taxes) Taxes {
-	newTaxes := Taxes(t)
+	newTaxes := t
 
 	for _, tax := range taxes {
 		newTaxes = newTaxes.AddTaxWithMerge(tax)
@@ -819,7 +818,7 @@ func (p PricedItems) Sum() domain.Price {
 	return sum
 }
 
-// TotalItems returns the Price per Totalitem - map key is total type
+// TotalItems returns the Price per total item - map key is total type
 func (p PricedItems) TotalItems() map[string]domain.Price {
 	return p.totalItems
 }

@@ -3,10 +3,10 @@ package application
 import (
 	"context"
 	"encoding/gob"
+	"errors"
 	"fmt"
 
 	"flamingo.me/flamingo/v3/core/auth"
-	"github.com/pkg/errors"
 
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
@@ -144,7 +144,7 @@ func (cs *CartService) ValidateCurrentCart(ctx context.Context, session *web.Ses
 	return cs.ValidateCart(ctx, session, decoratedCart), nil
 }
 
-// UpdatePaymentSelection updates the paymentselection in the cart
+// UpdatePaymentSelection updates the payment selection in the cart
 func (cs *CartService) UpdatePaymentSelection(ctx context.Context, session *web.Session, paymentSelection cartDomain.PaymentSelection) error {
 	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
 	if err != nil {
@@ -424,7 +424,7 @@ func (cs *CartService) DeleteItem(ctx context.Context, session *web.Session, ite
 	cart, defers, err = behaviour.DeleteItem(ctx, cart, itemID, deliveryCode)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
-		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "DeleteItem").Error(errors.Wrap(err, "Trying to delete SKU :"+item.MarketplaceCode))
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "DeleteItem").Error(fmt.Errorf("trying to delete SKU %q: %w", item.MarketplaceCode, err))
 
 		return err
 	}
@@ -772,7 +772,7 @@ func (cs *CartService) ApplyVoucher(ctx context.Context, session *web.Session, c
 	return cs.executeVoucherBehaviour(ctx, session, cart, couponCode, behaviour.ApplyVoucher)
 }
 
-// ApplyAny applies a voucher or giftcard to the cart
+// ApplyAny applies a voucher or gift card to the cart
 func (cs *CartService) ApplyAny(ctx context.Context, session *web.Session, anyCode string) (*cartDomain.Cart, error) {
 	cart, behaviour, err := cs.getCartAndBehaviour(ctx, session, "ApplyAny")
 	if err != nil {
@@ -793,7 +793,7 @@ func (cs *CartService) RemoveVoucher(ctx context.Context, session *web.Session, 
 	return cs.executeVoucherBehaviour(ctx, session, cart, couponCode, behaviour.RemoveVoucher)
 }
 
-// ApplyGiftCard adds a giftcard to the cart
+// ApplyGiftCard adds a gift card to the cart
 func (cs *CartService) ApplyGiftCard(ctx context.Context, session *web.Session, couponCode string) (*cartDomain.Cart, error) {
 	cart, behaviour, err := cs.getCartAndBehaviour(ctx, session, "ApplyGiftCard")
 	if err != nil {
@@ -805,7 +805,7 @@ func (cs *CartService) ApplyGiftCard(ctx context.Context, session *web.Session, 
 	return nil, errors.New("ApplyGiftCard not supported")
 }
 
-// RemoveGiftCard removes a giftcard from the cart
+// RemoveGiftCard removes a gift card from the cart
 func (cs *CartService) RemoveGiftCard(ctx context.Context, session *web.Session, couponCode string) (*cartDomain.Cart, error) {
 	cart, behaviour, err := cs.getCartAndBehaviour(ctx, session, "RemoveGiftCard")
 	if err != nil {
@@ -829,7 +829,7 @@ func (cs *CartService) getCartAndBehaviour(ctx context.Context, session *web.Ses
 }
 
 // Executes provided behaviour regarding vouchers, this function serves to reduce duplicated code
-// for voucher / giftcard behaviour as their internal logic is basically the same
+// for voucher / gift card behaviour as their internal logic is basically the same
 func (cs *CartService) executeVoucherBehaviour(ctx context.Context, session *web.Session, cart *cartDomain.Cart, couponCode string, fn promotionFunc) (*cartDomain.Cart, error) {
 	// cart cache must be updated - with the current value of cart
 	var defers cartDomain.DeferEvents
@@ -1033,16 +1033,16 @@ func (cs *CartService) CancelOrder(ctx context.Context, session *web.Session, or
 	return restoredCart, nil
 }
 
-func (cs *CartService) cancelOrder(ctx context.Context, session *web.Session, orderInfos placeorder.PlacedOrderInfos) error {
+func (cs *CartService) cancelOrder(ctx context.Context, _ *web.Session, orderInfos placeorder.PlacedOrderInfos) error {
 	if cs.placeOrderService == nil {
 		return errors.New("No placeOrderService registered")
 	}
 
 	var cancelErr error
 
-	identitiy := cs.webIdentityService.Identify(ctx, web.RequestFromContext(ctx))
-	if identitiy != nil {
-		cancelErr = cs.placeOrderService.CancelCustomerOrder(ctx, orderInfos, identitiy)
+	identity := cs.webIdentityService.Identify(ctx, web.RequestFromContext(ctx))
+	if identity != nil {
+		cancelErr = cs.placeOrderService.CancelCustomerOrder(ctx, orderInfos, identity)
 	} else {
 		cancelErr = cs.placeOrderService.CancelGuestOrder(ctx, orderInfos)
 	}
@@ -1059,7 +1059,7 @@ func (cs *CartService) CancelOrderWithoutRestore(ctx context.Context, session *w
 	return cs.cancelOrder(ctx, session, orderInfos)
 }
 
-// GetDefaultDeliveryCode returns the configured default deliverycode
+// GetDefaultDeliveryCode returns the configured default delivery code
 func (cs *CartService) GetDefaultDeliveryCode() string {
 	return cs.defaultDeliveryCode
 }

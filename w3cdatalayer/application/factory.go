@@ -5,6 +5,7 @@ import (
 	"crypto/sha512"
 	"encoding/base64"
 	"encoding/hex"
+	"fmt"
 	"net/url"
 	"regexp"
 	"strconv"
@@ -14,7 +15,6 @@ import (
 	"flamingo.me/flamingo/v3/core/auth"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
-	"github.com/pkg/errors"
 	"go.opencensus.io/tag"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
@@ -23,7 +23,7 @@ import (
 )
 
 type (
-	// Factory is used to build new datalayers
+	// Factory is used to build new data layers
 	Factory struct {
 		router                  *web.Router
 		logger                  flamingo.Logger
@@ -128,7 +128,7 @@ func (s Factory) BuildForCurrentRequest(ctx context.Context, request *web.Reques
 
 	baseURL, err := s.router.Absolute(request, request.Request().URL.Path, nil)
 	if err != nil {
-		s.logger.Warn(errors.Wrap(err, "cannot build absolute url"))
+		s.logger.Warn(fmt.Errorf("cannot build absolute url: %w", err))
 		baseURL = new(url.URL)
 	}
 	layer.Page = &domain.Page{
@@ -456,7 +456,7 @@ func (s Factory) hashWithSHA512(value string) string {
 	newHash.Write([]byte(value))
 	// the hash is a byte array
 	result := newHash.Sum(nil)
-	// since we want to use it in a variable we base64 encode it (other alternative would be Hexadecimal representation "% x", h.Sum(nil)
+	// since we want to use it in a variable we base64 encode it (other alternative would be Hexadecimal representation "% x", h.Sum(nil))
 	return s.hashEncoder.EncodeToString(result)
 }
 

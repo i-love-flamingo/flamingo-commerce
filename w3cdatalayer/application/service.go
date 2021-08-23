@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
@@ -11,7 +12,6 @@ import (
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 	"flamingo.me/pugtemplate/pugjs"
-	"github.com/pkg/errors"
 )
 
 type (
@@ -21,7 +21,7 @@ type (
 	// Service can be used from outside is expected to be initialized with the current request context
 	// It stores a dataLayer Value object for the current request context and allows interaction with it
 	Service struct {
-		//currentContext need to be set when using the service
+		// currentContext need to be set when using the service
 		currentContext context.Context
 		logger         flamingo.Logger
 		factory        *Factory
@@ -47,7 +47,7 @@ func (s *Service) Init(ctx context.Context) {
 	s.currentContext = ctx
 }
 
-// Get gets the data layer value object stored in the current context - or a freshly new build one if its the first call
+// Get gets the data layer value object stored in the current context - or a freshly new build one if it's the first call
 func (s *Service) Get() domain.Datalayer {
 	if s.currentContext == nil {
 		s.logger.WithField("category", "w3cDatalayer").Error("Get called without context!")
@@ -66,7 +66,7 @@ func (s *Service) Get() domain.Datalayer {
 		return savedDataLayer
 	}
 
-	//error
+	// error
 	s.logger.WithField("category", "w3cDatalayer").Warn("Receiving datalayer from context failed")
 	return domain.Datalayer{}
 }
