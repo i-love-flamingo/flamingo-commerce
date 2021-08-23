@@ -69,7 +69,7 @@ func NewRedis(
 			return err
 		}
 
-		_, err = conn.Get("foo")
+		_, err = conn.Get("dummy-key")
 		return err
 	}
 

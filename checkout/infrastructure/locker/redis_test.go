@@ -116,3 +116,40 @@ func runTestCases(t *testing.T, redisLocker *locker.Redis) {
 		assert.Error(t, err)
 	})
 }
+
+func TestRedis_StatusDocker(t *testing.T) {
+	t.Run("redis not ready", func(t *testing.T) {
+		redisLocker := getRedisLocker("tcp", "127.0.0.1:80")
+		alive, _ := redisLocker.Status()
+
+		assert.False(t, alive)
+	})
+
+	t.Run("redis is there", func(t *testing.T) {
+		ctx := context.Background()
+		req := testcontainers.ContainerRequest{
+			Image:        "redis:latest",
+			ExposedPorts: []string{"6379/tcp"},
+			WaitingFor:   wait.ForLog("Ready to accept connections"),
+		}
+		redisC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
+			ContainerRequest: req,
+			Started:          true,
+		})
+		require.NoError(t, err)
+		defer func() { _ = redisC.Terminate(ctx) }()
+		defer goleak.VerifyNone(t, goleak.IgnoreCurrent())
+
+		port, err := redisC.MappedPort(ctx, "6379")
+		require.NoError(t, err)
+
+		host, err := redisC.Host(ctx)
+		require.NoError(t, err)
+		address := fmt.Sprintf("%s:%s", host, port.Port())
+
+		redisLocker := getRedisLocker("tcp", address)
+		alive, _ := redisLocker.Status()
+
+		assert.True(t, alive)
+	})
+}
