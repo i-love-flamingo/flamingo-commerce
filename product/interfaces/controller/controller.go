@@ -188,13 +188,15 @@ func (vc *View) Get(c context.Context, r *web.Request) web.Result {
 
 	// catch error
 	if err != nil {
-		switch errors.Unwrap(err).(type) {
-		case domain.ProductNotFound:
-			return vc.Responder.NotFound(err)
-
-		default:
-			return vc.Responder.ServerError(err)
+		if unwrappedErr := errors.Unwrap(err); unwrappedErr != nil {
+			err = unwrappedErr
 		}
+
+		if _, ok := err.(domain.ProductNotFound); ok {
+			return vc.Responder.NotFound(err)
+		}
+
+		return vc.Responder.ServerError(err)
 	}
 
 	var viewData productViewData
