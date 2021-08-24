@@ -19,7 +19,6 @@ require (
 	github.com/google/uuid v1.1.2
 	github.com/gordonklaus/ineffassign v0.0.0-20201107091007-3b93a8888063 // indirect
 	github.com/leekchan/accounting v0.0.0-20191104051123-0b9b0bd19c36
-	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.6.1
 	github.com/stvp/tempredis v0.0.0-20181119212430-b82af8480203
 	github.com/swaggo/swag v1.6.6-0.20200603163350-20638f327979

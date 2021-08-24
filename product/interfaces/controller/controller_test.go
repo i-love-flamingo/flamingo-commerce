@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"testing"
@@ -74,6 +75,9 @@ func (mps *MockProductService) Get(_ context.Context, marketplacecode string) (d
 	if marketplacecode == "not_found" {
 		return nil, domain.ProductNotFound{MarketplaceCode: "not_found"}
 	}
+	if marketplacecode == "not_found_wrapped" {
+		return nil, fmt.Errorf("wrap it: %w", domain.ProductNotFound{MarketplaceCode: "not_found"})
+	}
 	if marketplacecode == "simple" {
 		return domain.SimpleProduct{
 			BasicProductData: domain.BasicProductData{Title: "My Product Title", MarketPlaceCode: marketplacecode},
@@ -127,22 +131,29 @@ func TestViewController_GetNotFound(t *testing.T) {
 			marketPlaceCode: "not_found",
 			expectedStatus:  http.StatusNotFound,
 		},
+		{
+			name:            "not found wrapped error",
+			marketPlaceCode: "not_found_wrapped",
+			expectedStatus:  http.StatusNotFound,
+		},
 	}
 	for _, tt := range tests {
-		vc := getController()
+		t.Run(tt.name, func(t *testing.T) {
+			vc := getController()
 
-		// call with correct name parameter and expect Rendering
-		ctx := context.Background()
-		r := web.CreateRequest(&http.Request{}, nil)
-		r.Request().URL = &url.URL{}
-		r.Params = web.RequestParams{
-			"marketplacecode": tt.marketPlaceCode,
-			"name":            tt.marketPlaceCode,
-		}
+			// call with correct name parameter and expect Rendering
+			ctx := context.Background()
+			r := web.CreateRequest(&http.Request{}, nil)
+			r.Request().URL = &url.URL{}
+			r.Params = web.RequestParams{
+				"marketplacecode": tt.marketPlaceCode,
+				"name":            tt.marketPlaceCode,
+			}
 
-		result := vc.Get(ctx, r)
-		require.IsType(t, &web.ServerErrorResponse{}, result)
-		assert.Equal(t, int(tt.expectedStatus), int(result.(*web.ServerErrorResponse).Response.Status))
+			result := vc.Get(ctx, r)
+			require.IsType(t, &web.ServerErrorResponse{}, result)
+			assert.Equal(t, int(tt.expectedStatus), int(result.(*web.ServerErrorResponse).Response.Status))
+		})
 	}
 }
 

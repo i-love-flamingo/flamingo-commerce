@@ -2,6 +2,8 @@ package domain
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"math"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -9,15 +11,13 @@ import (
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 
 	"flamingo.me/flamingo/v3/framework/flamingo"
-
-	"github.com/pkg/errors"
 )
 
 type (
 	// SourcingService describes the main port used by the sourcing logic.
 	SourcingService interface {
 		// AllocateItems returns Sources for the given item in the given cart
-		// e.g. use this during place order to know
+		// e.g. use this during place order to know where to source from
 		// throws ErrInsufficientSourceQty if not enough stock is available for the amount of items in the cart
 		// throws ErrNoSourceAvailable if no source is available at all for one of the items
 		// throws ErrNeedMoreDetailsSourceCannotBeDetected if information on the cart (or delivery is missing)
@@ -79,13 +79,13 @@ type (
 var (
 	_ SourcingService = new(DefaultSourcingService)
 
-	// ErrInsufficientSourceQty - use to indicate that the requested qty exceeds the available qty
+	// ErrInsufficientSourceQty should be used to indicate that the requested qty exceeds the available qty
 	ErrInsufficientSourceQty = errors.New("Available Source Qty insufficient")
 
-	// ErrNoSourceAvailable - use to indicate that no source for item is available at all
+	// ErrNoSourceAvailable should be used to indicate that no source for item is available at all
 	ErrNoSourceAvailable = errors.New("No Available Source Qty")
 
-	// ErrNeedMoreDetailsSourceCannotBeDetected - use to indicate that informations are missing to determine a source
+	// ErrNeedMoreDetailsSourceCannotBeDetected should be used to indicate that information are missing to determine a source
 	ErrNeedMoreDetailsSourceCannotBeDetected = errors.New("Source cannot be detected")
 )
 
@@ -149,7 +149,7 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 
 	if len(availableSources) == 0 {
 		if lastStockError != nil {
-			return availableSources, errors.Wrap(ErrNoSourceAvailable, lastStockError.Error())
+			return availableSources, fmt.Errorf("%w: %s", ErrNoSourceAvailable, lastStockError.Error())
 		}
 		return availableSources, ErrNoSourceAvailable
 	}
@@ -247,7 +247,7 @@ func (d *DefaultSourcingService) allocateItem(ctx context.Context, productSource
 	}
 
 	for _, source := range sources {
-		// if we have no stock given for source and productid we fetch it initially
+		// if we have no stock given for source and product id we fetch it initially
 		if _, exists := remainingSourcestock[productID][source]; !exists {
 			sourceStock, err := d.stockProvider.GetStock(ctx, decoratedItem.Product, source, &deliveryInfo)
 			if err != nil {
@@ -272,7 +272,7 @@ func (d *DefaultSourcingService) allocateItem(ctx context.Context, productSource
 			// increment allocatedQty by allocated Stock
 			allocatedQty = allocatedQty + stockToAllocate
 
-			// decrement remaining productSourceStock accordingly as its not happening by itself
+			// decrement remaining productSourceStock accordingly as it's not happening by itself
 			remainingSourcestock[productID][source] = remainingSourcestock[productID][source] - stockToAllocate
 		}
 	}
