@@ -14,8 +14,6 @@ import (
 	"flamingo.me/graphql"
 )
 
-//go:generate go run github.com/go-bindata/go-bindata/v3/go-bindata -nometadata -o schema.go -pkg graphql schema.graphql
-
 // Service describes the Commerce/Cart GraphQL Service
 type Service struct{}
 
