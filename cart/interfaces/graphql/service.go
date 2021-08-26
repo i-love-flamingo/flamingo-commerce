@@ -2,6 +2,8 @@ package graphql
 
 import (
 	"context"
+	// embed schema.graphql
+	_ "embed"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
@@ -12,16 +14,17 @@ import (
 	"flamingo.me/graphql"
 )
 
-//go:generate go run github.com/go-bindata/go-bindata/v3/go-bindata -nometadata -o schema.go -pkg graphql schema.graphql
-
 // Service describes the Commerce/Cart GraphQL Service
 type Service struct{}
 
 var _ graphql.Service = new(Service)
 
+//go:embed schema.graphql
+var schema []byte
+
 // Schema for cart, delivery and addresses
 func (*Service) Schema() []byte {
-	return MustAsset("schema.graphql")
+	return schema
 }
 
 // Types configures the GraphQL to Go resolvers
