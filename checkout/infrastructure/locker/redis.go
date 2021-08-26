@@ -3,10 +3,12 @@ package locker
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"flamingo.me/flamingo/v3/core/healthcheck/domain/healthcheck"
-	"github.com/go-redsync/redsync"
+	"github.com/go-redsync/redsync/v4"
+	"github.com/go-redsync/redsync/v4/redis/redigo"
 	"github.com/gomodule/redigo/redis"
 	"go.opencensus.io/trace"
 
@@ -49,7 +51,7 @@ func NewRedis(
 		r.database = cfg.Database
 	}
 
-	pools := []redsync.Pool{&redis.Pool{
+	pool := redigo.NewPool(&redis.Pool{
 		MaxIdle:     r.maxIdle,
 		IdleTimeout: r.idleTimeout,
 		Dial: func() (redis.Conn, error) {
@@ -59,14 +61,19 @@ func NewRedis(
 			_, err := c.Do("PING")
 			return err
 		},
-	}}
+	})
 
 	r.healthcheck = func() error {
-		_, err := pools[0].Get().Do("PING")
+		conn, err := pool.Get(context.Background())
+		if err != nil {
+			return err
+		}
+
+		_, err = conn.Get("dummy-key")
 		return err
 	}
 
-	r.redsync = redsync.New(pools)
+	r.redsync = redsync.New(pool)
 
 	return r
 }
@@ -77,9 +84,9 @@ func (r *Redis) TryLock(ctx context.Context, key string, maxlockduration time.Du
 	defer span.End()
 	mutex := r.redsync.NewMutex(
 		key,
-		redsync.SetExpiry(maxlockduration),
-		redsync.SetTries(1),
-		redsync.SetRetryDelayFunc(func(int) time.Duration { return 50 * time.Millisecond }),
+		redsync.WithExpiry(maxlockduration),
+		redsync.WithTries(1),
+		redsync.WithRetryDelay(50*time.Millisecond),
 	)
 	err := mutex.Lock()
 	if err != nil {
@@ -105,9 +112,9 @@ func (r *Redis) TryLock(ctx context.Context, key string, maxlockduration time.Du
 	return func() error {
 		close(done)
 		ticker.Stop()
-		ok := mutex.Unlock()
+		ok, err := mutex.Unlock()
 		if !ok {
-			return errors.New("unlock unsuccessful")
+			return fmt.Errorf("unlock unsuccessful: %w", err)
 		}
 		return nil
 	}, nil

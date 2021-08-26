@@ -12,10 +12,10 @@ require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/gavv/httpexpect/v2 v2.0.2
 	github.com/go-playground/form/v4 v4.2.0
-	github.com/go-redsync/redsync v1.3.1
+	github.com/go-redsync/redsync/v4 v4.3.0
 	github.com/go-test/deep v1.0.1
 	github.com/gomodule/redigo v2.0.0+incompatible
-	github.com/google/go-cmp v0.4.0
+	github.com/google/go-cmp v0.5.1
 	github.com/google/uuid v1.1.2
 	github.com/gordonklaus/ineffassign v0.0.0-20201107091007-3b93a8888063 // indirect
 	github.com/leekchan/accounting v0.0.0-20191104051123-0b9b0bd19c36
