@@ -1014,7 +1014,7 @@
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/paymentResultError"
+                            "$ref": "#/definitions/productResultError"
                         }
                     }
                 }
@@ -1074,57 +1074,6 @@
         }
     },
     "definitions": {
-        "ProductAttribute": {
-            "type": "object",
-            "properties": {
-                "Code": {
-                    "description": "Code is the internal attribute identifier",
-                    "type": "string"
-                },
-                "CodeLabel": {
-                    "description": "CodeLabel is the human readable (perhaps localized) attribute name",
-                    "type": "string"
-                },
-                "Label": {
-                    "description": "Label is the human readable (perhaps localized) attribute value",
-                    "type": "string"
-                },
-                "RawValue": {
-                    "description": "RawValue is the untouched original value of the attribute",
-                    "type": "object"
-                },
-                "UnitCode": {
-                    "description": "UnitCode is the internal code of the attribute values measuring unit",
-                    "type": "string"
-                }
-            }
-        },
-        "ProductAttributes": {
-            "type": "object",
-            "additionalProperties": {
-                "$ref": "#/definitions/ProductAttribute"
-            }
-        },
-        "ProductMedia": {
-            "type": "object",
-            "properties": {
-                "MimeType": {
-                    "type": "string"
-                },
-                "Reference": {
-                    "type": "string"
-                },
-                "Title": {
-                    "type": "string"
-                },
-                "Type": {
-                    "type": "string"
-                },
-                "Usage": {
-                    "type": "string"
-                }
-            }
-        },
         "application.PlaceOrderPaymentInfo": {
             "type": "object",
             "properties": {
@@ -1619,17 +1568,6 @@
                 }
             }
         },
-        "cartResultError": {
-            "type": "object",
-            "properties": {
-                "Code": {
-                    "type": "string"
-                },
-                "Message": {
-                    "type": "string"
-                }
-            }
-        },
         "checkoutError": {
             "type": "object",
             "properties": {
@@ -1672,7 +1610,7 @@
                 },
                 "Error": {
                     "description": "Contains details if success is false",
-                    "$ref": "#/definitions/cartResultError"
+                    "$ref": "#/definitions/productResultError"
                 },
                 "Success": {
                     "type": "boolean"
@@ -1784,6 +1722,15 @@
                 "Delivery": {
                     "$ref": "#/definitions/cart.Delivery"
                 }
+            }
+        },
+        "domain.Attribute": {
+            "type": "object"
+        },
+        "domain.Attributes": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/domain.Attribute"
             }
         },
         "domain.Badge": {
@@ -1926,6 +1873,26 @@
                 }
             }
         },
+        "domain.Media": {
+            "type": "object",
+            "properties": {
+                "MimeType": {
+                    "type": "string"
+                },
+                "Reference": {
+                    "type": "string"
+                },
+                "Title": {
+                    "type": "string"
+                },
+                "Type": {
+                    "type": "string"
+                },
+                "Usage": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.PaymentRequestAPI": {
             "type": "object",
             "properties": {
@@ -2014,7 +1981,7 @@
                     "$ref": "#/definitions/domain.PriceInfo"
                 },
                 "Attributes": {
-                    "$ref": "#/definitions/ProductAttributes"
+                    "$ref": "#/definitions/domain.Attributes"
                 },
                 "AvailablePrices": {
                     "type": "array",
@@ -2084,7 +2051,7 @@
                 "Media": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ProductMedia"
+                        "$ref": "#/definitions/domain.Media"
                     }
                 },
                 "RetailerCode": {
@@ -2143,7 +2110,7 @@
                     "description": "Media",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ProductMedia"
+                        "$ref": "#/definitions/domain.Media"
                     }
                 },
                 "PreSelectedVariantSku": {
@@ -2190,17 +2157,6 @@
                     "$ref": "#/definitions/domain.PaymentRequestAPI"
                 },
                 "UsedPaymentMethod": {
-                    "type": "string"
-                }
-            }
-        },
-        "paymentResultError": {
-            "type": "object",
-            "properties": {
-                "Code": {
-                    "type": "string"
-                },
-                "Message": {
                     "type": "string"
                 }
             }

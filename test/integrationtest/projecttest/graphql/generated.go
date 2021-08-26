@@ -6388,7 +6388,7 @@ func (ec *executionContext) dir_deprecated_args(ctx context.Context, rawArgs map
 	args := map[string]interface{}{}
 	var arg0 *string
 	if tmp, ok := rawArgs["reason"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("reason"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("reason"))
 		arg0, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6403,7 +6403,7 @@ func (ec *executionContext) dir_include_args(ctx context.Context, rawArgs map[st
 	args := map[string]interface{}{}
 	var arg0 bool
 	if tmp, ok := rawArgs["if"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("if"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("if"))
 		arg0, err = ec.unmarshalNBoolean2bool(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6418,7 +6418,7 @@ func (ec *executionContext) dir_skip_args(ctx context.Context, rawArgs map[strin
 	args := map[string]interface{}{}
 	var arg0 bool
 	if tmp, ok := rawArgs["if"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("if"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("if"))
 		arg0, err = ec.unmarshalNBoolean2bool(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6433,7 +6433,7 @@ func (ec *executionContext) field_Commerce_Cart_AppliedDiscounts_byCampaignCode_
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["campaignCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("campaignCode"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("campaignCode"))
 		arg0, err = ec.unmarshalOString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6448,7 +6448,7 @@ func (ec *executionContext) field_Commerce_Cart_AppliedDiscounts_byType_args(ctx
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["filterType"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("filterType"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filterType"))
 		arg0, err = ec.unmarshalOString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6463,7 +6463,7 @@ func (ec *executionContext) field_Commerce_Cart_Cart_getByExternalReference_args
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["ref"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("ref"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ref"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6478,7 +6478,7 @@ func (ec *executionContext) field_Commerce_Cart_Cart_getByItemID_args(ctx contex
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["itemID"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("itemID"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("itemID"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6493,7 +6493,7 @@ func (ec *executionContext) field_Commerce_Cart_Cart_getDeliveryByCode_args(ctx 
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["deliveryCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryCode"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6508,7 +6508,7 @@ func (ec *executionContext) field_Commerce_Cart_Cart_getDeliveryByItemID_args(ct
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["itemID"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("itemID"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("itemID"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6523,7 +6523,7 @@ func (ec *executionContext) field_Commerce_Cart_Cart_getTotalItemsByType_args(ct
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["typeCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("typeCode"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("typeCode"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6538,7 +6538,7 @@ func (ec *executionContext) field_Commerce_Cart_Cart_getTotalQty_args(ctx contex
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["marketPlaceCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("marketPlaceCode"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("marketPlaceCode"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6547,7 +6547,7 @@ func (ec *executionContext) field_Commerce_Cart_Cart_getTotalQty_args(ctx contex
 	args["marketPlaceCode"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["variantCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("variantCode"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("variantCode"))
 		arg1, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6562,7 +6562,7 @@ func (ec *executionContext) field_Commerce_Cart_Cart_hasDeliveryForCode_args(ctx
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["deliveryCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryCode"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6577,7 +6577,7 @@ func (ec *executionContext) field_Commerce_Cart_CustomAttributes_get_args(ctx co
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["key"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("key"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("key"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6592,7 +6592,7 @@ func (ec *executionContext) field_Commerce_Cart_DecoratedCart_getDecoratedDelive
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["deliveryCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryCode"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6607,7 +6607,7 @@ func (ec *executionContext) field_Commerce_Cart_Item_getAdditionalData_args(ctx 
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["key"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("key"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("key"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6622,7 +6622,7 @@ func (ec *executionContext) field_Commerce_Cart_Item_hasAdditionalDataKey_args(c
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["key"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("key"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("key"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6637,7 +6637,7 @@ func (ec *executionContext) field_Commerce_Cart_Summary_sumPaymentSelectionCartS
 	args := map[string]interface{}{}
 	var arg0 []string
 	if tmp, ok := rawArgs["methods"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("methods"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("methods"))
 		arg0, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6652,7 +6652,7 @@ func (ec *executionContext) field_Commerce_Cart_Taxes_getByType_args(ctx context
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["taxType"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("taxType"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taxType"))
 		arg0, err = ec.unmarshalOString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6667,7 +6667,7 @@ func (ec *executionContext) field_Commerce_Category_Attributes_get_args(ctx cont
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["code"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("code"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("code"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6682,7 +6682,7 @@ func (ec *executionContext) field_Commerce_Category_Attributes_has_args(ctx cont
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["code"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("code"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("code"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6697,7 +6697,7 @@ func (ec *executionContext) field_Commerce_Customer_Result_getAddress_args(ctx c
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("id"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 		arg0, err = ec.unmarshalNID2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6712,7 +6712,7 @@ func (ec *executionContext) field_Commerce_Price_Charges_getByChargeQualifierFor
 	args := map[string]interface{}{}
 	var arg0 domain.ChargeQualifier
 	if tmp, ok := rawArgs["qualifier"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("qualifier"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("qualifier"))
 		arg0, err = ec.unmarshalNCommerce_Price_ChargeQualifierInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐChargeQualifier(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6727,7 +6727,7 @@ func (ec *executionContext) field_Commerce_Price_Charges_getByTypeForced_args(ct
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["ctype"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("ctype"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ctype"))
 		arg0, err = ec.unmarshalOString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6742,7 +6742,7 @@ func (ec *executionContext) field_Commerce_Price_Charges_hasChargeQualifier_args
 	args := map[string]interface{}{}
 	var arg0 domain.ChargeQualifier
 	if tmp, ok := rawArgs["qualifier"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("qualifier"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("qualifier"))
 		arg0, err = ec.unmarshalNCommerce_Price_ChargeQualifierInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐChargeQualifier(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6757,7 +6757,7 @@ func (ec *executionContext) field_Commerce_Price_Charges_hasType_args(ctx contex
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["ctype"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("ctype"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ctype"))
 		arg0, err = ec.unmarshalOString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6772,7 +6772,7 @@ func (ec *executionContext) field_Commerce_Product_Attributes_getAttribute_args(
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["key"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("key"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("key"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6787,7 +6787,7 @@ func (ec *executionContext) field_Commerce_Product_Attributes_getAttributesByKey
 	args := map[string]interface{}{}
 	var arg0 []string
 	if tmp, ok := rawArgs["keys"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("keys"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keys"))
 		arg0, err = ec.unmarshalOString2ᚕstringᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6802,7 +6802,7 @@ func (ec *executionContext) field_Commerce_Product_Attributes_hasAttribute_args(
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["key"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("key"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("key"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6817,7 +6817,7 @@ func (ec *executionContext) field_Commerce_Product_Media_getMedia_args(ctx conte
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["usage"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("usage"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("usage"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6832,7 +6832,7 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_AddToCart_args(ctx cont
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["marketplaceCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("marketplaceCode"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("marketplaceCode"))
 		arg0, err = ec.unmarshalNID2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6841,7 +6841,7 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_AddToCart_args(ctx cont
 	args["marketplaceCode"] = arg0
 	var arg1 int
 	if tmp, ok := rawArgs["qty"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("qty"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("qty"))
 		arg1, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6850,7 +6850,7 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_AddToCart_args(ctx cont
 	args["qty"] = arg1
 	var arg2 string
 	if tmp, ok := rawArgs["deliveryCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryCode"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
 		arg2, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6865,7 +6865,7 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_ApplyCouponCodeOrGiftCa
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["code"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("code"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("code"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6880,7 +6880,7 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_DeleteCartDelivery_args
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["deliveryCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryCode"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6895,7 +6895,7 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_DeleteItem_args(ctx con
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["itemID"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("itemID"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("itemID"))
 		arg0, err = ec.unmarshalNID2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6904,7 +6904,7 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_DeleteItem_args(ctx con
 	args["itemID"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["deliveryCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryCode"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
 		arg1, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6919,7 +6919,7 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_RemoveCouponCode_args(c
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["couponCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("couponCode"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("couponCode"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6934,7 +6934,7 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_RemoveGiftCard_args(ctx
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["giftCardCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("giftCardCode"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("giftCardCode"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6949,7 +6949,7 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateAdditionalData_ar
 	args := map[string]interface{}{}
 	var arg0 []*dto.KeyValue
 	if tmp, ok := rawArgs["additionalData"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("additionalData"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("additionalData"))
 		arg0, err = ec.unmarshalNCommerce_Cart_KeyValueInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValueᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6964,7 +6964,7 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateBillingAddress_ar
 	args := map[string]interface{}{}
 	var arg0 *forms.AddressForm
 	if tmp, ok := rawArgs["addressForm"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("addressForm"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressForm"))
 		arg0, err = ec.unmarshalOCommerce_Cart_AddressFormInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐAddressForm(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6979,7 +6979,7 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveriesAdditio
 	args := map[string]interface{}{}
 	var arg0 []*dto.DeliveryAdditionalData
 	if tmp, ok := rawArgs["data"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("data"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("data"))
 		arg0, err = ec.unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalDataᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -6994,7 +6994,7 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveryAddresses
 	args := map[string]interface{}{}
 	var arg0 []*forms.DeliveryForm
 	if tmp, ok := rawArgs["deliveryAdresses"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryAdresses"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryAdresses"))
 		arg0, err = ec.unmarshalOCommerce_Cart_DeliveryAddressInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐDeliveryFormᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -7009,7 +7009,7 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateDeliveryShippingO
 	args := map[string]interface{}{}
 	var arg0 []*dto.DeliveryShippingOption
 	if tmp, ok := rawArgs["shippingOptions"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("shippingOptions"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("shippingOptions"))
 		arg0, err = ec.unmarshalOCommerce_Cart_DeliveryShippingOptionInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryShippingOptionᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -7024,7 +7024,7 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemQty_args(ctx 
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["itemID"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("itemID"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("itemID"))
 		arg0, err = ec.unmarshalNID2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -7033,7 +7033,7 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemQty_args(ctx 
 	args["itemID"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["deliveryCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryCode"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
 		arg1, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -7042,7 +7042,7 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateItemQty_args(ctx 
 	args["deliveryCode"] = arg1
 	var arg2 int
 	if tmp, ok := rawArgs["qty"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("qty"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("qty"))
 		arg2, err = ec.unmarshalNInt2int(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -7057,7 +7057,7 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateSelectedPayment_a
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["gateway"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("gateway"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gateway"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -7066,7 +7066,7 @@ func (ec *executionContext) field_Mutation_Commerce_Cart_UpdateSelectedPayment_a
 	args["gateway"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["method"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("method"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("method"))
 		arg1, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -7081,7 +7081,7 @@ func (ec *executionContext) field_Mutation_Commerce_Checkout_StartPlaceOrder_arg
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["returnUrl"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("returnUrl"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("returnUrl"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -7096,7 +7096,7 @@ func (ec *executionContext) field_Query_Commerce_Cart_QtyRestriction_args(ctx co
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["marketplaceCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("marketplaceCode"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("marketplaceCode"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -7105,7 +7105,7 @@ func (ec *executionContext) field_Query_Commerce_Cart_QtyRestriction_args(ctx co
 	args["marketplaceCode"] = arg0
 	var arg1 *string
 	if tmp, ok := rawArgs["variantCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("variantCode"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("variantCode"))
 		arg1, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -7114,7 +7114,7 @@ func (ec *executionContext) field_Query_Commerce_Cart_QtyRestriction_args(ctx co
 	args["variantCode"] = arg1
 	var arg2 string
 	if tmp, ok := rawArgs["deliveryCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryCode"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
 		arg2, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -7129,7 +7129,7 @@ func (ec *executionContext) field_Query_Commerce_CategoryTree_args(ctx context.C
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["activeCategoryCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("activeCategoryCode"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("activeCategoryCode"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -7144,7 +7144,7 @@ func (ec *executionContext) field_Query_Commerce_Category_args(ctx context.Conte
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["categoryCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("categoryCode"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categoryCode"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -7153,7 +7153,7 @@ func (ec *executionContext) field_Query_Commerce_Category_args(ctx context.Conte
 	args["categoryCode"] = arg0
 	var arg1 *searchdto.CommerceSearchRequest
 	if tmp, ok := rawArgs["categorySearchRequest"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("categorySearchRequest"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("categorySearchRequest"))
 		arg1, err = ec.unmarshalOCommerce_Search_Request2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRequest(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -7168,7 +7168,7 @@ func (ec *executionContext) field_Query_Commerce_Product_Search_args(ctx context
 	args := map[string]interface{}{}
 	var arg0 searchdto.CommerceSearchRequest
 	if tmp, ok := rawArgs["searchRequest"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("searchRequest"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("searchRequest"))
 		arg0, err = ec.unmarshalNCommerce_Search_Request2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRequest(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -7183,7 +7183,7 @@ func (ec *executionContext) field_Query_Commerce_Product_args(ctx context.Contex
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["marketPlaceCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("marketPlaceCode"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("marketPlaceCode"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -7192,7 +7192,7 @@ func (ec *executionContext) field_Query_Commerce_Product_args(ctx context.Contex
 	args["marketPlaceCode"] = arg0
 	var arg1 *string
 	if tmp, ok := rawArgs["variantMarketPlaceCode"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("variantMarketPlaceCode"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("variantMarketPlaceCode"))
 		arg1, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -7207,7 +7207,7 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["name"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("name"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -7222,7 +7222,7 @@ func (ec *executionContext) field___Type_enumValues_args(ctx context.Context, ra
 	args := map[string]interface{}{}
 	var arg0 bool
 	if tmp, ok := rawArgs["includeDeprecated"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("includeDeprecated"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("includeDeprecated"))
 		arg0, err = ec.unmarshalOBoolean2bool(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -7237,7 +7237,7 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 	args := map[string]interface{}{}
 	var arg0 bool
 	if tmp, ok := rawArgs["includeDeprecated"]; ok {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("includeDeprecated"))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("includeDeprecated"))
 		arg0, err = ec.unmarshalOBoolean2bool(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -7305,10 +7305,11 @@ func (ec *executionContext) _Commerce_Cart_AdditionalData_customAttributes(ctx c
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AdditionalData",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_AdditionalData",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -7336,10 +7337,11 @@ func (ec *executionContext) _Commerce_Cart_AdditionalData_reservedOrderID(ctx co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AdditionalData",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AdditionalData",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -7367,10 +7369,11 @@ func (ec *executionContext) _Commerce_Cart_Address_vat(ctx context.Context, fiel
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -7398,10 +7401,11 @@ func (ec *executionContext) _Commerce_Cart_Address_firstname(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -7429,10 +7433,11 @@ func (ec *executionContext) _Commerce_Cart_Address_lastname(ctx context.Context,
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -7460,10 +7465,11 @@ func (ec *executionContext) _Commerce_Cart_Address_middleName(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -7491,10 +7497,11 @@ func (ec *executionContext) _Commerce_Cart_Address_title(ctx context.Context, fi
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -7522,10 +7529,11 @@ func (ec *executionContext) _Commerce_Cart_Address_salutation(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -7553,10 +7561,11 @@ func (ec *executionContext) _Commerce_Cart_Address_street(ctx context.Context, f
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -7584,10 +7593,11 @@ func (ec *executionContext) _Commerce_Cart_Address_streetNr(ctx context.Context,
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -7615,10 +7625,11 @@ func (ec *executionContext) _Commerce_Cart_Address_additionalAddressLines(ctx co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -7643,10 +7654,11 @@ func (ec *executionContext) _Commerce_Cart_Address_company(ctx context.Context, 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -7674,10 +7686,11 @@ func (ec *executionContext) _Commerce_Cart_Address_city(ctx context.Context, fie
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -7705,10 +7718,11 @@ func (ec *executionContext) _Commerce_Cart_Address_postCode(ctx context.Context,
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -7736,10 +7750,11 @@ func (ec *executionContext) _Commerce_Cart_Address_state(ctx context.Context, fi
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -7767,10 +7782,11 @@ func (ec *executionContext) _Commerce_Cart_Address_regionCode(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -7798,10 +7814,11 @@ func (ec *executionContext) _Commerce_Cart_Address_country(ctx context.Context, 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -7829,10 +7846,11 @@ func (ec *executionContext) _Commerce_Cart_Address_countryCode(ctx context.Conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -7860,10 +7878,11 @@ func (ec *executionContext) _Commerce_Cart_Address_telephone(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -7891,10 +7910,11 @@ func (ec *executionContext) _Commerce_Cart_Address_email(ctx context.Context, fi
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -7922,10 +7942,11 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_vat(ctx context.Context, 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -7953,10 +7974,11 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_firstname(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -7984,10 +8006,11 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_lastname(ctx context.Cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8015,10 +8038,11 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_middleName(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8046,10 +8070,11 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_title(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8077,10 +8102,11 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_salutation(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8108,10 +8134,11 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_street(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8139,10 +8166,11 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_streetNr(ctx context.Cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8170,10 +8198,11 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_addressLine1(ctx context.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8201,10 +8230,11 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_addressLine2(ctx context.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8232,10 +8262,11 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_company(ctx context.Conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8263,10 +8294,11 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_city(ctx context.Context,
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8294,10 +8326,11 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_postCode(ctx context.Cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8325,10 +8358,11 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_state(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8356,10 +8390,11 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_regionCode(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8387,10 +8422,11 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_country(ctx context.Conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8418,10 +8454,11 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_countryCode(ctx context.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8449,10 +8486,11 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_phoneNumber(ctx context.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8480,10 +8518,11 @@ func (ec *executionContext) _Commerce_Cart_AddressForm_email(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8511,10 +8550,11 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_campaignCode(ctx cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AppliedDiscount",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AppliedDiscount",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8542,10 +8582,11 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_couponCode(ctx contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AppliedDiscount",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AppliedDiscount",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8573,10 +8614,11 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_label(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AppliedDiscount",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AppliedDiscount",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8604,10 +8646,11 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_applied(ctx context.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AppliedDiscount",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AppliedDiscount",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8635,10 +8678,11 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_type(ctx context.Cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AppliedDiscount",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AppliedDiscount",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8666,10 +8710,11 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_isItemRelated(ctx con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AppliedDiscount",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AppliedDiscount",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8697,10 +8742,11 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscount_sortOrder(ctx context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AppliedDiscount",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AppliedDiscount",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8728,10 +8774,11 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscounts_items(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AppliedDiscounts",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_AppliedDiscounts",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8756,10 +8803,11 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscounts_byCampaignCode(ctx c
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AppliedDiscounts",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_AppliedDiscounts",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8794,10 +8842,11 @@ func (ec *executionContext) _Commerce_Cart_AppliedDiscounts_byType(ctx context.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AppliedDiscounts",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_AppliedDiscounts",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8832,10 +8881,11 @@ func (ec *executionContext) _Commerce_Cart_AppliedGiftCard_code(ctx context.Cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AppliedGiftCard",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AppliedGiftCard",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8863,10 +8913,11 @@ func (ec *executionContext) _Commerce_Cart_AppliedGiftCard_applied(ctx context.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AppliedGiftCard",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AppliedGiftCard",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8894,10 +8945,11 @@ func (ec *executionContext) _Commerce_Cart_AppliedGiftCard_remaining(ctx context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AppliedGiftCard",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_AppliedGiftCard",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8925,10 +8977,11 @@ func (ec *executionContext) _Commerce_Cart_AppliedGiftCard_hasRemaining(ctx cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_AppliedGiftCard",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_AppliedGiftCard",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8956,10 +9009,11 @@ func (ec *executionContext) _Commerce_Cart_BillingAddressForm_formData(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_BillingAddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_BillingAddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -8984,10 +9038,11 @@ func (ec *executionContext) _Commerce_Cart_BillingAddressForm_validationInfo(ctx
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_BillingAddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_BillingAddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9012,10 +9067,11 @@ func (ec *executionContext) _Commerce_Cart_BillingAddressForm_processed(ctx cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_BillingAddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_BillingAddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9040,10 +9096,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_id(ctx context.Context, field gr
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9071,10 +9128,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_entityID(ctx context.Context, fi
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9102,10 +9160,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_billingAddress(ctx context.Conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9130,10 +9189,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_purchaser(ctx context.Context, f
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9158,10 +9218,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_deliveries(ctx context.Context, 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9186,10 +9247,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_additionalData(ctx context.Conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9217,10 +9279,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_paymentSelection(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9245,10 +9308,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_belongsToAuthenticatedUser(ctx c
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9276,10 +9340,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_authenticatedUserID(ctx context.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9307,10 +9372,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_appliedCouponCodes(ctx context.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9335,10 +9401,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_defaultCurrency(ctx context.Cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9366,10 +9433,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_totalitems(ctx context.Context, 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9394,10 +9462,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_itemCount(ctx context.Context, f
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9425,10 +9494,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_productCount(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9456,10 +9526,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_isPaymentSelected(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9487,10 +9558,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_grandTotal(ctx context.Context, 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9518,10 +9590,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_sumTotalTaxAmount(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9549,10 +9622,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_subTotalNet(ctx context.Context,
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9580,10 +9654,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_appliedGiftCards(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9608,10 +9683,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_getDeliveryByCode(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9643,10 +9719,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_getDeliveryCodes(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9671,10 +9748,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_getMainShippingEMail(ctx context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9702,10 +9780,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_isEmpty(ctx context.Context, fie
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9733,10 +9812,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_hasDeliveryForCode(ctx context.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9771,10 +9851,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_getDeliveryByItemID(ctx context.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9809,10 +9890,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_getByItemID(ctx context.Context,
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9847,10 +9929,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_getTotalQty(ctx context.Context,
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9882,10 +9965,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_getByExternalReference(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9920,10 +10004,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_getVoucherSavings(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9951,10 +10036,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_getCartTeaser(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -9982,10 +10068,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_sumShippingNet(ctx context.Conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10013,10 +10100,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_sumShippingNetWithDiscounts(ctx 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10044,10 +10132,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_sumShippingGross(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10075,10 +10164,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_sumShippingGrossWithDiscounts(ct
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10106,10 +10196,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_hasShippingCosts(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10137,10 +10228,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_allShippingTitles(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10165,10 +10257,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_subTotalGross(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10196,10 +10289,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_subTotalGrossWithDiscounts(ctx c
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10227,10 +10321,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_subTotalNetWithDiscounts(ctx con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10258,10 +10353,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_sumTotalDiscountAmount(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10289,10 +10385,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_sumNonItemRelatedDiscountAmount(
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10320,10 +10417,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_sumItemRelatedDiscountAmount(ctx
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10351,10 +10449,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_hasAppliedCouponCode(ctx context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10382,10 +10481,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_getPaymentReference(ctx context.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10413,10 +10513,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_getTotalItemsByType(ctx context.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10448,10 +10549,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_grandTotalCharges(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10479,10 +10581,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_hasAppliedGiftCards(ctx context.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10510,10 +10613,11 @@ func (ec *executionContext) _Commerce_Cart_Cart_hasRemainingGiftCards(ctx contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Cart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Cart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10541,10 +10645,11 @@ func (ec *executionContext) _Commerce_Cart_CouponCode_code(ctx context.Context, 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_CouponCode",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_CouponCode",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10572,10 +10677,11 @@ func (ec *executionContext) _Commerce_Cart_CustomAttributes_get(ctx context.Cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_CustomAttributes",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_CustomAttributes",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10607,10 +10713,11 @@ func (ec *executionContext) _Commerce_Cart_DecoratedCart_cart(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DecoratedCart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_DecoratedCart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10638,10 +10745,11 @@ func (ec *executionContext) _Commerce_Cart_DecoratedCart_decoratedDeliveries(ctx
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DecoratedCart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_DecoratedCart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10666,10 +10774,11 @@ func (ec *executionContext) _Commerce_Cart_DecoratedCart_getDecoratedDeliveryByC
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DecoratedCart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_DecoratedCart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10701,10 +10810,11 @@ func (ec *executionContext) _Commerce_Cart_DecoratedCart_getAllPaymentRequiredIt
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DecoratedCart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_DecoratedCart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10732,10 +10842,11 @@ func (ec *executionContext) _Commerce_Cart_DecoratedCart_cartSummary(ctx context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DecoratedCart",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_DecoratedCart",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10763,10 +10874,11 @@ func (ec *executionContext) _Commerce_Cart_DecoratedDelivery_delivery(ctx contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DecoratedDelivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_DecoratedDelivery",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10794,10 +10906,11 @@ func (ec *executionContext) _Commerce_Cart_DecoratedDelivery_decoratedItems(ctx 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DecoratedDelivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_DecoratedDelivery",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10822,10 +10935,11 @@ func (ec *executionContext) _Commerce_Cart_DecoratedItem_item(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DecoratedItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_DecoratedItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10850,10 +10964,11 @@ func (ec *executionContext) _Commerce_Cart_DecoratedItem_product(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DecoratedItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_DecoratedItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10878,10 +10993,11 @@ func (ec *executionContext) _Commerce_Cart_DefaultPaymentSelection_gateway(ctx c
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DefaultPaymentSelection",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_DefaultPaymentSelection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10909,10 +11025,11 @@ func (ec *executionContext) _Commerce_Cart_DefaultPaymentSelection_totalValue(ct
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DefaultPaymentSelection",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_DefaultPaymentSelection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10940,10 +11057,11 @@ func (ec *executionContext) _Commerce_Cart_DefaultPaymentSelection_cartSplit(ctx
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DefaultPaymentSelection",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_DefaultPaymentSelection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10968,10 +11086,11 @@ func (ec *executionContext) _Commerce_Cart_Delivery_deliveryInfo(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Delivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Delivery",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -10996,10 +11115,11 @@ func (ec *executionContext) _Commerce_Cart_Delivery_cartitems(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Delivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Delivery",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11024,10 +11144,11 @@ func (ec *executionContext) _Commerce_Cart_Delivery_shippingItem(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Delivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Delivery",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11052,10 +11173,11 @@ func (ec *executionContext) _Commerce_Cart_Delivery_subTotalGross(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Delivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Delivery",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11080,10 +11202,11 @@ func (ec *executionContext) _Commerce_Cart_Delivery_grandTotal(ctx context.Conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Delivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Delivery",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11108,10 +11231,11 @@ func (ec *executionContext) _Commerce_Cart_Delivery_sumTotalTaxAmount(ctx contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Delivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Delivery",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11136,10 +11260,11 @@ func (ec *executionContext) _Commerce_Cart_Delivery_subTotalNet(ctx context.Cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Delivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Delivery",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11164,10 +11289,11 @@ func (ec *executionContext) _Commerce_Cart_Delivery_sumTotalDiscountAmount(ctx c
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Delivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Delivery",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11192,10 +11318,11 @@ func (ec *executionContext) _Commerce_Cart_Delivery_sumNonItemRelatedDiscountAmo
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Delivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Delivery",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11220,10 +11347,11 @@ func (ec *executionContext) _Commerce_Cart_Delivery_sumItemRelatedDiscountAmount
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Delivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Delivery",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11248,10 +11376,11 @@ func (ec *executionContext) _Commerce_Cart_Delivery_subTotalGrossWithDiscounts(c
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Delivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Delivery",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11276,10 +11405,11 @@ func (ec *executionContext) _Commerce_Cart_Delivery_subTotalNetWithDiscounts(ctx
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Delivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Delivery",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11307,10 +11437,11 @@ func (ec *executionContext) _Commerce_Cart_Delivery_hasItems(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Delivery",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Delivery",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11338,10 +11469,11 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_deliveryCode(ctx 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DeliveryAddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_DeliveryAddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11369,10 +11501,11 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_formData(ctx cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DeliveryAddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_DeliveryAddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11397,10 +11530,11 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_useBillingAddress
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DeliveryAddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_DeliveryAddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11428,10 +11562,11 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_method(ctx contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DeliveryAddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_DeliveryAddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11456,10 +11591,11 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_carrier(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DeliveryAddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_DeliveryAddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11484,10 +11620,11 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_desiredTime(ctx c
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DeliveryAddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_DeliveryAddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11512,10 +11649,11 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_validationInfo(ct
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DeliveryAddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_DeliveryAddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11540,10 +11678,11 @@ func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm_processed(ctx con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DeliveryAddressForm",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_DeliveryAddressForm",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11568,10 +11707,11 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_code(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DeliveryInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_DeliveryInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11599,10 +11739,11 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_workflow(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DeliveryInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_DeliveryInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11630,10 +11771,11 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_method(ctx context.Conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DeliveryInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_DeliveryInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11661,10 +11803,11 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_carrier(ctx context.Cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DeliveryInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_DeliveryInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11692,10 +11835,11 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_deliveryLocation(ctx con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DeliveryInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_DeliveryInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11720,10 +11864,11 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_desiredTime(ctx context.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DeliveryInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_DeliveryInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11748,10 +11893,11 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo_additionalData(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DeliveryInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_DeliveryInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11779,10 +11925,11 @@ func (ec *executionContext) _Commerce_Cart_DeliveryLocation_type(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DeliveryLocation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_DeliveryLocation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11810,10 +11957,11 @@ func (ec *executionContext) _Commerce_Cart_DeliveryLocation_address(ctx context.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DeliveryLocation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_DeliveryLocation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11838,10 +11986,11 @@ func (ec *executionContext) _Commerce_Cart_DeliveryLocation_useBillingAddress(ct
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DeliveryLocation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_DeliveryLocation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11869,10 +12018,11 @@ func (ec *executionContext) _Commerce_Cart_DeliveryLocation_code(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_DeliveryLocation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_DeliveryLocation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11900,10 +12050,11 @@ func (ec *executionContext) _Commerce_Cart_ExistingCustomerData_id(ctx context.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_ExistingCustomerData",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_ExistingCustomerData",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11931,10 +12082,11 @@ func (ec *executionContext) _Commerce_Cart_Form_Error_messageKey(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Form_Error",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Form_Error",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11962,10 +12114,11 @@ func (ec *executionContext) _Commerce_Cart_Form_Error_defaultLabel(ctx context.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Form_Error",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Form_Error",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -11993,10 +12146,11 @@ func (ec *executionContext) _Commerce_Cart_Form_FieldError_messageKey(ctx contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Form_FieldError",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Form_FieldError",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12024,10 +12178,11 @@ func (ec *executionContext) _Commerce_Cart_Form_FieldError_defaultLabel(ctx cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Form_FieldError",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Form_FieldError",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12055,10 +12210,11 @@ func (ec *executionContext) _Commerce_Cart_Form_FieldError_fieldName(ctx context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Form_FieldError",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Form_FieldError",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12086,10 +12242,11 @@ func (ec *executionContext) _Commerce_Cart_Form_ValidationInfo_fieldErrors(ctx c
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Form_ValidationInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Form_ValidationInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12114,10 +12271,11 @@ func (ec *executionContext) _Commerce_Cart_Form_ValidationInfo_generalErrors(ctx
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Form_ValidationInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Form_ValidationInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12142,10 +12300,11 @@ func (ec *executionContext) _Commerce_Cart_Item_id(ctx context.Context, field gr
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Item",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Item",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12173,10 +12332,11 @@ func (ec *executionContext) _Commerce_Cart_Item_externalReference(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Item",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Item",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12204,10 +12364,11 @@ func (ec *executionContext) _Commerce_Cart_Item_marketplaceCode(ctx context.Cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Item",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Item",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12235,10 +12396,11 @@ func (ec *executionContext) _Commerce_Cart_Item_variantMarketPlaceCode(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Item",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Item",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12266,10 +12428,11 @@ func (ec *executionContext) _Commerce_Cart_Item_productName(ctx context.Context,
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Item",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Item",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12297,10 +12460,11 @@ func (ec *executionContext) _Commerce_Cart_Item_sourceID(ctx context.Context, fi
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Item",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Item",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12328,10 +12492,11 @@ func (ec *executionContext) _Commerce_Cart_Item_qty(ctx context.Context, field g
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Item",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Item",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12359,10 +12524,11 @@ func (ec *executionContext) _Commerce_Cart_Item_additionalDataKeys(ctx context.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Item",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Item",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12387,10 +12553,11 @@ func (ec *executionContext) _Commerce_Cart_Item_additionalDataValues(ctx context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Item",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Item",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12415,10 +12582,11 @@ func (ec *executionContext) _Commerce_Cart_Item_getAdditionalData(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Item",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Item",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12450,10 +12618,11 @@ func (ec *executionContext) _Commerce_Cart_Item_hasAdditionalDataKey(ctx context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Item",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Item",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12485,10 +12654,11 @@ func (ec *executionContext) _Commerce_Cart_Item_singlePriceGross(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Item",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Item",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12516,10 +12686,11 @@ func (ec *executionContext) _Commerce_Cart_Item_singlePriceNet(ctx context.Conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Item",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Item",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12547,10 +12718,11 @@ func (ec *executionContext) _Commerce_Cart_Item_rowPriceGross(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Item",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Item",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12578,10 +12750,11 @@ func (ec *executionContext) _Commerce_Cart_Item_rowPriceNet(ctx context.Context,
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Item",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Item",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12609,10 +12782,11 @@ func (ec *executionContext) _Commerce_Cart_Item_appliedDiscounts(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Item",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Item",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12640,10 +12814,11 @@ func (ec *executionContext) _Commerce_Cart_ItemValidationError_itemID(ctx contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_ItemValidationError",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_ItemValidationError",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12671,10 +12846,11 @@ func (ec *executionContext) _Commerce_Cart_ItemValidationError_errorMessageKey(c
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_ItemValidationError",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_ItemValidationError",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12702,10 +12878,11 @@ func (ec *executionContext) _Commerce_Cart_KeyValue_key(ctx context.Context, fie
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_KeyValue",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_KeyValue",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12733,10 +12910,11 @@ func (ec *executionContext) _Commerce_Cart_KeyValue_value(ctx context.Context, f
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_KeyValue",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_KeyValue",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12764,10 +12942,11 @@ func (ec *executionContext) _Commerce_Cart_PaymentSelection_Split_qualifier(ctx 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_PaymentSelection_Split",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_PaymentSelection_Split",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12795,10 +12974,11 @@ func (ec *executionContext) _Commerce_Cart_PaymentSelection_Split_charge(ctx con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_PaymentSelection_Split",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_PaymentSelection_Split",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12826,10 +13006,11 @@ func (ec *executionContext) _Commerce_Cart_PaymentSelection_SplitQualifier_type(
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_PaymentSelection_SplitQualifier",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_PaymentSelection_SplitQualifier",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12857,10 +13038,11 @@ func (ec *executionContext) _Commerce_Cart_PaymentSelection_SplitQualifier_metho
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_PaymentSelection_SplitQualifier",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_PaymentSelection_SplitQualifier",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12888,10 +13070,11 @@ func (ec *executionContext) _Commerce_Cart_PaymentSelection_SplitQualifier_refer
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_PaymentSelection_SplitQualifier",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_PaymentSelection_SplitQualifier",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12919,10 +13102,11 @@ func (ec *executionContext) _Commerce_Cart_Person_address(ctx context.Context, f
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Person",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Person",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12947,10 +13131,11 @@ func (ec *executionContext) _Commerce_Cart_Person_personalDetails(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Person",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Person",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -12978,10 +13163,11 @@ func (ec *executionContext) _Commerce_Cart_Person_existingCustomerData(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Person",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Person",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13006,10 +13192,11 @@ func (ec *executionContext) _Commerce_Cart_PersonalDetails_dateOfBirth(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_PersonalDetails",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_PersonalDetails",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13037,10 +13224,11 @@ func (ec *executionContext) _Commerce_Cart_PersonalDetails_passportCountry(ctx c
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_PersonalDetails",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_PersonalDetails",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13068,10 +13256,11 @@ func (ec *executionContext) _Commerce_Cart_PersonalDetails_passportNumber(ctx co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_PersonalDetails",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_PersonalDetails",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13099,10 +13288,11 @@ func (ec *executionContext) _Commerce_Cart_PersonalDetails_nationality(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_PersonalDetails",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_PersonalDetails",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13130,10 +13320,11 @@ func (ec *executionContext) _Commerce_Cart_PlacedOrderInfo_orderNumber(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_PlacedOrderInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_PlacedOrderInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13161,10 +13352,11 @@ func (ec *executionContext) _Commerce_Cart_PlacedOrderInfo_deliveryCode(ctx cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_PlacedOrderInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_PlacedOrderInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13192,10 +13384,11 @@ func (ec *executionContext) _Commerce_Cart_PricedCartItem_amount(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_PricedCartItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_PricedCartItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13223,10 +13416,11 @@ func (ec *executionContext) _Commerce_Cart_PricedCartItem_itemID(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_PricedCartItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_PricedCartItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13254,10 +13448,11 @@ func (ec *executionContext) _Commerce_Cart_PricedItems_cartItems(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_PricedItems",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_PricedItems",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13282,10 +13477,11 @@ func (ec *executionContext) _Commerce_Cart_PricedItems_shippingItems(ctx context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_PricedItems",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_PricedItems",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13310,10 +13506,11 @@ func (ec *executionContext) _Commerce_Cart_PricedItems_totalItems(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_PricedItems",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_PricedItems",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13338,10 +13535,11 @@ func (ec *executionContext) _Commerce_Cart_PricedShippingItem_amount(ctx context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_PricedShippingItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_PricedShippingItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13369,10 +13567,11 @@ func (ec *executionContext) _Commerce_Cart_PricedShippingItem_deliveryInfoCode(c
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_PricedShippingItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_PricedShippingItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13400,10 +13599,11 @@ func (ec *executionContext) _Commerce_Cart_PricedTotalItem_amount(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_PricedTotalItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_PricedTotalItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13431,10 +13631,11 @@ func (ec *executionContext) _Commerce_Cart_PricedTotalItem_code(ctx context.Cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_PricedTotalItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_PricedTotalItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13462,10 +13663,11 @@ func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult_isRestricted(ctx
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_QtyRestrictionResult",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_QtyRestrictionResult",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13493,10 +13695,11 @@ func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult_maxAllowed(ctx c
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_QtyRestrictionResult",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_QtyRestrictionResult",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13524,10 +13727,11 @@ func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult_remainingDiffere
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_QtyRestrictionResult",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_QtyRestrictionResult",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13555,10 +13759,11 @@ func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult_restrictorName(c
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_QtyRestrictionResult",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_QtyRestrictionResult",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13586,10 +13791,11 @@ func (ec *executionContext) _Commerce_Cart_SelectedPaymentResult_validationInfo(
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_SelectedPaymentResult",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_SelectedPaymentResult",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13614,10 +13820,11 @@ func (ec *executionContext) _Commerce_Cart_SelectedPaymentResult_processed(ctx c
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_SelectedPaymentResult",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_SelectedPaymentResult",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13642,10 +13849,11 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_title(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_ShippingItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_ShippingItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13673,10 +13881,11 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_priceNet(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_ShippingItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_ShippingItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13704,10 +13913,11 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_taxAmount(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_ShippingItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_ShippingItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13735,10 +13945,11 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_priceGross(ctx context.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_ShippingItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_ShippingItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13766,10 +13977,11 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_appliedDiscounts(ctx con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_ShippingItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_ShippingItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13797,10 +14009,11 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_totalWithDiscountInclTax
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_ShippingItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_ShippingItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13828,10 +14041,11 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem_tax(ctx context.Context,
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_ShippingItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_ShippingItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13859,10 +14073,11 @@ func (ec *executionContext) _Commerce_Cart_Summary_discounts(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Summary",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Summary",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13890,10 +14105,11 @@ func (ec *executionContext) _Commerce_Cart_Summary_sumAppliedDiscounts(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Summary",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Summary",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13918,10 +14134,11 @@ func (ec *executionContext) _Commerce_Cart_Summary_sumAppliedGiftCards(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Summary",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Summary",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13946,10 +14163,11 @@ func (ec *executionContext) _Commerce_Cart_Summary_sumGrandTotalWithGiftCards(ct
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Summary",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Summary",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -13974,10 +14192,11 @@ func (ec *executionContext) _Commerce_Cart_Summary_sumTotalDiscountWithGiftCards
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Summary",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Summary",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14002,10 +14221,11 @@ func (ec *executionContext) _Commerce_Cart_Summary_hasAppliedDiscounts(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Summary",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Summary",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14033,10 +14253,11 @@ func (ec *executionContext) _Commerce_Cart_Summary_sumTaxes(ctx context.Context,
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Summary",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Summary",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14061,10 +14282,11 @@ func (ec *executionContext) _Commerce_Cart_Summary_sumPaymentSelectionCartSplitV
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Summary",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Summary",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14096,10 +14318,11 @@ func (ec *executionContext) _Commerce_Cart_Tax_amount(ctx context.Context, field
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Tax",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Tax",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14127,10 +14350,11 @@ func (ec *executionContext) _Commerce_Cart_Tax_type(ctx context.Context, field g
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Tax",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Tax",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14158,10 +14382,11 @@ func (ec *executionContext) _Commerce_Cart_Tax_rate(ctx context.Context, field g
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Tax",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Tax",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14186,10 +14411,11 @@ func (ec *executionContext) _Commerce_Cart_Taxes_items(ctx context.Context, fiel
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Taxes",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Taxes",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14217,10 +14443,11 @@ func (ec *executionContext) _Commerce_Cart_Taxes_getByType(ctx context.Context, 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Taxes",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Cart_Taxes",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14255,10 +14482,11 @@ func (ec *executionContext) _Commerce_Cart_Teaser_productCount(ctx context.Conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Teaser",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Teaser",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14283,10 +14511,11 @@ func (ec *executionContext) _Commerce_Cart_Teaser_ItemCount(ctx context.Context,
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Teaser",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Teaser",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14311,10 +14540,11 @@ func (ec *executionContext) _Commerce_Cart_Teaser_DeliveryCodes(ctx context.Cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Teaser",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Teaser",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14339,10 +14569,11 @@ func (ec *executionContext) _Commerce_Cart_Totalitem_code(ctx context.Context, f
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Totalitem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Totalitem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14370,10 +14601,11 @@ func (ec *executionContext) _Commerce_Cart_Totalitem_title(ctx context.Context, 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Totalitem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Totalitem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14401,10 +14633,11 @@ func (ec *executionContext) _Commerce_Cart_Totalitem_price(ctx context.Context, 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Totalitem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Totalitem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14432,10 +14665,11 @@ func (ec *executionContext) _Commerce_Cart_Totalitem_type(ctx context.Context, f
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_Totalitem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_Totalitem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14463,10 +14697,11 @@ func (ec *executionContext) _Commerce_Cart_UpdateDeliveryShippingOptions_Result_
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_UpdateDeliveryShippingOptions_Result",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_UpdateDeliveryShippingOptions_Result",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14491,10 +14726,11 @@ func (ec *executionContext) _Commerce_Cart_ValidationResult_hasCommonError(ctx c
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_ValidationResult",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_ValidationResult",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14522,10 +14758,11 @@ func (ec *executionContext) _Commerce_Cart_ValidationResult_commonErrorMessageKe
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_ValidationResult",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_ValidationResult",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14553,10 +14790,11 @@ func (ec *executionContext) _Commerce_Cart_ValidationResult_itemResults(ctx cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Cart_ValidationResult",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Cart_ValidationResult",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14581,10 +14819,11 @@ func (ec *executionContext) _Commerce_CategoryData_code(ctx context.Context, fie
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CategoryData",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_CategoryData",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14612,10 +14851,11 @@ func (ec *executionContext) _Commerce_CategoryData_name(ctx context.Context, fie
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CategoryData",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_CategoryData",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14643,10 +14883,11 @@ func (ec *executionContext) _Commerce_CategoryData_path(ctx context.Context, fie
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CategoryData",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_CategoryData",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14674,10 +14915,11 @@ func (ec *executionContext) _Commerce_CategoryData_active(ctx context.Context, f
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CategoryData",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_CategoryData",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14705,10 +14947,11 @@ func (ec *executionContext) _Commerce_CategoryData_promoted(ctx context.Context,
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CategoryData",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_CategoryData",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14736,10 +14979,11 @@ func (ec *executionContext) _Commerce_CategoryData_attributes(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CategoryData",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_CategoryData",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14767,10 +15011,11 @@ func (ec *executionContext) _Commerce_CategoryTree_code(ctx context.Context, fie
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CategoryTree",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_CategoryTree",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14798,10 +15043,11 @@ func (ec *executionContext) _Commerce_CategoryTree_name(ctx context.Context, fie
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CategoryTree",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_CategoryTree",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14829,10 +15075,11 @@ func (ec *executionContext) _Commerce_CategoryTree_path(ctx context.Context, fie
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CategoryTree",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_CategoryTree",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14860,10 +15107,11 @@ func (ec *executionContext) _Commerce_CategoryTree_active(ctx context.Context, f
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CategoryTree",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_CategoryTree",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14891,10 +15139,11 @@ func (ec *executionContext) _Commerce_CategoryTree_subTrees(ctx context.Context,
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CategoryTree",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_CategoryTree",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14919,10 +15168,11 @@ func (ec *executionContext) _Commerce_CategoryTree_hasChilds(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CategoryTree",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_CategoryTree",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14950,10 +15200,11 @@ func (ec *executionContext) _Commerce_CategoryTree_documentCount(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_CategoryTree",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_CategoryTree",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -14981,10 +15232,11 @@ func (ec *executionContext) _Commerce_Category_Attribute_code(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Category_Attribute",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Category_Attribute",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15012,10 +15264,11 @@ func (ec *executionContext) _Commerce_Category_Attribute_label(ctx context.Conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Category_Attribute",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Category_Attribute",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15043,10 +15296,11 @@ func (ec *executionContext) _Commerce_Category_Attribute_values(ctx context.Cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Category_Attribute",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Category_Attribute",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15071,10 +15325,11 @@ func (ec *executionContext) _Commerce_Category_AttributeValue_value(ctx context.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Category_AttributeValue",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Category_AttributeValue",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15102,10 +15357,11 @@ func (ec *executionContext) _Commerce_Category_AttributeValue_label(ctx context.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Category_AttributeValue",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Category_AttributeValue",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15133,10 +15389,11 @@ func (ec *executionContext) _Commerce_Category_Attributes_get(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Category_Attributes",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Category_Attributes",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15168,10 +15425,11 @@ func (ec *executionContext) _Commerce_Category_Attributes_has(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Category_Attributes",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Category_Attributes",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15203,10 +15461,11 @@ func (ec *executionContext) _Commerce_Category_Attributes_all(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Category_Attributes",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Category_Attributes",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15231,10 +15490,11 @@ func (ec *executionContext) _Commerce_Category_SearchResult_category(ctx context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Category_SearchResult",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Category_SearchResult",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15262,10 +15522,11 @@ func (ec *executionContext) _Commerce_Category_SearchResult_productSearchResult(
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Category_SearchResult",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Category_SearchResult",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15293,10 +15554,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_cart(ctx contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderContext",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderContext",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15321,10 +15583,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_orderInfos(ctx 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderContext",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderContext",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15349,10 +15612,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_state(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderContext",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderContext",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15380,10 +15644,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext_uuid(ctx contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderContext",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderContext",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15411,10 +15676,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_gateway(ctx
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderPaymentInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderPaymentInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15442,10 +15708,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_paymentProv
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderPaymentInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderPaymentInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15473,10 +15740,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_method(ctx 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderPaymentInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderPaymentInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15504,10 +15772,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_amount(ctx 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderPaymentInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderPaymentInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15535,10 +15804,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo_title(ctx c
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderPaymentInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderPaymentInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15566,10 +15836,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_Form_Parameter_ke
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_Form_Parameter",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_Form_Parameter",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15597,10 +15868,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_Form_Parameter_va
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_Form_Parameter",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_Form_Parameter",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15625,10 +15897,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15656,10 +15929,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15687,10 +15961,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15718,10 +15993,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15746,10 +16022,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_PaymentRequestAPI",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15777,10 +16054,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed_name
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_Failed",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_State_Failed",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15808,10 +16086,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed_reas
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_Failed",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_State_Failed",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15839,10 +16118,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_FailedReason_CanceledByCustomer",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Checkout_PlaceOrderState_State_FailedReason_CanceledByCustomer",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15867,10 +16147,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15895,10 +16176,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15926,10 +16208,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_FailedReason_Error",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Checkout_PlaceOrderState_State_FailedReason_Error",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15954,10 +16237,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentCanceledByCustomer",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentCanceledByCustomer",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -15982,10 +16266,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReaso
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16010,10 +16295,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirec
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_PostRedirect",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_State_PostRedirect",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16041,10 +16327,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirec
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_PostRedirect",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_State_PostRedirect",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16072,10 +16359,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirec
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_PostRedirect",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_State_PostRedirect",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16100,10 +16388,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect_na
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_Redirect",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_State_Redirect",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16131,10 +16420,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect_UR
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_Redirect",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_State_Redirect",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16162,10 +16452,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHTML_na
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_ShowHTML",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_State_ShowHTML",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16193,10 +16484,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHTML_HT
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_ShowHTML",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_State_ShowHTML",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16224,10 +16516,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe_
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_ShowIframe",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_State_ShowIframe",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16255,10 +16548,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe_
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_ShowIframe",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_State_ShowIframe",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16286,10 +16580,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowWalletP
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16317,10 +16612,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowWalletP
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16348,10 +16644,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowWalletP
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16379,10 +16676,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Success_nam
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_Success",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_State_Success",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16410,10 +16708,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Wait_name(c
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_Wait",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_State_Wait",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16441,10 +16740,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_WaitForCust
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlaceOrderState_State_WaitForCustomer",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlaceOrderState_State_WaitForCustomer",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16472,10 +16772,11 @@ func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos_paymentInfos(ctx
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlacedOrderInfos",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlacedOrderInfos",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16500,10 +16801,11 @@ func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos_placedOrderInfos
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlacedOrderInfos",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlacedOrderInfos",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16528,10 +16830,11 @@ func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos_email(ctx contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_PlacedOrderInfos",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_PlacedOrderInfos",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16559,10 +16862,11 @@ func (ec *executionContext) _Commerce_Checkout_StartPlaceOrder_Result_uuid(ctx c
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Checkout_StartPlaceOrder_Result",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Checkout_StartPlaceOrder_Result",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16590,10 +16894,11 @@ func (ec *executionContext) _Commerce_Customer_Address_id(ctx context.Context, f
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16621,10 +16926,11 @@ func (ec *executionContext) _Commerce_Customer_Address_additionalAddressLines(ct
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16649,10 +16955,11 @@ func (ec *executionContext) _Commerce_Customer_Address_city(ctx context.Context,
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16680,10 +16987,11 @@ func (ec *executionContext) _Commerce_Customer_Address_company(ctx context.Conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16711,10 +17019,11 @@ func (ec *executionContext) _Commerce_Customer_Address_countryCode(ctx context.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16742,10 +17051,11 @@ func (ec *executionContext) _Commerce_Customer_Address_defaultBilling(ctx contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16773,10 +17083,11 @@ func (ec *executionContext) _Commerce_Customer_Address_defaultShipping(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16804,10 +17115,11 @@ func (ec *executionContext) _Commerce_Customer_Address_firstName(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16835,10 +17147,11 @@ func (ec *executionContext) _Commerce_Customer_Address_lastName(ctx context.Cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16866,10 +17179,11 @@ func (ec *executionContext) _Commerce_Customer_Address_postCode(ctx context.Cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16897,10 +17211,11 @@ func (ec *executionContext) _Commerce_Customer_Address_prefix(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16928,10 +17243,11 @@ func (ec *executionContext) _Commerce_Customer_Address_regionCode(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16959,10 +17275,11 @@ func (ec *executionContext) _Commerce_Customer_Address_street(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -16990,10 +17307,11 @@ func (ec *executionContext) _Commerce_Customer_Address_streetNumber(ctx context.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17021,10 +17339,11 @@ func (ec *executionContext) _Commerce_Customer_Address_state(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17052,10 +17371,11 @@ func (ec *executionContext) _Commerce_Customer_Address_telephone(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17083,10 +17403,11 @@ func (ec *executionContext) _Commerce_Customer_Address_email(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Address",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_Address",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17114,10 +17435,11 @@ func (ec *executionContext) _Commerce_Customer_PersonData_gender(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_PersonData",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_PersonData",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17145,10 +17467,11 @@ func (ec *executionContext) _Commerce_Customer_PersonData_firstName(ctx context.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_PersonData",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_PersonData",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17176,10 +17499,11 @@ func (ec *executionContext) _Commerce_Customer_PersonData_lastName(ctx context.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_PersonData",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_PersonData",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17207,10 +17531,11 @@ func (ec *executionContext) _Commerce_Customer_PersonData_middleName(ctx context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_PersonData",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_PersonData",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17238,10 +17563,11 @@ func (ec *executionContext) _Commerce_Customer_PersonData_mainEmail(ctx context.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_PersonData",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_PersonData",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17269,10 +17595,11 @@ func (ec *executionContext) _Commerce_Customer_PersonData_prefix(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_PersonData",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_PersonData",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17300,10 +17627,11 @@ func (ec *executionContext) _Commerce_Customer_PersonData_birthday(ctx context.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_PersonData",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_PersonData",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17328,10 +17656,11 @@ func (ec *executionContext) _Commerce_Customer_PersonData_nationality(ctx contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_PersonData",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_PersonData",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17359,10 +17688,11 @@ func (ec *executionContext) _Commerce_Customer_Result_id(ctx context.Context, fi
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Result",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_Result",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17390,10 +17720,11 @@ func (ec *executionContext) _Commerce_Customer_Result_personalData(ctx context.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Result",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_Result",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17421,10 +17752,11 @@ func (ec *executionContext) _Commerce_Customer_Result_getAddress(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Result",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Customer_Result",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17456,10 +17788,11 @@ func (ec *executionContext) _Commerce_Customer_Result_addresses(ctx context.Cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Result",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_Result",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17484,10 +17817,11 @@ func (ec *executionContext) _Commerce_Customer_Result_defaultShippingAddress(ctx
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Result",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_Result",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17512,10 +17846,11 @@ func (ec *executionContext) _Commerce_Customer_Result_defaultBillingAddress(ctx 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Result",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_Result",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17540,10 +17875,11 @@ func (ec *executionContext) _Commerce_Customer_Status_Result_isLoggedIn(ctx cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Status_Result",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_Status_Result",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17571,10 +17907,11 @@ func (ec *executionContext) _Commerce_Customer_Status_Result_userID(ctx context.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Customer_Status_Result",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Customer_Status_Result",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17602,10 +17939,11 @@ func (ec *executionContext) _Commerce_Price_amount(ctx context.Context, field gr
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Price",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Price",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17630,10 +17968,11 @@ func (ec *executionContext) _Commerce_Price_currency(ctx context.Context, field 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Price",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Price",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17661,10 +18000,11 @@ func (ec *executionContext) _Commerce_Price_Charge_price(ctx context.Context, fi
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Price_Charge",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Price_Charge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17692,10 +18032,11 @@ func (ec *executionContext) _Commerce_Price_Charge_value(ctx context.Context, fi
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Price_Charge",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Price_Charge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17723,10 +18064,11 @@ func (ec *executionContext) _Commerce_Price_Charge_type(ctx context.Context, fie
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Price_Charge",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Price_Charge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17754,10 +18096,11 @@ func (ec *executionContext) _Commerce_Price_Charge_reference(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Price_Charge",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Price_Charge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17785,10 +18128,11 @@ func (ec *executionContext) _Commerce_Price_ChargeQualifier_type(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Price_ChargeQualifier",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Price_ChargeQualifier",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17816,10 +18160,11 @@ func (ec *executionContext) _Commerce_Price_ChargeQualifier_reference(ctx contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Price_ChargeQualifier",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Price_ChargeQualifier",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17847,10 +18192,11 @@ func (ec *executionContext) _Commerce_Price_Charges_items(ctx context.Context, f
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Price_Charges",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Price_Charges",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17875,10 +18221,11 @@ func (ec *executionContext) _Commerce_Price_Charges_hasType(ctx context.Context,
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Price_Charges",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Price_Charges",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17910,10 +18257,11 @@ func (ec *executionContext) _Commerce_Price_Charges_hasChargeQualifier(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Price_Charges",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Price_Charges",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17945,10 +18293,11 @@ func (ec *executionContext) _Commerce_Price_Charges_getByChargeQualifierForced(c
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Price_Charges",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Price_Charges",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -17980,10 +18329,11 @@ func (ec *executionContext) _Commerce_Price_Charges_getByTypeForced(ctx context.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Price_Charges",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Price_Charges",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18015,10 +18365,11 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_type(ctx cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ActiveVariantProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ActiveVariantProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18046,10 +18397,11 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_marketPlaceCo
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ActiveVariantProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ActiveVariantProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18077,10 +18429,11 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_identifier(ct
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ActiveVariantProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ActiveVariantProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18108,10 +18461,11 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_media(ctx con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ActiveVariantProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ActiveVariantProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18139,10 +18493,11 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_price(ctx con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ActiveVariantProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ActiveVariantProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18170,10 +18525,11 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_availablePric
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ActiveVariantProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ActiveVariantProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18198,10 +18554,11 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_title(ctx con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ActiveVariantProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ActiveVariantProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18229,10 +18586,11 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_categories(ct
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ActiveVariantProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ActiveVariantProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18260,10 +18618,11 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_description(c
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ActiveVariantProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ActiveVariantProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18291,10 +18650,11 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_shortDescript
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ActiveVariantProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ActiveVariantProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18322,10 +18682,11 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_meta(ctx cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ActiveVariantProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ActiveVariantProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18353,10 +18714,11 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_loyalty(ctx c
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ActiveVariantProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ActiveVariantProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18384,10 +18746,11 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_attributes(ct
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ActiveVariantProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ActiveVariantProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18415,10 +18778,11 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_variantMarket
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ActiveVariantProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ActiveVariantProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18446,10 +18810,11 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_variationSele
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ActiveVariantProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ActiveVariantProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18474,10 +18839,11 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_activeVariati
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ActiveVariantProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ActiveVariantProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18502,10 +18868,11 @@ func (ec *executionContext) _Commerce_Product_ActiveVariantProduct_badges(ctx co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ActiveVariantProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ActiveVariantProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18533,10 +18900,11 @@ func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_code(ctx 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ActiveVariationSelection",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_ActiveVariationSelection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18564,10 +18932,11 @@ func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_label(ctx
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ActiveVariationSelection",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_ActiveVariationSelection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18595,10 +18964,11 @@ func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_value(ctx
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ActiveVariationSelection",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_ActiveVariationSelection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18626,10 +18996,11 @@ func (ec *executionContext) _Commerce_Product_Attribute_code(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Attribute",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_Attribute",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18657,10 +19028,11 @@ func (ec *executionContext) _Commerce_Product_Attribute_codeLabel(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Attribute",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_Attribute",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18688,10 +19060,11 @@ func (ec *executionContext) _Commerce_Product_Attribute_label(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Attribute",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_Attribute",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18719,10 +19092,11 @@ func (ec *executionContext) _Commerce_Product_Attribute_unitCode(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Attribute",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_Attribute",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18750,10 +19124,11 @@ func (ec *executionContext) _Commerce_Product_Attribute_values(ctx context.Conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Attribute",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_Attribute",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18778,10 +19153,11 @@ func (ec *executionContext) _Commerce_Product_Attributes_attributeKeys(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Attributes",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_Attributes",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18806,10 +19182,11 @@ func (ec *executionContext) _Commerce_Product_Attributes_attributes(ctx context.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Attributes",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_Attributes",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18834,10 +19211,11 @@ func (ec *executionContext) _Commerce_Product_Attributes_hasAttribute(ctx contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Attributes",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_Attributes",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18869,10 +19247,11 @@ func (ec *executionContext) _Commerce_Product_Attributes_getAttribute(ctx contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Attributes",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_Attributes",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18904,10 +19283,11 @@ func (ec *executionContext) _Commerce_Product_Attributes_getAttributesByKey(ctx 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Attributes",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_Attributes",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18939,10 +19319,11 @@ func (ec *executionContext) _Commerce_Product_Badge_code(ctx context.Context, fi
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Badge",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_Badge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -18970,10 +19351,11 @@ func (ec *executionContext) _Commerce_Product_Badge_label(ctx context.Context, f
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Badge",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_Badge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19001,10 +19383,11 @@ func (ec *executionContext) _Commerce_Product_Badges_all(ctx context.Context, fi
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Badges",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_Badges",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19029,10 +19412,11 @@ func (ec *executionContext) _Commerce_Product_Badges_first(ctx context.Context, 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Badges",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_Badges",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19057,10 +19441,11 @@ func (ec *executionContext) _Commerce_Product_Categories_main(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Categories",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_Categories",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19088,10 +19473,11 @@ func (ec *executionContext) _Commerce_Product_Categories_all(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Categories",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_Categories",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19116,10 +19502,11 @@ func (ec *executionContext) _Commerce_Product_CategoryTeaser_code(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_CategoryTeaser",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_CategoryTeaser",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19147,10 +19534,11 @@ func (ec *executionContext) _Commerce_Product_CategoryTeaser_path(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_CategoryTeaser",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_CategoryTeaser",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19178,10 +19566,11 @@ func (ec *executionContext) _Commerce_Product_CategoryTeaser_name(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_CategoryTeaser",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_CategoryTeaser",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19209,10 +19598,11 @@ func (ec *executionContext) _Commerce_Product_CategoryTeaser_parent(ctx context.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_CategoryTeaser",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_CategoryTeaser",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19237,10 +19627,11 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_type(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ConfigurableProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ConfigurableProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19268,10 +19659,11 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_marketPlaceCod
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ConfigurableProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ConfigurableProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19299,10 +19691,11 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_identifier(ctx
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ConfigurableProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ConfigurableProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19330,10 +19723,11 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_media(ctx cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ConfigurableProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ConfigurableProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19361,10 +19755,11 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_price(ctx cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ConfigurableProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ConfigurableProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19392,10 +19787,11 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_availablePrice
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ConfigurableProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ConfigurableProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19420,10 +19816,11 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_title(ctx cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ConfigurableProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ConfigurableProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19451,10 +19848,11 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_categories(ctx
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ConfigurableProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ConfigurableProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19482,10 +19880,11 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_description(ct
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ConfigurableProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ConfigurableProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19513,10 +19912,11 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_shortDescripti
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ConfigurableProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ConfigurableProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19544,10 +19944,11 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_meta(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ConfigurableProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ConfigurableProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19575,10 +19976,11 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_loyalty(ctx co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ConfigurableProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ConfigurableProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19606,10 +20008,11 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_attributes(ctx
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ConfigurableProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ConfigurableProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19637,10 +20040,11 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_variationSelec
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ConfigurableProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ConfigurableProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19665,10 +20069,11 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct_badges(ctx con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_ConfigurableProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_ConfigurableProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19696,10 +20101,11 @@ func (ec *executionContext) _Commerce_Product_Loyalty_price(ctx context.Context,
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Loyalty",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_Loyalty",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19724,10 +20130,11 @@ func (ec *executionContext) _Commerce_Product_Loyalty_earning(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Loyalty",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_Loyalty",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19752,10 +20159,11 @@ func (ec *executionContext) _Commerce_Product_Loyalty_EarningInfo_type(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Loyalty_EarningInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_Loyalty_EarningInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19783,10 +20191,11 @@ func (ec *executionContext) _Commerce_Product_Loyalty_EarningInfo_default(ctx co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Loyalty_EarningInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_Loyalty_EarningInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19814,10 +20223,11 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_type(ctx context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Loyalty_PriceInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_Loyalty_PriceInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19845,10 +20255,11 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_default(ctx cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Loyalty_PriceInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_Loyalty_PriceInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19876,10 +20287,11 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_isDiscounted(ctx
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Loyalty_PriceInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_Loyalty_PriceInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19907,10 +20319,11 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_discounted(ctx c
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Loyalty_PriceInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_Loyalty_PriceInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19938,10 +20351,11 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_discountText(ctx
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Loyalty_PriceInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_Loyalty_PriceInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -19969,10 +20383,11 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_minPointsToSpent
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Loyalty_PriceInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_Loyalty_PriceInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20000,10 +20415,11 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_maxPointsToSpent
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Loyalty_PriceInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_Loyalty_PriceInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20031,10 +20447,11 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo_context(ctx cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Loyalty_PriceInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_Loyalty_PriceInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20062,10 +20479,11 @@ func (ec *executionContext) _Commerce_Product_Media_all(ctx context.Context, fie
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Media",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_Media",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20090,10 +20508,11 @@ func (ec *executionContext) _Commerce_Product_Media_getMedia(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Media",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_Media",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20128,10 +20547,11 @@ func (ec *executionContext) _Commerce_Product_MediaItem_type(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_MediaItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_MediaItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20159,10 +20579,11 @@ func (ec *executionContext) _Commerce_Product_MediaItem_mimeType(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_MediaItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_MediaItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20190,10 +20611,11 @@ func (ec *executionContext) _Commerce_Product_MediaItem_usage(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_MediaItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_MediaItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20221,10 +20643,11 @@ func (ec *executionContext) _Commerce_Product_MediaItem_title(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_MediaItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_MediaItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20252,10 +20675,11 @@ func (ec *executionContext) _Commerce_Product_MediaItem_reference(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_MediaItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_MediaItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20283,10 +20707,11 @@ func (ec *executionContext) _Commerce_Product_Meta_keywords(ctx context.Context,
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_Meta",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_Meta",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20311,10 +20736,11 @@ func (ec *executionContext) _Commerce_Product_PriceContext_customerGroup(ctx con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_PriceContext",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_PriceContext",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20342,10 +20768,11 @@ func (ec *executionContext) _Commerce_Product_PriceContext_deliveryCode(ctx cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_PriceContext",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_PriceContext",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20373,10 +20800,11 @@ func (ec *executionContext) _Commerce_Product_PriceContext_channelCode(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_PriceContext",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_PriceContext",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20404,10 +20832,11 @@ func (ec *executionContext) _Commerce_Product_PriceContext_locale(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_PriceContext",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_PriceContext",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20435,10 +20864,11 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_default(ctx context.Cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_PriceInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_PriceInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20466,10 +20896,11 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_discounted(ctx context.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_PriceInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_PriceInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20497,10 +20928,11 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_discountText(ctx context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_PriceInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_PriceInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20528,10 +20960,11 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_activeBase(ctx context.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_PriceInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_PriceInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20559,10 +20992,11 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_activeBaseAmount(ctx con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_PriceInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_PriceInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20590,10 +21024,11 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_activeBaseUnit(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_PriceInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_PriceInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20621,10 +21056,11 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_isDiscounted(ctx context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_PriceInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_PriceInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20652,10 +21088,11 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_campaignRules(ctx contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_PriceInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_PriceInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20680,10 +21117,11 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_denyMoreDiscounts(ctx co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_PriceInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_PriceInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20711,10 +21149,11 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_context(ctx context.Cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_PriceInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_PriceInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20742,10 +21181,11 @@ func (ec *executionContext) _Commerce_Product_PriceInfo_taxClass(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_PriceInfo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_PriceInfo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20773,10 +21213,11 @@ func (ec *executionContext) _Commerce_Product_SearchResult_products(ctx context.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_SearchResult",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_SearchResult",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20801,10 +21242,11 @@ func (ec *executionContext) _Commerce_Product_SearchResult_facets(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_SearchResult",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_SearchResult",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20832,10 +21274,11 @@ func (ec *executionContext) _Commerce_Product_SearchResult_suggestions(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_SearchResult",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_SearchResult",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20860,10 +21303,11 @@ func (ec *executionContext) _Commerce_Product_SearchResult_searchMeta(ctx contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_SearchResult",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_SearchResult",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20891,10 +21335,11 @@ func (ec *executionContext) _Commerce_Product_SearchResult_hasSelectedFacet(ctx 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_SearchResult",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_SearchResult",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20922,10 +21367,11 @@ func (ec *executionContext) _Commerce_Product_SearchResult_promotion(ctx context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_SearchResult",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_SearchResult",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20950,10 +21396,11 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_type(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_SimpleProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_SimpleProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -20981,10 +21428,11 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_marketPlaceCode(ctx 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_SimpleProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_SimpleProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21012,10 +21460,11 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_identifier(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_SimpleProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_SimpleProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21043,10 +21492,11 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_media(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_SimpleProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_SimpleProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21074,10 +21524,11 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_price(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_SimpleProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_SimpleProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21105,10 +21556,11 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_availablePrices(ctx 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_SimpleProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_SimpleProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21133,10 +21585,11 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_title(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_SimpleProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_SimpleProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21164,10 +21617,11 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_categories(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_SimpleProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_SimpleProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21195,10 +21649,11 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_description(ctx cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_SimpleProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_SimpleProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21226,10 +21681,11 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_shortDescription(ctx
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_SimpleProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_SimpleProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21257,10 +21713,11 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_meta(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_SimpleProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_SimpleProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21288,10 +21745,11 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_loyalty(ctx context.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_SimpleProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_SimpleProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21319,10 +21777,11 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_attributes(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_SimpleProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_SimpleProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21350,10 +21809,11 @@ func (ec *executionContext) _Commerce_Product_SimpleProduct_badges(ctx context.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_SimpleProduct",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_SimpleProduct",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21381,10 +21841,11 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_code(ctx contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_VariationSelection",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_VariationSelection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21412,10 +21873,11 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_label(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_VariationSelection",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_VariationSelection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21443,10 +21905,11 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_options(ctx con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_VariationSelection",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_VariationSelection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21471,10 +21934,11 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_Option_label(ct
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_VariationSelection_Option",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_VariationSelection_Option",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21502,10 +21966,11 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_Option_state(ct
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_VariationSelection_Option",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_VariationSelection_Option",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21533,10 +21998,11 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_Option_variant(
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_VariationSelection_Option",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Product_VariationSelection_Option",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21564,10 +22030,11 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_OptionVariant_m
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Product_VariationSelection_OptionVariant",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Product_VariationSelection_OptionVariant",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21595,10 +22062,11 @@ func (ec *executionContext) _Commerce_Search_ListFacet_name(ctx context.Context,
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_ListFacet",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_ListFacet",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21626,10 +22094,11 @@ func (ec *executionContext) _Commerce_Search_ListFacet_label(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_ListFacet",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_ListFacet",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21657,10 +22126,11 @@ func (ec *executionContext) _Commerce_Search_ListFacet_position(ctx context.Cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_ListFacet",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_ListFacet",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21688,10 +22158,11 @@ func (ec *executionContext) _Commerce_Search_ListFacet_items(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_ListFacet",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_ListFacet",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21719,10 +22190,11 @@ func (ec *executionContext) _Commerce_Search_ListFacet_hasSelectedItem(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_ListFacet",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_ListFacet",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21750,10 +22222,11 @@ func (ec *executionContext) _Commerce_Search_ListFacetItem_label(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_ListFacetItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_ListFacetItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21781,10 +22254,11 @@ func (ec *executionContext) _Commerce_Search_ListFacetItem_value(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_ListFacetItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_ListFacetItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21812,10 +22286,11 @@ func (ec *executionContext) _Commerce_Search_ListFacetItem_selected(ctx context.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_ListFacetItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_ListFacetItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21843,10 +22318,11 @@ func (ec *executionContext) _Commerce_Search_ListFacetItem_count(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_ListFacetItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_ListFacetItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21874,10 +22350,11 @@ func (ec *executionContext) _Commerce_Search_Meta_query(ctx context.Context, fie
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_Meta",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Search_Meta",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21905,10 +22382,11 @@ func (ec *executionContext) _Commerce_Search_Meta_originalQuery(ctx context.Cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_Meta",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Search_Meta",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21936,10 +22414,11 @@ func (ec *executionContext) _Commerce_Search_Meta_page(ctx context.Context, fiel
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_Meta",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Search_Meta",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21967,10 +22446,11 @@ func (ec *executionContext) _Commerce_Search_Meta_numPages(ctx context.Context, 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_Meta",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Search_Meta",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -21998,10 +22478,11 @@ func (ec *executionContext) _Commerce_Search_Meta_numResults(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_Meta",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Search_Meta",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22029,10 +22510,11 @@ func (ec *executionContext) _Commerce_Search_Meta_sortOptions(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_Meta",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_Meta",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22057,10 +22539,11 @@ func (ec *executionContext) _Commerce_Search_Promotion_title(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_Promotion",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_Promotion",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22088,10 +22571,11 @@ func (ec *executionContext) _Commerce_Search_Promotion_content(ctx context.Conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_Promotion",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_Promotion",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22119,10 +22603,11 @@ func (ec *executionContext) _Commerce_Search_Promotion_url(ctx context.Context, 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_Promotion",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_Promotion",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22150,10 +22635,11 @@ func (ec *executionContext) _Commerce_Search_Promotion_media(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_Promotion",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_Promotion",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22178,10 +22664,11 @@ func (ec *executionContext) _Commerce_Search_PromotionMedia_type(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_PromotionMedia",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Search_PromotionMedia",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22209,10 +22696,11 @@ func (ec *executionContext) _Commerce_Search_PromotionMedia_mimeType(ctx context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_PromotionMedia",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Search_PromotionMedia",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22240,10 +22728,11 @@ func (ec *executionContext) _Commerce_Search_PromotionMedia_usage(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_PromotionMedia",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Search_PromotionMedia",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22271,10 +22760,11 @@ func (ec *executionContext) _Commerce_Search_PromotionMedia_title(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_PromotionMedia",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Search_PromotionMedia",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22302,10 +22792,11 @@ func (ec *executionContext) _Commerce_Search_PromotionMedia_reference(ctx contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_PromotionMedia",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Search_PromotionMedia",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22333,10 +22824,11 @@ func (ec *executionContext) _Commerce_Search_RangeFacet_name(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_RangeFacet",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_RangeFacet",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22364,10 +22856,11 @@ func (ec *executionContext) _Commerce_Search_RangeFacet_label(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_RangeFacet",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_RangeFacet",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22395,10 +22888,11 @@ func (ec *executionContext) _Commerce_Search_RangeFacet_position(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_RangeFacet",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_RangeFacet",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22426,10 +22920,11 @@ func (ec *executionContext) _Commerce_Search_RangeFacet_items(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_RangeFacet",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_RangeFacet",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22457,10 +22952,11 @@ func (ec *executionContext) _Commerce_Search_RangeFacet_hasSelectedItem(ctx cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_RangeFacet",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_RangeFacet",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22488,10 +22984,11 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_label(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_RangeFacetItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_RangeFacetItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22519,10 +23016,11 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_value(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_RangeFacetItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_RangeFacetItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22550,10 +23048,11 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_selected(ctx context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_RangeFacetItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_RangeFacetItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22581,10 +23080,11 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_count(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_RangeFacetItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_RangeFacetItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22612,10 +23112,11 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_min(ctx context.Cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_RangeFacetItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_RangeFacetItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22643,10 +23144,11 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_max(ctx context.Cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_RangeFacetItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_RangeFacetItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22674,10 +23176,11 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_selectedMin(ctx cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_RangeFacetItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_RangeFacetItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22705,10 +23208,11 @@ func (ec *executionContext) _Commerce_Search_RangeFacetItem_selectedMax(ctx cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_RangeFacetItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_RangeFacetItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22736,10 +23240,11 @@ func (ec *executionContext) _Commerce_Search_SortOption_label(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_SortOption",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Search_SortOption",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22767,10 +23272,11 @@ func (ec *executionContext) _Commerce_Search_SortOption_field(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_SortOption",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Search_SortOption",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22798,10 +23304,11 @@ func (ec *executionContext) _Commerce_Search_SortOption_selected(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_SortOption",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Search_SortOption",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22829,10 +23336,11 @@ func (ec *executionContext) _Commerce_Search_Suggestion_text(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_Suggestion",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Search_Suggestion",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22860,10 +23368,11 @@ func (ec *executionContext) _Commerce_Search_Suggestion_highlight(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_Suggestion",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "Commerce_Search_Suggestion",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22891,10 +23400,11 @@ func (ec *executionContext) _Commerce_Search_TreeFacet_name(ctx context.Context,
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_TreeFacet",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_TreeFacet",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22922,10 +23432,11 @@ func (ec *executionContext) _Commerce_Search_TreeFacet_label(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_TreeFacet",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_TreeFacet",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22953,10 +23464,11 @@ func (ec *executionContext) _Commerce_Search_TreeFacet_position(ctx context.Cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_TreeFacet",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_TreeFacet",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -22984,10 +23496,11 @@ func (ec *executionContext) _Commerce_Search_TreeFacet_items(ctx context.Context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_TreeFacet",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_TreeFacet",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23015,10 +23528,11 @@ func (ec *executionContext) _Commerce_Search_TreeFacet_hasSelectedItem(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_TreeFacet",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_TreeFacet",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23046,10 +23560,11 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_label(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_TreeFacetItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_TreeFacetItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23077,10 +23592,11 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_value(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_TreeFacetItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_TreeFacetItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23108,10 +23624,11 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_selected(ctx context.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_TreeFacetItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_TreeFacetItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23139,10 +23656,11 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_count(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_TreeFacetItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_TreeFacetItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23170,10 +23688,11 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_active(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_TreeFacetItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_TreeFacetItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23201,10 +23720,11 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem_items(ctx context.Con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Commerce_Search_TreeFacetItem",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Commerce_Search_TreeFacetItem",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23229,10 +23749,11 @@ func (ec *executionContext) _Mutation_flamingo(ctx context.Context, field graphq
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Mutation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23257,10 +23778,11 @@ func (ec *executionContext) _Mutation_Commerce_Cart_AddToCart(ctx context.Contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Mutation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23295,10 +23817,11 @@ func (ec *executionContext) _Mutation_Commerce_Cart_DeleteCartDelivery(ctx conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Mutation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23333,10 +23856,11 @@ func (ec *executionContext) _Mutation_Commerce_Cart_DeleteItem(ctx context.Conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Mutation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23371,10 +23895,11 @@ func (ec *executionContext) _Mutation_Commerce_Cart_UpdateItemQty(ctx context.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Mutation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23409,10 +23934,11 @@ func (ec *executionContext) _Mutation_Commerce_Cart_UpdateBillingAddress(ctx con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Mutation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23447,10 +23973,11 @@ func (ec *executionContext) _Mutation_Commerce_Cart_UpdateSelectedPayment(ctx co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Mutation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23485,10 +24012,11 @@ func (ec *executionContext) _Mutation_Commerce_Cart_ApplyCouponCodeOrGiftCard(ct
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Mutation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23520,10 +24048,11 @@ func (ec *executionContext) _Mutation_Commerce_Cart_RemoveGiftCard(ctx context.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Mutation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23555,10 +24084,11 @@ func (ec *executionContext) _Mutation_Commerce_Cart_RemoveCouponCode(ctx context
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Mutation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23590,10 +24120,11 @@ func (ec *executionContext) _Mutation_Commerce_Cart_UpdateDeliveryAddresses(ctx 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Mutation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23628,10 +24159,11 @@ func (ec *executionContext) _Mutation_Commerce_Cart_UpdateDeliveryShippingOption
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Mutation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23666,10 +24198,11 @@ func (ec *executionContext) _Mutation_Commerce_Cart_Clean(ctx context.Context, f
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Mutation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23697,10 +24230,11 @@ func (ec *executionContext) _Mutation_Commerce_Cart_UpdateAdditionalData(ctx con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Mutation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23735,10 +24269,11 @@ func (ec *executionContext) _Mutation_Commerce_Cart_UpdateDeliveriesAdditionalDa
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Mutation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23773,10 +24308,11 @@ func (ec *executionContext) _Mutation_Commerce_Checkout_StartPlaceOrder(ctx cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Mutation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23811,10 +24347,11 @@ func (ec *executionContext) _Mutation_Commerce_Checkout_CancelPlaceOrder(ctx con
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Mutation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23842,10 +24379,11 @@ func (ec *executionContext) _Mutation_Commerce_Checkout_ClearPlaceOrder(ctx cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Mutation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23873,10 +24411,11 @@ func (ec *executionContext) _Mutation_Commerce_Checkout_RefreshPlaceOrder(ctx co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Mutation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23904,10 +24443,11 @@ func (ec *executionContext) _Mutation_Commerce_Checkout_RefreshPlaceOrderBlockin
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Mutation",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23935,10 +24475,11 @@ func (ec *executionContext) _Query_flamingo(ctx context.Context, field graphql.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Query",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23963,10 +24504,11 @@ func (ec *executionContext) _Query_Commerce_Product(ctx context.Context, field g
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Query",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -23998,10 +24540,11 @@ func (ec *executionContext) _Query_Commerce_Product_Search(ctx context.Context, 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Query",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24036,10 +24579,11 @@ func (ec *executionContext) _Query_Commerce_Customer_Status(ctx context.Context,
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Query",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24064,10 +24608,11 @@ func (ec *executionContext) _Query_Commerce_Customer(ctx context.Context, field 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Query",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24092,10 +24637,11 @@ func (ec *executionContext) _Query_Commerce_Cart_DecoratedCart(ctx context.Conte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Query",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24123,10 +24669,11 @@ func (ec *executionContext) _Query_Commerce_Cart_Validator(ctx context.Context, 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Query",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24154,10 +24701,11 @@ func (ec *executionContext) _Query_Commerce_Cart_QtyRestriction(ctx context.Cont
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Query",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24192,10 +24740,11 @@ func (ec *executionContext) _Query_Commerce_Checkout_ActivePlaceOrder(ctx contex
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Query",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24223,10 +24772,11 @@ func (ec *executionContext) _Query_Commerce_Checkout_CurrentContext(ctx context.
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Query",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24254,10 +24804,11 @@ func (ec *executionContext) _Query_Commerce_CategoryTree(ctx context.Context, fi
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Query",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24292,10 +24843,11 @@ func (ec *executionContext) _Query_Commerce_Category(ctx context.Context, field 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Query",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24327,10 +24879,11 @@ func (ec *executionContext) _Query___type(ctx context.Context, field graphql.Col
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Query",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24362,10 +24915,11 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "Query",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24390,10 +24944,11 @@ func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__Directive",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "__Directive",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24421,10 +24976,11 @@ func (ec *executionContext) ___Directive_description(ctx context.Context, field 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__Directive",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "__Directive",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24449,10 +25005,11 @@ func (ec *executionContext) ___Directive_locations(ctx context.Context, field gr
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__Directive",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "__Directive",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24480,10 +25037,11 @@ func (ec *executionContext) ___Directive_args(ctx context.Context, field graphql
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__Directive",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "__Directive",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24511,10 +25069,11 @@ func (ec *executionContext) ___EnumValue_name(ctx context.Context, field graphql
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__EnumValue",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "__EnumValue",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24542,10 +25101,11 @@ func (ec *executionContext) ___EnumValue_description(ctx context.Context, field 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__EnumValue",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "__EnumValue",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24570,10 +25130,11 @@ func (ec *executionContext) ___EnumValue_isDeprecated(ctx context.Context, field
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__EnumValue",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "__EnumValue",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24601,10 +25162,11 @@ func (ec *executionContext) ___EnumValue_deprecationReason(ctx context.Context, 
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__EnumValue",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "__EnumValue",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24629,10 +25191,11 @@ func (ec *executionContext) ___Field_name(ctx context.Context, field graphql.Col
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__Field",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "__Field",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24660,10 +25223,11 @@ func (ec *executionContext) ___Field_description(ctx context.Context, field grap
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__Field",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "__Field",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24688,10 +25252,11 @@ func (ec *executionContext) ___Field_args(ctx context.Context, field graphql.Col
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__Field",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "__Field",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24719,10 +25284,11 @@ func (ec *executionContext) ___Field_type(ctx context.Context, field graphql.Col
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__Field",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "__Field",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24750,10 +25316,11 @@ func (ec *executionContext) ___Field_isDeprecated(ctx context.Context, field gra
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__Field",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "__Field",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24781,10 +25348,11 @@ func (ec *executionContext) ___Field_deprecationReason(ctx context.Context, fiel
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__Field",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "__Field",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24809,10 +25377,11 @@ func (ec *executionContext) ___InputValue_name(ctx context.Context, field graphq
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__InputValue",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "__InputValue",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24840,10 +25409,11 @@ func (ec *executionContext) ___InputValue_description(ctx context.Context, field
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__InputValue",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "__InputValue",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24868,10 +25438,11 @@ func (ec *executionContext) ___InputValue_type(ctx context.Context, field graphq
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__InputValue",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "__InputValue",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24899,10 +25470,11 @@ func (ec *executionContext) ___InputValue_defaultValue(ctx context.Context, fiel
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__InputValue",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
+		Object:     "__InputValue",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24927,10 +25499,11 @@ func (ec *executionContext) ___Schema_types(ctx context.Context, field graphql.C
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__Schema",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "__Schema",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24958,10 +25531,11 @@ func (ec *executionContext) ___Schema_queryType(ctx context.Context, field graph
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__Schema",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "__Schema",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -24989,10 +25563,11 @@ func (ec *executionContext) ___Schema_mutationType(ctx context.Context, field gr
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__Schema",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "__Schema",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -25017,10 +25592,11 @@ func (ec *executionContext) ___Schema_subscriptionType(ctx context.Context, fiel
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__Schema",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "__Schema",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -25045,10 +25621,11 @@ func (ec *executionContext) ___Schema_directives(ctx context.Context, field grap
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__Schema",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "__Schema",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -25076,10 +25653,11 @@ func (ec *executionContext) ___Type_kind(ctx context.Context, field graphql.Coll
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__Type",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "__Type",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -25107,10 +25685,11 @@ func (ec *executionContext) ___Type_name(ctx context.Context, field graphql.Coll
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__Type",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "__Type",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -25135,10 +25714,11 @@ func (ec *executionContext) ___Type_description(ctx context.Context, field graph
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__Type",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "__Type",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -25163,10 +25743,11 @@ func (ec *executionContext) ___Type_fields(ctx context.Context, field graphql.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__Type",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "__Type",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -25198,10 +25779,11 @@ func (ec *executionContext) ___Type_interfaces(ctx context.Context, field graphq
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__Type",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "__Type",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -25226,10 +25808,11 @@ func (ec *executionContext) ___Type_possibleTypes(ctx context.Context, field gra
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__Type",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "__Type",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -25254,10 +25837,11 @@ func (ec *executionContext) ___Type_enumValues(ctx context.Context, field graphq
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__Type",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "__Type",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -25289,10 +25873,11 @@ func (ec *executionContext) ___Type_inputFields(ctx context.Context, field graph
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__Type",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "__Type",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -25317,10 +25902,11 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:   "__Type",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
+		Object:     "__Type",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
@@ -25350,7 +25936,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 		case "vat":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("vat"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vat"))
 			it.Vat, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25358,7 +25944,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 		case "firstname":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("firstname"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firstname"))
 			it.Firstname, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25366,7 +25952,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 		case "lastname":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("lastname"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastname"))
 			it.Lastname, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25374,7 +25960,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 		case "middleName":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("middleName"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("middleName"))
 			it.MiddleName, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25382,7 +25968,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 		case "title":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("title"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
 			it.Title, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25390,7 +25976,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 		case "salutation":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("salutation"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("salutation"))
 			it.Salutation, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25398,7 +25984,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 		case "street":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("street"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("street"))
 			it.Street, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25406,7 +25992,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 		case "streetNr":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("streetNr"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("streetNr"))
 			it.StreetNr, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25414,7 +26000,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 		case "addressLine1":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("addressLine1"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressLine1"))
 			it.AddressLine1, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25422,7 +26008,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 		case "addressLine2":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("addressLine2"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressLine2"))
 			it.AddressLine2, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25430,7 +26016,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 		case "company":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("company"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("company"))
 			it.Company, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25438,7 +26024,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 		case "city":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("city"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("city"))
 			it.City, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25446,7 +26032,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 		case "postCode":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("postCode"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("postCode"))
 			it.PostCode, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25454,7 +26040,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 		case "state":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("state"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("state"))
 			it.State, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25462,7 +26048,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 		case "regionCode":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("regionCode"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("regionCode"))
 			it.RegionCode, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25470,7 +26056,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 		case "country":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("country"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("country"))
 			it.Country, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25478,7 +26064,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 		case "countryCode":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("countryCode"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("countryCode"))
 			it.CountryCode, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25486,7 +26072,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 		case "phoneNumber":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("phoneNumber"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("phoneNumber"))
 			it.PhoneNumber, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25494,7 +26080,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 		case "email":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("email"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
 			it.Email, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25514,7 +26100,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAdditionalDataIn
 		case "deliveryCode":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryCode"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
 			it.DeliveryCode, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25522,7 +26108,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAdditionalDataIn
 		case "additionalData":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("additionalData"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("additionalData"))
 			it.AdditionalData, err = ec.unmarshalNCommerce_Cart_KeyValueInput2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValueᚄ(ctx, v)
 			if err != nil {
 				return it, err
@@ -25542,7 +26128,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx
 		case "deliveryCode":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryCode"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
 			it.LocationCode, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25550,7 +26136,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx
 		case "deliveryAddress":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryAddress"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryAddress"))
 			it.DeliveryAddress, err = ec.unmarshalOCommerce_Cart_AddressFormInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐAddressForm(ctx, v)
 			if err != nil {
 				return it, err
@@ -25558,7 +26144,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx
 		case "useBillingAddress":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("useBillingAddress"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("useBillingAddress"))
 			it.UseBillingAddress, err = ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
@@ -25566,7 +26152,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx
 		case "method":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("method"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("method"))
 			it.ShippingMethod, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25574,7 +26160,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx
 		case "carrier":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("carrier"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("carrier"))
 			it.ShippingCarrier, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25582,7 +26168,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx
 		case "desiredTime":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("desiredTime"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("desiredTime"))
 			it.DesiredTime, err = ec.unmarshalOTime2timeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
@@ -25602,7 +26188,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryShippingOptionIn
 		case "deliveryCode":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("deliveryCode"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
 			it.DeliveryCode, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25610,7 +26196,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryShippingOptionIn
 		case "method":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("method"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("method"))
 			it.Method, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25618,7 +26204,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryShippingOptionIn
 		case "carrier":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("carrier"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("carrier"))
 			it.Carrier, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25638,7 +26224,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_KeyValueInput(ctx contex
 		case "key":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("key"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("key"))
 			it.Key, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25646,7 +26232,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_KeyValueInput(ctx contex
 		case "value":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("value"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("value"))
 			it.Value, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25666,7 +26252,7 @@ func (ec *executionContext) unmarshalInputCommerce_Price_ChargeQualifierInput(ct
 		case "type":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("type"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
 			it.Type, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25674,7 +26260,7 @@ func (ec *executionContext) unmarshalInputCommerce_Price_ChargeQualifierInput(ct
 		case "reference":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("reference"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("reference"))
 			it.Reference, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25694,7 +26280,7 @@ func (ec *executionContext) unmarshalInputCommerce_Search_KeyValueFilter(ctx con
 		case "k":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("k"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("k"))
 			it.K, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25702,7 +26288,7 @@ func (ec *executionContext) unmarshalInputCommerce_Search_KeyValueFilter(ctx con
 		case "v":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("v"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("v"))
 			it.V, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
 			if err != nil {
 				return it, err
@@ -25722,7 +26308,7 @@ func (ec *executionContext) unmarshalInputCommerce_Search_Request(ctx context.Co
 		case "pageSize":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("pageSize"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pageSize"))
 			it.PageSize, err = ec.unmarshalOInt2int(ctx, v)
 			if err != nil {
 				return it, err
@@ -25730,7 +26316,7 @@ func (ec *executionContext) unmarshalInputCommerce_Search_Request(ctx context.Co
 		case "page":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("page"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("page"))
 			it.Page, err = ec.unmarshalOInt2int(ctx, v)
 			if err != nil {
 				return it, err
@@ -25738,7 +26324,7 @@ func (ec *executionContext) unmarshalInputCommerce_Search_Request(ctx context.Co
 		case "sortBy":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("sortBy"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sortBy"))
 			it.SortBy, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -25746,7 +26332,7 @@ func (ec *executionContext) unmarshalInputCommerce_Search_Request(ctx context.Co
 		case "keyValueFilters":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("keyValueFilters"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keyValueFilters"))
 			it.KeyValueFilters, err = ec.unmarshalOCommerce_Search_KeyValueFilter2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchKeyValueFilterᚄ(ctx, v)
 			if err != nil {
 				return it, err
@@ -25754,7 +26340,7 @@ func (ec *executionContext) unmarshalInputCommerce_Search_Request(ctx context.Co
 		case "query":
 			var err error
 
-			ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("query"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
 			it.Query, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
@@ -31277,7 +31863,7 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
-	return res, graphql.WrapErrorWithInputPath(ctx, err)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.SelectionSet, v bool) graphql.Marshaler {
@@ -31388,11 +31974,6 @@ func (ec *executionContext) marshalNCommerce_Cart_Delivery2ᚖflamingoᚗmeᚋfl
 	return ec._Commerce_Cart_Delivery(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalData(ctx context.Context, v interface{}) (dto.DeliveryAdditionalData, error) {
-	res, err := ec.unmarshalInputCommerce_Cart_DeliveryAdditionalDataInput(ctx, v)
-	return res, graphql.WrapErrorWithInputPath(ctx, err)
-}
-
 func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalDataᚄ(ctx context.Context, v interface{}) ([]*dto.DeliveryAdditionalData, error) {
 	var vSlice []interface{}
 	if v != nil {
@@ -31405,18 +31986,18 @@ func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2
 	var err error
 	res := make([]*dto.DeliveryAdditionalData, len(vSlice))
 	for i := range vSlice {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithIndex(i))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
 		res[i], err = ec.unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalData(ctx, vSlice[i])
 		if err != nil {
-			return nil, graphql.WrapErrorWithInputPath(ctx, err)
+			return nil, err
 		}
 	}
 	return res, nil
 }
 
 func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalData(ctx context.Context, v interface{}) (*dto.DeliveryAdditionalData, error) {
-	res, err := ec.unmarshalNCommerce_Cart_DeliveryAdditionalDataInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAdditionalData(ctx, v)
-	return &res, graphql.WrapErrorWithInputPath(ctx, err)
+	res, err := ec.unmarshalInputCommerce_Cart_DeliveryAdditionalDataInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNCommerce_Cart_DeliveryAddressForm2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAddressForm(ctx context.Context, sel ast.SelectionSet, v []*dto.DeliveryAddressForm) graphql.Marshaler {
@@ -31456,24 +32037,14 @@ func (ec *executionContext) marshalNCommerce_Cart_DeliveryAddressForm2ᚕᚖflam
 	return ret
 }
 
-func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAddressInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐDeliveryForm(ctx context.Context, v interface{}) (forms.DeliveryForm, error) {
-	res, err := ec.unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx, v)
-	return res, graphql.WrapErrorWithInputPath(ctx, err)
-}
-
 func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryAddressInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐDeliveryForm(ctx context.Context, v interface{}) (*forms.DeliveryForm, error) {
-	res, err := ec.unmarshalNCommerce_Cart_DeliveryAddressInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐDeliveryForm(ctx, v)
-	return &res, graphql.WrapErrorWithInputPath(ctx, err)
-}
-
-func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryShippingOptionInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryShippingOption(ctx context.Context, v interface{}) (dto.DeliveryShippingOption, error) {
-	res, err := ec.unmarshalInputCommerce_Cart_DeliveryShippingOptionInput(ctx, v)
-	return res, graphql.WrapErrorWithInputPath(ctx, err)
+	res, err := ec.unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNCommerce_Cart_DeliveryShippingOptionInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryShippingOption(ctx context.Context, v interface{}) (*dto.DeliveryShippingOption, error) {
-	res, err := ec.unmarshalNCommerce_Cart_DeliveryShippingOptionInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryShippingOption(ctx, v)
-	return &res, graphql.WrapErrorWithInputPath(ctx, err)
+	res, err := ec.unmarshalInputCommerce_Cart_DeliveryShippingOptionInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNCommerce_Cart_Form_Error2flamingoᚗmeᚋformᚋdomainᚐError(ctx context.Context, sel ast.SelectionSet, v domain4.Error) graphql.Marshaler {
@@ -31504,7 +32075,7 @@ func (ec *executionContext) marshalNCommerce_Cart_ItemValidationError2flamingo�
 
 func (ec *executionContext) unmarshalNCommerce_Cart_KeyValueInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx context.Context, v interface{}) (dto.KeyValue, error) {
 	res, err := ec.unmarshalInputCommerce_Cart_KeyValueInput(ctx, v)
-	return res, graphql.WrapErrorWithInputPath(ctx, err)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNCommerce_Cart_KeyValueInput2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValueᚄ(ctx context.Context, v interface{}) ([]dto.KeyValue, error) {
@@ -31519,10 +32090,10 @@ func (ec *executionContext) unmarshalNCommerce_Cart_KeyValueInput2ᚕflamingoᚗ
 	var err error
 	res := make([]dto.KeyValue, len(vSlice))
 	for i := range vSlice {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithIndex(i))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
 		res[i], err = ec.unmarshalNCommerce_Cart_KeyValueInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx, vSlice[i])
 		if err != nil {
-			return nil, graphql.WrapErrorWithInputPath(ctx, err)
+			return nil, err
 		}
 	}
 	return res, nil
@@ -31540,22 +32111,18 @@ func (ec *executionContext) unmarshalNCommerce_Cart_KeyValueInput2ᚕᚖflamingo
 	var err error
 	res := make([]*dto.KeyValue, len(vSlice))
 	for i := range vSlice {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithIndex(i))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
 		res[i], err = ec.unmarshalNCommerce_Cart_KeyValueInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx, vSlice[i])
 		if err != nil {
-			return nil, graphql.WrapErrorWithInputPath(ctx, err)
+			return nil, err
 		}
 	}
 	return res, nil
 }
 
 func (ec *executionContext) unmarshalNCommerce_Cart_KeyValueInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx context.Context, v interface{}) (*dto.KeyValue, error) {
-	res, err := ec.unmarshalNCommerce_Cart_KeyValueInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx, v)
-	return &res, graphql.WrapErrorWithInputPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNCommerce_Cart_PaymentSelection_Split2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐPaymentSelectionSplit(ctx context.Context, sel ast.SelectionSet, v dto.PaymentSelectionSplit) graphql.Marshaler {
-	return ec._Commerce_Cart_PaymentSelection_Split(ctx, sel, &v)
+	res, err := ec.unmarshalInputCommerce_Cart_KeyValueInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNCommerce_Cart_PaymentSelection_Split2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐPaymentSelectionSplit(ctx context.Context, sel ast.SelectionSet, v *dto.PaymentSelectionSplit) graphql.Marshaler {
@@ -31667,10 +32234,6 @@ func (ec *executionContext) marshalNCommerce_Cart_Tax2ᚕflamingoᚗmeᚋflaming
 	}
 	wg.Wait()
 	return ret
-}
-
-func (ec *executionContext) marshalNCommerce_Cart_Teaser2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐTeaser(ctx context.Context, sel ast.SelectionSet, v cart.Teaser) graphql.Marshaler {
-	return ec._Commerce_Cart_Teaser(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNCommerce_Cart_Teaser2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐTeaser(ctx context.Context, sel ast.SelectionSet, v *cart.Teaser) graphql.Marshaler {
@@ -31831,7 +32394,7 @@ func (ec *executionContext) marshalNCommerce_Price_Charge2flamingoᚗmeᚋflamin
 
 func (ec *executionContext) unmarshalNCommerce_Price_ChargeQualifierInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐChargeQualifier(ctx context.Context, v interface{}) (domain.ChargeQualifier, error) {
 	res, err := ec.unmarshalInputCommerce_Price_ChargeQualifierInput(ctx, v)
-	return res, graphql.WrapErrorWithInputPath(ctx, err)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNCommerce_Price_Charges2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐCharges(ctx context.Context, sel ast.SelectionSet, v domain.Charges) graphql.Marshaler {
@@ -31936,7 +32499,8 @@ func (ec *executionContext) marshalNCommerce_Product_VariationSelection2flamingo
 
 func (ec *executionContext) unmarshalNCommerce_Product_VariationSelection_OptionState2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionOptionState(ctx context.Context, v interface{}) (graphqlproductdto.VariationSelectionOptionState, error) {
 	tmp, err := graphql.UnmarshalString(v)
-	return graphqlproductdto.VariationSelectionOptionState(tmp), graphql.WrapErrorWithInputPath(ctx, err)
+	res := graphqlproductdto.VariationSelectionOptionState(tmp)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNCommerce_Product_VariationSelection_OptionState2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionOptionState(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.VariationSelectionOptionState) graphql.Marshaler {
@@ -32002,11 +32566,7 @@ func (ec *executionContext) marshalNCommerce_Search_Facet2ᚕflamingoᚗmeᚋfla
 
 func (ec *executionContext) unmarshalNCommerce_Search_KeyValueFilter2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchKeyValueFilter(ctx context.Context, v interface{}) (searchdto.CommerceSearchKeyValueFilter, error) {
 	res, err := ec.unmarshalInputCommerce_Search_KeyValueFilter(ctx, v)
-	return res, graphql.WrapErrorWithInputPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNCommerce_Search_ListFacetItem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchListFacetItem(ctx context.Context, sel ast.SelectionSet, v searchdto.CommerceSearchListFacetItem) graphql.Marshaler {
-	return ec._Commerce_Search_ListFacetItem(ctx, sel, &v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNCommerce_Search_ListFacetItem2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchListFacetItemᚄ(ctx context.Context, sel ast.SelectionSet, v []*searchdto.CommerceSearchListFacetItem) graphql.Marshaler {
@@ -32060,10 +32620,6 @@ func (ec *executionContext) marshalNCommerce_Search_Meta2flamingoᚗmeᚋflaming
 	return ec._Commerce_Search_Meta(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Search_RangeFacetItem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRangeFacetItem(ctx context.Context, sel ast.SelectionSet, v searchdto.CommerceSearchRangeFacetItem) graphql.Marshaler {
-	return ec._Commerce_Search_RangeFacetItem(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalNCommerce_Search_RangeFacetItem2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRangeFacetItemᚄ(ctx context.Context, sel ast.SelectionSet, v []*searchdto.CommerceSearchRangeFacetItem) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -32113,11 +32669,7 @@ func (ec *executionContext) marshalNCommerce_Search_RangeFacetItem2ᚖflamingo�
 
 func (ec *executionContext) unmarshalNCommerce_Search_Request2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRequest(ctx context.Context, v interface{}) (searchdto.CommerceSearchRequest, error) {
 	res, err := ec.unmarshalInputCommerce_Search_Request(ctx, v)
-	return res, graphql.WrapErrorWithInputPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNCommerce_Search_SortOption2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchSortOption(ctx context.Context, sel ast.SelectionSet, v searchdto.CommerceSearchSortOption) graphql.Marshaler {
-	return ec._Commerce_Search_SortOption(ctx, sel, &v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNCommerce_Search_SortOption2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchSortOption(ctx context.Context, sel ast.SelectionSet, v *searchdto.CommerceSearchSortOption) graphql.Marshaler {
@@ -32132,10 +32684,6 @@ func (ec *executionContext) marshalNCommerce_Search_SortOption2ᚖflamingoᚗme�
 
 func (ec *executionContext) marshalNCommerce_Search_Suggestion2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐSuggestion(ctx context.Context, sel ast.SelectionSet, v domain2.Suggestion) graphql.Marshaler {
 	return ec._Commerce_Search_Suggestion(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNCommerce_Search_TreeFacetItem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchTreeFacetItem(ctx context.Context, sel ast.SelectionSet, v searchdto.CommerceSearchTreeFacetItem) graphql.Marshaler {
-	return ec._Commerce_Search_TreeFacetItem(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNCommerce_Search_TreeFacetItem2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchTreeFacetItemᚄ(ctx context.Context, sel ast.SelectionSet, v []*searchdto.CommerceSearchTreeFacetItem) graphql.Marshaler {
@@ -32197,7 +32745,7 @@ func (ec *executionContext) marshalNCommerce_Tree2flamingoᚗmeᚋflamingoᚑcom
 
 func (ec *executionContext) unmarshalNFloat2mathᚋbigᚐFloat(ctx context.Context, v interface{}) (big.Float, error) {
 	res, err := graphql2.UnmarshalFloat(v)
-	return res, graphql.WrapErrorWithInputPath(ctx, err)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNFloat2mathᚋbigᚐFloat(ctx context.Context, sel ast.SelectionSet, v big.Float) graphql.Marshaler {
@@ -32211,8 +32759,8 @@ func (ec *executionContext) marshalNFloat2mathᚋbigᚐFloat(ctx context.Context
 }
 
 func (ec *executionContext) unmarshalNFloat2ᚖmathᚋbigᚐFloat(ctx context.Context, v interface{}) (*big.Float, error) {
-	res, err := ec.unmarshalNFloat2mathᚋbigᚐFloat(ctx, v)
-	return &res, graphql.WrapErrorWithInputPath(ctx, err)
+	res, err := graphql2.UnmarshalFloat(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNFloat2ᚖmathᚋbigᚐFloat(ctx context.Context, sel ast.SelectionSet, v *big.Float) graphql.Marshaler {
@@ -32222,12 +32770,18 @@ func (ec *executionContext) marshalNFloat2ᚖmathᚋbigᚐFloat(ctx context.Cont
 		}
 		return graphql.Null
 	}
-	return ec.marshalNFloat2mathᚋbigᚐFloat(ctx, sel, *v)
+	res := graphql2.MarshalFloat(*v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
 }
 
 func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalID(v)
-	return res, graphql.WrapErrorWithInputPath(ctx, err)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
@@ -32242,7 +32796,7 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
 	res, err := graphql.UnmarshalInt(v)
-	return res, graphql.WrapErrorWithInputPath(ctx, err)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
@@ -32257,7 +32811,7 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalString(v)
-	return res, graphql.WrapErrorWithInputPath(ctx, err)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
@@ -32313,7 +32867,7 @@ func (ec *executionContext) marshalN__Directive2ᚕgithubᚗcomᚋ99designsᚋgq
 
 func (ec *executionContext) unmarshalN__DirectiveLocation2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalString(v)
-	return res, graphql.WrapErrorWithInputPath(ctx, err)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalN__DirectiveLocation2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
@@ -32338,10 +32892,10 @@ func (ec *executionContext) unmarshalN__DirectiveLocation2ᚕstringᚄ(ctx conte
 	var err error
 	res := make([]string, len(vSlice))
 	for i := range vSlice {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithIndex(i))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
 		res[i], err = ec.unmarshalN__DirectiveLocation2string(ctx, vSlice[i])
 		if err != nil {
-			return nil, graphql.WrapErrorWithInputPath(ctx, err)
+			return nil, err
 		}
 	}
 	return res, nil
@@ -32486,7 +33040,7 @@ func (ec *executionContext) marshalN__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgen�
 
 func (ec *executionContext) unmarshalN__TypeKind2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalString(v)
-	return res, graphql.WrapErrorWithInputPath(ctx, err)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
@@ -32501,7 +33055,7 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 
 func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
-	return res, graphql.WrapErrorWithInputPath(ctx, err)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOBoolean2bool(ctx context.Context, sel ast.SelectionSet, v bool) graphql.Marshaler {
@@ -32512,19 +33066,15 @@ func (ec *executionContext) unmarshalOBoolean2ᚖbool(ctx context.Context, v int
 	if v == nil {
 		return nil, nil
 	}
-	res, err := ec.unmarshalOBoolean2bool(ctx, v)
-	return &res, graphql.WrapErrorWithInputPath(ctx, err)
+	res, err := graphql.UnmarshalBoolean(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast.SelectionSet, v *bool) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	return ec.marshalOBoolean2bool(ctx, sel, *v)
-}
-
-func (ec *executionContext) marshalOCommerce_Cart_Address2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAddress(ctx context.Context, sel ast.SelectionSet, v cart.Address) graphql.Marshaler {
-	return ec._Commerce_Cart_Address(ctx, sel, &v)
+	return graphql.MarshalBoolean(*v)
 }
 
 func (ec *executionContext) marshalOCommerce_Cart_Address2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAddress(ctx context.Context, sel ast.SelectionSet, v *cart.Address) graphql.Marshaler {
@@ -32540,15 +33090,15 @@ func (ec *executionContext) marshalOCommerce_Cart_AddressForm2flamingoᚗmeᚋfl
 
 func (ec *executionContext) unmarshalOCommerce_Cart_AddressFormInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐAddressForm(ctx context.Context, v interface{}) (forms.AddressForm, error) {
 	res, err := ec.unmarshalInputCommerce_Cart_AddressFormInput(ctx, v)
-	return res, graphql.WrapErrorWithInputPath(ctx, err)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOCommerce_Cart_AddressFormInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐAddressForm(ctx context.Context, v interface{}) (*forms.AddressForm, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := ec.unmarshalOCommerce_Cart_AddressFormInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐAddressForm(ctx, v)
-	return &res, graphql.WrapErrorWithInputPath(ctx, err)
+	res, err := ec.unmarshalInputCommerce_Cart_AddressFormInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOCommerce_Cart_AppliedDiscount2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐAppliedDiscountᚄ(ctx context.Context, sel ast.SelectionSet, v []cart.AppliedDiscount) graphql.Marshaler {
@@ -32671,19 +33221,11 @@ func (ec *executionContext) marshalOCommerce_Cart_CouponCode2ᚕflamingoᚗmeᚋ
 	return ret
 }
 
-func (ec *executionContext) marshalOCommerce_Cart_DecoratedCart2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx context.Context, sel ast.SelectionSet, v dto.DecoratedCart) graphql.Marshaler {
-	return ec._Commerce_Cart_DecoratedCart(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalOCommerce_Cart_DecoratedCart2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedCart(ctx context.Context, sel ast.SelectionSet, v *dto.DecoratedCart) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._Commerce_Cart_DecoratedCart(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOCommerce_Cart_DecoratedDelivery2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedDelivery(ctx context.Context, sel ast.SelectionSet, v dto.DecoratedDelivery) graphql.Marshaler {
-	return ec._Commerce_Cart_DecoratedDelivery(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalOCommerce_Cart_DecoratedDelivery2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDecoratedDeliveryᚄ(ctx context.Context, sel ast.SelectionSet, v []dto.DecoratedDelivery) graphql.Marshaler {
@@ -32773,10 +33315,6 @@ func (ec *executionContext) marshalOCommerce_Cart_DecoratedItem2ᚕflamingoᚗme
 	return ret
 }
 
-func (ec *executionContext) marshalOCommerce_Cart_Delivery2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDelivery(ctx context.Context, sel ast.SelectionSet, v cart.Delivery) graphql.Marshaler {
-	return ec._Commerce_Cart_Delivery(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalOCommerce_Cart_Delivery2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐDeliveryᚄ(ctx context.Context, sel ast.SelectionSet, v []cart.Delivery) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -32824,10 +33362,6 @@ func (ec *executionContext) marshalOCommerce_Cart_Delivery2ᚖflamingoᚗmeᚋfl
 	return ec._Commerce_Cart_Delivery(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOCommerce_Cart_DeliveryAddressForm2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAddressForm(ctx context.Context, sel ast.SelectionSet, v dto.DeliveryAddressForm) graphql.Marshaler {
-	return ec._Commerce_Cart_DeliveryAddressForm(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalOCommerce_Cart_DeliveryAddressForm2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryAddressForm(ctx context.Context, sel ast.SelectionSet, v *dto.DeliveryAddressForm) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -32850,10 +33384,10 @@ func (ec *executionContext) unmarshalOCommerce_Cart_DeliveryAddressInput2ᚕᚖf
 	var err error
 	res := make([]*forms.DeliveryForm, len(vSlice))
 	for i := range vSlice {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithIndex(i))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
 		res[i], err = ec.unmarshalNCommerce_Cart_DeliveryAddressInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐDeliveryForm(ctx, vSlice[i])
 		if err != nil {
-			return nil, graphql.WrapErrorWithInputPath(ctx, err)
+			return nil, err
 		}
 	}
 	return res, nil
@@ -32882,17 +33416,13 @@ func (ec *executionContext) unmarshalOCommerce_Cart_DeliveryShippingOptionInput2
 	var err error
 	res := make([]*dto.DeliveryShippingOption, len(vSlice))
 	for i := range vSlice {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithIndex(i))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
 		res[i], err = ec.unmarshalNCommerce_Cart_DeliveryShippingOptionInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐDeliveryShippingOption(ctx, vSlice[i])
 		if err != nil {
-			return nil, graphql.WrapErrorWithInputPath(ctx, err)
+			return nil, err
 		}
 	}
 	return res, nil
-}
-
-func (ec *executionContext) marshalOCommerce_Cart_ExistingCustomerData2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐExistingCustomerData(ctx context.Context, sel ast.SelectionSet, v cart.ExistingCustomerData) graphql.Marshaler {
-	return ec._Commerce_Cart_ExistingCustomerData(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalOCommerce_Cart_ExistingCustomerData2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐExistingCustomerData(ctx context.Context, sel ast.SelectionSet, v *cart.ExistingCustomerData) graphql.Marshaler {
@@ -33070,10 +33600,6 @@ func (ec *executionContext) marshalOCommerce_Cart_ItemValidationError2ᚕflaming
 	return ret
 }
 
-func (ec *executionContext) marshalOCommerce_Cart_KeyValue2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx context.Context, sel ast.SelectionSet, v dto.KeyValue) graphql.Marshaler {
-	return ec._Commerce_Cart_KeyValue(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalOCommerce_Cart_KeyValue2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx context.Context, sel ast.SelectionSet, v *dto.KeyValue) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -33126,10 +33652,6 @@ func (ec *executionContext) marshalOCommerce_Cart_PaymentSelection_Split2ᚕᚖf
 	}
 	wg.Wait()
 	return ret
-}
-
-func (ec *executionContext) marshalOCommerce_Cart_Person2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐPerson(ctx context.Context, sel ast.SelectionSet, v cart.Person) graphql.Marshaler {
-	return ec._Commerce_Cart_Person(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalOCommerce_Cart_Person2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐPerson(ctx context.Context, sel ast.SelectionSet, v *cart.Person) graphql.Marshaler {
@@ -33307,10 +33829,6 @@ func (ec *executionContext) marshalOCommerce_Cart_Tax2flamingoᚗmeᚋflamingo�
 	return ec._Commerce_Cart_Tax(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalOCommerce_Cart_Taxes2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐTaxes(ctx context.Context, sel ast.SelectionSet, v dto.Taxes) graphql.Marshaler {
-	return ec._Commerce_Cart_Taxes(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalOCommerce_Cart_Taxes2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐTaxes(ctx context.Context, sel ast.SelectionSet, v *dto.Taxes) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -33356,10 +33874,6 @@ func (ec *executionContext) marshalOCommerce_Cart_Totalitem2ᚕflamingoᚗmeᚋf
 	}
 	wg.Wait()
 	return ret
-}
-
-func (ec *executionContext) marshalOCommerce_Category_Attribute2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcategoryᚋdomainᚐAttribute(ctx context.Context, sel ast.SelectionSet, v domain3.Attribute) graphql.Marshaler {
-	return ec._Commerce_Category_Attribute(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalOCommerce_Category_Attribute2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcategoryᚋdomainᚐAttributeᚄ(ctx context.Context, sel ast.SelectionSet, v []domain3.Attribute) graphql.Marshaler {
@@ -33449,10 +33963,6 @@ func (ec *executionContext) marshalOCommerce_Category_AttributeValue2ᚕflamingo
 	return ret
 }
 
-func (ec *executionContext) marshalOCommerce_Category_SearchResult2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcategoryᚋinterfacesᚋgraphqlᚋcategorydtoᚐCategorySearchResult(ctx context.Context, sel ast.SelectionSet, v categorydto.CategorySearchResult) graphql.Marshaler {
-	return ec._Commerce_Category_SearchResult(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalOCommerce_Category_SearchResult2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcategoryᚋinterfacesᚋgraphqlᚋcategorydtoᚐCategorySearchResult(ctx context.Context, sel ast.SelectionSet, v *categorydto.CategorySearchResult) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -33540,10 +34050,6 @@ func (ec *executionContext) marshalOCommerce_Checkout_PlaceOrderState_Form_Param
 	return ret
 }
 
-func (ec *executionContext) marshalOCommerce_Checkout_PlacedOrderInfos2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPlacedOrderInfos(ctx context.Context, sel ast.SelectionSet, v dto1.PlacedOrderInfos) graphql.Marshaler {
-	return ec._Commerce_Checkout_PlacedOrderInfos(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalOCommerce_Checkout_PlacedOrderInfos2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcheckoutᚋinterfacesᚋgraphqlᚋdtoᚐPlacedOrderInfos(ctx context.Context, sel ast.SelectionSet, v *dto1.PlacedOrderInfos) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -33602,19 +34108,11 @@ func (ec *executionContext) marshalOCommerce_Customer_Address2ᚖflamingoᚗme�
 	return ec._Commerce_Customer_Address(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOCommerce_Customer_Result2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋinterfacesᚋgraphqlᚋdtocustomerᚐCustomerResult(ctx context.Context, sel ast.SelectionSet, v dtocustomer.CustomerResult) graphql.Marshaler {
-	return ec._Commerce_Customer_Result(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalOCommerce_Customer_Result2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋinterfacesᚋgraphqlᚋdtocustomerᚐCustomerResult(ctx context.Context, sel ast.SelectionSet, v *dtocustomer.CustomerResult) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._Commerce_Customer_Result(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOCommerce_Customer_Status_Result2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋinterfacesᚋgraphqlᚋdtocustomerᚐCustomerStatusResult(ctx context.Context, sel ast.SelectionSet, v dtocustomer.CustomerStatusResult) graphql.Marshaler {
-	return ec._Commerce_Customer_Status_Result(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalOCommerce_Customer_Status_Result2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcustomerᚋinterfacesᚋgraphqlᚋdtocustomerᚐCustomerStatusResult(ctx context.Context, sel ast.SelectionSet, v *dtocustomer.CustomerStatusResult) graphql.Marshaler {
@@ -33810,10 +34308,6 @@ func (ec *executionContext) marshalOCommerce_Product_Attribute2ᚕflamingoᚗme�
 	return ret
 }
 
-func (ec *executionContext) marshalOCommerce_Product_Badge2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐBadge(ctx context.Context, sel ast.SelectionSet, v domain1.Badge) graphql.Marshaler {
-	return ec._Commerce_Product_Badge(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalOCommerce_Product_Badge2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐBadgeᚄ(ctx context.Context, sel ast.SelectionSet, v []domain1.Badge) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -33859,10 +34353,6 @@ func (ec *executionContext) marshalOCommerce_Product_Badge2ᚖflamingoᚗmeᚋfl
 		return graphql.Null
 	}
 	return ec._Commerce_Product_Badge(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOCommerce_Product_CategoryTeaser2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐCategoryTeaser(ctx context.Context, sel ast.SelectionSet, v domain1.CategoryTeaser) graphql.Marshaler {
-	return ec._Commerce_Product_CategoryTeaser(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalOCommerce_Product_CategoryTeaser2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐCategoryTeaserᚄ(ctx context.Context, sel ast.SelectionSet, v []domain1.CategoryTeaser) graphql.Marshaler {
@@ -33912,19 +34402,11 @@ func (ec *executionContext) marshalOCommerce_Product_CategoryTeaser2ᚖflamingo�
 	return ec._Commerce_Product_CategoryTeaser(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOCommerce_Product_Loyalty_EarningInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐLoyaltyEarningInfo(ctx context.Context, sel ast.SelectionSet, v domain1.LoyaltyEarningInfo) graphql.Marshaler {
-	return ec._Commerce_Product_Loyalty_EarningInfo(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalOCommerce_Product_Loyalty_EarningInfo2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐLoyaltyEarningInfo(ctx context.Context, sel ast.SelectionSet, v *domain1.LoyaltyEarningInfo) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._Commerce_Product_Loyalty_EarningInfo(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOCommerce_Product_Loyalty_PriceInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐLoyaltyPriceInfo(ctx context.Context, sel ast.SelectionSet, v domain1.LoyaltyPriceInfo) graphql.Marshaler {
-	return ec._Commerce_Product_Loyalty_PriceInfo(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalOCommerce_Product_Loyalty_PriceInfo2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐLoyaltyPriceInfo(ctx context.Context, sel ast.SelectionSet, v *domain1.LoyaltyPriceInfo) graphql.Marshaler {
@@ -34113,17 +34595,13 @@ func (ec *executionContext) unmarshalOCommerce_Search_KeyValueFilter2ᚕflamingo
 	var err error
 	res := make([]searchdto.CommerceSearchKeyValueFilter, len(vSlice))
 	for i := range vSlice {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithIndex(i))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
 		res[i], err = ec.unmarshalNCommerce_Search_KeyValueFilter2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchKeyValueFilter(ctx, vSlice[i])
 		if err != nil {
-			return nil, graphql.WrapErrorWithInputPath(ctx, err)
+			return nil, err
 		}
 	}
 	return res, nil
-}
-
-func (ec *executionContext) marshalOCommerce_Search_Promotion2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐPromotionDTO(ctx context.Context, sel ast.SelectionSet, v searchdto.PromotionDTO) graphql.Marshaler {
-	return ec._Commerce_Search_Promotion(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalOCommerce_Search_Promotion2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐPromotionDTO(ctx context.Context, sel ast.SelectionSet, v *searchdto.PromotionDTO) graphql.Marshaler {
@@ -34133,10 +34611,6 @@ func (ec *executionContext) marshalOCommerce_Search_Promotion2ᚖflamingoᚗme�
 	return ec._Commerce_Search_Promotion(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOCommerce_Search_PromotionMedia2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐMedia(ctx context.Context, sel ast.SelectionSet, v domain2.Media) graphql.Marshaler {
-	return ec._Commerce_Search_PromotionMedia(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalOCommerce_Search_PromotionMedia2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐMedia(ctx context.Context, sel ast.SelectionSet, v *domain2.Media) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -34144,17 +34618,12 @@ func (ec *executionContext) marshalOCommerce_Search_PromotionMedia2ᚖflamingo�
 	return ec._Commerce_Search_PromotionMedia(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOCommerce_Search_Request2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRequest(ctx context.Context, v interface{}) (searchdto.CommerceSearchRequest, error) {
-	res, err := ec.unmarshalInputCommerce_Search_Request(ctx, v)
-	return res, graphql.WrapErrorWithInputPath(ctx, err)
-}
-
 func (ec *executionContext) unmarshalOCommerce_Search_Request2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRequest(ctx context.Context, v interface{}) (*searchdto.CommerceSearchRequest, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := ec.unmarshalOCommerce_Search_Request2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchRequest(ctx, v)
-	return &res, graphql.WrapErrorWithInputPath(ctx, err)
+	res, err := ec.unmarshalInputCommerce_Search_Request(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOCommerce_Search_SortOption2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchSortOptionᚄ(ctx context.Context, sel ast.SelectionSet, v []*searchdto.CommerceSearchSortOption) graphql.Marshaler {
@@ -34326,7 +34795,7 @@ func (ec *executionContext) marshalOCommerce_Tree2ᚕflamingoᚗmeᚋflamingoᚑ
 
 func (ec *executionContext) unmarshalODate2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
 	res, err := graphql2.UnmarshalDate(v)
-	return res, graphql.WrapErrorWithInputPath(ctx, err)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalODate2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
@@ -34335,40 +34804,31 @@ func (ec *executionContext) marshalODate2timeᚐTime(ctx context.Context, sel as
 
 func (ec *executionContext) unmarshalOFloat2float64(ctx context.Context, v interface{}) (float64, error) {
 	res, err := graphql.UnmarshalFloat(v)
-	return res, graphql.WrapErrorWithInputPath(ctx, err)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOFloat2float64(ctx context.Context, sel ast.SelectionSet, v float64) graphql.Marshaler {
 	return graphql.MarshalFloat(v)
 }
 
-func (ec *executionContext) unmarshalOFloat2mathᚋbigᚐFloat(ctx context.Context, v interface{}) (big.Float, error) {
-	res, err := graphql2.UnmarshalFloat(v)
-	return res, graphql.WrapErrorWithInputPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOFloat2mathᚋbigᚐFloat(ctx context.Context, sel ast.SelectionSet, v big.Float) graphql.Marshaler {
-	return graphql2.MarshalFloat(v)
-}
-
 func (ec *executionContext) unmarshalOFloat2ᚖmathᚋbigᚐFloat(ctx context.Context, v interface{}) (*big.Float, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := ec.unmarshalOFloat2mathᚋbigᚐFloat(ctx, v)
-	return &res, graphql.WrapErrorWithInputPath(ctx, err)
+	res, err := graphql2.UnmarshalFloat(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOFloat2ᚖmathᚋbigᚐFloat(ctx context.Context, sel ast.SelectionSet, v *big.Float) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	return ec.marshalOFloat2mathᚋbigᚐFloat(ctx, sel, *v)
+	return graphql2.MarshalFloat(*v)
 }
 
 func (ec *executionContext) unmarshalOInt2int(ctx context.Context, v interface{}) (int, error) {
 	res, err := graphql.UnmarshalInt(v)
-	return res, graphql.WrapErrorWithInputPath(ctx, err)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
@@ -34377,7 +34837,7 @@ func (ec *executionContext) marshalOInt2int(ctx context.Context, sel ast.Selecti
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalString(v)
-	return res, graphql.WrapErrorWithInputPath(ctx, err)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
@@ -34399,10 +34859,10 @@ func (ec *executionContext) unmarshalOString2ᚕstring(ctx context.Context, v in
 	var err error
 	res := make([]string, len(vSlice))
 	for i := range vSlice {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithIndex(i))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
 		res[i], err = ec.unmarshalOString2string(ctx, vSlice[i])
 		if err != nil {
-			return nil, graphql.WrapErrorWithInputPath(ctx, err)
+			return nil, err
 		}
 	}
 	return res, nil
@@ -34435,10 +34895,10 @@ func (ec *executionContext) unmarshalOString2ᚕstringᚄ(ctx context.Context, v
 	var err error
 	res := make([]string, len(vSlice))
 	for i := range vSlice {
-		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithIndex(i))
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
 		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
 		if err != nil {
-			return nil, graphql.WrapErrorWithInputPath(ctx, err)
+			return nil, err
 		}
 	}
 	return res, nil
@@ -34460,20 +34920,20 @@ func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v in
 	if v == nil {
 		return nil, nil
 	}
-	res, err := ec.unmarshalOString2string(ctx, v)
-	return &res, graphql.WrapErrorWithInputPath(ctx, err)
+	res, err := graphql.UnmarshalString(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel ast.SelectionSet, v *string) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	return ec.marshalOString2string(ctx, sel, *v)
+	return graphql.MarshalString(*v)
 }
 
 func (ec *executionContext) unmarshalOTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
 	res, err := graphql.UnmarshalTime(v)
-	return res, graphql.WrapErrorWithInputPath(ctx, err)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
@@ -34600,19 +35060,11 @@ func (ec *executionContext) marshalO__InputValue2ᚕgithubᚗcomᚋ99designsᚋg
 	return ret
 }
 
-func (ec *executionContext) marshalO__Schema2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx context.Context, sel ast.SelectionSet, v introspection.Schema) graphql.Marshaler {
-	return ec.___Schema(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx context.Context, sel ast.SelectionSet, v *introspection.Schema) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec.___Schema(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalO__Type2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx context.Context, sel ast.SelectionSet, v introspection.Type) graphql.Marshaler {
-	return ec.___Type(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalO__Type2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐTypeᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.Type) graphql.Marshaler {
