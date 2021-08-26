@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go: [ '1.16', '1.*' ]
+        go: [ '1.16', '1.17' ]
     name: With Go ${{ matrix.go }}
     steps:
       - uses: actions/checkout@v2
@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go: [ '1.*' ]
+        go: [ '1.17' ]
     name: Static checks
     steps:
       - uses: actions/checkout@v2
@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go: [ '1.*' ]
+        go: [ '1.17' ]
     name: Integration
     steps:
       - uses: actions/checkout@v2
