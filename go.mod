@@ -11,7 +11,7 @@ require (
 	github.com/99designs/gqlgen v0.11.4-0.20200726064323-39a12e0f1b6d
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/gavv/httpexpect/v2 v2.0.2
-	github.com/go-playground/form v3.1.4+incompatible
+	github.com/go-playground/form/v4 v4.2.0
 	github.com/go-redsync/redsync v1.3.1
 	github.com/go-test/deep v1.0.1
 	github.com/gomodule/redigo v2.0.0+incompatible

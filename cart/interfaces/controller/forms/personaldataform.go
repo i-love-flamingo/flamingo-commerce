@@ -12,7 +12,7 @@ import (
 	"flamingo.me/flamingo/v3/framework/web"
 	"flamingo.me/form/application"
 	"flamingo.me/form/domain"
-	"github.com/go-playground/form"
+	"github.com/go-playground/form/v4"
 
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"

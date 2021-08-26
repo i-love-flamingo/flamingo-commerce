@@ -29,6 +29,7 @@
   * **Breaking**: Make naming convention consistent in graphql schema `Commerce_Cart_*`
   * **Breaking**: Remove the fields `getAdditionalData, additionalDataKeys, additionalDeliveryInfoKeys` from the `Commerce_CartDeliveryInfo` type
   * **Breaking**: `Commerce_Cart_UpdateDeliveryShippingOptions` mutation responded with slice of `Commerce_Cart_DeliveryAddressForm` which was incorrect as we don't process any form data within the mutation. It responds now rightly only with `processed` state.
+* **Breaking**: Upgrade github.com/go-playground/form to v4, all types are fully compatible, but import paths have to be changed
 
 **checkout**
 * Introducing Flamingo events on final states of the place order process
@@ -41,6 +42,7 @@
     POST /api/v1/checkout/placeorder/refresh
     POST /api/v1/checkout/placeorder/refresh-blocking
     ```
+* **Breaking**: Upgrade github.com/go-playground/form to v4, all types are fully compatible, but import paths have to be changed
 
 **customer**
 * Add mockery mocks for both `Customer` / `CustomerIdentityService` for easier testing
