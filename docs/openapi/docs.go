@@ -1030,7 +1030,7 @@ var doc = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/productResultError"
+                            "$ref": "#/definitions/paymentResultError"
                         }
                     }
                 }
@@ -1090,6 +1090,37 @@ var doc = `{
         }
     },
     "definitions": {
+        "ProductAttribute": {
+            "type": "object",
+            "properties": {
+                "Code": {
+                    "description": "Code is the internal attribute identifier",
+                    "type": "string"
+                },
+                "CodeLabel": {
+                    "description": "CodeLabel is the human readable (perhaps localized) attribute name",
+                    "type": "string"
+                },
+                "Label": {
+                    "description": "Label is the human readable (perhaps localized) attribute value",
+                    "type": "string"
+                },
+                "RawValue": {
+                    "description": "RawValue is the untouched original value of the attribute",
+                    "type": "object"
+                },
+                "UnitCode": {
+                    "description": "UnitCode is the internal code of the attribute values measuring unit",
+                    "type": "string"
+                }
+            }
+        },
+        "ProductAttributes": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/ProductAttribute"
+            }
+        },
         "application.PlaceOrderPaymentInfo": {
             "type": "object",
             "properties": {
@@ -1599,7 +1630,7 @@ var doc = `{
             "type": "object",
             "properties": {
                 "Error": {
-                    "$ref": "#/definitions/productResultError"
+                    "$ref": "#/definitions/paymentResultError"
                 },
                 "Product": {
                     "$ref": "#/definitions/domain.BasicProduct"
@@ -1626,7 +1657,7 @@ var doc = `{
                 },
                 "Error": {
                     "description": "Contains details if success is false",
-                    "$ref": "#/definitions/productResultError"
+                    "$ref": "#/definitions/paymentResultError"
                 },
                 "Success": {
                     "type": "boolean"
@@ -1738,15 +1769,6 @@ var doc = `{
                 "Delivery": {
                     "$ref": "#/definitions/cart.Delivery"
                 }
-            }
-        },
-        "domain.Attribute": {
-            "type": "object"
-        },
-        "domain.Attributes": {
-            "type": "object",
-            "additionalProperties": {
-                "$ref": "#/definitions/domain.Attribute"
             }
         },
         "domain.Badge": {
@@ -1890,24 +1912,7 @@ var doc = `{
             }
         },
         "domain.Media": {
-            "type": "object",
-            "properties": {
-                "MimeType": {
-                    "type": "string"
-                },
-                "Reference": {
-                    "type": "string"
-                },
-                "Title": {
-                    "type": "string"
-                },
-                "Type": {
-                    "type": "string"
-                },
-                "Usage": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "domain.PaymentRequestAPI": {
             "type": "object",
@@ -1997,7 +2002,7 @@ var doc = `{
                     "$ref": "#/definitions/domain.PriceInfo"
                 },
                 "Attributes": {
-                    "$ref": "#/definitions/domain.Attributes"
+                    "$ref": "#/definitions/ProductAttributes"
                 },
                 "AvailablePrices": {
                     "type": "array",
@@ -2177,6 +2182,17 @@ var doc = `{
                 }
             }
         },
+        "paymentResultError": {
+            "type": "object",
+            "properties": {
+                "Code": {
+                    "type": "string"
+                },
+                "Message": {
+                    "type": "string"
+                }
+            }
+        },
         "placeorder.CreditCardInfo": {
             "type": "object",
             "properties": {
@@ -2207,17 +2223,6 @@ var doc = `{
         },
         "process.StateData": {
             "type": "object"
-        },
-        "productResultError": {
-            "type": "object",
-            "properties": {
-                "Code": {
-                    "type": "string"
-                },
-                "Message": {
-                    "type": "string"
-                }
-            }
         },
         "validation.ItemValidationError": {
             "type": "object",

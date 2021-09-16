@@ -178,6 +178,36 @@ func TestPaymentValidator(t *testing.T) {
 			},
 		},
 		{
+			name: "status: unapproved, action: trigger_client_sdk",
+			flowStatus: flowStatusResult{
+				flowStatus: &domain.FlowStatus{
+					Status: domain.PaymentFlowStatusUnapproved,
+					Action: domain.PaymentFlowActionTriggerClientSDK,
+					ActionData: domain.FlowActionData{
+						URL: &url.URL{Scheme: "https", Host: "redirect-url.com"},
+					},
+				},
+			},
+			want: want{
+				runResult: process.RunResult{Failed: nil},
+				state:     states.TriggerClientSDK{}.Name(),
+				stateData: process.StateData(&url.URL{Scheme: "https", Host: "redirect-url.com"}),
+			},
+		},
+		{
+			name: "status: unapproved, action: trigger_client_sdk - URL missing",
+			flowStatus: flowStatusResult{
+				flowStatus: &domain.FlowStatus{
+					Status: domain.PaymentFlowStatusUnapproved,
+					Action: domain.PaymentFlowActionTriggerClientSDK,
+				},
+			},
+			want: want{
+				runResult: process.RunResult{Failed: process.PaymentErrorOccurredReason{Error: placeorder.ValidatePaymentErrorNoActionURL}},
+				state:     states.New{}.Name(),
+			},
+		},
+		{
 			name: "status: unapproved, action: post redirect",
 			flowStatus: flowStatusResult{
 				flowStatus: &domain.FlowStatus{

@@ -1,4 +1,28 @@
 definitions:
+  ProductAttribute:
+    properties:
+      Code:
+        description: Code is the internal attribute identifier
+        type: string
+      CodeLabel:
+        description: CodeLabel is the human readable (perhaps localized) attribute
+          name
+        type: string
+      Label:
+        description: Label is the human readable (perhaps localized) attribute value
+        type: string
+      RawValue:
+        description: RawValue is the untouched original value of the attribute
+        type: object
+      UnitCode:
+        description: UnitCode is the internal code of the attribute values measuring
+          unit
+        type: string
+    type: object
+  ProductAttributes:
+    additionalProperties:
+      $ref: '#/definitions/ProductAttribute'
+    type: object
   application.PlaceOrderPaymentInfo:
     properties:
       Amount:
@@ -376,7 +400,7 @@ definitions:
   controller.APIResult:
     properties:
       Error:
-        $ref: '#/definitions/productResultError'
+        $ref: '#/definitions/paymentResultError'
       Product:
         $ref: '#/definitions/domain.BasicProduct'
       Success:
@@ -393,7 +417,7 @@ definitions:
       DataValidationInfo:
         type: object
       Error:
-        $ref: '#/definitions/productResultError'
+        $ref: '#/definitions/paymentResultError'
         description: Contains details if success is false
       Success:
         type: boolean
@@ -466,12 +490,6 @@ definitions:
         type: array
       Delivery:
         $ref: '#/definitions/cart.Delivery'
-    type: object
-  domain.Attribute:
-    type: object
-  domain.Attributes:
-    additionalProperties:
-      $ref: '#/definitions/domain.Attribute'
     type: object
   domain.Badge:
     properties:
@@ -575,17 +593,6 @@ definitions:
         type: string
     type: object
   domain.Media:
-    properties:
-      MimeType:
-        type: string
-      Reference:
-        type: string
-      Title:
-        type: string
-      Type:
-        type: string
-      Usage:
-        type: string
     type: object
   domain.PaymentRequestAPI:
     properties:
@@ -645,7 +652,7 @@ definitions:
       ActivePrice:
         $ref: '#/definitions/domain.PriceInfo'
       Attributes:
-        $ref: '#/definitions/domain.Attributes'
+        $ref: '#/definitions/ProductAttributes'
       AvailablePrices:
         items:
           $ref: '#/definitions/domain.PriceInfo'
@@ -775,6 +782,13 @@ definitions:
       UsedPaymentMethod:
         type: string
     type: object
+  paymentResultError:
+    properties:
+      Code:
+        type: string
+      Message:
+        type: string
+    type: object
   placeorder.CreditCardInfo:
     properties:
       AnonymizedCardNumber:
@@ -794,13 +808,6 @@ definitions:
         type: string
     type: object
   process.StateData:
-    type: object
-  productResultError:
-    properties:
-      Code:
-        type: string
-      Message:
-        type: string
     type: object
   validation.ItemValidationError:
     properties:
@@ -1496,7 +1503,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/productResultError'
+            $ref: '#/definitions/paymentResultError'
       summary: Get the payment status of current cart (or last placed cart)
       tags:
       - Payment

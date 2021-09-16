@@ -37,6 +37,7 @@ func (*Service) Types(types *graphql.Types) {
 	types.Map("Commerce_Checkout_PlaceOrderState_State_ShowIframe", dto.ShowIframe{})
 	types.Map("Commerce_Checkout_PlaceOrderState_State_ShowHTML", dto.ShowHTML{})
 	types.Map("Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment", dto.ShowWalletPayment{})
+	types.Map("Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK", dto.TriggerClientSDK{})
 	types.Map("Commerce_Checkout_PlaceOrderState_PaymentRequestAPI", dto.PaymentRequestAPI{})
 	types.Map("Commerce_Checkout_PlaceOrderState_State_Redirect", dto.Redirect{})
 	types.Map("Commerce_Checkout_PlaceOrderState_State_PostRedirect", dto.PostRedirect{})
