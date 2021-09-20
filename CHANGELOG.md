@@ -42,6 +42,7 @@
     POST /api/v1/checkout/placeorder/refresh
     POST /api/v1/checkout/placeorder/refresh-blocking
     ```
+* Add new Flow Action `PaymentFlowActionTriggerClientSDK` to the checkout
 * **Breaking**: Upgrade github.com/go-playground/form to v4, all types are fully compatible, but import paths have to be changed
 
 **customer**
