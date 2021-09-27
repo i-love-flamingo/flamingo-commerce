@@ -49,32 +49,8 @@ func TestItem_PriceCalculation(t *testing.T) {
 
 }
 
-func TestItemBuild_SimpleBuild(t *testing.T) {
-
-	f := &cartDomain.ItemBuilder{}
-	item, err := f.SetSinglePriceNet(priceDomain.NewFromInt(100, 100, "EUR")).SetQty(10).SetID("22").SetExternalReference("kkk").CalculatePricesAndTaxAmountsFromSinglePriceNet().Build()
-	assert.NoError(t, err)
-	assert.Equal(t, "22", item.ID)
-	assert.Equal(t, priceDomain.NewFromInt(1000, 100, "EUR"), item.RowPriceGross)
-
-	// with tax from net:
-	item, err = f.SetSinglePriceNet(priceDomain.NewFromInt(100, 100, "EUR")).SetQty(10).SetID("22").SetExternalReference("kkk").AddTaxInfo("default", big.NewFloat(10), nil).CalculatePricesAndTaxAmountsFromSinglePriceNet().Build()
-	assert.NoError(t, err)
-	assert.Equal(t, "22", item.ID)
-	assert.Equal(t, priceDomain.NewFromInt(1100, 100, "EUR"), item.RowPriceGross)
-
-	// with tax from gross:
-	item, err = f.SetSinglePriceGross(priceDomain.NewFromInt(110, 100, "EUR")).SetQty(10).SetID("22").SetExternalReference("kkk").AddTaxInfo("default", big.NewFloat(10), nil).CalculatePricesAndTaxAmountsFromSinglePriceGross().Build()
-	assert.NoError(t, err)
-	assert.Equal(t, "22", item.ID)
-	assertPricesWithLikelyEqual(t, priceDomain.NewFromInt(1100, 100, "EUR"), item.RowPriceGross, "RowPriceGross wrong")
-	assert.Equal(t, priceDomain.NewFromInt(100, 100, "EUR"), item.TotalTaxAmount())
-
-}
-
 func assertPricesWithLikelyEqual(t *testing.T, p1 priceDomain.Price, p2 priceDomain.Price, msg string) {
 	assert.True(t, p1.LikelyEqual(p2), fmt.Sprintf("%v (%f != %f)", msg, p1.FloatAmount(), p2.FloatAmount()))
-
 }
 
 func TestItemSplitter_SplitGrossBased(t *testing.T) {
