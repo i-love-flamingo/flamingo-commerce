@@ -23,6 +23,19 @@ definitions:
     additionalProperties:
       $ref: '#/definitions/ProductAttribute'
     type: object
+  ProductMedia:
+    properties:
+      MimeType:
+        type: string
+      Reference:
+        type: string
+      Title:
+        type: string
+      Type:
+        type: string
+      Usage:
+        type: string
+    type: object
   application.PlaceOrderPaymentInfo:
     properties:
       Amount:
@@ -390,6 +403,13 @@ definitions:
       Type:
         type: string
     type: object
+  cartResultError:
+    properties:
+      Code:
+        type: string
+      Message:
+        type: string
+    type: object
   checkoutError:
     properties:
       Code:
@@ -400,7 +420,7 @@ definitions:
   controller.APIResult:
     properties:
       Error:
-        $ref: '#/definitions/paymentResultError'
+        $ref: '#/definitions/cartResultError'
       Product:
         $ref: '#/definitions/domain.BasicProduct'
       Success:
@@ -417,7 +437,7 @@ definitions:
       DataValidationInfo:
         type: object
       Error:
-        $ref: '#/definitions/paymentResultError'
+        $ref: '#/definitions/cartResultError'
         description: Contains details if success is false
       Success:
         type: boolean
@@ -592,8 +612,6 @@ definitions:
         description: Type or Name of the Loyalty program
         type: string
     type: object
-  domain.Media:
-    type: object
   domain.PaymentRequestAPI:
     properties:
       CompleteURL:
@@ -701,7 +719,7 @@ definitions:
         type: string
       Media:
         items:
-          $ref: '#/definitions/domain.Media'
+          $ref: '#/definitions/ProductMedia'
         type: array
       RetailerCode:
         type: string
@@ -741,7 +759,7 @@ definitions:
       Media:
         description: Media
         items:
-          $ref: '#/definitions/domain.Media'
+          $ref: '#/definitions/ProductMedia'
         type: array
       PreSelectedVariantSku:
         description: PreSelectedVariantSku might be set for configurables to give
@@ -780,13 +798,6 @@ definitions:
       PaymentRequestAPI:
         $ref: '#/definitions/domain.PaymentRequestAPI'
       UsedPaymentMethod:
-        type: string
-    type: object
-  paymentResultError:
-    properties:
-      Code:
-        type: string
-      Message:
         type: string
     type: object
   placeorder.CreditCardInfo:
@@ -1503,7 +1514,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/paymentResultError'
+            $ref: '#/definitions/cartResultError'
       summary: Get the payment status of current cart (or last placed cart)
       tags:
       - Payment

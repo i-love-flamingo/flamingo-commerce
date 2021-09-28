@@ -1030,7 +1030,7 @@ var doc = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/paymentResultError"
+                            "$ref": "#/definitions/cartResultError"
                         }
                     }
                 }
@@ -1119,6 +1119,26 @@ var doc = `{
             "type": "object",
             "additionalProperties": {
                 "$ref": "#/definitions/ProductAttribute"
+            }
+        },
+        "ProductMedia": {
+            "type": "object",
+            "properties": {
+                "MimeType": {
+                    "type": "string"
+                },
+                "Reference": {
+                    "type": "string"
+                },
+                "Title": {
+                    "type": "string"
+                },
+                "Type": {
+                    "type": "string"
+                },
+                "Usage": {
+                    "type": "string"
+                }
             }
         },
         "application.PlaceOrderPaymentInfo": {
@@ -1615,6 +1635,17 @@ var doc = `{
                 }
             }
         },
+        "cartResultError": {
+            "type": "object",
+            "properties": {
+                "Code": {
+                    "type": "string"
+                },
+                "Message": {
+                    "type": "string"
+                }
+            }
+        },
         "checkoutError": {
             "type": "object",
             "properties": {
@@ -1630,7 +1661,7 @@ var doc = `{
             "type": "object",
             "properties": {
                 "Error": {
-                    "$ref": "#/definitions/paymentResultError"
+                    "$ref": "#/definitions/cartResultError"
                 },
                 "Product": {
                     "$ref": "#/definitions/domain.BasicProduct"
@@ -1657,7 +1688,7 @@ var doc = `{
                 },
                 "Error": {
                     "description": "Contains details if success is false",
-                    "$ref": "#/definitions/paymentResultError"
+                    "$ref": "#/definitions/cartResultError"
                 },
                 "Success": {
                     "type": "boolean"
@@ -1911,9 +1942,6 @@ var doc = `{
                 }
             }
         },
-        "domain.Media": {
-            "type": "object"
-        },
         "domain.PaymentRequestAPI": {
             "type": "object",
             "properties": {
@@ -2072,7 +2100,7 @@ var doc = `{
                 "Media": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/domain.Media"
+                        "$ref": "#/definitions/ProductMedia"
                     }
                 },
                 "RetailerCode": {
@@ -2131,7 +2159,7 @@ var doc = `{
                     "description": "Media",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/domain.Media"
+                        "$ref": "#/definitions/ProductMedia"
                     }
                 },
                 "PreSelectedVariantSku": {
@@ -2178,17 +2206,6 @@ var doc = `{
                     "$ref": "#/definitions/domain.PaymentRequestAPI"
                 },
                 "UsedPaymentMethod": {
-                    "type": "string"
-                }
-            }
-        },
-        "paymentResultError": {
-            "type": "object",
-            "properties": {
-                "Code": {
-                    "type": "string"
-                },
-                "Message": {
                     "type": "string"
                 }
             }
