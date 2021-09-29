@@ -1,7 +1,6 @@
 package cart_test
 
 import (
-	"fmt"
 	"math/big"
 	"testing"
 
@@ -13,62 +12,9 @@ import (
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
-func TestItem_PriceCalculation(t *testing.T) {
-
-	item := cartDomain.Item{
-		SinglePriceNet:   priceDomain.NewFromInt(1234, 100, "EUR"),
-		SinglePriceGross: priceDomain.NewFromInt(1247, 100, "EUR"),
-		AppliedDiscounts: []cartDomain.AppliedDiscount{
-			{
-				Applied:       priceDomain.NewFromInt(-100, 100, "EUR"),
-				IsItemRelated: true,
-			},
-			{
-				Applied:       priceDomain.NewFromInt(-200, 100, "EUR"),
-				IsItemRelated: false,
-			},
-		},
-		RowPriceNet:   priceDomain.NewFromInt(12340, 100, "EUR"),
-		RowPriceGross: priceDomain.NewFromInt(12470, 100, "EUR"),
-		RowTaxes: cartDomain.Taxes([]cartDomain.Tax{
-			{Amount: priceDomain.NewFromInt(130, 100, "EUR"), Type: "vat"},
-		}),
-		Qty: 10,
-	}
-
-	assert.Equal(t, item.ItemRelatedDiscountAmount(), priceDomain.NewFromInt(-100, 100, "EUR"), "ItemRelatedDiscountAmount")
-	assert.Equal(t, item.NonItemRelatedDiscountAmount(), priceDomain.NewFromInt(-200, 100, "EUR"), "NonItemRelatedDiscountAmount")
-	assert.Equal(t, item.TotalDiscountAmount(), priceDomain.NewFromInt(-300, 100, "EUR"), "TotalDiscountAmount")
-
-	assertPricesWithLikelyEqual(t, item.RowPriceGrossWithDiscount(), priceDomain.NewFromInt(12170, 100, "EUR"), "RowPriceGrossWithDiscount")
-	assertPricesWithLikelyEqual(t, item.RowPriceNetWithDiscount(), priceDomain.NewFromInt(12040, 100, "EUR"), "RowPriceNetWithDiscount")
-	assertPricesWithLikelyEqual(t, item.RowPriceNetWithItemRelatedDiscount(), priceDomain.NewFromInt(12240, 100, "EUR"), "RowPriceNetWithItemRelatedDiscount")
-
-	assert.Equal(t, 1, len(item.RowTaxes))
-	assertPricesWithLikelyEqual(t, item.RowTaxes.TotalAmount(), priceDomain.NewFromInt(130, 100, "EUR"), "RowTaxes")
-
-}
-
-func assertPricesWithLikelyEqual(t *testing.T, p1 priceDomain.Price, p2 priceDomain.Price, msg string) {
-	assert.True(t, p1.LikelyEqual(p2), fmt.Sprintf("%v (%f != %f)", msg, p1.FloatAmount(), p2.FloatAmount()))
-}
-
 func TestItemSplitter_SplitGrossBased(t *testing.T) {
-	provider := func() *cartDomain.ItemBuilder {
-		b := cartDomain.ItemBuilder{}
-		b.Inject(&struct {
-			UseGrosPrice bool `inject:"config:commerce.product.priceIsGross,optional"`
-		}{
-			UseGrosPrice: true,
-		})
-		return &b
-	}
+	// todo
 	splitter := &cartDomain.ItemSplitter{}
-	splitter.Inject(provider, &struct {
-		UseGrossPrice bool `inject:"config:commerce.product.priceIsGross,optional"`
-	}{
-		UseGrossPrice: true,
-	})
 
 	builder := provider()
 	builder.SetSinglePriceGross(priceDomain.NewFromInt(2065, 100, "€")).
@@ -115,4 +61,19 @@ func TestItemSplitter_SplitGrossBased(t *testing.T) {
 	assert.Equal(t, item.TotalTaxAmount().FloatAmount(), totalTaxAmount)
 	assert.Equal(t, item.TotalDiscountAmount().FloatAmount(), totalDiscountAmount)
 
+}
+
+func TestItem_AdditionalDataKeys(t *testing.T) {
+	// todo
+}
+
+func TestItem_AdditionalDataValues(t *testing.T) {
+	// todo
+}
+
+func TestItem_HasAdditionalDataKey(t *testing.T) {
+	// todo
+}
+func TestItem_GetAdditionalData(t *testing.T) {
+	// todo
 }

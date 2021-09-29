@@ -55,9 +55,6 @@ type (
 		// RowTaxes is a list of all taxes applied for the given Qty of products
 		RowTaxes Taxes
 
-		// TotalTaxAmount is the sum of all applied taxes for the whole Qty of products
-		TotalTaxAmount priceDomain.Price
-
 		// AppliedDiscounts contains the details about the discounts applied to this item - they can be "itemrelated" or not
 		// itemrelated would be e.g. special price, buy 3 pay 2
 		// non-itemrelated would be e.g. 10% on everything
@@ -75,10 +72,14 @@ type (
 
 	// ItemSplitter used to split an item
 	ItemSplitter struct {
-		itemBuilderProvider ItemBuilderProvider
-		configUseGrossPrice bool
+		errorDuringSplitting error
 	}
 )
+
+// TotalTaxAmount is the sum of all applied taxes for the whole Qty of products
+func (i Item) TotalTaxAmount() priceDomain.Price {
+	return i.RowTaxes.TotalAmount()
+}
 
 // AdditionalDataKeys lists all available keys
 func (i Item) AdditionalDataKeys() []string {
@@ -115,16 +116,6 @@ func (i Item) GetAdditionalData(key string) string {
 	return attribute
 }
 
-// Inject dependencies
-func (s *ItemSplitter) Inject(itemBuilderProvider ItemBuilderProvider, config *struct {
-	UseGrossPrice bool `inject:"config:commerce.product.priceIsGross,optional"`
-}) {
-	s.itemBuilderProvider = itemBuilderProvider
-	if config != nil {
-		s.configUseGrossPrice = config.UseGrossPrice
-	}
-}
-
 // SplitInSingleQtyItems the given item into multiple items with Qty 1 and make sure the sum of the items prices matches by using SplitInPayables
 func (s *ItemSplitter) SplitInSingleQtyItems(givenItem Item) ([]Item, error) {
 	var items []Item
@@ -136,12 +127,15 @@ func (s *ItemSplitter) SplitInSingleQtyItems(givenItem Item) ([]Item, error) {
 	// Given: SinglePriceNez / all AppliedDiscounts  / All Taxes
 	// Calculated: SinglePriceGross / RowPriceGross / RowPriceNet / SinglePriceGross
 	for x := 0; x < givenItem.Qty; x++ {
+		item := Item{
+			MarketplaceCode:        givenItem.MarketplaceCode,
+			VariantMarketPlaceCode: givenItem.VariantMarketPlaceCode,
+			ProductName:            givenItem.ProductName,
+			ExternalReference:      givenItem.ExternalReference,
+			ID:                     givenItem.ID,
+			Qty:                    givenItem.Qty,
+		}
 
-		itemBuilder := s.itemBuilderProvider()
-		itemBuilder.SetProductData(givenItem.MarketplaceCode, givenItem.VariantMarketPlaceCode, givenItem.ProductName)
-		itemBuilder.SetExternalReference(givenItem.ExternalReference)
-		itemBuilder.SetID(givenItem.ID)
-		itemBuilder.SetQty(1)
 		for _, ap := range givenItem.AppliedDiscounts {
 			apSplitted, err := ap.Applied.SplitInPayables(givenItem.Qty)
 			// The split adds the moving cents to the first ones, resulting in
@@ -167,8 +161,10 @@ func (s *ItemSplitter) SplitInSingleQtyItems(givenItem Item) ([]Item, error) {
 				IsItemRelated: ap.IsItemRelated,
 				SortOrder:     ap.SortOrder,
 			}
-			itemBuilder.AddDiscount(newDiscount)
+
+			item.AppliedDiscounts = append(item.AppliedDiscounts, newDiscount)
 		}
+
 		for _, rt := range givenItem.RowTaxes {
 			if rt.Amount.IsZero() {
 				continue
@@ -177,20 +173,40 @@ func (s *ItemSplitter) SplitInSingleQtyItems(givenItem Item) ([]Item, error) {
 			if err != nil {
 				return nil, err
 			}
-			itemBuilder.AddTaxInfo(rt.Type, rt.Rate, &rtSplitted[x])
+
+			newTax := Tax{
+				Type:   rt.Type,
+				Rate:   rt.Rate,
+				Amount: rtSplitted[x],
+			}
+
+			item.RowTaxes = append(item.RowTaxes, newTax)
 		}
-		if s.configUseGrossPrice {
-			itemBuilder.SetSinglePriceGross(givenItem.SinglePriceGross.GetPayable())
-			itemBuilder.CalculatePricesAndTaxAmountsFromSinglePriceGross()
-		} else {
-			itemBuilder.SetSinglePriceNet(givenItem.SinglePriceNet.GetPayable())
-			itemBuilder.CalculatePricesAndTaxAmountsFromSinglePriceNet()
+
+		item.SinglePriceGross, item.SinglePriceNet = givenItem.SinglePriceGross.GetPayable(), givenItem.SinglePriceNet.GetPayable()
+		item.RowPriceGross, item.RowPriceNet = item.SinglePriceGross, item.SinglePriceNet
+		item.RowPriceGrossWithDiscount = s.splitPrice(givenItem.RowPriceGrossWithDiscount, givenItem.Qty, x)
+		item.RowPriceNetWithDiscount = s.splitPrice(givenItem.RowPriceNetWithDiscount, givenItem.Qty, x)
+		item.ItemRelatedDiscountAmount = s.splitPrice(givenItem.ItemRelatedDiscountAmount, givenItem.Qty, x)
+		item.RowPriceGrossWithItemRelatedDiscount = s.splitPrice(givenItem.RowPriceGrossWithItemRelatedDiscount, givenItem.Qty, x)
+		item.NonItemRelatedDiscountAmount = s.splitPrice(givenItem.NonItemRelatedDiscountAmount, givenItem.Qty, x)
+		item.RowPriceNetWithItemRelatedDiscount = s.splitPrice(givenItem.RowPriceNetWithItemRelatedDiscount, givenItem.Qty, x)
+
+		if s.errorDuringSplitting != nil {
+			return nil, s.errorDuringSplitting
 		}
-		item, err := itemBuilder.Build()
-		if err != nil {
-			return nil, err
-		}
-		items = append(items, *item)
+
+		items = append(items, item)
 	}
 	return items, nil
+}
+
+func (s *ItemSplitter) splitPrice(givenPrice priceDomain.Price, qty int, splitPosition int) priceDomain.Price {
+	splitted, err := givenPrice.SplitInPayables(qty)
+	if err != nil {
+		s.errorDuringSplitting = err
+		return priceDomain.Price{}
+	}
+
+	return splitted[splitPosition]
 }
