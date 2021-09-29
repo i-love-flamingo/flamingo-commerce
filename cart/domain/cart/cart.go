@@ -365,7 +365,7 @@ func (c Cart) GetVoucherSavings() domain.Price {
 // GetAllPaymentRequiredItems  returns all the Items (Cartitem, ShippingItem, TotalItems) that need to be paid with the final gross price
 func (c Cart) GetAllPaymentRequiredItems() PricedItems {
 	pricedItems := PricedItems{
-		cartItems:     make(map[string]domain.Price),
+		cartItems:     make(map[string]domain.Price, c.ProductCount()),
 		shippingItems: make(map[string]domain.Price, len(c.Deliveries)),
 		totalItems:    make(map[string]domain.Price, len(c.Totalitems)),
 	}
