@@ -133,6 +133,8 @@ func (s *ItemSplitter) SplitInSingleQtyItems(givenItem Item) ([]Item, error) {
 			ProductName:            givenItem.ProductName,
 			ExternalReference:      givenItem.ExternalReference,
 			ID:                     givenItem.ID,
+			SourceID:               givenItem.SourceID,
+			AdditionalData:         givenItem.AdditionalData,
 			Qty:                    1,
 		}
 
