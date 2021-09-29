@@ -8,10 +8,9 @@ import (
 
 type (
 
-	//DeliveryInfoBuilder - Factory
+	// DeliveryInfoBuilder can be used to set delivery infos depending on supplied delivery code
 	DeliveryInfoBuilder interface {
 		BuildByDeliveryCode(deliveryCode string) (*DeliveryInfo, error)
-		//BuildDeliveryInfoUpdateCommand(ctx web.Context, decoratedCart *DecoratedCart) ([]DeliveryInfoUpdateCommand, error)
 	}
 
 	// DefaultDeliveryInfoBuilder defines the default delivery info builder used

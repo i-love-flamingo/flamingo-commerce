@@ -2,7 +2,6 @@ package cart
 
 import (
 	"encoding/json"
-	"errors"
 	"time"
 
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
@@ -77,7 +76,7 @@ type (
 		Unmarshal(json.RawMessage) error
 	}
 
-	// DeliveryLocation value object
+	// DeliveryLocation hold information about where the items should be delivered
 	DeliveryLocation struct {
 		// Type is the type of the delivery - use some of the constant defined in the package like DeliverylocationTypeAddress
 		Type string
@@ -88,14 +87,6 @@ type (
 		// Code is an optional identifier of this location/destination
 		Code string
 	}
-
-	// DeliveryBuilder is the Builder (factory) to build new deliveries by making sure the invariants are ok
-	DeliveryBuilder struct {
-		deliveryInBuilding *Delivery
-	}
-
-	// DeliveryBuilderProvider should be used to create a Delivery
-	DeliveryBuilderProvider func() *DeliveryBuilder
 )
 
 const (
@@ -117,18 +108,6 @@ const (
 	// DeliverylocationTypeFreightstation constant for deliveries to an freight station
 	DeliverylocationTypeFreightstation = "freight-station"
 )
-
-// LoadAdditionalInfo returns the additional Data
-func (di *DeliveryInfo) LoadAdditionalInfo(key string, info AdditionalDeliverInfo) error {
-
-	if di.AdditionalDeliveryInfos == nil {
-		return ErrAdditionalInfosNotFound
-	}
-	if val, ok := di.AdditionalDeliveryInfos[key]; ok {
-		return info.Unmarshal(val)
-	}
-	return ErrAdditionalInfosNotFound
-}
 
 // SumRowTaxes returns all taxes applied to items of this delivery
 func (d Delivery) SumRowTaxes() Taxes {
@@ -160,72 +139,23 @@ func (d Delivery) HasItems() bool {
 	return len(d.Cartitems) > 0
 }
 
-// Copy can be used to set the values for the new delivery from an existing delivery by copying it
-func (f *DeliveryBuilder) Copy(d *Delivery) *DeliveryBuilder {
-	f.init()
-	f.deliveryInBuilding.Cartitems = d.Cartitems
-	f.deliveryInBuilding.ShippingItem = d.ShippingItem
-	f.deliveryInBuilding.DeliveryInfo = d.DeliveryInfo
-
-	return f
-}
-
-// AddItem adds an item to the delivery
-func (f *DeliveryBuilder) AddItem(i Item) *DeliveryBuilder {
-	f.init()
-	f.deliveryInBuilding.Cartitems = append(f.deliveryInBuilding.Cartitems, i)
-	return f
-}
-
-// SetShippingItem sets the delivery ShippingItem
-func (f *DeliveryBuilder) SetShippingItem(i ShippingItem) *DeliveryBuilder {
-	f.init()
-	f.deliveryInBuilding.ShippingItem = i
-	return f
-}
-
-// SetDeliveryInfo sets DeliveryInfo
-func (f *DeliveryBuilder) SetDeliveryInfo(i DeliveryInfo) *DeliveryBuilder {
-	f.init()
-	f.deliveryInBuilding.DeliveryInfo = i
-	return f
-}
-
-// SetDeliveryCode sets the deliveryCode (dont need to be called if SetDeliveryInfo has a code set already)
-func (f *DeliveryBuilder) SetDeliveryCode(code string) *DeliveryBuilder {
-	f.init()
-	f.deliveryInBuilding.DeliveryInfo.Code = code
-	return f
-}
-
-// Build is the main Factory method
-func (f *DeliveryBuilder) Build() (*Delivery, error) {
-	if f.deliveryInBuilding == nil {
-		return nil, errors.New("Nothing in building")
-	}
-	if f.deliveryInBuilding.DeliveryInfo.Code == "" {
-		return nil, errors.New("DeliveryInfo.Code is not allowed empty")
-	}
-
-	return f.deliveryInBuilding, nil
-}
-
-func (f *DeliveryBuilder) init() {
-	if f.deliveryInBuilding == nil {
-		f.deliveryInBuilding = &Delivery{}
-	}
-}
-
-func (f *DeliveryBuilder) reset() {
-	f.deliveryInBuilding = nil
-}
-
 // Tax is the Tax of the shipping
 func (s ShippingItem) Tax() Tax {
 	return Tax{
 		Type:   "tax",
 		Amount: s.TaxAmount,
 	}
+}
+
+// LoadAdditionalInfo returns the additional Data
+func (di *DeliveryInfo) LoadAdditionalInfo(key string, info AdditionalDeliverInfo) error {
+	if di.AdditionalDeliveryInfos == nil {
+		return ErrAdditionalInfosNotFound
+	}
+	if val, ok := di.AdditionalDeliveryInfos[key]; ok {
+		return info.Unmarshal(val)
+	}
+	return ErrAdditionalInfosNotFound
 }
 
 // GetAdditionalData returns additional data
