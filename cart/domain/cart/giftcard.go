@@ -20,8 +20,6 @@ type (
 	WithGiftCard interface {
 		HasRemainingGiftCards() bool
 		HasAppliedGiftCards() bool
-		SumAppliedGiftCards() (domain.Price, error)
-		SumGrandTotalWithGiftCards() (domain.Price, error)
 	}
 )
 
@@ -48,45 +46,6 @@ func (card AppliedGiftCard) Total() (domain.Price, error) {
 // HasAppliedGiftCards checks if a gift card is applied to the cart
 func (c Cart) HasAppliedGiftCards() bool {
 	return len(c.AppliedGiftCards) > 0
-}
-
-// SumAppliedGiftCards sum up all applied amounts of giftcads
-// price is returned as a payable
-func (c Cart) SumAppliedGiftCards() (domain.Price, error) {
-	// guard for no gift cards applied
-	if len(c.AppliedGiftCards) == 0 {
-		return domain.Price{}.GetPayable(), nil
-	}
-	prices := make([]domain.Price, 0, len(c.AppliedGiftCards))
-	// add prices to array
-	for _, card := range c.AppliedGiftCards {
-		prices = append(prices, card.Applied)
-	}
-	price, err := domain.SumAll(prices...)
-	// in case of error regarding sum, pass on error
-	if err != nil {
-		return domain.Price{}.GetPayable(), err
-	}
-	return price.GetPayable(), nil
-}
-
-// SumGrandTotalWithGiftCards calculate the grand total of the cart minus gift cards
-func (c Cart) SumGrandTotalWithGiftCards() (domain.Price, error) {
-	giftCardTotal, err := c.SumAppliedGiftCards()
-	if err != nil {
-		return domain.Price{}.GetPayable(), err
-	}
-	// if there are no gift cards just return cart grand total
-	total := c.GrandTotal()
-	if giftCardTotal.IsZero() {
-		return total.GetPayable(), err
-	}
-	// subtract gift card total from total for "remaining total"
-	result, err := total.Sub(giftCardTotal)
-	if err != nil {
-		return domain.Price{}.GetPayable(), err
-	}
-	return result.GetPayable(), nil
 }
 
 // HasRemainingGiftCards check whether there are gift cards with remaining balance

@@ -496,7 +496,7 @@ func TestCart_SumShippingNetWithDiscounts(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.cart.SumShippingNetWithDiscounts(); !got.Equal(tt.want) {
+			if got := tt.cart.SumShippingNetWithDiscounts; !got.Equal(tt.want) {
 				t.Errorf("Cart.SumShippingNetWithDiscount() = %v, want %v", got.Amount(), tt.want.Amount())
 			}
 		})
@@ -548,7 +548,7 @@ func TestCart_SumShippingGrossWithDiscounts(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.cart.SumShippingGrossWithDiscounts(); !got.Equal(tt.want) {
+			if got := tt.cart.SumShippingGrossWithDiscounts; !got.Equal(tt.want) {
 				t.Errorf("Cart.SumShippingGrossWithDiscounts() = %v, want %v", got.Amount(), tt.want.Amount())
 			}
 		})
@@ -678,20 +678,6 @@ func TestTaxes_AddTaxWithMerge(t *testing.T) {
 	assert.Equal(t, domain.NewFromInt(13, 1, "EUR"), total)
 
 	assert.Equal(t, 1, len(taxes))
-}
-
-func TestCartBuilder_BuildAndGet(t *testing.T) {
-	t.Parallel()
-
-	b := cartDomain.Builder{}
-
-	cart, err := b.AddTotalitem(cartDomain.Totalitem{
-		Title: "test",
-		Price: domain.NewFromInt(100, 100, "EUR"),
-	}).SetIds("id", "").Build()
-	assert.NoError(t, err)
-	assert.Equal(t, domain.NewFromInt(100, 100, "EUR"), cart.GrandTotal(), "gradtotal need to match given total")
-
 }
 
 func TestAppliedCouponCodes_ContainedIn(t *testing.T) {

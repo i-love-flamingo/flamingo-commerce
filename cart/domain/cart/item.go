@@ -133,11 +133,15 @@ func (s *ItemSplitter) SplitInSingleQtyItems(givenItem Item) ([]Item, error) {
 			ProductName:            givenItem.ProductName,
 			ExternalReference:      givenItem.ExternalReference,
 			ID:                     givenItem.ID,
-			Qty:                    givenItem.Qty,
+			Qty:                    1,
 		}
 
 		for _, ap := range givenItem.AppliedDiscounts {
 			apSplitted, err := ap.Applied.SplitInPayables(givenItem.Qty)
+			if err != nil {
+				return nil, err
+			}
+
 			// The split adds the moving cents to the first ones, resulting in
 			// having the smallest prices at the end but since discounts are
 			// negative, we need to reverse it to ensure that a split of the row
@@ -145,13 +149,7 @@ func (s *ItemSplitter) SplitInSingleQtyItems(givenItem Item) ([]Item, error) {
 			sort.Slice(apSplitted, func(i, j int) bool {
 				return apSplitted[i].FloatAmount() > apSplitted[j].FloatAmount()
 			})
-			p := make([]float64, 0)
-			for _, i := range apSplitted {
-				p = append(p, i.FloatAmount())
-			}
-			if err != nil {
-				return nil, err
-			}
+
 			newDiscount := AppliedDiscount{
 				CampaignCode:  ap.CampaignCode,
 				CouponCode:    ap.CouponCode,
@@ -183,7 +181,7 @@ func (s *ItemSplitter) SplitInSingleQtyItems(givenItem Item) ([]Item, error) {
 			item.RowTaxes = append(item.RowTaxes, newTax)
 		}
 
-		item.SinglePriceGross, item.SinglePriceNet = givenItem.SinglePriceGross.GetPayable(), givenItem.SinglePriceNet.GetPayable()
+		item.SinglePriceGross, item.SinglePriceNet = givenItem.SinglePriceGross, givenItem.SinglePriceNet
 		item.RowPriceGross, item.RowPriceNet = item.SinglePriceGross, item.SinglePriceNet
 		item.RowPriceGrossWithDiscount = s.splitPrice(givenItem.RowPriceGrossWithDiscount, givenItem.Qty, x)
 		item.RowPriceNetWithDiscount = s.splitPrice(givenItem.RowPriceNetWithDiscount, givenItem.Qty, x)
@@ -191,6 +189,7 @@ func (s *ItemSplitter) SplitInSingleQtyItems(givenItem Item) ([]Item, error) {
 		item.RowPriceGrossWithItemRelatedDiscount = s.splitPrice(givenItem.RowPriceGrossWithItemRelatedDiscount, givenItem.Qty, x)
 		item.NonItemRelatedDiscountAmount = s.splitPrice(givenItem.NonItemRelatedDiscountAmount, givenItem.Qty, x)
 		item.RowPriceNetWithItemRelatedDiscount = s.splitPrice(givenItem.RowPriceNetWithItemRelatedDiscount, givenItem.Qty, x)
+		item.TotalDiscountAmount = s.splitPrice(givenItem.TotalDiscountAmount, givenItem.Qty, x)
 
 		if s.errorDuringSplitting != nil {
 			return nil, s.errorDuringSplitting
@@ -207,6 +206,10 @@ func (s *ItemSplitter) splitPrice(givenPrice priceDomain.Price, qty int, splitPo
 		s.errorDuringSplitting = err
 		return priceDomain.Price{}
 	}
+
+	sort.Slice(splitted, func(i, j int) bool {
+		return splitted[i].FloatAmount() > splitted[j].FloatAmount()
+	})
 
 	return splitted[splitPosition]
 }

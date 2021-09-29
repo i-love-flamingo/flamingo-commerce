@@ -29,93 +29,95 @@ func (a ByCode) Less(i, j int) bool {
 // BuildItemWithDiscounts helper for item building
 func BuildItemWithDiscounts(t *testing.T) *cart.Item {
 	t.Helper()
-	builder := cart.ItemBuilder{}
-	builder.AddDiscount(cart.AppliedDiscount{
-		CampaignCode: "code-1",
-		Label:        "title-1",
-		Type:         "type-1",
-		Applied:      domain.NewFromFloat(-10.0, "$"),
-		SortOrder:    3,
-	})
-	builder.AddDiscount(cart.AppliedDiscount{
-		CampaignCode: "code-2",
-		Label:        "title-2",
-		Type:         "type-1",
-		Applied:      domain.NewFromFloat(-15.0, "$"),
-		SortOrder:    2,
-	})
-	builder.AddDiscount(cart.AppliedDiscount{
-		CampaignCode: "code-3",
-		Label:        "title-1",
-		Type:         "type-2",
-		Applied:      domain.NewFromFloat(-5.0, "$"),
-		SortOrder:    4,
-	})
-	builder.SetID("id-1")
-	item, err := builder.Build()
-	if err != nil {
-		t.Fatalf("Could not build item %s", err.Error())
+	item := cart.Item{ID: "id-1",
+		AppliedDiscounts: []cart.AppliedDiscount{
+			{
+				CampaignCode: "code-1",
+				Label:        "title-1",
+				Type:         "type-1",
+				Applied:      domain.NewFromFloat(-10.0, "$"),
+				SortOrder:    3,
+			},
+			{
+				CampaignCode: "code-2",
+				Label:        "title-2",
+				Type:         "type-1",
+				Applied:      domain.NewFromFloat(-15.0, "$"),
+				SortOrder:    2,
+			},
+			{
+				CampaignCode: "code-3",
+				Label:        "title-1",
+				Type:         "type-2",
+				Applied:      domain.NewFromFloat(-5.0, "$"),
+				SortOrder:    4,
+			},
+		},
 	}
-	return item
+
+	// todo: add discount total
+
+	return &item
 }
 
 // BuildItemWithAlternativeDiscounts helper for item building with different discounts
 func BuildItemWithAlternativeDiscounts(t *testing.T) *cart.Item {
 	t.Helper()
-	builder := cart.ItemBuilder{}
-	builder.AddDiscount(cart.AppliedDiscount{
-		CampaignCode: "code-4",
-		Label:        "title-4",
-		Type:         "type-1",
-		Applied:      domain.NewFromFloat(-10.0, "$"),
-		SortOrder:    5,
-	})
-	builder.AddDiscount(cart.AppliedDiscount{
-		CampaignCode: "code-5",
-		Label:        "title-5",
-		Type:         "type-1",
-		Applied:      domain.NewFromFloat(-15.0, "$"),
-		SortOrder:    0,
-	})
-	builder.AddDiscount(cart.AppliedDiscount{
-		CampaignCode: "code-6",
-		Label:        "title-6",
-		Type:         "type-2",
-		Applied:      domain.NewFromFloat(-5.0, "$"),
-		SortOrder:    1,
-	})
-	builder.SetID("id-2")
-	item, err := builder.Build()
-	if err != nil {
-		t.Fatalf("Could not build item %s", err.Error())
-	}
-	return item
+	item := cart.Item{
+		ID: "id-2",
+		AppliedDiscounts: []cart.AppliedDiscount{
+			cart.AppliedDiscount{
+				CampaignCode: "code-4",
+				Label:        "title-4",
+				Type:         "type-1",
+				Applied:      domain.NewFromFloat(-10.0, "$"),
+				SortOrder:    5,
+			},
+			cart.AppliedDiscount{
+				CampaignCode: "code-5",
+				Label:        "title-5",
+				Type:         "type-1",
+				Applied:      domain.NewFromFloat(-15.0, "$"),
+				SortOrder:    0,
+			},
+			cart.AppliedDiscount{
+				CampaignCode: "code-6",
+				Label:        "title-6",
+				Type:         "type-2",
+				Applied:      domain.NewFromFloat(-5.0, "$"),
+				SortOrder:    1,
+			},
+		},
+	} // todo: add discount total
+
+	return &item
 }
 
 // BuildItemWithDuplicateDiscounts helper for item building with duplicate discounts
 func BuildItemWithDuplicateDiscounts(t *testing.T) *cart.Item {
 	t.Helper()
-	builder := cart.ItemBuilder{}
-	builder.AddDiscount(cart.AppliedDiscount{
-		CampaignCode: "code-1",
-		Label:        "title-1",
-		Type:         "type-1",
-		Applied:      domain.NewFromFloat(-10.0, "$"),
-		SortOrder:    0,
-	})
-	builder.AddDiscount(cart.AppliedDiscount{
-		CampaignCode: "code-1",
-		Label:        "title-1",
-		Type:         "type-1",
-		Applied:      domain.NewFromFloat(-10.0, "$"),
-		SortOrder:    0,
-	})
-	builder.SetID("id-1")
-	item, err := builder.Build()
-	if err != nil {
-		t.Fatalf("Could not build item %s", err.Error())
-	}
-	return item
+
+	item := cart.Item{
+		ID: "id-1",
+		AppliedDiscounts: []cart.AppliedDiscount{
+			cart.AppliedDiscount{
+				CampaignCode: "code-1",
+				Label:        "title-1",
+				Type:         "type-1",
+				Applied:      domain.NewFromFloat(-10.0, "$"),
+				SortOrder:    0,
+			},
+			cart.AppliedDiscount{
+				CampaignCode: "code-1",
+				Label:        "title-1",
+				Type:         "type-1",
+				Applied:      domain.NewFromFloat(-10.0, "$"),
+				SortOrder:    0,
+			},
+		},
+	} // todo: add discount total
+
+	return &item
 }
 
 // BuildShippingItemWithDiscounts helper for shipping item building

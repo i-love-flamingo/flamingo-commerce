@@ -608,16 +608,11 @@ func TestItem_HasDiscounts(t *testing.T) {
 		},
 		{
 			name: "multiple discounts on item",
-			item: func() *cart.Item {
-				builder := cart.ItemBuilder{}
-				builder.AddDiscount(cart.AppliedDiscount{
-					CampaignCode: "code-1",
-					Label:        "title-1",
-					Type:         "type-1",
-				})
-				item, _ := builder.Build()
-				return item
-			}(),
+			item: &cart.Item{AppliedDiscounts: []cart.AppliedDiscount{cart.AppliedDiscount{
+				CampaignCode: "code-1",
+				Label:        "title-1",
+				Type:         "type-1",
+			}}},
 			want: true,
 		},
 		{

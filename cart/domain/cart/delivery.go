@@ -17,6 +17,25 @@ type (
 		Cartitems []Item
 		// ShippingItem	represent the shipping cost that may be involved in this delivery
 		ShippingItem ShippingItem
+
+		// SubTotalGross contains the sum of row gross prices, without shipping/discounts
+		SubTotalGross priceDomain.Price
+		// SubTotalNet contains the sum of row net prices, without shipping/discounts
+		SubTotalNet priceDomain.Price
+		// SumTotalDiscountAmount contains the sum of all discounts (incl. shipping)
+		SumTotalDiscountAmount priceDomain.Price
+		// SumTotalDiscountAmount contains the sum of all discounts (excl. shipping)
+		SumSubTotalDiscountAmount priceDomain.Price
+		// SumNonItemRelatedDiscountAmount contains the sum of discounts that are not related to the item, e.g. a general promo
+		SumNonItemRelatedDiscountAmount priceDomain.Price
+		// SumItemRelatedDiscountAmount contains the sum of discounts that are related to the item, e.g. promo due to product attribute
+		SumItemRelatedDiscountAmount priceDomain.Price
+		// SubTotalGrossWithDiscounts contains the sum of row gross prices reduced by the applied discounts
+		SubTotalGrossWithDiscounts priceDomain.Price
+		// SubTotalNetWithDiscounts contains the sum of row gross prices reduced by the applied discounts
+		SubTotalNetWithDiscounts priceDomain.Price
+		// GrandTotal contains the final price to pay
+		GrandTotal priceDomain.Price
 	}
 
 	// DeliveryInfo - represents the Delivery
@@ -40,13 +59,15 @@ type (
 		AdditionalDeliveryInfos map[string]json.RawMessage `swaggerignore:"true"`
 	}
 
-	// ShippingItem value object
+	// ShippingItem represents shipping costs that need to be paid by the customer
 	ShippingItem struct {
 		Title            string
 		PriceNet         priceDomain.Price
 		PriceGross       priceDomain.Price
 		TaxAmount        priceDomain.Price
 		AppliedDiscounts AppliedDiscounts
+		// TotalWithDiscountInclTax holds the final price for shipping
+		TotalWithDiscountInclTax priceDomain.Price
 	}
 
 	// AdditionalDeliverInfo is an interface that allows to store "any" additional objects on the cart
@@ -109,24 +130,6 @@ func (di *DeliveryInfo) LoadAdditionalInfo(key string, info AdditionalDeliverInf
 	return ErrAdditionalInfosNotFound
 }
 
-// SubTotalGross returns sub total of all items including the taxes for the delivery
-func (d Delivery) SubTotalGross() priceDomain.Price {
-	prices := make([]priceDomain.Price, 0, len(d.Cartitems))
-
-	for _, item := range d.Cartitems {
-		prices = append(prices, item.RowPriceGross)
-	}
-	result, _ := priceDomain.SumAll(prices...)
-
-	return result
-}
-
-// GrandTotal returns the sub total of all items, shipping costs and potential discounts including taxes for the delivery
-func (d Delivery) GrandTotal() priceDomain.Price {
-	result, _ := priceDomain.SumAll(d.SubTotalGross(), d.ShippingItem.PriceGross, d.SumTotalDiscountAmount())
-	return result
-}
-
 // SumRowTaxes returns all taxes applied to items of this delivery
 func (d Delivery) SumRowTaxes() Taxes {
 	var taxes Taxes
@@ -150,90 +153,6 @@ func (d Delivery) SumTotalTaxAmount() priceDomain.Price {
 	result, _ := priceDomain.SumAll(prices...)
 
 	return result
-}
-
-// SubTotalNet returns sub total of all items excluding the taxes for the delivery
-func (d Delivery) SubTotalNet() priceDomain.Price {
-	prices := make([]priceDomain.Price, 0, len(d.Cartitems))
-
-	for _, item := range d.Cartitems {
-		prices = append(prices, item.RowPriceNet)
-	}
-	result, _ := priceDomain.SumAll(prices...)
-
-	return result
-}
-
-// SumTotalDiscountAmount returns the total applied discounts of the items of the delivery
-func (d Delivery) SumTotalDiscountAmount() priceDomain.Price {
-	result := d.SumSubTotalDiscountAmount()
-
-	shippingDiscount, _ := d.ShippingItem.AppliedDiscounts.Sum()
-	result, _ = result.Add(shippingDiscount)
-
-	return result
-}
-
-// SumSubTotalDiscountAmount returns the total applied discounts of the items of the delivery
-func (d Delivery) SumSubTotalDiscountAmount() priceDomain.Price {
-	prices := make([]priceDomain.Price, 0, len(d.Cartitems))
-
-	for _, item := range d.Cartitems {
-		prices = append(prices, item.TotalDiscountAmount())
-	}
-	result, _ := priceDomain.SumAll(prices...)
-
-	return result
-}
-
-// SumNonItemRelatedDiscountAmount returns the total applied discounts that are not item related
-func (d Delivery) SumNonItemRelatedDiscountAmount() priceDomain.Price {
-	prices := make([]priceDomain.Price, 0, len(d.Cartitems)+len(d.ShippingItem.AppliedDiscounts))
-
-	for _, discount := range d.ShippingItem.AppliedDiscounts {
-		if !discount.IsItemRelated {
-			prices = append(prices, discount.Applied)
-		}
-	}
-
-	for _, item := range d.Cartitems {
-		prices = append(prices, item.NonItemRelatedDiscountAmount())
-	}
-	result, _ := priceDomain.SumAll(prices...)
-
-	return result
-}
-
-// SumItemRelatedDiscountAmount returns the total applied discounts that are item related
-func (d Delivery) SumItemRelatedDiscountAmount() priceDomain.Price {
-	prices := make([]priceDomain.Price, 0, len(d.Cartitems)+len(d.ShippingItem.AppliedDiscounts))
-
-	for _, discount := range d.ShippingItem.AppliedDiscounts {
-		if discount.IsItemRelated {
-			prices = append(prices, discount.Applied)
-		}
-	}
-
-	for _, item := range d.Cartitems {
-		prices = append(prices, item.ItemRelatedDiscountAmount())
-	}
-	result, _ := priceDomain.SumAll(prices...)
-
-	return result
-}
-
-// SubTotalGrossWithDiscounts returns sub total of all items including the taxes and applied discounts for the delivery
-func (d Delivery) SubTotalGrossWithDiscounts() priceDomain.Price {
-	price, _ := d.SubTotalGross().Add(d.SumSubTotalDiscountAmount())
-
-	return price
-}
-
-// SubTotalNetWithDiscounts returns sub total of all items excluding the taxes and applied discounts for the delivery
-func (d Delivery) SubTotalNetWithDiscounts() priceDomain.Price {
-	price, _ := d.SubTotalNet().Add(d.SumSubTotalDiscountAmount())
-
-	return price
 }
 
 // HasItems returns true if there are items under the delivery
@@ -299,13 +218,6 @@ func (f *DeliveryBuilder) init() {
 
 func (f *DeliveryBuilder) reset() {
 	f.deliveryInBuilding = nil
-}
-
-// TotalWithDiscountInclTax is the price the customer need to pay for the shipping
-func (s ShippingItem) TotalWithDiscountInclTax() priceDomain.Price {
-	discounts, _ := s.AppliedDiscounts.Sum()
-	price, _ := s.PriceGross.Add(discounts)
-	return price.GetPayable()
 }
 
 // Tax is the Tax of the shipping
