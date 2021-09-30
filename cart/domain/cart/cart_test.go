@@ -816,3 +816,97 @@ func TestCart_GetAllPaymentRequiredItems(t *testing.T) {
 	assert.Equal(t, 67.89, pricedItems.TotalItems()["item-1"].FloatAmount())
 	assert.Equal(t, 98.76, pricedItems.TotalItems()["item-2"].FloatAmount())
 }
+
+func TestCart_GetContactMail(t *testing.T) {
+	tests := []struct {
+		name          string
+		cart          cartDomain.Cart
+		expectedEmail string
+	}{
+		{name: "no mail", cart: cartDomain.Cart{}, expectedEmail: ""},
+		{name: "billing email", cart: cartDomain.Cart{BillingAddress: &cartDomain.Address{Email: "foo@example.com"}}, expectedEmail: "foo@example.com"},
+		{name: "shipping email", cart: cartDomain.Cart{Deliveries: []cartDomain.Delivery{{DeliveryInfo: cartDomain.DeliveryInfo{DeliveryLocation: cartDomain.DeliveryLocation{Address: &cartDomain.Address{Email: "foo@example.com"}}}}}}, expectedEmail: "foo@example.com"},
+		{name: "billing and shipping email",
+			cart: cartDomain.Cart{
+				BillingAddress: &cartDomain.Address{Email: "billing@example.com"},
+				Deliveries:     []cartDomain.Delivery{{DeliveryInfo: cartDomain.DeliveryInfo{DeliveryLocation: cartDomain.DeliveryLocation{Address: &cartDomain.Address{Email: "shipping@example.com"}}}}},
+			},
+			expectedEmail: "shipping@example.com",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.expectedEmail, tt.cart.GetContactMail())
+		})
+	}
+}
+
+func TestCart_GetDeliveryByCodeWithoutBool(t *testing.T) {
+	cart := cartDomain.Cart{Deliveries: []cartDomain.Delivery{{DeliveryInfo: cartDomain.DeliveryInfo{Code: "valid"}}}}
+	assert.Nil(t, cart.GetDeliveryByCodeWithoutBool("invalid"))
+	assert.NotNil(t, cart.GetDeliveryByCodeWithoutBool("valid"))
+}
+
+func TestCart_GetByItemID(t *testing.T) {
+	cart := cartDomain.Cart{Deliveries: []cartDomain.Delivery{
+		{
+			Cartitems: []cartDomain.Item{{ID: "item-1"}},
+		},
+		{
+			Cartitems: []cartDomain.Item{{ID: "item-2"}},
+		},
+	}}
+
+	t.Run("invalid item id should return error", func(t *testing.T) {
+		got, err := cart.GetByItemID("invalid")
+		assert.Error(t, err)
+		assert.Nil(t, got)
+	})
+
+	t.Run("valid item id should return item", func(t *testing.T) {
+		got, err := cart.GetByItemID("item-2")
+		assert.NoError(t, err)
+		assert.NotNil(t, got)
+		assert.Equal(t, "item-2", got.ID)
+	})
+}
+
+func TestCart_IsPaymentSelected(t *testing.T) {
+	cart := cartDomain.Cart{}
+	assert.False(t, cart.IsPaymentSelected())
+	cart.PaymentSelection = cartDomain.DefaultPaymentSelection{}
+	assert.True(t, cart.IsPaymentSelected())
+}
+
+func TestCart_HasShippingCosts(t *testing.T) {
+	cart := cartDomain.Cart{}
+	assert.False(t, cart.HasShippingCosts())
+
+	cart.SumShippingNet = domain.NewFromFloat(5.00, "USD")
+	assert.True(t, cart.HasShippingCosts())
+}
+
+func TestCart_AllShippingTitles(t *testing.T) {
+
+}
+
+func TestCart_SumTaxes(t *testing.T) {
+
+}
+
+func TestCart_SumTotalTaxAmount(t *testing.T) {
+
+}
+
+func TestCart_HasAppliedCouponCode(t *testing.T) {
+
+}
+
+func TestCart_GetPaymentReference(t *testing.T) {
+
+}
+
+func TestCart_GrandTotalCharges(t *testing.T) {
+
+}
