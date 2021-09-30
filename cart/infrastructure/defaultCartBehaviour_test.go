@@ -7,9 +7,11 @@ import (
 
 	domaincart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
+	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/go-test/deep"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestInMemoryBehaviour_CleanCart(t *testing.T) {
@@ -155,15 +157,6 @@ func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
 				newInMemoryStorage(),
 				nil,
 				flamingo.NullLogger{},
-				func() *domaincart.ItemBuilder {
-					return &domaincart.ItemBuilder{}
-				},
-				func() *domaincart.DeliveryBuilder {
-					return &domaincart.DeliveryBuilder{}
-				},
-				func() *domaincart.Builder {
-					return &domaincart.Builder{}
-				},
 				nil,
 				nil,
 				nil,
@@ -231,9 +224,6 @@ func TestInMemoryBehaviour_ApplyVoucher(t *testing.T) {
 				newInMemoryStorage(),
 				nil,
 				flamingo.NullLogger{},
-				nil,
-				nil,
-				nil,
 				&DefaultVoucherHandler{},
 				&DefaultGiftCardHandler{},
 				nil,
@@ -320,15 +310,6 @@ func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 				newInMemoryStorage(),
 				nil,
 				flamingo.NullLogger{},
-				func() *domaincart.ItemBuilder {
-					return &domaincart.ItemBuilder{}
-				},
-				func() *domaincart.DeliveryBuilder {
-					return &domaincart.DeliveryBuilder{}
-				},
-				func() *domaincart.Builder {
-					return &domaincart.Builder{}
-				},
 				&DefaultVoucherHandler{},
 				&DefaultGiftCardHandler{},
 				nil,
@@ -393,9 +374,6 @@ func TestInMemoryBehaviour_ApplyGiftCard(t *testing.T) {
 				newInMemoryStorage(),
 				nil,
 				flamingo.NullLogger{},
-				nil,
-				nil,
-				nil,
 				&DefaultVoucherHandler{},
 				&DefaultGiftCardHandler{},
 				nil,
@@ -462,9 +440,6 @@ func TestInMemoryBehaviour_RemoveGiftCard(t *testing.T) {
 				newInMemoryStorage(),
 				nil,
 				flamingo.NullLogger{},
-				nil,
-				nil,
-				nil,
 				&DefaultVoucherHandler{},
 				&DefaultGiftCardHandler{},
 				nil,
@@ -492,9 +467,6 @@ func TestInMemoryBehaviour_Complete(t *testing.T) {
 			nil,
 			nil,
 			nil,
-			nil,
-			nil,
-			nil,
 		)
 		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{ID: "test-id"})
 		assert.NoError(t, err)
@@ -519,9 +491,6 @@ func TestInMemoryBehaviour_Restore(t *testing.T) {
 			nil,
 			nil,
 			nil,
-			nil,
-			nil,
-			nil,
 		)
 		cart := &domaincart.Cart{ID: "1234"}
 
@@ -538,4 +507,55 @@ func newInMemoryStorage() *InMemoryCartStorage {
 	result.Inject()
 
 	return result
+}
+
+func TestDefaultCartBehaviour_createCartItemFromProduct(t *testing.T) {
+	t.Run("gross", func(t *testing.T) {
+		cob := DefaultCartBehaviour{}
+		cob.Inject(nil, nil, flamingo.NullLogger{}, nil, nil, &struct {
+			DefaultTaxRate float64 `inject:"config:commerce.cart.defaultCartAdapter.defaultTaxRate,optional"`
+			ProductPricing string  `inject:"config:commerce.cart.defaultCartAdapter.productPrices"`
+		}{ProductPricing: "gross", DefaultTaxRate: 10.0})
+
+		item, err := cob.createCartItemFromProduct(2, "ma", "", map[string]string{}, domain.SimpleProduct{
+			Saleable: domain.Saleable{
+				IsSaleable: true,
+				ActivePrice: domain.PriceInfo{
+					Default: priceDomain.NewFromFloat(50.00, "USD"),
+				},
+			},
+		})
+
+		require.NoError(t, err)
+		assert.True(t, item.SinglePriceGross.Equal(priceDomain.NewFromFloat(50.00, "USD")))
+		assert.Equal(t, 45.45, item.SinglePriceNet.FloatAmount())
+		assert.Equal(t, 100.00, item.RowPriceGross.FloatAmount())
+		assert.Equal(t, 45.45*2, item.RowPriceNet.FloatAmount())
+		assert.Equal(t, 100.00-45.45*2, item.TotalTaxAmount().FloatAmount())
+	})
+
+	t.Run("net", func(t *testing.T) {
+		cob := DefaultCartBehaviour{}
+		cob.Inject(nil, nil, flamingo.NullLogger{}, nil, nil, &struct {
+			DefaultTaxRate float64 `inject:"config:commerce.cart.defaultCartAdapter.defaultTaxRate,optional"`
+			ProductPricing string  `inject:"config:commerce.cart.defaultCartAdapter.productPrices"`
+		}{ProductPricing: "net", DefaultTaxRate: 10.0})
+
+		item, err := cob.createCartItemFromProduct(2, "ma", "", map[string]string{}, domain.SimpleProduct{
+			Saleable: domain.Saleable{
+				IsSaleable: true,
+				ActivePrice: domain.PriceInfo{
+					Default: priceDomain.NewFromFloat(50.00, "USD"),
+				},
+			},
+		})
+
+		require.NoError(t, err)
+		assert.True(t, item.SinglePriceNet.Equal(priceDomain.NewFromFloat(50.00, "USD")))
+		assert.Equal(t, 55.00, item.SinglePriceGross.FloatAmount())
+		assert.Equal(t, 55.00*2, item.RowPriceGross.FloatAmount())
+		assert.Equal(t, 50.00*2, item.RowPriceNet.FloatAmount())
+		assert.Equal(t, 10.0, item.TotalTaxAmount().FloatAmount())
+	})
+
 }

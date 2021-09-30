@@ -161,6 +161,8 @@ definitions:
       EntityID:
         description: EntityID is a second identifier that may be used by some backends
         type: string
+      GrandTotal:
+        $ref: '#/definitions/domain.Price'
       ID:
         description: ID is the main identifier of the cart
         type: string
@@ -172,6 +174,32 @@ definitions:
         $ref: '#/definitions/cart.Person'
         description: Purchaser hold additional infos for the legal contact person
           in this order
+      SubTotalGross:
+        $ref: '#/definitions/domain.Price'
+      SubTotalGrossWithDiscounts:
+        $ref: '#/definitions/domain.Price'
+      SubTotalNet:
+        $ref: '#/definitions/domain.Price'
+      SubTotalNetWithDiscounts:
+        $ref: '#/definitions/domain.Price'
+      SumAppliedGiftCards:
+        $ref: '#/definitions/domain.Price'
+      SumGrandTotalWithGiftCards:
+        $ref: '#/definitions/domain.Price'
+      SumItemRelatedDiscountAmount:
+        $ref: '#/definitions/domain.Price'
+      SumNonItemRelatedDiscountAmount:
+        $ref: '#/definitions/domain.Price'
+      SumShippingGross:
+        $ref: '#/definitions/domain.Price'
+      SumShippingGrossWithDiscounts:
+        $ref: '#/definitions/domain.Price'
+      SumShippingNet:
+        $ref: '#/definitions/domain.Price'
+      SumShippingNetWithDiscounts:
+        $ref: '#/definitions/domain.Price'
+      SumTotalDiscountAmount:
+        $ref: '#/definitions/domain.Price'
       Totalitems:
         description: Additional non taxable totals
         items:
@@ -199,10 +227,43 @@ definitions:
         $ref: '#/definitions/cart.DeliveryInfo'
         description: DeliveryInfo contains details for this delivery e.g. how and
           where the delivery should be delivered to
+      GrandTotal:
+        $ref: '#/definitions/domain.Price'
+        description: GrandTotal contains the final price to pay
       ShippingItem:
         $ref: '#/definitions/cart.ShippingItem'
         description: "ShippingItem\trepresent the shipping cost that may be involved
           in this delivery"
+      SubTotalGross:
+        $ref: '#/definitions/domain.Price'
+        description: SubTotalGross contains the sum of row gross prices, without shipping/discounts
+      SubTotalGrossWithDiscounts:
+        $ref: '#/definitions/domain.Price'
+        description: SubTotalGrossWithDiscounts contains the sum of row gross prices
+          reduced by the applied discounts
+      SubTotalNet:
+        $ref: '#/definitions/domain.Price'
+        description: SubTotalNet contains the sum of row net prices, without shipping/discounts
+      SubTotalNetWithDiscounts:
+        $ref: '#/definitions/domain.Price'
+        description: SubTotalNetWithDiscounts contains the sum of row gross prices
+          reduced by the applied discounts
+      SumItemRelatedDiscountAmount:
+        $ref: '#/definitions/domain.Price'
+        description: SumItemRelatedDiscountAmount contains the sum of discounts that
+          are related to the item, e.g. promo due to product attribute
+      SumNonItemRelatedDiscountAmount:
+        $ref: '#/definitions/domain.Price'
+        description: SumNonItemRelatedDiscountAmount contains the sum of discounts
+          that are not related to the item, e.g. a general promo
+      SumSubTotalDiscountAmount:
+        $ref: '#/definitions/domain.Price'
+        description: SumTotalDiscountAmount contains the sum of all discounts (excl.
+          shipping)
+      SumTotalDiscountAmount:
+        $ref: '#/definitions/domain.Price'
+        description: SumTotalDiscountAmount contains the sum of all discounts (incl.
+          shipping)
     type: object
   cart.DeliveryInfo:
     properties:
@@ -267,8 +328,10 @@ definitions:
           type: string
         type: object
       AppliedDiscounts:
-        description: AppliedDiscounts contains the details about the discounts applied
-          to this item - they can be "itemrelated" or not
+        description: |-
+          AppliedDiscounts contains the details about the discounts applied to this item - they can be "itemrelated" or not
+          itemrelated would be e.g. special price, buy 3 pay 2
+          non-itemrelated would be e.g. 10% on everything
         items:
           $ref: '#/definitions/cart.AppliedDiscount'
         type: array
@@ -280,33 +343,65 @@ definitions:
       ID:
         description: ID of the item - needs to be unique over the whole cart
         type: string
+      ItemRelatedDiscountAmount:
+        $ref: '#/definitions/domain.Price'
+        description: ItemRelatedDiscountAmount is the sum of all itemrelated Discounts
       MarketplaceCode:
+        description: MarketplaceCode is the identifier for the product
         type: string
+      NonItemRelatedDiscountAmount:
+        $ref: '#/definitions/domain.Price'
+        description: NonItemRelatedDiscountAmount is the sum of non-itemrelated Discounts
+          where IsItemRelated = false
       ProductName:
         type: string
       Qty:
         type: integer
       RowPriceGross:
         $ref: '#/definitions/domain.Price'
-        description: RowPriceGross
+        description: RowPriceGross is the price incl. taxes for the whole Qty of products
+      RowPriceGrossWithDiscount:
+        $ref: '#/definitions/domain.Price'
+        description: |-
+          RowPriceGrossWithDiscount is the price incl. taxes with deducted discounts for the whole Qty of products
+          This is in most cases the final price for the customer to pay
+      RowPriceGrossWithItemRelatedDiscount:
+        $ref: '#/definitions/domain.Price'
+        description: RowPriceGrossWithItemRelatedDiscount is the price incl. taxes
+          with deducted item related discounts for the whole Qty of products
       RowPriceNet:
         $ref: '#/definitions/domain.Price'
-        description: RowPriceNet
+        description: RowPriceNet is the price excl. taxes for the whole Qty of products
+          for the whole Qty of products
+      RowPriceNetWithDiscount:
+        $ref: '#/definitions/domain.Price'
+        description: RowPriceNetWithDiscount is the discounted net price for the whole
+          Qty of products
+      RowPriceNetWithItemRelatedDiscount:
+        $ref: '#/definitions/domain.Price'
+        description: RowPriceNetWithItemRelatedDiscount is the price excl. taxes with
+          deducted item related discounts for the whole Qty of products
       RowTaxes:
-        description: RowPriceGross
+        description: RowTaxes is a list of all taxes applied for the given Qty of
+          products
         items:
           $ref: '#/definitions/cart.Tax'
         type: array
       SinglePriceGross:
         $ref: '#/definitions/domain.Price'
-        description: SinglePriceGross gross price (incl. taxes) for a single product
+        description: SinglePriceGross is the gross price (incl. taxes) for a single
+          product
       SinglePriceNet:
         $ref: '#/definitions/domain.Price'
-        description: SinglePriceNet net price (excl. taxes) for a single product
+        description: SinglePriceNet is the net price (excl. taxes) for a single product
       SourceID:
         description: Source Id of where the items should be initial picked - This
           is set by the SourcingLogic
         type: string
+      TotalDiscountAmount:
+        $ref: '#/definitions/domain.Price'
+        description: TotalDiscountAmount is the sum of all applied discounts (aka
+          the savings for the customer)
       VariantMarketPlaceCode:
         description: VariantMarketPlaceCode is used for Configurable products
         type: string
@@ -349,6 +444,9 @@ definitions:
         $ref: '#/definitions/domain.Price'
       Title:
         type: string
+      TotalWithDiscountInclTax:
+        $ref: '#/definitions/domain.Price'
+        description: TotalWithDiscountInclTax holds the final price for shipping
     type: object
   cart.Tax:
     properties:
@@ -381,6 +479,13 @@ definitions:
       Type:
         type: string
     type: object
+  cartResultError:
+    properties:
+      Code:
+        type: string
+      Message:
+        type: string
+    type: object
   checkoutError:
     properties:
       Code:
@@ -391,7 +496,7 @@ definitions:
   controller.APIResult:
     properties:
       Error:
-        $ref: '#/definitions/productResultError'
+        $ref: '#/definitions/cartResultError'
       Product:
         $ref: '#/definitions/domain.BasicProduct'
       Success:
@@ -408,7 +513,7 @@ definitions:
       DataValidationInfo:
         type: object
       Error:
-        $ref: '#/definitions/productResultError'
+        $ref: '#/definitions/cartResultError'
         description: Contains details if success is false
       Success:
         type: boolean
@@ -799,13 +904,6 @@ definitions:
         type: string
     type: object
   process.StateData:
-    type: object
-  productResultError:
-    properties:
-      Code:
-        type: string
-      Message:
-        type: string
     type: object
   validation.ItemValidationError:
     properties:
@@ -1501,7 +1599,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/productResultError'
+            $ref: '#/definitions/cartResultError'
       summary: Get the payment status of current cart (or last placed cart)
       tags:
       - Payment

@@ -24,6 +24,7 @@ type (
 		giftCardHandler GiftCardHandler
 		voucherHandler  VoucherHandler
 		defaultTaxRate  float64
+		grossPricing    bool
 	}
 
 	// CartStorage Interface - might be implemented by other persistence types later as well
@@ -70,6 +71,7 @@ func (cob *DefaultCartBehaviour) Inject(
 	giftCardHandler GiftCardHandler,
 	config *struct {
 		DefaultTaxRate float64 `inject:"config:commerce.cart.defaultCartAdapter.defaultTaxRate,optional"`
+		ProductPricing string  `inject:"config:commerce.cart.defaultCartAdapter.productPrices"`
 	},
 ) {
 	cob.cartStorage = CartStorage
@@ -79,6 +81,9 @@ func (cob *DefaultCartBehaviour) Inject(
 	cob.giftCardHandler = giftCardHandler
 	if config != nil {
 		cob.defaultTaxRate = config.DefaultTaxRate
+		if config.ProductPricing == "gross" {
+			cob.grossPricing = true
+		}
 	}
 }
 
@@ -193,33 +198,43 @@ func (cob *DefaultCartBehaviour) UpdateItems(ctx context.Context, cart *domainca
 }
 
 func (cob *DefaultCartBehaviour) updateItem(ctx context.Context, cart *domaincart.Cart, itemUpdateCommand domaincart.ItemUpdateCommand) error {
-	itemBuilder := cob.itemBuilderProvider()
 	itemDelivery, err := cart.GetDeliveryByItemID(itemUpdateCommand.ItemID)
 	if err != nil {
 		return err
 	}
 
 	cob.logger.WithContext(ctx).Info("Inmemory Service Update %v in %#v", itemUpdateCommand.ItemID, itemDelivery.Cartitems)
-	for _, item := range itemDelivery.Cartitems {
+	for k, item := range itemDelivery.Cartitems {
 		if itemUpdateCommand.ItemID == item.ID {
-			itemBuilder.SetFromItem(item)
 			if itemUpdateCommand.Qty != nil {
-				itemBuilder.SetQty(*itemUpdateCommand.Qty)
+				itemDelivery.Cartitems[k].Qty = *itemUpdateCommand.Qty
+
+				gross := item.SinglePriceGross.Clone().Amount().Mul(item.SinglePriceGross.Amount(), big.NewFloat(float64(*itemUpdateCommand.Qty)))
+				itemDelivery.Cartitems[k].RowPriceGross = priceDomain.NewFromBigFloat(*gross, item.SinglePriceGross.Currency())
+
+				net := item.SinglePriceNet.Clone().Amount().Mul(item.SinglePriceNet.Amount(), big.NewFloat(float64(*itemUpdateCommand.Qty)))
+				itemDelivery.Cartitems[k].RowPriceNet = priceDomain.NewFromBigFloat(*net, item.SinglePriceNet.Currency())
+
+				itemDelivery.Cartitems[k].RowPriceGrossWithDiscount = itemDelivery.Cartitems[k].RowPriceGross
+				itemDelivery.Cartitems[k].RowPriceNetWithDiscount = itemDelivery.Cartitems[k].RowPriceNet
+
+				itemDelivery.Cartitems[k].RowPriceGrossWithItemRelatedDiscount = itemDelivery.Cartitems[k].RowPriceGross
+				itemDelivery.Cartitems[k].RowPriceNetWithItemRelatedDiscount = itemDelivery.Cartitems[k].RowPriceNet
+
+				if cob.defaultTaxRate > 0.0 {
+					taxAmount, err := itemDelivery.Cartitems[k].RowPriceGross.Sub(itemDelivery.Cartitems[k].RowPriceNet)
+					if err != nil {
+						return err
+					}
+					itemDelivery.Cartitems[k].RowTaxes[0].Amount = taxAmount
+				}
+
 			}
 
 			if itemUpdateCommand.SourceID != nil {
-				itemBuilder.SetSourceID(*itemUpdateCommand.SourceID)
+				itemDelivery.Cartitems[k].SourceID = *itemUpdateCommand.SourceID
 			}
-			itemBuilder.AddTaxInfo("default", big.NewFloat(cob.defaultTaxRate), nil).CalculatePricesAndTax()
-			newItem, err := itemBuilder.Build()
-			if err != nil {
-				return err
-			}
-			for k, currentItem := range itemDelivery.Cartitems {
-				if currentItem.ID == itemUpdateCommand.ItemID {
-					itemDelivery.Cartitems[k] = *newItem
-				}
-			}
+
 		}
 	}
 
@@ -290,8 +305,6 @@ func (cob *DefaultCartBehaviour) AddToCart(ctx context.Context, cart *domaincart
 }
 
 func (cob *DefaultCartBehaviour) buildItemForCart(ctx context.Context, addRequest domaincart.AddRequest) (*domaincart.Item, error) {
-	itemBuilder := cob.itemBuilderProvider()
-
 	// create and add new item
 	product, err := cob.productService.Get(ctx, addRequest.MarketplaceCode)
 	if err != nil {
@@ -307,15 +320,55 @@ func (cob *DefaultCartBehaviour) buildItemForCart(ctx context.Context, addReques
 		product = productWithActiveVariant
 	}
 
-	itemBuilder.
-		SetQty(addRequest.Qty).
-		AddTaxInfo("default", big.NewFloat(cob.defaultTaxRate), nil).
-		SetByProduct(product).
-		SetID(strconv.Itoa(rand.Int())).
-		SetExternalReference(strconv.Itoa(rand.Int())).
-		SetAdditionalData(addRequest.AdditionalData)
+	return cob.createCartItemFromProduct(addRequest.Qty, addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode, addRequest.AdditionalData, product)
+}
+func (cob *DefaultCartBehaviour) createCartItemFromProduct(qty int, marketplaceCode string, variantMarketPlaceCode string, additonalData map[string]string, product domain.BasicProduct) (*domaincart.Item, error) {
+	item := &domaincart.Item{
+		ID:                     strconv.Itoa(rand.Int()),
+		ExternalReference:      strconv.Itoa(rand.Int()),
+		MarketplaceCode:        marketplaceCode,
+		VariantMarketPlaceCode: variantMarketPlaceCode,
+		ProductName:            product.BaseData().Title,
+		Qty:                    qty,
+		AdditionalData:         additonalData,
+	}
 
-	return itemBuilder.Build()
+	currency := product.SaleableData().ActivePrice.GetFinalPrice().Currency()
+
+	if cob.grossPricing {
+		item.SinglePriceGross = product.SaleableData().ActivePrice.GetFinalPrice().GetPayable()
+		net := item.SinglePriceGross.Clone().Amount().Quo(item.SinglePriceGross.Amount(), big.NewFloat(1+(cob.defaultTaxRate/100)))
+		item.SinglePriceNet = priceDomain.NewFromBigFloat(*net, currency).GetPayable()
+	} else {
+		item.SinglePriceNet = product.SaleableData().ActivePrice.GetFinalPrice().GetPayable()
+		gross := item.SinglePriceGross.Clone().Amount().Mul(item.SinglePriceNet.Amount(), big.NewFloat(1+(cob.defaultTaxRate/100)))
+		item.SinglePriceGross = priceDomain.NewFromBigFloat(*gross, currency).GetPayable()
+	}
+
+	gross := item.SinglePriceGross.Clone().Amount().Mul(item.SinglePriceGross.Amount(), big.NewFloat(float64(qty)))
+	item.RowPriceGross = priceDomain.NewFromBigFloat(*gross, currency)
+	_ = item.RowPriceGross.FloatAmount()
+	net := item.SinglePriceNet.Clone().Amount().Mul(item.SinglePriceNet.Amount(), big.NewFloat(float64(qty)))
+	item.RowPriceNet = priceDomain.NewFromBigFloat(*net, currency)
+	_ = item.RowPriceNet.FloatAmount()
+
+	item.RowPriceGrossWithDiscount, item.RowPriceNetWithDiscount = item.RowPriceGross, item.RowPriceNet
+	item.RowPriceGrossWithItemRelatedDiscount, item.RowPriceNetWithItemRelatedDiscount = item.RowPriceGross, item.RowPriceNet
+	if cob.defaultTaxRate > 0.0 {
+		taxAmount, err := item.RowPriceGross.Sub(item.RowPriceNet)
+		if err != nil {
+			return nil, err
+		}
+		item.RowTaxes = []domaincart.Tax{{
+			Amount: taxAmount,
+			Type:   "default",
+			Rate:   big.NewFloat(cob.defaultTaxRate),
+		}}
+	}
+
+	item.TotalDiscountAmount = priceDomain.NewZero(currency)
+
+	return item, nil
 }
 
 // CleanCart removes everything from the cart, e.g. deliveries, billing address, etc

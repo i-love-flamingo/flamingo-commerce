@@ -102,6 +102,7 @@ commerce: {
 			enabled: bool | *true
 			storage: "inmemory"
 			defaultTaxRate?: number
+			productPrices: *"gross" | "net"
 		}
 		placeOrderLogger: {
 			enabled: bool | *true

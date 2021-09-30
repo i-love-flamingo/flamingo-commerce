@@ -1014,7 +1014,7 @@
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/productResultError"
+                            "$ref": "#/definitions/cartResultError"
                         }
                     }
                 }
@@ -1299,6 +1299,9 @@
                     "description": "EntityID is a second identifier that may be used by some backends",
                     "type": "string"
                 },
+                "GrandTotal": {
+                    "$ref": "#/definitions/domain.Price"
+                },
                 "ID": {
                     "description": "ID is the main identifier of the cart",
                     "type": "string"
@@ -1310,6 +1313,45 @@
                 "Purchaser": {
                     "description": "Purchaser hold additional infos for the legal contact person in this order",
                     "$ref": "#/definitions/cart.Person"
+                },
+                "SubTotalGross": {
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "SubTotalGrossWithDiscounts": {
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "SubTotalNet": {
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "SubTotalNetWithDiscounts": {
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "SumAppliedGiftCards": {
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "SumGrandTotalWithGiftCards": {
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "SumItemRelatedDiscountAmount": {
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "SumNonItemRelatedDiscountAmount": {
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "SumShippingGross": {
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "SumShippingGrossWithDiscounts": {
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "SumShippingNet": {
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "SumShippingNetWithDiscounts": {
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "SumTotalDiscountAmount": {
+                    "$ref": "#/definitions/domain.Price"
                 },
                 "Totalitems": {
                     "description": "Additional non taxable totals",
@@ -1347,9 +1389,45 @@
                     "description": "DeliveryInfo contains details for this delivery e.g. how and where the delivery should be delivered to",
                     "$ref": "#/definitions/cart.DeliveryInfo"
                 },
+                "GrandTotal": {
+                    "description": "GrandTotal contains the final price to pay",
+                    "$ref": "#/definitions/domain.Price"
+                },
                 "ShippingItem": {
                     "description": "ShippingItem\trepresent the shipping cost that may be involved in this delivery",
                     "$ref": "#/definitions/cart.ShippingItem"
+                },
+                "SubTotalGross": {
+                    "description": "SubTotalGross contains the sum of row gross prices, without shipping/discounts",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "SubTotalGrossWithDiscounts": {
+                    "description": "SubTotalGrossWithDiscounts contains the sum of row gross prices reduced by the applied discounts",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "SubTotalNet": {
+                    "description": "SubTotalNet contains the sum of row net prices, without shipping/discounts",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "SubTotalNetWithDiscounts": {
+                    "description": "SubTotalNetWithDiscounts contains the sum of row gross prices reduced by the applied discounts",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "SumItemRelatedDiscountAmount": {
+                    "description": "SumItemRelatedDiscountAmount contains the sum of discounts that are related to the item, e.g. promo due to product attribute",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "SumNonItemRelatedDiscountAmount": {
+                    "description": "SumNonItemRelatedDiscountAmount contains the sum of discounts that are not related to the item, e.g. a general promo",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "SumSubTotalDiscountAmount": {
+                    "description": "SumTotalDiscountAmount contains the sum of all discounts (excl. shipping)",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "SumTotalDiscountAmount": {
+                    "description": "SumTotalDiscountAmount contains the sum of all discounts (incl. shipping)",
+                    "$ref": "#/definitions/domain.Price"
                 }
             }
         },
@@ -1429,7 +1507,7 @@
                     }
                 },
                 "AppliedDiscounts": {
-                    "description": "AppliedDiscounts contains the details about the discounts applied to this item - they can be \"itemrelated\" or not",
+                    "description": "AppliedDiscounts contains the details about the discounts applied to this item - they can be \"itemrelated\" or not\nitemrelated would be e.g. special price, buy 3 pay 2\nnon-itemrelated would be e.g. 10% on everything",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/cart.AppliedDiscount"
@@ -1443,8 +1521,17 @@
                     "description": "ID of the item - needs to be unique over the whole cart",
                     "type": "string"
                 },
+                "ItemRelatedDiscountAmount": {
+                    "description": "ItemRelatedDiscountAmount is the sum of all itemrelated Discounts",
+                    "$ref": "#/definitions/domain.Price"
+                },
                 "MarketplaceCode": {
+                    "description": "MarketplaceCode is the identifier for the product",
                     "type": "string"
+                },
+                "NonItemRelatedDiscountAmount": {
+                    "description": "NonItemRelatedDiscountAmount is the sum of non-itemrelated Discounts where IsItemRelated = false",
+                    "$ref": "#/definitions/domain.Price"
                 },
                 "ProductName": {
                     "type": "string"
@@ -1453,31 +1540,51 @@
                     "type": "integer"
                 },
                 "RowPriceGross": {
-                    "description": "RowPriceGross",
+                    "description": "RowPriceGross is the price incl. taxes for the whole Qty of products",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "RowPriceGrossWithDiscount": {
+                    "description": "RowPriceGrossWithDiscount is the price incl. taxes with deducted discounts for the whole Qty of products\nThis is in most cases the final price for the customer to pay",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "RowPriceGrossWithItemRelatedDiscount": {
+                    "description": "RowPriceGrossWithItemRelatedDiscount is the price incl. taxes with deducted item related discounts for the whole Qty of products",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "RowPriceNet": {
-                    "description": "RowPriceNet",
+                    "description": "RowPriceNet is the price excl. taxes for the whole Qty of products for the whole Qty of products",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "RowPriceNetWithDiscount": {
+                    "description": "RowPriceNetWithDiscount is the discounted net price for the whole Qty of products",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "RowPriceNetWithItemRelatedDiscount": {
+                    "description": "RowPriceNetWithItemRelatedDiscount is the price excl. taxes with deducted item related discounts for the whole Qty of products",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "RowTaxes": {
-                    "description": "RowPriceGross",
+                    "description": "RowTaxes is a list of all taxes applied for the given Qty of products",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/cart.Tax"
                     }
                 },
                 "SinglePriceGross": {
-                    "description": "SinglePriceGross gross price (incl. taxes) for a single product",
+                    "description": "SinglePriceGross is the gross price (incl. taxes) for a single product",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "SinglePriceNet": {
-                    "description": "SinglePriceNet net price (excl. taxes) for a single product",
+                    "description": "SinglePriceNet is the net price (excl. taxes) for a single product",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "SourceID": {
                     "description": "Source Id of where the items should be initial picked - This is set by the SourcingLogic",
                     "type": "string"
+                },
+                "TotalDiscountAmount": {
+                    "description": "TotalDiscountAmount is the sum of all applied discounts (aka the savings for the customer)",
+                    "$ref": "#/definitions/domain.Price"
                 },
                 "VariantMarketPlaceCode": {
                     "description": "VariantMarketPlaceCode is used for Configurable products",
@@ -1540,6 +1647,10 @@
                 },
                 "Title": {
                     "type": "string"
+                },
+                "TotalWithDiscountInclTax": {
+                    "description": "TotalWithDiscountInclTax holds the final price for shipping",
+                    "$ref": "#/definitions/domain.Price"
                 }
             }
         },
@@ -1591,6 +1702,17 @@
                 }
             }
         },
+        "cartResultError": {
+            "type": "object",
+            "properties": {
+                "Code": {
+                    "type": "string"
+                },
+                "Message": {
+                    "type": "string"
+                }
+            }
+        },
         "checkoutError": {
             "type": "object",
             "properties": {
@@ -1606,7 +1728,7 @@
             "type": "object",
             "properties": {
                 "Error": {
-                    "$ref": "#/definitions/productResultError"
+                    "$ref": "#/definitions/cartResultError"
                 },
                 "Product": {
                     "$ref": "#/definitions/domain.BasicProduct"
@@ -1633,7 +1755,7 @@
                 },
                 "Error": {
                     "description": "Contains details if success is false",
-                    "$ref": "#/definitions/productResultError"
+                    "$ref": "#/definitions/cartResultError"
                 },
                 "Success": {
                     "type": "boolean"
@@ -2199,17 +2321,6 @@
         },
         "process.StateData": {
             "type": "object"
-        },
-        "productResultError": {
-            "type": "object",
-            "properties": {
-                "Code": {
-                    "type": "string"
-                },
-                "Message": {
-                    "type": "string"
-                }
-            }
         },
         "validation.ItemValidationError": {
             "type": "object",
