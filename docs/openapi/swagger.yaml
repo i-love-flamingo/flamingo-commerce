@@ -493,13 +493,6 @@ definitions:
       Type:
         type: string
     type: object
-  cartResultError:
-    properties:
-      Code:
-        type: string
-      Message:
-        type: string
-    type: object
   checkoutError:
     properties:
       Code:
@@ -510,7 +503,7 @@ definitions:
   controller.APIResult:
     properties:
       Error:
-        $ref: '#/definitions/cartResultError'
+        $ref: '#/definitions/productResultError'
       Product:
         $ref: '#/definitions/domain.BasicProduct'
       Success:
@@ -527,7 +520,7 @@ definitions:
       DataValidationInfo:
         type: object
       Error:
-        $ref: '#/definitions/cartResultError'
+        $ref: '#/definitions/productResultError'
         description: Contains details if success is false
       Success:
         type: boolean
@@ -916,6 +909,13 @@ definitions:
         type: string
     type: object
   process.StateData:
+    type: object
+  productResultError:
+    properties:
+      Code:
+        type: string
+      Message:
+        type: string
     type: object
   validation.ItemValidationError:
     properties:
@@ -1611,7 +1611,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/cartResultError'
+            $ref: '#/definitions/productResultError'
       summary: Get the payment status of current cart (or last placed cart)
       tags:
       - Payment

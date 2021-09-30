@@ -1030,7 +1030,7 @@ var doc = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/cartResultError"
+                            "$ref": "#/definitions/productResultError"
                         }
                     }
                 }
@@ -1740,17 +1740,6 @@ var doc = `{
                 }
             }
         },
-        "cartResultError": {
-            "type": "object",
-            "properties": {
-                "Code": {
-                    "type": "string"
-                },
-                "Message": {
-                    "type": "string"
-                }
-            }
-        },
         "checkoutError": {
             "type": "object",
             "properties": {
@@ -1766,7 +1755,7 @@ var doc = `{
             "type": "object",
             "properties": {
                 "Error": {
-                    "$ref": "#/definitions/cartResultError"
+                    "$ref": "#/definitions/productResultError"
                 },
                 "Product": {
                     "$ref": "#/definitions/domain.BasicProduct"
@@ -1793,7 +1782,7 @@ var doc = `{
                 },
                 "Error": {
                     "description": "Contains details if success is false",
-                    "$ref": "#/definitions/cartResultError"
+                    "$ref": "#/definitions/productResultError"
                 },
                 "Success": {
                     "type": "boolean"
@@ -2356,6 +2345,17 @@ var doc = `{
         },
         "process.StateData": {
             "type": "object"
+        },
+        "productResultError": {
+            "type": "object",
+            "properties": {
+                "Code": {
+                    "type": "string"
+                },
+                "Message": {
+                    "type": "string"
+                }
+            }
         },
         "validation.ItemValidationError": {
             "type": "object",
