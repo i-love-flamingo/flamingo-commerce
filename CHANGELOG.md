@@ -30,6 +30,10 @@
   * **Breaking**: Remove the fields `getAdditionalData, additionalDataKeys, additionalDeliveryInfoKeys` from the `Commerce_CartDeliveryInfo` type
   * **Breaking**: `Commerce_Cart_UpdateDeliveryShippingOptions` mutation responded with slice of `Commerce_Cart_DeliveryAddressForm` which was incorrect as we don't process any form data within the mutation. It responds now rightly only with `processed` state.
 * **Breaking**: Upgrade github.com/go-playground/form to v4, all types are fully compatible, but import paths have to be changed
+* **Breaking**: Move all calculations to cart behaviour implementation
+  * By moving calculation responsibility, we enable different implementation possibilities for calculations like tax before or after discounts, tax on single item or sum and different tax rounding modes instead of having it hard-coded in the flamingo cart.
+  * All calculation functions on cart item, shipping item, delivery and cart are now public fields for which the values must be set by the cart behaviour implementation
+  * The `DefaultCartBehaviour` calculates all new fields accordingly 
 
 **checkout**
 * Introducing Flamingo events on final states of the place order process
