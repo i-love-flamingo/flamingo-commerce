@@ -37,15 +37,6 @@ func TestInMemoryBehaviour_CleanCart(t *testing.T) {
 				newInMemoryStorage(),
 				nil,
 				flamingo.NullLogger{},
-				func() *domaincart.ItemBuilder {
-					return &domaincart.ItemBuilder{}
-				},
-				func() *domaincart.DeliveryBuilder {
-					return &domaincart.DeliveryBuilder{}
-				},
-				func() *domaincart.Builder {
-					return &domaincart.Builder{}
-				},
 				nil,
 				nil,
 				nil,

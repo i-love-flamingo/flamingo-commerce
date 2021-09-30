@@ -32,8 +32,8 @@ func (cs *CartSummary) HasAppliedDiscounts() bool {
 
 // SumTotalDiscountWithGiftCardsAmount – returns sum price of total discounts with applied gift cards
 func (cs *CartSummary) SumTotalDiscountWithGiftCardsAmount() domain.Price {
-	totalDiscount := cs.cart.SumTotalDiscountAmount()
-	appliedGiftCardsAmount, _ := cs.cart.SumAppliedGiftCards()
+	totalDiscount := cs.cart.SumTotalDiscountAmount
+	appliedGiftCardsAmount := cs.cart.SumAppliedGiftCards
 
 	price, _ := totalDiscount.Sub(appliedGiftCardsAmount)
 	return price
@@ -56,20 +56,12 @@ func (cs CartSummary) SumAppliedDiscounts() *domain.Price {
 
 // SumAppliedGiftCards – sums applied gift cards
 func (cs CartSummary) SumAppliedGiftCards() *domain.Price {
-	sum, err := cs.cart.SumAppliedGiftCards()
-	if err != nil {
-		return nil
-	}
-	return &sum
+	return &cs.cart.SumAppliedGiftCards
 }
 
 // SumGrandTotalWithGiftCards – sums grand total with gift cards
 func (cs CartSummary) SumGrandTotalWithGiftCards() *domain.Price {
-	sum, err := cs.cart.SumGrandTotalWithGiftCards()
-	if err != nil {
-		return nil
-	}
-	return &sum
+	return &cs.cart.SumGrandTotalWithGiftCards
 }
 
 // SumTaxes – sums taxes

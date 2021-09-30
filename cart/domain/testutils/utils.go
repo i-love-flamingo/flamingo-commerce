@@ -7,25 +7,6 @@ import (
 	"flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
-type (
-	// ByCode implements sort.Interface for []AppliedDiscount based on code
-	ByCode cart.AppliedDiscounts
-)
-
-// implementations for sort interface
-
-func (a ByCode) Len() int {
-	return len(a)
-}
-
-func (a ByCode) Swap(i, j int) {
-	a[i], a[j] = a[j], a[i]
-}
-
-func (a ByCode) Less(i, j int) bool {
-	return a[i].CampaignCode < a[j].CampaignCode
-}
-
 // BuildItemWithDiscounts helper for item building
 func BuildItemWithDiscounts(t *testing.T) *cart.Item {
 	t.Helper()

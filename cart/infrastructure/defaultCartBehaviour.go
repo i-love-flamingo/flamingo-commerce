@@ -18,15 +18,12 @@ import (
 type (
 	// DefaultCartBehaviour defines the in memory cart order behaviour
 	DefaultCartBehaviour struct {
-		cartStorage             CartStorage
-		productService          domain.ProductService
-		logger                  flamingo.Logger
-		itemBuilderProvider     domaincart.ItemBuilderProvider
-		deliveryBuilderProvider domaincart.DeliveryBuilderProvider
-		cartBuilderProvider     domaincart.BuilderProvider
-		giftCardHandler         GiftCardHandler
-		voucherHandler          VoucherHandler
-		defaultTaxRate          float64
+		cartStorage     CartStorage
+		productService  domain.ProductService
+		logger          flamingo.Logger
+		giftCardHandler GiftCardHandler
+		voucherHandler  VoucherHandler
+		defaultTaxRate  float64
 	}
 
 	// CartStorage Interface - might be implemented by other persistence types later as well
@@ -69,9 +66,6 @@ func (cob *DefaultCartBehaviour) Inject(
 	CartStorage CartStorage,
 	ProductService domain.ProductService,
 	Logger flamingo.Logger,
-	itemBuilderProvider domaincart.ItemBuilderProvider,
-	deliveryBuilderProvider domaincart.DeliveryBuilderProvider,
-	cartBuilderProvider domaincart.BuilderProvider,
 	voucherHandler VoucherHandler,
 	giftCardHandler GiftCardHandler,
 	config *struct {
@@ -81,9 +75,6 @@ func (cob *DefaultCartBehaviour) Inject(
 	cob.cartStorage = CartStorage
 	cob.productService = ProductService
 	cob.logger = Logger.WithField(flamingo.LogKeyCategory, "inmemorybehaviour")
-	cob.itemBuilderProvider = itemBuilderProvider
-	cob.deliveryBuilderProvider = deliveryBuilderProvider
-	cob.cartBuilderProvider = cartBuilderProvider
 	cob.voucherHandler = voucherHandler
 	cob.giftCardHandler = giftCardHandler
 	if config != nil {
@@ -639,7 +630,7 @@ func (cob *DefaultCartBehaviour) checkPaymentSelection(ctx context.Context, cart
 	}
 	paymentSelectionTotal := paymentSelection.TotalValue()
 
-	if !cart.GrandTotal().LikelyEqual(paymentSelectionTotal) {
+	if !cart.GrandTotal.LikelyEqual(paymentSelectionTotal) {
 		return errors.New("Payment Total does not match with Grandtotal")
 	}
 	return nil

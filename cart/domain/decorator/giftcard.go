@@ -2,10 +2,6 @@ package decorator
 
 import "flamingo.me/flamingo-commerce/v3/price/domain"
 
-const (
-	decoratedGiftCardError = "Unable to collect discounts, stopping and returning empty slice"
-)
-
 type (
 	// DecoratedWithGiftCard interface for a decorated object to be able to handle giftcards
 	// the difference to cart.WithGiftCard is, that these functions do NOT provide the client
@@ -36,19 +32,10 @@ func (dc DecoratedCart) HasAppliedGiftCards() bool {
 // SumAppliedGiftCards sum up all applied amounts of giftcads
 // price is returned as a payable
 func (dc DecoratedCart) SumAppliedGiftCards() domain.Price {
-	return dc.executeAndLog(dc.Cart.SumAppliedGiftCards)
+	return dc.Cart.SumAppliedGiftCards
 }
 
 // SumGrandTotalWithGiftCards calculate the grand total of the cart minus gift cards
 func (dc DecoratedCart) SumGrandTotalWithGiftCards() domain.Price {
-	return dc.executeAndLog(dc.Cart.SumGrandTotalWithGiftCards)
-}
-
-// executeAndLog executes given function and logs in case of an error
-func (dc DecoratedCart) executeAndLog(toExecute func() (domain.Price, error)) domain.Price {
-	result, err := toExecute()
-	if err != nil {
-		dc.Logger.Error(decoratedGiftCardError)
-	}
-	return result
+	return dc.Cart.SumGrandTotalWithGiftCards
 }

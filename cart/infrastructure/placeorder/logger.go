@@ -4,16 +4,17 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
-	"flamingo.me/flamingo/v3/core/auth"
-	"flamingo.me/flamingo/v3/framework/flamingo"
 	"fmt"
-	"golang.org/x/mod/modfile"
 	"io/ioutil"
 	"os"
 	"path"
 	"time"
+
+	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
+	"flamingo.me/flamingo/v3/core/auth"
+	"flamingo.me/flamingo/v3/framework/flamingo"
+	"golang.org/x/mod/modfile"
 )
 
 type (
@@ -78,15 +79,15 @@ func (e *PlaceOrderLoggerAdapter) placeCart(cart *cartDomain.Cart, payment *plac
 
 // checkPayment
 func (e *PlaceOrderLoggerAdapter) checkPayment(cart *cartDomain.Cart, payment *placeorder.Payment) error {
-	if payment == nil && cart.GrandTotal().IsPositive() {
+	if payment == nil && cart.GrandTotal.IsPositive() {
 		return errors.New("No valid Payment given")
 	}
-	if cart.GrandTotal().IsPositive() {
+	if cart.GrandTotal.IsPositive() {
 		totalPrice, err := payment.TotalValue()
 		if err != nil {
 			return err
 		}
-		if !totalPrice.Equal(cart.GrandTotal()) {
+		if !totalPrice.Equal(cart.GrandTotal) {
 			return errors.New("Payment Total does not match with Grandtotal")
 		}
 	}

@@ -65,7 +65,7 @@ func (po PlaceOrder) Run(ctx context.Context, p *process.Process) process.RunRes
 	decoratedCart := po.cartDecoratorFactory.Create(ctx, cart)
 
 	payment := &placeorder.Payment{}
-	if !cart.GrandTotal().IsZero() {
+	if !cart.GrandTotal.IsZero() {
 		paymentGateway, err := po.paymentService.PaymentGatewayByCart(cart)
 		if err != nil {
 			return process.RunResult{

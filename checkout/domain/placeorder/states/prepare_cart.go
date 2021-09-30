@@ -46,7 +46,7 @@ func (v PrepareCart) Run(ctx context.Context, p *process.Process) process.RunRes
 		}
 	}
 
-	if c.GrandTotal().IsZero() {
+	if c.GrandTotal.IsZero() {
 		p.UpdateState(ValidateCart{}.Name(), nil)
 		p.UpdateCart(*c)
 		return process.RunResult{}
