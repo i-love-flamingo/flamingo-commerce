@@ -2,10 +2,11 @@ package infrastructure
 
 import (
 	"context"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	"flamingo.me/flamingo/v3/framework/flamingo"
 	"math/rand"
 	"strconv"
+
+	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo/v3/framework/flamingo"
 )
 
 type (
@@ -49,6 +50,6 @@ func (gcs *DefaultGuestCartService) GetModifyBehaviour(context.Context) (cart.Mo
 // Deprecated: (deprecated in the interface)
 func (gcs *DefaultGuestCartService) RestoreCart(ctx context.Context, cart cart.Cart) (*cart.Cart, error) {
 	// RestoreCart restores a previously used cart
-	gcs.logger.Warn("RestoreCart depricated")
+	gcs.logger.Warn("RestoreCart deprecated")
 	return &cart, nil
 }

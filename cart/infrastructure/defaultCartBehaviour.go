@@ -25,6 +25,7 @@ type (
 		voucherHandler  VoucherHandler
 		defaultTaxRate  float64
 		grossPricing    bool
+		defaultCurrency string
 	}
 
 	// CartStorage Interface - might be implemented by other persistence types later as well
@@ -70,8 +71,9 @@ func (cob *DefaultCartBehaviour) Inject(
 	voucherHandler VoucherHandler,
 	giftCardHandler GiftCardHandler,
 	config *struct {
-		DefaultTaxRate float64 `inject:"config:commerce.cart.defaultCartAdapter.defaultTaxRate,optional"`
-		ProductPricing string  `inject:"config:commerce.cart.defaultCartAdapter.productPrices"`
+		DefaultTaxRate  float64 `inject:"config:commerce.cart.defaultCartAdapter.defaultTaxRate,optional"`
+		ProductPricing  string  `inject:"config:commerce.cart.defaultCartAdapter.productPrices"`
+		DefaultCurrency string  `inject:"config:commerce.cart.defaultCartAdapter.defaultCurrency"`
 	},
 ) {
 	cob.cartStorage = CartStorage
@@ -81,6 +83,7 @@ func (cob *DefaultCartBehaviour) Inject(
 	cob.giftCardHandler = giftCardHandler
 	if config != nil {
 		cob.defaultTaxRate = config.DefaultTaxRate
+		cob.defaultCurrency = config.DefaultCurrency
 		if config.ProductPricing == "gross" {
 			cob.grossPricing = true
 		}
@@ -141,7 +144,7 @@ func (cob *DefaultCartBehaviour) DeleteItem(ctx context.Context, cart *domaincar
 		}
 	}
 
-	cob.collectTotals(cart)
+	cob.collectTotals(&newCart)
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "newCart.infrastructure.DefaultCartBehaviour: error on saving newCart")
@@ -192,7 +195,7 @@ func (cob *DefaultCartBehaviour) UpdateItems(ctx context.Context, cart *domainca
 		}
 	}
 
-	cob.collectTotals(cart)
+	cob.collectTotals(&newCart)
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
@@ -300,7 +303,7 @@ func (cob *DefaultCartBehaviour) AddToCart(ctx context.Context, cart *domaincart
 		}
 	}
 
-	cob.collectTotals(cart)
+	cob.collectTotals(&newCart)
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
@@ -372,6 +375,8 @@ func (cob *DefaultCartBehaviour) createCartItemFromProduct(qty int, marketplaceC
 	}
 
 	item.TotalDiscountAmount = priceDomain.NewZero(currency)
+	item.ItemRelatedDiscountAmount = priceDomain.NewZero(currency)
+	item.NonItemRelatedDiscountAmount = priceDomain.NewZero(currency)
 
 	return item, nil
 }
@@ -396,7 +401,7 @@ func (cob *DefaultCartBehaviour) CleanCart(ctx context.Context, cart *domaincart
 	newCart.BillingAddress = nil
 	newCart.Totalitems = nil
 
-	cob.collectTotals(cart)
+	cob.collectTotals(&newCart)
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
@@ -434,7 +439,7 @@ func (cob *DefaultCartBehaviour) CleanDelivery(ctx context.Context, cart *domain
 	newCart.Deliveries[newLength] = domaincart.Delivery{}
 	newCart.Deliveries = newCart.Deliveries[:newLength]
 
-	cob.collectTotals(cart)
+	cob.collectTotals(&newCart)
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
@@ -456,7 +461,7 @@ func (cob *DefaultCartBehaviour) UpdatePurchaser(ctx context.Context, cart *doma
 		newCart.AdditionalData.CustomAttributes = additionalData.CustomAttributes
 	}
 
-	cob.collectTotals(cart)
+	cob.collectTotals(&newCart)
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
@@ -474,7 +479,7 @@ func (cob *DefaultCartBehaviour) UpdateBillingAddress(ctx context.Context, cart 
 
 	newCart.BillingAddress = &billingAddress
 
-	cob.collectTotals(cart)
+	cob.collectTotals(&newCart)
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
@@ -491,7 +496,7 @@ func (cob *DefaultCartBehaviour) UpdateAdditionalData(ctx context.Context, cart 
 	}
 
 	newCart.AdditionalData = *additionalData
-	cob.collectTotals(cart)
+	cob.collectTotals(&newCart)
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
 
 	if err != nil {
@@ -516,7 +521,7 @@ func (cob *DefaultCartBehaviour) UpdatePaymentSelection(ctx context.Context, car
 	}
 	newCart.PaymentSelection = paymentSelection
 
-	cob.collectTotals(cart)
+	cob.collectTotals(&newCart)
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
@@ -538,7 +543,7 @@ func (cob *DefaultCartBehaviour) UpdateDeliveryInfo(ctx context.Context, cart *d
 	for key, delivery := range newCart.Deliveries {
 		if delivery.DeliveryInfo.Code == deliveryCode {
 			newCart.Deliveries[key].DeliveryInfo = deliveryInfo
-			cob.collectTotals(cart)
+			cob.collectTotals(&newCart)
 			err := cob.cartStorage.StoreCart(ctx, &newCart)
 			if err != nil {
 				return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
@@ -548,7 +553,7 @@ func (cob *DefaultCartBehaviour) UpdateDeliveryInfo(ctx context.Context, cart *d
 	}
 	newCart.Deliveries = append(newCart.Deliveries, domaincart.Delivery{DeliveryInfo: deliveryInfo})
 
-	cob.collectTotals(cart)
+	cob.collectTotals(&newCart)
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
@@ -589,6 +594,7 @@ func (cob *DefaultCartBehaviour) StoreNewCart(ctx context.Context, newCart *doma
 	if newCart.ID == "" {
 		return nil, errors.New("no id given")
 	}
+	newCart.DefaultCurrency = cob.defaultCurrency
 	cob.collectTotals(newCart)
 	return newCart, cob.cartStorage.StoreCart(ctx, newCart)
 }
@@ -739,7 +745,7 @@ func (cob *DefaultCartBehaviour) collectTotals(cart *domaincart.Cart) {
 	cart.SumItemRelatedDiscountAmount = priceDomain.NewZero(cart.DefaultCurrency)
 
 	for i := 0; i < len(cart.Deliveries); i++ {
-		delivery := cart.Deliveries[i]
+		delivery := &cart.Deliveries[i]
 		delivery.SubTotalGross = priceDomain.NewZero(cart.DefaultCurrency)
 		delivery.SubTotalNet = priceDomain.NewZero(cart.DefaultCurrency)
 		delivery.SumTotalDiscountAmount = priceDomain.NewZero(cart.DefaultCurrency)
@@ -769,21 +775,33 @@ func (cob *DefaultCartBehaviour) collectTotals(cart *domaincart.Cart) {
 		}
 
 		// todo: gift cards?
-		cart.GrandTotal.ForceAdd(delivery.GrandTotal)
-		cart.SumShippingNet.ForceAdd(delivery.ShippingItem.PriceNet)
-		cart.SumShippingNetWithDiscounts.ForceAdd(delivery.ShippingItem.PriceNetWithDiscounts)
-		cart.SumShippingGross.ForceAdd(delivery.ShippingItem.PriceGross)
-		cart.SumShippingGrossWithDiscounts.ForceAdd(delivery.ShippingItem.PriceGrossWithDiscounts)
-		cart.SubTotalGross.ForceAdd(delivery.SubTotalGross)
-		cart.SubTotalNet.ForceAdd(delivery.SubTotalNet)
-		cart.SubTotalGrossWithDiscounts.ForceAdd(delivery.SubTotalGrossWithDiscounts)
-		cart.SubTotalNetWithDiscounts.ForceAdd(delivery.SubTotalNetWithDiscounts)
-		cart.SumTotalDiscountAmount.ForceAdd(delivery.SumTotalDiscountAmount)
-		cart.SumNonItemRelatedDiscountAmount.ForceAdd(delivery.SumNonItemRelatedDiscountAmount)
-		cart.SumItemRelatedDiscountAmount.ForceAdd(delivery.SumItemRelatedDiscountAmount)
+		cart.GrandTotal = cart.GrandTotal.ForceAdd(delivery.GrandTotal)
+		cart.SumShippingNet = cart.SumShippingNet.ForceAdd(delivery.ShippingItem.PriceNet)
+		cart.SumShippingNetWithDiscounts = cart.SumShippingNetWithDiscounts.ForceAdd(delivery.ShippingItem.PriceNetWithDiscounts)
+		cart.SumShippingGross = cart.SumShippingGross.ForceAdd(delivery.ShippingItem.PriceGross)
+		cart.SumShippingGrossWithDiscounts = cart.SumShippingGrossWithDiscounts.ForceAdd(delivery.ShippingItem.PriceGrossWithDiscounts)
+		cart.SubTotalGross = cart.SubTotalGross.ForceAdd(delivery.SubTotalGross)
+		cart.SubTotalNet = cart.SubTotalNet.ForceAdd(delivery.SubTotalNet)
+		cart.SubTotalGrossWithDiscounts = cart.SubTotalGrossWithDiscounts.ForceAdd(delivery.SubTotalGrossWithDiscounts)
+		cart.SubTotalNetWithDiscounts = cart.SubTotalNetWithDiscounts.ForceAdd(delivery.SubTotalNetWithDiscounts)
+		cart.SumTotalDiscountAmount = cart.SumTotalDiscountAmount.ForceAdd(delivery.SumTotalDiscountAmount)
+		cart.SumNonItemRelatedDiscountAmount = cart.SumNonItemRelatedDiscountAmount.ForceAdd(delivery.SumNonItemRelatedDiscountAmount)
+		cart.SumItemRelatedDiscountAmount = cart.SumItemRelatedDiscountAmount.ForceAdd(delivery.SumItemRelatedDiscountAmount)
 	}
+
 	for _, totalitem := range cart.Totalitems {
 		cart.GrandTotal = cart.GrandTotal.ForceAdd(totalitem.Price)
+	}
+
+	sumAppliedGiftCards := priceDomain.NewZero(cart.DefaultCurrency)
+	for _, card := range cart.AppliedGiftCards {
+		sumAppliedGiftCards = sumAppliedGiftCards.ForceAdd(card.Applied)
+	}
+
+	cart.SumAppliedGiftCards = sumAppliedGiftCards
+	cart.SumGrandTotalWithGiftCards, _ = cart.GrandTotal.Sub(cart.SumAppliedGiftCards)
+	if cart.SumGrandTotalWithGiftCards.IsNegative() {
+		cart.SumGrandTotalWithGiftCards = priceDomain.NewZero(cart.DefaultCurrency)
 	}
 }
 
@@ -823,9 +841,10 @@ func (DefaultGiftCardHandler) ApplyGiftCard(_ context.Context, cart *domaincart.
 
 	giftCard := domaincart.AppliedGiftCard{
 		Code:      giftCardCode,
-		Applied:   priceDomain.NewFromInt(10, 100, "$"),
-		Remaining: priceDomain.NewFromInt(0, 100, "$"),
+		Applied:   priceDomain.NewFromInt(10, 100, cart.DefaultCurrency),
+		Remaining: priceDomain.NewFromInt(0, 100, cart.DefaultCurrency),
 	}
+
 	cart.AppliedGiftCards = append(cart.AppliedGiftCards, giftCard)
 
 	return cart, nil

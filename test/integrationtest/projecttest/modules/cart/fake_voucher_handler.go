@@ -6,6 +6,7 @@ import (
 
 	domainCart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/infrastructure"
+	"flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
 type (
@@ -44,6 +45,10 @@ func (f FakeVoucherHandler) ApplyVoucher(ctx context.Context, cart *domainCart.C
 					IsItemRelated: false,
 					SortOrder:     0,
 				}}
+				cart.Deliveries[delKey].Cartitems[itemKey].RowPriceGrossWithDiscount = domain.NewZero(item.RowPriceGross.Currency())
+				cart.Deliveries[delKey].Cartitems[itemKey].RowPriceNetWithDiscount = domain.NewZero(item.RowPriceGross.Currency())
+				cart.Deliveries[delKey].Cartitems[itemKey].NonItemRelatedDiscountAmount = item.RowPriceGross.Inverse()
+				cart.Deliveries[delKey].Cartitems[itemKey].TotalDiscountAmount = item.RowPriceGross.Inverse()
 			}
 		}
 	}

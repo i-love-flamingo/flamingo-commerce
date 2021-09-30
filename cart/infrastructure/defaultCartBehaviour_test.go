@@ -334,7 +334,7 @@ func TestInMemoryBehaviour_ApplyGiftCard(t *testing.T) {
 		{
 			name: "apply valid giftcard - success",
 			args: args{
-				cart:         &domaincart.Cart{},
+				cart:         &domaincart.Cart{DefaultCurrency: "$"},
 				giftCardCode: "valid_giftcard",
 			},
 			want: []domaincart.AppliedGiftCard{
@@ -365,7 +365,11 @@ func TestInMemoryBehaviour_ApplyGiftCard(t *testing.T) {
 				flamingo.NullLogger{},
 				&DefaultVoucherHandler{},
 				&DefaultGiftCardHandler{},
-				nil,
+				&struct {
+					DefaultTaxRate  float64 `inject:"config:commerce.cart.defaultCartAdapter.defaultTaxRate,optional"`
+					ProductPricing  string  `inject:"config:commerce.cart.defaultCartAdapter.productPrices"`
+					DefaultCurrency string  `inject:"config:commerce.cart.defaultCartAdapter.defaultCurrency"`
+				}{DefaultCurrency: "$"},
 			)
 			got, _, err := cob.ApplyGiftCard(context.Background(), tt.args.cart, tt.args.giftCardCode)
 			if (err != nil) != tt.wantErr {
@@ -500,9 +504,10 @@ func TestDefaultCartBehaviour_createCartItemFromProduct(t *testing.T) {
 	t.Run("gross", func(t *testing.T) {
 		cob := DefaultCartBehaviour{}
 		cob.Inject(nil, nil, flamingo.NullLogger{}, nil, nil, &struct {
-			DefaultTaxRate float64 `inject:"config:commerce.cart.defaultCartAdapter.defaultTaxRate,optional"`
-			ProductPricing string  `inject:"config:commerce.cart.defaultCartAdapter.productPrices"`
-		}{ProductPricing: "gross", DefaultTaxRate: 10.0})
+			DefaultTaxRate  float64 `inject:"config:commerce.cart.defaultCartAdapter.defaultTaxRate,optional"`
+			ProductPricing  string  `inject:"config:commerce.cart.defaultCartAdapter.productPrices"`
+			DefaultCurrency string  `inject:"config:commerce.cart.defaultCartAdapter.defaultCurrency"`
+		}{ProductPricing: "gross", DefaultTaxRate: 10.0, DefaultCurrency: "€"})
 
 		item, err := cob.createCartItemFromProduct(2, "ma", "", map[string]string{}, domain.SimpleProduct{
 			Saleable: domain.Saleable{
@@ -524,9 +529,10 @@ func TestDefaultCartBehaviour_createCartItemFromProduct(t *testing.T) {
 	t.Run("net", func(t *testing.T) {
 		cob := DefaultCartBehaviour{}
 		cob.Inject(nil, nil, flamingo.NullLogger{}, nil, nil, &struct {
-			DefaultTaxRate float64 `inject:"config:commerce.cart.defaultCartAdapter.defaultTaxRate,optional"`
-			ProductPricing string  `inject:"config:commerce.cart.defaultCartAdapter.productPrices"`
-		}{ProductPricing: "net", DefaultTaxRate: 10.0})
+			DefaultTaxRate  float64 `inject:"config:commerce.cart.defaultCartAdapter.defaultTaxRate,optional"`
+			ProductPricing  string  `inject:"config:commerce.cart.defaultCartAdapter.productPrices"`
+			DefaultCurrency string  `inject:"config:commerce.cart.defaultCartAdapter.defaultCurrency"`
+		}{ProductPricing: "net", DefaultTaxRate: 10.0, DefaultCurrency: "€"})
 
 		item, err := cob.createCartItemFromProduct(2, "ma", "", map[string]string{}, domain.SimpleProduct{
 			Saleable: domain.Saleable{
