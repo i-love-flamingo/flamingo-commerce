@@ -18,7 +18,6 @@ func getPaymentMethodMapping(t *testing.T) map[string]string {
 }
 
 func Test_CanBuildSimpleSelectionFromCard(t *testing.T) {
-
 	cart := Cart{
 		Deliveries: []Delivery{
 			{
@@ -27,17 +26,16 @@ func Test_CanBuildSimpleSelectionFromCard(t *testing.T) {
 				},
 				Cartitems: []Item{
 					{
-						ID:            "1",
-						RowPriceGross: domain.NewFromInt(199, 100, "€"),
+						ID:                        "1",
+						RowPriceGrossWithDiscount: domain.NewFromInt(199, 100, "€"),
 					},
 					{
-						ID:            "2",
-						RowPriceGross: domain.NewFromInt(299, 100, "€"),
+						ID:                        "2",
+						RowPriceGrossWithDiscount: domain.NewFromInt(299, 100, "€"),
 					},
 				},
 				ShippingItem: ShippingItem{
-					PriceNet:   domain.NewFromInt(7, 1, "€"),
-					PriceGross: domain.NewFromInt(7, 1, "€"),
+					TotalWithDiscountInclTax: domain.NewFromInt(7, 1, "€"),
 				},
 			},
 		},

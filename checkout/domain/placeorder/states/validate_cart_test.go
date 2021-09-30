@@ -124,32 +124,15 @@ func TestValidateCart_Run(t *testing.T) {
 			state := new(states.ValidateCart).Inject(&cartService)
 			p := &process.Process{}
 			cart := cartDomain.Cart{
-				ID:       "cart-id",
-				EntityID: "entity-id",
-				Deliveries: []cartDomain.Delivery{
-					{
-						Cartitems: []cartDomain.Item{
-							{
-								ID:               "1",
-								Qty:              1,
-								SinglePriceGross: domain.NewFromInt(1, 1, "EUR"),
-								RowPriceGross:    domain.NewFromInt(1, 1, "EUR"),
-								RowPriceNet:      domain.NewFromInt(1, 1, "EUR"),
-								SinglePriceNet:   domain.NewFromInt(1, 1, "EUR"),
-							},
-						},
-					},
-				},
+				ID:         "cart-id",
+				EntityID:   "entity-id",
+				GrandTotal: domain.NewFromInt(1, 1, "EUR"),
 			}
 
 			if tt.isGrandTotalZero {
-				cart.Deliveries[0].Cartitems[0].AppliedDiscounts = []cartDomain.AppliedDiscount{
-					{
-						CampaignCode: "test",
-						Applied:      domain.NewFromInt(-1, 1, "EUR"),
-					},
-				}
+				cart.GrandTotal = domain.NewFromInt(0, 1, "EUR")
 			}
+
 			p.UpdateCart(cart)
 			p.UpdateState(state.Name(), nil)
 			ctx := web.ContextWithSession(context.Background(), web.EmptySession())
