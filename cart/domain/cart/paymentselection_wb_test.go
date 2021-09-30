@@ -36,7 +36,7 @@ func Test_CanBuildSimpleSelectionFromCard(t *testing.T) {
 					},
 				},
 				ShippingItem: ShippingItem{
-					TotalWithDiscountInclTax: domain.NewFromInt(7, 1, "€"),
+					PriceGrossWithDiscounts: domain.NewFromInt(7, 1, "€"),
 				},
 			},
 		},
@@ -63,7 +63,7 @@ func Test_CanBuildSimpleSelectionWithGiftCard_NoGc(t *testing.T) {
 					},
 				},
 				ShippingItem: ShippingItem{
-					TotalWithDiscountInclTax: domain.NewFromInt(7, 1, "€"),
+					PriceGrossWithDiscounts: domain.NewFromInt(7, 1, "€"),
 				},
 			},
 		},
@@ -93,7 +93,7 @@ func Test_CanBuildSimpleSelectionWithGiftCard(t *testing.T) {
 					},
 				},
 				ShippingItem: ShippingItem{
-					TotalWithDiscountInclTax: domain.NewFromInt(7, 1, "€"),
+					PriceGrossWithDiscounts: domain.NewFromInt(7, 1, "€"),
 				},
 			},
 		},
@@ -147,7 +147,7 @@ func Test_CanBuildSimpleSelectionWithGiftCardFullPayment(t *testing.T) {
 					},
 				},
 				ShippingItem: ShippingItem{
-					TotalWithDiscountInclTax: domain.NewFromInt(7, 1, "€"),
+					PriceGrossWithDiscounts: domain.NewFromInt(7, 1, "€"),
 				},
 			},
 		},
@@ -260,8 +260,8 @@ func Test_CartWithExpensiveItems(t *testing.T) {
 					},
 				},
 				ShippingItem: ShippingItem{
-					Title:                    "1",
-					TotalWithDiscountInclTax: domain.NewFromInt(88895, 100, "€"),
+					Title:                   "1",
+					PriceGrossWithDiscounts: domain.NewFromInt(88895, 100, "€"),
 				},
 			},
 		},
@@ -319,8 +319,8 @@ func Test_CartWithShipping(t *testing.T) {
 					},
 				},
 				ShippingItem: ShippingItem{
-					Title:                    "1",
-					TotalWithDiscountInclTax: domain.NewFromInt(99, 1, "€"),
+					Title:                   "1",
+					PriceGrossWithDiscounts: domain.NewFromInt(99, 1, "€"),
 				},
 			},
 		},
@@ -381,8 +381,8 @@ func Test_CreateSimplePaymentWithoutGiftCards(t *testing.T) {
 					},
 				},
 				ShippingItem: ShippingItem{
-					Title:                    "1",
-					TotalWithDiscountInclTax: domain.NewFromInt(20, 100, "€"),
+					Title:                   "1",
+					PriceGrossWithDiscounts: domain.NewFromInt(20, 100, "€"),
 				},
 			},
 		},
@@ -419,8 +419,8 @@ func Test_CreatePaymentWithFilteredCharges(t *testing.T) {
 					},
 				},
 				ShippingItem: ShippingItem{
-					Title:                    "1",
-					TotalWithDiscountInclTax: domain.NewFromInt(20, 1, "€"),
+					Title:                   "1",
+					PriceGrossWithDiscounts: domain.NewFromInt(20, 1, "€"),
 				},
 			},
 		},
@@ -492,8 +492,8 @@ func Test_CreatePaymentWithDiscounts(t *testing.T) {
 					},
 				},
 				ShippingItem: ShippingItem{
-					Title:                    "home",
-					TotalWithDiscountInclTax: domain.NewFromInt(28, 1, "€"),
+					Title:                   "home",
+					PriceGrossWithDiscounts: domain.NewFromInt(28, 1, "€"),
 				},
 			},
 		},

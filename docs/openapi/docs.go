@@ -1113,6 +1113,26 @@ var doc = `{
                 "$ref": "#/definitions/CategoryAttribute"
             }
         },
+        "ProductMedia": {
+            "type": "object",
+            "properties": {
+                "MimeType": {
+                    "type": "string"
+                },
+                "Reference": {
+                    "type": "string"
+                },
+                "Title": {
+                    "type": "string"
+                },
+                "Type": {
+                    "type": "string"
+                },
+                "Usage": {
+                    "type": "string"
+                }
+            }
+        },
         "application.PlaceOrderPaymentInfo": {
             "type": "object",
             "properties": {
@@ -1655,7 +1675,13 @@ var doc = `{
                 "PriceGross": {
                     "$ref": "#/definitions/domain.Price"
                 },
+                "PriceGrossWithDiscounts": {
+                    "$ref": "#/definitions/domain.Price"
+                },
                 "PriceNet": {
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "PriceNetWithDiscounts": {
                     "$ref": "#/definitions/domain.Price"
                 },
                 "TaxAmount": {
@@ -1663,10 +1689,6 @@ var doc = `{
                 },
                 "Title": {
                     "type": "string"
-                },
-                "TotalWithDiscountInclTax": {
-                    "description": "TotalWithDiscountInclTax holds the final price for shipping",
-                    "$ref": "#/definitions/domain.Price"
                 }
             }
         },
@@ -2036,9 +2058,6 @@ var doc = `{
                 }
             }
         },
-        "domain.Media": {
-            "type": "object"
-        },
         "domain.PaymentRequestAPI": {
             "type": "object",
             "properties": {
@@ -2197,7 +2216,7 @@ var doc = `{
                 "Media": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/domain.Media"
+                        "$ref": "#/definitions/ProductMedia"
                     }
                 },
                 "RetailerCode": {
@@ -2256,7 +2275,7 @@ var doc = `{
                     "description": "Media",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/domain.Media"
+                        "$ref": "#/definitions/ProductMedia"
                     }
                 },
                 "PreSelectedVariantSku": {

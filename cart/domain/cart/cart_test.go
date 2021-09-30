@@ -784,13 +784,13 @@ func TestCart_GetAllPaymentRequiredItems(t *testing.T) {
 					},
 				},
 				ShippingItem: cartDomain.ShippingItem{
-					TotalWithDiscountInclTax: domain.NewZero("$"),
+					PriceGrossWithDiscounts: domain.NewZero("$"),
 				},
 			},
 			{
 				DeliveryInfo: cartDomain.DeliveryInfo{Code: "delivery-2"},
 				ShippingItem: cartDomain.ShippingItem{
-					TotalWithDiscountInclTax: domain.NewFromInt(55, 10, "$"),
+					PriceGrossWithDiscounts: domain.NewFromInt(55, 10, "$"),
 				},
 			},
 		},

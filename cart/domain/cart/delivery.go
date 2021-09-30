@@ -60,13 +60,13 @@ type (
 
 	// ShippingItem represents shipping costs that need to be paid by the customer
 	ShippingItem struct {
-		Title            string
-		PriceNet         priceDomain.Price
-		PriceGross       priceDomain.Price
-		TaxAmount        priceDomain.Price
-		AppliedDiscounts AppliedDiscounts
-		// TotalWithDiscountInclTax holds the final price for shipping
-		TotalWithDiscountInclTax priceDomain.Price
+		Title                   string
+		PriceNet                priceDomain.Price
+		PriceNetWithDiscounts   priceDomain.Price
+		PriceGross              priceDomain.Price
+		PriceGrossWithDiscounts priceDomain.Price
+		TaxAmount               priceDomain.Price
+		AppliedDiscounts        AppliedDiscounts
 	}
 
 	// AdditionalDeliverInfo is an interface that allows to store "any" additional objects on the cart

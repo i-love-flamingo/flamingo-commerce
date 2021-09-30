@@ -2,7 +2,6 @@ package infrastructure
 
 import (
 	"context"
-	"reflect"
 	"testing"
 
 	domaincart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -189,7 +188,7 @@ func TestInMemoryBehaviour_ApplyVoucher(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *domaincart.Cart
+		want    []domaincart.CouponCode
 		wantErr bool
 	}{
 		{
@@ -198,11 +197,9 @@ func TestInMemoryBehaviour_ApplyVoucher(t *testing.T) {
 				cart:        &domaincart.Cart{},
 				voucherCode: "valid_voucher",
 			},
-			want: &domaincart.Cart{
-				AppliedCouponCodes: []domaincart.CouponCode{
-					{
-						Code: "valid_voucher",
-					},
+			want: []domaincart.CouponCode{
+				{
+					Code: "valid_voucher",
 				},
 			},
 			wantErr: false,
@@ -233,8 +230,8 @@ func TestInMemoryBehaviour_ApplyVoucher(t *testing.T) {
 				t.Errorf("DefaultCartBehaviour.ApplyVoucher() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("DefaultCartBehaviour.ApplyVoucher() got = %v, want %v", got, tt.want)
+			if !tt.wantErr {
+				assert.Equal(t, tt.want, got.AppliedCouponCodes)
 			}
 		})
 	}
@@ -250,7 +247,7 @@ func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want *domaincart.Cart
+		want []domaincart.CouponCode
 	}{
 		{
 			name: "Remove voucher from cart with vouchers",
@@ -265,11 +262,9 @@ func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 				},
 				couponCodeToRemove: "dummy-voucher-20",
 			},
-			want: &domaincart.Cart{
-				AppliedCouponCodes: []domaincart.CouponCode{
-					{Code: "OFF20"},
-					{Code: "SALE"},
-				},
+			want: []domaincart.CouponCode{
+				{Code: "OFF20"},
+				{Code: "SALE"},
 			},
 		},
 		{
@@ -279,7 +274,7 @@ func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 				cart:               &domaincart.Cart{},
 				couponCodeToRemove: "dummy-voucher-20",
 			},
-			want: &domaincart.Cart{},
+			want: nil,
 		},
 		{
 			name: "Remove voucher from cart that does not exist",
@@ -294,12 +289,10 @@ func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 				},
 				couponCodeToRemove: "non-existing-voucher",
 			},
-			want: &domaincart.Cart{
-				AppliedCouponCodes: []domaincart.CouponCode{
-					{Code: "OFF20"},
-					{Code: "dummy-voucher-20"},
-					{Code: "SALE"},
-				},
+			want: []domaincart.CouponCode{
+				{Code: "OFF20"},
+				{Code: "dummy-voucher-20"},
+				{Code: "SALE"},
 			},
 		},
 	}
@@ -319,11 +312,9 @@ func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 				t.Fatalf("cart could not be initialized")
 			}
 
-			got, _, _ := cob.RemoveVoucher(tt.args.ctx, tt.args.cart, tt.args.couponCodeToRemove)
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("DefaultCartBehaviour.RemoveVoucher() got = %v, want %v", got, tt.want)
-			}
-
+			got, _, err := cob.RemoveVoucher(tt.args.ctx, tt.args.cart, tt.args.couponCodeToRemove)
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got.AppliedCouponCodes)
 		})
 	}
 }
@@ -337,7 +328,7 @@ func TestInMemoryBehaviour_ApplyGiftCard(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *domaincart.Cart
+		want    []domaincart.AppliedGiftCard
 		wantErr bool
 	}{
 		{
@@ -346,13 +337,11 @@ func TestInMemoryBehaviour_ApplyGiftCard(t *testing.T) {
 				cart:         &domaincart.Cart{},
 				giftCardCode: "valid_giftcard",
 			},
-			want: &domaincart.Cart{
-				AppliedGiftCards: []domaincart.AppliedGiftCard{
-					{
-						Code:      "valid_giftcard",
-						Applied:   priceDomain.NewFromInt(10, 100, "$"),
-						Remaining: priceDomain.NewFromInt(0, 100, "$"),
-					},
+			want: []domaincart.AppliedGiftCard{
+				{
+					Code:      "valid_giftcard",
+					Applied:   priceDomain.NewFromInt(10, 100, "$"),
+					Remaining: priceDomain.NewFromInt(0, 100, "$"),
 				},
 			},
 			wantErr: false,
@@ -383,8 +372,8 @@ func TestInMemoryBehaviour_ApplyGiftCard(t *testing.T) {
 				t.Errorf("DefaultCartBehaviour.ApplyGiftCard() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("DefaultCartBehaviour.ApplyGiftCard() got = %v, want %v", got, tt.want)
+			if !tt.wantErr {
+				assert.Equal(t, tt.want, got.AppliedGiftCards)
 			}
 		})
 	}
@@ -399,7 +388,7 @@ func TestInMemoryBehaviour_RemoveGiftCard(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *domaincart.Cart
+		want    []domaincart.AppliedGiftCard
 		wantErr bool
 	}{
 		{
@@ -421,13 +410,11 @@ func TestInMemoryBehaviour_RemoveGiftCard(t *testing.T) {
 				},
 				giftCardCode: "to-remove",
 			},
-			want: &domaincart.Cart{
-				AppliedGiftCards: []domaincart.AppliedGiftCard{
-					{
-						Code:      "valid",
-						Applied:   priceDomain.NewFromInt(10, 100, "$"),
-						Remaining: priceDomain.NewFromInt(0, 100, "$"),
-					},
+			want: []domaincart.AppliedGiftCard{
+				{
+					Code:      "valid",
+					Applied:   priceDomain.NewFromInt(10, 100, "$"),
+					Remaining: priceDomain.NewFromInt(0, 100, "$"),
 				},
 			},
 			wantErr: false,
@@ -449,8 +436,8 @@ func TestInMemoryBehaviour_RemoveGiftCard(t *testing.T) {
 				t.Errorf("DefaultCartBehaviour.ApplyGiftCard() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("DefaultCartBehaviour.ApplyGiftCard() got = %v, want %v", got, tt.want)
+			if !tt.wantErr {
+				assert.Equal(t, tt.want, got.AppliedGiftCards)
 			}
 		})
 	}
@@ -473,7 +460,7 @@ func TestInMemoryBehaviour_Complete(t *testing.T) {
 
 		got, _, err := cob.Complete(context.Background(), cart)
 		assert.NoError(t, err)
-		assert.Equal(t, got, cart)
+		assert.Equal(t, cart, got)
 
 		_, err = cob.GetCart(context.Background(), "test-id")
 		assert.Error(t, err, "Cart should not be stored any more")

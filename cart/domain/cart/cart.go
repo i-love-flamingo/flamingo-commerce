@@ -373,8 +373,8 @@ func (c Cart) GetAllPaymentRequiredItems() PricedItems {
 		pricedItems.totalItems[ti.Code] = ti.Price
 	}
 	for _, del := range c.Deliveries {
-		if !del.ShippingItem.TotalWithDiscountInclTax.IsZero() {
-			pricedItems.shippingItems[del.DeliveryInfo.Code] = del.ShippingItem.TotalWithDiscountInclTax
+		if !del.ShippingItem.PriceGrossWithDiscounts.IsZero() {
+			pricedItems.shippingItems[del.DeliveryInfo.Code] = del.ShippingItem.PriceGrossWithDiscounts
 		}
 		for _, ci := range del.Cartitems {
 			pricedItems.cartItems[ci.ID] = ci.RowPriceGrossWithDiscount
