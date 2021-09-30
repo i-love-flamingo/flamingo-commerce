@@ -1,12 +1,14 @@
 package cart_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/big"
 	"testing"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 )
@@ -56,22 +58,51 @@ func TestShippingItem_Tax(t *testing.T) {
 	assert.Equal(t, priceDomain.NewFromInt(250, 100, "$"), shippingItem.Tax().Amount)
 }
 
+var _ cart.AdditionalDeliverInfo = &dummyDeliveryInfos{}
+
+type dummyDeliveryInfos struct {
+	Works bool
+}
+
+func (d *dummyDeliveryInfos) Marshal() (json.RawMessage, error) {
+	return json.Marshal(d)
+}
+
+func (d *dummyDeliveryInfos) Unmarshal(message json.RawMessage) error {
+	return json.Unmarshal(message, d)
+}
+
 func TestDeliveryInfo_LoadAdditionalInfo(t *testing.T) {
-	// todo:
-	// var info map[string]interface{}
-	// deliveryInfo := cart.DeliveryInfo{
-	// 	AdditionalDeliveryInfos: map[string]json.RawMessage{"foo": []byte(`{"baz":"bar"}`)}}
-	// deliveryInfo.LoadAdditionalInfo("foo", info)
+	t.Run("green line", func(t *testing.T) {
+		var info dummyDeliveryInfos
+		deliveryInfo := cart.DeliveryInfo{
+			AdditionalDeliveryInfos: map[string]json.RawMessage{"foo": json.RawMessage(`{"Works":true}`)}}
+		require.NoError(t, deliveryInfo.LoadAdditionalInfo("foo", &info))
+		assert.True(t, info.Works)
+	})
+	t.Run("missing additional key should lead to error", func(t *testing.T) {
+		deliveryInfo := cart.DeliveryInfo{}
+		require.Error(t, deliveryInfo.LoadAdditionalInfo("missing", &dummyDeliveryInfos{}))
+
+		deliveryInfo = cart.DeliveryInfo{AdditionalDeliveryInfos: map[string]json.RawMessage{"foo": json.RawMessage(`{"Works":true}`)}}
+		require.Error(t, deliveryInfo.LoadAdditionalInfo("missing", &dummyDeliveryInfos{}))
+	})
 }
-func TestDeliveryInfo_GetAdditionalData(t *testing.T) {
-	// todo:
-}
-func TestDeliveryInfo_AdditionalDataKeys(t *testing.T) {
-	// todo:
-}
+
 func TestDeliveryInfo_GetAdditionalDeliveryInfo(t *testing.T) {
-	// todo:
+	deliveryInfo := cart.DeliveryInfo{AdditionalDeliveryInfos: map[string]json.RawMessage{"foo": json.RawMessage("hello-world"), "bar": []byte{}}}
+	assert.Equal(t, json.RawMessage("hello-world"), deliveryInfo.GetAdditionalDeliveryInfo("foo"))
 }
 func TestDeliveryInfo_AdditionalDeliveryInfoKeys(t *testing.T) {
-	// todo:
+	deliveryInfo := cart.DeliveryInfo{AdditionalDeliveryInfos: map[string]json.RawMessage{"foo": []byte{}, "bar": []byte{}}}
+	assert.ElementsMatch(t, []string{"foo", "bar"}, deliveryInfo.AdditionalDeliveryInfoKeys())
+}
+
+func TestDeliveryInfo_GetAdditionalData(t *testing.T) {
+	deliveryInfo := cart.DeliveryInfo{AdditionalData: map[string]string{"foo": "bar"}}
+	assert.Equal(t, "bar", deliveryInfo.GetAdditionalData("foo"))
+}
+func TestDeliveryInfo_AdditionalDataKeys(t *testing.T) {
+	deliveryInfo := cart.DeliveryInfo{AdditionalData: map[string]string{"foo": "bar", "baz": "bar"}}
+	assert.ElementsMatch(t, []string{"foo", "baz"}, deliveryInfo.AdditionalDataKeys())
 }
