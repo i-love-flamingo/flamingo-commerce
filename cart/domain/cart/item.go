@@ -43,7 +43,7 @@ type (
 		// RowPriceGrossWithItemRelatedDiscount is the price incl. taxes with deducted item related discounts for the whole Qty of products
 		RowPriceGrossWithItemRelatedDiscount priceDomain.Price
 
-		// RowPriceNet is the price excl. taxes for the whole Qty of products for the whole Qty of products
+		// RowPriceNet is the price excl. taxes for the whole Qty of products
 		RowPriceNet priceDomain.Price
 
 		// RowPriceNetWithDiscount is the discounted net price for the whole Qty of products

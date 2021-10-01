@@ -31,7 +31,7 @@ type (
 		SumItemRelatedDiscountAmount priceDomain.Price
 		// SubTotalGrossWithDiscounts contains the sum of row gross prices reduced by the applied discounts
 		SubTotalGrossWithDiscounts priceDomain.Price
-		// SubTotalNetWithDiscounts contains the sum of row gross prices reduced by the applied discounts
+		// SubTotalNetWithDiscounts contains the sum of row net prices reduced by the net value of the applied discounts
 		SubTotalNetWithDiscounts priceDomain.Price
 		// GrandTotal contains the final price to pay
 		GrandTotal priceDomain.Price
