@@ -33,7 +33,53 @@
 * **Breaking**: Move all calculations to cart behaviour implementation
   * By moving calculation responsibility, we enable different implementation possibilities for calculations like tax before or after discounts, tax on single item or sum and different tax rounding modes instead of having it hard-coded in the flamingo cart.
   * All calculation functions on cart item, shipping item, delivery and cart are now public fields for which the values must be set by the cart behaviour implementation
-  * The `DefaultCartBehaviour` calculates all new fields accordingly 
+  * The `DefaultCartBehaviour` calculates all new fields accordingly
+  * To help with the migration there are sed commands for the following fields in `cart/migration.sed`: run `find . -type f -iname '*.go' -exec gsed -i -f migration.sed "{}" +;`
+  * Cart items
+    * | Old Function                           | New Field                            |
+      |----------------------------------------|--------------------------------------|
+      | RowPriceGrossWithDiscount()            | RowPriceGrossWithDiscount            |
+      | RowPriceGrossWithItemRelatedDiscount() | RowPriceGrossWithItemRelatedDiscount |
+      | RowPriceNetWithDiscount()              | RowPriceNetWithDiscount              |
+      | RowPriceNetWithItemRelatedDiscount()   | RowPriceNetWithItemRelatedDiscount   |
+      | TotalDiscountAmount()                  | TotalDiscountAmount                  |
+      | ItemRelatedDiscountAmount()            | ItemRelatedDiscountAmount            |
+      | NonItemRelatedDiscountAmount()         | NonItemRelatedDiscountAmount         |
+  * Shipping items
+     * | Old Function               | New Field               |
+       |----------------------------|-------------------------|
+       | TotalWithDiscountInclTax() | PriceGrossWithDiscounts |
+       | -                          | PriceNetWithDiscounts   |
+  * Deliveries
+    * | Old Function                      | New Field                       |
+      |-----------------------------------|---------------------------------|
+      | SubTotalGross()                   | SubTotalGross                   |
+      | SubTotalNet()                     | SubTotalNet                     |
+      | SumTotalDiscountAmount()          | SumTotalDiscountAmount          |
+      | SumSubTotalDiscountAmount()       | SumSubTotalDiscountAmount       |
+      | SumNonItemRelatedDiscountAmount() | SumNonItemRelatedDiscountAmount |
+      | SumItemRelatedDiscountAmount()    | SumItemRelatedDiscountAmount    |
+      | SubTotalGrossWithDiscounts()      | SubTotalGrossWithDiscounts      |
+      | SubTotalNetWithDiscounts()        | SubTotalNetWithDiscounts        |
+      | GrandTotal()                      | GrandTotal                      |
+  * Cart
+    * | Old Function                      | New Field                       |
+      |-----------------------------------|---------------------------------|
+      | GrandTotal()                      | GrandTotal                      |
+      | SumShippingNet()                  | SumShippingNet                  |
+      | SumShippingNetWithDiscounts()     | SumShippingNetWithDiscounts     |
+      | SumShippingGross()                | SumShippingGross                |
+      | SumShippingGrossWithDiscounts()   | SumShippingGrossWithDiscounts   |
+      | SubTotalGross()                   | SubTotalGross                   |
+      | SubTotalNet()                     | SubTotalNet                     |
+      | SubTotalGrossWithDiscounts()      | SubTotalGrossWithDiscounts      |
+      | SubTotalNetWithDiscounts()        | SubTotalNetWithDiscounts        |
+      | SumTotalDiscountAmount()          | SumTotalDiscountAmount          |
+      | SumNonItemRelatedDiscountAmount() | SumNonItemRelatedDiscountAmount |
+      | SumItemRelatedDiscountAmount()    | SumItemRelatedDiscountAmount    |
+      | -                                 | SumAppliedGiftCards             |
+      | -                                 | SumGrandTotalWithGiftCards      |
+
 
 **checkout**
 * Introducing Flamingo events on final states of the place order process
