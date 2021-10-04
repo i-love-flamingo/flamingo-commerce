@@ -9,8 +9,8 @@ type (
 	DecoratedWithGiftCard interface {
 		HasRemainingGiftCards() bool
 		HasAppliedGiftCards() bool
-		SumAppliedGiftCards() domain.Price
-		SumGrandTotalWithGiftCards() domain.Price
+		AppliedGiftCards() domain.Price
+		GrandTotalWithGiftCards() domain.Price
 	}
 )
 
@@ -29,13 +29,13 @@ func (dc DecoratedCart) HasAppliedGiftCards() bool {
 	return dc.Cart.HasAppliedGiftCards()
 }
 
-// SumAppliedGiftCards sum up all applied amounts of giftcads
+// AppliedGiftCards sum up all applied amounts of giftcads
 // price is returned as a payable
-func (dc DecoratedCart) SumAppliedGiftCards() domain.Price {
-	return dc.Cart.SumAppliedGiftCards
+func (dc DecoratedCart) AppliedGiftCards() domain.Price {
+	return dc.Cart.AppliedGiftCardsAmount
 }
 
-// SumGrandTotalWithGiftCards calculate the grand total of the cart minus gift cards
-func (dc DecoratedCart) SumGrandTotalWithGiftCards() domain.Price {
-	return dc.Cart.SumGrandTotalWithGiftCards
+// GrandTotalWithGiftCards calculate the grand total of the cart minus gift cards
+func (dc DecoratedCart) GrandTotalWithGiftCards() domain.Price {
+	return dc.Cart.GrandTotalWithGiftCards
 }

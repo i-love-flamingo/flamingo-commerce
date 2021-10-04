@@ -729,29 +729,29 @@ func (cob *DefaultCartBehaviour) resetPaymentSelectionIfInvalid(ctx context.Cont
 }
 
 func (cob *DefaultCartBehaviour) collectTotals(cart *domaincart.Cart) {
-	cart.SumAppliedGiftCards = priceDomain.NewZero(cart.DefaultCurrency)
-	cart.SumGrandTotalWithGiftCards = priceDomain.NewZero(cart.DefaultCurrency)
+	cart.AppliedGiftCardsAmount = priceDomain.NewZero(cart.DefaultCurrency)
+	cart.GrandTotalWithGiftCards = priceDomain.NewZero(cart.DefaultCurrency)
 	cart.GrandTotal = priceDomain.NewZero(cart.DefaultCurrency)
-	cart.SumShippingNet = priceDomain.NewZero(cart.DefaultCurrency)
-	cart.SumShippingNetWithDiscounts = priceDomain.NewZero(cart.DefaultCurrency)
-	cart.SumShippingGross = priceDomain.NewZero(cart.DefaultCurrency)
-	cart.SumShippingGrossWithDiscounts = priceDomain.NewZero(cart.DefaultCurrency)
+	cart.ShippingNet = priceDomain.NewZero(cart.DefaultCurrency)
+	cart.ShippingNetWithDiscounts = priceDomain.NewZero(cart.DefaultCurrency)
+	cart.ShippingGross = priceDomain.NewZero(cart.DefaultCurrency)
+	cart.ShippingGrossWithDiscounts = priceDomain.NewZero(cart.DefaultCurrency)
 	cart.SubTotalGross = priceDomain.NewZero(cart.DefaultCurrency)
 	cart.SubTotalNet = priceDomain.NewZero(cart.DefaultCurrency)
 	cart.SubTotalGrossWithDiscounts = priceDomain.NewZero(cart.DefaultCurrency)
 	cart.SubTotalNetWithDiscounts = priceDomain.NewZero(cart.DefaultCurrency)
-	cart.SumTotalDiscountAmount = priceDomain.NewZero(cart.DefaultCurrency)
-	cart.SumNonItemRelatedDiscountAmount = priceDomain.NewZero(cart.DefaultCurrency)
-	cart.SumItemRelatedDiscountAmount = priceDomain.NewZero(cart.DefaultCurrency)
+	cart.TotalDiscountAmount = priceDomain.NewZero(cart.DefaultCurrency)
+	cart.NonItemRelatedDiscountAmount = priceDomain.NewZero(cart.DefaultCurrency)
+	cart.ItemRelatedDiscountAmount = priceDomain.NewZero(cart.DefaultCurrency)
 
 	for i := 0; i < len(cart.Deliveries); i++ {
 		delivery := &cart.Deliveries[i]
 		delivery.SubTotalGross = priceDomain.NewZero(cart.DefaultCurrency)
 		delivery.SubTotalNet = priceDomain.NewZero(cart.DefaultCurrency)
-		delivery.SumTotalDiscountAmount = priceDomain.NewZero(cart.DefaultCurrency)
-		delivery.SumSubTotalDiscountAmount = priceDomain.NewZero(cart.DefaultCurrency)
-		delivery.SumNonItemRelatedDiscountAmount = priceDomain.NewZero(cart.DefaultCurrency)
-		delivery.SumItemRelatedDiscountAmount = priceDomain.NewZero(cart.DefaultCurrency)
+		delivery.TotalDiscountAmount = priceDomain.NewZero(cart.DefaultCurrency)
+		delivery.SubTotalDiscountAmount = priceDomain.NewZero(cart.DefaultCurrency)
+		delivery.NonItemRelatedDiscountAmount = priceDomain.NewZero(cart.DefaultCurrency)
+		delivery.ItemRelatedDiscountAmount = priceDomain.NewZero(cart.DefaultCurrency)
 		delivery.SubTotalGrossWithDiscounts = priceDomain.NewZero(cart.DefaultCurrency)
 		delivery.SubTotalNetWithDiscounts = priceDomain.NewZero(cart.DefaultCurrency)
 		delivery.GrandTotal = priceDomain.NewZero(cart.DefaultCurrency)
@@ -759,16 +759,16 @@ func (cob *DefaultCartBehaviour) collectTotals(cart *domaincart.Cart) {
 		if !delivery.ShippingItem.PriceGrossWithDiscounts.IsZero() {
 			delivery.GrandTotal = delivery.GrandTotal.ForceAdd(delivery.ShippingItem.PriceGrossWithDiscounts)
 			discounts, _ := delivery.ShippingItem.AppliedDiscounts.Sum()
-			delivery.SumTotalDiscountAmount = delivery.SumTotalDiscountAmount.ForceAdd(discounts)
+			delivery.TotalDiscountAmount = delivery.TotalDiscountAmount.ForceAdd(discounts)
 		}
 
 		for _, cartitem := range delivery.Cartitems {
 			delivery.SubTotalGross = delivery.SubTotalGross.ForceAdd(cartitem.RowPriceGross)
 			delivery.SubTotalNet = delivery.SubTotalNet.ForceAdd(cartitem.RowPriceNet)
-			delivery.SumTotalDiscountAmount = delivery.SumTotalDiscountAmount.ForceAdd(cartitem.TotalDiscountAmount)
-			delivery.SumSubTotalDiscountAmount = delivery.SumSubTotalDiscountAmount.ForceAdd(cartitem.TotalDiscountAmount)
-			delivery.SumNonItemRelatedDiscountAmount = delivery.SumNonItemRelatedDiscountAmount.ForceAdd(cartitem.NonItemRelatedDiscountAmount)
-			delivery.SumItemRelatedDiscountAmount = delivery.SumItemRelatedDiscountAmount.ForceAdd(cartitem.ItemRelatedDiscountAmount)
+			delivery.TotalDiscountAmount = delivery.TotalDiscountAmount.ForceAdd(cartitem.TotalDiscountAmount)
+			delivery.SubTotalDiscountAmount = delivery.SubTotalDiscountAmount.ForceAdd(cartitem.TotalDiscountAmount)
+			delivery.NonItemRelatedDiscountAmount = delivery.NonItemRelatedDiscountAmount.ForceAdd(cartitem.NonItemRelatedDiscountAmount)
+			delivery.ItemRelatedDiscountAmount = delivery.ItemRelatedDiscountAmount.ForceAdd(cartitem.ItemRelatedDiscountAmount)
 			delivery.SubTotalGrossWithDiscounts = delivery.SubTotalGrossWithDiscounts.ForceAdd(cartitem.RowPriceGrossWithDiscount)
 			delivery.SubTotalNetWithDiscounts = delivery.SubTotalNetWithDiscounts.ForceAdd(cartitem.RowPriceNetWithDiscount)
 			delivery.GrandTotal = delivery.GrandTotal.ForceAdd(cartitem.RowPriceGrossWithDiscount)
@@ -776,17 +776,17 @@ func (cob *DefaultCartBehaviour) collectTotals(cart *domaincart.Cart) {
 
 		// todo: gift cards?
 		cart.GrandTotal = cart.GrandTotal.ForceAdd(delivery.GrandTotal)
-		cart.SumShippingNet = cart.SumShippingNet.ForceAdd(delivery.ShippingItem.PriceNet)
-		cart.SumShippingNetWithDiscounts = cart.SumShippingNetWithDiscounts.ForceAdd(delivery.ShippingItem.PriceNetWithDiscounts)
-		cart.SumShippingGross = cart.SumShippingGross.ForceAdd(delivery.ShippingItem.PriceGross)
-		cart.SumShippingGrossWithDiscounts = cart.SumShippingGrossWithDiscounts.ForceAdd(delivery.ShippingItem.PriceGrossWithDiscounts)
+		cart.ShippingNet = cart.ShippingNet.ForceAdd(delivery.ShippingItem.PriceNet)
+		cart.ShippingNetWithDiscounts = cart.ShippingNetWithDiscounts.ForceAdd(delivery.ShippingItem.PriceNetWithDiscounts)
+		cart.ShippingGross = cart.ShippingGross.ForceAdd(delivery.ShippingItem.PriceGross)
+		cart.ShippingGrossWithDiscounts = cart.ShippingGrossWithDiscounts.ForceAdd(delivery.ShippingItem.PriceGrossWithDiscounts)
 		cart.SubTotalGross = cart.SubTotalGross.ForceAdd(delivery.SubTotalGross)
 		cart.SubTotalNet = cart.SubTotalNet.ForceAdd(delivery.SubTotalNet)
 		cart.SubTotalGrossWithDiscounts = cart.SubTotalGrossWithDiscounts.ForceAdd(delivery.SubTotalGrossWithDiscounts)
 		cart.SubTotalNetWithDiscounts = cart.SubTotalNetWithDiscounts.ForceAdd(delivery.SubTotalNetWithDiscounts)
-		cart.SumTotalDiscountAmount = cart.SumTotalDiscountAmount.ForceAdd(delivery.SumTotalDiscountAmount)
-		cart.SumNonItemRelatedDiscountAmount = cart.SumNonItemRelatedDiscountAmount.ForceAdd(delivery.SumNonItemRelatedDiscountAmount)
-		cart.SumItemRelatedDiscountAmount = cart.SumItemRelatedDiscountAmount.ForceAdd(delivery.SumItemRelatedDiscountAmount)
+		cart.TotalDiscountAmount = cart.TotalDiscountAmount.ForceAdd(delivery.TotalDiscountAmount)
+		cart.NonItemRelatedDiscountAmount = cart.NonItemRelatedDiscountAmount.ForceAdd(delivery.NonItemRelatedDiscountAmount)
+		cart.ItemRelatedDiscountAmount = cart.ItemRelatedDiscountAmount.ForceAdd(delivery.ItemRelatedDiscountAmount)
 	}
 
 	for _, totalitem := range cart.Totalitems {
@@ -798,10 +798,10 @@ func (cob *DefaultCartBehaviour) collectTotals(cart *domaincart.Cart) {
 		sumAppliedGiftCards = sumAppliedGiftCards.ForceAdd(card.Applied)
 	}
 
-	cart.SumAppliedGiftCards = sumAppliedGiftCards
-	cart.SumGrandTotalWithGiftCards, _ = cart.GrandTotal.Sub(cart.SumAppliedGiftCards)
-	if cart.SumGrandTotalWithGiftCards.IsNegative() {
-		cart.SumGrandTotalWithGiftCards = priceDomain.NewZero(cart.DefaultCurrency)
+	cart.AppliedGiftCardsAmount = sumAppliedGiftCards
+	cart.GrandTotalWithGiftCards, _ = cart.GrandTotal.Sub(cart.AppliedGiftCardsAmount)
+	if cart.GrandTotalWithGiftCards.IsNegative() {
+		cart.GrandTotalWithGiftCards = priceDomain.NewZero(cart.DefaultCurrency)
 	}
 }
 

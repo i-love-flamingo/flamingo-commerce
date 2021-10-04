@@ -1090,35 +1090,27 @@ var doc = `{
         }
     },
     "definitions": {
-        "ProductAttribute": {
+        "CategoryAttribute": {
             "type": "object",
             "properties": {
                 "Code": {
-                    "description": "Code is the internal attribute identifier",
-                    "type": "string"
-                },
-                "CodeLabel": {
-                    "description": "CodeLabel is the human readable (perhaps localized) attribute name",
                     "type": "string"
                 },
                 "Label": {
-                    "description": "Label is the human readable (perhaps localized) attribute value",
                     "type": "string"
                 },
-                "RawValue": {
-                    "description": "RawValue is the untouched original value of the attribute",
-                    "type": "object"
-                },
-                "UnitCode": {
-                    "description": "UnitCode is the internal code of the attribute values measuring unit",
-                    "type": "string"
+                "Values": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.AttributeValue"
+                    }
                 }
             }
         },
-        "ProductAttributes": {
+        "CategoryAttributes": {
             "type": "object",
             "additionalProperties": {
-                "$ref": "#/definitions/ProductAttribute"
+                "$ref": "#/definitions/CategoryAttribute"
             }
         },
         "application.PlaceOrderPaymentInfo": {
@@ -1297,6 +1289,10 @@ var doc = `{
                         "$ref": "#/definitions/cart.AppliedGiftCard"
                     }
                 },
+                "AppliedGiftCardsAmount": {
+                    "description": "AppliedGiftCardsAmount is the part of GrandTotal which is paid by gift cards",
+                    "$ref": "#/definitions/domain.Price"
+                },
                 "AuthenticatedUserID": {
                     "description": "AuthenticatedUserID holds the potential customer ID",
                     "type": "string"
@@ -1327,9 +1323,21 @@ var doc = `{
                     "description": "GrandTotal is the final amount that need to be paid by the customer (gross)",
                     "$ref": "#/definitions/domain.Price"
                 },
+                "GrandTotalWithGiftCards": {
+                    "description": "GrandTotalWithGiftCards is the final amount with the applied gift cards subtracted.",
+                    "$ref": "#/definitions/domain.Price"
+                },
                 "ID": {
                     "description": "ID is the main identifier of the cart",
                     "type": "string"
+                },
+                "ItemRelatedDiscountAmount": {
+                    "description": "ItemRelatedDiscountAmount is the sum of discounts that are related to the item (including shipping discounts)",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "NonItemRelatedDiscountAmount": {
+                    "description": "NonItemRelatedDiscountAmount is the sum of discounts that are not related to the item (including shipping discounts)",
+                    "$ref": "#/definitions/domain.Price"
                 },
                 "PaymentSelection": {
                     "description": "PaymentSelection is used to store information on \"how\" the customer wants to pay",
@@ -1338,6 +1346,22 @@ var doc = `{
                 "Purchaser": {
                     "description": "Purchaser hold additional infos for the legal contact person in this order",
                     "$ref": "#/definitions/cart.Person"
+                },
+                "ShippingGross": {
+                    "description": "ShippingGross is the sum of all shipping costs including tax",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "ShippingGrossWithDiscounts": {
+                    "description": "ShippingGrossWithDiscounts is the sum of all shipping costs with all shipping discounts including tax",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "ShippingNet": {
+                    "description": "ShippingNet is the sum of all shipping costs",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "ShippingNetWithDiscounts": {
+                    "description": "ShippingNetWithDiscounts is the sum of all shipping costs with all shipping discounts",
+                    "$ref": "#/definitions/domain.Price"
                 },
                 "SubTotalGross": {
                     "description": "SubTotalGross is the sum of all delivery subtotals (without shipping/ discounts)",
@@ -1355,40 +1379,8 @@ var doc = `{
                     "description": "SubTotalNetWithDiscounts is the sum of row net prices reduced by the net value of the applied discounts",
                     "$ref": "#/definitions/domain.Price"
                 },
-                "SumAppliedGiftCards": {
-                    "description": "SumAppliedGiftCards is the part of GrandTotal which is paid by gift cards",
-                    "$ref": "#/definitions/domain.Price"
-                },
-                "SumGrandTotalWithGiftCards": {
-                    "description": "SumGrandTotalWithGiftCards is the final amount with the applied gift cards subtracted.",
-                    "$ref": "#/definitions/domain.Price"
-                },
-                "SumItemRelatedDiscountAmount": {
-                    "description": "SumItemRelatedDiscountAmount is the sum of discounts that are related to the item (including shipping discounts)",
-                    "$ref": "#/definitions/domain.Price"
-                },
-                "SumNonItemRelatedDiscountAmount": {
-                    "description": "SumNonItemRelatedDiscountAmount is the sum of discounts that are not related to the item (including shipping discounts)",
-                    "$ref": "#/definitions/domain.Price"
-                },
-                "SumShippingGross": {
-                    "description": "SumShippingGross is the sum of all shipping costs including tax",
-                    "$ref": "#/definitions/domain.Price"
-                },
-                "SumShippingGrossWithDiscounts": {
-                    "description": "SumShippingGrossWithDiscounts is the sum of all shipping costs with all shipping discounts including tax",
-                    "$ref": "#/definitions/domain.Price"
-                },
-                "SumShippingNet": {
-                    "description": "SumShippingNet is the sum of all shipping costs",
-                    "$ref": "#/definitions/domain.Price"
-                },
-                "SumShippingNetWithDiscounts": {
-                    "description": "SumShippingNetWithDiscounts is the sum of all shipping costs with all shipping discounts",
-                    "$ref": "#/definitions/domain.Price"
-                },
-                "SumTotalDiscountAmount": {
-                    "description": "SumTotalDiscountAmount is the sum of all discounts (incl. shipping)",
+                "TotalDiscountAmount": {
+                    "description": "TotalDiscountAmount is the sum of all discounts (incl. shipping)",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "Totalitems": {
@@ -1431,9 +1423,21 @@ var doc = `{
                     "description": "GrandTotal contains the final price to pay",
                     "$ref": "#/definitions/domain.Price"
                 },
+                "ItemRelatedDiscountAmount": {
+                    "description": "ItemRelatedDiscountAmount contains the sum of discounts that are related to the item, e.g. promo due to product attribute",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "NonItemRelatedDiscountAmount": {
+                    "description": "NonItemRelatedDiscountAmount contains the sum of discounts that are not related to the item, e.g. a general promo",
+                    "$ref": "#/definitions/domain.Price"
+                },
                 "ShippingItem": {
                     "description": "ShippingItem\trepresent the shipping cost that may be involved in this delivery",
                     "$ref": "#/definitions/cart.ShippingItem"
+                },
+                "SubTotalDiscountAmount": {
+                    "description": "TotalDiscountAmount contains the sum of all discounts (excl. shipping)",
+                    "$ref": "#/definitions/domain.Price"
                 },
                 "SubTotalGross": {
                     "description": "SubTotalGross contains the sum of row gross prices, without shipping/discounts",
@@ -1451,20 +1455,8 @@ var doc = `{
                     "description": "SubTotalNetWithDiscounts contains the sum of row net prices reduced by the net value of the applied discounts",
                     "$ref": "#/definitions/domain.Price"
                 },
-                "SumItemRelatedDiscountAmount": {
-                    "description": "SumItemRelatedDiscountAmount contains the sum of discounts that are related to the item, e.g. promo due to product attribute",
-                    "$ref": "#/definitions/domain.Price"
-                },
-                "SumNonItemRelatedDiscountAmount": {
-                    "description": "SumNonItemRelatedDiscountAmount contains the sum of discounts that are not related to the item, e.g. a general promo",
-                    "$ref": "#/definitions/domain.Price"
-                },
-                "SumSubTotalDiscountAmount": {
-                    "description": "SumTotalDiscountAmount contains the sum of all discounts (excl. shipping)",
-                    "$ref": "#/definitions/domain.Price"
-                },
-                "SumTotalDiscountAmount": {
-                    "description": "SumTotalDiscountAmount contains the sum of all discounts (incl. shipping)",
+                "TotalDiscountAmount": {
+                    "description": "TotalDiscountAmount contains the sum of all discounts (incl. shipping)",
                     "$ref": "#/definitions/domain.Price"
                 }
             }
@@ -1909,6 +1901,17 @@ var doc = `{
                 }
             }
         },
+        "domain.AttributeValue": {
+            "type": "object",
+            "properties": {
+                "Label": {
+                    "type": "string"
+                },
+                "RawValue": {
+                    "type": "object"
+                }
+            }
+        },
         "domain.Badge": {
             "type": "object",
             "properties": {
@@ -2157,7 +2160,7 @@ var doc = `{
                     "$ref": "#/definitions/domain.PriceInfo"
                 },
                 "Attributes": {
-                    "$ref": "#/definitions/ProductAttributes"
+                    "$ref": "#/definitions/CategoryAttributes"
                 },
                 "AvailablePrices": {
                     "type": "array",

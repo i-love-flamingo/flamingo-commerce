@@ -21,14 +21,14 @@ type (
 		SubTotalGross priceDomain.Price
 		// SubTotalNet contains the sum of row net prices, without shipping/discounts
 		SubTotalNet priceDomain.Price
-		// SumTotalDiscountAmount contains the sum of all discounts (incl. shipping)
-		SumTotalDiscountAmount priceDomain.Price
-		// SumTotalDiscountAmount contains the sum of all discounts (excl. shipping)
-		SumSubTotalDiscountAmount priceDomain.Price
-		// SumNonItemRelatedDiscountAmount contains the sum of discounts that are not related to the item, e.g. a general promo
-		SumNonItemRelatedDiscountAmount priceDomain.Price
-		// SumItemRelatedDiscountAmount contains the sum of discounts that are related to the item, e.g. promo due to product attribute
-		SumItemRelatedDiscountAmount priceDomain.Price
+		// TotalDiscountAmount contains the sum of all discounts (incl. shipping)
+		TotalDiscountAmount priceDomain.Price
+		// TotalDiscountAmount contains the sum of all discounts (excl. shipping)
+		SubTotalDiscountAmount priceDomain.Price
+		// NonItemRelatedDiscountAmount contains the sum of discounts that are not related to the item, e.g. a general promo
+		NonItemRelatedDiscountAmount priceDomain.Price
+		// ItemRelatedDiscountAmount contains the sum of discounts that are related to the item, e.g. promo due to product attribute
+		ItemRelatedDiscountAmount priceDomain.Price
 		// SubTotalGrossWithDiscounts contains the sum of row gross prices reduced by the applied discounts
 		SubTotalGrossWithDiscounts priceDomain.Price
 		// SubTotalNetWithDiscounts contains the sum of row net prices reduced by the net value of the applied discounts

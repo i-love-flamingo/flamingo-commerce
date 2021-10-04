@@ -52,20 +52,20 @@ type (
 
 		// AppliedGiftCards is a list of applied gift cards
 		AppliedGiftCards []AppliedGiftCard
-		// SumAppliedGiftCards is the part of GrandTotal which is paid by gift cards
-		SumAppliedGiftCards domain.Price
-		// SumGrandTotalWithGiftCards is the final amount with the applied gift cards subtracted.
-		SumGrandTotalWithGiftCards domain.Price
+		// AppliedGiftCardsAmount is the part of GrandTotal which is paid by gift cards
+		AppliedGiftCardsAmount domain.Price
+		// GrandTotalWithGiftCards is the final amount with the applied gift cards subtracted.
+		GrandTotalWithGiftCards domain.Price
 		// GrandTotal is the final amount that need to be paid by the customer (gross)
 		GrandTotal domain.Price
-		// SumShippingNet is the sum of all shipping costs
-		SumShippingNet domain.Price
-		// SumShippingNetWithDiscounts is the sum of all shipping costs with all shipping discounts
-		SumShippingNetWithDiscounts domain.Price
-		// SumShippingGross is the sum of all shipping costs including tax
-		SumShippingGross domain.Price
-		// SumShippingGrossWithDiscounts is the sum of all shipping costs with all shipping discounts including tax
-		SumShippingGrossWithDiscounts domain.Price
+		// ShippingNet is the sum of all shipping costs
+		ShippingNet domain.Price
+		// ShippingNetWithDiscounts is the sum of all shipping costs with all shipping discounts
+		ShippingNetWithDiscounts domain.Price
+		// ShippingGross is the sum of all shipping costs including tax
+		ShippingGross domain.Price
+		// ShippingGrossWithDiscounts is the sum of all shipping costs with all shipping discounts including tax
+		ShippingGrossWithDiscounts domain.Price
 		// SubTotalGross is the sum of all delivery subtotals (without shipping/ discounts)
 		SubTotalGross domain.Price
 		// SubTotalNet is the sum of all delivery net subtotals (without shipping/ discounts)
@@ -74,12 +74,12 @@ type (
 		SubTotalGrossWithDiscounts domain.Price
 		// SubTotalNetWithDiscounts is the sum of row net prices reduced by the net value of the applied discounts
 		SubTotalNetWithDiscounts domain.Price
-		// SumTotalDiscountAmount is the sum of all discounts (incl. shipping)
-		SumTotalDiscountAmount domain.Price
-		// SumNonItemRelatedDiscountAmount is the sum of discounts that are not related to the item (including shipping discounts)
-		SumNonItemRelatedDiscountAmount domain.Price
-		// SumItemRelatedDiscountAmount is the sum of discounts that are related to the item (including shipping discounts)
-		SumItemRelatedDiscountAmount domain.Price
+		// TotalDiscountAmount is the sum of all discounts (incl. shipping)
+		TotalDiscountAmount domain.Price
+		// NonItemRelatedDiscountAmount is the sum of discounts that are not related to the item (including shipping discounts)
+		NonItemRelatedDiscountAmount domain.Price
+		// ItemRelatedDiscountAmount is the sum of discounts that are related to the item (including shipping discounts)
+		ItemRelatedDiscountAmount domain.Price
 	}
 
 	// Teaser represents some teaser infos for cart
@@ -398,7 +398,7 @@ func (c Cart) GetAllPaymentRequiredItems() PricedItems {
 
 // HasShippingCosts returns true if cart HasShippingCosts
 func (c Cart) HasShippingCosts() bool {
-	return c.SumShippingNet.IsPositive()
+	return c.ShippingNet.IsPositive()
 }
 
 // AllShippingTitles returns all ShippingItem titles

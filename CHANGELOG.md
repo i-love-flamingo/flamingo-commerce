@@ -55,10 +55,10 @@
       |-----------------------------------|---------------------------------|
       | SubTotalGross()                   | SubTotalGross                   |
       | SubTotalNet()                     | SubTotalNet                     |
-      | SumTotalDiscountAmount()          | SumTotalDiscountAmount          |
-      | SumSubTotalDiscountAmount()       | SumSubTotalDiscountAmount       |
-      | SumNonItemRelatedDiscountAmount() | SumNonItemRelatedDiscountAmount |
-      | SumItemRelatedDiscountAmount()    | SumItemRelatedDiscountAmount    |
+      | SumTotalDiscountAmount()          | TotalDiscountAmount             |
+      | SumSubTotalDiscountAmount()       | SubTotalDiscountAmount          |
+      | SumNonItemRelatedDiscountAmount() | NonItemRelatedDiscountAmount    |
+      | SumItemRelatedDiscountAmount()    | ItemRelatedDiscountAmount       |
       | SubTotalGrossWithDiscounts()      | SubTotalGrossWithDiscounts      |
       | SubTotalNetWithDiscounts()        | SubTotalNetWithDiscounts        |
       | GrandTotal()                      | GrandTotal                      |
@@ -66,19 +66,19 @@
     * | Old Function                      | New Field                       |
       |-----------------------------------|---------------------------------|
       | GrandTotal()                      | GrandTotal                      |
-      | SumShippingNet()                  | SumShippingNet                  |
-      | SumShippingNetWithDiscounts()     | SumShippingNetWithDiscounts     |
-      | SumShippingGross()                | SumShippingGross                |
-      | SumShippingGrossWithDiscounts()   | SumShippingGrossWithDiscounts   |
+      | SumShippingNet()                  | ShippingNet                     |
+      | SumShippingNetWithDiscounts()     | ShippingNetWithDiscounts        |
+      | SumShippingGross()                | ShippingGross                   |
+      | SumShippingGrossWithDiscounts()   | ShippingGrossWithDiscounts      |
       | SubTotalGross()                   | SubTotalGross                   |
       | SubTotalNet()                     | SubTotalNet                     |
       | SubTotalGrossWithDiscounts()      | SubTotalGrossWithDiscounts      |
       | SubTotalNetWithDiscounts()        | SubTotalNetWithDiscounts        |
-      | SumTotalDiscountAmount()          | SumTotalDiscountAmount          |
-      | SumNonItemRelatedDiscountAmount() | SumNonItemRelatedDiscountAmount |
-      | SumItemRelatedDiscountAmount()    | SumItemRelatedDiscountAmount    |
-      | SumAppliedGiftCards()             | SumAppliedGiftCards             |
-      | SumGrandTotalWithGiftCards()      | SumGrandTotalWithGiftCards      |
+      | SumTotalDiscountAmount()          | TotalDiscountAmount             |
+      | SumNonItemRelatedDiscountAmount() | NonItemRelatedDiscountAmount    |
+      | SumItemRelatedDiscountAmount()    | ItemRelatedDiscountAmount       |
+      | SumAppliedGiftCards()             | AppliedGiftCards                |
+      | SumGrandTotalWithGiftCards()      | GrandTotalWithGiftCards         |
 
 
 **checkout**

@@ -203,17 +203,17 @@ The Key with "()" in the list are methods and it is assumed as an invariant, tha
 
 | Key                             | Desc                                                                             | Math                                                             |
 |---------------------------------|----------------------------------------------------------------------------------|------------------------------------------------------------------|
-| GrandTotal                      | The final amount that need to be paid by the customer (Gross)                    | SubTotalGross + ShippingItem.PriceGross + SumTotalDiscountAmount |
+| GrandTotal                      | The final amount that need to be paid by the customer (Gross)                    | SubTotalGross + ShippingItem.PriceGross + TotalDiscountAmount    |
 | SubTotalGross                   | Sum of items RowPriceGross (without shipping/discounts)                          |                                                                  |
 | SubTotalGrossWithDiscounts      | Sum of row gross prices reduced by the applied discounts                         | SubTotalGross() + SumSubTotalDiscountAmount()                    |
 | SubTotalNetWithDiscounts        | Sum of row net prices reduced by the net value of the applied discounts          | SubTotalNet() + SumSubTotalDiscountAmount()                      |
 | SubTotalNet                     | Sum of items RowPriceNet                                                         |                                                                  |
 | SumRowTaxes()                   | List of the sum of the different RowTaxes (of cart items)                        |                                                                  |
 | SumTotalTaxAmount()             | Sum of all applied item taxes including shipping taxes                           |                                                                  |
-| SumTotalDiscountAmount          | Sum off all discounts affecting the delivery (on cart items and shipping)        | SumSubTotalDiscountAmount + shippingItem.AppliedDiscounts.Sum()  |
-| SumSubTotalDiscountAmount       | Sum of all cart items discounts (without shipping)                               | Sum of items TotalDiscountAmount                                 |
-| SumNonItemRelatedDiscountAmount | Sum of discounts that are not related to the item (including shipping discounts) |                                                                  |
-| SumItemRelatedDiscountAmount    | Sum of discounts that are related to the item (including shipping discounts)     |                                                                  |
+| TotalDiscountAmount             | Sum off all discounts affecting the delivery (on cart items and shipping)        | SumSubTotalDiscountAmount + shippingItem.AppliedDiscounts.Sum()  |
+| SubTotalDiscountAmount          | Sum of all cart items discounts (without shipping)                               | Sum of items TotalDiscountAmount                                 |
+| NonItemRelatedDiscountAmount    | Sum of discounts that are not related to the item (including shipping discounts) |                                                                  |
+| ItemRelatedDiscountAmount       | Sum of discounts that are related to the item (including shipping discounts)     |                                                                  |
 
 ### Cart - price fields and method 
 
@@ -231,11 +231,11 @@ The Key with "()" in the list are methods and it is assumed as an invariant, tha
 | SumTotalTaxAmount()             | The overall Tax of cart                                                                                        |                                                                              |
 | SubTotalGrossWithDiscounts      | Sum of row gross prices reduced by the applied discounts                                                       | Sum of deliveries SubTotalGrossWithDiscounts                                 |
 | SubTotalNetWithDiscounts        | Sum of row net prices reduced by the net value of the applied discounts                                        | Sum of deliveries SubTotalNetWithDiscounts                                   |
-| SumTotalDiscountAmount          | Sum of all discounts (incl. shipping)                                                                          | Sum of deliveries TotalDiscountAmount                                        |
-| SumNonItemRelatedDiscountAmount | Sum of discounts that are not related to the item (including shipping discounts)                               | Sum of deliveries NonItemRelatedDiscountAmount                               |
-| SumItemRelatedDiscountAmount    | Sum of discounts that are related to the item (including shipping discounts)                                   | Sum of deliveries ItemRelatedDiscountAmount                                  |
-| SumAppliedGiftCards             | The part of GrandTotal which is paid by gift cards                                                             |                                                                              |
-| SumGrandTotalWithGiftCards      | The final amount with the applied gift cards subtracted. If there are no gift cards, equal to GrandTotal.      | GrandTotal - SumAppliedGiftCards                                             |
+| TotalDiscountAmount             | Sum of all discounts (incl. shipping)                                                                          | Sum of deliveries TotalDiscountAmount                                        |
+| NonItemRelatedDiscountAmount    | Sum of discounts that are not related to the item (including shipping discounts)                               | Sum of deliveries NonItemRelatedDiscountAmount                               |
+| ItemRelatedDiscountAmount       | Sum of discounts that are related to the item (including shipping discounts)                                   | Sum of deliveries ItemRelatedDiscountAmount                                  |
+| AppliedGiftCards                | The part of GrandTotal which is paid by gift cards                                                             |                                                                              |
+| GrandTotalWithGiftCards         | The final amount with the applied gift cards subtracted. If there are no gift cards, equal to GrandTotal.      | GrandTotal - SumAppliedGiftCards                                             |
 | GetVoucherSavings()             | Returns the sum of Totalitems of type voucher                                                                  |                                                                              |
 
 ### Typical B2C vs B2B usecases

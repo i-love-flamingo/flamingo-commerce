@@ -883,7 +883,7 @@ func TestCart_HasShippingCosts(t *testing.T) {
 	cart := cartDomain.Cart{}
 	assert.False(t, cart.HasShippingCosts())
 
-	cart.SumShippingNet = domain.NewFromFloat(5.00, "USD")
+	cart.ShippingNet = domain.NewFromFloat(5.00, "USD")
 	assert.True(t, cart.HasShippingCosts())
 }
 
