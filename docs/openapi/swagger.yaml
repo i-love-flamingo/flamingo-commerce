@@ -1,31 +1,27 @@
 definitions:
-  CategoryAttribute:
+  ProductAttribute:
     properties:
       Code:
+        description: Code is the internal attribute identifier
+        type: string
+      CodeLabel:
+        description: CodeLabel is the human readable (perhaps localized) attribute
+          name
         type: string
       Label:
+        description: Label is the human readable (perhaps localized) attribute value
         type: string
-      Values:
-        items:
-          $ref: '#/definitions/domain.AttributeValue'
-        type: array
+      RawValue:
+        description: RawValue is the untouched original value of the attribute
+        type: object
+      UnitCode:
+        description: UnitCode is the internal code of the attribute values measuring
+          unit
+        type: string
     type: object
-  CategoryAttributes:
+  ProductAttributes:
     additionalProperties:
-      $ref: '#/definitions/CategoryAttribute'
-    type: object
-  ProductMedia:
-    properties:
-      MimeType:
-        type: string
-      Reference:
-        type: string
-      Title:
-        type: string
-      Type:
-        type: string
-      Usage:
-        type: string
+      $ref: '#/definitions/ProductAttribute'
     type: object
   application.PlaceOrderPaymentInfo:
     properties:
@@ -176,6 +172,8 @@ definitions:
         type: string
       GrandTotal:
         $ref: '#/definitions/domain.Price'
+        description: GrandTotal is the final amount that need to be paid by the customer
+          (gross)
       ID:
         description: ID is the main identifier of the cart
         type: string
@@ -189,30 +187,53 @@ definitions:
           in this order
       SubTotalGross:
         $ref: '#/definitions/domain.Price'
+        description: SubTotalGross is the sum of all delivery subtotals (without shipping/
+          discounts)
       SubTotalGrossWithDiscounts:
         $ref: '#/definitions/domain.Price'
+        description: SubTotalGrossWithDiscounts is the sum of row gross prices reduced
+          by the applied discounts
       SubTotalNet:
         $ref: '#/definitions/domain.Price'
+        description: SubTotalNet is the sum of all delivery net subtotals (without
+          shipping/ discounts)
       SubTotalNetWithDiscounts:
         $ref: '#/definitions/domain.Price'
+        description: SubTotalNetWithDiscounts is the sum of row net prices reduced
+          by the net value of the applied discounts
       SumAppliedGiftCards:
         $ref: '#/definitions/domain.Price'
+        description: SumAppliedGiftCards is the part of GrandTotal which is paid by
+          gift cards
       SumGrandTotalWithGiftCards:
         $ref: '#/definitions/domain.Price'
+        description: SumGrandTotalWithGiftCards is the final amount with the applied
+          gift cards subtracted.
       SumItemRelatedDiscountAmount:
         $ref: '#/definitions/domain.Price'
+        description: SumItemRelatedDiscountAmount is the sum of discounts that are
+          related to the item (including shipping discounts)
       SumNonItemRelatedDiscountAmount:
         $ref: '#/definitions/domain.Price'
+        description: SumNonItemRelatedDiscountAmount is the sum of discounts that
+          are not related to the item (including shipping discounts)
       SumShippingGross:
         $ref: '#/definitions/domain.Price'
+        description: SumShippingGross is the sum of all shipping costs including tax
       SumShippingGrossWithDiscounts:
         $ref: '#/definitions/domain.Price'
+        description: SumShippingGrossWithDiscounts is the sum of all shipping costs
+          with all shipping discounts including tax
       SumShippingNet:
         $ref: '#/definitions/domain.Price'
+        description: SumShippingNet is the sum of all shipping costs
       SumShippingNetWithDiscounts:
         $ref: '#/definitions/domain.Price'
+        description: SumShippingNetWithDiscounts is the sum of all shipping costs
+          with all shipping discounts
       SumTotalDiscountAmount:
         $ref: '#/definitions/domain.Price'
+        description: SumTotalDiscountAmount is the sum of all discounts (incl. shipping)
       Totalitems:
         description: Additional non taxable totals
         items:
@@ -259,8 +280,8 @@ definitions:
         description: SubTotalNet contains the sum of row net prices, without shipping/discounts
       SubTotalNetWithDiscounts:
         $ref: '#/definitions/domain.Price'
-        description: SubTotalNetWithDiscounts contains the sum of row gross prices
-          reduced by the applied discounts
+        description: SubTotalNetWithDiscounts contains the sum of row net prices reduced
+          by the net value of the applied discounts
       SumItemRelatedDiscountAmount:
         $ref: '#/definitions/domain.Price'
         description: SumItemRelatedDiscountAmount contains the sum of discounts that
@@ -385,7 +406,6 @@ definitions:
       RowPriceNet:
         $ref: '#/definitions/domain.Price'
         description: RowPriceNet is the price excl. taxes for the whole Qty of products
-          for the whole Qty of products
       RowPriceNetWithDiscount:
         $ref: '#/definitions/domain.Price'
         description: RowPriceNetWithDiscount is the discounted net price for the whole
@@ -493,6 +513,13 @@ definitions:
       Type:
         type: string
     type: object
+  cartResultError:
+    properties:
+      Code:
+        type: string
+      Message:
+        type: string
+    type: object
   checkoutError:
     properties:
       Code:
@@ -503,7 +530,7 @@ definitions:
   controller.APIResult:
     properties:
       Error:
-        $ref: '#/definitions/productResultError'
+        $ref: '#/definitions/cartResultError'
       Product:
         $ref: '#/definitions/domain.BasicProduct'
       Success:
@@ -520,7 +547,7 @@ definitions:
       DataValidationInfo:
         type: object
       Error:
-        $ref: '#/definitions/productResultError'
+        $ref: '#/definitions/cartResultError'
         description: Contains details if success is false
       Success:
         type: boolean
@@ -593,13 +620,6 @@ definitions:
         type: array
       Delivery:
         $ref: '#/definitions/cart.Delivery'
-    type: object
-  domain.AttributeValue:
-    properties:
-      Label:
-        type: string
-      RawValue:
-        type: object
     type: object
   domain.Badge:
     properties:
@@ -702,6 +722,19 @@ definitions:
         description: Type or Name of the Loyalty program
         type: string
     type: object
+  domain.Media:
+    properties:
+      MimeType:
+        type: string
+      Reference:
+        type: string
+      Title:
+        type: string
+      Type:
+        type: string
+      Usage:
+        type: string
+    type: object
   domain.PaymentRequestAPI:
     properties:
       CompleteURL:
@@ -760,7 +793,7 @@ definitions:
       ActivePrice:
         $ref: '#/definitions/domain.PriceInfo'
       Attributes:
-        $ref: '#/definitions/CategoryAttributes'
+        $ref: '#/definitions/ProductAttributes'
       AvailablePrices:
         items:
           $ref: '#/definitions/domain.PriceInfo'
@@ -809,7 +842,7 @@ definitions:
         type: string
       Media:
         items:
-          $ref: '#/definitions/ProductMedia'
+          $ref: '#/definitions/domain.Media'
         type: array
       RetailerCode:
         type: string
@@ -849,7 +882,7 @@ definitions:
       Media:
         description: Media
         items:
-          $ref: '#/definitions/ProductMedia'
+          $ref: '#/definitions/domain.Media'
         type: array
       PreSelectedVariantSku:
         description: PreSelectedVariantSku might be set for configurables to give
@@ -909,13 +942,6 @@ definitions:
         type: string
     type: object
   process.StateData:
-    type: object
-  productResultError:
-    properties:
-      Code:
-        type: string
-      Message:
-        type: string
     type: object
   validation.ItemValidationError:
     properties:
@@ -1611,7 +1637,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/productResultError'
+            $ref: '#/definitions/cartResultError'
       summary: Get the payment status of current cart (or last placed cart)
       tags:
       - Payment

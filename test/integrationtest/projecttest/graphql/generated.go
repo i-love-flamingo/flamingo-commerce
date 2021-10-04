@@ -9585,14 +9585,14 @@ func (ec *executionContext) _Commerce_Cart_Cart_grandTotal(ctx context.Context, 
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
+		IsMethod:   false,
 		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.GrandTotal(), nil
+		return obj.GrandTotal, nil
 	})
 
 	if resTmp == nil {
@@ -9649,14 +9649,14 @@ func (ec *executionContext) _Commerce_Cart_Cart_subTotalNet(ctx context.Context,
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
+		IsMethod:   false,
 		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SubTotalNet(), nil
+		return obj.SubTotalNet, nil
 	})
 
 	if resTmp == nil {
@@ -10095,14 +10095,14 @@ func (ec *executionContext) _Commerce_Cart_Cart_sumShippingNet(ctx context.Conte
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
+		IsMethod:   false,
 		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SumShippingNet(), nil
+		return obj.SumShippingNet, nil
 	})
 
 	if resTmp == nil {
@@ -10127,14 +10127,14 @@ func (ec *executionContext) _Commerce_Cart_Cart_sumShippingNetWithDiscounts(ctx 
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
+		IsMethod:   false,
 		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SumShippingNetWithDiscounts(), nil
+		return obj.SumShippingNetWithDiscounts, nil
 	})
 
 	if resTmp == nil {
@@ -10159,14 +10159,14 @@ func (ec *executionContext) _Commerce_Cart_Cart_sumShippingGross(ctx context.Con
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
+		IsMethod:   false,
 		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SumShippingGross(), nil
+		return obj.SumShippingGross, nil
 	})
 
 	if resTmp == nil {
@@ -10191,14 +10191,14 @@ func (ec *executionContext) _Commerce_Cart_Cart_sumShippingGrossWithDiscounts(ct
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
+		IsMethod:   false,
 		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SumShippingGrossWithDiscounts(), nil
+		return obj.SumShippingGrossWithDiscounts, nil
 	})
 
 	if resTmp == nil {
@@ -10284,14 +10284,14 @@ func (ec *executionContext) _Commerce_Cart_Cart_subTotalGross(ctx context.Contex
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
+		IsMethod:   false,
 		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SubTotalGross(), nil
+		return obj.SubTotalGross, nil
 	})
 
 	if resTmp == nil {
@@ -10316,14 +10316,14 @@ func (ec *executionContext) _Commerce_Cart_Cart_subTotalGrossWithDiscounts(ctx c
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
+		IsMethod:   false,
 		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SubTotalGrossWithDiscounts(), nil
+		return obj.SubTotalGrossWithDiscounts, nil
 	})
 
 	if resTmp == nil {
@@ -10348,14 +10348,14 @@ func (ec *executionContext) _Commerce_Cart_Cart_subTotalNetWithDiscounts(ctx con
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
+		IsMethod:   false,
 		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SubTotalNetWithDiscounts(), nil
+		return obj.SubTotalNetWithDiscounts, nil
 	})
 
 	if resTmp == nil {
@@ -10380,14 +10380,14 @@ func (ec *executionContext) _Commerce_Cart_Cart_sumTotalDiscountAmount(ctx conte
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
+		IsMethod:   false,
 		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SumTotalDiscountAmount(), nil
+		return obj.SumTotalDiscountAmount, nil
 	})
 
 	if resTmp == nil {
@@ -10412,14 +10412,14 @@ func (ec *executionContext) _Commerce_Cart_Cart_sumNonItemRelatedDiscountAmount(
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
+		IsMethod:   false,
 		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SumNonItemRelatedDiscountAmount(), nil
+		return obj.SumNonItemRelatedDiscountAmount, nil
 	})
 
 	if resTmp == nil {
@@ -10444,14 +10444,14 @@ func (ec *executionContext) _Commerce_Cart_Cart_sumItemRelatedDiscountAmount(ctx
 		Object:     "Commerce_Cart_Cart",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
+		IsMethod:   false,
 		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SumItemRelatedDiscountAmount(), nil
+		return obj.SumItemRelatedDiscountAmount, nil
 	})
 
 	if resTmp == nil {
@@ -11200,14 +11200,14 @@ func (ec *executionContext) _Commerce_Cart_Delivery_subTotalGross(ctx context.Co
 		Object:     "Commerce_Cart_Delivery",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
+		IsMethod:   false,
 		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SubTotalGross(), nil
+		return obj.SubTotalGross, nil
 	})
 
 	if resTmp == nil {
@@ -11229,14 +11229,14 @@ func (ec *executionContext) _Commerce_Cart_Delivery_grandTotal(ctx context.Conte
 		Object:     "Commerce_Cart_Delivery",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
+		IsMethod:   false,
 		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.GrandTotal(), nil
+		return obj.GrandTotal, nil
 	})
 
 	if resTmp == nil {
@@ -11287,14 +11287,14 @@ func (ec *executionContext) _Commerce_Cart_Delivery_subTotalNet(ctx context.Cont
 		Object:     "Commerce_Cart_Delivery",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
+		IsMethod:   false,
 		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SubTotalNet(), nil
+		return obj.SubTotalNet, nil
 	})
 
 	if resTmp == nil {
@@ -11316,14 +11316,14 @@ func (ec *executionContext) _Commerce_Cart_Delivery_sumTotalDiscountAmount(ctx c
 		Object:     "Commerce_Cart_Delivery",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
+		IsMethod:   false,
 		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SumTotalDiscountAmount(), nil
+		return obj.SumTotalDiscountAmount, nil
 	})
 
 	if resTmp == nil {
@@ -11345,14 +11345,14 @@ func (ec *executionContext) _Commerce_Cart_Delivery_sumNonItemRelatedDiscountAmo
 		Object:     "Commerce_Cart_Delivery",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
+		IsMethod:   false,
 		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SumNonItemRelatedDiscountAmount(), nil
+		return obj.SumNonItemRelatedDiscountAmount, nil
 	})
 
 	if resTmp == nil {
@@ -11374,14 +11374,14 @@ func (ec *executionContext) _Commerce_Cart_Delivery_sumItemRelatedDiscountAmount
 		Object:     "Commerce_Cart_Delivery",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
+		IsMethod:   false,
 		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SumItemRelatedDiscountAmount(), nil
+		return obj.SumItemRelatedDiscountAmount, nil
 	})
 
 	if resTmp == nil {
@@ -11403,14 +11403,14 @@ func (ec *executionContext) _Commerce_Cart_Delivery_subTotalGrossWithDiscounts(c
 		Object:     "Commerce_Cart_Delivery",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
+		IsMethod:   false,
 		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SubTotalGrossWithDiscounts(), nil
+		return obj.SubTotalGrossWithDiscounts, nil
 	})
 
 	if resTmp == nil {
@@ -11432,14 +11432,14 @@ func (ec *executionContext) _Commerce_Cart_Delivery_subTotalNetWithDiscounts(ctx
 		Object:     "Commerce_Cart_Delivery",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   true,
+		IsMethod:   false,
 		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SubTotalNetWithDiscounts(), nil
+		return obj.SubTotalNetWithDiscounts, nil
 	})
 
 	if resTmp == nil {

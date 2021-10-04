@@ -77,8 +77,8 @@
       | SumTotalDiscountAmount()          | SumTotalDiscountAmount          |
       | SumNonItemRelatedDiscountAmount() | SumNonItemRelatedDiscountAmount |
       | SumItemRelatedDiscountAmount()    | SumItemRelatedDiscountAmount    |
-      | -                                 | SumAppliedGiftCards             |
-      | -                                 | SumGrandTotalWithGiftCards      |
+      | SumAppliedGiftCards()             | SumAppliedGiftCards             |
+      | SumGrandTotalWithGiftCards()      | SumGrandTotalWithGiftCards      |
 
 
 **checkout**

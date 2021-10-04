@@ -1030,7 +1030,7 @@ var doc = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/productResultError"
+                            "$ref": "#/definitions/cartResultError"
                         }
                     }
                 }
@@ -1090,47 +1090,35 @@ var doc = `{
         }
     },
     "definitions": {
-        "CategoryAttribute": {
+        "ProductAttribute": {
             "type": "object",
             "properties": {
                 "Code": {
+                    "description": "Code is the internal attribute identifier",
+                    "type": "string"
+                },
+                "CodeLabel": {
+                    "description": "CodeLabel is the human readable (perhaps localized) attribute name",
                     "type": "string"
                 },
                 "Label": {
+                    "description": "Label is the human readable (perhaps localized) attribute value",
                     "type": "string"
                 },
-                "Values": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/domain.AttributeValue"
-                    }
+                "RawValue": {
+                    "description": "RawValue is the untouched original value of the attribute",
+                    "type": "object"
+                },
+                "UnitCode": {
+                    "description": "UnitCode is the internal code of the attribute values measuring unit",
+                    "type": "string"
                 }
             }
         },
-        "CategoryAttributes": {
+        "ProductAttributes": {
             "type": "object",
             "additionalProperties": {
-                "$ref": "#/definitions/CategoryAttribute"
-            }
-        },
-        "ProductMedia": {
-            "type": "object",
-            "properties": {
-                "MimeType": {
-                    "type": "string"
-                },
-                "Reference": {
-                    "type": "string"
-                },
-                "Title": {
-                    "type": "string"
-                },
-                "Type": {
-                    "type": "string"
-                },
-                "Usage": {
-                    "type": "string"
-                }
+                "$ref": "#/definitions/ProductAttribute"
             }
         },
         "application.PlaceOrderPaymentInfo": {
@@ -1336,6 +1324,7 @@ var doc = `{
                     "type": "string"
                 },
                 "GrandTotal": {
+                    "description": "GrandTotal is the final amount that need to be paid by the customer (gross)",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "ID": {
@@ -1351,42 +1340,55 @@ var doc = `{
                     "$ref": "#/definitions/cart.Person"
                 },
                 "SubTotalGross": {
+                    "description": "SubTotalGross is the sum of all delivery subtotals (without shipping/ discounts)",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "SubTotalGrossWithDiscounts": {
+                    "description": "SubTotalGrossWithDiscounts is the sum of row gross prices reduced by the applied discounts",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "SubTotalNet": {
+                    "description": "SubTotalNet is the sum of all delivery net subtotals (without shipping/ discounts)",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "SubTotalNetWithDiscounts": {
+                    "description": "SubTotalNetWithDiscounts is the sum of row net prices reduced by the net value of the applied discounts",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "SumAppliedGiftCards": {
+                    "description": "SumAppliedGiftCards is the part of GrandTotal which is paid by gift cards",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "SumGrandTotalWithGiftCards": {
+                    "description": "SumGrandTotalWithGiftCards is the final amount with the applied gift cards subtracted.",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "SumItemRelatedDiscountAmount": {
+                    "description": "SumItemRelatedDiscountAmount is the sum of discounts that are related to the item (including shipping discounts)",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "SumNonItemRelatedDiscountAmount": {
+                    "description": "SumNonItemRelatedDiscountAmount is the sum of discounts that are not related to the item (including shipping discounts)",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "SumShippingGross": {
+                    "description": "SumShippingGross is the sum of all shipping costs including tax",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "SumShippingGrossWithDiscounts": {
+                    "description": "SumShippingGrossWithDiscounts is the sum of all shipping costs with all shipping discounts including tax",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "SumShippingNet": {
+                    "description": "SumShippingNet is the sum of all shipping costs",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "SumShippingNetWithDiscounts": {
+                    "description": "SumShippingNetWithDiscounts is the sum of all shipping costs with all shipping discounts",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "SumTotalDiscountAmount": {
+                    "description": "SumTotalDiscountAmount is the sum of all discounts (incl. shipping)",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "Totalitems": {
@@ -1446,7 +1448,7 @@ var doc = `{
                     "$ref": "#/definitions/domain.Price"
                 },
                 "SubTotalNetWithDiscounts": {
-                    "description": "SubTotalNetWithDiscounts contains the sum of row gross prices reduced by the applied discounts",
+                    "description": "SubTotalNetWithDiscounts contains the sum of row net prices reduced by the net value of the applied discounts",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "SumItemRelatedDiscountAmount": {
@@ -1588,7 +1590,7 @@ var doc = `{
                     "$ref": "#/definitions/domain.Price"
                 },
                 "RowPriceNet": {
-                    "description": "RowPriceNet is the price excl. taxes for the whole Qty of products for the whole Qty of products",
+                    "description": "RowPriceNet is the price excl. taxes for the whole Qty of products",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "RowPriceNetWithDiscount": {
@@ -1740,6 +1742,17 @@ var doc = `{
                 }
             }
         },
+        "cartResultError": {
+            "type": "object",
+            "properties": {
+                "Code": {
+                    "type": "string"
+                },
+                "Message": {
+                    "type": "string"
+                }
+            }
+        },
         "checkoutError": {
             "type": "object",
             "properties": {
@@ -1755,7 +1768,7 @@ var doc = `{
             "type": "object",
             "properties": {
                 "Error": {
-                    "$ref": "#/definitions/productResultError"
+                    "$ref": "#/definitions/cartResultError"
                 },
                 "Product": {
                     "$ref": "#/definitions/domain.BasicProduct"
@@ -1782,7 +1795,7 @@ var doc = `{
                 },
                 "Error": {
                     "description": "Contains details if success is false",
-                    "$ref": "#/definitions/productResultError"
+                    "$ref": "#/definitions/cartResultError"
                 },
                 "Success": {
                     "type": "boolean"
@@ -1893,17 +1906,6 @@ var doc = `{
                 },
                 "Delivery": {
                     "$ref": "#/definitions/cart.Delivery"
-                }
-            }
-        },
-        "domain.AttributeValue": {
-            "type": "object",
-            "properties": {
-                "Label": {
-                    "type": "string"
-                },
-                "RawValue": {
-                    "type": "object"
                 }
             }
         },
@@ -2047,6 +2049,26 @@ var doc = `{
                 }
             }
         },
+        "domain.Media": {
+            "type": "object",
+            "properties": {
+                "MimeType": {
+                    "type": "string"
+                },
+                "Reference": {
+                    "type": "string"
+                },
+                "Title": {
+                    "type": "string"
+                },
+                "Type": {
+                    "type": "string"
+                },
+                "Usage": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.PaymentRequestAPI": {
             "type": "object",
             "properties": {
@@ -2135,7 +2157,7 @@ var doc = `{
                     "$ref": "#/definitions/domain.PriceInfo"
                 },
                 "Attributes": {
-                    "$ref": "#/definitions/CategoryAttributes"
+                    "$ref": "#/definitions/ProductAttributes"
                 },
                 "AvailablePrices": {
                     "type": "array",
@@ -2205,7 +2227,7 @@ var doc = `{
                 "Media": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ProductMedia"
+                        "$ref": "#/definitions/domain.Media"
                     }
                 },
                 "RetailerCode": {
@@ -2264,7 +2286,7 @@ var doc = `{
                     "description": "Media",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ProductMedia"
+                        "$ref": "#/definitions/domain.Media"
                     }
                 },
                 "PreSelectedVariantSku": {
@@ -2345,17 +2367,6 @@ var doc = `{
         },
         "process.StateData": {
             "type": "object"
-        },
-        "productResultError": {
-            "type": "object",
-            "properties": {
-                "Code": {
-                    "type": "string"
-                },
-                "Message": {
-                    "type": "string"
-                }
-            }
         },
         "validation.ItemValidationError": {
             "type": "object",
