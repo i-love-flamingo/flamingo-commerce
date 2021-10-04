@@ -402,14 +402,14 @@ type ComplexityRoot struct {
 	}
 
 	CommerceCartSummary struct {
-		AppliedGiftCardsAmount                           func(childComplexity int) int
 		Discounts                                        func(childComplexity int) int
 		GrandTotalWithGiftCards                          func(childComplexity int) int
 		HasAppliedDiscounts                              func(childComplexity int) int
-		SumAppliedDiscounts                              func(childComplexity int) int
 		SumPaymentSelectionCartSplitValueAmountByMethods func(childComplexity int, methods []string) int
 		SumTaxes                                         func(childComplexity int) int
 		SumTotalDiscountWithGiftCardsAmount              func(childComplexity int) int
+		TotalDiscountAmount                              func(childComplexity int) int
+		TotalGiftCardAmount                              func(childComplexity int) int
 	}
 
 	CommerceCartTax struct {
@@ -2612,13 +2612,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceCartShippingItem.TotalWithDiscountInclTax(childComplexity), true
 
-	case "Commerce_Cart_Summary.appliedGiftCardsAmount":
-		if e.complexity.CommerceCartSummary.AppliedGiftCardsAmount == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartSummary.AppliedGiftCardsAmount(childComplexity), true
-
 	case "Commerce_Cart_Summary.discounts":
 		if e.complexity.CommerceCartSummary.Discounts == nil {
 			break
@@ -2639,13 +2632,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceCartSummary.HasAppliedDiscounts(childComplexity), true
-
-	case "Commerce_Cart_Summary.sumAppliedDiscounts":
-		if e.complexity.CommerceCartSummary.SumAppliedDiscounts == nil {
-			break
-		}
-
-		return e.complexity.CommerceCartSummary.SumAppliedDiscounts(childComplexity), true
 
 	case "Commerce_Cart_Summary.sumPaymentSelectionCartSplitValueAmountByMethods":
 		if e.complexity.CommerceCartSummary.SumPaymentSelectionCartSplitValueAmountByMethods == nil {
@@ -2672,6 +2658,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceCartSummary.SumTotalDiscountWithGiftCardsAmount(childComplexity), true
+
+	case "Commerce_Cart_Summary.totalDiscountAmount":
+		if e.complexity.CommerceCartSummary.TotalDiscountAmount == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartSummary.TotalDiscountAmount(childComplexity), true
+
+	case "Commerce_Cart_Summary.totalGiftCardAmount":
+		if e.complexity.CommerceCartSummary.TotalGiftCardAmount == nil {
+			break
+		}
+
+		return e.complexity.CommerceCartSummary.TotalGiftCardAmount(childComplexity), true
 
 	case "Commerce_Cart_Tax.amount":
 		if e.complexity.CommerceCartTax.Amount == nil {
@@ -5702,8 +5702,8 @@ extend type Query {
 
 type Commerce_Cart_Summary {
     discounts: Commerce_Cart_AppliedDiscounts!
-    sumAppliedDiscounts: Commerce_Price
-    appliedGiftCardsAmount: Commerce_Price
+    totalDiscountAmount: Commerce_Price
+    totalGiftCardAmount: Commerce_Price
     grandTotalWithGiftCards: Commerce_Price
     sumTotalDiscountWithGiftCardsAmount: Commerce_Price
     hasAppliedDiscounts: Boolean!
@@ -14121,7 +14121,7 @@ func (ec *executionContext) _Commerce_Cart_Summary_discounts(ctx context.Context
 	return ec.marshalNCommerce_Cart_AppliedDiscounts2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐCartAppliedDiscounts(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Cart_Summary_sumAppliedDiscounts(ctx context.Context, field graphql.CollectedField, obj *dto.CartSummary) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Cart_Summary_totalDiscountAmount(ctx context.Context, field graphql.CollectedField, obj *dto.CartSummary) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -14139,7 +14139,7 @@ func (ec *executionContext) _Commerce_Cart_Summary_sumAppliedDiscounts(ctx conte
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.SumAppliedDiscounts(), nil
+		return obj.TotalDiscountAmount(), nil
 	})
 
 	if resTmp == nil {
@@ -14150,7 +14150,7 @@ func (ec *executionContext) _Commerce_Cart_Summary_sumAppliedDiscounts(ctx conte
 	return ec.marshalOCommerce_Price2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋpriceᚋdomainᚐPrice(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Commerce_Cart_Summary_appliedGiftCardsAmount(ctx context.Context, field graphql.CollectedField, obj *dto.CartSummary) (ret graphql.Marshaler) {
+func (ec *executionContext) _Commerce_Cart_Summary_totalGiftCardAmount(ctx context.Context, field graphql.CollectedField, obj *dto.CartSummary) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -14168,7 +14168,7 @@ func (ec *executionContext) _Commerce_Cart_Summary_appliedGiftCardsAmount(ctx co
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.AppliedGiftCardsAmount(), nil
+		return obj.TotalGiftCardAmount(), nil
 	})
 
 	if resTmp == nil {
@@ -28459,10 +28459,10 @@ func (ec *executionContext) _Commerce_Cart_Summary(ctx context.Context, sel ast.
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "sumAppliedDiscounts":
-			out.Values[i] = ec._Commerce_Cart_Summary_sumAppliedDiscounts(ctx, field, obj)
-		case "appliedGiftCardsAmount":
-			out.Values[i] = ec._Commerce_Cart_Summary_appliedGiftCardsAmount(ctx, field, obj)
+		case "totalDiscountAmount":
+			out.Values[i] = ec._Commerce_Cart_Summary_totalDiscountAmount(ctx, field, obj)
+		case "totalGiftCardAmount":
+			out.Values[i] = ec._Commerce_Cart_Summary_totalGiftCardAmount(ctx, field, obj)
 		case "grandTotalWithGiftCards":
 			out.Values[i] = ec._Commerce_Cart_Summary_grandTotalWithGiftCards(ctx, field, obj)
 		case "sumTotalDiscountWithGiftCardsAmount":

@@ -53,7 +53,7 @@ type (
 		// AppliedGiftCards is a list of applied gift cards
 		AppliedGiftCards []AppliedGiftCard
 		// AppliedGiftCardsAmount is the part of GrandTotal which is paid by gift cards
-		AppliedGiftCardsAmount domain.Price
+		TotalGiftCardAmount domain.Price
 		// GrandTotalWithGiftCards is the final amount with the applied gift cards subtracted.
 		GrandTotalWithGiftCards domain.Price
 		// GrandTotal is the final amount that need to be paid by the customer (gross)

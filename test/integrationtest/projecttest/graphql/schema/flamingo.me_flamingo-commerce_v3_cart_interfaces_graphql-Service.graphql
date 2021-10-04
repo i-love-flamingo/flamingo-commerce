@@ -8,8 +8,8 @@ type Commerce_Cart_DecoratedCart {
 
 type Commerce_Cart_Summary {
     discounts: Commerce_Cart_AppliedDiscounts!
-    sumAppliedDiscounts: Commerce_Price
-    appliedGiftCardsAmount: Commerce_Price
+    totalDiscountAmount: Commerce_Price
+    totalGiftCardAmount: Commerce_Price
     grandTotalWithGiftCards: Commerce_Price
     sumTotalDiscountWithGiftCardsAmount: Commerce_Price
     hasAppliedDiscounts: Boolean!

@@ -31,5 +31,5 @@ s/\.SubTotalNetWithDiscounts()/.SubTotalNetWithDiscounts/
 s/\.SumTotalDiscountAmount()/.TotalDiscountAmount/
 s/\.SumNonItemRelatedDiscountAmount()/.NonItemRelatedDiscountAmount/
 s/\.SumItemRelatedDiscountAmount()/.ItemRelatedDiscountAmount/
-s/\.SumAppliedGiftCards()/.AppliedGiftCards/
+s/\.SumAppliedGiftCards()/.TotalGiftCardAmount/
 s/\.SumGrandTotalWithGiftCards()/.GrandTotalWithGiftCards/

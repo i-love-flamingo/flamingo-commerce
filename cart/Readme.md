@@ -234,7 +234,7 @@ The Key with "()" in the list are methods and it is assumed as an invariant, tha
 | TotalDiscountAmount             | Sum of all discounts (incl. shipping)                                                                          | Sum of deliveries TotalDiscountAmount                                        |
 | NonItemRelatedDiscountAmount    | Sum of discounts that are not related to the item (including shipping discounts)                               | Sum of deliveries NonItemRelatedDiscountAmount                               |
 | ItemRelatedDiscountAmount       | Sum of discounts that are related to the item (including shipping discounts)                                   | Sum of deliveries ItemRelatedDiscountAmount                                  |
-| AppliedGiftCards                | The part of GrandTotal which is paid by gift cards                                                             |                                                                              |
+| TotalGiftCardAmount             | The part of GrandTotal which is paid by gift cards                                                             |                                                                              |
 | GrandTotalWithGiftCards         | The final amount with the applied gift cards subtracted. If there are no gift cards, equal to GrandTotal.      | GrandTotal - SumAppliedGiftCards                                             |
 | GetVoucherSavings()             | Returns the sum of Totalitems of type voucher                                                                  |                                                                              |
 

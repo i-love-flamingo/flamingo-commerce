@@ -1030,7 +1030,7 @@ var doc = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/cartResultError"
+                            "$ref": "#/definitions/paymentResultError"
                         }
                     }
                 }
@@ -1111,6 +1111,26 @@ var doc = `{
             "type": "object",
             "additionalProperties": {
                 "$ref": "#/definitions/CategoryAttribute"
+            }
+        },
+        "ProductMedia": {
+            "type": "object",
+            "properties": {
+                "MimeType": {
+                    "type": "string"
+                },
+                "Reference": {
+                    "type": "string"
+                },
+                "Title": {
+                    "type": "string"
+                },
+                "Type": {
+                    "type": "string"
+                },
+                "Usage": {
+                    "type": "string"
+                }
             }
         },
         "application.PlaceOrderPaymentInfo": {
@@ -1289,10 +1309,6 @@ var doc = `{
                         "$ref": "#/definitions/cart.AppliedGiftCard"
                     }
                 },
-                "AppliedGiftCardsAmount": {
-                    "description": "AppliedGiftCardsAmount is the part of GrandTotal which is paid by gift cards",
-                    "$ref": "#/definitions/domain.Price"
-                },
                 "AuthenticatedUserID": {
                     "description": "AuthenticatedUserID holds the potential customer ID",
                     "type": "string"
@@ -1381,6 +1397,10 @@ var doc = `{
                 },
                 "TotalDiscountAmount": {
                     "description": "TotalDiscountAmount is the sum of all discounts (incl. shipping)",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "TotalGiftCardAmount": {
+                    "description": "AppliedGiftCardsAmount is the part of GrandTotal which is paid by gift cards",
                     "$ref": "#/definitions/domain.Price"
                 },
                 "Totalitems": {
@@ -1734,17 +1754,6 @@ var doc = `{
                 }
             }
         },
-        "cartResultError": {
-            "type": "object",
-            "properties": {
-                "Code": {
-                    "type": "string"
-                },
-                "Message": {
-                    "type": "string"
-                }
-            }
-        },
         "checkoutError": {
             "type": "object",
             "properties": {
@@ -1760,7 +1769,7 @@ var doc = `{
             "type": "object",
             "properties": {
                 "Error": {
-                    "$ref": "#/definitions/cartResultError"
+                    "$ref": "#/definitions/paymentResultError"
                 },
                 "Product": {
                     "$ref": "#/definitions/domain.BasicProduct"
@@ -1787,7 +1796,7 @@ var doc = `{
                 },
                 "Error": {
                     "description": "Contains details if success is false",
-                    "$ref": "#/definitions/cartResultError"
+                    "$ref": "#/definitions/paymentResultError"
                 },
                 "Success": {
                     "type": "boolean"
@@ -2052,26 +2061,6 @@ var doc = `{
                 }
             }
         },
-        "domain.Media": {
-            "type": "object",
-            "properties": {
-                "MimeType": {
-                    "type": "string"
-                },
-                "Reference": {
-                    "type": "string"
-                },
-                "Title": {
-                    "type": "string"
-                },
-                "Type": {
-                    "type": "string"
-                },
-                "Usage": {
-                    "type": "string"
-                }
-            }
-        },
         "domain.PaymentRequestAPI": {
             "type": "object",
             "properties": {
@@ -2230,7 +2219,7 @@ var doc = `{
                 "Media": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/domain.Media"
+                        "$ref": "#/definitions/ProductMedia"
                     }
                 },
                 "RetailerCode": {
@@ -2289,7 +2278,7 @@ var doc = `{
                     "description": "Media",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/domain.Media"
+                        "$ref": "#/definitions/ProductMedia"
                     }
                 },
                 "PreSelectedVariantSku": {
@@ -2336,6 +2325,17 @@ var doc = `{
                     "$ref": "#/definitions/domain.PaymentRequestAPI"
                 },
                 "UsedPaymentMethod": {
+                    "type": "string"
+                }
+            }
+        },
+        "paymentResultError": {
+            "type": "object",
+            "properties": {
+                "Code": {
+                    "type": "string"
+                },
+                "Message": {
                     "type": "string"
                 }
             }

@@ -729,7 +729,7 @@ func (cob *DefaultCartBehaviour) resetPaymentSelectionIfInvalid(ctx context.Cont
 }
 
 func (cob *DefaultCartBehaviour) collectTotals(cart *domaincart.Cart) {
-	cart.AppliedGiftCardsAmount = priceDomain.NewZero(cart.DefaultCurrency)
+	cart.TotalGiftCardAmount = priceDomain.NewZero(cart.DefaultCurrency)
 	cart.GrandTotalWithGiftCards = priceDomain.NewZero(cart.DefaultCurrency)
 	cart.GrandTotal = priceDomain.NewZero(cart.DefaultCurrency)
 	cart.ShippingNet = priceDomain.NewZero(cart.DefaultCurrency)
@@ -798,8 +798,8 @@ func (cob *DefaultCartBehaviour) collectTotals(cart *domaincart.Cart) {
 		sumAppliedGiftCards = sumAppliedGiftCards.ForceAdd(card.Applied)
 	}
 
-	cart.AppliedGiftCardsAmount = sumAppliedGiftCards
-	cart.GrandTotalWithGiftCards, _ = cart.GrandTotal.Sub(cart.AppliedGiftCardsAmount)
+	cart.TotalGiftCardAmount = sumAppliedGiftCards
+	cart.GrandTotalWithGiftCards, _ = cart.GrandTotal.Sub(cart.TotalGiftCardAmount)
 	if cart.GrandTotalWithGiftCards.IsNegative() {
 		cart.GrandTotalWithGiftCards = priceDomain.NewZero(cart.DefaultCurrency)
 	}
