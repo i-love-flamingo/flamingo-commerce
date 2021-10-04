@@ -190,7 +190,7 @@ func (s *PostRedirect) MapFrom(pctx process.Context) {
 }
 
 // MapFrom the internal process state to the graphQL state fields
-func (t TriggerClientSDK) MapFrom(pctx process.Context) {
+func (t *TriggerClientSDK) MapFrom(pctx process.Context) {
 	t.Name = pctx.CurrentStateName
 	if stateData, ok := pctx.CurrentStateData.(*url.URL); ok {
 		t.URL = stateData.String()
