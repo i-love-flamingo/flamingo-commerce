@@ -1030,7 +1030,7 @@ var doc = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/cartResultError"
+                            "$ref": "#/definitions/productResultError"
                         }
                     }
                 }
@@ -1090,55 +1090,27 @@ var doc = `{
         }
     },
     "definitions": {
-        "ProductAttribute": {
+        "CategoryAttribute": {
             "type": "object",
             "properties": {
                 "Code": {
-                    "description": "Code is the internal attribute identifier",
-                    "type": "string"
-                },
-                "CodeLabel": {
-                    "description": "CodeLabel is the human readable (perhaps localized) attribute name",
                     "type": "string"
                 },
                 "Label": {
-                    "description": "Label is the human readable (perhaps localized) attribute value",
                     "type": "string"
                 },
-                "RawValue": {
-                    "description": "RawValue is the untouched original value of the attribute",
-                    "type": "object"
-                },
-                "UnitCode": {
-                    "description": "UnitCode is the internal code of the attribute values measuring unit",
-                    "type": "string"
+                "Values": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.AttributeValue"
+                    }
                 }
             }
         },
-        "ProductAttributes": {
+        "CategoryAttributes": {
             "type": "object",
             "additionalProperties": {
-                "$ref": "#/definitions/ProductAttribute"
-            }
-        },
-        "ProductMedia": {
-            "type": "object",
-            "properties": {
-                "MimeType": {
-                    "type": "string"
-                },
-                "Reference": {
-                    "type": "string"
-                },
-                "Title": {
-                    "type": "string"
-                },
-                "Type": {
-                    "type": "string"
-                },
-                "Usage": {
-                    "type": "string"
-                }
+                "$ref": "#/definitions/CategoryAttribute"
             }
         },
         "application.PlaceOrderPaymentInfo": {
@@ -1635,17 +1607,6 @@ var doc = `{
                 }
             }
         },
-        "cartResultError": {
-            "type": "object",
-            "properties": {
-                "Code": {
-                    "type": "string"
-                },
-                "Message": {
-                    "type": "string"
-                }
-            }
-        },
         "checkoutError": {
             "type": "object",
             "properties": {
@@ -1661,7 +1622,7 @@ var doc = `{
             "type": "object",
             "properties": {
                 "Error": {
-                    "$ref": "#/definitions/cartResultError"
+                    "$ref": "#/definitions/productResultError"
                 },
                 "Product": {
                     "$ref": "#/definitions/domain.BasicProduct"
@@ -1688,7 +1649,7 @@ var doc = `{
                 },
                 "Error": {
                     "description": "Contains details if success is false",
-                    "$ref": "#/definitions/cartResultError"
+                    "$ref": "#/definitions/productResultError"
                 },
                 "Success": {
                     "type": "boolean"
@@ -1799,6 +1760,17 @@ var doc = `{
                 },
                 "Delivery": {
                     "$ref": "#/definitions/cart.Delivery"
+                }
+            }
+        },
+        "domain.AttributeValue": {
+            "type": "object",
+            "properties": {
+                "Label": {
+                    "type": "string"
+                },
+                "RawValue": {
+                    "type": "object"
                 }
             }
         },
@@ -1942,6 +1914,9 @@ var doc = `{
                 }
             }
         },
+        "domain.Media": {
+            "type": "object"
+        },
         "domain.PaymentRequestAPI": {
             "type": "object",
             "properties": {
@@ -2030,7 +2005,7 @@ var doc = `{
                     "$ref": "#/definitions/domain.PriceInfo"
                 },
                 "Attributes": {
-                    "$ref": "#/definitions/ProductAttributes"
+                    "$ref": "#/definitions/CategoryAttributes"
                 },
                 "AvailablePrices": {
                     "type": "array",
@@ -2100,7 +2075,7 @@ var doc = `{
                 "Media": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ProductMedia"
+                        "$ref": "#/definitions/domain.Media"
                     }
                 },
                 "RetailerCode": {
@@ -2159,7 +2134,7 @@ var doc = `{
                     "description": "Media",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ProductMedia"
+                        "$ref": "#/definitions/domain.Media"
                     }
                 },
                 "PreSelectedVariantSku": {
@@ -2240,6 +2215,17 @@ var doc = `{
         },
         "process.StateData": {
             "type": "object"
+        },
+        "productResultError": {
+            "type": "object",
+            "properties": {
+                "Code": {
+                    "type": "string"
+                },
+                "Message": {
+                    "type": "string"
+                }
+            }
         },
         "validation.ItemValidationError": {
             "type": "object",

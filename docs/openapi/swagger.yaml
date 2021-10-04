@@ -1,40 +1,18 @@
 definitions:
-  ProductAttribute:
+  CategoryAttribute:
     properties:
       Code:
-        description: Code is the internal attribute identifier
-        type: string
-      CodeLabel:
-        description: CodeLabel is the human readable (perhaps localized) attribute
-          name
         type: string
       Label:
-        description: Label is the human readable (perhaps localized) attribute value
         type: string
-      RawValue:
-        description: RawValue is the untouched original value of the attribute
-        type: object
-      UnitCode:
-        description: UnitCode is the internal code of the attribute values measuring
-          unit
-        type: string
+      Values:
+        items:
+          $ref: '#/definitions/domain.AttributeValue'
+        type: array
     type: object
-  ProductAttributes:
+  CategoryAttributes:
     additionalProperties:
-      $ref: '#/definitions/ProductAttribute'
-    type: object
-  ProductMedia:
-    properties:
-      MimeType:
-        type: string
-      Reference:
-        type: string
-      Title:
-        type: string
-      Type:
-        type: string
-      Usage:
-        type: string
+      $ref: '#/definitions/CategoryAttribute'
     type: object
   application.PlaceOrderPaymentInfo:
     properties:
@@ -403,13 +381,6 @@ definitions:
       Type:
         type: string
     type: object
-  cartResultError:
-    properties:
-      Code:
-        type: string
-      Message:
-        type: string
-    type: object
   checkoutError:
     properties:
       Code:
@@ -420,7 +391,7 @@ definitions:
   controller.APIResult:
     properties:
       Error:
-        $ref: '#/definitions/cartResultError'
+        $ref: '#/definitions/productResultError'
       Product:
         $ref: '#/definitions/domain.BasicProduct'
       Success:
@@ -437,7 +408,7 @@ definitions:
       DataValidationInfo:
         type: object
       Error:
-        $ref: '#/definitions/cartResultError'
+        $ref: '#/definitions/productResultError'
         description: Contains details if success is false
       Success:
         type: boolean
@@ -510,6 +481,13 @@ definitions:
         type: array
       Delivery:
         $ref: '#/definitions/cart.Delivery'
+    type: object
+  domain.AttributeValue:
+    properties:
+      Label:
+        type: string
+      RawValue:
+        type: object
     type: object
   domain.Badge:
     properties:
@@ -612,6 +590,8 @@ definitions:
         description: Type or Name of the Loyalty program
         type: string
     type: object
+  domain.Media:
+    type: object
   domain.PaymentRequestAPI:
     properties:
       CompleteURL:
@@ -670,7 +650,7 @@ definitions:
       ActivePrice:
         $ref: '#/definitions/domain.PriceInfo'
       Attributes:
-        $ref: '#/definitions/ProductAttributes'
+        $ref: '#/definitions/CategoryAttributes'
       AvailablePrices:
         items:
           $ref: '#/definitions/domain.PriceInfo'
@@ -719,7 +699,7 @@ definitions:
         type: string
       Media:
         items:
-          $ref: '#/definitions/ProductMedia'
+          $ref: '#/definitions/domain.Media'
         type: array
       RetailerCode:
         type: string
@@ -759,7 +739,7 @@ definitions:
       Media:
         description: Media
         items:
-          $ref: '#/definitions/ProductMedia'
+          $ref: '#/definitions/domain.Media'
         type: array
       PreSelectedVariantSku:
         description: PreSelectedVariantSku might be set for configurables to give
@@ -819,6 +799,13 @@ definitions:
         type: string
     type: object
   process.StateData:
+    type: object
+  productResultError:
+    properties:
+      Code:
+        type: string
+      Message:
+        type: string
     type: object
   validation.ItemValidationError:
     properties:
@@ -1514,7 +1501,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/cartResultError'
+            $ref: '#/definitions/productResultError'
       summary: Get the payment status of current cart (or last placed cart)
       tags:
       - Payment

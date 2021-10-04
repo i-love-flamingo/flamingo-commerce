@@ -26514,8 +26514,6 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State(ctx context
 			return graphql.Null
 		}
 		return ec._Commerce_Checkout_PlaceOrderState_State_Redirect(ctx, sel, obj)
-	case dto1.TriggerClientSDK:
-		return ec._Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK(ctx, sel, &obj)
 	case *dto1.TriggerClientSDK:
 		if obj == nil {
 			return graphql.Null
