@@ -572,6 +572,11 @@ type ComplexityRoot struct {
 		Name func(childComplexity int) int
 	}
 
+	CommerceCheckoutPlaceOrderStateStateTriggerClientSdk struct {
+		Name func(childComplexity int) int
+		URL  func(childComplexity int) int
+	}
+
 	CommerceCheckoutPlaceOrderStateStateWait struct {
 		Name func(childComplexity int) int
 	}
@@ -3214,6 +3219,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceCheckoutPlaceOrderStateStateSuccess.Name(childComplexity), true
+
+	case "Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK.name":
+		if e.complexity.CommerceCheckoutPlaceOrderStateStateTriggerClientSdk.Name == nil {
+			break
+		}
+
+		return e.complexity.CommerceCheckoutPlaceOrderStateStateTriggerClientSdk.Name(childComplexity), true
+
+	case "Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK.URL":
+		if e.complexity.CommerceCheckoutPlaceOrderStateStateTriggerClientSdk.URL == nil {
+			break
+		}
+
+		return e.complexity.CommerceCheckoutPlaceOrderStateStateTriggerClientSdk.URL(childComplexity), true
 
 	case "Commerce_Checkout_PlaceOrderState_State_Wait.name":
 		if e.complexity.CommerceCheckoutPlaceOrderStateStateWait.Name == nil {
@@ -6230,6 +6249,11 @@ type Commerce_Checkout_PlaceOrderState_State_ShowHTML implements Commerce_Checko
 }
 
 type Commerce_Checkout_PlaceOrderState_State_Redirect implements Commerce_Checkout_PlaceOrderState_State {
+    name: String!
+    URL: String!
+}
+
+type Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK implements Commerce_Checkout_PlaceOrderState_State {
     name: String!
     URL: String!
 }
@@ -16700,6 +16724,70 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Success_nam
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK_name(ctx context.Context, field graphql.CollectedField, obj *dto1.TriggerClientSDK) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK_URL(ctx context.Context, field graphql.CollectedField, obj *dto1.TriggerClientSDK) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.URL, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Wait_name(ctx context.Context, field graphql.CollectedField, obj *dto1.Wait) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -26426,6 +26514,11 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State(ctx context
 			return graphql.Null
 		}
 		return ec._Commerce_Checkout_PlaceOrderState_State_Redirect(ctx, sel, obj)
+	case *dto1.TriggerClientSDK:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK(ctx, sel, obj)
 	case *dto1.ShowWalletPayment:
 		if obj == nil {
 			return graphql.Null
@@ -29313,6 +29406,38 @@ func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Success(ctx
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_Success")
 		case "name":
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_Success_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Checkout_PlaceOrderState_State_TriggerClientSDKImplementors = []string{"Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK", "Commerce_Checkout_PlaceOrderState_State"}
+
+func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK(ctx context.Context, sel ast.SelectionSet, obj *dto1.TriggerClientSDK) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_TriggerClientSDKImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK")
+		case "name":
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "URL":
+			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK_URL(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

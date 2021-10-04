@@ -1,4 +1,19 @@
 definitions:
+  CategoryAttribute:
+    properties:
+      Code:
+        type: string
+      Label:
+        type: string
+      Values:
+        items:
+          $ref: '#/definitions/domain.AttributeValue'
+        type: array
+    type: object
+  CategoryAttributes:
+    additionalProperties:
+      $ref: '#/definitions/CategoryAttribute'
+    type: object
   application.PlaceOrderPaymentInfo:
     properties:
       Amount:
@@ -467,11 +482,12 @@ definitions:
       Delivery:
         $ref: '#/definitions/cart.Delivery'
     type: object
-  domain.Attribute:
-    type: object
-  domain.Attributes:
-    additionalProperties:
-      $ref: '#/definitions/domain.Attribute'
+  domain.AttributeValue:
+    properties:
+      Label:
+        type: string
+      RawValue:
+        type: object
     type: object
   domain.Badge:
     properties:
@@ -575,17 +591,6 @@ definitions:
         type: string
     type: object
   domain.Media:
-    properties:
-      MimeType:
-        type: string
-      Reference:
-        type: string
-      Title:
-        type: string
-      Type:
-        type: string
-      Usage:
-        type: string
     type: object
   domain.PaymentRequestAPI:
     properties:
@@ -645,7 +650,7 @@ definitions:
       ActivePrice:
         $ref: '#/definitions/domain.PriceInfo'
       Attributes:
-        $ref: '#/definitions/domain.Attributes'
+        $ref: '#/definitions/CategoryAttributes'
       AvailablePrices:
         items:
           $ref: '#/definitions/domain.PriceInfo'

@@ -108,6 +108,8 @@ const (
 	PaymentFlowActionPostRedirect = "post_redirect"
 	// PaymentFlowActionShowWalletPayment signals the frontend to start a wallet payment
 	PaymentFlowActionShowWalletPayment = "show_wallet_payment"
+	// PaymentFlowActionTriggerClientSDK signals the frontend to trigger a special client sdk implementation
+	PaymentFlowActionTriggerClientSDK = "trigger_client_sdk"
 )
 
 // Error getter

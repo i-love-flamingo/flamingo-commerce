@@ -1090,6 +1090,29 @@ var doc = `{
         }
     },
     "definitions": {
+        "CategoryAttribute": {
+            "type": "object",
+            "properties": {
+                "Code": {
+                    "type": "string"
+                },
+                "Label": {
+                    "type": "string"
+                },
+                "Values": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.AttributeValue"
+                    }
+                }
+            }
+        },
+        "CategoryAttributes": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/CategoryAttribute"
+            }
+        },
         "application.PlaceOrderPaymentInfo": {
             "type": "object",
             "properties": {
@@ -1740,13 +1763,15 @@ var doc = `{
                 }
             }
         },
-        "domain.Attribute": {
-            "type": "object"
-        },
-        "domain.Attributes": {
+        "domain.AttributeValue": {
             "type": "object",
-            "additionalProperties": {
-                "$ref": "#/definitions/domain.Attribute"
+            "properties": {
+                "Label": {
+                    "type": "string"
+                },
+                "RawValue": {
+                    "type": "object"
+                }
             }
         },
         "domain.Badge": {
@@ -1890,24 +1915,7 @@ var doc = `{
             }
         },
         "domain.Media": {
-            "type": "object",
-            "properties": {
-                "MimeType": {
-                    "type": "string"
-                },
-                "Reference": {
-                    "type": "string"
-                },
-                "Title": {
-                    "type": "string"
-                },
-                "Type": {
-                    "type": "string"
-                },
-                "Usage": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "domain.PaymentRequestAPI": {
             "type": "object",
@@ -1997,7 +2005,7 @@ var doc = `{
                     "$ref": "#/definitions/domain.PriceInfo"
                 },
                 "Attributes": {
-                    "$ref": "#/definitions/domain.Attributes"
+                    "$ref": "#/definitions/CategoryAttributes"
                 },
                 "AvailablePrices": {
                     "type": "array",
