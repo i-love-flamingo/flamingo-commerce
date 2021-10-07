@@ -191,7 +191,6 @@ func (s *ItemSplitter) SplitInSingleQtyItems(givenItem Item) ([]Item, error) {
 
 		item.SinglePriceGross, item.SinglePriceNet = givenItem.SinglePriceGross, givenItem.SinglePriceNet
 		item.RowPriceGross, item.RowPriceNet = item.SinglePriceGross, item.SinglePriceNet
-		// todo: refactor because splitting doesn't work like that
 		item.RowPriceGrossWithDiscount = s.splitPrice(givenItem.RowPriceGrossWithDiscount, givenItem.Qty, x)
 		item.RowPriceNetWithDiscount = s.splitPrice(givenItem.RowPriceNetWithDiscount, givenItem.Qty, x)
 
