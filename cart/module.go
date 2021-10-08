@@ -162,25 +162,25 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 	registry.HandleAny("cart.view", r.viewController.ViewAction)
 	registry.MustRoute("/cart", "cart.view")
 
-	registry.HandleAny("cart.add", r.viewController.AddAndViewAction)
+	registry.HandlePost("cart.add", r.viewController.AddAndViewAction)
 	registry.MustRoute("/cart/add/:marketplaceCode", `cart.add(marketplaceCode,variantMarketplaceCode?="",qty?="1",deliveryCode?="")`)
 
-	registry.HandleAny("cart.updateQty", r.viewController.UpdateQtyAndViewAction)
+	registry.HandlePost("cart.updateQty", r.viewController.UpdateQtyAndViewAction)
 	registry.MustRoute("/cart/update/:id", `cart.updateQty(id,qty?="1",deliveryCode?="")`)
 
-	registry.HandleAny("cart.deleteAllItems", r.viewController.DeleteAllAndViewAction)
+	registry.HandlePost("cart.deleteAllItems", r.viewController.DeleteAllAndViewAction)
 	registry.MustRoute("/cart/delete/all", "cart.deleteAllItems")
 
-	registry.HandleAny("cart.clean", r.viewController.CleanAndViewAction)
+	registry.HandlePost("cart.clean", r.viewController.CleanAndViewAction)
 	registry.MustRoute("/cart/clean", "cart.clean")
 
 	registry.HandleDelete("cart.clean", r.viewController.CleanAndViewAction)
 	registry.MustRoute("/cart/delivery/:deliveryCode", "cart.clean")
 
-	registry.HandleAny("cart.cleanDelivery", r.viewController.CleanDeliveryAndViewAction)
+	registry.HandlePost("cart.cleanDelivery", r.viewController.CleanDeliveryAndViewAction)
 	registry.MustRoute("/cart/delete/delivery/:deliveryCode", `cart.cleanDelivery(deliveryCode?="")`)
 
-	registry.HandleAny("cart.deleteItem", r.viewController.DeleteAndViewAction)
+	registry.HandlePost("cart.deleteItem", r.viewController.DeleteAndViewAction)
 	registry.MustRoute("/cart/delete/:id", `cart.deleteItem(id,deliveryCode?="")`)
 	r.apiRoutes(registry)
 }
