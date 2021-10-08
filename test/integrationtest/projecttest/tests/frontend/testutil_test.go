@@ -29,10 +29,10 @@ const (
 	routeCheckoutSuccess    = "/en/checkout/success"
 )
 
-//CartAddProduct helper
+// CartAddProduct helper
 func CartAddProduct(t *testing.T, e *httpexpect.Expect, marketplaceCode string, qty int, variantMarketplaceCode string, deliveryCode string) {
 	t.Helper()
-	request := e.GET("/en/cart/add/"+marketplaceCode).WithQuery("qty", qty)
+	request := e.POST("/en/cart/add/"+marketplaceCode).WithQuery("qty", qty)
 	if deliveryCode != "" {
 		request = request.WithQuery("deliveryCode", deliveryCode)
 	}
