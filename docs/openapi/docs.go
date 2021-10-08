@@ -1030,7 +1030,7 @@ var doc = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/productResultError"
+                            "$ref": "#/definitions/cartResultError"
                         }
                     }
                 }
@@ -1320,8 +1320,7 @@ var doc = `{
                     "type": "string"
                 },
                 "PaymentSelection": {
-                    "description": "PaymentSelection is used to store information on \"how\" the customer wants to pay",
-                    "$ref": "#/definitions/cart.PaymentSelection"
+                    "description": "PaymentSelection is used to store information on \"how\" the customer wants to pay"
                 },
                 "Purchaser": {
                     "description": "Purchaser hold additional infos for the legal contact person in this order",
@@ -1501,9 +1500,6 @@ var doc = `{
                 }
             }
         },
-        "cart.PaymentSelection": {
-            "type": "object"
-        },
         "cart.Person": {
             "type": "object",
             "properties": {
@@ -1607,6 +1603,17 @@ var doc = `{
                 }
             }
         },
+        "cartResultError": {
+            "type": "object",
+            "properties": {
+                "Code": {
+                    "type": "string"
+                },
+                "Message": {
+                    "type": "string"
+                }
+            }
+        },
         "checkoutError": {
             "type": "object",
             "properties": {
@@ -1622,11 +1629,9 @@ var doc = `{
             "type": "object",
             "properties": {
                 "Error": {
-                    "$ref": "#/definitions/productResultError"
+                    "$ref": "#/definitions/cartResultError"
                 },
-                "Product": {
-                    "$ref": "#/definitions/domain.BasicProduct"
-                },
+                "Product": {},
                 "Success": {
                     "type": "boolean"
                 }
@@ -1641,15 +1646,13 @@ var doc = `{
                 "CartValidationResult": {
                     "$ref": "#/definitions/validation.Result"
                 },
-                "Data": {
-                    "type": "object"
-                },
+                "Data": {},
                 "DataValidationInfo": {
                     "type": "object"
                 },
                 "Error": {
                     "description": "Contains details if success is false",
-                    "$ref": "#/definitions/productResultError"
+                    "$ref": "#/definitions/cartResultError"
                 },
                 "Success": {
                     "type": "boolean"
@@ -1685,9 +1688,7 @@ var doc = `{
                 "State": {
                     "type": "string"
                 },
-                "StateData": {
-                    "$ref": "#/definitions/process.StateData"
-                },
+                "StateData": {},
                 "UUID": {
                     "type": "string"
                 }
@@ -1744,9 +1745,7 @@ var doc = `{
                 "Item": {
                     "$ref": "#/definitions/cart.Item"
                 },
-                "Product": {
-                    "$ref": "#/definitions/domain.BasicProduct"
-                }
+                "Product": {}
             }
         },
         "decorator.DecoratedDelivery": {
@@ -1769,9 +1768,7 @@ var doc = `{
                 "Label": {
                     "type": "string"
                 },
-                "RawValue": {
-                    "type": "object"
-                }
+                "RawValue": {}
             }
         },
         "domain.Badge": {
@@ -1784,9 +1781,6 @@ var doc = `{
                     "type": "string"
                 }
             }
-        },
-        "domain.BasicProduct": {
-            "type": "object"
         },
         "domain.CategoryTeaser": {
             "type": "object",
@@ -1849,8 +1843,7 @@ var doc = `{
                     "$ref": "#/definitions/domain.FlowActionData"
                 },
                 "Data": {
-                    "description": "Data contains additional information related to the action / flow",
-                    "type": "object"
+                    "description": "Data contains additional information related to the action / flow"
                 },
                 "Error": {
                     "description": "Error contains additional information in case of an error (e.g. payment failed)",
@@ -1913,9 +1906,6 @@ var doc = `{
                     "type": "string"
                 }
             }
-        },
-        "domain.Media": {
-            "type": "object"
         },
         "domain.PaymentRequestAPI": {
             "type": "object",
@@ -2074,9 +2064,7 @@ var doc = `{
                 },
                 "Media": {
                     "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/domain.Media"
-                    }
+                    "items": {}
                 },
                 "RetailerCode": {
                     "type": "string"
@@ -2133,9 +2121,7 @@ var doc = `{
                 "Media": {
                     "description": "Media",
                     "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/domain.Media"
-                    }
+                    "items": {}
                 },
                 "PreSelectedVariantSku": {
                     "description": "PreSelectedVariantSku might be set for configurables to give a hint to link to a variant of a configurable (That might be the case if a user filters for an attribute and in the teaser the variant with that attribute is shown)",
@@ -2209,20 +2195,6 @@ var doc = `{
                     "type": "string"
                 },
                 "OrderNumber": {
-                    "type": "string"
-                }
-            }
-        },
-        "process.StateData": {
-            "type": "object"
-        },
-        "productResultError": {
-            "type": "object",
-            "properties": {
-                "Code": {
-                    "type": "string"
-                },
-                "Message": {
                     "type": "string"
                 }
             }

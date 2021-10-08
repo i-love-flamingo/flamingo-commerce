@@ -165,7 +165,6 @@ definitions:
         description: ID is the main identifier of the cart
         type: string
       PaymentSelection:
-        $ref: '#/definitions/cart.PaymentSelection'
         description: PaymentSelection is used to store information on "how" the customer
           wants to pay
       Purchaser:
@@ -311,8 +310,6 @@ definitions:
         description: VariantMarketPlaceCode is used for Configurable products
         type: string
     type: object
-  cart.PaymentSelection:
-    type: object
   cart.Person:
     properties:
       Address:
@@ -381,6 +378,13 @@ definitions:
       Type:
         type: string
     type: object
+  cartResultError:
+    properties:
+      Code:
+        type: string
+      Message:
+        type: string
+    type: object
   checkoutError:
     properties:
       Code:
@@ -391,9 +395,8 @@ definitions:
   controller.APIResult:
     properties:
       Error:
-        $ref: '#/definitions/productResultError'
-      Product:
-        $ref: '#/definitions/domain.BasicProduct'
+        $ref: '#/definitions/cartResultError'
+      Product: {}
       Success:
         type: boolean
     type: object
@@ -403,12 +406,11 @@ definitions:
         $ref: '#/definitions/cart.Teaser'
       CartValidationResult:
         $ref: '#/definitions/validation.Result'
-      Data:
-        type: object
+      Data: {}
       DataValidationInfo:
         type: object
       Error:
-        $ref: '#/definitions/productResultError'
+        $ref: '#/definitions/cartResultError'
         description: Contains details if success is false
       Success:
         type: boolean
@@ -432,8 +434,7 @@ definitions:
         $ref: '#/definitions/controller.placedOrderInfos'
       State:
         type: string
-      StateData:
-        $ref: '#/definitions/process.StateData'
+      StateData: {}
       UUID:
         type: string
     type: object
@@ -470,8 +471,7 @@ definitions:
     properties:
       Item:
         $ref: '#/definitions/cart.Item'
-      Product:
-        $ref: '#/definitions/domain.BasicProduct'
+      Product: {}
     type: object
   decorator.DecoratedDelivery:
     properties:
@@ -486,8 +486,7 @@ definitions:
     properties:
       Label:
         type: string
-      RawValue:
-        type: object
+      RawValue: {}
     type: object
   domain.Badge:
     properties:
@@ -495,8 +494,6 @@ definitions:
         type: string
       Label:
         type: string
-    type: object
-  domain.BasicProduct:
     type: object
   domain.CategoryTeaser:
     properties:
@@ -546,7 +543,6 @@ definitions:
       Data:
         description: Data contains additional information related to the action /
           flow
-        type: object
       Error:
         $ref: '#/definitions/domain.Error'
         description: Error contains additional information in case of an error (e.g.
@@ -589,8 +585,6 @@ definitions:
       Type:
         description: Type or Name of the Loyalty program
         type: string
-    type: object
-  domain.Media:
     type: object
   domain.PaymentRequestAPI:
     properties:
@@ -698,8 +692,7 @@ definitions:
       MarketPlaceCode:
         type: string
       Media:
-        items:
-          $ref: '#/definitions/domain.Media'
+        items: {}
         type: array
       RetailerCode:
         type: string
@@ -738,8 +731,7 @@ definitions:
         type: string
       Media:
         description: Media
-        items:
-          $ref: '#/definitions/domain.Media'
+        items: {}
         type: array
       PreSelectedVariantSku:
         description: PreSelectedVariantSku might be set for configurables to give
@@ -796,15 +788,6 @@ definitions:
       DeliveryCode:
         type: string
       OrderNumber:
-        type: string
-    type: object
-  process.StateData:
-    type: object
-  productResultError:
-    properties:
-      Code:
-        type: string
-      Message:
         type: string
     type: object
   validation.ItemValidationError:
@@ -1501,7 +1484,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/productResultError'
+            $ref: '#/definitions/cartResultError'
       summary: Get the payment status of current cart (or last placed cart)
       tags:
       - Payment
