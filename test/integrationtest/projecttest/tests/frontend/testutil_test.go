@@ -12,9 +12,9 @@ import (
 )
 
 type (
-	//CartItems list of CartItem
+	// CartItems list of CartItem
 	CartItems []CartItem
-	//CartItem used as simple CartItem representation during test
+	// CartItem used as simple CartItem representation during test
 	CartItem struct {
 		ProductName     string
 		MarketplaceCode string
@@ -29,10 +29,10 @@ const (
 	routeCheckoutSuccess    = "/en/checkout/success"
 )
 
-//CartAddProduct helper
+// CartAddProduct helper
 func CartAddProduct(t *testing.T, e *httpexpect.Expect, marketplaceCode string, qty int, variantMarketplaceCode string, deliveryCode string) {
 	t.Helper()
-	request := e.GET("/en/cart/add/"+marketplaceCode).WithQuery("qty", qty)
+	request := e.POST("/en/cart/add/"+marketplaceCode).WithQuery("qty", qty)
 	if deliveryCode != "" {
 		request = request.WithQuery("deliveryCode", deliveryCode)
 	}
@@ -43,14 +43,14 @@ func CartAddProduct(t *testing.T, e *httpexpect.Expect, marketplaceCode string, 
 		Status(http.StatusOK)
 }
 
-//CartApplyVoucher applies a voucher via api
+// CartApplyVoucher applies a voucher via api
 func CartApplyVoucher(t *testing.T, e *httpexpect.Expect, code string) {
 	t.Helper()
 	request := e.POST("/en/api/cart/applyvoucher").WithQuery("couponCode", code)
 	request.Expect().Status(http.StatusOK)
 }
 
-//CartGetItems testhelper
+// CartGetItems testhelper
 func CartGetItems(t *testing.T, e *httpexpect.Expect) CartItems {
 	t.Helper()
 	var items CartItems
@@ -72,7 +72,7 @@ func CartGetItems(t *testing.T, e *httpexpect.Expect) CartItems {
 	return items
 }
 
-//MustContain checks and returns CartItem by marketplaceCode
+// MustContain checks and returns CartItem by marketplaceCode
 func (c CartItems) MustContain(t *testing.T, marketplaceCode string) *CartItem {
 	t.Helper()
 	for _, v := range c {
