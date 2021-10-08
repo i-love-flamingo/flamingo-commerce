@@ -1,11 +1,11 @@
 package cart
 
-//go:generate go run github.com/vektra/mockery/v2 --name CompleteBehaviour --case snake
-//go:generate go run github.com/vektra/mockery/v2 --name CustomerCartService --case snake
-//go:generate go run github.com/vektra/mockery/v2 --name GiftCardAndVoucherBehaviour --case snake
-//go:generate go run github.com/vektra/mockery/v2 --name GiftCardBehaviour --case snake
-//go:generate go run github.com/vektra/mockery/v2 --name GuestCartService --case snake
-//go:generate go run github.com/vektra/mockery/v2 --name ModifyBehaviour --case snake
+//go:generate go run github.com/vektra/mockery/v2@v2.9.4 --name CompleteBehaviour --case snake
+//go:generate go run github.com/vektra/mockery/v2@v2.9.4 --name CustomerCartService --case snake
+//go:generate go run github.com/vektra/mockery/v2@v2.9.4 --name GiftCardAndVoucherBehaviour --case snake
+//go:generate go run github.com/vektra/mockery/v2@v2.9.4 --name GiftCardBehaviour --case snake
+//go:generate go run github.com/vektra/mockery/v2@v2.9.4 --name GuestCartService --case snake
+//go:generate go run github.com/vektra/mockery/v2@v2.9.4 --name ModifyBehaviour --case snake
 
 import (
 	"context"
