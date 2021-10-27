@@ -196,31 +196,94 @@ func TestPrice_GetPayableByRoundingMode(t *testing.T) {
 	payable = price.GetPayableByRoundingMode(domain.RoundingModeFloor, 100)
 	assert.Equal(t, domain.NewFromInt(1234, 100, "EUR").Amount(), payable.Amount())
 
-	payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfUp, 100)
-	assert.Equal(t, domain.NewFromInt(1235, 100, "EUR").Amount(), payable.Amount())
-
-	payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfDown, 100)
-	assert.Equal(t, domain.NewFromInt(1234, 100, "EUR").Amount(), payable.Amount())
-
 	payable = price.GetPayableByRoundingMode(domain.RoundingModeFloor, 1)
 	assert.Equal(t, domain.NewFromInt(12, 1, "EUR").Amount(), payable.Amount())
-
-	price = domain.NewFromFloat(-0.0001, "EUR")
-	payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfUp, 100)
-	assert.Equal(t, domain.NewFromInt(0, 1, "EUR").Amount(), payable.Amount())
-
-	price = domain.NewFromFloat(-0.12, "EUR")
-	payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfUp, 100)
-	assert.EqualValues(t, domain.NewFromInt(-12, 100, "EUR").Amount(), payable.Amount())
 
 	price = domain.NewFromFloat(-0.119, "EUR")
 	payable = price.GetPayableByRoundingMode(domain.RoundingModeFloor, 100)
 	assert.Equal(t, domain.NewFromInt(-12, 100, "EUR").Amount(), payable.Amount())
+}
 
-	price = domain.NewFromFloat(-0.115, "EUR")
-	payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfUp, 100)
-	assert.EqualValues(t, domain.NewFromInt(-11, 100, "EUR").Amount(), payable.Amount())
+func TestPrice_GetPayableByRoundingMode_RoundingModeCeil(t *testing.T) {
+	price := domain.NewFromFloat(12.34567, "EUR")
 
+	payable := price.GetPayableByRoundingMode(domain.RoundingModeCeil, 100)
+	assert.Equal(t, domain.NewFromInt(1235, 100, "EUR").Amount(), payable.Amount())
+
+	price = domain.NewFromFloat(-12.34567, "EUR")
+	payable = price.GetPayableByRoundingMode(domain.RoundingModeCeil, 100)
+	assert.Equal(t, domain.NewFromInt(-1234, 100, "EUR").Amount(), payable.Amount())
+}
+
+func TestPrice_GetPayableByRoundingMode_RoundingModeFloor(t *testing.T) {
+	price := domain.NewFromFloat(12.34567, "EUR")
+
+	payable := price.GetPayableByRoundingMode(domain.RoundingModeFloor, 100)
+	assert.Equal(t, domain.NewFromInt(1234, 100, "EUR").Amount(), payable.Amount())
+
+	price = domain.NewFromFloat(-12.34567, "EUR")
+	payable = price.GetPayableByRoundingMode(domain.RoundingModeFloor, 100)
+	assert.Equal(t, domain.NewFromInt(-1235, 100, "EUR").Amount(), payable.Amount())
+}
+
+func TestPrice_GetPayableByRoundingMode_RoundingModeHalfUp(t *testing.T) {
+	t.Run("positive values", func(t *testing.T) {
+		price := domain.NewFromFloat(7.6, "EUR")
+		payable := price.GetPayableByRoundingMode(domain.RoundingModeHalfUp, 1)
+		assert.EqualValues(t, domain.NewFromInt(8, 1, "EUR").Amount(), payable.Amount(), "7.6 should be rounded to 8")
+
+		price = domain.NewFromFloat(7.5, "EUR")
+		payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfUp, 1)
+		assert.EqualValues(t, domain.NewFromInt(8, 1, "EUR").Amount(), payable.Amount(), "7.5 should be rounded to 8")
+
+		price = domain.NewFromFloat(7.4, "EUR")
+		payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfUp, 1)
+		assert.EqualValues(t, domain.NewFromInt(7, 1, "EUR").Amount(), payable.Amount(), "7.4 should be rounded to 7")
+	})
+
+	t.Run("negative values", func(t *testing.T) {
+		price := domain.NewFromFloat(-7.4, "EUR")
+		payable := price.GetPayableByRoundingMode(domain.RoundingModeHalfUp, 1)
+		assert.EqualValues(t, domain.NewFromInt(-7, 1, "EUR").Amount(), payable.Amount(), "-7.4 should be rounded to -7")
+
+		price = domain.NewFromFloat(-7.5, "EUR")
+		payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfUp, 1)
+		assert.EqualValues(t, domain.NewFromInt(-7, 1, "EUR").Amount(), payable.Amount(), "-7.5 should be rounded to -7")
+
+		price = domain.NewFromFloat(-7.6, "EUR")
+		payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfUp, 1)
+		assert.EqualValues(t, domain.NewFromInt(-8, 1, "EUR").Amount(), payable.Amount(), "-7.5 should be rounded to -8")
+	})
+}
+
+func TestPrice_GetPayableByRoundingMode_RoundingModeHalfDown(t *testing.T) {
+	t.Run("positive values", func(t *testing.T) {
+		price := domain.NewFromFloat(7.6, "EUR")
+		payable := price.GetPayableByRoundingMode(domain.RoundingModeHalfDown, 1)
+		assert.EqualValues(t, domain.NewFromInt(8, 1, "EUR").Amount(), payable.Amount(), "7.6 should be rounded to 8")
+
+		price = domain.NewFromFloat(7.5, "EUR")
+		payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfDown, 1)
+		assert.EqualValues(t, domain.NewFromInt(7, 1, "EUR").Amount(), payable.Amount(), "7.5 should be rounded to 7")
+
+		price = domain.NewFromFloat(7.4, "EUR")
+		payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfDown, 1)
+		assert.EqualValues(t, domain.NewFromInt(7, 1, "EUR").Amount(), payable.Amount(), "7.4 should be rounded to 7")
+	})
+
+	t.Run("negative values", func(t *testing.T) {
+		price := domain.NewFromFloat(-7.4, "EUR")
+		payable := price.GetPayableByRoundingMode(domain.RoundingModeHalfDown, 1)
+		assert.EqualValues(t, domain.NewFromInt(-7, 1, "EUR").Amount(), payable.Amount(), "-7.4 should be rounded to -7")
+
+		price = domain.NewFromFloat(-7.5, "EUR")
+		payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfDown, 1)
+		assert.EqualValues(t, domain.NewFromInt(-8, 1, "EUR").Amount(), payable.Amount(), "-7.5 should be rounded to -8")
+
+		price = domain.NewFromFloat(-7.6, "EUR")
+		payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfDown, 1)
+		assert.EqualValues(t, domain.NewFromInt(-8, 1, "EUR").Amount(), payable.Amount(), "-7.6 should be rounded to -8")
+	})
 }
 
 func TestCharges_Add(t *testing.T) {

@@ -349,8 +349,16 @@ func (p Price) GetPayableByRoundingMode(mode string, precision int) Price {
 		if negative == 1 && valueAfterPrecision >= 5 {
 			amountTruncatedInt = amountTruncatedInt + (1 * negative)
 		}
+
+		if negative == -1 && valueAfterPrecision > 5 {
+			amountTruncatedInt = amountTruncatedInt + (1 * negative)
+		}
 	case mode == RoundingModeHalfDown:
 		if negative == 1 && valueAfterPrecision > 5 {
+			amountTruncatedInt = amountTruncatedInt + (1 * negative)
+		}
+
+		if negative == -1 && valueAfterPrecision >= 5 {
 			amountTruncatedInt = amountTruncatedInt + (1 * negative)
 		}
 	case mode == RoundingModeFloor:
