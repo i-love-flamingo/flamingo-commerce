@@ -214,7 +214,6 @@ func (s *ItemSplitter) splitPrice(givenPrice priceDomain.Price, qty int, splitPo
 		s.errorDuringSplitting = err
 		return priceDomain.Price{}
 	}
-
 	sort.Slice(splitted, func(i, j int) bool {
 		return splitted[i].FloatAmount() > splitted[j].FloatAmount()
 	})

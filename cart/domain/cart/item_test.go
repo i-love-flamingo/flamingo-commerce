@@ -66,6 +66,27 @@ func TestItemSplitter_SplitGrossBased(t *testing.T) {
 			NonItemRelatedDiscountAmount: priceDomain.NewFromInt(-3172, 100, "€"),
 			AdditionalData:               map[string]string{"baz": "bam"},
 		},
+		{
+			Qty:                       2,
+			MarketplaceCode:           "foo",
+			SinglePriceNet:            priceDomain.NewFromFloat(42.01, "EUR"),
+			SinglePriceGross:          priceDomain.NewFromFloat(49.99, "EUR"),
+			RowPriceNet:               priceDomain.NewFromFloat(84.02, "EUR"),
+			RowPriceGross:             priceDomain.NewFromFloat(99.98, "EUR"),
+			RowPriceNetWithDiscount:   priceDomain.NewFromFloat(75.61, "EUR"),
+			RowPriceGrossWithDiscount: priceDomain.NewFromFloat(89.98, "EUR"),
+			RowTaxes: []cartDomain.Tax{{
+				Amount: priceDomain.NewFromFloat(14.37, "EUR"),
+				Rate:   big.NewFloat(19.0),
+				Type:   "VAT",
+			}},
+			TotalDiscountAmount:                  priceDomain.NewFromFloat(-10.00, "EUR"),
+			NonItemRelatedDiscountAmount:         priceDomain.NewFromFloat(-5.00, "EUR"),
+			ItemRelatedDiscountAmount:            priceDomain.NewZero("EUR"),
+			RowPriceNetWithItemRelatedDiscount:   priceDomain.NewFromFloat(84.02, "EUR"),
+			RowPriceGrossWithItemRelatedDiscount: priceDomain.NewFromFloat(99.98, "EUR"),
+			AppliedDiscounts:                     []cartDomain.AppliedDiscount{{Applied: priceDomain.NewFromFloat(-10.00, "EUR")}},
+		},
 	}
 
 	for _, item := range items {
@@ -146,7 +167,7 @@ func TestItemSplitter_SplitGrossBased(t *testing.T) {
 
 			assert.Equal(t, item.RowPriceGross.FloatAmount(), rowGrossTotal)
 			assert.Equal(t, item.RowPriceNet.FloatAmount(), rowNetTotal)
-			assert.Equal(t, item.TotalTaxAmount().FloatAmount(), totalTaxAmount)
+			assert.True(t, item.TotalTaxAmount().LikelyEqual(priceDomain.NewFromFloat(totalTaxAmount, item.TotalTaxAmount().Currency())))
 		})
 	}
 }
