@@ -326,14 +326,12 @@ func (p Price) GetPayableByRoundingMode(mode string, precision int) Price {
 	if p.IsNegative() {
 		negative = -1
 	}
-	offsetToCheckRounding := new(big.Float).Mul(p.precisionF(precision), new(big.Float).SetInt64(10))
 
 	amountTruncatedFloat, _ := new(big.Float).Mul(amountForRound, p.precisionF(precision)).Float64()
 	amountTruncatedInt := int64(amountTruncatedFloat)
 
-	amountRoundingCheckFloat, _ := new(big.Float).Mul(amountForRound, offsetToCheckRounding).Float64()
-	amountRoundingCheckInt := int64(amountRoundingCheckFloat)
-	valueAfterPrecision := (amountRoundingCheckInt - (amountTruncatedInt * 10)) * negative
+	valueAfterPrecision := (amountTruncatedFloat - float64(amountTruncatedInt)) * 10 * float64(negative)
+	valueAfterPrecision = math.Round(valueAfterPrecision*100) / 100
 	if amountTruncatedFloat >= float64(math.MaxInt64) {
 		// will not work if we are already above MaxInt - so we return unrounded price:
 		newPrice.amount = p.amount
