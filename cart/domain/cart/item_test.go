@@ -34,7 +34,7 @@ func TestItemSplitter_SplitGrossBased(t *testing.T) {
 			RowPriceNetWithItemRelatedDiscount:   priceDomain.NewFromInt(1930*5, 100, "€"),
 			RowTaxes:                             []cartDomain.Tax{{Amount: priceDomain.NewFromInt(468, 100, "€"), Type: "tax", Rate: big.NewFloat(7)}},
 			AppliedDiscounts: cartDomain.AppliedDiscounts{
-				cartDomain.AppliedDiscount{IsItemRelated: false, Applied: priceDomain.NewFromInt(-3172, 100, "€")},
+				cartDomain.AppliedDiscount{IsItemRelated: true, Applied: priceDomain.NewFromInt(-3172, 100, "€")},
 			},
 			TotalDiscountAmount:          priceDomain.NewFromInt(-3172, 100, "€"),
 			ItemRelatedDiscountAmount:    priceDomain.NewFromInt(-3172, 100, "€"),
@@ -81,7 +81,7 @@ func TestItemSplitter_SplitGrossBased(t *testing.T) {
 				Type:   "VAT",
 			}},
 			TotalDiscountAmount:                  priceDomain.NewFromFloat(-10.00, "EUR"),
-			NonItemRelatedDiscountAmount:         priceDomain.NewFromFloat(-5.00, "EUR"),
+			NonItemRelatedDiscountAmount:         priceDomain.NewFromFloat(-10.00, "EUR"),
 			ItemRelatedDiscountAmount:            priceDomain.NewZero("EUR"),
 			RowPriceNetWithItemRelatedDiscount:   priceDomain.NewFromFloat(84.02, "EUR"),
 			RowPriceGrossWithItemRelatedDiscount: priceDomain.NewFromFloat(99.98, "EUR"),
