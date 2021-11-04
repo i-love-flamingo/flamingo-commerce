@@ -312,7 +312,7 @@ func (p Price) GetPayable() Price {
 	return p.GetPayableByRoundingMode(mode, precision)
 }
 
-// GetPayableByRoundingMode - a flexible rounding method where you can pass rounding mode and precision
+// GetPayableByRoundingMode returns the price rounded you can pass the used rounding mode and precision
 // 1.115 >  1.12 (RoundingModeHalfUp)  / 1.11 (RoundingModeFloor)
 // -1.115 > -1.11 (RoundingModeHalfUp) / -1.12 (RoundingModeFloor)
 //
@@ -328,10 +328,9 @@ func (p Price) GetPayableByRoundingMode(mode string, precision int) Price {
 	}
 
 	amountTruncatedFloat, _ := new(big.Float).Mul(amountForRound, p.precisionF(precision)).Float64()
-	amountTruncatedInt := int64(amountTruncatedFloat)
-
-	valueAfterPrecision := (amountTruncatedFloat - float64(amountTruncatedInt)) * 10 * float64(negative)
-	valueAfterPrecision = math.Round(valueAfterPrecision*100) / 100
+	integerPart, fractionalPart := math.Modf(amountTruncatedFloat)
+	amountTruncatedInt := int64(integerPart)
+	valueAfterPrecision := (math.Round(fractionalPart*10*100) / 100) * float64(negative)
 	if amountTruncatedFloat >= float64(math.MaxInt64) {
 		// will not work if we are already above MaxInt - so we return unrounded price:
 		newPrice.amount = p.amount
@@ -344,23 +343,15 @@ func (p Price) GetPayableByRoundingMode(mode string, precision int) Price {
 			amountTruncatedInt = amountTruncatedInt + (1 * negative)
 		}
 	case mode == RoundingModeHalfUp:
-		if negative == 1 && valueAfterPrecision >= 5 {
-			amountTruncatedInt = amountTruncatedInt + (1 * negative)
-		}
-
-		if negative == -1 && valueAfterPrecision > 5 {
+		if valueAfterPrecision >= 5 {
 			amountTruncatedInt = amountTruncatedInt + (1 * negative)
 		}
 	case mode == RoundingModeHalfDown:
-		if negative == 1 && valueAfterPrecision > 5 {
-			amountTruncatedInt = amountTruncatedInt + (1 * negative)
-		}
-
-		if negative == -1 && valueAfterPrecision >= 5 {
+		if valueAfterPrecision > 5 {
 			amountTruncatedInt = amountTruncatedInt + (1 * negative)
 		}
 	case mode == RoundingModeFloor:
-		if negative == -1 {
+		if negative == -1 && valueAfterPrecision > 0 {
 			amountTruncatedInt = amountTruncatedInt + (1 * negative)
 		}
 	default:
