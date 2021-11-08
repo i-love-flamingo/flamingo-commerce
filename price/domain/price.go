@@ -337,20 +337,20 @@ func (p Price) GetPayableByRoundingMode(mode string, precision int) Price {
 		return newPrice
 	}
 
-	switch {
-	case mode == RoundingModeCeil:
+	switch mode {
+	case RoundingModeCeil:
 		if negative == 1 && valueAfterPrecision > 0 {
 			amountTruncatedInt = amountTruncatedInt + negative
 		}
-	case mode == RoundingModeHalfUp:
+	case RoundingModeHalfUp:
 		if valueAfterPrecision >= 5 {
 			amountTruncatedInt = amountTruncatedInt + negative
 		}
-	case mode == RoundingModeHalfDown:
+	case RoundingModeHalfDown:
 		if valueAfterPrecision > 5 {
 			amountTruncatedInt = amountTruncatedInt + negative
 		}
-	case mode == RoundingModeFloor:
+	case RoundingModeFloor:
 		if negative == -1 && valueAfterPrecision > 0 {
 			amountTruncatedInt = amountTruncatedInt + negative
 		}
