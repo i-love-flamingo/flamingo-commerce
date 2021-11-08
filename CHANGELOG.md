@@ -35,16 +35,6 @@
   * **Breaking**: Remove the fields `getAdditionalData, additionalDataKeys, additionalDeliveryInfoKeys` from the `Commerce_CartDeliveryInfo` type
   * **Breaking**: `Commerce_Cart_UpdateDeliveryShippingOptions` mutation responded with slice of `Commerce_Cart_DeliveryAddressForm` which was incorrect as we don't process any form data within the mutation. It responds now rightly only with `processed` state.
 * **Breaking**: Upgrade github.com/go-playground/form to v4, all types are fully compatible, but import paths have to be changed
-* **Breaking**: Fix CSRF issues by not allowing cart mutations via `GET` anymore.
-  All Add, Update, Delete and Clean actions are affected and must now be done via a `POST` request:
-  * | route name          | route path                          | old HTTP verb | new HTTP verb |
-    |---------------------|-------------------------------------|---------------|---------------|
-    | cart.add            | /cart/add/:marketplaceCode          | GET/POST      | POST          |
-    | cart.updateQty      | /cart/update/:id                    | GET/POST      | POST          |
-    | cart.deleteAllItems | /cart/delete/all                    | GET/POST      | POST          |
-    | cart.clean          | /cart/clean                         | GET/POST      | POST          |
-    | cart.cleanDelivery  | /cart/delete/delivery/:deliveryCode | GET/POST      | POST          |
-    | cart.deleteItem     | /cart/delete/:id                    | GET/POST      | POST          |
 
 **checkout**
 * Introducing Flamingo events on final states of the place order process
