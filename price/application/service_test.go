@@ -49,6 +49,5 @@ func TestService_FormatPrice_Regression(t *testing.T) {
 
 	price := priceDomain.NewFromFloat(-161.92, "USD")
 	formatted := service.FormatPrice(price)
-	// -161.92 expected, but getting -161.91
 	assert.Equal(t, "-USD161.92", formatted)
 }
