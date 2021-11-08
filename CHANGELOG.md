@@ -1,5 +1,10 @@
 # Changelog
-## v3.5.0 [upcoming]
+## v3.6.0 [upcoming]
+
+## v3.5.0
+**general**
+* Switch to MIT License
+
 **cart**
 * Add convenience function to clone carts
 * DefaultCartBehaviour now returns real cart clones to prevent data races on cart fields 
@@ -101,6 +106,7 @@
 
 **price**
 * When marshalling `domain.Price` to JSON the amount is rounded.
+* Fix various rounding issues with negative prices, add all rounding modes and examples to moduel readme.
 
 **product**
 * Enhance the `PriceContext` to allow potential delivery specific pricing

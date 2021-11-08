@@ -60,13 +60,14 @@ const (
 	ChargeTypeGiftCard = "giftcard"
 	// ChargeTypeMain used as default for a Charge
 	ChargeTypeMain = "main"
-	// RoundingModeFloor - use if you want to cut (round down)
+
+	// RoundingModeFloor use if you want to cut (round down)
 	RoundingModeFloor = "floor"
-	// RoundingModeCeil - use if you want to round up always
+	// RoundingModeCeil use if you want to round up always
 	RoundingModeCeil = "ceil"
-	// RoundingModeHalfUp - default for GetPayable()
+	// RoundingModeHalfUp round up if the discarded fraction is ≥ 0.5, otherwise round down. Default for GetPayable()
 	RoundingModeHalfUp = "halfup"
-	// RoundingModeHalfDown - in cases where you want to round down on .5
+	// RoundingModeHalfDown round up if the discarded fraction is > 0.5, otherwise round down.
 	RoundingModeHalfDown = "halfdown"
 )
 
@@ -94,23 +95,23 @@ func NewZero(currency string) Price {
 	}
 }
 
-// NewFromInt use to set money by smallest payable unit - e.g. to set 2.45 EUR you should use NewFromInt(245,100)
-func NewFromInt(amount int64, precicion int, currency string) Price {
+// NewFromInt use to set money by smallest payable unit - e.g. to set 2.45 EUR you should use NewFromInt(245, 100, "EUR")
+func NewFromInt(amount int64, precision int, currency string) Price {
 	amountF := new(big.Float).SetInt64(amount)
-	if precicion == 0 {
+	if precision == 0 {
 		return Price{
 			amount:   *new(big.Float).SetInt64(0),
 			currency: currency,
 		}
 	}
-	precicionF := new(big.Float).SetInt64(int64(precicion))
+	precicionF := new(big.Float).SetInt64(int64(precision))
 	return Price{
 		amount:   *new(big.Float).Quo(amountF, precicionF),
 		currency: currency,
 	}
 }
 
-// Add - Adds the given price to the current price and returns a new price
+// Add the given price to the current price and returns a new price
 func (p Price) Add(add Price) (Price, error) {
 	newPrice, err := p.currencyGuard(add)
 	if err != nil {
@@ -120,7 +121,7 @@ func (p Price) Add(add Price) (Price, error) {
 	return newPrice, nil
 }
 
-// ForceAdd - tries to Adds the given price to the current price - will not return errors
+// ForceAdd tries to add the given price to the current price - will not return errors
 func (p Price) ForceAdd(add Price) Price {
 	newPrice, err := p.currencyGuard(add)
 	if err != nil {
@@ -130,8 +131,8 @@ func (p Price) ForceAdd(add Price) Price {
 	return newPrice
 }
 
-// currencyGuard - common Guard that protects price calculations of prices with different currency.
-// 	Robust: if original is Zero and the currencies are different we take the given currency
+// currencyGuard is a common Guard that protects price calculations of prices with different currency.
+// Robust: if original is Zero and the currencies are different we take the given currency
 func (p Price) currencyGuard(check Price) (Price, error) {
 	if p.currency == check.currency {
 		return Price{
@@ -152,7 +153,7 @@ func (p Price) currencyGuard(check Price) (Price, error) {
 	return NewZero(p.currency), errors.New("Cannot calculate prices in different currencies")
 }
 
-// Discounted - returns new price reduced by given percent
+// Discounted returns new price reduced by given percent
 func (p Price) Discounted(percent float64) Price {
 	newPrice := Price{
 		currency: p.currency,
@@ -161,7 +162,7 @@ func (p Price) Discounted(percent float64) Price {
 	return newPrice
 }
 
-// Taxed - returns new price added with Tax (assuming current price is net)
+// Taxed returns new price added with Tax (assuming current price is net)
 func (p Price) Taxed(percent big.Float) Price {
 	newPrice := Price{
 		currency: p.currency,
@@ -170,7 +171,7 @@ func (p Price) Taxed(percent big.Float) Price {
 	return newPrice
 }
 
-// TaxFromNet - returns new price representing the taxamount (assuming the current price is net 100%)
+// TaxFromNet returns new price representing the tax amount (assuming the current price is net 100%)
 func (p Price) TaxFromNet(percent big.Float) Price {
 	quo := new(big.Float).Mul(&percent, &p.amount)
 	newPrice := Price{
@@ -180,7 +181,7 @@ func (p Price) TaxFromNet(percent big.Float) Price {
 	return newPrice
 }
 
-// TaxFromGross - returns new price representing the taxamount (assuming the current price is gross 100+percent)
+// TaxFromGross returns new price representing the tax amount (assuming the current price is gross 100+percent)
 func (p Price) TaxFromGross(percent big.Float) Price {
 	quo := new(big.Float).Mul(&percent, &p.amount)
 	percent100 := new(big.Float).Add(&percent, new(big.Float).SetInt64(100))
@@ -191,7 +192,7 @@ func (p Price) TaxFromGross(percent big.Float) Price {
 	return newPrice
 }
 
-// Sub - Subtract the given price from the current price and returns a new price
+// Sub the given price from the current price and returns a new price
 func (p Price) Sub(sub Price) (Price, error) {
 	newPrice, err := p.currencyGuard(sub)
 	if err != nil {
@@ -201,13 +202,13 @@ func (p Price) Sub(sub Price) (Price, error) {
 	return newPrice, nil
 }
 
-// Inverse - gets the price multiplied with -1
+// Inverse returns the price multiplied with -1
 func (p Price) Inverse() Price {
 	p.amount = *new(big.Float).Mul(&p.amount, big.NewFloat(-1))
 	return p
 }
 
-// Multiply  returns a new price with the amount Multiply
+// Multiply returns a new price with the amount Multiply
 func (p Price) Multiply(qty int) Price {
 	newPrice := Price{
 		currency: p.currency,
@@ -216,20 +217,19 @@ func (p Price) Multiply(qty int) Price {
 	return newPrice
 }
 
-// Divided  returns a new price with the amount Divided
+// Divided returns a new price with the amount Divided
 func (p Price) Divided(qty int) Price {
 	newPrice := Price{
 		currency: p.currency,
 	}
 	if qty == 0 {
-		// TODO log
 		return NewZero(p.currency)
 	}
 	newPrice.amount.Quo(&p.amount, new(big.Float).SetInt64(int64(qty)))
 	return newPrice
 }
 
-// Equal - compares the prices exact
+// Equal compares the prices exact
 func (p Price) Equal(cmp Price) bool {
 	if p.currency != cmp.currency {
 		return false
@@ -237,7 +237,7 @@ func (p Price) Equal(cmp Price) bool {
 	return p.amount.Cmp(&cmp.amount) == 0
 }
 
-// LikelyEqual - compares the prices with some tolerance
+// LikelyEqual compares the prices with some tolerance
 func (p Price) LikelyEqual(cmp Price) bool {
 	if p.currency != cmp.currency {
 		return false
@@ -247,7 +247,7 @@ func (p Price) LikelyEqual(cmp Price) bool {
 	return absDiff.Cmp(big.NewFloat(0.000000001)) == -1
 }
 
-// IsLessThen - compares the prices
+// IsLessThen compares the current price with a given one
 func (p Price) IsLessThen(cmp Price) bool {
 	if p.currency != cmp.currency {
 		return false
@@ -255,7 +255,7 @@ func (p Price) IsLessThen(cmp Price) bool {
 	return p.amount.Cmp(&cmp.amount) == -1
 }
 
-// IsGreaterThen - compares the prices
+// IsGreaterThen compares the current price with a given one
 func (p Price) IsGreaterThen(cmp Price) bool {
 	if p.currency != cmp.currency {
 		return false
@@ -279,22 +279,22 @@ func (p Price) IsGreaterThenValue(amount big.Float) bool {
 	return false
 }
 
-// IsNegative - returns true if the price represents a negative value
+// IsNegative returns true if the price represents a negative value
 func (p Price) IsNegative() bool {
 	return p.IsLessThenValue(*big.NewFloat(0.0))
 }
 
-// IsPositive - returns true if the price represents a positive value
+// IsPositive returns true if the price represents a positive value
 func (p Price) IsPositive() bool {
 	return p.IsGreaterThenValue(*big.NewFloat(0.0))
 }
 
-// IsPayable - returns true if the price represents a payable (rounded) value
+// IsPayable returns true if the price represents a payable (rounded) value
 func (p Price) IsPayable() bool {
 	return p.GetPayable().Equal(p)
 }
 
-// IsZero - returns true if the price represents zero value
+// IsZero returns true if the price represents zero value
 func (p Price) IsZero() bool {
 	return p.LikelyEqual(NewZero(p.Currency())) || p.LikelyEqual(NewFromFloat(0, p.Currency()))
 }
@@ -305,17 +305,17 @@ func (p Price) FloatAmount() float64 {
 	return a
 }
 
-// GetPayable - rounds the price with the precision required by the currency in a price that can actually be paid
+// GetPayable rounds the price with the precision required by the currency in a price that can actually be paid
 // e.g. an internal amount of 1,23344 will get rounded to 1,23
 func (p Price) GetPayable() Price {
 	mode, precision := p.payableRoundingPrecision()
 	return p.GetPayableByRoundingMode(mode, precision)
 }
 
-// GetPayableByRoundingMode - a flexible rounding method where you can pass rounding mode and precision
-// 1.115 >  1.12 (RoundingModeHalfUp)  / 1.11 (RoundingModeFloor)
-// -1.115 > -1.11 (RoundingModeHalfUp) / -1.12 (RoundingModeFloor)
-//
+// GetPayableByRoundingMode returns the price rounded you can pass the used rounding mode and precision
+// Example for precision 100:
+//	1.115 >  1.12 (RoundingModeHalfUp)  / 1.11 (RoundingModeFloor)
+//	-1.115 > -1.11 (RoundingModeHalfUp) / -1.12 (RoundingModeFloor)
 func (p Price) GetPayableByRoundingMode(mode string, precision int) Price {
 	newPrice := Price{
 		currency: p.currency,
@@ -326,36 +326,33 @@ func (p Price) GetPayableByRoundingMode(mode string, precision int) Price {
 	if p.IsNegative() {
 		negative = -1
 	}
-	offsetToCheckRounding := new(big.Float).Mul(p.precisionF(precision), new(big.Float).SetInt64(10))
 
 	amountTruncatedFloat, _ := new(big.Float).Mul(amountForRound, p.precisionF(precision)).Float64()
-	amountTruncatedInt := int64(amountTruncatedFloat)
-
-	amountRoundingCheckFloat, _ := new(big.Float).Mul(amountForRound, offsetToCheckRounding).Float64()
-	amountRoundingCheckInt := int64(amountRoundingCheckFloat)
-	valueAfterPrecision := (amountRoundingCheckInt - (amountTruncatedInt * 10)) * negative
+	integerPart, fractionalPart := math.Modf(amountTruncatedFloat)
+	amountTruncatedInt := int64(integerPart)
+	valueAfterPrecision := (math.Round(fractionalPart*1000) / 100) * float64(negative)
 	if amountTruncatedFloat >= float64(math.MaxInt64) {
 		// will not work if we are already above MaxInt - so we return unrounded price:
 		newPrice.amount = p.amount
 		return newPrice
 	}
 
-	switch {
-	case mode == RoundingModeCeil:
+	switch mode {
+	case RoundingModeCeil:
 		if negative == 1 && valueAfterPrecision > 0 {
-			amountTruncatedInt = amountTruncatedInt + (1 * negative)
+			amountTruncatedInt = amountTruncatedInt + negative
 		}
-	case mode == RoundingModeHalfUp:
-		if negative == 1 && valueAfterPrecision >= 5 {
-			amountTruncatedInt = amountTruncatedInt + (1 * negative)
+	case RoundingModeHalfUp:
+		if valueAfterPrecision >= 5 {
+			amountTruncatedInt = amountTruncatedInt + negative
 		}
-	case mode == RoundingModeHalfDown:
-		if negative == 1 && valueAfterPrecision > 5 {
-			amountTruncatedInt = amountTruncatedInt + (1 * negative)
+	case RoundingModeHalfDown:
+		if valueAfterPrecision > 5 {
+			amountTruncatedInt = amountTruncatedInt + negative
 		}
-	case mode == RoundingModeFloor:
-		if negative == -1 {
-			amountTruncatedInt = amountTruncatedInt + (1 * negative)
+	case RoundingModeFloor:
+		if negative == -1 && valueAfterPrecision > 0 {
+			amountTruncatedInt = amountTruncatedInt + negative
 		}
 	default:
 		// nothing to round
@@ -366,7 +363,7 @@ func (p Price) GetPayableByRoundingMode(mode string, precision int) Price {
 	return newPrice
 }
 
-// precisionF - returns big.Float from int
+// precisionF returns big.Float from int
 func (p Price) precisionF(precision int) *big.Float {
 	return new(big.Float).SetInt64(int64(precision))
 }
@@ -381,7 +378,7 @@ func (p Price) payableRoundingPrecision() (string, int) {
 	return RoundingModeHalfUp, int(100)
 }
 
-// SplitInPayables - returns "count" payable prices (each rounded) that in sum matches the given price
+// SplitInPayables returns "count" payable prices (each rounded) that in sum matches the given price
 //  - Given a price of 12.456 (Payable 12,46)  - Splitted in 6 will mean: 6 * 2.076
 //  - but having them payable requires rounding them each (e.g. 2.07) which would mean we have 0.03 difference (=12,45-6*2.07)
 //  - so that the sum is as close as possible to the original value   in this case the correct return will be:
@@ -439,12 +436,12 @@ func (p Price) Currency() string {
 	return p.currency
 }
 
-// Amount - returns exact amount as bigFloat
+// Amount returns exact amount as bigFloat
 func (p Price) Amount() *big.Float {
 	return &p.amount
 }
 
-// SumAll - retruns new price with sum of all given prices
+// SumAll returns new price with sum of all given prices
 func SumAll(prices ...Price) (Price, error) {
 	if len(prices) == 0 {
 		return NewZero(""), errors.New("no price given")
@@ -494,12 +491,12 @@ func (p *Price) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
-// UnmarshalJSON – implements encode Unmarshaler
+// UnmarshalJSON implements encode Unmarshaler
 func (p *Price) UnmarshalJSON(data []byte) error {
 	return p.UnmarshalBinary(data)
 }
 
-// Add - Adds the given Charge to the current Charge and returns a new Charge
+// Add the given Charge to the current Charge and returns a new Charge
 func (p Charge) Add(add Charge) (Charge, error) {
 	if p.Type != add.Type {
 		return Charge{}, errors.New("charge type mismatch")
@@ -518,14 +515,14 @@ func (p Charge) Add(add Charge) (Charge, error) {
 	return p, nil
 }
 
-// GetPayable - Rounds the charge
+// GetPayable rounds the charge
 func (p Charge) GetPayable() Charge {
 	p.Value = p.Value.GetPayable()
 	p.Price = p.Price.GetPayable()
 	return p
 }
 
-// Mul - Mul the given Charge and returns a new Charge
+// Mul the given Charge and returns a new Charge
 func (p Charge) Mul(qty int) Charge {
 	p.Price = p.Price.Multiply(qty)
 	p.Value = p.Value.Multiply(qty)
@@ -538,7 +535,7 @@ func NewCharges(chargesByType map[string]Charge) *Charges {
 	return &charges
 }
 
-// HasType - returns a true if any charges include a charge with given type
+// HasType returns a true if any charges include a charge with given type
 func (c Charges) HasType(ctype string) bool {
 	for qualifier := range c.chargesByQualifier {
 		if qualifier.Type == ctype {
@@ -548,7 +545,7 @@ func (c Charges) HasType(ctype string) bool {
 	return false
 }
 
-// GetByType - returns a charge of given type. If it was not found a Zero amount
+// GetByType returns a charge of given type. If it was not found a Zero amount
 // is returned and the second return value is false
 // sums up charges by a certain type if there are multiple
 func (c Charges) GetByType(ctype string) (Charge, bool) {
@@ -568,7 +565,7 @@ func (c Charges) GetByType(ctype string) (Charge, bool) {
 	return result, true
 }
 
-// HasChargeQualifier - returns a true if any charges include a charge with given type
+// HasChargeQualifier returns a true if any charges include a charge with given type
 // and concrete key values provided by additional
 func (c Charges) HasChargeQualifier(qualifier ChargeQualifier) bool {
 	if _, ok := c.chargesByQualifier[qualifier]; ok {
@@ -601,7 +598,7 @@ func (c Charges) GetByChargeQualifierForced(qualifier ChargeQualifier) Charge {
 	return result
 }
 
-// GetByTypeForced - returns a charge of given type. If it was not found a Zero amount is returned.
+// GetByTypeForced returns a charge of given type. If it was not found a Zero amount is returned.
 // This method might be useful to call in View (template) directly where you need one return value
 // sums up charges by a certain type if there are multiple
 func (c Charges) GetByTypeForced(ctype string) Charge {
@@ -612,7 +609,7 @@ func (c Charges) GetByTypeForced(ctype string) Charge {
 	return result
 }
 
-// GetAllCharges - returns all charges
+// GetAllCharges returns all charges
 func (c Charges) GetAllCharges() map[ChargeQualifier]Charge {
 	return c.chargesByQualifier
 }
@@ -633,7 +630,7 @@ func (c Charges) GetAllByType(ctype string) map[ChargeQualifier]Charge {
 	return chargesByType
 }
 
-// Add - returns new Charges with the given added
+// Add returns new Charges with the given added
 func (c Charges) Add(toadd Charges) Charges {
 	if c.chargesByQualifier == nil {
 		c.chargesByQualifier = make(map[ChargeQualifier]Charge)
@@ -649,7 +646,7 @@ func (c Charges) Add(toadd Charges) Charges {
 	return c
 }
 
-// AddCharge - returns new Charges with the given Charge added
+// AddCharge returns new Charges with the given Charge added
 func (c Charges) AddCharge(toadd Charge) Charges {
 	if c.chargesByQualifier == nil {
 		c.chargesByQualifier = make(map[ChargeQualifier]Charge)
@@ -668,7 +665,7 @@ func (c Charges) AddCharge(toadd Charge) Charges {
 	return c
 }
 
-// Mul - returns new Charges with the given multiplied
+// Mul returns new Charges with the given multiplied
 func (c Charges) Mul(qty int) Charges {
 	if c.chargesByQualifier == nil {
 		return c
@@ -679,7 +676,7 @@ func (c Charges) Mul(qty int) Charges {
 	return c
 }
 
-// Items – returns all charges items
+// Items returns all charges items
 func (c Charges) Items() []Charge {
 	var charges []Charge
 
@@ -690,7 +687,7 @@ func (c Charges) Items() []Charge {
 	return charges
 }
 
-// addChargeQualifier - parse string keys to charge qualifier for backwards compatibility
+// addChargeQualifier parse string keys to charge qualifier for backwards compatibility
 func addChargeQualifier(chargesByType map[string]Charge) Charges {
 	withQualifier := make(map[ChargeQualifier]Charge)
 	for chargeType, charge := range chargesByType {
