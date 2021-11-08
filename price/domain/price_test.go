@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"encoding/json"
+	"fmt"
 	"math"
 	"math/big"
 	"testing"
@@ -196,30 +197,148 @@ func TestPrice_GetPayableByRoundingMode(t *testing.T) {
 	payable = price.GetPayableByRoundingMode(domain.RoundingModeFloor, 100)
 	assert.Equal(t, domain.NewFromInt(1234, 100, "EUR").Amount(), payable.Amount())
 
-	payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfUp, 100)
-	assert.Equal(t, domain.NewFromInt(1235, 100, "EUR").Amount(), payable.Amount())
-
-	payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfDown, 100)
-	assert.Equal(t, domain.NewFromInt(1234, 100, "EUR").Amount(), payable.Amount())
-
 	payable = price.GetPayableByRoundingMode(domain.RoundingModeFloor, 1)
 	assert.Equal(t, domain.NewFromInt(12, 1, "EUR").Amount(), payable.Amount())
-
-	price = domain.NewFromFloat(-0.0001, "EUR")
-	payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfUp, 100)
-	assert.Equal(t, domain.NewFromInt(0, 1, "EUR").Amount(), payable.Amount())
-
-	price = domain.NewFromFloat(-0.12, "EUR")
-	payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfUp, 100)
-	assert.EqualValues(t, domain.NewFromInt(-12, 100, "EUR").Amount(), payable.Amount())
 
 	price = domain.NewFromFloat(-0.119, "EUR")
 	payable = price.GetPayableByRoundingMode(domain.RoundingModeFloor, 100)
 	assert.Equal(t, domain.NewFromInt(-12, 100, "EUR").Amount(), payable.Amount())
+}
 
-	price = domain.NewFromFloat(-0.115, "EUR")
-	payable = price.GetPayableByRoundingMode(domain.RoundingModeHalfUp, 100)
-	assert.EqualValues(t, domain.NewFromInt(-11, 100, "EUR").Amount(), payable.Amount())
+func TestPrice_GetPayableByRoundingMode_RoundingModeCeil(t *testing.T) {
+	tests := []struct {
+		price     float64
+		precision int
+		expected  int64
+	}{
+		{price: 12.34567, precision: 100, expected: 1235},
+		{price: -12.34567, precision: 100, expected: -1234},
+		{price: 5.5, precision: 1, expected: 6},
+		{price: 2.5, precision: 1, expected: 3},
+		{price: 1.6, precision: 1, expected: 2},
+		{price: 1.1, precision: 1, expected: 2},
+		{price: 1.0, precision: 1, expected: 1},
+		{price: -1.0, precision: 1, expected: -1},
+		{price: -1.1, precision: 1, expected: -1},
+		{price: -1.6, precision: 1, expected: -1},
+		{price: -2.5, precision: 1, expected: -2},
+		{price: -5.5, precision: 1, expected: -5},
+	}
+
+	for _, tt := range tests {
+		t.Run(fmt.Sprintf("rounding %f", tt.price), func(t *testing.T) {
+			price := domain.NewFromFloat(tt.price, "EUR")
+
+			payable := price.GetPayableByRoundingMode(domain.RoundingModeCeil, tt.precision)
+			assert.Equal(t, domain.NewFromInt(tt.expected, tt.precision, "EUR").Amount(), payable.Amount())
+		})
+	}
+}
+
+func TestPrice_GetPayableByRoundingMode_RoundingModeFloor(t *testing.T) {
+	tests := []struct {
+		price     float64
+		precision int
+		expected  int64
+	}{
+		{price: 12.34567, precision: 100, expected: 1234},
+		{price: -12.34567, precision: 100, expected: -1235},
+		{price: 5.5, precision: 1, expected: 5},
+		{price: 2.5, precision: 1, expected: 2},
+		{price: 1.6, precision: 1, expected: 1},
+		{price: 1.1, precision: 1, expected: 1},
+		{price: 1.0, precision: 1, expected: 1},
+		{price: -1.0, precision: 1, expected: -1},
+		{price: -1.1, precision: 1, expected: -2},
+		{price: -1.6, precision: 1, expected: -2},
+		{price: -2.5, precision: 1, expected: -3},
+		{price: -5.5, precision: 1, expected: -6},
+	}
+
+	for _, tt := range tests {
+		t.Run(fmt.Sprintf("rounding %f", tt.price), func(t *testing.T) {
+			price := domain.NewFromFloat(tt.price, "EUR")
+
+			payable := price.GetPayableByRoundingMode(domain.RoundingModeFloor, tt.precision)
+			assert.Equal(t, domain.NewFromInt(tt.expected, tt.precision, "EUR").Amount(), payable.Amount())
+		})
+	}
+}
+
+func TestPrice_GetPayableByRoundingMode_RoundingModeHalfUp(t *testing.T) {
+	tests := []struct {
+		price     float64
+		precision int
+		expected  int64
+		msg       string
+	}{
+		{price: 7.6, precision: 1, expected: 8, msg: "7.6 should be rounded to 8"},
+		{price: 7.5, precision: 1, expected: 8, msg: "7.5 should be rounded to 8"},
+		{price: 7.4, precision: 1, expected: 7, msg: "7.4 should be rounded to 7"},
+		{price: 12.34567, precision: 100, expected: 1235, msg: "12.34567 should be rounded to 12.35"},
+		{price: -7.4, precision: 1, expected: -7, msg: "-7.4 should be rounded to -7"},
+		{price: -7.45, precision: 1, expected: -7, msg: "-7.45 should be rounded to -7"},
+		{price: -7.5, precision: 1, expected: -8, msg: "-7.5 should be rounded to -8"},
+		{price: -7.55, precision: 1, expected: -8, msg: "-7.55 should be rounded to -8"},
+		{price: -7.6, precision: 1, expected: -8, msg: "-7.6 should be rounded to -8"},
+
+		{price: 5.5, precision: 1, expected: 6, msg: "5.5 should be rounded to 6"},
+		{price: 2.5, precision: 1, expected: 3, msg: "2.5 should be rounded to 3"},
+		{price: 1.6, precision: 1, expected: 2, msg: "1.6 should be rounded to 2"},
+		{price: 1.1, precision: 1, expected: 1, msg: "1.1 should be rounded to 1"},
+		{price: 1.0, precision: 1, expected: 1, msg: "1.0 should be rounded to 1"},
+		{price: -1.0, precision: 1, expected: -1, msg: "-1.0 should be rounded to -1"},
+		{price: -1.1, precision: 1, expected: -1, msg: "-1.1 should be rounded to -1"},
+		{price: -1.6, precision: 1, expected: -2, msg: "-1.6 should be rounded to -2"},
+		{price: -2.5, precision: 1, expected: -3, msg: "-2.5 should be rounded to -3"},
+		{price: -5.5, precision: 1, expected: -6, msg: "-5.5 should be rounded to -6"},
+	}
+
+	for _, tt := range tests {
+		t.Run(fmt.Sprintf("rounding %f", tt.price), func(t *testing.T) {
+			price := domain.NewFromFloat(tt.price, "EUR")
+
+			payable := price.GetPayableByRoundingMode(domain.RoundingModeHalfUp, tt.precision)
+			assert.Equal(t, domain.NewFromInt(tt.expected, tt.precision, "EUR").Amount(), payable.Amount(), tt.msg)
+		})
+	}
+}
+
+func TestPrice_GetPayableByRoundingMode_RoundingModeHalfDown(t *testing.T) {
+	tests := []struct {
+		price     float64
+		precision int
+		expected  int64
+		msg       string
+	}{
+		{price: 7.6, precision: 1, expected: 8, msg: "7.6 should be rounded to 8"},
+		{price: 7.5, precision: 1, expected: 7, msg: "7.5 should be rounded to 7"},
+		{price: 7.4, precision: 1, expected: 7, msg: "7.4 should be rounded to 7"},
+		{price: 12.34567, precision: 100, expected: 1235, msg: "12.34567 should be rounded to 12.35"},
+
+		{price: -7.4, precision: 1, expected: -7, msg: "-7.4 should be rounded to -7"},
+		{price: -7.5, precision: 1, expected: -7, msg: "-7.5 should be rounded to -7"},
+		{price: -7.6, precision: 1, expected: -8, msg: "-7.6 should be rounded to -8"},
+
+		{price: 5.5, precision: 1, expected: 5, msg: "5.5 should be rounded to 5"},
+		{price: 2.5, precision: 1, expected: 2, msg: "2.5 should be rounded to 2"},
+		{price: 1.6, precision: 1, expected: 2, msg: "1.6 should be rounded to 2"},
+		{price: 1.1, precision: 1, expected: 1, msg: "1.1 should be rounded to 1"},
+		{price: 1.0, precision: 1, expected: 1, msg: "1.0 should be rounded to 1"},
+		{price: -1.0, precision: 1, expected: -1, msg: "-1.0 should be rounded to -1"},
+		{price: -1.1, precision: 1, expected: -1, msg: "-1.1 should be rounded to -1"},
+		{price: -1.6, precision: 1, expected: -2, msg: "-1.6 should be rounded to -2"},
+		{price: -2.5, precision: 1, expected: -2, msg: "-2.5 should be rounded to -2"},
+		{price: -5.5, precision: 1, expected: -5, msg: "-5.5 should be rounded to -5"},
+	}
+	for _, tt := range tests {
+		t.Run(fmt.Sprintf("rounding %f", tt.price), func(t *testing.T) {
+			price := domain.NewFromFloat(tt.price, "EUR")
+
+			payable := price.GetPayableByRoundingMode(domain.RoundingModeHalfDown, tt.precision)
+			assert.Equal(t, domain.NewFromInt(tt.expected, tt.precision, "EUR").Amount(), payable.Amount(), tt.msg)
+		})
+	}
 
 }
 

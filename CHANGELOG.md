@@ -59,6 +59,7 @@
 
 **price**
 * When marshalling `domain.Price` to JSON the amount is rounded.
+* Fix various rounding issues with negative prices, add all rounding modes and examples to moduel readme.
 
 **product**
 * Enhance the `PriceContext` to allow potential delivery specific pricing
