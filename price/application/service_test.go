@@ -13,7 +13,7 @@ import (
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
-func TestService_FormatPrice_Regression(t *testing.T) {
+func TestService_FormatPrice(t *testing.T) {
 	translationService := &fake.TranslationService{}
 
 	labelService := &localeApplication.LabelService{}
@@ -32,16 +32,16 @@ func TestService_FormatPrice_Regression(t *testing.T) {
 	service := application.Service{}
 	service.Inject(
 		labelService,
-		&struct{
+		&struct {
 			Config config.Map `inject:"config:locale.accounting"`
 		}{
 			Config: config.Map{
 				"default": config.Map{
-					"decimal": ".",
-					"thousand": ",",
+					"decimal":    ".",
+					"thousand":   ",",
 					"formatLong": "%s %s",
 					"formatZero": "%s%v",
-					"format": "%s%v",
+					"format":     "%s%v",
 				},
 			},
 		},
