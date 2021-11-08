@@ -13,7 +13,7 @@ Price calculation is not a trivial topic and multiple solutions exist.
 The implementation details of the price object is:
 
 * internally we use big.Float to hold the amount, this is to be able to calculate exactly
-* however a float like representation of an amount cannot be paid, that is why the price has a method "GetPayablePrice" that returns a Price that can be paid in the given currency, using correct rounding and amount representation
+* however, a float like representation of an amount cannot be paid, that is why the price has a method "GetPayablePrice" that returns a Price that can be paid in the given currency, using correct rounding and amount representation
 
 
 ### Example:
@@ -39,6 +39,80 @@ price2 := NewFromFloat(2.45,"EUR")
 
 Be aware that `price.Equals(price2)` may be false but due to float arithmetic but
 `price.GetPayable().Equals(price2.GetPayable())` will be true
+
+#### Rounding Modes
+
+We support a variety of rounding modes. These can be used with the `GetPayableByRoundingMode` function by specifying a mode and precision. The following modes are available:
+
+* `RoundingModeFloor`
+  
+  Rounding mode to round towards negative infinity.
+  _Note that this rounding mode never increases the calculated value._
+
+  | `price` | `price.GetPayableByRoundingMode(RoundingModeFloor, 1)` |
+  |---------|--------------------------------------------------------|
+  |     5.5 |                                                      5 |
+  |     2.5 |                                                      2 |
+  |     1.6 |                                                      1 |
+  |     1.1 |                                                      1 |
+  |     1.0 |                                                      1 |
+  |    -1.0 |                                                     -1 |
+  |    -1.1 |                                                     -2 |
+  |    -1.6 |                                                     -2 |
+  |    -2.5 |                                                     -3 |
+  |    -5.5 |                                                     -6 |
+* `RoundingModeCeil`
+  
+  Rounding mode to round towards positive infinity.
+  _Note that this rounding mode never decreases the calculated value._
+
+  | `price` | `price.GetPayableByRoundingMode(RoundingModeCeil, 1)` |
+  |---------|-------------------------------------------------------|
+  |     5.5 |                                                     6 |
+  |     2.5 |                                                     3 |
+  |     1.6 |                                                     2 |
+  |     1.1 |                                                     2 |
+  |     1.0 |                                                     1 |
+  |    -1.0 |                                                    -1 |
+  |    -1.1 |                                                    -1 |
+  |    -1.6 |                                                    -1 |
+  |    -2.5 |                                                    -2 |
+  |    -5.5 |                                                    -5 |
+* `RoundingModeHalfUp` default mode for `GetPayable()`
+  
+  Rounding mode to round towards "nearest neighbor" unless both neighbors are equidistant, in which case round up.
+  _Note that this is the rounding mode commonly taught at school._
+
+  | `price` | `price.GetPayableByRoundingMode(RoundingModeHalfUp, 1)` |
+  |---------|---------------------------------------------------------|
+  |     5.5 |                                                       6 |
+  |     2.5 |                                                       3 |
+  |     1.6 |                                                       2 |
+  |     1.1 |                                                       1 |
+  |     1.0 |                                                       1 |
+  |    -1.0 |                                                      -1 |
+  |    -1.1 |                                                      -1 |
+  |    -1.6 |                                                      -2 |
+  |    -2.5 |                                                      -3 |
+  |    -5.5 |                                                      -6 |
+  
+* `RoundingModeHalfDown`
+  
+  Rounding mode to round towards "nearest neighbor" unless both neighbors are equidistant, in which case round down.
+
+  | `price` | `price.GetPayableByRoundingMode(RoundingModeHalfDown, 1)` |
+  |---------|-----------------------------------------------------------|
+  |     5.5 |                                                         5 |
+  |     2.5 |                                                         2 |
+  |     1.6 |                                                         2 |
+  |     1.1 |                                                         1 |
+  |     1.0 |                                                         1 |
+  |    -1.0 |                                                        -1 |
+  |    -1.1 |                                                        -1 |
+  |    -1.6 |                                                        -2 |
+  |    -2.5 |                                                        -2 |
+  |    -5.5 |                                                        -5 |
+
 
 ## Charge:
 Represents a price together with a type. A charge has a values price (normally in default currency) and a the price that is paid that might be in a different currency.
