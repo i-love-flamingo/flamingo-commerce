@@ -1,5 +1,10 @@
 # Changelog
-## v3.5.0 [upcoming]
+## v3.6.0 [upcoming]
+
+## v3.5.0
+**general**
+* Switch to MIT License
+
 **cart**
 * Add convenience function to clone carts
 * DefaultCartBehaviour now returns real cart clones to prevent data races on cart fields 
@@ -42,6 +47,7 @@
     POST /api/v1/checkout/placeorder/refresh
     POST /api/v1/checkout/placeorder/refresh-blocking
     ```
+* Add new Flow Action `PaymentFlowActionTriggerClientSDK` to the checkout
 * **Breaking**: Upgrade github.com/go-playground/form to v4, all types are fully compatible, but import paths have to be changed
 
 **customer**
@@ -50,6 +56,7 @@
 
 **price**
 * When marshalling `domain.Price` to JSON the amount is rounded.
+* Fix various rounding issues with negative prices, add all rounding modes and examples to moduel readme.
 
 **product**
 * Enhance the `PriceContext` to allow potential delivery specific pricing
