@@ -313,8 +313,9 @@ func (p Price) GetPayable() Price {
 }
 
 // GetPayableByRoundingMode returns the price rounded you can pass the used rounding mode and precision
-// 1.115 >  1.12 (RoundingModeHalfUp)  / 1.11 (RoundingModeFloor)
-// -1.115 > -1.11 (RoundingModeHalfUp) / -1.12 (RoundingModeFloor)
+// Example for precision 100:
+//	1.115 >  1.12 (RoundingModeHalfUp)  / 1.11 (RoundingModeFloor)
+//	-1.115 > -1.11 (RoundingModeHalfUp) / -1.12 (RoundingModeFloor)
 func (p Price) GetPayableByRoundingMode(mode string, precision int) Price {
 	newPrice := Price{
 		currency: p.currency,
@@ -329,7 +330,7 @@ func (p Price) GetPayableByRoundingMode(mode string, precision int) Price {
 	amountTruncatedFloat, _ := new(big.Float).Mul(amountForRound, p.precisionF(precision)).Float64()
 	integerPart, fractionalPart := math.Modf(amountTruncatedFloat)
 	amountTruncatedInt := int64(integerPart)
-	valueAfterPrecision := (math.Round(fractionalPart*10*100) / 100) * float64(negative)
+	valueAfterPrecision := (math.Round(fractionalPart*1000) / 100) * float64(negative)
 	if amountTruncatedFloat >= float64(math.MaxInt64) {
 		// will not work if we are already above MaxInt - so we return unrounded price:
 		newPrice.amount = p.amount
@@ -339,19 +340,19 @@ func (p Price) GetPayableByRoundingMode(mode string, precision int) Price {
 	switch {
 	case mode == RoundingModeCeil:
 		if negative == 1 && valueAfterPrecision > 0 {
-			amountTruncatedInt = amountTruncatedInt + (1 * negative)
+			amountTruncatedInt = amountTruncatedInt + negative
 		}
 	case mode == RoundingModeHalfUp:
 		if valueAfterPrecision >= 5 {
-			amountTruncatedInt = amountTruncatedInt + (1 * negative)
+			amountTruncatedInt = amountTruncatedInt + negative
 		}
 	case mode == RoundingModeHalfDown:
 		if valueAfterPrecision > 5 {
-			amountTruncatedInt = amountTruncatedInt + (1 * negative)
+			amountTruncatedInt = amountTruncatedInt + negative
 		}
 	case mode == RoundingModeFloor:
 		if negative == -1 && valueAfterPrecision > 0 {
-			amountTruncatedInt = amountTruncatedInt + (1 * negative)
+			amountTruncatedInt = amountTruncatedInt + negative
 		}
 	default:
 		// nothing to round
