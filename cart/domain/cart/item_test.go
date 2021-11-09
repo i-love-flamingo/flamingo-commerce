@@ -87,6 +87,21 @@ func TestItemSplitter_SplitGrossBased(t *testing.T) {
 			RowPriceGrossWithItemRelatedDiscount: priceDomain.NewFromFloat(99.98, "EUR"),
 			AppliedDiscounts:                     []cartDomain.AppliedDiscount{{Applied: priceDomain.NewFromFloat(-10.00, "EUR")}},
 		},
+		{
+			Qty:                                  1,
+			MarketplaceCode:                      "no need for split, no taxes, no discounts",
+			SinglePriceNet:                       priceDomain.NewFromFloat(42.01, "EUR"),
+			SinglePriceGross:                     priceDomain.NewFromFloat(42.01, "EUR"),
+			RowPriceNet:                          priceDomain.NewFromFloat(42.01, "EUR"),
+			RowPriceGross:                        priceDomain.NewFromFloat(42.01, "EUR"),
+			RowPriceNetWithDiscount:              priceDomain.NewFromFloat(42.01, "EUR"),
+			RowPriceGrossWithDiscount:            priceDomain.NewFromFloat(42.01, "EUR"),
+			TotalDiscountAmount:                  priceDomain.NewZero("EUR"),
+			NonItemRelatedDiscountAmount:         priceDomain.NewZero("EUR"),
+			ItemRelatedDiscountAmount:            priceDomain.NewZero("EUR"),
+			RowPriceNetWithItemRelatedDiscount:   priceDomain.NewZero("EUR"),
+			RowPriceGrossWithItemRelatedDiscount: priceDomain.NewZero("EUR"),
+		},
 	}
 
 	for _, item := range items {
@@ -133,9 +148,11 @@ func TestItemSplitter_SplitGrossBased(t *testing.T) {
 				rowNetWithItemDiscount += splitItem.RowPriceNetWithItemRelatedDiscount.FloatAmount()
 				itemDiscountAmount += splitItem.ItemRelatedDiscountAmount.FloatAmount()
 				nonItemDiscountAmount += splitItem.NonItemRelatedDiscountAmount.FloatAmount()
-				rate, _ := splitItem.RowTaxes[0].Rate.Float64()
-				expectedRate, _ := item.RowTaxes[0].Rate.Float64()
-				assert.Equal(t, expectedRate, rate)
+				if len(splitItem.RowTaxes) > 0 {
+					rate, _ := splitItem.RowTaxes[0].Rate.Float64()
+					expectedRate, _ := item.RowTaxes[0].Rate.Float64()
+					assert.Equal(t, expectedRate, rate)
+				}
 				totalDiscountAmount = totalDiscountAmount + splitItem.TotalDiscountAmount.FloatAmount()
 
 				require.Len(t, splitItem.AppliedDiscounts, len(item.AppliedDiscounts))

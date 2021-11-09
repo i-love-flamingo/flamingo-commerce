@@ -204,7 +204,11 @@ func (s *ItemSplitter) SplitInSingleQtyItems(givenItem Item) ([]Item, error) {
 		item.RowPriceGross, item.RowPriceNet = item.SinglePriceGross, item.SinglePriceNet
 
 		item.RowPriceNetWithDiscount = s.splitPrice(givenItem.RowPriceNetWithDiscount, givenItem.Qty, x)
-		item.RowPriceGrossWithDiscount = item.RowPriceNetWithDiscount.ForceAdd(item.RowTaxes.TotalAmount())
+		taxAmount := item.RowTaxes.TotalAmount()
+		item.RowPriceGrossWithDiscount = item.RowPriceNetWithDiscount
+		if !taxAmount.IsZero() && taxAmount.Currency() == item.RowPriceGrossWithDiscount.Currency() {
+			item.RowPriceGrossWithDiscount = item.RowPriceGrossWithDiscount.ForceAdd(taxAmount)
+		}
 
 		item.RowPriceGrossWithItemRelatedDiscount = s.splitPrice(givenItem.RowPriceGrossWithItemRelatedDiscount, givenItem.Qty, x)
 		item.RowPriceNetWithItemRelatedDiscount = s.splitPrice(givenItem.RowPriceNetWithItemRelatedDiscount, givenItem.Qty, x)
