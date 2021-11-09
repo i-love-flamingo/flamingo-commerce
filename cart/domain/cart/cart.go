@@ -80,8 +80,6 @@ type (
 		SubTotalNetWithDiscounts domain.Price
 		// TotalDiscountAmount is the sum of all discounts (incl. shipping)
 		TotalDiscountAmount domain.Price
-		// TotalDutiesAmount is the sum of all duties
-		TotalDutiesAmount domain.Price
 		// NonItemRelatedDiscountAmount is the sum of discounts that are not related to the item (including shipping discounts)
 		NonItemRelatedDiscountAmount domain.Price
 		// ItemRelatedDiscountAmount is the sum of discounts that are related to the item (including shipping discounts)
