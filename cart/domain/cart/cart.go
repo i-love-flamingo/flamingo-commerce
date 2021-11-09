@@ -56,8 +56,12 @@ type (
 		TotalGiftCardAmount domain.Price
 		// GrandTotalWithGiftCards is the final amount with the applied gift cards subtracted.
 		GrandTotalWithGiftCards domain.Price
+		// GrandTotalNetWithGiftCards is the corresponding net value to GrandTotalWithGiftCards
+		GrandTotalNetWithGiftCards domain.Price
 		// GrandTotal is the final amount that need to be paid by the customer (gross)
 		GrandTotal domain.Price
+		// GrandTotalNet is the corresponding net value to GrandTotal
+		GrandTotalNet domain.Price
 		// ShippingNet is the sum of all shipping costs
 		ShippingNet domain.Price
 		// ShippingNetWithDiscounts is the sum of all shipping costs with all shipping discounts
@@ -76,6 +80,8 @@ type (
 		SubTotalNetWithDiscounts domain.Price
 		// TotalDiscountAmount is the sum of all discounts (incl. shipping)
 		TotalDiscountAmount domain.Price
+		// TotalDutiesAmount is the sum of all duties
+		TotalDutiesAmount domain.Price
 		// NonItemRelatedDiscountAmount is the sum of discounts that are not related to the item (including shipping discounts)
 		NonItemRelatedDiscountAmount domain.Price
 		// ItemRelatedDiscountAmount is the sum of discounts that are related to the item (including shipping discounts)
