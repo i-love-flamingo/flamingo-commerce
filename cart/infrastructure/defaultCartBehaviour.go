@@ -732,6 +732,8 @@ func (cob *DefaultCartBehaviour) collectTotals(cart *domaincart.Cart) {
 	cart.TotalGiftCardAmount = priceDomain.NewZero(cart.DefaultCurrency)
 	cart.GrandTotalWithGiftCards = priceDomain.NewZero(cart.DefaultCurrency)
 	cart.GrandTotal = priceDomain.NewZero(cart.DefaultCurrency)
+	cart.GrandTotalNet = priceDomain.NewZero(cart.DefaultCurrency)
+	cart.GrandTotalNetWithGiftCards = priceDomain.NewZero(cart.DefaultCurrency)
 	cart.ShippingNet = priceDomain.NewZero(cart.DefaultCurrency)
 	cart.ShippingNetWithDiscounts = priceDomain.NewZero(cart.DefaultCurrency)
 	cart.ShippingGross = priceDomain.NewZero(cart.DefaultCurrency)
@@ -774,8 +776,8 @@ func (cob *DefaultCartBehaviour) collectTotals(cart *domaincart.Cart) {
 			delivery.GrandTotal = delivery.GrandTotal.ForceAdd(cartitem.RowPriceGrossWithDiscount)
 		}
 
-		// todo: gift cards?
 		cart.GrandTotal = cart.GrandTotal.ForceAdd(delivery.GrandTotal)
+		cart.GrandTotalNet = cart.GrandTotalNet.ForceAdd(delivery.SubTotalNetWithDiscounts).ForceAdd(delivery.ShippingItem.PriceNetWithDiscounts)
 		cart.ShippingNet = cart.ShippingNet.ForceAdd(delivery.ShippingItem.PriceNet)
 		cart.ShippingNetWithDiscounts = cart.ShippingNetWithDiscounts.ForceAdd(delivery.ShippingItem.PriceNetWithDiscounts)
 		cart.ShippingGross = cart.ShippingGross.ForceAdd(delivery.ShippingItem.PriceGross)
@@ -799,9 +801,15 @@ func (cob *DefaultCartBehaviour) collectTotals(cart *domaincart.Cart) {
 	}
 
 	cart.TotalGiftCardAmount = sumAppliedGiftCards
+
 	cart.GrandTotalWithGiftCards, _ = cart.GrandTotal.Sub(cart.TotalGiftCardAmount)
 	if cart.GrandTotalWithGiftCards.IsNegative() {
 		cart.GrandTotalWithGiftCards = priceDomain.NewZero(cart.DefaultCurrency)
+	}
+
+	cart.GrandTotalNetWithGiftCards, _ = cart.GrandTotalNet.Sub(cart.TotalGiftCardAmount)
+	if cart.GrandTotalNetWithGiftCards.IsNegative() {
+		cart.GrandTotalNetWithGiftCards = priceDomain.NewZero(cart.DefaultCurrency)
 	}
 }
 
