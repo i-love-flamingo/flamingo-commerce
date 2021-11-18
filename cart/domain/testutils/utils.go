@@ -7,115 +7,98 @@ import (
 	"flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
-type (
-	// ByCode implements sort.Interface for []AppliedDiscount based on code
-	ByCode cart.AppliedDiscounts
-)
-
-// implementations for sort interface
-
-func (a ByCode) Len() int {
-	return len(a)
-}
-
-func (a ByCode) Swap(i, j int) {
-	a[i], a[j] = a[j], a[i]
-}
-
-func (a ByCode) Less(i, j int) bool {
-	return a[i].CampaignCode < a[j].CampaignCode
-}
-
 // BuildItemWithDiscounts helper for item building
 func BuildItemWithDiscounts(t *testing.T) *cart.Item {
 	t.Helper()
-	builder := cart.ItemBuilder{}
-	builder.AddDiscount(cart.AppliedDiscount{
-		CampaignCode: "code-1",
-		Label:        "title-1",
-		Type:         "type-1",
-		Applied:      domain.NewFromFloat(-10.0, "$"),
-		SortOrder:    3,
-	})
-	builder.AddDiscount(cart.AppliedDiscount{
-		CampaignCode: "code-2",
-		Label:        "title-2",
-		Type:         "type-1",
-		Applied:      domain.NewFromFloat(-15.0, "$"),
-		SortOrder:    2,
-	})
-	builder.AddDiscount(cart.AppliedDiscount{
-		CampaignCode: "code-3",
-		Label:        "title-1",
-		Type:         "type-2",
-		Applied:      domain.NewFromFloat(-5.0, "$"),
-		SortOrder:    4,
-	})
-	builder.SetID("id-1")
-	item, err := builder.Build()
-	if err != nil {
-		t.Fatalf("Could not build item %s", err.Error())
+	item := cart.Item{ID: "id-1",
+		AppliedDiscounts: []cart.AppliedDiscount{
+			{
+				CampaignCode: "code-1",
+				Label:        "title-1",
+				Type:         "type-1",
+				Applied:      domain.NewFromFloat(-10.0, "$"),
+				SortOrder:    3,
+			},
+			{
+				CampaignCode: "code-2",
+				Label:        "title-2",
+				Type:         "type-1",
+				Applied:      domain.NewFromFloat(-15.0, "$"),
+				SortOrder:    2,
+			},
+			{
+				CampaignCode: "code-3",
+				Label:        "title-1",
+				Type:         "type-2",
+				Applied:      domain.NewFromFloat(-5.0, "$"),
+				SortOrder:    4,
+			},
+		},
 	}
-	return item
+
+	// todo: add discount total
+
+	return &item
 }
 
 // BuildItemWithAlternativeDiscounts helper for item building with different discounts
 func BuildItemWithAlternativeDiscounts(t *testing.T) *cart.Item {
 	t.Helper()
-	builder := cart.ItemBuilder{}
-	builder.AddDiscount(cart.AppliedDiscount{
-		CampaignCode: "code-4",
-		Label:        "title-4",
-		Type:         "type-1",
-		Applied:      domain.NewFromFloat(-10.0, "$"),
-		SortOrder:    5,
-	})
-	builder.AddDiscount(cart.AppliedDiscount{
-		CampaignCode: "code-5",
-		Label:        "title-5",
-		Type:         "type-1",
-		Applied:      domain.NewFromFloat(-15.0, "$"),
-		SortOrder:    0,
-	})
-	builder.AddDiscount(cart.AppliedDiscount{
-		CampaignCode: "code-6",
-		Label:        "title-6",
-		Type:         "type-2",
-		Applied:      domain.NewFromFloat(-5.0, "$"),
-		SortOrder:    1,
-	})
-	builder.SetID("id-2")
-	item, err := builder.Build()
-	if err != nil {
-		t.Fatalf("Could not build item %s", err.Error())
-	}
-	return item
+	item := cart.Item{
+		ID: "id-2",
+		AppliedDiscounts: []cart.AppliedDiscount{
+			cart.AppliedDiscount{
+				CampaignCode: "code-4",
+				Label:        "title-4",
+				Type:         "type-1",
+				Applied:      domain.NewFromFloat(-10.0, "$"),
+				SortOrder:    5,
+			},
+			cart.AppliedDiscount{
+				CampaignCode: "code-5",
+				Label:        "title-5",
+				Type:         "type-1",
+				Applied:      domain.NewFromFloat(-15.0, "$"),
+				SortOrder:    0,
+			},
+			cart.AppliedDiscount{
+				CampaignCode: "code-6",
+				Label:        "title-6",
+				Type:         "type-2",
+				Applied:      domain.NewFromFloat(-5.0, "$"),
+				SortOrder:    1,
+			},
+		},
+	} // todo: add discount total
+
+	return &item
 }
 
 // BuildItemWithDuplicateDiscounts helper for item building with duplicate discounts
 func BuildItemWithDuplicateDiscounts(t *testing.T) *cart.Item {
 	t.Helper()
-	builder := cart.ItemBuilder{}
-	builder.AddDiscount(cart.AppliedDiscount{
-		CampaignCode: "code-1",
-		Label:        "title-1",
-		Type:         "type-1",
-		Applied:      domain.NewFromFloat(-10.0, "$"),
-		SortOrder:    0,
-	})
-	builder.AddDiscount(cart.AppliedDiscount{
-		CampaignCode: "code-1",
-		Label:        "title-1",
-		Type:         "type-1",
-		Applied:      domain.NewFromFloat(-10.0, "$"),
-		SortOrder:    0,
-	})
-	builder.SetID("id-1")
-	item, err := builder.Build()
-	if err != nil {
-		t.Fatalf("Could not build item %s", err.Error())
-	}
-	return item
+
+	item := cart.Item{
+		ID: "id-1",
+		AppliedDiscounts: []cart.AppliedDiscount{
+			cart.AppliedDiscount{
+				CampaignCode: "code-1",
+				Label:        "title-1",
+				Type:         "type-1",
+				Applied:      domain.NewFromFloat(-10.0, "$"),
+				SortOrder:    0,
+			},
+			cart.AppliedDiscount{
+				CampaignCode: "code-1",
+				Label:        "title-1",
+				Type:         "type-1",
+				Applied:      domain.NewFromFloat(-10.0, "$"),
+				SortOrder:    0,
+			},
+		},
+	} // todo: add discount total
+
+	return &item
 }
 
 // BuildShippingItemWithDiscounts helper for shipping item building
@@ -205,14 +188,9 @@ func BuildShippingItemWithDuplicateDiscounts(t *testing.T) *cart.ShippingItem {
 // The amount should be added to the previous discount
 func BuildDeliveryWithDiscounts(t *testing.T) *cart.Delivery {
 	t.Helper()
-	builder := cart.DeliveryBuilder{}
-	builder.SetDeliveryCode("code")
-	builder.AddItem(*BuildItemWithDiscounts(t))
-	builder.AddItem(*BuildItemWithDiscounts(t))
-	// add items with discounts
-	delivery, err := builder.Build()
-	if err != nil {
-		t.Fatalf("Could not build delivery %s", err.Error())
+	delivery := &cart.Delivery{
+		DeliveryInfo: cart.DeliveryInfo{Code: "code"},
+		Cartitems:    []cart.Item{*BuildItemWithDiscounts(t), *BuildItemWithDiscounts(t)},
 	}
 	return delivery
 }
@@ -223,14 +201,9 @@ func BuildDeliveryWithDiscounts(t *testing.T) *cart.Delivery {
 // The amount should be added to the previous discount
 func BuildAlternativeDeliveryWithAlternativeDiscounts(t *testing.T) *cart.Delivery {
 	t.Helper()
-	builder := cart.DeliveryBuilder{}
-	builder.SetDeliveryCode("code-2")
-	builder.AddItem(*BuildItemWithAlternativeDiscounts(t))
-	builder.AddItem(*BuildItemWithAlternativeDiscounts(t))
-	// add items with discounts
-	delivery, err := builder.Build()
-	if err != nil {
-		t.Fatalf("Could not build delivery %s", err.Error())
+	delivery := &cart.Delivery{
+		DeliveryInfo: cart.DeliveryInfo{Code: "code-2"},
+		Cartitems:    []cart.Item{*BuildItemWithAlternativeDiscounts(t), *BuildItemWithAlternativeDiscounts(t)},
 	}
 	return delivery
 }
@@ -241,14 +214,9 @@ func BuildAlternativeDeliveryWithAlternativeDiscounts(t *testing.T) *cart.Delive
 // The amount should be added to the previous discount
 func BuildDeliveryWithDifferentDiscounts(t *testing.T) *cart.Delivery {
 	t.Helper()
-	builder := cart.DeliveryBuilder{}
-	builder.SetDeliveryCode("code-1")
-	builder.AddItem(*BuildItemWithDiscounts(t))
-	builder.AddItem(*BuildItemWithAlternativeDiscounts(t))
-	// add items with discounts
-	delivery, err := builder.Build()
-	if err != nil {
-		t.Fatalf("Could not build delivery %s", err.Error())
+	delivery := &cart.Delivery{
+		DeliveryInfo: cart.DeliveryInfo{Code: "code-1"},
+		Cartitems:    []cart.Item{*BuildItemWithDiscounts(t), *BuildItemWithAlternativeDiscounts(t)},
 	}
 	return delivery
 }
@@ -259,13 +227,9 @@ func BuildDeliveryWithDifferentDiscounts(t *testing.T) *cart.Delivery {
 // The amount should be added to the previous discount
 func BuildDeliveryWithDuplicateDiscounts(t *testing.T) *cart.Delivery {
 	t.Helper()
-	builder := cart.DeliveryBuilder{}
-	builder.SetDeliveryCode("code-1")
-	builder.AddItem(*BuildItemWithDuplicateDiscounts(t))
-	// add items with discounts
-	delivery, err := builder.Build()
-	if err != nil {
-		t.Fatalf("Could not build delivery %s", err.Error())
+	delivery := &cart.Delivery{
+		DeliveryInfo: cart.DeliveryInfo{Code: "code-1"},
+		Cartitems:    []cart.Item{*BuildItemWithDuplicateDiscounts(t)},
 	}
 	return delivery
 }
@@ -273,26 +237,9 @@ func BuildDeliveryWithDuplicateDiscounts(t *testing.T) *cart.Delivery {
 // BuildDeliveryWithoutDiscounts helper for delivery building
 func BuildDeliveryWithoutDiscounts(t *testing.T) *cart.Delivery {
 	t.Helper()
-	builder := cart.DeliveryBuilder{}
-	builder.AddItem(cart.Item{})
-	builder.AddItem(cart.Item{})
-	builder.SetDeliveryCode("code")
-	delivery, err := builder.Build()
-	if err != nil {
-		t.Fatalf("Could not build delivery %s", err.Error())
-	}
-	return delivery
-}
-
-// BuildDeliveryWithoutItemsButWithShippingDiscounts helper for delivery building
-func BuildDeliveryWithoutItemsButWithShippingDiscounts(t *testing.T) *cart.Delivery {
-	t.Helper()
-	builder := cart.DeliveryBuilder{}
-	builder.SetDeliveryCode("code")
-	builder.SetShippingItem(*BuildShippingItemWithDiscounts(t))
-	delivery, err := builder.Build()
-	if err != nil {
-		t.Fatalf("Could not build delivery %s", err.Error())
+	delivery := &cart.Delivery{
+		DeliveryInfo: cart.DeliveryInfo{Code: "code"},
+		Cartitems:    []cart.Item{{}, {}},
 	}
 	return delivery
 }
@@ -300,15 +247,13 @@ func BuildDeliveryWithoutItemsButWithShippingDiscounts(t *testing.T) *cart.Deliv
 // BuildDeliveryWithoutDiscountsAndShippingDiscounts helper for delivery building
 func BuildDeliveryWithoutDiscountsAndShippingDiscounts(t *testing.T) *cart.Delivery {
 	t.Helper()
-	builder := cart.DeliveryBuilder{}
-	builder.AddItem(cart.Item{})
-	builder.AddItem(cart.Item{})
-	builder.SetDeliveryCode("code")
-	builder.SetShippingItem(*BuildShippingItemWithDiscounts(t))
-	delivery, err := builder.Build()
-	if err != nil {
-		t.Fatalf("Could not build delivery %s", err.Error())
+
+	delivery := &cart.Delivery{
+		DeliveryInfo: cart.DeliveryInfo{Code: "code"},
+		Cartitems:    []cart.Item{{}, {}},
+		ShippingItem: *BuildShippingItemWithDiscounts(t),
 	}
+
 	return delivery
 }
 
@@ -319,16 +264,12 @@ func BuildDeliveryWithoutDiscountsAndShippingDiscounts(t *testing.T) *cart.Deliv
 // The amount should be added to the previous discount
 func BuildDeliveryWithDifferentDiscountsAndShippingDiscounts(t *testing.T) *cart.Delivery {
 	t.Helper()
-	builder := cart.DeliveryBuilder{}
-	builder.SetDeliveryCode("code-1")
-	builder.AddItem(*BuildItemWithDiscounts(t))
-	builder.AddItem(*BuildItemWithAlternativeDiscounts(t))
-	builder.SetShippingItem(*BuildShippingItemWithDiscounts(t))
-	// add items with discounts
-	delivery, err := builder.Build()
-	if err != nil {
-		t.Fatalf("Could not build delivery %s", err.Error())
+	delivery := &cart.Delivery{
+		DeliveryInfo: cart.DeliveryInfo{Code: "code-1"},
+		Cartitems:    []cart.Item{*BuildItemWithDiscounts(t), *BuildItemWithAlternativeDiscounts(t)},
+		ShippingItem: *BuildShippingItemWithDiscounts(t),
 	}
+
 	return delivery
 }
 
@@ -339,14 +280,11 @@ func BuildDeliveryWithDifferentDiscountsAndShippingDiscounts(t *testing.T) *cart
 // The amount should be added to the previous discount
 func BuildDeliveryWithDuplicateDiscountsAndShippingDiscounts(t *testing.T) *cart.Delivery {
 	t.Helper()
-	builder := cart.DeliveryBuilder{}
-	builder.SetDeliveryCode("code-1")
-	builder.AddItem(*BuildItemWithDuplicateDiscounts(t))
-	builder.SetShippingItem(*BuildShippingItemWithDiscounts(t))
-	// add items with discounts
-	delivery, err := builder.Build()
-	if err != nil {
-		t.Fatalf("Could not build delivery %s", err.Error())
+	delivery := &cart.Delivery{
+		DeliveryInfo: cart.DeliveryInfo{Code: "code-1"},
+		Cartitems:    []cart.Item{*BuildItemWithDuplicateDiscounts(t)},
+		ShippingItem: *BuildShippingItemWithDiscounts(t),
 	}
+
 	return delivery
 }

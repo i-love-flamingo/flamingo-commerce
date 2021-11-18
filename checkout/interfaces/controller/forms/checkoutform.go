@@ -220,7 +220,7 @@ func (c *CheckoutFormController) HandleFormAction(ctx context.Context, r *web.Re
 		}
 	}
 
-	if !cart.GrandTotal().IsZero() {
+	if !cart.GrandTotal.IsZero() {
 		// 4. ### Add the simplePaymentForm if payment is required.
 		simplePaymentForm, success, err := c.simplePaymentFormController.HandleFormAction(ctx, newRequestWithResolvedNamespace("payment", r))
 		overallSuccess = overallSuccess && success

@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
-	"flamingo.me/flamingo-commerce/v3/cart/domain/testutils"
 	"github.com/stretchr/testify/require"
 
 	"github.com/stretchr/testify/assert"
@@ -451,131 +450,6 @@ func TestCart_GetVoucherSavings(t *testing.T) {
 	assert.Equal(t, got, domain.Price{})
 }
 
-func TestCart_SumShippingNetWithDiscounts(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		name string
-		cart cartDomain.Cart
-		want domain.Price
-	}{
-		{
-			name: "empty cart",
-			cart: cartDomain.Cart{},
-			want: domain.NewZero(""),
-		},
-		{
-			name: "cart with items with discounts but no shipping cost",
-			cart: func() cartDomain.Cart {
-				cart := &cartDomain.Cart{}
-				cart.Deliveries = append(cart.Deliveries, *testutils.BuildDeliveryWithDifferentDiscounts(t))
-				return *cart
-			}(),
-			want: domain.NewZero(""),
-		},
-		{
-			name: "cart with items and shipping cost, both with discounts",
-			cart: func() cartDomain.Cart {
-				cart := &cartDomain.Cart{}
-				cart.Deliveries = append(cart.Deliveries, *testutils.BuildDeliveryWithDifferentDiscountsAndShippingDiscounts(t))
-				return *cart
-			}(),
-			want: domain.NewFromFloat(5.0, "$"),
-		},
-		{
-			name: "cart with multiple deliveries with items and shipping cost, some with discounts",
-			cart: func() cartDomain.Cart {
-				cart := &cartDomain.Cart{}
-				cart.Deliveries = append(cart.Deliveries, *testutils.BuildDeliveryWithDifferentDiscountsAndShippingDiscounts(t))
-				cart.Deliveries = append(cart.Deliveries, *testutils.BuildDeliveryWithoutDiscountsAndShippingDiscounts(t))
-				return *cart
-			}(),
-			want: domain.NewFromFloat(10.0, "$"),
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.cart.SumShippingNetWithDiscounts(); !got.Equal(tt.want) {
-				t.Errorf("Cart.SumShippingNetWithDiscount() = %v, want %v", got.Amount(), tt.want.Amount())
-			}
-		})
-	}
-}
-
-func TestCart_SumShippingGrossWithDiscounts(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		name string
-		cart cartDomain.Cart
-		want domain.Price
-	}{
-		{
-			name: "empty cart",
-			cart: cartDomain.Cart{},
-			want: domain.NewZero(""),
-		},
-		{
-			name: "cart with items with discounts but no shipping cost",
-			cart: func() cartDomain.Cart {
-				cart := &cartDomain.Cart{}
-				cart.Deliveries = append(cart.Deliveries, *testutils.BuildDeliveryWithDifferentDiscounts(t))
-				return *cart
-			}(),
-			want: domain.NewZero(""),
-		},
-		{
-			name: "cart with items and shipping cost, both with discounts",
-			cart: func() cartDomain.Cart {
-				cart := &cartDomain.Cart{}
-				cart.Deliveries = append(cart.Deliveries, *testutils.BuildDeliveryWithDifferentDiscountsAndShippingDiscounts(t))
-				return *cart
-			}(),
-			want: domain.NewFromFloat(7.0, "$"),
-		},
-		{
-			name: "cart with multiple deliveries with items and shipping cost, some with discounts",
-			cart: func() cartDomain.Cart {
-				cart := &cartDomain.Cart{}
-				cart.Deliveries = append(cart.Deliveries, *testutils.BuildDeliveryWithDifferentDiscountsAndShippingDiscounts(t))
-				cart.Deliveries = append(cart.Deliveries, *testutils.BuildDeliveryWithoutDiscountsAndShippingDiscounts(t))
-				return *cart
-			}(),
-			want: domain.NewFromFloat(14.0, "$"),
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.cart.SumShippingGrossWithDiscounts(); !got.Equal(tt.want) {
-				t.Errorf("Cart.SumShippingGrossWithDiscounts() = %v, want %v", got.Amount(), tt.want.Amount())
-			}
-		})
-	}
-}
-
-/*
-func TestCart_HasNoMixedCart(t *testing.T) {
-	var cart = new(Cart)
-
-	cart.Cartitems = append(cart.Cartitems, getItemWithDepartureIntent())
-
-	resultNoMixedCart := cart.HasMixedCart()
-	assert.False(t, resultNoMixedCart)
-}
-
-func TestCart_HasMixedCart(t *testing.T) {
-	var cart = new(Cart)
-
-	cart.Cartitems = append(cart.Cartitems, getItemWithDepartureIntent())
-	cart.Cartitems = append(cart.Cartitems, getItemWithArrivalIntent())
-
-	resultMixedCart := cart.HasMixedCart()
-	assert.True(t, resultMixedCart)
-}
-*/
-
 func TestPlacedOrderInfos_GetOrderNumberForDeliveryCode(t *testing.T) {
 	t.Parallel()
 
@@ -678,20 +552,6 @@ func TestTaxes_AddTaxWithMerge(t *testing.T) {
 	assert.Equal(t, domain.NewFromInt(13, 1, "EUR"), total)
 
 	assert.Equal(t, 1, len(taxes))
-}
-
-func TestCartBuilder_BuildAndGet(t *testing.T) {
-	t.Parallel()
-
-	b := cartDomain.Builder{}
-
-	cart, err := b.AddTotalitem(cartDomain.Totalitem{
-		Title: "test",
-		Price: domain.NewFromInt(100, 100, "EUR"),
-	}).SetIds("id", "").Build()
-	assert.NoError(t, err)
-	assert.Equal(t, domain.NewFromInt(100, 100, "EUR"), cart.GrandTotal(), "gradtotal need to match given total")
-
 }
 
 func TestAppliedCouponCodes_ContainedIn(t *testing.T) {
@@ -906,4 +766,222 @@ func TestCart_ProductCountAndUniqueProductCount(t *testing.T) {
 		assert.Equal(t, tt.wantProductCount, tt.cart.ProductCount(), "ProductCount has wrong result, expected %#v but got %#v", tt.wantProductCount, tt.cart.ProductCount())
 		assert.Equal(t, tt.wantProductUniqueCount, tt.cart.ProductCountUnique(), "ProductCountUnique has wrong result, expected %#v but got %#v", tt.wantProductUniqueCount, tt.cart.ProductCountUnique())
 	}
+}
+
+func TestCart_GetAllPaymentRequiredItems(t *testing.T) {
+	cart := &cartDomain.Cart{
+		Deliveries: []cartDomain.Delivery{
+			{
+				DeliveryInfo: cartDomain.DeliveryInfo{Code: "delivery-1"},
+				Cartitems: []cartDomain.Item{
+					{
+						ID:                        "1",
+						RowPriceGrossWithDiscount: domain.NewFromInt(1234, 100, "$"),
+					},
+					{
+						ID:                        "2",
+						RowPriceGrossWithDiscount: domain.NewFromInt(4321, 100, "$"),
+					},
+				},
+				ShippingItem: cartDomain.ShippingItem{
+					PriceGrossWithDiscounts: domain.NewZero("$"),
+				},
+			},
+			{
+				DeliveryInfo: cartDomain.DeliveryInfo{Code: "delivery-2"},
+				ShippingItem: cartDomain.ShippingItem{
+					PriceGrossWithDiscounts: domain.NewFromInt(55, 10, "$"),
+				},
+			},
+		},
+		Totalitems: []cartDomain.Totalitem{
+			{
+				Code:  "item-1",
+				Price: domain.NewFromInt(6789, 100, "$"),
+			},
+			{
+				Code:  "item-2",
+				Price: domain.NewFromInt(9876, 100, "$"),
+			},
+		},
+	}
+
+	pricedItems := cart.GetAllPaymentRequiredItems()
+	assert.Len(t, pricedItems.CartItems(), cart.ProductCount())
+	assert.Equal(t, 12.34, pricedItems.CartItems()["1"].FloatAmount())
+	assert.Equal(t, 43.21, pricedItems.CartItems()["2"].FloatAmount())
+	assert.Len(t, pricedItems.ShippingItems(), 1)
+	assert.Equal(t, 5.5, pricedItems.ShippingItems()["delivery-2"].FloatAmount())
+	assert.Len(t, pricedItems.TotalItems(), len(cart.Totalitems))
+	assert.Equal(t, 67.89, pricedItems.TotalItems()["item-1"].FloatAmount())
+	assert.Equal(t, 98.76, pricedItems.TotalItems()["item-2"].FloatAmount())
+}
+
+func TestCart_GetContactMail(t *testing.T) {
+	tests := []struct {
+		name          string
+		cart          cartDomain.Cart
+		expectedEmail string
+	}{
+		{name: "no mail", cart: cartDomain.Cart{}, expectedEmail: ""},
+		{name: "billing email", cart: cartDomain.Cart{BillingAddress: &cartDomain.Address{Email: "foo@example.com"}}, expectedEmail: "foo@example.com"},
+		{name: "shipping email", cart: cartDomain.Cart{Deliveries: []cartDomain.Delivery{{DeliveryInfo: cartDomain.DeliveryInfo{DeliveryLocation: cartDomain.DeliveryLocation{Address: &cartDomain.Address{Email: "foo@example.com"}}}}}}, expectedEmail: "foo@example.com"},
+		{name: "billing and shipping email",
+			cart: cartDomain.Cart{
+				BillingAddress: &cartDomain.Address{Email: "billing@example.com"},
+				Deliveries:     []cartDomain.Delivery{{DeliveryInfo: cartDomain.DeliveryInfo{DeliveryLocation: cartDomain.DeliveryLocation{Address: &cartDomain.Address{Email: "shipping@example.com"}}}}},
+			},
+			expectedEmail: "shipping@example.com",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.expectedEmail, tt.cart.GetContactMail())
+		})
+	}
+}
+
+func TestCart_GetDeliveryByCodeWithoutBool(t *testing.T) {
+	cart := cartDomain.Cart{Deliveries: []cartDomain.Delivery{{DeliveryInfo: cartDomain.DeliveryInfo{Code: "valid"}}}}
+	assert.Nil(t, cart.GetDeliveryByCodeWithoutBool("invalid"))
+	assert.NotNil(t, cart.GetDeliveryByCodeWithoutBool("valid"))
+}
+
+func TestCart_GetByItemID(t *testing.T) {
+	cart := cartDomain.Cart{Deliveries: []cartDomain.Delivery{
+		{
+			Cartitems: []cartDomain.Item{{ID: "item-1"}},
+		},
+		{
+			Cartitems: []cartDomain.Item{{ID: "item-2"}},
+		},
+	}}
+
+	t.Run("invalid item id should return error", func(t *testing.T) {
+		got, err := cart.GetByItemID("invalid")
+		assert.Error(t, err)
+		assert.Nil(t, got)
+	})
+
+	t.Run("valid item id should return item", func(t *testing.T) {
+		got, err := cart.GetByItemID("item-2")
+		assert.NoError(t, err)
+		assert.NotNil(t, got)
+		assert.Equal(t, "item-2", got.ID)
+	})
+}
+
+func TestCart_IsPaymentSelected(t *testing.T) {
+	cart := cartDomain.Cart{}
+	assert.False(t, cart.IsPaymentSelected())
+	cart.PaymentSelection = cartDomain.DefaultPaymentSelection{}
+	assert.True(t, cart.IsPaymentSelected())
+}
+
+func TestCart_HasShippingCosts(t *testing.T) {
+	cart := cartDomain.Cart{}
+	assert.False(t, cart.HasShippingCosts())
+
+	cart.ShippingNet = domain.NewFromFloat(5.00, "USD")
+	assert.True(t, cart.HasShippingCosts())
+}
+
+func TestCart_AllShippingTitles(t *testing.T) {
+	cart := cartDomain.Cart{}
+	assert.Equal(t, []string{}, cart.AllShippingTitles())
+
+	cart.Deliveries = []cartDomain.Delivery{
+		{ShippingItem: cartDomain.ShippingItem{Title: "shipping a"}},
+		{ShippingItem: cartDomain.ShippingItem{Title: "shipping b"}},
+	}
+	assert.ElementsMatch(t, []string{"shipping a", "shipping b"}, cart.AllShippingTitles())
+}
+
+func TestCart_SumTaxes(t *testing.T) {
+	cart := cartDomain.Cart{}
+	assert.Len(t, cart.SumTaxes(), 0)
+
+	cart.Deliveries = []cartDomain.Delivery{
+		{
+			Cartitems: []cartDomain.Item{
+				{RowTaxes: []cartDomain.Tax{{Type: "gst", Amount: domain.NewFromFloat(1.00, "USD")}}},
+				{RowTaxes: []cartDomain.Tax{{Type: "foo", Amount: domain.NewFromFloat(2.00, "USD")}}},
+			},
+			ShippingItem: cartDomain.ShippingItem{TaxAmount: domain.NewFromFloat(2.00, "USD")},
+		},
+		{
+			Cartitems: []cartDomain.Item{
+				{RowTaxes: []cartDomain.Tax{{Type: "gst", Amount: domain.NewFromFloat(1.00, "USD")}}},
+				{RowTaxes: []cartDomain.Tax{{Type: "bar", Amount: domain.NewFromFloat(2.00, "USD")}}},
+			},
+		},
+	}
+
+	assert.Len(t, cart.SumTaxes(), 4)
+}
+
+func TestCart_SumTotalTaxAmount(t *testing.T) {
+	cart := cartDomain.Cart{}
+	assert.Equal(t, cart.SumTotalTaxAmount(), domain.NewZero(""))
+
+	cart.Deliveries = []cartDomain.Delivery{
+		{
+			Cartitems: []cartDomain.Item{
+				{RowTaxes: []cartDomain.Tax{{Type: "gst", Amount: domain.NewFromFloat(1.00, "USD")}}},
+				{RowTaxes: []cartDomain.Tax{{Type: "foo", Amount: domain.NewFromFloat(2.00, "USD")}}},
+			},
+			ShippingItem: cartDomain.ShippingItem{TaxAmount: domain.NewFromFloat(2.00, "USD")},
+		},
+		{
+			Cartitems: []cartDomain.Item{
+				{RowTaxes: []cartDomain.Tax{{Type: "gst", Amount: domain.NewFromFloat(1.00, "USD")}}},
+				{RowTaxes: []cartDomain.Tax{{Type: "bar", Amount: domain.NewFromFloat(2.00, "USD")}}},
+			},
+		},
+	}
+
+	assert.Equal(t, cart.SumTotalTaxAmount(), domain.NewFromFloat(8.00, "USD"))
+}
+
+func TestCart_HasAppliedCouponCode(t *testing.T) {
+	cart := cartDomain.Cart{}
+	assert.False(t, cart.HasAppliedCouponCode())
+
+	cart.AppliedCouponCodes = []cartDomain.CouponCode{{Code: "summer-2020"}}
+	assert.True(t, cart.HasAppliedCouponCode())
+}
+
+func TestCart_GetPaymentReference(t *testing.T) {
+	cart := cartDomain.Cart{EntityID: "e", ID: "i"}
+	assert.Equal(t, "i-e", cart.GetPaymentReference())
+
+	cart.AdditionalData.ReservedOrderID = "order-id"
+	assert.Equal(t, "order-id", cart.GetPaymentReference())
+}
+
+func TestCart_GrandTotalCharges(t *testing.T) {
+	cart := cartDomain.Cart{GrandTotal: domain.NewFromFloat(100.00, "USD")}
+	expected := domain.NewCharges(map[string]domain.Charge{
+		domain.ChargeTypeMain: {
+			Type:  domain.ChargeTypeMain,
+			Value: domain.NewFromFloat(100.00, "USD"),
+			Price: domain.NewFromFloat(100.00, "USD"),
+		},
+	})
+
+	assert.Equal(t, *expected, cart.GrandTotalCharges())
+}
+
+func TestCart_GetTotalItemsByType(t *testing.T) {
+	cart := cartDomain.Cart{Totalitems: []cartDomain.Totalitem{
+		{Type: "valid", Price: domain.NewFromFloat(5.00, "USD")},
+		{Type: "valid", Price: domain.NewFromFloat(2.00, "USD")},
+		{Type: "other", Price: domain.NewFromFloat(5.00, "USD")},
+	}}
+	assert.Equal(t, []cartDomain.Totalitem{}, cart.GetTotalItemsByType("invalid"))
+	assert.Equal(t, []cartDomain.Totalitem{
+		{Type: "valid", Price: domain.NewFromFloat(5.00, "USD")},
+		{Type: "valid", Price: domain.NewFromFloat(2.00, "USD")},
+	}, cart.GetTotalItemsByType("valid"))
 }

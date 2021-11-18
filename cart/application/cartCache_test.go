@@ -532,23 +532,16 @@ func TestCartSessionCache_DeleteAll(t *testing.T) {
 
 func getFixtureCartForTest(t *testing.T) *cart.Cart {
 	t.Helper()
-	cartItemBuilder := cart.ItemBuilder{}
-	cartItemBuilder.SetSinglePriceGross(domain.NewFromInt(2050, 100, "EUR")).SetID("1").SetExternalReference("1ext").SetQty(2).CalculatePricesAndTaxAmountsFromSinglePriceGross()
-	item, err := cartItemBuilder.Build()
-	if err != nil {
-		t.Fatal("cannot build fixture cart for test!", err)
+	item := cart.Item{
+		ID:                "1",
+		ExternalReference: "1ext",
+		Qty:               2,
+		SinglePriceGross:  domain.NewFromInt(2050, 100, "EUR"),
+		SinglePriceNet:    domain.NewFromInt(2050, 100, "EUR"),
 	}
-	deliveryBuilder := cart.DeliveryBuilder{}
-	deliveryBuilder.AddItem(*item).SetDeliveryCode("code")
-	delivery, err := deliveryBuilder.Build()
-	if err != nil {
-		t.Fatal("cannot build delivery cart for test!", err)
-	}
-	cartBuilder := cart.Builder{}
-	cartBuilder.AddDelivery(*delivery).SetDefaultCurrency("EUR").SetIds("1", "1")
-	cartResult, err := cartBuilder.Build()
-	if err != nil {
-		t.Fatal("cannot build  cart for test!", err)
-	}
+
+	delivery := cart.Delivery{DeliveryInfo: cart.DeliveryInfo{Code: "code"}, Cartitems: []cart.Item{item}}
+	cartResult := &cart.Cart{ID: "1", EntityID: "1", DefaultCurrency: "EUR", Deliveries: []cart.Delivery{delivery}}
+
 	return cartResult
 }

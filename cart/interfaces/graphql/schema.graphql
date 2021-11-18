@@ -8,9 +8,9 @@ type Commerce_Cart_DecoratedCart {
 
 type Commerce_Cart_Summary {
     discounts: Commerce_Cart_AppliedDiscounts!
-    sumAppliedDiscounts: Commerce_Price
-    sumAppliedGiftCards: Commerce_Price
-    sumGrandTotalWithGiftCards: Commerce_Price
+    totalDiscountAmount: Commerce_Price
+    totalGiftCardAmount: Commerce_Price
+    grandTotalWithGiftCards: Commerce_Price
     sumTotalDiscountWithGiftCardsAmount: Commerce_Price
     hasAppliedDiscounts: Boolean!
     sumTaxes: Commerce_Cart_Taxes
@@ -52,10 +52,10 @@ type Commerce_Cart_Cart {
     getVoucherSavings: Commerce_Price!
     getCartTeaser: Commerce_Cart_Teaser!
 
-    sumShippingNet: Commerce_Price!
-    sumShippingNetWithDiscounts: Commerce_Price!
-    sumShippingGross: Commerce_Price!
-    sumShippingGrossWithDiscounts: Commerce_Price!
+    shippingNet: Commerce_Price!
+    shippingNetWithDiscounts: Commerce_Price!
+    shippingGross: Commerce_Price!
+    shippingGrossWithDiscounts: Commerce_Price!
 
     hasShippingCosts: Boolean!
     allShippingTitles: [String!]
@@ -63,9 +63,9 @@ type Commerce_Cart_Cart {
     subTotalGross: Commerce_Price!
     subTotalGrossWithDiscounts: Commerce_Price!
     subTotalNetWithDiscounts: Commerce_Price!
-    sumTotalDiscountAmount: Commerce_Price!
-    sumNonItemRelatedDiscountAmount: Commerce_Price!
-    sumItemRelatedDiscountAmount: Commerce_Price!
+    totalDiscountAmount: Commerce_Price!
+    nonItemRelatedDiscountAmount: Commerce_Price!
+    itemRelatedDiscountAmount: Commerce_Price!
     hasAppliedCouponCode: Boolean!
 
     getPaymentReference: String!
@@ -150,9 +150,9 @@ type Commerce_Cart_Delivery {
     grandTotal: Commerce_Price
     sumTotalTaxAmount: Commerce_Price
     subTotalNet: Commerce_Price
-    sumTotalDiscountAmount: Commerce_Price
-    sumNonItemRelatedDiscountAmount: Commerce_Price
-    sumItemRelatedDiscountAmount: Commerce_Price
+    totalDiscountAmount: Commerce_Price
+    nonItemRelatedDiscountAmount: Commerce_Price
+    itemRelatedDiscountAmount: Commerce_Price
     subTotalGrossWithDiscounts: Commerce_Price
     subTotalNetWithDiscounts: Commerce_Price!
     hasItems: Boolean!

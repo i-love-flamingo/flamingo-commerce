@@ -1,6 +1,62 @@
 # Changelog
 ## v3.6.0 [upcoming]
 
+**cart**
+* **Breaking**: Move all calculations to cart behaviour implementation
+  * By moving calculation responsibility, we enable different implementation possibilities for calculations like tax before or after discounts, tax on single item or sum and different tax rounding modes instead of having it hard-coded in the flamingo cart.
+  * All calculation functions on cart item, shipping item, delivery and cart are now public fields for which the values must be set by the cart behaviour implementation
+  * The `DefaultCartBehaviour` calculates all new fields accordingly
+  * Removed `ItemBuilder`, `DeliveryBuilder` and `Builder` since they didn't provide any meaningful functionality after removing the calculations. Please create structs directly.
+  * Changed the GraphQL cart model accordingly.
+  * To help with the migration there are sed commands for the following fields in `cart/migration.sed`: run `find . -type f -iname '*.go' -exec gsed -i -f migration.sed "{}" +;`
+  * Cart items
+      * | Old Function                           | New Field                            |
+        |----------------------------------------|--------------------------------------|
+        | RowPriceGrossWithDiscount()            | RowPriceGrossWithDiscount            |
+        | RowPriceGrossWithItemRelatedDiscount() | RowPriceGrossWithItemRelatedDiscount |
+        | RowPriceNetWithDiscount()              | RowPriceNetWithDiscount              |
+        | RowPriceNetWithItemRelatedDiscount()   | RowPriceNetWithItemRelatedDiscount   |
+        | TotalDiscountAmount()                  | TotalDiscountAmount                  |
+        | ItemRelatedDiscountAmount()            | ItemRelatedDiscountAmount            |
+        | NonItemRelatedDiscountAmount()         | NonItemRelatedDiscountAmount         |
+  * Shipping items
+      * | Old Function               | New Field               |
+        |----------------------------|-------------------------|
+        | TotalWithDiscountInclTax() | PriceGrossWithDiscounts |
+        | -                          | PriceNetWithDiscounts   |
+  * Deliveries
+      * | Old Function                      | New Field                       |
+        |-----------------------------------|---------------------------------|
+        | SubTotalGross()                   | SubTotalGross                   |
+        | SubTotalNet()                     | SubTotalNet                     |
+        | SumTotalDiscountAmount()          | TotalDiscountAmount             |
+        | SumSubTotalDiscountAmount()       | SubTotalDiscountAmount          |
+        | SumNonItemRelatedDiscountAmount() | NonItemRelatedDiscountAmount    |
+        | SumItemRelatedDiscountAmount()    | ItemRelatedDiscountAmount       |
+        | SubTotalGrossWithDiscounts()      | SubTotalGrossWithDiscounts      |
+        | SubTotalNetWithDiscounts()        | SubTotalNetWithDiscounts        |
+        | GrandTotal()                      | GrandTotal                      |
+  * Cart
+      * | Old Function                      | New Field                       |
+        |-----------------------------------|---------------------------------|
+        | GrandTotal()                      | GrandTotal                      |
+        | -                                 | GrandTotalNet                   |
+        | SumShippingNet()                  | ShippingNet                     |
+        | SumShippingNetWithDiscounts()     | ShippingNetWithDiscounts        |
+        | SumShippingGross()                | ShippingGross                   |
+        | SumShippingGrossWithDiscounts()   | ShippingGrossWithDiscounts      |
+        | SubTotalGross()                   | SubTotalGross                   |
+        | SubTotalNet()                     | SubTotalNet                     |
+        | SubTotalGrossWithDiscounts()      | SubTotalGrossWithDiscounts      |
+        | SubTotalNetWithDiscounts()        | SubTotalNetWithDiscounts        |
+        | SumTotalDiscountAmount()          | TotalDiscountAmount             |
+        | SumNonItemRelatedDiscountAmount() | NonItemRelatedDiscountAmount    |
+        | SumItemRelatedDiscountAmount()    | ItemRelatedDiscountAmount       |
+        | SumAppliedGiftCards()             | TotalGiftCardAmount             |
+        | SumGrandTotalWithGiftCards()      | GrandTotalWithGiftCards         |
+        | -                                 | GrandTotalNetWithGiftCards      |
+
+
 ## v3.5.0
 **general**
 * Switch to MIT License
@@ -35,6 +91,7 @@
   * **Breaking**: Remove the fields `getAdditionalData, additionalDataKeys, additionalDeliveryInfoKeys` from the `Commerce_CartDeliveryInfo` type
   * **Breaking**: `Commerce_Cart_UpdateDeliveryShippingOptions` mutation responded with slice of `Commerce_Cart_DeliveryAddressForm` which was incorrect as we don't process any form data within the mutation. It responds now rightly only with `processed` state.
 * **Breaking**: Upgrade github.com/go-playground/form to v4, all types are fully compatible, but import paths have to be changed
+
 
 **checkout**
 * Introducing Flamingo events on final states of the place order process

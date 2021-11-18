@@ -1,13 +1,9 @@
 package cart
 
 import (
-	"errors"
-	"fmt"
-	"math/big"
 	"sort"
 
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
-	"flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
 type (
@@ -18,7 +14,8 @@ type (
 		// ExternalReference can be used by cart service implementations to separate the representation in an external
 		// cart service from the unique item ID
 		ExternalReference string
-		MarketplaceCode   string
+		// MarketplaceCode is the identifier for the product
+		MarketplaceCode string
 		// VariantMarketPlaceCode is used for Configurable products
 		VariantMarketPlaceCode string
 		ProductName            string
@@ -30,113 +27,58 @@ type (
 
 		AdditionalData map[string]string
 
-		// SinglePriceGross gross price (incl. taxes) for a single product
+		// SinglePriceGross is the gross price (incl. taxes) for a single product
 		SinglePriceGross priceDomain.Price
 
-		// SinglePriceNet net price (excl. taxes) for a single product
+		// SinglePriceNet is the net price (excl. taxes) for a single product
 		SinglePriceNet priceDomain.Price
 
-		// RowPriceGross
+		// RowPriceGross is the price incl. taxes for the whole Qty of products
 		RowPriceGross priceDomain.Price
 
-		// RowPriceNet
+		// RowPriceGrossWithDiscount is the price incl. taxes with deducted discounts for the whole Qty of products
+		// This is in most cases the final price for the customer to pay
+		RowPriceGrossWithDiscount priceDomain.Price
+
+		// RowPriceGrossWithItemRelatedDiscount is the price incl. taxes with deducted item related discounts for the whole Qty of products
+		RowPriceGrossWithItemRelatedDiscount priceDomain.Price
+
+		// RowPriceNet is the price excl. taxes for the whole Qty of products
 		RowPriceNet priceDomain.Price
 
-		// RowPriceGross
+		// RowPriceNetWithDiscount is the discounted net price for the whole Qty of products
+		RowPriceNetWithDiscount priceDomain.Price
+
+		// RowPriceNetWithItemRelatedDiscount is the price excl. taxes with deducted item related discounts for the whole Qty of products
+		RowPriceNetWithItemRelatedDiscount priceDomain.Price
+
+		// RowTaxes is a list of all taxes applied for the given Qty of products
 		RowTaxes Taxes
 
 		// AppliedDiscounts contains the details about the discounts applied to this item - they can be "itemrelated" or not
+		// itemrelated would be e.g. special price, buy 3 pay 2
+		// non-itemrelated would be e.g. 10% on everything
 		AppliedDiscounts AppliedDiscounts
-	}
 
-	// ItemBuilder can be used to construct an item with a fluent interface
-	ItemBuilder struct {
-		itemCurrency        *string
-		invariantError      error
-		itemInBuilding      *Item
-		configUseGrossPrice bool
-	}
+		// TotalDiscountAmount is the sum of all applied discounts (aka the savings for the customer)
+		TotalDiscountAmount priceDomain.Price
 
-	// ItemBuilderProvider should be used to create an item
-	ItemBuilderProvider func() *ItemBuilder
+		// ItemRelatedDiscountAmount is the sum of all itemrelated Discounts
+		ItemRelatedDiscountAmount priceDomain.Price
+
+		// NonItemRelatedDiscountAmount is the sum of non-itemrelated Discounts where IsItemRelated = false
+		NonItemRelatedDiscountAmount priceDomain.Price
+	}
 
 	// ItemSplitter used to split an item
 	ItemSplitter struct {
-		itemBuilderProvider ItemBuilderProvider
-		configUseGrossPrice bool
+		errorDuringSplitting error
 	}
 )
 
-// TotalTaxAmount returns total tax amount as price
+// TotalTaxAmount is the sum of all applied taxes for the whole Qty of products
 func (i Item) TotalTaxAmount() priceDomain.Price {
 	return i.RowTaxes.TotalAmount()
-}
-
-// TotalDiscountAmount gets the savings by item
-func (i Item) TotalDiscountAmount() priceDomain.Price {
-	result, _ := i.NonItemRelatedDiscountAmount().Add(i.ItemRelatedDiscountAmount())
-
-	return result
-}
-
-// ItemRelatedDiscountAmount is the sum of AppliedDiscounts where IsItemRelated = true
-func (i Item) ItemRelatedDiscountAmount() priceDomain.Price {
-	prices := make([]priceDomain.Price, 0, len(i.AppliedDiscounts))
-
-	for _, discount := range i.AppliedDiscounts {
-		if !discount.IsItemRelated {
-			continue
-		}
-		prices = append(prices, discount.Applied)
-	}
-
-	result, _ := priceDomain.SumAll(prices...)
-
-	return result.GetPayable()
-}
-
-// NonItemRelatedDiscountAmount is the sum of AppliedDiscounts where IsItemRelated = false
-func (i Item) NonItemRelatedDiscountAmount() priceDomain.Price {
-	prices := make([]priceDomain.Price, 0, len(i.AppliedDiscounts))
-
-	for _, discount := range i.AppliedDiscounts {
-		if discount.IsItemRelated {
-			continue
-		}
-		prices = append(prices, discount.Applied)
-	}
-
-	result, _ := priceDomain.SumAll(prices...)
-
-	return result.GetPayable()
-}
-
-// RowPriceGrossWithDiscount = RowPriceGross-TotalDiscountAmount()
-func (i Item) RowPriceGrossWithDiscount() priceDomain.Price {
-	result, _ := i.RowPriceGross.Add(i.TotalDiscountAmount())
-
-	return result
-}
-
-// RowPriceNetWithDiscount = RowPriceNet-TotalDiscountAmount()
-func (i Item) RowPriceNetWithDiscount() priceDomain.Price {
-	result, _ := i.RowPriceNet.Add(i.TotalDiscountAmount())
-
-	return result
-}
-
-// RowPriceGrossWithItemRelatedDiscount = RowPriceGross-ItemRelatedDiscountAmount()
-func (i Item) RowPriceGrossWithItemRelatedDiscount() priceDomain.Price {
-	result, _ := i.RowPriceGross.Add(i.ItemRelatedDiscountAmount())
-
-	return result
-}
-
-// RowPriceNetWithItemRelatedDiscount =RowTotal-ItemRelatedDiscountAmount
-func (i Item) RowPriceNetWithItemRelatedDiscount() priceDomain.Price {
-	result, _ := i.RowPriceNet.Add(i.ItemRelatedDiscountAmount())
-
-	return result
 }
 
 // AdditionalDataKeys lists all available keys
@@ -174,282 +116,6 @@ func (i Item) GetAdditionalData(key string) string {
 	return attribute
 }
 
-// Inject dependencies
-func (f *ItemBuilder) Inject(config *struct {
-	UseGrosPrice bool `inject:"config:commerce.product.priceIsGross,optional"`
-}) {
-	if config != nil {
-		f.configUseGrossPrice = config.UseGrosPrice
-	}
-}
-
-// SetID sets the id
-func (f *ItemBuilder) SetID(id string) *ItemBuilder {
-	f.init()
-	f.itemInBuilding.ID = id
-	return f
-}
-
-// SetExternalReference sets the ExternalReference
-func (f *ItemBuilder) SetExternalReference(ref string) *ItemBuilder {
-	f.init()
-	f.itemInBuilding.ExternalReference = ref
-	return f
-}
-
-// SetFromItem sets the data in builder from existing item - useful to get a updated item based from existing. Its not setting Taxes (use Calculate)
-func (f *ItemBuilder) SetFromItem(item Item) *ItemBuilder {
-	f.init()
-	f.SetProductData(item.MarketplaceCode, item.VariantMarketPlaceCode, item.ProductName)
-	f.SetExternalReference(item.ExternalReference)
-	f.SetID(item.ID)
-	f.SetQty(item.Qty)
-	f.AddDiscounts(item.AppliedDiscounts...)
-	f.SetSinglePriceGross(item.SinglePriceGross)
-	f.SetSinglePriceNet(item.SinglePriceNet)
-
-	return f
-}
-
-// SetVariantMarketPlaceCode sets VariantMarketPlaceCode (only for configurable_with_variant relevant)
-func (f *ItemBuilder) SetVariantMarketPlaceCode(id string) *ItemBuilder {
-	f.init()
-	f.itemInBuilding.VariantMarketPlaceCode = id
-	return f
-}
-
-// SetSourceID sets optional source ID
-func (f *ItemBuilder) SetSourceID(id string) *ItemBuilder {
-	f.init()
-	f.itemInBuilding.SourceID = id
-	return f
-}
-
-// SetAdditionalData sets optional additional data
-func (f *ItemBuilder) SetAdditionalData(d map[string]string) *ItemBuilder {
-	f.init()
-	f.itemInBuilding.AdditionalData = d
-	return f
-}
-
-// SetQty sets the qty (defaults to 1)
-func (f *ItemBuilder) SetQty(q int) *ItemBuilder {
-	f.init()
-	f.itemInBuilding.Qty = q
-	return f
-}
-
-// SetSinglePriceGross set by gross price
-func (f *ItemBuilder) SetSinglePriceGross(grossPrice priceDomain.Price) *ItemBuilder {
-	f.init()
-	if !grossPrice.IsPayable() {
-		f.invariantError = errors.New("SetSinglePriceGross need to get payable price")
-	}
-	f.itemInBuilding.SinglePriceGross = grossPrice
-	f.checkCurrency(&grossPrice)
-	return f
-}
-
-// SetSinglePriceNet set by net price
-func (f *ItemBuilder) SetSinglePriceNet(price priceDomain.Price) *ItemBuilder {
-	f.init()
-	if !price.IsPayable() {
-		f.invariantError = errors.New("SetSinglePriceNet need to get payable price")
-	}
-	f.itemInBuilding.SinglePriceNet = price
-	f.checkCurrency(&price)
-	return f
-}
-
-// AddTaxInfo add a tax info - at least taxRate OR taxAmount need to be given. the tax amount can be calculated
-func (f *ItemBuilder) AddTaxInfo(taxType string, taxRate *big.Float, taxAmount *priceDomain.Price) *ItemBuilder {
-	f.init()
-	if taxRate == nil && taxAmount == nil {
-		f.invariantError = errors.New("at least taxRate or taxAmount need to be given")
-	}
-	tax := Tax{
-		Type: taxType,
-		Rate: taxRate,
-	}
-	if taxAmount != nil {
-		if !taxAmount.IsPayable() {
-			f.invariantError = errors.New("taxAmount need to be payable price")
-		}
-		f.checkCurrency(taxAmount)
-		tax.Amount = *taxAmount
-	}
-	f.itemInBuilding.RowTaxes = append(f.itemInBuilding.RowTaxes, tax)
-	return f
-}
-
-// AddDiscount adds a discount
-func (f *ItemBuilder) AddDiscount(discount AppliedDiscount) *ItemBuilder {
-	f.init()
-	if !discount.Applied.IsPayable() {
-		f.invariantError = errors.New("AddDiscount need to have payable price")
-	}
-	if !discount.Applied.IsNegative() {
-		f.invariantError = fmt.Errorf("AddDiscount need to have negative price - given %f", discount.Applied.FloatAmount())
-	}
-	f.checkCurrency(&discount.Applied)
-	f.itemInBuilding.AppliedDiscounts = append(f.itemInBuilding.AppliedDiscounts, discount)
-	return f
-}
-
-// AddDiscounts adds a list of discounts
-func (f *ItemBuilder) AddDiscounts(discounts ...AppliedDiscount) *ItemBuilder {
-	for _, discount := range discounts {
-		f.AddDiscount(discount)
-	}
-	return f
-}
-
-// CalculatePricesAndTaxAmountsFromSinglePriceNet handles the vertical tax calculation - based from current SinglePriceNet, Qty and the RowTax Infos given
-// Sets RowPriceNet, missing tax.Amount and RowPriceGross
-func (f *ItemBuilder) CalculatePricesAndTaxAmountsFromSinglePriceNet() *ItemBuilder {
-	priceNet := f.itemInBuilding.SinglePriceNet
-	f.itemInBuilding.RowPriceNet = priceNet.Multiply(f.itemInBuilding.Qty)
-	for k, tax := range f.itemInBuilding.RowTaxes {
-		// Calculate tax amount from rate if required
-		if tax.Amount.IsZero() && tax.Rate != nil {
-			// set tax amount and round it
-			tax.Amount = f.itemInBuilding.RowPriceNetWithDiscount().TaxFromNet(*tax.Rate).GetPayable()
-			f.itemInBuilding.RowTaxes[k] = tax
-		}
-	}
-	totalTaxAmount := f.itemInBuilding.TotalTaxAmount()
-	f.itemInBuilding.RowPriceGross, _ = priceDomain.SumAll(f.itemInBuilding.RowPriceNet, totalTaxAmount)
-	if f.itemInBuilding.Qty == 0 {
-		f.invariantError = errors.New("Quantity is Zero")
-		return f
-	}
-	f.itemInBuilding.SinglePriceGross, _ = priceNet.Add(totalTaxAmount.Divided(f.itemInBuilding.Qty))
-	return f
-}
-
-// CalculatePricesAndTax reads the config flag and recalculates Total and Tax
-func (f *ItemBuilder) CalculatePricesAndTax() *ItemBuilder {
-	if f.configUseGrossPrice {
-		return f.CalculatePricesAndTaxAmountsFromSinglePriceGross()
-	}
-	return f.CalculatePricesAndTaxAmountsFromSinglePriceNet()
-}
-
-// CalculatePricesAndTaxAmountsFromSinglePriceGross handles the vertical tax calculation - based from current SinglePriceNet, Qty and the RowTax Infos given
-// Sets RowPriceNet, missing tax.Amount and RowPriceGross
-func (f *ItemBuilder) CalculatePricesAndTaxAmountsFromSinglePriceGross() *ItemBuilder {
-	priceGross := f.itemInBuilding.SinglePriceGross
-	f.itemInBuilding.RowPriceGross = priceGross.Multiply(f.itemInBuilding.Qty)
-	for k, tax := range f.itemInBuilding.RowTaxes {
-		// Calculate tax amount from rate if required
-		if tax.Amount.IsZero() && tax.Rate != nil {
-			tax.Amount = f.itemInBuilding.RowPriceGrossWithDiscount().TaxFromGross(*tax.Rate).GetPayable()
-			f.itemInBuilding.RowTaxes[k] = tax
-		}
-	}
-	totalTaxAmount := f.itemInBuilding.TotalTaxAmount()
-	f.itemInBuilding.RowPriceNet, _ = f.itemInBuilding.RowPriceGross.Sub(totalTaxAmount)
-	f.itemInBuilding.SinglePriceNet, _ = priceGross.Sub(totalTaxAmount.Divided(f.itemInBuilding.Qty))
-	return f
-}
-
-// SetProductData set product data: MarketplaceCode, VariantMarketPlaceCode, ProductName
-func (f *ItemBuilder) SetProductData(marketplace string, vc string, name string) *ItemBuilder {
-	f.init()
-	f.itemInBuilding.MarketplaceCode = marketplace
-	f.itemInBuilding.VariantMarketPlaceCode = vc
-	f.itemInBuilding.ProductName = name
-	return f
-}
-
-// SetByProduct gets a product and calculates also prices
-func (f *ItemBuilder) SetByProduct(product domain.BasicProduct) *ItemBuilder {
-	if !product.IsSaleable() {
-		f.invariantError = errors.New("Product is not saleable")
-	}
-
-	f.init()
-	f.itemInBuilding.MarketplaceCode = product.BaseData().MarketPlaceCode
-	f.itemInBuilding.ProductName = product.BaseData().Title
-
-	if configurable, ok := product.(domain.ConfigurableProductWithActiveVariant); ok {
-		f.itemInBuilding.MarketplaceCode = configurable.ConfigurableBaseData().MarketPlaceCode
-		f.itemInBuilding.VariantMarketPlaceCode = configurable.ActiveVariant.MarketPlaceCode
-	}
-
-	if f.configUseGrossPrice {
-		f.SetSinglePriceGross(product.SaleableData().ActivePrice.GetFinalPrice())
-		f.CalculatePricesAndTaxAmountsFromSinglePriceGross()
-	} else {
-		f.SetSinglePriceNet(product.SaleableData().ActivePrice.GetFinalPrice())
-		f.CalculatePricesAndTaxAmountsFromSinglePriceNet()
-	}
-
-	return f
-}
-
-func (f *ItemBuilder) checkCurrency(price *priceDomain.Price) {
-	if price == nil {
-		return
-	}
-	currency := price.Currency()
-	if f.itemCurrency == nil {
-		f.itemCurrency = &currency
-		return
-	}
-	if *f.itemCurrency != currency {
-		f.invariantError = fmt.Errorf("There is a currency mismatch inside the item %v and %v", currency, *f.itemCurrency)
-	}
-}
-
-// Build returns build item or error if invariants do not match. Any call will also REST the ItemBuilder
-func (f *ItemBuilder) Build() (*Item, error) {
-	if f.itemInBuilding == nil {
-		return f.reset(errors.New("Nothing in building"))
-	}
-
-	if f.invariantError != nil {
-		return f.reset(f.invariantError)
-	}
-
-	if f.itemInBuilding.ID == "" {
-		return f.reset(errors.New("Id Required"))
-	}
-
-	checkPrice, _ := f.itemInBuilding.RowPriceNet.Add(f.itemInBuilding.TotalTaxAmount())
-	if !checkPrice.LikelyEqual(f.itemInBuilding.RowPriceGross) {
-		return f.reset(fmt.Errorf("RowPriceGross (%f) need to match likely TotalTaxAmount + RowPriceNet. (%f) for item %v ", f.itemInBuilding.RowPriceGross.FloatAmount(), checkPrice.FloatAmount(), f.itemInBuilding.ID))
-	}
-
-	return f.reset(nil)
-}
-
-func (f *ItemBuilder) init() {
-	if f.itemInBuilding == nil {
-		f.itemInBuilding = &Item{
-			Qty: 1,
-		}
-	}
-}
-
-func (f *ItemBuilder) reset(err error) (*Item, error) {
-	item := f.itemInBuilding
-	f.itemInBuilding = nil
-	f.invariantError = nil
-	f.itemCurrency = nil
-	return item, err
-}
-
-// Inject dependencies
-func (s *ItemSplitter) Inject(itemBuilderProvider ItemBuilderProvider, config *struct {
-	UseGrossPrice bool `inject:"config:commerce.product.priceIsGross,optional"`
-}) {
-	s.itemBuilderProvider = itemBuilderProvider
-	if config != nil {
-		s.configUseGrossPrice = config.UseGrossPrice
-	}
-}
-
 // SplitInSingleQtyItems the given item into multiple items with Qty 1 and make sure the sum of the items prices matches by using SplitInPayables
 func (s *ItemSplitter) SplitInSingleQtyItems(givenItem Item) ([]Item, error) {
 	var items []Item
@@ -461,39 +127,58 @@ func (s *ItemSplitter) SplitInSingleQtyItems(givenItem Item) ([]Item, error) {
 	// Given: SinglePriceNez / all AppliedDiscounts  / All Taxes
 	// Calculated: SinglePriceGross / RowPriceGross / RowPriceNet / SinglePriceGross
 	for x := 0; x < givenItem.Qty; x++ {
+		item := Item{
+			MarketplaceCode:              givenItem.MarketplaceCode,
+			VariantMarketPlaceCode:       givenItem.VariantMarketPlaceCode,
+			ProductName:                  givenItem.ProductName,
+			ExternalReference:            givenItem.ExternalReference,
+			ID:                           givenItem.ID,
+			SourceID:                     givenItem.SourceID,
+			AdditionalData:               givenItem.AdditionalData,
+			Qty:                          1,
+			TotalDiscountAmount:          priceDomain.NewZero(givenItem.SinglePriceGross.Currency()),
+			ItemRelatedDiscountAmount:    priceDomain.NewZero(givenItem.SinglePriceGross.Currency()),
+			NonItemRelatedDiscountAmount: priceDomain.NewZero(givenItem.SinglePriceGross.Currency()),
+		}
 
-		itemBuilder := s.itemBuilderProvider()
-		itemBuilder.SetProductData(givenItem.MarketplaceCode, givenItem.VariantMarketPlaceCode, givenItem.ProductName)
-		itemBuilder.SetExternalReference(givenItem.ExternalReference)
-		itemBuilder.SetID(givenItem.ID)
-		itemBuilder.SetQty(1)
 		for _, ap := range givenItem.AppliedDiscounts {
-			apSplitted, err := ap.Applied.SplitInPayables(givenItem.Qty)
+			apSplit, err := ap.Applied.SplitInPayables(givenItem.Qty)
+			if err != nil {
+				return nil, err
+			}
+
 			// The split adds the moving cents to the first ones, resulting in
 			// having the smallest prices at the end but since discounts are
 			// negative, we need to reverse it to ensure that a split of the row
 			// totals has the rounding cents at the same positions
-			sort.Slice(apSplitted, func(i, j int) bool {
-				return apSplitted[i].FloatAmount() > apSplitted[j].FloatAmount()
+			sort.Slice(apSplit, func(i, j int) bool {
+				return apSplit[i].FloatAmount() > apSplit[j].FloatAmount()
 			})
-			p := make([]float64, 0)
-			for _, i := range apSplitted {
-				p = append(p, i.FloatAmount())
-			}
-			if err != nil {
-				return nil, err
-			}
+
 			newDiscount := AppliedDiscount{
 				CampaignCode:  ap.CampaignCode,
 				CouponCode:    ap.CouponCode,
 				Label:         ap.Label,
-				Applied:       apSplitted[x],
+				Applied:       apSplit[x],
 				Type:          ap.Type,
 				IsItemRelated: ap.IsItemRelated,
 				SortOrder:     ap.SortOrder,
 			}
-			itemBuilder.AddDiscount(newDiscount)
+
+			if ap.IsItemRelated {
+				item.ItemRelatedDiscountAmount = item.ItemRelatedDiscountAmount.ForceAdd(apSplit[x])
+			} else {
+				item.NonItemRelatedDiscountAmount = item.NonItemRelatedDiscountAmount.ForceAdd(apSplit[x])
+			}
+
+			item.TotalDiscountAmount, err = item.TotalDiscountAmount.Add(apSplit[x])
+			if err != nil {
+				return nil, err
+			}
+
+			item.AppliedDiscounts = append(item.AppliedDiscounts, newDiscount)
 		}
+
 		for _, rt := range givenItem.RowTaxes {
 			if rt.Amount.IsZero() {
 				continue
@@ -502,20 +187,47 @@ func (s *ItemSplitter) SplitInSingleQtyItems(givenItem Item) ([]Item, error) {
 			if err != nil {
 				return nil, err
 			}
-			itemBuilder.AddTaxInfo(rt.Type, rt.Rate, &rtSplitted[x])
+
+			sort.Slice(rtSplitted, func(i, j int) bool {
+				return rtSplitted[i].FloatAmount() < rtSplitted[j].FloatAmount()
+			})
+			newTax := Tax{
+				Type:   rt.Type,
+				Rate:   rt.Rate,
+				Amount: rtSplitted[x],
+			}
+
+			item.RowTaxes = append(item.RowTaxes, newTax)
 		}
-		if s.configUseGrossPrice {
-			itemBuilder.SetSinglePriceGross(givenItem.SinglePriceGross.GetPayable())
-			itemBuilder.CalculatePricesAndTaxAmountsFromSinglePriceGross()
-		} else {
-			itemBuilder.SetSinglePriceNet(givenItem.SinglePriceNet.GetPayable())
-			itemBuilder.CalculatePricesAndTaxAmountsFromSinglePriceNet()
+
+		item.SinglePriceGross, item.SinglePriceNet = givenItem.SinglePriceGross, givenItem.SinglePriceNet
+		item.RowPriceGross, item.RowPriceNet = item.SinglePriceGross, item.SinglePriceNet
+
+		item.RowPriceNetWithDiscount = s.splitPrice(givenItem.RowPriceNetWithDiscount, givenItem.Qty, x)
+		taxAmount := item.RowTaxes.TotalAmount()
+		item.RowPriceGrossWithDiscount = item.RowPriceNetWithDiscount
+		if !taxAmount.IsZero() && taxAmount.Currency() == item.RowPriceGrossWithDiscount.Currency() {
+			item.RowPriceGrossWithDiscount = item.RowPriceGrossWithDiscount.ForceAdd(taxAmount)
 		}
-		item, err := itemBuilder.Build()
-		if err != nil {
-			return nil, err
+
+		item.RowPriceGrossWithItemRelatedDiscount = s.splitPrice(givenItem.RowPriceGrossWithItemRelatedDiscount, givenItem.Qty, x)
+		item.RowPriceNetWithItemRelatedDiscount = s.splitPrice(givenItem.RowPriceNetWithItemRelatedDiscount, givenItem.Qty, x)
+
+		if s.errorDuringSplitting != nil {
+			return nil, s.errorDuringSplitting
 		}
-		items = append(items, *item)
+
+		items = append(items, item)
 	}
 	return items, nil
+}
+
+func (s *ItemSplitter) splitPrice(givenPrice priceDomain.Price, qty int, splitPosition int) priceDomain.Price {
+	splitted, err := givenPrice.SplitInPayables(qty)
+	if err != nil {
+		s.errorDuringSplitting = err
+		return priceDomain.Price{}
+	}
+
+	return splitted[splitPosition]
 }

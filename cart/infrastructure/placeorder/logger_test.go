@@ -2,13 +2,14 @@ package logger_test
 
 import (
 	"context"
+	"testing"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	logger "flamingo.me/flamingo-commerce/v3/cart/infrastructure/placeorder"
 	"flamingo.me/flamingo-commerce/v3/price/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 type (
@@ -210,8 +211,8 @@ func TestPlaceOrderLoggerAdapter_PlaceGuestCart(t *testing.T) {
 			placeorder.Transaction{
 				Method:            "testmethod",
 				Status:            placeorder.PaymentStatusOpen,
-				ValuedAmountPayed: exampleCart.GrandTotal(),
-				AmountPayed:       exampleCart.GrandTotal(),
+				ValuedAmountPayed: exampleCart.GrandTotal,
+				AmountPayed:       exampleCart.GrandTotal,
 				TransactionID:     "t1",
 			},
 		},

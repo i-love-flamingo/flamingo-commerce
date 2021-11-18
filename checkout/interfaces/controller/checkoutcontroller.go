@@ -269,7 +269,7 @@ func (cc *CheckoutController) placeOrderAction(ctx context.Context, r *web.Reque
 		placedOrderInfo, _ = cc.orderService.LastPlacedOrder(ctx)
 		cc.orderService.ClearLastPlacedOrder(ctx)
 	} else {
-		if decoratedCart.Cart.GrandTotal().IsZero() {
+		if decoratedCart.Cart.GrandTotal.IsZero() {
 			// Nothing to pay, so cart can be placed without payment processing.
 			placedOrderInfo, err = cc.orderService.CurrentCartPlaceOrder(ctx, session, placeorder.Payment{})
 		} else {
@@ -474,7 +474,7 @@ func (cc *CheckoutController) processPayment(ctx context.Context, r *web.Request
 	}
 
 	// Cart grand total is zero, so no payment needed.
-	if decoratedCart.Cart.GrandTotal().IsZero() {
+	if decoratedCart.Cart.GrandTotal.IsZero() {
 		return cc.responder.RouteRedirect("checkout.placeorder", nil)
 	}
 
@@ -561,7 +561,7 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 			return cc.processPayment(ctx, r)
 		}
 
-		if decoratedCart.Cart.GrandTotal().IsZero() {
+		if decoratedCart.Cart.GrandTotal.IsZero() {
 			return cc.responder.RouteRedirect("checkout.placeorder", nil)
 		}
 	}

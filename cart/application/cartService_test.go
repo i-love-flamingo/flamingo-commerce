@@ -759,15 +759,6 @@ func (m *MockGuestCartServiceWithModifyBehaviour) GetModifyBehaviour(context.Con
 		storage,
 		&MockProductService{},
 		flamingo.NullLogger{},
-		func() *cartDomain.ItemBuilder {
-			return &cartDomain.ItemBuilder{}
-		},
-		func() *cartDomain.DeliveryBuilder {
-			return &cartDomain.DeliveryBuilder{}
-		},
-		func() *cartDomain.Builder {
-			return &cartDomain.Builder{}
-		},
 		nil,
 		nil,
 		nil,

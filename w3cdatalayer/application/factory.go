@@ -215,17 +215,17 @@ func (s Factory) BuildCartData(cart decorator.DecoratedCart) *domain.Cart {
 	cartData := domain.Cart{
 		CartID: cart.Cart.ID,
 		Price: &domain.CartPrice{
-			Currency:       cart.Cart.GrandTotal().Currency(),
-			BasePrice:      cart.Cart.SubTotalNet().FloatAmount(),
-			CartTotal:      cart.Cart.GrandTotal().FloatAmount(),
-			Shipping:       cart.Cart.SumShippingNet().FloatAmount(),
+			Currency:       cart.Cart.GrandTotal.Currency(),
+			BasePrice:      cart.Cart.SubTotalNet.FloatAmount(),
+			CartTotal:      cart.Cart.GrandTotal.FloatAmount(),
+			Shipping:       cart.Cart.ShippingNet.FloatAmount(),
 			ShippingMethod: strings.Join(cart.Cart.AllShippingTitles(), "/"),
-			PriceWithTax:   cart.Cart.GrandTotal().FloatAmount(),
+			PriceWithTax:   cart.Cart.GrandTotal.FloatAmount(),
 		},
 		Attributes: make(map[string]interface{}),
 	}
 	for _, item := range cart.GetAllDecoratedItems() {
-		itemData := s.buildCartItem(item, cart.Cart.GrandTotal().Currency())
+		itemData := s.buildCartItem(item, cart.Cart.GrandTotal.Currency())
 		cartData.Item = append(cartData.Item, itemData)
 	}
 	return &cartData
@@ -246,17 +246,17 @@ func (s Factory) BuildTransactionData(ctx context.Context, cart decorator.Decora
 	transactionData := domain.Transaction{
 		TransactionID: orderID,
 		Price: &domain.TransactionPrice{
-			Currency:         cart.Cart.GrandTotal().Currency(),
-			BasePrice:        cart.Cart.GrandTotal().FloatAmount(),
-			TransactionTotal: cart.Cart.GrandTotal().FloatAmount(),
-			Shipping:         cart.Cart.SumShippingNet().FloatAmount(),
+			Currency:         cart.Cart.GrandTotal.Currency(),
+			BasePrice:        cart.Cart.GrandTotal.FloatAmount(),
+			TransactionTotal: cart.Cart.GrandTotal.FloatAmount(),
+			Shipping:         cart.Cart.ShippingNet.FloatAmount(),
 			ShippingMethod:   strings.Join(cart.Cart.AllShippingTitles(), "/"),
 		},
 		Profile:    profile,
 		Attributes: make(map[string]interface{}),
 	}
 	for _, item := range decoratedItems {
-		itemData := s.buildCartItem(item, cart.Cart.GrandTotal().Currency())
+		itemData := s.buildCartItem(item, cart.Cart.GrandTotal.Currency())
 		transactionData.Item = append(transactionData.Item, itemData)
 	}
 	return &transactionData

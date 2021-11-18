@@ -53,7 +53,7 @@ func (v ValidateCart) Run(ctx context.Context, p *process.Process) process.RunRe
 		}
 	}
 
-	if p.Context().Cart.GrandTotal().IsZero() {
+	if p.Context().Cart.GrandTotal.IsZero() {
 		p.UpdateState(CompleteCart{}.Name(), nil)
 		return process.RunResult{}
 	}

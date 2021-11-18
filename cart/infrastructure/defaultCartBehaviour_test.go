@@ -2,14 +2,15 @@ package infrastructure
 
 import (
 	"context"
-	"reflect"
 	"testing"
 
 	domaincart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
+	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/go-test/deep"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestInMemoryBehaviour_CleanCart(t *testing.T) {
@@ -37,15 +38,6 @@ func TestInMemoryBehaviour_CleanCart(t *testing.T) {
 				newInMemoryStorage(),
 				nil,
 				flamingo.NullLogger{},
-				func() *domaincart.ItemBuilder {
-					return &domaincart.ItemBuilder{}
-				},
-				func() *domaincart.DeliveryBuilder {
-					return &domaincart.DeliveryBuilder{}
-				},
-				func() *domaincart.Builder {
-					return &domaincart.Builder{}
-				},
 				nil,
 				nil,
 				nil,
@@ -164,15 +156,6 @@ func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
 				newInMemoryStorage(),
 				nil,
 				flamingo.NullLogger{},
-				func() *domaincart.ItemBuilder {
-					return &domaincart.ItemBuilder{}
-				},
-				func() *domaincart.DeliveryBuilder {
-					return &domaincart.DeliveryBuilder{}
-				},
-				func() *domaincart.Builder {
-					return &domaincart.Builder{}
-				},
 				nil,
 				nil,
 				nil,
@@ -205,7 +188,7 @@ func TestInMemoryBehaviour_ApplyVoucher(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *domaincart.Cart
+		want    []domaincart.CouponCode
 		wantErr bool
 	}{
 		{
@@ -214,11 +197,9 @@ func TestInMemoryBehaviour_ApplyVoucher(t *testing.T) {
 				cart:        &domaincart.Cart{},
 				voucherCode: "valid_voucher",
 			},
-			want: &domaincart.Cart{
-				AppliedCouponCodes: []domaincart.CouponCode{
-					{
-						Code: "valid_voucher",
-					},
+			want: []domaincart.CouponCode{
+				{
+					Code: "valid_voucher",
 				},
 			},
 			wantErr: false,
@@ -240,9 +221,6 @@ func TestInMemoryBehaviour_ApplyVoucher(t *testing.T) {
 				newInMemoryStorage(),
 				nil,
 				flamingo.NullLogger{},
-				nil,
-				nil,
-				nil,
 				&DefaultVoucherHandler{},
 				&DefaultGiftCardHandler{},
 				nil,
@@ -252,8 +230,8 @@ func TestInMemoryBehaviour_ApplyVoucher(t *testing.T) {
 				t.Errorf("DefaultCartBehaviour.ApplyVoucher() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("DefaultCartBehaviour.ApplyVoucher() got = %v, want %v", got, tt.want)
+			if !tt.wantErr {
+				assert.Equal(t, tt.want, got.AppliedCouponCodes)
 			}
 		})
 	}
@@ -269,7 +247,7 @@ func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want *domaincart.Cart
+		want []domaincart.CouponCode
 	}{
 		{
 			name: "Remove voucher from cart with vouchers",
@@ -284,11 +262,9 @@ func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 				},
 				couponCodeToRemove: "dummy-voucher-20",
 			},
-			want: &domaincart.Cart{
-				AppliedCouponCodes: []domaincart.CouponCode{
-					{Code: "OFF20"},
-					{Code: "SALE"},
-				},
+			want: []domaincart.CouponCode{
+				{Code: "OFF20"},
+				{Code: "SALE"},
 			},
 		},
 		{
@@ -298,7 +274,7 @@ func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 				cart:               &domaincart.Cart{},
 				couponCodeToRemove: "dummy-voucher-20",
 			},
-			want: &domaincart.Cart{},
+			want: nil,
 		},
 		{
 			name: "Remove voucher from cart that does not exist",
@@ -313,12 +289,10 @@ func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 				},
 				couponCodeToRemove: "non-existing-voucher",
 			},
-			want: &domaincart.Cart{
-				AppliedCouponCodes: []domaincart.CouponCode{
-					{Code: "OFF20"},
-					{Code: "dummy-voucher-20"},
-					{Code: "SALE"},
-				},
+			want: []domaincart.CouponCode{
+				{Code: "OFF20"},
+				{Code: "dummy-voucher-20"},
+				{Code: "SALE"},
 			},
 		},
 	}
@@ -329,15 +303,6 @@ func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 				newInMemoryStorage(),
 				nil,
 				flamingo.NullLogger{},
-				func() *domaincart.ItemBuilder {
-					return &domaincart.ItemBuilder{}
-				},
-				func() *domaincart.DeliveryBuilder {
-					return &domaincart.DeliveryBuilder{}
-				},
-				func() *domaincart.Builder {
-					return &domaincart.Builder{}
-				},
 				&DefaultVoucherHandler{},
 				&DefaultGiftCardHandler{},
 				nil,
@@ -347,11 +312,9 @@ func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 				t.Fatalf("cart could not be initialized")
 			}
 
-			got, _, _ := cob.RemoveVoucher(tt.args.ctx, tt.args.cart, tt.args.couponCodeToRemove)
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("DefaultCartBehaviour.RemoveVoucher() got = %v, want %v", got, tt.want)
-			}
-
+			got, _, err := cob.RemoveVoucher(tt.args.ctx, tt.args.cart, tt.args.couponCodeToRemove)
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got.AppliedCouponCodes)
 		})
 	}
 }
@@ -365,22 +328,20 @@ func TestInMemoryBehaviour_ApplyGiftCard(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *domaincart.Cart
+		want    []domaincart.AppliedGiftCard
 		wantErr bool
 	}{
 		{
 			name: "apply valid giftcard - success",
 			args: args{
-				cart:         &domaincart.Cart{},
+				cart:         &domaincart.Cart{DefaultCurrency: "$"},
 				giftCardCode: "valid_giftcard",
 			},
-			want: &domaincart.Cart{
-				AppliedGiftCards: []domaincart.AppliedGiftCard{
-					{
-						Code:      "valid_giftcard",
-						Applied:   priceDomain.NewFromInt(10, 100, "$"),
-						Remaining: priceDomain.NewFromInt(0, 100, "$"),
-					},
+			want: []domaincart.AppliedGiftCard{
+				{
+					Code:      "valid_giftcard",
+					Applied:   priceDomain.NewFromInt(10, 100, "$"),
+					Remaining: priceDomain.NewFromInt(0, 100, "$"),
 				},
 			},
 			wantErr: false,
@@ -402,20 +363,21 @@ func TestInMemoryBehaviour_ApplyGiftCard(t *testing.T) {
 				newInMemoryStorage(),
 				nil,
 				flamingo.NullLogger{},
-				nil,
-				nil,
-				nil,
 				&DefaultVoucherHandler{},
 				&DefaultGiftCardHandler{},
-				nil,
+				&struct {
+					DefaultTaxRate  float64 `inject:"config:commerce.cart.defaultCartAdapter.defaultTaxRate,optional"`
+					ProductPricing  string  `inject:"config:commerce.cart.defaultCartAdapter.productPrices"`
+					DefaultCurrency string  `inject:"config:commerce.cart.defaultCartAdapter.defaultCurrency"`
+				}{DefaultCurrency: "$"},
 			)
 			got, _, err := cob.ApplyGiftCard(context.Background(), tt.args.cart, tt.args.giftCardCode)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("DefaultCartBehaviour.ApplyGiftCard() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("DefaultCartBehaviour.ApplyGiftCard() got = %v, want %v", got, tt.want)
+			if !tt.wantErr {
+				assert.Equal(t, tt.want, got.AppliedGiftCards)
 			}
 		})
 	}
@@ -430,7 +392,7 @@ func TestInMemoryBehaviour_RemoveGiftCard(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *domaincart.Cart
+		want    []domaincart.AppliedGiftCard
 		wantErr bool
 	}{
 		{
@@ -452,13 +414,11 @@ func TestInMemoryBehaviour_RemoveGiftCard(t *testing.T) {
 				},
 				giftCardCode: "to-remove",
 			},
-			want: &domaincart.Cart{
-				AppliedGiftCards: []domaincart.AppliedGiftCard{
-					{
-						Code:      "valid",
-						Applied:   priceDomain.NewFromInt(10, 100, "$"),
-						Remaining: priceDomain.NewFromInt(0, 100, "$"),
-					},
+			want: []domaincart.AppliedGiftCard{
+				{
+					Code:      "valid",
+					Applied:   priceDomain.NewFromInt(10, 100, "$"),
+					Remaining: priceDomain.NewFromInt(0, 100, "$"),
 				},
 			},
 			wantErr: false,
@@ -471,9 +431,6 @@ func TestInMemoryBehaviour_RemoveGiftCard(t *testing.T) {
 				newInMemoryStorage(),
 				nil,
 				flamingo.NullLogger{},
-				nil,
-				nil,
-				nil,
 				&DefaultVoucherHandler{},
 				&DefaultGiftCardHandler{},
 				nil,
@@ -483,8 +440,8 @@ func TestInMemoryBehaviour_RemoveGiftCard(t *testing.T) {
 				t.Errorf("DefaultCartBehaviour.ApplyGiftCard() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("DefaultCartBehaviour.ApplyGiftCard() got = %v, want %v", got, tt.want)
+			if !tt.wantErr {
+				assert.Equal(t, tt.want, got.AppliedGiftCards)
 			}
 		})
 	}
@@ -501,16 +458,13 @@ func TestInMemoryBehaviour_Complete(t *testing.T) {
 			nil,
 			nil,
 			nil,
-			nil,
-			nil,
-			nil,
 		)
 		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{ID: "test-id"})
 		assert.NoError(t, err)
 
 		got, _, err := cob.Complete(context.Background(), cart)
 		assert.NoError(t, err)
-		assert.Equal(t, got, cart)
+		assert.Equal(t, cart, got)
 
 		_, err = cob.GetCart(context.Background(), "test-id")
 		assert.Error(t, err, "Cart should not be stored any more")
@@ -525,9 +479,6 @@ func TestInMemoryBehaviour_Restore(t *testing.T) {
 			newInMemoryStorage(),
 			nil,
 			flamingo.NullLogger{},
-			nil,
-			nil,
-			nil,
 			nil,
 			nil,
 			nil,
@@ -547,4 +498,57 @@ func newInMemoryStorage() *InMemoryCartStorage {
 	result.Inject()
 
 	return result
+}
+
+func TestDefaultCartBehaviour_createCartItemFromProduct(t *testing.T) {
+	t.Run("gross", func(t *testing.T) {
+		cob := DefaultCartBehaviour{}
+		cob.Inject(nil, nil, flamingo.NullLogger{}, nil, nil, &struct {
+			DefaultTaxRate  float64 `inject:"config:commerce.cart.defaultCartAdapter.defaultTaxRate,optional"`
+			ProductPricing  string  `inject:"config:commerce.cart.defaultCartAdapter.productPrices"`
+			DefaultCurrency string  `inject:"config:commerce.cart.defaultCartAdapter.defaultCurrency"`
+		}{ProductPricing: "gross", DefaultTaxRate: 10.0, DefaultCurrency: "€"})
+
+		item, err := cob.createCartItemFromProduct(2, "ma", "", map[string]string{}, domain.SimpleProduct{
+			Saleable: domain.Saleable{
+				IsSaleable: true,
+				ActivePrice: domain.PriceInfo{
+					Default: priceDomain.NewFromFloat(50.00, "USD"),
+				},
+			},
+		})
+
+		require.NoError(t, err)
+		assert.True(t, item.SinglePriceGross.Equal(priceDomain.NewFromFloat(50.00, "USD")))
+		assert.Equal(t, 45.45, item.SinglePriceNet.FloatAmount())
+		assert.Equal(t, 100.00, item.RowPriceGross.FloatAmount())
+		assert.Equal(t, 45.45*2, item.RowPriceNet.FloatAmount())
+		assert.Equal(t, 100.00-45.45*2, item.TotalTaxAmount().FloatAmount())
+	})
+
+	t.Run("net", func(t *testing.T) {
+		cob := DefaultCartBehaviour{}
+		cob.Inject(nil, nil, flamingo.NullLogger{}, nil, nil, &struct {
+			DefaultTaxRate  float64 `inject:"config:commerce.cart.defaultCartAdapter.defaultTaxRate,optional"`
+			ProductPricing  string  `inject:"config:commerce.cart.defaultCartAdapter.productPrices"`
+			DefaultCurrency string  `inject:"config:commerce.cart.defaultCartAdapter.defaultCurrency"`
+		}{ProductPricing: "net", DefaultTaxRate: 10.0, DefaultCurrency: "€"})
+
+		item, err := cob.createCartItemFromProduct(2, "ma", "", map[string]string{}, domain.SimpleProduct{
+			Saleable: domain.Saleable{
+				IsSaleable: true,
+				ActivePrice: domain.PriceInfo{
+					Default: priceDomain.NewFromFloat(50.00, "USD"),
+				},
+			},
+		})
+
+		require.NoError(t, err)
+		assert.True(t, item.SinglePriceNet.Equal(priceDomain.NewFromFloat(50.00, "USD")))
+		assert.Equal(t, 55.00, item.SinglePriceGross.FloatAmount())
+		assert.Equal(t, 55.00*2, item.RowPriceGross.FloatAmount())
+		assert.Equal(t, 50.00*2, item.RowPriceNet.FloatAmount())
+		assert.Equal(t, 10.0, item.TotalTaxAmount().FloatAmount())
+	})
+
 }

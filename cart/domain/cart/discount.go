@@ -102,6 +102,12 @@ func (i *Item) HasAppliedDiscounts() (bool, error) {
 	return hasAppliedDiscounts(i)
 }
 
+// TotalWithDiscountInclTax returns the final shipping price to pay
+// Deprecated use public field PriceGrossWithDiscounts
+func (s *ShippingItem) TotalWithDiscountInclTax() domain.Price {
+	return s.PriceGrossWithDiscounts
+}
+
 // MergeDiscounts parses discounts of a shipping item
 // All discounts with the same campaign code are aggregated and returned as one with a summed price
 func (s *ShippingItem) MergeDiscounts() (AppliedDiscounts, error) {

@@ -6,7 +6,7 @@ import (
 )
 
 type (
-	// CartSummary – provides custom graphql interface methods
+	// CartSummary provides custom graphql interface methods
 	CartSummary struct {
 		cart *cart.Cart
 	}
@@ -30,49 +30,33 @@ func (cs *CartSummary) HasAppliedDiscounts() bool {
 	return result
 }
 
-// SumTotalDiscountWithGiftCardsAmount – returns sum price of total discounts with applied gift cards
+// SumTotalDiscountWithGiftCardsAmount returns sum price of total discounts with applied gift cards
 func (cs *CartSummary) SumTotalDiscountWithGiftCardsAmount() domain.Price {
-	totalDiscount := cs.cart.SumTotalDiscountAmount()
-	appliedGiftCardsAmount, _ := cs.cart.SumAppliedGiftCards()
+	totalDiscount := cs.cart.TotalDiscountAmount
+	appliedGiftCardsAmount := cs.cart.TotalGiftCardAmount
 
 	price, _ := totalDiscount.Sub(appliedGiftCardsAmount)
 	return price
 }
 
-// SumAppliedDiscounts – returns the sum of the applied values of the AppliedDiscounts
-func (cs CartSummary) SumAppliedDiscounts() *domain.Price {
-	result, err := cs.cart.MergeDiscounts()
-	if err != nil {
-		return nil
-	}
-
-	sum, err := result.Sum()
-	if err != nil {
-		return nil
-	}
+// TotalDiscountAmount returns the sum of the applied values of the AppliedDiscounts
+func (cs CartSummary) TotalDiscountAmount() *domain.Price {
+	sum := cs.cart.TotalDiscountAmount
 
 	return &sum
 }
 
-// SumAppliedGiftCards – sums applied gift cards
-func (cs CartSummary) SumAppliedGiftCards() *domain.Price {
-	sum, err := cs.cart.SumAppliedGiftCards()
-	if err != nil {
-		return nil
-	}
-	return &sum
+// TotalGiftCardAmount sums applied gift cards
+func (cs CartSummary) TotalGiftCardAmount() *domain.Price {
+	return &cs.cart.TotalGiftCardAmount
 }
 
-// SumGrandTotalWithGiftCards – sums grand total with gift cards
-func (cs CartSummary) SumGrandTotalWithGiftCards() *domain.Price {
-	sum, err := cs.cart.SumGrandTotalWithGiftCards()
-	if err != nil {
-		return nil
-	}
-	return &sum
+// GrandTotalWithGiftCards sums grand total with gift cards
+func (cs CartSummary) GrandTotalWithGiftCards() *domain.Price {
+	return &cs.cart.GrandTotalWithGiftCards
 }
 
-// SumTaxes – sums taxes
+// SumTaxes sums taxes
 func (cs CartSummary) SumTaxes() *Taxes {
 	items := cs.cart.SumTaxes()
 	taxes := make([]cart.Tax, 0, len(items))
@@ -87,7 +71,7 @@ func (cs CartSummary) SumTaxes() *Taxes {
 	return &Taxes{Items: taxes}
 }
 
-// SumPaymentSelectionCartSplitValueAmountByMethods – sum
+// SumPaymentSelectionCartSplitValueAmountByMethods sum
 func (cs CartSummary) SumPaymentSelectionCartSplitValueAmountByMethods(methods []string) *domain.Price {
 	if cs.cart.PaymentSelection == nil {
 		return nil

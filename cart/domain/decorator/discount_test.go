@@ -79,15 +79,13 @@ func TestDecoratedItem_HasDiscounts(t *testing.T) {
 		{
 			name: "multiple discounts on item",
 			item: func() *decorator.DecoratedCartItem {
-				builder := cart.ItemBuilder{}
-				builder.AddDiscount(cart.AppliedDiscount{
+				item := cart.Item{ID: "item-1", AppliedDiscounts: []cart.AppliedDiscount{{
 					CampaignCode: "code-1",
 					Label:        "title-1",
 					Type:         "type-1",
-				})
-				item, _ := builder.Build()
+				}}}
 				decorated := decorator.DecoratedCartItem{
-					Item: *item,
+					Item: item,
 				}
 				return &decorated
 			}(),
@@ -119,13 +117,9 @@ func TestDecoratedDelivery_MergeDiscounts(t *testing.T) {
 		{
 			name: "delivery with items but without discounts",
 			delivery: func() *decorator.DecoratedDelivery {
-				builder := cart.DeliveryBuilder{}
-				builder.AddItem(cart.Item{})
-				builder.AddItem(cart.Item{})
-				builder.SetDeliveryCode("code")
-				delivery, _ := builder.Build()
+				delivery := cart.Delivery{DeliveryInfo: cart.DeliveryInfo{Code: "code"}, Cartitems: []cart.Item{{}, {}}}
 				decorated := decorator.DecoratedDelivery{
-					Delivery: *delivery,
+					Delivery: delivery,
 				}
 				return &decorated
 			}(),
@@ -222,39 +216,13 @@ func TestDecoratedCart_MergeDiscounts(t *testing.T) {
 			want: cart.AppliedDiscounts{},
 		},
 		{
-			name: "cart with deliveries but without items",
-			cart: &decorator.DecoratedCart{
-				Cart: cart.Cart{
-					Deliveries: func() []cart.Delivery {
-						result := make([]cart.Delivery, 0)
-						builder := cart.DeliveryBuilder{}
-						builder.SetDeliveryCode("code-1")
-						delivery, _ := builder.Build()
-						result = append(result, *delivery)
-						builder = cart.DeliveryBuilder{}
-						builder.SetDeliveryCode("code-2")
-						result = append(result, *delivery)
-						return result
-					}(),
-				},
-			},
-			want: cart.AppliedDiscounts{},
-		},
-		{
 			name: "cart with deliveries with items but without discounts",
 			cart: &decorator.DecoratedCart{
 				Cart: cart.Cart{
 					Deliveries: func() []cart.Delivery {
 						result := make([]cart.Delivery, 0)
-						builder := cart.DeliveryBuilder{}
-						builder.SetDeliveryCode("code-1")
-						builder.AddItem(cart.Item{})
-						builder.AddItem(cart.Item{})
-						delivery, _ := builder.Build()
-						result = append(result, *delivery)
-						builder = cart.DeliveryBuilder{}
-						builder.SetDeliveryCode("code-2")
-						result = append(result, *delivery)
+						delivery := cart.Delivery{DeliveryInfo: cart.DeliveryInfo{Code: "code-1"}}
+						result = append(result, delivery)
 						return result
 					}(),
 				},
@@ -320,46 +288,6 @@ func TestDecoratedCart_HasDiscounts(t *testing.T) {
 			name: "empty cart",
 			cart: &decorator.DecoratedCart{
 				Cart: cart.Cart{},
-			},
-			want: false,
-		},
-		{
-			name: "cart with deliveries but without items",
-			cart: &decorator.DecoratedCart{
-				Cart: cart.Cart{
-					Deliveries: func() []cart.Delivery {
-						result := make([]cart.Delivery, 0)
-						builder := cart.DeliveryBuilder{}
-						builder.SetDeliveryCode("code-1")
-						delivery, _ := builder.Build()
-						result = append(result, *delivery)
-						builder = cart.DeliveryBuilder{}
-						builder.SetDeliveryCode("code-2")
-						result = append(result, *delivery)
-						return result
-					}(),
-				},
-			},
-			want: false,
-		},
-		{
-			name: "cart with deliveries with items but without discounts",
-			cart: &decorator.DecoratedCart{
-				Cart: cart.Cart{
-					Deliveries: func() []cart.Delivery {
-						result := make([]cart.Delivery, 0)
-						builder := cart.DeliveryBuilder{}
-						builder.SetDeliveryCode("code-1")
-						builder.AddItem(cart.Item{})
-						builder.AddItem(cart.Item{})
-						delivery, _ := builder.Build()
-						result = append(result, *delivery)
-						builder = cart.DeliveryBuilder{}
-						builder.SetDeliveryCode("code-2")
-						result = append(result, *delivery)
-						return result
-					}(),
-				},
 			},
 			want: false,
 		},

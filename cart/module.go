@@ -102,6 +102,8 @@ commerce: {
 			enabled: bool | *true
 			storage: "inmemory"
 			defaultTaxRate?: number
+			productPrices: *"gross" | "net"
+			defaultCurrency: string | *"€"
 		}
 		placeOrderLogger: {
 			enabled: bool | *true
