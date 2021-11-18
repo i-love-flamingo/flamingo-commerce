@@ -6,6 +6,8 @@
   * By moving calculation responsibility, we enable different implementation possibilities for calculations like tax before or after discounts, tax on single item or sum and different tax rounding modes instead of having it hard-coded in the flamingo cart.
   * All calculation functions on cart item, shipping item, delivery and cart are now public fields for which the values must be set by the cart behaviour implementation
   * The `DefaultCartBehaviour` calculates all new fields accordingly
+  * Removed `ItemBuilder`, `DeliveryBuilder` and `Builder` since they didn't provide any meaningful functionality after removing the calculations. Please create structs directly.
+  * Changed the GraphQL cart model accordingly.
   * To help with the migration there are sed commands for the following fields in `cart/migration.sed`: run `find . -type f -iname '*.go' -exec gsed -i -f migration.sed "{}" +;`
   * Cart items
       * | Old Function                           | New Field                            |
