@@ -40,5 +40,7 @@ func TestTriggerClientSDK_Run(t *testing.T) {
 }
 
 func TestNewTriggerClientSDKStateData(t *testing.T) {
-	assert.Equal(t, process.StateData(&url.URL{Host: "test.com"}), states.NewTriggerClientSDKStateData(&url.URL{Host: "test.com"}))
+	assert.Equal(t,
+		process.StateData(states.TriggerClientSDKData{URL: &url.URL{Host: "test.com"}, Data: "data"}),
+		states.NewTriggerClientSDKStateData(&url.URL{Host: "test.com"}, "data"))
 }

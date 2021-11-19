@@ -56,6 +56,8 @@
         | SumGrandTotalWithGiftCards()      | GrandTotalWithGiftCards         |
         | -                                 | GrandTotalNetWithGiftCards      |
 
+**checkout**
+* Add possibility to have additional data in `PaymentFlowActionTriggerClientSDK`
 
 ## v3.5.0
 **general**

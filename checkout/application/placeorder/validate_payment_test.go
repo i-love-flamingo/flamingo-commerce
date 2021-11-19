@@ -184,14 +184,18 @@ func TestPaymentValidator(t *testing.T) {
 					Status: domain.PaymentFlowStatusUnapproved,
 					Action: domain.PaymentFlowActionTriggerClientSDK,
 					ActionData: domain.FlowActionData{
-						URL: &url.URL{Scheme: "https", Host: "redirect-url.com"},
+						URL:         &url.URL{Scheme: "https", Host: "redirect-url.com"},
+						DisplayData: `{"foo": "bar"}`,
 					},
 				},
 			},
 			want: want{
 				runResult: process.RunResult{Failed: nil},
 				state:     states.TriggerClientSDK{}.Name(),
-				stateData: process.StateData(&url.URL{Scheme: "https", Host: "redirect-url.com"}),
+				stateData: process.StateData(states.TriggerClientSDKData{
+					URL:  &url.URL{Scheme: "https", Host: "redirect-url.com"},
+					Data: `{"foo": "bar"}`,
+				}),
 			},
 		},
 		{

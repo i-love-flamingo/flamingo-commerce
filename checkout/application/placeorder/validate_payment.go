@@ -86,7 +86,7 @@ func PaymentValidator(ctx context.Context, p *process.Process, paymentService *a
 					Failed: process.PaymentErrorOccurredReason{Error: ValidatePaymentErrorNoActionURL},
 				}
 			}
-			p.UpdateState(states.TriggerClientSDK{}.Name(), states.NewTriggerClientSDKStateData(flowStatus.ActionData.URL))
+			p.UpdateState(states.TriggerClientSDK{}.Name(), states.NewTriggerClientSDKStateData(flowStatus.ActionData.URL, flowStatus.ActionData.DisplayData))
 		default:
 			return process.RunResult{
 				Failed: process.PaymentErrorOccurredReason{Error: fmt.Sprintf("Payment action not supported: %q", flowStatus.Action)},
