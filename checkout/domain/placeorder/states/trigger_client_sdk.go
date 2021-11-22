@@ -16,6 +16,8 @@ type (
 		paymentService *application.PaymentService
 		validator      process.PaymentValidatorFunc
 	}
+
+	// TriggerClientSDKData holds the data which must be sent to the client via SDK
 	TriggerClientSDKData struct {
 		URL  *url.URL
 		Data string
