@@ -1030,7 +1030,7 @@ var doc = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/paymentResultError"
+                            "$ref": "#/definitions/cartResultError"
                         }
                     }
                 }
@@ -1090,47 +1090,34 @@ var doc = `{
         }
     },
     "definitions": {
-        "CategoryAttribute": {
+        "ProductAttribute": {
             "type": "object",
             "properties": {
                 "Code": {
+                    "description": "Code is the internal attribute identifier",
+                    "type": "string"
+                },
+                "CodeLabel": {
+                    "description": "CodeLabel is the human readable (perhaps localized) attribute name",
                     "type": "string"
                 },
                 "Label": {
+                    "description": "Label is the human readable (perhaps localized) attribute value",
                     "type": "string"
                 },
-                "Values": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/domain.AttributeValue"
-                    }
+                "RawValue": {
+                    "description": "RawValue is the untouched original value of the attribute"
+                },
+                "UnitCode": {
+                    "description": "UnitCode is the internal code of the attribute values measuring unit",
+                    "type": "string"
                 }
             }
         },
-        "CategoryAttributes": {
+        "ProductAttributes": {
             "type": "object",
             "additionalProperties": {
-                "$ref": "#/definitions/CategoryAttribute"
-            }
-        },
-        "ProductMedia": {
-            "type": "object",
-            "properties": {
-                "MimeType": {
-                    "type": "string"
-                },
-                "Reference": {
-                    "type": "string"
-                },
-                "Title": {
-                    "type": "string"
-                },
-                "Type": {
-                    "type": "string"
-                },
-                "Usage": {
-                    "type": "string"
-                }
+                "$ref": "#/definitions/ProductAttribute"
             }
         },
         "application.PlaceOrderPaymentInfo": {
@@ -1339,6 +1326,14 @@ var doc = `{
                     "description": "GrandTotal is the final amount that need to be paid by the customer (gross)",
                     "$ref": "#/definitions/domain.Price"
                 },
+                "GrandTotalNet": {
+                    "description": "GrandTotalNet is the corresponding net value to GrandTotal",
+                    "$ref": "#/definitions/domain.Price"
+                },
+                "GrandTotalNetWithGiftCards": {
+                    "description": "GrandTotalNetWithGiftCards is the corresponding net value to GrandTotalWithGiftCards",
+                    "$ref": "#/definitions/domain.Price"
+                },
                 "GrandTotalWithGiftCards": {
                     "description": "GrandTotalWithGiftCards is the final amount with the applied gift cards subtracted.",
                     "$ref": "#/definitions/domain.Price"
@@ -1356,8 +1351,7 @@ var doc = `{
                     "$ref": "#/definitions/domain.Price"
                 },
                 "PaymentSelection": {
-                    "description": "PaymentSelection is used to store information on \"how\" the customer wants to pay",
-                    "$ref": "#/definitions/cart.PaymentSelection"
+                    "description": "PaymentSelection is used to store information on \"how\" the customer wants to pay"
                 },
                 "Purchaser": {
                     "description": "Purchaser hold additional infos for the legal contact person in this order",
@@ -1642,9 +1636,6 @@ var doc = `{
                 }
             }
         },
-        "cart.PaymentSelection": {
-            "type": "object"
-        },
         "cart.Person": {
             "type": "object",
             "properties": {
@@ -1754,6 +1745,17 @@ var doc = `{
                 }
             }
         },
+        "cartResultError": {
+            "type": "object",
+            "properties": {
+                "Code": {
+                    "type": "string"
+                },
+                "Message": {
+                    "type": "string"
+                }
+            }
+        },
         "checkoutError": {
             "type": "object",
             "properties": {
@@ -1769,11 +1771,9 @@ var doc = `{
             "type": "object",
             "properties": {
                 "Error": {
-                    "$ref": "#/definitions/paymentResultError"
+                    "$ref": "#/definitions/cartResultError"
                 },
-                "Product": {
-                    "$ref": "#/definitions/domain.BasicProduct"
-                },
+                "Product": {},
                 "Success": {
                     "type": "boolean"
                 }
@@ -1788,15 +1788,13 @@ var doc = `{
                 "CartValidationResult": {
                     "$ref": "#/definitions/validation.Result"
                 },
-                "Data": {
-                    "type": "object"
-                },
+                "Data": {},
                 "DataValidationInfo": {
                     "type": "object"
                 },
                 "Error": {
                     "description": "Contains details if success is false",
-                    "$ref": "#/definitions/paymentResultError"
+                    "$ref": "#/definitions/cartResultError"
                 },
                 "Success": {
                     "type": "boolean"
@@ -1832,9 +1830,7 @@ var doc = `{
                 "State": {
                     "type": "string"
                 },
-                "StateData": {
-                    "$ref": "#/definitions/process.StateData"
-                },
+                "StateData": {},
                 "UUID": {
                     "type": "string"
                 }
@@ -1891,9 +1887,7 @@ var doc = `{
                 "Item": {
                     "$ref": "#/definitions/cart.Item"
                 },
-                "Product": {
-                    "$ref": "#/definitions/domain.BasicProduct"
-                }
+                "Product": {}
             }
         },
         "decorator.DecoratedDelivery": {
@@ -1910,17 +1904,6 @@ var doc = `{
                 }
             }
         },
-        "domain.AttributeValue": {
-            "type": "object",
-            "properties": {
-                "Label": {
-                    "type": "string"
-                },
-                "RawValue": {
-                    "type": "object"
-                }
-            }
-        },
         "domain.Badge": {
             "type": "object",
             "properties": {
@@ -1931,9 +1914,6 @@ var doc = `{
                     "type": "string"
                 }
             }
-        },
-        "domain.BasicProduct": {
-            "type": "object"
         },
         "domain.CategoryTeaser": {
             "type": "object",
@@ -1996,8 +1976,7 @@ var doc = `{
                     "$ref": "#/definitions/domain.FlowActionData"
                 },
                 "Data": {
-                    "description": "Data contains additional information related to the action / flow",
-                    "type": "object"
+                    "description": "Data contains additional information related to the action / flow"
                 },
                 "Error": {
                     "description": "Error contains additional information in case of an error (e.g. payment failed)",
@@ -2057,6 +2036,26 @@ var doc = `{
                 },
                 "Type": {
                     "description": "Type or Name of the Loyalty program",
+                    "type": "string"
+                }
+            }
+        },
+        "domain.Media": {
+            "type": "object",
+            "properties": {
+                "MimeType": {
+                    "type": "string"
+                },
+                "Reference": {
+                    "type": "string"
+                },
+                "Title": {
+                    "type": "string"
+                },
+                "Type": {
+                    "type": "string"
+                },
+                "Usage": {
                     "type": "string"
                 }
             }
@@ -2149,7 +2148,7 @@ var doc = `{
                     "$ref": "#/definitions/domain.PriceInfo"
                 },
                 "Attributes": {
-                    "$ref": "#/definitions/CategoryAttributes"
+                    "$ref": "#/definitions/ProductAttributes"
                 },
                 "AvailablePrices": {
                     "type": "array",
@@ -2219,7 +2218,7 @@ var doc = `{
                 "Media": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ProductMedia"
+                        "$ref": "#/definitions/domain.Media"
                     }
                 },
                 "RetailerCode": {
@@ -2278,7 +2277,7 @@ var doc = `{
                     "description": "Media",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/ProductMedia"
+                        "$ref": "#/definitions/domain.Media"
                     }
                 },
                 "PreSelectedVariantSku": {
@@ -2329,17 +2328,6 @@ var doc = `{
                 }
             }
         },
-        "paymentResultError": {
-            "type": "object",
-            "properties": {
-                "Code": {
-                    "type": "string"
-                },
-                "Message": {
-                    "type": "string"
-                }
-            }
-        },
         "placeorder.CreditCardInfo": {
             "type": "object",
             "properties": {
@@ -2367,9 +2355,6 @@ var doc = `{
                     "type": "string"
                 }
             }
-        },
-        "process.StateData": {
-            "type": "object"
         },
         "validation.ItemValidationError": {
             "type": "object",

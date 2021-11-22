@@ -16,17 +16,26 @@ type (
 		paymentService *application.PaymentService
 		validator      process.PaymentValidatorFunc
 	}
+
+	// TriggerClientSDKData holds the data which must be sent to the client via SDK
+	TriggerClientSDKData struct {
+		URL  *url.URL
+		Data string
+	}
 )
 
 var _ process.State = TriggerClientSDK{}
 
 func init() {
-	gob.Register(&url.URL{})
+	gob.Register(TriggerClientSDKData{})
 }
 
 // NewTriggerClientSDKStateData creates data required for this state
-func NewTriggerClientSDKStateData(url *url.URL) process.StateData {
-	return process.StateData(url)
+func NewTriggerClientSDKStateData(url *url.URL, data string) process.StateData {
+	return process.StateData(TriggerClientSDKData{
+		URL:  url,
+		Data: data,
+	})
 }
 
 // Inject dependencies
@@ -54,7 +63,7 @@ func (r TriggerClientSDK) Run(ctx context.Context, p *process.Process) process.R
 }
 
 // Rollback the state operations
-func (r TriggerClientSDK) Rollback(ctx context.Context, _ process.RollbackData) error {
+func (r TriggerClientSDK) Rollback(_ context.Context, _ process.RollbackData) error {
 	return nil
 }
 

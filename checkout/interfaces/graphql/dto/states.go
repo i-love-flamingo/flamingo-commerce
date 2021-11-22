@@ -77,6 +77,7 @@ type (
 	TriggerClientSDK struct {
 		Name string
 		URL  string
+		Data string
 	}
 
 	// PaymentRequestAPI holds all data needed to create a PaymentRequest
@@ -192,8 +193,9 @@ func (s *PostRedirect) MapFrom(pctx process.Context) {
 // MapFrom the internal process state to the graphQL state fields
 func (t *TriggerClientSDK) MapFrom(pctx process.Context) {
 	t.Name = pctx.CurrentStateName
-	if stateData, ok := pctx.CurrentStateData.(*url.URL); ok {
-		t.URL = stateData.String()
+	if stateData, ok := pctx.CurrentStateData.(states.TriggerClientSDKData); ok {
+		t.URL = stateData.URL.String()
+		t.Data = stateData.Data
 	}
 }
 
