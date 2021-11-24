@@ -69,7 +69,7 @@ type Commerce_Checkout_PlaceOrderState_State_Redirect implements Commerce_Checko
 type Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK implements Commerce_Checkout_PlaceOrderState_State {
     name: String!
     URL: String!
-    Data: String!
+    data: String!
 }
 
 type Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment implements Commerce_Checkout_PlaceOrderState_State {

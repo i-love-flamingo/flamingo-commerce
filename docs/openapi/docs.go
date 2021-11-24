@@ -1030,7 +1030,7 @@ var doc = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/cartResultError"
+                            "$ref": "#/definitions/productResultError"
                         }
                     }
                 }
@@ -1090,36 +1090,6 @@ var doc = `{
         }
     },
     "definitions": {
-        "ProductAttribute": {
-            "type": "object",
-            "properties": {
-                "Code": {
-                    "description": "Code is the internal attribute identifier",
-                    "type": "string"
-                },
-                "CodeLabel": {
-                    "description": "CodeLabel is the human readable (perhaps localized) attribute name",
-                    "type": "string"
-                },
-                "Label": {
-                    "description": "Label is the human readable (perhaps localized) attribute value",
-                    "type": "string"
-                },
-                "RawValue": {
-                    "description": "RawValue is the untouched original value of the attribute"
-                },
-                "UnitCode": {
-                    "description": "UnitCode is the internal code of the attribute values measuring unit",
-                    "type": "string"
-                }
-            }
-        },
-        "ProductAttributes": {
-            "type": "object",
-            "additionalProperties": {
-                "$ref": "#/definitions/ProductAttribute"
-            }
-        },
         "application.PlaceOrderPaymentInfo": {
             "type": "object",
             "properties": {
@@ -1745,17 +1715,6 @@ var doc = `{
                 }
             }
         },
-        "cartResultError": {
-            "type": "object",
-            "properties": {
-                "Code": {
-                    "type": "string"
-                },
-                "Message": {
-                    "type": "string"
-                }
-            }
-        },
         "checkoutError": {
             "type": "object",
             "properties": {
@@ -1771,7 +1730,7 @@ var doc = `{
             "type": "object",
             "properties": {
                 "Error": {
-                    "$ref": "#/definitions/cartResultError"
+                    "$ref": "#/definitions/productResultError"
                 },
                 "Product": {},
                 "Success": {
@@ -1794,7 +1753,7 @@ var doc = `{
                 },
                 "Error": {
                     "description": "Contains details if success is false",
-                    "$ref": "#/definitions/cartResultError"
+                    "$ref": "#/definitions/productResultError"
                 },
                 "Success": {
                     "type": "boolean"
@@ -1903,6 +1862,10 @@ var doc = `{
                     "$ref": "#/definitions/cart.Delivery"
                 }
             }
+        },
+        "domain.Attributes": {
+            "type": "object",
+            "additionalProperties": {}
         },
         "domain.Badge": {
             "type": "object",
@@ -2148,7 +2111,7 @@ var doc = `{
                     "$ref": "#/definitions/domain.PriceInfo"
                 },
                 "Attributes": {
-                    "$ref": "#/definitions/ProductAttributes"
+                    "$ref": "#/definitions/domain.Attributes"
                 },
                 "AvailablePrices": {
                     "type": "array",
@@ -2352,6 +2315,17 @@ var doc = `{
                     "type": "string"
                 },
                 "OrderNumber": {
+                    "type": "string"
+                }
+            }
+        },
+        "productResultError": {
+            "type": "object",
+            "properties": {
+                "Code": {
+                    "type": "string"
+                },
+                "Message": {
                     "type": "string"
                 }
             }
