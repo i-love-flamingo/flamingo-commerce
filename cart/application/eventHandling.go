@@ -50,6 +50,7 @@ func (e *EventReceiver) Inject(
 	e.cartService = cartService
 	e.cartReceiverService = cartReceiverService
 	e.webIdentityService = webIdentityService
+	e.eventRouter = eventRouter
 	if optionals != nil {
 		e.cartCache = optionals.CartCache
 	}
