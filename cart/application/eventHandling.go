@@ -20,6 +20,18 @@ type (
 		cartReceiverService *CartReceiverService
 		cartCache           CartCache
 		webIdentityService  *auth.WebIdentityService
+		eventRouter         flamingo.EventRouter
+	}
+
+	// PreCartMergeEvent is dispatched after getting the (current) guest cart and the customer cart before merging
+	PreCartMergeEvent struct {
+		GuestCart    *cartDomain.Cart
+		CustomerCart *cartDomain.Cart
+	}
+
+	// PostCartMergeEvent is dispatched after merging the guest cart and the customer cart
+	PostCartMergeEvent struct {
+		MergedCart *cartDomain.Cart
 	}
 )
 
@@ -29,6 +41,7 @@ func (e *EventReceiver) Inject(
 	cartService *CartService,
 	cartReceiverService *CartReceiverService,
 	webIdentityService *auth.WebIdentityService,
+	eventRouter flamingo.EventRouter,
 	optionals *struct {
 		CartCache CartCache `inject:",optional"`
 	},
@@ -79,6 +92,9 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 			if err != nil {
 				e.logger.WithContext(ctx).Error("WebLoginEvent - DeleteSavedSessionGuestCartID Error", err)
 			}
+
+			e.eventRouter.Dispatch(ctx, &PreCartMergeEvent{GuestCart: guestCart, CustomerCart: customerCart})
+
 			for _, d := range guestCart.Deliveries {
 				e.logger.WithContext(ctx).Info(fmt.Sprintf("Merging delivery with code %v of guestCart with ID %v into customerCart with ID %v", d.DeliveryInfo.Code, guestCart.ID, customerCart.ID))
 				err := e.cartService.UpdateDeliveryInfo(ctx, session, d.DeliveryInfo.Code, cartDomain.CreateDeliveryInfoUpdateCommand(d.DeliveryInfo))
@@ -115,7 +131,7 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 			}
 			if guestCart.HasAppliedCouponCode() {
 				for _, code := range guestCart.AppliedCouponCodes {
-					_, err := e.cartService.ApplyVoucher(ctx, session, code.Code)
+					customerCart, err = e.cartService.ApplyVoucher(ctx, session, code.Code)
 					if err != nil {
 						e.logger.WithContext(ctx).Error("WebLoginEvent - customerCart ApplyVoucher has error", code.Code, err)
 					}
@@ -123,7 +139,7 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 			}
 			if guestCart.HasAppliedGiftCards() {
 				for _, code := range guestCart.AppliedGiftCards {
-					_, err := e.cartService.ApplyGiftCard(ctx, session, code.Code)
+					customerCart, err = e.cartService.ApplyGiftCard(ctx, session, code.Code)
 					if err != nil {
 						e.logger.WithContext(ctx).Error("WebLoginEvent - customerCart ApplyGiftCard has error", code.Code, err)
 					}
@@ -140,6 +156,8 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 					}
 				}
 			}
+
+			e.eventRouter.Dispatch(ctx, &PostCartMergeEvent{MergedCart: customerCart})
 		})
 	// Handle Event to Invalidate the Cart Cache
 	case *cartDomain.InvalidateCartEvent:
