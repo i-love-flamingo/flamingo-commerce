@@ -25,13 +25,13 @@ type (
 
 	// PreCartMergeEvent is dispatched after getting the (current) guest cart and the customer cart before merging
 	PreCartMergeEvent struct {
-		GuestCart    *cartDomain.Cart
-		CustomerCart *cartDomain.Cart
+		GuestCart    cartDomain.Cart
+		CustomerCart cartDomain.Cart
 	}
 
 	// PostCartMergeEvent is dispatched after merging the guest cart and the customer cart
 	PostCartMergeEvent struct {
-		MergedCart *cartDomain.Cart
+		MergedCart cartDomain.Cart
 	}
 )
 
@@ -94,7 +94,9 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 				e.logger.WithContext(ctx).Error("WebLoginEvent - DeleteSavedSessionGuestCartID Error", err)
 			}
 
-			e.eventRouter.Dispatch(ctx, &PreCartMergeEvent{GuestCart: guestCart, CustomerCart: customerCart})
+			clonedGuestCart, _ := guestCart.Clone()
+			clonedCustomerCart, _ := customerCart.Clone()
+			e.eventRouter.Dispatch(ctx, &PreCartMergeEvent{GuestCart: clonedGuestCart, CustomerCart: clonedCustomerCart})
 
 			for _, d := range guestCart.Deliveries {
 				e.logger.WithContext(ctx).Info(fmt.Sprintf("Merging delivery with code %v of guestCart with ID %v into customerCart with ID %v", d.DeliveryInfo.Code, guestCart.ID, customerCart.ID))
@@ -158,7 +160,8 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 				}
 			}
 
-			e.eventRouter.Dispatch(ctx, &PostCartMergeEvent{MergedCart: customerCart})
+			mergedCart, _ := customerCart.Clone()
+			e.eventRouter.Dispatch(ctx, &PostCartMergeEvent{MergedCart: mergedCart})
 		})
 	// Handle Event to Invalidate the Cart Cache
 	case *cartDomain.InvalidateCartEvent:
