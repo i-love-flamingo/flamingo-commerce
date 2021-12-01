@@ -55,6 +55,7 @@
         | SumAppliedGiftCards()             | TotalGiftCardAmount             |
         | SumGrandTotalWithGiftCards()      | GrandTotalWithGiftCards         |
         | -                                 | GrandTotalNetWithGiftCards      |
+* Dispatch a `PreCartMergeEvent` before and a `PostCartMergeEvent` after merging a guest and customer cart when logging in
 
 **checkout**
 * Add possibility to have additional data in `PaymentFlowActionTriggerClientSDK`
