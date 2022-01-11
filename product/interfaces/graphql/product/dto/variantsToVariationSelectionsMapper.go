@@ -176,6 +176,7 @@ func (m *variantsToVariationSelectionsMapper) buildVariationSelectionOptions(att
 		}
 
 		if option != nil {
+			option.UnitCode = attribute.UnitCode
 			options = append(options, *option)
 		}
 	})
