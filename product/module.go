@@ -64,6 +64,7 @@ func (*Module) Depends() []dingo.Module {
 
 // CueConfig defines the product module configuration
 func (*Module) CueConfig() string {
+	// language=cue
 	return `
 commerce: {
 	product: {
@@ -77,7 +78,8 @@ commerce: {
 			enabled: bool | *false
 			currency: *"€" | !=""
 			if enabled {
-			  jsonTestDataFolder?: string | !=""
+			  jsonTestDataFolder?: string & !=""
+			  jsonTestDataLiveSearch?: string & !=""
 			}
 		}
 		api: {
@@ -98,9 +100,9 @@ func (r *routes) Inject(controller *controller.View) {
 
 func (r *routes) Routes(registry *web.RouterRegistry) {
 	registry.HandleGet("product.view", r.controller.Get)
-	h, _ := registry.Route("/product/:marketplacecode/:name.html", `product.view(marketplacecode, name, backurl?="")`)
+	h := registry.MustRoute("/product/:marketplacecode/:name.html", `product.view(marketplacecode, name, backurl?="")`)
 	h.Normalize("name")
-	h, _ = registry.Route("/product/:marketplacecode/:variantcode/:name.html", `product.view(marketplacecode, variantcode, name, backurl?="")`)
+	h = registry.MustRoute("/product/:marketplacecode/:variantcode/:name.html", `product.view(marketplacecode, variantcode, name, backurl?="")`)
 	h.Normalize("name")
 }
 
@@ -113,6 +115,6 @@ func (r *apiRoutes) Inject(apiController *controller.APIController) {
 }
 
 func (r *apiRoutes) Routes(registry *web.RouterRegistry) {
-	registry.Route("/api/v1/products/:marketplacecode", "products.api.get")
+	registry.MustRoute("/api/v1/products/:marketplacecode", "products.api.get")
 	registry.HandleGet("products.api.get", r.apiController.Get)
 }

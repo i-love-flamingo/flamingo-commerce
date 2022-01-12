@@ -165,14 +165,19 @@ With enabled fake services `domain.ProductService` and `domain.SearchService` ar
 commerce: 
 	product: 
 		fakeservice: 
-			enabled: true # boolean: enables fakservices
-			currency: *"€" | !="" # string: currency for the fakeservices
-			jsonTestDataFolder: string | *"testdata/products"
+			enabled: true # boolean: enables fake services
+			currency: "€" # string: currency for the fake services
+			jsonTestDataFolder: "testdata/products"
+			jsonTestDataLiveSearch: "testdata/livesearch/livesearch.json"
 ````
 
 The configuration option `jsonTestDataFolder` tells fakeservices to look for json files with product data in the defined folder. 
 Json files represent MarketPlaceCodes with their filename and `domain.BasicProduct` within the contents.
 You can find an example product under: `test/integrationtest/projecttest/tests/graphql/testdata/products/json_simple.json`
+
+The configuration option `jsonTestDataLiveSearch` provides a possibility to fake live search results separately. When you leave it
+empty, livesearch will just be redirected to normal search (without promotions and suggestions). The contents of the json file is a map
+of `search query => fake results`. The fake results must match the `fake.liveSearchData` struct and all mentioned marketplace codes must be available in the `jsonTestDataFolder`.
 
 ### SearchService
 The fake service returns specific products if the query matches their marketplace code. This corresponds to the file name of the products in your project. There are also available default products with the marketplace codes:
