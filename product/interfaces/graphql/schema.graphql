@@ -98,11 +98,13 @@ type Commerce_Product_ActiveVariationSelection {
     code: String!
     label: String!
     value: String!
+    unitCode: String!
 }
 
 "An option for a group of attributes"
 type Commerce_Product_VariationSelection_Option {
     label: String!
+    unitCode: String!
     state: Commerce_Product_VariationSelection_OptionState!
     """
     Contains information about a product that matches this option.

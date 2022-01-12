@@ -1,4 +1,40 @@
 definitions:
+  ProductAttribute:
+    properties:
+      Code:
+        description: Code is the internal attribute identifier
+        type: string
+      CodeLabel:
+        description: CodeLabel is the human readable (perhaps localized) attribute
+          name
+        type: string
+      Label:
+        description: Label is the human readable (perhaps localized) attribute value
+        type: string
+      RawValue:
+        description: RawValue is the untouched original value of the attribute
+      UnitCode:
+        description: UnitCode is the internal code of the attribute values measuring
+          unit
+        type: string
+    type: object
+  ProductAttributes:
+    additionalProperties:
+      $ref: '#/definitions/ProductAttribute'
+    type: object
+  ProductMedia:
+    properties:
+      MimeType:
+        type: string
+      Reference:
+        type: string
+      Title:
+        type: string
+      Type:
+        type: string
+      Usage:
+        type: string
+    type: object
   application.PlaceOrderPaymentInfo:
     properties:
       Amount:
@@ -590,9 +626,6 @@ definitions:
       Delivery:
         $ref: '#/definitions/cart.Delivery'
     type: object
-  domain.Attributes:
-    additionalProperties: {}
-    type: object
   domain.Badge:
     properties:
       Code:
@@ -691,19 +724,6 @@ definitions:
         description: Type or Name of the Loyalty program
         type: string
     type: object
-  domain.Media:
-    properties:
-      MimeType:
-        type: string
-      Reference:
-        type: string
-      Title:
-        type: string
-      Type:
-        type: string
-      Usage:
-        type: string
-    type: object
   domain.PaymentRequestAPI:
     properties:
       CompleteURL:
@@ -762,7 +782,7 @@ definitions:
       ActivePrice:
         $ref: '#/definitions/domain.PriceInfo'
       Attributes:
-        $ref: '#/definitions/domain.Attributes'
+        $ref: '#/definitions/ProductAttributes'
       AvailablePrices:
         items:
           $ref: '#/definitions/domain.PriceInfo'
@@ -811,7 +831,7 @@ definitions:
         type: string
       Media:
         items:
-          $ref: '#/definitions/domain.Media'
+          $ref: '#/definitions/ProductMedia'
         type: array
       RetailerCode:
         type: string
@@ -851,7 +871,7 @@ definitions:
       Media:
         description: Media
         items:
-          $ref: '#/definitions/domain.Media'
+          $ref: '#/definitions/ProductMedia'
         type: array
       PreSelectedVariantSku:
         description: PreSelectedVariantSku might be set for configurables to give

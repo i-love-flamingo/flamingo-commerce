@@ -68,7 +68,6 @@ func TestMapConfigurable(t *testing.T) {
 	t.Run("should map variationSelection for two variation attributes", func(t *testing.T) {
 		fakeConfigurable, _ := fakeService.Get(nil, "fake_configurable")
 		configurable := fakeConfigurable.(domain.ConfigurableProduct)
-		configurable.VariantVariationAttributes = []string{"color", "size"}
 
 		variationSelection := NewVariantsToVariationSelections(configurable)
 		assert.Equal(t, []VariationSelection{

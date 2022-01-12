@@ -57,14 +57,14 @@ func getProductDomainConfigurableWithActiveVariantProduct() productDomain.Config
 						Code:      "attribute_a_code",
 						CodeLabel: "attribute_a_codeLabel",
 						Label:     "attribute_a_variantLabel",
-						RawValue:  nil,
+						RawValue:  "attribute_a_variantValue",
 						UnitCode:  "attribute_a_unitCode",
 					},
 					"attribute_b_code": {
 						Code:      "attribute_b_code",
 						CodeLabel: "attribute_b_codeLabel",
 						Label:     "attribute_b_variantLabel",
-						RawValue:  nil,
+						RawValue:  "attribute_b_variantValue",
 						UnitCode:  "attribute_b_unitCode",
 					},
 				},
@@ -111,8 +111,8 @@ func getProductDomainConfigurableWithActiveVariantProduct() productDomain.Config
 
 		VariantVariationAttributesSorting: map[string][]string{
 			"attribute_a_code": {
-				"attribute_a_variantLabel",
-				"attribute_b_variantLabel",
+				"attribute_a_variantValue",
+				"attribute_b_variantValue",
 			},
 		},
 
@@ -125,14 +125,14 @@ func getProductDomainConfigurableWithActiveVariantProduct() productDomain.Config
 							Code:      "attribute_a_code",
 							CodeLabel: "attribute_a_codeLabel",
 							Label:     "attribute_a_variantLabel",
-							RawValue:  nil,
+							RawValue:  "attribute_a_variantValue",
 							UnitCode:  "attribute_a_unitCode",
 						},
 						"attribute_b_code": {
 							Code:      "attribute_b_code",
 							CodeLabel: "attribute_b_codeLabel",
 							Label:     "attribute_b_variantLabel",
-							RawValue:  nil,
+							RawValue:  "attribute_b_variantValue",
 							UnitCode:  "attribute_b_unitCode",
 						},
 					},
@@ -147,14 +147,14 @@ func getProductDomainConfigurableWithActiveVariantProduct() productDomain.Config
 							Code:      "attribute_a_code",
 							CodeLabel: "attribute_a_codeLabel",
 							Label:     "attribute_a_variantLabel",
-							RawValue:  nil,
+							RawValue:  "attribute_a_variantValue",
 							UnitCode:  "attribute_a_unitCode",
 						},
 						"attribute_b_code": {
 							Code:      "attribute_b_code",
 							CodeLabel: "attribute_b_codeLabel",
 							Label:     "attribute_b_variantLabel",
-							RawValue:  nil,
+							RawValue:  "attribute_b_variantValue",
 							UnitCode:  "attribute_b_unitCode",
 						},
 					},
@@ -321,9 +321,10 @@ func TestActiveVariantProduct_VariationSelections(t *testing.T) {
 			Label: "attribute_a_codeLabel",
 			Options: []graphqlProductDto.VariationSelectionOption{
 				{
-					Label:   "attribute_a_variantLabel",
-					State:   graphqlProductDto.VariationSelectionOptionStateActive,
-					Variant: graphqlProductDto.NewVariationSelectionOptionVariant(configurableProduct.Variants[0]),
+					Label:    "attribute_a_variantLabel",
+					UnitCode: "attribute_a_unitCode",
+					State:    graphqlProductDto.VariationSelectionOptionStateActive,
+					Variant:  graphqlProductDto.NewVariationSelectionOptionVariant(configurableProduct.Variants[0]),
 				},
 			},
 		},
@@ -334,9 +335,10 @@ func TestActiveVariantProduct_ActiveVariationSelections(t *testing.T) {
 	product := getActiveVariantProduct()
 
 	assert.Equal(t, []graphqlProductDto.ActiveVariationSelection{{
-		Code:  "attribute_a_code",
-		Label: "attribute_a_codeLabel",
-		Value: "attribute_a_variantLabel",
+		Code:     "attribute_a_code",
+		Label:    "attribute_a_codeLabel",
+		Value:    "attribute_a_variantLabel",
+		UnitCode: "attribute_a_unitCode",
 	}}, product.ActiveVariationSelections())
 }
 

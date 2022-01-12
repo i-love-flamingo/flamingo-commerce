@@ -45,14 +45,14 @@ func getProductDomainConfigurableProduct() productDomain.ConfigurableProduct {
 					Code:      "attribute_a_code",
 					CodeLabel: "attribute_a_codeLabel",
 					Label:     "attribute_a_label",
-					RawValue:  nil,
+					RawValue:  "attribute_a_variantValue",
 					UnitCode:  "attribute_a_unitCode",
 				},
 				"attribute_b_code": {
 					Code:      "attribute_b_code",
 					CodeLabel: "attribute_b_codeLabel",
 					Label:     "attribute_b_label",
-					RawValue:  nil,
+					RawValue:  "attribute_b_variantValue",
 					UnitCode:  "attribute_b_unitCode",
 				},
 			},
@@ -68,8 +68,8 @@ func getProductDomainConfigurableProduct() productDomain.ConfigurableProduct {
 		},
 		VariantVariationAttributesSorting: map[string][]string{
 			"attribute_a_code": {
-				"attribute_a_variantLabel",
-				"attribute_b_variantLabel",
+				"attribute_a_variantValue",
+				"attribute_b_variantValue",
 			},
 		},
 		Variants: []productDomain.Variant{
@@ -81,14 +81,14 @@ func getProductDomainConfigurableProduct() productDomain.ConfigurableProduct {
 							Code:      "attribute_a_code",
 							CodeLabel: "attribute_a_codeLabel",
 							Label:     "attribute_a_variantLabel",
-							RawValue:  nil,
+							RawValue:  "attribute_a_variantValue",
 							UnitCode:  "attribute_a_unitCode",
 						},
 						"attribute_b_code": {
 							Code:      "attribute_b_code",
 							CodeLabel: "attribute_b_codeLabel",
 							Label:     "attribute_b_variantLabel",
-							RawValue:  nil,
+							RawValue:  "attribute_b_variantValue",
 							UnitCode:  "attribute_b_unitCode",
 						},
 					},
@@ -244,9 +244,10 @@ func TestConfigurableProduct_VariationSelections(t *testing.T) {
 			Label: "attribute_a_codeLabel",
 			Options: []graphqlProductDto.VariationSelectionOption{
 				{
-					Label:   "attribute_a_variantLabel",
-					State:   graphqlProductDto.VariationSelectionOptionStateMatch,
-					Variant: graphqlProductDto.NewVariationSelectionOptionVariant(configurableProduct.Variants[0]),
+					Label:    "attribute_a_variantLabel",
+					UnitCode: "attribute_a_unitCode",
+					State:    graphqlProductDto.VariationSelectionOptionStateMatch,
+					Variant:  graphqlProductDto.NewVariationSelectionOptionVariant(configurableProduct.Variants[0]),
 				},
 			},
 		},

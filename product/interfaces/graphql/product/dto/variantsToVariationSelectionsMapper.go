@@ -176,6 +176,7 @@ func (m *variantsToVariationSelectionsMapper) buildVariationSelectionOptions(att
 		}
 
 		if option != nil {
+			option.UnitCode = attribute.UnitCode
 			options = append(options, *option)
 		}
 	})
@@ -277,12 +278,14 @@ func newAttributeGroup(a domain.Attribute, attributesSorting []string) *attribut
 }
 
 func (ag *attributeGroup) addAttribute(attribute domain.Attribute) {
-	ag.Attributes[attribute.Label] = attribute
+	if value, ok := attribute.RawValue.(string); ok {
+		ag.Attributes[value] = attribute
+	}
 }
 
 func (ag *attributeGroup) eachAttributeInOrder(callback func(*domain.Attribute)) {
-	for _, attributeLabel := range ag.AttributesSorting {
-		attribute := ag.getAttributeByLabel(attributeLabel)
+	for _, attributeValue := range ag.AttributesSorting {
+		attribute := ag.getAttributeByValue(attributeValue)
 		if attribute != nil {
 			callback(attribute)
 		}
@@ -290,8 +293,13 @@ func (ag *attributeGroup) eachAttributeInOrder(callback func(*domain.Attribute))
 }
 
 func (ag *attributeGroup) hasAttribute(attribute domain.Attribute) bool {
-	_, ok := ag.Attributes[attribute.Label]
-	return ok
+	value, ok := attribute.RawValue.(string)
+	if !ok {
+		return false
+	}
+
+	_, found := ag.Attributes[value]
+	return found
 }
 
 func (ag *attributeGroup) addAttributeIfNotExisting(attribute domain.Attribute) {
@@ -300,8 +308,8 @@ func (ag *attributeGroup) addAttributeIfNotExisting(attribute domain.Attribute) 
 	}
 }
 
-func (ag *attributeGroup) getAttributeByLabel(label string) *domain.Attribute {
-	if attribute, ok := ag.Attributes[label]; ok {
+func (ag *attributeGroup) getAttributeByValue(value string) *domain.Attribute {
+	if attribute, ok := ag.Attributes[value]; ok {
 		return &attribute
 	}
 	return nil
@@ -321,9 +329,9 @@ func (c *variantSortingComparer) compare() bool {
 }
 
 func (c *variantSortingComparer) getSortingIndex(code string, variant domain.Variant) int {
-	sortedLabels := c.attributesSorting[code]
-	for index, label := range sortedLabels {
-		if variant.Attribute(code).Label == label {
+	sortedValues := c.attributesSorting[code]
+	for index, value := range sortedValues {
+		if variant.Attribute(code).RawValue == value {
 			return index
 		}
 	}
