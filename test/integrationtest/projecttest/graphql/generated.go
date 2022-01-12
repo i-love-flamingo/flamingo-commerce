@@ -687,9 +687,10 @@ type ComplexityRoot struct {
 	}
 
 	CommerceProductActiveVariationSelection struct {
-		Code  func(childComplexity int) int
-		Label func(childComplexity int) int
-		Value func(childComplexity int) int
+		Code     func(childComplexity int) int
+		Label    func(childComplexity int) int
+		UnitCode func(childComplexity int) int
+		Value    func(childComplexity int) int
 	}
 
 	CommerceProductAttribute struct {
@@ -840,9 +841,10 @@ type ComplexityRoot struct {
 	}
 
 	CommerceProductVariationSelectionOption struct {
-		Label   func(childComplexity int) int
-		State   func(childComplexity int) int
-		Variant func(childComplexity int) int
+		Label    func(childComplexity int) int
+		State    func(childComplexity int) int
+		UnitCode func(childComplexity int) int
+		Variant  func(childComplexity int) int
 	}
 
 	CommerceProductVariationSelectionOptionVariant struct {
@@ -3764,6 +3766,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CommerceProductActiveVariationSelection.Label(childComplexity), true
 
+	case "Commerce_Product_ActiveVariationSelection.unitCode":
+		if e.complexity.CommerceProductActiveVariationSelection.UnitCode == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductActiveVariationSelection.UnitCode(childComplexity), true
+
 	case "Commerce_Product_ActiveVariationSelection.value":
 		if e.complexity.CommerceProductActiveVariationSelection.Value == nil {
 			break
@@ -4455,6 +4464,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.CommerceProductVariationSelectionOption.State(childComplexity), true
+
+	case "Commerce_Product_VariationSelection_Option.unitCode":
+		if e.complexity.CommerceProductVariationSelectionOption.UnitCode == nil {
+			break
+		}
+
+		return e.complexity.CommerceProductVariationSelectionOption.UnitCode(childComplexity), true
 
 	case "Commerce_Product_VariationSelection_Option.variant":
 		if e.complexity.CommerceProductVariationSelectionOption.Variant == nil {
@@ -5489,11 +5505,13 @@ type Commerce_Product_ActiveVariationSelection {
     code: String!
     label: String!
     value: String!
+    unitCode: String!
 }
 
 "An option for a group of attributes"
 type Commerce_Product_VariationSelection_Option {
     label: String!
+    unitCode: String!
     state: Commerce_Product_VariationSelection_OptionState!
     """
     Contains information about a product that matches this option.
@@ -19117,6 +19135,38 @@ func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_value(ctx
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Commerce_Product_ActiveVariationSelection_unitCode(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ActiveVariationSelection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Commerce_Product_ActiveVariationSelection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UnitCode, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Commerce_Product_Attribute_code(ctx context.Context, field graphql.CollectedField, obj *domain1.Attribute) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -22074,6 +22124,38 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_Option_label(ct
 	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Label, nil
+	})
+
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Commerce_Product_VariationSelection_Option_unitCode(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariationSelectionOption) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Commerce_Product_VariationSelection_Option",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp := ec._fieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UnitCode, nil
 	})
 
 	if resTmp == nil {
@@ -30104,6 +30186,11 @@ func (ec *executionContext) _Commerce_Product_ActiveVariationSelection(ctx conte
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "unitCode":
+			out.Values[i] = ec._Commerce_Product_ActiveVariationSelection_unitCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -30932,6 +31019,11 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_Option(ctx cont
 			out.Values[i] = graphql.MarshalString("Commerce_Product_VariationSelection_Option")
 		case "label":
 			out.Values[i] = ec._Commerce_Product_VariationSelection_Option_label(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "unitCode":
+			out.Values[i] = ec._Commerce_Product_VariationSelection_Option_unitCode(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
