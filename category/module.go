@@ -34,7 +34,6 @@ func URLWithName(code, name string) (string, map[string]string) {
 
 // Inject dependencies
 func (m *Module) Inject(
-	routerRegistry *web.RouterRegistry,
 	config *struct {
 		UseCategoryFixedAdapter bool `inject:"config:commerce.category.useCategoryFixedAdapter,optional"`
 		UseFakeService          bool `inject:"config:commerce.category.fakeService.enabled,optional"`
@@ -86,7 +85,7 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 	registry.HandleGet("category.view", r.view.Get)
 	handler, _ := registry.Route("/category/:code/:name.html", "category.view(code, name, *)")
 	handler.Normalize("name")
-	registry.Route("/category/:code", "category.view(code, *)")
+	registry.MustRoute("/category/:code", "category.view(code, *)")
 
 	registry.HandleData("category.tree", r.tree.Data)
 	registry.HandleData("category", r.entity.Data)
@@ -120,7 +119,7 @@ commerce: {
 		fakeService: {
 			enabled: bool | *false
 			if enabled {
-			  testDataFolder?: string | !=""
+			  testDataFolder?: string & !=""
 			}
 		}
 	}
