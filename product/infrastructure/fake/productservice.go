@@ -199,7 +199,7 @@ func (ps *ProductService) getFakeConfigurable(marketplaceCode string) domain.Con
 	product.VariantVariationAttributes = []string{"color", "size"}
 	product.VariantVariationAttributesSorting = map[string][]string{
 		"size":  {"M", "L"},
-		"color": {"Red", "White", "Black"},
+		"color": {"red", "white", "black"},
 	}
 
 	return product

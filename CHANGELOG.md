@@ -63,6 +63,7 @@
 **product**
 * GraphQL:
   * Add `unitCode` to`Commerce_Product_VariationSelection_Option` and `Commerce_Product_ActiveVariationSelection`
+  * Fix mapping of VariationSelections
 
 ## v3.5.0
 **general**
