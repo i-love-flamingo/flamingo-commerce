@@ -78,8 +78,8 @@ commerce: {
 			enabled: bool | *false
 			currency: *"€" | !=""
 			if enabled {
-			  jsonTestDataFolder: string | !=""
-			  jsonTestDataLiveSearch: string | !=""
+			  jsonTestDataFolder?: string & !=""
+			  jsonTestDataLiveSearch?: string & !=""
 			}
 		}
 		api: {

@@ -28,7 +28,7 @@ type (
 func (s *SearchService) Inject(
 	productService *ProductService,
 	cfg *struct {
-		LiveSearchJSON string `inject:"config:commerce.product.fakeservice.jsonTestDataLiveSearch"`
+		LiveSearchJSON string `inject:"config:commerce.product.fakeservice.jsonTestDataLiveSearch,optional"`
 	},
 ) *SearchService {
 	s.productService = productService
