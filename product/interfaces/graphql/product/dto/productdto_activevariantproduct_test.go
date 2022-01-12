@@ -321,9 +321,10 @@ func TestActiveVariantProduct_VariationSelections(t *testing.T) {
 			Label: "attribute_a_codeLabel",
 			Options: []graphqlProductDto.VariationSelectionOption{
 				{
-					Label:   "attribute_a_variantLabel",
-					State:   graphqlProductDto.VariationSelectionOptionStateActive,
-					Variant: graphqlProductDto.NewVariationSelectionOptionVariant(configurableProduct.Variants[0]),
+					Label:    "attribute_a_variantLabel",
+					UnitCode: "attribute_a_unitCode",
+					State:    graphqlProductDto.VariationSelectionOptionStateActive,
+					Variant:  graphqlProductDto.NewVariationSelectionOptionVariant(configurableProduct.Variants[0]),
 				},
 			},
 		},
@@ -334,9 +335,10 @@ func TestActiveVariantProduct_ActiveVariationSelections(t *testing.T) {
 	product := getActiveVariantProduct()
 
 	assert.Equal(t, []graphqlProductDto.ActiveVariationSelection{{
-		Code:  "attribute_a_code",
-		Label: "attribute_a_codeLabel",
-		Value: "attribute_a_variantLabel",
+		Code:     "attribute_a_code",
+		Label:    "attribute_a_codeLabel",
+		Value:    "attribute_a_variantLabel",
+		UnitCode: "attribute_a_unitCode",
 	}}, product.ActiveVariationSelections())
 }
 

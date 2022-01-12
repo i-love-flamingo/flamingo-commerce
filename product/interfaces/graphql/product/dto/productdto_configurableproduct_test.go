@@ -244,9 +244,10 @@ func TestConfigurableProduct_VariationSelections(t *testing.T) {
 			Label: "attribute_a_codeLabel",
 			Options: []graphqlProductDto.VariationSelectionOption{
 				{
-					Label:   "attribute_a_variantLabel",
-					State:   graphqlProductDto.VariationSelectionOptionStateMatch,
-					Variant: graphqlProductDto.NewVariationSelectionOptionVariant(configurableProduct.Variants[0]),
+					Label:    "attribute_a_variantLabel",
+					UnitCode: "attribute_a_unitCode",
+					State:    graphqlProductDto.VariationSelectionOptionStateMatch,
+					Variant:  graphqlProductDto.NewVariationSelectionOptionVariant(configurableProduct.Variants[0]),
 				},
 			},
 		},
