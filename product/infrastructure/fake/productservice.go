@@ -30,16 +30,18 @@ var (
 
 // ProductService is just mocking stuff
 type ProductService struct {
-	currencyCode  string
-	testDataFiles map[string]string
-	logger        flamingo.Logger
+	currencyCode           string
+	testDataFiles          map[string]string
+	logger                 flamingo.Logger
+	deliverDefaultProducts bool
 }
 
 // Inject dependencies
 func (ps *ProductService) Inject(logger flamingo.Logger,
 	c *struct {
-		CurrencyCode   string `inject:"config:commerce.product.fakeservice.currency,optional"`
-		TestDataFolder string `inject:"config:commerce.product.fakeservice.jsonTestDataFolder,optional"`
+		CurrencyCode            string `inject:"config:commerce.product.fakeservice.currency,optional"`
+		TestDataFolder          string `inject:"config:commerce.product.fakeservice.jsonTestDataFolder,optional"`
+		DeliveryDefaultProducts bool   `inject:"config:commerce.product.fakeservice.defaultProducts,optional"`
 	},
 ) *ProductService {
 	ps.logger = logger
@@ -48,6 +50,8 @@ func (ps *ProductService) Inject(logger flamingo.Logger,
 		if len(c.TestDataFolder) > 0 {
 			ps.testDataFiles = registerTestData(c.TestDataFolder, ps.logger)
 		}
+
+		ps.deliverDefaultProducts = c.DeliveryDefaultProducts
 	}
 
 	return ps
@@ -176,6 +180,10 @@ func (ps *ProductService) FakeSimple(marketplaceCode string, isNew bool, isExclu
 
 // GetMarketPlaceCodes returns list of available marketplace codes which are supported by this fakeservice
 func (ps *ProductService) GetMarketPlaceCodes() []string {
+	if !ps.deliverDefaultProducts {
+		return ps.jsonProductCodes()
+	}
+
 	marketPlaceCodes := []string{
 		"fake_configurable",
 		"fake_configurable_with_active_variant",

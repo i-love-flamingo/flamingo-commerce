@@ -169,6 +169,7 @@ commerce:
 			currency: "€" # string: currency for the fake services
 			jsonTestDataFolder: "testdata/products"
 			jsonTestDataLiveSearch: "testdata/livesearch/livesearch.json"
+            defaultProducts: true
 ````
 
 The configuration option `jsonTestDataFolder` tells fakeservices to look for json files with product data in the defined folder. 
@@ -178,6 +179,8 @@ You can find an example product under: `test/integrationtest/projecttest/tests/g
 The configuration option `jsonTestDataLiveSearch` provides a possibility to fake live search results separately. When you leave it
 empty, livesearch will just be redirected to normal search (without promotions and suggestions). The contents of the json file is a map
 of `search query => fake results`. The fake results must match the `fake.liveSearchData` struct and all mentioned marketplace codes must be available in the `jsonTestDataFolder`.
+
+The configuration option `defaultProducts` toggles the delivery of default test products. Json files will be still delivered.
 
 ### SearchService
 The fake service returns specific products if the query matches their marketplace code. This corresponds to the file name of the products in your project. There are also available default products with the marketplace codes:

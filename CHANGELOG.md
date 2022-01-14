@@ -64,6 +64,8 @@
 * GraphQL:
   * Add `unitCode` to`Commerce_Product_VariationSelection_Option` and `Commerce_Product_ActiveVariationSelection`
   * Fix mapping of VariationSelections
+* FakeService
+  * Added configuration option `commerce.product.fakeservice.defaultProducts` which toggles the delivery of default test products. 
 
 ## v3.5.0
 **general**
