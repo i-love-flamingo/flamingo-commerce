@@ -26,8 +26,6 @@ require (
 	github.com/vektah/gqlparser/v2 v2.1.0
 	go.opencensus.io v0.23.0
 	go.uber.org/goleak v1.1.10
-	golang.org/x/mod v0.5.1
-	golang.org/x/sys v0.0.0-20220111092808-5a964db01320 // indirect
-	golang.org/x/tools v0.1.8 // indirect
+	golang.org/x/mod v0.4.2
 	gopkg.in/go-playground/assert.v1 v1.2.1
 )
