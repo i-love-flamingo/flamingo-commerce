@@ -2,6 +2,7 @@ package graphql
 
 import (
 	"context"
+
 	"flamingo.me/flamingo-commerce/v3/category/domain"
 	graphqlDto "flamingo.me/flamingo-commerce/v3/category/interfaces/graphql/categorydto"
 	productApplication "flamingo.me/flamingo-commerce/v3/product/application"
@@ -43,14 +44,14 @@ func (r *CommerceCategoryQueryResolver) CommerceCategory(
 		return nil, err
 	}
 
-	searchRequest := &application.SearchRequest{}
+	var filters []searchDomain.Filter
+	filters = append(filters, domain.NewCategoryFacet(categoryCode))
+	searchRequest := &application.SearchRequest{AdditionalFilter: filters}
+
 	if request != nil {
-		var filters []searchDomain.Filter
 		for _, filter := range request.KeyValueFilters {
 			filters = append(filters, searchDomain.NewKeyValueFilter(filter.K, filter.V))
 		}
-
-		filters = append(filters, domain.NewCategoryFacet(categoryCode))
 		searchRequest = &application.SearchRequest{
 			AdditionalFilter: filters,
 			PageSize:         request.PageSize,
