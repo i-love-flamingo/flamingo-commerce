@@ -14,8 +14,9 @@ import (
 type (
 	// SearchService is just mocking stuff
 	SearchService struct {
-		productService *ProductService
-		liveSearchJSON string
+		productService         *ProductService
+		liveSearchJSON         string
+		categoryFacetItemsJSON string
 	}
 	liveSearchData struct {
 		Marketplacecodes []string                  `json:"marketplacecodes"`
@@ -28,12 +29,14 @@ type (
 func (s *SearchService) Inject(
 	productService *ProductService,
 	cfg *struct {
-		LiveSearchJSON string `inject:"config:commerce.product.fakeservice.jsonTestDataLiveSearch,optional"`
+		LiveSearchJSON         string `inject:"config:commerce.product.fakeservice.jsonTestDataLiveSearch,optional"`
+		CategoryFacetItemsJSON string `inject:"config:commerce.product.fakeservice.jsonTestDataCategoryFacetItems,optional"`
 	},
 ) *SearchService {
 	s.productService = productService
 	if cfg != nil {
 		s.liveSearchJSON = cfg.LiveSearchJSON
+		s.categoryFacetItemsJSON = cfg.CategoryFacetItemsJSON
 	}
 
 	return s
@@ -165,6 +168,8 @@ func (s *SearchService) findCurrentPage(filters []searchDomain.Filter) int {
 func (s *SearchService) createFacets(filters []searchDomain.Filter) (map[string]searchDomain.Facet, []searchDomain.Facet) {
 	selectedFacets := make([]searchDomain.Facet, 0)
 
+	categoryFilterValue := s.categoryFilterValue(filters)
+
 	facets := map[string]searchDomain.Facet{
 		"brandCode": {
 			Type:  string(searchDomain.ListFacet),
@@ -193,6 +198,8 @@ func (s *SearchService) createFacets(filters []searchDomain.Filter) (map[string]
 			}},
 			Position: 0,
 		},
+
+		"categoryCodes": s.createCategoryFacet(categoryFilterValue),
 	}
 
 	if s.hasFilterWithValue(filters, "brandCode", "apple") != false {
@@ -205,6 +212,10 @@ func (s *SearchService) createFacets(filters []searchDomain.Filter) (map[string]
 		facets["retailerCode"].Items[0].Active = true
 		facets["retailerCode"].Items[0].Selected = true
 		selectedFacets = append(selectedFacets, facets["retailerCode"])
+	}
+
+	if categoryFilterValue != "" {
+		selectedFacets = append(selectedFacets, facets["categoryCodes"])
 	}
 
 	return facets, selectedFacets
@@ -230,5 +241,56 @@ func (s *SearchService) hasFilterWithValue(filters []searchDomain.Filter, key st
 		}
 	}
 
+	return false
+}
+
+func (s *SearchService) categoryFilterValue(filters []searchDomain.Filter) string {
+	for _, filter := range filters {
+		filterKey, filterValues := filter.Value()
+		switch filterKey {
+		case "category", "categoryCodes":
+			if len(filterValues) > 0 {
+				return filterValues[0]
+			}
+		}
+	}
+
+	return ""
+}
+
+func (s *SearchService) createCategoryFacet(selectedCategory string) searchDomain.Facet {
+	return searchDomain.Facet{
+		Type:     searchDomain.TreeFacet,
+		Name:     "categoryCodes",
+		Label:    "Category",
+		Items:    s.createCategoryFacetItems(selectedCategory),
+		Position: 0,
+	}
+}
+
+func (s *SearchService) createCategoryFacetItems(selectedCategory string) []*searchDomain.FacetItem {
+	items, err := loadCategoryFacetItems(s.categoryFacetItemsJSON)
+
+	if err != nil {
+		return nil
+	}
+
+	selectFacetItems(selectedCategory, items)
+	return items
+}
+
+func selectFacetItems(selectedCategory string, items []*searchDomain.FacetItem) bool {
+	for _, item := range items {
+		if item.Value == selectedCategory {
+			item.Active = true
+			item.Selected = true
+			return true
+		}
+		childSelectedOrActive := selectFacetItems(selectedCategory, item.Items)
+		if childSelectedOrActive {
+			item.Active = true
+			return true
+		}
+	}
 	return false
 }

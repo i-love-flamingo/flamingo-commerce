@@ -1,0 +1,36 @@
+[
+  {
+    "Value": "electronics",
+    "Label": "Electronics",
+    "Items": [
+      {
+        "Value": "flat-screen_tvs",
+        "Label": "Flat Screens & TV"
+      },
+      {
+        "Value": "headphones",
+        "Label": "Headphones",
+        "Items": [
+          {
+            "Value": "headphone_accessories",
+            "Label": "Accessories"
+          }
+        ]
+      },
+      {
+        "Value": "tablets",
+        "Label": "Tablets"
+      }
+    ]
+  },
+  {
+    "Value": "clothing",
+    "Label": "Clothes & Fashion",
+    "Items": [
+      {
+        "Value": "jumpsuits",
+        "Label": "Jumpsuits"
+      }
+    ]
+  }
+]
