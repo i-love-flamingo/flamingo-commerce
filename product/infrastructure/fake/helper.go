@@ -1,6 +1,7 @@
 package fake
 
 import (
+	// embed test data file directly
 	_ "embed"
 	"encoding/json"
 	"errors"
