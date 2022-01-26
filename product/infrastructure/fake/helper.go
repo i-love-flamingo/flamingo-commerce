@@ -1,7 +1,7 @@
 package fake
 
 import (
-	"embed"
+	_ "embed"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
@@ -65,8 +65,8 @@ func unmarshalJSONProduct(productRaw []byte) (domain.BasicProduct, error) {
 	return *simpleProduct, nil
 }
 
-//go:embed testdata
-var testdata embed.FS
+//go:embed testdata/categoryFacetItems.json
+var testdata []byte
 
 func loadCategoryFacetItems(givenJSON string) ([]*searchDomain.FacetItem, error) {
 
@@ -85,12 +85,7 @@ func loadCategoryFacetItems(givenJSON string) ([]*searchDomain.FacetItem, error)
 		return items, nil
 	}
 
-	jsonFile, err := testdata.ReadFile("testdata/categoryFacetItems.json")
-	if err != nil {
-		return nil, err
-	}
-
-	err = json.Unmarshal(jsonFile, &items)
+	err := json.Unmarshal(testdata, &items)
 	if err != nil {
 		return nil, err
 	}
