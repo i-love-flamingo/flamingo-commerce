@@ -18,7 +18,7 @@ func Test_CommerceProductSearchFacets(t *testing.T) {
 	resp.Status(http.StatusOK)
 
 	facets := getValue(resp, "Commerce_Product_Search", "facets").Array()
-	facets.Length().Equal(2)
+	facets.Length().Equal(3)
 
 	for _, facet := range facets.Iter() {
 		facetName := facet.Object().Value("name").String()
@@ -28,6 +28,8 @@ func Test_CommerceProductSearchFacets(t *testing.T) {
 			facet.Object().Value("items").Array().First().Object().Value("value").String().Equal("apple")
 		case "retailerCode":
 			facet.Object().Value("items").Array().First().Object().Value("value").String().Equal("retailer")
+		case "categoryCodes":
+			facet.Object().Value("items").Array().First().Object().Value("value").String().Equal("electronics")
 		default:
 			// Do nothing here
 		}

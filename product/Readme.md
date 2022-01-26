@@ -169,6 +169,7 @@ commerce:
 			currency: "€" # string: currency for the fake services
 			jsonTestDataFolder: "testdata/products"
 			jsonTestDataLiveSearch: "testdata/livesearch/livesearch.json"
+            jsonTestDataCategoryFacetItems: "testdata/facets/categoryFacetItems.json"
             defaultProducts: true
 ````
 
@@ -179,6 +180,10 @@ You can find an example product under: `test/integrationtest/projecttest/tests/g
 The configuration option `jsonTestDataLiveSearch` provides a possibility to fake live search results separately. When you leave it
 empty, livesearch will just be redirected to normal search (without promotions and suggestions). The contents of the json file is a map
 of `search query => fake results`. The fake results must match the `fake.liveSearchData` struct and all mentioned marketplace codes must be available in the `jsonTestDataFolder`.
+
+The configuration option `jsonTestDataCategoryFacetItems` provides a possibility to fake the contents of the category facet individually. When you leave it
+empty, the default category facet items will be used. These can be found in `product/infrastructure/fake/testdata/categoryFacetItems.json` 
+which can be used as a reference for building your own file.
 
 The configuration option `defaultProducts` toggles the delivery of default test products. Json files will be still delivered.
 

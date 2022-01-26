@@ -1,14 +1,19 @@
 package fake
 
 import (
+	// embed test data file directly
+	_ "embed"
 	"encoding/json"
 	"errors"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strings"
+
+	searchDomain "flamingo.me/flamingo-commerce/v3/search/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 
 	"flamingo.me/flamingo-commerce/v3/product/domain"
-	"io/ioutil"
-	"path/filepath"
-	"strings"
 )
 
 // registerTestData returns files of given folder
@@ -59,4 +64,32 @@ func unmarshalJSONProduct(productRaw []byte) (domain.BasicProduct, error) {
 	}
 
 	return *simpleProduct, nil
+}
+
+//go:embed testdata/categoryFacetItems.json
+var testdata []byte
+
+func loadCategoryFacetItems(givenJSON string) ([]*searchDomain.FacetItem, error) {
+
+	var items []*searchDomain.FacetItem
+
+	if givenJSON != "" {
+		fileContent, err := os.ReadFile(givenJSON)
+		if err != nil {
+			return nil, err
+		}
+
+		err = json.Unmarshal(fileContent, &items)
+		if err != nil {
+			return nil, err
+		}
+		return items, nil
+	}
+
+	err := json.Unmarshal(testdata, &items)
+	if err != nil {
+		return nil, err
+	}
+
+	return items, nil
 }
