@@ -29,3 +29,5 @@ require (
 	golang.org/x/mod v0.4.2
 	gopkg.in/go-playground/assert.v1 v1.2.1
 )
+
+exclude github.com/coreos/etcd v3.3.10+incompatible
