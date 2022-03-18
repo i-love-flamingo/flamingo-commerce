@@ -1090,24 +1090,27 @@ var doc = `{
         }
     },
     "definitions": {
-        "ProductMedia": {
+        "CategoryAttribute": {
             "type": "object",
             "properties": {
-                "MimeType": {
+                "Code": {
                     "type": "string"
                 },
-                "Reference": {
+                "Label": {
                     "type": "string"
                 },
-                "Title": {
-                    "type": "string"
-                },
-                "Type": {
-                    "type": "string"
-                },
-                "Usage": {
-                    "type": "string"
+                "Values": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.AttributeValue"
+                    }
                 }
+            }
+        },
+        "CategoryAttributes": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/CategoryAttribute"
             }
         },
         "application.PlaceOrderPaymentInfo": {
@@ -1883,9 +1886,14 @@ var doc = `{
                 }
             }
         },
-        "domain.Attributes": {
+        "domain.AttributeValue": {
             "type": "object",
-            "additionalProperties": {}
+            "properties": {
+                "Label": {
+                    "type": "string"
+                },
+                "RawValue": {}
+            }
         },
         "domain.Badge": {
             "type": "object",
@@ -2111,7 +2119,7 @@ var doc = `{
                     "$ref": "#/definitions/domain.PriceInfo"
                 },
                 "Attributes": {
-                    "$ref": "#/definitions/domain.Attributes"
+                    "$ref": "#/definitions/CategoryAttributes"
                 },
                 "AvailablePrices": {
                     "type": "array",
@@ -2180,9 +2188,7 @@ var doc = `{
                 },
                 "Media": {
                     "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/ProductMedia"
-                    }
+                    "items": {}
                 },
                 "RetailerCode": {
                     "type": "string"
@@ -2239,9 +2245,7 @@ var doc = `{
                 "Media": {
                     "description": "Media",
                     "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/ProductMedia"
-                    }
+                    "items": {}
                 },
                 "PreSelectedVariantSku": {
                     "description": "PreSelectedVariantSku might be set for configurables to give a hint to link to a variant of a configurable (That might be the case if a user filters for an attribute and in the teaser the variant with that attribute is shown)",
