@@ -36,7 +36,16 @@ func TestService_FormatPrice(t *testing.T) {
 			Config config.Map `inject:"config:locale.accounting"`
 		}{
 			Config: config.Map{
+				"JPY": config.Map{
+					"precision":  0.0,
+					"decimal":    "",
+					"thousand":   ",",
+					"formatLong": "%s %s",
+					"formatZero": "%s%v",
+					"format":     "%s%v",
+				},
 				"default": config.Map{
+					"precision":  2.0,
 					"decimal":    ".",
 					"thousand":   ",",
 					"formatLong": "%s %s",
@@ -50,4 +59,8 @@ func TestService_FormatPrice(t *testing.T) {
 	price := priceDomain.NewFromFloat(-161.92, "USD")
 	formatted := service.FormatPrice(price)
 	assert.Equal(t, "-USD161.92", formatted)
+
+	price = priceDomain.NewFromFloat(-161.92, "JPY")
+	formatted = service.FormatPrice(price)
+	assert.Equal(t, "-JPY162", formatted)
 }

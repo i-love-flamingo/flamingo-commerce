@@ -44,6 +44,10 @@ func (s *Service) FormatPrice(price domain.Price) string {
 		Symbol:    currency,
 		Precision: 2,
 	}
+	precision, ok := configForCurrency["precision"].(float64)
+	if ok {
+		ac.Precision = int(precision)
+	}
 	decimal, ok := configForCurrency["decimal"].(string)
 	if ok {
 		ac.Decimal = decimal
