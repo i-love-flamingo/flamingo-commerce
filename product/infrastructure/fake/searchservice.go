@@ -172,7 +172,7 @@ func (s *SearchService) createFacets(filters []searchDomain.Filter) (map[string]
 
 	facets := map[string]searchDomain.Facet{
 		"brandCode": {
-			Type:  string(searchDomain.ListFacet),
+			Type:  searchDomain.ListFacet,
 			Name:  "brandCode",
 			Label: "Brand",
 			Items: []*searchDomain.FacetItem{{
@@ -186,7 +186,7 @@ func (s *SearchService) createFacets(filters []searchDomain.Filter) (map[string]
 		},
 
 		"retailerCode": {
-			Type:  string(searchDomain.ListFacet),
+			Type:  searchDomain.ListFacet,
 			Name:  "retailerCode",
 			Label: "Retailer",
 			Items: []*searchDomain.FacetItem{{
@@ -202,13 +202,13 @@ func (s *SearchService) createFacets(filters []searchDomain.Filter) (map[string]
 		"categoryCodes": s.createCategoryFacet(categoryFilterValue),
 	}
 
-	if s.hasFilterWithValue(filters, "brandCode", "apple") != false {
+	if s.hasFilterWithValue(filters, "brandCode", "apple") {
 		facets["brandCode"].Items[0].Active = true
 		facets["brandCode"].Items[0].Selected = true
 		selectedFacets = append(selectedFacets, facets["brandCode"])
 	}
 
-	if s.hasFilterWithValue(filters, "retailerCode", "retailer") != false {
+	if s.hasFilterWithValue(filters, "retailerCode", "retailer") {
 		facets["retailerCode"].Items[0].Active = true
 		facets["retailerCode"].Items[0].Selected = true
 		selectedFacets = append(selectedFacets, facets["retailerCode"])

@@ -52,10 +52,7 @@ func (p SimpleProduct) GetIdentifier() string {
 // HasMedia  for SimpleProduct
 func (p SimpleProduct) HasMedia(group string, usage string) bool {
 	media := findMediaInProduct(BasicProduct(p), group, usage)
-	if media == nil {
-		return false
-	}
-	return true
+	return media != nil
 }
 
 // GetMedia  for SimpleProduct

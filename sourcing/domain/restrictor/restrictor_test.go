@@ -8,7 +8,6 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
-	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	sourcingApplication "flamingo.me/flamingo-commerce/v3/sourcing/application"
 	sourcingDomain "flamingo.me/flamingo-commerce/v3/sourcing/domain"
 
@@ -40,7 +39,7 @@ var (
 )
 
 func TestRestrictor_Restrict(t *testing.T) {
-	fixtureProduct := productDomain.SimpleProduct{Identifier: "productid"}
+	fixtureProduct := domain.SimpleProduct{Identifier: "productid"}
 
 	fixtureCart := &cart.Cart{}
 

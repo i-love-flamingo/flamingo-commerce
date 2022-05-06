@@ -7,7 +7,7 @@ type CommerceSearchFacet interface {
 	Name() string
 	Label() string
 	Position() int
-	//Items() []CommerceSearchFacetItem
+	// Items() []CommerceSearchFacetItem
 	HasSelectedItem() bool
 }
 
@@ -169,10 +169,7 @@ func hasSelectedItem(items []*CommerceSearchTreeFacetItem) bool {
 
 // HasSelectedItem getter
 func (c *CommerceSearchTreeFacet) HasSelectedItem() bool {
-	if hasSelectedItem(c.items) {
-		return true
-	}
-	return false
+	return hasSelectedItem(c.items)
 }
 
 // CommerceSearchTreeFacetItem dto for tree facet items

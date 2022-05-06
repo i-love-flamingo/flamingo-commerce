@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"flamingo.me/flamingo-commerce/v3/price/domain"
-	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -228,68 +227,68 @@ func TestSaleable_GetLoyaltyChargeSplit(t *testing.T) {
 
 	p := Saleable{
 		ActivePrice: PriceInfo{
-			//100€ value
-			Default: priceDomain.NewFromInt(100, 1, "€"),
+			// 100€ value
+			Default: domain.NewFromInt(100, 1, "€"),
 		},
 		LoyaltyPrices: []LoyaltyPriceInfo{
 			{
 				Type:             "loyalty.miles",
 				MaxPointsToSpent: new(big.Float).SetInt64(50),
-				//10 is the minimum to pay in miles (=20€ value)
+				// 10 is the minimum to pay in miles (=20€ value)
 				MinPointsToSpent: *new(big.Float).SetInt64(10),
-				//50 miles == 100€ meaning 1Mile = 2€
-				Default: priceDomain.NewFromInt(50, 1, "Miles"),
+				// 50 miles == 100€ meaning 1Mile = 2€
+				Default: domain.NewFromInt(50, 1, "Miles"),
 			},
 		},
 	}
 
-	//Test default charges (the min price in points should be evaluated)
+	// Test default charges (the min price in points should be evaluated)
 	charges := p.GetLoyaltyChargeSplit(nil, nil, 1)
 
 	chargeLoyaltyMiles, found := charges.GetByType("loyalty.miles")
 	assert.True(t, found)
-	assert.Equal(t, priceDomain.NewFromInt(10, 1, "Miles"), chargeLoyaltyMiles.Price, "only minimum points expected")
+	assert.Equal(t, domain.NewFromInt(10, 1, "Miles"), chargeLoyaltyMiles.Price, "only minimum points expected")
 
-	chargeMain, found := charges.GetByType(priceDomain.ChargeTypeMain)
+	chargeMain, found := charges.GetByType(domain.ChargeTypeMain)
 	assert.True(t, found)
-	assert.Equal(t, priceDomain.NewFromInt(80, 1, "€"), chargeMain.Price)
+	assert.Equal(t, domain.NewFromInt(80, 1, "€"), chargeMain.Price)
 
-	//Test when we pass 15 miles as wish
-	wished := NewWishedToPay().Add("loyalty.miles", priceDomain.NewFromInt(15, 1, "Miles"))
+	// Test when we pass 15 miles as wish
+	wished := NewWishedToPay().Add("loyalty.miles", domain.NewFromInt(15, 1, "Miles"))
 	charges = p.GetLoyaltyChargeSplit(nil, &wished, 1)
-	chargeMain, found = charges.GetByType(priceDomain.ChargeTypeMain)
+	chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 	assert.True(t, found)
 
-	assert.Equal(t, priceDomain.NewFromInt(70, 1, "€"), chargeMain.Price)
+	assert.Equal(t, domain.NewFromInt(70, 1, "€"), chargeMain.Price)
 
 	chargeLoyaltyMiles, found = charges.GetByType("loyalty.miles")
 	assert.True(t, found)
-	assert.Equal(t, priceDomain.NewFromInt(15, 1, "Miles"), chargeLoyaltyMiles.Price, "the whished 15 points expected")
+	assert.Equal(t, domain.NewFromInt(15, 1, "Miles"), chargeLoyaltyMiles.Price, "the whished 15 points expected")
 
-	//Test when we pass 100 miles as wish
-	wished = NewWishedToPay().Add("loyalty.miles", priceDomain.NewFromInt(100, 1, "Miles"))
+	// Test when we pass 100 miles as wish
+	wished = NewWishedToPay().Add("loyalty.miles", domain.NewFromInt(100, 1, "Miles"))
 	charges = p.GetLoyaltyChargeSplit(nil, &wished, 1)
-	chargeMain, found = charges.GetByType(priceDomain.ChargeTypeMain)
+	chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 	assert.True(t, found)
 
-	assert.Equal(t, priceDomain.NewFromInt(0, 1, "€"), chargeMain.Price, "Main charge should be 0")
+	assert.Equal(t, domain.NewFromInt(0, 1, "€"), chargeMain.Price, "Main charge should be 0")
 
 	chargeLoyaltyMiles, found = charges.GetByType("loyalty.miles")
 	assert.True(t, found)
-	assert.Equal(t, priceDomain.NewFromInt(50, 1, "Miles"), chargeLoyaltyMiles.Price, "50 points expected as max")
+	assert.Equal(t, domain.NewFromInt(50, 1, "Miles"), chargeLoyaltyMiles.Price, "50 points expected as max")
 
-	//Test when we pass 30 miles as desired payment and wish for qty 2
-	wished = NewWishedToPay().Add("loyalty.miles", priceDomain.NewFromInt(30, 1, "Miles"))
+	// Test when we pass 30 miles as desired payment and wish for qty 2
+	wished = NewWishedToPay().Add("loyalty.miles", domain.NewFromInt(30, 1, "Miles"))
 	doublePrice := p.ActivePrice.GetFinalPrice().Multiply(2)
 	charges = p.GetLoyaltyChargeSplit(&doublePrice, &wished, 1)
-	chargeMain, found = charges.GetByType(priceDomain.ChargeTypeMain)
+	chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 	assert.True(t, found)
 
-	assert.Equal(t, priceDomain.NewFromInt(140, 1, "€"), chargeMain.Price)
+	assert.Equal(t, domain.NewFromInt(140, 1, "€"), chargeMain.Price)
 
 	chargeLoyaltyMiles, found = charges.GetByType("loyalty.miles")
 	assert.True(t, found)
-	assert.Equal(t, priceDomain.NewFromInt(30, 1, "Miles"), chargeLoyaltyMiles.Price, "the whished 30 points expected")
+	assert.Equal(t, domain.NewFromInt(30, 1, "Miles"), chargeLoyaltyMiles.Price, "the whished 30 points expected")
 
 }
 
@@ -297,73 +296,73 @@ func TestSaleable_GetLoyaltyChargeSplitWithAdjustedValue(t *testing.T) {
 
 	p := Saleable{
 		ActivePrice: PriceInfo{
-			//100€ value
-			Default: priceDomain.NewFromInt(100, 1, "€"),
+			// 100€ value
+			Default: domain.NewFromInt(100, 1, "€"),
 		},
 		LoyaltyPrices: []LoyaltyPriceInfo{
 			{
 				Type:             "loyalty.miles",
 				MaxPointsToSpent: nil,
-				//10 is the minimum to pay in miles (=20€ value)
+				// 10 is the minimum to pay in miles (=20€ value)
 				MinPointsToSpent: *new(big.Float).SetInt64(10),
-				//50 miles == 100€ meaning 1Mile = 2€
-				Default: priceDomain.NewFromInt(50, 1, "Miles"),
+				// 50 miles == 100€ meaning 1Mile = 2€
+				Default: domain.NewFromInt(50, 1, "Miles"),
 			},
 		},
 	}
 
-	//we need to pay 150€ (e,g. because some tax are added)
-	newValue := priceDomain.NewFromInt(150, 1, "€")
+	// we need to pay 150€ (e,g. because some tax are added)
+	newValue := domain.NewFromInt(150, 1, "€")
 	charges := p.GetLoyaltyChargeSplit(&newValue, nil, 1)
 
 	chargeLoyaltyMiles, found := charges.GetByType("loyalty.miles")
 	assert.True(t, found)
-	assert.Equal(t, priceDomain.NewFromInt(10, 1, "Miles"), chargeLoyaltyMiles.Price, "only minimum points expected")
+	assert.Equal(t, domain.NewFromInt(10, 1, "Miles"), chargeLoyaltyMiles.Price, "only minimum points expected")
 
-	chargeMain, found := charges.GetByType(priceDomain.ChargeTypeMain)
+	chargeMain, found := charges.GetByType(domain.ChargeTypeMain)
 	assert.True(t, found)
-	assert.Equal(t, priceDomain.NewFromInt(130, 1, "€"), chargeMain.Price)
+	assert.Equal(t, domain.NewFromInt(130, 1, "€"), chargeMain.Price)
 
-	//pay 150 - and want to spend less then min
-	newValue = priceDomain.NewFromInt(150, 1, "€")
+	// pay 150 - and want to spend less then min
+	newValue = domain.NewFromInt(150, 1, "€")
 	wished := NewWishedToPay()
-	wished.Add("loyalty.miles", priceDomain.NewFromInt(8, 1, "Miles"))
+	wished.Add("loyalty.miles", domain.NewFromInt(8, 1, "Miles"))
 	charges = p.GetLoyaltyChargeSplit(&newValue, &wished, 1)
 
 	chargeLoyaltyMiles, found = charges.GetByType("loyalty.miles")
 	assert.True(t, found)
-	assert.Equal(t, priceDomain.NewFromInt(10, 1, "Miles"), chargeLoyaltyMiles.Price, "only minimum points expected")
+	assert.Equal(t, domain.NewFromInt(10, 1, "Miles"), chargeLoyaltyMiles.Price, "only minimum points expected")
 
-	chargeMain, found = charges.GetByType(priceDomain.ChargeTypeMain)
+	chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 	assert.True(t, found)
-	assert.Equal(t, priceDomain.NewFromInt(130, 1, "€"), chargeMain.Price)
+	assert.Equal(t, domain.NewFromInt(130, 1, "€"), chargeMain.Price)
 
-	//we need to pay 50€ (e,g. because some discounts are applied)
-	newValue = priceDomain.NewFromInt(50, 1, "€")
+	// we need to pay 50€ (e,g. because some discounts are applied)
+	newValue = domain.NewFromInt(50, 1, "€")
 	charges = p.GetLoyaltyChargeSplit(&newValue, nil, 1)
 
 	chargeLoyaltyMiles, found = charges.GetByType("loyalty.miles")
 	assert.True(t, found)
-	assert.Equal(t, priceDomain.NewFromInt(10, 1, "Miles"), chargeLoyaltyMiles.Price, "only minimum points expected")
+	assert.Equal(t, domain.NewFromInt(10, 1, "Miles"), chargeLoyaltyMiles.Price, "only minimum points expected")
 
-	chargeMain, found = charges.GetByType(priceDomain.ChargeTypeMain)
+	chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 	assert.True(t, found)
-	assert.Equal(t, priceDomain.NewFromInt(30, 1, "€"), chargeMain.Price)
+	assert.Equal(t, domain.NewFromInt(30, 1, "€"), chargeMain.Price)
 
-	//we need to pay 150€ and wish to pay everything with miles
-	newValue = priceDomain.NewFromInt(150, 1, "€")
+	// we need to pay 150€ and wish to pay everything with miles
+	newValue = domain.NewFromInt(150, 1, "€")
 
 	wished = NewWishedToPay()
-	wished.Add("loyalty.miles", priceDomain.NewFromInt(200000, 1, "Miles"))
+	wished.Add("loyalty.miles", domain.NewFromInt(200000, 1, "Miles"))
 	charges = p.GetLoyaltyChargeSplit(&newValue, &wished, 1)
 
 	chargeLoyaltyMiles, found = charges.GetByType("loyalty.miles")
 	assert.True(t, found)
-	assert.Equal(t, priceDomain.NewFromInt(75, 1, "Miles"), chargeLoyaltyMiles.Price, "adjusted  points expected as charge (not more than total value)")
+	assert.Equal(t, domain.NewFromInt(75, 1, "Miles"), chargeLoyaltyMiles.Price, "adjusted  points expected as charge (not more than total value)")
 
-	chargeMain, found = charges.GetByType(priceDomain.ChargeTypeMain)
+	chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 	assert.True(t, found)
-	assert.Equal(t, priceDomain.NewFromInt(0, 1, "€"), chargeMain.Price)
+	assert.Equal(t, domain.NewFromInt(0, 1, "€"), chargeMain.Price)
 
 }
 
@@ -371,60 +370,60 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 
 	p := Saleable{
 		ActivePrice: PriceInfo{
-			//100€ value
-			Default: priceDomain.NewFromFloat(9.99, "€"),
+			// 100€ value
+			Default: domain.NewFromFloat(9.99, "€"),
 		},
 		LoyaltyPrices: []LoyaltyPriceInfo{
 			{
 				Type:             "loyalty.miles",
 				MaxPointsToSpent: nil,
-				//10 is the minimum to pay in miles (=20€ value)
+				// 10 is the minimum to pay in miles (=20€ value)
 				MinPointsToSpent: *new(big.Float).SetInt64(10),
-				//50 miles == 100€ meaning 1Mile = 2€
+				// 50 miles == 100€ meaning 1Mile = 2€
 				Default: domain.NewFromInt(53, 1, "Miles"), // one mile = 5.305305305305305 €
 			},
 		},
 	}
 
 	wishedMax := NewWishedToPay()
-	wishedMax.Add("loyalty.miles", priceDomain.NewFromInt(math.MaxInt64, 1, "Miles"))
+	wishedMax.Add("loyalty.miles", domain.NewFromInt(math.MaxInt64, 1, "Miles"))
 
-	//107.06 would be 567.98 miles - so  we pay 567 miles (rounded floor always) we expect to pay everything in miles.
+	// 107.06 would be 567.98 miles - so  we pay 567 miles (rounded floor always) we expect to pay everything in miles.
 	expectedMilesMax := int64(567)
-	newValue := priceDomain.NewFromFloat(107.06, "€")
+	newValue := domain.NewFromFloat(107.06, "€")
 	charges := p.GetLoyaltyChargeSplit(&newValue, &wishedMax, 1)
 	chargeLoyaltyMiles, _ := charges.GetByType("loyalty.miles")
-	assert.Equal(t, priceDomain.NewFromInt(expectedMilesMax, 1, "Miles").FloatAmount(), chargeLoyaltyMiles.Price.FloatAmount(), "107.06 expected to be 567 miles")
+	assert.Equal(t, domain.NewFromInt(expectedMilesMax, 1, "Miles").FloatAmount(), chargeLoyaltyMiles.Price.FloatAmount(), "107.06 expected to be 567 miles")
 
 	wished := NewWishedToPay()
-	wished.Add("loyalty.miles", priceDomain.NewFromInt(expectedMilesMax, 1, "Miles"))
+	wished.Add("loyalty.miles", domain.NewFromInt(expectedMilesMax, 1, "Miles"))
 
 	charges = p.GetLoyaltyChargeSplit(&newValue, &wished, 1)
 
 	chargeLoyaltyMiles, found := charges.GetByType("loyalty.miles")
 	assert.True(t, found)
-	assert.Equal(t, priceDomain.NewFromInt(567, 1, "Miles"), chargeLoyaltyMiles.Price, "adjusted  points expected as charge (not more than total value)")
+	assert.Equal(t, domain.NewFromInt(567, 1, "Miles"), chargeLoyaltyMiles.Price, "adjusted  points expected as charge (not more than total value)")
 	assert.Equal(t, 107.06, chargeLoyaltyMiles.Value.FloatAmount(), "adjusted  points expected as charge (not more than total value)")
 
-	chargeMain, found := charges.GetByType(priceDomain.ChargeTypeMain)
+	chargeMain, found := charges.GetByType(domain.ChargeTypeMain)
 	assert.True(t, found)
-	assert.Equal(t, priceDomain.NewFromInt(0, 1, "€"), chargeMain.Price)
+	assert.Equal(t, domain.NewFromInt(0, 1, "€"), chargeMain.Price)
 
-	//106.89 would be 567.084084084084084 miles - so  we also pay 567 miles (rounded) we expect to pay everything in miles.
-	newValue = priceDomain.NewFromFloat(106.89, "€")
+	// 106.89 would be 567.084084084084084 miles - so  we also pay 567 miles (rounded) we expect to pay everything in miles.
+	newValue = domain.NewFromFloat(106.89, "€")
 
 	wished = NewWishedToPay()
-	wished.Add("loyalty.miles", priceDomain.NewFromInt(567, 1, "Miles"))
+	wished.Add("loyalty.miles", domain.NewFromInt(567, 1, "Miles"))
 	charges = p.GetLoyaltyChargeSplit(&newValue, &wished, 1)
 
 	chargeLoyaltyMiles, found = charges.GetByType("loyalty.miles")
 	assert.True(t, found)
-	assert.Equal(t, priceDomain.NewFromInt(567, 1, "Miles"), chargeLoyaltyMiles.Price, "adjusted  points expected as charge (not more than total value)")
+	assert.Equal(t, domain.NewFromInt(567, 1, "Miles"), chargeLoyaltyMiles.Price, "adjusted  points expected as charge (not more than total value)")
 	assert.Equal(t, 106.89, chargeLoyaltyMiles.Value.FloatAmount(), "adjusted  points expected as charge (not more than total value)")
 
-	chargeMain, found = charges.GetByType(priceDomain.ChargeTypeMain)
+	chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 	assert.True(t, found)
-	assert.Equal(t, priceDomain.NewFromInt(0, 1, "€"), chargeMain.Price)
+	assert.Equal(t, domain.NewFromInt(0, 1, "€"), chargeMain.Price)
 
 }
 
@@ -432,30 +431,30 @@ func TestSaleable_GetLoyaltyChargeSplitIgnoreMin(t *testing.T) {
 
 	p := Saleable{
 		ActivePrice: PriceInfo{
-			//100€ value
-			Default: priceDomain.NewFromInt(100, 1, "€"),
+			// 100€ value
+			Default: domain.NewFromInt(100, 1, "€"),
 		},
 		LoyaltyPrices: []LoyaltyPriceInfo{
 			{
 				Type:             "loyalty.miles",
 				MaxPointsToSpent: new(big.Float).SetInt64(50),
-				//10 is the minimum to pay in miles (=20€ value)
+				// 10 is the minimum to pay in miles (=20€ value)
 				MinPointsToSpent: *new(big.Float).SetInt64(10),
-				//50 miles == 100€ meaning 1Mile = 2€
-				Default: priceDomain.NewFromInt(50, 1, "Miles"),
+				// 50 miles == 100€ meaning 1Mile = 2€
+				Default: domain.NewFromInt(50, 1, "Miles"),
 			},
 		},
 	}
 
-	//Test default charges (the min price in points should be evaluated)
+	// Test default charges (the min price in points should be evaluated)
 	charges := p.GetLoyaltyChargeSplitIgnoreMin(nil, nil, 1)
 
 	_, found := charges.GetByType("loyalty.miles")
 	assert.False(t, found)
 
-	chargeMain, found := charges.GetByType(priceDomain.ChargeTypeMain)
+	chargeMain, found := charges.GetByType(domain.ChargeTypeMain)
 	assert.True(t, found)
-	assert.Equal(t, priceDomain.NewFromInt(100, 1, "€"), chargeMain.Price)
+	assert.Equal(t, domain.NewFromInt(100, 1, "€"), chargeMain.Price)
 }
 
 func TestSaleable_GetLoyaltyEarningByType(t *testing.T) {
@@ -479,18 +478,18 @@ func TestSaleable_GetLoyaltyEarningByType(t *testing.T) {
 			loyaltyEarnings: []LoyaltyEarningInfo{
 				{
 					Type:    "MilesAndMore",
-					Default: priceDomain.NewFromFloat(23.23, "NZD"),
+					Default: domain.NewFromFloat(23.23, "NZD"),
 				},
 				{
 					Type:    "TheOtherThing",
-					Default: priceDomain.NewFromFloat(24.24, "NZD"),
+					Default: domain.NewFromFloat(24.24, "NZD"),
 				},
 			},
 			leType:   "MilesAndMore",
 			wantBool: true,
 			wantEarning: &LoyaltyEarningInfo{
 				Type:    "MilesAndMore",
-				Default: priceDomain.NewFromFloat(23.23, "NZD"),
+				Default: domain.NewFromFloat(23.23, "NZD"),
 			},
 		},
 		{
@@ -498,11 +497,11 @@ func TestSaleable_GetLoyaltyEarningByType(t *testing.T) {
 			loyaltyEarnings: []LoyaltyEarningInfo{
 				{
 					Type:    "MilesAndMoreX",
-					Default: priceDomain.NewFromFloat(23.23, "NZD"),
+					Default: domain.NewFromFloat(23.23, "NZD"),
 				},
 				{
 					Type:    "TheOtherThing",
-					Default: priceDomain.NewFromFloat(24.24, "NZD"),
+					Default: domain.NewFromFloat(24.24, "NZD"),
 				},
 			},
 			leType:      "MilesAndMore",

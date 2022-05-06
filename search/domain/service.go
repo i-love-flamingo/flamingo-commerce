@@ -84,7 +84,7 @@ type (
 
 	// Facet provided by the search backend
 	Facet struct {
-		Type     string
+		Type     FacetType
 		Name     string
 		Label    string
 		Items    []*FacetItem
@@ -173,8 +173,8 @@ func (fc FacetCollection) Order() []string {
 // Facet types
 const (
 	ListFacet  FacetType = "ListFacet"
-	TreeFacet            = "TreeFacet"
-	RangeFacet           = "RangeFacet"
+	TreeFacet  FacetType = "TreeFacet"
+	RangeFacet FacetType = "RangeFacet"
 )
 
 var (

@@ -3,10 +3,11 @@ package controller
 import (
 	"context"
 	"net/url"
-	"strings"
 
 	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/pkg/errors"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 
 	"flamingo.me/flamingo-commerce/v3/product/application"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
@@ -90,7 +91,7 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 					combinationsOrder[attribute] = append(combinationsOrder[attribute], variant.Attributes[attribute].Value())
 				}
 
-				//titles[variant.Attributes[subattribute].Value()] = variant.Attributes[subattribute].Label
+				// titles[variant.Attributes[subattribute].Value()] = variant.Attributes[subattribute].Label
 				if subattribute != attribute {
 					if _, ok := variant.Attributes[subattribute]; ok {
 						if combinations[attribute][variant.Attributes[attribute].Value()][subattribute] == nil {
@@ -113,7 +114,7 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 
 		viewVariantAttribute := viewVariantAttribute{
 			Key:       code,
-			Title:     strings.Title(code),
+			Title:     cases.Title(language.Und).String(code),
 			CodeLabel: codeLabel,
 		}
 
@@ -142,7 +143,7 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 
 			label, ok := titles[code][optionCode]
 			if !ok || label == "" {
-				label = strings.Title(optionCode)
+				label = cases.Title(language.Und).String(optionCode)
 			}
 			viewVariantAttribute.Options = append(viewVariantAttribute.Options, viewVariantOption{
 				Key:          optionCode,
@@ -184,7 +185,7 @@ func (vc *View) variantSelection(configurable domain.ConfigurableProduct, active
 // Get Response for Product matching sku param
 func (vc *View) Get(c context.Context, r *web.Request) web.Result {
 	product, err := vc.ProductService.Get(c, r.Params["marketplacecode"])
-	skipnamecheck, _ := r.Params["skipnamecheck"]
+	skipnamecheck := r.Params["skipnamecheck"]
 
 	// catch error
 	if err != nil {
@@ -208,7 +209,7 @@ func (vc *View) Get(c context.Context, r *web.Request) web.Result {
 		variantCode, ok := r.Params["variantcode"]
 
 		if !ok {
-			//Redirect if url is not canonical
+			// Redirect if url is not canonical
 			redirect := vc.getRedirectIfRequired(configurableProduct, r, skipnamecheck)
 			if redirect != nil {
 				return redirect
@@ -223,7 +224,7 @@ func (vc *View) Get(c context.Context, r *web.Request) web.Result {
 				return vc.Responder.NotFound(err)
 			}
 			activeVariant = &configurableProductWithActiveVariant.ActiveVariant
-			//Redirect if url is not canonical
+			// Redirect if url is not canonical
 			redirect := vc.getRedirectIfRequired(configurableProductWithActiveVariant, r, skipnamecheck)
 			if redirect != nil {
 				return redirect
@@ -235,7 +236,7 @@ func (vc *View) Get(c context.Context, r *web.Request) web.Result {
 		viewData.VariantSelection = vc.variantSelection(configurableProduct, activeVariant)
 
 	} else {
-		//Redirect if url is not canonical
+		// Redirect if url is not canonical
 		redirect := vc.getRedirectIfRequired(product, r, skipnamecheck)
 		if redirect != nil {
 			return redirect
@@ -264,7 +265,7 @@ func (vc *View) getRedirectIfRequired(product domain.BasicProduct, r *web.Reques
 	if skipnamecheck != "" {
 		return nil
 	}
-	//Redirect if url is not canonical
+	// Redirect if url is not canonical
 	if vc.URLService.GetNameParam(product, "") != currentNameParameter {
 		if redirectURL, err := vc.URLService.Get(product, ""); err == nil {
 			newURL, _ := url.Parse(redirectURL)

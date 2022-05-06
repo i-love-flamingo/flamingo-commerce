@@ -364,7 +364,7 @@ func (bpd BasicProductData) GetMedia(usage string) Media {
 
 // IsSaleableNow checks flag and time
 func (p Saleable) IsSaleableNow() bool {
-	if p.IsSaleable == false {
+	if !p.IsSaleable {
 		return false
 	}
 
@@ -667,7 +667,7 @@ func (c *CategoryTeaser) CPath() string {
 
 // First of the badges, returns nil if there is no first badge
 func (b Badges) First() *Badge {
-	if 0 == len(b) {
+	if len(b) == 0 {
 		return nil
 	}
 

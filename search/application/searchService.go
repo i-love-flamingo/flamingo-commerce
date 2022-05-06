@@ -46,7 +46,7 @@ type (
 	}
 )
 
-//Inject dependencies
+// Inject dependencies
 func (s *SearchService) Inject(
 	paginationInfoFactory *utils.PaginationInfoFactory,
 	logger flamingo.Logger,
@@ -68,7 +68,7 @@ func (s *SearchService) Inject(
 // FindBy returns a SearchResult for the given Request
 func (s *SearchService) FindBy(ctx context.Context, documentType string, searchRequest SearchRequest) (*SearchResult, error) {
 	if s.searchService == nil {
-		return nil, errors.New("No searchservice available")
+		return nil, errors.New("no searchservice available")
 	}
 	var currentURL *url.URL
 	request := web.RequestFromContext(ctx)
@@ -121,7 +121,7 @@ func (s *SearchService) FindBy(ctx context.Context, documentType string, searchR
 // Find returns a Searchresult for all document types for the given Request
 func (s *SearchService) Find(ctx context.Context, searchRequest SearchRequest) (map[string]*SearchResult, error) {
 	if s.searchService == nil {
-		return nil, errors.New("No searchservice available")
+		return nil, errors.New("no searchservice available")
 	}
 	var currentURL *url.URL
 	request := web.RequestFromContext(ctx)
@@ -200,9 +200,7 @@ func BuildFilters(request SearchRequest, defaultPageSize int) []domain.Filter {
 		filters = append(filters, domain.NewSortFilter(request.SortBy, request.SortDirection))
 	}
 
-	for _, additionalFilter := range request.AdditionalFilter {
-		filters = append(filters, additionalFilter)
-	}
+	filters = append(filters, request.AdditionalFilter...)
 
 	return filters
 }

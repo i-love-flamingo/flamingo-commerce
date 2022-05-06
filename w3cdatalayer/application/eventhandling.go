@@ -34,7 +34,7 @@ func (e *EventReceiver) Inject(factory *Factory, cartFactory *decorator.Decorate
 // In case the events might be asycron (e.g. the origin action does a redirect to a success page) - we save the datalayer Event to a Session Flash - to make sure it is still available the first time the DatalayerService.Get is calles
 func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 	switch currentEvent := event.(type) {
-	//Handle OrderPlacedEvent and Set Transaction to current datalayer
+	// Handle OrderPlacedEvent and Set Transaction to current datalayer
 	case *events.AddToCartEvent:
 		e.logger.WithContext(ctx).Debug("Receive Event AddToCartEvent")
 		session := web.SessionFromContext(ctx)
@@ -59,7 +59,7 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 			if currentEvent.VariantMarketplaceCode != "" {
 				saleableProductCode = currentEvent.VariantMarketplaceCode
 			}
-			dataLayerEvent := e.factory.BuildChangeQtyEvent(saleableProductCode, currentEvent.ProductName, currentEvent.QtyAfter, currentEvent.QtyBefore, currentEvent.CartID)
+			dataLayerEvent := e.factory.BuildChangeQtyEvent(saleableProductCode, currentEvent.ProductName, currentEvent.QtyAfter, currentEvent.QtyBefore, currentEvent.Cart.ID)
 			session.AddFlash(
 				dataLayerEvent,
 				SessionEventsKey,
