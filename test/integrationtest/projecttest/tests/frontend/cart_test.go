@@ -6,9 +6,8 @@ package frontend_test
 import (
 	"testing"
 
-	"gopkg.in/go-playground/assert.v1"
-
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_Cart_AddToCart(t *testing.T) {
