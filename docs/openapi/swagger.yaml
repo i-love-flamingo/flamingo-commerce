@@ -1,19 +1,4 @@
 definitions:
-  CategoryAttribute:
-    properties:
-      Code:
-        type: string
-      Label:
-        type: string
-      Values:
-        items:
-          $ref: '#/definitions/domain.AttributeValue'
-        type: array
-    type: object
-  CategoryAttributes:
-    additionalProperties:
-      $ref: '#/definitions/CategoryAttribute'
-    type: object
   application.PlaceOrderPaymentInfo:
     properties:
       Amount:
@@ -605,11 +590,8 @@ definitions:
       Delivery:
         $ref: '#/definitions/cart.Delivery'
     type: object
-  domain.AttributeValue:
-    properties:
-      Label:
-        type: string
-      RawValue: {}
+  domain.Attributes:
+    additionalProperties: {}
     type: object
   domain.Badge:
     properties:
@@ -709,6 +691,19 @@ definitions:
         description: Type or Name of the Loyalty program
         type: string
     type: object
+  domain.Media:
+    properties:
+      MimeType:
+        type: string
+      Reference:
+        type: string
+      Title:
+        type: string
+      Type:
+        type: string
+      Usage:
+        type: string
+    type: object
   domain.PaymentRequestAPI:
     properties:
       CompleteURL:
@@ -767,7 +762,7 @@ definitions:
       ActivePrice:
         $ref: '#/definitions/domain.PriceInfo'
       Attributes:
-        $ref: '#/definitions/CategoryAttributes'
+        $ref: '#/definitions/domain.Attributes'
       AvailablePrices:
         items:
           $ref: '#/definitions/domain.PriceInfo'
@@ -815,7 +810,8 @@ definitions:
       MarketPlaceCode:
         type: string
       Media:
-        items: {}
+        items:
+          $ref: '#/definitions/domain.Media'
         type: array
       RetailerCode:
         type: string
@@ -854,7 +850,8 @@ definitions:
         type: string
       Media:
         description: Media
-        items: {}
+        items:
+          $ref: '#/definitions/domain.Media'
         type: array
       PreSelectedVariantSku:
         description: PreSelectedVariantSku might be set for configurables to give

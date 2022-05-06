@@ -1090,29 +1090,6 @@ var doc = `{
         }
     },
     "definitions": {
-        "CategoryAttribute": {
-            "type": "object",
-            "properties": {
-                "Code": {
-                    "type": "string"
-                },
-                "Label": {
-                    "type": "string"
-                },
-                "Values": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/domain.AttributeValue"
-                    }
-                }
-            }
-        },
-        "CategoryAttributes": {
-            "type": "object",
-            "additionalProperties": {
-                "$ref": "#/definitions/CategoryAttribute"
-            }
-        },
         "application.PlaceOrderPaymentInfo": {
             "type": "object",
             "properties": {
@@ -1886,14 +1863,9 @@ var doc = `{
                 }
             }
         },
-        "domain.AttributeValue": {
+        "domain.Attributes": {
             "type": "object",
-            "properties": {
-                "Label": {
-                    "type": "string"
-                },
-                "RawValue": {}
-            }
+            "additionalProperties": {}
         },
         "domain.Badge": {
             "type": "object",
@@ -2031,6 +2003,26 @@ var doc = `{
                 }
             }
         },
+        "domain.Media": {
+            "type": "object",
+            "properties": {
+                "MimeType": {
+                    "type": "string"
+                },
+                "Reference": {
+                    "type": "string"
+                },
+                "Title": {
+                    "type": "string"
+                },
+                "Type": {
+                    "type": "string"
+                },
+                "Usage": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.PaymentRequestAPI": {
             "type": "object",
             "properties": {
@@ -2119,7 +2111,7 @@ var doc = `{
                     "$ref": "#/definitions/domain.PriceInfo"
                 },
                 "Attributes": {
-                    "$ref": "#/definitions/CategoryAttributes"
+                    "$ref": "#/definitions/domain.Attributes"
                 },
                 "AvailablePrices": {
                     "type": "array",
@@ -2188,7 +2180,9 @@ var doc = `{
                 },
                 "Media": {
                     "type": "array",
-                    "items": {}
+                    "items": {
+                        "$ref": "#/definitions/domain.Media"
+                    }
                 },
                 "RetailerCode": {
                     "type": "string"
@@ -2245,7 +2239,9 @@ var doc = `{
                 "Media": {
                     "description": "Media",
                     "type": "array",
-                    "items": {}
+                    "items": {
+                        "$ref": "#/definitions/domain.Media"
+                    }
                 },
                 "PreSelectedVariantSku": {
                     "description": "PreSelectedVariantSku might be set for configurables to give a hint to link to a variant of a configurable (That might be the case if a user filters for an attribute and in the teaser the variant with that attribute is shown)",
