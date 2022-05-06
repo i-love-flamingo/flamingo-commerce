@@ -169,7 +169,7 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.S
 	if billingAddress == nil {
 		os.logger.WithContext(ctx).Warn("CurrentCartSaveInfos called without billing address")
 
-		return errors.New("Billing Address is missing")
+		return errors.New("billing address is missing")
 	}
 
 	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(ctx, session)
@@ -354,12 +354,12 @@ func (os *OrderService) LastPlacedOrder(ctx context.Context) (*PlaceOrderInfo, e
 	session := web.SessionFromContext(ctx)
 
 	lastPlacedOrder, found := session.Load(LastPlacedOrderSessionKey)
-	if found == false {
+	if !found {
 		return nil, nil
 	}
 
 	placeOrderInfo, ok := lastPlacedOrder.(PlaceOrderInfo)
-	if ok == false {
+	if !ok {
 		return nil, errors.New("placeOrderInfo couldn't be received from session")
 	}
 

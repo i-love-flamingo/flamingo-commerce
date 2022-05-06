@@ -150,7 +150,7 @@ func (p Price) currencyGuard(check Price) (Price, error) {
 			currency: p.currency,
 		}, nil
 	}
-	return NewZero(p.currency), errors.New("Cannot calculate prices in different currencies")
+	return NewZero(p.currency), errors.New("cannot calculate prices in different currencies")
 }
 
 // Discounted returns new price reduced by given percent
@@ -265,18 +265,12 @@ func (p Price) IsGreaterThen(cmp Price) bool {
 
 // IsLessThenValue compares the price with a given amount value (assuming same currency)
 func (p Price) IsLessThenValue(amount big.Float) bool {
-	if p.amount.Cmp(&amount) == -1 {
-		return true
-	}
-	return false
+	return p.amount.Cmp(&amount) == -1
 }
 
 // IsGreaterThenValue compares the price with a given amount value (assuming same currency)
 func (p Price) IsGreaterThenValue(amount big.Float) bool {
-	if p.amount.Cmp(&amount) == 1 {
-		return true
-	}
-	return false
+	return p.amount.Cmp(&amount) == 1
 }
 
 // IsNegative returns true if the price represents a negative value
@@ -385,7 +379,7 @@ func (p Price) payableRoundingPrecision() (string, int) {
 //  - 	 2.07 + 2.07+2.08 +2.08 +2.08 +2.08
 func (p Price) SplitInPayables(count int) ([]Price, error) {
 	if count <= 0 {
-		return nil, errors.New("Split must be higher than zero")
+		return nil, errors.New("split must be higher than zero")
 	}
 	// guard clause invert negative values
 	_, precision := p.payableRoundingPrecision()

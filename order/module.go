@@ -11,8 +11,7 @@ import (
 type (
 	// Module definition of the order module
 	Module struct {
-		useFakeAdapter     bool
-		useInMemoryService bool
+		useFakeAdapter bool
 	}
 )
 

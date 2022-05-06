@@ -696,10 +696,6 @@ func (cob *DefaultCartBehaviour) RemoveGiftCard(ctx context.Context, cart *domai
 	return cob.resetPaymentSelectionIfInvalid(ctx, newCartWithOutGiftCard)
 }
 
-func (cob *DefaultCartBehaviour) isCurrentPaymentSelectionValid(ctx context.Context, cart *domaincart.Cart) bool {
-	return cob.checkPaymentSelection(ctx, cart, cart.PaymentSelection) == nil
-}
-
 // isPaymentSelectionValid checks if the grand total of the cart matches the total of the supplied payment selection
 func (cob *DefaultCartBehaviour) checkPaymentSelection(ctx context.Context, cart *domaincart.Cart, paymentSelection domaincart.PaymentSelection) error {
 	if paymentSelection == nil {

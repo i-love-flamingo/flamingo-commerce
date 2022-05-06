@@ -157,7 +157,7 @@ func removeZeroChargesFromSplit(
 				continue
 			}
 			// we assume that map of types and method matches
-			method, _ := chargeTypeToPaymentMethod[qualifier.Type]
+			method := chargeTypeToPaymentMethod[qualifier.Type]
 			add(id, method, charge)
 		}
 	}

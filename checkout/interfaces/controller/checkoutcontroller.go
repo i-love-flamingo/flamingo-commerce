@@ -784,7 +784,7 @@ func (cc *CheckoutController) checkTermsAndPrivacyPolicy(r *web.Request) (bool, 
 
 	canProceed := proceed == "1" && (!cc.privacyPolicyRequired || privacyPolicy == "1") && termsAndConditions == "1"
 
-	if 0 == len(errorMessages) {
+	if len(errorMessages) == 0 {
 		return canProceed, nil
 	}
 

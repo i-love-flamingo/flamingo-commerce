@@ -80,7 +80,7 @@ func (e *PlaceOrderLoggerAdapter) placeCart(cart *cartDomain.Cart, payment *plac
 // checkPayment
 func (e *PlaceOrderLoggerAdapter) checkPayment(cart *cartDomain.Cart, payment *placeorder.Payment) error {
 	if payment == nil && cart.GrandTotal.IsPositive() {
-		return errors.New("No valid Payment given")
+		return errors.New("no valid payment given")
 	}
 	if cart.GrandTotal.IsPositive() {
 		totalPrice, err := payment.TotalValue()
@@ -88,7 +88,7 @@ func (e *PlaceOrderLoggerAdapter) checkPayment(cart *cartDomain.Cart, payment *p
 			return err
 		}
 		if !totalPrice.Equal(cart.GrandTotal) {
-			return errors.New("Payment Total does not match with Grandtotal")
+			return errors.New("payment total does not match with grandtotal")
 		}
 	}
 	return nil
@@ -103,7 +103,7 @@ func (e *PlaceOrderLoggerAdapter) logOrder(cart *cartDomain.Cart, payment *place
 		if !modfile.IsDirectoryPath(e.logDirectory) {
 			return fmt.Errorf("%v is not a valid directory path", e.logDirectory)
 		}
-		//Create folder if not exist
+		// Create folder if not exist
 		if _, err := os.Stat(e.logDirectory); os.IsNotExist(err) {
 			err = os.MkdirAll(e.logDirectory, os.ModePerm)
 			if err != nil {

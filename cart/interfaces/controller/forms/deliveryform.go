@@ -42,7 +42,7 @@ type (
 	}
 )
 
-//MapToDeliveryInfo - updates some fields of the given DeliveryInfo with data from the form
+// MapToDeliveryInfo - updates some fields of the given DeliveryInfo with data from the form
 func (d *DeliveryForm) MapToDeliveryInfo(currentInfo cartDomain.DeliveryInfo) cartDomain.DeliveryInfo {
 	address := d.DeliveryAddress.MapToDomainAddress()
 	currentInfo.DeliveryLocation.Address = &address
@@ -54,7 +54,7 @@ func (d *DeliveryForm) MapToDeliveryInfo(currentInfo cartDomain.DeliveryInfo) ca
 	return currentInfo
 }
 
-//Inject - Inject
+// Inject - Inject
 func (p *DeliveryFormService) Inject(applicationCartReceiverService *cartApplication.CartReceiverService) {
 	p.applicationCartReceiverService = applicationCartReceiverService
 }
@@ -94,11 +94,11 @@ func (p *DeliveryFormService) GetFormData(ctx context.Context, req *web.Request)
 func (p *DeliveryFormService) Validate(ctx context.Context, req *web.Request, validatorProvider domain.ValidatorProvider, formData interface{}) (*domain.ValidationInfo, error) {
 	deliveryForm, ok := formData.(DeliveryForm)
 	if !ok {
-		return nil, errors.New("No BillingAddressForm given")
+		return nil, errors.New("no BillingAddressForm given")
 	}
 	validationInfo := domain.ValidationInfo{}
 	if !deliveryForm.UseBillingAddress {
-		//Validate address only if no billing should be used
+		// Validate address only if no billing should be used
 		validationInfo = validatorProvider.Validate(ctx, req, deliveryForm)
 	}
 	return &validationInfo, nil
@@ -144,7 +144,7 @@ func (c *DeliveryFormController) HandleFormAction(ctx context.Context, r *web.Re
 
 	deliverycode := r.Params["deliveryCode"]
 	if deliverycode == "" {
-		return nil, false, errors.New("No deliverycode parameter given")
+		return nil, false, errors.New("no deliverycode parameter given")
 	}
 	formHandler, err := c.getFormHandler()
 	if err != nil {
@@ -180,7 +180,7 @@ func (c *DeliveryFormController) HandleFormAction(ctx context.Context, r *web.Re
 
 	deliveryInfo = deliveryForm.MapToDeliveryInfo(deliveryInfo)
 
-	//update Cart
+	// update Cart
 	err = c.applicationCartService.UpdateDeliveryInfo(ctx, session, deliverycode, cartDomain.CreateDeliveryInfoUpdateCommand(deliveryInfo))
 	if err != nil {
 		c.logger.WithContext(ctx).Error("UpdateDeliveryInfo  Error %v", err)

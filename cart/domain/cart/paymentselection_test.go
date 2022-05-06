@@ -10,7 +10,6 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/price/domain"
-	price "flamingo.me/flamingo-commerce/v3/price/domain"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
@@ -133,8 +132,8 @@ func TestPaymentSplit_UnmarshalJSON(t *testing.T) {
 			want: func() cart.PaymentSplit {
 				result := cart.PaymentSplit{}
 				charge := domain.Charge{
-					Price:     price.NewZero(""),
-					Value:     price.NewZero(""),
+					Price:     domain.NewZero(""),
+					Value:     domain.NewZero(""),
 					Type:      "t1",
 					Reference: "",
 				}
@@ -179,9 +178,9 @@ func TestPaymentSplit_UnmarshalJSON(t *testing.T) {
 
 func TestRemoveZeroCharges(t *testing.T) {
 	chargeTypeToPaymentMethod := map[string]string{
-		price.ChargeTypeMain:     "cc",
-		price.ChargeTypeGiftCard: "giftcard",
-		"loyalty":                "loyalty",
+		domain.ChargeTypeMain:     "cc",
+		domain.ChargeTypeGiftCard: "giftcard",
+		"loyalty":                 "loyalty",
 	}
 
 	selection := cart.DefaultPaymentSelection{
@@ -206,16 +205,16 @@ func TestRemoveZeroCharges(t *testing.T) {
 	builder.AddCartItem("item-1", "giftcard", domain.Charge{
 		Price: domain.NewFromInt(0, 1, "$"),
 		Value: domain.NewFromInt(0, 1, "$"),
-		Type:  price.ChargeTypeGiftCard,
+		Type:  domain.ChargeTypeGiftCard,
 	})
 
-	builder.AddShippingItem("delivery-1", "loyalty", price.Charge{
+	builder.AddShippingItem("delivery-1", "loyalty", domain.Charge{
 		Price: domain.NewFromInt(20, 1, "Points"),
 		Value: domain.NewFromInt(5, 1, "$"),
 		Type:  "loyalty",
 	})
 
-	builder.AddShippingItem("delivery-1", "cc", price.Charge{
+	builder.AddShippingItem("delivery-1", "cc", domain.Charge{
 		Price: domain.NewFromInt(0, 1, "$"),
 		Value: domain.NewFromInt(0, 1, "$"),
 		Type:  domain.ChargeTypeMain,
@@ -223,16 +222,16 @@ func TestRemoveZeroCharges(t *testing.T) {
 
 	selection.ChargedItemsProp = builder.Build()
 	filteredSelection := cart.RemoveZeroCharges(selection, chargeTypeToPaymentMethod)
-	_, found := filteredSelection.ItemSplit().CartItems["item-1"].ChargesByType().GetByType(price.ChargeTypeGiftCard)
+	_, found := filteredSelection.ItemSplit().CartItems["item-1"].ChargesByType().GetByType(domain.ChargeTypeGiftCard)
 
 	if found == true {
-		t.Errorf("item-1 shouldn't have charge of type %q", price.ChargeTypeGiftCard)
+		t.Errorf("item-1 shouldn't have charge of type %q", domain.ChargeTypeGiftCard)
 	}
 
-	_, found = filteredSelection.ItemSplit().ShippingItems["delivery-1"].ChargesByType().GetByType(price.ChargeTypeMain)
+	_, found = filteredSelection.ItemSplit().ShippingItems["delivery-1"].ChargesByType().GetByType(domain.ChargeTypeMain)
 
 	if found == true {
-		t.Errorf("delivery-1 shouldn't have charge of type %q", price.ChargeTypeMain)
+		t.Errorf("delivery-1 shouldn't have charge of type %q", domain.ChargeTypeMain)
 	}
 
 	assert.Regexp(t, "(?i)^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$", filteredSelection.IdempotencyKey(), "IdempotencyKey looks not like a valid UUID v4")
@@ -241,7 +240,7 @@ func TestRemoveZeroCharges(t *testing.T) {
 
 func Test_NewDefaultPaymentSelection_IdempotencyKey(t *testing.T) {
 	// NewDefaultPaymentSelection should generate a new idempotency key
-	selection, _ := cart.NewDefaultPaymentSelection("", map[string]string{price.ChargeTypeMain: "main"}, cart.Cart{})
+	selection, _ := cart.NewDefaultPaymentSelection("", map[string]string{domain.ChargeTypeMain: "main"}, cart.Cart{})
 	assert.Regexp(t, "(?i)^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$", selection.IdempotencyKey(), "IdempotencyKey looks not like a valid UUID v4")
 	assert.NotEqual(t, uuid.Nil.String(), selection.IdempotencyKey())
 
@@ -262,11 +261,11 @@ func Test_NewPaymentSelection_IdempotencyKey(t *testing.T) {
 }
 
 func TestDefaultPaymentSelection_MarshalJSON(t *testing.T) {
-	selection, _ := cart.NewDefaultPaymentSelection("", map[string]string{price.ChargeTypeMain: "main"}, cart.Cart{})
+	selection, _ := cart.NewDefaultPaymentSelection("", map[string]string{domain.ChargeTypeMain: "main"}, cart.Cart{})
 
 	expectedJSON := fmt.Sprintf("{\"GatewayProp\":\"\",\"ChargedItemsProp\":{\"CartItems\":{},\"ShippingItems\":{},\"TotalItems\":{}},\"IdempotencyKey\":\"%s\"}", selection.IdempotencyKey())
 
 	actual, _ := json.Marshal(selection)
-	actualJSON := fmt.Sprintf("%s", actual)
+	actualJSON := string(actual)
 	assert.Equal(t, expectedJSON, actualJSON)
 }

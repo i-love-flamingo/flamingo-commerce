@@ -1066,7 +1066,7 @@ func (cs *CartService) GetDefaultDeliveryCode() string {
 
 // handleEmptyDelivery - delete an empty delivery when found and feature flag is set
 func (cs *CartService) handleEmptyDelivery(ctx context.Context, session *web.Session, cart *cartDomain.Cart, deliveryCode string) {
-	if cs.deleteEmptyDelivery != true {
+	if !cs.deleteEmptyDelivery {
 		return
 	}
 
