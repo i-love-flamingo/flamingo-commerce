@@ -68,6 +68,8 @@ flamingo.me/graphql v1.8.0 h1:RKl7JOo0RZzPOYX24IiKUvtkswvLnomL1wJ7BTzsKvU=
 flamingo.me/graphql v1.8.0/go.mod h1:KA9Y6HJ3tJe02mLe3Kbrfi22ITbXl4gLCRzh7mPRi+8=
 flamingo.me/pugtemplate v1.2.1 h1:Wg4AJ8++XB1RQYnJu7vLn3Jj6idH15gb+ScMTae9vEA=
 flamingo.me/pugtemplate v1.2.1/go.mod h1:jhoYixt7j9ZkLjwMS/ZeYUqRVaNFF+dCa1CuzHNDdRM=
+flamingo.me/pugtemplate v1.2.2 h1:CKVcQMsbuTmCddlNZLPamGgolhpqTvDeFJTkCGtHmAg=
+flamingo.me/pugtemplate v1.2.2/go.mod h1:ITYKs83hmwPb8wj1FWLBh57eU/pKRvGeAfh3yfWMcQw=
 github.com/99designs/gqlgen v0.17.5 h1:bTgv7FQz3+NROg6ooHtlkaJ82Uqrp6e5sAziXTBo1hc=
 github.com/99designs/gqlgen v0.17.5/go.mod h1:SNpLVzaF37rRLSAXtu8FKVp5I4zycneMmFX6NT4XGSU=
 github.com/Azure/azure-sdk-for-go v16.2.1+incompatible/go.mod h1:9XXNKU+eRnpl9moKnB4QOLf1HestfXbmab5FXxiDBjc=
@@ -398,6 +400,8 @@ github.com/go-sql-driver/mysql v1.6.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LB
 github.com/go-stack/stack v1.8.0/go.mod h1:v0f6uXyyMGvRgIKkXu+yp6POWl0qKG85gN/melR3HDY=
 github.com/go-test/deep v1.0.1 h1:UQhStjbkDClarlmv0am7OXXO4/GaPdCGiUiMTvi28sg=
 github.com/go-test/deep v1.0.1/go.mod h1:wGDj63lr65AM2AQyKZd/NYHGb0R+1RLqB8NKt3aSFNA=
+github.com/go-test/deep v1.0.7 h1:/VSMRlnY/JSyqxQUzQLKVMAskpY/NZKFA5j2P+0pP2M=
+github.com/go-test/deep v1.0.7/go.mod h1:QV8Hv/iy04NyLBxAdO9njL0iVPN1S4d/A3NVv1V36o8=
 github.com/godbus/dbus v0.0.0-20151105175453-c7fdd8b5cd55/go.mod h1:/YcGZj5zSblfDWMMoOzV4fas9FZnQYTkDnsGvmh2Grw=
 github.com/godbus/dbus v0.0.0-20180201030542-885f9cc04c9c/go.mod h1:/YcGZj5zSblfDWMMoOzV4fas9FZnQYTkDnsGvmh2Grw=
 github.com/godbus/dbus v0.0.0-20190422162347-ade71ed3457e/go.mod h1:bBOAhwG1umN6/6ZUMtDFBMQR8jRg9O75tm9K00oMsK4=
