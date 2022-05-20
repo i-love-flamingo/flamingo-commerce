@@ -2,6 +2,7 @@ package graphql
 
 import (
 	"context"
+
 	"flamingo.me/flamingo-commerce/v3/search/domain"
 	"flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/searchdto"
 )

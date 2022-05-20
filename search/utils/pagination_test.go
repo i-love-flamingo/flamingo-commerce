@@ -1,10 +1,11 @@
 package utils
 
 import (
-	"github.com/stretchr/testify/assert"
 	"log"
 	"net/url"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestBuildWith(t *testing.T) {

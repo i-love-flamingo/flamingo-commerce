@@ -2,6 +2,7 @@ package infrastructure
 
 import (
 	"context"
+
 	"flamingo.me/flamingo/v3/core/auth"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 
