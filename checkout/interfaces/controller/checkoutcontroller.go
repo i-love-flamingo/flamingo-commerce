@@ -602,13 +602,12 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 				return cc.responder.RouteRedirect("checkout", nil)
 			}
 
-			restoredCart, err := cc.orderService.CancelOrder(ctx, session, infos)
+			_, err = cc.orderService.CancelOrder(ctx, session, infos)
 			if err != nil {
 				cc.logger.WithContext(ctx).Error(err)
 				return cc.responder.RouteRedirect("checkout", nil)
 			}
 
-			decoratedCart = cc.decoratedCartFactory.Create(ctx, *restoredCart)
 			cc.orderService.ClearLastPlacedOrder(ctx)
 
 			_, _ = cc.applicationCartService.ForceReserveOrderIDAndSave(ctx, r.Session())

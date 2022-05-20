@@ -49,16 +49,13 @@ func (tf *FindProducts) Func(ctx context.Context) interface{} {
 			switch configKey {
 			case 0:
 				searchConfig = config.AsStringMap()
-				break
 			case 1:
 				for key, value := range config.AsStringIfaceMap() {
 					switch value := value.(type) {
 					case pugjs.String:
 						keyValueFilters[key] = []string{value.String()}
-						break
 					case []string:
 						keyValueFilters[key] = value
-						break
 					case []interface{}:
 						var filterValues []string
 						for _, sv := range value {
@@ -69,14 +66,11 @@ func (tf *FindProducts) Func(ctx context.Context) interface{} {
 						if len(filterValues) > 0 {
 							keyValueFilters[key] = filterValues
 						}
-						break
 					}
 				}
 
-				break
 			case 2:
 				filterConstrains = config.AsStringMap()
-				break
 			}
 		}
 
