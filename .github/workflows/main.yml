@@ -16,7 +16,7 @@ jobs:
         go: [ '1.17', '1.*' ]
     name: With Go ${{ matrix.go }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Go
         uses: actions/setup-go@v3
         with:
@@ -32,7 +32,7 @@ jobs:
         go: [ '1.*' ]
     name: Static checks
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Go
         uses: actions/setup-go@v3
         with:
@@ -68,7 +68,7 @@ jobs:
         go: [ '1.*' ]
     name: Integration
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Go
         uses: actions/setup-go@v3
         with:
