@@ -135,14 +135,14 @@ func (cc *CartAPIController) DeleteCartAction(ctx context.Context, r *web.Reques
 // @Param qty query integer false "optional the qty that should be added"
 // @Router /api/v1/cart/delivery/{deliveryCode}/item [post]
 func (cc *CartAPIController) AddAction(ctx context.Context, r *web.Request) web.Result {
-	variantMarketplaceCode, _ := r.Params["variantMarketplaceCode"]
+	variantMarketplaceCode := r.Params["variantMarketplaceCode"]
 
 	qty, ok := r.Params["qty"]
 	if !ok {
 		qty = "1"
 	}
 	qtyInt, _ := strconv.Atoi(qty)
-	deliveryCode, _ := r.Params["deliveryCode"]
+	deliveryCode := r.Params["deliveryCode"]
 
 	addRequest := cc.cartService.BuildAddRequest(ctx, r.Params["marketplaceCode"], variantMarketplaceCode, qtyInt, nil)
 	_, err := cc.cartService.AddProduct(ctx, r.Session(), deliveryCode, addRequest)
@@ -171,7 +171,7 @@ func (cc *CartAPIController) AddAction(ctx context.Context, r *web.Request) web.
 // @Router /api/v1/cart/delivery/{deliveryCode}/item [delete]
 func (cc *CartAPIController) DeleteItemAction(ctx context.Context, r *web.Request) web.Result {
 	itemID, _ := r.Query1("itemID")
-	deliveryCode, _ := r.Params["deliveryCode"]
+	deliveryCode := r.Params["deliveryCode"]
 
 	err := cc.cartService.DeleteItem(ctx, r.Session(), itemID, deliveryCode)
 
@@ -200,7 +200,7 @@ func (cc *CartAPIController) DeleteItemAction(ctx context.Context, r *web.Reques
 // @Router /api/v1/cart/delivery/{deliveryCode}/item [put]
 func (cc *CartAPIController) UpdateItemAction(ctx context.Context, r *web.Request) web.Result {
 	itemID, _ := r.Query1("itemID")
-	deliveryCode, _ := r.Params["deliveryCode"]
+	deliveryCode := r.Params["deliveryCode"]
 	qty, ok := r.Params["qty"]
 	if !ok {
 		qty = "1"

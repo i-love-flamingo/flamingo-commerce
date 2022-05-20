@@ -250,7 +250,7 @@ func (c Cart) GetDeliveryByCodeWithoutBool(deliveryCode string) *Delivery {
 func (c Cart) HasDeliveryForCode(deliveryCode string) bool {
 	_, found := c.GetDeliveryByCode(deliveryCode)
 
-	return found == true
+	return found
 }
 
 // GetDeliveryCodes returns a slice of all delivery codes in cart that have at least one cart item

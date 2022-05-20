@@ -7,7 +7,6 @@ import (
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
-	cartForms "flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
 	formApplication "flamingo.me/form/application"
 	"flamingo.me/form/domain"
@@ -21,18 +20,18 @@ type CommerceCartMutationResolver struct {
 	q                            *CommerceCartQueryResolver
 	cartService                  *application.CartService
 	cartReceiverService          *application.CartReceiverService
-	billingAddressFormController *cartForms.BillingAddressFormController
-	deliveryFormController       *cartForms.DeliveryFormController
-	simplePaymentFormController  *cartForms.SimplePaymentFormController
+	billingAddressFormController *forms.BillingAddressFormController
+	deliveryFormController       *forms.DeliveryFormController
+	simplePaymentFormController  *forms.SimplePaymentFormController
 	formDataEncoderFactory       formApplication.FormDataEncoderFactory
 }
 
 // Inject dependencies
 func (r *CommerceCartMutationResolver) Inject(q *CommerceCartQueryResolver,
-	billingAddressFormController *cartForms.BillingAddressFormController,
-	deliveryFormController *cartForms.DeliveryFormController,
+	billingAddressFormController *forms.BillingAddressFormController,
+	deliveryFormController *forms.DeliveryFormController,
 	formDataEncoderFactory formApplication.FormDataEncoderFactory,
-	simplePaymentFormController *cartForms.SimplePaymentFormController,
+	simplePaymentFormController *forms.SimplePaymentFormController,
 	cartService *application.CartService,
 	cartReceiverService *application.CartReceiverService) *CommerceCartMutationResolver {
 	r.q = q
@@ -92,8 +91,8 @@ func (r *CommerceCartMutationResolver) CommerceUpdateItemQty(ctx context.Context
 	return r.q.CommerceCart(ctx)
 }
 
-//CommerceCartUpdateBillingAddress resolver method
-func (r *CommerceCartMutationResolver) CommerceCartUpdateBillingAddress(ctx context.Context, address *cartForms.AddressForm) (*dto.BillingAddressForm, error) {
+// CommerceCartUpdateBillingAddress resolver method
+func (r *CommerceCartMutationResolver) CommerceCartUpdateBillingAddress(ctx context.Context, address *forms.AddressForm) (*dto.BillingAddressForm, error) {
 	newRequest := web.CreateRequest(web.RequestFromContext(ctx).Request(), web.SessionFromContext(ctx))
 	v, err := r.formDataEncoderFactory.CreateByNamedEncoder("commerce.cart.billingFormService").Encode(ctx, address)
 	if err != nil {
@@ -109,7 +108,7 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateBillingAddress(ctx cont
 
 }
 
-//CommerceCartUpdateSelectedPayment resolver method
+// CommerceCartUpdateSelectedPayment resolver method
 func (r *CommerceCartMutationResolver) CommerceCartUpdateSelectedPayment(ctx context.Context, gateway string, method string) (*dto.SelectedPaymentResult, error) {
 	newRequest := web.CreateRequest(web.RequestFromContext(ctx).Request(), web.SessionFromContext(ctx))
 	urlValues := make(url.Values)
@@ -270,7 +269,7 @@ func (r *CommerceCartMutationResolver) UpdateDeliveriesAdditionalData(ctx contex
 }
 
 func mapCommerceDeliveryAddressForm(form *domain.Form, success bool) (dto.DeliveryAddressForm, error) {
-	formData, ok := form.Data.(cartForms.DeliveryForm)
+	formData, ok := form.Data.(forms.DeliveryForm)
 	if !ok {
 		return dto.DeliveryAddressForm{}, errors.New("unexpected form data")
 	}
@@ -292,7 +291,7 @@ func mapCommerceDeliveryAddressForm(form *domain.Form, success bool) (dto.Delive
 
 // mapCommerceBillingAddressForm helper to map the graphql type Commerce_Cart_BillingAddressForm from common form
 func mapCommerceBillingAddressForm(form *domain.Form, success bool) (*dto.BillingAddressForm, error) {
-	billingFormData, ok := form.Data.(cartForms.BillingAddressForm)
+	billingFormData, ok := form.Data.(forms.BillingAddressForm)
 	if !ok {
 		return nil, errors.New("unexpected form data")
 	}

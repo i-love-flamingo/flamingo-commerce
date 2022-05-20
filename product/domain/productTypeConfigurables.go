@@ -14,7 +14,7 @@ const (
 
 type (
 
-	//Configurable - interface that is implemented by ConfigurableProduct and ConfigurableProductWithActiveVariant
+	// Configurable - interface that is implemented by ConfigurableProduct and ConfigurableProductWithActiveVariant
 	Configurable interface {
 		GetConfigurableWithActiveVariant(variantMarketplaceCode string) (ConfigurableProductWithActiveVariant, error)
 		Variant(variantMarketplaceCode string) (*Variant, error)
@@ -65,7 +65,7 @@ func (p ConfigurableProduct) IsSaleable() bool {
 	return false
 }
 
-//SaleableData getter for ConfigurableProduct - Configurable is NOT Salable
+// SaleableData getter for ConfigurableProduct - Configurable is NOT Salable
 func (p ConfigurableProduct) SaleableData() Saleable {
 	return Saleable{}
 }
@@ -118,16 +118,13 @@ func (p ConfigurableProduct) GetDefaultVariant() (*Variant, error) {
 	if len(p.Variants) > 0 {
 		return &p.Variants[0], nil
 	}
-	return nil, errors.New("There is no Variant. ")
+	return nil, errors.New("there is no variant. ")
 }
 
 // HasMedia for ConfigurableProduct
 func (p ConfigurableProduct) HasMedia(group string, usage string) bool {
 	media := findMediaInProduct(BasicProduct(p), group, usage)
-	if media == nil {
-		return false
-	}
-	return true
+	return media != nil
 }
 
 // GetMedia  for ConfigurableProduct
@@ -155,7 +152,7 @@ func (v Variant) SaleableData() Saleable {
 	return v.Saleable
 }
 
-//********CONFIGURABLE WITH ACTIVE VARIANT
+// ********CONFIGURABLE WITH ACTIVE VARIANT
 
 // Type getter
 func (p ConfigurableProductWithActiveVariant) Type() string {
@@ -203,7 +200,7 @@ func (p ConfigurableProductWithActiveVariant) GetDefaultVariant() (*Variant, err
 	if len(p.Variants) > 0 {
 		return &p.Variants[0], nil
 	}
-	return nil, errors.New("There is no Variant. ")
+	return nil, errors.New("there is no variant. ")
 }
 
 // SaleableData getter for ConfigurableProduct
@@ -215,10 +212,7 @@ func (p ConfigurableProductWithActiveVariant) SaleableData() Saleable {
 // HasMedia  for ConfigurableProduct
 func (p ConfigurableProductWithActiveVariant) HasMedia(group string, usage string) bool {
 	media := findMediaInProduct(BasicProduct(p), group, usage)
-	if media == nil {
-		return false
-	}
-	return true
+	return media != nil
 }
 
 // GetMedia  for ConfigurableProduct

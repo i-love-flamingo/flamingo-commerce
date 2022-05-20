@@ -1,6 +1,7 @@
 package graphqlproductdto
 
 import (
+	"context"
 	"testing"
 
 	"flamingo.me/flamingo-commerce/v3/product/domain"
@@ -26,7 +27,7 @@ func getOptionVariantByMarketPlaceCode(variants []domain.Variant, marketPlaceCod
 }
 
 func TestMapSimpleProduct(t *testing.T) {
-	simpleProduct, _ := fakeService.Get(nil, "fake_simple")
+	simpleProduct, _ := fakeService.Get(context.Background(), "fake_simple")
 	variationSelection := NewVariantsToVariationSelections(simpleProduct)
 
 	t.Run("should have empty variationSelection", func(t *testing.T) {
@@ -36,7 +37,7 @@ func TestMapSimpleProduct(t *testing.T) {
 
 func TestMapConfigurable(t *testing.T) {
 	t.Run("should map variationSelection for one variation attribute", func(t *testing.T) {
-		fakeConfigurable, _ := fakeService.Get(nil, "fake_configurable")
+		fakeConfigurable, _ := fakeService.Get(context.Background(), "fake_configurable")
 		configurable := fakeConfigurable.(domain.ConfigurableProduct)
 		configurable.VariantVariationAttributes = []string{"color"}
 		variationSelection := NewVariantsToVariationSelections(configurable)
@@ -66,7 +67,7 @@ func TestMapConfigurable(t *testing.T) {
 	})
 
 	t.Run("should map variationSelection for two variation attributes", func(t *testing.T) {
-		fakeConfigurable, _ := fakeService.Get(nil, "fake_configurable")
+		fakeConfigurable, _ := fakeService.Get(context.Background(), "fake_configurable")
 		configurable := fakeConfigurable.(domain.ConfigurableProduct)
 
 		variationSelection := NewVariantsToVariationSelections(configurable)
@@ -111,7 +112,7 @@ func TestMapConfigurable(t *testing.T) {
 	})
 
 	t.Run("should return empty variation selection if no product has matching attributes", func(t *testing.T) {
-		fakeConfigurable, _ := fakeService.Get(nil, "fake_configurable")
+		fakeConfigurable, _ := fakeService.Get(context.Background(), "fake_configurable")
 		configurable := fakeConfigurable.(domain.ConfigurableProduct)
 		configurable.VariantVariationAttributes = []string{"foobar"}
 		variationSelection := NewVariantsToVariationSelections(configurable)
@@ -121,7 +122,7 @@ func TestMapConfigurable(t *testing.T) {
 
 func TestMapConfigurableWithActiveVariant(t *testing.T) {
 	t.Run("should map variationSelection for one variation attribute with active variant", func(t *testing.T) {
-		fakeConfigurable, _ := fakeService.Get(nil, "fake_configurable_with_active_variant")
+		fakeConfigurable, _ := fakeService.Get(context.Background(), "fake_configurable_with_active_variant")
 		configurable := fakeConfigurable.(domain.ConfigurableProductWithActiveVariant)
 		configurable.VariantVariationAttributes = []string{"color"}
 		variationSelection := NewVariantsToVariationSelections(configurable)
@@ -151,7 +152,7 @@ func TestMapConfigurableWithActiveVariant(t *testing.T) {
 	})
 
 	t.Run("should map variationSelection for two variation attributes with active variant", func(t *testing.T) {
-		fakeConfigurable, _ := fakeService.Get(nil, "fake_configurable_with_active_variant")
+		fakeConfigurable, _ := fakeService.Get(context.Background(), "fake_configurable_with_active_variant")
 		configurable := fakeConfigurable.(domain.ConfigurableProductWithActiveVariant)
 		configurable.VariantVariationAttributes = []string{"color", "size"}
 		variationSelection := NewVariantsToVariationSelections(configurable)

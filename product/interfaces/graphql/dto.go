@@ -1,13 +1,14 @@
 package graphql
 
 import (
+	"sort"
+
 	"flamingo.me/flamingo-commerce/v3/product/application"
 	graphqlProductDto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
 	searchdomain "flamingo.me/flamingo-commerce/v3/search/domain"
 	"flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/searchdto"
 	"flamingo.me/flamingo-commerce/v3/search/utils"
 	"flamingo.me/flamingo/v3/framework/flamingo"
-	"sort"
 )
 
 // WrapSearchResult wraps the search result into the graphql dto

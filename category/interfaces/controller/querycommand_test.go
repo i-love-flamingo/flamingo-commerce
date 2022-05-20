@@ -3,6 +3,7 @@ package controller_test
 import (
 	"context"
 	"errors"
+
 	"flamingo.me/flamingo-commerce/v3/category/interfaces/controller"
 
 	"testing"

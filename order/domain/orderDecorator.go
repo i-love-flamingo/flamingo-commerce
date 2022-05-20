@@ -186,7 +186,7 @@ func (rd *DecoratedOrder) GetGroupedBy(group string, sortGroup bool) *GroupedDec
 			groupedItemKeys = append(groupedItemKeys, groupKey)
 		}
 
-		groupedItemsEntry, _ := groupedItemsCollection[groupKey]
+		groupedItemsEntry := groupedItemsCollection[groupKey]
 		groupedItemsEntry.DecoratedItems = append(groupedItemsEntry.DecoratedItems, item)
 	}
 
@@ -196,7 +196,7 @@ func (rd *DecoratedOrder) GetGroupedBy(group string, sortGroup bool) *GroupedDec
 
 	groups := make([]*GroupedDecoratedOrderItems, len(groupedItemKeys))
 	for i, key := range groupedItemKeys {
-		groupedItemsEntry, _ := groupedItemsCollection[key]
+		groupedItemsEntry := groupedItemsCollection[key]
 		groups[i] = groupedItemsEntry
 	}
 	result.Groups = groups

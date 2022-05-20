@@ -602,13 +602,12 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 				return cc.responder.RouteRedirect("checkout", nil)
 			}
 
-			restoredCart, err := cc.orderService.CancelOrder(ctx, session, infos)
+			_, err = cc.orderService.CancelOrder(ctx, session, infos)
 			if err != nil {
 				cc.logger.WithContext(ctx).Error(err)
 				return cc.responder.RouteRedirect("checkout", nil)
 			}
 
-			decoratedCart = cc.decoratedCartFactory.Create(ctx, *restoredCart)
 			cc.orderService.ClearLastPlacedOrder(ctx)
 
 			_, _ = cc.applicationCartService.ForceReserveOrderIDAndSave(ctx, r.Session())
@@ -784,7 +783,7 @@ func (cc *CheckoutController) checkTermsAndPrivacyPolicy(r *web.Request) (bool, 
 
 	canProceed := proceed == "1" && (!cc.privacyPolicyRequired || privacyPolicy == "1") && termsAndConditions == "1"
 
-	if 0 == len(errorMessages) {
+	if len(errorMessages) == 0 {
 		return canProceed, nil
 	}
 

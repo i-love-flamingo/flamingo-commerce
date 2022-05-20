@@ -86,7 +86,7 @@ func (s *URLService) GetURLParams(product domain.BasicProduct, variantCode strin
 		if configurableProduct, ok := product.(domain.ConfigurableProduct); ok {
 			params["marketplacecode"] = configurableProduct.BaseData().MarketPlaceCode
 			params["name"] = s.getSlug(configurableProduct.BaseData(), configurableProduct.BaseData().Title)
-			//if the teaser teasers a variant then link to this
+			// if the teaser teasers a variant then link to this
 			if configurableProduct.TeaserData().PreSelectedVariantSku != "" {
 				params["variantcode"] = configurableProduct.TeaserData().PreSelectedVariantSku
 				params["name"] = func(d domain.TeaserData) string {
@@ -94,14 +94,14 @@ func (s *URLService) GetURLParams(product domain.BasicProduct, variantCode strin
 						return web.URLTitle(d.ShortTitle)
 					}
 
-					if "" == d.URLSlug {
+					if d.URLSlug == "" {
 						return web.URLTitle(d.ShortTitle)
 					}
 
 					return d.URLSlug
 				}(configurableProduct.TeaserData())
 			}
-			//if a variantCode is given then link to that variant
+			// if a variantCode is given then link to that variant
 			if variantCode != "" && configurableProduct.HasVariant(variantCode) {
 				variantInstance, err := configurableProduct.Variant(variantCode)
 				if err == nil {

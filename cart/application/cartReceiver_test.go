@@ -699,7 +699,6 @@ func TestCartReceiverService_RestoreCart(t *testing.T) {
 		guestCartService     cartDomain.GuestCartService
 		customerCartService  cartDomain.CustomerCartService
 		cartDecoratorFactory *decorator.DecoratedCartFactory
-		eventRouter          flamingo.EventRouter
 		logger               flamingo.Logger
 		cartCache            cartApplication.CartCache
 	}
@@ -871,7 +870,7 @@ func TestCartReceiverService_RestoreCart(t *testing.T) {
 			}
 
 			if tt.wantCartStoredInCache && tt.fields.cartCache != nil {
-				cart, _ := tt.fields.cartCache.GetCart(nil, nil, cartApplication.CartCacheIdentifier{})
+				cart, _ := tt.fields.cartCache.GetCart(context.Background(), nil, cartApplication.CartCacheIdentifier{})
 				if cart == nil {
 					t.Error("Cart not found in cart cache")
 				}

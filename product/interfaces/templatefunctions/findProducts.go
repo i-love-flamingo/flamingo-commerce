@@ -2,10 +2,11 @@ package templatefunctions
 
 import (
 	"context"
-	"flamingo.me/flamingo-commerce/v3/search/utils"
 	"log"
 	"strconv"
 	"strings"
+
+	"flamingo.me/flamingo-commerce/v3/search/utils"
 
 	"flamingo.me/pugtemplate/pugjs"
 
@@ -48,16 +49,13 @@ func (tf *FindProducts) Func(ctx context.Context) interface{} {
 			switch configKey {
 			case 0:
 				searchConfig = config.AsStringMap()
-				break
 			case 1:
 				for key, value := range config.AsStringIfaceMap() {
 					switch value := value.(type) {
 					case pugjs.String:
 						keyValueFilters[key] = []string{value.String()}
-						break
 					case []string:
 						keyValueFilters[key] = value
-						break
 					case []interface{}:
 						var filterValues []string
 						for _, sv := range value {
@@ -68,14 +66,11 @@ func (tf *FindProducts) Func(ctx context.Context) interface{} {
 						if len(filterValues) > 0 {
 							keyValueFilters[key] = filterValues
 						}
-						break
 					}
 				}
 
-				break
 			case 2:
 				filterConstrains = config.AsStringMap()
-				break
 			}
 		}
 
@@ -92,10 +87,9 @@ func (tf *FindProducts) Func(ctx context.Context) interface{} {
 
 func newFilterProcessing(request *web.Request, namespace string, searchConfig map[string]string, keyValueFilters map[string][]string, filterConstrains map[string]string, paginationConfig *utils.PaginationConfig) filterProcessing {
 	var filterProcessing filterProcessing
-	var searchRequest searchApplication.SearchRequest
 
 	// 1- set the originalSearchRequest from given searchConfig and keyValueFilters
-	searchRequest = searchApplication.SearchRequest{
+	var searchRequest = searchApplication.SearchRequest{
 		SortDirection:    searchConfig["sortDirection"],
 		SortBy:           searchConfig["sortBy"],
 		Query:            searchConfig["query"],
@@ -129,7 +123,7 @@ func newFilterProcessing(request *web.Request, namespace string, searchConfig ma
 		filterProcessing.whiteList = nil
 	}
 
-	//2 - Use the url parameters to modify the filters:
+	// 2 - Use the url parameters to modify the filters:
 	for k, v := range request.QueryAll() {
 		if !strings.HasPrefix(k, namespace) {
 			continue
@@ -162,8 +156,7 @@ func newFilterProcessing(request *web.Request, namespace string, searchConfig ma
 
 // modifyResult - while check the result against the blacklist/whitelist
 func (f *filterProcessing) modifyResult(result *application.SearchResult) *application.SearchResult {
-	var newFacetCollection domain.FacetCollection
-	newFacetCollection = make(map[string]domain.Facet)
+	var newFacetCollection domain.FacetCollection = make(map[string]domain.Facet)
 	for k, facet := range result.Facets {
 		if f.isAllowed(k) {
 			newFacetCollection[k] = facet

@@ -2,7 +2,6 @@ package validation_test
 
 import (
 	"context"
-	"fmt"
 	"math"
 	"reflect"
 	"testing"
@@ -23,7 +22,7 @@ type MockRestrictor struct {
 }
 
 func (r *MockRestrictor) Name() string {
-	return fmt.Sprintf("MockRestrictor")
+	return "MockRestrictor"
 }
 
 func (r *MockRestrictor) Restrict(ctx context.Context, session *web.Session, product domain.BasicProduct, currentCart *cart.Cart, deliveryCode string) *validation.RestrictionResult {

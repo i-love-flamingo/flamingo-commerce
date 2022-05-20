@@ -1,13 +1,14 @@
 package templatefunctions
 
 import (
+	"net/http"
+	"net/url"
+	"testing"
+
 	"flamingo.me/flamingo-commerce/v3/product/application"
 	"flamingo.me/flamingo-commerce/v3/search/domain"
 	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/stretchr/testify/assert"
-	"net/http"
-	"net/url"
-	"testing"
 )
 
 // TestFilterProcessingIsAllowed - Test different combinations of filter processing
