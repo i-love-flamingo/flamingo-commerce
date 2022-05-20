@@ -25,7 +25,7 @@ require (
 	github.com/testcontainers/testcontainers-go v0.11.1
 	github.com/vektah/gqlparser/v2 v2.4.2
 	go.opencensus.io v0.23.0
-	go.uber.org/goleak v1.1.10
+	go.uber.org/goleak v1.1.12
 	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3
 	golang.org/x/text v0.3.7
 )
