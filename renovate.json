@@ -1,6 +1,7 @@
 {
   "extends": [
     "config:base",
-    ":semanticCommitTypeAll(chore)"
+    ":semanticCommitTypeAll(chore)",
+    "prHourlyLimit": 0
   ]
 }
