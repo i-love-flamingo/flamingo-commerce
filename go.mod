@@ -5,7 +5,7 @@ go 1.17
 require (
 	flamingo.me/dingo v0.2.9
 	flamingo.me/flamingo/v3 v3.3.0
-	flamingo.me/form v1.1.0
+	flamingo.me/form v1.1.1
 	flamingo.me/graphql v1.8.0
 	flamingo.me/pugtemplate v1.2.1
 	github.com/99designs/gqlgen v0.17.5
@@ -65,8 +65,8 @@ require (
 	github.com/go-openapi/spec v0.20.3 // indirect
 	github.com/go-openapi/swag v0.19.14 // indirect
 	github.com/go-playground/form v3.1.4+incompatible // indirect
-	github.com/go-playground/locales v0.12.1 // indirect
-	github.com/go-playground/universal-translator v0.16.0 // indirect
+	github.com/go-playground/locales v0.13.0 // indirect
+	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
@@ -82,7 +82,7 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/klauspost/compress v1.11.3 // indirect
 	github.com/labstack/gommon v0.0.0-20180613044413-d6898124de91 // indirect
-	github.com/leebenson/conform v0.0.0-20180615210222-bc2e0311fd85 // indirect
+	github.com/leebenson/conform v1.2.2 // indirect
 	github.com/leodido/go-urn v1.1.0 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
@@ -139,7 +139,7 @@ require (
 	google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa // indirect
 	google.golang.org/grpc v1.42.0 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
-	gopkg.in/go-playground/validator.v9 v9.27.0 // indirect
+	gopkg.in/go-playground/validator.v9 v9.31.0 // indirect
 	gopkg.in/sourcemap.v1 v1.0.5 // indirect
 	gopkg.in/square/go-jose.v2 v2.5.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
