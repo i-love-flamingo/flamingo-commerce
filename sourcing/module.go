@@ -48,7 +48,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	}
 
 	if m.useFakeService {
-		injector.Bind(new(domain.AvailableSourcesProvider)).To(fake.SourcingService{})
+		injector.Override(new(domain.SourcingService), "").To(fake.SourcingService{})
 	}
 
 	injector.Bind(new(application.SourcingApplication)).To(application.Service{})
@@ -71,7 +71,7 @@ commerce: {
 		enableQtyRestrictor: bool | *false
 		fake: {
 			enable: bool | *false
-			jsonPath: string | ""
+			jsonPath: string | *""
 		}
 	}
 }

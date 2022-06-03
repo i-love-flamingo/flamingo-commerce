@@ -19,7 +19,7 @@ func TestSourcingService_AllocateItems(t *testing.T) {
 		service.Inject(&struct {
 			FakeSourceData string `inject:"config:commerce.sourcing.fake.jsonPath,optional"`
 		}{
-			FakeSourceData: "fakeSourceData.json",
+			FakeSourceData: "testdata/fakeSourceData.json",
 		})
 
 		decoratedCart := &decorator.DecoratedCart{
@@ -84,7 +84,7 @@ func TestSourcingService_AllocateItems(t *testing.T) {
 		service.Inject(&struct {
 			FakeSourceData string `inject:"config:commerce.sourcing.fake.jsonPath,optional"`
 		}{
-			FakeSourceData: "fakeSourceData.json",
+			FakeSourceData: "testdata/fakeSourceData.json",
 		})
 
 		decoratedCart := &decorator.DecoratedCart{
@@ -126,7 +126,7 @@ func TestSourcingService_GetAvailableSources(t *testing.T) {
 		service.Inject(&struct {
 			FakeSourceData string `inject:"config:commerce.sourcing.fake.jsonPath,optional"`
 		}{
-			FakeSourceData: "fakeSourceData.json",
+			FakeSourceData: "testdata/fakeSourceData.json",
 		})
 
 		product := productDomain.SimpleProduct{
@@ -156,7 +156,7 @@ func TestSourcingService_GetAvailableSources(t *testing.T) {
 		service.Inject(&struct {
 			FakeSourceData string `inject:"config:commerce.sourcing.fake.jsonPath,optional"`
 		}{
-			FakeSourceData: "fakeSourceData.json",
+			FakeSourceData: "testdata/fakeSourceData.json",
 		})
 
 		product := productDomain.SimpleProduct{
@@ -186,7 +186,7 @@ func TestSourcingService_GetAvailableSources(t *testing.T) {
 		service.Inject(&struct {
 			FakeSourceData string `inject:"config:commerce.sourcing.fake.jsonPath,optional"`
 		}{
-			FakeSourceData: "fakeSourceData.json",
+			FakeSourceData: "testdata/fakeSourceData.json",
 		})
 
 		product := productDomain.SimpleProduct{
@@ -216,7 +216,7 @@ func TestSourcingService_GetAvailableSources(t *testing.T) {
 		service.Inject(&struct {
 			FakeSourceData string `inject:"config:commerce.sourcing.fake.jsonPath,optional"`
 		}{
-			FakeSourceData: "fakeSourceData.json",
+			FakeSourceData: "testdata/fakeSourceData.json",
 		})
 
 		product := productDomain.SimpleProduct{
