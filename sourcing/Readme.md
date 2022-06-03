@@ -54,3 +54,34 @@ The package also offers a "DefaultSourcingService" that does sourcing based on t
 
 For this two inputs the DefaultSourcingService offers also Ports where you can provide individual adapters.
 Based on this the DefaultSourcingService fetches the possible sourcelocations and will source items based on the available stock on that locations (starting from the first sourcelocation retrieved).
+
+### Fake SourcingService
+
+Enabled by adding:
+```yaml
+commerce:
+  sourcing:
+    fake:
+      enable: true
+```
+
+When enabled overrides other fake services and user should provide fake data json by
+```yaml
+commerce:
+  sourcing:
+    fake:
+      jsonPath: <your_json_path_here>
+```
+
+JSON structure example:
+```json
+{
+  "deliveryCodes": {
+    "inflight": 5
+  },
+  "products": {
+    "0f0asdf-0asd0a9sd-askdlj123rw": 10,
+    "0f0asdf-0asd0a9sd-askdlj123rx": 15
+  }
+}
+```

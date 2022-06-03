@@ -159,6 +159,7 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 
 // AllocateItems - see description in Interface
 func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCart *decorator.DecoratedCart) (ItemAllocations, error) {
+	decoratedCart.DecoratedDeliveries[0].DecoratedItems[0].Product.GetIdentifier()
 	if err := d.checkConfiguration(); err != nil {
 		return nil, err
 	}
