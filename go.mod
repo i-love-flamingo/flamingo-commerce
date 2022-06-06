@@ -19,7 +19,7 @@ require (
 	github.com/leekchan/accounting v0.3.1
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.4.0
-	github.com/stretchr/testify v1.7.1
+	github.com/stretchr/testify v1.7.2
 	github.com/stvp/tempredis v0.0.0-20181119212430-b82af8480203
 	github.com/swaggo/swag v1.8.2
 	github.com/testcontainers/testcontainers-go v0.13.0
@@ -146,7 +146,7 @@ require (
 	gopkg.in/sourcemap.v1 v1.0.5 // indirect
 	gopkg.in/square/go-jose.v2 v2.5.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 	moul.io/http2curl v1.0.1-0.20190925090545-5cd742060b0e // indirect
 )
 
