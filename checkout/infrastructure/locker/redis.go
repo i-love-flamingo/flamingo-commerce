@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"runtime"
 	"time"
 
 	"flamingo.me/flamingo/v3/core/healthcheck/domain/healthcheck"
+	"github.com/go-redis/redis/v8"
 	"github.com/go-redsync/redsync/v4"
-	"github.com/go-redsync/redsync/v4/redis/redigo"
-	"github.com/gomodule/redigo/redis"
+	"github.com/go-redsync/redsync/v4/redis/goredis/v8"
 	"go.opencensus.io/trace"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/application/placeorder"
@@ -51,17 +52,15 @@ func NewRedis(
 		r.database = cfg.Database
 	}
 
-	pool := redigo.NewPool(&redis.Pool{
-		MaxIdle:     r.maxIdle,
-		IdleTimeout: r.idleTimeout,
-		Dial: func() (redis.Conn, error) {
-			return redis.Dial(r.network, r.address, redis.DialDatabase(r.database))
-		},
-		TestOnBorrow: func(c redis.Conn, t time.Time) error {
-			_, err := c.Do("PING")
-			return err
-		},
+	client := redis.NewClient(&redis.Options{
+		PoolSize:    cfg.MaxIdle,
+		IdleTimeout: time.Duration(cfg.IdleTimeoutMilliseconds) * time.Millisecond,
+		DB:          cfg.Database,
+		Addr:        cfg.Address,
+		Network:     cfg.Network,
 	})
+
+	pool := goredis.NewPool(client)
 
 	r.healthcheck = func() error {
 		conn, err := pool.Get(context.Background())
@@ -74,7 +73,7 @@ func NewRedis(
 	}
 
 	r.redsync = redsync.New(pool)
-
+	runtime.SetFinalizer(client, func(client *redis.Client) { _ = client.Close() }) // close all connections on destruction
 	return r
 }
 

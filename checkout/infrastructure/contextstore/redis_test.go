@@ -9,8 +9,8 @@ import (
 	"testing"
 
 	"flamingo.me/flamingo/v3/framework/flamingo"
+	"github.com/go-redis/redis/v8"
 	"github.com/go-test/deep"
-	"github.com/gomodule/redigo/redis"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stvp/tempredis"
@@ -44,31 +44,28 @@ func getRedisStore(network, address string) *contextstore.Redis {
 		}{MaxIdle: 3, IdleTimeoutMilliseconds: 240000, Network: network, Address: address, Database: 0, TTL: "2h"})
 }
 
-func prepareData(t *testing.T, conn redis.Conn) {
+func prepareData(t *testing.T, conn *redis.Client) {
 	buffer := new(bytes.Buffer)
 	require.NoError(t, gob.NewEncoder(buffer).Encode(testContext))
-	_, err := conn.Do("SET", existingKey, buffer)
+	_, err := conn.Set(context.Background(), existingKey, buffer.String(), 0).Result()
 	require.NoError(t, err)
-	_, err = conn.Do("SET", wrongDataKey, "wrong data")
+	_, err = conn.Set(context.Background(), wrongDataKey, "wrong data", 0).Result()
 	require.NoError(t, err)
 }
 
-func startUpLocalRedis(t *testing.T) (*tempredis.Server, redis.Conn) {
+func startUpLocalRedis(t *testing.T) (*tempredis.Server, *redis.Client) {
 	t.Helper()
 	server, err := tempredis.Start(tempredis.Config{})
 	if err != nil {
 		t.Fatal(err)
 	}
-	conn, err := redis.Dial("unix", server.Socket())
-	if err != nil {
-		t.Fatal(err)
-	}
+	conn := redis.NewClient(&redis.Options{Network: "unix", Addr: server.Socket()})
 	prepareData(t, conn)
 
 	return server, conn
 }
 
-func startUpDockerRedis(t *testing.T) (func(), string, redis.Conn) {
+func startUpDockerRedis(t *testing.T) (func(), string, *redis.Client) {
 	ctx := context.Background()
 	req := testcontainers.ContainerRequest{
 		Image:        "redis:latest",
@@ -88,10 +85,9 @@ func startUpDockerRedis(t *testing.T) (func(), string, redis.Conn) {
 	require.NoError(t, err)
 	address := fmt.Sprintf("%s:%s", host, port.Port())
 
-	conn, err := redis.Dial("tcp", address)
-	require.NoError(t, err)
+	conn := redis.NewClient(&redis.Options{Network: "tcp", Addr: address})
 
-	_, err = conn.Do("PING")
+	_, err = conn.Ping(context.Background()).Result()
 	require.NoError(t, err)
 
 	prepareData(t, conn)
@@ -158,7 +154,7 @@ func TestRedis_Get(t *testing.T) {
 }
 
 func TestRedis_Store(t *testing.T) {
-	runTestCases := func(t *testing.T, store *contextstore.Redis, conn redis.Conn) {
+	runTestCases := func(t *testing.T, store *contextstore.Redis, conn *redis.Client) {
 		tests := []struct {
 			name  string
 			key   string
@@ -180,13 +176,13 @@ func TestRedis_Store(t *testing.T) {
 			t.Run(tt.name, func(t *testing.T) {
 				require.NoError(t, store.Store(context.Background(), tt.key, tt.value))
 
-				result, err := redis.Bytes(conn.Do("GET", tt.key))
+				result, err := conn.Get(context.Background(), tt.key).Result()
 				require.NoError(t, err)
 
 				buffer := new(bytes.Buffer)
 				require.NoError(t, gob.NewEncoder(buffer).Encode(tt.value))
 
-				assert.Equal(t, buffer.Bytes(), result)
+				assert.Equal(t, buffer.String(), result)
 			})
 		}
 	}
@@ -211,7 +207,7 @@ func TestRedis_Store(t *testing.T) {
 }
 
 func TestRedis_Delete(t *testing.T) {
-	runTestCases := func(t *testing.T, store *contextstore.Redis, conn redis.Conn) {
+	runTestCases := func(t *testing.T, store *contextstore.Redis, conn *redis.Client) {
 		tests := []struct {
 			name string
 			key  string
@@ -230,7 +226,7 @@ func TestRedis_Delete(t *testing.T) {
 			t.Run(tt.name, func(t *testing.T) {
 				require.NoError(t, store.Delete(context.Background(), tt.key))
 
-				_, err := redis.Bytes(conn.Do("GET", tt.key))
+				_, err := conn.Get(context.Background(), tt.key).Result()
 				require.Error(t, err, "entry not deleted")
 			})
 		}
