@@ -61,9 +61,11 @@
 * Add possibility to have additional data in `PaymentFlowActionTriggerClientSDK`
 
 **product**
+* Introduce `Labels()` function on `Attribute` to handle translations for attributes with multiple values, will fallback to `Values()` function if not translated.
 * GraphQL:
   * Add `unitCode` to`Commerce_Product_VariationSelection_Option` and `Commerce_Product_ActiveVariationSelection`
   * Fix mapping of VariationSelections
+  * Introduce `Labels` for attributes here as well
 * FakeService
   * Add configuration option `commerce.product.fakeservice.defaultProducts` which toggles the delivery of default test products. 
   * Add category facet functionality to the fake `SearchService` with default category facet items.

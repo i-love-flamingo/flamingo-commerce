@@ -63,34 +63,75 @@ func TestAttributeIsDisabledValue(t *testing.T) {
 }
 
 func TestAttributeHasMultipleValues(t *testing.T) {
-	a := Attribute{RawValue: "some string"}
-	assert.False(t, a.HasMultipleValues())
+	t.Run("[]interface{} raw value", func(t *testing.T) {
+		a := Attribute{RawValue: "some string"}
+		assert.False(t, a.HasMultipleValues())
 
-	var rawValue []interface{}
-	for _, val := range []string{"some", "string"} {
-		rawValue = append(rawValue, val)
-	}
-	a.RawValue = rawValue
+		var rawValue []interface{}
+		for _, val := range []string{"some", "string"} {
+			rawValue = append(rawValue, val)
+		}
+		a.RawValue = rawValue
 
-	assert.True(t, a.HasMultipleValues())
+		assert.True(t, a.HasMultipleValues())
+	})
+
+	t.Run("Translated multi value", func(t *testing.T) {
+		a := Attribute{RawValue: []Attribute{{Code: "foo"}}}
+		assert.True(t, a.HasMultipleValues())
+	})
 }
 
 func TestAttributeValues(t *testing.T) {
-	a := Attribute{RawValue: "some string"}
-	result := a.Values()
-	assert.IsType(t, []string{}, result)
-	assert.Len(t, result, 0)
+	t.Run("string values", func(t *testing.T) {
+		a := Attribute{RawValue: "some string"}
+		result := a.Values()
+		assert.IsType(t, []string{}, result)
+		assert.Len(t, result, 0)
 
-	var rawValue []interface{}
-	for _, val := range []string{"some", "  string    "} {
-		rawValue = append(rawValue, val)
-	}
-	a.RawValue = rawValue
-	result = a.Values()
-	assert.IsType(t, []string{}, result)
-	assert.Len(t, result, 2)
-	assert.Equal(t, "some", result[0])
-	assert.Equal(t, "string", result[1])
+		var rawValue []interface{}
+		for _, val := range []string{"some", "  string    "} {
+			rawValue = append(rawValue, val)
+		}
+		a.RawValue = rawValue
+		result = a.Values()
+		assert.IsType(t, []string{}, result)
+		assert.Len(t, result, 2)
+		assert.Equal(t, "some", result[0])
+		assert.Equal(t, "string", result[1])
+	})
+
+	t.Run("translated values", func(t *testing.T) {
+		a := Attribute{RawValue: []Attribute{{Label: "translation-A", RawValue: "raw-A"}, {Label: "translation-B", RawValue: "raw-B"}}}
+		values := a.Values()
+		assert.Len(t, values, 2)
+		assert.Equal(t, "raw-A", values[0])
+		assert.Equal(t, "raw-B", values[1])
+	})
+}
+
+func TestAttributeLabels(t *testing.T) {
+	t.Run("translated values", func(t *testing.T) {
+		a := Attribute{RawValue: []Attribute{{Label: "translation-A", RawValue: "raw-A"}, {Label: "translation-B", RawValue: "raw-B"}}}
+		labels := a.Labels()
+		assert.Len(t, labels, 2)
+		assert.Equal(t, "translation-A", labels[0])
+		assert.Equal(t, "translation-B", labels[1])
+	})
+
+	t.Run("no translated values will fallback to raw values", func(t *testing.T) {
+		a := Attribute{}
+		var rawValue []interface{}
+		for _, val := range []string{"raw-1", "raw-2"} {
+			rawValue = append(rawValue, val)
+		}
+		a.RawValue = rawValue
+
+		labels := a.Labels()
+		assert.Len(t, labels, 2)
+		assert.Equal(t, "raw-1", labels[0])
+		assert.Equal(t, "raw-2", labels[1])
+	})
 }
 
 func TestAttributeHasUnit(t *testing.T) {

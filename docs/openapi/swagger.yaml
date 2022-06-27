@@ -5,11 +5,11 @@ definitions:
         description: Code is the internal attribute identifier
         type: string
       CodeLabel:
-        description: CodeLabel is the human readable (perhaps localized) attribute
+        description: CodeLabel is the human-readable (perhaps localized) attribute
           name
         type: string
       Label:
-        description: Label is the human readable (perhaps localized) attribute value
+        description: Label is the human-readable (perhaps localized) attribute value
         type: string
       RawValue:
         description: RawValue is the untouched original value of the attribute
