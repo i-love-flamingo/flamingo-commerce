@@ -1098,11 +1098,11 @@ var doc = `{
                     "type": "string"
                 },
                 "CodeLabel": {
-                    "description": "CodeLabel is the human readable (perhaps localized) attribute name",
+                    "description": "CodeLabel is the human-readable (perhaps localized) attribute name",
                     "type": "string"
                 },
                 "Label": {
-                    "description": "Label is the human readable (perhaps localized) attribute value",
+                    "description": "Label is the human-readable (perhaps localized) attribute value",
                     "type": "string"
                 },
                 "RawValue": {

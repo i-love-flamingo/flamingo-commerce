@@ -694,7 +694,9 @@ type ComplexityRoot struct {
 		Code      func(childComplexity int) int
 		CodeLabel func(childComplexity int) int
 		Label     func(childComplexity int) int
+		Labels    func(childComplexity int) int
 		UnitCode  func(childComplexity int) int
+		Value     func(childComplexity int) int
 		Values    func(childComplexity int) int
 	}
 
@@ -3798,12 +3800,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Commerce_Product_Attribute.Label(childComplexity), true
 
+	case "Commerce_Product_Attribute.labels":
+		if e.complexity.Commerce_Product_Attribute.Labels == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_Attribute.Labels(childComplexity), true
+
 	case "Commerce_Product_Attribute.unitCode":
 		if e.complexity.Commerce_Product_Attribute.UnitCode == nil {
 			break
 		}
 
 		return e.complexity.Commerce_Product_Attribute.UnitCode(childComplexity), true
+
+	case "Commerce_Product_Attribute.value":
+		if e.complexity.Commerce_Product_Attribute.Value == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_Attribute.Value(childComplexity), true
 
 	case "Commerce_Product_Attribute.values":
 		if e.complexity.Commerce_Product_Attribute.Values == nil {
@@ -5505,7 +5521,7 @@ type Commerce_Product_ActiveVariantProduct implements Commerce_Product {
 type Commerce_Product_VariationSelection {
     code: String!
     label: String!
-    "All possiblie variations for that attribute. E.g. 'M', 'L', 'XL'"
+    "All possible variations for that attribute. E.g. 'M', 'L', 'XL'"
     options: [Commerce_Product_VariationSelection_Option]
 }
 
@@ -5610,11 +5626,20 @@ type Commerce_Product_Attributes {
 }
 
 type Commerce_Product_Attribute {
+    "Code of the attribute e.g. ` + "`" + `productWeight` + "`" + `"
     code: String!
+    "Human-readable code e.g. ` + "`" + `The Product Weight` + "`" + `"
     codeLabel: String!
+    "Human-readable label of a single value"
     label: String!
+    "Value of the selected attribute"
+    value: String!
+    "Unit of the attribute e.g. ` + "`" + `kg` + "`" + `"
     unitCode: String!
+    "Values of a multi value attribute"
     values: [String!]
+    "Human-readable labels of a multi value attribute"
+    labels: [String!]
 }
 
 type Commerce_Product_CategoryTeaser {
@@ -25379,6 +25404,50 @@ func (ec *executionContext) fieldContext_Commerce_Product_Attribute_label(ctx co
 	return fc, nil
 }
 
+func (ec *executionContext) _Commerce_Product_Attribute_value(ctx context.Context, field graphql.CollectedField, obj *domain1.Attribute) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_Attribute_value(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Value(), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_Attribute_value(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_Attribute",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Commerce_Product_Attribute_unitCode(ctx context.Context, field graphql.CollectedField, obj *domain1.Attribute) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Commerce_Product_Attribute_unitCode(ctx, field)
 	if err != nil {
@@ -25452,6 +25521,47 @@ func (ec *executionContext) _Commerce_Product_Attribute_values(ctx context.Conte
 }
 
 func (ec *executionContext) fieldContext_Commerce_Product_Attribute_values(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_Attribute",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_Attribute_labels(ctx context.Context, field graphql.CollectedField, obj *domain1.Attribute) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_Attribute_labels(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Labels(), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalOString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_Attribute_labels(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Commerce_Product_Attribute",
 		Field:      field,
@@ -25547,10 +25657,14 @@ func (ec *executionContext) fieldContext_Commerce_Product_Attributes_attributes(
 				return ec.fieldContext_Commerce_Product_Attribute_codeLabel(ctx, field)
 			case "label":
 				return ec.fieldContext_Commerce_Product_Attribute_label(ctx, field)
+			case "value":
+				return ec.fieldContext_Commerce_Product_Attribute_value(ctx, field)
 			case "unitCode":
 				return ec.fieldContext_Commerce_Product_Attribute_unitCode(ctx, field)
 			case "values":
 				return ec.fieldContext_Commerce_Product_Attribute_values(ctx, field)
+			case "labels":
+				return ec.fieldContext_Commerce_Product_Attribute_labels(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_Attribute", field.Name)
 		},
@@ -25652,10 +25766,14 @@ func (ec *executionContext) fieldContext_Commerce_Product_Attributes_getAttribut
 				return ec.fieldContext_Commerce_Product_Attribute_codeLabel(ctx, field)
 			case "label":
 				return ec.fieldContext_Commerce_Product_Attribute_label(ctx, field)
+			case "value":
+				return ec.fieldContext_Commerce_Product_Attribute_value(ctx, field)
 			case "unitCode":
 				return ec.fieldContext_Commerce_Product_Attribute_unitCode(ctx, field)
 			case "values":
 				return ec.fieldContext_Commerce_Product_Attribute_values(ctx, field)
+			case "labels":
+				return ec.fieldContext_Commerce_Product_Attribute_labels(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_Attribute", field.Name)
 		},
@@ -25716,10 +25834,14 @@ func (ec *executionContext) fieldContext_Commerce_Product_Attributes_getAttribut
 				return ec.fieldContext_Commerce_Product_Attribute_codeLabel(ctx, field)
 			case "label":
 				return ec.fieldContext_Commerce_Product_Attribute_label(ctx, field)
+			case "value":
+				return ec.fieldContext_Commerce_Product_Attribute_value(ctx, field)
 			case "unitCode":
 				return ec.fieldContext_Commerce_Product_Attribute_unitCode(ctx, field)
 			case "values":
 				return ec.fieldContext_Commerce_Product_Attribute_values(ctx, field)
+			case "labels":
+				return ec.fieldContext_Commerce_Product_Attribute_labels(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_Attribute", field.Name)
 		},
@@ -40896,6 +41018,13 @@ func (ec *executionContext) _Commerce_Product_Attribute(ctx context.Context, sel
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "value":
+
+			out.Values[i] = ec._Commerce_Product_Attribute_value(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "unitCode":
 
 			out.Values[i] = ec._Commerce_Product_Attribute_unitCode(ctx, field, obj)
@@ -40906,6 +41035,10 @@ func (ec *executionContext) _Commerce_Product_Attribute(ctx context.Context, sel
 		case "values":
 
 			out.Values[i] = ec._Commerce_Product_Attribute_values(ctx, field, obj)
+
+		case "labels":
+
+			out.Values[i] = ec._Commerce_Product_Attribute_labels(ctx, field, obj)
 
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))

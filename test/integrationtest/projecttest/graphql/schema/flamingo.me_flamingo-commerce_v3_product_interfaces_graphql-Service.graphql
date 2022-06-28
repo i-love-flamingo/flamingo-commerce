@@ -89,7 +89,7 @@ type Commerce_Product_ActiveVariantProduct implements Commerce_Product {
 type Commerce_Product_VariationSelection {
     code: String!
     label: String!
-    "All possiblie variations for that attribute. E.g. 'M', 'L', 'XL'"
+    "All possible variations for that attribute. E.g. 'M', 'L', 'XL'"
     options: [Commerce_Product_VariationSelection_Option]
 }
 
@@ -194,11 +194,20 @@ type Commerce_Product_Attributes {
 }
 
 type Commerce_Product_Attribute {
+    "Code of the attribute e.g. `productWeight`"
     code: String!
+    "Human-readable code e.g. `The Product Weight`"
     codeLabel: String!
+    "Human-readable label of a single value"
     label: String!
+    "Value of the selected attribute"
+    value: String!
+    "Unit of the attribute e.g. `kg`"
     unitCode: String!
+    "Values of a multi value attribute"
     values: [String!]
+    "Human-readable labels of a multi value attribute"
+    labels: [String!]
 }
 
 type Commerce_Product_CategoryTeaser {
