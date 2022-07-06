@@ -8,7 +8,7 @@ require (
 	flamingo.me/form v1.1.1
 	flamingo.me/graphql v1.8.0
 	flamingo.me/pugtemplate v1.2.2
-	github.com/99designs/gqlgen v0.17.5
+	github.com/99designs/gqlgen v0.17.12
 	github.com/gavv/httpexpect/v2 v2.3.1
 	github.com/go-playground/form/v4 v4.2.0
 	github.com/go-redsync/redsync/v4 v4.5.1
