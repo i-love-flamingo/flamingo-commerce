@@ -3,10 +3,11 @@ package controller
 import (
 	"context"
 
-	"flamingo.me/flamingo-commerce/v3/product/application"
-	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/pkg/errors"
+
+	"flamingo.me/flamingo-commerce/v3/product/application"
+	"flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
 type (
@@ -19,15 +20,15 @@ type (
 
 	// APIResult view data
 	APIResult struct {
-		Error   *resultError
+		Error   *productResultError
 		Success bool
 		Product domain.BasicProduct
 	}
 
-	resultError struct {
+	productResultError struct {
 		Message string
 		Code    string
-	} //@name productResultError
+	}
 )
 
 // Inject dependencies
@@ -56,13 +57,13 @@ func (c *APIController) Get(ctx context.Context, r *web.Request) web.Result {
 		case domain.ProductNotFound:
 			return c.responder.Data(APIResult{
 				Success: false,
-				Error:   &resultError{Code: "404", Message: err.Error()},
+				Error:   &productResultError{Code: "404", Message: err.Error()},
 			})
 
 		default:
 			return c.responder.Data(APIResult{
 				Success: false,
-				Error:   &resultError{Code: "500", Message: err.Error()},
+				Error:   &productResultError{Code: "500", Message: err.Error()},
 			})
 		}
 	}
