@@ -1797,7 +1797,7 @@ var doc = `{
             "type": "object",
             "properties": {
                 "Error": {
-                    "$ref": "#/definitions/controller.productResultError"
+                    "$ref": "#/definitions/productResultError"
                 },
                 "Product": {
                     "$ref": "#/definitions/domain.BasicProduct"
@@ -1888,17 +1888,6 @@ var doc = `{
                     "items": {
                         "$ref": "#/definitions/placeorder.PlacedOrderInfo"
                     }
-                }
-            }
-        },
-        "controller.productResultError": {
-            "type": "object",
-            "properties": {
-                "Code": {
-                    "type": "string"
-                },
-                "Message": {
-                    "type": "string"
                 }
             }
         },
@@ -2398,6 +2387,17 @@ var doc = `{
         },
         "process.StateData": {
             "type": "object"
+        },
+        "productResultError": {
+            "type": "object",
+            "properties": {
+                "Code": {
+                    "type": "string"
+                },
+                "Message": {
+                    "type": "string"
+                }
+            }
         },
         "validation.ItemValidationError": {
             "type": "object",

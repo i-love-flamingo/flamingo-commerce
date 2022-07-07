@@ -20,15 +20,15 @@ type (
 
 	// APIResult view data
 	APIResult struct {
-		Error   *productResultError
+		Error   *resultError
 		Success bool
 		Product domain.BasicProduct
 	}
 
-	productResultError struct {
+	resultError struct {
 		Message string
 		Code    string
-	}
+	} //@name productResultError
 )
 
 // Inject dependencies
@@ -57,13 +57,13 @@ func (c *APIController) Get(ctx context.Context, r *web.Request) web.Result {
 		case domain.ProductNotFound:
 			return c.responder.Data(APIResult{
 				Success: false,
-				Error:   &productResultError{Code: "404", Message: err.Error()},
+				Error:   &resultError{Code: "404", Message: err.Error()},
 			})
 
 		default:
 			return c.responder.Data(APIResult{
 				Success: false,
-				Error:   &productResultError{Code: "500", Message: err.Error()},
+				Error:   &resultError{Code: "500", Message: err.Error()},
 			})
 		}
 	}

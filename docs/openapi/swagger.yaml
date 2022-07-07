@@ -550,7 +550,7 @@ definitions:
   controller.APIResult:
     properties:
       Error:
-        $ref: '#/definitions/controller.productResultError'
+        $ref: '#/definitions/productResultError'
       Product:
         $ref: '#/definitions/domain.BasicProduct'
       Success:
@@ -610,13 +610,6 @@ definitions:
         items:
           $ref: '#/definitions/placeorder.PlacedOrderInfo'
         type: array
-    type: object
-  controller.productResultError:
-    properties:
-      Code:
-        type: string
-      Message:
-        type: string
     type: object
   controller.startPlaceOrderResult:
     properties:
@@ -963,6 +956,13 @@ definitions:
         type: string
     type: object
   process.StateData:
+    type: object
+  productResultError:
+    properties:
+      Code:
+        type: string
+      Message:
+        type: string
     type: object
   validation.ItemValidationError:
     properties:
