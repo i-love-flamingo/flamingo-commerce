@@ -5,6 +5,7 @@ package graphql
 import (
 	"bytes"
 	"context"
+	"embed"
 	"errors"
 	"fmt"
 	"math/big"
@@ -5264,1203 +5265,26 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 	return introspection.WrapTypeFromDef(parsedSchema, parsedSchema.Types[name]), nil
 }
 
+//go:embed "schema/schema.graphql" "schema/flamingo.me_flamingo-commerce_v3_price_interfaces_graphql-Service.graphql" "schema/flamingo.me_flamingo-commerce_v3_search_interfaces_graphql-Service.graphql" "schema/flamingo.me_flamingo-commerce_v3_product_interfaces_graphql-Service.graphql" "schema/flamingo.me_flamingo-commerce_v3_customer_interfaces_graphql-Service.graphql" "schema/flamingo.me_flamingo-commerce_v3_cart_interfaces_graphql-Service.graphql" "schema/flamingo.me_flamingo-commerce_v3_checkout_interfaces_graphql-Service.graphql" "schema/flamingo.me_flamingo-commerce_v3_category_interfaces_graphql-Service.graphql"
+var sourcesFS embed.FS
+
+func sourceData(filename string) string {
+	data, err := sourcesFS.ReadFile(filename)
+	if err != nil {
+		panic(fmt.Sprintf("codegen problem: %s not available", filename))
+	}
+	return string(data)
+}
+
 var sources = []*ast.Source{
-	{Name: "graphql/schema/schema.graphql", Input: `type Query { flamingo: String }
-type Mutation { flamingo: String }
-scalar Time
-scalar Map
-scalar Date`, BuiltIn: false},
-	{Name: "graphql/schema/flamingo.me_flamingo-commerce_v3_price_interfaces_graphql-Service.graphql", Input: `type Commerce_Price{
-    amount: Float
-    currency: String!
-}
-
-type Commerce_Price_Charge {
-    price: Commerce_Price!
-    value: Commerce_Price!
-    type: String!
-    reference: String!
-}
-
-type Commerce_Price_ChargeQualifier {
-    type: String!
-    reference: String!
-}
-
-input Commerce_Price_ChargeQualifierInput {
-    type: String!
-    reference: String!
-}
-
-type Commerce_Price_Charges {
-    items: [Commerce_Price_Charge!]
-    hasType(ctype: String): Boolean
-    hasChargeQualifier(qualifier: Commerce_Price_ChargeQualifierInput!): Boolean
-    getByChargeQualifierForced(qualifier: Commerce_Price_ChargeQualifierInput!): Commerce_Price_Charge
-    getByTypeForced(ctype: String): Commerce_Price_Charge
-}`, BuiltIn: false},
-	{Name: "graphql/schema/flamingo.me_flamingo-commerce_v3_search_interfaces_graphql-Service.graphql", Input: `input Commerce_Search_KeyValueFilter {
-    k: String!
-    v: [String!]
-}
-
-input Commerce_Search_Request {
-    pageSize:           Int
-    page:               Int
-    sortBy:             String
-    keyValueFilters:    [Commerce_Search_KeyValueFilter!]
-    query:              String
-}
-
-#input Commerce_Search_LiveSearchRequest {
-#    query:              String
-#}
-
-type Commerce_Search_Meta {
-    query:          String!
-    originalQuery:  String!
-    page:           Int!
-    numPages:       Int!
-    numResults:     Int!
-    sortOptions:    [Commerce_Search_SortOption!]
-}
-
-type Commerce_Search_SortOption {
-    label: String!
-    field: String!
-    selected: Boolean!
-}
-
-interface Commerce_Search_Facet {
-    name: String!
-    label: String!
-    position: Int!
-    items: [Commerce_Search_FacetItem!]!
-    hasSelectedItem: Boolean!
-}
-
-interface Commerce_Search_FacetItem {
-    label: String!
-    value: String!
-    selected: Boolean!
-    count: Int!
-}
-
-type Commerce_Search_ListFacet implements Commerce_Search_Facet {
-    name: String!
-    label: String!
-    position: Int!
-    items: [Commerce_Search_ListFacetItem!]!
-    hasSelectedItem: Boolean!
-}
-
-type Commerce_Search_ListFacetItem implements Commerce_Search_FacetItem {
-    label: String!
-    value: String!
-    selected: Boolean!
-    count: Int!
-}
-
-type Commerce_Search_TreeFacet implements Commerce_Search_Facet {
-    name: String!
-    label: String!
-    position: Int!
-    items: [Commerce_Search_TreeFacetItem!]!
-    hasSelectedItem: Boolean!
-}
-
-type Commerce_Search_TreeFacetItem implements Commerce_Search_FacetItem {
-    label: String!
-    value: String!
-    selected: Boolean!
-    count: Int!
-    active: Boolean!
-    items: [Commerce_Search_TreeFacetItem!]
-}
-
-type Commerce_Search_RangeFacet implements Commerce_Search_Facet {
-    name: String!
-    label: String!
-    position: Int!
-    items: [Commerce_Search_RangeFacetItem!]!
-    hasSelectedItem: Boolean!
-}
-
-type Commerce_Search_RangeFacetItem implements Commerce_Search_FacetItem {
-    label: String!
-    value: String!
-    selected: Boolean!
-    count: Int!
-    min: Int!
-    max: Int!
-    selectedMin: Int!
-    selectedMax: Int!
-}
-
-type Commerce_Search_Suggestion {
-    text:      String!
-    highlight: String!
-}
-
-type Commerce_Search_Promotion {
-    title: String!
-    content: String!
-    url: String!
-    media: Commerce_Search_PromotionMedia
-}
-
-type Commerce_Search_PromotionMedia {
-    type:      String!
-    mimeType:  String!
-    usage:     String!
-    title:     String!
-    reference: String!
-}
-
-#type Commerce_Search_Result {
-#    hits: []Commerce_Search_Document  / Or maybe we dont need hits and the modules need to add a edge to this object... we will see
-#    searchMeta:     Commerce_Search_Meta!
-    # Facets: domain.FacetCollection
-#    suggestions:    [Commerce_Search_Suggestion]
-#}
-
-
-#extend type Query {
-#    Commerce_Search(searchRequest: Commerce_Search_Request): Commerce_Search_Result
-#    Commerce_Search_LiveSearch(searchRequest: Commerce_Search_LiveSearchRequest): Commerce_Search_ResultCommerce_Search_LiveSearchRequest!
-#}
-`, BuiltIn: false},
-	{Name: "graphql/schema/flamingo.me_flamingo-commerce_v3_product_interfaces_graphql-Service.graphql", Input: `interface Commerce_Product {
-    type: String!
-    marketPlaceCode: String!
-    identifier: String!
-    media: Commerce_Product_Media!,
-    price: Commerce_Product_PriceInfo!,
-    availablePrices: [Commerce_Product_PriceInfo!],
-    title: String!
-    categories: Commerce_Product_Categories!
-    description: String!
-    shortDescription: String!
-    meta: Commerce_Product_Meta!
-    loyalty: Commerce_Product_Loyalty!
-    attributes: Commerce_Product_Attributes!
-    badges: Commerce_Product_Badges!
-}
-
-"""
-A simple product, that has no variable attributes and therefore no relation to other products
-"""
-type Commerce_Product_SimpleProduct implements Commerce_Product {
-    type: String!
-    marketPlaceCode: String!
-    identifier: String!
-    media: Commerce_Product_Media!,
-    price: Commerce_Product_PriceInfo!,
-    availablePrices: [Commerce_Product_PriceInfo!],
-    title: String!
-    categories: Commerce_Product_Categories!
-    description: String!
-    shortDescription: String!
-    meta: Commerce_Product_Meta!
-    loyalty: Commerce_Product_Loyalty!
-    attributes: Commerce_Product_Attributes!
-    badges: Commerce_Product_Badges!
-}
-
-"""
-A configurable product defines the possible variations of a product. It only contains
-information about product variants but has no active variant itself.
-"""
-type Commerce_Product_ConfigurableProduct implements Commerce_Product {
-    type: String!
-    marketPlaceCode: String!
-    identifier: String!
-    media: Commerce_Product_Media!,
-    price: Commerce_Product_PriceInfo!,
-    availablePrices: [Commerce_Product_PriceInfo!],
-    title: String!
-    categories: Commerce_Product_Categories!
-    description: String!
-    shortDescription: String!
-    meta: Commerce_Product_Meta!
-    loyalty: Commerce_Product_Loyalty!
-    attributes: Commerce_Product_Attributes!
-    variationSelections: [Commerce_Product_VariationSelection!]
-    badges: Commerce_Product_Badges!
-}
-
-"""
-An active variant is one of many concrete variants that a configurable provides. All data relates to one active variant
-and not the the configurable. It also contains information about it´s siblings (other variants on the same configurable)
-"""
-type Commerce_Product_ActiveVariantProduct implements Commerce_Product {
-    type: String!
-    "The marketPlaceCode of the 'configurable' product. See also 'variantMarketPlaceCode' for the variant marketPlaceCode"
-    marketPlaceCode: String!
-    identifier: String!
-    media: Commerce_Product_Media!,
-    price: Commerce_Product_PriceInfo!,
-    availablePrices: [Commerce_Product_PriceInfo!],
-    title: String!
-    categories: Commerce_Product_Categories!
-    description: String!
-    shortDescription: String!
-    meta: Commerce_Product_Meta!
-    loyalty: Commerce_Product_Loyalty!
-    attributes: Commerce_Product_Attributes!
-    "The marketPlaceCode of the actual variant"
-    variantMarketPlaceCode: String!
-    "Contains information about other available product variations"
-    variationSelections: [Commerce_Product_VariationSelection!]
-    "Convenience property to access the active variant labels easily"
-    activeVariationSelections: [Commerce_Product_ActiveVariationSelection!]
-    badges: Commerce_Product_Badges!
-}
-
-"A group of attributes. E.g. 'size'"
-type Commerce_Product_VariationSelection {
-    code: String!
-    label: String!
-    "All possible variations for that attribute. E.g. 'M', 'L', 'XL'"
-    options: [Commerce_Product_VariationSelection_Option]
-}
-
-"Easy-to-access property to display attribute information about an active variant"
-type Commerce_Product_ActiveVariationSelection {
-    code: String!
-    label: String!
-    value: String!
-    unitCode: String!
-}
-
-"An option for a group of attributes"
-type Commerce_Product_VariationSelection_Option {
-    label: String!
-    unitCode: String!
-    state: Commerce_Product_VariationSelection_OptionState!
-    """
-    Contains information about a product that matches this option.
-    Depending on if there is an active variant or not, it tries to include the variant,
-    that best matches the current option.
-    """
-    variant: Commerce_Product_VariationSelection_OptionVariant!,
-}
-
-"Information about the underlying variant"
-type Commerce_Product_VariationSelection_OptionVariant {
-    marketPlaceCode: String!
-}
-
-"The state of an option related to the currently active variant"
-enum Commerce_Product_VariationSelection_OptionState {
-    "The currently active variant has this exact attribute + all other active variant attributes"
-    ACTIVE
-    "A variant (other than the active variant) exists, that matches this exact attribute + all other active variant attributes"
-    MATCH
-    "No variant exists, that matches this exact attribute + all other active variant attributes."
-    NO_MATCH
-}
-
-"Wrapper that includes main category and all categories"
-type Commerce_Product_Categories {
-    main: Commerce_Product_CategoryTeaser!
-    all:   [Commerce_Product_CategoryTeaser!]
-}
-
-"Meta information about the product"
-type Commerce_Product_Meta {
-    keywords:        [String!]
-}
-
-"Loyalty information about this product"
-type Commerce_Product_Loyalty {
-    price:      Commerce_Product_Loyalty_PriceInfo
-    earning:    Commerce_Product_Loyalty_EarningInfo
-}
-
-type Commerce_Product_Loyalty_PriceInfo {
-    type: String!
-    default: Commerce_Price!
-    isDiscounted: Boolean!
-    discounted: Commerce_Price!
-    discountText: String!
-    minPointsToSpent: Float!
-    maxPointsToSpent: Float!
-    context: Commerce_Product_PriceContext!
-}
-
-"Shows the type and the points earned"
-type Commerce_Product_Loyalty_EarningInfo {
-    "The type of the LoyaltyEarningInfo, e.g. MilesAndMore"
-    type: String!
-    "The value of the LoyaltyEarningInfo, currency can be e.g. points or miles"
-    default: Commerce_Price!
-}
-
-type Commerce_Product_PriceContext {
-    customerGroup: String!
-    deliveryCode: String!
-    channelCode: String!
-    locale: String!
-}
-
-type Commerce_Product_Media {
-    all: [Commerce_Product_MediaItem!]
-    getMedia(usage: String!): Commerce_Product_MediaItem!
-}
-
-type Commerce_Product_MediaItem {
-    type:      String!
-    mimeType:  String!
-    usage:     String!
-    title:     String!
-    reference: String!
-}
-
-type Commerce_Product_Attributes {
-    attributeKeys: [String!]
-    attributes: [Commerce_Product_Attribute!]
-    hasAttribute(key: String!): Boolean
-    getAttribute(key: String!): Commerce_Product_Attribute
-    getAttributesByKey(keys: [String!]): [Commerce_Product_Attribute!]
-}
-
-type Commerce_Product_Attribute {
-    "Code of the attribute e.g. ` + "`" + `productWeight` + "`" + `"
-    code: String!
-    "Human-readable code e.g. ` + "`" + `The Product Weight` + "`" + `"
-    codeLabel: String!
-    "Human-readable label of a single value"
-    label: String!
-    "Value of the selected attribute"
-    value: String!
-    "Unit of the attribute e.g. ` + "`" + `kg` + "`" + `"
-    unitCode: String!
-    "Values of a multi value attribute"
-    values: [String!]
-    "Human-readable labels of a multi value attribute"
-    labels: [String!]
-}
-
-type Commerce_Product_CategoryTeaser {
-    code: String!
-    path: String!
-    name: String!
-    parent: Commerce_Product_CategoryTeaser
-}
-
-type Commerce_Product_PriceInfo {
-    default: Commerce_Price!
-    discounted: Commerce_Price!
-    discountText: String!
-    activeBase: Commerce_Price!
-    activeBaseAmount: Float!
-    activeBaseUnit: String!
-    isDiscounted: Boolean!
-    campaignRules: [String!]
-    denyMoreDiscounts: Boolean!
-    context: Commerce_Product_PriceContext!
-    taxClass: String!
-}
-
-
-type Commerce_Product_SearchResult {
-    products: [Commerce_Product!]
-    facets: [Commerce_Search_Facet!]!
-    suggestions: [Commerce_Search_Suggestion!]
-    searchMeta: Commerce_Search_Meta!
-    hasSelectedFacet: Boolean!
-    promotion: Commerce_Search_Promotion
-}
-
-type Commerce_Product_Badges {
-    all: [Commerce_Product_Badge!]
-    first: Commerce_Product_Badge
-}
-
-type Commerce_Product_Badge {
-    code:  String!
-    label: String!
-}
-
-extend type Query {
-    Commerce_Product(marketPlaceCode: String!, variantMarketPlaceCode: String): Commerce_Product
-    Commerce_Product_Search(searchRequest: Commerce_Search_Request!): Commerce_Product_SearchResult!
-}
-`, BuiltIn: false},
-	{Name: "graphql/schema/flamingo.me_flamingo-commerce_v3_customer_interfaces_graphql-Service.graphql", Input: `type Commerce_Customer_Status_Result {
-    isLoggedIn: Boolean!
-    userID: String!
-}
-
-type Commerce_Customer_Result {
-    id: String!
-    "Customers personal data"
-    personalData: Commerce_Customer_PersonData!
-    "Get a specific address from the customer"
-    getAddress(id: ID!): Commerce_Customer_Address
-    "Addresses that the customer provided, can be used for billing / shipping"
-    addresses: [Commerce_Customer_Address!]
-    "The default shipping address of the customer, null if there is none"
-    defaultShippingAddress: Commerce_Customer_Address
-    "The default billing address of the customer, null if there is none"
-    defaultBillingAddress: Commerce_Customer_Address
-}
-
-type Commerce_Customer_PersonData {
-    gender:     String!
-    firstName:  String!
-    lastName:   String!
-    middleName: String!
-    mainEmail:  String!
-    prefix:      String!
-    birthday:    Date
-    nationality: String!
-}
-
-type Commerce_Customer_Address {
-    id:                     ID!
-    additionalAddressLines: [String!]
-    city:                   String!
-    company:                String!
-    countryCode:            String!
-    "Flag if this address should be used as the default billing address"
-    defaultBilling:         Boolean!
-    "Flag if this address should be used as the default shipping address"
-    defaultShipping:        Boolean!
-    firstName:              String!
-    lastName:               String!
-    postCode:               String!
-    prefix:                 String!
-    regionCode:             String!
-    street:                 String!
-    streetNumber:           String!
-    state:                  String!
-    telephone:              String!
-    email:                  String!
-}
-
-extend type Query {
-    """
-    Returns the logged in status for the current session
-    """
-    Commerce_Customer_Status: Commerce_Customer_Status_Result
-    """
-    Returns the logged in customer for the current session or an error if it is not logged in.
-    If you don't want to handle the error, check with Commerce_Customer_Status first.
-    """
-    Commerce_Customer: Commerce_Customer_Result
-}
-`, BuiltIn: false},
-	{Name: "graphql/schema/flamingo.me_flamingo-commerce_v3_cart_interfaces_graphql-Service.graphql", Input: `type Commerce_Cart_DecoratedCart {
-    cart: Commerce_Cart_Cart!
-    decoratedDeliveries: [Commerce_Cart_DecoratedDelivery!]
-    getDecoratedDeliveryByCode(deliveryCode: String!): Commerce_Cart_DecoratedDelivery
-    getAllPaymentRequiredItems: Commerce_Cart_PricedItems!
-    cartSummary: Commerce_Cart_Summary!
-}
-
-type Commerce_Cart_Summary {
-    discounts: Commerce_Cart_AppliedDiscounts!
-    totalDiscountAmount: Commerce_Price
-    totalGiftCardAmount: Commerce_Price
-    grandTotalWithGiftCards: Commerce_Price
-    sumTotalDiscountWithGiftCardsAmount: Commerce_Price
-    hasAppliedDiscounts: Boolean!
-    sumTaxes: Commerce_Cart_Taxes
-    sumPaymentSelectionCartSplitValueAmountByMethods(methods: [String!]): Commerce_Price
-}
-
-type Commerce_Cart_Cart {
-    id: ID!
-    entityID: String!
-    billingAddress: Commerce_Cart_Address
-    purchaser: Commerce_Cart_Person
-    deliveries: [Commerce_Cart_Delivery!]
-    additionalData: Commerce_Cart_AdditionalData!
-    paymentSelection: Commerce_Cart_PaymentSelection
-    belongsToAuthenticatedUser: Boolean!
-    authenticatedUserID: String!
-    appliedCouponCodes: [Commerce_Cart_CouponCode!]
-    defaultCurrency: String!
-    totalitems: [Commerce_Cart_Totalitem!]
-    itemCount: Int!
-    productCount: Int!
-    isPaymentSelected: Boolean!
-    grandTotal: Commerce_Price!
-    sumTotalTaxAmount: Commerce_Price!
-    subTotalNet: Commerce_Price!
-    appliedGiftCards: [Commerce_Cart_AppliedGiftCard!]
-    getDeliveryByCode(deliveryCode: String!): Commerce_Cart_Delivery
-    getDeliveryCodes: [String!]
-
-    getMainShippingEMail: String!
-    isEmpty: Boolean!
-    hasDeliveryForCode(deliveryCode: String!): Boolean!
-
-    getDeliveryByItemID(itemID: String!): Commerce_Cart_Delivery!
-    getByItemID(itemID: String!): Commerce_Cart_Item!
-    getTotalQty(marketPlaceCode: String!, variantCode: String!): Int
-    getByExternalReference(ref: String!): Commerce_Cart_Item!
-
-    getVoucherSavings: Commerce_Price!
-    getCartTeaser: Commerce_Cart_Teaser!
-
-    shippingNet: Commerce_Price!
-    shippingNetWithDiscounts: Commerce_Price!
-    shippingGross: Commerce_Price!
-    shippingGrossWithDiscounts: Commerce_Price!
-
-    hasShippingCosts: Boolean!
-    allShippingTitles: [String!]
-
-    subTotalGross: Commerce_Price!
-    subTotalGrossWithDiscounts: Commerce_Price!
-    subTotalNetWithDiscounts: Commerce_Price!
-    totalDiscountAmount: Commerce_Price!
-    nonItemRelatedDiscountAmount: Commerce_Price!
-    itemRelatedDiscountAmount: Commerce_Price!
-    hasAppliedCouponCode: Boolean!
-
-    getPaymentReference: String!
-    getTotalItemsByType(typeCode: String!): [Commerce_Cart_Totalitem!]
-    grandTotalCharges: Commerce_Price_Charges!
-
-    hasAppliedGiftCards: Boolean!
-    hasRemainingGiftCards: Boolean!
-}
-
-type Commerce_Cart_PricedItems {
-    cartItems:  [Commerce_Cart_PricedCartItem!]
-    shippingItems:  [Commerce_Cart_PricedShippingItem!]
-    totalItems: [Commerce_Cart_PricedTotalItem!]
-}
-
-type Commerce_Cart_PricedCartItem {
-    amount: Commerce_Price!
-    itemID: String!
-}
-
-type Commerce_Cart_PricedShippingItem {
-    amount: Commerce_Price!
-    deliveryInfoCode: String!
-}
-
-type Commerce_Cart_PricedTotalItem {
-    amount: Commerce_Price!
-    code: String!
-}
-
-type Commerce_Cart_Tax {
-    amount: Commerce_Price!
-    type: String!
-    rate: Float
-}
-
-type Commerce_Cart_Taxes {
-    items: [Commerce_Cart_Tax]!
-    getByType(taxType: String): Commerce_Cart_Tax!
-}
-
-type Commerce_Cart_Teaser {
-    productCount:  Int
-    ItemCount:     Int
-    DeliveryCodes: [String]
-}
-
-interface Commerce_Cart_PaymentSelection {
-    gateway: String!
-    totalValue: Commerce_Price!
-    cartSplit: [Commerce_Cart_PaymentSelection_Split!]
-}
-
-type Commerce_Cart_PaymentSelection_Split {
-    qualifier: Commerce_Cart_PaymentSelection_SplitQualifier!
-    charge: Commerce_Price_Charge!
-}
-
-type Commerce_Cart_PaymentSelection_SplitQualifier {
-    type: String!
-    method: String!
-    reference: String!
-}
-
-type Commerce_Cart_DefaultPaymentSelection implements Commerce_Cart_PaymentSelection {
-    gateway: String!
-    totalValue: Commerce_Price!
-    cartSplit: [Commerce_Cart_PaymentSelection_Split!]
-}
-
-type Commerce_Cart_DecoratedDelivery {
-    delivery: Commerce_Cart_Delivery!
-    decoratedItems: [Commerce_Cart_DecoratedItem!]
-}
-
-type Commerce_Cart_Delivery {
-    deliveryInfo: Commerce_Cart_DeliveryInfo
-    cartitems: [Commerce_Cart_Item!]
-    shippingItem: Commerce_Cart_ShippingItem
-    subTotalGross: Commerce_Price
-    grandTotal: Commerce_Price
-    sumTotalTaxAmount: Commerce_Price
-    subTotalNet: Commerce_Price
-    totalDiscountAmount: Commerce_Price
-    nonItemRelatedDiscountAmount: Commerce_Price
-    itemRelatedDiscountAmount: Commerce_Price
-    subTotalGrossWithDiscounts: Commerce_Price
-    subTotalNetWithDiscounts: Commerce_Price!
-    hasItems: Boolean!
-}
-
-type Commerce_Cart_DeliveryInfo {
-    code: String!
-    workflow: String!
-    method: String!
-    carrier: String!
-    deliveryLocation: Commerce_Cart_DeliveryLocation
-    desiredTime: Time
-    additionalData: Commerce_Cart_CustomAttributes!
-}
-
-type Commerce_Cart_DeliveryLocation  {
-    type: String!
-    address: Commerce_Cart_Address
-    useBillingAddress: Boolean!
-    code: String!
-}
-
-type Commerce_Cart_ShippingItem {
-    title: String!
-    priceNet: Commerce_Price!
-    taxAmount: Commerce_Price!
-    priceGross: Commerce_Price!
-    appliedDiscounts: Commerce_Cart_AppliedDiscounts!
-    totalWithDiscountInclTax: Commerce_Price!
-    tax: Commerce_Cart_Tax!
-}
-
-type Commerce_Cart_AppliedDiscounts {
-    items: [Commerce_Cart_AppliedDiscount!]
-    byCampaignCode(campaignCode: String):  Commerce_Cart_AppliedDiscounts!
-    byType(filterType: String): Commerce_Cart_AppliedDiscounts!
-}
-
-type Commerce_Cart_AppliedDiscount {
-    campaignCode:  String!
-    couponCode:    String!
-    label:         String!
-    applied:       Commerce_Price!
-    type:          String!
-    isItemRelated: Boolean!
-    sortOrder:     Int!
-}
-
-type Commerce_Cart_DecoratedItem {
-    item: Commerce_Cart_Item
-    product: Commerce_Product
-}
-
-type Commerce_Cart_Item {
-    id: ID!
-    externalReference: String!
-    marketplaceCode: String!
-    variantMarketPlaceCode: String!
-    productName: String!
-    sourceID: String!
-    qty: Int!
-    additionalDataKeys: [String!]
-    additionalDataValues: [String!]
-    getAdditionalData(key: String!): String
-    hasAdditionalDataKey(key: String!): Boolean
-    singlePriceGross: Commerce_Price!
-    singlePriceNet: Commerce_Price!
-    rowPriceGross: Commerce_Price!
-    rowPriceNet: Commerce_Price!
-    appliedDiscounts: Commerce_Cart_AppliedDiscounts!
-    #    rowTaxes: Commerce_Taxes!
-}
-
-type Commerce_Cart_Address {
-    vat:                    String!
-    firstname:              String!
-    lastname:               String!
-    middleName:             String!
-    title:                  String!
-    salutation:             String!
-    street:                 String!
-    streetNr:               String!
-    additionalAddressLines: [String!]
-    company:                String!
-    city:                   String!
-    postCode:               String!
-    state:                  String!
-    regionCode:             String!
-    country:                String!
-    countryCode:            String!
-    telephone:              String!
-    email:                  String!
-}
-
-type Commerce_Cart_Person {
-    address: Commerce_Cart_Address
-    personalDetails: Commerce_Cart_PersonalDetails!
-    existingCustomerData: Commerce_Cart_ExistingCustomerData
-}
-
-type Commerce_Cart_ExistingCustomerData {
-    id: ID!
-}
-
-type Commerce_Cart_PersonalDetails {
-    dateOfBirth: String!
-    passportCountry: String!
-    passportNumber: String!
-    nationality: String!
-}
-
-type Commerce_Cart_AdditionalData {
-    customAttributes: Commerce_Cart_CustomAttributes!
-    reservedOrderID: String!
-}
-
-type Commerce_Cart_CustomAttributes {
-    "Get specific attribute by key"
-    get(key: String!): Commerce_Cart_KeyValue
-}
-
-type Commerce_Cart_KeyValue {
-    key: String!
-    value: String!
-}
-
-type Commerce_Cart_Totalitem {
-    code: String!
-    title: String!
-    price: Commerce_Price!
-    type: String!
-}
-
-type Commerce_Cart_CouponCode {
-    code: String!
-}
-
-type Commerce_Cart_AppliedGiftCard {
-    code: String!
-    applied: Commerce_Price!
-    remaining: Commerce_Price!
-    hasRemaining: Boolean!
-}
-
-type Commerce_Cart_ValidationResult {
-    hasCommonError:        Boolean!
-    commonErrorMessageKey: String!
-    itemResults:           [Commerce_Cart_ItemValidationError!]
-}
-
-type Commerce_Cart_ItemValidationError {
-    itemID:          String!
-    errorMessageKey: String!
-}
-
-
-type Commerce_Cart_QtyRestrictionResult {
-    isRestricted:        Boolean!
-    maxAllowed:          Int!
-    remainingDifference: Int!
-    restrictorName:      String!
-}
-
-type Commerce_Cart_PlacedOrderInfo {
-    orderNumber:    String!
-    deliveryCode:   String!
-}
-
-type Commerce_Cart_BillingAddressForm {
-    "Billing address form data"
-    formData:       Commerce_Cart_AddressForm
-    "Validation of supplied billing address, empty if address is valid"
-    validationInfo: Commerce_Cart_Form_ValidationInfo
-    "Shows if the request was successfully processed"
-    processed: Boolean
-}
-
-type Commerce_Cart_SelectedPaymentResult {
-    validationInfo: Commerce_Cart_Form_ValidationInfo
-    processed: Boolean
-}
-
-type Commerce_Cart_Form_ValidationInfo {
-    "Field specific validation errors"
-    fieldErrors: [Commerce_Cart_Form_FieldError!]
-    "General validation errors"
-    generalErrors: [Commerce_Cart_Form_Error!]
-}
-
-type Commerce_Cart_Form_Error {
-    "A key of the error message. Often used for translation"
-    messageKey: String!
-    "A speaking error label. Often used to show to end user - in case no translation exists"
-    defaultLabel: String!
-}
-
-type Commerce_Cart_Form_FieldError {
-    "A key of the error message. Often used for translation"
-    messageKey: String!
-    "A speaking error label. Often used to show to end user - in case no translation exists"
-    defaultLabel: String!
-    "Identifier for a form field"
-    fieldName: String!
-}
-
-type Commerce_Cart_AddressForm {
-    vat:                    String!
-    firstname:              String!
-    lastname:               String!
-    middleName:             String!
-    title:                  String!
-    salutation:             String!
-    street:                 String!
-    streetNr:               String!
-    addressLine1:           String!
-    addressLine2:           String!
-    company:                String!
-    city:                   String!
-    postCode:               String!
-    state:                  String!
-    regionCode:             String!
-    country:                String!
-    countryCode:            String!
-    phoneNumber:            String!
-    email:                  String!
-}
-
-input Commerce_Cart_AddressFormInput {
-    vat:                    String
-    firstname:              String!
-    lastname:               String!
-    middleName:             String
-    title:                  String
-    salutation:             String
-    street:                 String
-    streetNr:               String
-    addressLine1:           String
-    addressLine2:           String
-    company:                String
-    city:                   String
-    postCode:               String
-    state:                  String
-    regionCode:             String
-    country:                String
-    countryCode:            String
-    phoneNumber:            String
-    email:                  String!
-}
-
-input Commerce_Cart_DeliveryAddressInput {
-    "Unique delivery code to identify the delivery"
-    deliveryCode: String!
-    "Delivery address form data"
-    deliveryAddress: Commerce_Cart_AddressFormInput
-    "Should the data of the billing address be used for this delivery"
-    useBillingAddress: Boolean!
-    "Optional Shipping Method"
-    method: String
-    "Optional Shipping Method"
-    carrier: String
-    "Optional desired delivery date / time"
-    desiredTime: Time
-}
-
-type Commerce_Cart_DeliveryAddressForm {
-    "Unique delivery code to identify the delivery"
-    deliveryCode: String!
-    "Delivery address form data"
-    formData:       Commerce_Cart_AddressForm
-    "Shows if the data of the billing address should be used for this delivery"
-    useBillingAddress: Boolean!
-    "Shipping Method"
-    method: String
-    "Shipping Carrier"
-    carrier: String
-    "Optional desired delivery date / time"
-    desiredTime: Time
-
-    "Validation of supplied delivery address, empty if address is valid"
-    validationInfo: Commerce_Cart_Form_ValidationInfo
-    "Shows if the request was successfully processed"
-    processed: Boolean
-}
-
-type Commerce_Cart_UpdateDeliveryShippingOptions_Result {
-    "Shows if the request was successfully processed"
-    processed: Boolean
-}
-
-input Commerce_Cart_DeliveryShippingOptionInput {
-    "Unique delivery code to identify an **existing** delivery"
-    deliveryCode: String!
-    "Shipping Method"
-    method: String!
-    "Shipping Carrier"
-    carrier: String!
-}
-
-input Commerce_Cart_KeyValueInput {
-    key: String!
-    value: String!
-}
-
-input Commerce_Cart_DeliveryAdditionalDataInput {
-    deliveryCode: String!
-    additionalData: [Commerce_Cart_KeyValueInput!]!
-}
-
-extend type Query {
-    Commerce_Cart_DecoratedCart: Commerce_Cart_DecoratedCart!
-    Commerce_Cart_Validator: Commerce_Cart_ValidationResult!
-    "Commerce_Cart_QtyRestriction returns if the product is restricted in terms of the allowed quantity for the current cart and the given delivery"
-    Commerce_Cart_QtyRestriction(marketplaceCode: String!, variantCode: String, deliveryCode: String!): Commerce_Cart_QtyRestrictionResult!
-}
-
-extend type Mutation {
-    Commerce_Cart_AddToCart(marketplaceCode: ID!, qty: Int!, deliveryCode: String!): Commerce_Cart_DecoratedCart!
-    Commerce_Cart_DeleteCartDelivery(deliveryCode: String!): Commerce_Cart_DecoratedCart!
-    Commerce_Cart_DeleteItem(itemID: ID!, deliveryCode: String!): Commerce_Cart_DecoratedCart!
-    Commerce_Cart_UpdateItemQty(itemID: ID!, deliveryCode: String!, qty: Int!): Commerce_Cart_DecoratedCart!
-    "Adds/Updates the Billing Address of the current cart"
-    Commerce_Cart_UpdateBillingAddress(addressForm: Commerce_Cart_AddressFormInput): Commerce_Cart_BillingAddressForm!
-    Commerce_Cart_UpdateSelectedPayment(gateway: String!, method: String!): Commerce_Cart_SelectedPaymentResult!
-    Commerce_Cart_ApplyCouponCodeOrGiftCard(code: String!): Commerce_Cart_DecoratedCart
-    Commerce_Cart_RemoveGiftCard(giftCardCode: String!): Commerce_Cart_DecoratedCart
-    Commerce_Cart_RemoveCouponCode(couponCode: String!): Commerce_Cart_DecoratedCart
-    "Adds/Updates one/multiple Delivery Addresses"
-    Commerce_Cart_UpdateDeliveryAddresses(deliveryAdresses: [Commerce_Cart_DeliveryAddressInput!]): [Commerce_Cart_DeliveryAddressForm]!
-    "Adds/Updates one/multiple Delivery Addresses"
-    Commerce_Cart_UpdateDeliveryShippingOptions(shippingOptions: [Commerce_Cart_DeliveryShippingOptionInput!]): Commerce_Cart_UpdateDeliveryShippingOptions_Result!
-    "Cleans current cart"
-    Commerce_Cart_Clean: Boolean!
-    "Adds/Updates additional data for the cart"
-    Commerce_Cart_UpdateAdditionalData(additionalData: [Commerce_Cart_KeyValueInput!]!): Commerce_Cart_DecoratedCart!
-    "Adds/Updates additional data for the given deliveries"
-    Commerce_Cart_UpdateDeliveriesAdditionalData(data: [Commerce_Cart_DeliveryAdditionalDataInput!]!): Commerce_Cart_DecoratedCart!
-}
-`, BuiltIn: false},
-	{Name: "graphql/schema/flamingo.me_flamingo-commerce_v3_checkout_interfaces_graphql-Service.graphql", Input: `type Commerce_Checkout_StartPlaceOrder_Result {
-    uuid: String!
-}
-# Commerce_Checkout_PlaceOrderContext represents the result of the current (running) place order mutation
-type Commerce_Checkout_PlaceOrderContext {
-    # The Cart that is going to be placed
-    cart: Commerce_Cart_DecoratedCart
-    # The placed order in case order is already placed
-    orderInfos: Commerce_Checkout_PlacedOrderInfos
-    # State depending on the state of payment and place order - state may contain additional infos
-    state: Commerce_Checkout_PlaceOrderState_State!
-    # A unique id for the process
-    uuid: String!
-}
-
-
-# Commerce_Checkout_PlacedOrderInfos - infos about the placed orders - typically shown on a suceess page
-type Commerce_Checkout_PlacedOrderInfos {
-    paymentInfos:        [Commerce_Checkout_PlaceOrderPaymentInfo!]
-    placedOrderInfos:    [Commerce_Cart_PlacedOrderInfo!]
-    email:               String!
-}
-
-type  Commerce_Checkout_PlaceOrderPaymentInfo {
-    gateway:         String!
-    paymentProvider: String!
-    method:          String!
-    amount:          Commerce_Price!
-    title:           String!
-}
-
-
-interface Commerce_Checkout_PlaceOrderState_State {
-    name: String!
-}
-
-type Commerce_Checkout_PlaceOrderState_State_Wait implements Commerce_Checkout_PlaceOrderState_State {
-    name: String!
-}
-
-type Commerce_Checkout_PlaceOrderState_State_WaitForCustomer implements Commerce_Checkout_PlaceOrderState_State {
-    name: String!
-}
-
-type Commerce_Checkout_PlaceOrderState_State_Success implements Commerce_Checkout_PlaceOrderState_State {
-    name: String!
-}
-
-type Commerce_Checkout_PlaceOrderState_State_Failed implements Commerce_Checkout_PlaceOrderState_State {
-    name: String!
-    reason: Commerce_Checkout_PlaceOrderState_State_FailedReason!
-}
-
-type Commerce_Checkout_PlaceOrderState_State_ShowIframe implements Commerce_Checkout_PlaceOrderState_State {
-    name: String!
-    URL: String!
-}
-
-type Commerce_Checkout_PlaceOrderState_State_ShowHTML implements Commerce_Checkout_PlaceOrderState_State {
-    name: String!
-    HTML: String!
-}
-
-type Commerce_Checkout_PlaceOrderState_State_Redirect implements Commerce_Checkout_PlaceOrderState_State {
-    name: String!
-    URL: String!
-}
-
-type Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK implements Commerce_Checkout_PlaceOrderState_State {
-    name: String!
-    URL: String!
-    data: String!
-}
-
-type Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment implements Commerce_Checkout_PlaceOrderState_State {
-    name: String!
-    "Wallet payment method that was chosen previously"
-    paymentMethod: String!
-    "Information needed to create a payment using the PaymentRequest API"
-    paymentRequestAPI: Commerce_Checkout_PlaceOrderState_PaymentRequestAPI!
-}
-
-type Commerce_Checkout_PlaceOrderState_PaymentRequestAPI {
-    "Contains the JSON encoded method data for the PaymentRequest API"
-    methodData: String!
-    "Contains the JSON encoded details for the PaymentRequest API"
-    details: String!
-    "Contains the JSON encoded options for the PaymentRequest API"
-    options: String!
-    "Optional endpoint used for obtaining a merchant session, not set if the wallet payment doesn't require a merchant validation"
-    merchantValidationURL: String
-    "Endpoint to sent completed payment to"
-    completeURL: String!
-}
-
-type Commerce_Checkout_PlaceOrderState_State_PostRedirect implements Commerce_Checkout_PlaceOrderState_State {
-    name: String!
-    URL: String!
-    Parameters: [Commerce_Checkout_PlaceOrderState_Form_Parameter!]
-}
-
-interface Commerce_Checkout_PlaceOrderState_State_FailedReason {
-    reason: String
-}
-
-
-type Commerce_Checkout_PlaceOrderState_State_FailedReason_Error implements Commerce_Checkout_PlaceOrderState_State_FailedReason {
-    reason: String
-}
-
-type Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError implements Commerce_Checkout_PlaceOrderState_State_FailedReason {
-    reason: String
-}
-
-type Commerce_Checkout_PlaceOrderState_State_FailedReason_CanceledByCustomer implements Commerce_Checkout_PlaceOrderState_State_FailedReason {
-    reason: String
-}
-
-type Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentCanceledByCustomer implements Commerce_Checkout_PlaceOrderState_State_FailedReason {
-    reason: String
-}
-
-type Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError implements Commerce_Checkout_PlaceOrderState_State_FailedReason {
-    reason: String
-    validationResult: Commerce_Cart_ValidationResult!
-}
-
-type Commerce_Checkout_PlaceOrderState_Form_Parameter {
-    key: String!
-    value: [String!]
-}
-
-extend type Query {
-    # Is there a active place order process
-    Commerce_Checkout_ActivePlaceOrder: Boolean!
-    Commerce_Checkout_CurrentContext: Commerce_Checkout_PlaceOrderContext!
-}
-
-extend type Mutation {
-    # Starts a new process and will replace existing ones
-    Commerce_Checkout_StartPlaceOrder(returnUrl: String!): Commerce_Checkout_StartPlaceOrder_Result!
-    # Cancels to current running place order process, possible if state is not final
-    Commerce_Checkout_CancelPlaceOrder: Boolean!
-    # Clears the last stored place order process
-    Commerce_Checkout_ClearPlaceOrder: Boolean!
-    # Gets the last stored place order state and ensures that the state machine proceeds, non blocking
-    Commerce_Checkout_RefreshPlaceOrder: Commerce_Checkout_PlaceOrderContext!
-    # Gets the most recent place order state by waiting for the state machine to proceed, therefore blocking
-    Commerce_Checkout_RefreshPlaceOrderBlocking: Commerce_Checkout_PlaceOrderContext!
-}
-`, BuiltIn: false},
-	{Name: "graphql/schema/flamingo.me_flamingo-commerce_v3_category_interfaces_graphql-Service.graphql", Input: `type Commerce_Category_Attributes {
-    get(code: String!): Commerce_Category_Attribute
-    has(code: String!): Boolean
-    all: [Commerce_Category_Attribute!]
-}
-
-type Commerce_Category_Attribute {
-    code: String!
-    label: String!
-    values: [Commerce_Category_AttributeValue!]
-}
-
-type Commerce_Category_AttributeValue {
-    value: String!
-    label: String!
-}
-
-interface Commerce_Category {
-    code: String!
-    name: String!
-    path: String!
-    active: Boolean!
-    promoted: Boolean!
-    attributes: Commerce_Category_Attributes!
-}
-
-type Commerce_CategoryData implements Commerce_Category {
-    code: String!
-    name: String!
-    path: String!
-    active: Boolean!
-    promoted: Boolean!
-    attributes: Commerce_Category_Attributes!
-}
-
-interface Commerce_Tree {
-    code: String!
-    name: String!
-    path: String!
-    active: Boolean!
-    subTrees: [Commerce_Tree]
-    hasChilds: Boolean!
-    documentCount: Int!
-}
-
-type Commerce_CategoryTree implements Commerce_Tree{
-    code: String!
-    name: String!
-    path: String!
-    active: Boolean!
-    subTrees: [Commerce_Tree]
-    hasChilds: Boolean!
-    documentCount: Int!
-}
-
-type Commerce_Category_SearchResult {
-    category:               Commerce_Category!
-    productSearchResult:    Commerce_Product_SearchResult!
-}
-
-extend type Query {
-    Commerce_CategoryTree(activeCategoryCode: String!): Commerce_Tree!
-    Commerce_Category(categoryCode: String!, categorySearchRequest: Commerce_Search_Request): Commerce_Category_SearchResult
-}
-`, BuiltIn: false},
+	{Name: "schema/schema.graphql", Input: sourceData("schema/schema.graphql"), BuiltIn: false},
+	{Name: "schema/flamingo.me_flamingo-commerce_v3_price_interfaces_graphql-Service.graphql", Input: sourceData("schema/flamingo.me_flamingo-commerce_v3_price_interfaces_graphql-Service.graphql"), BuiltIn: false},
+	{Name: "schema/flamingo.me_flamingo-commerce_v3_search_interfaces_graphql-Service.graphql", Input: sourceData("schema/flamingo.me_flamingo-commerce_v3_search_interfaces_graphql-Service.graphql"), BuiltIn: false},
+	{Name: "schema/flamingo.me_flamingo-commerce_v3_product_interfaces_graphql-Service.graphql", Input: sourceData("schema/flamingo.me_flamingo-commerce_v3_product_interfaces_graphql-Service.graphql"), BuiltIn: false},
+	{Name: "schema/flamingo.me_flamingo-commerce_v3_customer_interfaces_graphql-Service.graphql", Input: sourceData("schema/flamingo.me_flamingo-commerce_v3_customer_interfaces_graphql-Service.graphql"), BuiltIn: false},
+	{Name: "schema/flamingo.me_flamingo-commerce_v3_cart_interfaces_graphql-Service.graphql", Input: sourceData("schema/flamingo.me_flamingo-commerce_v3_cart_interfaces_graphql-Service.graphql"), BuiltIn: false},
+	{Name: "schema/flamingo.me_flamingo-commerce_v3_checkout_interfaces_graphql-Service.graphql", Input: sourceData("schema/flamingo.me_flamingo-commerce_v3_checkout_interfaces_graphql-Service.graphql"), BuiltIn: false},
+	{Name: "schema/flamingo.me_flamingo-commerce_v3_category_interfaces_graphql-Service.graphql", Input: sourceData("schema/flamingo.me_flamingo-commerce_v3_category_interfaces_graphql-Service.graphql"), BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
 
@@ -36215,7 +35039,12 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 		asMap[k] = v
 	}
 
-	for k, v := range asMap {
+	fieldsInOrder := [...]string{"vat", "firstname", "lastname", "middleName", "title", "salutation", "street", "streetNr", "addressLine1", "addressLine2", "company", "city", "postCode", "state", "regionCode", "country", "countryCode", "phoneNumber", "email"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
 		switch k {
 		case "vat":
 			var err error
@@ -36382,7 +35211,12 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAdditionalDataIn
 		asMap[k] = v
 	}
 
-	for k, v := range asMap {
+	fieldsInOrder := [...]string{"deliveryCode", "additionalData"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
 		switch k {
 		case "deliveryCode":
 			var err error
@@ -36413,7 +35247,12 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx
 		asMap[k] = v
 	}
 
-	for k, v := range asMap {
+	fieldsInOrder := [...]string{"deliveryCode", "deliveryAddress", "useBillingAddress", "method", "carrier", "desiredTime"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
 		switch k {
 		case "deliveryCode":
 			var err error
@@ -36476,7 +35315,12 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryShippingOptionIn
 		asMap[k] = v
 	}
 
-	for k, v := range asMap {
+	fieldsInOrder := [...]string{"deliveryCode", "method", "carrier"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
 		switch k {
 		case "deliveryCode":
 			var err error
@@ -36515,7 +35359,12 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_KeyValueInput(ctx contex
 		asMap[k] = v
 	}
 
-	for k, v := range asMap {
+	fieldsInOrder := [...]string{"key", "value"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
 		switch k {
 		case "key":
 			var err error
@@ -36546,7 +35395,12 @@ func (ec *executionContext) unmarshalInputCommerce_Price_ChargeQualifierInput(ct
 		asMap[k] = v
 	}
 
-	for k, v := range asMap {
+	fieldsInOrder := [...]string{"type", "reference"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
 		switch k {
 		case "type":
 			var err error
@@ -36577,7 +35431,12 @@ func (ec *executionContext) unmarshalInputCommerce_Search_KeyValueFilter(ctx con
 		asMap[k] = v
 	}
 
-	for k, v := range asMap {
+	fieldsInOrder := [...]string{"k", "v"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
 		switch k {
 		case "k":
 			var err error
@@ -36608,7 +35467,12 @@ func (ec *executionContext) unmarshalInputCommerce_Search_Request(ctx context.Co
 		asMap[k] = v
 	}
 
-	for k, v := range asMap {
+	fieldsInOrder := [...]string{"pageSize", "page", "sortBy", "keyValueFilters", "query"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
 		switch k {
 		case "pageSize":
 			var err error

@@ -1014,7 +1014,7 @@
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/productResultError"
+                            "$ref": "#/definitions/paymentResultError"
                         }
                     }
                 }
@@ -1090,7 +1090,8 @@
                     "type": "string"
                 },
                 "RawValue": {
-                    "description": "RawValue is the untouched original value of the attribute"
+                    "description": "RawValue is the untouched original value of the attribute",
+                    "type": "object"
                 },
                 "UnitCode": {
                     "description": "UnitCode is the internal code of the attribute values measuring unit",
@@ -1355,7 +1356,8 @@
                     "$ref": "#/definitions/domain.Price"
                 },
                 "PaymentSelection": {
-                    "description": "PaymentSelection is used to store information on \"how\" the customer wants to pay"
+                    "description": "PaymentSelection is used to store information on \"how\" the customer wants to pay",
+                    "$ref": "#/definitions/cart.PaymentSelection"
                 },
                 "Purchaser": {
                     "description": "Purchaser hold additional infos for the legal contact person in this order",
@@ -1640,6 +1642,9 @@
                 }
             }
         },
+        "cart.PaymentSelection": {
+            "type": "object"
+        },
         "cart.Person": {
             "type": "object",
             "properties": {
@@ -1749,6 +1754,17 @@
                 }
             }
         },
+        "cartResultError": {
+            "type": "object",
+            "properties": {
+                "Code": {
+                    "type": "string"
+                },
+                "Message": {
+                    "type": "string"
+                }
+            }
+        },
         "checkoutError": {
             "type": "object",
             "properties": {
@@ -1766,7 +1782,9 @@
                 "Error": {
                     "$ref": "#/definitions/productResultError"
                 },
-                "Product": {},
+                "Product": {
+                    "$ref": "#/definitions/domain.BasicProduct"
+                },
                 "Success": {
                     "type": "boolean"
                 }
@@ -1781,13 +1799,15 @@
                 "CartValidationResult": {
                     "$ref": "#/definitions/validation.Result"
                 },
-                "Data": {},
+                "Data": {
+                    "type": "object"
+                },
                 "DataValidationInfo": {
                     "type": "object"
                 },
                 "Error": {
                     "description": "Contains details if success is false",
-                    "$ref": "#/definitions/productResultError"
+                    "$ref": "#/definitions/cartResultError"
                 },
                 "Success": {
                     "type": "boolean"
@@ -1823,7 +1843,9 @@
                 "State": {
                     "type": "string"
                 },
-                "StateData": {},
+                "StateData": {
+                    "$ref": "#/definitions/process.StateData"
+                },
                 "UUID": {
                     "type": "string"
                 }
@@ -1880,7 +1902,9 @@
                 "Item": {
                     "$ref": "#/definitions/cart.Item"
                 },
-                "Product": {}
+                "Product": {
+                    "$ref": "#/definitions/domain.BasicProduct"
+                }
             }
         },
         "decorator.DecoratedDelivery": {
@@ -1907,6 +1931,9 @@
                     "type": "string"
                 }
             }
+        },
+        "domain.BasicProduct": {
+            "type": "object"
         },
         "domain.CategoryTeaser": {
             "type": "object",
@@ -1969,7 +1996,8 @@
                     "$ref": "#/definitions/domain.FlowActionData"
                 },
                 "Data": {
-                    "description": "Data contains additional information related to the action / flow"
+                    "description": "Data contains additional information related to the action / flow",
+                    "type": "object"
                 },
                 "Error": {
                     "description": "Error contains additional information in case of an error (e.g. payment failed)",
@@ -2301,6 +2329,17 @@
                 }
             }
         },
+        "paymentResultError": {
+            "type": "object",
+            "properties": {
+                "Code": {
+                    "type": "string"
+                },
+                "Message": {
+                    "type": "string"
+                }
+            }
+        },
         "placeorder.CreditCardInfo": {
             "type": "object",
             "properties": {
@@ -2328,6 +2367,9 @@
                     "type": "string"
                 }
             }
+        },
+        "process.StateData": {
+            "type": "object"
         },
         "productResultError": {
             "type": "object",

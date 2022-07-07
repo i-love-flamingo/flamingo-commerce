@@ -3,10 +3,11 @@ package controller
 import (
 	"context"
 
-	"flamingo.me/flamingo-commerce/v3/product/application"
-	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/pkg/errors"
+
+	"flamingo.me/flamingo-commerce/v3/product/application"
+	"flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
 type (

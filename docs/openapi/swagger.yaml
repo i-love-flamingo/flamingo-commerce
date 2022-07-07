@@ -13,6 +13,7 @@ definitions:
         type: string
       RawValue:
         description: RawValue is the untouched original value of the attribute
+        type: object
       UnitCode:
         description: UnitCode is the internal code of the attribute values measuring
           unit
@@ -209,6 +210,7 @@ definitions:
         description: NonItemRelatedDiscountAmount is the sum of discounts that are
           not related to the item (including shipping discounts)
       PaymentSelection:
+        $ref: '#/definitions/cart.PaymentSelection'
         description: PaymentSelection is used to store information on "how" the customer
           wants to pay
       Purchaser:
@@ -457,6 +459,8 @@ definitions:
         description: VariantMarketPlaceCode is used for Configurable products
         type: string
     type: object
+  cart.PaymentSelection:
+    type: object
   cart.Person:
     properties:
       Address:
@@ -529,6 +533,13 @@ definitions:
       Type:
         type: string
     type: object
+  cartResultError:
+    properties:
+      Code:
+        type: string
+      Message:
+        type: string
+    type: object
   checkoutError:
     properties:
       Code:
@@ -540,7 +551,8 @@ definitions:
     properties:
       Error:
         $ref: '#/definitions/productResultError'
-      Product: {}
+      Product:
+        $ref: '#/definitions/domain.BasicProduct'
       Success:
         type: boolean
     type: object
@@ -550,11 +562,12 @@ definitions:
         $ref: '#/definitions/cart.Teaser'
       CartValidationResult:
         $ref: '#/definitions/validation.Result'
-      Data: {}
+      Data:
+        type: object
       DataValidationInfo:
         type: object
       Error:
-        $ref: '#/definitions/productResultError'
+        $ref: '#/definitions/cartResultError'
         description: Contains details if success is false
       Success:
         type: boolean
@@ -578,7 +591,8 @@ definitions:
         $ref: '#/definitions/controller.placedOrderInfos'
       State:
         type: string
-      StateData: {}
+      StateData:
+        $ref: '#/definitions/process.StateData'
       UUID:
         type: string
     type: object
@@ -615,7 +629,8 @@ definitions:
     properties:
       Item:
         $ref: '#/definitions/cart.Item'
-      Product: {}
+      Product:
+        $ref: '#/definitions/domain.BasicProduct'
     type: object
   decorator.DecoratedDelivery:
     properties:
@@ -632,6 +647,8 @@ definitions:
         type: string
       Label:
         type: string
+    type: object
+  domain.BasicProduct:
     type: object
   domain.CategoryTeaser:
     properties:
@@ -681,6 +698,7 @@ definitions:
       Data:
         description: Data contains additional information related to the action /
           flow
+        type: object
       Error:
         $ref: '#/definitions/domain.Error'
         description: Error contains additional information in case of an error (e.g.
@@ -912,6 +930,13 @@ definitions:
       UsedPaymentMethod:
         type: string
     type: object
+  paymentResultError:
+    properties:
+      Code:
+        type: string
+      Message:
+        type: string
+    type: object
   placeorder.CreditCardInfo:
     properties:
       AnonymizedCardNumber:
@@ -929,6 +954,8 @@ definitions:
         type: string
       OrderNumber:
         type: string
+    type: object
+  process.StateData:
     type: object
   productResultError:
     properties:
@@ -1631,7 +1658,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/productResultError'
+            $ref: '#/definitions/paymentResultError'
       summary: Get the payment status of current cart (or last placed cart)
       tags:
       - Payment
