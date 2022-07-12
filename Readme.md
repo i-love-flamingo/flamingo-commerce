@@ -29,8 +29,8 @@ A demoshop using the standalone adapters is online here https://demoshop.flaming
 
 ## Whats does Flamingo Commerce provide?
 
-* Different e-commerce Flamingo Modules for typical e-commerce domains: Each providing a separated bounded context with its „domain“, „application“ and „interface“ logic.
-* Using „ports and adapters“ to separate domain from technical details, all these modules can be used with your own „Adapters“ to interact with any API or microservice you want.
+* Different e-commerce Flamingo Modules for typical e-commerce domains: Each providing a separated bounded context with its *domain*, *application* and *interface* logic.
+* Using *ports and adapters* to separate domain from technical details, all these modules can be used with your own *adapters* to interact with any API or microservice you want.
 * Some of the major Flamingo Commerce modules (bounded contexts) are:
     * product: Offering domain models for different product types. Supporting multiple prices (including loyalty prices) etc..
     * cart: Powerful cart domain model. Supporting multi delivery, multiple payment transactions, and a lot more. 
