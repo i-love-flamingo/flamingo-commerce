@@ -24,7 +24,7 @@ A demoshop using the standalone adapters is online here https://demoshop.flaming
 * **Decoupled and flexible frontend development**: Frontend development is decoupled from the "Backend for Frontend" - so that it is possible to use "any" frontend technology.
 * **Testability**: By providing "Fake Adapters" that provide test data, it is possible to test your application without external dependencies.
 * **Great Developer Experience**: :-)
-* **Open Source**: Flamingo Commerce and Flamingo is Open Source and will be.
+* **Open Source**: Flamingo Commerce and Flamingo is Open Source and will remain so.
 
 
 ## Whats does Flamingo Commerce provide?
@@ -95,7 +95,7 @@ You are encourages to use it but if you update you might need to adjust your cod
 
 ## Setup
 
-We recommend to use go modules, so you just need to add Flamingo Commerce to your main go file as import:
+We recommend to use Go modules, so you just need to add Flamingo Commerce to your main go file as import:
 
 e.g. to use the product module add
 
@@ -105,7 +105,7 @@ import (
 )
 ```
 
-And then load the Module in your application bootstrap:
+And then load the module in your application bootstrap:
 
 ```go
 
@@ -123,7 +123,7 @@ func main() {
 
 ```
 
-To update the dependency in go.mod run
+To update the dependency in `go.mod` run
 
 ```
 go get flamingo.me/flamingo-commerce/v3
