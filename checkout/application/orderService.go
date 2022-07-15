@@ -16,7 +16,6 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
-	"flamingo.me/flamingo-commerce/v3/checkout/domain"
 	paymentDomain "flamingo.me/flamingo-commerce/v3/payment/domain"
 	"flamingo.me/flamingo-commerce/v3/payment/interfaces"
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
@@ -25,7 +24,6 @@ import (
 type (
 	// OrderService defines the order service
 	OrderService struct {
-		sourcingEngine           *domain.SourcingEngine
 		logger                   flamingo.Logger
 		cartService              *application.CartService
 		cartReceiverService      *application.CartReceiverService
@@ -115,7 +113,6 @@ func init() {
 
 // Inject dependencies
 func (os *OrderService) Inject(
-	SourcingEngine *domain.SourcingEngine,
 	logger flamingo.Logger,
 	CartService *application.CartService,
 	CartReceiverService *application.CartReceiverService,
@@ -126,7 +123,6 @@ func (os *OrderService) Inject(
 		DeprecatedSourcingActive bool `inject:"config:commerce.checkout.activateDeprecatedSourcing,optional"`
 	},
 ) {
-	os.sourcingEngine = SourcingEngine
 	os.logger = logger.WithField(flamingo.LogKeyCategory, "checkout.OrderService").WithField(flamingo.LogKeyModule, "checkout")
 	os.cartService = CartService
 	os.cartReceiverService = CartReceiverService
@@ -136,29 +132,6 @@ func (os *OrderService) Inject(
 	if cfg != nil {
 		os.deprecatedSourcingActive = cfg.DeprecatedSourcingActive
 	}
-}
-
-// SetSources sets sources for sessions carts items
-// Deprecated: Sourcing moved to new module see sourcing module
-func (os *OrderService) SetSources(ctx context.Context, session *web.Session) error {
-	if !os.deprecatedSourcingActive {
-		return nil
-	}
-	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(ctx, session)
-	if err != nil {
-		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error ", err)
-
-		return err
-	}
-
-	err = os.sourcingEngine.SetSourcesForCartItems(ctx, session, decoratedCart)
-	if err != nil {
-		os.logger.WithContext(ctx).Error("Error while getting sources: ", err)
-
-		return errors.New("error while setting sources")
-	}
-
-	return nil
 }
 
 // CurrentCartSaveInfos saves additional information on current cart
@@ -206,14 +179,6 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.S
 	err = os.cartService.UpdatePurchaser(ctx, session, purchaser, additionalData)
 	if err != nil {
 		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder UpdatePurchaser Error ", err)
-
-		return err
-	}
-
-	// After setting DeliveryInfos - call SourcingEnginge (this will reload the cart and update all items!)
-	err = os.SetSources(ctx, session)
-	if err != nil {
-		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder SetSources Error ", err)
 
 		return err
 	}
