@@ -48,6 +48,8 @@ type (
 		ErrorMessage string
 		// if the Error happens during processing payment (can be used in template to behave special in case of payment errors)
 		HasPaymentError bool
+		// if payment error occurred holds additional infos
+		PaymentErrorCode string
 	}
 
 	// SuccessViewData represents the success view data
@@ -443,6 +445,7 @@ func getViewErrorInfo(err error) ViewErrorInfos {
 	}
 
 	hasPaymentError := false
+	paymentErrorCode := ""
 
 	if paymentErr, ok := err.(*paymentDomain.Error); ok {
 		hasPaymentError = true
@@ -454,12 +457,15 @@ func getViewErrorInfo(err error) ViewErrorInfos {
 				HasPaymentError: false,
 			}
 		}
+
+		paymentErrorCode = paymentErr.ErrorCode
 	}
 
 	return ViewErrorInfos{
-		HasError:        true,
-		ErrorMessage:    err.Error(),
-		HasPaymentError: hasPaymentError,
+		HasError:         true,
+		ErrorMessage:     err.Error(),
+		HasPaymentError:  hasPaymentError,
+		PaymentErrorCode: paymentErrorCode,
 	}
 }
 
