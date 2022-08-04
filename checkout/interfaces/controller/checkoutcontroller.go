@@ -48,7 +48,7 @@ type (
 		ErrorMessage string
 		// if the Error happens during processing payment (can be used in template to behave special in case of payment errors)
 		HasPaymentError bool
-		// if payment error occured holds additional infos
+		// if payment error occurred holds additional infos
 		PaymentErrorCode string
 	}
 
@@ -449,7 +449,6 @@ func getViewErrorInfo(err error) ViewErrorInfos {
 
 	if paymentErr, ok := err.(*paymentDomain.Error); ok {
 		hasPaymentError = true
-		paymentErrorCode = paymentErr.ErrorCode
 
 		if paymentErr.ErrorCode == paymentDomain.PaymentErrorAbortedByCustomer {
 			// in case of customer payment abort don't show error message in frontend
@@ -458,6 +457,8 @@ func getViewErrorInfo(err error) ViewErrorInfos {
 				HasPaymentError: false,
 			}
 		}
+
+		paymentErrorCode = paymentErr.ErrorCode
 	}
 
 	return ViewErrorInfos{
