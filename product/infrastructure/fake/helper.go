@@ -5,7 +5,6 @@ import (
 	_ "embed"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -19,7 +18,7 @@ import (
 // registerTestData returns files of given folder
 func registerTestData(folder string, logger flamingo.Logger) map[string]string {
 	testDataFiles := make(map[string]string)
-	files, err := ioutil.ReadDir(folder)
+	files, err := os.ReadDir(folder)
 	if err != nil {
 		logger.Info(err)
 		return testDataFiles

@@ -6,8 +6,8 @@ package graphql_test
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
+	"os"
 	"path"
 	"strings"
 	"testing"
@@ -22,7 +22,7 @@ import (
 
 func loadGraphQL(t *testing.T, name string, replacements map[string]string) string {
 	t.Helper()
-	content, err := ioutil.ReadFile(path.Join("testdata", name+".graphql"))
+	content, err := os.ReadFile(path.Join("testdata", name+".graphql"))
 	if err != nil {
 		t.Fatal(err)
 	}

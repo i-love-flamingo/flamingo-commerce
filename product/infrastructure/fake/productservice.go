@@ -3,9 +3,9 @@ package fake
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"math/big"
 	"math/rand"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -401,7 +401,7 @@ func (ps *ProductService) getProductFromJSON(code string) (domain.BasicProduct, 
 		return nil, &domain.ProductNotFound{MarketplaceCode: code}
 	}
 
-	jsonBytes, err := ioutil.ReadFile(file)
+	jsonBytes, err := os.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}
