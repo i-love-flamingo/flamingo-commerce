@@ -184,7 +184,8 @@ func (dci DecoratedCartItem) GetChargesToPay(wishedToPaySum *domain.WishedToPay)
 // GetGroupedBy legacy function
 // deprecated: only here to support the old structure of accesing DecoratedItems in the Decorated Cart
 // Use instead:
-//		or iterate over DecoratedCart.DecoratedDelivery
+//
+//	or iterate over DecoratedCart.DecoratedDelivery
 func (dc DecoratedCart) GetGroupedBy(group string, sortGroup bool, params ...string) []*GroupedDecoratedCartItem {
 
 	if dc.Logger != nil {

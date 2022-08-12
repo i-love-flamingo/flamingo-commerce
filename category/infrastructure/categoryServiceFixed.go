@@ -28,7 +28,7 @@ var (
 	_ domain.CategoryService = new(CategoryServiceFixed)
 )
 
-//Inject - dingo injector
+// Inject - dingo injector
 func (c *CategoryServiceFixed) Inject(config *struct {
 	Tree config.Map `inject:"config:commerce.category.categoryServiceFixed.tree"`
 }) {

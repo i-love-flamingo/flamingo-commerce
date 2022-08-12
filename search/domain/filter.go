@@ -54,7 +54,7 @@ const (
 	SortDirectionNone = ""
 )
 
-//NewKeyValueFilters - Factory method that you can use to get a list of KeyValueFilter based from url.Values
+// NewKeyValueFilters - Factory method that you can use to get a list of KeyValueFilter based from url.Values
 func NewKeyValueFilters(params map[string][]string) []Filter {
 	var result []Filter
 	for k, v := range params {

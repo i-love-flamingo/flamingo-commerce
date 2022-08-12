@@ -32,7 +32,7 @@ type (
 	}
 )
 
-//MapToDomainAddress - returns the cart Address Object
+// MapToDomainAddress - returns the cart Address Object
 func (a *AddressForm) MapToDomainAddress() cart.Address {
 	lines := make([]string, 2)
 	lines[0] = a.AddressLine1
@@ -60,7 +60,7 @@ func (a *AddressForm) MapToDomainAddress() cart.Address {
 	}
 }
 
-//LoadFromCustomerAddress - fills the form from data in the address object (from customer module)
+// LoadFromCustomerAddress - fills the form from data in the address object (from customer module)
 func (a *AddressForm) LoadFromCustomerAddress(address domain.Address) {
 
 	if a.Email == "" || a.Email == "@" {
@@ -87,7 +87,7 @@ func (a *AddressForm) LoadFromCustomerAddress(address domain.Address) {
 
 }
 
-//LoadFromCartAddress - loads the form data from cart address
+// LoadFromCartAddress - loads the form data from cart address
 func (a *AddressForm) LoadFromCartAddress(address cart.Address) {
 	if address.Firstname != "" {
 		a.Firstname = address.Firstname
