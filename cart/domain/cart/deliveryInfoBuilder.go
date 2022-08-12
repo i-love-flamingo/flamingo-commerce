@@ -35,9 +35,9 @@ func (b *DefaultDeliveryInfoBuilder) Inject(
 
 // BuildByDeliveryCode builds a (initial) DeliveryInfo by deliveryCode
 // Convention that is used in this factory is to split infos in the build deliveryinfo by "_" like this:
-//	* workflow_locationtype_locationdetail_method_anythingelse
-//  * not all parts are required
-//	* to "skip" parts in between use "-"
+//   - workflow_locationtype_locationdetail_method_anythingelse
+//   - not all parts are required
+//   - to "skip" parts in between use "-"
 func (b *DefaultDeliveryInfoBuilder) BuildByDeliveryCode(deliverycode string) (*DeliveryInfo, error) {
 	if deliverycode == "" {
 		b.logger.Warn("Empty deliverycode")

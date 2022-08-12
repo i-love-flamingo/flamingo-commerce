@@ -78,7 +78,7 @@ func init() {
 	}
 }
 
-//Inject dependencies
+// Inject dependencies
 func (c *Coordinator) Inject(
 	locker TryLocker,
 	logger flamingo.Logger,

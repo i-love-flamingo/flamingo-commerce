@@ -47,7 +47,7 @@ type (
 	}
 )
 
-//BuildWith builds a paginationInfo based on the given infos and config
+// BuildWith builds a paginationInfo based on the given infos and config
 func BuildWith(currentResult CurrentResultInfos, paginationConfig PaginationConfig, urlBase *url.URL) PaginationInfo {
 	if currentResult.PageSize < 1 {
 		currentResult.PageSize = 1
@@ -120,7 +120,7 @@ func BuildWith(currentResult CurrentResultInfos, paginationConfig PaginationConf
 	return paginationInfo
 }
 
-//Build Pagination with the default configuration
+// Build Pagination with the default configuration
 func (f *PaginationInfoFactory) Build(activePage int, totalHits int, pageSize int, lastPage int, urlBase *url.URL) PaginationInfo {
 	return BuildWith(CurrentResultInfos{
 		ActivePage: activePage,
