@@ -63,7 +63,9 @@ type (
 
 		CategoryToCodeMapping []string
 
+		// Deprecated: use Stock[x].Level instead
 		StockLevel string
+		Stock      []Stock
 
 		Keywords []string
 		IsNew    bool
@@ -229,6 +231,14 @@ type (
 
 	// Badges slice of Badge
 	Badges []Badge
+
+	// Stock holds data with product availability info
+	Stock struct {
+		InStock      bool
+		Level        string
+		Amount       int
+		DeliveryCode string
+	}
 )
 
 // Stock Level values
@@ -570,6 +580,7 @@ func findMediaInProduct(p BasicProduct, group string, usage string) *Media {
 
 // IsInStock returns information if current product whether in stock or not
 func (bpd BasicProductData) IsInStock() bool {
+	// todo: not sure what to do here
 	if bpd.StockLevel == "" || bpd.StockLevel == StockLevelOutOfStock {
 		return false
 	}
