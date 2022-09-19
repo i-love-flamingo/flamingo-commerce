@@ -601,7 +601,7 @@ func (bpd BasicProductData) IsInStockForDeliveryCode(deliveryCode string) bool {
 		}
 	}
 
-	return true
+	return false
 }
 
 // NewWishedToPay returns a new WishedToPay struct

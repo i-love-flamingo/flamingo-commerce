@@ -608,7 +608,7 @@ func TestBasicProductData_IsInStockForDeliveryCode(t *testing.T) {
 		assert.False(t, result)
 	})
 
-	t.Run("when delivery code not found return true", func(t *testing.T) {
+	t.Run("when delivery code not found return false", func(t *testing.T) {
 		t.Parallel()
 
 		product := BasicProductData{
@@ -626,6 +626,6 @@ func TestBasicProductData_IsInStockForDeliveryCode(t *testing.T) {
 
 		result := product.IsInStockForDeliveryCode("test")
 
-		assert.True(t, result)
+		assert.False(t, result)
 	})
 }
