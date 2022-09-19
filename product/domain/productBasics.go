@@ -580,9 +580,25 @@ func findMediaInProduct(p BasicProduct, group string, usage string) *Media {
 
 // IsInStock returns information if current product whether in stock or not
 func (bpd BasicProductData) IsInStock() bool {
-	// todo: not sure what to do here
+	for _, stock := range bpd.Stock {
+		if stock.InStock {
+			return true
+		}
+	}
+
 	if bpd.StockLevel == "" || bpd.StockLevel == StockLevelOutOfStock {
 		return false
+	}
+
+	return true
+}
+
+// IsInStockForDeliveryCode returns information if current product whether in stock or not for provided delivery code
+func (bpd BasicProductData) IsInStockForDeliveryCode(deliveryCode string) bool {
+	for _, stock := range bpd.Stock {
+		if stock.DeliveryCode == deliveryCode {
+			return stock.InStock
+		}
 	}
 
 	return true

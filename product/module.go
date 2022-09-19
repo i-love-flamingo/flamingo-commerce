@@ -2,6 +2,10 @@ package product
 
 import (
 	"flamingo.me/dingo"
+	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/web"
+	"flamingo.me/graphql"
+
 	"flamingo.me/flamingo-commerce/v3/price"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo-commerce/v3/product/infrastructure/fake"
@@ -9,9 +13,6 @@ import (
 	productgraphql "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql"
 	"flamingo.me/flamingo-commerce/v3/product/interfaces/templatefunctions"
 	"flamingo.me/flamingo-commerce/v3/search"
-	"flamingo.me/flamingo/v3/framework/flamingo"
-	"flamingo.me/flamingo/v3/framework/web"
-	"flamingo.me/graphql"
 )
 
 // Module represents the product module
@@ -82,6 +83,7 @@ commerce: {
 			  jsonTestDataFolder?: string & !=""
 			  jsonTestDataLiveSearch?: string & !=""
 			}
+			deliveryCodes: [...string] | *["testCode1", "testCode2"]
 		}
 		api: {
 			enabled: bool | *true
