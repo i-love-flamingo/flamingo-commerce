@@ -62,6 +62,7 @@
 
 **product**
 * Introduce `Labels()` function on `Attribute` to handle translations for attributes with multiple values, will fallback to `Values()` function if not translated.
+* Introduce `Stock` slice in `BasicProductData` to store more accurate information about availability for each delivery code   
 * GraphQL:
   * Add `unitCode` to`Commerce_Product_VariationSelection_Option` and `Commerce_Product_ActiveVariationSelection`
   * Fix mapping of VariationSelections
@@ -70,6 +71,8 @@
   * Add configuration option `commerce.product.fakeservice.defaultProducts` which toggles the delivery of default test products. 
   * Add category facet functionality to the fake `SearchService` with default category facet items.
   * Add configuration option `commerce.product.fakeservice.jsonTestDataCategoryFacetItems` which can be used to provide your own category facet items. 
+  * Add new `Stock` field to returned `SimpleProduct` from service
+  * Add configuration option for delivery codes `commerce.product.fakeservice.deliveryCodes` which can be used to provide different delivery codes for stock.
 
 ## v3.5.0
 **general**
