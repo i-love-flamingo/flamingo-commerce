@@ -218,30 +218,31 @@ func TestViewController_variantSelection(t *testing.T) {
 				{
 					BasicProductData: domain.BasicProductData{
 						Attributes: domain.Attributes{"color": {Label: "Red", CodeLabel: "Colour", RawValue: "red"}, "size": {Label: "S", CodeLabel: "Clothing Size", RawValue: "s"}},
-						StockLevel: "",
+						Stock:      getStock(false, domain.StockLevelOutOfStock, 0),
 					},
 				},
 				{
 					BasicProductData: domain.BasicProductData{
 						Attributes: domain.Attributes{"color": {Label: "Red", CodeLabel: "Colour", RawValue: "red"}, "size": {Label: "M", CodeLabel: "Clothing Size", RawValue: "m"}},
-						StockLevel: "out",
+						Stock:      getStock(false, domain.StockLevelOutOfStock, 0),
 					},
 				},
 				{
 					BasicProductData: domain.BasicProductData{
 						Attributes: domain.Attributes{"color": {Label: "Red", CodeLabel: "Colour", RawValue: "red"}, "size": {Label: "L", CodeLabel: "Clothing Size", RawValue: "l"}},
-						StockLevel: "low",
+						Stock:      getStock(true, domain.StockLevelLowStock, 100),
 					},
 				},
 				{
 					BasicProductData: domain.BasicProductData{
 						Attributes: domain.Attributes{"color": {Label: "Blue", CodeLabel: "Colour", RawValue: "blue"}, "size": {Label: "S", CodeLabel: "Clothing Size", RawValue: "s"}},
-						StockLevel: "high",
+						Stock:      getStock(true, domain.StockLevelInStock, 999),
 					},
 				},
 				{
 					BasicProductData: domain.BasicProductData{
 						Attributes: domain.Attributes{"color": {Label: "Blue", CodeLabel: "Colour", RawValue: "blue"}, "size": {Label: "M", CodeLabel: "Clothing Size", RawValue: "m"}},
+						Stock:      getStock(false, domain.StockLevelOutOfStock, 0),
 					},
 				},
 			},
@@ -327,13 +328,13 @@ func TestViewController_variantSelection(t *testing.T) {
 				{
 					BasicProductData: domain.BasicProductData{
 						Attributes: domain.Attributes{"volume": {CodeLabel: "Volume", RawValue: "500", UnitCode: "MILLILITRE"}},
-						StockLevel: "high",
+						Stock:      getStock(true, domain.StockLevelInStock, 999),
 					},
 				},
 				{
 					BasicProductData: domain.BasicProductData{
 						Attributes: domain.Attributes{"volume": {CodeLabel: "Volume", RawValue: "1", UnitCode: "LITRE"}},
-						StockLevel: "high",
+						Stock:      getStock(true, domain.StockLevelInStock, 999),
 					},
 				},
 			},
@@ -519,4 +520,17 @@ func viewVariantsEqual(t *testing.T, variant1, variant2 viewVariant) bool {
 		}
 	}
 	return true
+}
+
+func getStock(inStock bool, level string, amount int) []domain.Stock {
+	stock := make([]domain.Stock, 0)
+
+	stock = append(stock, domain.Stock{
+		Amount:       amount,
+		InStock:      inStock,
+		Level:        level,
+		DeliveryCode: "",
+	})
+
+	return stock
 }

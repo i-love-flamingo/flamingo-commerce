@@ -34,14 +34,16 @@ type ProductService struct {
 	testDataFiles          map[string]string
 	logger                 flamingo.Logger
 	deliverDefaultProducts bool
+	deliveryCodes          []string
 }
 
 // Inject dependencies
 func (ps *ProductService) Inject(logger flamingo.Logger,
 	c *struct {
-		CurrencyCode            string `inject:"config:commerce.product.fakeservice.currency,optional"`
-		TestDataFolder          string `inject:"config:commerce.product.fakeservice.jsonTestDataFolder,optional"`
-		DeliveryDefaultProducts bool   `inject:"config:commerce.product.fakeservice.defaultProducts,optional"`
+		CurrencyCode            string   `inject:"config:commerce.product.fakeservice.currency,optional"`
+		TestDataFolder          string   `inject:"config:commerce.product.fakeservice.jsonTestDataFolder,optional"`
+		DeliveryDefaultProducts bool     `inject:"config:commerce.product.fakeservice.defaultProducts,optional"`
+		DeliveryCodes           []string `inject:"config:commerce.product.fakeservice.deliveryCodes,optional"`
 	},
 ) *ProductService {
 	ps.logger = logger
@@ -52,6 +54,7 @@ func (ps *ProductService) Inject(logger flamingo.Logger,
 		}
 
 		ps.deliverDefaultProducts = c.DeliveryDefaultProducts
+		ps.deliveryCodes = c.DeliveryCodes
 	}
 
 	return ps
@@ -170,12 +173,28 @@ func (ps *ProductService) FakeSimple(marketplaceCode string, isNew bool, isExclu
 		}
 	}
 
-	product.StockLevel = domain.StockLevelInStock
+	product.Stock = ps.getStock(true, domain.StockLevelInStock, 999)
+
 	if isOutOfStock {
-		product.StockLevel = domain.StockLevelOutOfStock
+		product.Stock = ps.getStock(false, domain.StockLevelOutOfStock, 0)
 	}
 
 	return product
+}
+
+func (ps *ProductService) getStock(inStock bool, level string, amount int) []domain.Stock {
+	stock := make([]domain.Stock, 0)
+
+	for _, code := range ps.deliveryCodes {
+		stock = append(stock, domain.Stock{
+			Amount:       amount,
+			InStock:      inStock,
+			Level:        level,
+			DeliveryCode: code,
+		})
+	}
+
+	return stock
 }
 
 // GetMarketPlaceCodes returns list of available marketplace codes which are supported by this fakeservice
@@ -221,52 +240,52 @@ func (ps *ProductService) getFakeConfigurableWithVariants(marketplaceCode string
 		marketplaceCode string
 		title           string
 		attributes      domain.Attributes
-		stockLevel      string
+		stock           []domain.Stock
 		badges          []domain.Badge
 	}{
 		{"shirt-red-s", "Shirt Red S", domain.Attributes{
 			"size":                  domain.Attribute{RawValue: "S", Code: "size", CodeLabel: "Size", Label: "S"},
 			"manufacturerColor":     domain.Attribute{RawValue: "red", Code: "manufacturerColor", CodeLabel: "Manufacturer Color", Label: "Red"},
 			"manufacturerColorCode": domain.Attribute{RawValue: "#ff0000", Code: "manufacturerColorCode", CodeLabel: "Manufacturer Color Code", Label: "BloodRed"}},
-			"high",
+			ps.getStock(true, domain.StockLevelInStock, 999),
 			[]domain.Badge{{Code: "new", Label: "New"}},
 		},
 		{"shirt-white-s", "Shirt White S", domain.Attributes{
 			"size":                  domain.Attribute{RawValue: "S", Code: "size", CodeLabel: "Size", Label: "S"},
 			"manufacturerColor":     domain.Attribute{RawValue: "white", Code: "manufacturerColor", CodeLabel: "Manufacturer Color", Label: "White"},
 			"manufacturerColorCode": domain.Attribute{RawValue: "#ffffff", Code: "manufacturerColorCode", CodeLabel: "Manufacturer Color Code", Label: "SnowWhite"}},
-			"high",
+			ps.getStock(true, domain.StockLevelInStock, 999),
 			nil,
 		},
 		{"shirt-white-m", "Shirt White M", domain.Attributes{
 			"size":  domain.Attribute{RawValue: "M", Code: "size", CodeLabel: "Size", Label: "M"},
 			"color": domain.Attribute{RawValue: "white", Code: "color", CodeLabel: "Color", Label: "White"}},
-			"high",
+			ps.getStock(true, domain.StockLevelInStock, 999),
 			nil,
 		},
 		{"shirt-black-m", "Shirt Black M", domain.Attributes{
 			"size":                  domain.Attribute{RawValue: "M", Code: "size", CodeLabel: "Size", Label: "M"},
 			"manufacturerColor":     domain.Attribute{RawValue: "blue", Code: "manufacturerColor", CodeLabel: "Manufacturer Color", Label: "Blue"},
 			"manufacturerColorCode": domain.Attribute{RawValue: "#0000ff", Code: "manufacturerColorCode", CodeLabel: "Manufacturer Color Code", Label: "SkyBlue"}},
-			"high",
+			ps.getStock(true, domain.StockLevelInStock, 999),
 			nil,
 		},
 		{"shirt-black-l", "Shirt Black L", domain.Attributes{
 			"size":  domain.Attribute{RawValue: "L", Code: "size", CodeLabel: "Size", Label: "L"},
 			"color": domain.Attribute{RawValue: "black", Code: "color", CodeLabel: "Color", Label: "Black"}},
-			"high",
+			ps.getStock(true, domain.StockLevelInStock, 999),
 			nil,
 		},
 		{"shirt-red-l", "Shirt Red L", domain.Attributes{
 			"size":  domain.Attribute{RawValue: "L", Code: "size", CodeLabel: "Size", Label: "L"},
 			"color": domain.Attribute{RawValue: "red", Code: "color", CodeLabel: "Color", Label: "Red"}},
-			"out",
+			ps.getStock(false, domain.StockLevelOutOfStock, 0),
 			nil,
 		},
 		{"shirt-red-m", "Shirt Red M", domain.Attributes{
 			"size":  domain.Attribute{RawValue: "M", Code: "size", CodeLabel: "Size", Label: "M"},
 			"color": domain.Attribute{RawValue: "red", Code: "color", CodeLabel: "Color", Label: "Red"}},
-			"out",
+			ps.getStock(false, domain.StockLevelOutOfStock, 0),
 			nil,
 		},
 	}
@@ -280,7 +299,7 @@ func (ps *ProductService) getFakeConfigurableWithVariants(marketplaceCode string
 			simpleVariant.BasicProductData.Attributes[key] = attr
 		}
 
-		simpleVariant.StockLevel = variant.stockLevel
+		simpleVariant.Stock = variant.stock
 
 		// Give new images for variants with custom colors
 		if simpleVariant.Attributes.HasAttribute("manufacturerColorCode") {
