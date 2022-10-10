@@ -155,7 +155,7 @@ func TestDefaultSourcingService_GetAvailableSources(t *testing.T) {
 		t.Log(availableSources)
 
 		assert.Error(t, err)
-		assert.Equal(t, err, domain.ErrNoSourceAvailable)
+		assert.ErrorIs(t, err, domain.ErrNoSourceAvailable)
 	})
 }
 
