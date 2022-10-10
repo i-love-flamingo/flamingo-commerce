@@ -3,6 +3,7 @@ package domain
 import (
 	"context"
 	"math"
+	"strings"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
@@ -74,6 +75,11 @@ type (
 	StockProvider interface {
 		GetStock(ctx context.Context, product domain.BasicProduct, source Source, deliveryInfo *cartDomain.DeliveryInfo) (int, error)
 	}
+
+	SourceError struct {
+		msg  string
+		data string
+	}
 )
 
 var (
@@ -88,6 +94,34 @@ var (
 	// ErrNeedMoreDetailsSourceCannotBeDetected - use to indicate that informations are missing to determine a source
 	ErrNeedMoreDetailsSourceCannotBeDetected = errors.New("Source cannot be detected")
 )
+
+func (err SourceError) Error() string {
+	return err.msg
+}
+
+func (err SourceError) CheckedSources() string {
+	return err.data
+}
+
+func (err SourceError) SetError(msg string) {
+	err.msg = msg
+}
+
+func (err *SourceError) SetSources(sources []Source) {
+	builder := strings.Builder{}
+
+	for _, source := range sources {
+		builder.WriteString("SourceCode: ")
+		builder.WriteString(source.LocationCode)
+		builder.WriteString(" ExternalSourceCode: ")
+		builder.WriteString(source.ExternalLocationCode)
+		builder.WriteString("\n")
+	}
+
+	data := builder.String()
+
+	err.data = data
+}
 
 // Inject the dependencies
 func (d *DefaultSourcingService) Inject(
@@ -115,6 +149,7 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 
 	sources, err := d.availableSourcesProvider.GetPossibleSources(ctx, product, deliveryInfo)
 	if err != nil {
+		d.logger.Warn("no possible sources available: " + err.Error())
 		return nil, err
 	}
 
@@ -148,6 +183,12 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 	}
 
 	if len(availableSources) == 0 {
+		if len(sources) > 0 {
+			sourceErr := SourceError{}
+			sourceErr.SetSources(sources)
+			return availableSources, sourceErr
+		}
+
 		if lastStockError != nil {
 			return availableSources, errors.Wrap(ErrNoSourceAvailable, lastStockError.Error())
 		}
