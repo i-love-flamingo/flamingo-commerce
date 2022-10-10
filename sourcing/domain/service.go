@@ -103,7 +103,7 @@ func (err SourceError) CheckedSources() string {
 	return err.data
 }
 
-func (err SourceError) SetError(msg string) {
+func (err *SourceError) SetError(msg string) {
 	err.msg = msg
 }
 
