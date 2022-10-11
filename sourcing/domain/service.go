@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"strings"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
@@ -323,16 +322,11 @@ func min(a int, b int) int {
 }
 
 func formatSources(sources []Source) string {
-	builder := strings.Builder{}
-
-	builder.WriteString("\nChecked Sources: ")
+	checkedSources := "Checked sources:"
 
 	for _, source := range sources {
-		builder.WriteString("\nSourceCode: ")
-		builder.WriteString(source.LocationCode)
-		builder.WriteString(" ExternalSourceCode: ")
-		builder.WriteString(source.ExternalLocationCode)
+		checkedSources += fmt.Sprintf(" SourceCode: %q ExternalSourceCode: %q", source.LocationCode, source.ExternalLocationCode)
 	}
 
-	return builder.String()
+	return checkedSources
 }
