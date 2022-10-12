@@ -129,7 +129,6 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 
 			continue
 		}
-		//qty = 0
 		if qty > 0 {
 			availableSources[source] = qty
 		}
