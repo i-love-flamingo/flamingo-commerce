@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"fmt"
 	"math"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -151,7 +152,7 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 		if lastStockError != nil {
 			return availableSources, errors.Wrap(ErrNoSourceAvailable, lastStockError.Error())
 		}
-		return availableSources, ErrNoSourceAvailable
+		return availableSources, fmt.Errorf("%w %s", ErrNoSourceAvailable, formatSources(sources))
 	}
 
 	return availableSources, nil
@@ -317,4 +318,14 @@ func min(a int, b int) int {
 		return a
 	}
 	return b
+}
+
+func formatSources(sources []Source) string {
+	checkedSources := "Checked sources:"
+
+	for _, source := range sources {
+		checkedSources += fmt.Sprintf(" SourceCode: %q ExternalSourceCode: %q", source.LocationCode, source.ExternalLocationCode)
+	}
+
+	return checkedSources
 }

@@ -2,14 +2,14 @@ package validation
 
 import (
 	"context"
+	"fmt"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 
-	"fmt"
+	"flamingo.me/flamingo/v3/framework/web"
 
 	"flamingo.me/flamingo-commerce/v3/product/domain"
-	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (
@@ -23,6 +23,7 @@ type (
 		Reason              string
 		RedirectHandlerName string
 		RedirectParams      map[string]string
+		AdditionalData      map[string]interface{}
 	}
 )
 
