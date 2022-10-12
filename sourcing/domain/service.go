@@ -116,7 +116,6 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 
 	sources, err := d.availableSourcesProvider.GetPossibleSources(ctx, product, deliveryInfo)
 	if err != nil {
-		d.logger.Warn("no possible sources available: " + err.Error())
 		return nil, err
 	}
 
@@ -130,6 +129,7 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 
 			continue
 		}
+		//qty = 0
 		if qty > 0 {
 			availableSources[source] = qty
 		}
