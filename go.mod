@@ -15,7 +15,7 @@ require (
 	github.com/go-redsync/redsync/v4 v4.5.1
 	github.com/go-test/deep v1.0.8
 	github.com/gomodule/redigo v2.0.0+incompatible
-	github.com/google/go-cmp v0.5.8
+	github.com/google/go-cmp v0.5.9
 	github.com/google/uuid v1.3.0
 	github.com/leekchan/accounting v1.0.0
 	github.com/pkg/errors v0.9.1
