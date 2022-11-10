@@ -308,6 +308,7 @@ func (p Price) GetPayable() Price {
 
 // GetPayableByRoundingMode returns the price rounded you can pass the used rounding mode and precision
 // Example for precision 100:
+//
 //	1.115 >  1.12 (RoundingModeHalfUp)  / 1.11 (RoundingModeFloor)
 //	-1.115 > -1.11 (RoundingModeHalfUp) / -1.12 (RoundingModeFloor)
 func (p Price) GetPayableByRoundingMode(mode string, precision int) Price {
@@ -373,10 +374,10 @@ func (p Price) payableRoundingPrecision() (string, int) {
 }
 
 // SplitInPayables returns "count" payable prices (each rounded) that in sum matches the given price
-//  - Given a price of 12.456 (Payable 12,46)  - Splitted in 6 will mean: 6 * 2.076
-//  - but having them payable requires rounding them each (e.g. 2.07) which would mean we have 0.03 difference (=12,45-6*2.07)
-//  - so that the sum is as close as possible to the original value   in this case the correct return will be:
-//  - 	 2.07 + 2.07+2.08 +2.08 +2.08 +2.08
+//   - Given a price of 12.456 (Payable 12,46)  - Splitted in 6 will mean: 6 * 2.076
+//   - but having them payable requires rounding them each (e.g. 2.07) which would mean we have 0.03 difference (=12,45-6*2.07)
+//   - so that the sum is as close as possible to the original value   in this case the correct return will be:
+//   - 2.07 + 2.07+2.08 +2.08 +2.08 +2.08
 func (p Price) SplitInPayables(count int) ([]Price, error) {
 	if count <= 0 {
 		return nil, errors.New("split must be higher than zero")

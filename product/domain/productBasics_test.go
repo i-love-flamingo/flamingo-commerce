@@ -6,8 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"flamingo.me/flamingo-commerce/v3/price/domain"
 	"github.com/stretchr/testify/assert"
+
+	"flamingo.me/flamingo-commerce/v3/price/domain"
 )
 
 func TestAttributeValue(t *testing.T) {
@@ -560,4 +561,71 @@ func TestSaleable_GetLoyaltyEarningByType(t *testing.T) {
 		assert.Equal(t, tt.wantEarning, resultEarning, tt.name)
 	}
 
+}
+
+func TestBasicProductData_IsInStockForDeliveryCode(t *testing.T) {
+	t.Parallel()
+
+	t.Run("when in stock for delivery code then return true", func(t *testing.T) {
+		t.Parallel()
+
+		product := BasicProductData{
+			Stock: []Stock{
+				{
+					InStock:      true,
+					DeliveryCode: "test",
+				},
+				{
+					InStock:      false,
+					DeliveryCode: "not this one",
+				},
+			},
+		}
+
+		result := product.IsInStockForDeliveryCode("test")
+
+		assert.True(t, result)
+	})
+
+	t.Run("when not in stock for delivery code then return false", func(t *testing.T) {
+		t.Parallel()
+
+		product := BasicProductData{
+			Stock: []Stock{
+				{
+					InStock:      true,
+					DeliveryCode: "not this one",
+				},
+				{
+					InStock:      false,
+					DeliveryCode: "test",
+				},
+			},
+		}
+
+		result := product.IsInStockForDeliveryCode("test")
+
+		assert.False(t, result)
+	})
+
+	t.Run("when delivery code not found return false", func(t *testing.T) {
+		t.Parallel()
+
+		product := BasicProductData{
+			Stock: []Stock{
+				{
+					InStock:      true,
+					DeliveryCode: "not this one",
+				},
+				{
+					InStock:      false,
+					DeliveryCode: "nope",
+				},
+			},
+		}
+
+		result := product.IsInStockForDeliveryCode("test")
+
+		assert.False(t, result)
+	})
 }

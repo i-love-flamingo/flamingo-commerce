@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"time"
@@ -124,7 +123,7 @@ func (e *PlaceOrderLoggerAdapter) logOrder(cart *cartDomain.Cart, payment *place
 			return err
 		}
 		fileName := fmt.Sprintf("order-%v-%v.json", time.Now().Format(time.RFC3339), cart.ID)
-		err = ioutil.WriteFile(path.Join(e.logDirectory, fileName), []byte(content), os.ModePerm)
+		err = os.WriteFile(path.Join(e.logDirectory, fileName), []byte(content), os.ModePerm)
 		if err != nil {
 			e.logger.WithField("placeorder", cart.ID).Error(err)
 		}
