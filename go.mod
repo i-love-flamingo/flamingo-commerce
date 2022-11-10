@@ -8,7 +8,7 @@ require (
 	flamingo.me/form v1.1.1
 	flamingo.me/graphql v1.8.0
 	flamingo.me/pugtemplate v1.2.2
-	github.com/99designs/gqlgen v0.17.12
+	github.com/99designs/gqlgen v0.17.20
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/gavv/httpexpect/v2 v2.3.1
 	github.com/go-playground/form/v4 v4.2.0
@@ -24,7 +24,7 @@ require (
 	github.com/stvp/tempredis v0.0.0-20181119212430-b82af8480203
 	github.com/swaggo/swag v1.8.3
 	github.com/testcontainers/testcontainers-go v0.15.0
-	github.com/vektah/gqlparser/v2 v2.4.6
+	github.com/vektah/gqlparser/v2 v2.5.1
 	go.opencensus.io v0.23.0
 	go.uber.org/goleak v1.2.0
 	golang.org/x/mod v0.6.0
@@ -94,8 +94,8 @@ require (
 	github.com/leodido/go-urn v1.1.0 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
-	github.com/mattn/go-colorable v0.1.12 // indirect
-	github.com/mattn/go-isatty v0.0.14 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369 // indirect
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/moby/sys/mount v0.3.3 // indirect
