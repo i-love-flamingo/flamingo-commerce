@@ -3,7 +3,7 @@ module flamingo.me/flamingo-commerce/v3
 go 1.17
 
 require (
-	flamingo.me/dingo v0.2.9
+	flamingo.me/dingo v0.2.10
 	flamingo.me/flamingo/v3 v3.4.0
 	flamingo.me/form v1.1.1
 	flamingo.me/graphql v1.8.0
