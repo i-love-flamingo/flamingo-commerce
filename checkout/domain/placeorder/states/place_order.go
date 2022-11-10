@@ -44,7 +44,7 @@ func (po *PlaceOrder) Inject(
 	cartDecoratorFactory *decorator.DecoratedCartFactory,
 	paymentService *paymentApplication.PaymentService,
 	cfg *struct {
-		cancelOrdersDuringRollback bool `inject:"config:commerce.checkout.placeorder.states.placeorder.cancelOrdersDuringRollback"`
+		CancelOrdersDuringRollback bool `inject:"config:commerce.checkout.placeorder.states.placeorder.cancelOrdersDuringRollback"`
 	},
 ) *PlaceOrder {
 	po.orderService = orderService
@@ -53,7 +53,7 @@ func (po *PlaceOrder) Inject(
 	po.paymentService = paymentService
 
 	if cfg != nil {
-		po.cancelOrdersDuringRollback = cfg.cancelOrdersDuringRollback
+		po.cancelOrdersDuringRollback = cfg.CancelOrdersDuringRollback
 	}
 
 	return po
