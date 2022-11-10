@@ -106,6 +106,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 
 // CueConfig definition
 func (m *Module) CueConfig() string {
+	// language=cue
 	return `
 commerce: checkout: {
 	Redis :: {
@@ -136,6 +137,11 @@ commerce: checkout: {
 			type: *"memory" | "redis"
 			if type == "redis" {
 				redis: Redis
+			}
+		}
+		states: {
+			placeorder: {
+				cancelOrdersDuringRollback: bool | *false		
 			}
 		}
 	}

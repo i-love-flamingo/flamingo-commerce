@@ -60,6 +60,7 @@
 
 **checkout**
 * Add possibility to have additional data in `PaymentFlowActionTriggerClientSDK`
+* Breaking: Disable auto canceling of orders during place order rollback, to restore old behaviour set `commerce.checkout.placeorder.states.placeorder.cancelOrdersDuringRollback: true`
 
 **product**
 * Introduce `Labels()` function on `Attribute` to handle translations for attributes with multiple values, will fallback to `Values()` function if not translated.
