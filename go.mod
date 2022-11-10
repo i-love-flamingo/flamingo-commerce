@@ -24,7 +24,7 @@ require (
 	github.com/stvp/tempredis v0.0.0-20181119212430-b82af8480203
 	github.com/swaggo/swag v1.8.3
 	github.com/testcontainers/testcontainers-go v0.15.0
-	github.com/vektah/gqlparser/v2 v2.4.6
+	github.com/vektah/gqlparser/v2 v2.5.1
 	go.opencensus.io v0.23.0
 	go.uber.org/goleak v1.2.0
 	golang.org/x/mod v0.6.0
