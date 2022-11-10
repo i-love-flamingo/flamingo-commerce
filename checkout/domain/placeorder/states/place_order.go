@@ -18,10 +18,11 @@ import (
 type (
 	// PlaceOrder state
 	PlaceOrder struct {
-		orderService         *application.OrderService
-		cartService          *cartApplication.CartService
-		cartDecoratorFactory *decorator.DecoratedCartFactory
-		paymentService       *paymentApplication.PaymentService
+		orderService               *application.OrderService
+		cartService                *cartApplication.CartService
+		cartDecoratorFactory       *decorator.DecoratedCartFactory
+		paymentService             *paymentApplication.PaymentService
+		cancelOrdersDuringRollback bool
 	}
 
 	// PlaceOrderRollbackData needed for rollbacks
@@ -42,11 +43,18 @@ func (po *PlaceOrder) Inject(
 	cartService *cartApplication.CartService,
 	cartDecoratorFactory *decorator.DecoratedCartFactory,
 	paymentService *paymentApplication.PaymentService,
+	cfg *struct {
+		CancelOrdersDuringRollback bool `inject:"config:commerce.checkout.placeorder.states.placeorder.cancelOrdersDuringRollback"`
+	},
 ) *PlaceOrder {
 	po.orderService = orderService
 	po.cartService = cartService
 	po.cartDecoratorFactory = cartDecoratorFactory
 	po.paymentService = paymentService
+
+	if cfg != nil {
+		po.cancelOrdersDuringRollback = cfg.CancelOrdersDuringRollback
+	}
 
 	return po
 }
@@ -106,6 +114,10 @@ func (po PlaceOrder) Rollback(ctx context.Context, data process.RollbackData) er
 	rollbackData, ok := data.(PlaceOrderRollbackData)
 	if !ok {
 		return fmt.Errorf("rollback data not of expected type 'PlaceOrderRollbackData', but %T", rollbackData)
+	}
+
+	if !po.cancelOrdersDuringRollback {
+		return nil
 	}
 
 	err := po.orderService.CancelOrderWithoutRestore(ctx, web.SessionFromContext(ctx), &rollbackData.OrderInfos)
