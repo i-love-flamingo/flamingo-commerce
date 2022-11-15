@@ -56,6 +56,7 @@
         | SumGrandTotalWithGiftCards()      | GrandTotalWithGiftCards         |
         | -                                 | GrandTotalNetWithGiftCards      |
 * Dispatch a `PreCartMergeEvent` before and a `PostCartMergeEvent` after merging a guest and customer cart when logging in
+* Update payment selection on cart merge with the guest carts' payment selection after applying coupons and giftcards and only if customer cart has no items
 * Add possibility to have additional data in `AddToCartNotAllowed` error
 
 **checkout**
