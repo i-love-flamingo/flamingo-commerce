@@ -440,6 +440,8 @@ github.com/gavv/httpexpect/v2 v2.3.1 h1:sGLlKMn8AuHS9ztK9Sb7AJ7OxIL8v2PcLdyxfKt1
 github.com/gavv/httpexpect/v2 v2.3.1/go.mod h1:yOE8m/aqFYQDNrgprMeXgq4YynfN9h1NgcE1+1suV64=
 github.com/gavv/httpexpect/v2 v2.4.0 h1:YPYAnGRzSfWB663jdCVEAe/5QwfjnXiAHpSwUMWcigo=
 github.com/gavv/httpexpect/v2 v2.4.0/go.mod h1:MvAp9Dft2y+AAJnnU4zOrx6mnqe1TUkPYkNpIhZAUdM=
+github.com/gavv/httpexpect/v2 v2.4.1 h1:U5iZ+ZVok1OdmSmUt3wM4qs0cgbOG8KWiaN0y0WPQbk=
+github.com/gavv/httpexpect/v2 v2.4.1/go.mod h1:qddn0sNk5sM+Uh/AVStNaqNkZPDIadaQvq6vd1AyORI=
 github.com/ghodss/yaml v0.0.0-20150909031657-73d445a93680/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
 github.com/ghodss/yaml v1.0.0 h1:wQHKEahhL6wmXdzwWG11gIVCkOv05bNOh+Rxn0yngAk=
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
