@@ -126,12 +126,6 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 					e.logger.WithContext(ctx).Error("WebLoginEvent - customerCart UpdatePurchaser error", err)
 				}
 			}
-			if customerCart.PaymentSelection == nil && guestCart.PaymentSelection != nil {
-				err := e.cartService.UpdatePaymentSelection(ctx, session, guestCart.PaymentSelection)
-				if err != nil {
-					e.logger.WithContext(ctx).Error("WebLoginEvent - customerCart UpdatePaymentSelection error", err)
-				}
-			}
 			if guestCart.HasAppliedCouponCode() {
 				for _, code := range guestCart.AppliedCouponCodes {
 					customerCart, err = e.cartService.ApplyVoucher(ctx, session, code.Code)
@@ -146,6 +140,12 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 					if err != nil {
 						e.logger.WithContext(ctx).Error("WebLoginEvent - customerCart ApplyGiftCard has error", code.Code, err)
 					}
+				}
+			}
+			if customerCart.PaymentSelection == nil && guestCart.PaymentSelection != nil && customerCart.ItemCount() == 0 {
+				err := e.cartService.UpdatePaymentSelection(ctx, session, guestCart.PaymentSelection)
+				if err != nil {
+					e.logger.WithContext(ctx).Error("WebLoginEvent - customerCart UpdatePaymentSelection error", err)
 				}
 			}
 
