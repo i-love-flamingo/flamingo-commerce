@@ -10,7 +10,7 @@ require (
 	flamingo.me/pugtemplate v1.2.2
 	github.com/99designs/gqlgen v0.17.20
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
-	github.com/gavv/httpexpect/v2 v2.4.0
+	github.com/gavv/httpexpect/v2 v2.4.1
 	github.com/go-playground/form/v4 v4.2.0
 	github.com/go-redsync/redsync/v4 v4.6.0
 	github.com/go-test/deep v1.0.8
