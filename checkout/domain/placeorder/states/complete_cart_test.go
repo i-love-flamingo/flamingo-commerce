@@ -71,7 +71,7 @@ func TestCompleteCart_Run(t *testing.T) {
 			},
 			expectedState: states.New{}.Name(),
 			expectedResult: process.RunResult{
-				Failed: process.ErrorOccurredReason{Error: "test error"},
+				Failed: process.ErrorOccurredReason{Error: "CloseCurrentCart error: test error"},
 			},
 		},
 		{
@@ -190,7 +190,7 @@ func TestCompleteCart_Rollback(t *testing.T) {
 				t.Helper()
 				behaviour.(*mocks.AllBehaviour).CompleteBehaviour.AssertNumberOfCalls(t, "Restore", 1)
 			},
-			expectedError: errors.New("test error"),
+			expectedError: errors.New("RestoreCart error: test error"),
 		},
 		{
 			name: "wrong rollback data",
@@ -237,7 +237,12 @@ func TestCompleteCart_Rollback(t *testing.T) {
 			state.Inject(cartService, cartReceiverService)
 			ctx := web.ContextWithSession(context.Background(), web.EmptySession())
 			err := state.Rollback(ctx, tt.rollbackData)
-			assert.Equal(t, tt.expectedError, err)
+
+			if tt.expectedError == nil {
+				assert.NoError(t, err)
+			} else {
+				assert.Equal(t, tt.expectedError.Error(), err.Error())
+			}
 		})
 	}
 }
