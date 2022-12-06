@@ -85,6 +85,27 @@ type Commerce_Product_ActiveVariantProduct implements Commerce_Product {
     badges: Commerce_Product_Badges!
 }
 
+"""
+A bundle product, that consists of basic products.
+"""
+type Commerce_Product_BundleProduct implements Commerce_Product {
+    type: String!
+    marketPlaceCode: String!
+    identifier: String!
+    media: Commerce_Product_Media!,
+    price: Commerce_Product_PriceInfo!,
+    availablePrices: [Commerce_Product_PriceInfo!],
+    title: String!
+    categories: Commerce_Product_Categories!
+    description: String!
+    shortDescription: String!
+    meta: Commerce_Product_Meta!
+    loyalty: Commerce_Product_Loyalty!
+    attributes: Commerce_Product_Attributes!
+    badges: Commerce_Product_Badges!
+    choices: [Commerce_Product_Choice!]
+}
+
 "A group of attributes. E.g. 'size'"
 type Commerce_Product_VariationSelection {
     code: String!
@@ -249,6 +270,18 @@ type Commerce_Product_Badges {
 type Commerce_Product_Badge {
     code:  String!
     label: String!
+}
+
+type Commerce_Product_Choice {
+    identifier: String!
+    required: Boolean!
+    label: String!
+    options: [Commerce_Product_Option!]
+}
+
+type Commerce_Product_Option {
+    product: Commerce_Product!
+    qty: Int!
 }
 
 extend type Query {

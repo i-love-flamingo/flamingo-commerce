@@ -98,6 +98,7 @@ var (
 	_ Product = SimpleProduct{}
 	_ Product = ConfigurableProduct{}
 	_ Product = ActiveVariantProduct{}
+	_ Product = BundleProduct{}
 )
 
 // GetMedia returns the FIRST found Product media by usage
@@ -144,6 +145,15 @@ func NewGraphqlProductDto(product productDomain.BasicProduct, preSelectedVariant
 		configurableProduct := product.(productDomain.ConfigurableProductWithActiveVariant)
 		return ActiveVariantProduct{
 			product: configurableProduct,
+		}
+	}
+
+	if product.Type() == productDomain.TypeBundle {
+		bundleProduct := product.(productDomain.BundleProduct)
+
+		return BundleProduct{
+			product: bundleProduct,
+			Choices: mapChoices(bundleProduct.Choices),
 		}
 	}
 

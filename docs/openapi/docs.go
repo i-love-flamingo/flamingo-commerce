@@ -2257,7 +2257,14 @@ var doc = `{
                 "ShortDescription": {
                     "type": "string"
                 },
+                "Stock": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Stock"
+                    }
+                },
                 "StockLevel": {
+                    "description": "Deprecated: use Stock[x].Level instead",
                     "type": "string"
                 },
                 "Teaser": {
@@ -2273,6 +2280,23 @@ var doc = `{
                     "type": "string"
                 },
                 "VisibleTo": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.Stock": {
+            "type": "object",
+            "properties": {
+                "Amount": {
+                    "type": "integer"
+                },
+                "DeliveryCode": {
+                    "type": "string"
+                },
+                "InStock": {
+                    "type": "boolean"
+                },
+                "Level": {
                     "type": "string"
                 }
             }

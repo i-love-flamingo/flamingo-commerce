@@ -719,6 +719,24 @@ type ComplexityRoot struct {
 		First func(childComplexity int) int
 	}
 
+	Commerce_Product_BundleProduct struct {
+		Attributes       func(childComplexity int) int
+		AvailablePrices  func(childComplexity int) int
+		Badges           func(childComplexity int) int
+		Categories       func(childComplexity int) int
+		Choices          func(childComplexity int) int
+		Description      func(childComplexity int) int
+		Identifier       func(childComplexity int) int
+		Loyalty          func(childComplexity int) int
+		MarketPlaceCode  func(childComplexity int) int
+		Media            func(childComplexity int) int
+		Meta             func(childComplexity int) int
+		Price            func(childComplexity int) int
+		ShortDescription func(childComplexity int) int
+		Title            func(childComplexity int) int
+		Type             func(childComplexity int) int
+	}
+
 	Commerce_Product_Categories struct {
 		All  func(childComplexity int) int
 		Main func(childComplexity int) int
@@ -729,6 +747,13 @@ type ComplexityRoot struct {
 		Name   func(childComplexity int) int
 		Parent func(childComplexity int) int
 		Path   func(childComplexity int) int
+	}
+
+	Commerce_Product_Choice struct {
+		Identifier func(childComplexity int) int
+		Label      func(childComplexity int) int
+		Options    func(childComplexity int) int
+		Required   func(childComplexity int) int
 	}
 
 	Commerce_Product_ConfigurableProduct struct {
@@ -785,6 +810,11 @@ type ComplexityRoot struct {
 
 	Commerce_Product_Meta struct {
 		Keywords func(childComplexity int) int
+	}
+
+	Commerce_Product_Option struct {
+		Product func(childComplexity int) int
+		Qty     func(childComplexity int) int
 	}
 
 	Commerce_Product_PriceContext struct {
@@ -3907,6 +3937,111 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Commerce_Product_Badges.First(childComplexity), true
 
+	case "Commerce_Product_BundleProduct.attributes":
+		if e.complexity.Commerce_Product_BundleProduct.Attributes == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_BundleProduct.Attributes(childComplexity), true
+
+	case "Commerce_Product_BundleProduct.availablePrices":
+		if e.complexity.Commerce_Product_BundleProduct.AvailablePrices == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_BundleProduct.AvailablePrices(childComplexity), true
+
+	case "Commerce_Product_BundleProduct.badges":
+		if e.complexity.Commerce_Product_BundleProduct.Badges == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_BundleProduct.Badges(childComplexity), true
+
+	case "Commerce_Product_BundleProduct.categories":
+		if e.complexity.Commerce_Product_BundleProduct.Categories == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_BundleProduct.Categories(childComplexity), true
+
+	case "Commerce_Product_BundleProduct.choices":
+		if e.complexity.Commerce_Product_BundleProduct.Choices == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_BundleProduct.Choices(childComplexity), true
+
+	case "Commerce_Product_BundleProduct.description":
+		if e.complexity.Commerce_Product_BundleProduct.Description == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_BundleProduct.Description(childComplexity), true
+
+	case "Commerce_Product_BundleProduct.identifier":
+		if e.complexity.Commerce_Product_BundleProduct.Identifier == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_BundleProduct.Identifier(childComplexity), true
+
+	case "Commerce_Product_BundleProduct.loyalty":
+		if e.complexity.Commerce_Product_BundleProduct.Loyalty == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_BundleProduct.Loyalty(childComplexity), true
+
+	case "Commerce_Product_BundleProduct.marketPlaceCode":
+		if e.complexity.Commerce_Product_BundleProduct.MarketPlaceCode == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_BundleProduct.MarketPlaceCode(childComplexity), true
+
+	case "Commerce_Product_BundleProduct.media":
+		if e.complexity.Commerce_Product_BundleProduct.Media == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_BundleProduct.Media(childComplexity), true
+
+	case "Commerce_Product_BundleProduct.meta":
+		if e.complexity.Commerce_Product_BundleProduct.Meta == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_BundleProduct.Meta(childComplexity), true
+
+	case "Commerce_Product_BundleProduct.price":
+		if e.complexity.Commerce_Product_BundleProduct.Price == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_BundleProduct.Price(childComplexity), true
+
+	case "Commerce_Product_BundleProduct.shortDescription":
+		if e.complexity.Commerce_Product_BundleProduct.ShortDescription == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_BundleProduct.ShortDescription(childComplexity), true
+
+	case "Commerce_Product_BundleProduct.title":
+		if e.complexity.Commerce_Product_BundleProduct.Title == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_BundleProduct.Title(childComplexity), true
+
+	case "Commerce_Product_BundleProduct.type":
+		if e.complexity.Commerce_Product_BundleProduct.Type == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_BundleProduct.Type(childComplexity), true
+
 	case "Commerce_Product_Categories.all":
 		if e.complexity.Commerce_Product_Categories.All == nil {
 			break
@@ -3948,6 +4083,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Commerce_Product_CategoryTeaser.Path(childComplexity), true
+
+	case "Commerce_Product_Choice.identifier":
+		if e.complexity.Commerce_Product_Choice.Identifier == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_Choice.Identifier(childComplexity), true
+
+	case "Commerce_Product_Choice.label":
+		if e.complexity.Commerce_Product_Choice.Label == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_Choice.Label(childComplexity), true
+
+	case "Commerce_Product_Choice.options":
+		if e.complexity.Commerce_Product_Choice.Options == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_Choice.Options(childComplexity), true
+
+	case "Commerce_Product_Choice.required":
+		if e.complexity.Commerce_Product_Choice.Required == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_Choice.Required(childComplexity), true
 
 	case "Commerce_Product_ConfigurableProduct.attributes":
 		if e.complexity.Commerce_Product_ConfigurableProduct.Attributes == nil {
@@ -4198,6 +4361,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Commerce_Product_Meta.Keywords(childComplexity), true
+
+	case "Commerce_Product_Option.product":
+		if e.complexity.Commerce_Product_Option.Product == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_Option.Product(childComplexity), true
+
+	case "Commerce_Product_Option.qty":
+		if e.complexity.Commerce_Product_Option.Qty == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_Option.Qty(childComplexity), true
 
 	case "Commerce_Product_PriceContext.channelCode":
 		if e.complexity.Commerce_Product_PriceContext.ChannelCode == nil {
@@ -24866,6 +25043,758 @@ func (ec *executionContext) fieldContext_Commerce_Product_Badges_first(ctx conte
 	return fc, nil
 }
 
+func (ec *executionContext) _Commerce_Product_BundleProduct_type(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.BundleProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_BundleProduct_type(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type(), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_BundleProduct",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_BundleProduct_marketPlaceCode(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.BundleProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_BundleProduct_marketPlaceCode(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MarketPlaceCode(), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_marketPlaceCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_BundleProduct",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_BundleProduct_identifier(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.BundleProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_BundleProduct_identifier(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Identifier(), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_identifier(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_BundleProduct",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_BundleProduct_media(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.BundleProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_BundleProduct_media(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Media(), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(graphqlproductdto.ProductMedia)
+	fc.Result = res
+	return ec.marshalNCommerce_Product_Media2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductMedia(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_media(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_BundleProduct",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "all":
+				return ec.fieldContext_Commerce_Product_Media_all(ctx, field)
+			case "getMedia":
+				return ec.fieldContext_Commerce_Product_Media_getMedia(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_Media", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_BundleProduct_price(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.BundleProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_BundleProduct_price(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Price(), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain1.PriceInfo)
+	fc.Result = res
+	return ec.marshalNCommerce_Product_PriceInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_price(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_BundleProduct",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "default":
+				return ec.fieldContext_Commerce_Product_PriceInfo_default(ctx, field)
+			case "discounted":
+				return ec.fieldContext_Commerce_Product_PriceInfo_discounted(ctx, field)
+			case "discountText":
+				return ec.fieldContext_Commerce_Product_PriceInfo_discountText(ctx, field)
+			case "activeBase":
+				return ec.fieldContext_Commerce_Product_PriceInfo_activeBase(ctx, field)
+			case "activeBaseAmount":
+				return ec.fieldContext_Commerce_Product_PriceInfo_activeBaseAmount(ctx, field)
+			case "activeBaseUnit":
+				return ec.fieldContext_Commerce_Product_PriceInfo_activeBaseUnit(ctx, field)
+			case "isDiscounted":
+				return ec.fieldContext_Commerce_Product_PriceInfo_isDiscounted(ctx, field)
+			case "campaignRules":
+				return ec.fieldContext_Commerce_Product_PriceInfo_campaignRules(ctx, field)
+			case "denyMoreDiscounts":
+				return ec.fieldContext_Commerce_Product_PriceInfo_denyMoreDiscounts(ctx, field)
+			case "context":
+				return ec.fieldContext_Commerce_Product_PriceInfo_context(ctx, field)
+			case "taxClass":
+				return ec.fieldContext_Commerce_Product_PriceInfo_taxClass(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_PriceInfo", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_BundleProduct_availablePrices(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.BundleProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_BundleProduct_availablePrices(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AvailablePrices(), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]domain1.PriceInfo)
+	fc.Result = res
+	return ec.marshalOCommerce_Product_PriceInfo2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfoᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_availablePrices(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_BundleProduct",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "default":
+				return ec.fieldContext_Commerce_Product_PriceInfo_default(ctx, field)
+			case "discounted":
+				return ec.fieldContext_Commerce_Product_PriceInfo_discounted(ctx, field)
+			case "discountText":
+				return ec.fieldContext_Commerce_Product_PriceInfo_discountText(ctx, field)
+			case "activeBase":
+				return ec.fieldContext_Commerce_Product_PriceInfo_activeBase(ctx, field)
+			case "activeBaseAmount":
+				return ec.fieldContext_Commerce_Product_PriceInfo_activeBaseAmount(ctx, field)
+			case "activeBaseUnit":
+				return ec.fieldContext_Commerce_Product_PriceInfo_activeBaseUnit(ctx, field)
+			case "isDiscounted":
+				return ec.fieldContext_Commerce_Product_PriceInfo_isDiscounted(ctx, field)
+			case "campaignRules":
+				return ec.fieldContext_Commerce_Product_PriceInfo_campaignRules(ctx, field)
+			case "denyMoreDiscounts":
+				return ec.fieldContext_Commerce_Product_PriceInfo_denyMoreDiscounts(ctx, field)
+			case "context":
+				return ec.fieldContext_Commerce_Product_PriceInfo_context(ctx, field)
+			case "taxClass":
+				return ec.fieldContext_Commerce_Product_PriceInfo_taxClass(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_PriceInfo", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_BundleProduct_title(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.BundleProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_BundleProduct_title(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Title(), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_title(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_BundleProduct",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_BundleProduct_categories(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.BundleProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_BundleProduct_categories(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Categories(), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(graphqlproductdto.ProductCategories)
+	fc.Result = res
+	return ec.marshalNCommerce_Product_Categories2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductCategories(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_categories(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_BundleProduct",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "main":
+				return ec.fieldContext_Commerce_Product_Categories_main(ctx, field)
+			case "all":
+				return ec.fieldContext_Commerce_Product_Categories_all(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_Categories", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_BundleProduct_description(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.BundleProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_BundleProduct_description(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Description(), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_BundleProduct",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_BundleProduct_shortDescription(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.BundleProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_BundleProduct_shortDescription(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ShortDescription(), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_shortDescription(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_BundleProduct",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_BundleProduct_meta(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.BundleProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_BundleProduct_meta(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Meta(), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(graphqlproductdto.ProductMeta)
+	fc.Result = res
+	return ec.marshalNCommerce_Product_Meta2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductMeta(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_meta(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_BundleProduct",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "keywords":
+				return ec.fieldContext_Commerce_Product_Meta_keywords(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_Meta", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_BundleProduct_loyalty(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.BundleProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_BundleProduct_loyalty(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Loyalty(), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(graphqlproductdto.ProductLoyalty)
+	fc.Result = res
+	return ec.marshalNCommerce_Product_Loyalty2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductLoyalty(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_loyalty(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_BundleProduct",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "price":
+				return ec.fieldContext_Commerce_Product_Loyalty_price(ctx, field)
+			case "earning":
+				return ec.fieldContext_Commerce_Product_Loyalty_earning(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_Loyalty", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_BundleProduct_attributes(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.BundleProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_BundleProduct_attributes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Attributes(), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(domain1.Attributes)
+	fc.Result = res
+	return ec.marshalNCommerce_Product_Attributes2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐAttributes(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_attributes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_BundleProduct",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "attributeKeys":
+				return ec.fieldContext_Commerce_Product_Attributes_attributeKeys(ctx, field)
+			case "attributes":
+				return ec.fieldContext_Commerce_Product_Attributes_attributes(ctx, field)
+			case "hasAttribute":
+				return ec.fieldContext_Commerce_Product_Attributes_hasAttribute(ctx, field)
+			case "getAttribute":
+				return ec.fieldContext_Commerce_Product_Attributes_getAttribute(ctx, field)
+			case "getAttributesByKey":
+				return ec.fieldContext_Commerce_Product_Attributes_getAttributesByKey(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_Attributes", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_BundleProduct_badges(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.BundleProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_BundleProduct_badges(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Badges(), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(graphqlproductdto.ProductBadges)
+	fc.Result = res
+	return ec.marshalNCommerce_Product_Badges2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductBadges(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_badges(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_BundleProduct",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "all":
+				return ec.fieldContext_Commerce_Product_Badges_all(ctx, field)
+			case "first":
+				return ec.fieldContext_Commerce_Product_Badges_first(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_Badges", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_BundleProduct_choices(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.BundleProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_BundleProduct_choices(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Choices, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]graphqlproductdto.Choice)
+	fc.Result = res
+	return ec.marshalOCommerce_Product_Choice2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐChoiceᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_choices(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_BundleProduct",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "identifier":
+				return ec.fieldContext_Commerce_Product_Choice_identifier(ctx, field)
+			case "required":
+				return ec.fieldContext_Commerce_Product_Choice_required(ctx, field)
+			case "label":
+				return ec.fieldContext_Commerce_Product_Choice_label(ctx, field)
+			case "options":
+				return ec.fieldContext_Commerce_Product_Choice_options(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_Choice", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Commerce_Product_Categories_main(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ProductCategories) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Commerce_Product_Categories_main(ctx, field)
 	if err != nil {
@@ -25149,6 +26078,185 @@ func (ec *executionContext) fieldContext_Commerce_Product_CategoryTeaser_parent(
 				return ec.fieldContext_Commerce_Product_CategoryTeaser_parent(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_CategoryTeaser", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_Choice_identifier(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.Choice) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_Choice_identifier(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Identifier, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_Choice_identifier(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_Choice",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_Choice_required(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.Choice) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_Choice_required(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Required, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_Choice_required(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_Choice",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_Choice_label(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.Choice) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_Choice_label(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Label, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_Choice_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_Choice",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_Choice_options(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.Choice) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_Choice_options(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Options, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]graphqlproductdto.Option)
+	fc.Result = res
+	return ec.marshalOCommerce_Product_Option2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOptionᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_Choice_options(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_Choice",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "product":
+				return ec.fieldContext_Commerce_Product_Option_product(ctx, field)
+			case "qty":
+				return ec.fieldContext_Commerce_Product_Option_qty(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_Option", field.Name)
 		},
 	}
 	return fc, nil
@@ -26854,6 +27962,94 @@ func (ec *executionContext) fieldContext_Commerce_Product_Meta_keywords(ctx cont
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_Option_product(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.Option) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_Option_product(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Product, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(graphqlproductdto.Product)
+	fc.Result = res
+	return ec.marshalNCommerce_Product2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProduct(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_Option_product(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_Option",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("FieldContext.Child cannot be called on type INTERFACE")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_Option_qty(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.Option) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_Option_qty(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Qty, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_Option_qty(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_Option",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -35684,6 +36880,13 @@ func (ec *executionContext) _Commerce_Product(ctx context.Context, sel ast.Selec
 			return graphql.Null
 		}
 		return ec._Commerce_Product_ActiveVariantProduct(ctx, sel, obj)
+	case graphqlproductdto.BundleProduct:
+		return ec._Commerce_Product_BundleProduct(ctx, sel, &obj)
+	case *graphqlproductdto.BundleProduct:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._Commerce_Product_BundleProduct(ctx, sel, obj)
 	default:
 		panic(fmt.Errorf("unexpected type %T", obj))
 	}
@@ -40020,6 +41223,126 @@ func (ec *executionContext) _Commerce_Product_Badges(ctx context.Context, sel as
 	return out
 }
 
+var commerce_Product_BundleProductImplementors = []string{"Commerce_Product_BundleProduct", "Commerce_Product"}
+
+func (ec *executionContext) _Commerce_Product_BundleProduct(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.BundleProduct) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_BundleProductImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Product_BundleProduct")
+		case "type":
+
+			out.Values[i] = ec._Commerce_Product_BundleProduct_type(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "marketPlaceCode":
+
+			out.Values[i] = ec._Commerce_Product_BundleProduct_marketPlaceCode(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "identifier":
+
+			out.Values[i] = ec._Commerce_Product_BundleProduct_identifier(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "media":
+
+			out.Values[i] = ec._Commerce_Product_BundleProduct_media(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "price":
+
+			out.Values[i] = ec._Commerce_Product_BundleProduct_price(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "availablePrices":
+
+			out.Values[i] = ec._Commerce_Product_BundleProduct_availablePrices(ctx, field, obj)
+
+		case "title":
+
+			out.Values[i] = ec._Commerce_Product_BundleProduct_title(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "categories":
+
+			out.Values[i] = ec._Commerce_Product_BundleProduct_categories(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "description":
+
+			out.Values[i] = ec._Commerce_Product_BundleProduct_description(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "shortDescription":
+
+			out.Values[i] = ec._Commerce_Product_BundleProduct_shortDescription(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "meta":
+
+			out.Values[i] = ec._Commerce_Product_BundleProduct_meta(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "loyalty":
+
+			out.Values[i] = ec._Commerce_Product_BundleProduct_loyalty(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "attributes":
+
+			out.Values[i] = ec._Commerce_Product_BundleProduct_attributes(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "badges":
+
+			out.Values[i] = ec._Commerce_Product_BundleProduct_badges(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "choices":
+
+			out.Values[i] = ec._Commerce_Product_BundleProduct_choices(ctx, field, obj)
+
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var commerce_Product_CategoriesImplementors = []string{"Commerce_Product_Categories"}
 
 func (ec *executionContext) _Commerce_Product_Categories(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.ProductCategories) graphql.Marshaler {
@@ -40086,6 +41409,52 @@ func (ec *executionContext) _Commerce_Product_CategoryTeaser(ctx context.Context
 		case "parent":
 
 			out.Values[i] = ec._Commerce_Product_CategoryTeaser_parent(ctx, field, obj)
+
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Product_ChoiceImplementors = []string{"Commerce_Product_Choice"}
+
+func (ec *executionContext) _Commerce_Product_Choice(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.Choice) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_ChoiceImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Product_Choice")
+		case "identifier":
+
+			out.Values[i] = ec._Commerce_Product_Choice_identifier(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "required":
+
+			out.Values[i] = ec._Commerce_Product_Choice_required(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "label":
+
+			out.Values[i] = ec._Commerce_Product_Choice_label(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "options":
+
+			out.Values[i] = ec._Commerce_Product_Choice_options(ctx, field, obj)
 
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
@@ -40461,6 +41830,41 @@ func (ec *executionContext) _Commerce_Product_Meta(ctx context.Context, sel ast.
 
 			out.Values[i] = ec._Commerce_Product_Meta_keywords(ctx, field, obj)
 
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Product_OptionImplementors = []string{"Commerce_Product_Option"}
+
+func (ec *executionContext) _Commerce_Product_Option(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.Option) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_OptionImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Product_Option")
+		case "product":
+
+			out.Values[i] = ec._Commerce_Product_Option_product(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "qty":
+
+			out.Values[i] = ec._Commerce_Product_Option_qty(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -42914,6 +44318,10 @@ func (ec *executionContext) marshalNCommerce_Product_CategoryTeaser2flamingoᚗm
 	return ec._Commerce_Product_CategoryTeaser(ctx, sel, &v)
 }
 
+func (ec *executionContext) marshalNCommerce_Product_Choice2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐChoice(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.Choice) graphql.Marshaler {
+	return ec._Commerce_Product_Choice(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalNCommerce_Product_Loyalty2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductLoyalty(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.ProductLoyalty) graphql.Marshaler {
 	return ec._Commerce_Product_Loyalty(ctx, sel, &v)
 }
@@ -42938,6 +44346,10 @@ func (ec *executionContext) marshalNCommerce_Product_MediaItem2ᚖflamingoᚗme�
 
 func (ec *executionContext) marshalNCommerce_Product_Meta2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductMeta(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.ProductMeta) graphql.Marshaler {
 	return ec._Commerce_Product_Meta(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Product_Option2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOption(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.Option) graphql.Marshaler {
+	return ec._Commerce_Product_Option(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNCommerce_Product_PriceContext2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceContext(ctx context.Context, sel ast.SelectionSet, v domain1.PriceContext) graphql.Marshaler {
@@ -45106,6 +46518,53 @@ func (ec *executionContext) marshalOCommerce_Product_CategoryTeaser2ᚖflamingo�
 	return ec._Commerce_Product_CategoryTeaser(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalOCommerce_Product_Choice2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐChoiceᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.Choice) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCommerce_Product_Choice2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐChoice(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
 func (ec *executionContext) marshalOCommerce_Product_Loyalty_EarningInfo2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐLoyaltyEarningInfo(ctx context.Context, sel ast.SelectionSet, v *domain1.LoyaltyEarningInfo) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -45148,6 +46607,53 @@ func (ec *executionContext) marshalOCommerce_Product_MediaItem2ᚕflamingoᚗme�
 				defer wg.Done()
 			}
 			ret[i] = ec.marshalNCommerce_Product_MediaItem2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐMedia(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalOCommerce_Product_Option2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOptionᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.Option) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCommerce_Product_Option2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOption(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)

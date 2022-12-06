@@ -4,9 +4,10 @@ import (
 	// embed schema.graphql
 	_ "embed"
 
+	"flamingo.me/graphql"
+
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	graphqlProductDto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
-	"flamingo.me/graphql"
 )
 
 // Service is the Graphql-Service of this module
@@ -28,6 +29,7 @@ func (*Service) Types(types *graphql.Types) {
 	types.Map("Commerce_Product_SimpleProduct", graphqlProductDto.SimpleProduct{})
 	types.Map("Commerce_Product_ConfigurableProduct", graphqlProductDto.ConfigurableProduct{})
 	types.Map("Commerce_Product_ActiveVariantProduct", graphqlProductDto.ActiveVariantProduct{})
+	types.Map("Commerce_Product_BundleProduct", graphqlProductDto.BundleProduct{})
 	types.Map("Commerce_Product_VariationSelection", graphqlProductDto.VariationSelection{})
 	types.Map("Commerce_Product_ActiveVariationSelection", graphqlProductDto.ActiveVariationSelection{})
 	types.Map("Commerce_Product_VariationSelection_Option", graphqlProductDto.VariationSelectionOption{})
@@ -53,6 +55,8 @@ func (*Service) Types(types *graphql.Types) {
 	types.Map("Commerce_Product_SearchResult", SearchResultDTO{})
 	types.Map("Commerce_Product_Badges", graphqlProductDto.ProductBadges{})
 	types.Map("Commerce_Product_Badge", domain.Badge{})
+	types.Map("Commerce_Product_Choice", graphqlProductDto.Choice{})
+	types.Map("Commerce_Product_Option", graphqlProductDto.Option{})
 
 	types.Resolve("Query", "Commerce_Product", CommerceProductQueryResolver{}, "CommerceProduct")
 	types.Resolve("Query", "Commerce_Product_Search", CommerceProductQueryResolver{}, "CommerceProductSearch")
