@@ -42,7 +42,7 @@ func (v PrepareCart) Run(ctx context.Context, p *process.Process) process.RunRes
 	c, err := v.cartService.ForceReserveOrderIDAndSave(ctx, web.SessionFromContext(ctx))
 	if err != nil {
 		return process.RunResult{
-			Failed: process.ErrorOccurredReason{Error: err.Error()},
+			Failed: process.ErrorOccurredReason{Error: err},
 		}
 	}
 
@@ -61,14 +61,14 @@ func (v PrepareCart) Run(ctx context.Context, p *process.Process) process.RunRes
 	paymentSelection, err := c.PaymentSelection.GenerateNewIdempotencyKey()
 	if err != nil {
 		return process.RunResult{
-			Failed: process.ErrorOccurredReason{Error: err.Error()},
+			Failed: process.ErrorOccurredReason{Error: err},
 		}
 	}
 
 	err = v.cartService.UpdatePaymentSelection(ctx, web.SessionFromContext(ctx), paymentSelection)
 	if err != nil {
 		return process.RunResult{
-			Failed: process.ErrorOccurredReason{Error: err.Error()},
+			Failed: process.ErrorOccurredReason{Error: err},
 		}
 	}
 

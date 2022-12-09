@@ -25,14 +25,14 @@ func PaymentValidator(ctx context.Context, p *process.Process, paymentService *a
 	gateway, err := paymentService.PaymentGatewayByCart(p.Context().Cart)
 	if err != nil {
 		return process.RunResult{
-			Failed: process.ErrorOccurredReason{Error: err.Error()},
+			Failed: process.ErrorOccurredReason{Error: err},
 		}
 	}
 
 	flowStatus, err := gateway.FlowStatus(ctx, &cart, p.Context().UUID)
 	if err != nil {
 		return process.RunResult{
-			Failed: process.ErrorOccurredReason{Error: err.Error()},
+			Failed: process.ErrorOccurredReason{Error: err},
 		}
 	}
 

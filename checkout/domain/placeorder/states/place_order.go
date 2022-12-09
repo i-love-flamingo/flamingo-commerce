@@ -5,14 +5,15 @@ import (
 	"encoding/gob"
 	"fmt"
 
+	"flamingo.me/flamingo/v3/framework/web"
+	"go.opencensus.io/trace"
+
 	cartApplication "flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/checkout/application"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	paymentApplication "flamingo.me/flamingo-commerce/v3/payment/application"
-	"flamingo.me/flamingo/v3/framework/web"
-	"go.opencensus.io/trace"
 )
 
 type (
@@ -84,7 +85,7 @@ func (po PlaceOrder) Run(ctx context.Context, p *process.Process) process.RunRes
 		payment, err = paymentGateway.OrderPaymentFromFlow(ctx, &cart, p.Context().UUID)
 		if err != nil {
 			return process.RunResult{
-				Failed: process.ErrorOccurredReason{Error: err.Error()},
+				Failed: process.ErrorOccurredReason{Error: err},
 			}
 		}
 
@@ -96,7 +97,7 @@ func (po PlaceOrder) Run(ctx context.Context, p *process.Process) process.RunRes
 	infos, err := po.orderService.CartPlaceOrder(ctx, decoratedCart, *payment)
 	if err != nil {
 		return process.RunResult{
-			Failed: process.ErrorOccurredReason{Error: err.Error()},
+			Failed: process.ErrorOccurredReason{Error: err},
 		}
 	}
 

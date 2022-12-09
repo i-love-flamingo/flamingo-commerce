@@ -350,7 +350,7 @@ func (c *Coordinator) proceedInStateMachineUntilNoStateChange(ctx context.Contex
 	}
 
 	p.Failed(ctx, process.ErrorOccurredReason{
-		Error: fmt.Sprintf("max run count %d of state machine reached", maxRunCount),
+		Error: fmt.Errorf("max run count %d of state machine reached", maxRunCount),
 	})
 	return nil
 }

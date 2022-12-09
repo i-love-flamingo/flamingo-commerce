@@ -41,7 +41,7 @@ func (v ValidateCart) Run(ctx context.Context, p *process.Process) process.RunRe
 	result, err := v.cartService.ValidateCurrentCart(ctx, web.SessionFromContext(ctx))
 	if err != nil {
 		return process.RunResult{
-			Failed: process.ErrorOccurredReason{Error: err.Error()},
+			Failed: process.ErrorOccurredReason{Error: err},
 		}
 	}
 

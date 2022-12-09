@@ -57,7 +57,7 @@ type (
 
 	// ErrorOccurredReason is used for unspecified errors
 	ErrorOccurredReason struct {
-		Error string
+		Error error
 	}
 
 	// CanceledByCustomerReason is used when customer cancels order
@@ -102,7 +102,7 @@ func init() {
 
 // Reason for the error occurred
 func (e ErrorOccurredReason) Reason() string {
-	return e.Error
+	return e.Error.Error()
 }
 
 // Reason for the error occurred
@@ -191,7 +191,7 @@ func (p *Process) Inject(
 func (p *Process) Run(ctx context.Context) {
 	currentState, err := p.CurrentState()
 	if err != nil {
-		p.Failed(ctx, ErrorOccurredReason{Error: err.Error()})
+		p.Failed(ctx, ErrorOccurredReason{Error: err})
 		return
 	}
 
@@ -266,6 +266,10 @@ func (p *Process) UpdateOrderInfo(info *application.PlaceOrderInfo) {
 
 // Failed performs all collected rollbacks and switches to FailedState
 func (p *Process) Failed(ctx context.Context, reason FailedReason) {
+	if r, ok := reason.(ErrorOccurredReason); ok {
+		p.logger.WithContext(ctx).Error(fmt.Errorf("place order process failed with error: %w", r.Error))
+	}
+
 	err := p.rollback(ctx)
 	if err != nil {
 		p.logger.WithContext(ctx).Error("fatal rollback error: ", err)

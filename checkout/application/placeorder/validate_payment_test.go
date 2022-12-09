@@ -6,6 +6,11 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/checkout/application/placeorder"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
@@ -15,10 +20,6 @@ import (
 	"flamingo.me/flamingo-commerce/v3/payment/interfaces"
 	"flamingo.me/flamingo-commerce/v3/payment/interfaces/mocks"
 	price "flamingo.me/flamingo-commerce/v3/price/domain"
-	"github.com/google/go-cmp/cmp"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 )
 
 func provideProcessFactory(t *testing.T) *process.Factory {
@@ -83,7 +84,7 @@ func TestPaymentValidator(t *testing.T) {
 				err: errors.New("generic_error"),
 			},
 			want: want{
-				runResult: process.RunResult{Failed: process.ErrorOccurredReason{Error: "generic_error"}},
+				runResult: process.RunResult{Failed: process.ErrorOccurredReason{Error: errors.New("generic_error")}},
 				state:     states.New{}.Name(),
 			},
 		},
@@ -427,8 +428,15 @@ func TestPaymentValidator(t *testing.T) {
 
 			paymentService := paymentServiceHelper(t, gateway)
 			got := placeorder.PaymentValidator(context.Background(), p, paymentService)
-			if diff := cmp.Diff(got, tt.want.runResult); diff != "" {
-				t.Error("PaymentValidator() = -got +want", diff)
+
+			if got.Failed == nil {
+				if diff := cmp.Diff(got, tt.want.runResult); diff != "" {
+					t.Error("PaymentValidator() = -got +want", diff)
+				}
+			} else {
+				if diff := cmp.Diff(got.Failed.Reason(), tt.want.runResult.Failed.Reason()); diff != "" {
+					t.Error("PaymentValidator() = -got +want", diff)
+				}
 			}
 
 			assert.Equal(t, p.Context().CurrentStateName, tt.want.state)

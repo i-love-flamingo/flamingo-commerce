@@ -1266,7 +1266,7 @@ func (cs *CartService) UpdateDeliveryAdditionalData(ctx context.Context, session
 
 	err = cs.UpdateDeliveryInfo(ctx, session, deliveryCode, newDeliveryInfoUpdateCommand)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to update delivery info: %w", err)
 	}
 
 	cart, _, err = cs.cartReceiverService.GetCart(ctx, session)

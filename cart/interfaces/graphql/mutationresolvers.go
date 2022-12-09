@@ -3,16 +3,20 @@ package graphql
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/url"
+
+	"flamingo.me/flamingo/v3/framework/flamingo"
+	formApplication "flamingo.me/form/application"
+	"flamingo.me/form/domain"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
-	formApplication "flamingo.me/form/application"
-	"flamingo.me/form/domain"
+
+	"flamingo.me/flamingo/v3/framework/web"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
-	"flamingo.me/flamingo/v3/framework/web"
 )
 
 // CommerceCartMutationResolver resolves cart mutations
@@ -24,16 +28,20 @@ type CommerceCartMutationResolver struct {
 	deliveryFormController       *forms.DeliveryFormController
 	simplePaymentFormController  *forms.SimplePaymentFormController
 	formDataEncoderFactory       formApplication.FormDataEncoderFactory
+	logger                       flamingo.Logger
 }
 
 // Inject dependencies
-func (r *CommerceCartMutationResolver) Inject(q *CommerceCartQueryResolver,
+func (r *CommerceCartMutationResolver) Inject(
+	q *CommerceCartQueryResolver,
 	billingAddressFormController *forms.BillingAddressFormController,
 	deliveryFormController *forms.DeliveryFormController,
 	formDataEncoderFactory formApplication.FormDataEncoderFactory,
 	simplePaymentFormController *forms.SimplePaymentFormController,
 	cartService *application.CartService,
-	cartReceiverService *application.CartReceiverService) *CommerceCartMutationResolver {
+	cartReceiverService *application.CartReceiverService,
+	logger flamingo.Logger,
+) *CommerceCartMutationResolver {
 	r.q = q
 	r.billingAddressFormController = billingAddressFormController
 	r.deliveryFormController = deliveryFormController
@@ -41,6 +49,7 @@ func (r *CommerceCartMutationResolver) Inject(q *CommerceCartQueryResolver,
 	r.simplePaymentFormController = simplePaymentFormController
 	r.cartService = cartService
 	r.cartReceiverService = cartReceiverService
+	r.logger = logger.WithField(flamingo.LogKeyModule, "cart").WithField(flamingo.LogKeyCategory, "interfaces.graphql.CommerceCartMutationResolver")
 	return r
 }
 
@@ -65,6 +74,8 @@ func (r *CommerceCartMutationResolver) CommerceDeleteItem(ctx context.Context, i
 	err := r.cartService.DeleteItem(ctx, req.Session(), itemID, deliveryCode)
 
 	if err != nil {
+		r.logger.WithContext(ctx).Error(fmt.Errorf("failed to delete item %s: %w", itemID, err))
+
 		return nil, err
 	}
 
@@ -76,6 +87,8 @@ func (r *CommerceCartMutationResolver) CommerceDeleteCartDelivery(ctx context.Co
 	req := web.RequestFromContext(ctx)
 	_, err := r.cartService.DeleteDelivery(ctx, req.Session(), deliveryCode)
 	if err != nil {
+		r.logger.WithContext(ctx).Error("failed to delete cart delivery: ", err)
+
 		return nil, err
 	}
 	return r.q.CommerceCart(ctx)
@@ -86,6 +99,8 @@ func (r *CommerceCartMutationResolver) CommerceUpdateItemQty(ctx context.Context
 	req := web.RequestFromContext(ctx)
 	err := r.cartService.UpdateItemQty(ctx, req.Session(), itemID, deliveryCode, qty)
 	if err != nil {
+		r.logger.WithContext(ctx).Error("Failed to update item quantity: ", err)
+
 		return nil, err
 	}
 	return r.q.CommerceCart(ctx)
@@ -217,6 +232,8 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryShippingOptions
 
 		err = r.cartService.UpdateDeliveryInfo(ctx, session, shippingOption.DeliveryCode, cartDomain.CreateDeliveryInfoUpdateCommand(deliveryInfo))
 		if err != nil {
+			r.logger.WithContext(ctx).Error("failed to update delivery shipping options: ", err)
+
 			return nil, err
 		}
 	}
@@ -228,6 +245,8 @@ func (r *CommerceCartMutationResolver) CommerceCartUpdateDeliveryShippingOptions
 func (r *CommerceCartMutationResolver) CartClean(ctx context.Context) (bool, error) {
 	err := r.cartService.Clean(ctx, web.SessionFromContext(ctx))
 	if err != nil {
+		r.logger.WithContext(ctx).Error("failed to clean cart: ", err)
+
 		return false, err
 	}
 
@@ -261,6 +280,8 @@ func (r *CommerceCartMutationResolver) UpdateDeliveriesAdditionalData(ctx contex
 
 		_, err := r.cartService.UpdateDeliveryAdditionalData(ctx, session, additionalData.DeliveryCode, additionalDataMap)
 		if err != nil {
+			r.logger.WithContext(ctx).Error("failed to update deliveries additional data: ", err)
+
 			return nil, err
 		}
 	}

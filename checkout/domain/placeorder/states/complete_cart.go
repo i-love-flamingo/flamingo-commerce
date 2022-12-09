@@ -54,7 +54,7 @@ func (c CompleteCart) Run(ctx context.Context, p *process.Process) process.RunRe
 	behaviour, err := c.cartReceiverService.ModifyBehaviour(ctx)
 	if err != nil {
 		return process.RunResult{
-			Failed: process.ErrorOccurredReason{Error: err.Error()},
+			Failed: process.ErrorOccurredReason{Error: err},
 		}
 	}
 
@@ -68,7 +68,7 @@ func (c CompleteCart) Run(ctx context.Context, p *process.Process) process.RunRe
 	completedCart, err := c.cartService.CompleteCurrentCart(ctx)
 	if err != nil {
 		return process.RunResult{
-			Failed: process.ErrorOccurredReason{Error: err.Error()},
+			Failed: process.ErrorOccurredReason{Error: err},
 		}
 	}
 

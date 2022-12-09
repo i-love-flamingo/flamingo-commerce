@@ -71,7 +71,7 @@ func TestCompleteCart_Run(t *testing.T) {
 			},
 			expectedState: states.New{}.Name(),
 			expectedResult: process.RunResult{
-				Failed: process.ErrorOccurredReason{Error: "CloseCurrentCart error: test error"},
+				Failed: process.ErrorOccurredReason{Error: errors.New("CloseCurrentCart error: test error")},
 			},
 		},
 		{
@@ -94,7 +94,7 @@ func TestCompleteCart_Run(t *testing.T) {
 			validator:      nil,
 			expectedState:  states.New{}.Name(),
 			expectedResult: process.RunResult{
-				Failed: process.ErrorOccurredReason{Error: "no behaviour"},
+				Failed: process.ErrorOccurredReason{Error: errors.New("no behaviour")},
 			},
 		},
 	}
@@ -139,8 +139,12 @@ func TestCompleteCart_Run(t *testing.T) {
 			result := state.Run(ctx, p)
 			assert.Equal(t, tt.expectedState, p.Context().CurrentStateName)
 
-			if diff := deep.Equal(result, tt.expectedResult); diff != nil {
-				t.Error("expected result is wrong: ", diff)
+			if result.Failed == nil {
+				if diff := deep.Equal(result, tt.expectedResult); diff != nil {
+					t.Error("expected result is wrong: ", diff)
+				}
+			} else {
+				assert.Equal(t, result.Failed.Reason(), tt.expectedResult.Failed.Reason())
 			}
 
 			if tt.validator != nil {
