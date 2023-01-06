@@ -108,7 +108,7 @@ func (sp BundleProduct) Badges() ProductBadges {
 }
 
 func mapChoices(domainChoices []productDomain.Choice) []Choice {
-	choices := make([]Choice, len(domainChoices))
+	choices := make([]Choice, 0, len(domainChoices))
 
 	for _, domainChoice := range domainChoices {
 		choices = append(choices, mapChoice(domainChoice))
@@ -127,7 +127,7 @@ func mapChoice(domainChoice productDomain.Choice) Choice {
 }
 
 func mapOptions(domainOptions []productDomain.Option) []Option {
-	options := make([]Option, len(domainOptions))
+	options := make([]Option, 0, len(domainOptions))
 
 	for _, domainOption := range domainOptions {
 		options = append(options, mapOption(domainOption))
