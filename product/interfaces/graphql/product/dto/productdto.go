@@ -92,11 +92,6 @@ type (
 	VariationSelectionOptionVariant struct {
 		variant productDomain.Variant
 	}
-
-	// SelectedChoices holds information about selected choices
-	SelectedChoices struct {
-		choices []productDomain.BundleConfiguration
-	}
 )
 
 var (
