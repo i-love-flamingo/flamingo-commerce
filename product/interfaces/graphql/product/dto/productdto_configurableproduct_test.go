@@ -3,10 +3,11 @@ package graphqlproductdto_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	graphqlProductDto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
-	"github.com/stretchr/testify/assert"
 )
 
 func getProductDomainConfigurableProduct() productDomain.ConfigurableProduct {
@@ -127,7 +128,7 @@ func getProductDomainConfigurableProduct() productDomain.ConfigurableProduct {
 
 func getConfigurableProduct() graphqlProductDto.Product {
 	product := getProductDomainConfigurableProduct()
-	return graphqlProductDto.NewGraphqlProductDto(product, nil)
+	return graphqlProductDto.NewGraphqlProductDto(product, nil, nil)
 }
 
 func TestConfigurableProduct_Attributes(t *testing.T) {

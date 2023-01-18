@@ -20,6 +20,20 @@ type (
 		Product Product
 		Qty     int
 	}
+
+	// BundleProductWithActiveChoices A bundle Product with selected choices
+	BundleProductWithActiveChoices struct {
+		BundleProduct
+		ActiveChoices []ActiveChoice
+	}
+
+	ActiveChoice struct {
+		Identifier string
+		Required   bool
+		Label      string
+		Product    Product
+		Qty        int
+	}
 )
 
 // Type the product type
@@ -138,7 +152,25 @@ func mapOptions(domainOptions []productDomain.Option) []Option {
 
 func mapOption(domainOption productDomain.Option) Option {
 	return Option{
-		Product: NewGraphqlProductDto(domainOption.Product, nil),
+		Product: NewGraphqlProductDto(domainOption.Product, nil, nil),
 		Qty:     domainOption.Qty,
 	}
+}
+
+func mapActiveChoices(domainChoices map[productDomain.Identifier]productDomain.ActiveChoice) []ActiveChoice {
+	dtoChoices := make([]ActiveChoice, 0, len(domainChoices))
+
+	for identifier, domainChoice := range domainChoices {
+		dtoChoice := ActiveChoice{
+			Identifier: string(identifier),
+			Required:   domainChoice.Required,
+			Label:      domainChoice.Label,
+			Product:    NewGraphqlProductDto(domainChoice.Product, nil, nil),
+			Qty:        domainChoice.Qty,
+		}
+
+		dtoChoices = append(dtoChoices, dtoChoice)
+	}
+
+	return dtoChoices
 }

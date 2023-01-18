@@ -106,6 +106,29 @@ type Commerce_Product_BundleProduct implements Commerce_Product {
     choices: [Commerce_Product_Choice!]
 }
 
+"""
+A bundle product, that consists of basic products.
+"""
+type Commerce_Product_BundleProductWithActiveChoices implements Commerce_Product {
+    type: String!
+    marketPlaceCode: String!
+    identifier: String!
+    media: Commerce_Product_Media!,
+    price: Commerce_Product_PriceInfo!,
+    availablePrices: [Commerce_Product_PriceInfo!],
+    title: String!
+    categories: Commerce_Product_Categories!
+    description: String!
+    shortDescription: String!
+    meta: Commerce_Product_Meta!
+    loyalty: Commerce_Product_Loyalty!
+    attributes: Commerce_Product_Attributes!
+    badges: Commerce_Product_Badges!
+    choices: [Commerce_Product_Choice!]
+    activeChoices: [Commerce_Product_ActiveChoice!]
+}
+
+
 "A group of attributes. E.g. 'size'"
 type Commerce_Product_VariationSelection {
     code: String!
@@ -279,12 +302,26 @@ type Commerce_Product_Choice {
     options: [Commerce_Product_Option!]
 }
 
+type Commerce_Product_ActiveChoice {
+    identifier: String!
+    required: Boolean!
+    label: String!
+    qty: Int!
+    product: Commerce_Product!
+}
+
 type Commerce_Product_Option {
     product: Commerce_Product!
     qty: Int!
 }
 
+input Commerce_Product_BundleConfigurationInput {
+    identifier: String!
+    marketplaceCode: String!
+    variantMarketplaceCode: String
+}
+
 extend type Query {
-    Commerce_Product(marketPlaceCode: String!, variantMarketPlaceCode: String): Commerce_Product
+    Commerce_Product(marketPlaceCode: String!, variantMarketPlaceCode: String, bundleConfiguration: [Commerce_Product_BundleConfigurationInput]): Commerce_Product
     Commerce_Product_Search(searchRequest: Commerce_Search_Request!): Commerce_Product_SearchResult!
 }

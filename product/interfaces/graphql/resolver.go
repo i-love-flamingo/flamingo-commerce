@@ -29,20 +29,21 @@ func (r *CommerceProductQueryResolver) Inject(
 }
 
 // CommerceProduct returns a product with the given marketplaceCode from productService
-func (r *CommerceProductQueryResolver) CommerceProduct(ctx context.Context, marketplaceCode string, variantMarketPlaceCode *string) (productDto.Product, error) {
-
+func (r *CommerceProductQueryResolver) CommerceProduct(ctx context.Context,
+	marketplaceCode string,
+	variantMarketPlaceCode *string,
+	bundleConfiguration []*domain.BundleConfiguration) (productDto.Product, error) {
 	product, err := r.productService.Get(ctx, marketplaceCode)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return productDto.NewGraphqlProductDto(product, variantMarketPlaceCode), nil
+	return productDto.NewGraphqlProductDto(product, variantMarketPlaceCode, bundleConfiguration), nil
 }
 
 // CommerceProductSearch returns a search result of products based on the given search request
 func (r *CommerceProductQueryResolver) CommerceProductSearch(ctx context.Context, request searchdto.CommerceSearchRequest) (*SearchResultDTO, error) {
-
 	var filters []searchDomain.Filter
 	for _, filter := range request.KeyValueFilters {
 		filters = append(filters, searchDomain.NewKeyValueFilter(filter.K, filter.V))

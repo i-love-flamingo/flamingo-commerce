@@ -3,12 +3,13 @@ package graphql
 import (
 	"sort"
 
+	"flamingo.me/flamingo/v3/framework/flamingo"
+
 	"flamingo.me/flamingo-commerce/v3/product/application"
 	graphqlProductDto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
 	searchdomain "flamingo.me/flamingo-commerce/v3/search/domain"
 	"flamingo.me/flamingo-commerce/v3/search/interfaces/graphql/searchdto"
 	"flamingo.me/flamingo-commerce/v3/search/utils"
-	"flamingo.me/flamingo/v3/framework/flamingo"
 )
 
 // WrapSearchResult wraps the search result into the graphql dto
@@ -38,7 +39,7 @@ func (obj *SearchResultDTO) Suggestions() []searchdomain.Suggestion {
 func (obj *SearchResultDTO) Products() []graphqlProductDto.Product {
 	products := make([]graphqlProductDto.Product, 0, len(obj.result.Products))
 	for _, p := range obj.result.Products {
-		products = append(products, graphqlProductDto.NewGraphqlProductDto(p, nil))
+		products = append(products, graphqlProductDto.NewGraphqlProductDto(p, nil, nil))
 	}
 
 	return products

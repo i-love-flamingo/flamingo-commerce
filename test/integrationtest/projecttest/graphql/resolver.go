@@ -342,7 +342,7 @@ func (r *rootResolverMutation) CommerceCheckoutRefreshPlaceOrderBlocking(ctx con
 
 type rootResolverQuery struct {
 	resolveFlamingo                         func(ctx context.Context) (*string, error)
-	resolveCommerceProduct                  func(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode *string) (graphqlproductdto.Product, error)
+	resolveCommerceProduct                  func(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode *string, bundleConfiguration []*domain.BundleConfiguration) (graphqlproductdto.Product, error)
 	resolveCommerceProductSearch            func(ctx context.Context, searchRequest searchdto.CommerceSearchRequest) (*graphql2.SearchResultDTO, error)
 	resolveCommerceCustomerStatus           func(ctx context.Context) (*dtocustomer.CustomerStatusResult, error)
 	resolveCommerceCustomer                 func(ctx context.Context) (*dtocustomer.CustomerResult, error)
@@ -386,8 +386,8 @@ func (r *rootResolverQuery) Inject(
 func (r *rootResolverQuery) Flamingo(ctx context.Context) (*string, error) {
 	return r.resolveFlamingo(ctx)
 }
-func (r *rootResolverQuery) CommerceProduct(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode *string) (graphqlproductdto.Product, error) {
-	return r.resolveCommerceProduct(ctx, marketPlaceCode, variantMarketPlaceCode)
+func (r *rootResolverQuery) CommerceProduct(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode *string, bundleConfiguration []*domain.BundleConfiguration) (graphqlproductdto.Product, error) {
+	return r.resolveCommerceProduct(ctx, marketPlaceCode, variantMarketPlaceCode, bundleConfiguration)
 }
 func (r *rootResolverQuery) CommerceProductSearch(ctx context.Context, searchRequest searchdto.CommerceSearchRequest) (*graphql2.SearchResultDTO, error) {
 	return r.resolveCommerceProductSearch(ctx, searchRequest)

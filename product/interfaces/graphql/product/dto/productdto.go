@@ -92,6 +92,11 @@ type (
 	VariationSelectionOptionVariant struct {
 		variant productDomain.Variant
 	}
+
+	// SelectedChoices holds information about selected choices
+	SelectedChoices struct {
+		choices []productDomain.BundleConfiguration
+	}
 )
 
 var (
@@ -112,7 +117,7 @@ func (pm ProductMedia) GetMedia(usage string) *productDomain.Media {
 }
 
 // NewGraphqlProductDto returns a new Product dto
-func NewGraphqlProductDto(product productDomain.BasicProduct, preSelectedVariantSku *string) Product {
+func NewGraphqlProductDto(product productDomain.BasicProduct, preSelectedVariantSku *string, bundleConfiguration []*productDomain.BundleConfiguration) Product {
 	if product.Type() == productDomain.TypeConfigurable {
 		configurableProduct := product.(productDomain.ConfigurableProduct)
 
@@ -148,8 +153,37 @@ func NewGraphqlProductDto(product productDomain.BasicProduct, preSelectedVariant
 		}
 	}
 
+	if product.Type() == productDomain.TypeBundleWithActiveChoices {
+		bundleProduct := product.(productDomain.BundleProductWithActiveChoices)
+
+		bundleDto := BundleProduct{
+			product: bundleProduct.BundleProduct,
+			Choices: mapChoices(bundleProduct.Choices),
+		}
+
+		return BundleProductWithActiveChoices{
+			BundleProduct: bundleDto,
+			ActiveChoices: mapActiveChoices(bundleProduct.ActiveChoices),
+		}
+	}
+
 	if product.Type() == productDomain.TypeBundle {
 		bundleProduct := product.(productDomain.BundleProduct)
+
+		if len(bundleConfiguration) != 0 {
+			bundleProductWithActiveChoices, err := bundleProduct.GetBundleProductWithActiveChoices(bundleConfiguration)
+			if err == nil {
+				bundleDto := BundleProduct{
+					product: bundleProductWithActiveChoices.BundleProduct,
+					Choices: mapChoices(bundleProductWithActiveChoices.Choices),
+				}
+
+				return BundleProductWithActiveChoices{
+					BundleProduct: bundleDto,
+					ActiveChoices: mapActiveChoices(bundleProductWithActiveChoices.ActiveChoices),
+				}
+			}
+		}
 
 		return BundleProduct{
 			product: bundleProduct,

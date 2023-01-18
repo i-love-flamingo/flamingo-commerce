@@ -85,7 +85,7 @@ func mapDecoratedItems(decoratedItems []decorator.DecoratedCartItem) []Decorated
 	for _, di := range decoratedItems {
 		items = append(items, DecoratedCartItem{
 			Item:    di.Item,
-			Product: graphqlProductDto.NewGraphqlProductDto(di.Product, &di.Item.VariantMarketPlaceCode),
+			Product: graphqlProductDto.NewGraphqlProductDto(di.Product, &di.Item.VariantMarketPlaceCode, nil),
 		})
 	}
 

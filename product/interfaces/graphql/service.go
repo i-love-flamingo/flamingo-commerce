@@ -30,6 +30,7 @@ func (*Service) Types(types *graphql.Types) {
 	types.Map("Commerce_Product_ConfigurableProduct", graphqlProductDto.ConfigurableProduct{})
 	types.Map("Commerce_Product_ActiveVariantProduct", graphqlProductDto.ActiveVariantProduct{})
 	types.Map("Commerce_Product_BundleProduct", graphqlProductDto.BundleProduct{})
+	types.Map("Commerce_Product_BundleProductWithActiveChoices", graphqlProductDto.BundleProductWithActiveChoices{})
 	types.Map("Commerce_Product_VariationSelection", graphqlProductDto.VariationSelection{})
 	types.Map("Commerce_Product_ActiveVariationSelection", graphqlProductDto.ActiveVariationSelection{})
 	types.Map("Commerce_Product_VariationSelection_Option", graphqlProductDto.VariationSelectionOption{})
@@ -57,6 +58,8 @@ func (*Service) Types(types *graphql.Types) {
 	types.Map("Commerce_Product_Badge", domain.Badge{})
 	types.Map("Commerce_Product_Choice", graphqlProductDto.Choice{})
 	types.Map("Commerce_Product_Option", graphqlProductDto.Option{})
+	types.Map("Commerce_Product_BundleConfigurationInput", domain.BundleConfiguration{})
+	types.Map("Commerce_Product_ActiveChoice", graphqlProductDto.ActiveChoice{})
 
 	types.Resolve("Query", "Commerce_Product", CommerceProductQueryResolver{}, "CommerceProduct")
 	types.Resolve("Query", "Commerce_Product_Search", CommerceProductQueryResolver{}, "CommerceProductSearch")

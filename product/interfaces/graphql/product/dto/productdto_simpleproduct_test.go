@@ -4,10 +4,11 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	graphqlProductDto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
-	"github.com/stretchr/testify/assert"
 )
 
 func getProductDomainSimpleProduct() productDomain.SimpleProduct {
@@ -108,7 +109,7 @@ func getProductDomainSimpleProduct() productDomain.SimpleProduct {
 
 func getSimpleProduct() graphqlProductDto.Product {
 	product := getProductDomainSimpleProduct()
-	return graphqlProductDto.NewGraphqlProductDto(product, nil)
+	return graphqlProductDto.NewGraphqlProductDto(product, nil, nil)
 }
 
 func TestSimpleProduct_Attributes(t *testing.T) {
