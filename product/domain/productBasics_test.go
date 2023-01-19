@@ -466,7 +466,54 @@ func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
 	chargeMain, found = charges.GetByType(domain.ChargeTypeMain)
 	assert.True(t, found)
 	assert.Equal(t, domain.NewFromInt(0, 1, "€"), chargeMain.Price)
+}
 
+func TestSaleable_GetLoyaltyChargeSplit_minMiles(t *testing.T) {
+
+	p := Saleable{
+		ActivePrice: PriceInfo{
+			// 100€ value
+			Default: domain.NewFromFloat(49.0, "€"),
+		},
+		LoyaltyPrices: []LoyaltyPriceInfo{
+			{
+				Type:             "loyalty.miles",
+				MaxPointsToSpent: nil,
+				// 10 is the minimum to pay in miles (=20€ value)
+				MinPointsToSpent: *new(big.Float).SetInt64(6125),
+				// 50 miles == 100€ meaning 1Mile = 2€
+				Default: domain.NewFromInt(6125, 1, "Miles"), // one mile = 5.305305305305305 €
+			},
+		},
+	}
+
+	newValue := domain.NewFromFloat(47.52, "€")
+	charges := p.GetLoyaltyChargeSplit(&newValue, nil, 1)
+	chargeLoyaltyMiles, _ := charges.GetByType("loyalty.miles")
+
+	assert.Equal(t, 5940.0, chargeLoyaltyMiles.Price.FloatAmount())
+	assert.Equal(t, 47.52, chargeLoyaltyMiles.Value.FloatAmount())
+
+	newValue = domain.NewFromFloat(52.92, "€")
+	charges = p.GetLoyaltyChargeSplit(&newValue, nil, 1)
+	chargeLoyaltyMiles, _ = charges.GetByType("loyalty.miles")
+
+	assert.Equal(t, 6125.0, chargeLoyaltyMiles.Price.FloatAmount())
+	assert.Equal(t, 49.0, chargeLoyaltyMiles.Value.FloatAmount())
+
+	newValue = domain.NewFromFloat(44.00, "€")
+	charges = p.GetLoyaltyChargeSplit(&newValue, nil, 1)
+	chargeLoyaltyMiles, _ = charges.GetByType("loyalty.miles")
+
+	assert.Equal(t, 5500.0, chargeLoyaltyMiles.Price.FloatAmount())
+	assert.Equal(t, 44.0, chargeLoyaltyMiles.Value.FloatAmount())
+
+	newValue = domain.NewFromFloat(49.00, "€")
+	charges = p.GetLoyaltyChargeSplit(&newValue, nil, 1)
+	chargeLoyaltyMiles, _ = charges.GetByType("loyalty.miles")
+
+	assert.Equal(t, 6125.0, chargeLoyaltyMiles.Price.FloatAmount())
+	assert.Equal(t, 49.0, chargeLoyaltyMiles.Value.FloatAmount())
 }
 
 func TestSaleable_GetLoyaltyChargeSplitIgnoreMin(t *testing.T) {
