@@ -315,13 +315,13 @@ type Commerce_Product_Option {
     qty: Int!
 }
 
-input Commerce_Product_BundleConfigurationInput {
+input Commerce_Product_ChoiceConfigurationInput {
     identifier: String!
     marketplaceCode: String!
     variantMarketplaceCode: String
 }
 
 extend type Query {
-    Commerce_Product(marketPlaceCode: String!, variantMarketPlaceCode: String, bundleConfiguration: [Commerce_Product_BundleConfigurationInput]): Commerce_Product
+    Commerce_Product(marketPlaceCode: String!, variantMarketPlaceCode: String, bundleConfiguration: [Commerce_Product_ChoiceConfigurationInput]): Commerce_Product
     Commerce_Product_Search(searchRequest: Commerce_Search_Request!): Commerce_Product_SearchResult!
 }

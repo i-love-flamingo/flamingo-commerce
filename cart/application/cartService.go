@@ -680,7 +680,7 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 		cs.dispatchAllEvents(ctx, defers)
 	}()
 
-	addRequest, product, err := cs.checkProductForAddRequest(ctx, session, cart, deliveryCode, addRequest)
+	product, err := cs.checkProductForAddRequest(ctx, session, cart, deliveryCode, addRequest)
 
 	switch err.(type) {
 	case nil:
@@ -848,35 +848,53 @@ func (cs *CartService) handleCartNotFound(session *web.Session, err error) {
 }
 
 // checkProductForAddRequest existence and validate with productService
-func (cs *CartService) checkProductForAddRequest(ctx context.Context, session *web.Session, cart *cartDomain.Cart, deliveryCode string, addRequest cartDomain.AddRequest) (cartDomain.AddRequest, productDomain.BasicProduct, error) {
+func (cs *CartService) checkProductForAddRequest(ctx context.Context, session *web.Session, cart *cartDomain.Cart, deliveryCode string, addRequest cartDomain.AddRequest) (productDomain.BasicProduct, error) {
 	product, err := cs.productService.Get(ctx, addRequest.MarketplaceCode)
 	if err != nil {
-		return addRequest, nil, err
+		return nil, err
 	}
 
 	if product.Type() == productDomain.TypeConfigurable {
 		if addRequest.VariantMarketplaceCode == "" {
-			return addRequest, nil, errors.New("no variant given for configurable product")
+			return nil, errors.New("no variant given for configurable product")
 		}
 
 		configurableProduct := product.(productDomain.ConfigurableProduct)
 		if !configurableProduct.HasVariant(addRequest.VariantMarketplaceCode) {
-			return addRequest, nil, errors.New("product has not the given variant")
+			return nil, errors.New("product has not the given variant")
 		}
 
 		product, err = configurableProduct.GetConfigurableWithActiveVariant(addRequest.VariantMarketplaceCode)
 		if err != nil {
-			return addRequest, nil, err
+			return nil, err
+		}
+	}
+
+	if product.Type() == productDomain.TypeBundle {
+		if len(addRequest.BundleConfiguration) == 0 {
+			return nil, ErrNoBundleConfigurationGiven
+		}
+
+		bundleProduct := product.(productDomain.BundleProduct)
+		domainBundleConfig := productDomain.MapToProductDomain(addRequest.BundleConfiguration)
+
+		if !bundleProduct.AllRequiredChoicesAreSelected(domainBundleConfig) {
+			return nil, ErrRequiredChoicesAreNotSelected
+		}
+
+		product, err = bundleProduct.GetBundleProductWithActiveChoices(domainBundleConfig)
+		if err != nil {
+			return nil, fmt.Errorf("error getting bundle with active choices: %w", err)
 		}
 	}
 
 	// Now Validate the Item with the optional registered ItemValidator
 	if cs.itemValidator != nil {
 		decoratedCart, _ := cs.cartReceiverService.DecorateCart(ctx, cart)
-		return addRequest, product, cs.itemValidator.Validate(ctx, session, decoratedCart, deliveryCode, addRequest, product)
+		return product, cs.itemValidator.Validate(ctx, session, decoratedCart, deliveryCode, addRequest, product)
 	}
 
-	return addRequest, product, nil
+	return product, nil
 }
 
 func (cs *CartService) checkProductQtyRestrictions(ctx context.Context, sess *web.Session, product productDomain.BasicProduct, cart *cartDomain.Cart, qtyToCheck int, deliveryCode string, itemID string) error {

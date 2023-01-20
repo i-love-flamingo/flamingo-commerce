@@ -61,4 +61,18 @@ type (
 	UpdateShippingOptionsResult struct {
 		Processed bool
 	}
+
+	AddToCart struct {
+		MarketplaceCode        string
+		Qty                    int
+		DeliveryCode           string
+		VariantMarketplaceCode string
+		BundleConfiguration    []ChoiceConfiguration
+	}
+
+	ChoiceConfiguration struct {
+		Identifier             string
+		MarketplaceCode        string
+		VariantMarketplaceCode string
+	}
 )

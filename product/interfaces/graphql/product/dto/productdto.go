@@ -92,6 +92,12 @@ type (
 	VariationSelectionOptionVariant struct {
 		variant productDomain.Variant
 	}
+
+	ChoiceConfiguration struct {
+		Identifier             string
+		MarketplaceCode        string
+		VariantMarketplaceCode string
+	}
 )
 
 var (
@@ -112,7 +118,7 @@ func (pm ProductMedia) GetMedia(usage string) *productDomain.Media {
 }
 
 // NewGraphqlProductDto returns a new Product dto
-func NewGraphqlProductDto(product productDomain.BasicProduct, preSelectedVariantSku *string, bundleConfiguration []*productDomain.BundleConfiguration) Product {
+func NewGraphqlProductDto(product productDomain.BasicProduct, preSelectedVariantSku *string, bundleConfiguration productDomain.BundleConfiguration) Product {
 	if product.Type() == productDomain.TypeConfigurable {
 		configurableProduct := product.(productDomain.ConfigurableProduct)
 

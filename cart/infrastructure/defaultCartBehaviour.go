@@ -7,12 +7,13 @@ import (
 	"math/rand"
 	"strconv"
 
+	"flamingo.me/flamingo/v3/framework/flamingo"
+	"github.com/pkg/errors"
+
 	domaincart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
-	"flamingo.me/flamingo/v3/framework/flamingo"
-	"github.com/pkg/errors"
 )
 
 type (
@@ -326,6 +327,17 @@ func (cob *DefaultCartBehaviour) buildItemForCart(ctx context.Context, addReques
 			return nil, err
 		}
 		product = productWithActiveVariant
+	}
+
+	if bundleProduct, ok := product.(domain.BundleProduct); ok && len(addRequest.BundleConfiguration) != 0 {
+		bundleConfig := domain.MapToProductDomain(addRequest.BundleConfiguration)
+
+		bundleProductWithActiveChoices, err := bundleProduct.GetBundleProductWithActiveChoices(bundleConfig)
+		if err != nil {
+			return nil, fmt.Errorf("error getting bundle with active choices: %w", err)
+		}
+
+		product = bundleProductWithActiveChoices
 	}
 
 	return cob.createCartItemFromProduct(addRequest.Qty, addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode, addRequest.AdditionalData, product)

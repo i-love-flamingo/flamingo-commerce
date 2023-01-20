@@ -32,14 +32,16 @@ func (r *CommerceProductQueryResolver) Inject(
 func (r *CommerceProductQueryResolver) CommerceProduct(ctx context.Context,
 	marketplaceCode string,
 	variantMarketPlaceCode *string,
-	bundleConfiguration []*domain.BundleConfiguration) (productDto.Product, error) {
+	bundleConfiguration []*productDto.ChoiceConfiguration) (productDto.Product, error) {
 	product, err := r.productService.Get(ctx, marketplaceCode)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return productDto.NewGraphqlProductDto(product, variantMarketPlaceCode, bundleConfiguration), nil
+	domainBundleConfiguration := mapToDomain(bundleConfiguration)
+
+	return productDto.NewGraphqlProductDto(product, variantMarketPlaceCode, domainBundleConfiguration), nil
 }
 
 // CommerceProductSearch returns a search result of products based on the given search request
@@ -69,4 +71,21 @@ func (r *CommerceProductQueryResolver) CommerceProductSearch(ctx context.Context
 func (r *CommerceProductQueryResolver) ActiveBase(_ context.Context, priceInfo *domain.PriceInfo) (*priceDomain.Price, error) {
 	result := priceDomain.NewFromBigFloat(priceInfo.ActiveBase, priceInfo.Default.Currency())
 	return &result, nil
+}
+
+func mapToDomain(dtoChoices []*productDto.ChoiceConfiguration) domain.BundleConfiguration {
+	domainConfiguration := make(domain.BundleConfiguration)
+
+	for _, choice := range dtoChoices {
+		if choice == nil {
+			continue
+		}
+
+		domainConfiguration[domain.Identifier(choice.Identifier)] = domain.ChoiceConfiguration{
+			MarketplaceCode:        choice.MarketplaceCode,
+			VariantMarketplaceCode: choice.VariantMarketplaceCode,
+		}
+	}
+
+	return domainConfiguration
 }

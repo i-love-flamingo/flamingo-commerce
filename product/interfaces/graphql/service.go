@@ -58,7 +58,7 @@ func (*Service) Types(types *graphql.Types) {
 	types.Map("Commerce_Product_Badge", domain.Badge{})
 	types.Map("Commerce_Product_Choice", graphqlProductDto.Choice{})
 	types.Map("Commerce_Product_Option", graphqlProductDto.Option{})
-	types.Map("Commerce_Product_BundleConfigurationInput", domain.BundleConfiguration{})
+	types.Map("Commerce_Product_ChoiceConfigurationInput", graphqlProductDto.ChoiceConfiguration{})
 	types.Map("Commerce_Product_ActiveChoice", graphqlProductDto.ActiveChoice{})
 
 	types.Resolve("Query", "Commerce_Product", CommerceProductQueryResolver{}, "CommerceProduct")

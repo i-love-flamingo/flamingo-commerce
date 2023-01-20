@@ -5,13 +5,14 @@ import (
 	// embed schema.graphql
 	_ "embed"
 
+	formDomain "flamingo.me/form/domain"
+	"flamingo.me/graphql"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
-	formDomain "flamingo.me/form/domain"
-	"flamingo.me/graphql"
 )
 
 // Service describes the Commerce/Cart GraphQL Service
@@ -81,6 +82,8 @@ func (*Service) Types(types *graphql.Types) {
 	types.Map("Commerce_Cart_DeliveryAddressForm", dto.DeliveryAddressForm{})
 	types.Map("Commerce_Cart_DeliveryAddressInput", forms.DeliveryForm{})
 	types.Map("Commerce_Cart_UpdateDeliveryShippingOptions_Result", dto.UpdateShippingOptionsResult{})
+	types.Map("Commerce_Cart_AddToCartInput", dto.AddToCart{})
+	types.Map("Commerce_Cart_ChoiceConfigurationInput", dto.ChoiceConfiguration{})
 
 	types.GoField("Commerce_Cart_DeliveryAddressInput", "deliveryCode", "LocationCode")
 	types.GoField("Commerce_Cart_DeliveryAddressInput", "carrier", "ShippingCarrier")

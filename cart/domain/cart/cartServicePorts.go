@@ -92,6 +92,14 @@ type (
 		Qty                    int
 		VariantMarketplaceCode string
 		AdditionalData         map[string]string
+		BundleConfiguration    map[ChoiceID]ChoiceConfiguration
+	}
+
+	ChoiceID string
+
+	ChoiceConfiguration struct {
+		MarketplaceCode        string
+		VariantMarketplaceCode string
 	}
 
 	// ItemUpdateCommand defines the update item command
