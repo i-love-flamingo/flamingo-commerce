@@ -14,25 +14,12 @@ type (
 		Required   bool
 		Label      string
 		Options    []Option
+		Active     Product
 	}
 
 	Option struct {
 		Product Product
 		Qty     int
-	}
-
-	// BundleProductWithActiveChoices A bundle Product with selected choices
-	BundleProductWithActiveChoices struct {
-		BundleProduct
-		ActiveChoices []ActiveChoice
-	}
-
-	ActiveChoice struct {
-		Identifier string
-		Required   bool
-		Label      string
-		Product    Product
-		Qty        int
 	}
 )
 
@@ -121,9 +108,25 @@ func (sp BundleProduct) Badges() ProductBadges {
 	}
 }
 
+func mapWithActiveChoices(domainChoices []productDomain.Choice, activeChoices map[productDomain.Identifier]productDomain.ActiveChoice) []Choice {
+	choices := mapChoices(domainChoices)
+
+	if activeChoices == nil {
+		return choices
+	}
+
+	for i, choice := range choices {
+		activeChoice, ok := activeChoices[productDomain.Identifier(choice.Identifier)]
+		if ok {
+			choices[i].Active = NewGraphqlProductDto(activeChoice.Product, nil, nil)
+		}
+	}
+
+	return choices
+}
+
 func mapChoices(domainChoices []productDomain.Choice) []Choice {
 	choices := make([]Choice, 0, len(domainChoices))
-
 	for _, domainChoice := range domainChoices {
 		choices = append(choices, mapChoice(domainChoice))
 	}
@@ -155,22 +158,4 @@ func mapOption(domainOption productDomain.Option) Option {
 		Product: NewGraphqlProductDto(domainOption.Product, nil, nil),
 		Qty:     domainOption.Qty,
 	}
-}
-
-func mapActiveChoices(domainChoices map[productDomain.Identifier]productDomain.ActiveChoice) []ActiveChoice {
-	dtoChoices := make([]ActiveChoice, 0, len(domainChoices))
-
-	for identifier, domainChoice := range domainChoices {
-		dtoChoice := ActiveChoice{
-			Identifier: string(identifier),
-			Required:   domainChoice.Required,
-			Label:      domainChoice.Label,
-			Product:    NewGraphqlProductDto(domainChoice.Product, nil, nil),
-			Qty:        domainChoice.Qty,
-		}
-
-		dtoChoices = append(dtoChoices, dtoChoice)
-	}
-
-	return dtoChoices
 }
