@@ -1,8 +1,10 @@
 mutation {
     Commerce_Cart_AddToCart(
-        marketplaceCode: "###MARKETPLACE_CODE###"
-        qty: 1
-        deliveryCode: "###DELIVERY_CODE###"
+        addToCartInput: {
+            marketplaceCode: "###MARKETPLACE_CODE###"
+            qty: 1
+            deliveryCode: "###DELIVERY_CODE###"
+        }
     ) {
         cart {
             id
