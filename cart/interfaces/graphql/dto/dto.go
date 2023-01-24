@@ -1,6 +1,7 @@
 package dto
 
 import (
+	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
 
 	"time"
@@ -76,3 +77,16 @@ type (
 		VariantMarketplaceCode string
 	}
 )
+
+func MapBundleConfigToDomain(graphqlBundleConfig []ChoiceConfiguration) cartDomain.BundleConfiguration {
+	cartBundleConfiguration := make(map[cartDomain.ChoiceID]cartDomain.ChoiceConfiguration)
+
+	for _, configuration := range graphqlBundleConfig {
+		cartBundleConfiguration[cartDomain.ChoiceID(configuration.Identifier)] = cartDomain.ChoiceConfiguration{
+			MarketplaceCode:        configuration.MarketplaceCode,
+			VariantMarketplaceCode: configuration.VariantMarketplaceCode,
+		}
+	}
+
+	return cartBundleConfiguration
+}

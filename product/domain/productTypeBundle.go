@@ -3,6 +3,7 @@ package domain
 import (
 	"fmt"
 
+	"flamingo.me/flamingo-commerce/v3/cart/application"
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 )
 
@@ -56,7 +57,9 @@ type (
 	}
 )
 
-var _ BasicProduct = BundleProduct{}
+var (
+	_ BasicProduct = BundleProduct{}
+)
 
 func (b BundleProduct) BaseData() BasicProductData {
 	return b.BasicProductData
@@ -97,24 +100,23 @@ func (b BundleProduct) GetBundleProductWithActiveChoices(bundleConfiguration Bun
 		ActiveChoices: make(map[Identifier]ActiveChoice, 0),
 	}
 
-	for choiceIdentifier, selectedChoice := range bundleConfiguration {
-		for _, possibleChoice := range b.Choices {
-			if string(choiceIdentifier) != possibleChoice.Identifier {
+	for _, choice := range b.Choices {
+		choiceConfig, ok := bundleConfiguration[Identifier(choice.Identifier)]
+		if !ok && choice.Required {
+			return bundleProductWithActiveChoices, application.ErrRequiredChoicesAreNotSelected
+		}
+
+		for _, option := range choice.Options {
+			if choiceConfig.MarketplaceCode != option.Product.BaseData().MarketPlaceCode {
 				continue
 			}
 
-			for _, option := range possibleChoice.Options {
-				if selectedChoice.MarketplaceCode != option.Product.BaseData().MarketPlaceCode {
-					continue
-				}
-
-				activeChoice, err := mapChoiceToActiveProduct(option, possibleChoice, selectedChoice)
-				if err != nil {
-					return BundleProductWithActiveChoices{}, fmt.Errorf("bundle product: %w", err)
-				}
-
-				bundleProductWithActiveChoices.ActiveChoices[choiceIdentifier] = activeChoice
+			activeChoice, err := mapChoiceToActiveProduct(option, choice, choiceConfig)
+			if err != nil {
+				return BundleProductWithActiveChoices{}, fmt.Errorf("bundle product: %w", err)
 			}
+
+			bundleProductWithActiveChoices.ActiveChoices[Identifier(choice.Identifier)] = activeChoice
 		}
 	}
 
@@ -124,15 +126,8 @@ func (b BundleProduct) GetBundleProductWithActiveChoices(bundleConfiguration Bun
 func mapChoiceToActiveProduct(option Option, possibleChoice Choice, selectedChoice ChoiceConfiguration) (ActiveChoice, error) {
 	activeChoice := ActiveChoice{}
 
-	if option.Product.Type() == TypeSimple {
-		activeChoice = ActiveChoice{
-			Product:  option.Product,
-			Qty:      option.Qty,
-			Label:    possibleChoice.Label,
-			Required: possibleChoice.Required,
-		}
-	}
-	if option.Product.Type() == TypeConfigurable {
+	switch option.Product.Type() {
+	case TypeConfigurable:
 		activeChoice = ActiveChoice{
 			Product:  option.Product,
 			Qty:      option.Qty,
@@ -140,54 +135,27 @@ func mapChoiceToActiveProduct(option Option, possibleChoice Choice, selectedChoi
 			Required: possibleChoice.Required,
 		}
 
-		if selectedChoice.VariantMarketplaceCode != "" {
-			if configurable, ok := option.Product.(ConfigurableProduct); ok {
-				configurableWithActiveVariant, err := configurable.GetConfigurableWithActiveVariant(selectedChoice.VariantMarketplaceCode)
-				if err != nil {
-					return ActiveChoice{}, fmt.Errorf("error getting configurable with active variant: %w", err)
-				}
-
-				activeChoice.Product = configurableWithActiveVariant
+		if configurable, ok := option.Product.(ConfigurableProduct); ok {
+			configurableWithActiveVariant, err := configurable.GetConfigurableWithActiveVariant(selectedChoice.VariantMarketplaceCode)
+			if err != nil {
+				return ActiveChoice{}, fmt.Errorf("error getting configurable with active variant: %w", err)
 			}
+
+			activeChoice.Product = configurableWithActiveVariant
+		}
+	case TypeSimple:
+		activeChoice = ActiveChoice{
+			Product:  option.Product,
+			Qty:      option.Qty,
+			Label:    possibleChoice.Label,
+			Required: possibleChoice.Required,
 		}
 	}
 
 	return activeChoice, nil
 }
 
-func (b BundleProduct) AllRequiredChoicesAreSelected(bundleConfiguration BundleConfiguration) bool {
-	for _, choice := range b.Choices {
-		if !choice.Required {
-			continue
-		}
-
-		config, ok := bundleConfiguration[Identifier(choice.Identifier)]
-		if !ok {
-			return false
-		}
-
-		for _, option := range choice.Options {
-			if option.Product.BaseData().MarketPlaceCode == config.MarketplaceCode {
-				switch option.Product.Type() {
-				// todo can it be configurable with active variant?
-				case TypeConfigurable:
-					configurable, _ := option.Product.(ConfigurableProduct)
-					if !configurable.HasVariant(config.VariantMarketplaceCode) {
-						return false
-					}
-				case TypeSimple:
-				default:
-				}
-			}
-		}
-
-		return false
-	}
-
-	return true
-}
-
-func MapToProductDomain(cartBundleConfig map[cartDomain.ChoiceID]cartDomain.ChoiceConfiguration) BundleConfiguration {
+func MapToProductDomain(cartBundleConfig cartDomain.BundleConfiguration) BundleConfiguration {
 	domainConfig := make(BundleConfiguration)
 
 	for choiceID, cartChoiceConfig := range cartBundleConfig {

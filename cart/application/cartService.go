@@ -646,6 +646,7 @@ func (cs *CartService) DeleteDelivery(ctx context.Context, session *web.Session,
 }
 
 // BuildAddRequest Helper to build
+// Deprecated: build your own add request
 func (cs *CartService) BuildAddRequest(_ context.Context, marketplaceCode string, variantMarketplaceCode string, qty int, additionalData map[string]string) cartDomain.AddRequest {
 	if qty < 0 {
 		qty = 0
@@ -877,10 +878,6 @@ func (cs *CartService) checkProductForAddRequest(ctx context.Context, session *w
 
 		bundleProduct := product.(productDomain.BundleProduct)
 		domainBundleConfig := productDomain.MapToProductDomain(addRequest.BundleConfiguration)
-
-		if !bundleProduct.AllRequiredChoicesAreSelected(domainBundleConfig) {
-			return nil, ErrRequiredChoicesAreNotSelected
-		}
 
 		product, err = bundleProduct.GetBundleProductWithActiveChoices(domainBundleConfig)
 		if err != nil {

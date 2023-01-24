@@ -59,7 +59,7 @@ func (r *CommerceCartMutationResolver) CommerceAddToCart(ctx context.Context, gr
 		Qty:                    graphqlAddRequest.Qty,
 		VariantMarketplaceCode: graphqlAddRequest.VariantMarketplaceCode,
 		AdditionalData:         nil,
-		BundleConfiguration:    mapDtoToDomain(graphqlAddRequest.BundleConfiguration),
+		BundleConfiguration:    dto.MapBundleConfigToDomain(graphqlAddRequest.BundleConfiguration),
 	}
 
 	_, err := r.cartService.AddProduct(ctx, req.Session(), graphqlAddRequest.DeliveryCode, addRequest)
@@ -330,17 +330,4 @@ func mapFieldErrors(validationInfo domain.ValidationInfo) []dto.FieldError {
 		}
 	}
 	return fieldErrors
-}
-
-func mapDtoToDomain(graphqlBundleConfig []dto.ChoiceConfiguration) map[cartDomain.ChoiceID]cartDomain.ChoiceConfiguration {
-	cartBundleConfiguration := make(map[cartDomain.ChoiceID]cartDomain.ChoiceConfiguration)
-
-	for _, configuration := range graphqlBundleConfig {
-		cartBundleConfiguration[cartDomain.ChoiceID(configuration.Identifier)] = cartDomain.ChoiceConfiguration{
-			MarketplaceCode:        configuration.MarketplaceCode,
-			VariantMarketplaceCode: configuration.VariantMarketplaceCode,
-		}
-	}
-
-	return cartBundleConfiguration
 }

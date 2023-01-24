@@ -92,10 +92,12 @@ type (
 		Qty                    int
 		VariantMarketplaceCode string
 		AdditionalData         map[string]string
-		BundleConfiguration    map[ChoiceID]ChoiceConfiguration
+		BundleConfiguration    BundleConfiguration
 	}
 
 	ChoiceID string
+
+	BundleConfiguration map[ChoiceID]ChoiceConfiguration
 
 	ChoiceConfiguration struct {
 		MarketplaceCode        string
