@@ -6236,7 +6236,7 @@ func (ec *executionContext) field_Query_Commerce_Product_args(ctx context.Contex
 	var arg2 []*graphqlproductdto.ChoiceConfiguration
 	if tmp, ok := rawArgs["bundleConfiguration"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("bundleConfiguration"))
-		arg2, err = ec.unmarshalOCommerce_Product_ChoiceConfigurationInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐChoiceConfiguration(ctx, tmp)
+		arg2, err = ec.unmarshalOCommerce_Product_ChoiceConfigurationInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐChoiceConfigurationᚄ(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -36315,7 +36315,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddToCartInput(ctx conte
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("bundleConfiguration"))
-			it.BundleConfiguration, err = ec.unmarshalOCommerce_Cart_ChoiceConfigurationInput2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐChoiceConfiguration(ctx, v)
+			it.BundleConfiguration, err = ec.unmarshalOCommerce_Cart_ChoiceConfigurationInput2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐChoiceConfigurationᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -43997,6 +43997,11 @@ func (ec *executionContext) marshalNCommerce_Cart_Cart2flamingoᚗmeᚋflamingo�
 	return ec._Commerce_Cart_Cart(ctx, sel, &v)
 }
 
+func (ec *executionContext) unmarshalNCommerce_Cart_ChoiceConfigurationInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐChoiceConfiguration(ctx context.Context, v interface{}) (dto.ChoiceConfiguration, error) {
+	res, err := ec.unmarshalInputCommerce_Cart_ChoiceConfigurationInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) marshalNCommerce_Cart_CouponCode2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋdomainᚋcartᚐCouponCode(ctx context.Context, sel ast.SelectionSet, v cart.CouponCode) graphql.Marshaler {
 	return ec._Commerce_Cart_CouponCode(ctx, sel, &v)
 }
@@ -44514,6 +44519,11 @@ func (ec *executionContext) marshalNCommerce_Product_CategoryTeaser2flamingoᚗm
 
 func (ec *executionContext) marshalNCommerce_Product_Choice2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐChoice(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.Choice) graphql.Marshaler {
 	return ec._Commerce_Product_Choice(ctx, sel, &v)
+}
+
+func (ec *executionContext) unmarshalNCommerce_Product_ChoiceConfigurationInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐChoiceConfiguration(ctx context.Context, v interface{}) (*graphqlproductdto.ChoiceConfiguration, error) {
+	res, err := ec.unmarshalInputCommerce_Product_ChoiceConfigurationInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNCommerce_Product_Loyalty2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductLoyalty(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.ProductLoyalty) graphql.Marshaler {
@@ -45324,12 +45334,7 @@ func (ec *executionContext) marshalOCommerce_Cart_AppliedGiftCard2ᚕflamingoᚗ
 	return ret
 }
 
-func (ec *executionContext) unmarshalOCommerce_Cart_ChoiceConfigurationInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐChoiceConfiguration(ctx context.Context, v interface{}) (dto.ChoiceConfiguration, error) {
-	res, err := ec.unmarshalInputCommerce_Cart_ChoiceConfigurationInput(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) unmarshalOCommerce_Cart_ChoiceConfigurationInput2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐChoiceConfiguration(ctx context.Context, v interface{}) ([]dto.ChoiceConfiguration, error) {
+func (ec *executionContext) unmarshalOCommerce_Cart_ChoiceConfigurationInput2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐChoiceConfigurationᚄ(ctx context.Context, v interface{}) ([]dto.ChoiceConfiguration, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -45341,7 +45346,7 @@ func (ec *executionContext) unmarshalOCommerce_Cart_ChoiceConfigurationInput2ᚕ
 	res := make([]dto.ChoiceConfiguration, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalOCommerce_Cart_ChoiceConfigurationInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐChoiceConfiguration(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNCommerce_Cart_ChoiceConfigurationInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐChoiceConfiguration(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -46784,7 +46789,7 @@ func (ec *executionContext) marshalOCommerce_Product_Choice2ᚕflamingoᚗmeᚋf
 	return ret
 }
 
-func (ec *executionContext) unmarshalOCommerce_Product_ChoiceConfigurationInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐChoiceConfiguration(ctx context.Context, v interface{}) ([]*graphqlproductdto.ChoiceConfiguration, error) {
+func (ec *executionContext) unmarshalOCommerce_Product_ChoiceConfigurationInput2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐChoiceConfigurationᚄ(ctx context.Context, v interface{}) ([]*graphqlproductdto.ChoiceConfiguration, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -46796,20 +46801,12 @@ func (ec *executionContext) unmarshalOCommerce_Product_ChoiceConfigurationInput2
 	res := make([]*graphqlproductdto.ChoiceConfiguration, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalOCommerce_Product_ChoiceConfigurationInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐChoiceConfiguration(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNCommerce_Product_ChoiceConfigurationInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐChoiceConfiguration(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
 	}
 	return res, nil
-}
-
-func (ec *executionContext) unmarshalOCommerce_Product_ChoiceConfigurationInput2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐChoiceConfiguration(ctx context.Context, v interface{}) (*graphqlproductdto.ChoiceConfiguration, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := ec.unmarshalInputCommerce_Product_ChoiceConfigurationInput(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOCommerce_Product_Loyalty_EarningInfo2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐLoyaltyEarningInfo(ctx context.Context, sel ast.SelectionSet, v *domain1.LoyaltyEarningInfo) graphql.Marshaler {

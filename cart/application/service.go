@@ -59,6 +59,5 @@ type (
 )
 
 var (
-	ErrNoBundleConfigurationGiven    = errors.New("no bundle configuration given for configurable product")
-	ErrRequiredChoicesAreNotSelected = errors.New("required choices are not selected")
+	ErrNoBundleConfigurationGiven = errors.New("no bundle configuration given for configurable product")
 )

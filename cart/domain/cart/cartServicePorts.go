@@ -15,6 +15,8 @@ import (
 	"flamingo.me/flamingo/v3/framework/flamingo"
 
 	"github.com/pkg/errors"
+
+	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
 type (
@@ -170,4 +172,17 @@ func (d *DeliveryInfoUpdateCommand) init() {
 	if d.additional == nil {
 		d.additional = make(map[string]json.RawMessage)
 	}
+}
+
+func (bc BundleConfiguration) MapToProductDomain() productDomain.BundleConfiguration {
+	domainConfig := make(productDomain.BundleConfiguration)
+
+	for choiceID, cartChoiceConfig := range bc {
+		domainConfig[productDomain.Identifier(choiceID)] = productDomain.ChoiceConfiguration{
+			VariantMarketplaceCode: cartChoiceConfig.VariantMarketplaceCode,
+			MarketplaceCode:        cartChoiceConfig.MarketplaceCode,
+		}
+	}
+
+	return domainConfig
 }

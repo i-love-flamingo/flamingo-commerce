@@ -1,10 +1,8 @@
 package domain
 
 import (
+	"errors"
 	"fmt"
-
-	"flamingo.me/flamingo-commerce/v3/cart/application"
-	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 )
 
 const (
@@ -58,7 +56,8 @@ type (
 )
 
 var (
-	_ BasicProduct = BundleProduct{}
+	_                                BasicProduct = BundleProduct{}
+	ErrRequiredChoicesAreNotSelected              = errors.New("required choices are not selected")
 )
 
 func (b BundleProduct) BaseData() BasicProductData {
@@ -103,7 +102,7 @@ func (b BundleProduct) GetBundleProductWithActiveChoices(bundleConfiguration Bun
 	for _, choice := range b.Choices {
 		choiceConfig, ok := bundleConfiguration[Identifier(choice.Identifier)]
 		if !ok && choice.Required {
-			return bundleProductWithActiveChoices, application.ErrRequiredChoicesAreNotSelected
+			return bundleProductWithActiveChoices, ErrRequiredChoicesAreNotSelected
 		}
 
 		for _, option := range choice.Options {
@@ -153,17 +152,4 @@ func mapChoiceToActiveProduct(option Option, possibleChoice Choice, selectedChoi
 	}
 
 	return activeChoice, nil
-}
-
-func MapToProductDomain(cartBundleConfig cartDomain.BundleConfiguration) BundleConfiguration {
-	domainConfig := make(BundleConfiguration)
-
-	for choiceID, cartChoiceConfig := range cartBundleConfig {
-		domainConfig[Identifier(choiceID)] = ChoiceConfiguration{
-			VariantMarketplaceCode: cartChoiceConfig.VariantMarketplaceCode,
-			MarketplaceCode:        cartChoiceConfig.MarketplaceCode,
-		}
-	}
-
-	return domainConfig
 }

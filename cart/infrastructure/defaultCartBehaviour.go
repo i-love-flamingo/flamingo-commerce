@@ -330,7 +330,7 @@ func (cob *DefaultCartBehaviour) buildItemForCart(ctx context.Context, addReques
 	}
 
 	if bundleProduct, ok := product.(domain.BundleProduct); ok && len(addRequest.BundleConfiguration) != 0 {
-		bundleConfig := domain.MapToProductDomain(addRequest.BundleConfiguration)
+		bundleConfig := addRequest.BundleConfiguration.MapToProductDomain()
 
 		bundleProductWithActiveChoices, err := bundleProduct.GetBundleProductWithActiveChoices(bundleConfig)
 		if err != nil {

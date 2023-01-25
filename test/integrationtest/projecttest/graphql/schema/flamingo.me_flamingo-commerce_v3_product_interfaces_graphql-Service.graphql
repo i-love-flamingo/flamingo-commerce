@@ -293,6 +293,6 @@ input Commerce_Product_ChoiceConfigurationInput {
 }
 
 extend type Query {
-    Commerce_Product(marketPlaceCode: String!, variantMarketPlaceCode: String, bundleConfiguration: [Commerce_Product_ChoiceConfigurationInput]): Commerce_Product
+    Commerce_Product(marketPlaceCode: String!, variantMarketPlaceCode: String, bundleConfiguration: [Commerce_Product_ChoiceConfigurationInput!]): Commerce_Product
     Commerce_Product_Search(searchRequest: Commerce_Search_Request!): Commerce_Product_SearchResult!
 }

@@ -877,7 +877,7 @@ func (cs *CartService) checkProductForAddRequest(ctx context.Context, session *w
 		}
 
 		bundleProduct := product.(productDomain.BundleProduct)
-		domainBundleConfig := productDomain.MapToProductDomain(addRequest.BundleConfiguration)
+		domainBundleConfig := addRequest.BundleConfiguration.MapToProductDomain()
 
 		product, err = bundleProduct.GetBundleProductWithActiveChoices(domainBundleConfig)
 		if err != nil {
