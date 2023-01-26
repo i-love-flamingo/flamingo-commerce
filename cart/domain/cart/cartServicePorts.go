@@ -104,6 +104,7 @@ type (
 	ChoiceConfiguration struct {
 		MarketplaceCode        string
 		VariantMarketplaceCode string
+		Qty                    int
 	}
 
 	// ItemUpdateCommand defines the update item command

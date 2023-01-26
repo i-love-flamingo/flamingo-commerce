@@ -14,7 +14,8 @@ const (
 type (
 	Option struct {
 		Product BasicProduct
-		Qty     int
+		MinQty  int
+		MaxQty  int
 	}
 
 	Choice struct {
@@ -52,6 +53,7 @@ type (
 	ChoiceConfiguration struct {
 		MarketplaceCode        string
 		VariantMarketplaceCode string
+		Qty                    int
 	}
 )
 
