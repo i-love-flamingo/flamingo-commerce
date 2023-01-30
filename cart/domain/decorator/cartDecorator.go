@@ -113,6 +113,22 @@ func (df *DecoratedCartFactory) decorateCartItem(ctx context.Context, cartitem c
 			}
 		}
 	}
+
+	if product.Type() == domain.TypeBundle {
+		if bundle, ok := product.(domain.BundleProduct); ok {
+			bundleWithActiveChoices, err := bundle.GetBundleProductWithActiveChoices(cartitem.BundleConfig.MapToProductDomain())
+			if err != nil {
+				product = domain.SimpleProduct{
+					BasicProductData: domain.BasicProductData{
+						Title: cartitem.ProductName + "[outdated]",
+					},
+				}
+			} else {
+				product = bundleWithActiveChoices
+			}
+		}
+	}
+
 	decorateditem.Product = product
 	return decorateditem
 }

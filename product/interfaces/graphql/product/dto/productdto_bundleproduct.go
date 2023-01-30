@@ -156,6 +156,6 @@ func mapOptions(domainOptions []productDomain.Option) []Option {
 func mapOption(domainOption productDomain.Option) Option {
 	return Option{
 		Product: NewGraphqlProductDto(domainOption.Product, nil, nil),
-		Qty:     domainOption.Qty,
+		Qty:     domainOption.MinQty,
 	}
 }

@@ -60,6 +60,7 @@ type (
 var (
 	_                                BasicProduct = BundleProduct{}
 	ErrRequiredChoicesAreNotSelected              = errors.New("required choices are not selected")
+	ErrSelectedQuantityOutOfRange                 = errors.New("selected quantity is out of range")
 )
 
 func (b BundleProduct) BaseData() BasicProductData {
@@ -127,11 +128,17 @@ func (b BundleProduct) GetBundleProductWithActiveChoices(bundleConfiguration Bun
 func mapChoiceToActiveProduct(option Option, possibleChoice Choice, selectedChoice ChoiceConfiguration) (ActiveChoice, error) {
 	activeChoice := ActiveChoice{}
 
+	quantity, err := getQuantity(option.MinQty, option.MaxQty, selectedChoice.Qty)
+
+	if err != nil {
+		return ActiveChoice{}, err
+	}
+
 	switch option.Product.Type() {
 	case TypeConfigurable:
 		activeChoice = ActiveChoice{
 			Product:  option.Product,
-			Qty:      option.Qty,
+			Qty:      quantity,
 			Label:    possibleChoice.Label,
 			Required: possibleChoice.Required,
 		}
@@ -147,11 +154,23 @@ func mapChoiceToActiveProduct(option Option, possibleChoice Choice, selectedChoi
 	case TypeSimple:
 		activeChoice = ActiveChoice{
 			Product:  option.Product,
-			Qty:      option.Qty,
+			Qty:      quantity,
 			Label:    possibleChoice.Label,
 			Required: possibleChoice.Required,
 		}
 	}
 
 	return activeChoice, nil
+}
+
+func getQuantity(min, max, selected int) (int, error) {
+	if selected != 0 {
+		if selected >= min && selected <= max {
+			return selected, nil
+		}
+
+		return 0, ErrSelectedQuantityOutOfRange
+	}
+
+	return min, nil
 }

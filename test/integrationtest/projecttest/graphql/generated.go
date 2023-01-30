@@ -36504,7 +36504,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_ChoiceConfigurationInput
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"identifier", "marketplaceCode", "variantMarketplaceCode"}
+	fieldsInOrder := [...]string{"identifier", "marketplaceCode", "variantMarketplaceCode", "qty"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -36532,6 +36532,14 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_ChoiceConfigurationInput
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("variantMarketplaceCode"))
 			it.VariantMarketplaceCode, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "qty":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("qty"))
+			it.Qty, err = ec.unmarshalOInt2int(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -36768,7 +36776,7 @@ func (ec *executionContext) unmarshalInputCommerce_Product_ChoiceConfigurationIn
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"identifier", "marketplaceCode", "variantMarketplaceCode"}
+	fieldsInOrder := [...]string{"identifier", "marketplaceCode", "variantMarketplaceCode", "qty"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -36796,6 +36804,14 @@ func (ec *executionContext) unmarshalInputCommerce_Product_ChoiceConfigurationIn
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("variantMarketplaceCode"))
 			it.VariantMarketplaceCode, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "qty":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("qty"))
+			it.Qty, err = ec.unmarshalOInt2int(ctx, v)
 			if err != nil {
 				return it, err
 			}

@@ -479,6 +479,7 @@ input Commerce_Cart_ChoiceConfigurationInput {
     identifier: String!
     marketplaceCode: String!
     variantMarketplaceCode: String
+    qty: Int
 }
 
 extend type Mutation {

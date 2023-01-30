@@ -97,6 +97,7 @@ type (
 		Identifier             string
 		MarketplaceCode        string
 		VariantMarketplaceCode string
+		Qty                    int
 	}
 )
 
