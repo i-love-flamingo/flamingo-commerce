@@ -36531,7 +36531,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_ChoiceConfigurationInput
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("variantMarketplaceCode"))
-			it.VariantMarketplaceCode, err = ec.unmarshalOString2string(ctx, v)
+			it.VariantMarketplaceCode, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -36539,7 +36539,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_ChoiceConfigurationInput
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("qty"))
-			it.Qty, err = ec.unmarshalOInt2int(ctx, v)
+			it.Qty, err = ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
