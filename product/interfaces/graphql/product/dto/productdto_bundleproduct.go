@@ -50,12 +50,12 @@ func (sp BundleProduct) Media() ProductMedia {
 
 // Price of the product
 func (sp BundleProduct) Price() productDomain.PriceInfo {
-	return productDomain.PriceInfo{}
+	return sp.product.Saleable.ActivePrice
 }
 
 // AvailablePrices of the product
 func (sp BundleProduct) AvailablePrices() []productDomain.PriceInfo {
-	return nil
+	return sp.product.Saleable.AvailablePrices
 }
 
 // Title of the product

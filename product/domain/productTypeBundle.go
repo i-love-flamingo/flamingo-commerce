@@ -73,11 +73,11 @@ func (b BundleProduct) TeaserData() TeaserData {
 }
 
 func (b BundleProduct) IsSaleable() bool {
-	return false
+	return true
 }
 
 func (b BundleProduct) SaleableData() Saleable {
-	return Saleable{}
+	return b.Saleable
 }
 
 func (b BundleProduct) Type() string {
