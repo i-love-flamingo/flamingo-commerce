@@ -30,6 +30,7 @@ type (
 		Choices    []Choice
 		BasicProductData
 		Teaser TeaserData
+		Saleable
 	}
 
 	ActiveChoice struct {

@@ -96,8 +96,8 @@ type (
 	ChoiceConfiguration struct {
 		Identifier             string
 		MarketplaceCode        string
-		VariantMarketplaceCode string
-		Qty                    int
+		VariantMarketplaceCode *string
+		Qty                    *int
 	}
 )
 

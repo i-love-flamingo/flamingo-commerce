@@ -74,8 +74,8 @@ type (
 	ChoiceConfiguration struct {
 		Identifier             string
 		MarketplaceCode        string
-		VariantMarketplaceCode string
-		Qty                    int
+		VariantMarketplaceCode *string
+		Qty                    *int
 	}
 )
 
@@ -83,10 +83,20 @@ func MapBundleConfigToDomain(graphqlBundleConfig []ChoiceConfiguration) cartDoma
 	cartBundleConfiguration := make(map[cartDomain.ChoiceID]cartDomain.ChoiceConfiguration)
 
 	for _, configuration := range graphqlBundleConfig {
+		variantMarketplaceCode := ""
+		quantity := 0
+
+		if configuration.VariantMarketplaceCode != nil {
+			variantMarketplaceCode = *configuration.VariantMarketplaceCode
+		}
+		if configuration.Qty != nil {
+			quantity = *configuration.Qty
+		}
+
 		cartBundleConfiguration[cartDomain.ChoiceID(configuration.Identifier)] = cartDomain.ChoiceConfiguration{
 			MarketplaceCode:        configuration.MarketplaceCode,
-			VariantMarketplaceCode: configuration.VariantMarketplaceCode,
-			Qty:                    configuration.Qty,
+			VariantMarketplaceCode: variantMarketplaceCode,
+			Qty:                    quantity,
 		}
 	}
 
