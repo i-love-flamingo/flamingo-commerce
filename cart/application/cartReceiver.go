@@ -186,7 +186,7 @@ func (cs *BaseCartReceiver) GetCart(ctx context.Context, session *web.Session) (
 }
 
 // ModifyBehaviour returns the correct behaviour to modify the cart for the current user (guest/customer)
-func (cs *CartReceiverService) ModifyBehaviour(ctx context.Context) (cartDomain.ModifyBehaviour, error) {
+func (cs *BaseCartReceiver) ModifyBehaviour(ctx context.Context) (cartDomain.ModifyBehaviour, error) {
 	identity := cs.webIdentityService.Identify(ctx, web.RequestFromContext(ctx))
 	if identity != nil {
 		return cs.customerCartService.GetModifyBehaviour(ctx, identity)
