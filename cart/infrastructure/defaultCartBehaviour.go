@@ -340,9 +340,10 @@ func (cob *DefaultCartBehaviour) buildItemForCart(ctx context.Context, addReques
 		product = bundleProductWithActiveChoices
 	}
 
-	return cob.createCartItemFromProduct(addRequest.Qty, addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode, addRequest.AdditionalData, product)
+	return cob.createCartItemFromProduct(addRequest.Qty, addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode, addRequest.AdditionalData, addRequest.BundleConfiguration, product)
 }
-func (cob *DefaultCartBehaviour) createCartItemFromProduct(qty int, marketplaceCode string, variantMarketPlaceCode string, additonalData map[string]string, product domain.BasicProduct) (*domaincart.Item, error) {
+func (cob *DefaultCartBehaviour) createCartItemFromProduct(qty int, marketplaceCode string, variantMarketPlaceCode string,
+	additonalData map[string]string, bundleConfig domaincart.BundleConfiguration, product domain.BasicProduct) (*domaincart.Item, error) {
 	item := &domaincart.Item{
 		ID:                     strconv.Itoa(rand.Int()),
 		ExternalReference:      strconv.Itoa(rand.Int()),
@@ -389,6 +390,8 @@ func (cob *DefaultCartBehaviour) createCartItemFromProduct(qty int, marketplaceC
 	item.TotalDiscountAmount = priceDomain.NewZero(currency)
 	item.ItemRelatedDiscountAmount = priceDomain.NewZero(currency)
 	item.NonItemRelatedDiscountAmount = priceDomain.NewZero(currency)
+
+	item.BundleConfig = bundleConfig
 
 	return item, nil
 }
