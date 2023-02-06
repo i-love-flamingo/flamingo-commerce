@@ -84,6 +84,10 @@ func (b BundleProduct) Type() string {
 	return TypeBundle
 }
 
+func (b BundleProductWithActiveChoices) Type() string {
+	return TypeBundleWithActiveChoices
+}
+
 func (b BundleProduct) GetIdentifier() string {
 	return b.Identifier
 }
