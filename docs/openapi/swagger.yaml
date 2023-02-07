@@ -863,7 +863,12 @@ definitions:
         type: string
       ShortDescription:
         type: string
+      Stock:
+        items:
+          $ref: '#/definitions/domain.Stock'
+        type: array
       StockLevel:
+        description: 'Deprecated: use Stock[x].Level instead'
         type: string
       Teaser:
         $ref: '#/definitions/domain.TeaserData'
@@ -874,6 +879,17 @@ definitions:
       VisibleFrom:
         type: string
       VisibleTo:
+        type: string
+    type: object
+  domain.Stock:
+    properties:
+      Amount:
+        type: integer
+      DeliveryCode:
+        type: string
+      InStock:
+        type: boolean
+      Level:
         type: string
     type: object
   domain.TeaserData:

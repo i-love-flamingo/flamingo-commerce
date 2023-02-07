@@ -1,16 +1,17 @@
 package application
 
-//go:generate go run github.com/vektra/mockery/v2@v2.10.0 --name Service --case snake --structname CartService
+//go:generate go run github.com/vektra/mockery/v2@v2.18.0 --name Service --case snake --structname CartService
 
 import (
 	"context"
+
+	"flamingo.me/flamingo/v3/framework/web"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
-	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (
