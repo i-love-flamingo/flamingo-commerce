@@ -472,6 +472,7 @@ input Commerce_Cart_AddToCartInput {
     marketplaceCode: ID!
     qty: Int!
     deliveryCode: String!
+    variantMarketplaceCode: String
     bundleConfiguration:[Commerce_Cart_ChoiceConfigurationInput!]
 }
 

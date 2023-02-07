@@ -36280,7 +36280,7 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddToCartInput(ctx conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"marketplaceCode", "qty", "deliveryCode", "bundleConfiguration"}
+	fieldsInOrder := [...]string{"marketplaceCode", "qty", "deliveryCode", "variantMarketplaceCode", "bundleConfiguration"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -36308,6 +36308,14 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddToCartInput(ctx conte
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
 			it.DeliveryCode, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "variantMarketplaceCode":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("variantMarketplaceCode"))
+			it.VariantMarketplaceCode, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}

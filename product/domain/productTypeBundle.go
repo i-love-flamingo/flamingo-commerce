@@ -62,6 +62,7 @@ var (
 	_                                BasicProduct = BundleProduct{}
 	ErrRequiredChoicesAreNotSelected              = errors.New("required choices are not selected")
 	ErrSelectedQuantityOutOfRange                 = errors.New("selected quantity is out of range")
+	ErrMarketplaceCodeDoNotExists                 = errors.New("selected marketplace code does not exist")
 )
 
 func (b BundleProduct) BaseData() BasicProductData {
@@ -110,7 +111,7 @@ func (b BundleProduct) GetBundleProductWithActiveChoices(bundleConfiguration Bun
 	for _, choice := range b.Choices {
 		choiceConfig, ok := bundleConfiguration[Identifier(choice.Identifier)]
 		if !ok && choice.Required {
-			return bundleProductWithActiveChoices, ErrRequiredChoicesAreNotSelected
+			return BundleProductWithActiveChoices{}, ErrRequiredChoicesAreNotSelected
 		}
 
 		for _, option := range choice.Options {
@@ -124,6 +125,10 @@ func (b BundleProduct) GetBundleProductWithActiveChoices(bundleConfiguration Bun
 			}
 
 			bundleProductWithActiveChoices.ActiveChoices[Identifier(choice.Identifier)] = activeChoice
+		}
+
+		if _, ok := bundleProductWithActiveChoices.ActiveChoices[Identifier(choice.Identifier)]; !ok {
+			return BundleProductWithActiveChoices{}, ErrMarketplaceCodeDoNotExists
 		}
 	}
 
