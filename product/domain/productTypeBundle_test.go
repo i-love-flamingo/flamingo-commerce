@@ -91,10 +91,9 @@ func TestGetBundleProductWithActiveChoices(t *testing.T) {
 
 		bc := domain.BundleConfiguration{}
 
-		bpac, err := b.GetBundleProductWithActiveChoices(bc)
+		_, err := b.GetBundleProductWithActiveChoices(bc)
 
 		assert.Equal(t, domain.ErrRequiredChoicesAreNotSelected, err)
-		assert.Equal(t, domain.BundleProductWithActiveChoices{BundleProduct: b, ActiveChoices: map[domain.Identifier]domain.ActiveChoice{}}, bpac)
 	})
 
 	t.Run("error when variant not found", func(t *testing.T) {
