@@ -205,6 +205,8 @@ func prepareCartWithDeliveries(t *testing.T, e *httpexpect.Expect) {
 }
 
 func TestAddBundleProductToCart(t *testing.T) {
+	t.Parallel()
+
 	t.Run("add to cart bundle product", func(t *testing.T) {
 		t.Parallel()
 		e := httpexpect.New(t, "http://"+FlamingoURL)
@@ -318,5 +320,40 @@ func TestAddBundleProductToCart(t *testing.T) {
 		if !strings.Contains(errorMessage, "selected marketplace code does not exist") {
 			t.Error("want: selected marketplace code does not exist, but have: ", errorMessage)
 		}
+	})
+}
+
+func TestUpdateBundleProductQty(t *testing.T) {
+	t.Parallel()
+
+	t.Run("update should update quantity of bundle product", func(t *testing.T) {
+		t.Parallel()
+
+		e := httpexpect.New(t, "http://"+FlamingoURL)
+		addResponse := helper.GraphQlRequest(t, e, loadGraphQL(t, "commerce_cart_AddBundleToCart_Update_Qty_Helper", map[string]string{
+			"MARKETPLACE_CODE":          "fake_bundle",
+			"DELIVERY_CODE":             "delivery",
+			"IDENTIFIER1":               "identifier1",
+			"MARKETPLACE_CODE1":         "simple_option1",
+			"IDENTIFIER2":               "identifier2",
+			"MARKETPLACE_CODE2":         "configurable_option2",
+			"VARIANT_MARKETPLACE_CODE2": "shirt-red-s",
+		}))
+
+		itemID := addResponse.Expect().Status(http.StatusOK).JSON().Object().Value("data").Object().
+			Value("Commerce_Cart_AddToCart").Object().Value("decoratedDeliveries").Array().
+			Element(0).Object().Value("decoratedItems").Array().Element(0).Object().
+			Value("item").Object().Value("id").String().Raw()
+
+		updateResponse := helper.GraphQlRequest(t, e, loadGraphQL(t, "update_item_quantity", map[string]string{
+			"ITEM_ID":       itemID,
+			"DELIVERY_CODE": "inflight",
+			"QTY":           "4",
+		}))
+
+		updateResponse.Expect().Status(http.StatusOK).JSON().Object().Value("data").Object().
+			Value("Commerce_Cart_UpdateItemQty").Object().Value("decoratedDeliveries").Array().
+			Element(0).Object().Value("decoratedItems").Array().Element(0).Object().
+			Value("item").Object().Value("qty").Equal(4)
 	})
 }

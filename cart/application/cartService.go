@@ -285,7 +285,7 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 		return err
 	}
 
-	product, err = cs.getProductWithActiveVariantIfProductIsConfigurable(ctx, product, item.VariantMarketPlaceCode)
+	product, err = cs.getSpecificProductType(ctx, product, item.VariantMarketPlaceCode, item.BundleConfig)
 	if err != nil {
 		return err
 	}
@@ -1160,7 +1160,7 @@ func (cs *CartService) generateRestrictedQtyAdjustments(ctx context.Context, ses
 				return nil, err
 			}
 
-			product, err = cs.getProductWithActiveVariantIfProductIsConfigurable(ctx, product, item.VariantMarketPlaceCode)
+			product, err = cs.getSpecificProductType(ctx, product, item.VariantMarketPlaceCode, item.BundleConfig)
 			if err != nil {
 				return nil, err
 			}
@@ -1186,9 +1186,9 @@ func (cs *CartService) generateRestrictedQtyAdjustments(ctx context.Context, ses
 	return result, nil
 }
 
-func (cs *CartService) getProductWithActiveVariantIfProductIsConfigurable(_ context.Context, product productDomain.BasicProduct, variantMarketplaceCode string) (productDomain.BasicProduct, error) {
+func (cs *CartService) getSpecificProductType(_ context.Context, product productDomain.BasicProduct, variantMarketplaceCode string, bundleConfig cartDomain.BundleConfiguration) (productDomain.BasicProduct, error) {
 	var err error
-	if product.Type() != productDomain.TypeConfigurable {
+	if product.Type() != productDomain.TypeConfigurable || product.Type() != productDomain.TypeBundle {
 		return product, nil
 	}
 
@@ -1199,6 +1199,13 @@ func (cs *CartService) getProductWithActiveVariantIfProductIsConfigurable(_ cont
 	if configurableProduct, ok := product.(productDomain.ConfigurableProduct); ok {
 		product, err = configurableProduct.GetConfigurableWithActiveVariant(variantMarketplaceCode)
 
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if bundleProduct, ok := product.(productDomain.BundleProduct); ok {
+		product, err = bundleProduct.GetBundleProductWithActiveChoices(bundleConfig.MapToProductDomain())
 		if err != nil {
 			return nil, err
 		}

@@ -1,0 +1,17 @@
+mutation {
+    Commerce_Cart_UpdateItemQty(
+        itemID: ###ITEM_ID###,
+        deliveryCode: "###DELIVERY_CODE###",
+        qty: ###QTY###
+    )
+    {
+        decoratedDeliveries {
+            decoratedItems {
+                item {
+                    qty
+                    id
+                }
+            }
+        }
+    }
+}
