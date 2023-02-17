@@ -99,6 +99,43 @@ type (
 		VariantMarketplaceCode *string
 		Qty                    *int
 	}
+
+	// VariantSelection contains information about all possible variant selections
+	VariantSelection struct {
+		Attributes []VariantSelectionAttribute
+		Variants   []VariantSelectionVariant
+	}
+
+	VariantSelectionAttribute struct {
+		Label   string
+		Code    string
+		Options []VariantSelectionAttributeOption
+	}
+
+	VariantSelectionAttributeOption struct {
+		Label                       string
+		UnitCode                    string
+		OtherAttributesRestrictions []OtherAttributesRestriction
+	}
+
+	OtherAttributesRestriction struct {
+		Code             string
+		AvailableOptions []string
+	}
+
+	VariantSelectionVariant struct {
+		MatchingAttributes []MatchingVariantSelection
+		Variant            VariantSelectionVariantMatchingVariant
+	}
+
+	MatchingVariantSelection struct {
+		Key   string
+		Value string
+	}
+
+	VariantSelectionVariantMatchingVariant struct {
+		MarketplaceCode string
+	}
 )
 
 var (
@@ -205,6 +242,11 @@ func (v *VariationSelectionOptionVariant) MarketPlaceCode() string {
 
 // BaseData of the variant
 func (v *VariationSelectionOptionVariant) BaseData() productDomain.BasicProductData {
+	return v.variant.BaseData()
+}
+
+// Variant of the variant
+func (v *VariationSelectionOptionVariant) Variant() productDomain.BasicProductData {
 	return v.variant.BaseData()
 }
 

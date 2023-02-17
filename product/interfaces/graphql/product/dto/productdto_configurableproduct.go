@@ -94,6 +94,11 @@ func (cp ConfigurableProduct) VariationSelections() []VariationSelection {
 	return NewVariantsToVariationSelections(cp.Product())
 }
 
+// VariantSelection contains possible combinations of variation attributes
+func (cp ConfigurableProduct) VariantSelection() VariantSelection {
+	return MapVariantSelections(cp.Product())
+}
+
 // Badges of the configurable product
 func (cp ConfigurableProduct) Badges() ProductBadges {
 	return ProductBadges{

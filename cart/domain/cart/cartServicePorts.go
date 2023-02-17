@@ -182,6 +182,7 @@ func (bc BundleConfiguration) MapToProductDomain() productDomain.BundleConfigura
 		domainConfig[productDomain.Identifier(choiceID)] = productDomain.ChoiceConfiguration{
 			VariantMarketplaceCode: cartChoiceConfig.VariantMarketplaceCode,
 			MarketplaceCode:        cartChoiceConfig.MarketplaceCode,
+			Qty:                    cartChoiceConfig.Qty,
 		}
 	}
 

@@ -58,6 +58,13 @@ func (*Service) Types(types *graphql.Types) {
 	types.Map("Commerce_Product_Choice", graphqlProductDto.Choice{})
 	types.Map("Commerce_Product_Option", graphqlProductDto.Option{})
 	types.Map("Commerce_Product_ChoiceConfigurationInput", graphqlProductDto.ChoiceConfiguration{})
+	types.Map("VariantSelection", graphqlProductDto.VariantSelection{})
+	types.Map("VariantSelectionAttribute", graphqlProductDto.VariantSelectionAttribute{})
+	types.Map("VariantSelectionAttributeOption", graphqlProductDto.VariantSelectionAttributeOption{})
+	types.Map("OtherAttributesRestriction", graphqlProductDto.OtherAttributesRestriction{})
+	types.Map("VariantSelectionVariant", graphqlProductDto.VariantSelectionVariant{})
+	types.Map("MatchingVariantSelection", graphqlProductDto.MatchingVariantSelection{})
+	types.Map("VariantSelectionVariantMatchingVariant", graphqlProductDto.VariantSelectionVariantMatchingVariant{})
 
 	types.Resolve("Query", "Commerce_Product", CommerceProductQueryResolver{}, "CommerceProduct")
 	types.Resolve("Query", "Commerce_Product_Search", CommerceProductQueryResolver{}, "CommerceProductSearch")

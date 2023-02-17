@@ -772,6 +772,7 @@ type ComplexityRoot struct {
 		ShortDescription    func(childComplexity int) int
 		Title               func(childComplexity int) int
 		Type                func(childComplexity int) int
+		VariantSelection    func(childComplexity int) int
 		VariationSelections func(childComplexity int) int
 	}
 
@@ -968,6 +969,11 @@ type ComplexityRoot struct {
 		Value    func(childComplexity int) int
 	}
 
+	MatchingVariantSelection struct {
+		Key   func(childComplexity int) int
+		Value func(childComplexity int) int
+	}
+
 	Mutation struct {
 		CommerceCartAddToCart                      func(childComplexity int, addToCartInput dto.AddToCart) int
 		CommerceCartApplyCouponCodeOrGiftCard      func(childComplexity int, code string) int
@@ -991,6 +997,11 @@ type ComplexityRoot struct {
 		Flamingo                                   func(childComplexity int) int
 	}
 
+	OtherAttributesRestriction struct {
+		AvailableOptions func(childComplexity int) int
+		Code             func(childComplexity int) int
+	}
+
 	Query struct {
 		CommerceCartDecoratedCart        func(childComplexity int) int
 		CommerceCartQtyRestriction       func(childComplexity int, marketplaceCode string, variantCode *string, deliveryCode string) int
@@ -1004,6 +1015,28 @@ type ComplexityRoot struct {
 		CommerceProduct                  func(childComplexity int, marketPlaceCode string, variantMarketPlaceCode *string, bundleConfiguration []*graphqlproductdto.ChoiceConfiguration) int
 		CommerceProductSearch            func(childComplexity int, searchRequest searchdto.CommerceSearchRequest) int
 		Flamingo                         func(childComplexity int) int
+	}
+
+	VariantSelection struct {
+		Attributes func(childComplexity int) int
+		Variants   func(childComplexity int) int
+	}
+
+	VariantSelectionAttribute struct {
+		Code    func(childComplexity int) int
+		Label   func(childComplexity int) int
+		Options func(childComplexity int) int
+	}
+
+	VariantSelectionAttributeOption struct {
+		Label                       func(childComplexity int) int
+		OtherAttributesRestrictions func(childComplexity int) int
+		UnitCode                    func(childComplexity int) int
+	}
+
+	VariantSelectionVariant struct {
+		MatchingAttributes func(childComplexity int) int
+		Variant            func(childComplexity int) int
 	}
 }
 
@@ -4218,6 +4251,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Commerce_Product_ConfigurableProduct.Type(childComplexity), true
 
+	case "Commerce_Product_ConfigurableProduct.variantSelection":
+		if e.complexity.Commerce_Product_ConfigurableProduct.VariantSelection == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_ConfigurableProduct.VariantSelection(childComplexity), true
+
 	case "Commerce_Product_ConfigurableProduct.variationSelections":
 		if e.complexity.Commerce_Product_ConfigurableProduct.VariationSelections == nil {
 			break
@@ -5056,6 +5096,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Commerce_Search_TreeFacetItem.Value(childComplexity), true
 
+	case "MatchingVariantSelection.key":
+		if e.complexity.MatchingVariantSelection.Key == nil {
+			break
+		}
+
+		return e.complexity.MatchingVariantSelection.Key(childComplexity), true
+
+	case "MatchingVariantSelection.value":
+		if e.complexity.MatchingVariantSelection.Value == nil {
+			break
+		}
+
+		return e.complexity.MatchingVariantSelection.Value(childComplexity), true
+
 	case "Mutation.Commerce_Cart_AddToCart":
 		if e.complexity.Mutation.CommerceCartAddToCart == nil {
 			break
@@ -5266,6 +5320,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.Flamingo(childComplexity), true
 
+	case "OtherAttributesRestriction.availableOptions":
+		if e.complexity.OtherAttributesRestriction.AvailableOptions == nil {
+			break
+		}
+
+		return e.complexity.OtherAttributesRestriction.AvailableOptions(childComplexity), true
+
+	case "OtherAttributesRestriction.code":
+		if e.complexity.OtherAttributesRestriction.Code == nil {
+			break
+		}
+
+		return e.complexity.OtherAttributesRestriction.Code(childComplexity), true
+
 	case "Query.Commerce_Cart_DecoratedCart":
 		if e.complexity.Query.CommerceCartDecoratedCart == nil {
 			break
@@ -5374,6 +5442,76 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Flamingo(childComplexity), true
+
+	case "VariantSelection.attributes":
+		if e.complexity.VariantSelection.Attributes == nil {
+			break
+		}
+
+		return e.complexity.VariantSelection.Attributes(childComplexity), true
+
+	case "VariantSelection.variants":
+		if e.complexity.VariantSelection.Variants == nil {
+			break
+		}
+
+		return e.complexity.VariantSelection.Variants(childComplexity), true
+
+	case "VariantSelectionAttribute.code":
+		if e.complexity.VariantSelectionAttribute.Code == nil {
+			break
+		}
+
+		return e.complexity.VariantSelectionAttribute.Code(childComplexity), true
+
+	case "VariantSelectionAttribute.label":
+		if e.complexity.VariantSelectionAttribute.Label == nil {
+			break
+		}
+
+		return e.complexity.VariantSelectionAttribute.Label(childComplexity), true
+
+	case "VariantSelectionAttribute.options":
+		if e.complexity.VariantSelectionAttribute.Options == nil {
+			break
+		}
+
+		return e.complexity.VariantSelectionAttribute.Options(childComplexity), true
+
+	case "VariantSelectionAttributeOption.label":
+		if e.complexity.VariantSelectionAttributeOption.Label == nil {
+			break
+		}
+
+		return e.complexity.VariantSelectionAttributeOption.Label(childComplexity), true
+
+	case "VariantSelectionAttributeOption.OtherAttributesRestrictions":
+		if e.complexity.VariantSelectionAttributeOption.OtherAttributesRestrictions == nil {
+			break
+		}
+
+		return e.complexity.VariantSelectionAttributeOption.OtherAttributesRestrictions(childComplexity), true
+
+	case "VariantSelectionAttributeOption.unitCode":
+		if e.complexity.VariantSelectionAttributeOption.UnitCode == nil {
+			break
+		}
+
+		return e.complexity.VariantSelectionAttributeOption.UnitCode(childComplexity), true
+
+	case "VariantSelectionVariant.matchingAttributes":
+		if e.complexity.VariantSelectionVariant.MatchingAttributes == nil {
+			break
+		}
+
+		return e.complexity.VariantSelectionVariant.MatchingAttributes(childComplexity), true
+
+	case "VariantSelectionVariant.variant":
+		if e.complexity.VariantSelectionVariant.Variant == nil {
+			break
+		}
+
+		return e.complexity.VariantSelectionVariant.Variant(childComplexity), true
 
 	}
 	return 0, false
@@ -27007,6 +27145,56 @@ func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_va
 	return fc, nil
 }
 
+func (ec *executionContext) _Commerce_Product_ConfigurableProduct_variantSelection(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_ConfigurableProduct_variantSelection(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.VariantSelection(), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(graphqlproductdto.VariantSelection)
+	fc.Result = res
+	return ec.marshalNVariantSelection2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_ConfigurableProduct_variantSelection(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_ConfigurableProduct",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "variants":
+				return ec.fieldContext_VariantSelection_variants(ctx, field)
+			case "attributes":
+				return ec.fieldContext_VariantSelection_attributes(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type VariantSelection", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Commerce_Product_ConfigurableProduct_badges(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ConfigurableProduct) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Commerce_Product_ConfigurableProduct_badges(ctx, field)
 	if err != nil {
@@ -32533,6 +32721,94 @@ func (ec *executionContext) fieldContext_Commerce_Search_TreeFacetItem_items(ctx
 	return fc, nil
 }
 
+func (ec *executionContext) _MatchingVariantSelection_key(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.MatchingVariantSelection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_MatchingVariantSelection_key(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Key, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_MatchingVariantSelection_key(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MatchingVariantSelection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _MatchingVariantSelection_value(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.MatchingVariantSelection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_MatchingVariantSelection_value(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Value, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_MatchingVariantSelection_value(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MatchingVariantSelection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_flamingo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_flamingo(ctx, field)
 	if err != nil {
@@ -33723,6 +33999,94 @@ func (ec *executionContext) fieldContext_Mutation_Commerce_Checkout_RefreshPlace
 	return fc, nil
 }
 
+func (ec *executionContext) _OtherAttributesRestriction_code(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.OtherAttributesRestriction) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_OtherAttributesRestriction_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_OtherAttributesRestriction_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "OtherAttributesRestriction",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _OtherAttributesRestriction_availableOptions(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.OtherAttributesRestriction) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_OtherAttributesRestriction_availableOptions(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AvailableOptions, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_OtherAttributesRestriction_availableOptions(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "OtherAttributesRestriction",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_flamingo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_flamingo(ctx, field)
 	if err != nil {
@@ -34495,6 +34859,478 @@ func (ec *executionContext) fieldContext_Query___schema(ctx context.Context, fie
 				return ec.fieldContext___Schema_directives(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Schema", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VariantSelection_variants(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VariantSelection_variants(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Variants, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]graphqlproductdto.VariantSelectionVariant)
+	fc.Result = res
+	return ec.marshalNVariantSelectionVariant2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionVariantᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VariantSelection_variants(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VariantSelection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "matchingAttributes":
+				return ec.fieldContext_VariantSelectionVariant_matchingAttributes(ctx, field)
+			case "variant":
+				return ec.fieldContext_VariantSelectionVariant_variant(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type VariantSelectionVariant", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VariantSelection_attributes(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VariantSelection_attributes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Attributes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]graphqlproductdto.VariantSelectionAttribute)
+	fc.Result = res
+	return ec.marshalNVariantSelectionAttribute2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttributeᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VariantSelection_attributes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VariantSelection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "label":
+				return ec.fieldContext_VariantSelectionAttribute_label(ctx, field)
+			case "code":
+				return ec.fieldContext_VariantSelectionAttribute_code(ctx, field)
+			case "options":
+				return ec.fieldContext_VariantSelectionAttribute_options(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type VariantSelectionAttribute", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VariantSelectionAttribute_label(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionAttribute) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VariantSelectionAttribute_label(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Label, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VariantSelectionAttribute_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VariantSelectionAttribute",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VariantSelectionAttribute_code(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionAttribute) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VariantSelectionAttribute_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VariantSelectionAttribute_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VariantSelectionAttribute",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VariantSelectionAttribute_options(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionAttribute) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VariantSelectionAttribute_options(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Options, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]graphqlproductdto.VariantSelectionAttributeOption)
+	fc.Result = res
+	return ec.marshalNVariantSelectionAttributeOption2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttributeOptionᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VariantSelectionAttribute_options(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VariantSelectionAttribute",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "label":
+				return ec.fieldContext_VariantSelectionAttributeOption_label(ctx, field)
+			case "unitCode":
+				return ec.fieldContext_VariantSelectionAttributeOption_unitCode(ctx, field)
+			case "OtherAttributesRestrictions":
+				return ec.fieldContext_VariantSelectionAttributeOption_OtherAttributesRestrictions(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type VariantSelectionAttributeOption", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VariantSelectionAttributeOption_label(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionAttributeOption) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VariantSelectionAttributeOption_label(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Label, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VariantSelectionAttributeOption_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VariantSelectionAttributeOption",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VariantSelectionAttributeOption_unitCode(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionAttributeOption) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VariantSelectionAttributeOption_unitCode(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UnitCode, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VariantSelectionAttributeOption_unitCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VariantSelectionAttributeOption",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VariantSelectionAttributeOption_OtherAttributesRestrictions(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionAttributeOption) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VariantSelectionAttributeOption_OtherAttributesRestrictions(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.OtherAttributesRestrictions, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]graphqlproductdto.OtherAttributesRestriction)
+	fc.Result = res
+	return ec.marshalNOtherAttributesRestriction2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOtherAttributesRestrictionᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VariantSelectionAttributeOption_OtherAttributesRestrictions(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VariantSelectionAttributeOption",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "code":
+				return ec.fieldContext_OtherAttributesRestriction_code(ctx, field)
+			case "availableOptions":
+				return ec.fieldContext_OtherAttributesRestriction_availableOptions(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type OtherAttributesRestriction", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VariantSelectionVariant_matchingAttributes(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionVariant) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VariantSelectionVariant_matchingAttributes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MatchingAttributes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]graphqlproductdto.MatchingVariantSelection)
+	fc.Result = res
+	return ec.marshalOMatchingVariantSelection2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐMatchingVariantSelectionᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VariantSelectionVariant_matchingAttributes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VariantSelectionVariant",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "key":
+				return ec.fieldContext_MatchingVariantSelection_key(ctx, field)
+			case "value":
+				return ec.fieldContext_MatchingVariantSelection_value(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type MatchingVariantSelection", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _VariantSelectionVariant_variant(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionVariant) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_VariantSelectionVariant_variant(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Variant, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(graphqlproductdto.VariationSelectionOptionVariant)
+	fc.Result = res
+	return ec.marshalNCommerce_Product_VariationSelection_OptionVariant2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionOptionVariant(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_VariantSelectionVariant_variant(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "VariantSelectionVariant",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "marketPlaceCode":
+				return ec.fieldContext_Commerce_Product_VariationSelection_OptionVariant_marketPlaceCode(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_VariationSelection_OptionVariant", field.Name)
 		},
 	}
 	return fc, nil
@@ -41782,6 +42618,13 @@ func (ec *executionContext) _Commerce_Product_ConfigurableProduct(ctx context.Co
 
 			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_variationSelections(ctx, field, obj)
 
+		case "variantSelection":
+
+			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_variantSelection(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "badges":
 
 			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_badges(ctx, field, obj)
@@ -43138,6 +43981,41 @@ func (ec *executionContext) _Commerce_Search_TreeFacetItem(ctx context.Context, 
 	return out
 }
 
+var matchingVariantSelectionImplementors = []string{"MatchingVariantSelection"}
+
+func (ec *executionContext) _MatchingVariantSelection(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.MatchingVariantSelection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, matchingVariantSelectionImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("MatchingVariantSelection")
+		case "key":
+
+			out.Values[i] = ec._MatchingVariantSelection_key(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "value":
+
+			out.Values[i] = ec._MatchingVariantSelection_value(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -43321,6 +44199,41 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_Commerce_Checkout_RefreshPlaceOrderBlocking(ctx, field)
 			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var otherAttributesRestrictionImplementors = []string{"OtherAttributesRestriction"}
+
+func (ec *executionContext) _OtherAttributesRestriction(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.OtherAttributesRestriction) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, otherAttributesRestrictionImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("OtherAttributesRestriction")
+		case "code":
+
+			out.Values[i] = ec._OtherAttributesRestriction_code(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "availableOptions":
+
+			out.Values[i] = ec._OtherAttributesRestriction_availableOptions(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -43628,6 +44541,154 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				return ec._Query___schema(ctx, field)
 			})
 
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var variantSelectionImplementors = []string{"VariantSelection"}
+
+func (ec *executionContext) _VariantSelection(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariantSelection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, variantSelectionImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("VariantSelection")
+		case "variants":
+
+			out.Values[i] = ec._VariantSelection_variants(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "attributes":
+
+			out.Values[i] = ec._VariantSelection_attributes(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var variantSelectionAttributeImplementors = []string{"VariantSelectionAttribute"}
+
+func (ec *executionContext) _VariantSelectionAttribute(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariantSelectionAttribute) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, variantSelectionAttributeImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("VariantSelectionAttribute")
+		case "label":
+
+			out.Values[i] = ec._VariantSelectionAttribute_label(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "code":
+
+			out.Values[i] = ec._VariantSelectionAttribute_code(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "options":
+
+			out.Values[i] = ec._VariantSelectionAttribute_options(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var variantSelectionAttributeOptionImplementors = []string{"VariantSelectionAttributeOption"}
+
+func (ec *executionContext) _VariantSelectionAttributeOption(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariantSelectionAttributeOption) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, variantSelectionAttributeOptionImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("VariantSelectionAttributeOption")
+		case "label":
+
+			out.Values[i] = ec._VariantSelectionAttributeOption_label(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "unitCode":
+
+			out.Values[i] = ec._VariantSelectionAttributeOption_unitCode(ctx, field, obj)
+
+		case "OtherAttributesRestrictions":
+
+			out.Values[i] = ec._VariantSelectionAttributeOption_OtherAttributesRestrictions(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var variantSelectionVariantImplementors = []string{"VariantSelectionVariant"}
+
+func (ec *executionContext) _VariantSelectionVariant(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariantSelectionVariant) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, variantSelectionVariantImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("VariantSelectionVariant")
+		case "matchingAttributes":
+
+			out.Values[i] = ec._VariantSelectionVariant_matchingAttributes(ctx, field, obj)
+
+		case "variant":
+
+			out.Values[i] = ec._VariantSelectionVariant_variant(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -44946,6 +46007,58 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
+func (ec *executionContext) marshalNMatchingVariantSelection2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐMatchingVariantSelection(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.MatchingVariantSelection) graphql.Marshaler {
+	return ec._MatchingVariantSelection(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNOtherAttributesRestriction2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOtherAttributesRestriction(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.OtherAttributesRestriction) graphql.Marshaler {
+	return ec._OtherAttributesRestriction(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNOtherAttributesRestriction2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOtherAttributesRestrictionᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.OtherAttributesRestriction) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNOtherAttributesRestriction2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOtherAttributesRestriction(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -44959,6 +46072,186 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNString2ᚕstringᚄ(ctx context.Context, v interface{}) ([]string, error) {
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNString2ᚕstringᚄ(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
+	}
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNVariantSelection2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelection(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.VariantSelection) graphql.Marshaler {
+	return ec._VariantSelection(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNVariantSelectionAttribute2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttribute(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.VariantSelectionAttribute) graphql.Marshaler {
+	return ec._VariantSelectionAttribute(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNVariantSelectionAttribute2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttributeᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.VariantSelectionAttribute) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNVariantSelectionAttribute2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttribute(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNVariantSelectionAttributeOption2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttributeOption(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.VariantSelectionAttributeOption) graphql.Marshaler {
+	return ec._VariantSelectionAttributeOption(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNVariantSelectionAttributeOption2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttributeOptionᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.VariantSelectionAttributeOption) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNVariantSelectionAttributeOption2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttributeOption(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNVariantSelectionVariant2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionVariant(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.VariantSelectionVariant) graphql.Marshaler {
+	return ec._VariantSelectionVariant(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNVariantSelectionVariant2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionVariantᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.VariantSelectionVariant) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNVariantSelectionVariant2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionVariant(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
@@ -47371,6 +48664,53 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 	}
 	res := graphql.MarshalInt(*v)
 	return res
+}
+
+func (ec *executionContext) marshalOMatchingVariantSelection2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐMatchingVariantSelectionᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.MatchingVariantSelection) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNMatchingVariantSelection2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐMatchingVariantSelection(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {

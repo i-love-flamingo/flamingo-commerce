@@ -54,7 +54,44 @@ type Commerce_Product_ConfigurableProduct implements Commerce_Product {
     loyalty: Commerce_Product_Loyalty!
     attributes: Commerce_Product_Attributes!
     variationSelections: [Commerce_Product_VariationSelection!]
+    variantSelection: VariantSelection!
     badges: Commerce_Product_Badges!
+}
+
+type VariantSelection {
+    variants: [VariantSelectionVariant!]!
+    attributes: [VariantSelectionAttribute!]!
+}
+
+type VariantSelectionAttribute {
+    label: String!
+    code: String!
+    options: [VariantSelectionAttributeOption!]!
+}
+
+type VariantSelectionAttributeOption {
+    label: String!
+    unitCode: String
+    OtherAttributesRestrictions: [OtherAttributesRestriction!]!
+}
+
+type OtherAttributesRestriction {
+    code: String!
+    availableOptions: [String!]!
+}
+
+type VariantSelectionVariant {
+    matchingAttributes: [MatchingVariantSelection!]
+    variant: VariantSelectionVariantMatchingVariant!
+}
+
+type MatchingVariantSelection {
+    key: String!
+    value: String!
+}
+
+type VariantSelectionVariantMatchingVariant {
+    marketplaceCode: String!
 }
 
 """

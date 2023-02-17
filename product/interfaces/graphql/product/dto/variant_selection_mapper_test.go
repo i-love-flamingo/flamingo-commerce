@@ -1,0 +1,211 @@
+package graphqlproductdto
+
+import (
+	"testing"
+
+	"gotest.tools/v3/assert"
+
+	"flamingo.me/flamingo-commerce/v3/product/domain"
+)
+
+func TestVariantSelectionMappingOfConfigurableProducts(t *testing.T) {
+	t.Parallel()
+
+	t.Run("just work", func(t *testing.T) {
+		redS := domain.Variant{
+			BasicProductData: domain.BasicProductData{
+				MarketPlaceCode: "red-s",
+				Attributes:      domain.Attributes{"color": {Label: "Red", CodeLabel: "Color", RawValue: "red"}, "size": {Label: "S", CodeLabel: "Clothing Size", RawValue: "s"}},
+			},
+		}
+		redM := domain.Variant{
+			BasicProductData: domain.BasicProductData{
+				MarketPlaceCode: "red-m",
+				Attributes:      domain.Attributes{"color": {Label: "Red", CodeLabel: "Colour", RawValue: "red"}, "size": {Label: "M", CodeLabel: "Clothing Size", RawValue: "m"}},
+			},
+		}
+		redL := domain.Variant{
+			BasicProductData: domain.BasicProductData{
+				MarketPlaceCode: "red-l",
+				Attributes:      domain.Attributes{"color": {Label: "Red", CodeLabel: "Colour", RawValue: "red"}, "size": {Label: "L", CodeLabel: "Clothing Size", RawValue: "l"}},
+			},
+		}
+		blueS := domain.Variant{
+			BasicProductData: domain.BasicProductData{
+				MarketPlaceCode: "blue-s",
+				Attributes:      domain.Attributes{"color": {Label: "Blue", CodeLabel: "Colour", RawValue: "blue"}, "size": {Label: "S", CodeLabel: "Clothing Size", RawValue: "s"}},
+			},
+		}
+		blueM := domain.Variant{
+			BasicProductData: domain.BasicProductData{
+				MarketPlaceCode: "blue-m",
+				Attributes:      domain.Attributes{"color": {Label: "Blue", CodeLabel: "Colour", RawValue: "blue"}, "size": {Label: "M", CodeLabel: "Clothing Size", RawValue: "m"}},
+			},
+		}
+
+		configurable := domain.ConfigurableProduct{
+			VariantVariationAttributes:        []string{"color", "size"},
+			VariantVariationAttributesSorting: map[string][]string{"color": {"red", "blue"}, "size": {"s", "m", "l"}},
+			Variants:                          []domain.Variant{redS, redM, redL, blueS, blueM},
+		}
+
+		got := MapVariantSelections(configurable)
+
+		redSMarchingSelection := []MatchingVariantSelection{
+			{
+				Key:   "color",
+				Value: "Red",
+			},
+			{
+				Key:   "size",
+				Value: "S",
+			},
+		}
+		redMMarchingSelection := []MatchingVariantSelection{
+			{
+				Key:   "color",
+				Value: "Red",
+			},
+			{
+				Key:   "size",
+				Value: "M",
+			},
+		}
+		redLMatchingSelection := []MatchingVariantSelection{
+			{
+				Key:   "color",
+				Value: "Red",
+			},
+			{
+				Key:   "size",
+				Value: "L",
+			},
+		}
+		blueSMatchingSelection := []MatchingVariantSelection{
+			{
+				Key:   "color",
+				Value: "Blue",
+			},
+			{
+				Key:   "size",
+				Value: "S",
+			},
+		}
+		blueMMatchingSelection := []MatchingVariantSelection{
+			{
+				Key:   "color",
+				Value: "Blue",
+			},
+			{
+				Key:   "size",
+				Value: "M",
+			},
+		}
+
+		want := VariantSelection{
+			Attributes: []VariantSelectionAttribute{
+				{
+					Label: "Color",
+					Code:  "color",
+					Options: []VariantSelectionAttributeOption{
+						{
+							Label:    "Red",
+							UnitCode: "",
+							OtherAttributesRestrictions: []OtherAttributesRestriction{
+								{
+									Code:             "size",
+									AvailableOptions: []string{"S", "M", "L"},
+								},
+							},
+						},
+						{
+							Label:    "Blue",
+							UnitCode: "",
+							OtherAttributesRestrictions: []OtherAttributesRestriction{
+								{
+									Code:             "size",
+									AvailableOptions: []string{"S", "M"},
+								},
+							},
+						},
+					},
+				},
+				{
+					Label: "Clothing Size",
+					Code:  "size",
+					Options: []VariantSelectionAttributeOption{
+						{
+							Label:    "S",
+							UnitCode: "",
+							OtherAttributesRestrictions: []OtherAttributesRestriction{
+								{
+									Code:             "color",
+									AvailableOptions: []string{"Red", "Blue"},
+								},
+							},
+						},
+						{
+							Label:    "M",
+							UnitCode: "",
+							OtherAttributesRestrictions: []OtherAttributesRestriction{
+								{
+									Code:             "color",
+									AvailableOptions: []string{"Red", "Blue"},
+								},
+							},
+						},
+						{
+							Label:    "L",
+							UnitCode: "",
+							OtherAttributesRestrictions: []OtherAttributesRestriction{
+								{
+									Code:             "color",
+									AvailableOptions: []string{"Red"},
+								},
+							},
+						},
+					},
+				},
+			},
+			Variants: []VariantSelectionVariant{
+				{
+					Variant:            VariantSelectionVariantMatchingVariant{MarketplaceCode: redS.MarketPlaceCode},
+					MatchingAttributes: redSMarchingSelection,
+				},
+				{
+					Variant:            VariantSelectionVariantMatchingVariant{MarketplaceCode: redM.MarketPlaceCode},
+					MatchingAttributes: redMMarchingSelection,
+				},
+				{
+					Variant:            VariantSelectionVariantMatchingVariant{MarketplaceCode: redL.MarketPlaceCode},
+					MatchingAttributes: redLMatchingSelection,
+				},
+				{
+					Variant:            VariantSelectionVariantMatchingVariant{MarketplaceCode: blueS.MarketPlaceCode},
+					MatchingAttributes: blueSMatchingSelection,
+				},
+				{
+					Variant:            VariantSelectionVariantMatchingVariant{MarketplaceCode: blueM.MarketPlaceCode},
+					MatchingAttributes: blueMMatchingSelection,
+				},
+			},
+		}
+
+		assert.DeepEqual(t, want.Attributes, got.Attributes)
+
+		assert.DeepEqual(t, want.Variants[0].MatchingAttributes, got.Variants[0].MatchingAttributes)
+		assert.Equal(t, want.Variants[0].Variant.MarketplaceCode, got.Variants[0].Variant.MarketplaceCode)
+
+		assert.DeepEqual(t, want.Variants[1].MatchingAttributes, got.Variants[1].MatchingAttributes)
+		assert.Equal(t, want.Variants[1].Variant.MarketplaceCode, got.Variants[1].Variant.MarketplaceCode)
+
+		assert.DeepEqual(t, want.Variants[2].MatchingAttributes, got.Variants[2].MatchingAttributes)
+		assert.Equal(t, want.Variants[2].Variant.MarketplaceCode, got.Variants[2].Variant.MarketplaceCode)
+
+		assert.DeepEqual(t, want.Variants[3].MatchingAttributes, got.Variants[3].MatchingAttributes)
+		assert.Equal(t, want.Variants[3].Variant.MarketplaceCode, got.Variants[3].Variant.MarketplaceCode)
+
+		assert.DeepEqual(t, want.Variants[4].MatchingAttributes, got.Variants[4].MatchingAttributes)
+		assert.Equal(t, want.Variants[4].Variant.MarketplaceCode, got.Variants[4].Variant.MarketplaceCode)
+	})
+}
