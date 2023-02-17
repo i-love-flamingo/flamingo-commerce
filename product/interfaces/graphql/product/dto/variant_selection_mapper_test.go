@@ -192,20 +192,6 @@ func TestVariantSelectionMappingOfConfigurableProducts(t *testing.T) {
 		}
 
 		assert.DeepEqual(t, want.Attributes, got.Attributes)
-
-		assert.DeepEqual(t, want.Variants[0].MatchingAttributes, got.Variants[0].MatchingAttributes)
-		assert.Equal(t, want.Variants[0].Variant.MarketplaceCode, got.Variants[0].Variant.MarketplaceCode)
-
-		assert.DeepEqual(t, want.Variants[1].MatchingAttributes, got.Variants[1].MatchingAttributes)
-		assert.Equal(t, want.Variants[1].Variant.MarketplaceCode, got.Variants[1].Variant.MarketplaceCode)
-
-		assert.DeepEqual(t, want.Variants[2].MatchingAttributes, got.Variants[2].MatchingAttributes)
-		assert.Equal(t, want.Variants[2].Variant.MarketplaceCode, got.Variants[2].Variant.MarketplaceCode)
-
-		assert.DeepEqual(t, want.Variants[3].MatchingAttributes, got.Variants[3].MatchingAttributes)
-		assert.Equal(t, want.Variants[3].Variant.MarketplaceCode, got.Variants[3].Variant.MarketplaceCode)
-
-		assert.DeepEqual(t, want.Variants[4].MatchingAttributes, got.Variants[4].MatchingAttributes)
-		assert.Equal(t, want.Variants[4].Variant.MarketplaceCode, got.Variants[4].Variant.MarketplaceCode)
+		assert.DeepEqual(t, want.Variants, got.Variants)
 	})
 }

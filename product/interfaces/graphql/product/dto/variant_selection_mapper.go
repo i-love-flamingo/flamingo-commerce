@@ -1,6 +1,8 @@
 package graphqlproductdto
 
 import (
+	"sort"
+
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
@@ -8,22 +10,23 @@ func MapVariantSelections(product domain.BasicProduct) VariantSelection {
 	if product.Type() == domain.TypeConfigurable {
 		configurable, ok := product.(domain.ConfigurableProduct)
 		if ok {
-			return mapVariations(configurable.VariantVariationAttributes, configurable.Variants)
+			return mapVariations(configurable.VariantVariationAttributes,
+				configurable.VariantVariationAttributesSorting, configurable.Variants)
 		}
 	}
 
-	if product.Type() == domain.TypeConfigurableWithActiveVariant {
-		configurableWithActiveVariants, ok := product.(domain.ConfigurableProductWithActiveVariant)
-		if ok {
-			return mapVariations(configurableWithActiveVariants.VariantVariationAttributes, configurableWithActiveVariants.Variants)
-		}
-	}
+	//if product.Type() == domain.TypeConfigurableWithActiveVariant {
+	//	configurableWithActiveVariants, ok := product.(domain.ConfigurableProductWithActiveVariant)
+	//	if ok {
+	//		return mapVariations(configurableWithActiveVariants.VariantVariationAttributes, configurableWithActiveVariants.Variants)
+	//	}
+	//}
 
 	return VariantSelection{}
 }
 
 // mapVariations ranges over all variants and inserts every one existing selection into the structure
-func mapVariations(variantVariation []string, variants []domain.Variant) VariantSelection {
+func mapVariations(variantVariation []string, variantVariationSorting map[string][]string, variants []domain.Variant) VariantSelection {
 	selection := VariantSelection{}
 
 	for _, variant := range variants {
@@ -38,13 +41,14 @@ func mapVariations(variantVariation []string, variants []domain.Variant) Variant
 			variantValues[variantVariation] = attribute
 		}
 
-		selection = addToVariationSelection(selection, variant, variantValues)
+		selection = addToVariationSelection(selection, variant, variantValues, variantVariationSorting)
 	}
 
 	return selection
 }
 
-func addToVariationSelection(v VariantSelection, variant domain.Variant, variantVariationValues map[string]domain.Attribute) VariantSelection {
+func addToVariationSelection(v VariantSelection, variant domain.Variant, variantVariationValues map[string]domain.Attribute,
+	variantVariationSorting map[string][]string) VariantSelection {
 	variantSelectionVariant := VariantSelectionVariant{
 		Variant: VariantSelectionVariantMatchingVariant{MarketplaceCode: variant.MarketPlaceCode},
 	}
@@ -54,7 +58,6 @@ func addToVariationSelection(v VariantSelection, variant domain.Variant, variant
 			Key:   variantVariation,
 			Value: value.Label,
 		})
-
 		attribute, attributePosition := findOrCreateVariantSelectionAttribute(variantVariation, value, v.Attributes)
 		attributeOption, attributeOptionPosition := findOrCreateVariantSelectionAttributeOption(value, attribute.Options)
 
@@ -66,14 +69,39 @@ func addToVariationSelection(v VariantSelection, variant domain.Variant, variant
 			otherAttributeRestrictions, attributeRestrictionPosition := findOrCreateOtherAttributeRestriction(restriction, attributeOption.OtherAttributesRestrictions)
 
 			otherAttributeRestrictions.AvailableOptions = append(otherAttributeRestrictions.AvailableOptions, restrictionValue.Label)
+
+			sort.Slice(otherAttributeRestrictions.AvailableOptions, func(i, j int) bool {
+				return indexOf(variantVariationSorting[variantVariation], otherAttributeRestrictions.AvailableOptions[i]) <
+					indexOf(variantVariationSorting[variantVariation], otherAttributeRestrictions.AvailableOptions[j])
+			})
+
 			attributeOption.OtherAttributesRestrictions = appendOtherAttributeRestrictions(attributeOption.OtherAttributesRestrictions,
 				attributeRestrictionPosition, otherAttributeRestrictions)
+
+			sort.Slice(attributeOption.OtherAttributesRestrictions, func(i, j int) bool {
+				return indexOf(variantVariationSorting[variantVariation], attributeOption.OtherAttributesRestrictions[i].Code) <
+					indexOf(variantVariationSorting[variantVariation], attributeOption.OtherAttributesRestrictions[j].Code)
+			})
 		}
 
 		attribute.Options = appendOptions(attribute.Options, attributeOptionPosition, attributeOption)
+		sort.Slice(attribute.Options, func(i, j int) bool {
+			return indexOf(variantVariationSorting[variantVariation], attribute.Options[i].Label) <
+				indexOf(variantVariationSorting[variantVariation], attribute.Options[j].Label)
+		})
 
 		v.Attributes = appendSelectionAttributes(v.Attributes, attributePosition, attribute)
+
+		sort.Slice(v.Attributes, func(i, j int) bool {
+			return indexOf([]string{"color", "size"}, v.Attributes[i].Code) <
+				indexOf([]string{"color", "size"}, v.Attributes[j].Code)
+		})
 	}
+
+	sort.Slice(variantSelectionVariant.MatchingAttributes, func(i, j int) bool {
+		return indexOf([]string{"color", "size"}, variantSelectionVariant.MatchingAttributes[i].Key) <
+			indexOf([]string{"color", "size"}, variantSelectionVariant.MatchingAttributes[j].Key)
+	})
 
 	v.Variants = append(v.Variants, variantSelectionVariant)
 
@@ -146,4 +174,13 @@ func appendSelectionAttributes(attributes []VariantSelectionAttribute, pos int, 
 
 	attributes[pos] = attribute
 	return attributes
+}
+
+func indexOf(slice []string, element string) int {
+	for i, v := range slice {
+		if v == element {
+			return i
+		}
+	}
+	return -1
 }
