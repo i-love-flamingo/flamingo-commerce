@@ -90,6 +90,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 
 	injector.BindMulti(new(flamingographql.Service)).To(graphql.Service{})
 
+	injector.Bind(new(application.Receiver)).To(application.BaseCartReceiver{})
 	injector.Bind(new(application.Service)).To(application.CartService{})
 }
 

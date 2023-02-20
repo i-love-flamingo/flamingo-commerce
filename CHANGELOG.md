@@ -59,6 +59,7 @@
 * Update payment selection on cart merge with the guest carts' payment selection after applying coupons and giftcards and only if customer cart has no items
 * Add possibility to have additional data in `AddToCartNotAllowed` error
 * Provide `BaseCartReceiver` for fetching carts without `DecoratedCartFactory` dependency
+* Provide `Receiver` interface to be able to mock receiving a cart
 
 **checkout**
 * Add possibility to have additional data in `PaymentFlowActionTriggerClientSDK`
