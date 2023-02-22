@@ -79,7 +79,8 @@
   * Fix mapping of VariationSelections
   * Introduce `Labels` for attributes here as well
   * Extend `Commerce_Product` query with non-mandatory bundle configuration argument
-  * Add type `Commerce_Product_BundleProduct` that implements `Commerce_Product` interface and is used as bundle product graphql representation.  
+  * Add type `Commerce_Product_BundleProduct` that implements `Commerce_Product` interface and is used as bundle product graphql representation.
+  * Change `variantionSelections` field in configurable products with `variantSelection` that handles all possible combinations of multi axis configurable.
 * FakeService
   * Add configuration option `commerce.product.fakeservice.defaultProducts` which toggles the delivery of default test products. 
   * Add category facet functionality to the fake `SearchService` with default category facet items.
