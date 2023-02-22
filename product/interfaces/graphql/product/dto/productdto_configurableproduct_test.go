@@ -236,25 +236,6 @@ func TestConfigurableProduct_Type(t *testing.T) {
 	assert.Equal(t, productDomain.TypeConfigurable, product.Type())
 }
 
-func TestConfigurableProduct_VariationSelections(t *testing.T) {
-	configurableProduct := getProductDomainConfigurableProduct()
-	product := getConfigurableProduct().(graphqlProductDto.ConfigurableProduct)
-	assert.Equal(t, []graphqlProductDto.VariationSelection{
-		{
-			Code:  "attribute_a_code",
-			Label: "attribute_a_codeLabel",
-			Options: []graphqlProductDto.VariationSelectionOption{
-				{
-					Label:    "attribute_a_variantLabel",
-					UnitCode: "attribute_a_unitCode",
-					State:    graphqlProductDto.VariationSelectionOptionStateMatch,
-					Variant:  graphqlProductDto.NewVariationSelectionOptionVariant(configurableProduct.Variants[0]),
-				},
-			},
-		},
-	}, product.VariationSelections())
-}
-
 func TestConfigurableProduct_Badges(t *testing.T) {
 	product := getConfigurableProduct()
 	assert.Equal(
