@@ -15,13 +15,6 @@ func MapVariantSelections(product domain.BasicProduct) VariantSelection {
 		}
 	}
 
-	//if product.Type() == domain.TypeConfigurableWithActiveVariant {
-	//	configurableWithActiveVariants, ok := product.(domain.ConfigurableProductWithActiveVariant)
-	//	if ok {
-	//		return mapVariations(configurableWithActiveVariants.VariantVariationAttributes, configurableWithActiveVariants.Variants)
-	//	}
-	//}
-
 	return VariantSelection{}
 }
 
@@ -41,14 +34,13 @@ func mapVariations(variantVariation []string, variantVariationSorting map[string
 			variantValues[variantVariation] = attribute
 		}
 
-		selection = addToVariationSelection(selection, variant, variantValues, variantVariationSorting)
+		selection = addToVariationSelection(selection, variant, variantValues)
 	}
 
-	return selection
+	return sortSelection(variantVariation, variantVariationSorting, selection)
 }
 
-func addToVariationSelection(v VariantSelection, variant domain.Variant, variantVariationValues map[string]domain.Attribute,
-	variantVariationSorting map[string][]string) VariantSelection {
+func addToVariationSelection(v VariantSelection, variant domain.Variant, variantVariationValues map[string]domain.Attribute) VariantSelection {
 	variantSelectionVariant := VariantSelectionVariant{
 		Variant: VariantSelectionVariantMatchingVariant{MarketplaceCode: variant.MarketPlaceCode},
 	}
@@ -70,42 +62,55 @@ func addToVariationSelection(v VariantSelection, variant domain.Variant, variant
 
 			otherAttributeRestrictions.AvailableOptions = append(otherAttributeRestrictions.AvailableOptions, restrictionValue.Label)
 
-			sort.Slice(otherAttributeRestrictions.AvailableOptions, func(i, j int) bool {
-				return indexOf(variantVariationSorting[variantVariation], otherAttributeRestrictions.AvailableOptions[i]) <
-					indexOf(variantVariationSorting[variantVariation], otherAttributeRestrictions.AvailableOptions[j])
-			})
-
 			attributeOption.OtherAttributesRestrictions = appendOtherAttributeRestrictions(attributeOption.OtherAttributesRestrictions,
 				attributeRestrictionPosition, otherAttributeRestrictions)
-
-			sort.Slice(attributeOption.OtherAttributesRestrictions, func(i, j int) bool {
-				return indexOf(variantVariationSorting[variantVariation], attributeOption.OtherAttributesRestrictions[i].Code) <
-					indexOf(variantVariationSorting[variantVariation], attributeOption.OtherAttributesRestrictions[j].Code)
-			})
 		}
 
 		attribute.Options = appendOptions(attribute.Options, attributeOptionPosition, attributeOption)
-		sort.Slice(attribute.Options, func(i, j int) bool {
-			return indexOf(variantVariationSorting[variantVariation], attribute.Options[i].Label) <
-				indexOf(variantVariationSorting[variantVariation], attribute.Options[j].Label)
-		})
 
 		v.Attributes = appendSelectionAttributes(v.Attributes, attributePosition, attribute)
-
-		sort.Slice(v.Attributes, func(i, j int) bool {
-			return indexOf([]string{"color", "size"}, v.Attributes[i].Code) <
-				indexOf([]string{"color", "size"}, v.Attributes[j].Code)
-		})
 	}
-
-	sort.Slice(variantSelectionVariant.MatchingAttributes, func(i, j int) bool {
-		return indexOf([]string{"color", "size"}, variantSelectionVariant.MatchingAttributes[i].Key) <
-			indexOf([]string{"color", "size"}, variantSelectionVariant.MatchingAttributes[j].Key)
-	})
 
 	v.Variants = append(v.Variants, variantSelectionVariant)
 
 	return v
+}
+
+func sortSelection(variantVariation []string, variantVariationSorting map[string][]string, selection VariantSelection) VariantSelection {
+	for attributeIndex, attribute := range selection.Attributes {
+		for optionIndex, option := range attribute.Options {
+			for restrictionIndex, _ := range option.OtherAttributesRestrictions {
+				sort.Slice(selection.Attributes[attributeIndex].Options[optionIndex].OtherAttributesRestrictions[restrictionIndex].AvailableOptions, func(i, j int) bool {
+					return indexOf(variantVariationSorting[attribute.Code], selection.Attributes[attributeIndex].Options[optionIndex].OtherAttributesRestrictions[restrictionIndex].AvailableOptions[i]) <
+						indexOf(variantVariationSorting[attribute.Code], selection.Attributes[attributeIndex].Options[optionIndex].OtherAttributesRestrictions[restrictionIndex].AvailableOptions[j])
+				})
+			}
+
+			sort.Slice(selection.Attributes[attributeIndex].Options[optionIndex].OtherAttributesRestrictions, func(i, j int) bool {
+				return indexOf(variantVariationSorting[attribute.Code], selection.Attributes[attributeIndex].Options[optionIndex].OtherAttributesRestrictions[i].Code) <
+					indexOf(variantVariationSorting[attribute.Code], selection.Attributes[attributeIndex].Options[optionIndex].OtherAttributesRestrictions[j].Code)
+			})
+		}
+
+		sort.Slice(attribute.Options, func(i, j int) bool {
+			return indexOf(variantVariationSorting[attribute.Code], attribute.Options[i].Label) <
+				indexOf(variantVariationSorting[attribute.Code], attribute.Options[j].Label)
+		})
+	}
+
+	sort.Slice(selection.Attributes, func(i, j int) bool {
+		return indexOf(variantVariation, selection.Attributes[i].Code) <
+			indexOf(variantVariation, selection.Attributes[j].Code)
+	})
+
+	for variantIndex, _ := range selection.Variants {
+		sort.Slice(selection.Variants[variantIndex].MatchingAttributes, func(i, j int) bool {
+			return indexOf(variantVariation, selection.Variants[variantIndex].MatchingAttributes[i].Key) <
+				indexOf(variantVariation, selection.Variants[variantIndex].MatchingAttributes[j].Key)
+		})
+	}
+
+	return selection
 }
 
 func findOrCreateVariantSelectionAttribute(key string, domainAttribute domain.Attribute, attributes []VariantSelectionAttribute) (VariantSelectionAttribute, int) {

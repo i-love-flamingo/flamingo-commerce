@@ -9,8 +9,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	searchDomain "flamingo.me/flamingo-commerce/v3/search/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
+
+	searchDomain "flamingo.me/flamingo-commerce/v3/search/domain"
 
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 )
@@ -53,6 +54,14 @@ func unmarshalJSONProduct(productRaw []byte) (domain.BasicProduct, error) {
 		err = json.Unmarshal(productRaw, configurableProduct)
 		if err == nil {
 			return *configurableProduct, nil
+		}
+	}
+
+	if productType == domain.TypeBundle {
+		bundleProduct := &domain.BundleProduct{}
+		err = json.Unmarshal(productRaw, bundleProduct)
+		if err == nil {
+			return *bundleProduct, nil
 		}
 	}
 

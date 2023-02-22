@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 )
@@ -183,4 +184,50 @@ func getQuantity(min, max, selected int) (int, error) {
 	}
 
 	return min, nil
+}
+
+func (o *Option) UnmarshalJSON(optionData []byte) error {
+	option := &struct {
+		Product json.RawMessage
+		MinQty  int
+		MaxQty  int
+	}{}
+
+	err := json.Unmarshal(optionData, option)
+	if err != nil {
+		return errors.New("option product: " + err.Error())
+	}
+
+	product := &map[string]interface{}{}
+	err = json.Unmarshal(option.Product, product)
+	if err != nil {
+		return errors.New("option product: " + err.Error())
+	}
+
+	productType, ok := (*product)["Type"]
+
+	if !ok {
+		return errors.New("option product: type is not specified")
+	}
+
+	o.MinQty = option.MinQty
+	o.MaxQty = option.MaxQty
+
+	switch productType {
+	case TypeConfigurable:
+		configurableProduct := &ConfigurableProduct{}
+		err = json.Unmarshal(option.Product, configurableProduct)
+		if err != nil {
+			return errors.New("option product: " + err.Error())
+		}
+		o.Product = *configurableProduct
+	default:
+		simpleProduct := &SimpleProduct{}
+		err = json.Unmarshal(option.Product, simpleProduct)
+		if err != nil {
+			return errors.New("option product: " + err.Error())
+		}
+		o.Product = *simpleProduct
+	}
+	return nil
 }
