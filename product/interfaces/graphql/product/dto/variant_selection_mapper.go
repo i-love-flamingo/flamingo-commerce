@@ -79,7 +79,7 @@ func addToVariationSelection(v VariantSelection, variant domain.Variant, variant
 func sortSelection(variantVariation []string, variantVariationSorting map[string][]string, selection VariantSelection) VariantSelection {
 	for attributeIndex, attribute := range selection.Attributes {
 		for optionIndex, option := range attribute.Options {
-			for restrictionIndex, _ := range option.OtherAttributesRestrictions {
+			for restrictionIndex := range option.OtherAttributesRestrictions {
 				sort.Slice(selection.Attributes[attributeIndex].Options[optionIndex].OtherAttributesRestrictions[restrictionIndex].AvailableOptions, func(i, j int) bool {
 					return indexOf(variantVariationSorting[attribute.Code], selection.Attributes[attributeIndex].Options[optionIndex].OtherAttributesRestrictions[restrictionIndex].AvailableOptions[i]) <
 						indexOf(variantVariationSorting[attribute.Code], selection.Attributes[attributeIndex].Options[optionIndex].OtherAttributesRestrictions[restrictionIndex].AvailableOptions[j])
@@ -103,7 +103,7 @@ func sortSelection(variantVariation []string, variantVariationSorting map[string
 			indexOf(variantVariation, selection.Attributes[j].Code)
 	})
 
-	for variantIndex, _ := range selection.Variants {
+	for variantIndex := range selection.Variants {
 		sort.Slice(selection.Variants[variantIndex].MatchingAttributes, func(i, j int) bool {
 			return indexOf(variantVariation, selection.Variants[variantIndex].MatchingAttributes[i].Key) <
 				indexOf(variantVariation, selection.Variants[variantIndex].MatchingAttributes[j].Key)
