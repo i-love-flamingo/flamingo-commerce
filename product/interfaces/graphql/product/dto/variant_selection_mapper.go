@@ -42,7 +42,7 @@ func mapVariations(variantVariation []string, variantVariationSorting map[string
 
 func addToVariationSelection(v VariantSelection, variant domain.Variant, variantVariationValues map[string]domain.Attribute) VariantSelection {
 	variantSelectionVariant := VariantSelectionVariant{
-		Variant: VariantSelectionVariantMatchingVariant{MarketplaceCode: variant.MarketPlaceCode},
+		Variant: VariantSelectionVariantMatchingVariant{MarketplaceCode: variant.MarketPlaceCode, VariantData: variant},
 	}
 
 	for variantVariation, value := range variantVariationValues {

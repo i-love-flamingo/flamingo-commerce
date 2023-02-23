@@ -53,43 +53,43 @@ type Commerce_Product_ConfigurableProduct implements Commerce_Product {
     meta: Commerce_Product_Meta!
     loyalty: Commerce_Product_Loyalty!
     attributes: Commerce_Product_Attributes!
-    variantSelection: VariantSelection!
+    variantSelection: Commerce_Product_VariantSelection!
     badges: Commerce_Product_Badges!
 }
 
-type VariantSelection {
-    variants: [VariantSelectionVariant!]!
-    attributes: [VariantSelectionAttribute!]!
+type Commerce_Product_VariantSelection {
+    variants: [Commerce_Product_VariantSelectionVariant!]!
+    attributes: [Commerce_Product_VariantSelectionAttribute!]!
 }
 
-type VariantSelectionAttribute {
+type Commerce_Product_VariantSelectionAttribute {
     label: String!
     code: String!
-    options: [VariantSelectionAttributeOption!]!
+    options: [Commerce_Product_VariantSelectionAttributeOption!]!
 }
 
-type VariantSelectionAttributeOption {
+type Commerce_Product_VariantSelectionAttributeOption {
     label: String!
     unitCode: String
-    otherAttributesRestrictions: [OtherAttributesRestriction!]!
+    otherAttributesRestrictions: [Commerce_Product_OtherAttributesRestriction!]!
 }
 
-type OtherAttributesRestriction {
+type Commerce_Product_OtherAttributesRestriction {
     code: String!
     availableOptions: [String!]!
 }
 
-type VariantSelectionVariant {
-    matchingAttributes: [MatchingVariantSelection!]
-    variant: VariantSelectionVariantMatchingVariant!
+type Commerce_Product_VariantSelectionVariant {
+    matchingAttributes: [Commerce_Product_MatchingVariantSelection!]
+    variant: Commerce_Product_VariantSelectionVariantMatchingVariant!
 }
 
-type MatchingVariantSelection {
+type Commerce_Product_MatchingVariantSelection {
     key: String!
     value: String!
 }
 
-type VariantSelectionVariantMatchingVariant {
+type Commerce_Product_VariantSelectionVariantMatchingVariant {
     marketplaceCode: String!
 }
 

@@ -135,6 +135,7 @@ type (
 
 	VariantSelectionVariantMatchingVariant struct {
 		MarketplaceCode string
+		VariantData     productDomain.Variant
 	}
 )
 
