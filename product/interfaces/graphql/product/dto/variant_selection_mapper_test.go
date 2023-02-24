@@ -51,7 +51,7 @@ func TestVariantSelectionMappingOfConfigurableProducts(t *testing.T) {
 
 		got := MapVariantSelections(configurable)
 
-		redSMarchingSelection := []MatchingVariantSelection{
+		redSMarchingSelection := []VariantSelectionMatchAttributes{
 			{
 				Key:   "color",
 				Value: "Red",
@@ -61,7 +61,7 @@ func TestVariantSelectionMappingOfConfigurableProducts(t *testing.T) {
 				Value: "S",
 			},
 		}
-		redMMarchingSelection := []MatchingVariantSelection{
+		redMMarchingSelection := []VariantSelectionMatchAttributes{
 			{
 				Key:   "color",
 				Value: "Red",
@@ -71,7 +71,7 @@ func TestVariantSelectionMappingOfConfigurableProducts(t *testing.T) {
 				Value: "M",
 			},
 		}
-		redLMatchingSelection := []MatchingVariantSelection{
+		redLMatchingSelection := []VariantSelectionMatchAttributes{
 			{
 				Key:   "color",
 				Value: "Red",
@@ -81,7 +81,7 @@ func TestVariantSelectionMappingOfConfigurableProducts(t *testing.T) {
 				Value: "L",
 			},
 		}
-		blueSMatchingSelection := []MatchingVariantSelection{
+		blueSMatchingSelection := []VariantSelectionMatchAttributes{
 			{
 				Key:   "color",
 				Value: "Blue",
@@ -91,7 +91,7 @@ func TestVariantSelectionMappingOfConfigurableProducts(t *testing.T) {
 				Value: "S",
 			},
 		}
-		blueMMatchingSelection := []MatchingVariantSelection{
+		blueMMatchingSelection := []VariantSelectionMatchAttributes{
 			{
 				Key:   "color",
 				Value: "Blue",
@@ -167,45 +167,45 @@ func TestVariantSelectionMappingOfConfigurableProducts(t *testing.T) {
 					},
 				},
 			},
-			Variants: []VariantSelectionVariant{
+			Variants: []VariantSelectionMatch{
 				{
-					Variant:            VariantSelectionVariantMatchingVariant{MarketplaceCode: redS.MarketPlaceCode},
-					MatchingAttributes: redSMarchingSelection,
+					Variant:    VariantSelectionMatchVariant{MarketplaceCode: redS.MarketPlaceCode},
+					Attributes: redSMarchingSelection,
 				},
 				{
-					Variant:            VariantSelectionVariantMatchingVariant{MarketplaceCode: redM.MarketPlaceCode},
-					MatchingAttributes: redMMarchingSelection,
+					Variant:    VariantSelectionMatchVariant{MarketplaceCode: redM.MarketPlaceCode},
+					Attributes: redMMarchingSelection,
 				},
 				{
-					Variant:            VariantSelectionVariantMatchingVariant{MarketplaceCode: redL.MarketPlaceCode},
-					MatchingAttributes: redLMatchingSelection,
+					Variant:    VariantSelectionMatchVariant{MarketplaceCode: redL.MarketPlaceCode},
+					Attributes: redLMatchingSelection,
 				},
 				{
-					Variant:            VariantSelectionVariantMatchingVariant{MarketplaceCode: blueS.MarketPlaceCode},
-					MatchingAttributes: blueSMatchingSelection,
+					Variant:    VariantSelectionMatchVariant{MarketplaceCode: blueS.MarketPlaceCode},
+					Attributes: blueSMatchingSelection,
 				},
 				{
-					Variant:            VariantSelectionVariantMatchingVariant{MarketplaceCode: blueM.MarketPlaceCode},
-					MatchingAttributes: blueMMatchingSelection,
+					Variant:    VariantSelectionMatchVariant{MarketplaceCode: blueM.MarketPlaceCode},
+					Attributes: blueMMatchingSelection,
 				},
 			},
 		}
 
 		assert.DeepEqual(t, want.Attributes, got.Attributes)
 
-		assert.DeepEqual(t, got.Variants[0].MatchingAttributes, redSMarchingSelection)
+		assert.DeepEqual(t, got.Variants[0].Attributes, redSMarchingSelection)
 		assert.Equal(t, got.Variants[0].Variant.MarketplaceCode, redS.MarketPlaceCode)
 
-		assert.DeepEqual(t, got.Variants[1].MatchingAttributes, redMMarchingSelection)
+		assert.DeepEqual(t, got.Variants[1].Attributes, redMMarchingSelection)
 		assert.Equal(t, got.Variants[1].Variant.MarketplaceCode, redM.MarketPlaceCode)
 
-		assert.DeepEqual(t, got.Variants[2].MatchingAttributes, redLMatchingSelection)
+		assert.DeepEqual(t, got.Variants[2].Attributes, redLMatchingSelection)
 		assert.Equal(t, got.Variants[2].Variant.MarketplaceCode, redL.MarketPlaceCode)
 
-		assert.DeepEqual(t, got.Variants[3].MatchingAttributes, blueSMatchingSelection)
+		assert.DeepEqual(t, got.Variants[3].Attributes, blueSMatchingSelection)
 		assert.Equal(t, got.Variants[3].Variant.MarketplaceCode, blueS.MarketPlaceCode)
 
-		assert.DeepEqual(t, got.Variants[4].MatchingAttributes, blueMMatchingSelection)
+		assert.DeepEqual(t, got.Variants[4].Attributes, blueMMatchingSelection)
 		assert.Equal(t, got.Variants[4].Variant.MarketplaceCode, blueM.MarketPlaceCode)
 	})
 }

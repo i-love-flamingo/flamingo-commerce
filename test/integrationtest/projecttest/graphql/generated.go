@@ -796,11 +796,6 @@ type ComplexityRoot struct {
 		Type             func(childComplexity int) int
 	}
 
-	Commerce_Product_MatchingVariantSelection struct {
-		Key   func(childComplexity int) int
-		Value func(childComplexity int) int
-	}
-
 	Commerce_Product_Media struct {
 		All      func(childComplexity int) int
 		GetMedia func(childComplexity int, usage string) int
@@ -821,11 +816,6 @@ type ComplexityRoot struct {
 	Commerce_Product_Option struct {
 		Product func(childComplexity int) int
 		Qty     func(childComplexity int) int
-	}
-
-	Commerce_Product_OtherAttributesRestriction struct {
-		AvailableOptions func(childComplexity int) int
-		Code             func(childComplexity int) int
 	}
 
 	Commerce_Product_PriceContext struct {
@@ -880,25 +870,35 @@ type ComplexityRoot struct {
 		Variants   func(childComplexity int) int
 	}
 
-	Commerce_Product_VariantSelectionAttribute struct {
+	Commerce_Product_VariantSelection_Attribute struct {
 		Code    func(childComplexity int) int
 		Label   func(childComplexity int) int
 		Options func(childComplexity int) int
 	}
 
-	Commerce_Product_VariantSelectionAttributeOption struct {
+	Commerce_Product_VariantSelection_Attribute_Option struct {
 		Label                       func(childComplexity int) int
 		OtherAttributesRestrictions func(childComplexity int) int
 		UnitCode                    func(childComplexity int) int
 	}
 
-	Commerce_Product_VariantSelectionVariant struct {
-		MatchingAttributes func(childComplexity int) int
-		Variant            func(childComplexity int) int
+	Commerce_Product_VariantSelection_Match struct {
+		Attributes func(childComplexity int) int
+		Variant    func(childComplexity int) int
 	}
 
-	Commerce_Product_VariantSelectionVariantMatchingVariant struct {
+	Commerce_Product_VariantSelection_Match_Attributes struct {
+		Key   func(childComplexity int) int
+		Value func(childComplexity int) int
+	}
+
+	Commerce_Product_VariantSelection_Match_Variant struct {
 		MarketplaceCode func(childComplexity int) int
+	}
+
+	Commerce_Product_VariantSelection_Option_OtherAttributesRestriction struct {
+		AvailableOptions func(childComplexity int) int
+		Code             func(childComplexity int) int
 	}
 
 	Commerce_Product_VariationSelection struct {
@@ -4345,20 +4345,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Commerce_Product_Loyalty_PriceInfo.Type(childComplexity), true
 
-	case "Commerce_Product_MatchingVariantSelection.key":
-		if e.complexity.Commerce_Product_MatchingVariantSelection.Key == nil {
-			break
-		}
-
-		return e.complexity.Commerce_Product_MatchingVariantSelection.Key(childComplexity), true
-
-	case "Commerce_Product_MatchingVariantSelection.value":
-		if e.complexity.Commerce_Product_MatchingVariantSelection.Value == nil {
-			break
-		}
-
-		return e.complexity.Commerce_Product_MatchingVariantSelection.Value(childComplexity), true
-
 	case "Commerce_Product_Media.all":
 		if e.complexity.Commerce_Product_Media.All == nil {
 			break
@@ -4433,20 +4419,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Commerce_Product_Option.Qty(childComplexity), true
-
-	case "Commerce_Product_OtherAttributesRestriction.availableOptions":
-		if e.complexity.Commerce_Product_OtherAttributesRestriction.AvailableOptions == nil {
-			break
-		}
-
-		return e.complexity.Commerce_Product_OtherAttributesRestriction.AvailableOptions(childComplexity), true
-
-	case "Commerce_Product_OtherAttributesRestriction.code":
-		if e.complexity.Commerce_Product_OtherAttributesRestriction.Code == nil {
-			break
-		}
-
-		return e.complexity.Commerce_Product_OtherAttributesRestriction.Code(childComplexity), true
 
 	case "Commerce_Product_PriceContext.channelCode":
 		if e.complexity.Commerce_Product_PriceContext.ChannelCode == nil {
@@ -4707,68 +4679,96 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Commerce_Product_VariantSelection.Variants(childComplexity), true
 
-	case "Commerce_Product_VariantSelectionAttribute.code":
-		if e.complexity.Commerce_Product_VariantSelectionAttribute.Code == nil {
+	case "Commerce_Product_VariantSelection_Attribute.code":
+		if e.complexity.Commerce_Product_VariantSelection_Attribute.Code == nil {
 			break
 		}
 
-		return e.complexity.Commerce_Product_VariantSelectionAttribute.Code(childComplexity), true
+		return e.complexity.Commerce_Product_VariantSelection_Attribute.Code(childComplexity), true
 
-	case "Commerce_Product_VariantSelectionAttribute.label":
-		if e.complexity.Commerce_Product_VariantSelectionAttribute.Label == nil {
+	case "Commerce_Product_VariantSelection_Attribute.label":
+		if e.complexity.Commerce_Product_VariantSelection_Attribute.Label == nil {
 			break
 		}
 
-		return e.complexity.Commerce_Product_VariantSelectionAttribute.Label(childComplexity), true
+		return e.complexity.Commerce_Product_VariantSelection_Attribute.Label(childComplexity), true
 
-	case "Commerce_Product_VariantSelectionAttribute.options":
-		if e.complexity.Commerce_Product_VariantSelectionAttribute.Options == nil {
+	case "Commerce_Product_VariantSelection_Attribute.options":
+		if e.complexity.Commerce_Product_VariantSelection_Attribute.Options == nil {
 			break
 		}
 
-		return e.complexity.Commerce_Product_VariantSelectionAttribute.Options(childComplexity), true
+		return e.complexity.Commerce_Product_VariantSelection_Attribute.Options(childComplexity), true
 
-	case "Commerce_Product_VariantSelectionAttributeOption.label":
-		if e.complexity.Commerce_Product_VariantSelectionAttributeOption.Label == nil {
+	case "Commerce_Product_VariantSelection_Attribute_Option.label":
+		if e.complexity.Commerce_Product_VariantSelection_Attribute_Option.Label == nil {
 			break
 		}
 
-		return e.complexity.Commerce_Product_VariantSelectionAttributeOption.Label(childComplexity), true
+		return e.complexity.Commerce_Product_VariantSelection_Attribute_Option.Label(childComplexity), true
 
-	case "Commerce_Product_VariantSelectionAttributeOption.otherAttributesRestrictions":
-		if e.complexity.Commerce_Product_VariantSelectionAttributeOption.OtherAttributesRestrictions == nil {
+	case "Commerce_Product_VariantSelection_Attribute_Option.otherAttributesRestrictions":
+		if e.complexity.Commerce_Product_VariantSelection_Attribute_Option.OtherAttributesRestrictions == nil {
 			break
 		}
 
-		return e.complexity.Commerce_Product_VariantSelectionAttributeOption.OtherAttributesRestrictions(childComplexity), true
+		return e.complexity.Commerce_Product_VariantSelection_Attribute_Option.OtherAttributesRestrictions(childComplexity), true
 
-	case "Commerce_Product_VariantSelectionAttributeOption.unitCode":
-		if e.complexity.Commerce_Product_VariantSelectionAttributeOption.UnitCode == nil {
+	case "Commerce_Product_VariantSelection_Attribute_Option.unitCode":
+		if e.complexity.Commerce_Product_VariantSelection_Attribute_Option.UnitCode == nil {
 			break
 		}
 
-		return e.complexity.Commerce_Product_VariantSelectionAttributeOption.UnitCode(childComplexity), true
+		return e.complexity.Commerce_Product_VariantSelection_Attribute_Option.UnitCode(childComplexity), true
 
-	case "Commerce_Product_VariantSelectionVariant.matchingAttributes":
-		if e.complexity.Commerce_Product_VariantSelectionVariant.MatchingAttributes == nil {
+	case "Commerce_Product_VariantSelection_Match.attributes":
+		if e.complexity.Commerce_Product_VariantSelection_Match.Attributes == nil {
 			break
 		}
 
-		return e.complexity.Commerce_Product_VariantSelectionVariant.MatchingAttributes(childComplexity), true
+		return e.complexity.Commerce_Product_VariantSelection_Match.Attributes(childComplexity), true
 
-	case "Commerce_Product_VariantSelectionVariant.variant":
-		if e.complexity.Commerce_Product_VariantSelectionVariant.Variant == nil {
+	case "Commerce_Product_VariantSelection_Match.variant":
+		if e.complexity.Commerce_Product_VariantSelection_Match.Variant == nil {
 			break
 		}
 
-		return e.complexity.Commerce_Product_VariantSelectionVariant.Variant(childComplexity), true
+		return e.complexity.Commerce_Product_VariantSelection_Match.Variant(childComplexity), true
 
-	case "Commerce_Product_VariantSelectionVariantMatchingVariant.marketplaceCode":
-		if e.complexity.Commerce_Product_VariantSelectionVariantMatchingVariant.MarketplaceCode == nil {
+	case "Commerce_Product_VariantSelection_Match_Attributes.key":
+		if e.complexity.Commerce_Product_VariantSelection_Match_Attributes.Key == nil {
 			break
 		}
 
-		return e.complexity.Commerce_Product_VariantSelectionVariantMatchingVariant.MarketplaceCode(childComplexity), true
+		return e.complexity.Commerce_Product_VariantSelection_Match_Attributes.Key(childComplexity), true
+
+	case "Commerce_Product_VariantSelection_Match_Attributes.value":
+		if e.complexity.Commerce_Product_VariantSelection_Match_Attributes.Value == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_VariantSelection_Match_Attributes.Value(childComplexity), true
+
+	case "Commerce_Product_VariantSelection_Match_Variant.marketplaceCode":
+		if e.complexity.Commerce_Product_VariantSelection_Match_Variant.MarketplaceCode == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_VariantSelection_Match_Variant.MarketplaceCode(childComplexity), true
+
+	case "Commerce_Product_VariantSelection_Option_OtherAttributesRestriction.availableOptions":
+		if e.complexity.Commerce_Product_VariantSelection_Option_OtherAttributesRestriction.AvailableOptions == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_VariantSelection_Option_OtherAttributesRestriction.AvailableOptions(childComplexity), true
+
+	case "Commerce_Product_VariantSelection_Option_OtherAttributesRestriction.code":
+		if e.complexity.Commerce_Product_VariantSelection_Option_OtherAttributesRestriction.Code == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_VariantSelection_Option_OtherAttributesRestriction.Code(childComplexity), true
 
 	case "Commerce_Product_VariationSelection.code":
 		if e.complexity.Commerce_Product_VariationSelection.Code == nil {
@@ -27773,94 +27773,6 @@ func (ec *executionContext) fieldContext_Commerce_Product_Loyalty_PriceInfo_cont
 	return fc, nil
 }
 
-func (ec *executionContext) _Commerce_Product_MatchingVariantSelection_key(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.MatchingVariantSelection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Commerce_Product_MatchingVariantSelection_key(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Key, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Commerce_Product_MatchingVariantSelection_key(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Commerce_Product_MatchingVariantSelection",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Commerce_Product_MatchingVariantSelection_value(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.MatchingVariantSelection) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Commerce_Product_MatchingVariantSelection_value(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Value, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Commerce_Product_MatchingVariantSelection_value(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Commerce_Product_MatchingVariantSelection",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Commerce_Product_Media_all(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.ProductMedia) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Commerce_Product_Media_all(ctx, field)
 	if err != nil {
@@ -28325,94 +28237,6 @@ func (ec *executionContext) fieldContext_Commerce_Product_Option_qty(ctx context
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Int does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Commerce_Product_OtherAttributesRestriction_code(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.OtherAttributesRestriction) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Commerce_Product_OtherAttributesRestriction_code(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Code, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Commerce_Product_OtherAttributesRestriction_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Commerce_Product_OtherAttributesRestriction",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Commerce_Product_OtherAttributesRestriction_availableOptions(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.OtherAttributesRestriction) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Commerce_Product_OtherAttributesRestriction_availableOptions(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.AvailableOptions, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]string)
-	fc.Result = res
-	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Commerce_Product_OtherAttributesRestriction_availableOptions(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Commerce_Product_OtherAttributesRestriction",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -30115,9 +29939,9 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_variants(ctx cont
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]graphqlproductdto.VariantSelectionVariant)
+	res := resTmp.([]graphqlproductdto.VariantSelectionMatch)
 	fc.Result = res
-	return ec.marshalNCommerce_Product_VariantSelectionVariant2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionVariantᚄ(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Product_VariantSelection_Match2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionMatchᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_variants(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -30128,12 +29952,12 @@ func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_varia
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "matchingAttributes":
-				return ec.fieldContext_Commerce_Product_VariantSelectionVariant_matchingAttributes(ctx, field)
+			case "attributes":
+				return ec.fieldContext_Commerce_Product_VariantSelection_Match_attributes(ctx, field)
 			case "variant":
-				return ec.fieldContext_Commerce_Product_VariantSelectionVariant_variant(ctx, field)
+				return ec.fieldContext_Commerce_Product_VariantSelection_Match_variant(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_VariantSelectionVariant", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_VariantSelection_Match", field.Name)
 		},
 	}
 	return fc, nil
@@ -30167,7 +29991,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelection_attributes(ctx co
 	}
 	res := resTmp.([]graphqlproductdto.VariantSelectionAttribute)
 	fc.Result = res
-	return ec.marshalNCommerce_Product_VariantSelectionAttribute2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttributeᚄ(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Product_VariantSelection_Attribute2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttributeᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_attributes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -30179,20 +30003,20 @@ func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_attri
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "label":
-				return ec.fieldContext_Commerce_Product_VariantSelectionAttribute_label(ctx, field)
+				return ec.fieldContext_Commerce_Product_VariantSelection_Attribute_label(ctx, field)
 			case "code":
-				return ec.fieldContext_Commerce_Product_VariantSelectionAttribute_code(ctx, field)
+				return ec.fieldContext_Commerce_Product_VariantSelection_Attribute_code(ctx, field)
 			case "options":
-				return ec.fieldContext_Commerce_Product_VariantSelectionAttribute_options(ctx, field)
+				return ec.fieldContext_Commerce_Product_VariantSelection_Attribute_options(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_VariantSelectionAttribute", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_VariantSelection_Attribute", field.Name)
 		},
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _Commerce_Product_VariantSelectionAttribute_label(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionAttribute) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Commerce_Product_VariantSelectionAttribute_label(ctx, field)
+func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_label(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionAttribute) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_VariantSelection_Attribute_label(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -30222,9 +30046,9 @@ func (ec *executionContext) _Commerce_Product_VariantSelectionAttribute_label(ct
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariantSelectionAttribute_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Attribute_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "Commerce_Product_VariantSelectionAttribute",
+		Object:     "Commerce_Product_VariantSelection_Attribute",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -30235,8 +30059,8 @@ func (ec *executionContext) fieldContext_Commerce_Product_VariantSelectionAttrib
 	return fc, nil
 }
 
-func (ec *executionContext) _Commerce_Product_VariantSelectionAttribute_code(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionAttribute) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Commerce_Product_VariantSelectionAttribute_code(ctx, field)
+func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_code(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionAttribute) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_VariantSelection_Attribute_code(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -30266,9 +30090,9 @@ func (ec *executionContext) _Commerce_Product_VariantSelectionAttribute_code(ctx
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariantSelectionAttribute_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Attribute_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "Commerce_Product_VariantSelectionAttribute",
+		Object:     "Commerce_Product_VariantSelection_Attribute",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -30279,8 +30103,8 @@ func (ec *executionContext) fieldContext_Commerce_Product_VariantSelectionAttrib
 	return fc, nil
 }
 
-func (ec *executionContext) _Commerce_Product_VariantSelectionAttribute_options(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionAttribute) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Commerce_Product_VariantSelectionAttribute_options(ctx, field)
+func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_options(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionAttribute) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_VariantSelection_Attribute_options(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -30307,32 +30131,32 @@ func (ec *executionContext) _Commerce_Product_VariantSelectionAttribute_options(
 	}
 	res := resTmp.([]graphqlproductdto.VariantSelectionAttributeOption)
 	fc.Result = res
-	return ec.marshalNCommerce_Product_VariantSelectionAttributeOption2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttributeOptionᚄ(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Product_VariantSelection_Attribute_Option2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttributeOptionᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariantSelectionAttribute_options(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Attribute_options(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "Commerce_Product_VariantSelectionAttribute",
+		Object:     "Commerce_Product_VariantSelection_Attribute",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "label":
-				return ec.fieldContext_Commerce_Product_VariantSelectionAttributeOption_label(ctx, field)
+				return ec.fieldContext_Commerce_Product_VariantSelection_Attribute_Option_label(ctx, field)
 			case "unitCode":
-				return ec.fieldContext_Commerce_Product_VariantSelectionAttributeOption_unitCode(ctx, field)
+				return ec.fieldContext_Commerce_Product_VariantSelection_Attribute_Option_unitCode(ctx, field)
 			case "otherAttributesRestrictions":
-				return ec.fieldContext_Commerce_Product_VariantSelectionAttributeOption_otherAttributesRestrictions(ctx, field)
+				return ec.fieldContext_Commerce_Product_VariantSelection_Attribute_Option_otherAttributesRestrictions(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_VariantSelectionAttributeOption", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_VariantSelection_Attribute_Option", field.Name)
 		},
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _Commerce_Product_VariantSelectionAttributeOption_label(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionAttributeOption) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Commerce_Product_VariantSelectionAttributeOption_label(ctx, field)
+func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_Option_label(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionAttributeOption) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_VariantSelection_Attribute_Option_label(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -30362,9 +30186,9 @@ func (ec *executionContext) _Commerce_Product_VariantSelectionAttributeOption_la
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariantSelectionAttributeOption_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Attribute_Option_label(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "Commerce_Product_VariantSelectionAttributeOption",
+		Object:     "Commerce_Product_VariantSelection_Attribute_Option",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -30375,8 +30199,8 @@ func (ec *executionContext) fieldContext_Commerce_Product_VariantSelectionAttrib
 	return fc, nil
 }
 
-func (ec *executionContext) _Commerce_Product_VariantSelectionAttributeOption_unitCode(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionAttributeOption) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Commerce_Product_VariantSelectionAttributeOption_unitCode(ctx, field)
+func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_Option_unitCode(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionAttributeOption) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_VariantSelection_Attribute_Option_unitCode(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -30403,9 +30227,9 @@ func (ec *executionContext) _Commerce_Product_VariantSelectionAttributeOption_un
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariantSelectionAttributeOption_unitCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Attribute_Option_unitCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "Commerce_Product_VariantSelectionAttributeOption",
+		Object:     "Commerce_Product_VariantSelection_Attribute_Option",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -30416,8 +30240,8 @@ func (ec *executionContext) fieldContext_Commerce_Product_VariantSelectionAttrib
 	return fc, nil
 }
 
-func (ec *executionContext) _Commerce_Product_VariantSelectionAttributeOption_otherAttributesRestrictions(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionAttributeOption) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Commerce_Product_VariantSelectionAttributeOption_otherAttributesRestrictions(ctx, field)
+func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_Option_otherAttributesRestrictions(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionAttributeOption) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_VariantSelection_Attribute_Option_otherAttributesRestrictions(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -30444,30 +30268,30 @@ func (ec *executionContext) _Commerce_Product_VariantSelectionAttributeOption_ot
 	}
 	res := resTmp.([]graphqlproductdto.OtherAttributesRestriction)
 	fc.Result = res
-	return ec.marshalNCommerce_Product_OtherAttributesRestriction2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOtherAttributesRestrictionᚄ(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Product_VariantSelection_Option_OtherAttributesRestriction2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOtherAttributesRestrictionᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariantSelectionAttributeOption_otherAttributesRestrictions(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Attribute_Option_otherAttributesRestrictions(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "Commerce_Product_VariantSelectionAttributeOption",
+		Object:     "Commerce_Product_VariantSelection_Attribute_Option",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "code":
-				return ec.fieldContext_Commerce_Product_OtherAttributesRestriction_code(ctx, field)
+				return ec.fieldContext_Commerce_Product_VariantSelection_Option_OtherAttributesRestriction_code(ctx, field)
 			case "availableOptions":
-				return ec.fieldContext_Commerce_Product_OtherAttributesRestriction_availableOptions(ctx, field)
+				return ec.fieldContext_Commerce_Product_VariantSelection_Option_OtherAttributesRestriction_availableOptions(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_OtherAttributesRestriction", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_VariantSelection_Option_OtherAttributesRestriction", field.Name)
 		},
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _Commerce_Product_VariantSelectionVariant_matchingAttributes(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionVariant) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Commerce_Product_VariantSelectionVariant_matchingAttributes(ctx, field)
+func (ec *executionContext) _Commerce_Product_VariantSelection_Match_attributes(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionMatch) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_VariantSelection_Match_attributes(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -30480,7 +30304,7 @@ func (ec *executionContext) _Commerce_Product_VariantSelectionVariant_matchingAt
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.MatchingAttributes, nil
+		return obj.Attributes, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -30489,32 +30313,32 @@ func (ec *executionContext) _Commerce_Product_VariantSelectionVariant_matchingAt
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]graphqlproductdto.MatchingVariantSelection)
+	res := resTmp.([]graphqlproductdto.VariantSelectionMatchAttributes)
 	fc.Result = res
-	return ec.marshalOCommerce_Product_MatchingVariantSelection2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐMatchingVariantSelectionᚄ(ctx, field.Selections, res)
+	return ec.marshalOCommerce_Product_VariantSelection_Match_Attributes2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionMatchAttributesᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariantSelectionVariant_matchingAttributes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Match_attributes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "Commerce_Product_VariantSelectionVariant",
+		Object:     "Commerce_Product_VariantSelection_Match",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "key":
-				return ec.fieldContext_Commerce_Product_MatchingVariantSelection_key(ctx, field)
+				return ec.fieldContext_Commerce_Product_VariantSelection_Match_Attributes_key(ctx, field)
 			case "value":
-				return ec.fieldContext_Commerce_Product_MatchingVariantSelection_value(ctx, field)
+				return ec.fieldContext_Commerce_Product_VariantSelection_Match_Attributes_value(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_MatchingVariantSelection", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_VariantSelection_Match_Attributes", field.Name)
 		},
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _Commerce_Product_VariantSelectionVariant_variant(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionVariant) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Commerce_Product_VariantSelectionVariant_variant(ctx, field)
+func (ec *executionContext) _Commerce_Product_VariantSelection_Match_variant(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionMatch) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_VariantSelection_Match_variant(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -30539,30 +30363,118 @@ func (ec *executionContext) _Commerce_Product_VariantSelectionVariant_variant(ct
 		}
 		return graphql.Null
 	}
-	res := resTmp.(graphqlproductdto.VariantSelectionVariantMatchingVariant)
+	res := resTmp.(graphqlproductdto.VariantSelectionMatchVariant)
 	fc.Result = res
-	return ec.marshalNCommerce_Product_VariantSelectionVariantMatchingVariant2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionVariantMatchingVariant(ctx, field.Selections, res)
+	return ec.marshalNCommerce_Product_VariantSelection_Match_Variant2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionMatchVariant(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariantSelectionVariant_variant(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Match_variant(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "Commerce_Product_VariantSelectionVariant",
+		Object:     "Commerce_Product_VariantSelection_Match",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "marketplaceCode":
-				return ec.fieldContext_Commerce_Product_VariantSelectionVariantMatchingVariant_marketplaceCode(ctx, field)
+				return ec.fieldContext_Commerce_Product_VariantSelection_Match_Variant_marketplaceCode(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_VariantSelectionVariantMatchingVariant", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_VariantSelection_Match_Variant", field.Name)
 		},
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _Commerce_Product_VariantSelectionVariantMatchingVariant_marketplaceCode(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionVariantMatchingVariant) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Commerce_Product_VariantSelectionVariantMatchingVariant_marketplaceCode(ctx, field)
+func (ec *executionContext) _Commerce_Product_VariantSelection_Match_Attributes_key(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionMatchAttributes) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_VariantSelection_Match_Attributes_key(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Key, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Match_Attributes_key(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_VariantSelection_Match_Attributes",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_VariantSelection_Match_Attributes_value(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionMatchAttributes) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_VariantSelection_Match_Attributes_value(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Value, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Match_Attributes_value(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_VariantSelection_Match_Attributes",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_VariantSelection_Match_Variant_marketplaceCode(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.VariantSelectionMatchVariant) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_VariantSelection_Match_Variant_marketplaceCode(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -30592,9 +30504,97 @@ func (ec *executionContext) _Commerce_Product_VariantSelectionVariantMatchingVar
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Commerce_Product_VariantSelectionVariantMatchingVariant_marketplaceCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Match_Variant_marketplaceCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "Commerce_Product_VariantSelectionVariantMatchingVariant",
+		Object:     "Commerce_Product_VariantSelection_Match_Variant",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_VariantSelection_Option_OtherAttributesRestriction_code(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.OtherAttributesRestriction) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_VariantSelection_Option_OtherAttributesRestriction_code(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Code, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Option_OtherAttributesRestriction_code(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_VariantSelection_Option_OtherAttributesRestriction",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_VariantSelection_Option_OtherAttributesRestriction_availableOptions(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.OtherAttributesRestriction) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_VariantSelection_Option_OtherAttributesRestriction_availableOptions(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AvailableOptions, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	fc.Result = res
+	return ec.marshalNString2ᚕstringᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_VariantSelection_Option_OtherAttributesRestriction_availableOptions(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_VariantSelection_Option_OtherAttributesRestriction",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -42778,41 +42778,6 @@ func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo(ctx context.Cont
 	return out
 }
 
-var commerce_Product_MatchingVariantSelectionImplementors = []string{"Commerce_Product_MatchingVariantSelection"}
-
-func (ec *executionContext) _Commerce_Product_MatchingVariantSelection(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.MatchingVariantSelection) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_MatchingVariantSelectionImplementors)
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_Product_MatchingVariantSelection")
-		case "key":
-
-			out.Values[i] = ec._Commerce_Product_MatchingVariantSelection_key(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "value":
-
-			out.Values[i] = ec._Commerce_Product_MatchingVariantSelection_value(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
 var commerce_Product_MediaImplementors = []string{"Commerce_Product_Media"}
 
 func (ec *executionContext) _Commerce_Product_Media(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.ProductMedia) graphql.Marshaler {
@@ -42946,41 +42911,6 @@ func (ec *executionContext) _Commerce_Product_Option(ctx context.Context, sel as
 		case "qty":
 
 			out.Values[i] = ec._Commerce_Product_Option_qty(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var commerce_Product_OtherAttributesRestrictionImplementors = []string{"Commerce_Product_OtherAttributesRestriction"}
-
-func (ec *executionContext) _Commerce_Product_OtherAttributesRestriction(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.OtherAttributesRestriction) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_OtherAttributesRestrictionImplementors)
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_Product_OtherAttributesRestriction")
-		case "code":
-
-			out.Values[i] = ec._Commerce_Product_OtherAttributesRestriction_code(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "availableOptions":
-
-			out.Values[i] = ec._Commerce_Product_OtherAttributesRestriction_availableOptions(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -43358,33 +43288,33 @@ func (ec *executionContext) _Commerce_Product_VariantSelection(ctx context.Conte
 	return out
 }
 
-var commerce_Product_VariantSelectionAttributeImplementors = []string{"Commerce_Product_VariantSelectionAttribute"}
+var commerce_Product_VariantSelection_AttributeImplementors = []string{"Commerce_Product_VariantSelection_Attribute"}
 
-func (ec *executionContext) _Commerce_Product_VariantSelectionAttribute(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariantSelectionAttribute) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariantSelectionAttributeImplementors)
+func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariantSelectionAttribute) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariantSelection_AttributeImplementors)
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_Product_VariantSelectionAttribute")
+			out.Values[i] = graphql.MarshalString("Commerce_Product_VariantSelection_Attribute")
 		case "label":
 
-			out.Values[i] = ec._Commerce_Product_VariantSelectionAttribute_label(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Product_VariantSelection_Attribute_label(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "code":
 
-			out.Values[i] = ec._Commerce_Product_VariantSelectionAttribute_code(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Product_VariantSelection_Attribute_code(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "options":
 
-			out.Values[i] = ec._Commerce_Product_VariantSelectionAttribute_options(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Product_VariantSelection_Attribute_options(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -43400,30 +43330,30 @@ func (ec *executionContext) _Commerce_Product_VariantSelectionAttribute(ctx cont
 	return out
 }
 
-var commerce_Product_VariantSelectionAttributeOptionImplementors = []string{"Commerce_Product_VariantSelectionAttributeOption"}
+var commerce_Product_VariantSelection_Attribute_OptionImplementors = []string{"Commerce_Product_VariantSelection_Attribute_Option"}
 
-func (ec *executionContext) _Commerce_Product_VariantSelectionAttributeOption(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariantSelectionAttributeOption) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariantSelectionAttributeOptionImplementors)
+func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_Option(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariantSelectionAttributeOption) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariantSelection_Attribute_OptionImplementors)
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_Product_VariantSelectionAttributeOption")
+			out.Values[i] = graphql.MarshalString("Commerce_Product_VariantSelection_Attribute_Option")
 		case "label":
 
-			out.Values[i] = ec._Commerce_Product_VariantSelectionAttributeOption_label(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Product_VariantSelection_Attribute_Option_label(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "unitCode":
 
-			out.Values[i] = ec._Commerce_Product_VariantSelectionAttributeOption_unitCode(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Product_VariantSelection_Attribute_Option_unitCode(ctx, field, obj)
 
 		case "otherAttributesRestrictions":
 
-			out.Values[i] = ec._Commerce_Product_VariantSelectionAttributeOption_otherAttributesRestrictions(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Product_VariantSelection_Attribute_Option_otherAttributesRestrictions(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -43439,23 +43369,23 @@ func (ec *executionContext) _Commerce_Product_VariantSelectionAttributeOption(ct
 	return out
 }
 
-var commerce_Product_VariantSelectionVariantImplementors = []string{"Commerce_Product_VariantSelectionVariant"}
+var commerce_Product_VariantSelection_MatchImplementors = []string{"Commerce_Product_VariantSelection_Match"}
 
-func (ec *executionContext) _Commerce_Product_VariantSelectionVariant(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariantSelectionVariant) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariantSelectionVariantImplementors)
+func (ec *executionContext) _Commerce_Product_VariantSelection_Match(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariantSelectionMatch) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariantSelection_MatchImplementors)
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_Product_VariantSelectionVariant")
-		case "matchingAttributes":
+			out.Values[i] = graphql.MarshalString("Commerce_Product_VariantSelection_Match")
+		case "attributes":
 
-			out.Values[i] = ec._Commerce_Product_VariantSelectionVariant_matchingAttributes(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Product_VariantSelection_Match_attributes(ctx, field, obj)
 
 		case "variant":
 
-			out.Values[i] = ec._Commerce_Product_VariantSelectionVariant_variant(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Product_VariantSelection_Match_variant(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -43471,19 +43401,89 @@ func (ec *executionContext) _Commerce_Product_VariantSelectionVariant(ctx contex
 	return out
 }
 
-var commerce_Product_VariantSelectionVariantMatchingVariantImplementors = []string{"Commerce_Product_VariantSelectionVariantMatchingVariant"}
+var commerce_Product_VariantSelection_Match_AttributesImplementors = []string{"Commerce_Product_VariantSelection_Match_Attributes"}
 
-func (ec *executionContext) _Commerce_Product_VariantSelectionVariantMatchingVariant(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariantSelectionVariantMatchingVariant) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariantSelectionVariantMatchingVariantImplementors)
+func (ec *executionContext) _Commerce_Product_VariantSelection_Match_Attributes(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariantSelectionMatchAttributes) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariantSelection_Match_AttributesImplementors)
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("Commerce_Product_VariantSelectionVariantMatchingVariant")
+			out.Values[i] = graphql.MarshalString("Commerce_Product_VariantSelection_Match_Attributes")
+		case "key":
+
+			out.Values[i] = ec._Commerce_Product_VariantSelection_Match_Attributes_key(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "value":
+
+			out.Values[i] = ec._Commerce_Product_VariantSelection_Match_Attributes_value(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Product_VariantSelection_Match_VariantImplementors = []string{"Commerce_Product_VariantSelection_Match_Variant"}
+
+func (ec *executionContext) _Commerce_Product_VariantSelection_Match_Variant(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariantSelectionMatchVariant) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariantSelection_Match_VariantImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Product_VariantSelection_Match_Variant")
 		case "marketplaceCode":
 
-			out.Values[i] = ec._Commerce_Product_VariantSelectionVariantMatchingVariant_marketplaceCode(ctx, field, obj)
+			out.Values[i] = ec._Commerce_Product_VariantSelection_Match_Variant_marketplaceCode(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var commerce_Product_VariantSelection_Option_OtherAttributesRestrictionImplementors = []string{"Commerce_Product_VariantSelection_Option_OtherAttributesRestriction"}
+
+func (ec *executionContext) _Commerce_Product_VariantSelection_Option_OtherAttributesRestriction(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.OtherAttributesRestriction) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariantSelection_Option_OtherAttributesRestrictionImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Product_VariantSelection_Option_OtherAttributesRestriction")
+		case "code":
+
+			out.Values[i] = ec._Commerce_Product_VariantSelection_Option_OtherAttributesRestriction_code(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "availableOptions":
+
+			out.Values[i] = ec._Commerce_Product_VariantSelection_Option_OtherAttributesRestriction_availableOptions(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -45637,10 +45637,6 @@ func (ec *executionContext) marshalNCommerce_Product_Loyalty2flamingoᚗmeᚋfla
 	return ec._Commerce_Product_Loyalty(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Product_MatchingVariantSelection2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐMatchingVariantSelection(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.MatchingVariantSelection) graphql.Marshaler {
-	return ec._Commerce_Product_MatchingVariantSelection(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalNCommerce_Product_Media2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐProductMedia(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.ProductMedia) graphql.Marshaler {
 	return ec._Commerce_Product_Media(ctx, sel, &v)
 }
@@ -45665,54 +45661,6 @@ func (ec *executionContext) marshalNCommerce_Product_Meta2flamingoᚗmeᚋflamin
 
 func (ec *executionContext) marshalNCommerce_Product_Option2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOption(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.Option) graphql.Marshaler {
 	return ec._Commerce_Product_Option(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNCommerce_Product_OtherAttributesRestriction2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOtherAttributesRestriction(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.OtherAttributesRestriction) graphql.Marshaler {
-	return ec._Commerce_Product_OtherAttributesRestriction(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNCommerce_Product_OtherAttributesRestriction2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOtherAttributesRestrictionᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.OtherAttributesRestriction) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNCommerce_Product_OtherAttributesRestriction2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOtherAttributesRestriction(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
 }
 
 func (ec *executionContext) marshalNCommerce_Product_PriceContext2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceContext(ctx context.Context, sel ast.SelectionSet, v domain1.PriceContext) graphql.Marshaler {
@@ -45741,11 +45689,11 @@ func (ec *executionContext) marshalNCommerce_Product_VariantSelection2flamingo�
 	return ec._Commerce_Product_VariantSelection(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Product_VariantSelectionAttribute2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttribute(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.VariantSelectionAttribute) graphql.Marshaler {
-	return ec._Commerce_Product_VariantSelectionAttribute(ctx, sel, &v)
+func (ec *executionContext) marshalNCommerce_Product_VariantSelection_Attribute2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttribute(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.VariantSelectionAttribute) graphql.Marshaler {
+	return ec._Commerce_Product_VariantSelection_Attribute(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Product_VariantSelectionAttribute2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttributeᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.VariantSelectionAttribute) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Product_VariantSelection_Attribute2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttributeᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.VariantSelectionAttribute) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -45769,7 +45717,7 @@ func (ec *executionContext) marshalNCommerce_Product_VariantSelectionAttribute2�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNCommerce_Product_VariantSelectionAttribute2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttribute(ctx, sel, v[i])
+			ret[i] = ec.marshalNCommerce_Product_VariantSelection_Attribute2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttribute(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -45789,11 +45737,11 @@ func (ec *executionContext) marshalNCommerce_Product_VariantSelectionAttribute2�
 	return ret
 }
 
-func (ec *executionContext) marshalNCommerce_Product_VariantSelectionAttributeOption2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttributeOption(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.VariantSelectionAttributeOption) graphql.Marshaler {
-	return ec._Commerce_Product_VariantSelectionAttributeOption(ctx, sel, &v)
+func (ec *executionContext) marshalNCommerce_Product_VariantSelection_Attribute_Option2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttributeOption(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.VariantSelectionAttributeOption) graphql.Marshaler {
+	return ec._Commerce_Product_VariantSelection_Attribute_Option(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Product_VariantSelectionAttributeOption2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttributeOptionᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.VariantSelectionAttributeOption) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Product_VariantSelection_Attribute_Option2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttributeOptionᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.VariantSelectionAttributeOption) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -45817,7 +45765,7 @@ func (ec *executionContext) marshalNCommerce_Product_VariantSelectionAttributeOp
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNCommerce_Product_VariantSelectionAttributeOption2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttributeOption(ctx, sel, v[i])
+			ret[i] = ec.marshalNCommerce_Product_VariantSelection_Attribute_Option2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionAttributeOption(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -45837,11 +45785,11 @@ func (ec *executionContext) marshalNCommerce_Product_VariantSelectionAttributeOp
 	return ret
 }
 
-func (ec *executionContext) marshalNCommerce_Product_VariantSelectionVariant2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionVariant(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.VariantSelectionVariant) graphql.Marshaler {
-	return ec._Commerce_Product_VariantSelectionVariant(ctx, sel, &v)
+func (ec *executionContext) marshalNCommerce_Product_VariantSelection_Match2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionMatch(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.VariantSelectionMatch) graphql.Marshaler {
+	return ec._Commerce_Product_VariantSelection_Match(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCommerce_Product_VariantSelectionVariant2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionVariantᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.VariantSelectionVariant) graphql.Marshaler {
+func (ec *executionContext) marshalNCommerce_Product_VariantSelection_Match2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionMatchᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.VariantSelectionMatch) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -45865,7 +45813,7 @@ func (ec *executionContext) marshalNCommerce_Product_VariantSelectionVariant2ᚕ
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNCommerce_Product_VariantSelectionVariant2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionVariant(ctx, sel, v[i])
+			ret[i] = ec.marshalNCommerce_Product_VariantSelection_Match2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionMatch(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -45885,8 +45833,60 @@ func (ec *executionContext) marshalNCommerce_Product_VariantSelectionVariant2ᚕ
 	return ret
 }
 
-func (ec *executionContext) marshalNCommerce_Product_VariantSelectionVariantMatchingVariant2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionVariantMatchingVariant(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.VariantSelectionVariantMatchingVariant) graphql.Marshaler {
-	return ec._Commerce_Product_VariantSelectionVariantMatchingVariant(ctx, sel, &v)
+func (ec *executionContext) marshalNCommerce_Product_VariantSelection_Match_Attributes2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionMatchAttributes(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.VariantSelectionMatchAttributes) graphql.Marshaler {
+	return ec._Commerce_Product_VariantSelection_Match_Attributes(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Product_VariantSelection_Match_Variant2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionMatchVariant(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.VariantSelectionMatchVariant) graphql.Marshaler {
+	return ec._Commerce_Product_VariantSelection_Match_Variant(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Product_VariantSelection_Option_OtherAttributesRestriction2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOtherAttributesRestriction(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.OtherAttributesRestriction) graphql.Marshaler {
+	return ec._Commerce_Product_VariantSelection_Option_OtherAttributesRestriction(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Product_VariantSelection_Option_OtherAttributesRestriction2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOtherAttributesRestrictionᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.OtherAttributesRestriction) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCommerce_Product_VariantSelection_Option_OtherAttributesRestriction2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOtherAttributesRestriction(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalNCommerce_Product_VariationSelection2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelection(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.VariationSelection) graphql.Marshaler {
@@ -48166,53 +48166,6 @@ func (ec *executionContext) marshalOCommerce_Product_Loyalty_PriceInfo2ᚖflamin
 	return ec._Commerce_Product_Loyalty_PriceInfo(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOCommerce_Product_MatchingVariantSelection2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐMatchingVariantSelectionᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.MatchingVariantSelection) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNCommerce_Product_MatchingVariantSelection2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐMatchingVariantSelection(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
-}
-
 func (ec *executionContext) marshalOCommerce_Product_MediaItem2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐMediaᚄ(ctx context.Context, sel ast.SelectionSet, v []domain1.Media) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -48335,6 +48288,53 @@ func (ec *executionContext) marshalOCommerce_Product_PriceInfo2ᚕflamingoᚗme�
 				defer wg.Done()
 			}
 			ret[i] = ec.marshalNCommerce_Product_PriceInfo2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfo(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalOCommerce_Product_VariantSelection_Match_Attributes2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionMatchAttributesᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.VariantSelectionMatchAttributes) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCommerce_Product_VariantSelection_Match_Attributes2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariantSelectionMatchAttributes(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)

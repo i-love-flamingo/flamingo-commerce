@@ -33,36 +33,45 @@ func mapVariations(variantVariation []string, variantVariationSorting map[string
 }
 
 func addToVariationSelection(v VariantSelection, variant domain.Variant, variantVariationValues map[string]domain.Attribute) VariantSelection {
-	variantSelectionVariant := VariantSelectionVariant{
-		Variant: VariantSelectionVariantMatchingVariant{MarketplaceCode: variant.MarketPlaceCode, VariantData: variant},
+	variantSelectionVariant := VariantSelectionMatch{
+		Variant: VariantSelectionMatchVariant{MarketplaceCode: variant.MarketPlaceCode, VariantData: variant},
 	}
 
 	for variantVariation, value := range variantVariationValues {
-		variantSelectionVariant.Attributes = append(variantSelectionVariant.Attributes, MatchingVariantSelection{
+		variantSelectionVariant.Attributes = append(variantSelectionVariant.Attributes, VariantSelectionMatchAttributes{
 			Key:   variantVariation,
 			Value: value.Label,
 		})
+		// we need positions because we cannot mutate variables belonging to loop
+		// if position is -1 then it simply appends to a slice
 		attribute, attributePosition := findOrCreateVariantSelectionAttribute(variantVariation, value, v.Attributes)
 		attributeOption, attributeOptionPosition := findOrCreateVariantSelectionAttributeOption(value, attribute.Options)
 
 		for restriction, restrictionValue := range variantVariationValues {
+			// skip because we do not want to insert to attribute color with option red possible
+			// attribute color with option red
 			if variantVariation == restriction {
 				continue
 			}
 
 			otherAttributeRestrictions, attributeRestrictionPosition := findOrCreateOtherAttributeRestriction(restriction, attributeOption.OtherAttributesRestrictions)
 
+			// insert available options for current attribute (available options: m,l current attribute: size)
 			otherAttributeRestrictions.AvailableOptions = append(otherAttributeRestrictions.AvailableOptions, restrictionValue.Label)
 
+			// insert other attributes available for current attribute (current attribute: color-blue, available attribute: size-m-l)
 			attributeOption.OtherAttributesRestrictions = appendOtherAttributeRestrictions(attributeOption.OtherAttributesRestrictions,
 				attributeRestrictionPosition, otherAttributeRestrictions)
 		}
 
+		// insert options available for current attribute (current attribute: color available options: red, blue)
 		attribute.Options = appendOptions(attribute.Options, attributeOptionPosition, attributeOption)
 
+		// insert all possible selections
 		v.Attributes = appendSelectionAttributes(v.Attributes, attributePosition, attribute)
 	}
 
+	// insert variant with its attributes
 	v.Variants = append(v.Variants, variantSelectionVariant)
 
 	return v
@@ -72,30 +81,35 @@ func sortSelection(variantVariation []string, variantVariationSorting map[string
 	for attributeIndex, attribute := range selection.Attributes {
 		for optionIndex, option := range attribute.Options {
 			for restrictionIndex := range option.OtherAttributesRestrictions {
+				// sort available options for current attribute (available options: m,l current attribute: size)
 				sort.Slice(selection.Attributes[attributeIndex].Options[optionIndex].OtherAttributesRestrictions[restrictionIndex].AvailableOptions, func(i, j int) bool {
 					return indexOf(variantVariationSorting[attribute.Code], selection.Attributes[attributeIndex].Options[optionIndex].OtherAttributesRestrictions[restrictionIndex].AvailableOptions[i]) <
 						indexOf(variantVariationSorting[attribute.Code], selection.Attributes[attributeIndex].Options[optionIndex].OtherAttributesRestrictions[restrictionIndex].AvailableOptions[j])
 				})
 			}
 
+			// sort other attributes available for current attribute (current attribute: color-blue, available attribute: size-m-l)
 			sort.Slice(selection.Attributes[attributeIndex].Options[optionIndex].OtherAttributesRestrictions, func(i, j int) bool {
 				return indexOf(variantVariationSorting[attribute.Code], selection.Attributes[attributeIndex].Options[optionIndex].OtherAttributesRestrictions[i].Code) <
 					indexOf(variantVariationSorting[attribute.Code], selection.Attributes[attributeIndex].Options[optionIndex].OtherAttributesRestrictions[j].Code)
 			})
 		}
 
+		// sort options available for current attribute (current attribute: color available options: red, blue)
 		sort.Slice(attribute.Options, func(i, j int) bool {
 			return indexOf(variantVariationSorting[attribute.Code], attribute.Options[i].Label) <
 				indexOf(variantVariationSorting[attribute.Code], attribute.Options[j].Label)
 		})
 	}
 
+	// sort selections
 	sort.Slice(selection.Attributes, func(i, j int) bool {
 		return indexOf(variantVariation, selection.Attributes[i].Code) <
 			indexOf(variantVariation, selection.Attributes[j].Code)
 	})
 
 	for variantIndex := range selection.Variants {
+		// sort all possible variants
 		sort.Slice(selection.Variants[variantIndex].Attributes, func(i, j int) bool {
 			return indexOf(variantVariation, selection.Variants[variantIndex].Attributes[i].Key) <
 				indexOf(variantVariation, selection.Variants[variantIndex].Attributes[j].Key)

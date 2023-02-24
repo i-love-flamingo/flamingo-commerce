@@ -30,7 +30,7 @@ func Test_CommerceProductGet(t *testing.T) {
 			"variantSelection": map[string]interface{}{
 				"variants": []interface{}{
 					map[string]interface{}{
-						"matchingAttributes": []interface{}{
+						"attributes": []interface{}{
 							map[string]interface{}{
 								"key":   string("color"),
 								"value": string("White"),
@@ -45,7 +45,7 @@ func Test_CommerceProductGet(t *testing.T) {
 						},
 					},
 					map[string]interface{}{
-						"matchingAttributes": []interface{}{
+						"attributes": []interface{}{
 							map[string]interface{}{
 								"key":   string("color"),
 								"value": string("Black"),
@@ -60,7 +60,7 @@ func Test_CommerceProductGet(t *testing.T) {
 						},
 					},
 					map[string]interface{}{
-						"matchingAttributes": []interface{}{
+						"attributes": []interface{}{
 							map[string]interface{}{
 								"key":   string("color"),
 								"value": string("Red"),
@@ -75,7 +75,7 @@ func Test_CommerceProductGet(t *testing.T) {
 						},
 					},
 					map[string]interface{}{
-						"matchingAttributes": []interface{}{
+						"attributes": []interface{}{
 							map[string]interface{}{
 								"key":   string("color"),
 								"value": string("Red"),

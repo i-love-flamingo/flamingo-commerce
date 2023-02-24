@@ -103,7 +103,7 @@ type (
 	// VariantSelection contains information about all possible variant selections
 	VariantSelection struct {
 		Attributes []VariantSelectionAttribute
-		Variants   []VariantSelectionVariant
+		Variants   []VariantSelectionMatch
 	}
 
 	VariantSelectionAttribute struct {
@@ -123,17 +123,17 @@ type (
 		AvailableOptions []string
 	}
 
-	VariantSelectionVariant struct {
-		Attributes []MatchingVariantSelection
-		Variant    VariantSelectionVariantMatchingVariant
+	VariantSelectionMatch struct {
+		Attributes []VariantSelectionMatchAttributes
+		Variant    VariantSelectionMatchVariant
 	}
 
-	MatchingVariantSelection struct {
+	VariantSelectionMatchAttributes struct {
 		Key   string
 		Value string
 	}
 
-	VariantSelectionVariantMatchingVariant struct {
+	VariantSelectionMatchVariant struct {
 		MarketplaceCode string
 		VariantData     productDomain.Variant
 	}

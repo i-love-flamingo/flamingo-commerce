@@ -23,7 +23,7 @@ query {
         ... on Commerce_Product_ConfigurableProduct {
             variantSelection {
                 variants {
-                    matchingAttributes {
+                    attributes {
                         key
                         value
                     }
