@@ -91,7 +91,7 @@ func (cp ConfigurableProduct) Attributes() productDomain.Attributes {
 
 // VariantSelection contains possible combinations of variation attributes
 func (cp ConfigurableProduct) VariantSelection() VariantSelection {
-	return MapVariantSelections(cp.Product())
+	return MapVariantSelections(cp.product)
 }
 
 // Badges of the configurable product

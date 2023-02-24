@@ -6,16 +6,8 @@ import (
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
-func MapVariantSelections(product domain.BasicProduct) VariantSelection {
-	if product.Type() == domain.TypeConfigurable {
-		configurable, ok := product.(domain.ConfigurableProduct)
-		if ok {
-			return mapVariations(configurable.VariantVariationAttributes,
-				configurable.VariantVariationAttributesSorting, configurable.Variants)
-		}
-	}
-
-	return VariantSelection{}
+func MapVariantSelections(configurable domain.ConfigurableProduct) VariantSelection {
+	return mapVariations(configurable.VariantVariationAttributes, configurable.VariantVariationAttributesSorting, configurable.Variants)
 }
 
 // mapVariations ranges over all variants and inserts every one existing selection into the structure
@@ -46,7 +38,7 @@ func addToVariationSelection(v VariantSelection, variant domain.Variant, variant
 	}
 
 	for variantVariation, value := range variantVariationValues {
-		variantSelectionVariant.MatchingAttributes = append(variantSelectionVariant.MatchingAttributes, MatchingVariantSelection{
+		variantSelectionVariant.Attributes = append(variantSelectionVariant.Attributes, MatchingVariantSelection{
 			Key:   variantVariation,
 			Value: value.Label,
 		})
@@ -104,9 +96,9 @@ func sortSelection(variantVariation []string, variantVariationSorting map[string
 	})
 
 	for variantIndex := range selection.Variants {
-		sort.Slice(selection.Variants[variantIndex].MatchingAttributes, func(i, j int) bool {
-			return indexOf(variantVariation, selection.Variants[variantIndex].MatchingAttributes[i].Key) <
-				indexOf(variantVariation, selection.Variants[variantIndex].MatchingAttributes[j].Key)
+		sort.Slice(selection.Variants[variantIndex].Attributes, func(i, j int) bool {
+			return indexOf(variantVariation, selection.Variants[variantIndex].Attributes[i].Key) <
+				indexOf(variantVariation, selection.Variants[variantIndex].Attributes[j].Key)
 		})
 	}
 

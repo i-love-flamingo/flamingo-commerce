@@ -124,8 +124,8 @@ type (
 	}
 
 	VariantSelectionVariant struct {
-		MatchingAttributes []MatchingVariantSelection
-		Variant            VariantSelectionVariantMatchingVariant
+		Attributes []MatchingVariantSelection
+		Variant    VariantSelectionVariantMatchingVariant
 	}
 
 	MatchingVariantSelection struct {
