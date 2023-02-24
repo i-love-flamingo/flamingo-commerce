@@ -7,12 +7,13 @@ import (
 	"math/rand"
 	"strconv"
 
+	"flamingo.me/flamingo/v3/framework/flamingo"
+	"github.com/pkg/errors"
+
 	domaincart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
-	"flamingo.me/flamingo/v3/framework/flamingo"
-	"github.com/pkg/errors"
 )
 
 type (
@@ -328,9 +329,21 @@ func (cob *DefaultCartBehaviour) buildItemForCart(ctx context.Context, addReques
 		product = productWithActiveVariant
 	}
 
-	return cob.createCartItemFromProduct(addRequest.Qty, addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode, addRequest.AdditionalData, product)
+	if bundleProduct, ok := product.(domain.BundleProduct); ok && len(addRequest.BundleConfiguration) != 0 {
+		bundleConfig := addRequest.BundleConfiguration.MapToProductDomain()
+
+		bundleProductWithActiveChoices, err := bundleProduct.GetBundleProductWithActiveChoices(bundleConfig)
+		if err != nil {
+			return nil, fmt.Errorf("error getting bundle with active choices: %w", err)
+		}
+
+		product = bundleProductWithActiveChoices
+	}
+
+	return cob.createCartItemFromProduct(addRequest.Qty, addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode, addRequest.AdditionalData, addRequest.BundleConfiguration, product)
 }
-func (cob *DefaultCartBehaviour) createCartItemFromProduct(qty int, marketplaceCode string, variantMarketPlaceCode string, additonalData map[string]string, product domain.BasicProduct) (*domaincart.Item, error) {
+func (cob *DefaultCartBehaviour) createCartItemFromProduct(qty int, marketplaceCode string, variantMarketPlaceCode string,
+	additonalData map[string]string, bundleConfig domaincart.BundleConfiguration, product domain.BasicProduct) (*domaincart.Item, error) {
 	item := &domaincart.Item{
 		ID:                     strconv.Itoa(rand.Int()),
 		ExternalReference:      strconv.Itoa(rand.Int()),
@@ -377,6 +390,8 @@ func (cob *DefaultCartBehaviour) createCartItemFromProduct(qty int, marketplaceC
 	item.TotalDiscountAmount = priceDomain.NewZero(currency)
 	item.ItemRelatedDiscountAmount = priceDomain.NewZero(currency)
 	item.NonItemRelatedDiscountAmount = priceDomain.NewZero(currency)
+
+	item.BundleConfig = bundleConfig
 
 	return item, nil
 }

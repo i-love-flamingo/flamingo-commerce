@@ -214,7 +214,7 @@ func (r *rootResolverCommerce_Search_Meta) SortOptions(ctx context.Context, obj 
 
 type rootResolverMutation struct {
 	resolveFlamingo                                   func(ctx context.Context) (*string, error)
-	resolveCommerceCartAddToCart                      func(ctx context.Context, marketplaceCode string, qty int, deliveryCode string) (*dto.DecoratedCart, error)
+	resolveCommerceCartAddToCart                      func(ctx context.Context, addToCartInput dto.AddToCart) (*dto.DecoratedCart, error)
 	resolveCommerceCartDeleteCartDelivery             func(ctx context.Context, deliveryCode string) (*dto.DecoratedCart, error)
 	resolveCommerceCartDeleteItem                     func(ctx context.Context, itemID string, deliveryCode string) (*dto.DecoratedCart, error)
 	resolveCommerceCartUpdateItemQty                  func(ctx context.Context, itemID string, deliveryCode string, qty int) (*dto.DecoratedCart, error)
@@ -282,8 +282,8 @@ func (r *rootResolverMutation) Inject(
 func (r *rootResolverMutation) Flamingo(ctx context.Context) (*string, error) {
 	return r.resolveFlamingo(ctx)
 }
-func (r *rootResolverMutation) CommerceCartAddToCart(ctx context.Context, marketplaceCode string, qty int, deliveryCode string) (*dto.DecoratedCart, error) {
-	return r.resolveCommerceCartAddToCart(ctx, marketplaceCode, qty, deliveryCode)
+func (r *rootResolverMutation) CommerceCartAddToCart(ctx context.Context, addToCartInput dto.AddToCart) (*dto.DecoratedCart, error) {
+	return r.resolveCommerceCartAddToCart(ctx, addToCartInput)
 }
 func (r *rootResolverMutation) CommerceCartDeleteCartDelivery(ctx context.Context, deliveryCode string) (*dto.DecoratedCart, error) {
 	return r.resolveCommerceCartDeleteCartDelivery(ctx, deliveryCode)
@@ -342,7 +342,7 @@ func (r *rootResolverMutation) CommerceCheckoutRefreshPlaceOrderBlocking(ctx con
 
 type rootResolverQuery struct {
 	resolveFlamingo                         func(ctx context.Context) (*string, error)
-	resolveCommerceProduct                  func(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode *string) (graphqlproductdto.Product, error)
+	resolveCommerceProduct                  func(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode *string, bundleConfiguration []*graphqlproductdto.ChoiceConfiguration) (graphqlproductdto.Product, error)
 	resolveCommerceProductSearch            func(ctx context.Context, searchRequest searchdto.CommerceSearchRequest) (*graphql2.SearchResultDTO, error)
 	resolveCommerceCustomerStatus           func(ctx context.Context) (*dtocustomer.CustomerStatusResult, error)
 	resolveCommerceCustomer                 func(ctx context.Context) (*dtocustomer.CustomerResult, error)
@@ -386,8 +386,8 @@ func (r *rootResolverQuery) Inject(
 func (r *rootResolverQuery) Flamingo(ctx context.Context) (*string, error) {
 	return r.resolveFlamingo(ctx)
 }
-func (r *rootResolverQuery) CommerceProduct(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode *string) (graphqlproductdto.Product, error) {
-	return r.resolveCommerceProduct(ctx, marketPlaceCode, variantMarketPlaceCode)
+func (r *rootResolverQuery) CommerceProduct(ctx context.Context, marketPlaceCode string, variantMarketPlaceCode *string, bundleConfiguration []*graphqlproductdto.ChoiceConfiguration) (graphqlproductdto.Product, error) {
+	return r.resolveCommerceProduct(ctx, marketPlaceCode, variantMarketPlaceCode, bundleConfiguration)
 }
 func (r *rootResolverQuery) CommerceProductSearch(ctx context.Context, searchRequest searchdto.CommerceSearchRequest) (*graphql2.SearchResultDTO, error) {
 	return r.resolveCommerceProductSearch(ctx, searchRequest)

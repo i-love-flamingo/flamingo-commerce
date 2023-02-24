@@ -468,8 +468,23 @@ extend type Query {
     Commerce_Cart_QtyRestriction(marketplaceCode: String!, variantCode: String, deliveryCode: String!): Commerce_Cart_QtyRestrictionResult!
 }
 
+input Commerce_Cart_AddToCartInput {
+    marketplaceCode: ID!
+    qty: Int!
+    deliveryCode: String!
+    variantMarketplaceCode: String
+    bundleConfiguration:[Commerce_Cart_ChoiceConfigurationInput!]
+}
+
+input Commerce_Cart_ChoiceConfigurationInput {
+    identifier: String!
+    marketplaceCode: String!
+    variantMarketplaceCode: String
+    qty: Int
+}
+
 extend type Mutation {
-    Commerce_Cart_AddToCart(marketplaceCode: ID!, qty: Int!, deliveryCode: String!): Commerce_Cart_DecoratedCart!
+    Commerce_Cart_AddToCart(addToCartInput: Commerce_Cart_AddToCartInput!): Commerce_Cart_DecoratedCart!
     Commerce_Cart_DeleteCartDelivery(deliveryCode: String!): Commerce_Cart_DecoratedCart!
     Commerce_Cart_DeleteItem(itemID: ID!, deliveryCode: String!): Commerce_Cart_DecoratedCart!
     Commerce_Cart_UpdateItemQty(itemID: ID!, deliveryCode: String!, qty: Int!): Commerce_Cart_DecoratedCart!

@@ -28,6 +28,7 @@ integrationtest:
 
 generate-integrationtest-graphql:
 	rm -f test/integrationtest/projecttest/graphql/generated.go
+	rm -f test/integrationtest/projecttest/graphql/resolver.go
 	go generate ./...
 	export RUN="0" && cd test/integrationtest/projecttest && go run -tags graphql main.go
 

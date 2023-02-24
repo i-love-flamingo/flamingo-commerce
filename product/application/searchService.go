@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"net/url"
 
+	"flamingo.me/flamingo/v3/framework/flamingo"
+	"flamingo.me/flamingo/v3/framework/web"
+
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo-commerce/v3/search/application"
 	searchdomain "flamingo.me/flamingo-commerce/v3/search/domain"
 	"flamingo.me/flamingo-commerce/v3/search/utils"
-	"flamingo.me/flamingo/v3/framework/flamingo"
-	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (

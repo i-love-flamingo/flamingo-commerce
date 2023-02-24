@@ -4,13 +4,15 @@ package application
 
 import (
 	"context"
+	"errors"
+
+	"flamingo.me/flamingo/v3/framework/web"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
-	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (
@@ -32,6 +34,7 @@ type (
 		RestoreCart(ctx context.Context, cart *cartDomain.Cart) (*cartDomain.Cart, error)
 		Clean(ctx context.Context, session *web.Session) error
 		DeleteDelivery(ctx context.Context, session *web.Session, deliveryCode string) (*cartDomain.Cart, error)
+		// Deprecated: build your own add request
 		BuildAddRequest(ctx context.Context, marketplaceCode string, variantMarketplaceCode string, qty int, additionalData map[string]string) cartDomain.AddRequest
 		AddProduct(ctx context.Context, session *web.Session, deliveryCode string, addRequest cartDomain.AddRequest) (productDomain.BasicProduct, error)
 		CreateInitialDeliveryIfNotPresent(ctx context.Context, session *web.Session, deliveryCode string) (*cartDomain.Cart, error)
@@ -53,4 +56,8 @@ type (
 		UpdateAdditionalData(ctx context.Context, session *web.Session, additionalData map[string]string) (*cartDomain.Cart, error)
 		UpdateDeliveryAdditionalData(ctx context.Context, session *web.Session, deliveryCode string, additionalData map[string]string) (*cartDomain.Cart, error)
 	}
+)
+
+var (
+	ErrNoBundleConfigurationGiven = errors.New("no bundle configuration given for configurable product")
 )

@@ -5,11 +5,13 @@ package graphql_test
 
 import (
 	"net/http"
+	"strings"
 	"testing"
+
+	"github.com/gavv/httpexpect/v2"
 
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest"
 	"flamingo.me/flamingo-commerce/v3/test/integrationtest/projecttest/helper"
-	"github.com/gavv/httpexpect/v2"
 )
 
 func Test_CartUpdateDeliveryAddresses(t *testing.T) {
@@ -200,4 +202,158 @@ func prepareCartWithDeliveries(t *testing.T, e *httpexpect.Expect) {
 	t.Helper()
 	helper.GraphQlRequest(t, e, loadGraphQL(t, "cart_add_to_cart", map[string]string{"MARKETPLACE_CODE": "fake_simple", "DELIVERY_CODE": "delivery1"})).Expect().Status(http.StatusOK)
 	helper.GraphQlRequest(t, e, loadGraphQL(t, "cart_add_to_cart", map[string]string{"MARKETPLACE_CODE": "fake_simple", "DELIVERY_CODE": "delivery2"})).Expect().Status(http.StatusOK)
+}
+
+func TestAddBundleProductToCart(t *testing.T) {
+	t.Parallel()
+
+	t.Run("add to cart bundle product", func(t *testing.T) {
+		t.Parallel()
+		e := httpexpect.New(t, "http://"+FlamingoURL)
+		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "commerce_cart_AddBundleToCart", map[string]string{
+			"MARKETPLACE_CODE":          "fake_bundle",
+			"DELIVERY_CODE":             "delivery",
+			"IDENTIFIER1":               "identifier1",
+			"MARKETPLACE_CODE1":         "simple_option1",
+			"IDENTIFIER2":               "identifier2",
+			"MARKETPLACE_CODE2":         "configurable_option2",
+			"VARIANT_MARKETPLACE_CODE2": "shirt-red-s",
+		}))
+
+		body := response.Expect().Body()
+
+		expected := `{
+					  "data": {
+						"Commerce_Cart_AddToCart": {
+						  "decoratedDeliveries": [
+							{
+							  "decoratedItems": [
+								{
+								  "product": {
+									"marketPlaceCode": "fake_bundle",
+									"choices": [
+									  {
+										"identifier": "identifier1",
+										"active": {
+										  "marketPlaceCode": "simple_option1"
+										}
+									  },
+									  {
+										"identifier": "identifier2",
+										"active": {
+										  "marketPlaceCode": "configurable_option2",
+										  "variantMarketPlaceCode": "shirt-red-s"
+										}
+									  }
+									]
+								  }
+								}
+							  ]
+							}
+						  ]
+						}
+					  }
+					}`
+
+		expected = spaceMap(expected)
+		body.Equal(expected)
+	})
+
+	t.Run("add to cart bundle product, selected variant do not exists", func(t *testing.T) {
+		t.Parallel()
+		e := httpexpect.New(t, "http://"+FlamingoURL)
+		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "commerce_cart_AddBundleToCart", map[string]string{
+			"MARKETPLACE_CODE":          "fake_bundle",
+			"DELIVERY_CODE":             "delivery",
+			"IDENTIFIER1":               "identifier1",
+			"MARKETPLACE_CODE1":         "simple_option1",
+			"IDENTIFIER2":               "identifier2",
+			"MARKETPLACE_CODE2":         "configurable_option2",
+			"VARIANT_MARKETPLACE_CODE2": "there is no option like this",
+		}))
+
+		data := response.Expect().Status(http.StatusOK).JSON().Object()
+
+		errorMessage := data.Value("errors").Array().Element(0).Object().Value("message").String().Raw()
+
+		if !strings.Contains(errorMessage, "No Variant with code there is no option like this found") {
+			t.Error("error do not contain: No Variant with code there is no option like this found ")
+		}
+	})
+
+	t.Run("add to cart bundle product, required choice is not selected", func(t *testing.T) {
+		t.Parallel()
+		e := httpexpect.New(t, "http://"+FlamingoURL)
+		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "commerce_cart_AddBundleToCart", map[string]string{
+			"MARKETPLACE_CODE":  "fake_bundle",
+			"DELIVERY_CODE":     "delivery",
+			"IDENTIFIER1":       "identifier1",
+			"MARKETPLACE_CODE1": "simple_option1",
+		}))
+
+		data := response.Expect().Status(http.StatusOK).JSON().Object()
+
+		errorMessage := data.Value("errors").Array().Element(0).Object().Value("message").String().Raw()
+
+		if !strings.Contains(errorMessage, "required choices are not selected") {
+			t.Error("error do not contain: required choices are not selected")
+		}
+	})
+
+	t.Run("add to cart bundle product, not existing marketplace code selected", func(t *testing.T) {
+		t.Parallel()
+		e := httpexpect.New(t, "http://"+FlamingoURL)
+		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "commerce_cart_AddBundleToCart", map[string]string{
+			"MARKETPLACE_CODE":          "fake_bundle",
+			"DELIVERY_CODE":             "delivery",
+			"IDENTIFIER1":               "identifier1",
+			"MARKETPLACE_CODE1":         "simple_option1xxxxwrong",
+			"IDENTIFIER2":               "identifier2",
+			"MARKETPLACE_CODE2":         "configurable_option2",
+			"VARIANT_MARKETPLACE_CODE2": "shirt-red-s",
+		}))
+
+		data := response.Expect().Status(http.StatusOK).JSON().Object()
+
+		errorMessage := data.Value("errors").Array().Element(0).Object().Value("message").String().Raw()
+
+		if !strings.Contains(errorMessage, "selected marketplace code does not exist") {
+			t.Error("want: selected marketplace code does not exist, but have: ", errorMessage)
+		}
+	})
+}
+
+func TestUpdateBundleProductQty(t *testing.T) {
+	t.Parallel()
+
+	t.Run("update should update quantity of bundle product", func(t *testing.T) {
+		t.Parallel()
+
+		e := httpexpect.New(t, "http://"+FlamingoURL)
+		addResponse := helper.GraphQlRequest(t, e, loadGraphQL(t, "commerce_cart_AddBundleToCart_Update_Qty_Helper", map[string]string{
+			"MARKETPLACE_CODE":          "fake_bundle",
+			"DELIVERY_CODE":             "delivery",
+			"IDENTIFIER1":               "identifier1",
+			"MARKETPLACE_CODE1":         "simple_option1",
+			"IDENTIFIER2":               "identifier2",
+			"MARKETPLACE_CODE2":         "configurable_option2",
+			"VARIANT_MARKETPLACE_CODE2": "shirt-red-s",
+		}))
+
+		itemID := addResponse.Expect().Status(http.StatusOK).JSON().Object().Value("data").Object().
+			Value("Commerce_Cart_AddToCart").Object().Value("decoratedDeliveries").Array().
+			Element(0).Object().Value("decoratedItems").Array().Element(0).Object().
+			Value("item").Object().Value("id").String().Raw()
+
+		updateResponse := helper.GraphQlRequest(t, e, loadGraphQL(t, "update_item_quantity", map[string]string{
+			"ITEM_ID":       itemID,
+			"DELIVERY_CODE": "inflight",
+			"QTY":           "4",
+		}))
+
+		updateResponse.Expect().Status(http.StatusOK).JSON().Object().Value("data").Object().
+			Value("Commerce_Cart_UpdateItemQty").Object().Value("decoratedDeliveries").Array().
+			Element(0).Object().Value("decoratedItems").Array().Element(0).Object().
+			Value("item").Object().Value("qty").Equal(4)
+	})
 }

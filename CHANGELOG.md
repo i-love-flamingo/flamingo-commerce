@@ -58,8 +58,13 @@
 * Dispatch a `PreCartMergeEvent` before and a `PostCartMergeEvent` after merging a guest and customer cart when logging in
 * Update payment selection on cart merge with the guest carts' payment selection after applying coupons and giftcards and only if customer cart has no items
 * Add possibility to have additional data in `AddToCartNotAllowed` error
+* Deprecate `BuildAddRequest` in cart service (build your own add request)
 * Provide `BaseCartReceiver` for fetching carts without `DecoratedCartFactory` dependency
 * Provide `Receiver` interface to be able to mock receiving a cart
+* GraphQL:
+  * Aggregate many input values to `Commerce_Cart_AddToCart` mutation in `Commerce_Cart_AddToCartInput`
+  * Add support for bundle and configurable products in `Commerce_Cart_AddToCart` mutation
+
 
 **checkout**
 * Add possibility to have additional data in `PaymentFlowActionTriggerClientSDK`
@@ -67,11 +72,15 @@
 
 **product**
 * Introduce `Labels()` function on `Attribute` to handle translations for attributes with multiple values, will fallback to `Values()` function if not translated.
-* Introduce `Stock` slice in `BasicProductData` to store more accurate information about availability for each delivery code   
+* Introduce `Stock` slice in `BasicProductData` to store more accurate information about availability for each delivery code
+* Introduce new `BundleProduct` and `BundleProductWithActiveChoices` types
 * GraphQL:
   * Add `unitCode` to`Commerce_Product_VariationSelection_Option` and `Commerce_Product_ActiveVariationSelection`
   * Fix mapping of VariationSelections
   * Introduce `Labels` for attributes here as well
+  * Extend `Commerce_Product` query with non-mandatory bundle configuration argument
+  * Add type `Commerce_Product_BundleProduct` that implements `Commerce_Product` interface and is used as bundle product graphql representation.
+  * Change `variantionSelections` field in configurable products with `variantSelection` that handles all possible combinations of multi axis configurable.
 * FakeService
   * Add configuration option `commerce.product.fakeservice.defaultProducts` which toggles the delivery of default test products. 
   * Add category facet functionality to the fake `SearchService` with default category facet items.

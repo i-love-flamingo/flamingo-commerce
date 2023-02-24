@@ -5,14 +5,16 @@ import (
 	"errors"
 	"net/url"
 
-	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
-	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
 	formApplication "flamingo.me/form/application"
 	"flamingo.me/form/domain"
 
-	"flamingo.me/flamingo-commerce/v3/cart/application"
+	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
+	"flamingo.me/flamingo-commerce/v3/cart/interfaces/graphql/dto"
+
 	"flamingo.me/flamingo/v3/framework/web"
+
+	"flamingo.me/flamingo-commerce/v3/cart/application"
 )
 
 // CommerceCartMutationResolver resolves cart mutations
@@ -45,12 +47,22 @@ func (r *CommerceCartMutationResolver) Inject(q *CommerceCartQueryResolver,
 }
 
 // CommerceAddToCart mutation for adding products to the current users cart
-func (r *CommerceCartMutationResolver) CommerceAddToCart(ctx context.Context, marketplaceCode string, qty int, deliveryCode string) (*dto.DecoratedCart, error) {
+func (r *CommerceCartMutationResolver) CommerceAddToCart(ctx context.Context, graphqlAddRequest dto.AddToCart) (*dto.DecoratedCart, error) {
 	req := web.RequestFromContext(ctx)
 
-	addRequest := r.cartService.BuildAddRequest(ctx, marketplaceCode, "", qty, nil)
+	if graphqlAddRequest.Qty < 0 {
+		graphqlAddRequest.Qty = 0
+	}
 
-	_, err := r.cartService.AddProduct(ctx, req.Session(), deliveryCode, addRequest)
+	addRequest := cartDomain.AddRequest{
+		MarketplaceCode:        graphqlAddRequest.MarketplaceCode,
+		Qty:                    graphqlAddRequest.Qty,
+		VariantMarketplaceCode: graphqlAddRequest.VariantMarketplaceCode,
+		AdditionalData:         nil,
+		BundleConfiguration:    dto.MapBundleConfigToDomain(graphqlAddRequest.BundleConfiguration),
+	}
+
+	_, err := r.cartService.AddProduct(ctx, req.Session(), graphqlAddRequest.DeliveryCode, addRequest)
 	if err != nil {
 		return nil, err
 	}

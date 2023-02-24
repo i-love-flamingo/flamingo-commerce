@@ -1297,6 +1297,12 @@ var doc = `{
                 }
             }
         },
+        "cart.BundleConfiguration": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/cart.ChoiceConfiguration"
+            }
+        },
         "cart.Cart": {
             "type": "object",
             "properties": {
@@ -1426,6 +1432,20 @@ var doc = `{
                     "items": {
                         "$ref": "#/definitions/cart.Totalitem"
                     }
+                }
+            }
+        },
+        "cart.ChoiceConfiguration": {
+            "type": "object",
+            "properties": {
+                "MarketplaceCode": {
+                    "type": "string"
+                },
+                "Qty": {
+                    "type": "integer"
+                },
+                "VariantMarketplaceCode": {
+                    "type": "string"
                 }
             }
         },
@@ -1579,6 +1599,9 @@ var doc = `{
                     "items": {
                         "$ref": "#/definitions/cart.AppliedDiscount"
                     }
+                },
+                "BundleConfig": {
+                    "$ref": "#/definitions/cart.BundleConfiguration"
                 },
                 "ExternalReference": {
                     "description": "ExternalReference can be used by cart service implementations to separate the representation in an external\ncart service from the unique item ID",
@@ -2257,7 +2280,14 @@ var doc = `{
                 "ShortDescription": {
                     "type": "string"
                 },
+                "Stock": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Stock"
+                    }
+                },
                 "StockLevel": {
+                    "description": "Deprecated: use Stock[x].Level instead",
                     "type": "string"
                 },
                 "Teaser": {
@@ -2273,6 +2303,23 @@ var doc = `{
                     "type": "string"
                 },
                 "VisibleTo": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.Stock": {
+            "type": "object",
+            "properties": {
+                "Amount": {
+                    "type": "integer"
+                },
+                "DeliveryCode": {
+                    "type": "string"
+                },
+                "InStock": {
+                    "type": "boolean"
+                },
+                "Level": {
                     "type": "string"
                 }
             }

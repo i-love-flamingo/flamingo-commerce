@@ -145,6 +145,10 @@ definitions:
         $ref: '#/definitions/domain.Price'
         description: how much of the gift card is still available
     type: object
+  cart.BundleConfiguration:
+    additionalProperties:
+      $ref: '#/definitions/cart.ChoiceConfiguration'
+    type: object
   cart.Cart:
     properties:
       AdditionalData:
@@ -259,6 +263,15 @@ definitions:
         items:
           $ref: '#/definitions/cart.Totalitem'
         type: array
+    type: object
+  cart.ChoiceConfiguration:
+    properties:
+      MarketplaceCode:
+        type: string
+      Qty:
+        type: integer
+      VariantMarketplaceCode:
+        type: string
     type: object
   cart.CouponCode:
     properties:
@@ -389,6 +402,8 @@ definitions:
         items:
           $ref: '#/definitions/cart.AppliedDiscount'
         type: array
+      BundleConfig:
+        $ref: '#/definitions/cart.BundleConfiguration'
       ExternalReference:
         description: |-
           ExternalReference can be used by cart service implementations to separate the representation in an external
@@ -863,7 +878,12 @@ definitions:
         type: string
       ShortDescription:
         type: string
+      Stock:
+        items:
+          $ref: '#/definitions/domain.Stock'
+        type: array
       StockLevel:
+        description: 'Deprecated: use Stock[x].Level instead'
         type: string
       Teaser:
         $ref: '#/definitions/domain.TeaserData'
@@ -874,6 +894,17 @@ definitions:
       VisibleFrom:
         type: string
       VisibleTo:
+        type: string
+    type: object
+  domain.Stock:
+    properties:
+      Amount:
+        type: integer
+      DeliveryCode:
+        type: string
+      InStock:
+        type: boolean
+      Level:
         type: string
     type: object
   domain.TeaserData:

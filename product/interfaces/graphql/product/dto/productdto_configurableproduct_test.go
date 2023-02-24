@@ -3,10 +3,11 @@ package graphqlproductdto_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	graphqlProductDto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
-	"github.com/stretchr/testify/assert"
 )
 
 func getProductDomainConfigurableProduct() productDomain.ConfigurableProduct {
@@ -127,7 +128,7 @@ func getProductDomainConfigurableProduct() productDomain.ConfigurableProduct {
 
 func getConfigurableProduct() graphqlProductDto.Product {
 	product := getProductDomainConfigurableProduct()
-	return graphqlProductDto.NewGraphqlProductDto(product, nil)
+	return graphqlProductDto.NewGraphqlProductDto(product, nil, nil)
 }
 
 func TestConfigurableProduct_Attributes(t *testing.T) {
@@ -233,25 +234,6 @@ func TestConfigurableProduct_Title(t *testing.T) {
 func TestConfigurableProduct_Type(t *testing.T) {
 	product := getConfigurableProduct()
 	assert.Equal(t, productDomain.TypeConfigurable, product.Type())
-}
-
-func TestConfigurableProduct_VariationSelections(t *testing.T) {
-	configurableProduct := getProductDomainConfigurableProduct()
-	product := getConfigurableProduct().(graphqlProductDto.ConfigurableProduct)
-	assert.Equal(t, []graphqlProductDto.VariationSelection{
-		{
-			Code:  "attribute_a_code",
-			Label: "attribute_a_codeLabel",
-			Options: []graphqlProductDto.VariationSelectionOption{
-				{
-					Label:    "attribute_a_variantLabel",
-					UnitCode: "attribute_a_unitCode",
-					State:    graphqlProductDto.VariationSelectionOptionStateMatch,
-					Variant:  graphqlProductDto.NewVariationSelectionOptionVariant(configurableProduct.Variants[0]),
-				},
-			},
-		},
-	}, product.VariationSelections())
 }
 
 func TestConfigurableProduct_Badges(t *testing.T) {

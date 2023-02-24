@@ -285,7 +285,7 @@ func (cs *CartService) UpdateItemQty(ctx context.Context, session *web.Session, 
 		return err
 	}
 
-	product, err = cs.getProductWithActiveVariantIfProductIsConfigurable(ctx, product, item.VariantMarketPlaceCode)
+	product, err = cs.getSpecificProductType(ctx, product, item.VariantMarketPlaceCode, item.BundleConfig)
 	if err != nil {
 		return err
 	}
@@ -646,6 +646,7 @@ func (cs *CartService) DeleteDelivery(ctx context.Context, session *web.Session,
 }
 
 // BuildAddRequest Helper to build
+// Deprecated: build your own add request
 func (cs *CartService) BuildAddRequest(_ context.Context, marketplaceCode string, variantMarketplaceCode string, qty int, additionalData map[string]string) cartDomain.AddRequest {
 	if qty < 0 {
 		qty = 0
@@ -680,7 +681,7 @@ func (cs *CartService) AddProduct(ctx context.Context, session *web.Session, del
 		cs.dispatchAllEvents(ctx, defers)
 	}()
 
-	addRequest, product, err := cs.checkProductForAddRequest(ctx, session, cart, deliveryCode, addRequest)
+	product, err := cs.checkProductForAddRequest(ctx, session, cart, deliveryCode, addRequest)
 
 	switch err.(type) {
 	case nil:
@@ -848,35 +849,49 @@ func (cs *CartService) handleCartNotFound(session *web.Session, err error) {
 }
 
 // checkProductForAddRequest existence and validate with productService
-func (cs *CartService) checkProductForAddRequest(ctx context.Context, session *web.Session, cart *cartDomain.Cart, deliveryCode string, addRequest cartDomain.AddRequest) (cartDomain.AddRequest, productDomain.BasicProduct, error) {
+func (cs *CartService) checkProductForAddRequest(ctx context.Context, session *web.Session, cart *cartDomain.Cart, deliveryCode string, addRequest cartDomain.AddRequest) (productDomain.BasicProduct, error) {
 	product, err := cs.productService.Get(ctx, addRequest.MarketplaceCode)
 	if err != nil {
-		return addRequest, nil, err
+		return nil, err
 	}
 
 	if product.Type() == productDomain.TypeConfigurable {
 		if addRequest.VariantMarketplaceCode == "" {
-			return addRequest, nil, errors.New("no variant given for configurable product")
+			return nil, errors.New("no variant given for configurable product")
 		}
 
 		configurableProduct := product.(productDomain.ConfigurableProduct)
 		if !configurableProduct.HasVariant(addRequest.VariantMarketplaceCode) {
-			return addRequest, nil, errors.New("product has not the given variant")
+			return nil, errors.New("product has not the given variant")
 		}
 
 		product, err = configurableProduct.GetConfigurableWithActiveVariant(addRequest.VariantMarketplaceCode)
 		if err != nil {
-			return addRequest, nil, err
+			return nil, err
+		}
+	}
+
+	if product.Type() == productDomain.TypeBundle {
+		if len(addRequest.BundleConfiguration) == 0 {
+			return nil, ErrNoBundleConfigurationGiven
+		}
+
+		bundleProduct := product.(productDomain.BundleProduct)
+		domainBundleConfig := addRequest.BundleConfiguration.MapToProductDomain()
+
+		product, err = bundleProduct.GetBundleProductWithActiveChoices(domainBundleConfig)
+		if err != nil {
+			return nil, fmt.Errorf("error getting bundle with active choices: %w", err)
 		}
 	}
 
 	// Now Validate the Item with the optional registered ItemValidator
 	if cs.itemValidator != nil {
 		decoratedCart, _ := cs.cartReceiverService.DecorateCart(ctx, cart)
-		return addRequest, product, cs.itemValidator.Validate(ctx, session, decoratedCart, deliveryCode, addRequest, product)
+		return product, cs.itemValidator.Validate(ctx, session, decoratedCart, deliveryCode, addRequest, product)
 	}
 
-	return addRequest, product, nil
+	return product, nil
 }
 
 func (cs *CartService) checkProductQtyRestrictions(ctx context.Context, sess *web.Session, product productDomain.BasicProduct, cart *cartDomain.Cart, qtyToCheck int, deliveryCode string, itemID string) error {
@@ -1145,7 +1160,7 @@ func (cs *CartService) generateRestrictedQtyAdjustments(ctx context.Context, ses
 				return nil, err
 			}
 
-			product, err = cs.getProductWithActiveVariantIfProductIsConfigurable(ctx, product, item.VariantMarketPlaceCode)
+			product, err = cs.getSpecificProductType(ctx, product, item.VariantMarketPlaceCode, item.BundleConfig)
 			if err != nil {
 				return nil, err
 			}
@@ -1171,9 +1186,9 @@ func (cs *CartService) generateRestrictedQtyAdjustments(ctx context.Context, ses
 	return result, nil
 }
 
-func (cs *CartService) getProductWithActiveVariantIfProductIsConfigurable(_ context.Context, product productDomain.BasicProduct, variantMarketplaceCode string) (productDomain.BasicProduct, error) {
+func (cs *CartService) getSpecificProductType(_ context.Context, product productDomain.BasicProduct, variantMarketplaceCode string, bundleConfig cartDomain.BundleConfiguration) (productDomain.BasicProduct, error) {
 	var err error
-	if product.Type() != productDomain.TypeConfigurable {
+	if product.Type() != productDomain.TypeConfigurable || product.Type() != productDomain.TypeBundle {
 		return product, nil
 	}
 
@@ -1184,6 +1199,13 @@ func (cs *CartService) getProductWithActiveVariantIfProductIsConfigurable(_ cont
 	if configurableProduct, ok := product.(productDomain.ConfigurableProduct); ok {
 		product, err = configurableProduct.GetConfigurableWithActiveVariant(variantMarketplaceCode)
 
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if bundleProduct, ok := product.(productDomain.BundleProduct); ok {
+		product, err = bundleProduct.GetBundleProductWithActiveChoices(bundleConfig.MapToProductDomain())
 		if err != nil {
 			return nil, err
 		}

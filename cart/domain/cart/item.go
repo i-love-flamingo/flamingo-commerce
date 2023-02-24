@@ -20,6 +20,8 @@ type (
 		VariantMarketPlaceCode string
 		ProductName            string
 
+		BundleConfig BundleConfiguration
+
 		// Source Id of where the items should be initial picked - This is set by the SourcingLogic
 		SourceID string
 

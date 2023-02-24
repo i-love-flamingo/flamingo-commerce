@@ -21,9 +21,28 @@ query {
         }
 
         ... on Commerce_Product_ConfigurableProduct {
-            variationSelections {
-                code
-                label
+            variantSelection {
+                variants {
+                    attributes {
+                        key
+                        value
+                    }
+                    variant {
+                        marketplaceCode
+                    }
+                }
+                attributes {
+                    label
+                    code
+                    options {
+                        label
+                        unitCode
+                        otherAttributesRestrictions {
+                            code
+                            availableOptions
+                        }
+                    }
+                }
             }
         }
     }

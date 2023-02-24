@@ -1,6 +1,7 @@
 package dto
 
 import (
+	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/interfaces/controller/forms"
 
 	"time"
@@ -61,4 +62,43 @@ type (
 	UpdateShippingOptionsResult struct {
 		Processed bool
 	}
+
+	AddToCart struct {
+		MarketplaceCode        string
+		Qty                    int
+		DeliveryCode           string
+		VariantMarketplaceCode string
+		BundleConfiguration    []ChoiceConfiguration
+	}
+
+	ChoiceConfiguration struct {
+		Identifier             string
+		MarketplaceCode        string
+		VariantMarketplaceCode *string
+		Qty                    *int
+	}
 )
+
+func MapBundleConfigToDomain(graphqlBundleConfig []ChoiceConfiguration) cartDomain.BundleConfiguration {
+	cartBundleConfiguration := make(map[cartDomain.ChoiceID]cartDomain.ChoiceConfiguration)
+
+	for _, configuration := range graphqlBundleConfig {
+		variantMarketplaceCode := ""
+		quantity := 0
+
+		if configuration.VariantMarketplaceCode != nil {
+			variantMarketplaceCode = *configuration.VariantMarketplaceCode
+		}
+		if configuration.Qty != nil {
+			quantity = *configuration.Qty
+		}
+
+		cartBundleConfiguration[cartDomain.ChoiceID(configuration.Identifier)] = cartDomain.ChoiceConfiguration{
+			MarketplaceCode:        configuration.MarketplaceCode,
+			VariantMarketplaceCode: variantMarketplaceCode,
+			Qty:                    quantity,
+		}
+	}
+
+	return cartBundleConfiguration
+}

@@ -92,12 +92,58 @@ type (
 	VariationSelectionOptionVariant struct {
 		variant productDomain.Variant
 	}
+
+	ChoiceConfiguration struct {
+		Identifier             string
+		MarketplaceCode        string
+		VariantMarketplaceCode *string
+		Qty                    *int
+	}
+
+	// VariantSelection contains information about all possible variant selections
+	VariantSelection struct {
+		Attributes []VariantSelectionAttribute
+		Variants   []VariantSelectionMatch
+	}
+
+	VariantSelectionAttribute struct {
+		Label   string
+		Code    string
+		Options []VariantSelectionAttributeOption
+	}
+
+	VariantSelectionAttributeOption struct {
+		Label                       string
+		UnitCode                    string
+		OtherAttributesRestrictions []OtherAttributesRestriction
+	}
+
+	OtherAttributesRestriction struct {
+		Code             string
+		AvailableOptions []string
+	}
+
+	VariantSelectionMatch struct {
+		Attributes []VariantSelectionMatchAttributes
+		Variant    VariantSelectionMatchVariant
+	}
+
+	VariantSelectionMatchAttributes struct {
+		Key   string
+		Value string
+	}
+
+	VariantSelectionMatchVariant struct {
+		MarketplaceCode string
+		VariantData     productDomain.Variant
+	}
 )
 
 var (
 	_ Product = SimpleProduct{}
 	_ Product = ConfigurableProduct{}
 	_ Product = ActiveVariantProduct{}
+	_ Product = BundleProduct{}
 )
 
 // GetMedia returns the FIRST found Product media by usage
@@ -111,7 +157,7 @@ func (pm ProductMedia) GetMedia(usage string) *productDomain.Media {
 }
 
 // NewGraphqlProductDto returns a new Product dto
-func NewGraphqlProductDto(product productDomain.BasicProduct, preSelectedVariantSku *string) Product {
+func NewGraphqlProductDto(product productDomain.BasicProduct, preSelectedVariantSku *string, bundleConfiguration productDomain.BundleConfiguration) Product {
 	if product.Type() == productDomain.TypeConfigurable {
 		configurableProduct := product.(productDomain.ConfigurableProduct)
 
@@ -147,6 +193,38 @@ func NewGraphqlProductDto(product productDomain.BasicProduct, preSelectedVariant
 		}
 	}
 
+	if product.Type() == productDomain.TypeBundleWithActiveChoices {
+		bundleProduct := product.(productDomain.BundleProductWithActiveChoices)
+
+		bundleDto := BundleProduct{
+			product: bundleProduct.BundleProduct,
+			Choices: mapWithActiveChoices(bundleProduct.Choices, bundleProduct.ActiveChoices),
+		}
+
+		return bundleDto
+	}
+
+	if product.Type() == productDomain.TypeBundle {
+		bundleProduct := product.(productDomain.BundleProduct)
+
+		if len(bundleConfiguration) != 0 {
+			bundleProductWithActiveChoices, err := bundleProduct.GetBundleProductWithActiveChoices(bundleConfiguration)
+			if err == nil {
+				bundleDto := BundleProduct{
+					product: bundleProductWithActiveChoices.BundleProduct,
+					Choices: mapWithActiveChoices(bundleProductWithActiveChoices.Choices, bundleProductWithActiveChoices.ActiveChoices),
+				}
+
+				return bundleDto
+			}
+		}
+
+		return BundleProduct{
+			product: bundleProduct,
+			Choices: mapChoices(bundleProduct.Choices),
+		}
+	}
+
 	simpleProduct := product.(productDomain.SimpleProduct)
 	return SimpleProduct{
 		product: simpleProduct,
@@ -165,6 +243,11 @@ func (v *VariationSelectionOptionVariant) MarketPlaceCode() string {
 
 // BaseData of the variant
 func (v *VariationSelectionOptionVariant) BaseData() productDomain.BasicProductData {
+	return v.variant.BaseData()
+}
+
+// Variant of the variant
+func (v *VariationSelectionOptionVariant) Variant() productDomain.BasicProductData {
 	return v.variant.BaseData()
 }
 

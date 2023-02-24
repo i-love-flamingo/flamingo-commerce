@@ -4,13 +4,14 @@ import (
 	"context"
 	"testing"
 
-	domaincart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
-	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/go-test/deep"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	domaincart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
+	"flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
 func TestInMemoryBehaviour_CleanCart(t *testing.T) {
@@ -509,7 +510,7 @@ func TestDefaultCartBehaviour_createCartItemFromProduct(t *testing.T) {
 			DefaultCurrency string  `inject:"config:commerce.cart.defaultCartAdapter.defaultCurrency"`
 		}{ProductPricing: "gross", DefaultTaxRate: 10.0, DefaultCurrency: "€"})
 
-		item, err := cob.createCartItemFromProduct(2, "ma", "", map[string]string{}, domain.SimpleProduct{
+		item, err := cob.createCartItemFromProduct(2, "ma", "", map[string]string{}, nil, domain.SimpleProduct{
 			Saleable: domain.Saleable{
 				IsSaleable: true,
 				ActivePrice: domain.PriceInfo{
@@ -534,7 +535,7 @@ func TestDefaultCartBehaviour_createCartItemFromProduct(t *testing.T) {
 			DefaultCurrency string  `inject:"config:commerce.cart.defaultCartAdapter.defaultCurrency"`
 		}{ProductPricing: "net", DefaultTaxRate: 10.0, DefaultCurrency: "€"})
 
-		item, err := cob.createCartItemFromProduct(2, "ma", "", map[string]string{}, domain.SimpleProduct{
+		item, err := cob.createCartItemFromProduct(2, "ma", "", map[string]string{}, nil, domain.SimpleProduct{
 			Saleable: domain.Saleable{
 				IsSaleable: true,
 				ActivePrice: domain.PriceInfo{

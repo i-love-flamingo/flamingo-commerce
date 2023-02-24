@@ -29,20 +29,23 @@ func (r *CommerceProductQueryResolver) Inject(
 }
 
 // CommerceProduct returns a product with the given marketplaceCode from productService
-func (r *CommerceProductQueryResolver) CommerceProduct(ctx context.Context, marketplaceCode string, variantMarketPlaceCode *string) (productDto.Product, error) {
-
+func (r *CommerceProductQueryResolver) CommerceProduct(ctx context.Context,
+	marketplaceCode string,
+	variantMarketPlaceCode *string,
+	bundleConfiguration []*productDto.ChoiceConfiguration) (productDto.Product, error) {
 	product, err := r.productService.Get(ctx, marketplaceCode)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return productDto.NewGraphqlProductDto(product, variantMarketPlaceCode), nil
+	domainBundleConfiguration := mapToDomain(bundleConfiguration)
+
+	return productDto.NewGraphqlProductDto(product, variantMarketPlaceCode, domainBundleConfiguration), nil
 }
 
 // CommerceProductSearch returns a search result of products based on the given search request
 func (r *CommerceProductQueryResolver) CommerceProductSearch(ctx context.Context, request searchdto.CommerceSearchRequest) (*SearchResultDTO, error) {
-
 	var filters []searchDomain.Filter
 	for _, filter := range request.KeyValueFilters {
 		filters = append(filters, searchDomain.NewKeyValueFilter(filter.K, filter.V))
@@ -68,4 +71,32 @@ func (r *CommerceProductQueryResolver) CommerceProductSearch(ctx context.Context
 func (r *CommerceProductQueryResolver) ActiveBase(_ context.Context, priceInfo *domain.PriceInfo) (*priceDomain.Price, error) {
 	result := priceDomain.NewFromBigFloat(priceInfo.ActiveBase, priceInfo.Default.Currency())
 	return &result, nil
+}
+
+func mapToDomain(dtoChoices []*productDto.ChoiceConfiguration) domain.BundleConfiguration {
+	domainConfiguration := make(domain.BundleConfiguration)
+
+	for _, choice := range dtoChoices {
+		if choice == nil {
+			continue
+		}
+
+		variantMarketplaceCode := ""
+		quantity := 0
+
+		if choice.VariantMarketplaceCode != nil {
+			variantMarketplaceCode = *choice.VariantMarketplaceCode
+		}
+		if choice.Qty != nil {
+			quantity = *choice.Qty
+		}
+
+		domainConfiguration[domain.Identifier(choice.Identifier)] = domain.ChoiceConfiguration{
+			MarketplaceCode:        choice.MarketplaceCode,
+			VariantMarketplaceCode: variantMarketplaceCode,
+			Qty:                    quantity,
+		}
+	}
+
+	return domainConfiguration
 }

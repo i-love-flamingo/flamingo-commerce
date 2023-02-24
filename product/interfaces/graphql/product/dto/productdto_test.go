@@ -3,9 +3,10 @@ package graphqlproductdto_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	graphqlProductDto "flamingo.me/flamingo-commerce/v3/product/interfaces/graphql/product/dto"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestProductMedia_GetMedia(t *testing.T) {
@@ -46,7 +47,7 @@ func TestProductMedia_GetMedia(t *testing.T) {
 		VariantVariationAttributes:        nil,
 		Variants:                          nil,
 		VariantVariationAttributesSorting: nil,
-	}, nil)
+	}, nil, nil)
 
 	assert.Equal(t, &domain.Media{
 		Type:      "teaser",
@@ -74,7 +75,7 @@ func TestNewGraphqlProductDto(t *testing.T) {
 		Saleable:         domain.Saleable{},
 		Teaser:           domain.TeaserData{},
 	}
-	graphqlSimpleProduct := graphqlProductDto.NewGraphqlProductDto(simpleProduct, nil)
+	graphqlSimpleProduct := graphqlProductDto.NewGraphqlProductDto(simpleProduct, nil, nil)
 	assert.Equal(t, "simple", graphqlSimpleProduct.Type())
 
 	// Configurable input
@@ -83,7 +84,7 @@ func TestNewGraphqlProductDto(t *testing.T) {
 		BasicProductData: domain.BasicProductData{},
 		Teaser:           domain.TeaserData{},
 	}
-	graphqlConfigurableProduct := graphqlProductDto.NewGraphqlProductDto(configurableProduct, nil)
+	graphqlConfigurableProduct := graphqlProductDto.NewGraphqlProductDto(configurableProduct, nil, nil)
 	assert.Equal(t, "configurable", graphqlConfigurableProduct.Type())
 
 	// Configurable input with active variant preselected
@@ -104,7 +105,7 @@ func TestNewGraphqlProductDto(t *testing.T) {
 			},
 		},
 	}
-	graphqlConfigurableWithPreselectedVariantProduct := graphqlProductDto.NewGraphqlProductDto(configurableWithPreselectedVariantProduct, nil).(graphqlProductDto.ActiveVariantProduct)
+	graphqlConfigurableWithPreselectedVariantProduct := graphqlProductDto.NewGraphqlProductDto(configurableWithPreselectedVariantProduct, nil, nil).(graphqlProductDto.ActiveVariantProduct)
 	assert.Equal(t, "configurable_with_activevariant", graphqlConfigurableWithPreselectedVariantProduct.Type())
 	assert.Equal(t, "configurable_code", graphqlConfigurableWithPreselectedVariantProduct.MarketPlaceCode())
 	assert.Equal(t, "active_variant_code", graphqlConfigurableWithPreselectedVariantProduct.VariantMarketPlaceCode())
@@ -134,7 +135,7 @@ func TestNewGraphqlProductDto(t *testing.T) {
 		},
 	}
 	customVariantCode := "second_active_variant_code"
-	graphqlConfigurableWithManualPreselectedVariantProduct := graphqlProductDto.NewGraphqlProductDto(configurableWithManualPreselectedVariantProduct, &customVariantCode).(graphqlProductDto.ActiveVariantProduct)
+	graphqlConfigurableWithManualPreselectedVariantProduct := graphqlProductDto.NewGraphqlProductDto(configurableWithManualPreselectedVariantProduct, &customVariantCode, nil).(graphqlProductDto.ActiveVariantProduct)
 	assert.Equal(t, "configurable_with_activevariant", graphqlConfigurableWithManualPreselectedVariantProduct.Type())
 	assert.Equal(t, "configurable_code", graphqlConfigurableWithManualPreselectedVariantProduct.MarketPlaceCode())
 	assert.Equal(t, customVariantCode, graphqlConfigurableWithManualPreselectedVariantProduct.VariantMarketPlaceCode())
@@ -145,7 +146,7 @@ func TestNewGraphqlProductDto(t *testing.T) {
 		BasicProductData: domain.BasicProductData{},
 		Teaser:           domain.TeaserData{},
 	}
-	graphqlActiveVariantProduct := graphqlProductDto.NewGraphqlProductDto(activeVariantProduct, nil)
+	graphqlActiveVariantProduct := graphqlProductDto.NewGraphqlProductDto(activeVariantProduct, nil, nil)
 	assert.Equal(t, "configurable_with_activevariant", graphqlActiveVariantProduct.Type())
 }
 

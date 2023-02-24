@@ -80,6 +80,8 @@ func (ps *ProductService) Get(_ context.Context, marketplaceCode string) (domain
 
 	case "fake_simple_out_of_stock":
 		return ps.FakeSimple(marketplaceCode, false, false, true, true, false), nil
+	case "fake_bundle":
+		return ps.FakeBundle(marketplaceCode, false, false, true, true, false), nil
 	default:
 		jsonProduct, err := ps.getProductFromJSON(marketplaceCode)
 		if err != nil {
@@ -436,4 +438,126 @@ func (ps *ProductService) jsonProductCodes() []string {
 	}
 	sort.Strings(keys)
 	return keys
+}
+
+// FakeBundle generates a bundle fake product
+func (ps *ProductService) FakeBundle(marketplaceCode string, isNew bool, isExclusive bool, isOutOfStock bool, isDiscounted bool, hasFixedPrice bool) domain.BundleProduct {
+	product := domain.BundleProduct{}
+	product.Title = "TypeBundle product"
+	ps.addBasicData(&product.BasicProductData)
+
+	product.Saleable = domain.Saleable{
+		IsSaleable:   true,
+		SaleableTo:   time.Now().Add(time.Hour * time.Duration(1)),
+		SaleableFrom: time.Now().Add(time.Hour * time.Duration(-1)),
+		LoyaltyPrices: []domain.LoyaltyPriceInfo{
+			{
+				Type:    "AwesomeLoyaltyProgram",
+				Default: priceDomain.NewFromFloat(500, "BonusPoints"),
+			},
+		},
+		LoyaltyEarnings: []domain.LoyaltyEarningInfo{
+			{
+				Type:    "AwesomeLoyaltyProgram",
+				Default: priceDomain.NewFromFloat(23.23, "BonusPoints"),
+			},
+		},
+	}
+
+	discountedPrice := 0.0
+	if isDiscounted {
+		discountedPrice = 10.49 + float64(rand.Intn(10))
+		if hasFixedPrice {
+			discountedPrice = 10.49
+		}
+	}
+
+	defaultPrice := 21.37 + float64(rand.Intn(10))
+	if hasFixedPrice {
+		defaultPrice = 20.99
+	}
+
+	product.ActivePrice = ps.getPrice(defaultPrice, discountedPrice)
+	product.MarketPlaceCode = marketplaceCode
+
+	product.CreatedAt = time.Date(2019, 6, 29, 00, 00, 00, 00, time.UTC)
+	product.UpdatedAt = time.Date(2019, 7, 29, 12, 00, 00, 00, time.UTC)
+	product.VisibleFrom = time.Date(2019, 7, 29, 12, 00, 00, 00, time.UTC)
+	product.VisibleTo = time.Now().Add(time.Hour * time.Duration(10))
+
+	product.Teaser = domain.TeaserData{
+		ShortDescription: product.ShortDescription,
+		ShortTitle:       product.Title,
+		URLSlug:          product.BaseData().Attributes["urlSlug"].Value(),
+		Media:            product.Media,
+		MarketPlaceCode:  product.MarketPlaceCode,
+		TeaserPrice: domain.PriceInfo{
+			Default: priceDomain.NewFromFloat(9.99, "SD").GetPayable(),
+		},
+		TeaserLoyaltyPriceInfo: &domain.LoyaltyPriceInfo{
+			Type:    "AwesomeLoyaltyProgram",
+			Default: priceDomain.NewFromFloat(500, "BonusPoints"),
+		},
+		TeaserLoyaltyEarningInfo: &domain.LoyaltyEarningInfo{
+			Type:    "AwesomeLoyaltyProgram",
+			Default: priceDomain.NewFromFloat(23.23, "BonusPoints"),
+		},
+		Badges: product.Badges,
+	}
+
+	if isNew {
+		product.BasicProductData.IsNew = true
+	}
+
+	if isExclusive {
+		product.Attributes["exclusiveProduct"] = domain.Attribute{
+			RawValue: "30002654_yes",
+			Code:     "exclusiveProduct",
+		}
+	}
+
+	product.Stock = ps.getStock(true, domain.StockLevelInStock, 999)
+
+	if isOutOfStock {
+		product.Stock = ps.getStock(false, domain.StockLevelOutOfStock, 0)
+	}
+
+	product.Choices = []domain.Choice{
+		{
+			Identifier: "identifier1",
+			Required:   true,
+			Label:      "first choice",
+			Options: []domain.Option{
+				{
+					MinQty:  1,
+					MaxQty:  1,
+					Product: ps.FakeSimple("simple_option1", false, false, false, true, true),
+				},
+				{
+					MinQty:  1,
+					MaxQty:  1,
+					Product: ps.FakeSimple("simple_option2", false, false, false, true, true),
+				},
+			},
+		},
+		{
+			Identifier: "identifier2",
+			Required:   true,
+			Label:      "second choice",
+			Options: []domain.Option{
+				{
+					MinQty:  1,
+					MaxQty:  1,
+					Product: ps.getFakeConfigurableWithVariants("configurable_option1"),
+				},
+				{
+					MinQty:  1,
+					MaxQty:  1,
+					Product: ps.getFakeConfigurableWithVariants("configurable_option2"),
+				},
+			},
+		},
+	}
+
+	return product
 }
