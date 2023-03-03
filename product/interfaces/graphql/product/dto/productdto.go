@@ -197,8 +197,9 @@ func NewGraphqlProductDto(product productDomain.BasicProduct, preSelectedVariant
 		bundleProduct := product.(productDomain.BundleProductWithActiveChoices)
 
 		bundleDto := BundleProduct{
-			product: bundleProduct.BundleProduct,
-			Choices: mapWithActiveChoices(bundleProduct.Choices, bundleProduct.ActiveChoices),
+			product:      bundleProduct.BundleProduct,
+			Choices:      mapWithActiveChoices(bundleProduct.Choices, bundleProduct.ActiveChoices),
+			bundleConfig: bundleProduct.ExtractBundleConfig(),
 		}
 
 		return bundleDto
@@ -211,8 +212,9 @@ func NewGraphqlProductDto(product productDomain.BasicProduct, preSelectedVariant
 			bundleProductWithActiveChoices, err := bundleProduct.GetBundleProductWithActiveChoices(bundleConfiguration)
 			if err == nil {
 				bundleDto := BundleProduct{
-					product: bundleProductWithActiveChoices.BundleProduct,
-					Choices: mapWithActiveChoices(bundleProductWithActiveChoices.Choices, bundleProductWithActiveChoices.ActiveChoices),
+					product:      bundleProductWithActiveChoices.BundleProduct,
+					Choices:      mapWithActiveChoices(bundleProductWithActiveChoices.Choices, bundleProductWithActiveChoices.ActiveChoices),
+					bundleConfig: bundleConfiguration,
 				}
 
 				return bundleDto

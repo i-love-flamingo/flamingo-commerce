@@ -231,3 +231,32 @@ func (o *Option) UnmarshalJSON(optionData []byte) error {
 	}
 	return nil
 }
+
+func (b BundleProductWithActiveChoices) ExtractBundleConfig() BundleConfiguration {
+	if len(b.ActiveChoices) == 0 {
+		return nil
+	}
+
+	config := make(BundleConfiguration)
+
+	for identifier, choice := range b.ActiveChoices {
+		if choice.Product.Type() == TypeSimple {
+			config[identifier] = ChoiceConfiguration{
+				MarketplaceCode: choice.Product.BaseData().MarketPlaceCode,
+				Qty:             choice.Qty,
+			}
+		}
+		if choice.Product.Type() == TypeConfigurableWithActiveVariant {
+			configurableWithActiveVariant, ok := choice.Product.(ConfigurableProductWithActiveVariant)
+			if ok {
+				config[identifier] = ChoiceConfiguration{
+					MarketplaceCode:        configurableWithActiveVariant.ConfigurableBaseData().MarketPlaceCode,
+					VariantMarketplaceCode: choice.Product.BaseData().MarketPlaceCode,
+					Qty:                    choice.Qty,
+				}
+			}
+		}
+	}
+
+	return config
+}
