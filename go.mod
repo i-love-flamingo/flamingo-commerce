@@ -1,20 +1,20 @@
 module flamingo.me/flamingo-commerce/v3
 
-go 1.17
+go 1.19
 
 require (
 	flamingo.me/dingo v0.2.10
 	flamingo.me/flamingo/v3 v3.4.0
 	flamingo.me/form v1.1.1
-	flamingo.me/graphql v1.8.0
+	flamingo.me/graphql v1.9.0
 	flamingo.me/pugtemplate v1.2.2
-	github.com/99designs/gqlgen v0.17.20
+	github.com/99designs/gqlgen v0.17.21
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/gavv/httpexpect/v2 v2.4.1
 	github.com/go-playground/form/v4 v4.2.0
 	github.com/go-redsync/redsync/v4 v4.6.0
 	github.com/go-test/deep v1.1.0
-	github.com/gomodule/redigo v2.0.0+incompatible
+	github.com/gomodule/redigo v1.8.9
 	github.com/google/go-cmp v0.5.9
 	github.com/google/uuid v1.3.0
 	github.com/leekchan/accounting v1.0.0
@@ -92,7 +92,7 @@ require (
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
-	github.com/mitchellh/mapstructure v1.4.3 // indirect
+	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/moby/sys/mount v0.3.3 // indirect
 	github.com/moby/sys/mountinfo v0.6.2 // indirect
 	github.com/moby/term v0.0.0-20210619224110-3f7ff695adc6 // indirect
@@ -156,4 +156,7 @@ require (
 	gotest.tools/v3 v3.4.0
 )
 
-exclude github.com/coreos/etcd v3.3.10+incompatible
+exclude (
+	github.com/coreos/etcd v3.3.10+incompatible
+	github.com/gomodule/redigo v2.0.0+incompatible
+)
