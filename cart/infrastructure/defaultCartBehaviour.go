@@ -237,6 +237,9 @@ func (cob *DefaultCartBehaviour) updateItem(ctx context.Context, cart *domaincar
 					itemDelivery.Cartitems[k].RowTaxes[0].Amount = taxAmount
 				}
 
+				if itemUpdateCommand.AdditionalData != nil {
+					itemDelivery.Cartitems[k].AdditionalData = itemUpdateCommand.AdditionalData
+				}
 			}
 
 			if itemUpdateCommand.SourceID != nil {
