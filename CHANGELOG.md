@@ -1,5 +1,7 @@
 # Changelog
-## v3.6.0 [upcoming]
+## v3.6.1 [upcoming]
+
+## v3.6.0
 
 **cart**
 * **Breaking**: Move all calculations to cart behaviour implementation
