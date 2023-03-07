@@ -1,12 +1,13 @@
 package application
 
-//go:generate go run github.com/vektra/mockery/v2@v2.10.0 --name Receiver --case snake --structname CartReceiver
+//go:generate go run github.com/vektra/mockery/v2@v2.21.1 --name Receiver --case snake --structname CartReceiver
 
 import (
 	"context"
 
-	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo/v3/framework/web"
+
+	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 )
 
 type (

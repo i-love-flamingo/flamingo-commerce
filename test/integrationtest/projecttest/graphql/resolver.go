@@ -56,6 +56,7 @@ func (r *rootResolver) Inject(
 	rootResolverCommerce_Search_Meta *rootResolverCommerce_Search_Meta,
 	rootResolverMutation *rootResolverMutation,
 	rootResolverQuery *rootResolverQuery,
+
 ) {
 	r.rootResolverCommerce_Cart_AdditionalData = rootResolverCommerce_Cart_AdditionalData
 	r.rootResolverCommerce_Cart_Cart = rootResolverCommerce_Cart_Cart
@@ -67,6 +68,11 @@ func (r *rootResolver) Inject(
 	r.rootResolverCommerce_Search_Meta = rootResolverCommerce_Search_Meta
 	r.rootResolverMutation = rootResolverMutation
 	r.rootResolverQuery = rootResolverQuery
+
+}
+
+func (r *rootResolver) directives() DirectiveRoot {
+	return DirectiveRoot{}
 }
 
 func (r *rootResolver) Commerce_Cart_AdditionalData() Commerce_Cart_AdditionalDataResolver {
