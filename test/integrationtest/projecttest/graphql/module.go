@@ -21,7 +21,7 @@ type Module struct{}
 // Configure sets the graphql.ExecutableSchema binding via a provider, passing in the correct root resolver
 func (*Module) Configure(injector *dingo.Injector) {
 	injector.Bind(new(graphql.ExecutableSchema)).ToProvider(func(root *rootResolver) graphql.ExecutableSchema {
-		return NewExecutableSchema(Config{Resolvers: root})
+		return NewExecutableSchema(Config{Resolvers: root, Directives: root.directives()})
 	})
 
 	injector.BindMulti(new(cobra.Command)).ToProvider(func(root *rootResolver) *cobra.Command {
