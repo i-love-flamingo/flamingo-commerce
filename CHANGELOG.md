@@ -64,7 +64,7 @@
 * GraphQL:
   * Aggregate many input values to `Commerce_Cart_AddToCart` mutation in `Commerce_Cart_AddToCartInput`
   * Add support for bundle and configurable products in `Commerce_Cart_AddToCart` mutation
-
+* Added support for AdditionalData on CartItem Level for the defaultCartBehaviour.
 
 **checkout**
 * Add possibility to have additional data in `PaymentFlowActionTriggerClientSDK`
