@@ -198,3 +198,64 @@ func TestGetBundleProductWithActiveChoices(t *testing.T) {
 		assert.Equal(t, domain.BundleProduct{Choices: b.Choices}, bundleProductWithActiveChoices.BundleProduct)
 	})
 }
+
+func Test_ExtractBundleConfig(t *testing.T) {
+	t.Run("get config with simples and configurbles correctly", func(t *testing.T) {
+		b := domain.BundleProductWithActiveChoices{
+			ActiveChoices: map[domain.Identifier]domain.ActiveChoice{
+				domain.Identifier("identifier1"): {
+					Product:  domain.SimpleProduct{BasicProductData: domain.BasicProductData{MarketPlaceCode: "marketplace1"}},
+					Qty:      1,
+					Required: true,
+				},
+				domain.Identifier("identifier2"): {
+					Product:  domain.SimpleProduct{BasicProductData: domain.BasicProductData{MarketPlaceCode: "marketplace2"}},
+					Qty:      1,
+					Required: true,
+				},
+				domain.Identifier("identifier3"): {
+					Product: domain.ConfigurableProductWithActiveVariant{
+						BasicProductData: domain.BasicProductData{
+							MarketPlaceCode: "marketplace3",
+						},
+						ActiveVariant: domain.Variant{
+							BasicProductData: domain.BasicProductData{
+								MarketPlaceCode: "variantMarketplace3",
+							},
+						},
+					},
+					Qty:      1,
+					Required: true,
+				},
+			},
+		}
+
+		want := domain.BundleConfiguration{
+			domain.Identifier("identifier1"): {
+				MarketplaceCode: "marketplace1",
+				Qty:             1,
+			},
+			domain.Identifier("identifier2"): {
+				MarketplaceCode: "marketplace2",
+				Qty:             1,
+			},
+			domain.Identifier("identifier3"): {
+				MarketplaceCode:        "marketplace3",
+				VariantMarketplaceCode: "variantMarketplace3",
+				Qty:                    1,
+			},
+		}
+
+		config := b.ExtractBundleConfig()
+
+		assert.Equal(t, want, config)
+	})
+
+	t.Run("return nil when active choices are empty", func(t *testing.T) {
+		b := domain.BundleProductWithActiveChoices{}
+
+		config := b.ExtractBundleConfig()
+
+		assert.Nil(t, config)
+	})
+}

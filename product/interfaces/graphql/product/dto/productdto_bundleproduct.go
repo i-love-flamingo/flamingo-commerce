@@ -5,8 +5,9 @@ import productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 type (
 	// BundleProduct A bundle Product with options
 	BundleProduct struct {
-		product productDomain.BundleProduct
-		Choices []Choice
+		product      productDomain.BundleProduct
+		Choices      []Choice
+		bundleConfig productDomain.BundleConfiguration
 	}
 
 	Choice struct {
@@ -30,7 +31,16 @@ func (sp BundleProduct) Type() string {
 
 // Product the bundle product information
 func (sp BundleProduct) Product() productDomain.BasicProduct {
-	return sp.product
+	if sp.bundleConfig == nil {
+		return sp.product
+	}
+
+	product, err := sp.product.GetBundleProductWithActiveChoices(sp.bundleConfig)
+	if err != nil {
+		return sp.product
+	}
+
+	return product
 }
 
 // MarketPlaceCode of the product
