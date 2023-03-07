@@ -1,5 +1,5 @@
 # Changelog
-## v3.7.0 [upcoming]
+## v3.6.1 [upcoming]
 
 ## v3.6.0
 
