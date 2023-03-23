@@ -3,5 +3,15 @@
     "config:base",
     ":semanticCommitTypeAll(chore)"
   ],
-  "prHourlyLimit": 0
+  "prHourlyLimit": 0,
+  "regexManagers": [
+    {
+      "description": "Update go run/go install dependencies",
+      "fileMatch": [".*\\.go$", "Makefile"],
+      "matchStrings": [
+        "\\s*go (run|install) (?<depName>([^@]+)?).*@(?<currentValue>[^\\s]+)"
+      ],
+      "datasourceTemplate": "go"
+    }
+  ]
 }
