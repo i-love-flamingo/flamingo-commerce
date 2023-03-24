@@ -90,6 +90,9 @@
   * Add new `Stock` field to returned `SimpleProduct` from service
   * Add configuration option for delivery codes `commerce.product.fakeservice.deliveryCodes` which can be used to provide different delivery codes for stock.
 
+**general**
+* Add .golangci.yml
+
 ## v3.5.0
 **general**
 * Switch to MIT License

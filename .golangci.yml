@@ -1,0 +1,116 @@
+# Options for analysis running.
+run:
+  concurrency: 4
+  timeout: 5m
+  tests: true
+  # vendor$, third_party$, testdata$, examples$, Godeps$, builtin$
+  skip-dirs-use-default: true
+  modules-download-mode: readonly
+  allow-parallel-runners: false
+  go: '1.19'
+
+# output configuration options
+output:
+  # Format: colored-line-number|line-number|json|tab|checkstyle|code-climate|junit-xml|github-actions
+  #
+  # Multiple can be specified by separating them by comma, output can be provided
+  # for each of them by separating format name and path by colon symbol.
+  # Output path can be either `stdout`, `stderr` or path to the file to write to.
+  # Example: "checkstyle:report.json,colored-line-number"
+  #
+  # Default: colored-line-number
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+  uniq-by-line: true
+  sort-results: true
+
+linters:
+  disable-all: true
+  enable:
+    - bidichk
+    - bodyclose
+    - containedctx
+    - contextcheck
+    - cyclop
+    - durationcheck
+    - errcheck
+    - errname
+    - errorlint
+    - exhaustive
+    - exportloopref
+    - forbidigo
+    - forcetypeassert
+    - gocognit
+    - goconst
+    - gocritic
+    - goerr113
+    - gofmt
+    - gomnd
+    - gomoddirectives
+    - gosec
+    - gosimple
+    - govet
+    - grouper
+    - ineffassign
+    - makezero
+    - misspell
+    - nakedret
+    - nestif
+    - nilerr
+    - nilnil
+    - noctx
+    - nolintlint
+    - nosprintfhostport
+    - paralleltest
+    - prealloc
+    - predeclared
+    - revive
+    - staticcheck
+    - tenv
+    - testpackage
+    - thelper
+    - tparallel
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+    - usestdlibvars
+    - varnamelen
+    - wrapcheck
+    - wsl
+
+issues:
+  new: true
+  fix: false
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - containedctx
+        - forcetypeassert
+        - goconst
+        - goerr113
+        - varnamelen
+        - wrapcheck
+
+linters-settings:
+  gomnd:
+    ignored-functions:
+      - context.WithTimeout
+  nolintlint:
+    require-specific: true
+    require-explanation: true
+  revive:
+    rules:
+      - name: var-naming
+        disabled: true
+  varnamelen:
+    max-distance: 10
+    ignore-type-assert-ok: true
+    ignore-map-index-ok: true
+    ignore-chan-recv-ok: true
+    ignore-names:
+      - err
+      - id
+    ignore-decls:
+      - i int
