@@ -1,6 +1,9 @@
 # Changelog
 ## v3.6.1 [upcoming]
 
+**general**
+* Add .golangci.yml and github workflow
+
 ## v3.6.0
 
 **cart**
@@ -89,9 +92,6 @@
   * Add configuration option `commerce.product.fakeservice.jsonTestDataCategoryFacetItems` which can be used to provide your own category facet items. 
   * Add new `Stock` field to returned `SimpleProduct` from service
   * Add configuration option for delivery codes `commerce.product.fakeservice.deliveryCodes` which can be used to provide different delivery codes for stock.
-
-**general**
-* Add .golangci.yml
 
 ## v3.5.0
 **general**
