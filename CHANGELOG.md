@@ -1,6 +1,9 @@
 # Changelog
 ## v3.6.1 [upcoming]
 
+**general**
+* Add .golangci.yml and github workflow
+
 ## v3.6.0
 
 **cart**
