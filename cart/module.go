@@ -29,6 +29,7 @@ type (
 		enableDefaultCartAdapter      bool
 		enablePlaceOrderLoggerAdapter bool
 		enableCartCache               bool
+		enableRedisStorage            bool
 	}
 )
 
@@ -39,6 +40,7 @@ func (m *Module) Inject(
 		EnableDefaultCartAdapter      bool `inject:"config:commerce.cart.defaultCartAdapter.enabled,optional"`
 		EnableCartCache               bool `inject:"config:commerce.cart.enableCartCache,optional"`
 		EnablePlaceOrderLoggerAdapter bool `inject:"config:commerce.cart.placeOrderLogger.enabled,optional"`
+		EnableRedisStorage            bool `inject:"config:commerce.cart.redis.enabled,optional"`
 	},
 ) {
 	m.routerRegistry = routerRegistry
@@ -46,18 +48,26 @@ func (m *Module) Inject(
 		m.enableDefaultCartAdapter = config.EnableDefaultCartAdapter
 		m.enableCartCache = config.EnableCartCache
 		m.enablePlaceOrderLoggerAdapter = config.EnablePlaceOrderLoggerAdapter
+		m.enableRedisStorage = config.EnableRedisStorage
 	}
 }
 
 // Configure module
 func (m *Module) Configure(injector *dingo.Injector) {
 	if m.enableDefaultCartAdapter {
-		injector.Bind((*infrastructure.CartStorage)(nil)).To(infrastructure.InMemoryCartStorage{}).AsEagerSingleton()
+		if m.enableRedisStorage {
+			injector.Bind((*infrastructure.CartSerializer)(nil)).To(infrastructure.GobSerializer{})
+			injector.Bind((*infrastructure.CartStorage)(nil)).To(infrastructure.RedisStorage{}).AsEagerSingleton()
+		} else {
+			injector.Bind((*infrastructure.CartStorage)(nil)).To(infrastructure.InMemoryCartStorage{}).AsEagerSingleton()
+		}
+
 		injector.Bind((*infrastructure.GiftCardHandler)(nil)).To(infrastructure.DefaultGiftCardHandler{})
 		injector.Bind((*infrastructure.VoucherHandler)(nil)).To(infrastructure.DefaultVoucherHandler{})
 		injector.Bind((*cart.GuestCartService)(nil)).To(infrastructure.DefaultGuestCartService{})
 		injector.Bind((*cart.CustomerCartService)(nil)).To(infrastructure.DefaultCustomerCartService{})
 	}
+
 	if m.enablePlaceOrderLoggerAdapter {
 		injector.Bind((*placeorder.Service)(nil)).To(placeorderAdapter.PlaceOrderLoggerAdapter{})
 	}
@@ -128,6 +138,18 @@ commerce: {
 		}
 		simplePaymentForm: {
 			giftCardPaymentMethod: string | *"voucher"
+		}
+		redis: {
+			enabled: bool | *false
+			keyPrefix: string | *"cart:"
+			ttl: number | *60
+			address: string | *""
+			network: string | *"redis"
+			password: string | *""
+			idle: connections: float | int | *10
+			database: float | int | *0
+			tls: bool | *false
+			clusterMode: bool | *false
 		}
 	}
 }`
