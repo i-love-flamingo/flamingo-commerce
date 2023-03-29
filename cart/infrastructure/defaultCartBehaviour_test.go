@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"flamingo.me/flamingo-commerce/v3/product/infrastructure/fake"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/go-test/deep"
 	"github.com/stretchr/testify/assert"
@@ -491,6 +492,91 @@ func TestInMemoryBehaviour_Restore(t *testing.T) {
 
 		_, err = cob.GetCart(context.Background(), got.ID)
 		assert.Nil(t, err)
+	})
+}
+
+func TestDefaultCartBehaviour_AddToCart(t *testing.T) {
+	t.Parallel()
+
+	t.Run("adding product to empty cart adds delivery", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			&fake.ProductService{},
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
+			ID: "1234",
+		})
+		assert.NoError(t, err)
+
+		got, _, err := cob.AddToCart(context.Background(), cart, "delivery", domaincart.AddRequest{
+			MarketplaceCode: "fake_fixed_simple_without_discounts",
+			Qty:             1,
+		})
+
+		assert.NoError(t, err)
+		assert.Equal(t, 1, len(got.Deliveries))
+		assert.Equal(t, 1, len(got.Deliveries[0].Cartitems))
+		assert.Equal(t, "fake_fixed_simple_without_discounts", got.Deliveries[0].Cartitems[0].MarketplaceCode)
+		assert.Equal(t, 1, got.Deliveries[0].Cartitems[0].Qty)
+		assert.Equal(t, 20.99, got.GrandTotal.FloatAmount())
+	})
+
+	t.Run("adding the same product increases qty", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			&fake.ProductService{},
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
+			ID: "1234",
+			Deliveries: []domaincart.Delivery{
+				{
+					DeliveryInfo: domaincart.DeliveryInfo{
+						Code: "delivery",
+					},
+					Cartitems: []domaincart.Item{
+						{
+							MarketplaceCode: "fake_fixed_simple_without_discounts",
+							Qty:             1,
+							AdditionalData: map[string]string{
+								"1": "a",
+							},
+						},
+					},
+				},
+			},
+		})
+		assert.NoError(t, err)
+
+		got, _, err := cob.AddToCart(context.Background(), cart, "delivery", domaincart.AddRequest{
+			MarketplaceCode: "fake_fixed_simple_without_discounts",
+			Qty:             1,
+			AdditionalData: map[string]string{
+				"2": "b",
+			},
+		})
+
+		assert.NoError(t, err)
+		assert.Equal(t, 1, len(got.Deliveries[0].Cartitems))
+		assert.Equal(t, "fake_fixed_simple_without_discounts", got.Deliveries[0].Cartitems[0].MarketplaceCode)
+		assert.Equal(t, map[string]string{"1": "a", "2": "b"}, got.Deliveries[0].Cartitems[0].AdditionalData)
+		assert.Equal(t, 2, got.Deliveries[0].Cartitems[0].Qty)
+		assert.Equal(t, 41.98, got.GrandTotal.FloatAmount())
 	})
 }
 

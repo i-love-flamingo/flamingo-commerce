@@ -278,27 +278,9 @@ func (cob *DefaultCartBehaviour) AddToCart(ctx context.Context, cart *domaincart
 		newCart.Deliveries = append(newCart.Deliveries, *delivery)
 	}
 
-	// has cart current delivery, check if there is an item present for this delivery
-	delivery, _ := newCart.GetDeliveryByCode(deliveryCode)
-
-	// create and add new item
-	cartItem, err := cob.buildItemForCart(ctx, addRequest)
+	delivery, err := cob.addToDelivery(ctx, newCart.GetDeliveryByCodeWithoutBool(deliveryCode), addRequest)
 	if err != nil {
 		return nil, nil, err
-	}
-
-	// does the item already exist?
-	itemFound := false
-
-	for i, item := range delivery.Cartitems {
-		if item.MarketplaceCode == addRequest.MarketplaceCode {
-			delivery.Cartitems[i] = *cartItem
-			itemFound = true
-		}
-	}
-
-	if !itemFound {
-		delivery.Cartitems = append(delivery.Cartitems, *cartItem)
 	}
 
 	for k, del := range newCart.Deliveries {
@@ -314,6 +296,43 @@ func (cob *DefaultCartBehaviour) AddToCart(ctx context.Context, cart *domaincart
 	}
 
 	return cob.resetPaymentSelectionIfInvalid(ctx, &newCart)
+}
+
+// has cart current delivery, check if there is an item present for this delivery
+func (cob *DefaultCartBehaviour) addToDelivery(ctx context.Context, delivery *domaincart.Delivery, addRequest domaincart.AddRequest) (*domaincart.Delivery, error) {
+	for i, item := range delivery.Cartitems {
+		if item.MarketplaceCode == addRequest.MarketplaceCode {
+			addRequest.Qty += item.Qty
+
+			if addRequest.AdditionalData == nil && len(item.AdditionalData) > 0 {
+				addRequest.AdditionalData = make(map[string]string)
+			}
+
+			for key, val := range item.AdditionalData {
+				addRequest.AdditionalData[key] = val
+			}
+
+			// create and add new item
+			cartItem, err := cob.buildItemForCart(ctx, addRequest)
+			if err != nil {
+				return nil, err
+			}
+
+			delivery.Cartitems[i] = *cartItem
+
+			return delivery, nil
+		}
+	}
+
+	// create and add new item
+	cartItem, err := cob.buildItemForCart(ctx, addRequest)
+	if err != nil {
+		return nil, err
+	}
+
+	delivery.Cartitems = append(delivery.Cartitems, *cartItem)
+
+	return delivery, nil
 }
 
 func (cob *DefaultCartBehaviour) buildItemForCart(ctx context.Context, addRequest domaincart.AddRequest) (*domaincart.Item, error) {
