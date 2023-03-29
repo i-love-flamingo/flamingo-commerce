@@ -580,6 +580,58 @@ func TestDefaultCartBehaviour_AddToCart(t *testing.T) {
 	})
 }
 
+func TestDefaultCartBehaviour_UpdatePurchaser(t *testing.T) {
+	t.Parallel()
+
+	t.Run("additional data custom attributes are merged", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			nil,
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
+			ID: "1234",
+			Deliveries: []domaincart.Delivery{
+				{
+					DeliveryInfo: domaincart.DeliveryInfo{
+						Code: "delivery",
+					},
+				},
+			},
+			AdditionalData: domaincart.AdditionalData{
+				CustomAttributes: map[string]string{
+					"1": "a",
+				},
+			},
+		})
+		assert.NoError(t, err)
+
+		got, _, err := cob.UpdatePurchaser(
+			context.Background(),
+			cart,
+			&domaincart.Person{
+				Address: &domaincart.Address{
+					Firstname: "test",
+				},
+			},
+			&domaincart.AdditionalData{
+				CustomAttributes: map[string]string{
+					"2": "b",
+				},
+			})
+		assert.NoError(t, err)
+		assert.Equal(t, "test", got.Purchaser.Address.Firstname)
+		assert.Equal(t, map[string]string{"1": "a", "2": "b"}, got.AdditionalData.CustomAttributes)
+	})
+}
+
 func newInMemoryStorage() *InMemoryCartStorage {
 	result := &InMemoryCartStorage{}
 	result.Inject()

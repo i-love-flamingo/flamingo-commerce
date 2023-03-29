@@ -485,20 +485,27 @@ func (cob *DefaultCartBehaviour) CleanDelivery(ctx context.Context, cart *domain
 	return cob.resetPaymentSelectionIfInvalid(ctx, &newCart)
 }
 
-// UpdatePurchaser @todo implement when needed
+// UpdatePurchaser - updates purchaser
 func (cob *DefaultCartBehaviour) UpdatePurchaser(ctx context.Context, cart *domaincart.Cart, purchaser *domaincart.Person, additionalData *domaincart.AdditionalData) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	newCart, err := cart.Clone()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("cart.infrastructure.DefaultCartBehaviour: error on cloning cart: %w", err)
 	}
 
 	newCart.Purchaser = purchaser
 
 	if additionalData != nil {
-		newCart.AdditionalData.CustomAttributes = additionalData.CustomAttributes
+		if newCart.AdditionalData.CustomAttributes == nil {
+			newCart.AdditionalData.CustomAttributes = make(map[string]string)
+		}
+
+		for key, val := range additionalData.CustomAttributes {
+			newCart.AdditionalData.CustomAttributes[key] = val
+		}
 	}
 
 	cob.collectTotals(&newCart)
+
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
