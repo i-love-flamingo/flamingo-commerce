@@ -354,3 +354,59 @@ func TestRedisStorage_RemoveCart(t *testing.T) {
 		runTestCases(t, store, client)
 	})
 }
+
+func TestRedisStorage_MultipleStoragesSingleRedis(t *testing.T) {
+	t.Parallel()
+
+	runTestCase := func(t *testing.T, storageA, storageB *infrastructure.RedisStorage) {
+		t.Helper()
+
+		assert.True(t, storageA.HasCart(context.Background(), existingKey))
+		assert.True(t, storageB.HasCart(context.Background(), existingKey))
+
+		cartA, err := storageA.GetCart(context.Background(), existingKey)
+		assert.NoError(t, err)
+
+		cartA.EntityID = "storageA"
+
+		err = storageA.StoreCart(context.Background(), cartA)
+		assert.NoError(t, err)
+
+		cartB, err := storageB.GetCart(context.Background(), existingKey)
+		assert.NoError(t, err)
+		assert.Equal(t, "storageA", cartB.EntityID)
+
+		err = storageB.RemoveCart(context.Background(), cartB)
+		assert.NoError(t, err)
+
+		assert.False(t, storageA.HasCart(context.Background(), existingKey))
+		assert.False(t, storageB.HasCart(context.Background(), existingKey))
+	}
+
+	t.Run("local-redis", func(t *testing.T) {
+		t.Parallel()
+
+		if _, err := exec.LookPath("redis-server"); err != nil {
+			t.Skip("redis-server not installed")
+		}
+
+		server, _ := startUpLocalRedis(t)
+		storeA := getRedisStorage("unix", server.Socket())
+		storeB := getRedisStorage("unix", server.Socket())
+		runTestCase(t, storeA, storeB)
+	})
+
+	t.Run("docker-redis", func(t *testing.T) {
+		t.Parallel()
+
+		if _, err := exec.LookPath("docker"); err != nil {
+			t.Skip("docker not installed")
+		}
+
+		shutdown, address, _ := startUpDockerRedis(t)
+		defer shutdown()
+		storeA := getRedisStorage("tcp", address)
+		storeB := getRedisStorage("tcp", address)
+		runTestCase(t, storeA, storeB)
+	})
+}
