@@ -41,7 +41,7 @@ var (
 	_ CartStorage    = &RedisStorage{}
 	_ CartSerializer = &GobSerializer{}
 
-	errCartIsNil = errors.New("cart is nil")
+	ErrCartIsNil = errors.New("cart is nil")
 )
 
 // Inject dependencies and build redis client
@@ -122,7 +122,7 @@ func (r *RedisStorage) HasCart(ctx context.Context, id string) bool {
 // StoreCart serializes a cart and stores it in redis
 func (r *RedisStorage) StoreCart(ctx context.Context, cart *cartDomain.Cart) error {
 	if cart == nil {
-		return errCartIsNil
+		return ErrCartIsNil
 	}
 
 	b, err := r.serializer.Serialize(cart)
@@ -141,7 +141,7 @@ func (r *RedisStorage) StoreCart(ctx context.Context, cart *cartDomain.Cart) err
 // RemoveCart deletes a cart from redis
 func (r *RedisStorage) RemoveCart(ctx context.Context, cart *cartDomain.Cart) error {
 	if cart == nil {
-		return errCartIsNil
+		return ErrCartIsNil
 	}
 
 	err := r.client.Del(ctx, r.keyPrefix+cart.ID).Err()

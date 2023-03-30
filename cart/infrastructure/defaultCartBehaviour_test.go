@@ -17,6 +17,7 @@ import (
 
 func TestInMemoryBehaviour_CleanCart(t *testing.T) {
 	t.Parallel()
+
 	tests := []struct {
 		name       string
 		want       *domaincart.Cart
@@ -77,10 +78,12 @@ func TestInMemoryBehaviour_CleanCart(t *testing.T) {
 
 func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
 	t.Parallel()
+
 	type args struct {
 		cart         *domaincart.Cart
 		deliveryCode string
 	}
+
 	tests := []struct {
 		name       string
 		args       args
@@ -183,10 +186,12 @@ func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
 
 func TestInMemoryBehaviour_ApplyVoucher(t *testing.T) {
 	t.Parallel()
+
 	type args struct {
 		cart        *domaincart.Cart
 		voucherCode string
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -216,6 +221,7 @@ func TestInMemoryBehaviour_ApplyVoucher(t *testing.T) {
 			wantErr: true,
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cob := &DefaultCartBehaviour{}
@@ -241,11 +247,13 @@ func TestInMemoryBehaviour_ApplyVoucher(t *testing.T) {
 
 func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 	t.Parallel()
+
 	type args struct {
 		ctx                context.Context
 		cart               *domaincart.Cart
 		couponCodeToRemove string
 	}
+
 	tests := []struct {
 		name string
 		args args
@@ -323,10 +331,12 @@ func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 
 func TestInMemoryBehaviour_ApplyGiftCard(t *testing.T) {
 	t.Parallel()
+
 	type args struct {
 		cart         *domaincart.Cart
 		giftCardCode string
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -387,10 +397,12 @@ func TestInMemoryBehaviour_ApplyGiftCard(t *testing.T) {
 
 func TestInMemoryBehaviour_RemoveGiftCard(t *testing.T) {
 	t.Parallel()
+
 	type args struct {
 		cart         *domaincart.Cart
 		giftCardCode string
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -451,7 +463,10 @@ func TestInMemoryBehaviour_RemoveGiftCard(t *testing.T) {
 
 func TestInMemoryBehaviour_Complete(t *testing.T) {
 	t.Parallel()
+
 	t.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+
 		cob := &DefaultCartBehaviour{}
 		cob.Inject(
 			newInMemoryStorage(),
@@ -475,7 +490,10 @@ func TestInMemoryBehaviour_Complete(t *testing.T) {
 
 func TestInMemoryBehaviour_Restore(t *testing.T) {
 	t.Parallel()
+
 	t.Run("happy path", func(t *testing.T) {
+		t.Parallel()
+
 		cob := &DefaultCartBehaviour{}
 		cob.Inject(
 			newInMemoryStorage(),
@@ -492,6 +510,362 @@ func TestInMemoryBehaviour_Restore(t *testing.T) {
 
 		_, err = cob.GetCart(context.Background(), got.ID)
 		assert.Nil(t, err)
+	})
+}
+
+func TestDefaultCartBehaviour_DeleteItem(t *testing.T) {
+	t.Parallel()
+
+	t.Run("cart does not exist", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			&fake.ProductService{},
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart := &domaincart.Cart{
+			ID: "1234",
+			Deliveries: []domaincart.Delivery{
+				{
+					DeliveryInfo: domaincart.DeliveryInfo{
+						Code: "delivery",
+					},
+					Cartitems: []domaincart.Item{
+						{
+							ID: "abc",
+						},
+					},
+				},
+			},
+		}
+
+		_, _, err := cob.DeleteItem(context.Background(), cart, "abc", "delivery")
+		assert.Error(t, err)
+	})
+
+	t.Run("item in first place in delivery deleted", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			&fake.ProductService{},
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
+			ID: "1234",
+			Deliveries: []domaincart.Delivery{
+				{
+					DeliveryInfo: domaincart.DeliveryInfo{
+						Code: "delivery",
+					},
+					Cartitems: []domaincart.Item{
+						{
+							ID: "id-1",
+						},
+						{
+							ID: "id-2",
+						},
+						{
+							ID: "id-3",
+						},
+					},
+				},
+			},
+		})
+		assert.NoError(t, err)
+
+		got, _, err := cob.DeleteItem(context.Background(), cart, "id-1", "delivery")
+		assert.NoError(t, err)
+		assert.Equal(t, 2, len(got.Deliveries[0].Cartitems))
+		assert.Equal(t, "id-2", got.Deliveries[0].Cartitems[0].ID)
+		assert.Equal(t, "id-3", got.Deliveries[0].Cartitems[1].ID)
+	})
+
+	t.Run("item in middle of delivery deleted", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			&fake.ProductService{},
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
+			ID: "1234",
+			Deliveries: []domaincart.Delivery{
+				{
+					DeliveryInfo: domaincart.DeliveryInfo{
+						Code: "delivery",
+					},
+					Cartitems: []domaincart.Item{
+						{
+							ID: "id-1",
+						},
+						{
+							ID: "id-2",
+						},
+						{
+							ID: "id-3",
+						},
+					},
+				},
+			},
+		})
+		assert.NoError(t, err)
+
+		got, _, err := cob.DeleteItem(context.Background(), cart, "id-2", "delivery")
+		assert.NoError(t, err)
+		assert.Equal(t, 2, len(got.Deliveries[0].Cartitems))
+		assert.Equal(t, "id-1", got.Deliveries[0].Cartitems[0].ID)
+		assert.Equal(t, "id-3", got.Deliveries[0].Cartitems[1].ID)
+	})
+
+	t.Run("item in last place in delivery deleted", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			&fake.ProductService{},
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
+			ID: "1234",
+			Deliveries: []domaincart.Delivery{
+				{
+					DeliveryInfo: domaincart.DeliveryInfo{
+						Code: "delivery",
+					},
+					Cartitems: []domaincart.Item{
+						{
+							ID: "id-1",
+						},
+						{
+							ID: "id-2",
+						},
+						{
+							ID: "id-3",
+						},
+					},
+				},
+			},
+		})
+		assert.NoError(t, err)
+
+		got, _, err := cob.DeleteItem(context.Background(), cart, "id-3", "delivery")
+		assert.NoError(t, err)
+		assert.Equal(t, 2, len(got.Deliveries[0].Cartitems))
+		assert.Equal(t, "id-1", got.Deliveries[0].Cartitems[0].ID)
+		assert.Equal(t, "id-2", got.Deliveries[0].Cartitems[1].ID)
+	})
+
+	t.Run("item in different delivery not deleted", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			&fake.ProductService{},
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
+			ID: "1234",
+			Deliveries: []domaincart.Delivery{
+				{
+					DeliveryInfo: domaincart.DeliveryInfo{
+						Code: "delivery",
+					},
+					Cartitems: []domaincart.Item{
+						{
+							ID: "abc",
+						},
+					},
+				},
+			},
+		})
+		assert.NoError(t, err)
+
+		got, _, err := cob.DeleteItem(context.Background(), cart, "abc", "delivery-2")
+		assert.NoError(t, err)
+		assert.Equal(t, 1, len(got.Deliveries[0].Cartitems))
+		assert.Equal(t, "abc", got.Deliveries[0].Cartitems[0].ID)
+	})
+}
+
+func TestDefaultCartBehaviour_UpdateItems(t *testing.T) {
+	t.Parallel()
+
+	t.Run("cart does not exist", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			&fake.ProductService{},
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart := &domaincart.Cart{
+			ID: "1234",
+			Deliveries: []domaincart.Delivery{
+				{
+					DeliveryInfo: domaincart.DeliveryInfo{
+						Code: "delivery",
+					},
+					Cartitems: []domaincart.Item{
+						{
+							ID: "abc",
+						},
+					},
+				},
+			},
+		}
+
+		_, _, err := cob.UpdateItems(context.Background(), cart, []domaincart.ItemUpdateCommand{})
+		assert.Error(t, err)
+	})
+
+	t.Run("item not found in delivery", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			&fake.ProductService{},
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
+			ID: "1234",
+		})
+		assert.NoError(t, err)
+
+		got, _, err := cob.UpdateItems(context.Background(), cart, []domaincart.ItemUpdateCommand{
+			{
+				ItemID: "abc",
+			},
+		})
+		assert.Empty(t, got)
+		assert.EqualError(t, err, "cart.infrastructure.DefaultCartBehaviour: error on finding delivery of item: delivery not found for \"abc\"")
+	})
+
+	t.Run("item updated in delivery", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			&fake.ProductService{},
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
+			ID: "1234",
+			Deliveries: []domaincart.Delivery{
+				{
+					Cartitems: []domaincart.Item{
+						{
+							ID:              "abc",
+							Qty:             1,
+							MarketplaceCode: "fake_fixed_simple_without_discounts",
+							AdditionalData: map[string]string{
+								"1": "a",
+							},
+							SinglePriceGross: priceDomain.NewFromFloat(20.99, "EUR"),
+						},
+					},
+				},
+			},
+		})
+		assert.NoError(t, err)
+
+		qty := 2
+		got, _, err := cob.UpdateItems(context.Background(), cart, []domaincart.ItemUpdateCommand{
+			{
+				ItemID: "abc",
+				Qty:    &qty,
+				AdditionalData: map[string]string{
+					"2": "b",
+				},
+			},
+		})
+		assert.NoError(t, err)
+		assert.Equal(t, map[string]string{"2": "b"}, got.Deliveries[0].Cartitems[0].AdditionalData)
+		assert.Equal(t, 2, got.Deliveries[0].Cartitems[0].Qty)
+		assert.Equal(t, 41.98, got.GrandTotal.FloatAmount())
+	})
+
+	t.Run("item updated with qty 0 is deleted", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			&fake.ProductService{},
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
+			ID: "1234",
+			Deliveries: []domaincart.Delivery{
+				{
+					Cartitems: []domaincart.Item{
+						{
+							ID:              "abc",
+							Qty:             1,
+							MarketplaceCode: "fake_fixed_simple_without_discounts",
+						},
+					},
+				},
+			},
+		})
+		assert.NoError(t, err)
+
+		qty := 0
+		got, _, err := cob.UpdateItems(context.Background(), cart, []domaincart.ItemUpdateCommand{
+			{
+				ItemID: "abc",
+				Qty:    &qty,
+			},
+		})
+		assert.NoError(t, err)
+		assert.Equal(t, 0, len(got.Deliveries[0].Cartitems))
+		assert.Equal(t, 0.0, got.GrandTotal.FloatAmount())
 	})
 }
 
@@ -632,6 +1006,241 @@ func TestDefaultCartBehaviour_UpdatePurchaser(t *testing.T) {
 	})
 }
 
+func TestDefaultCartBehaviour_UpdateBillingAddress(t *testing.T) {
+	t.Parallel()
+
+	t.Run("add billing address", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			nil,
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{ID: "1234"})
+		assert.NoError(t, err)
+
+		got, _, err := cob.UpdateBillingAddress(context.Background(), cart, domaincart.Address{
+			Firstname: "first",
+		})
+		assert.NoError(t, err)
+		assert.Equal(t, "first", got.BillingAddress.Firstname)
+	})
+
+	t.Run("update billing address", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			nil,
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
+			ID: "1234",
+			BillingAddress: &domaincart.Address{
+				Firstname: "first-1",
+			},
+		})
+		assert.NoError(t, err)
+
+		got, _, err := cob.UpdateBillingAddress(context.Background(), cart, domaincart.Address{
+			Firstname: "first-2",
+		})
+		assert.NoError(t, err)
+		assert.Equal(t, "first-2", got.BillingAddress.Firstname)
+	})
+}
+
+func TestDefaultCartBehaviour_UpdateAdditionalData(t *testing.T) {
+	t.Parallel()
+
+	t.Run("add additional data", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			nil,
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{ID: "1234"})
+		assert.NoError(t, err)
+
+		got, _, err := cob.UpdateAdditionalData(context.Background(), cart, &domaincart.AdditionalData{
+			ReservedOrderID:  "id-1",
+			CustomAttributes: map[string]string{"1": "a"},
+		})
+		assert.NoError(t, err)
+		assert.Equal(t, "id-1", got.AdditionalData.ReservedOrderID)
+		assert.Equal(t, map[string]string{"1": "a"}, got.AdditionalData.CustomAttributes)
+	})
+
+	t.Run("update additional data", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			nil,
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
+			ID: "1234",
+			AdditionalData: domaincart.AdditionalData{
+				ReservedOrderID:  "id-1",
+				CustomAttributes: map[string]string{"1": "a"},
+			},
+		})
+		assert.NoError(t, err)
+
+		got, _, err := cob.UpdateAdditionalData(context.Background(), cart, &domaincart.AdditionalData{
+			ReservedOrderID:  "id-2",
+			CustomAttributes: map[string]string{"2": "b"},
+		})
+		assert.NoError(t, err)
+		assert.Equal(t, "id-2", got.AdditionalData.ReservedOrderID)
+		assert.Equal(t, map[string]string{"2": "b"}, got.AdditionalData.CustomAttributes)
+	})
+}
+
+func TestDefaultCartBehaviour_UpdatePaymentSelection(t *testing.T) {
+	t.Parallel()
+
+	t.Run("add payment selection", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			nil,
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{ID: "1234"})
+		assert.NoError(t, err)
+
+		got, _, err := cob.UpdatePaymentSelection(context.Background(), cart, &domaincart.DefaultPaymentSelection{
+			GatewayProp: "gateway-1",
+		})
+		assert.NoError(t, err)
+		assert.Equal(t, "gateway-1", got.PaymentSelection.Gateway())
+	})
+
+	t.Run("update payment selection", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			nil,
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
+			ID: "1234",
+			PaymentSelection: &domaincart.DefaultPaymentSelection{
+				GatewayProp: "gateway-1",
+			},
+		})
+		assert.NoError(t, err)
+
+		got, _, err := cob.UpdatePaymentSelection(context.Background(), cart, &domaincart.DefaultPaymentSelection{
+			GatewayProp: "gateway-2",
+		})
+		assert.NoError(t, err)
+		assert.Equal(t, "gateway-2", got.PaymentSelection.Gateway())
+	})
+}
+
+func TestDefaultCartBehaviour_UpdateDeliveryInfo(t *testing.T) {
+	t.Parallel()
+
+	t.Run("add new delivery info", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			nil,
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{ID: "1234"})
+		assert.NoError(t, err)
+
+		got, _, err := cob.UpdateDeliveryInfo(context.Background(), cart, "delivery", domaincart.DeliveryInfoUpdateCommand{
+			DeliveryInfo: domaincart.DeliveryInfo{
+				Code: "delivery",
+			},
+		})
+		assert.NoError(t, err)
+		assert.Equal(t, 1, len(got.Deliveries))
+		assert.Equal(t, "delivery", got.Deliveries[0].DeliveryInfo.Code)
+	})
+
+	t.Run("update delivery info", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			nil,
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
+			ID: "1234",
+			Deliveries: []domaincart.Delivery{
+				{
+					DeliveryInfo: domaincart.DeliveryInfo{
+						Code: "delivery-1",
+					},
+				},
+			},
+		})
+		assert.NoError(t, err)
+
+		got, _, err := cob.UpdateDeliveryInfo(context.Background(), cart, "delivery-1", domaincart.DeliveryInfoUpdateCommand{
+			DeliveryInfo: domaincart.DeliveryInfo{
+				Code: "delivery-2",
+			},
+		})
+		assert.NoError(t, err)
+		assert.Equal(t, 1, len(got.Deliveries))
+		assert.Equal(t, "delivery-2", got.Deliveries[0].DeliveryInfo.Code)
+	})
+}
+
 func newInMemoryStorage() *InMemoryCartStorage {
 	result := &InMemoryCartStorage{}
 	result.Inject()
@@ -640,7 +1249,11 @@ func newInMemoryStorage() *InMemoryCartStorage {
 }
 
 func TestDefaultCartBehaviour_createCartItemFromProduct(t *testing.T) {
+	t.Parallel()
+
 	t.Run("gross", func(t *testing.T) {
+		t.Parallel()
+
 		cob := DefaultCartBehaviour{}
 		cob.Inject(nil, nil, flamingo.NullLogger{}, nil, nil, &struct {
 			DefaultTaxRate  float64 `inject:"config:commerce.cart.defaultCartAdapter.defaultTaxRate,optional"`
@@ -666,6 +1279,8 @@ func TestDefaultCartBehaviour_createCartItemFromProduct(t *testing.T) {
 	})
 
 	t.Run("net", func(t *testing.T) {
+		t.Parallel()
+
 		cob := DefaultCartBehaviour{}
 		cob.Inject(nil, nil, flamingo.NullLogger{}, nil, nil, &struct {
 			DefaultTaxRate  float64 `inject:"config:commerce.cart.defaultCartAdapter.defaultTaxRate,optional"`
@@ -689,5 +1304,4 @@ func TestDefaultCartBehaviour_createCartItemFromProduct(t *testing.T) {
 		assert.Equal(t, 50.00*2, item.RowPriceNet.FloatAmount())
 		assert.Equal(t, 10.0, item.TotalTaxAmount().FloatAmount())
 	})
-
 }

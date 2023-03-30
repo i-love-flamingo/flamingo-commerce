@@ -54,7 +54,23 @@ type (
 
 	// DefaultVoucherHandler implements a basic voucher handler
 	DefaultVoucherHandler struct{}
+
+	CartNotFoundError struct {
+		action string
+		id     string
+	}
 )
+
+func (e *CartNotFoundError) Error() string {
+	return fmt.Sprintf("cart.infrastructure.DefaultCartBehaviour: Cannot %v - Cart with id %v not existent", e.action, e.id)
+}
+
+func notFound(action, id string) *CartNotFoundError {
+	return &CartNotFoundError{
+		action: action,
+		id:     id,
+	}
+}
 
 var (
 	_ domaincart.ModifyBehaviour             = (*DefaultCartBehaviour)(nil)
@@ -62,13 +78,14 @@ var (
 	_ domaincart.CompleteBehaviour           = (*DefaultCartBehaviour)(nil)
 	_ GiftCardHandler                        = (*DefaultGiftCardHandler)(nil)
 	_ VoucherHandler                         = (*DefaultVoucherHandler)(nil)
+	_ error                                  = (*CartNotFoundError)(nil)
 )
 
 // Inject dependencies
 func (cob *DefaultCartBehaviour) Inject(
-	CartStorage CartStorage,
-	ProductService domain.ProductService,
-	Logger flamingo.Logger,
+	cartStorage CartStorage,
+	productService domain.ProductService,
+	logger flamingo.Logger,
 	voucherHandler VoucherHandler,
 	giftCardHandler GiftCardHandler,
 	config *struct {
@@ -77,14 +94,16 @@ func (cob *DefaultCartBehaviour) Inject(
 		DefaultCurrency string  `inject:"config:commerce.cart.defaultCartAdapter.defaultCurrency"`
 	},
 ) {
-	cob.cartStorage = CartStorage
-	cob.productService = ProductService
-	cob.logger = Logger.WithField(flamingo.LogKeyCategory, "inmemorybehaviour")
+	cob.cartStorage = cartStorage
+	cob.productService = productService
+	cob.logger = logger.WithField(flamingo.LogKeyCategory, "inmemorybehaviour")
 	cob.voucherHandler = voucherHandler
 	cob.giftCardHandler = giftCardHandler
+
 	if config != nil {
 		cob.defaultTaxRate = config.DefaultTaxRate
 		cob.defaultCurrency = config.DefaultCurrency
+
 		if config.ProductPricing == "gross" {
 			cob.grossPricing = true
 		}
@@ -97,6 +116,7 @@ func (cob *DefaultCartBehaviour) Complete(ctx context.Context, cart *domaincart.
 	if err != nil {
 		return nil, nil, err
 	}
+
 	return cart, nil, nil
 }
 
@@ -104,89 +124,72 @@ func (cob *DefaultCartBehaviour) Complete(ctx context.Context, cart *domaincart.
 func (cob *DefaultCartBehaviour) Restore(ctx context.Context, cart *domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	newCart, err := cart.Clone()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on cloning cart")
 	}
+
 	cob.collectTotals(cart)
+
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
 	if err != nil {
 		return nil, nil, err
 	}
+
 	return &newCart, nil, nil
 }
 
 // DeleteItem removes an item from the cart
 func (cob *DefaultCartBehaviour) DeleteItem(ctx context.Context, cart *domaincart.Cart, itemID string, deliveryCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	if !cob.cartStorage.HasCart(ctx, cart.ID) {
-		return nil, nil, fmt.Errorf("newCart.infrastructure.DefaultCartBehaviour: Cannot delete - Guestcart with id %v not existent", cart.ID)
+		return nil, nil, notFound("delete", cart.ID)
 	}
 
 	newCart, err := cart.Clone()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on cloning cart")
 	}
 
 	if newDelivery, ok := newCart.GetDeliveryByCode(deliveryCode); ok {
 		cob.logger.WithContext(ctx).Info("Inmemory Service Delete %v in %#v", itemID, newDelivery.Cartitems)
-		for k, item := range newDelivery.Cartitems {
-			if item.ID == itemID {
-				if len(newDelivery.Cartitems) > k {
-					newDelivery.Cartitems = append(newDelivery.Cartitems[:k], newDelivery.Cartitems[k+1:]...)
-				} else {
-					newDelivery.Cartitems = newDelivery.Cartitems[:k]
-				}
 
-				// update the delivery with the new info
-				for j, delivery := range newCart.Deliveries {
-					if deliveryCode == delivery.DeliveryInfo.Code {
-						newCart.Deliveries[j] = *newDelivery
-					}
-				}
+		for index, item := range newDelivery.Cartitems {
+			if item.ID == itemID {
+				newDelivery.Cartitems = append(newDelivery.Cartitems[:index], newDelivery.Cartitems[index+1:]...)
+				break
+			}
+		}
+
+		// update the delivery with the new info
+		for index, delivery := range newCart.Deliveries {
+			if deliveryCode == delivery.DeliveryInfo.Code {
+				newCart.Deliveries[index] = *newDelivery
 			}
 		}
 	}
 
 	cob.collectTotals(&newCart)
+
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "newCart.infrastructure.DefaultCartBehaviour: error on saving newCart")
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving newCart")
 	}
+
 	return cob.resetPaymentSelectionIfInvalid(ctx, &newCart)
 }
 
 // UpdateItem updates a cart item
 func (cob *DefaultCartBehaviour) UpdateItem(ctx context.Context, cart *domaincart.Cart, itemUpdateCommand domaincart.ItemUpdateCommand) (*domaincart.Cart, domaincart.DeferEvents, error) {
-	if !cob.cartStorage.HasCart(ctx, cart.ID) {
-		return nil, nil, fmt.Errorf("cart.infrastructure.DefaultCartBehaviour: Cannot add - Guestcart with id %v not existent", cart.ID)
-	}
-
-	newCart, err := cart.Clone()
-	if err != nil {
-		return nil, nil, err
-	}
-
-	err = cob.updateItem(ctx, &newCart, itemUpdateCommand)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	cob.collectTotals(&newCart)
-	err = cob.cartStorage.StoreCart(ctx, &newCart)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
-	}
-
-	return cob.resetPaymentSelectionIfInvalid(ctx, &newCart)
+	return cob.UpdateItems(ctx, cart, []domaincart.ItemUpdateCommand{itemUpdateCommand})
 }
 
 // UpdateItems updates multiple cart items
 func (cob *DefaultCartBehaviour) UpdateItems(ctx context.Context, cart *domaincart.Cart, itemUpdateCommands []domaincart.ItemUpdateCommand) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	if !cob.cartStorage.HasCart(ctx, cart.ID) {
-		return nil, nil, fmt.Errorf("cart.infrastructure.DefaultCartBehaviour: Cannot update - Guestcart with id %v not existent", cart.ID)
+		return nil, nil, notFound("update", cart.ID)
 	}
 
 	newCart, err := cart.Clone()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on cloning cart")
 	}
 
 	for _, itemUpdateCommand := range itemUpdateCommands {
@@ -197,6 +200,7 @@ func (cob *DefaultCartBehaviour) UpdateItems(ctx context.Context, cart *domainca
 	}
 
 	cob.collectTotals(&newCart)
+
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
@@ -208,51 +212,62 @@ func (cob *DefaultCartBehaviour) UpdateItems(ctx context.Context, cart *domainca
 func (cob *DefaultCartBehaviour) updateItem(ctx context.Context, cart *domaincart.Cart, itemUpdateCommand domaincart.ItemUpdateCommand) error {
 	itemDelivery, err := cart.GetDeliveryByItemID(itemUpdateCommand.ItemID)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on finding delivery of item")
 	}
 
 	cob.logger.WithContext(ctx).Info("Inmemory Service Update %v in %#v", itemUpdateCommand.ItemID, itemDelivery.Cartitems)
-	for k, item := range itemDelivery.Cartitems {
-		if itemUpdateCommand.ItemID == item.ID {
-			if itemUpdateCommand.Qty != nil {
-				itemDelivery.Cartitems[k].Qty = *itemUpdateCommand.Qty
 
-				gross := item.SinglePriceGross.Clone().Amount().Mul(item.SinglePriceGross.Amount(), big.NewFloat(float64(*itemUpdateCommand.Qty)))
-				itemDelivery.Cartitems[k].RowPriceGross = priceDomain.NewFromBigFloat(*gross, item.SinglePriceGross.Currency())
+	for index, item := range itemDelivery.Cartitems {
+		if itemUpdateCommand.ItemID != item.ID {
+			continue
+		}
 
-				net := item.SinglePriceNet.Clone().Amount().Mul(item.SinglePriceNet.Amount(), big.NewFloat(float64(*itemUpdateCommand.Qty)))
-				itemDelivery.Cartitems[k].RowPriceNet = priceDomain.NewFromBigFloat(*net, item.SinglePriceNet.Currency())
+		if itemUpdateCommand.SourceID != nil {
+			itemDelivery.Cartitems[index].SourceID = *itemUpdateCommand.SourceID
+		}
 
-				itemDelivery.Cartitems[k].RowPriceGrossWithDiscount = itemDelivery.Cartitems[k].RowPriceGross
-				itemDelivery.Cartitems[k].RowPriceNetWithDiscount = itemDelivery.Cartitems[k].RowPriceNet
+		if itemUpdateCommand.AdditionalData != nil {
+			itemDelivery.Cartitems[index].AdditionalData = itemUpdateCommand.AdditionalData
+		}
 
-				itemDelivery.Cartitems[k].RowPriceGrossWithItemRelatedDiscount = itemDelivery.Cartitems[k].RowPriceGross
-				itemDelivery.Cartitems[k].RowPriceNetWithItemRelatedDiscount = itemDelivery.Cartitems[k].RowPriceNet
+		if itemUpdateCommand.Qty == nil {
+			break
+		}
 
-				if cob.defaultTaxRate > 0.0 {
-					taxAmount, err := itemDelivery.Cartitems[k].RowPriceGross.Sub(itemDelivery.Cartitems[k].RowPriceNet)
-					if err != nil {
-						return err
-					}
-					itemDelivery.Cartitems[k].RowTaxes[0].Amount = taxAmount
-				}
+		// in case of qty 0 remove the item from the delivery
+		if *itemUpdateCommand.Qty == 0 {
+			itemDelivery.Cartitems = append(itemDelivery.Cartitems[:index], itemDelivery.Cartitems[index+1:]...)
+			break
+		}
 
-				if itemUpdateCommand.AdditionalData != nil {
-					itemDelivery.Cartitems[k].AdditionalData = itemUpdateCommand.AdditionalData
-				}
+		itemDelivery.Cartitems[index].Qty = *itemUpdateCommand.Qty
+
+		gross := item.SinglePriceGross.Clone().Amount().Mul(item.SinglePriceGross.Amount(), big.NewFloat(float64(*itemUpdateCommand.Qty)))
+		itemDelivery.Cartitems[index].RowPriceGross = priceDomain.NewFromBigFloat(*gross, item.SinglePriceGross.Currency())
+
+		net := item.SinglePriceNet.Clone().Amount().Mul(item.SinglePriceNet.Amount(), big.NewFloat(float64(*itemUpdateCommand.Qty)))
+		itemDelivery.Cartitems[index].RowPriceNet = priceDomain.NewFromBigFloat(*net, item.SinglePriceNet.Currency())
+
+		itemDelivery.Cartitems[index].RowPriceGrossWithDiscount = itemDelivery.Cartitems[index].RowPriceGross
+		itemDelivery.Cartitems[index].RowPriceNetWithDiscount = itemDelivery.Cartitems[index].RowPriceNet
+
+		itemDelivery.Cartitems[index].RowPriceGrossWithItemRelatedDiscount = itemDelivery.Cartitems[index].RowPriceGross
+		itemDelivery.Cartitems[index].RowPriceNetWithItemRelatedDiscount = itemDelivery.Cartitems[index].RowPriceNet
+
+		if cob.defaultTaxRate > 0.0 {
+			taxAmount, err := itemDelivery.Cartitems[index].RowPriceGross.Sub(itemDelivery.Cartitems[index].RowPriceNet)
+			if err != nil {
+				return errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error calculating tax amount")
 			}
 
-			if itemUpdateCommand.SourceID != nil {
-				itemDelivery.Cartitems[k].SourceID = *itemUpdateCommand.SourceID
-			}
-
+			itemDelivery.Cartitems[index].RowTaxes[0].Amount = taxAmount
 		}
 	}
 
 	// update the delivery with the new info
-	for j, delivery := range cart.Deliveries {
+	for index, delivery := range cart.Deliveries {
 		if itemDelivery.DeliveryInfo.Code == delivery.DeliveryInfo.Code {
-			cart.Deliveries[j] = delivery
+			cart.Deliveries[index] = *itemDelivery
 		}
 	}
 
@@ -262,12 +277,12 @@ func (cob *DefaultCartBehaviour) updateItem(ctx context.Context, cart *domaincar
 // AddToCart add an item to the cart
 func (cob *DefaultCartBehaviour) AddToCart(ctx context.Context, cart *domaincart.Cart, deliveryCode string, addRequest domaincart.AddRequest) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	if cart != nil && !cob.cartStorage.HasCart(ctx, cart.ID) {
-		return nil, nil, fmt.Errorf("cart.infrastructure.DefaultCartBehaviour: Cannot add - Guestcart with id %v not existent", cart.ID)
+		return nil, nil, notFound("add", cart.ID)
 	}
 
 	newCart, err := cart.Clone()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on cloning cart")
 	}
 
 	// create delivery if it does not yet exist
@@ -290,6 +305,7 @@ func (cob *DefaultCartBehaviour) AddToCart(ctx context.Context, cart *domaincart
 	}
 
 	cob.collectTotals(&newCart)
+
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
@@ -400,7 +416,7 @@ func (cob *DefaultCartBehaviour) createCartItemFromProduct(qty int, marketplaceC
 	if cob.defaultTaxRate > 0.0 {
 		taxAmount, err := item.RowPriceGross.Sub(item.RowPriceNet)
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error calculating tax amount")
 		}
 		item.RowTaxes = []domaincart.Tax{{
 			Amount: taxAmount,
@@ -421,12 +437,12 @@ func (cob *DefaultCartBehaviour) createCartItemFromProduct(qty int, marketplaceC
 // CleanCart removes everything from the cart, e.g. deliveries, billing address, etc
 func (cob *DefaultCartBehaviour) CleanCart(ctx context.Context, cart *domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	if !cob.cartStorage.HasCart(ctx, cart.ID) {
-		return nil, nil, fmt.Errorf("cart.infrastructure.DefaultCartBehaviour: Cannot delete - Guestcart with id %v not existent", cart.ID)
+		return nil, nil, notFound("clean cart", cart.ID)
 	}
 
 	newCart, err := cart.Clone()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on cloning cart")
 	}
 
 	newCart.Deliveries = []domaincart.Delivery{}
@@ -439,6 +455,7 @@ func (cob *DefaultCartBehaviour) CleanCart(ctx context.Context, cart *domaincart
 	newCart.Totalitems = nil
 
 	cob.collectTotals(&newCart)
+
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
@@ -450,12 +467,12 @@ func (cob *DefaultCartBehaviour) CleanCart(ctx context.Context, cart *domaincart
 // CleanDelivery removes a complete delivery with its items from the cart
 func (cob *DefaultCartBehaviour) CleanDelivery(ctx context.Context, cart *domaincart.Cart, deliveryCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	if !cob.cartStorage.HasCart(ctx, cart.ID) {
-		return nil, nil, fmt.Errorf("cart.infrastructure.DefaultCartBehaviour: Cannot delete - Guestcart with id %v not existent", cart.ID)
+		return nil, nil, notFound("clean delivery", cart.ID)
 	}
 
 	newCart, err := cart.Clone()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on cloning cart")
 	}
 
 	// create delivery if it does not yet exist
@@ -464,9 +481,10 @@ func (cob *DefaultCartBehaviour) CleanDelivery(ctx context.Context, cart *domain
 	}
 
 	var position int
-	for i, delivery := range newCart.Deliveries {
+
+	for index, delivery := range newCart.Deliveries {
 		if delivery.DeliveryInfo.Code == deliveryCode {
-			position = i
+			position = index
 			break
 		}
 	}
@@ -477,6 +495,7 @@ func (cob *DefaultCartBehaviour) CleanDelivery(ctx context.Context, cart *domain
 	newCart.Deliveries = newCart.Deliveries[:newLength]
 
 	cob.collectTotals(&newCart)
+
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
@@ -489,7 +508,7 @@ func (cob *DefaultCartBehaviour) CleanDelivery(ctx context.Context, cart *domain
 func (cob *DefaultCartBehaviour) UpdatePurchaser(ctx context.Context, cart *domaincart.Cart, purchaser *domaincart.Person, additionalData *domaincart.AdditionalData) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	newCart, err := cart.Clone()
 	if err != nil {
-		return nil, nil, fmt.Errorf("cart.infrastructure.DefaultCartBehaviour: error on cloning cart: %w", err)
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on cloning cart")
 	}
 
 	newCart.Purchaser = purchaser
@@ -518,12 +537,13 @@ func (cob *DefaultCartBehaviour) UpdatePurchaser(ctx context.Context, cart *doma
 func (cob *DefaultCartBehaviour) UpdateBillingAddress(ctx context.Context, cart *domaincart.Cart, billingAddress domaincart.Address) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	newCart, err := cart.Clone()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on cloning cart")
 	}
 
 	newCart.BillingAddress = &billingAddress
 
 	cob.collectTotals(&newCart)
+
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
@@ -536,13 +556,14 @@ func (cob *DefaultCartBehaviour) UpdateBillingAddress(ctx context.Context, cart 
 func (cob *DefaultCartBehaviour) UpdateAdditionalData(ctx context.Context, cart *domaincart.Cart, additionalData *domaincart.AdditionalData) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	newCart, err := cart.Clone()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on cloning cart")
 	}
 
 	newCart.AdditionalData = *additionalData
-	cob.collectTotals(&newCart)
-	err = cob.cartStorage.StoreCart(ctx, &newCart)
 
+	cob.collectTotals(&newCart)
+
+	err = cob.cartStorage.StoreCart(ctx, &newCart)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on updating additional data")
 	}
@@ -554,7 +575,7 @@ func (cob *DefaultCartBehaviour) UpdateAdditionalData(ctx context.Context, cart 
 func (cob *DefaultCartBehaviour) UpdatePaymentSelection(ctx context.Context, cart *domaincart.Cart, paymentSelection domaincart.PaymentSelection) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	newCart, err := cart.Clone()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on cloning cart")
 	}
 
 	if paymentSelection != nil {
@@ -563,9 +584,11 @@ func (cob *DefaultCartBehaviour) UpdatePaymentSelection(ctx context.Context, car
 			return nil, nil, err
 		}
 	}
+
 	newCart.PaymentSelection = paymentSelection
 
 	cob.collectTotals(&newCart)
+
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
@@ -578,7 +601,7 @@ func (cob *DefaultCartBehaviour) UpdatePaymentSelection(ctx context.Context, car
 func (cob *DefaultCartBehaviour) UpdateDeliveryInfo(ctx context.Context, cart *domaincart.Cart, deliveryCode string, deliveryInfoUpdateCommand domaincart.DeliveryInfoUpdateCommand) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	newCart, err := cart.Clone()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on cloning cart")
 	}
 
 	deliveryInfo := deliveryInfoUpdateCommand.DeliveryInfo
@@ -587,17 +610,22 @@ func (cob *DefaultCartBehaviour) UpdateDeliveryInfo(ctx context.Context, cart *d
 	for key, delivery := range newCart.Deliveries {
 		if delivery.DeliveryInfo.Code == deliveryCode {
 			newCart.Deliveries[key].DeliveryInfo = deliveryInfo
+
 			cob.collectTotals(&newCart)
+
 			err := cob.cartStorage.StoreCart(ctx, &newCart)
 			if err != nil {
 				return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
 			}
+
 			return &newCart, nil, nil
 		}
 	}
+
 	newCart.Deliveries = append(newCart.Deliveries, domaincart.Delivery{DeliveryInfo: deliveryInfo})
 
 	cob.collectTotals(&newCart)
+
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on saving cart")
@@ -614,7 +642,7 @@ func (cob *DefaultCartBehaviour) UpdateDeliveryInfoAdditionalData(ctx context.Co
 // GetCart returns the current cart from storage
 func (cob *DefaultCartBehaviour) GetCart(ctx context.Context, cartID string) (*domaincart.Cart, error) {
 	if !cob.cartStorage.HasCart(ctx, cartID) {
-		cob.logger.Info(fmt.Errorf("cart.infrastructure.DefaultCartBehaviour: Cannot get - cart with id %v not existent", cartID))
+		cob.logger.Info(notFound("get", cartID))
 		return nil, domaincart.ErrCartNotFound
 	}
 
@@ -638,8 +666,11 @@ func (cob *DefaultCartBehaviour) StoreNewCart(ctx context.Context, newCart *doma
 	if newCart.ID == "" {
 		return nil, errors.New("no id given")
 	}
+
 	newCart.DefaultCurrency = cob.defaultCurrency
+
 	cob.collectTotals(newCart)
+
 	return newCart, cob.cartStorage.StoreCart(ctx, newCart)
 }
 
@@ -647,7 +678,7 @@ func (cob *DefaultCartBehaviour) StoreNewCart(ctx context.Context, newCart *doma
 func (cob *DefaultCartBehaviour) ApplyVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	newCart, err := cart.Clone()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on cloning cart")
 	}
 
 	newCartWithVoucher, err := cob.voucherHandler.ApplyVoucher(ctx, &newCart, couponCode)
@@ -656,6 +687,7 @@ func (cob *DefaultCartBehaviour) ApplyVoucher(ctx context.Context, cart *domainc
 	}
 
 	cob.collectTotals(newCartWithVoucher)
+
 	err = cob.cartStorage.StoreCart(ctx, newCartWithVoucher)
 	if err != nil {
 		return nil, nil, err
@@ -680,7 +712,7 @@ func (cob *DefaultCartBehaviour) ApplyAny(ctx context.Context, cart *domaincart.
 func (cob *DefaultCartBehaviour) RemoveVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	newCart, err := cart.Clone()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on cloning cart")
 	}
 
 	newCartWithoutVoucher, err := cob.voucherHandler.RemoveVoucher(ctx, &newCart, couponCode)
@@ -689,6 +721,7 @@ func (cob *DefaultCartBehaviour) RemoveVoucher(ctx context.Context, cart *domain
 	}
 
 	cob.collectTotals(newCartWithoutVoucher)
+
 	err = cob.cartStorage.StoreCart(ctx, newCartWithoutVoucher)
 	if err != nil {
 		return nil, nil, err
@@ -702,7 +735,7 @@ func (cob *DefaultCartBehaviour) RemoveVoucher(ctx context.Context, cart *domain
 func (cob *DefaultCartBehaviour) ApplyGiftCard(ctx context.Context, cart *domaincart.Cart, giftCardCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	newCart, err := cart.Clone()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on cloning cart")
 	}
 
 	newCartWithGiftCard, err := cob.giftCardHandler.ApplyGiftCard(ctx, &newCart, giftCardCode)
@@ -711,10 +744,12 @@ func (cob *DefaultCartBehaviour) ApplyGiftCard(ctx context.Context, cart *domain
 	}
 
 	cob.collectTotals(newCartWithGiftCard)
+
 	err = cob.cartStorage.StoreCart(ctx, newCartWithGiftCard)
 	if err != nil {
 		return nil, nil, err
 	}
+
 	return cob.resetPaymentSelectionIfInvalid(ctx, newCartWithGiftCard)
 }
 
@@ -723,7 +758,7 @@ func (cob *DefaultCartBehaviour) ApplyGiftCard(ctx context.Context, cart *domain
 func (cob *DefaultCartBehaviour) RemoveGiftCard(ctx context.Context, cart *domaincart.Cart, giftCardCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	newCart, err := cart.Clone()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.Wrap(err, "cart.infrastructure.DefaultCartBehaviour: error on cloning cart")
 	}
 
 	newCartWithOutGiftCard, err := cob.giftCardHandler.RemoveGiftCard(ctx, &newCart, giftCardCode)
@@ -732,6 +767,7 @@ func (cob *DefaultCartBehaviour) RemoveGiftCard(ctx context.Context, cart *domai
 	}
 
 	cob.collectTotals(newCartWithOutGiftCard)
+
 	err = cob.cartStorage.StoreCart(ctx, newCartWithOutGiftCard)
 	if err != nil {
 		return nil, nil, err
