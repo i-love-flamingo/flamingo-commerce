@@ -56,7 +56,6 @@ func (r *RedisStorage) Inject(
 		RedisIdleConnections float64 `inject:"config:commerce.cart.redis.idle.connections"`
 		RedisDatabase        int     `inject:"config:commerce.cart.redis.database,optional"`
 		RedisTLS             bool    `inject:"config:commerce.cart.redis.tls,optional"`
-		RedisClusterMode     bool    `inject:"config:commerce.cart.redis.clusterMode,optional"`
 	},
 ) *RedisStorage {
 	r.serializer = serializer
@@ -69,23 +68,14 @@ func (r *RedisStorage) Inject(
 			tlsConfig = &tls.Config{MinVersion: tls.VersionTLS12}
 		}
 
-		if config.RedisClusterMode {
-			r.client = redis.NewClusterClient(&redis.ClusterOptions{
-				Addrs:     []string{config.RedisAddress},
-				Password:  config.RedisPassword,
-				PoolSize:  int(config.RedisIdleConnections),
-				TLSConfig: tlsConfig,
-			})
-		} else {
-			r.client = redis.NewClient(&redis.Options{
-				Network:   config.RedisNetwork,
-				Addr:      config.RedisAddress,
-				Password:  config.RedisPassword,
-				DB:        config.RedisDatabase,
-				PoolSize:  int(config.RedisIdleConnections),
-				TLSConfig: tlsConfig,
-			})
-		}
+		r.client = redis.NewClient(&redis.Options{
+			Network:   config.RedisNetwork,
+			Addr:      config.RedisAddress,
+			Password:  config.RedisPassword,
+			DB:        config.RedisDatabase,
+			PoolSize:  int(config.RedisIdleConnections),
+			TLSConfig: tlsConfig,
+		})
 
 		// close redis client
 		runtime.SetFinalizer(r, func(r *RedisStorage) { _ = r.client.Close() })

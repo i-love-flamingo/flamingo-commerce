@@ -43,7 +43,6 @@ func getRedisStorage(network, address string) *infrastructure.RedisStorage {
 			RedisIdleConnections float64 `inject:"config:commerce.cart.redis.idle.connections"`
 			RedisDatabase        int     `inject:"config:commerce.cart.redis.database,optional"`
 			RedisTLS             bool    `inject:"config:commerce.cart.redis.tls,optional"`
-			RedisClusterMode     bool    `inject:"config:commerce.cart.redis.clusterMode,optional"`
 		}{RedisIdleConnections: 3, RedisNetwork: network, RedisAddress: address, RedisDatabase: 0, RedisTTL: 60})
 }
 
