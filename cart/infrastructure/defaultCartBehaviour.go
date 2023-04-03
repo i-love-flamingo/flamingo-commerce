@@ -16,6 +16,9 @@ import (
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
+//go:generate go run github.com/vektra/mockery/v2@v2.21.1 --name GiftCardHandler --case snake
+//go:generate go run github.com/vektra/mockery/v2@v2.21.1 --name VoucherHandler --case snake
+
 type (
 	// DefaultCartBehaviour defines the in memory cart order behaviour
 	DefaultCartBehaviour struct {
@@ -889,61 +892,22 @@ func (cob *DefaultCartBehaviour) collectTotals(cart *domaincart.Cart) {
 	}
 }
 
-// ApplyVoucher checks the voucher and adds the voucher to the supplied cart if valid
-func (DefaultVoucherHandler) ApplyVoucher(_ context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, error) {
-	if couponCode != "valid_voucher" && couponCode != "valid" {
-		return nil, errors.New("Code invalid")
-	}
-
-	coupon := domaincart.CouponCode{
-		Code: couponCode,
-	}
-
-	cart.AppliedCouponCodes = append(cart.AppliedCouponCodes, coupon)
+// ApplyVoucher is called when applying a voucher
+func (DefaultVoucherHandler) ApplyVoucher(_ context.Context, cart *domaincart.Cart, _ string) (*domaincart.Cart, error) {
 	return cart, nil
 }
 
-// RemoveVoucher removes the voucher from the cart if possible
-func (DefaultVoucherHandler) RemoveVoucher(_ context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, error) {
-	for i, coupon := range cart.AppliedCouponCodes {
-		if coupon.Code == couponCode {
-			cart.AppliedCouponCodes[i] = cart.AppliedCouponCodes[len(cart.AppliedCouponCodes)-1]
-			cart.AppliedCouponCodes[len(cart.AppliedCouponCodes)-1] = domaincart.CouponCode{}
-			cart.AppliedCouponCodes = cart.AppliedCouponCodes[:len(cart.AppliedCouponCodes)-1]
-			return cart, nil
-		}
-	}
-
+// RemoveVoucher is called when removing a voucher
+func (DefaultVoucherHandler) RemoveVoucher(_ context.Context, cart *domaincart.Cart, _ string) (*domaincart.Cart, error) {
 	return cart, nil
 }
 
-// ApplyGiftCard checks the gift card and adds it to the supplied cart if valid
-func (DefaultGiftCardHandler) ApplyGiftCard(_ context.Context, cart *domaincart.Cart, giftCardCode string) (*domaincart.Cart, error) {
-	if giftCardCode != "valid_giftcard" && giftCardCode != "valid" {
-		return nil, errors.New("Code invalid")
-	}
-
-	giftCard := domaincart.AppliedGiftCard{
-		Code:      giftCardCode,
-		Applied:   priceDomain.NewFromInt(10, 100, cart.DefaultCurrency),
-		Remaining: priceDomain.NewFromInt(0, 100, cart.DefaultCurrency),
-	}
-
-	cart.AppliedGiftCards = append(cart.AppliedGiftCards, giftCard)
-
+// ApplyGiftCard is called when applying a gift card
+func (DefaultGiftCardHandler) ApplyGiftCard(_ context.Context, cart *domaincart.Cart, _ string) (*domaincart.Cart, error) {
 	return cart, nil
 }
 
-// RemoveGiftCard removes the gift card from the cart if possible
-func (DefaultGiftCardHandler) RemoveGiftCard(_ context.Context, cart *domaincart.Cart, giftCardCode string) (*domaincart.Cart, error) {
-	for i, giftcard := range cart.AppliedGiftCards {
-		if giftcard.Code == giftCardCode {
-			cart.AppliedGiftCards[i] = cart.AppliedGiftCards[len(cart.AppliedGiftCards)-1]
-			cart.AppliedGiftCards[len(cart.AppliedGiftCards)-1] = domaincart.AppliedGiftCard{}
-			cart.AppliedGiftCards = cart.AppliedGiftCards[:len(cart.AppliedGiftCards)-1]
-			return cart, nil
-		}
-	}
-
+// RemoveGiftCard is called when removing a gift card
+func (DefaultGiftCardHandler) RemoveGiftCard(_ context.Context, cart *domaincart.Cart, _ string) (*domaincart.Cart, error) {
 	return cart, nil
 }

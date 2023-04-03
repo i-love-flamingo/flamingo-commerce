@@ -2,12 +2,15 @@ package infrastructure
 
 import (
 	"context"
+	"errors"
 	"testing"
 
+	"flamingo.me/flamingo-commerce/v3/cart/infrastructure/mocks"
 	"flamingo.me/flamingo-commerce/v3/product/infrastructure/fake"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/go-test/deep"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
 	domaincart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -187,278 +190,201 @@ func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
 func TestInMemoryBehaviour_ApplyVoucher(t *testing.T) {
 	t.Parallel()
 
-	type args struct {
-		cart        *domaincart.Cart
-		voucherCode string
-	}
+	t.Run("apply voucher successful", func(t *testing.T) {
+		t.Parallel()
 
-	tests := []struct {
-		name    string
-		args    args
-		want    []domaincart.CouponCode
-		wantErr bool
-	}{
-		{
-			name: "apply valid voucher - success",
-			args: args{
-				cart:        &domaincart.Cart{},
-				voucherCode: "valid_voucher",
-			},
-			want: []domaincart.CouponCode{
-				{
-					Code: "valid_voucher",
-				},
-			},
-			wantErr: false,
-		},
-		{
-			name: "apply invalid giftcard - failure",
-			args: args{
-				cart:        &domaincart.Cart{},
-				voucherCode: "invalid",
-			},
-			want:    nil,
-			wantErr: true,
-		},
-	}
+		voucherHandler := mocks.NewVoucherHandler(t)
+		voucherHandler.On("ApplyVoucher", mock.Anything, mock.Anything, "voucher").
+			Return(&domaincart.Cart{ID: "voucher"}, nil)
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			cob := &DefaultCartBehaviour{}
-			cob.Inject(
-				newInMemoryStorage(),
-				nil,
-				flamingo.NullLogger{},
-				&DefaultVoucherHandler{},
-				&DefaultGiftCardHandler{},
-				nil,
-			)
-			got, _, err := cob.ApplyVoucher(context.Background(), tt.args.cart, tt.args.voucherCode)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("DefaultCartBehaviour.ApplyVoucher() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !tt.wantErr {
-				assert.Equal(t, tt.want, got.AppliedCouponCodes)
-			}
-		})
-	}
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			nil,
+			flamingo.NullLogger{},
+			voucherHandler,
+			nil,
+			nil,
+		)
+
+		got, _, err := cob.ApplyVoucher(context.Background(), &domaincart.Cart{ID: "test"}, "voucher")
+		assert.NoError(t, err)
+		assert.Equal(t, "voucher", got.ID)
+		voucherHandler.AssertCalled(t, "ApplyVoucher", mock.Anything, mock.Anything, "voucher")
+	})
+
+	t.Run("apply voucher error", func(t *testing.T) {
+		t.Parallel()
+
+		voucherHandler := mocks.NewVoucherHandler(t)
+		voucherHandler.On("ApplyVoucher", mock.Anything, mock.Anything, "voucher").
+			Return(nil, errors.New("invalid voucher"))
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			nil,
+			flamingo.NullLogger{},
+			voucherHandler,
+			nil,
+			nil,
+		)
+
+		got, _, err := cob.ApplyVoucher(context.Background(), &domaincart.Cart{ID: "test"}, "voucher")
+		assert.EqualError(t, err, "invalid voucher")
+		assert.Nil(t, got)
+		voucherHandler.AssertCalled(t, "ApplyVoucher", mock.Anything, mock.Anything, "voucher")
+	})
 }
 
 func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 	t.Parallel()
 
-	type args struct {
-		ctx                context.Context
-		cart               *domaincart.Cart
-		couponCodeToRemove string
-	}
+	t.Run("remove voucher successful", func(t *testing.T) {
+		t.Parallel()
 
-	tests := []struct {
-		name string
-		args args
-		want []domaincart.CouponCode
-	}{
-		{
-			name: "Remove voucher from cart with vouchers",
-			args: args{
-				ctx: nil,
-				cart: &domaincart.Cart{
-					AppliedCouponCodes: []domaincart.CouponCode{
-						{Code: "OFF20"},
-						{Code: "dummy-voucher-20"},
-						{Code: "SALE"},
-					},
-				},
-				couponCodeToRemove: "dummy-voucher-20",
-			},
-			want: []domaincart.CouponCode{
-				{Code: "OFF20"},
-				{Code: "SALE"},
-			},
-		},
-		{
-			name: "Remove voucher from cart without vouchers",
-			args: args{
-				ctx:                nil,
-				cart:               &domaincart.Cart{},
-				couponCodeToRemove: "dummy-voucher-20",
-			},
-			want: nil,
-		},
-		{
-			name: "Remove voucher from cart that does not exist",
-			args: args{
-				ctx: nil,
-				cart: &domaincart.Cart{
-					AppliedCouponCodes: []domaincart.CouponCode{
-						{Code: "OFF20"},
-						{Code: "dummy-voucher-20"},
-						{Code: "SALE"},
-					},
-				},
-				couponCodeToRemove: "non-existing-voucher",
-			},
-			want: []domaincart.CouponCode{
-				{Code: "OFF20"},
-				{Code: "dummy-voucher-20"},
-				{Code: "SALE"},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			cob := &DefaultCartBehaviour{}
-			cob.Inject(
-				newInMemoryStorage(),
-				nil,
-				flamingo.NullLogger{},
-				&DefaultVoucherHandler{},
-				&DefaultGiftCardHandler{},
-				nil,
-			)
+		voucherHandler := mocks.NewVoucherHandler(t)
+		voucherHandler.On("RemoveVoucher", mock.Anything, mock.Anything, "voucher").
+			Return(&domaincart.Cart{ID: "voucher"}, nil)
 
-			if err := cob.cartStorage.StoreCart(context.Background(), tt.args.cart); err != nil {
-				t.Fatalf("cart could not be initialized")
-			}
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			nil,
+			flamingo.NullLogger{},
+			voucherHandler,
+			nil,
+			nil,
+		)
 
-			got, _, err := cob.RemoveVoucher(tt.args.ctx, tt.args.cart, tt.args.couponCodeToRemove)
-			require.NoError(t, err)
-			assert.Equal(t, tt.want, got.AppliedCouponCodes)
-		})
-	}
+		got, _, err := cob.RemoveVoucher(context.Background(), &domaincart.Cart{ID: "test"}, "voucher")
+		assert.NoError(t, err)
+		assert.Equal(t, "voucher", got.ID)
+		voucherHandler.AssertCalled(t, "RemoveVoucher", mock.Anything, mock.Anything, "voucher")
+	})
+
+	t.Run("remove voucher error", func(t *testing.T) {
+		t.Parallel()
+
+		voucherHandler := mocks.NewVoucherHandler(t)
+		voucherHandler.On("RemoveVoucher", mock.Anything, mock.Anything, "voucher").
+			Return(nil, errors.New("invalid voucher"))
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			nil,
+			flamingo.NullLogger{},
+			voucherHandler,
+			nil,
+			nil,
+		)
+
+		got, _, err := cob.RemoveVoucher(context.Background(), &domaincart.Cart{ID: "test"}, "voucher")
+		assert.EqualError(t, err, "invalid voucher")
+		assert.Nil(t, got)
+		voucherHandler.AssertCalled(t, "RemoveVoucher", mock.Anything, mock.Anything, "voucher")
+	})
 }
 
 func TestInMemoryBehaviour_ApplyGiftCard(t *testing.T) {
 	t.Parallel()
 
-	type args struct {
-		cart         *domaincart.Cart
-		giftCardCode string
-	}
+	t.Run("apply gift card successful", func(t *testing.T) {
+		t.Parallel()
 
-	tests := []struct {
-		name    string
-		args    args
-		want    []domaincart.AppliedGiftCard
-		wantErr bool
-	}{
-		{
-			name: "apply valid giftcard - success",
-			args: args{
-				cart:         &domaincart.Cart{DefaultCurrency: "$"},
-				giftCardCode: "valid_giftcard",
-			},
-			want: []domaincart.AppliedGiftCard{
-				{
-					Code:      "valid_giftcard",
-					Applied:   priceDomain.NewFromInt(10, 100, "$"),
-					Remaining: priceDomain.NewFromInt(0, 100, "$"),
-				},
-			},
-			wantErr: false,
-		},
-		{
-			name: "apply invalid giftcard - failure",
-			args: args{
-				cart:         &domaincart.Cart{},
-				giftCardCode: "invalid",
-			},
-			want:    nil,
-			wantErr: true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			cob := &DefaultCartBehaviour{}
-			cob.Inject(
-				newInMemoryStorage(),
-				nil,
-				flamingo.NullLogger{},
-				&DefaultVoucherHandler{},
-				&DefaultGiftCardHandler{},
-				&struct {
-					DefaultTaxRate  float64 `inject:"config:commerce.cart.defaultCartAdapter.defaultTaxRate,optional"`
-					ProductPricing  string  `inject:"config:commerce.cart.defaultCartAdapter.productPrices"`
-					DefaultCurrency string  `inject:"config:commerce.cart.defaultCartAdapter.defaultCurrency"`
-				}{DefaultCurrency: "$"},
-			)
-			got, _, err := cob.ApplyGiftCard(context.Background(), tt.args.cart, tt.args.giftCardCode)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("DefaultCartBehaviour.ApplyGiftCard() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !tt.wantErr {
-				assert.Equal(t, tt.want, got.AppliedGiftCards)
-			}
-		})
-	}
+		giftCardHandler := mocks.NewGiftCardHandler(t)
+		giftCardHandler.On("ApplyGiftCard", mock.Anything, mock.Anything, "giftCard").
+			Return(&domaincart.Cart{ID: "giftCard"}, nil)
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			nil,
+			flamingo.NullLogger{},
+			nil,
+			giftCardHandler,
+			nil,
+		)
+
+		got, _, err := cob.ApplyGiftCard(context.Background(), &domaincart.Cart{ID: "test"}, "giftCard")
+		assert.NoError(t, err)
+		assert.Equal(t, "giftCard", got.ID)
+		giftCardHandler.AssertCalled(t, "ApplyGiftCard", mock.Anything, mock.Anything, "giftCard")
+	})
+
+	t.Run("apply gift card error", func(t *testing.T) {
+		t.Parallel()
+
+		giftCardHandler := mocks.NewGiftCardHandler(t)
+		giftCardHandler.On("ApplyGiftCard", mock.Anything, mock.Anything, "giftCard").
+			Return(nil, errors.New("invalid gift card"))
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			nil,
+			flamingo.NullLogger{},
+			nil,
+			giftCardHandler,
+			nil,
+		)
+
+		got, _, err := cob.ApplyGiftCard(context.Background(), &domaincart.Cart{ID: "test"}, "giftCard")
+		assert.EqualError(t, err, "invalid gift card")
+		assert.Nil(t, got)
+		giftCardHandler.AssertCalled(t, "ApplyGiftCard", mock.Anything, mock.Anything, "giftCard")
+	})
 }
 
 func TestInMemoryBehaviour_RemoveGiftCard(t *testing.T) {
 	t.Parallel()
 
-	type args struct {
-		cart         *domaincart.Cart
-		giftCardCode string
-	}
+	t.Run("remove gift card successful", func(t *testing.T) {
+		t.Parallel()
 
-	tests := []struct {
-		name    string
-		args    args
-		want    []domaincart.AppliedGiftCard
-		wantErr bool
-	}{
-		{
-			name: "remove giftcard successfully",
-			args: args{
-				cart: &domaincart.Cart{
-					AppliedGiftCards: []domaincart.AppliedGiftCard{
-						{
-							Code:      "to-remove",
-							Applied:   priceDomain.NewFromInt(10, 100, "$"),
-							Remaining: priceDomain.NewFromInt(0, 100, "$"),
-						},
-						{
-							Code:      "valid",
-							Applied:   priceDomain.NewFromInt(10, 100, "$"),
-							Remaining: priceDomain.NewFromInt(0, 100, "$"),
-						},
-					},
-				},
-				giftCardCode: "to-remove",
-			},
-			want: []domaincart.AppliedGiftCard{
-				{
-					Code:      "valid",
-					Applied:   priceDomain.NewFromInt(10, 100, "$"),
-					Remaining: priceDomain.NewFromInt(0, 100, "$"),
-				},
-			},
-			wantErr: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			cob := &DefaultCartBehaviour{}
-			cob.Inject(
-				newInMemoryStorage(),
-				nil,
-				flamingo.NullLogger{},
-				&DefaultVoucherHandler{},
-				&DefaultGiftCardHandler{},
-				nil,
-			)
-			got, _, err := cob.RemoveGiftCard(context.Background(), tt.args.cart, tt.args.giftCardCode)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("DefaultCartBehaviour.ApplyGiftCard() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !tt.wantErr {
-				assert.Equal(t, tt.want, got.AppliedGiftCards)
-			}
-		})
-	}
+		giftCardHandler := mocks.NewGiftCardHandler(t)
+		giftCardHandler.On("RemoveGiftCard", mock.Anything, mock.Anything, "giftCard").
+			Return(&domaincart.Cart{ID: "giftCard"}, nil)
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			nil,
+			flamingo.NullLogger{},
+			nil,
+			giftCardHandler,
+			nil,
+		)
+
+		got, _, err := cob.RemoveGiftCard(context.Background(), &domaincart.Cart{ID: "test"}, "giftCard")
+		assert.NoError(t, err)
+		assert.Equal(t, "giftCard", got.ID)
+		giftCardHandler.AssertCalled(t, "RemoveGiftCard", mock.Anything, mock.Anything, "giftCard")
+	})
+
+	t.Run("remove gift card error", func(t *testing.T) {
+		t.Parallel()
+
+		giftCardHandler := mocks.NewGiftCardHandler(t)
+		giftCardHandler.On("RemoveGiftCard", mock.Anything, mock.Anything, "giftCard").
+			Return(nil, errors.New("invalid gift card"))
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			nil,
+			flamingo.NullLogger{},
+			nil,
+			giftCardHandler,
+			nil,
+		)
+
+		got, _, err := cob.RemoveGiftCard(context.Background(), &domaincart.Cart{ID: "test"}, "giftCard")
+		assert.EqualError(t, err, "invalid gift card")
+		assert.Nil(t, got)
+		giftCardHandler.AssertCalled(t, "RemoveGiftCard", mock.Anything, mock.Anything, "giftCard")
+	})
 }
 
 func TestInMemoryBehaviour_Complete(t *testing.T) {
