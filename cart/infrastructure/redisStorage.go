@@ -11,6 +11,7 @@ import (
 	"time"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo/v3/core/healthcheck/domain/healthcheck"
 	"github.com/go-redis/redis/v8"
 )
 
@@ -38,8 +39,9 @@ type (
 )
 
 var (
-	_ CartStorage    = &RedisStorage{}
-	_ CartSerializer = &GobSerializer{}
+	_ CartStorage        = &RedisStorage{}
+	_ healthcheck.Status = &RedisStorage{}
+	_ CartSerializer     = &GobSerializer{}
 
 	ErrCartIsNil = errors.New("cart is nil")
 )
@@ -140,6 +142,16 @@ func (r *RedisStorage) RemoveCart(ctx context.Context, cart *cartDomain.Cart) er
 	}
 
 	return nil
+}
+
+// Status healthcheck via ping
+func (r *RedisStorage) Status() (alive bool, details string) {
+	err := r.client.Ping(context.Background()).Err()
+	if err != nil {
+		return false, err.Error()
+	}
+
+	return true, "redis for cart storage replies to PING"
 }
 
 // Serialize a cart using gob

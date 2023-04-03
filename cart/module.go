@@ -2,6 +2,7 @@ package cart
 
 import (
 	"flamingo.me/dingo"
+	"flamingo.me/flamingo/v3/core/healthcheck/domain/healthcheck"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 	"flamingo.me/form"
@@ -58,6 +59,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 		if m.enableRedisStorage {
 			injector.Bind((*infrastructure.CartSerializer)(nil)).To(infrastructure.GobSerializer{})
 			injector.Bind((*infrastructure.CartStorage)(nil)).To(infrastructure.RedisStorage{}).AsEagerSingleton()
+			injector.BindMap(new(healthcheck.Status), "cart.storage.redis").To(new(infrastructure.RedisStorage))
 		} else {
 			injector.Bind((*infrastructure.CartStorage)(nil)).To(infrastructure.InMemoryCartStorage{}).AsEagerSingleton()
 		}
