@@ -11,7 +11,6 @@ import (
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo-commerce/v3/product/infrastructure/fake"
 	"flamingo.me/flamingo/v3/framework/flamingo"
-	"github.com/go-test/deep"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -20,170 +19,121 @@ import (
 func TestDefaultCartBehaviour_CleanCart(t *testing.T) {
 	t.Parallel()
 
-	tests := []struct {
-		name       string
-		want       *domaincart.Cart
-		wantDefers domaincart.DeferEvents
-		wantErr    bool
-	}{
-		{
-			name: "clean cart",
-			want: &domaincart.Cart{
-				ID:         "17",
-				Deliveries: []domaincart.Delivery{},
-			},
-			wantDefers: nil,
-			wantErr:    false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			cob := &DefaultCartBehaviour{}
-			cob.Inject(
-				newInMemoryStorage(),
-				nil,
-				flamingo.NullLogger{},
-				nil,
-				nil,
-				nil,
-			)
-			cart := &domaincart.Cart{
-				ID: "17",
-				Deliveries: []domaincart.Delivery{
-					{
-						DeliveryInfo: domaincart.DeliveryInfo{
-							Code: "dev-1",
-						},
-						Cartitems: nil,
+	t.Run("clean cart", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			nil,
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart := &domaincart.Cart{
+			ID: "17",
+			Deliveries: []domaincart.Delivery{
+				{
+					DeliveryInfo: domaincart.DeliveryInfo{
+						Code: "dev-1",
 					},
+					Cartitems: nil,
 				},
-			}
+			},
+		}
 
-			if err := cob.cartStorage.StoreCart(context.Background(), cart); err != nil {
-				t.Fatalf("cart could not be initialized")
-			}
+		err := cob.cartStorage.StoreCart(context.Background(), cart)
+		assert.NoError(t, err)
 
-			got, gotDefers, err := cob.CleanCart(context.Background(), cart)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("InMemoryCartOrderBehaviour.CleanCart() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if diff := deep.Equal(got, tt.want); diff != nil {
-				t.Errorf("InMemoryCartOrderBehaviour.CleanCart() got!=want, diff: %#v", diff)
-			}
-			if diff := deep.Equal(gotDefers, tt.wantDefers); diff != nil {
-				t.Errorf("InMemoryCartOrderBehaviour.CleanCart() gotDefers!=wantDefers, diff: %#v", diff)
-			}
-		})
-	}
+		got, _, err := cob.CleanCart(context.Background(), cart)
+		assert.NoError(t, err)
+		assert.Empty(t, got.Deliveries)
+	})
 }
 
 func TestDefaultCartBehaviour_CleanDelivery(t *testing.T) {
 	t.Parallel()
 
-	type args struct {
-		cart         *domaincart.Cart
-		deliveryCode string
-	}
+	t.Run("clean dev-1", func(t *testing.T) {
+		t.Parallel()
 
-	tests := []struct {
-		name       string
-		args       args
-		want       *domaincart.Cart
-		wantDefers domaincart.DeferEvents
-		wantErr    bool
-	}{
-		{
-			name: "clean dev-1",
-			args: args{
-				cart: &domaincart.Cart{
-					ID: "17",
-					Deliveries: []domaincart.Delivery{
-						{
-							DeliveryInfo: domaincart.DeliveryInfo{
-								Code: "dev-1",
-							},
-							Cartitems: nil,
-						},
-						{
-							DeliveryInfo: domaincart.DeliveryInfo{
-								Code: "dev-2",
-							},
-							Cartitems: nil,
-						},
-					},
-				},
-				deliveryCode: "dev-1",
-			},
-			want: &domaincart.Cart{
-				ID: "17",
-				Deliveries: []domaincart.Delivery{
-					{
-						DeliveryInfo: domaincart.DeliveryInfo{
-							Code: "dev-2",
-						},
-						Cartitems: nil,
-					},
-				},
-			},
-			wantDefers: nil,
-			wantErr:    false,
-		},
-		{
-			name: "delivery not found",
-			args: args{
-				cart: &domaincart.Cart{
-					ID: "17",
-					Deliveries: []domaincart.Delivery{
-						{
-							DeliveryInfo: domaincart.DeliveryInfo{
-								Code: "dev-1",
-							},
-							Cartitems: nil,
-						},
-						{
-							DeliveryInfo: domaincart.DeliveryInfo{
-								Code: "dev-2",
-							},
-							Cartitems: nil,
-						},
-					},
-				},
-				deliveryCode: "dev-3",
-			},
-			want:       nil,
-			wantDefers: nil,
-			wantErr:    true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			cob := &DefaultCartBehaviour{}
-			cob.Inject(
-				newInMemoryStorage(),
-				nil,
-				flamingo.NullLogger{},
-				nil,
-				nil,
-				nil,
-			)
-			if err := cob.cartStorage.StoreCart(context.Background(), tt.args.cart); err != nil {
-				t.Fatalf("cart could not be initialized")
-			}
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			nil,
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
 
-			got, gotDefers, err := cob.CleanDelivery(context.Background(), tt.args.cart, tt.args.deliveryCode)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("InMemoryCartOrderBehaviour.CleanDelivery() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if diff := deep.Equal(got, tt.want); diff != nil {
-				t.Errorf("InMemoryCartOrderBehaviour.CleanDelivery() got!=want, diff: %#v", diff)
-			}
-			if diff := deep.Equal(gotDefers, tt.wantDefers); diff != nil {
-				t.Errorf("InMemoryCartOrderBehaviour.CleanCart() gotDefers!=wantDefers, diff: %#v", diff)
-			}
-		})
-	}
+		cart := &domaincart.Cart{
+			ID: "17",
+			Deliveries: []domaincart.Delivery{
+				{
+					DeliveryInfo: domaincart.DeliveryInfo{
+						Code: "dev-1",
+					},
+					Cartitems: nil,
+				},
+				{
+					DeliveryInfo: domaincart.DeliveryInfo{
+						Code: "dev-2",
+					},
+					Cartitems: nil,
+				},
+			},
+		}
+
+		err := cob.cartStorage.StoreCart(context.Background(), cart)
+		assert.NoError(t, err)
+
+		got, _, err := cob.CleanDelivery(context.Background(), cart, "dev-1")
+		assert.NoError(t, err)
+		assert.Equal(t, 1, len(got.Deliveries))
+		assert.Equal(t, "dev-2", got.Deliveries[0].DeliveryInfo.Code)
+	})
+
+	t.Run("delivery not found", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			nil,
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart := &domaincart.Cart{
+			ID: "17",
+			Deliveries: []domaincart.Delivery{
+				{
+					DeliveryInfo: domaincart.DeliveryInfo{
+						Code: "dev-1",
+					},
+					Cartitems: nil,
+				},
+				{
+					DeliveryInfo: domaincart.DeliveryInfo{
+						Code: "dev-2",
+					},
+					Cartitems: nil,
+				},
+			},
+		}
+
+		err := cob.cartStorage.StoreCart(context.Background(), cart)
+		assert.NoError(t, err)
+
+		got, _, err := cob.CleanDelivery(context.Background(), cart, "dev-3")
+		assert.EqualError(t, err, "DefaultCartBehaviour: delivery dev-3 not found")
+		assert.Nil(t, got)
+	})
 }
 
 func TestDefaultCartBehaviour_ApplyVoucher(t *testing.T) {

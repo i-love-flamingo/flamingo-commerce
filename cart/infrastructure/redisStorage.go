@@ -169,7 +169,7 @@ func (r *RedisStorage) RemoveCart(ctx context.Context, cart *cartDomain.Cart) er
 func (r *RedisStorage) Status() (alive bool, details string) {
 	err := r.client.Ping(context.Background()).Err()
 	if err != nil {
-		return false, err.Error()
+		return false, fmt.Errorf("error trying to PING: %w", err).Error()
 	}
 
 	return true, "redis for cart storage replies to PING"

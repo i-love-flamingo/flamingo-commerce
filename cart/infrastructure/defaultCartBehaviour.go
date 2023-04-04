@@ -20,7 +20,7 @@ import (
 //go:generate go run github.com/vektra/mockery/v2@v2.21.1 --name VoucherHandler --case snake
 
 type (
-	// DefaultCartBehaviour defines the in memory cart order behaviour
+	// DefaultCartBehaviour defines the default cart order behaviour
 	DefaultCartBehaviour struct {
 		cartStorage     CartStorage
 		productService  domain.ProductService
@@ -40,13 +40,13 @@ type (
 		RemoveCart(ctx context.Context, cart *domaincart.Cart) error
 	}
 
-	// GiftCardHandler enables the projects to have specific GiftCard handling within the in-memory cart
+	// GiftCardHandler enables the projects to have specific GiftCard handling
 	GiftCardHandler interface {
 		ApplyGiftCard(ctx context.Context, cart *domaincart.Cart, giftCardCode string) (*domaincart.Cart, error)
 		RemoveGiftCard(ctx context.Context, cart *domaincart.Cart, giftCardCode string) (*domaincart.Cart, error)
 	}
 
-	// VoucherHandler enables the projects to have specific Voucher handling within the in-memory cart
+	// VoucherHandler enables the projects to have specific Voucher handling
 	VoucherHandler interface {
 		ApplyVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, error)
 		RemoveVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, error)
@@ -67,6 +67,10 @@ var (
 	_ VoucherHandler                         = (*DefaultVoucherHandler)(nil)
 )
 
+const (
+	logCategory = "DefaultCartBehaviour"
+)
+
 // Inject dependencies
 func (cob *DefaultCartBehaviour) Inject(
 	cartStorage CartStorage,
@@ -82,7 +86,7 @@ func (cob *DefaultCartBehaviour) Inject(
 ) {
 	cob.cartStorage = cartStorage
 	cob.productService = productService
-	cob.logger = logger.WithField(flamingo.LogKeyCategory, "inmemorybehaviour")
+	cob.logger = logger
 	cob.voucherHandler = voucherHandler
 	cob.giftCardHandler = giftCardHandler
 
@@ -135,7 +139,7 @@ func (cob *DefaultCartBehaviour) DeleteItem(ctx context.Context, cart *domaincar
 	}
 
 	if newDelivery, ok := newCart.GetDeliveryByCode(deliveryCode); ok {
-		cob.logger.WithContext(ctx).Info("Inmemory Service Delete %v in %#v", itemID, newDelivery.Cartitems)
+		cob.logger.WithContext(ctx).WithField(flamingo.LogKeyCategory, logCategory).Info("DefaultCartBehaviour Delete %v in %#v", itemID, newDelivery.Cartitems)
 
 		for index, item := range newDelivery.Cartitems {
 			if item.ID == itemID {
@@ -201,7 +205,7 @@ func (cob *DefaultCartBehaviour) updateItem(ctx context.Context, cart *domaincar
 		return fmt.Errorf("DefaultCartBehaviour: error finding delivery of item: %w", err)
 	}
 
-	cob.logger.WithContext(ctx).Info("Inmemory Service Update %v in %#v", itemUpdateCommand.ItemID, itemDelivery.Cartitems)
+	cob.logger.WithContext(ctx).WithField(flamingo.LogKeyCategory, logCategory).Info("DefaultCartBehaviour Update %v in %#v", itemUpdateCommand.ItemID, itemDelivery.Cartitems)
 
 	for index, item := range itemDelivery.Cartitems {
 		if itemUpdateCommand.ItemID != item.ID {
@@ -643,20 +647,20 @@ func (cob *DefaultCartBehaviour) UpdateDeliveryInfoAdditionalData(ctx context.Co
 func (cob *DefaultCartBehaviour) GetCart(ctx context.Context, cartID string) (*domaincart.Cart, error) {
 	if !cob.cartStorage.HasCart(ctx, cartID) {
 		err := fmt.Errorf("DefaultCartBehaviour: %w for cart id %q during get", domaincart.ErrCartNotFound, cartID)
-		cob.logger.Info(err)
+		cob.logger.WithField(flamingo.LogKeyCategory, logCategory).Info(err)
 
 		return nil, err
 	}
 
 	cart, err := cob.cartStorage.GetCart(ctx, cartID)
 	if err != nil {
-		cob.logger.Info(fmt.Errorf("DefaultCartBehaviour: get cart from storage: %w ", err))
+		cob.logger.WithField(flamingo.LogKeyCategory, logCategory).Info(fmt.Errorf("DefaultCartBehaviour: get cart from storage: %w ", err))
 		return nil, domaincart.ErrCartNotFound
 	}
 
 	newCart, err := cart.Clone()
 	if err != nil {
-		cob.logger.Info(fmt.Errorf("DefaultCartBehaviour: cart clone failed: %w ", err))
+		cob.logger.WithField(flamingo.LogKeyCategory, logCategory).Info(fmt.Errorf("DefaultCartBehaviour: cart clone failed: %w ", err))
 		return nil, domaincart.ErrCartNotFound
 	}
 
