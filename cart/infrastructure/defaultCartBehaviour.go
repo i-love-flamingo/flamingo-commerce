@@ -104,7 +104,7 @@ func (cob *DefaultCartBehaviour) Inject(
 func (cob *DefaultCartBehaviour) Complete(ctx context.Context, cart *domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
 	err := cob.cartStorage.RemoveCart(ctx, cart)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error removing cart: %w", err)
 	}
 
 	return cart, nil, nil
@@ -121,7 +121,7 @@ func (cob *DefaultCartBehaviour) Restore(ctx context.Context, cart *domaincart.C
 
 	err = cob.cartStorage.StoreCart(ctx, &newCart)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error saving cart: %w", err)
 	}
 
 	return &newCart, nil, nil
@@ -356,14 +356,14 @@ func (cob *DefaultCartBehaviour) buildItemForCart(ctx context.Context, addReques
 	// create and add new item
 	product, err := cob.productService.Get(ctx, addRequest.MarketplaceCode)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error getting product: %w", err)
 	}
 
 	// Get variant of configurable product
 	if configurableProduct, ok := product.(domain.ConfigurableProduct); ok && addRequest.VariantMarketplaceCode != "" {
 		productWithActiveVariant, err := configurableProduct.GetConfigurableWithActiveVariant(addRequest.VariantMarketplaceCode)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("error getting configurable with active variant: %w", err)
 		}
 
 		product = productWithActiveVariant

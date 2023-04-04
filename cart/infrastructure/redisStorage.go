@@ -64,9 +64,8 @@ func (r *RedisStorage) Inject(
 ) *RedisStorage {
 	r.serializer = serializer
 	if config != nil {
-		r.keyPrefix = config.RedisKeyPrefix
-
 		var err error
+
 		r.ttlGuest, err = time.ParseDuration(config.RedisTTLGuest)
 		if err != nil {
 			panic("can't parse commerce.cart.redis.ttl.guest")
@@ -76,6 +75,8 @@ func (r *RedisStorage) Inject(
 		if err != nil {
 			panic("can't parse commerce.cart.redis.ttl.customer")
 		}
+
+		r.keyPrefix = config.RedisKeyPrefix
 
 		var tlsConfig *tls.Config
 		if config.RedisTLS {
