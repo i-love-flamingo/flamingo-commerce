@@ -63,6 +63,7 @@ func (r *RedisStorage) Inject(
 	},
 ) *RedisStorage {
 	r.serializer = serializer
+
 	if config != nil {
 		var err error
 
