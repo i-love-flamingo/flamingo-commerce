@@ -5,20 +5,19 @@ import (
 	"errors"
 	"testing"
 
+	domaincart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/infrastructure/mocks"
+	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
+	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo-commerce/v3/product/infrastructure/fake"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/go-test/deep"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-
-	domaincart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
-	"flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
-func TestInMemoryBehaviour_CleanCart(t *testing.T) {
+func TestDefaultCartBehaviour_CleanCart(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
@@ -79,7 +78,7 @@ func TestInMemoryBehaviour_CleanCart(t *testing.T) {
 	}
 }
 
-func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
+func TestDefaultCartBehaviour_CleanDelivery(t *testing.T) {
 	t.Parallel()
 
 	type args struct {
@@ -187,7 +186,7 @@ func TestInMemoryBehaviour_CleanDelivery(t *testing.T) {
 	}
 }
 
-func TestInMemoryBehaviour_ApplyVoucher(t *testing.T) {
+func TestDefaultCartBehaviour_ApplyVoucher(t *testing.T) {
 	t.Parallel()
 
 	t.Run("apply voucher successful", func(t *testing.T) {
@@ -237,7 +236,7 @@ func TestInMemoryBehaviour_ApplyVoucher(t *testing.T) {
 	})
 }
 
-func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
+func TestDefaultCartBehaviour_RemoveVoucher(t *testing.T) {
 	t.Parallel()
 
 	t.Run("remove voucher successful", func(t *testing.T) {
@@ -287,7 +286,7 @@ func TestInMemoryBehaviour_RemoveVoucher(t *testing.T) {
 	})
 }
 
-func TestInMemoryBehaviour_ApplyGiftCard(t *testing.T) {
+func TestDefaultCartBehaviour_ApplyGiftCard(t *testing.T) {
 	t.Parallel()
 
 	t.Run("apply gift card successful", func(t *testing.T) {
@@ -337,7 +336,7 @@ func TestInMemoryBehaviour_ApplyGiftCard(t *testing.T) {
 	})
 }
 
-func TestInMemoryBehaviour_RemoveGiftCard(t *testing.T) {
+func TestDefaultCartBehaviour_RemoveGiftCard(t *testing.T) {
 	t.Parallel()
 
 	t.Run("remove gift card successful", func(t *testing.T) {
@@ -387,7 +386,7 @@ func TestInMemoryBehaviour_RemoveGiftCard(t *testing.T) {
 	})
 }
 
-func TestInMemoryBehaviour_Complete(t *testing.T) {
+func TestDefaultCartBehaviour_Complete(t *testing.T) {
 	t.Parallel()
 
 	t.Run("happy path", func(t *testing.T) {
@@ -414,7 +413,7 @@ func TestInMemoryBehaviour_Complete(t *testing.T) {
 	})
 }
 
-func TestInMemoryBehaviour_Restore(t *testing.T) {
+func TestDefaultCartBehaviour_Restore(t *testing.T) {
 	t.Parallel()
 
 	t.Run("happy path", func(t *testing.T) {
@@ -701,7 +700,7 @@ func TestDefaultCartBehaviour_UpdateItems(t *testing.T) {
 			},
 		})
 		assert.Empty(t, got)
-		assert.EqualError(t, err, "cart.infrastructure.DefaultCartBehaviour: error on finding delivery of item: delivery not found for \"abc\"")
+		assert.EqualError(t, err, "DefaultCartBehaviour: error finding delivery of item: delivery not found for \"abc\"")
 	})
 
 	t.Run("item updated in delivery", func(t *testing.T) {
@@ -877,6 +876,118 @@ func TestDefaultCartBehaviour_AddToCart(t *testing.T) {
 		assert.Equal(t, map[string]string{"1": "a", "2": "b"}, got.Deliveries[0].Cartitems[0].AdditionalData)
 		assert.Equal(t, 2, got.Deliveries[0].Cartitems[0].Qty)
 		assert.Equal(t, 41.98, got.GrandTotal.FloatAmount())
+	})
+
+	t.Run("adding the same configurable product with different active variant", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			&fake.ProductService{},
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
+			ID: "1234",
+			Deliveries: []domaincart.Delivery{
+				{
+					DeliveryInfo: domaincart.DeliveryInfo{
+						Code: "delivery",
+					},
+					Cartitems: []domaincart.Item{
+						{
+							MarketplaceCode:        "fake_configurable_with_active_variant",
+							VariantMarketPlaceCode: "shirt-red-s",
+							Qty:                    1,
+						},
+					},
+				},
+			},
+		})
+		assert.NoError(t, err)
+
+		got, _, err := cob.AddToCart(context.Background(), cart, "delivery", domaincart.AddRequest{
+			MarketplaceCode:        "fake_configurable_with_active_variant",
+			VariantMarketplaceCode: "shirt-black-l",
+			Qty:                    1,
+		})
+
+		assert.NoError(t, err)
+		assert.Equal(t, 2, len(got.Deliveries[0].Cartitems))
+		assert.Equal(t, "fake_configurable_with_active_variant", got.Deliveries[0].Cartitems[0].MarketplaceCode)
+		assert.Equal(t, "shirt-red-s", got.Deliveries[0].Cartitems[0].VariantMarketPlaceCode)
+		assert.Equal(t, "fake_configurable_with_active_variant", got.Deliveries[0].Cartitems[1].MarketplaceCode)
+		assert.Equal(t, "shirt-black-l", got.Deliveries[0].Cartitems[1].VariantMarketPlaceCode)
+	})
+
+	t.Run("adding the same bundle product with different choices", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			&fake.ProductService{},
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
+			ID: "1234",
+			Deliveries: []domaincart.Delivery{
+				{
+					DeliveryInfo: domaincart.DeliveryInfo{
+						Code: "delivery",
+					},
+					Cartitems: []domaincart.Item{
+						{
+							MarketplaceCode: "fake_bundle",
+							Qty:             1,
+							BundleConfig: map[domaincart.ChoiceID]domaincart.ChoiceConfiguration{
+								"identifier1": {
+									MarketplaceCode: "simple_option1",
+									Qty:             1,
+								},
+								"identifier2": {
+									MarketplaceCode:        "configurable_option1",
+									VariantMarketplaceCode: "shirt-black-l",
+									Qty:                    1,
+								},
+							},
+						},
+					},
+				},
+			},
+		})
+		assert.NoError(t, err)
+
+		got, _, err := cob.AddToCart(context.Background(), cart, "delivery", domaincart.AddRequest{
+			MarketplaceCode: "fake_bundle",
+			Qty:             1,
+			BundleConfiguration: map[domaincart.ChoiceID]domaincart.ChoiceConfiguration{
+				"identifier1": {
+					MarketplaceCode: "simple_option2",
+					Qty:             1,
+				},
+				"identifier2": {
+					MarketplaceCode:        "configurable_option1",
+					VariantMarketplaceCode: "shirt-black-l",
+					Qty:                    1,
+				},
+			},
+		})
+
+		assert.NoError(t, err)
+		assert.Equal(t, 2, len(got.Deliveries[0].Cartitems))
+		assert.Equal(t, "fake_bundle", got.Deliveries[0].Cartitems[0].MarketplaceCode)
+		assert.Equal(t, "simple_option1", got.Deliveries[0].Cartitems[0].BundleConfig["identifier1"].MarketplaceCode)
+		assert.Equal(t, "fake_bundle", got.Deliveries[0].Cartitems[1].MarketplaceCode)
+		assert.Equal(t, "simple_option2", got.Deliveries[0].Cartitems[1].BundleConfig["identifier1"].MarketplaceCode)
 	})
 }
 

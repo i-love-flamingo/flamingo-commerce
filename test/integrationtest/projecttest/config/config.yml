@@ -68,7 +68,9 @@ commerce:
     redis:
       enabled: true
       keyPrefix: "cart:"
-      ttl: 600
+      ttl:
+        guest: "1m"
+        customer: "2m"
       network: "tcp"
   checkout:
     showEmptyCartPageIfNoItems: true

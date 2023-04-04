@@ -144,11 +144,14 @@ commerce: {
 		redis: {
 			enabled: bool | *false
 			keyPrefix: string | *"cart:"
-			ttl: number | *60
+			ttl: {
+				guest: string | *"48h"
+				customer: string | *"168h"
+			}
 			address: string | *""
-			network: string | *"redis"
+			network: "unix" | *"tcp"
 			password: string | *""
-			idle: connections: float | int | *10
+			idleConnections: number | *10
 			database: float | int | *0
 			tls: bool | *false
 			clusterMode: bool | *false

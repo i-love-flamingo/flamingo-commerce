@@ -12,7 +12,7 @@ import (
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo/v3/core/healthcheck/domain/healthcheck"
-	"github.com/go-redis/redis/v8"
+	"github.com/go-redis/redis/v9"
 )
 
 type (
@@ -25,7 +25,8 @@ type (
 		// key prefix with which the cart will be stored
 		keyPrefix string
 		// time to live
-		ttl int
+		ttlGuest    time.Duration
+		ttlCustomer time.Duration
 	}
 
 	// CartSerializer serializes carts in order to store them in redis
@@ -51,11 +52,12 @@ func (r *RedisStorage) Inject(
 	serializer CartSerializer,
 	config *struct {
 		RedisKeyPrefix       string  `inject:"config:commerce.cart.redis.keyPrefix"`
-		RedisTTL             int     `inject:"config:commerce.cart.redis.ttl"`
+		RedisTTLGuest        string  `inject:"config:commerce.cart.redis.ttl.guest"`
+		RedisTTLCustomer     string  `inject:"config:commerce.cart.redis.ttl.customer"`
 		RedisNetwork         string  `inject:"config:commerce.cart.redis.network"`
 		RedisAddress         string  `inject:"config:commerce.cart.redis.address"`
 		RedisPassword        string  `inject:"config:commerce.cart.redis.password"`
-		RedisIdleConnections float64 `inject:"config:commerce.cart.redis.idle.connections"`
+		RedisIdleConnections float64 `inject:"config:commerce.cart.redis.idleConnections"`
 		RedisDatabase        int     `inject:"config:commerce.cart.redis.database,optional"`
 		RedisTLS             bool    `inject:"config:commerce.cart.redis.tls,optional"`
 	},
@@ -63,7 +65,17 @@ func (r *RedisStorage) Inject(
 	r.serializer = serializer
 	if config != nil {
 		r.keyPrefix = config.RedisKeyPrefix
-		r.ttl = config.RedisTTL
+
+		var err error
+		r.ttlGuest, err = time.ParseDuration(config.RedisTTLGuest)
+		if err != nil {
+			panic("can't parse commerce.cart.redis.ttl.guest")
+		}
+
+		r.ttlCustomer, err = time.ParseDuration(config.RedisTTLCustomer)
+		if err != nil {
+			panic("can't parse commerce.cart.redis.ttl.customer")
+		}
 
 		var tlsConfig *tls.Config
 		if config.RedisTLS {
@@ -122,12 +134,21 @@ func (r *RedisStorage) StoreCart(ctx context.Context, cart *cartDomain.Cart) err
 		return fmt.Errorf("could not store cart: %w", err)
 	}
 
-	err = r.client.Set(ctx, r.keyPrefix+cart.ID, b, time.Duration(r.ttl)*time.Second).Err()
+	err = r.client.Set(ctx, r.keyPrefix+cart.ID, b, r.ttl(cart)).Err()
 	if err != nil {
 		return fmt.Errorf("could not store cart: %w", err)
 	}
 
 	return nil
+}
+
+// ttl may differ for guest and customer carts
+func (r *RedisStorage) ttl(cart *cartDomain.Cart) time.Duration {
+	if cart.BelongsToAuthenticatedUser {
+		return r.ttlCustomer
+	}
+
+	return r.ttlGuest
 }
 
 // RemoveCart deletes a cart from redis

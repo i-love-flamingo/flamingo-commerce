@@ -10,7 +10,7 @@ import (
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/infrastructure"
-	"github.com/go-redis/redis/v8"
+	"github.com/go-redis/redis/v9"
 	"github.com/go-test/deep"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -36,14 +36,15 @@ func getRedisStorage(network, address string) *infrastructure.RedisStorage {
 		&infrastructure.GobSerializer{},
 		&struct {
 			RedisKeyPrefix       string  `inject:"config:commerce.cart.redis.keyPrefix"`
-			RedisTTL             int     `inject:"config:commerce.cart.redis.ttl"`
+			RedisTTLGuest        string  `inject:"config:commerce.cart.redis.ttl.guest"`
+			RedisTTLCustomer     string  `inject:"config:commerce.cart.redis.ttl.customer"`
 			RedisNetwork         string  `inject:"config:commerce.cart.redis.network"`
 			RedisAddress         string  `inject:"config:commerce.cart.redis.address"`
 			RedisPassword        string  `inject:"config:commerce.cart.redis.password"`
-			RedisIdleConnections float64 `inject:"config:commerce.cart.redis.idle.connections"`
+			RedisIdleConnections float64 `inject:"config:commerce.cart.redis.idleConnections"`
 			RedisDatabase        int     `inject:"config:commerce.cart.redis.database,optional"`
 			RedisTLS             bool    `inject:"config:commerce.cart.redis.tls,optional"`
-		}{RedisIdleConnections: 3, RedisNetwork: network, RedisAddress: address, RedisDatabase: 0, RedisTTL: 60})
+		}{RedisIdleConnections: 3, RedisNetwork: network, RedisAddress: address, RedisDatabase: 0, RedisTTLGuest: "1m", RedisTTLCustomer: "2m"})
 }
 
 func prepareData(t *testing.T, ctx context.Context, client redis.UniversalClient) {
