@@ -15,6 +15,14 @@ type GiftCardAndVoucherBehaviour struct {
 	mock.Mock
 }
 
+type GiftCardAndVoucherBehaviour_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *GiftCardAndVoucherBehaviour) EXPECT() *GiftCardAndVoucherBehaviour_Expecter {
+	return &GiftCardAndVoucherBehaviour_Expecter{mock: &_m.Mock}
+}
+
 // ApplyAny provides a mock function with given fields: ctx, _a1, anyCode
 func (_m *GiftCardAndVoucherBehaviour) ApplyAny(ctx context.Context, _a1 *cart.Cart, anyCode string) (*cart.Cart, cart.DeferEvents, error) {
 	ret := _m.Called(ctx, _a1, anyCode)
@@ -48,6 +56,36 @@ func (_m *GiftCardAndVoucherBehaviour) ApplyAny(ctx context.Context, _a1 *cart.C
 	}
 
 	return r0, r1, r2
+}
+
+// GiftCardAndVoucherBehaviour_ApplyAny_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ApplyAny'
+type GiftCardAndVoucherBehaviour_ApplyAny_Call struct {
+	*mock.Call
+}
+
+// ApplyAny is a helper method to define mock.On call
+//   - ctx context.Context
+//   - _a1 *cart.Cart
+//   - anyCode string
+func (_e *GiftCardAndVoucherBehaviour_Expecter) ApplyAny(ctx interface{}, _a1 interface{}, anyCode interface{}) *GiftCardAndVoucherBehaviour_ApplyAny_Call {
+	return &GiftCardAndVoucherBehaviour_ApplyAny_Call{Call: _e.mock.On("ApplyAny", ctx, _a1, anyCode)}
+}
+
+func (_c *GiftCardAndVoucherBehaviour_ApplyAny_Call) Run(run func(ctx context.Context, _a1 *cart.Cart, anyCode string)) *GiftCardAndVoucherBehaviour_ApplyAny_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(*cart.Cart), args[2].(string))
+	})
+	return _c
+}
+
+func (_c *GiftCardAndVoucherBehaviour_ApplyAny_Call) Return(_a0 *cart.Cart, _a1 cart.DeferEvents, _a2 error) *GiftCardAndVoucherBehaviour_ApplyAny_Call {
+	_c.Call.Return(_a0, _a1, _a2)
+	return _c
+}
+
+func (_c *GiftCardAndVoucherBehaviour_ApplyAny_Call) RunAndReturn(run func(context.Context, *cart.Cart, string) (*cart.Cart, cart.DeferEvents, error)) *GiftCardAndVoucherBehaviour_ApplyAny_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 type mockConstructorTestingTNewGiftCardAndVoucherBehaviour interface {

@@ -17,6 +17,14 @@ type CustomerIdentityService struct {
 	mock.Mock
 }
 
+type CustomerIdentityService_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *CustomerIdentityService) EXPECT() *CustomerIdentityService_Expecter {
+	return &CustomerIdentityService_Expecter{mock: &_m.Mock}
+}
+
 // GetByIdentity provides a mock function with given fields: ctx, identity
 func (_m *CustomerIdentityService) GetByIdentity(ctx context.Context, identity auth.Identity) (domain.Customer, error) {
 	ret := _m.Called(ctx, identity)
@@ -41,6 +49,35 @@ func (_m *CustomerIdentityService) GetByIdentity(ctx context.Context, identity a
 	}
 
 	return r0, r1
+}
+
+// CustomerIdentityService_GetByIdentity_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetByIdentity'
+type CustomerIdentityService_GetByIdentity_Call struct {
+	*mock.Call
+}
+
+// GetByIdentity is a helper method to define mock.On call
+//   - ctx context.Context
+//   - identity auth.Identity
+func (_e *CustomerIdentityService_Expecter) GetByIdentity(ctx interface{}, identity interface{}) *CustomerIdentityService_GetByIdentity_Call {
+	return &CustomerIdentityService_GetByIdentity_Call{Call: _e.mock.On("GetByIdentity", ctx, identity)}
+}
+
+func (_c *CustomerIdentityService_GetByIdentity_Call) Run(run func(ctx context.Context, identity auth.Identity)) *CustomerIdentityService_GetByIdentity_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(auth.Identity))
+	})
+	return _c
+}
+
+func (_c *CustomerIdentityService_GetByIdentity_Call) Return(_a0 domain.Customer, _a1 error) *CustomerIdentityService_GetByIdentity_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *CustomerIdentityService_GetByIdentity_Call) RunAndReturn(run func(context.Context, auth.Identity) (domain.Customer, error)) *CustomerIdentityService_GetByIdentity_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 type mockConstructorTestingTNewCustomerIdentityService interface {
