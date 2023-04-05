@@ -82,7 +82,7 @@ func TestValidateCart_Run(t *testing.T) {
 	// global service setup
 	cartReceiverService := &application.CartReceiverService{}
 	guestCartService := new(mocks.GuestCartService)
-	guestCartService.On("GetNewCart", mock.Anything).Return(&cartDomain.Cart{ID: "mock_guest_cart"}, nil)
+	guestCartService.EXPECT().GetNewCart(mock.Anything).Return(&cartDomain.Cart{ID: "mock_guest_cart"}, nil)
 	cartReceiverService.Inject(
 		guestCartService,
 		new(mocks.CustomerCartService),

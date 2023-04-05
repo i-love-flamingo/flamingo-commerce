@@ -3,6 +3,7 @@
 
 **general**
 * Add .golangci.yml and github workflow
+* Add .mockery.yaml config
 
 ## v3.6.0
 

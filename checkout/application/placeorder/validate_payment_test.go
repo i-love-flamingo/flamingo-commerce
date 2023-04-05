@@ -422,8 +422,8 @@ func TestPaymentValidator(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			factory := provideProcessFactory(t)
 			p, _ := factory.New(&url.URL{}, provideCartWithPaymentSelection(t))
-			gateway := &mocks.WebCartPaymentGateway{}
-			gateway.On("FlowStatus", mock.Anything, mock.Anything, p.Context().UUID).Return(tt.flowStatus.flowStatus, tt.flowStatus.err).Once()
+			gateway := mocks.NewWebCartPaymentGateway(t)
+			gateway.EXPECT().FlowStatus(mock.Anything, mock.Anything, p.Context().UUID).Return(tt.flowStatus.flowStatus, tt.flowStatus.err).Once()
 
 			paymentService := paymentServiceHelper(t, gateway)
 			got := placeorder.PaymentValidator(context.Background(), p, paymentService)

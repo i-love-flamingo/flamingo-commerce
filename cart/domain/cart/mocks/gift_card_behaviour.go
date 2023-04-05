@@ -15,6 +15,14 @@ type GiftCardBehaviour struct {
 	mock.Mock
 }
 
+type GiftCardBehaviour_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *GiftCardBehaviour) EXPECT() *GiftCardBehaviour_Expecter {
+	return &GiftCardBehaviour_Expecter{mock: &_m.Mock}
+}
+
 // ApplyGiftCard provides a mock function with given fields: ctx, _a1, giftCardCode
 func (_m *GiftCardBehaviour) ApplyGiftCard(ctx context.Context, _a1 *cart.Cart, giftCardCode string) (*cart.Cart, cart.DeferEvents, error) {
 	ret := _m.Called(ctx, _a1, giftCardCode)
@@ -50,6 +58,36 @@ func (_m *GiftCardBehaviour) ApplyGiftCard(ctx context.Context, _a1 *cart.Cart, 
 	return r0, r1, r2
 }
 
+// GiftCardBehaviour_ApplyGiftCard_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ApplyGiftCard'
+type GiftCardBehaviour_ApplyGiftCard_Call struct {
+	*mock.Call
+}
+
+// ApplyGiftCard is a helper method to define mock.On call
+//   - ctx context.Context
+//   - _a1 *cart.Cart
+//   - giftCardCode string
+func (_e *GiftCardBehaviour_Expecter) ApplyGiftCard(ctx interface{}, _a1 interface{}, giftCardCode interface{}) *GiftCardBehaviour_ApplyGiftCard_Call {
+	return &GiftCardBehaviour_ApplyGiftCard_Call{Call: _e.mock.On("ApplyGiftCard", ctx, _a1, giftCardCode)}
+}
+
+func (_c *GiftCardBehaviour_ApplyGiftCard_Call) Run(run func(ctx context.Context, _a1 *cart.Cart, giftCardCode string)) *GiftCardBehaviour_ApplyGiftCard_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(*cart.Cart), args[2].(string))
+	})
+	return _c
+}
+
+func (_c *GiftCardBehaviour_ApplyGiftCard_Call) Return(_a0 *cart.Cart, _a1 cart.DeferEvents, _a2 error) *GiftCardBehaviour_ApplyGiftCard_Call {
+	_c.Call.Return(_a0, _a1, _a2)
+	return _c
+}
+
+func (_c *GiftCardBehaviour_ApplyGiftCard_Call) RunAndReturn(run func(context.Context, *cart.Cart, string) (*cart.Cart, cart.DeferEvents, error)) *GiftCardBehaviour_ApplyGiftCard_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // RemoveGiftCard provides a mock function with given fields: ctx, _a1, giftCardCode
 func (_m *GiftCardBehaviour) RemoveGiftCard(ctx context.Context, _a1 *cart.Cart, giftCardCode string) (*cart.Cart, cart.DeferEvents, error) {
 	ret := _m.Called(ctx, _a1, giftCardCode)
@@ -83,6 +121,36 @@ func (_m *GiftCardBehaviour) RemoveGiftCard(ctx context.Context, _a1 *cart.Cart,
 	}
 
 	return r0, r1, r2
+}
+
+// GiftCardBehaviour_RemoveGiftCard_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'RemoveGiftCard'
+type GiftCardBehaviour_RemoveGiftCard_Call struct {
+	*mock.Call
+}
+
+// RemoveGiftCard is a helper method to define mock.On call
+//   - ctx context.Context
+//   - _a1 *cart.Cart
+//   - giftCardCode string
+func (_e *GiftCardBehaviour_Expecter) RemoveGiftCard(ctx interface{}, _a1 interface{}, giftCardCode interface{}) *GiftCardBehaviour_RemoveGiftCard_Call {
+	return &GiftCardBehaviour_RemoveGiftCard_Call{Call: _e.mock.On("RemoveGiftCard", ctx, _a1, giftCardCode)}
+}
+
+func (_c *GiftCardBehaviour_RemoveGiftCard_Call) Run(run func(ctx context.Context, _a1 *cart.Cart, giftCardCode string)) *GiftCardBehaviour_RemoveGiftCard_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(*cart.Cart), args[2].(string))
+	})
+	return _c
+}
+
+func (_c *GiftCardBehaviour_RemoveGiftCard_Call) Return(_a0 *cart.Cart, _a1 cart.DeferEvents, _a2 error) *GiftCardBehaviour_RemoveGiftCard_Call {
+	_c.Call.Return(_a0, _a1, _a2)
+	return _c
+}
+
+func (_c *GiftCardBehaviour_RemoveGiftCard_Call) RunAndReturn(run func(context.Context, *cart.Cart, string) (*cart.Cart, cart.DeferEvents, error)) *GiftCardBehaviour_RemoveGiftCard_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 type mockConstructorTestingTNewGiftCardBehaviour interface {

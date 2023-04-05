@@ -17,6 +17,14 @@ type CartReceiver struct {
 	mock.Mock
 }
 
+type CartReceiver_Expecter struct {
+	mock *mock.Mock
+}
+
+func (_m *CartReceiver) EXPECT() *CartReceiver_Expecter {
+	return &CartReceiver_Expecter{mock: &_m.Mock}
+}
+
 // GetCart provides a mock function with given fields: ctx, session
 func (_m *CartReceiver) GetCart(ctx context.Context, session *web.Session) (*cart.Cart, cart.ModifyBehaviour, error) {
 	ret := _m.Called(ctx, session)
@@ -52,6 +60,35 @@ func (_m *CartReceiver) GetCart(ctx context.Context, session *web.Session) (*car
 	return r0, r1, r2
 }
 
+// CartReceiver_GetCart_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetCart'
+type CartReceiver_GetCart_Call struct {
+	*mock.Call
+}
+
+// GetCart is a helper method to define mock.On call
+//   - ctx context.Context
+//   - session *web.Session
+func (_e *CartReceiver_Expecter) GetCart(ctx interface{}, session interface{}) *CartReceiver_GetCart_Call {
+	return &CartReceiver_GetCart_Call{Call: _e.mock.On("GetCart", ctx, session)}
+}
+
+func (_c *CartReceiver_GetCart_Call) Run(run func(ctx context.Context, session *web.Session)) *CartReceiver_GetCart_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(*web.Session))
+	})
+	return _c
+}
+
+func (_c *CartReceiver_GetCart_Call) Return(_a0 *cart.Cart, _a1 cart.ModifyBehaviour, _a2 error) *CartReceiver_GetCart_Call {
+	_c.Call.Return(_a0, _a1, _a2)
+	return _c
+}
+
+func (_c *CartReceiver_GetCart_Call) RunAndReturn(run func(context.Context, *web.Session) (*cart.Cart, cart.ModifyBehaviour, error)) *CartReceiver_GetCart_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetCartWithoutCache provides a mock function with given fields: ctx, session
 func (_m *CartReceiver) GetCartWithoutCache(ctx context.Context, session *web.Session) (*cart.Cart, error) {
 	ret := _m.Called(ctx, session)
@@ -76,6 +113,35 @@ func (_m *CartReceiver) GetCartWithoutCache(ctx context.Context, session *web.Se
 	}
 
 	return r0, r1
+}
+
+// CartReceiver_GetCartWithoutCache_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetCartWithoutCache'
+type CartReceiver_GetCartWithoutCache_Call struct {
+	*mock.Call
+}
+
+// GetCartWithoutCache is a helper method to define mock.On call
+//   - ctx context.Context
+//   - session *web.Session
+func (_e *CartReceiver_Expecter) GetCartWithoutCache(ctx interface{}, session interface{}) *CartReceiver_GetCartWithoutCache_Call {
+	return &CartReceiver_GetCartWithoutCache_Call{Call: _e.mock.On("GetCartWithoutCache", ctx, session)}
+}
+
+func (_c *CartReceiver_GetCartWithoutCache_Call) Run(run func(ctx context.Context, session *web.Session)) *CartReceiver_GetCartWithoutCache_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(*web.Session))
+	})
+	return _c
+}
+
+func (_c *CartReceiver_GetCartWithoutCache_Call) Return(_a0 *cart.Cart, _a1 error) *CartReceiver_GetCartWithoutCache_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *CartReceiver_GetCartWithoutCache_Call) RunAndReturn(run func(context.Context, *web.Session) (*cart.Cart, error)) *CartReceiver_GetCartWithoutCache_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // ModifyBehaviour provides a mock function with given fields: ctx
@@ -104,6 +170,34 @@ func (_m *CartReceiver) ModifyBehaviour(ctx context.Context) (cart.ModifyBehavio
 	return r0, r1
 }
 
+// CartReceiver_ModifyBehaviour_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ModifyBehaviour'
+type CartReceiver_ModifyBehaviour_Call struct {
+	*mock.Call
+}
+
+// ModifyBehaviour is a helper method to define mock.On call
+//   - ctx context.Context
+func (_e *CartReceiver_Expecter) ModifyBehaviour(ctx interface{}) *CartReceiver_ModifyBehaviour_Call {
+	return &CartReceiver_ModifyBehaviour_Call{Call: _e.mock.On("ModifyBehaviour", ctx)}
+}
+
+func (_c *CartReceiver_ModifyBehaviour_Call) Run(run func(ctx context.Context)) *CartReceiver_ModifyBehaviour_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context))
+	})
+	return _c
+}
+
+func (_c *CartReceiver_ModifyBehaviour_Call) Return(_a0 cart.ModifyBehaviour, _a1 error) *CartReceiver_ModifyBehaviour_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *CartReceiver_ModifyBehaviour_Call) RunAndReturn(run func(context.Context) (cart.ModifyBehaviour, error)) *CartReceiver_ModifyBehaviour_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // ShouldHaveCart provides a mock function with given fields: ctx, session
 func (_m *CartReceiver) ShouldHaveCart(ctx context.Context, session *web.Session) bool {
 	ret := _m.Called(ctx, session)
@@ -118,6 +212,35 @@ func (_m *CartReceiver) ShouldHaveCart(ctx context.Context, session *web.Session
 	return r0
 }
 
+// CartReceiver_ShouldHaveCart_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ShouldHaveCart'
+type CartReceiver_ShouldHaveCart_Call struct {
+	*mock.Call
+}
+
+// ShouldHaveCart is a helper method to define mock.On call
+//   - ctx context.Context
+//   - session *web.Session
+func (_e *CartReceiver_Expecter) ShouldHaveCart(ctx interface{}, session interface{}) *CartReceiver_ShouldHaveCart_Call {
+	return &CartReceiver_ShouldHaveCart_Call{Call: _e.mock.On("ShouldHaveCart", ctx, session)}
+}
+
+func (_c *CartReceiver_ShouldHaveCart_Call) Run(run func(ctx context.Context, session *web.Session)) *CartReceiver_ShouldHaveCart_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(*web.Session))
+	})
+	return _c
+}
+
+func (_c *CartReceiver_ShouldHaveCart_Call) Return(_a0 bool) *CartReceiver_ShouldHaveCart_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *CartReceiver_ShouldHaveCart_Call) RunAndReturn(run func(context.Context, *web.Session) bool) *CartReceiver_ShouldHaveCart_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // ShouldHaveGuestCart provides a mock function with given fields: session
 func (_m *CartReceiver) ShouldHaveGuestCart(session *web.Session) bool {
 	ret := _m.Called(session)
@@ -130,6 +253,34 @@ func (_m *CartReceiver) ShouldHaveGuestCart(session *web.Session) bool {
 	}
 
 	return r0
+}
+
+// CartReceiver_ShouldHaveGuestCart_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ShouldHaveGuestCart'
+type CartReceiver_ShouldHaveGuestCart_Call struct {
+	*mock.Call
+}
+
+// ShouldHaveGuestCart is a helper method to define mock.On call
+//   - session *web.Session
+func (_e *CartReceiver_Expecter) ShouldHaveGuestCart(session interface{}) *CartReceiver_ShouldHaveGuestCart_Call {
+	return &CartReceiver_ShouldHaveGuestCart_Call{Call: _e.mock.On("ShouldHaveGuestCart", session)}
+}
+
+func (_c *CartReceiver_ShouldHaveGuestCart_Call) Run(run func(session *web.Session)) *CartReceiver_ShouldHaveGuestCart_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(*web.Session))
+	})
+	return _c
+}
+
+func (_c *CartReceiver_ShouldHaveGuestCart_Call) Return(_a0 bool) *CartReceiver_ShouldHaveGuestCart_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *CartReceiver_ShouldHaveGuestCart_Call) RunAndReturn(run func(*web.Session) bool) *CartReceiver_ShouldHaveGuestCart_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // ViewCart provides a mock function with given fields: ctx, session
@@ -158,6 +309,35 @@ func (_m *CartReceiver) ViewCart(ctx context.Context, session *web.Session) (*ca
 	return r0, r1
 }
 
+// CartReceiver_ViewCart_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ViewCart'
+type CartReceiver_ViewCart_Call struct {
+	*mock.Call
+}
+
+// ViewCart is a helper method to define mock.On call
+//   - ctx context.Context
+//   - session *web.Session
+func (_e *CartReceiver_Expecter) ViewCart(ctx interface{}, session interface{}) *CartReceiver_ViewCart_Call {
+	return &CartReceiver_ViewCart_Call{Call: _e.mock.On("ViewCart", ctx, session)}
+}
+
+func (_c *CartReceiver_ViewCart_Call) Run(run func(ctx context.Context, session *web.Session)) *CartReceiver_ViewCart_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(*web.Session))
+	})
+	return _c
+}
+
+func (_c *CartReceiver_ViewCart_Call) Return(_a0 *cart.Cart, _a1 error) *CartReceiver_ViewCart_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *CartReceiver_ViewCart_Call) RunAndReturn(run func(context.Context, *web.Session) (*cart.Cart, error)) *CartReceiver_ViewCart_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // ViewGuestCart provides a mock function with given fields: ctx, session
 func (_m *CartReceiver) ViewGuestCart(ctx context.Context, session *web.Session) (*cart.Cart, error) {
 	ret := _m.Called(ctx, session)
@@ -182,6 +362,35 @@ func (_m *CartReceiver) ViewGuestCart(ctx context.Context, session *web.Session)
 	}
 
 	return r0, r1
+}
+
+// CartReceiver_ViewGuestCart_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ViewGuestCart'
+type CartReceiver_ViewGuestCart_Call struct {
+	*mock.Call
+}
+
+// ViewGuestCart is a helper method to define mock.On call
+//   - ctx context.Context
+//   - session *web.Session
+func (_e *CartReceiver_Expecter) ViewGuestCart(ctx interface{}, session interface{}) *CartReceiver_ViewGuestCart_Call {
+	return &CartReceiver_ViewGuestCart_Call{Call: _e.mock.On("ViewGuestCart", ctx, session)}
+}
+
+func (_c *CartReceiver_ViewGuestCart_Call) Run(run func(ctx context.Context, session *web.Session)) *CartReceiver_ViewGuestCart_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(*web.Session))
+	})
+	return _c
+}
+
+func (_c *CartReceiver_ViewGuestCart_Call) Return(_a0 *cart.Cart, _a1 error) *CartReceiver_ViewGuestCart_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *CartReceiver_ViewGuestCart_Call) RunAndReturn(run func(context.Context, *web.Session) (*cart.Cart, error)) *CartReceiver_ViewGuestCart_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 type mockConstructorTestingTNewCartReceiver interface {

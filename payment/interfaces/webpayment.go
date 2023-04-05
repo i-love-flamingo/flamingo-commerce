@@ -9,6 +9,8 @@ import (
 	"flamingo.me/flamingo-commerce/v3/payment/domain"
 )
 
+//go:generate go run github.com/vektra/mockery/v2@v2.21.1 --name WebCartPaymentGateway --case snake
+
 type (
 	// WebCartPaymentGatewayProvider defines the map of providers for payment providers
 	WebCartPaymentGatewayProvider func() map[string]WebCartPaymentGateway
