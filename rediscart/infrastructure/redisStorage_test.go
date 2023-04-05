@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
-	"flamingo.me/flamingo-commerce/v3/cart/infrastructure"
+	"flamingo.me/flamingo-commerce/v3/rediscart/infrastructure"
 	"github.com/go-redis/redis/v9"
 	"github.com/go-test/deep"
 	"github.com/stretchr/testify/assert"

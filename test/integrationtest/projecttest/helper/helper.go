@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"flamingo.me/flamingo-commerce/v3/rediscart"
 	"flamingo.me/graphql"
 	"github.com/gavv/httpexpect/v2"
 
@@ -80,6 +81,7 @@ func modulesDemoProject() []dingo.Module {
 		new(payment.Module),
 		new(placeorder.Module),
 		new(integrationCart.Module),
+		new(rediscart.Module),
 	}
 }
 

@@ -2,7 +2,6 @@ package cart
 
 import (
 	"flamingo.me/dingo"
-	"flamingo.me/flamingo/v3/core/healthcheck/domain/healthcheck"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 	"flamingo.me/form"
@@ -30,7 +29,6 @@ type (
 		enableDefaultCartAdapter      bool
 		enablePlaceOrderLoggerAdapter bool
 		enableCartCache               bool
-		enableRedisStorage            bool
 	}
 )
 
@@ -41,7 +39,6 @@ func (m *Module) Inject(
 		EnableDefaultCartAdapter      bool `inject:"config:commerce.cart.defaultCartAdapter.enabled,optional"`
 		EnableCartCache               bool `inject:"config:commerce.cart.enableCartCache,optional"`
 		EnablePlaceOrderLoggerAdapter bool `inject:"config:commerce.cart.placeOrderLogger.enabled,optional"`
-		EnableRedisStorage            bool `inject:"config:commerce.cart.redis.enabled,optional"`
 	},
 ) {
 	m.routerRegistry = routerRegistry
@@ -49,21 +46,13 @@ func (m *Module) Inject(
 		m.enableDefaultCartAdapter = config.EnableDefaultCartAdapter
 		m.enableCartCache = config.EnableCartCache
 		m.enablePlaceOrderLoggerAdapter = config.EnablePlaceOrderLoggerAdapter
-		m.enableRedisStorage = config.EnableRedisStorage
 	}
 }
 
 // Configure module
 func (m *Module) Configure(injector *dingo.Injector) {
 	if m.enableDefaultCartAdapter {
-		if m.enableRedisStorage {
-			injector.Bind((*infrastructure.CartSerializer)(nil)).To(infrastructure.GobSerializer{})
-			injector.Bind((*infrastructure.CartStorage)(nil)).To(infrastructure.RedisStorage{}).AsEagerSingleton()
-			injector.BindMap(new(healthcheck.Status), "cart.storage.redis").To(new(infrastructure.RedisStorage))
-		} else {
-			injector.Bind((*infrastructure.CartStorage)(nil)).To(infrastructure.InMemoryCartStorage{}).AsEagerSingleton()
-		}
-
+		injector.Bind((*infrastructure.CartStorage)(nil)).To(infrastructure.InMemoryCartStorage{}).AsEagerSingleton()
 		injector.Bind((*infrastructure.GiftCardHandler)(nil)).To(infrastructure.DefaultGiftCardHandler{})
 		injector.Bind((*infrastructure.VoucherHandler)(nil)).To(infrastructure.DefaultVoucherHandler{})
 		injector.Bind((*cart.GuestCartService)(nil)).To(infrastructure.DefaultGuestCartService{})
@@ -140,21 +129,6 @@ commerce: {
 		}
 		simplePaymentForm: {
 			giftCardPaymentMethod: string | *"voucher"
-		}
-		redis: {
-			enabled: bool | *false
-			keyPrefix: string | *"cart:"
-			ttl: {
-				guest: string | *"48h"
-				customer: string | *"168h"
-			}
-			address: string | *""
-			network: "unix" | *"tcp"
-			password: string | *""
-			idleConnections: number | *10
-			database: float | int | *0
-			tls: bool | *false
-			clusterMode: bool | *false
 		}
 	}
 }`

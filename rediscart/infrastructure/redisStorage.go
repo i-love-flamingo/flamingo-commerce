@@ -11,6 +11,7 @@ import (
 	"time"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/cart/infrastructure"
 	"flamingo.me/flamingo/v3/core/healthcheck/domain/healthcheck"
 	"github.com/go-redis/redis/v9"
 )
@@ -40,9 +41,9 @@ type (
 )
 
 var (
-	_ CartStorage        = &RedisStorage{}
-	_ healthcheck.Status = &RedisStorage{}
-	_ CartSerializer     = &GobSerializer{}
+	_ infrastructure.CartStorage = &RedisStorage{}
+	_ healthcheck.Status         = &RedisStorage{}
+	_ CartSerializer             = &GobSerializer{}
 
 	ErrCartIsNil = errors.New("cart is nil")
 )
