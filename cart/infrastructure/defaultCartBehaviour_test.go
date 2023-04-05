@@ -136,6 +136,9 @@ func TestDefaultCartBehaviour_CleanDelivery(t *testing.T) {
 	})
 }
 
+var errInvalidVoucher = errors.New("invalid voucher")
+var errInvalidGiftCard = errors.New("invalid gift card")
+
 func TestDefaultCartBehaviour_ApplyVoucher(t *testing.T) {
 	t.Parallel()
 
@@ -143,7 +146,7 @@ func TestDefaultCartBehaviour_ApplyVoucher(t *testing.T) {
 		t.Parallel()
 
 		voucherHandler := mocks.NewVoucherHandler(t)
-		voucherHandler.On("ApplyVoucher", mock.Anything, mock.Anything, "voucher").
+		voucherHandler.EXPECT().ApplyVoucher(mock.Anything, mock.Anything, "voucher").
 			Return(&domaincart.Cart{ID: "voucher"}, nil)
 
 		cob := &DefaultCartBehaviour{}
@@ -166,8 +169,8 @@ func TestDefaultCartBehaviour_ApplyVoucher(t *testing.T) {
 		t.Parallel()
 
 		voucherHandler := mocks.NewVoucherHandler(t)
-		voucherHandler.On("ApplyVoucher", mock.Anything, mock.Anything, "voucher").
-			Return(nil, errors.New("invalid voucher"))
+		voucherHandler.EXPECT().ApplyVoucher(mock.Anything, mock.Anything, "voucher").
+			Return(nil, errInvalidVoucher)
 
 		cob := &DefaultCartBehaviour{}
 		cob.Inject(
@@ -193,7 +196,7 @@ func TestDefaultCartBehaviour_RemoveVoucher(t *testing.T) {
 		t.Parallel()
 
 		voucherHandler := mocks.NewVoucherHandler(t)
-		voucherHandler.On("RemoveVoucher", mock.Anything, mock.Anything, "voucher").
+		voucherHandler.EXPECT().RemoveVoucher(mock.Anything, mock.Anything, "voucher").
 			Return(&domaincart.Cart{ID: "voucher"}, nil)
 
 		cob := &DefaultCartBehaviour{}
@@ -216,8 +219,8 @@ func TestDefaultCartBehaviour_RemoveVoucher(t *testing.T) {
 		t.Parallel()
 
 		voucherHandler := mocks.NewVoucherHandler(t)
-		voucherHandler.On("RemoveVoucher", mock.Anything, mock.Anything, "voucher").
-			Return(nil, errors.New("invalid voucher"))
+		voucherHandler.EXPECT().RemoveVoucher(mock.Anything, mock.Anything, "voucher").
+			Return(nil, errInvalidVoucher)
 
 		cob := &DefaultCartBehaviour{}
 		cob.Inject(
@@ -243,7 +246,7 @@ func TestDefaultCartBehaviour_ApplyGiftCard(t *testing.T) {
 		t.Parallel()
 
 		giftCardHandler := mocks.NewGiftCardHandler(t)
-		giftCardHandler.On("ApplyGiftCard", mock.Anything, mock.Anything, "giftCard").
+		giftCardHandler.EXPECT().ApplyGiftCard(mock.Anything, mock.Anything, "giftCard").
 			Return(&domaincart.Cart{ID: "giftCard"}, nil)
 
 		cob := &DefaultCartBehaviour{}
@@ -266,8 +269,8 @@ func TestDefaultCartBehaviour_ApplyGiftCard(t *testing.T) {
 		t.Parallel()
 
 		giftCardHandler := mocks.NewGiftCardHandler(t)
-		giftCardHandler.On("ApplyGiftCard", mock.Anything, mock.Anything, "giftCard").
-			Return(nil, errors.New("invalid gift card"))
+		giftCardHandler.EXPECT().ApplyGiftCard(mock.Anything, mock.Anything, "giftCard").
+			Return(nil, errInvalidGiftCard)
 
 		cob := &DefaultCartBehaviour{}
 		cob.Inject(
@@ -293,7 +296,7 @@ func TestDefaultCartBehaviour_RemoveGiftCard(t *testing.T) {
 		t.Parallel()
 
 		giftCardHandler := mocks.NewGiftCardHandler(t)
-		giftCardHandler.On("RemoveGiftCard", mock.Anything, mock.Anything, "giftCard").
+		giftCardHandler.EXPECT().RemoveGiftCard(mock.Anything, mock.Anything, "giftCard").
 			Return(&domaincart.Cart{ID: "giftCard"}, nil)
 
 		cob := &DefaultCartBehaviour{}
@@ -316,8 +319,8 @@ func TestDefaultCartBehaviour_RemoveGiftCard(t *testing.T) {
 		t.Parallel()
 
 		giftCardHandler := mocks.NewGiftCardHandler(t)
-		giftCardHandler.On("RemoveGiftCard", mock.Anything, mock.Anything, "giftCard").
-			Return(nil, errors.New("invalid gift card"))
+		giftCardHandler.EXPECT().RemoveGiftCard(mock.Anything, mock.Anything, "giftCard").
+			Return(nil, errInvalidGiftCard)
 
 		cob := &DefaultCartBehaviour{}
 		cob.Inject(
