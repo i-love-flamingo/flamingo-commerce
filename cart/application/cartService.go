@@ -843,7 +843,7 @@ func (cs *CartService) executeVoucherBehaviour(ctx context.Context, session *web
 }
 
 func (cs *CartService) handleCartNotFound(session *web.Session, err error) {
-	if err == cartDomain.ErrCartNotFound {
+	if errors.Is(err, cartDomain.ErrCartNotFound) {
 		_ = cs.DeleteSavedSessionGuestCartID(session)
 	}
 }

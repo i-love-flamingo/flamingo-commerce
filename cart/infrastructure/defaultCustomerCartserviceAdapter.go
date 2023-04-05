@@ -2,6 +2,7 @@ package infrastructure
 
 import (
 	"context"
+	"errors"
 
 	"flamingo.me/flamingo/v3/core/auth"
 	"flamingo.me/flamingo/v3/framework/flamingo"
@@ -33,16 +34,20 @@ func (cs *DefaultCustomerCartService) Inject(
 // GetCart gets a customer cart from the in memory customer cart service
 func (cs *DefaultCustomerCartService) GetCart(ctx context.Context, identity auth.Identity, _ string) (*cart.Cart, error) {
 	id := identity.Subject()
+
 	foundCart, err := cs.defaultBehaviour.GetCart(ctx, id)
 	if err == nil {
-		return foundCart, err
+		return foundCart, nil
 	}
-	if err == cart.ErrCartNotFound {
+
+	if errors.Is(err, cart.ErrCartNotFound) {
 		cart := &cart.Cart{ID: id}
 		cart.BelongsToAuthenticatedUser = true
 		cart.AuthenticatedUserID = id
+
 		return cs.defaultBehaviour.StoreNewCart(ctx, cart)
 	}
+
 	return nil, err
 }
 
