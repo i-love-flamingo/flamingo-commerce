@@ -2,7 +2,6 @@ package rediscart
 
 import (
 	"flamingo.me/dingo"
-	"flamingo.me/flamingo-commerce/v3/cart"
 	cartInfrastructure "flamingo.me/flamingo-commerce/v3/cart/infrastructure"
 	"flamingo.me/flamingo-commerce/v3/rediscart/infrastructure"
 	"flamingo.me/flamingo/v3/core/healthcheck/domain/healthcheck"
@@ -40,11 +39,4 @@ commerce: {
 		}
 	}
 }`
-}
-
-// Depends on other modules
-func (m *Module) Depends() []dingo.Module {
-	return []dingo.Module{
-		new(cart.Module),
-	}
 }
