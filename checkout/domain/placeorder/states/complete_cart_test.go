@@ -42,7 +42,7 @@ func TestCompleteCart_Run(t *testing.T) {
 			name: "successful completion",
 			behaviour: func() cartDomain.ModifyBehaviour {
 				behaviour := new(mocks.AllBehaviour)
-				behaviour.CompleteBehaviour.On("Complete", mock.Anything, &cart).Return(&cart, nil, nil)
+				behaviour.CompleteBehaviour.EXPECT().Complete(mock.Anything, &cart).Return(&cart, nil, nil)
 				return behaviour
 			}(),
 			behaviourError: nil,
@@ -61,7 +61,7 @@ func TestCompleteCart_Run(t *testing.T) {
 			name: "error on completion",
 			behaviour: func() cartDomain.ModifyBehaviour {
 				behaviour := new(mocks.AllBehaviour)
-				behaviour.CompleteBehaviour.On("Complete", mock.Anything, &cart).Return(nil, nil, errors.New("test error"))
+				behaviour.CompleteBehaviour.EXPECT().Complete(mock.Anything, &cart).Return(nil, nil, errors.New("test error"))
 				return behaviour
 			}(),
 			behaviourError: nil,
@@ -107,8 +107,8 @@ func TestCompleteCart_Run(t *testing.T) {
 
 			cartReceiverService := &cartApplication.CartReceiverService{}
 			guestCartService := new(mocks.GuestCartService)
-			guestCartService.On("GetModifyBehaviour", mock.Anything, mock.Anything).Return(tt.behaviour, tt.behaviourError)
-			guestCartService.On("GetNewCart", mock.Anything).Return(&cart, nil)
+			guestCartService.EXPECT().GetModifyBehaviour(mock.Anything).Return(tt.behaviour, tt.behaviourError)
+			guestCartService.EXPECT().GetNewCart(mock.Anything).Return(&cart, nil)
 			cartReceiverService.Inject(
 				guestCartService,
 				nil,
@@ -164,7 +164,7 @@ func TestCompleteCart_Rollback(t *testing.T) {
 			name: "successful restore",
 			behaviour: func() cartDomain.ModifyBehaviour {
 				behaviour := new(mocks.AllBehaviour)
-				behaviour.CompleteBehaviour.On("Restore", mock.Anything, &cart).Return(&cart, nil, nil)
+				behaviour.CompleteBehaviour.EXPECT().Restore(mock.Anything, &cart).Return(&cart, nil, nil)
 				return behaviour
 			}(),
 			rollbackData: states.CompleteCartRollbackData{
@@ -180,7 +180,7 @@ func TestCompleteCart_Rollback(t *testing.T) {
 			name: "error on restore",
 			behaviour: func() cartDomain.ModifyBehaviour {
 				behaviour := new(mocks.AllBehaviour)
-				behaviour.CompleteBehaviour.On("Restore", mock.Anything, &cart).Return(nil, nil, errors.New("test error"))
+				behaviour.CompleteBehaviour.EXPECT().Restore(mock.Anything, &cart).Return(nil, nil, errors.New("test error"))
 				return behaviour
 			}(),
 			rollbackData: states.CompleteCartRollbackData{
@@ -208,8 +208,8 @@ func TestCompleteCart_Rollback(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			cartReceiverService := &cartApplication.CartReceiverService{}
 			guestCartService := new(mocks.GuestCartService)
-			guestCartService.On("GetModifyBehaviour", mock.Anything, mock.Anything).Return(tt.behaviour, nil)
-			guestCartService.On("GetNewCart", mock.Anything).Return(&cart, nil)
+			guestCartService.EXPECT().GetModifyBehaviour(mock.Anything).Return(tt.behaviour, nil)
+			guestCartService.EXPECT().GetNewCart(mock.Anything).Return(&cart, nil)
 			cartReceiverService.Inject(
 				guestCartService,
 				nil,

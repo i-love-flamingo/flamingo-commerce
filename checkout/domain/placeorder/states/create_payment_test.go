@@ -33,9 +33,9 @@ func TestCreatePayment_Run(t *testing.T) {
 		state := states.CreatePayment{}
 
 		expectedPayment := &placeorder.Payment{Gateway: "test", RawTransactionData: &rawTransactionData{}}
-		gateway := &mocks.WebCartPaymentGateway{}
-		gateway.On("StartFlow", mock.Anything, mock.Anything, p.Context().UUID, p.Context().ReturnURL).Return(&domain.FlowResult{EarlyPlaceOrder: true}, nil).Once()
-		gateway.On("OrderPaymentFromFlow", mock.Anything, mock.Anything, p.Context().UUID).Return(expectedPayment, nil).Once()
+		gateway := mocks.NewWebCartPaymentGateway(t)
+		gateway.EXPECT().StartFlow(mock.Anything, mock.Anything, p.Context().UUID, p.Context().ReturnURL).Return(&domain.FlowResult{EarlyPlaceOrder: true}, nil).Once()
+		gateway.EXPECT().OrderPaymentFromFlow(mock.Anything, mock.Anything, p.Context().UUID).Return(expectedPayment, nil).Once()
 		paymentService := paymentServiceHelper(t, gateway)
 
 		state.Inject(paymentService)
@@ -81,8 +81,8 @@ func TestCreatePayment_Run(t *testing.T) {
 
 		expectedError := errors.New("StartFlow payment error")
 
-		gateway := &mocks.WebCartPaymentGateway{}
-		gateway.On("StartFlow", mock.Anything, mock.Anything, p.Context().UUID, p.Context().ReturnURL).Return(nil, expectedError).Once()
+		gateway := mocks.NewWebCartPaymentGateway(t)
+		gateway.EXPECT().StartFlow(mock.Anything, mock.Anything, p.Context().UUID, p.Context().ReturnURL).Return(nil, expectedError).Once()
 		paymentService := paymentServiceHelper(t, gateway)
 		state.Inject(paymentService)
 
@@ -104,9 +104,9 @@ func TestCreatePayment_Run(t *testing.T) {
 
 		expectedError := errors.New("OrderPaymentFromFlow payment error")
 
-		gateway := &mocks.WebCartPaymentGateway{}
-		gateway.On("StartFlow", mock.Anything, mock.Anything, p.Context().UUID, p.Context().ReturnURL).Return(&domain.FlowResult{}, nil).Once()
-		gateway.On("OrderPaymentFromFlow", mock.Anything, mock.Anything, p.Context().UUID).Return(nil, expectedError).Once()
+		gateway := mocks.NewWebCartPaymentGateway(t)
+		gateway.EXPECT().StartFlow(mock.Anything, mock.Anything, p.Context().UUID, p.Context().ReturnURL).Return(&domain.FlowResult{}, nil).Once()
+		gateway.EXPECT().OrderPaymentFromFlow(mock.Anything, mock.Anything, p.Context().UUID).Return(nil, expectedError).Once()
 
 		paymentService := paymentServiceHelper(t, gateway)
 		state.Inject(paymentService)
@@ -181,8 +181,8 @@ func TestCreatePayment_Rollback(t *testing.T) {
 			RawTransactionData: payment.RawTransactionData,
 		}
 
-		gateway := &mocks.WebCartPaymentGateway{}
-		gateway.On("CancelOrderPayment", mock.Anything, payment).Return(nil).Once()
+		gateway := mocks.NewWebCartPaymentGateway(t)
+		gateway.EXPECT().CancelOrderPayment(mock.Anything, payment).Return(nil).Once()
 		paymentService := paymentServiceHelper(t, gateway)
 		state.Inject(paymentService)
 
@@ -233,9 +233,9 @@ func TestCreatePayment_Rollback(t *testing.T) {
 			RawTransactionData: payment.RawTransactionData,
 		}
 
-		gateway := &mocks.WebCartPaymentGateway{}
 		expectedError := errors.New("generic payment error")
-		gateway.On("CancelOrderPayment", mock.Anything, payment).Return(expectedError).Once()
+		gateway := mocks.NewWebCartPaymentGateway(t)
+		gateway.EXPECT().CancelOrderPayment(mock.Anything, payment).Return(expectedError).Once()
 		paymentService := paymentServiceHelper(t, gateway)
 		state.Inject(paymentService)
 		assert.EqualError(t, state.Rollback(context.Background(), data), expectedError.Error())
