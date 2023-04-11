@@ -13,11 +13,12 @@ import (
 	"time"
 
 	"flamingo.me/dingo"
+	"github.com/gavv/httpexpect/v2"
+
 	"flamingo.me/flamingo/v3"
 	"flamingo.me/flamingo/v3/framework/config"
 	flamingoFramework "flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
-	"github.com/gavv/httpexpect/v2"
 )
 
 type (
@@ -53,7 +54,7 @@ func (t *testModule) Configure(i *dingo.Injector) {
 }
 
 // Notify gets notified by event router
-func (t *testModule) Notify(ctx context.Context, event flamingoFramework.Event) {
+func (t *testModule) Notify(_ context.Context, event flamingoFramework.Event) {
 	switch event.(type) {
 	case *flamingoFramework.ShutdownEvent:
 		log.Printf("ShutdownEvent event received...")
@@ -115,7 +116,6 @@ func Bootup(modules []dingo.Module, configDir string, config config.Map) BootupI
 	if len(os.Args) > 1 {
 		os.Args[1] = "serve"
 	}
-
 	additionalConfig = config
 
 	application, err := flamingo.NewApplication(modules, flamingo.ConfigDir(configDir))
