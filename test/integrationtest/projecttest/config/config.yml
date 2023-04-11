@@ -65,9 +65,6 @@ commerce:
       emailAddress: "test@test.de"
     placeOrderLogger:
       enabled: false
-    redis:
-      enabled: true
-      keyPrefix: "cart:"
   checkout:
     showEmptyCartPageIfNoItems: true
     usePersonalDataForm: true

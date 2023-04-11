@@ -13,14 +13,11 @@ import (
 	"time"
 
 	"flamingo.me/dingo"
-	"github.com/gavv/httpexpect/v2"
-	"github.com/testcontainers/testcontainers-go"
-	"github.com/testcontainers/testcontainers-go/wait"
-
 	"flamingo.me/flamingo/v3"
 	"flamingo.me/flamingo/v3/framework/config"
 	flamingoFramework "flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
+	"github.com/gavv/httpexpect/v2"
 )
 
 type (
@@ -60,10 +57,6 @@ func (t *testModule) Notify(ctx context.Context, event flamingoFramework.Event) 
 	switch event.(type) {
 	case *flamingoFramework.ShutdownEvent:
 		log.Printf("ShutdownEvent event received...")
-
-		if redisC != nil {
-			_ = redisC.Terminate(ctx)
-		}
 	}
 }
 
@@ -123,7 +116,6 @@ func Bootup(modules []dingo.Module, configDir string, config config.Map) BootupI
 		os.Args[1] = "serve"
 	}
 
-	config = startUpDockerRedis(config)
 	additionalConfig = config
 
 	application, err := flamingo.NewApplication(modules, flamingo.ConfigDir(configDir))
@@ -152,50 +144,6 @@ func Bootup(modules []dingo.Module, configDir string, config config.Map) BootupI
 		"localhost:" + port,
 		listenAndServeQuited,
 	}
-}
-
-var redisC testcontainers.Container
-
-func startUpDockerRedis(configMap config.Map) config.Map {
-	ctx := context.Background()
-	req := testcontainers.ContainerRequest{
-		Image:        "redis:latest",
-		ExposedPorts: []string{"6379/tcp"},
-		WaitingFor:   wait.ForLog("Ready to accept connections"),
-	}
-
-	var err error
-
-	redisC, err = testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
-		ContainerRequest: req,
-		Started:          true,
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	port, err := redisC.MappedPort(ctx, "6379")
-	if err != nil {
-		panic(err)
-	}
-
-	host, err := redisC.Host(ctx)
-	if err != nil {
-		panic(err)
-	}
-
-	address := fmt.Sprintf("%s:%s", host, port.Port())
-
-	if configMap == nil {
-		configMap = config.Map{}
-	}
-
-	err = configMap.Add(config.Map{"commerce.cart.redis.address": address})
-	if err != nil {
-		panic(err)
-	}
-
-	return configMap
 }
 
 // NewHTTPExpectWithCookies returns a new Expect object without printer with preset cookies to the base URL
