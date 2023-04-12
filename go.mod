@@ -15,7 +15,7 @@ require (
 	github.com/go-redis/redis/v9 v9.0.0-beta.2
 	github.com/go-redsync/redsync/v4 v4.6.0
 	github.com/go-test/deep v1.1.0
-	github.com/gomodule/redigo v1.8.9
+	github.com/gomodule/redigo v1.8.2
 	github.com/google/go-cmp v0.5.9
 	github.com/google/uuid v1.3.0
 	github.com/leekchan/accounting v1.0.0
