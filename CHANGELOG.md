@@ -1,6 +1,10 @@
 # Changelog
 ## v3.6.1 [upcoming]
 
+**cart**
+* Updated the `DefaultCartBehaviour` to be able to support other `CartStorage` implementations
+    * Dropped the fake implementations of `GiftCardHandler` and `VoucherHandler` to not magically add some discounts
+
 **general**
 * Add .golangci.yml and github workflow
 * Add .mockery.yaml config
