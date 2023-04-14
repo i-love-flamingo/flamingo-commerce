@@ -43,10 +43,12 @@ type (
 
 	// ItemAllocation info
 	ItemAllocation struct {
-		CustomAllocations map[string]AllocatedQtys
+		CustomAllocations map[ProductID]AllocatedQtys
 		AllocatedQtys     AllocatedQtys
 		Error             error
 	}
+
+	ProductID string
 
 	// AllocatedQtys represents the allocated Qty per source
 	AllocatedQtys map[Source]int
@@ -234,7 +236,7 @@ func (d *DefaultSourcingService) allocateBundleWithActiveChoices(ctx context.Con
 		allocatedQtys, productSourceStockForBundle, err := d.allocateItem(ctx, productSourcestock, activeChoice.Product, qty, deliveryInfo)
 
 		if resultItemAllocation.CustomAllocations == nil {
-			resultItemAllocation.CustomAllocations = make(map[string]AllocatedQtys)
+			resultItemAllocation.CustomAllocations = make(map[ProductID]AllocatedQtys)
 		}
 
 		if err != nil {
@@ -242,7 +244,7 @@ func (d *DefaultSourcingService) allocateBundleWithActiveChoices(ctx context.Con
 		}
 
 		remainingSourcestock = productSourceStockForBundle
-		resultItemAllocation.CustomAllocations[string(choiceID)] = allocatedQtys
+		resultItemAllocation.CustomAllocations[ProductID(choiceID)] = allocatedQtys
 	}
 
 	return resultItemAllocation, remainingSourcestock
