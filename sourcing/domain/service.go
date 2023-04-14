@@ -133,32 +133,16 @@ func (d *DefaultSourcingService) GetAvailableSources(
 		return nil, err
 	}
 
-	var lastStockError error
-	availableSources := AvailableSources{}
-	for _, source := range sources {
-		qty, err := d.stockProvider.GetStock(ctx, product, source, deliveryInfo)
-		if err != nil {
-			d.logger.Error(err)
-			lastStockError = err
-
-			continue
-		}
-		if qty > 0 {
-			availableSources[source] = qty
-		}
+	availableSources, lastStockError := d.fetchAvailableSources(ctx, product, deliveryInfo, sources)
+	if err != nil {
+		return nil, err
 	}
 
 	// if a cart is given we need to deduct the possible allocated items in the cart
 	if decoratedCart != nil {
-		allocatedSources, err := d.AllocateItems(ctx, decoratedCart)
+		availableSources, err = d.deductAllocatedItems(ctx, availableSources, decoratedCart, product)
 		if err != nil {
 			return nil, err
-		}
-
-		itemIdsWithProduct := getItemIdsWithProduct(decoratedCart, product)
-
-		for _, itemID := range itemIdsWithProduct {
-			availableSources = availableSources.Reduce(allocatedSources[itemID].AllocatedQtys)
 		}
 	}
 
@@ -166,7 +150,47 @@ func (d *DefaultSourcingService) GetAvailableSources(
 		if lastStockError != nil {
 			return availableSources, errors.Wrap(ErrNoSourceAvailable, lastStockError.Error())
 		}
+
 		return availableSources, fmt.Errorf("%w %s", ErrNoSourceAvailable, formatSources(sources))
+	}
+
+	return availableSources, nil
+}
+
+func (d *DefaultSourcingService) fetchAvailableSources(
+	ctx context.Context,
+	product domain.BasicProduct,
+	deliveryInfo *cartDomain.DeliveryInfo,
+	sources []Source) (AvailableSources, error) {
+	availableSources := make(AvailableSources)
+	var lastStockError error
+
+	for _, source := range sources {
+		qty, err := d.stockProvider.GetStock(ctx, product, source, deliveryInfo)
+		if err != nil {
+			d.logger.Error(err)
+			lastStockError = err
+			continue
+		}
+
+		if qty > 0 {
+			availableSources[source] = qty
+		}
+	}
+
+	return availableSources, lastStockError
+}
+
+func (d *DefaultSourcingService) deductAllocatedItems(ctx context.Context, availableSources AvailableSources, decoratedCart *decorator.DecoratedCart, product domain.BasicProduct) (AvailableSources, error) {
+	allocatedSources, err := d.AllocateItems(ctx, decoratedCart)
+	if err != nil {
+		return nil, err
+	}
+
+	itemIdsWithProduct := getItemIdsWithProduct(decoratedCart, product)
+
+	for _, itemID := range itemIdsWithProduct {
+		availableSources = availableSources.Reduce(allocatedSources[itemID].AllocatedQtys)
 	}
 
 	return availableSources, nil
@@ -213,7 +237,7 @@ func (d *DefaultSourcingService) allocateItemForProduct(
 	decoratedItem *decorator.DecoratedCartItem,
 	deliveryInfo cartDomain.DeliveryInfo,
 ) (ItemAllocation, map[string]map[Source]int, error) {
-	if decoratedItem.Product.Type() == domain.TypeBundle {
+	if decoratedItem.Product.Type() == domain.TypeBundle || decoratedItem.Product.Type() == domain.TypeConfigurableWithActiveVariant {
 		return ItemAllocation{}, productSourcestock, ErrUnsupportedProduct
 	}
 
