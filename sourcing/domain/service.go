@@ -185,13 +185,17 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 	resultItemAllocations := make(ItemAllocations)
 
 	for _, delivery := range decoratedCart.DecoratedDeliveries {
+		deliveryInfo := delivery.Delivery.DeliveryInfo // create a new variable to avoid memory aliasing
+
 		for _, decoratedItem := range delivery.DecoratedItems {
-			itemAllocation, updatedSourcestock, err := d.allocateItemForProduct(ctx, productSourcestock, &decoratedItem, delivery.Delivery.DeliveryInfo)
+			item := decoratedItem // create a new variable to avoid memory aliasing
+
+			itemAllocation, updatedSourcestock, err := d.allocateItemForProduct(ctx, productSourcestock, &item, deliveryInfo)
 			if err != nil {
 				return nil, err
 			}
 
-			resultItemAllocations[ItemID(decoratedItem.Item.ID)] = itemAllocation
+			resultItemAllocations[ItemID(item.Item.ID)] = itemAllocation
 			productSourcestock = updatedSourcestock
 		}
 	}
@@ -327,7 +331,7 @@ func (d *DefaultSourcingService) getSourceStock(ctx context.Context, remainingSo
 	if _, exists := remainingSourcestock[productID][source]; !exists {
 		sourceStock, err := d.stockProvider.GetStock(ctx, product, source, deliveryInfo)
 		if err != nil {
-			return 0, fmt.Errorf("error geting stock product: %w", err)
+			return 0, fmt.Errorf("error getting stock product: %w", err)
 		}
 
 		remainingSourcestock[productID][source] = sourceStock
