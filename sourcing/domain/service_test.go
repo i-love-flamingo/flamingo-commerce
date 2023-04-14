@@ -5,12 +5,12 @@ import (
 	"errors"
 	"testing"
 
+	"flamingo.me/flamingo/v3/framework/flamingo"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo-commerce/v3/sourcing/domain"
-
-	"flamingo.me/flamingo/v3/framework/flamingo"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -160,6 +160,7 @@ func TestDefaultSourcingService_GetAvailableSources(t *testing.T) {
 }
 
 func TestDefaultSourcingService_AllocateItems(t *testing.T) {
+	t.Parallel()
 	/**
 	Given:
 	Cart:
@@ -192,6 +193,8 @@ func TestDefaultSourcingService_AllocateItems(t *testing.T) {
 
 	*/
 	t.Run("allocate easy", func(t *testing.T) {
+		t.Parallel()
+
 		stubbedProduct1 := productDomain.SimpleProduct{Identifier: "product1"}
 		stubbedProduct2 := productDomain.SimpleProduct{Identifier: "product2"}
 
@@ -252,6 +255,253 @@ func TestDefaultSourcingService_AllocateItems(t *testing.T) {
 		assert.Equal(t, 2, itemAllocation[domain.ItemID("item2")].AllocatedQtys[source3])
 		assert.Equal(t, 5, itemAllocation[domain.ItemID("item3")].AllocatedQtys[source2])
 	})
+
+	t.Run("allocate cart with bundle item", func(t *testing.T) {
+		t.Parallel()
+
+		bundleProduct := productDomain.BundleProductWithActiveChoices{
+			BundleProduct: productDomain.BundleProduct{
+				Identifier: "bundle_product",
+			},
+			ActiveChoices: map[productDomain.Identifier]productDomain.ActiveChoice{
+				"identifier1": {
+					Qty: 1,
+					Product: productDomain.SimpleProduct{
+						Identifier: "product4",
+					},
+				},
+				"identifier2": {
+					Qty: 2,
+					Product: productDomain.SimpleProduct{
+						Identifier: "product3",
+					},
+				},
+			},
+		}
+
+		simple2 := productDomain.SimpleProduct{Identifier: "product2"}
+		simple5 := productDomain.SimpleProduct{Identifier: "product5"}
+
+		testCart := decorator.DecoratedCart{
+			DecoratedDeliveries: []decorator.DecoratedDelivery{
+				{
+					DecoratedItems: []decorator.DecoratedCartItem{
+						{
+							Product: bundleProduct,
+							Item:    cart.Item{Qty: 1, ID: "item1"},
+						},
+						{
+							Product: simple2,
+							Item:    cart.Item{Qty: 1, ID: "item2"},
+						},
+					},
+				},
+				{
+					DecoratedItems: []decorator.DecoratedCartItem{
+						{
+							Product: simple5,
+							Item:    cart.Item{Qty: 4, ID: "item3"},
+						},
+					},
+				},
+			},
+		}
+
+		source1 := domain.Source{LocationCode: "Source1"}
+		source2 := domain.Source{LocationCode: "Source2"}
+		source3 := domain.Source{LocationCode: "Source3"}
+		stubbedSources := []domain.Source{source1, source2, source3}
+
+		stockBySourceAndProductProviderMock := stockBySourceAndProductProviderMock{
+			Qty: map[string]map[string]int{
+				"Source1": {
+					"product2": 3,
+					"product4": 27,
+					"product5": 3,
+				},
+				"Source2": {
+					"product1": 10,
+					"product4": 27,
+				},
+				"Source3": {
+					"product2": 10,
+					"product3": 4,
+				},
+			},
+		}
+
+		sourcingService := newDefaultSourcingService(stockBySourceAndProductProviderMock, stubbedSources)
+
+		itemAllocation, err := sourcingService.AllocateItems(context.Background(), &testCart)
+		assert.NoError(t, err)
+		assert.NoError(t, itemAllocation[domain.ItemID("item1")].Error)
+		assert.NoError(t, itemAllocation[domain.ItemID("item2")].Error)
+
+		assert.ErrorIs(t, domain.ErrInsufficientSourceQty, itemAllocation[domain.ItemID("item3")].Error)
+
+		assert.Nil(t, itemAllocation[domain.ItemID("item1")].AllocatedQtys)
+		assert.Nil(t, itemAllocation[domain.ItemID("item2")].CustomAllocations)
+		assert.Nil(t, itemAllocation[domain.ItemID("item3")].CustomAllocations)
+
+		assert.Equal(t, 1,
+			itemAllocation[domain.ItemID("item1")].CustomAllocations["identifier1"][source1])
+		assert.Equal(t, 2,
+			itemAllocation[domain.ItemID("item1")].CustomAllocations["identifier2"][source3])
+		assert.Equal(t, 1,
+			itemAllocation[domain.ItemID("item2")].AllocatedQtys[source1])
+	})
+
+	t.Run("if too many products are allocated to a bundle, they won't be available for the next item", func(t *testing.T) {
+		t.Parallel()
+
+		bundleProduct := productDomain.BundleProductWithActiveChoices{
+			BundleProduct: productDomain.BundleProduct{
+				Identifier: "bundle_product",
+			},
+			ActiveChoices: map[productDomain.Identifier]productDomain.ActiveChoice{
+				"identifier1": {
+					Qty: 1,
+					Product: productDomain.SimpleProduct{
+						Identifier: "product1",
+					},
+				},
+				"identifier2": {
+					Qty: 2,
+					Product: productDomain.SimpleProduct{
+						Identifier: "product2",
+					},
+				},
+			},
+		}
+
+		simple2 := productDomain.SimpleProduct{Identifier: "product2"}
+
+		testCart := decorator.DecoratedCart{
+			DecoratedDeliveries: []decorator.DecoratedDelivery{
+				{
+					DecoratedItems: []decorator.DecoratedCartItem{
+						{
+							Product: bundleProduct,
+							Item:    cart.Item{Qty: 2, ID: "item1"},
+						},
+						{
+							Product: simple2,
+							Item:    cart.Item{Qty: 1, ID: "item2"},
+						},
+					},
+				},
+			},
+		}
+
+		source1 := domain.Source{LocationCode: "Source1"}
+		source2 := domain.Source{LocationCode: "Source2"}
+		stubbedSources := []domain.Source{source1, source2}
+
+		stockBySourceAndProductProviderMock := stockBySourceAndProductProviderMock{
+			Qty: map[string]map[string]int{
+				"Source1": {
+					"product1": 28,
+					"product2": 4,
+				},
+				"Source2": {
+					"product1": 28,
+					"product2": 0,
+				},
+			},
+		}
+
+		sourcingService := newDefaultSourcingService(stockBySourceAndProductProviderMock, stubbedSources)
+
+		itemAllocation, err := sourcingService.AllocateItems(context.Background(), &testCart)
+		assert.NoError(t, err)
+		assert.NoError(t, itemAllocation[domain.ItemID("item1")].Error)
+
+		assert.ErrorIs(t, domain.ErrInsufficientSourceQty, itemAllocation[domain.ItemID("item2")].Error)
+
+		assert.Nil(t, itemAllocation[domain.ItemID("item1")].AllocatedQtys)
+		assert.Nil(t, itemAllocation[domain.ItemID("item2")].CustomAllocations)
+
+		assert.Equal(t, 2,
+			itemAllocation[domain.ItemID("item1")].CustomAllocations["identifier1"][source1])
+		assert.Equal(t, 4,
+			itemAllocation[domain.ItemID("item1")].CustomAllocations["identifier2"][source1])
+	})
+
+	t.Run("if an item from a bundle is purchased separately and insufficient quantity remains, it won't be available for the bundle", func(t *testing.T) {
+		t.Parallel()
+		bundleProduct := productDomain.BundleProductWithActiveChoices{
+			BundleProduct: productDomain.BundleProduct{
+				Identifier: "bundle_product",
+			},
+			ActiveChoices: map[productDomain.Identifier]productDomain.ActiveChoice{
+				"identifier1": {
+					Qty: 1,
+					Product: productDomain.SimpleProduct{
+						Identifier: "product1",
+					},
+				},
+				"identifier2": {
+					Qty: 3,
+					Product: productDomain.SimpleProduct{
+						Identifier: "product2",
+					},
+				},
+			},
+		}
+
+		simple2 := productDomain.SimpleProduct{Identifier: "product2", Saleable: productDomain.Saleable{IsSaleable: true}}
+
+		testCart := decorator.DecoratedCart{
+			DecoratedDeliveries: []decorator.DecoratedDelivery{
+				{
+					DecoratedItems: []decorator.DecoratedCartItem{
+						{
+							Product: simple2,
+							Item:    cart.Item{Qty: 3, ID: "item1"},
+						},
+						{
+							Product: bundleProduct,
+							Item:    cart.Item{Qty: 1, ID: "item2"},
+						},
+					},
+				},
+			},
+		}
+
+		source1 := domain.Source{LocationCode: "Source1"}
+		source2 := domain.Source{LocationCode: "Source2"}
+		stubbedSources := []domain.Source{source1, source2}
+
+		stockBySourceAndProductProviderMock := stockBySourceAndProductProviderMock{
+			Qty: map[string]map[string]int{
+				"Source1": {
+					"product1": 28,
+					"product2": 3,
+				},
+				"Source2": {
+					"product1": 28,
+					"product2": 0,
+				},
+			},
+		}
+
+		sourcingService := newDefaultSourcingService(stockBySourceAndProductProviderMock, stubbedSources)
+
+		itemAllocation, err := sourcingService.AllocateItems(context.Background(), &testCart)
+		assert.NoError(t, err)
+		assert.NoError(t, itemAllocation[domain.ItemID("item1")].Error)
+
+		assert.ErrorIs(t, domain.ErrInsufficientSourceQty, itemAllocation[domain.ItemID("item2")].Error)
+
+		if itemAllocation[domain.ItemID("item2")].Error == nil {
+			assert.Nil(t, nil)
+		}
+
+		assert.Nil(t, itemAllocation[domain.ItemID("item1")].CustomAllocations)
+
+		assert.Equal(t, 3,
+			itemAllocation[domain.ItemID("item1")].AllocatedQtys[source1])
+	})
 }
 
 func newDefaultSourcingService(stockProvider domain.StockProvider, expectedSources []domain.Source) domain.DefaultSourcingService {
@@ -268,3 +518,17 @@ func newDefaultSourcingService(stockProvider domain.StockProvider, expectedSourc
 
 	return sourcingService
 }
+
+//sourcingService := domain.DefaultSourcingService{}
+//stockProvider := &mocks.StockProvider{}
+////availableSourcesProvider := &mocks.AvailableSourcesProvider{}
+//
+//sourcingService.Inject(
+//	flamingo.NullLogger{},
+//	&struct {
+//		AvailableSourcesProvider domain.AvailableSourcesProvider `inject:",optional"`
+//		StockProvider            domain.StockProvider            `inject:",optional"`
+//	}{
+//		StockProvider:            stockProvider,
+//		AvailableSourcesProvider: stockBySourceAndProductProviderMock,
+//	})
