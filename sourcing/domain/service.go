@@ -130,13 +130,10 @@ func (d *DefaultSourcingService) GetAvailableSources(
 
 	sources, err := d.availableSourcesProvider.GetPossibleSources(ctx, product, deliveryInfo)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error getting possible sources: %w", err)
 	}
 
 	availableSources, lastStockError := d.fetchAvailableSources(ctx, product, deliveryInfo, sources)
-	if err != nil {
-		return nil, err
-	}
 
 	// if a cart is given we need to deduct the possible allocated items in the cart
 	if decoratedCart != nil {
@@ -170,6 +167,7 @@ func (d *DefaultSourcingService) fetchAvailableSources(
 		if err != nil {
 			d.logger.Error(err)
 			lastStockError = err
+
 			continue
 		}
 
@@ -181,7 +179,12 @@ func (d *DefaultSourcingService) fetchAvailableSources(
 	return availableSources, lastStockError
 }
 
-func (d *DefaultSourcingService) deductAllocatedItems(ctx context.Context, availableSources AvailableSources, decoratedCart *decorator.DecoratedCart, product domain.BasicProduct) (AvailableSources, error) {
+func (d *DefaultSourcingService) deductAllocatedItems(
+	ctx context.Context,
+	availableSources AvailableSources,
+	decoratedCart *decorator.DecoratedCart,
+	product domain.BasicProduct,
+) (AvailableSources, error) {
 	allocatedSources, err := d.AllocateItems(ctx, decoratedCart)
 	if err != nil {
 		return nil, err
