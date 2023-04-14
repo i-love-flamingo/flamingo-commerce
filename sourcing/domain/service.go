@@ -104,9 +104,9 @@ var (
 func (d *DefaultSourcingService) Inject(
 	logger flamingo.Logger,
 	dep *struct {
-	AvailableSourcesProvider AvailableSourcesProvider `inject:",optional"`
-	StockProvider            StockProvider            `inject:",optional"`
-},
+		AvailableSourcesProvider AvailableSourcesProvider `inject:",optional"`
+		StockProvider            StockProvider            `inject:",optional"`
+	},
 ) *DefaultSourcingService {
 	d.logger = logger.WithField(flamingo.LogKeyModule, "sourcing").WithField(flamingo.LogKeyCategory, "DefaultSourcingService")
 
@@ -168,7 +168,6 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 	return availableSources, nil
 }
 
-// AllocateItems - see description in Interface
 func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCart *decorator.DecoratedCart) (ItemAllocations, error) {
 	if err := d.checkConfiguration(); err != nil {
 		return nil, err
@@ -177,48 +176,47 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 		return nil, errors.New("Cart not given")
 	}
 
-	// productSourcestock holds the available stock per product and source.
-	// During allocation the initial retrieved available stock is reduced according to used allocation
-	var productSourcestock = map[string]map[Source]int{}
+	productSourcestock := make(map[string]map[Source]int)
 
 	if len(decoratedCart.DecoratedDeliveries) == 0 {
 		return nil, ErrNeedMoreDetailsSourceCannotBeDetected
 	}
 
-	resultItemAllocations := ItemAllocations{}
+	resultItemAllocations := make(ItemAllocations)
 
-	// overallError that will be returned
-	var overallError error
 	for _, delivery := range decoratedCart.DecoratedDeliveries {
 		for _, decoratedItem := range delivery.DecoratedItems {
-			if decoratedItem.Product.Type() == domain.TypeBundle {
-				return nil, ErrUnsupportedProduct
-			}
-
-			if bundleProduct, ok := decoratedItem.Product.(domain.BundleProductWithActiveChoices); ok {
-				itemAllocationForBundle, productSourceStockAfterBundleAllocate := d.allocateBundleWithActiveChoices(ctx, decoratedItem.Item.Qty, productSourcestock, bundleProduct, delivery.Delivery.DeliveryInfo)
-				productSourcestock = productSourceStockAfterBundleAllocate
-
-				resultItemAllocations[ItemID(decoratedItem.Item.ID)] = itemAllocationForBundle
-
-				continue
-			}
-
-			// Handle non-bundle products
-			var itemAllocation ItemAllocation
-
-			allocatedQtys, productSourceStockAfterAllocation, err := d.allocateItem(ctx, productSourcestock, decoratedItem.Product, decoratedItem.Item.Qty, delivery.Delivery.DeliveryInfo)
-			productSourcestock = productSourceStockAfterAllocation
-
-			itemAllocation.AllocatedQtys = allocatedQtys
+			itemAllocation, updatedSourcestock, err := d.allocateItemForProduct(ctx, productSourcestock, &decoratedItem, delivery.Delivery.DeliveryInfo)
 			if err != nil {
-				itemAllocation.Error = err
+				return nil, err
 			}
+
 			resultItemAllocations[ItemID(decoratedItem.Item.ID)] = itemAllocation
+			productSourcestock = updatedSourcestock
 		}
 	}
 
-	return resultItemAllocations, overallError
+	return resultItemAllocations, nil
+}
+
+func (d *DefaultSourcingService) allocateItemForProduct(ctx context.Context, productSourcestock map[string]map[Source]int, decoratedItem *decorator.DecoratedCartItem, deliveryInfo cartDomain.DeliveryInfo) (ItemAllocation, map[string]map[Source]int, error) {
+	if decoratedItem.Product.Type() == domain.TypeBundle {
+		return ItemAllocation{}, productSourcestock, ErrUnsupportedProduct
+	}
+
+	if bundleProduct, ok := decoratedItem.Product.(domain.BundleProductWithActiveChoices); ok {
+		itemAllocation, productStock := d.allocateBundleWithActiveChoices(ctx, decoratedItem.Item.Qty, productSourcestock, bundleProduct, deliveryInfo)
+		return itemAllocation, productStock, nil
+	}
+
+	allocatedQtys, updatedSourcestock, err := d.allocateItem(ctx, productSourcestock, decoratedItem.Product, decoratedItem.Item.Qty, deliveryInfo)
+
+	itemAllocation := ItemAllocation{
+		AllocatedQtys: allocatedQtys,
+		Error:         err,
+	}
+
+	return itemAllocation, updatedSourcestock, nil
 }
 
 func (d *DefaultSourcingService) allocateBundleWithActiveChoices(ctx context.Context, itemQty int, productSourcestock map[string]map[Source]int, bundleProduct domain.BundleProductWithActiveChoices, deliveryInfo cartDomain.DeliveryInfo) (ItemAllocation, map[string]map[Source]int) {
@@ -286,10 +284,8 @@ func (d *DefaultSourcingService) allocateItem(ctx context.Context, productSource
 	}
 
 	allocatedQtys := make(AllocatedQtys)
-	allocatedQty, remainingSourcestock, err := d.allocateFromSources(ctx, productSourcestock, product, productID, qtyToAllocate, sources, &deliveryInfo, allocatedQtys)
-	if err != nil {
-		return nil, remainingSourcestock, err
-	}
+
+	allocatedQty, remainingSourcestock := d.allocateFromSources(ctx, productSourcestock, product, productID, qtyToAllocate, sources, &deliveryInfo, allocatedQtys)
 
 	if allocatedQty < qtyToAllocate {
 		return allocatedQtys, remainingSourcestock, ErrInsufficientSourceQty
@@ -298,7 +294,7 @@ func (d *DefaultSourcingService) allocateItem(ctx context.Context, productSource
 	return allocatedQtys, remainingSourcestock, nil
 }
 
-func (d *DefaultSourcingService) allocateFromSources(ctx context.Context, productSourcestock map[string]map[Source]int, product domain.BasicProduct, productID string, qtyToAllocate int, sources []Source, deliveryInfo *cartDomain.DeliveryInfo, allocatedQtys AllocatedQtys) (int, map[string]map[Source]int, error) {
+func (d *DefaultSourcingService) allocateFromSources(ctx context.Context, productSourcestock map[string]map[Source]int, product domain.BasicProduct, productID string, qtyToAllocate int, sources []Source, deliveryInfo *cartDomain.DeliveryInfo, allocatedQtys AllocatedQtys) (int, map[string]map[Source]int) {
 	allocatedQty := 0
 	remainingSourcestock := productSourcestock
 
@@ -324,14 +320,14 @@ func (d *DefaultSourcingService) allocateFromSources(ctx context.Context, produc
 		allocatedQtys[source] = stockToAllocate // Added this line to update allocatedQtys map
 	}
 
-	return allocatedQty, remainingSourcestock, nil
+	return allocatedQty, remainingSourcestock
 }
 
 func (d *DefaultSourcingService) getSourceStock(ctx context.Context, remainingSourcestock map[string]map[Source]int, product domain.BasicProduct, productID string, source Source, deliveryInfo *cartDomain.DeliveryInfo) (int, error) {
 	if _, exists := remainingSourcestock[productID][source]; !exists {
 		sourceStock, err := d.stockProvider.GetStock(ctx, product, source, deliveryInfo)
 		if err != nil {
-			return 0, err
+			return 0, fmt.Errorf("error geting stock product: %w", err)
 		}
 
 		remainingSourcestock[productID][source] = sourceStock
