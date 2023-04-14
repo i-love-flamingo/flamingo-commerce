@@ -202,11 +202,13 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 
 			// Handle non-bundle products
 			var itemAllocation ItemAllocation
-			allocatedQtys, err, productSourceStockAfterAllocation := d.allocateItem(ctx, productSourcestock, decoratedItem.Product, decoratedItem.Item.Qty, delivery.Delivery.DeliveryInfo)
+			allocatedQtys, productSourceStockAfterAllocation, err := d.allocateItem(ctx, productSourcestock, decoratedItem.Product, decoratedItem.Item.Qty, delivery.Delivery.DeliveryInfo)
 			productSourcestock = productSourceStockAfterAllocation
 
 			itemAllocation.AllocatedQtys = allocatedQtys
-			itemAllocation.Error = err
+			if err != nil {
+				itemAllocation.Error = err
+			}
 			resultItemAllocations[ItemID(decoratedItem.Item.ID)] = itemAllocation
 		}
 	}
@@ -222,7 +224,7 @@ func (d *DefaultSourcingService) allocateBundleWithActiveChoices(ctx context.Con
 	for choiceID, activeChoice := range bundleProduct.ActiveChoices {
 		qty := activeChoice.Qty * itemQty
 
-		allocatedQtys, err, productSourceStockForBundle := d.allocateItem(ctx, productSourcestock, activeChoice.Product, qty, deliveryInfo)
+		allocatedQtys, productSourceStockForBundle, err := d.allocateItem(ctx, productSourcestock, activeChoice.Product, qty, deliveryInfo)
 
 		if resultItemAllocation.CustomAllocations == nil {
 			resultItemAllocation.CustomAllocations = make(map[string]AllocatedQtys)
@@ -264,7 +266,7 @@ func getItemIdsWithProduct(dc *decorator.DecoratedCart, product domain.BasicProd
 
 // allocateItem returns the itemAllocation and the remaining stock for the given item.
 // The passed productSourcestock is used - and the remaining productSourcestock is returned. In case a source is not yet given in productSourcestock it will be fetched
-func (d *DefaultSourcingService) allocateItem(ctx context.Context, productSourcestock map[string]map[Source]int, product domain.BasicProduct, qtyToAllocate int, deliveryInfo cartDomain.DeliveryInfo) (AllocatedQtys, error, map[string]map[Source]int) {
+func (d *DefaultSourcingService) allocateItem(ctx context.Context, productSourcestock map[string]map[Source]int, product domain.BasicProduct, qtyToAllocate int, deliveryInfo cartDomain.DeliveryInfo) (AllocatedQtys, map[string]map[Source]int, error) {
 	resultAllocatedQtys := make(AllocatedQtys)
 	var resultErr error
 
@@ -273,16 +275,16 @@ func (d *DefaultSourcingService) allocateItem(ctx context.Context, productSource
 
 	productID := product.GetIdentifier()
 	if productID == "" {
-		return nil, errors.New("product id missing"), remainingSourcestock
+		return nil, remainingSourcestock, errors.New("product id missing")
 	}
 
 	sources, err := d.availableSourcesProvider.GetPossibleSources(ctx, product, &deliveryInfo)
 	if err != nil {
-		return nil, err, remainingSourcestock
+		return nil, remainingSourcestock, err
 	}
 
 	if len(sources) == 0 {
-		return nil, ErrNoSourceAvailable, remainingSourcestock
+		return nil, remainingSourcestock, ErrNoSourceAvailable
 	}
 
 	//qtyToAllocate := qty
@@ -329,7 +331,7 @@ func (d *DefaultSourcingService) allocateItem(ctx context.Context, productSource
 		resultErr = ErrInsufficientSourceQty
 	}
 
-	return resultAllocatedQtys, resultErr, remainingSourcestock
+	return resultAllocatedQtys, remainingSourcestock, resultErr
 }
 
 // QtySum returns the sum of all sourced items
