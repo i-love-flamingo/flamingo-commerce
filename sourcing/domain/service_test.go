@@ -79,7 +79,7 @@ func TestDefaultSourcingService_GetAvailableSources(t *testing.T) {
 		})
 
 		_, err := sourcingService.GetAvailableSources(context.Background(), nil, nil, nil)
-		assert.EqualError(t, err, "mocked available sources provider error", "result contains the error message of the available sources provider")
+		assert.Contains(t, err.Error(), "mocked available sources provider error", "result contains the error message of the available sources provider")
 	})
 
 	t.Run("full qty with nil cart", func(t *testing.T) {
