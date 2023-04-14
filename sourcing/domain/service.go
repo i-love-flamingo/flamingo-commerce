@@ -95,15 +95,18 @@ var (
 
 	// ErrUnsupportedProduct return when product type is not supported by service
 	ErrUnsupportedProduct = errors.New("unsupported product")
+
+	// ErrProductIDMissing return when product id is missing
+	ErrProductIDMissing = errors.New("product id missing")
 )
 
 // Inject the dependencies
 func (d *DefaultSourcingService) Inject(
 	logger flamingo.Logger,
 	dep *struct {
-		AvailableSourcesProvider AvailableSourcesProvider `inject:",optional"`
-		StockProvider            StockProvider            `inject:",optional"`
-	},
+	AvailableSourcesProvider AvailableSourcesProvider `inject:",optional"`
+	StockProvider            StockProvider            `inject:",optional"`
+},
 ) *DefaultSourcingService {
 	d.logger = logger.WithField(flamingo.LogKeyModule, "sourcing").WithField(flamingo.LogKeyCategory, "DefaultSourcingService")
 
@@ -197,11 +200,13 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 				productSourcestock = productSourceStockAfterBundleAllocate
 
 				resultItemAllocations[ItemID(decoratedItem.Item.ID)] = itemAllocationForBundle
+
 				continue
 			}
 
 			// Handle non-bundle products
 			var itemAllocation ItemAllocation
+
 			allocatedQtys, productSourceStockAfterAllocation, err := d.allocateItem(ctx, productSourcestock, decoratedItem.Product, decoratedItem.Item.Qty, delivery.Delivery.DeliveryInfo)
 			productSourcestock = productSourceStockAfterAllocation
 
@@ -261,77 +266,78 @@ func getItemIdsWithProduct(dc *decorator.DecoratedCart, product domain.BasicProd
 			result = append(result, ItemID(di.Item.ID))
 		}
 	}
+
 	return result
 }
 
-// allocateItem returns the itemAllocation and the remaining stock for the given item.
-// The passed productSourcestock is used - and the remaining productSourcestock is returned. In case a source is not yet given in productSourcestock it will be fetched
 func (d *DefaultSourcingService) allocateItem(ctx context.Context, productSourcestock map[string]map[Source]int, product domain.BasicProduct, qtyToAllocate int, deliveryInfo cartDomain.DeliveryInfo) (AllocatedQtys, map[string]map[Source]int, error) {
-	resultAllocatedQtys := make(AllocatedQtys)
-	var resultErr error
-
-	// copy given known stock
-	remainingSourcestock := productSourcestock
-
 	productID := product.GetIdentifier()
 	if productID == "" {
-		return nil, remainingSourcestock, errors.New("product id missing")
+		return nil, productSourcestock, ErrProductIDMissing
 	}
 
 	sources, err := d.availableSourcesProvider.GetPossibleSources(ctx, product, &deliveryInfo)
 	if err != nil {
-		return nil, remainingSourcestock, err
+		return nil, productSourcestock, fmt.Errorf("error getting possible sources: %w", err)
 	}
 
 	if len(sources) == 0 {
-		return nil, remainingSourcestock, ErrNoSourceAvailable
+		return nil, productSourcestock, ErrNoSourceAvailable
 	}
 
-	//qtyToAllocate := qty
+	allocatedQtys := make(AllocatedQtys)
+	allocatedQty, remainingSourcestock, err := d.allocateFromSources(ctx, productSourcestock, product, productID, qtyToAllocate, sources, &deliveryInfo, allocatedQtys)
+	if err != nil {
+		return nil, remainingSourcestock, err
+	}
+
+	if allocatedQty < qtyToAllocate {
+		return allocatedQtys, remainingSourcestock, ErrInsufficientSourceQty
+	}
+
+	return allocatedQtys, remainingSourcestock, nil
+}
+
+func (d *DefaultSourcingService) allocateFromSources(ctx context.Context, productSourcestock map[string]map[Source]int, product domain.BasicProduct, productID string, qtyToAllocate int, sources []Source, deliveryInfo *cartDomain.DeliveryInfo, allocatedQtys AllocatedQtys) (int, map[string]map[Source]int, error) {
 	allocatedQty := 0
+	remainingSourcestock := productSourcestock
 
 	if _, exists := productSourcestock[productID]; !exists {
 		productSourcestock[productID] = make(map[Source]int)
 	}
 
 	for _, source := range sources {
+		sourceStock, err := d.getSourceStock(ctx, remainingSourcestock, product, productID, source, deliveryInfo)
+		if err != nil {
+			d.logger.Error(err)
 
-		// if we have no stock given for source and productid we fetch it initially
-		if _, exists := remainingSourcestock[productID][source]; !exists {
-			sourceStock, err := d.stockProvider.GetStock(ctx, product, source, &deliveryInfo)
-			if err != nil {
-				d.logger.Error(err)
-				continue
-			}
-			remainingSourcestock[productID][source] = sourceStock
-		}
-
-		if remainingSourcestock[productID][source] == 0 {
 			continue
 		}
 
-		if allocatedQty < qtyToAllocate {
-			// stock to write to result allocation is the lowest of either :
-			// - the remaining qty that is to be allocated
-			// OR
-			// - the existing sourceStock that is then used completely
-			stockToAllocate := min(qtyToAllocate-allocatedQty, productSourcestock[productID][source])
-
-			resultAllocatedQtys[source] = stockToAllocate
-
-			// increment allocatedQty by allocated Stock
-			allocatedQty = allocatedQty + stockToAllocate
-
-			// decrement remaining productSourceStock accordingly as it's not happening by itself
-			remainingSourcestock[productID][source] = remainingSourcestock[productID][source] - stockToAllocate
+		if sourceStock == 0 {
+			continue
 		}
+
+		stockToAllocate := min(qtyToAllocate-allocatedQty, sourceStock)
+		remainingSourcestock[productID][source] -= stockToAllocate
+		allocatedQty += stockToAllocate
+		allocatedQtys[source] = stockToAllocate // Added this line to update allocatedQtys map
 	}
 
-	if allocatedQty < qtyToAllocate {
-		resultErr = ErrInsufficientSourceQty
+	return allocatedQty, remainingSourcestock, nil
+}
+
+func (d *DefaultSourcingService) getSourceStock(ctx context.Context, remainingSourcestock map[string]map[Source]int, product domain.BasicProduct, productID string, source Source, deliveryInfo *cartDomain.DeliveryInfo) (int, error) {
+	if _, exists := remainingSourcestock[productID][source]; !exists {
+		sourceStock, err := d.stockProvider.GetStock(ctx, product, source, deliveryInfo)
+		if err != nil {
+			return 0, err
+		}
+
+		remainingSourcestock[productID][source] = sourceStock
 	}
 
-	return resultAllocatedQtys, remainingSourcestock, resultErr
+	return remainingSourcestock[productID][source], nil
 }
 
 // QtySum returns the sum of all sourced items

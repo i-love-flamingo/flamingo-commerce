@@ -518,17 +518,3 @@ func newDefaultSourcingService(stockProvider domain.StockProvider, expectedSourc
 
 	return sourcingService
 }
-
-//sourcingService := domain.DefaultSourcingService{}
-//stockProvider := &mocks.StockProvider{}
-////availableSourcesProvider := &mocks.AvailableSourcesProvider{}
-//
-//sourcingService.Inject(
-//	flamingo.NullLogger{},
-//	&struct {
-//		AvailableSourcesProvider domain.AvailableSourcesProvider `inject:",optional"`
-//		StockProvider            domain.StockProvider            `inject:",optional"`
-//	}{
-//		StockProvider:            stockProvider,
-//		AvailableSourcesProvider: stockBySourceAndProductProviderMock,
-//	})
