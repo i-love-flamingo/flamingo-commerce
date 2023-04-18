@@ -164,17 +164,3 @@ func (d *DeliveryInfoUpdateCommand) init() {
 		d.additional = make(map[string]json.RawMessage)
 	}
 }
-
-//func (bc BundleConfiguration) MapToProductDomain() productDomain.BundleConfiguration {
-//	domainConfig := make(productDomain.BundleConfiguration)
-//
-//	for choiceID, cartChoiceConfig := range bc {
-//		domainConfig[productDomain.Identifier(choiceID)] = productDomain.ChoiceConfiguration{
-//			VariantMarketplaceCode: cartChoiceConfig.VariantMarketplaceCode,
-//			MarketplaceCode:        cartChoiceConfig.MarketplaceCode,
-//			Qty:                    cartChoiceConfig.Qty,
-//		}
-//	}
-//
-//	return domainConfig
-//}

@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math"
 
@@ -10,8 +11,6 @@ import (
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 
 	"flamingo.me/flamingo/v3/framework/flamingo"
-
-	"github.com/pkg/errors"
 )
 
 type (
@@ -92,11 +91,11 @@ var (
 	// ErrNeedMoreDetailsSourceCannotBeDetected - use to indicate that information are missing to determine a source
 	ErrNeedMoreDetailsSourceCannotBeDetected = errors.New("Source cannot be detected")
 
-	// ErrUnsupportedProduct return when product type is not supported by service
-	ErrUnsupportedProduct = errors.New("unsupported product")
+	// ErrUnsupportedProductType return when product type is not supported by the service
+	ErrUnsupportedProductType = errors.New("unsupported product type")
 
-	// ErrProductIDMissing return when product id is missing
-	ErrProductIDMissing = errors.New("product id missing")
+	// ErrEmptyProductIdentifier return when product id is missing
+	ErrEmptyProductIdentifier = errors.New("product identifier is empty")
 )
 
 // Inject the dependencies
@@ -133,7 +132,7 @@ func (d *DefaultSourcingService) GetAvailableSources(
 		return nil, fmt.Errorf("error getting possible sources: %w", err)
 	}
 
-	availableSources, lastStockError := d.fetchAvailableSources(ctx, product, deliveryInfo, sources)
+	availableSources, lastStockError := d.fetchSourcesWithAvailableStock(ctx, product, deliveryInfo, sources)
 
 	// if a cart is given we need to deduct the possible allocated items in the cart
 	if decoratedCart != nil {
@@ -145,7 +144,7 @@ func (d *DefaultSourcingService) GetAvailableSources(
 
 	if len(availableSources) == 0 {
 		if lastStockError != nil {
-			return availableSources, errors.Wrap(ErrNoSourceAvailable, lastStockError.Error())
+			return availableSources, fmt.Errorf("%w %s", ErrNoSourceAvailable, lastStockError.Error())
 		}
 
 		return availableSources, fmt.Errorf("%w %s", ErrNoSourceAvailable, formatSources(sources))
@@ -154,7 +153,7 @@ func (d *DefaultSourcingService) GetAvailableSources(
 	return availableSources, nil
 }
 
-func (d *DefaultSourcingService) fetchAvailableSources(
+func (d *DefaultSourcingService) fetchSourcesWithAvailableStock(
 	ctx context.Context,
 	product domain.BasicProduct,
 	deliveryInfo *cartDomain.DeliveryInfo,
@@ -240,8 +239,8 @@ func (d *DefaultSourcingService) allocateItemForProduct(
 	decoratedItem *decorator.DecoratedCartItem,
 	deliveryInfo cartDomain.DeliveryInfo,
 ) (ItemAllocation, map[string]map[Source]int, error) {
-	if decoratedItem.Product.Type() == domain.TypeBundle || decoratedItem.Product.Type() == domain.TypeConfigurableWithActiveVariant {
-		return ItemAllocation{}, productSourcestock, ErrUnsupportedProduct
+	if decoratedItem.Product.Type() == domain.TypeBundle || decoratedItem.Product.Type() == domain.TypeConfigurable {
+		return ItemAllocation{}, productSourcestock, fmt.Errorf("%w: %s", ErrUnsupportedProductType, decoratedItem.Product.Type())
 	}
 
 	if bundleProduct, ok := decoratedItem.Product.(domain.BundleProductWithActiveChoices); ok {
@@ -323,11 +322,12 @@ func (d *DefaultSourcingService) allocateItem(
 ) (AllocatedQtys, map[string]map[Source]int, error) {
 	sources, err := d.availableSourcesProvider.GetPossibleSources(ctx, product, &deliveryInfo)
 	if err != nil {
-		return nil, productSourcestock, fmt.Errorf("error getting possible sources: %w", err)
+		return nil, productSourcestock,
+			fmt.Errorf("error getting possible sources for product with identifier %s: %w", product.GetIdentifier(), err)
 	}
 
 	if len(sources) == 0 {
-		return nil, productSourcestock, ErrNoSourceAvailable
+		return nil, productSourcestock, fmt.Errorf("%w: for product with identifier %s", ErrNoSourceAvailable, product.GetIdentifier())
 	}
 
 	allocatedQtys := make(AllocatedQtys)
@@ -355,7 +355,7 @@ func (d *DefaultSourcingService) allocateFromSources(
 ) (int, map[string]map[Source]int, error) {
 	productID := product.GetIdentifier()
 	if productID == "" {
-		return 0, productSourcestock, ErrProductIDMissing
+		return 0, productSourcestock, ErrEmptyProductIdentifier
 	}
 
 	allocatedQty := 0
