@@ -4,6 +4,7 @@ import (
 	"sort"
 
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
+	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
 type (
@@ -20,7 +21,7 @@ type (
 		VariantMarketPlaceCode string
 		ProductName            string
 
-		BundleConfig BundleConfiguration
+		BundleConfig productDomain.BundleConfiguration
 
 		// Source Id of where the items should be initial picked - This is set by the SourcingLogic
 		SourceID string

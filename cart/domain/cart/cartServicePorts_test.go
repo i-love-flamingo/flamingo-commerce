@@ -3,7 +3,8 @@ package cart_test
 import (
 	"testing"
 
-	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/product/domain"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -13,7 +14,7 @@ func TestBundleConfiguration_Equals(t *testing.T) {
 	t.Run("empty bundle configuration equals nil", func(t *testing.T) {
 		t.Parallel()
 
-		bc := cart.BundleConfiguration{}
+		bc := domain.BundleConfiguration{}
 
 		assert.True(t, bc.Equals(nil))
 	})
@@ -21,15 +22,15 @@ func TestBundleConfiguration_Equals(t *testing.T) {
 	t.Run("nil bundle configuration equals empty", func(t *testing.T) {
 		t.Parallel()
 
-		var bc cart.BundleConfiguration
+		var bc domain.BundleConfiguration
 
-		assert.True(t, bc.Equals(cart.BundleConfiguration{}))
+		assert.True(t, bc.Equals(domain.BundleConfiguration{}))
 	})
 
 	t.Run("bundle configuration equals itself", func(t *testing.T) {
 		t.Parallel()
 
-		bc := cart.BundleConfiguration{
+		bc := domain.BundleConfiguration{
 			"choice-1": {
 				MarketplaceCode:        "code-1",
 				VariantMarketplaceCode: "variant-1",
@@ -50,7 +51,7 @@ func TestBundleConfiguration_Equals(t *testing.T) {
 	t.Run("bundle configuration does not equal different choice", func(t *testing.T) {
 		t.Parallel()
 
-		bc := cart.BundleConfiguration{
+		bc := domain.BundleConfiguration{
 			"choice-1": {
 				MarketplaceCode:        "code-1",
 				VariantMarketplaceCode: "variant-1",
@@ -63,7 +64,7 @@ func TestBundleConfiguration_Equals(t *testing.T) {
 			},
 		}
 
-		other := cart.BundleConfiguration{
+		other := domain.BundleConfiguration{
 			"choice-1": {
 				MarketplaceCode:        "code-1",
 				VariantMarketplaceCode: "variant-1",
@@ -82,7 +83,7 @@ func TestBundleConfiguration_Equals(t *testing.T) {
 	t.Run("bundle configuration does not equal extra choice", func(t *testing.T) {
 		t.Parallel()
 
-		bc := cart.BundleConfiguration{
+		bc := domain.BundleConfiguration{
 			"choice-1": {
 				MarketplaceCode:        "code-1",
 				VariantMarketplaceCode: "variant-1",
@@ -95,7 +96,7 @@ func TestBundleConfiguration_Equals(t *testing.T) {
 			},
 		}
 
-		other := cart.BundleConfiguration{
+		other := domain.BundleConfiguration{
 			"choice-1": {
 				MarketplaceCode:        "code-1",
 				VariantMarketplaceCode: "variant-1",

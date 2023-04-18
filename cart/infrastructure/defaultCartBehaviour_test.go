@@ -5,15 +5,16 @@ import (
 	"errors"
 	"testing"
 
+	"flamingo.me/flamingo/v3/framework/flamingo"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
+
 	domaincart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/infrastructure/mocks"
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo-commerce/v3/product/infrastructure/fake"
-	"flamingo.me/flamingo/v3/framework/flamingo"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 )
 
 func TestDefaultCartBehaviour_CleanCart(t *testing.T) {
@@ -901,7 +902,7 @@ func TestDefaultCartBehaviour_AddToCart(t *testing.T) {
 						{
 							MarketplaceCode: "fake_bundle",
 							Qty:             1,
-							BundleConfig: map[domaincart.ChoiceID]domaincart.ChoiceConfiguration{
+							BundleConfig: map[domain.Identifier]domain.ChoiceConfiguration{
 								"identifier1": {
 									MarketplaceCode: "simple_option1",
 									Qty:             1,
@@ -922,7 +923,7 @@ func TestDefaultCartBehaviour_AddToCart(t *testing.T) {
 		got, _, err := cob.AddToCart(context.Background(), cart, "delivery", domaincart.AddRequest{
 			MarketplaceCode: "fake_bundle",
 			Qty:             1,
-			BundleConfiguration: map[domaincart.ChoiceID]domaincart.ChoiceConfiguration{
+			BundleConfiguration: map[domain.Identifier]domain.ChoiceConfiguration{
 				"identifier1": {
 					MarketplaceCode: "simple_option2",
 					Qty:             1,

@@ -116,7 +116,7 @@ func (df *DecoratedCartFactory) decorateCartItem(ctx context.Context, cartitem c
 
 	if product.Type() == domain.TypeBundle {
 		if bundle, ok := product.(domain.BundleProduct); ok {
-			bundleWithActiveChoices, err := bundle.GetBundleProductWithActiveChoices(cartitem.BundleConfig.MapToProductDomain())
+			bundleWithActiveChoices, err := bundle.GetBundleProductWithActiveChoices(cartitem.BundleConfig)
 			if err != nil {
 				product = domain.SimpleProduct{
 					BasicProductData: domain.BasicProductData{

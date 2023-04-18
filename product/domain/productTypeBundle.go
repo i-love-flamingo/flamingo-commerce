@@ -260,3 +260,31 @@ func (b BundleProductWithActiveChoices) ExtractBundleConfig() BundleConfiguratio
 
 	return config
 }
+
+// Equals compares the marketplace codes of all choices
+func (bc BundleConfiguration) Equals(other BundleConfiguration) bool {
+	if len(bc) != len(other) {
+		return false
+	}
+
+	for choiceID, cartChoiceConfig := range bc {
+		otherChoiceConfig, ok := other[choiceID]
+		if !ok {
+			return false
+		}
+
+		if cartChoiceConfig.MarketplaceCode != otherChoiceConfig.MarketplaceCode {
+			return false
+		}
+
+		if cartChoiceConfig.VariantMarketplaceCode != otherChoiceConfig.VariantMarketplaceCode {
+			return false
+		}
+
+		if cartChoiceConfig.Qty != otherChoiceConfig.Qty {
+			return false
+		}
+	}
+
+	return true
+}
