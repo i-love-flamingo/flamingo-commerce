@@ -138,6 +138,11 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 		availableSourceForBundle := make(AvailableSourcesPerProduct)
 
 		for _, choice := range bundle.ActiveChoices {
+			// check here so we don't need to check further
+			if choice.Product.GetIdentifier() == "" {
+				return nil, ErrEmptyProductIdentifier
+			}
+
 			qtys, err := d.getAvailableSourcesForASingleProduct(ctx, choice.Product, deliveryInfo, decoratedCart)
 			if err != nil {
 				return nil, err
@@ -147,6 +152,11 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 		}
 
 		return availableSourceForBundle, nil
+	}
+
+	// check here so we don't need to check further
+	if product.GetIdentifier() == "" {
+		return nil, ErrEmptyProductIdentifier
 	}
 
 	qtys, err := d.getAvailableSourcesForASingleProduct(ctx, product, deliveryInfo, decoratedCart)
@@ -161,7 +171,7 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 func (d *DefaultSourcingService) getAvailableSourcesForASingleProduct(ctx context.Context, product domain.BasicProduct, deliveryInfo *cartDomain.DeliveryInfo, decoratedCart *decorator.DecoratedCart) (AvailableSources, error) {
 	sources, err := d.availableSourcesProvider.GetPossibleSources(ctx, product, deliveryInfo)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error getting possible sources for product with identifier %s: %w", product.GetIdentifier(), err)
 	}
 
 	var lastStockError error
@@ -204,6 +214,38 @@ func (d *DefaultSourcingService) getAvailableSourcesForASingleProduct(ctx contex
 	}
 
 	return availableSources, nil
+}
+
+func (d *DefaultSourcingService) checkConfiguration() error {
+	if d.availableSourcesProvider == nil {
+		d.logger.Error("no Source Provider bound")
+		return errors.New("no Source Provider bound")
+	}
+	if d.stockProvider == nil {
+		d.logger.Error("no Stock Provider bound")
+		return errors.New("no Stock Provider bound")
+	}
+
+	return nil
+}
+
+func getItemIdsWithProduct(dc *decorator.DecoratedCart, product domain.BasicProduct) []ItemID {
+	var result []ItemID
+	for _, di := range dc.GetAllDecoratedItems() {
+		if bundle, ok := di.Product.(domain.BundleProductWithActiveChoices); ok {
+			for _, choice := range bundle.ActiveChoices {
+				if choice.Product.GetIdentifier() == product.GetIdentifier() {
+					result = append(result, ItemID(di.Item.ID))
+				}
+			}
+		}
+
+		if di.Product.GetIdentifier() == product.GetIdentifier() {
+			result = append(result, ItemID(di.Item.ID))
+		}
+	}
+
+	return result
 }
 
 // AllocateItems - see description in Interface
@@ -257,6 +299,14 @@ func (d *DefaultSourcingService) allocateItemForProduct(
 		return itemAllocation, nil
 	}
 
+	// check here so we don't need to check further
+	if decoratedItem.Product.GetIdentifier() == "" {
+		return ItemAllocation{
+			AllocatedQtys: nil,
+			Error:         ErrEmptyProductIdentifier,
+		}, nil
+	}
+
 	allocatedQtys, err := d.allocateItem(ctx, productSourcestock, decoratedItem.Product, decoratedItem.Item.Qty, deliveryInfo)
 
 	itemAllocation := ItemAllocation{
@@ -279,6 +329,13 @@ func (d *DefaultSourcingService) allocateBundleWithActiveChoices(
 	for _, activeChoice := range bundleProduct.ActiveChoices {
 		qty := activeChoice.Qty * itemQty
 
+		if activeChoice.Product.GetIdentifier() == "" {
+			return ItemAllocation{
+				AllocatedQtys: nil,
+				Error:         ErrEmptyProductIdentifier,
+			}
+		}
+
 		allocatedQtys, err := d.allocateItem(ctx, productSourcestock, activeChoice.Product, qty, deliveryInfo)
 
 		if resultItemAllocation.AllocatedQtys == nil {
@@ -293,38 +350,6 @@ func (d *DefaultSourcingService) allocateBundleWithActiveChoices(
 	}
 
 	return resultItemAllocation
-}
-
-func (d *DefaultSourcingService) checkConfiguration() error {
-	if d.availableSourcesProvider == nil {
-		d.logger.Error("no Source Provider bound")
-		return errors.New("no Source Provider bound")
-	}
-	if d.stockProvider == nil {
-		d.logger.Error("no Stock Provider bound")
-		return errors.New("no Stock Provider bound")
-	}
-
-	return nil
-}
-
-func getItemIdsWithProduct(dc *decorator.DecoratedCart, product domain.BasicProduct) []ItemID {
-	var result []ItemID
-	for _, di := range dc.GetAllDecoratedItems() {
-		if bundle, ok := di.Product.(domain.BundleProductWithActiveChoices); ok {
-			for _, choice := range bundle.ActiveChoices {
-				if choice.Product.GetIdentifier() == product.GetIdentifier() {
-					result = append(result, ItemID(di.Item.ID))
-				}
-			}
-		}
-
-		if di.Product.GetIdentifier() == product.GetIdentifier() {
-			result = append(result, ItemID(di.Item.ID))
-		}
-	}
-
-	return result
 }
 
 func (d *DefaultSourcingService) allocateItem(
@@ -368,10 +393,6 @@ func (d *DefaultSourcingService) allocateFromSources(
 	allocatedQtys AllocatedQtys,
 ) (int, error) {
 	productID := product.GetIdentifier()
-	if productID == "" {
-		return 0, ErrEmptyProductIdentifier
-	}
-
 	allocatedQty := 0
 
 	if _, exists := productSourcestock[productID]; !exists {
@@ -379,7 +400,7 @@ func (d *DefaultSourcingService) allocateFromSources(
 	}
 
 	for _, source := range sources {
-		sourceStock, err := d.getSourceStock(ctx, productSourcestock, product, productID, source, deliveryInfo)
+		sourceStock, err := d.getSourceStock(ctx, productSourcestock, product, source, deliveryInfo)
 		if err != nil {
 			d.logger.Error(err)
 
@@ -403,20 +424,19 @@ func (d *DefaultSourcingService) getSourceStock(
 	ctx context.Context,
 	remainingSourcestock map[string]map[Source]int,
 	product domain.BasicProduct,
-	productID string,
 	source Source,
 	deliveryInfo *cartDomain.DeliveryInfo,
 ) (int, error) {
-	if _, exists := remainingSourcestock[productID][source]; !exists {
+	if _, exists := remainingSourcestock[product.GetIdentifier()][source]; !exists {
 		sourceStock, err := d.stockProvider.GetStock(ctx, product, source, deliveryInfo)
 		if err != nil {
 			return 0, fmt.Errorf("error getting stock product: %w", err)
 		}
 
-		remainingSourcestock[productID][source] = sourceStock
+		remainingSourcestock[product.GetIdentifier()][source] = sourceStock
 	}
 
-	return remainingSourcestock[productID][source], nil
+	return remainingSourcestock[product.GetIdentifier()][source], nil
 }
 
 // QtySum returns the sum of all sourced items

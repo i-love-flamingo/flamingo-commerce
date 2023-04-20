@@ -78,7 +78,7 @@ func TestDefaultSourcingService_GetAvailableSources(t *testing.T) {
 			StockProvider: stockProviderMock{},
 		})
 
-		_, err := sourcingService.GetAvailableSources(context.Background(), productDomain.SimpleProduct{}, nil, nil)
+		_, err := sourcingService.GetAvailableSources(context.Background(), productDomain.SimpleProduct{Identifier: "example"}, nil, nil)
 		assert.Contains(t, err.Error(), "mocked available sources provider error", "result contains the error message of the available sources provider")
 	})
 
