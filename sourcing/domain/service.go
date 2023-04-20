@@ -100,6 +100,12 @@ var (
 
 	// ErrProductIsNil returned when nil product is received
 	ErrProductIsNil = errors.New("received product in nil")
+
+	// ErrStockProviderNotFound returned stock provider is nil
+	ErrStockProviderNotFound = errors.New("no Stock Provider bound")
+
+	// ErrSourceProviderNotFound returned source provider is nil
+	ErrSourceProviderNotFound = errors.New("no Source Provider bound")
 )
 
 // Inject the dependencies
@@ -121,6 +127,8 @@ func (d *DefaultSourcingService) Inject(
 }
 
 // GetAvailableSources - see description in Interface
+//
+//nolint:cyclop // more readable this way
 func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, product domain.BasicProduct, deliveryInfo *cartDomain.DeliveryInfo, decoratedCart *decorator.DecoratedCart) (AvailableSourcesPerProduct, error) {
 	if err := d.checkConfiguration(); err != nil {
 		return nil, err
@@ -219,11 +227,12 @@ func (d *DefaultSourcingService) getAvailableSourcesForASingleProduct(ctx contex
 func (d *DefaultSourcingService) checkConfiguration() error {
 	if d.availableSourcesProvider == nil {
 		d.logger.Error("no Source Provider bound")
-		return errors.New("no Source Provider bound")
+		return ErrSourceProviderNotFound
 	}
+
 	if d.stockProvider == nil {
 		d.logger.Error("no Stock Provider bound")
-		return errors.New("no Stock Provider bound")
+		return ErrStockProviderNotFound
 	}
 
 	return nil
@@ -231,6 +240,7 @@ func (d *DefaultSourcingService) checkConfiguration() error {
 
 func getItemIdsWithProduct(dc *decorator.DecoratedCart, product domain.BasicProduct) []ItemID {
 	var result []ItemID
+
 	for _, di := range dc.GetAllDecoratedItems() {
 		if bundle, ok := di.Product.(domain.BundleProductWithActiveChoices); ok {
 			for _, choice := range bundle.ActiveChoices {
@@ -371,10 +381,7 @@ func (d *DefaultSourcingService) allocateItem(
 
 	allocatedQtys := make(AllocatedQtys)
 
-	allocatedQty, err := d.allocateFromSources(ctx, productSourcestock, product, qtyToAllocate, sources, &deliveryInfo, allocatedQtys)
-	if err != nil {
-		return nil, err
-	}
+	allocatedQty := d.allocateFromSources(ctx, productSourcestock, product, qtyToAllocate, sources, &deliveryInfo, allocatedQtys)
 
 	if allocatedQty < qtyToAllocate {
 		return allocatedQtys, ErrInsufficientSourceQty
@@ -391,7 +398,7 @@ func (d *DefaultSourcingService) allocateFromSources(
 	sources []Source,
 	deliveryInfo *cartDomain.DeliveryInfo,
 	allocatedQtys AllocatedQtys,
-) (int, error) {
+) int {
 	productID := product.GetIdentifier()
 	allocatedQty := 0
 
@@ -417,7 +424,7 @@ func (d *DefaultSourcingService) allocateFromSources(
 		allocatedQtys[source] = stockToAllocate // Added this line to update allocatedQtys map
 	}
 
-	return allocatedQty, nil
+	return allocatedQty
 }
 
 func (d *DefaultSourcingService) getSourceStock(
