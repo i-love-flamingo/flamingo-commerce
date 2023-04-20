@@ -157,6 +157,7 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 	return AvailableSourcesPerProduct{ProductID(product.GetIdentifier()): qtys}, nil
 }
 
+//nolint:cyclop // more readable this way
 func (d *DefaultSourcingService) getAvailableSourcesForASingleProduct(ctx context.Context, product domain.BasicProduct, deliveryInfo *cartDomain.DeliveryInfo, decoratedCart *decorator.DecoratedCart) (AvailableSources, error) {
 	sources, err := d.availableSourcesProvider.GetPossibleSources(ctx, product, deliveryInfo)
 	if err != nil {
@@ -196,7 +197,8 @@ func (d *DefaultSourcingService) getAvailableSourcesForASingleProduct(ctx contex
 
 	if len(availableSources) == 0 {
 		if lastStockError != nil {
-			return availableSources, fmt.Errorf("%w %s", ErrNoSourceAvailable, lastStockError.Error())
+			errString := err.Error()
+			return availableSources, fmt.Errorf("%w with error: %s", ErrNoSourceAvailable, errString)
 		}
 		return availableSources, fmt.Errorf("%w %s", ErrNoSourceAvailable, formatSources(sources))
 	}
