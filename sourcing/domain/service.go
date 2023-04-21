@@ -138,6 +138,10 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 		return nil, ErrProductIsNil
 	}
 
+	if product.GetIdentifier() == "" {
+		return nil, ErrEmptyProductIdentifier
+	}
+
 	if product.Type() == domain.TypeBundle || product.Type() == domain.TypeConfigurable {
 		return nil, fmt.Errorf("%w: %s", ErrUnsupportedProductType, product.Type())
 	}
@@ -160,11 +164,6 @@ func (d *DefaultSourcingService) GetAvailableSources(ctx context.Context, produc
 		}
 
 		return availableSourceForBundle, nil
-	}
-
-	// check here so we don't need to check further
-	if product.GetIdentifier() == "" {
-		return nil, ErrEmptyProductIdentifier
 	}
 
 	qtys, err := d.getAvailableSourcesForASingleProduct(ctx, product, deliveryInfo, decoratedCart)
@@ -282,7 +281,7 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 		for _, decoratedItem := range delivery.DecoratedItems {
 			item := decoratedItem // create a new variable to avoid memory aliasing
 
-			itemAllocation, err := d.allocateItemForProduct(ctx, productSourcestock, &item, deliveryInfo)
+			itemAllocation, err := d.allocateItem(ctx, productSourcestock, &item, deliveryInfo)
 			if err != nil {
 				return nil, err
 			}
@@ -294,7 +293,7 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 	return resultItemAllocations, nil
 }
 
-func (d *DefaultSourcingService) allocateItemForProduct(
+func (d *DefaultSourcingService) allocateItem(
 	ctx context.Context,
 	productSourcestock map[string]map[Source]int,
 	decoratedItem *decorator.DecoratedCartItem,
@@ -317,7 +316,7 @@ func (d *DefaultSourcingService) allocateItemForProduct(
 		}, nil
 	}
 
-	allocatedQtys, err := d.allocateItem(ctx, productSourcestock, decoratedItem.Product, decoratedItem.Item.Qty, deliveryInfo)
+	allocatedQtys, err := d.allocateProduct(ctx, productSourcestock, decoratedItem.Product, decoratedItem.Item.Qty, deliveryInfo)
 
 	itemAllocation := ItemAllocation{
 		AllocatedQtys: map[ProductID]AllocatedQtys{ProductID(decoratedItem.Product.GetIdentifier()): allocatedQtys},
@@ -346,7 +345,7 @@ func (d *DefaultSourcingService) allocateBundleWithActiveChoices(
 			}
 		}
 
-		allocatedQtys, err := d.allocateItem(ctx, productSourcestock, activeChoice.Product, qty, deliveryInfo)
+		allocatedQtys, err := d.allocateProduct(ctx, productSourcestock, activeChoice.Product, qty, deliveryInfo)
 
 		if resultItemAllocation.AllocatedQtys == nil {
 			resultItemAllocation.AllocatedQtys = make(map[ProductID]AllocatedQtys)
@@ -362,7 +361,7 @@ func (d *DefaultSourcingService) allocateBundleWithActiveChoices(
 	return resultItemAllocation
 }
 
-func (d *DefaultSourcingService) allocateItem(
+func (d *DefaultSourcingService) allocateProduct(
 	ctx context.Context,
 	productSourcestock map[string]map[Source]int,
 	product domain.BasicProduct,
