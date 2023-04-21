@@ -106,6 +106,9 @@ var (
 
 	// ErrSourceProviderNotFound returned source provider is nil
 	ErrSourceProviderNotFound = errors.New("no Source Provider bound")
+
+	// ErrCartNotProvided cart not provided
+	ErrCartNotProvided = errors.New("cart not provided")
 )
 
 // Inject the dependencies
@@ -264,7 +267,7 @@ func (d *DefaultSourcingService) AllocateItems(ctx context.Context, decoratedCar
 	}
 
 	if decoratedCart == nil {
-		return nil, errors.New("Cart not given")
+		return nil, ErrCartNotProvided
 	}
 
 	productSourcestock := make(map[string]map[Source]int)

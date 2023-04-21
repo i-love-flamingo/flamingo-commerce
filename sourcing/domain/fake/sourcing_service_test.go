@@ -14,7 +14,11 @@ import (
 )
 
 func TestSourcingService_AllocateItems(t *testing.T) {
+	t.Parallel()
+
 	t.Run("success when product id is correct", func(t *testing.T) {
+		t.Parallel()
+
 		service := &fake.SourcingService{}
 		service.Inject(&struct {
 			FakeSourceData string `inject:"config:commerce.sourcing.fake.jsonPath,optional"`
@@ -84,6 +88,8 @@ func TestSourcingService_AllocateItems(t *testing.T) {
 	})
 
 	t.Run("empty result when there are no item ids", func(t *testing.T) {
+		t.Parallel()
+
 		service := &fake.SourcingService{}
 		service.Inject(&struct {
 			FakeSourceData string `inject:"config:commerce.sourcing.fake.jsonPath,optional"`
@@ -125,7 +131,11 @@ func TestSourcingService_AllocateItems(t *testing.T) {
 }
 
 func TestSourcingService_GetAvailableSources(t *testing.T) {
+	t.Parallel()
+
 	t.Run("success when product id exists", func(t *testing.T) {
+		t.Parallel()
+
 		service := &fake.SourcingService{}
 		service.Inject(&struct {
 			FakeSourceData string `inject:"config:commerce.sourcing.fake.jsonPath,optional"`
@@ -158,6 +168,8 @@ func TestSourcingService_GetAvailableSources(t *testing.T) {
 	})
 
 	t.Run("success when product id was not found but delivery code correct", func(t *testing.T) {
+		t.Parallel()
+
 		service := &fake.SourcingService{}
 		service.Inject(&struct {
 			FakeSourceData string `inject:"config:commerce.sourcing.fake.jsonPath,optional"`
@@ -190,6 +202,8 @@ func TestSourcingService_GetAvailableSources(t *testing.T) {
 	})
 
 	t.Run("failure when product id is empty", func(t *testing.T) {
+		t.Parallel()
+
 		service := &fake.SourcingService{}
 		service.Inject(&struct {
 			FakeSourceData string `inject:"config:commerce.sourcing.fake.jsonPath,optional"`

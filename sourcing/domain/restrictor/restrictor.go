@@ -102,6 +102,7 @@ func (r *Restrictor) unrestricted() *validation.RestrictionResult {
 
 func findSourceWithLeastQty(availableSourcesPerProduct domain.AvailableSourcesPerProduct) domain.AvailableSources {
 	var minAvailableSources domain.AvailableSources
+
 	minQtySum := math.MaxInt32
 
 	for _, availableSources := range availableSourcesPerProduct {

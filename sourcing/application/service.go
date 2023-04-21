@@ -67,7 +67,6 @@ func (s *Service) GetAvailableSourcesDeductedByCurrentCart(ctx context.Context, 
 
 // GetAvailableSources without evaluating current cart items
 func (s *Service) GetAvailableSources(ctx context.Context, session *web.Session, product productDomain.BasicProduct, deliveryCode string) (domain.AvailableSourcesPerProduct, error) {
-
 	if product == nil {
 		s.logger.WithContext(ctx).Error("No product given for GetAvailableSources")
 		return nil, errors.New("no product given for GetAvailableSources")
