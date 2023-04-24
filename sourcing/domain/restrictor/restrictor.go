@@ -2,7 +2,6 @@ package restrictors
 
 import (
 	"context"
-	"math"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
@@ -58,7 +57,7 @@ func (r *Restrictor) Restrict(ctx context.Context, session *web.Session, product
 	}
 
 	if product.Type() == productDomain.TypeBundleWithActiveChoices {
-		availableSources = findSourceWithLeastQty(availableSourcesPerProduct)
+		availableSources = availableSourcesPerProduct.FindSourceWithLeastQty()
 	}
 
 	restrictedByNotDeductedSources := &validation.RestrictionResult{
@@ -80,7 +79,7 @@ func (r *Restrictor) Restrict(ctx context.Context, session *web.Session, product
 	}
 
 	if product.Type() == productDomain.TypeBundleWithActiveChoices {
-		availableSourcesDeducted = findSourceWithLeastQty(availableSourcesPerProductDeducted)
+		availableSourcesDeducted = availableSourcesPerProductDeducted.FindSourceWithLeastQty()
 	}
 
 	return &validation.RestrictionResult{
@@ -98,20 +97,4 @@ func (r *Restrictor) unrestricted() *validation.RestrictionResult {
 		RemainingDifference: 0,
 		RestrictorName:      r.Name(),
 	}
-}
-
-func findSourceWithLeastQty(availableSourcesPerProduct domain.AvailableSourcesPerProduct) domain.AvailableSources {
-	var minAvailableSources domain.AvailableSources
-
-	minQtySum := math.MaxInt32
-
-	for _, availableSources := range availableSourcesPerProduct {
-		qtySum := availableSources.QtySum()
-		if qtySum < minQtySum {
-			minQtySum = qtySum
-			minAvailableSources = availableSources
-		}
-	}
-
-	return minAvailableSources
 }
