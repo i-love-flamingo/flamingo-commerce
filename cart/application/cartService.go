@@ -877,7 +877,7 @@ func (cs *CartService) checkProductForAddRequest(ctx context.Context, session *w
 		}
 
 		bundleProduct := product.(productDomain.BundleProduct)
-		domainBundleConfig := addRequest.BundleConfiguration.MapToProductDomain()
+		domainBundleConfig := addRequest.BundleConfiguration
 
 		product, err = bundleProduct.GetBundleProductWithActiveChoices(domainBundleConfig)
 		if err != nil {
@@ -1186,7 +1186,7 @@ func (cs *CartService) generateRestrictedQtyAdjustments(ctx context.Context, ses
 	return result, nil
 }
 
-func (cs *CartService) getSpecificProductType(_ context.Context, product productDomain.BasicProduct, variantMarketplaceCode string, bundleConfig cartDomain.BundleConfiguration) (productDomain.BasicProduct, error) {
+func (cs *CartService) getSpecificProductType(_ context.Context, product productDomain.BasicProduct, variantMarketplaceCode string, bundleConfig productDomain.BundleConfiguration) (productDomain.BasicProduct, error) {
 	var err error
 	if product.Type() != productDomain.TypeConfigurable || product.Type() != productDomain.TypeBundle {
 		return product, nil
@@ -1205,7 +1205,7 @@ func (cs *CartService) getSpecificProductType(_ context.Context, product product
 	}
 
 	if bundleProduct, ok := product.(productDomain.BundleProduct); ok {
-		product, err = bundleProduct.GetBundleProductWithActiveChoices(bundleConfig.MapToProductDomain())
+		product, err = bundleProduct.GetBundleProductWithActiveChoices(bundleConfig)
 		if err != nil {
 			return nil, err
 		}

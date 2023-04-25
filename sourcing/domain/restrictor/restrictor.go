@@ -7,6 +7,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 	productDomain "flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo-commerce/v3/sourcing/application"
+	"flamingo.me/flamingo-commerce/v3/sourcing/domain"
 
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
@@ -45,34 +46,55 @@ func (r *Restrictor) Restrict(ctx context.Context, session *web.Session, product
 	ctx, span := trace.StartSpan(ctx, "sourcing/restrictors/SourceAvailableRestrictor")
 	defer span.End()
 
-	unrestricted := &validation.RestrictionResult{
-		IsRestricted:        false,
-		MaxAllowed:          0,
-		RemainingDifference: 0,
+	availableSourcesPerProduct, err := r.sourcingService.GetAvailableSources(ctx, session, product, deliveryCode)
+	if err != nil {
+		return r.unrestricted()
+	}
+
+	availableSources, ok := availableSourcesPerProduct[domain.ProductID(product.GetIdentifier())]
+	if !ok {
+		return r.unrestricted()
+	}
+
+	if product.Type() == productDomain.TypeBundleWithActiveChoices {
+		availableSources = availableSourcesPerProduct.FindSourcesWithLeastAvailableQty()
+	}
+
+	restrictedByNotDeductedSources := &validation.RestrictionResult{
+		IsRestricted:        true,
+		MaxAllowed:          availableSources.QtySum(),
+		RemainingDifference: availableSources.QtySum(),
 		RestrictorName:      r.Name(),
 	}
 
-	availableSources, err := r.sourcingService.GetAvailableSources(ctx, session, product, deliveryCode)
-	if err != nil {
-		return unrestricted
-	}
-
-	availableSourcesDeducted, err := r.sourcingService.GetAvailableSourcesDeductedByCurrentCart(ctx, session, product, deliveryCode)
+	availableSourcesPerProductDeducted, err := r.sourcingService.GetAvailableSourcesDeductedByCurrentCart(ctx, session, product, deliveryCode)
 	if err != nil {
 		r.logger.Error(err)
+		return restrictedByNotDeductedSources
+	}
 
-		return &validation.RestrictionResult{
-			IsRestricted:        true,
-			MaxAllowed:          availableSources.QtySum(),
-			RemainingDifference: availableSources.QtySum(),
-			RestrictorName:      r.Name(),
-		}
+	availableSourcesDeducted, ok := availableSourcesPerProductDeducted[domain.ProductID(product.GetIdentifier())]
+	if !ok {
+		return restrictedByNotDeductedSources
+	}
+
+	if product.Type() == productDomain.TypeBundleWithActiveChoices {
+		availableSourcesDeducted = availableSourcesPerProductDeducted.FindSourcesWithLeastAvailableQty()
 	}
 
 	return &validation.RestrictionResult{
 		IsRestricted:        true,
 		MaxAllowed:          availableSources.QtySum(),
 		RemainingDifference: availableSourcesDeducted.QtySum(),
+		RestrictorName:      r.Name(),
+	}
+}
+
+func (r *Restrictor) unrestricted() *validation.RestrictionResult {
+	return &validation.RestrictionResult{
+		IsRestricted:        false,
+		MaxAllowed:          0,
+		RemainingDifference: 0,
 		RestrictorName:      r.Name(),
 	}
 }

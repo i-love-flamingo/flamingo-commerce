@@ -60,9 +60,13 @@ func (s *SourcingService) AllocateItems(ctx context.Context, decoratedCart *deco
 			}
 
 			availableSources, err := s.GetAvailableSources(ctx, decoratedItem.Product, &decoratedDelivery.Delivery.DeliveryInfo, decoratedCart)
+			availableSourcesForProduct := availableSources[commerceSourcingDomain.ProductID(decoratedItem.Product.GetIdentifier())]
+
 			itemAllocation := commerceSourcingDomain.ItemAllocation{
-				AllocatedQtys: commerceSourcingDomain.AllocatedQtys(availableSources),
-				Error:         err,
+				AllocatedQtys: map[commerceSourcingDomain.ProductID]commerceSourcingDomain.AllocatedQtys{
+					commerceSourcingDomain.ProductID(decoratedItem.Product.GetIdentifier()): commerceSourcingDomain.AllocatedQtys(availableSourcesForProduct),
+				},
+				Error: err,
 			}
 
 			itemAllocations[commerceSourcingDomain.ItemID(decoratedItem.Item.ID)] = itemAllocation
@@ -72,27 +76,37 @@ func (s *SourcingService) AllocateItems(ctx context.Context, decoratedCart *deco
 	return itemAllocations, overallError
 }
 
-func (s *SourcingService) GetAvailableSources(_ context.Context, product productDomain.BasicProduct, deliveryInfo *cartDomain.DeliveryInfo, _ *decorator.DecoratedCart) (commerceSourcingDomain.AvailableSources, error) {
+func (s *SourcingService) GetAvailableSources(_ context.Context, product productDomain.BasicProduct, deliveryInfo *cartDomain.DeliveryInfo, _ *decorator.DecoratedCart) (commerceSourcingDomain.AvailableSourcesPerProduct, error) {
+	if product.Type() == productDomain.TypeBundle || product.Type() == productDomain.TypeConfigurable {
+		return nil, commerceSourcingDomain.ErrUnsupportedProductType
+	}
+
 	productId := product.GetIdentifier()
 
-	if productId != "" {
-		allocationQty, found := s.fakeSource.Products[productId]
-		if found {
-			return s.makeAvailableSources(allocationQty, productId), nil
-		}
+	if productId == "" {
+		return nil, commerceSourcingDomain.ErrEmptyProductIdentifier
+	}
+
+	allocationQty, found := s.fakeSource.Products[productId]
+	if found {
+		return commerceSourcingDomain.AvailableSourcesPerProduct{
+			commerceSourcingDomain.ProductID(productId): s.makeAvailableSources(allocationQty, productId),
+		}, nil
 	}
 
 	if deliveryInfo.Code != "" {
 		allocationQty, found := s.fakeSource.DeliveryCodes[deliveryInfo.Code]
 		if found {
-			return s.makeAvailableSources(allocationQty, deliveryInfo.Code), nil
+			return commerceSourcingDomain.AvailableSourcesPerProduct{
+				commerceSourcingDomain.ProductID(productId): s.makeAvailableSources(allocationQty, deliveryInfo.Code),
+			}, nil
 		}
 	}
 
 	return nil, commerceSourcingDomain.ErrNoSourceAvailable
 }
 
-func (s SourcingService) makeAvailableSources(qty int, id string) commerceSourcingDomain.AvailableSources {
+func (s *SourcingService) makeAvailableSources(qty int, id string) commerceSourcingDomain.AvailableSources {
 	return map[commerceSourcingDomain.Source]int{
 		commerceSourcingDomain.Source{
 			LocationCode:         id,

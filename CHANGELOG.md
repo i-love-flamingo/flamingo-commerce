@@ -1,5 +1,5 @@
 # Changelog
-## v3.6.1 [upcoming]
+## v3.7.0 [upcoming]
 
 **cart**
 * Updated the `DefaultCartBehaviour` to be able to support other `CartStorage` implementations
@@ -8,6 +8,11 @@
 **general**
 * Add .golangci.yml and github workflow
 * Add .mockery.yaml config
+
+**sourcing**
+* **Breaking**
+    * SourcingService changed types for return values for bundle product support.
+      Every sourcing value is now returned per product id.
 
 ## v3.6.0
 

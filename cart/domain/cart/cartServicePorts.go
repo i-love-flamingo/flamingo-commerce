@@ -94,17 +94,7 @@ type (
 		Qty                    int
 		VariantMarketplaceCode string
 		AdditionalData         map[string]string
-		BundleConfiguration    BundleConfiguration
-	}
-
-	ChoiceID string
-
-	BundleConfiguration map[ChoiceID]ChoiceConfiguration
-
-	ChoiceConfiguration struct {
-		MarketplaceCode        string
-		VariantMarketplaceCode string
-		Qty                    int
+		BundleConfiguration    productDomain.BundleConfiguration
 	}
 
 	// ItemUpdateCommand defines the update item command
@@ -173,46 +163,4 @@ func (d *DeliveryInfoUpdateCommand) init() {
 	if d.additional == nil {
 		d.additional = make(map[string]json.RawMessage)
 	}
-}
-
-func (bc BundleConfiguration) MapToProductDomain() productDomain.BundleConfiguration {
-	domainConfig := make(productDomain.BundleConfiguration)
-
-	for choiceID, cartChoiceConfig := range bc {
-		domainConfig[productDomain.Identifier(choiceID)] = productDomain.ChoiceConfiguration{
-			VariantMarketplaceCode: cartChoiceConfig.VariantMarketplaceCode,
-			MarketplaceCode:        cartChoiceConfig.MarketplaceCode,
-			Qty:                    cartChoiceConfig.Qty,
-		}
-	}
-
-	return domainConfig
-}
-
-// Equals compares the marketplace codes of all choices
-func (bc BundleConfiguration) Equals(other BundleConfiguration) bool {
-	if len(bc) != len(other) {
-		return false
-	}
-
-	for choiceID, cartChoiceConfig := range bc {
-		otherChoiceConfig, ok := other[choiceID]
-		if !ok {
-			return false
-		}
-
-		if cartChoiceConfig.MarketplaceCode != otherChoiceConfig.MarketplaceCode {
-			return false
-		}
-
-		if cartChoiceConfig.VariantMarketplaceCode != otherChoiceConfig.VariantMarketplaceCode {
-			return false
-		}
-
-		if cartChoiceConfig.Qty != otherChoiceConfig.Qty {
-			return false
-		}
-	}
-
-	return true
 }

@@ -14,7 +14,11 @@ import (
 )
 
 func TestSourcingService_AllocateItems(t *testing.T) {
+	t.Parallel()
+
 	t.Run("success when product id is correct", func(t *testing.T) {
+		t.Parallel()
+
 		service := &fake.SourcingService{}
 		service.Inject(&struct {
 			FakeSourceData string `inject:"config:commerce.sourcing.fake.jsonPath,optional"`
@@ -54,20 +58,24 @@ func TestSourcingService_AllocateItems(t *testing.T) {
 
 		expectedItemAllocations := commerceSourcingDomain.ItemAllocations{
 			"item1": {
-				AllocatedQtys: map[commerceSourcingDomain.Source]int{
-					commerceSourcingDomain.Source{
-						LocationCode:         "0f0asdf-0asd0a9sd-askdlj123rw",
-						ExternalLocationCode: "0f0asdf-0asd0a9sd-askdlj123rw",
-					}: 10,
+				AllocatedQtys: map[commerceSourcingDomain.ProductID]commerceSourcingDomain.AllocatedQtys{
+					"0f0asdf-0asd0a9sd-askdlj123rw": {
+						commerceSourcingDomain.Source{
+							LocationCode:         "0f0asdf-0asd0a9sd-askdlj123rw",
+							ExternalLocationCode: "0f0asdf-0asd0a9sd-askdlj123rw",
+						}: 10,
+					},
 				},
 				Error: nil,
 			},
 			"item2": {
-				AllocatedQtys: map[commerceSourcingDomain.Source]int{
-					commerceSourcingDomain.Source{
-						LocationCode:         "0f0asdf-0asd0a9sd-askdlj123rx",
-						ExternalLocationCode: "0f0asdf-0asd0a9sd-askdlj123rx",
-					}: 15,
+				AllocatedQtys: map[commerceSourcingDomain.ProductID]commerceSourcingDomain.AllocatedQtys{
+					"0f0asdf-0asd0a9sd-askdlj123rx": {
+						commerceSourcingDomain.Source{
+							LocationCode:         "0f0asdf-0asd0a9sd-askdlj123rx",
+							ExternalLocationCode: "0f0asdf-0asd0a9sd-askdlj123rx",
+						}: 15,
+					},
 				},
 				Error: nil,
 			},
@@ -80,6 +88,8 @@ func TestSourcingService_AllocateItems(t *testing.T) {
 	})
 
 	t.Run("empty result when there are no item ids", func(t *testing.T) {
+		t.Parallel()
+
 		service := &fake.SourcingService{}
 		service.Inject(&struct {
 			FakeSourceData string `inject:"config:commerce.sourcing.fake.jsonPath,optional"`
@@ -121,7 +131,11 @@ func TestSourcingService_AllocateItems(t *testing.T) {
 }
 
 func TestSourcingService_GetAvailableSources(t *testing.T) {
+	t.Parallel()
+
 	t.Run("success when product id exists", func(t *testing.T) {
+		t.Parallel()
+
 		service := &fake.SourcingService{}
 		service.Inject(&struct {
 			FakeSourceData string `inject:"config:commerce.sourcing.fake.jsonPath,optional"`
@@ -137,11 +151,13 @@ func TestSourcingService_GetAvailableSources(t *testing.T) {
 			Code: "inflight",
 		}
 
-		var expectedSources commerceSourcingDomain.AvailableSources = map[commerceSourcingDomain.Source]int{
-			commerceSourcingDomain.Source{
-				LocationCode:         "0f0asdf-0asd0a9sd-askdlj123rw",
-				ExternalLocationCode: "0f0asdf-0asd0a9sd-askdlj123rw",
-			}: 10,
+		expectedSources := commerceSourcingDomain.AvailableSourcesPerProduct{
+			"0f0asdf-0asd0a9sd-askdlj123rw": {
+				commerceSourcingDomain.Source{
+					LocationCode:         "0f0asdf-0asd0a9sd-askdlj123rw",
+					ExternalLocationCode: "0f0asdf-0asd0a9sd-askdlj123rw",
+				}: 10,
+			},
 		}
 
 		resultSources, err := service.GetAvailableSources(context.Background(), product, deliveryInfo, &decorator.DecoratedCart{})
@@ -152,6 +168,8 @@ func TestSourcingService_GetAvailableSources(t *testing.T) {
 	})
 
 	t.Run("success when product id was not found but delivery code correct", func(t *testing.T) {
+		t.Parallel()
+
 		service := &fake.SourcingService{}
 		service.Inject(&struct {
 			FakeSourceData string `inject:"config:commerce.sourcing.fake.jsonPath,optional"`
@@ -160,18 +178,20 @@ func TestSourcingService_GetAvailableSources(t *testing.T) {
 		})
 
 		product := productDomain.SimpleProduct{
-			Identifier: "_____",
+			Identifier: "some-fake-id",
 		}
 
 		deliveryInfo := &cartDomain.DeliveryInfo{
 			Code: "inflight",
 		}
 
-		var expectedSources commerceSourcingDomain.AvailableSources = map[commerceSourcingDomain.Source]int{
-			commerceSourcingDomain.Source{
-				LocationCode:         "inflight",
-				ExternalLocationCode: "inflight",
-			}: 5,
+		expectedSources := commerceSourcingDomain.AvailableSourcesPerProduct{
+			"some-fake-id": {
+				commerceSourcingDomain.Source{
+					LocationCode:         "inflight",
+					ExternalLocationCode: "inflight",
+				}: 5,
+			},
 		}
 
 		resultSources, err := service.GetAvailableSources(context.Background(), product, deliveryInfo, &decorator.DecoratedCart{})
@@ -181,7 +201,9 @@ func TestSourcingService_GetAvailableSources(t *testing.T) {
 		assert.Equal(t, expectedSources, resultSources)
 	})
 
-	t.Run("success when product id is empty but delivery code correct", func(t *testing.T) {
+	t.Run("failure when product id is empty", func(t *testing.T) {
+		t.Parallel()
+
 		service := &fake.SourcingService{}
 		service.Inject(&struct {
 			FakeSourceData string `inject:"config:commerce.sourcing.fake.jsonPath,optional"`
@@ -195,42 +217,35 @@ func TestSourcingService_GetAvailableSources(t *testing.T) {
 
 		deliveryInfo := &cartDomain.DeliveryInfo{
 			Code: "inflight",
-		}
-
-		var expectedSources commerceSourcingDomain.AvailableSources = map[commerceSourcingDomain.Source]int{
-			commerceSourcingDomain.Source{
-				LocationCode:         "inflight",
-				ExternalLocationCode: "inflight",
-			}: 5,
-		}
-
-		resultSources, err := service.GetAvailableSources(context.Background(), product, deliveryInfo, &decorator.DecoratedCart{})
-
-		assert.NoError(t, err)
-		assert.NotNil(t, resultSources)
-		assert.Equal(t, expectedSources, resultSources)
-	})
-
-	t.Run("failure when product id and delivery code are empty", func(t *testing.T) {
-		service := &fake.SourcingService{}
-		service.Inject(&struct {
-			FakeSourceData string `inject:"config:commerce.sourcing.fake.jsonPath,optional"`
-		}{
-			FakeSourceData: "testdata/fakeSourceData.json",
-		})
-
-		product := productDomain.SimpleProduct{
-			Identifier: "",
-		}
-
-		deliveryInfo := &cartDomain.DeliveryInfo{
-			Code: "",
 		}
 
 		resultSources, err := service.GetAvailableSources(context.Background(), product, deliveryInfo, &decorator.DecoratedCart{})
 
 		assert.Error(t, err)
 		assert.Nil(t, resultSources)
-		assert.Equal(t, commerceSourcingDomain.ErrNoSourceAvailable, err)
+		assert.Equal(t, commerceSourcingDomain.ErrEmptyProductIdentifier, err)
+	})
+
+	t.Run("failure when product type is bundle", func(t *testing.T) {
+		t.Parallel()
+
+		service := &fake.SourcingService{}
+		service.Inject(&struct {
+			FakeSourceData string `inject:"config:commerce.sourcing.fake.jsonPath,optional"`
+		}{
+			FakeSourceData: "testdata/fakeSourceData.json",
+		})
+
+		product := productDomain.BundleProduct{}
+
+		deliveryInfo := &cartDomain.DeliveryInfo{
+			Code: "inflight",
+		}
+
+		resultSources, err := service.GetAvailableSources(context.Background(), product, deliveryInfo, &decorator.DecoratedCart{})
+
+		assert.Error(t, err)
+		assert.Nil(t, resultSources)
+		assert.Equal(t, commerceSourcingDomain.ErrUnsupportedProductType, err)
 	})
 }

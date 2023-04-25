@@ -19,18 +19,18 @@ import (
 
 type (
 	sourcingServiceMock struct {
-		AvailableSources              sourcingDomain.AvailableSources
+		AvailableSources              sourcingDomain.AvailableSourcesPerProduct
 		AvailableSourcesError         error
-		DeductedAvailableSources      sourcingDomain.AvailableSources
+		DeductedAvailableSources      sourcingDomain.AvailableSourcesPerProduct
 		DeductedAvailableSourcesError error
 	}
 )
 
-func (s *sourcingServiceMock) GetAvailableSourcesDeductedByCurrentCart(_ context.Context, _ *web.Session, _ domain.BasicProduct, _ string) (sourcingDomain.AvailableSources, error) {
+func (s *sourcingServiceMock) GetAvailableSourcesDeductedByCurrentCart(_ context.Context, _ *web.Session, _ domain.BasicProduct, _ string) (sourcingDomain.AvailableSourcesPerProduct, error) {
 	return s.DeductedAvailableSources, s.DeductedAvailableSourcesError
 }
 
-func (s *sourcingServiceMock) GetAvailableSources(_ context.Context, _ *web.Session, _ domain.BasicProduct, _ string) (sourcingDomain.AvailableSources, error) {
+func (s *sourcingServiceMock) GetAvailableSources(_ context.Context, _ *web.Session, _ domain.BasicProduct, _ string) (sourcingDomain.AvailableSourcesPerProduct, error) {
 	return s.AvailableSources, s.AvailableSourcesError
 }
 
@@ -84,11 +84,13 @@ func TestRestrictor_Restrict(t *testing.T) {
 		restrictor.Inject(
 			flamingo.NullLogger{},
 			&sourcingServiceMock{
-				AvailableSources: sourcingDomain.AvailableSources{
-					sourcingDomain.Source{
-						LocationCode:         "testCode1",
-						ExternalLocationCode: "testExternalLocation1",
-					}: 3,
+				AvailableSources: sourcingDomain.AvailableSourcesPerProduct{
+					"productid": sourcingDomain.AvailableSources{
+						sourcingDomain.Source{
+							LocationCode:         "testCode1",
+							ExternalLocationCode: "testExternalLocation1",
+						}: 3,
+					},
 				},
 				DeductedAvailableSources:      nil,
 				AvailableSourcesError:         nil,
@@ -119,25 +121,29 @@ func TestRestrictor_Restrict(t *testing.T) {
 		restrictor.Inject(
 			flamingo.NullLogger{},
 			&sourcingServiceMock{
-				AvailableSources: sourcingDomain.AvailableSources{
-					sourcingDomain.Source{
-						LocationCode:         "testCode1",
-						ExternalLocationCode: "testExternalLocation1",
-					}: 3,
-					sourcingDomain.Source{
-						LocationCode:         "testCode2",
-						ExternalLocationCode: "testExternalLocation1",
-					}: 2,
+				AvailableSources: sourcingDomain.AvailableSourcesPerProduct{
+					"productid": sourcingDomain.AvailableSources{
+						sourcingDomain.Source{
+							LocationCode:         "testCode1",
+							ExternalLocationCode: "testExternalLocation1",
+						}: 3,
+						sourcingDomain.Source{
+							LocationCode:         "testCode2",
+							ExternalLocationCode: "testExternalLocation1",
+						}: 2,
+					},
 				},
-				DeductedAvailableSources: sourcingDomain.AvailableSources{
-					sourcingDomain.Source{
-						LocationCode:         "testCode1",
-						ExternalLocationCode: "testExternalLocation",
-					}: 2,
-					sourcingDomain.Source{
-						LocationCode:         "testCode2",
-						ExternalLocationCode: "testExternalLocation",
-					}: 1,
+				DeductedAvailableSources: sourcingDomain.AvailableSourcesPerProduct{
+					"productid": sourcingDomain.AvailableSources{
+						sourcingDomain.Source{
+							LocationCode:         "testCode1",
+							ExternalLocationCode: "testExternalLocation",
+						}: 2,
+						sourcingDomain.Source{
+							LocationCode:         "testCode2",
+							ExternalLocationCode: "testExternalLocation",
+						}: 1,
+					},
 				},
 				AvailableSourcesError:         nil,
 				DeductedAvailableSourcesError: nil,

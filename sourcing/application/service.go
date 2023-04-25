@@ -17,8 +17,8 @@ import (
 type (
 	// SourcingApplication interface
 	SourcingApplication interface {
-		GetAvailableSourcesDeductedByCurrentCart(ctx context.Context, session *web.Session, product productDomain.BasicProduct, deliveryCode string) (domain.AvailableSources, error)
-		GetAvailableSources(ctx context.Context, session *web.Session, product productDomain.BasicProduct, deliveryCode string) (domain.AvailableSources, error)
+		GetAvailableSourcesDeductedByCurrentCart(ctx context.Context, session *web.Session, product productDomain.BasicProduct, deliveryCode string) (domain.AvailableSourcesPerProduct, error)
+		GetAvailableSources(ctx context.Context, session *web.Session, product productDomain.BasicProduct, deliveryCode string) (domain.AvailableSourcesPerProduct, error)
 	}
 
 	// Service to access the sourcing based on current cart
@@ -51,7 +51,7 @@ func (s *Service) Inject(
 }
 
 // GetAvailableSourcesDeductedByCurrentCart fetches available sources minus those already allocated to the cart
-func (s *Service) GetAvailableSourcesDeductedByCurrentCart(ctx context.Context, session *web.Session, product productDomain.BasicProduct, deliveryCode string) (domain.AvailableSources, error) {
+func (s *Service) GetAvailableSourcesDeductedByCurrentCart(ctx context.Context, session *web.Session, product productDomain.BasicProduct, deliveryCode string) (domain.AvailableSourcesPerProduct, error) {
 	if product == nil {
 		s.logger.WithContext(ctx).Error("No product given for GetAvailableSourcesDeductedByCurrentCart")
 		return nil, errors.New("no product given for GetAvailableSourcesDeductedByCurrentCart")
@@ -66,8 +66,7 @@ func (s *Service) GetAvailableSourcesDeductedByCurrentCart(ctx context.Context, 
 }
 
 // GetAvailableSources without evaluating current cart items
-func (s *Service) GetAvailableSources(ctx context.Context, session *web.Session, product productDomain.BasicProduct, deliveryCode string) (domain.AvailableSources, error) {
-
+func (s *Service) GetAvailableSources(ctx context.Context, session *web.Session, product productDomain.BasicProduct, deliveryCode string) (domain.AvailableSourcesPerProduct, error) {
 	if product == nil {
 		s.logger.WithContext(ctx).Error("No product given for GetAvailableSources")
 		return nil, errors.New("no product given for GetAvailableSources")
