@@ -57,7 +57,7 @@ func (r *Restrictor) Restrict(ctx context.Context, session *web.Session, product
 	}
 
 	if product.Type() == productDomain.TypeBundleWithActiveChoices {
-		availableSources = availableSourcesPerProduct.FindSourceWithLeastQty()
+		availableSources = availableSourcesPerProduct.FindSourcesWithLeastAvailableQty()
 	}
 
 	restrictedByNotDeductedSources := &validation.RestrictionResult{
@@ -79,7 +79,7 @@ func (r *Restrictor) Restrict(ctx context.Context, session *web.Session, product
 	}
 
 	if product.Type() == productDomain.TypeBundleWithActiveChoices {
-		availableSourcesDeducted = availableSourcesPerProductDeducted.FindSourceWithLeastQty()
+		availableSourcesDeducted = availableSourcesPerProductDeducted.FindSourcesWithLeastAvailableQty()
 	}
 
 	return &validation.RestrictionResult{

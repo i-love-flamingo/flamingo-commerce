@@ -77,6 +77,10 @@ func (s *SourcingService) AllocateItems(ctx context.Context, decoratedCart *deco
 }
 
 func (s *SourcingService) GetAvailableSources(_ context.Context, product productDomain.BasicProduct, deliveryInfo *cartDomain.DeliveryInfo, _ *decorator.DecoratedCart) (commerceSourcingDomain.AvailableSourcesPerProduct, error) {
+	if product.Type() == productDomain.TypeBundle || product.Type() == productDomain.TypeConfigurable {
+		return nil, commerceSourcingDomain.ErrUnsupportedProductType
+	}
+
 	productId := product.GetIdentifier()
 
 	if productId == "" {

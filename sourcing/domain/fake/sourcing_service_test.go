@@ -225,4 +225,27 @@ func TestSourcingService_GetAvailableSources(t *testing.T) {
 		assert.Nil(t, resultSources)
 		assert.Equal(t, commerceSourcingDomain.ErrEmptyProductIdentifier, err)
 	})
+
+	t.Run("failure when product type is bundle", func(t *testing.T) {
+		t.Parallel()
+
+		service := &fake.SourcingService{}
+		service.Inject(&struct {
+			FakeSourceData string `inject:"config:commerce.sourcing.fake.jsonPath,optional"`
+		}{
+			FakeSourceData: "testdata/fakeSourceData.json",
+		})
+
+		product := productDomain.BundleProduct{}
+
+		deliveryInfo := &cartDomain.DeliveryInfo{
+			Code: "inflight",
+		}
+
+		resultSources, err := service.GetAvailableSources(context.Background(), product, deliveryInfo, &decorator.DecoratedCart{})
+
+		assert.Error(t, err)
+		assert.Nil(t, resultSources)
+		assert.Equal(t, commerceSourcingDomain.ErrUnsupportedProductType, err)
+	})
 }

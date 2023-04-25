@@ -494,7 +494,7 @@ func formatSources(sources []Source) string {
 	return checkedSources
 }
 
-func (as AvailableSourcesPerProduct) FindSourceWithLeastQty() AvailableSources {
+func (as AvailableSourcesPerProduct) FindSourcesWithLeastAvailableQty() AvailableSources {
 	var minAvailableSources AvailableSources
 
 	minQtySum := math.MaxInt32
