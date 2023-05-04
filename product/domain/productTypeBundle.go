@@ -148,10 +148,11 @@ func mapChoiceToActiveProduct(option Option, possibleChoice Choice, selectedChoi
 	switch option.Product.Type() {
 	case TypeConfigurable:
 		activeChoice = ActiveChoice{
-			Product:  option.Product,
-			Qty:      quantity,
-			Label:    possibleChoice.Label,
-			Required: possibleChoice.Required,
+			Identifier: possibleChoice.Identifier,
+			Product:    option.Product,
+			Qty:        quantity,
+			Label:      possibleChoice.Label,
+			Required:   possibleChoice.Required,
 		}
 
 		if configurable, ok := option.Product.(ConfigurableProduct); ok {
@@ -164,10 +165,11 @@ func mapChoiceToActiveProduct(option Option, possibleChoice Choice, selectedChoi
 		}
 	case TypeSimple:
 		activeChoice = ActiveChoice{
-			Product:  option.Product,
-			Qty:      quantity,
-			Label:    possibleChoice.Label,
-			Required: possibleChoice.Required,
+			Identifier: possibleChoice.Identifier,
+			Product:    option.Product,
+			Qty:        quantity,
+			Label:      possibleChoice.Label,
+			Required:   possibleChoice.Required,
 		}
 	}
 
