@@ -44,8 +44,20 @@ func TestGetBundleProductWithActiveChoices(t *testing.T) {
 		assert.Equal(t, domain.BundleProductWithActiveChoices{
 			BundleProduct: b,
 			ActiveChoices: map[domain.Identifier]domain.ActiveChoice{
-				"A": {Product: domain.SimpleProduct{BasicProductData: domain.BasicProductData{MarketPlaceCode: "A"}}, Qty: 1, Label: "", Required: true},
-				"B": {Product: domain.SimpleProduct{BasicProductData: domain.BasicProductData{MarketPlaceCode: "B"}}, Qty: 2, Label: "", Required: false},
+				"A": {
+					Product:    domain.SimpleProduct{BasicProductData: domain.BasicProductData{MarketPlaceCode: "A"}},
+					Qty:        1,
+					Label:      "",
+					Required:   true,
+					Identifier: "A",
+				},
+				"B": {
+					Product:    domain.SimpleProduct{BasicProductData: domain.BasicProductData{MarketPlaceCode: "B"}},
+					Qty:        2,
+					Label:      "",
+					Required:   false,
+					Identifier: "B",
+				},
 			},
 		}, bpac)
 	})
