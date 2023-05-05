@@ -1,5 +1,7 @@
 # Changelog
-## v3.7.0 [upcoming]
+## v3.7.1 [upcoming]
+
+## v3.7.0
 
 **cart**
 * Updated the `DefaultCartBehaviour` to be able to support other `CartStorage` implementations
