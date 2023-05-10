@@ -682,7 +682,11 @@ func TestDefaultCartBehaviour_UpdateItems(t *testing.T) {
 							AdditionalData: map[string]string{
 								"1": "a",
 							},
-							SinglePriceGross: priceDomain.NewFromFloat(20.99, "EUR"),
+							SinglePriceGross:          priceDomain.NewFromFloat(20.99, "EUR"),
+							RowPriceGross:             priceDomain.NewFromFloat(20.99, "EUR"),
+							RowPriceGrossWithDiscount: priceDomain.NewFromFloat(20.98, "EUR"),
+							TotalDiscountAmount:       priceDomain.NewFromFloat(0.01, "EUR"),
+							ItemRelatedDiscountAmount: priceDomain.NewFromFloat(0.01, "EUR"),
 						},
 					},
 				},
@@ -703,7 +707,12 @@ func TestDefaultCartBehaviour_UpdateItems(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, map[string]string{"2": "b"}, got.Deliveries[0].Cartitems[0].AdditionalData)
 		assert.Equal(t, 2, got.Deliveries[0].Cartitems[0].Qty)
-		assert.Equal(t, 41.98, got.GrandTotal.FloatAmount())
+		assert.Equal(t, 20.99, got.Deliveries[0].Cartitems[0].SinglePriceGross.FloatAmount())
+		assert.Equal(t, 41.98, got.Deliveries[0].Cartitems[0].RowPriceGross.FloatAmount())
+		assert.Equal(t, 41.97, got.Deliveries[0].Cartitems[0].RowPriceGrossWithDiscount.FloatAmount())
+		assert.Equal(t, 0.01, got.Deliveries[0].Cartitems[0].TotalDiscountAmount.FloatAmount())
+		assert.Equal(t, 0.01, got.Deliveries[0].Cartitems[0].ItemRelatedDiscountAmount.FloatAmount())
+		assert.Equal(t, 41.97, got.GrandTotal.FloatAmount())
 	})
 
 	t.Run("item updated with qty 0 is deleted", func(t *testing.T) {

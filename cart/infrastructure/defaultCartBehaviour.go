@@ -239,10 +239,24 @@ func (cob *DefaultCartBehaviour) updateItem(ctx context.Context, cart *domaincar
 		itemDelivery.Cartitems[index].RowPriceNet = priceDomain.NewFromBigFloat(*net, item.SinglePriceNet.Currency())
 
 		itemDelivery.Cartitems[index].RowPriceGrossWithDiscount = itemDelivery.Cartitems[index].RowPriceGross
+		if rowPriceGrossWithDiscount, err := itemDelivery.Cartitems[index].RowPriceGross.Sub(itemDelivery.Cartitems[index].TotalDiscountAmount); err == nil {
+			itemDelivery.Cartitems[index].RowPriceGrossWithDiscount = rowPriceGrossWithDiscount
+		}
+
 		itemDelivery.Cartitems[index].RowPriceNetWithDiscount = itemDelivery.Cartitems[index].RowPriceNet
+		if rowPriceNetWithDiscount, err := itemDelivery.Cartitems[index].RowPriceNet.Sub(itemDelivery.Cartitems[index].TotalDiscountAmount); err == nil {
+			itemDelivery.Cartitems[index].RowPriceNetWithDiscount = rowPriceNetWithDiscount
+		}
 
 		itemDelivery.Cartitems[index].RowPriceGrossWithItemRelatedDiscount = itemDelivery.Cartitems[index].RowPriceGross
+		if rowPriceGrossWithItemRelatedDiscount, err := itemDelivery.Cartitems[index].RowPriceGross.Sub(itemDelivery.Cartitems[index].ItemRelatedDiscountAmount); err == nil {
+			itemDelivery.Cartitems[index].RowPriceGrossWithItemRelatedDiscount = rowPriceGrossWithItemRelatedDiscount
+		}
+
 		itemDelivery.Cartitems[index].RowPriceNetWithItemRelatedDiscount = itemDelivery.Cartitems[index].RowPriceNet
+		if rowPriceNetWithItemRelatedDiscount, err := itemDelivery.Cartitems[index].RowPriceNet.Sub(itemDelivery.Cartitems[index].ItemRelatedDiscountAmount); err == nil {
+			itemDelivery.Cartitems[index].RowPriceNetWithItemRelatedDiscount = rowPriceNetWithItemRelatedDiscount
+		}
 
 		if cob.defaultTaxRate > 0.0 {
 			taxAmount, err := itemDelivery.Cartitems[index].RowPriceGross.Sub(itemDelivery.Cartitems[index].RowPriceNet)
