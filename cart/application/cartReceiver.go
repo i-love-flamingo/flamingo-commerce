@@ -16,7 +16,7 @@ import (
 )
 
 type (
-	//CartReceiverService provides methods to get the correct cart
+	// CartReceiverService provides methods to get the correct cart
 	CartReceiverService struct {
 		cartDecoratorFactory *decorator.DecoratedCartFactory
 		*BaseCartReceiver

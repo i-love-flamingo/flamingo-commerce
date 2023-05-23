@@ -29,6 +29,7 @@ type (
 		enableDefaultCartAdapter      bool
 		enablePlaceOrderLoggerAdapter bool
 		enableCartCache               bool
+		cartMergeStrategy             string
 	}
 )
 
@@ -36,15 +37,17 @@ type (
 func (m *Module) Inject(
 	routerRegistry *web.RouterRegistry,
 	config *struct {
-		EnableDefaultCartAdapter      bool `inject:"config:commerce.cart.defaultCartAdapter.enabled,optional"`
-		EnableCartCache               bool `inject:"config:commerce.cart.enableCartCache,optional"`
-		EnablePlaceOrderLoggerAdapter bool `inject:"config:commerce.cart.placeOrderLogger.enabled,optional"`
+		EnableDefaultCartAdapter      bool   `inject:"config:commerce.cart.defaultCartAdapter.enabled,optional"`
+		EnableCartCache               bool   `inject:"config:commerce.cart.enableCartCache,optional"`
+		CartMergeStrategy             string `inject:"config:commerce.cart.mergeStrategy,optional"`
+		EnablePlaceOrderLoggerAdapter bool   `inject:"config:commerce.cart.placeOrderLogger.enabled,optional"`
 	},
 ) {
 	m.routerRegistry = routerRegistry
 	if config != nil {
 		m.enableDefaultCartAdapter = config.EnableDefaultCartAdapter
 		m.enableCartCache = config.EnableCartCache
+		m.cartMergeStrategy = config.CartMergeStrategy
 		m.enablePlaceOrderLoggerAdapter = config.EnablePlaceOrderLoggerAdapter
 	}
 }
@@ -67,6 +70,16 @@ func (m *Module) Configure(injector *dingo.Injector) {
 
 	// Event
 	flamingo.BindEventSubscriber(injector).To(application.EventReceiver{})
+
+	// Cart merge strategy that is used by the event receiver to merge carts on during login
+	switch m.cartMergeStrategy {
+	case "replace":
+		injector.Bind((*application.CartMerger)(nil)).To(application.CartMergeStrategyReplace{})
+	case "none":
+		injector.Bind((*application.CartMerger)(nil)).To(application.CartMergeStrategyNone{})
+	default:
+		injector.Bind((*application.CartMerger)(nil)).To(application.CartMergeStrategyMerge{})
+	}
 
 	// TemplateFunction
 	flamingo.BindTemplateFunc(injector, "getCart", new(templatefunctions.GetCart))
@@ -118,6 +131,7 @@ commerce: {
 		defaultUseBillingAddress: bool | *false
 		defaultDeliveryCode: string | *"delivery"
 		deleteEmptyDelivery: bool | *false
+		mergeStrategy: "none" | "replace" | *"merge"
 		showEmptyCartPageIfNoItems?: bool
 		adjustItemsToRestrictedQty?: bool
 		personalDataForm: {

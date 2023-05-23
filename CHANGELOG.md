@@ -1,5 +1,12 @@
 # Changelog
-## v3.7.1 [upcoming]
+## v3.8.0 [upcoming]
+
+**cart**
+* Make the cart merge strategy configurable, this strategy handles how a guest cart is transformed into a customer cart.
+  The following strategies can be set via the config `commerce.cart.mergeStrategy`:
+  * `merge` (default): Merge the content of the guest and customer cart
+  * `replace`: Replace the customer cart with the guest cart content
+  * `none`: Don't do anything, guest cart is lost during customer sign-in.
 
 ## v3.7.0
 
