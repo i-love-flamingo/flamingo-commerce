@@ -25,7 +25,7 @@ type (
 	}
 
 	CartMerger interface {
-		Merge(ctx context.Context, session *web.Session, guestCart *cartDomain.Cart, customerCart *cartDomain.Cart)
+		Merge(ctx context.Context, session *web.Session, guestCart cartDomain.Cart, customerCart cartDomain.Cart)
 	}
 
 	CartMergeStrategyMerge struct {
@@ -118,7 +118,7 @@ func (e *EventReceiver) handleLoginEvent(ctx context.Context, loginEvent *auth.W
 	e.eventRouter.Dispatch(ctx, &PreCartMergeEvent{GuestCart: clonedGuestCart, CustomerCart: clonedCustomerCart})
 
 	// merge the cart depending on the set strategy
-	e.cartMerger.Merge(ctx, session, guestCart, customerCart)
+	e.cartMerger.Merge(ctx, session, *guestCart, *customerCart)
 
 	if e.cartCache != nil {
 		cacheID, err := e.cartCache.BuildIdentifier(ctx, session)
@@ -128,6 +128,12 @@ func (e *EventReceiver) handleLoginEvent(ctx context.Context, loginEvent *auth.W
 				e.prepareLogger(ctx).Error(fmt.Errorf("can't delete cart cache entry %v: %w", cacheID, err))
 			}
 		}
+	}
+
+	customerCart, err = e.cartReceiverService.ViewCart(ctx, session)
+	if err != nil {
+		e.prepareLogger(ctx).Error(fmt.Errorf("view customer cart failed: %w", err))
+		return
 	}
 
 	mergedCart, _ := customerCart.Clone()
@@ -158,7 +164,7 @@ func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
 	}
 }
 
-func (c *CartMergeStrategyNone) Merge(_ context.Context, _ *web.Session, _ *cartDomain.Cart, _ *cartDomain.Cart) {
+func (c *CartMergeStrategyNone) Merge(_ context.Context, _ *web.Session, _ cartDomain.Cart, _ cartDomain.Cart) {
 	// do nothing
 }
 
@@ -173,7 +179,8 @@ func (c *CartMergeStrategyReplace) Inject(
 	return c
 }
 
-func (c *CartMergeStrategyReplace) Merge(ctx context.Context, session *web.Session, guestCart *cartDomain.Cart, customerCart *cartDomain.Cart) {
+//nolint:cyclop // setting all cart attributes is a complex task
+func (c *CartMergeStrategyReplace) Merge(ctx context.Context, session *web.Session, guestCart cartDomain.Cart, _ cartDomain.Cart) {
 	var err error
 
 	c.logger.WithContext(ctx).Info("cleaning existing customer cart, to be able to replace the content with the guest one.")
@@ -220,7 +227,7 @@ func (c *CartMergeStrategyReplace) Merge(ctx context.Context, session *web.Sessi
 
 	if guestCart.HasAppliedCouponCode() {
 		for _, code := range guestCart.AppliedCouponCodes {
-			customerCart, err = c.cartService.ApplyVoucher(ctx, session, code.Code)
+			_, err = c.cartService.ApplyVoucher(ctx, session, code.Code)
 			if err != nil {
 				c.logger.WithContext(ctx).Error(fmt.Errorf("couldn't apply voucher %q: %w", code.Code, err))
 			}
@@ -229,7 +236,7 @@ func (c *CartMergeStrategyReplace) Merge(ctx context.Context, session *web.Sessi
 
 	if guestCart.HasAppliedGiftCards() {
 		for _, code := range guestCart.AppliedGiftCards {
-			customerCart, err = c.cartService.ApplyGiftCard(ctx, session, code.Code)
+			_, err = c.cartService.ApplyGiftCard(ctx, session, code.Code)
 			if err != nil {
 				c.logger.WithContext(ctx).Error(fmt.Errorf("couldn't apply gift card %q: %w", code.Code, err))
 			}
@@ -255,7 +262,8 @@ func (c *CartMergeStrategyMerge) Inject(
 	return c
 }
 
-func (c *CartMergeStrategyMerge) Merge(ctx context.Context, session *web.Session, guestCart *cartDomain.Cart, customerCart *cartDomain.Cart) {
+//nolint:cyclop,gocognit // setting all cart attributes is a complex task
+func (c *CartMergeStrategyMerge) Merge(ctx context.Context, session *web.Session, guestCart cartDomain.Cart, customerCart cartDomain.Cart) {
 	var err error
 
 	for _, delivery := range guestCart.Deliveries {
@@ -298,7 +306,7 @@ func (c *CartMergeStrategyMerge) Merge(ctx context.Context, session *web.Session
 
 	if guestCart.HasAppliedCouponCode() {
 		for _, code := range guestCart.AppliedCouponCodes {
-			customerCart, err = c.cartService.ApplyVoucher(ctx, session, code.Code)
+			_, err = c.cartService.ApplyVoucher(ctx, session, code.Code)
 			if err != nil {
 				c.logger.WithContext(ctx).Error("WebLoginEvent - customerCart ApplyVoucher has error", code.Code, err)
 			}
@@ -307,7 +315,7 @@ func (c *CartMergeStrategyMerge) Merge(ctx context.Context, session *web.Session
 
 	if guestCart.HasAppliedGiftCards() {
 		for _, code := range guestCart.AppliedGiftCards {
-			customerCart, err = c.cartService.ApplyGiftCard(ctx, session, code.Code)
+			_, err = c.cartService.ApplyGiftCard(ctx, session, code.Code)
 			if err != nil {
 				c.logger.WithContext(ctx).Error("WebLoginEvent - customerCart ApplyGiftCard has error", code.Code, err)
 			}

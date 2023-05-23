@@ -26,7 +26,7 @@ func (_m *CartMerger) EXPECT() *CartMerger_Expecter {
 }
 
 // Merge provides a mock function with given fields: ctx, session, guestCart, customerCart
-func (_m *CartMerger) Merge(ctx context.Context, session *web.Session, guestCart *cart.Cart, customerCart *cart.Cart) {
+func (_m *CartMerger) Merge(ctx context.Context, session *web.Session, guestCart cart.Cart, customerCart cart.Cart) {
 	_m.Called(ctx, session, guestCart, customerCart)
 }
 
@@ -38,15 +38,15 @@ type CartMerger_Merge_Call struct {
 // Merge is a helper method to define mock.On call
 //   - ctx context.Context
 //   - session *web.Session
-//   - guestCart *cart.Cart
-//   - customerCart *cart.Cart
+//   - guestCart cart.Cart
+//   - customerCart cart.Cart
 func (_e *CartMerger_Expecter) Merge(ctx interface{}, session interface{}, guestCart interface{}, customerCart interface{}) *CartMerger_Merge_Call {
 	return &CartMerger_Merge_Call{Call: _e.mock.On("Merge", ctx, session, guestCart, customerCart)}
 }
 
-func (_c *CartMerger_Merge_Call) Run(run func(ctx context.Context, session *web.Session, guestCart *cart.Cart, customerCart *cart.Cart)) *CartMerger_Merge_Call {
+func (_c *CartMerger_Merge_Call) Run(run func(ctx context.Context, session *web.Session, guestCart cart.Cart, customerCart cart.Cart)) *CartMerger_Merge_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(*web.Session), args[2].(*cart.Cart), args[3].(*cart.Cart))
+		run(args[0].(context.Context), args[1].(*web.Session), args[2].(cart.Cart), args[3].(cart.Cart))
 	})
 	return _c
 }
@@ -56,7 +56,7 @@ func (_c *CartMerger_Merge_Call) Return() *CartMerger_Merge_Call {
 	return _c
 }
 
-func (_c *CartMerger_Merge_Call) RunAndReturn(run func(context.Context, *web.Session, *cart.Cart, *cart.Cart)) *CartMerger_Merge_Call {
+func (_c *CartMerger_Merge_Call) RunAndReturn(run func(context.Context, *web.Session, cart.Cart, cart.Cart)) *CartMerger_Merge_Call {
 	_c.Call.Return(run)
 	return _c
 }

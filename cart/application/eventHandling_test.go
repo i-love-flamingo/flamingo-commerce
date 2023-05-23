@@ -119,7 +119,7 @@ func TestCartMergeStrategyReplace_Merge(t *testing.T) {
 	cartService.EXPECT().ApplyGiftCard(mock.Anything, session, "GHDJAHJH-DADAD-2113").Return(&cart.Cart{}, nil)
 	cartService.EXPECT().UpdatePaymentSelection(mock.Anything, session, mock.Anything).Return(nil)
 	c.Inject(flamingo.NullLogger{}, cartService)
-	c.Merge(context.Background(), session, &cart.Cart{
+	c.Merge(context.Background(), session, cart.Cart{
 		ID: "guest", BelongsToAuthenticatedUser: false,
 		Deliveries: []cart.Delivery{{
 			DeliveryInfo: cart.DeliveryInfo{Code: "delivery1"},
@@ -130,7 +130,7 @@ func TestCartMergeStrategyReplace_Merge(t *testing.T) {
 		AppliedCouponCodes: []cart.CouponCode{{Code: "SUMMER_SALE"}},
 		AppliedGiftCards:   []cart.AppliedGiftCard{{Code: "GHDJAHJH-DADAD-2113"}},
 		PaymentSelection:   cart.DefaultPaymentSelection{},
-	}, &cart.Cart{ID: "customer", BelongsToAuthenticatedUser: true})
+	}, cart.Cart{ID: "customer", BelongsToAuthenticatedUser: true})
 
 }
 
@@ -152,7 +152,7 @@ func TestCartMergeStrategyMerge_Merge(t *testing.T) {
 	cartService.EXPECT().ApplyGiftCard(mock.Anything, session, "GHDJAHJH-DADAD-2113").Return(&cart.Cart{}, nil)
 	cartService.EXPECT().UpdatePaymentSelection(mock.Anything, session, mock.Anything).Return(nil)
 	c.Inject(flamingo.NullLogger{}, cartService)
-	c.Merge(context.Background(), session, &cart.Cart{
+	c.Merge(context.Background(), session, cart.Cart{
 		ID: "guest", BelongsToAuthenticatedUser: false,
 		Deliveries: []cart.Delivery{{
 			DeliveryInfo: cart.DeliveryInfo{Code: "delivery1"},
@@ -163,12 +163,12 @@ func TestCartMergeStrategyMerge_Merge(t *testing.T) {
 		AppliedCouponCodes: []cart.CouponCode{{Code: "SUMMER_SALE"}},
 		AppliedGiftCards:   []cart.AppliedGiftCard{{Code: "GHDJAHJH-DADAD-2113"}},
 		PaymentSelection:   cart.DefaultPaymentSelection{},
-	}, &cart.Cart{ID: "customer", BelongsToAuthenticatedUser: true})
+	}, cart.Cart{ID: "customer", BelongsToAuthenticatedUser: true})
 }
 
 func TestCartMergeStrategyNone_Merge(t *testing.T) {
 	t.Parallel()
 
 	c := &application.CartMergeStrategyNone{}
-	c.Merge(context.Background(), nil, nil, nil)
+	c.Merge(context.Background(), nil, cart.Cart{}, cart.Cart{})
 }
