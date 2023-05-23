@@ -19,7 +19,6 @@ type (
 		logger              flamingo.Logger
 		cartReceiverService Receiver
 		cartCache           CartCache
-		webIdentityService  *auth.WebIdentityService
 		eventRouter         flamingo.EventRouter
 		cartMerger          CartMerger
 	}
@@ -81,6 +80,7 @@ func (e *EventReceiver) prepareLogger(ctx context.Context) flamingo.Logger {
 	return e.logger.WithField(flamingo.LogKeyCategory, "cart").WithField(flamingo.LogKeySubCategory, "cart-events").WithContext(ctx)
 }
 
+//nolint:cyclop // grabbing both the customer cart and the guest cart is a complex process
 func (e *EventReceiver) handleLoginEvent(ctx context.Context, loginEvent *auth.WebLoginEvent) {
 	if loginEvent == nil {
 		return

@@ -106,6 +106,7 @@ func (cs *CartSessionCache) Inject(
 ) {
 	cs.webIdentityService = webIdentityService
 	cs.logger = logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").WithField(flamingo.LogKeyModule, "cart")
+
 	if config != nil {
 		cs.lifetimeSeconds = config.LifetimeSeconds
 	}

@@ -72,13 +72,13 @@ func TestEventReceiver_Notify(t *testing.T) {
 		session := web.EmptySession()
 		request := web.CreateRequest(nil, session)
 
-		guestCart := &cart.Cart{ID: "guestCart", BelongsToAuthenticatedUser: false}
-		customerCart := &cart.Cart{ID: "customerCart", BelongsToAuthenticatedUser: true}
+		guestCart := cart.Cart{ID: "guestCart", BelongsToAuthenticatedUser: false}
+		customerCart := cart.Cart{ID: "customerCart", BelongsToAuthenticatedUser: true}
 
 		cartReceiver := mocks.NewCartReceiver(t)
 		cartReceiver.EXPECT().ShouldHaveGuestCart(session).Return(true)
-		cartReceiver.EXPECT().ViewGuestCart(mock.Anything, session).Return(guestCart, nil)
-		cartReceiver.EXPECT().ViewCart(mock.Anything, session).Return(customerCart, nil)
+		cartReceiver.EXPECT().ViewGuestCart(mock.Anything, session).Return(&guestCart, nil)
+		cartReceiver.EXPECT().ViewCart(mock.Anything, session).Return(&customerCart, nil)
 		cartMerger := mocks.NewCartMerger(t)
 		cartMerger.EXPECT().Merge(mock.Anything, session, guestCart, customerCart)
 
@@ -131,7 +131,6 @@ func TestCartMergeStrategyReplace_Merge(t *testing.T) {
 		AppliedGiftCards:   []cart.AppliedGiftCard{{Code: "GHDJAHJH-DADAD-2113"}},
 		PaymentSelection:   cart.DefaultPaymentSelection{},
 	}, cart.Cart{ID: "customer", BelongsToAuthenticatedUser: true})
-
 }
 
 func TestCartMergeStrategyMerge_Merge(t *testing.T) {
