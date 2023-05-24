@@ -62,8 +62,8 @@ func (e *EventReceiver) Inject(
 	eventRouter flamingo.EventRouter,
 	cartMerger CartMerger,
 	optionals *struct {
-		CartCache CartCache `inject:",optional"`
-	},
+	CartCache CartCache `inject:",optional"`
+},
 ) {
 	e.logger = logger
 	e.cartReceiverService = cartReceiverService
@@ -184,6 +184,7 @@ func (c *CartMergeStrategyReplace) Merge(ctx context.Context, session *web.Sessi
 	var err error
 
 	c.logger.WithContext(ctx).Info("cleaning existing customer cart, to be able to replace the content with the guest one.")
+
 	err = c.cartService.Clean(ctx, session)
 	if err != nil {
 		c.logger.WithContext(ctx).Error(fmt.Errorf("cleaning the customer cart didn't work: %w", err))
@@ -204,6 +205,7 @@ func (c *CartMergeStrategyReplace) Merge(ctx context.Context, session *web.Sessi
 				VariantMarketplaceCode: item.VariantMarketPlaceCode,
 				AdditionalData:         item.AdditionalData,
 			}
+
 			_, err = c.cartService.AddProduct(ctx, session, delivery.DeliveryInfo.Code, addRequest)
 			if err != nil {
 				c.logger.WithContext(ctx).Error(fmt.Errorf("add to cart for guest item %v failed: %w", item, err))
