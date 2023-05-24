@@ -16,7 +16,7 @@ import (
 )
 
 type (
-	//CartReceiverService provides methods to get the correct cart
+	// CartReceiverService provides methods to get the correct cart
 	CartReceiverService struct {
 		cartDecoratorFactory *decorator.DecoratedCartFactory
 		*BaseCartReceiver
@@ -83,6 +83,7 @@ func (cs *BaseCartReceiver) Inject(
 	cs.webIdentityService = webIdentityService
 	cs.logger = logger.WithField("module", "cart").WithField(flamingo.LogKeyCategory, "checkout.cartreceiver")
 	cs.eventRouter = eventRouter
+
 	if optionals != nil {
 		cs.cartCache = optionals.CartCache
 	}
@@ -237,13 +238,16 @@ func (cs *BaseCartReceiver) getCartFromCacheIfCacheIsEnabled(ctx context.Context
 		return nil, false, err
 	}
 	cs.logger.WithContext(ctx).Debug("query cart cache %#v", cacheID)
+
 	cart, cacheErr := cs.cartCache.GetCart(ctx, session, cacheID)
 	if cacheErr == ErrNoCacheEntry {
 		return nil, false, nil
 	}
+
 	if cacheErr != nil {
 		return nil, false, cacheErr
 	}
+
 	return cart, true, nil
 }
 

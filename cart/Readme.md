@@ -417,6 +417,16 @@ the maximum allowed quantity and the remaining difference in relation to the cur
 
 The Service itself consolidates the results of all bound restrictors and returns the most restricting result.
 
+### Event Handling
+
+Event Handling is mainly concerned with the transformation of a guest shopping cart into a customer shopping cart.
+Various options are available for this. By default, the content of both shopping carts is merged.
+
+The following strategies can be set via the config `commerce.cart.mergeStrategy`:
+* `merge` (default): Merge the content of the guest and customer cart
+* `replace`: Replace the customer cart with the guest cart content
+* `none`: Don't do anything, guest cart is lost during customer sign-in.
+
 ## A typical Checkout "Flow"
 
 A checkout package would use the cart package for adding information to the cart, typically that would involve:

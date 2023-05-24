@@ -14,6 +14,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+//go:generate go run github.com/vektra/mockery/v2@v2.21.1 --name CartCache --case snake
+
 type (
 	// CartCache describes a cart caches methods
 	CartCache interface {
@@ -74,7 +76,7 @@ func (ci *CartCacheIdentifier) CacheKey() string {
 }
 
 // BuildIdentifierFromCart creates a Cache Identifier from Cart Data
-// DEPRICATED
+// Deprecated: use BuildIdentifier function of concrete implementation
 func BuildIdentifierFromCart(cart *cart.Cart) (*CartCacheIdentifier, error) {
 	if cart == nil {
 		return nil, errors.New("no cart")
@@ -104,6 +106,7 @@ func (cs *CartSessionCache) Inject(
 ) {
 	cs.webIdentityService = webIdentityService
 	cs.logger = logger.WithField(flamingo.LogKeyCategory, "CartSessionCache").WithField(flamingo.LogKeyModule, "cart")
+
 	if config != nil {
 		cs.lifetimeSeconds = config.LifetimeSeconds
 	}
