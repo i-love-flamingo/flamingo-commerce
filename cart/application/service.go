@@ -59,5 +59,12 @@ type (
 )
 
 var (
+	// ErrNoBundleConfigurationGiven returned when bundle configuration is not provided
 	ErrNoBundleConfigurationGiven = errors.New("no bundle configuration given for configurable product")
+
+	// ErrNoVariantForConfigurable returned when type configurable with active variant do not have variant selected
+	ErrNoVariantForConfigurable = errors.New("no variant given for configurable product")
+
+	// ErrVariantDoNotExist returned when selected variant do not exist
+	ErrVariantDoNotExist = errors.New("product has not the given variant")
 )

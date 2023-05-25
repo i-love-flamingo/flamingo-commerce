@@ -857,12 +857,12 @@ func (cs *CartService) checkProductForAddRequest(ctx context.Context, session *w
 
 	if product.Type() == productDomain.TypeConfigurable {
 		if addRequest.VariantMarketplaceCode == "" {
-			return nil, errors.New("no variant given for configurable product")
+			return nil, ErrNoVariantForConfigurable
 		}
 
 		configurableProduct := product.(productDomain.ConfigurableProduct)
 		if !configurableProduct.HasVariant(addRequest.VariantMarketplaceCode) {
-			return nil, errors.New("product has not the given variant")
+			return nil, ErrVariantDoNotExist
 		}
 
 		product, err = configurableProduct.GetConfigurableWithActiveVariant(addRequest.VariantMarketplaceCode)
