@@ -13,7 +13,7 @@ import (
 	"flamingo.me/flamingo/v3/framework/flamingo"
 )
 
-const MaxSourceQyt = math.MaxInt64
+const MaxSourceQty = math.MaxInt64
 
 type (
 	// SourcingService describes the main port used by the sourcing logic.
@@ -455,8 +455,8 @@ func (s AvailableSources) QtySum() int {
 	qty := 0
 	for _, sqty := range s {
 		// check against max int 32 to avoid overflowing int
-		if sqty == MaxSourceQyt || qty > math.MaxInt32 {
-			return MaxSourceQyt
+		if sqty == MaxSourceQty || qty > math.MaxInt32 {
+			return MaxSourceQty
 		}
 
 		qty = qty + sqty
@@ -501,7 +501,7 @@ func formatSources(sources []Source) string {
 func (as AvailableSourcesPerProduct) FindSourcesWithLeastAvailableQty() AvailableSources {
 	var minAvailableSources AvailableSources
 
-	minQtySum := MaxSourceQyt
+	minQtySum := MaxSourceQty
 
 	for _, availableSources := range as {
 		qtySum := availableSources.QtySum()
