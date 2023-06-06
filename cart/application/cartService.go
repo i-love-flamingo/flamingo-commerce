@@ -62,7 +62,23 @@ type (
 
 	// PromotionFunction type takes ctx, cart, couponCode and applies the promotion
 	promotionFunc func(context.Context, *cartDomain.Cart, string) (*cartDomain.Cart, cartDomain.DeferEvents, error)
+
+	contextKeyType string
 )
+
+const (
+	itemIDKey contextKeyType = "item_id"
+)
+
+func ItemIDFromContext(ctx context.Context) string {
+	id, _ := ctx.Value(itemIDKey).(string)
+
+	return id
+}
+
+func ContextWithItemID(ctx context.Context, itemID string) context.Context {
+	return context.WithValue(ctx, itemIDKey, itemID)
+}
 
 func init() {
 	gob.Register(RestrictionError{})
@@ -1165,7 +1181,9 @@ func (cs *CartService) generateRestrictedQtyAdjustments(ctx context.Context, ses
 				return nil, err
 			}
 
-			restrictionResult := cs.restrictionService.RestrictQty(ctx, session, product, cart, delivery.DeliveryInfo.Code)
+			itemContext := ContextWithItemID(ctx, item.ID)
+			restrictionResult := cs.restrictionService.RestrictQty(itemContext, session, product, cart, delivery.DeliveryInfo.Code)
+
 			if restrictionResult.RemainingDifference >= 0 {
 				continue
 			}

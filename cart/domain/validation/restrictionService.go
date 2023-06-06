@@ -4,9 +4,10 @@ import (
 	"context"
 	"math"
 
+	"flamingo.me/flamingo/v3/framework/web"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/product/domain"
-	"flamingo.me/flamingo/v3/framework/web"
 )
 
 type (
@@ -29,7 +30,7 @@ type (
 		// Name returns the code of the restrictor
 		Name() string
 		// Restrict must return a `RestrictionResult` which contains information regarding if a restriction is
-		// applied and whats the max allowed quantity
+		// applied and whats the max allowed quantity. Might expect item id from context in implementation.
 		Restrict(ctx context.Context, session *web.Session, product domain.BasicProduct, cart *cart.Cart, deliveryCode string) *RestrictionResult
 	}
 )
@@ -44,7 +45,7 @@ func (rs *RestrictionService) Inject(
 }
 
 // RestrictQty checks if there is an qty restriction present and returns an according result containing the max allowed
-// quantity and the quantity difference to the current cart
+// quantity and the quantity difference to the current cart. Restrictor might expect item id in context
 func (rs *RestrictionService) RestrictQty(ctx context.Context, session *web.Session, product domain.BasicProduct, currentCart *cart.Cart, deliveryCode string) *RestrictionResult {
 	restrictionResult := &RestrictionResult{
 		IsRestricted:        false,
