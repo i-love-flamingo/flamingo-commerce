@@ -76,7 +76,7 @@ func ItemIDFromContext(ctx context.Context) string {
 	return id
 }
 
-func contextWithItemID(ctx context.Context, itemID string) context.Context {
+func ContextWithItemID(ctx context.Context, itemID string) context.Context {
 	return context.WithValue(ctx, itemIDKey, itemID)
 }
 
@@ -1181,7 +1181,7 @@ func (cs *CartService) generateRestrictedQtyAdjustments(ctx context.Context, ses
 				return nil, err
 			}
 
-			itemContext := contextWithItemID(ctx, item.ID)
+			itemContext := ContextWithItemID(ctx, item.ID)
 			restrictionResult := cs.restrictionService.RestrictQty(itemContext, session, product, cart, delivery.DeliveryInfo.Code)
 
 			if restrictionResult.RemainingDifference >= 0 {
