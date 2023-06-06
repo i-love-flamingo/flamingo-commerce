@@ -1206,7 +1206,8 @@ func (cs *CartService) generateRestrictedQtyAdjustments(ctx context.Context, ses
 
 func (cs *CartService) getSpecificProductType(_ context.Context, product productDomain.BasicProduct, variantMarketplaceCode string, bundleConfig productDomain.BundleConfiguration) (productDomain.BasicProduct, error) {
 	var err error
-	if product.Type() != productDomain.TypeConfigurable || product.Type() != productDomain.TypeBundle {
+
+	if product.Type() != productDomain.TypeConfigurable && product.Type() != productDomain.TypeBundle {
 		return product, nil
 	}
 
