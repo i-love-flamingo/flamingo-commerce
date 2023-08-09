@@ -56,7 +56,9 @@ func (a *AddressForm) MapToDomainAddress() cart.Address {
 		Country:                a.Country,
 		CountryCode:            a.CountryCode,
 		Email:                  a.Email,
-		Telephone:              a.PhoneCountryCode + a.PhoneAreaCode + a.PhoneNumber,
+		TelephoneCountryCode:   a.PhoneCountryCode,
+		TelephoneAreaCode:      a.PhoneAreaCode,
+		Telephone:              a.PhoneNumber,
 	}
 }
 
@@ -132,6 +134,14 @@ func (a *AddressForm) LoadFromCartAddress(address cart.Address) {
 
 	if address.City != "" {
 		a.City = address.City
+	}
+
+	if address.TelephoneCountryCode != "" {
+		a.PhoneCountryCode = address.TelephoneCountryCode
+	}
+
+	if address.TelephoneAreaCode != "" {
+		a.PhoneAreaCode = address.TelephoneAreaCode
 	}
 
 	if address.Telephone != "" {

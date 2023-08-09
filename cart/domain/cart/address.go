@@ -19,6 +19,8 @@ type (
 		RegionCode             string
 		Country                string
 		CountryCode            string
+		TelephoneCountryCode   string
+		TelephoneAreaCode      string
 		Telephone              string
 		Email                  string
 	}
