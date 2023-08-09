@@ -1235,6 +1235,12 @@ var doc = `{
                 "Telephone": {
                     "type": "string"
                 },
+                "TelephoneAreaCode": {
+                    "type": "string"
+                },
+                "TelephoneCountryCode": {
+                    "type": "string"
+                },
                 "Title": {
                     "type": "string"
                 },
@@ -1295,12 +1301,6 @@ var doc = `{
                     "description": "how much of the gift card is still available",
                     "$ref": "#/definitions/domain.Price"
                 }
-            }
-        },
-        "cart.BundleConfiguration": {
-            "type": "object",
-            "additionalProperties": {
-                "$ref": "#/definitions/cart.ChoiceConfiguration"
             }
         },
         "cart.Cart": {
@@ -1432,20 +1432,6 @@ var doc = `{
                     "items": {
                         "$ref": "#/definitions/cart.Totalitem"
                     }
-                }
-            }
-        },
-        "cart.ChoiceConfiguration": {
-            "type": "object",
-            "properties": {
-                "MarketplaceCode": {
-                    "type": "string"
-                },
-                "Qty": {
-                    "type": "integer"
-                },
-                "VariantMarketplaceCode": {
-                    "type": "string"
                 }
             }
         },
@@ -1601,7 +1587,7 @@ var doc = `{
                     }
                 },
                 "BundleConfig": {
-                    "$ref": "#/definitions/cart.BundleConfiguration"
+                    "$ref": "#/definitions/domain.BundleConfiguration"
                 },
                 "ExternalReference": {
                     "description": "ExternalReference can be used by cart service implementations to separate the representation in an external\ncart service from the unique item ID",
@@ -1975,6 +1961,12 @@ var doc = `{
         "domain.BasicProduct": {
             "type": "object"
         },
+        "domain.BundleConfiguration": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/domain.ChoiceConfiguration"
+            }
+        },
         "domain.CategoryTeaser": {
             "type": "object",
             "properties": {
@@ -1988,6 +1980,20 @@ var doc = `{
                 },
                 "Path": {
                     "description": "The Path (root to leaf) for this Category - separated by \"/\"",
+                    "type": "string"
+                }
+            }
+        },
+        "domain.ChoiceConfiguration": {
+            "type": "object",
+            "properties": {
+                "MarketplaceCode": {
+                    "type": "string"
+                },
+                "Qty": {
+                    "type": "integer"
+                },
+                "VariantMarketplaceCode": {
                     "type": "string"
                 }
             }
