@@ -21,8 +21,10 @@ type (
 		CountryCode            string
 		TelephoneCountryCode   string
 		TelephoneAreaCode      string
-		Telephone              string
-		Email                  string
+		TelephoneNumber        string
+		// Deprecated: parts of number should be distinguished, please use TelephoneCountryCode, TelephoneAreaCode and TelephoneNumber
+		Telephone string
+		Email     string
 	}
 )
 
