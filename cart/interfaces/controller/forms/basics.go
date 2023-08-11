@@ -137,7 +137,9 @@ func (a *AddressForm) LoadFromCartAddress(address cart.Address) {
 		a.City = address.City
 	}
 
+	//lint:ignore SA1019 deprecated since 10.08.2023
 	if address.Telephone != "" {
+		//lint:ignore SA1019 deprecated since 10.08.2023
 		a.PhoneNumber = address.Telephone
 	}
 
