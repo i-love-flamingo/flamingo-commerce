@@ -1233,12 +1233,16 @@ var doc = `{
                     "type": "string"
                 },
                 "Telephone": {
+                    "description": "Deprecated: parts of number should be distinguished, please use TelephoneCountryCode, TelephoneAreaCode and TelephoneNumber",
                     "type": "string"
                 },
                 "TelephoneAreaCode": {
                     "type": "string"
                 },
                 "TelephoneCountryCode": {
+                    "type": "string"
+                },
+                "TelephoneNumber": {
                     "type": "string"
                 },
                 "Title": {
