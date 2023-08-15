@@ -1,4 +1,3 @@
-
 # Flamingo Commerce
 [![Go Report Card](https://goreportcard.com/badge/github.com/i-love-flamingo/flamingo-commerce)](https://goreportcard.com/report/github.com/i-love-flamingo/flamingo-commerce)
 [![Tests](https://github.com/i-love-flamingo/flamingo-commerce/workflows/Tests/badge.svg?branch=master)](https://github.com/i-love-flamingo/flamingo-commerce/actions?query=branch%3Amaster+workflow%3ATests)

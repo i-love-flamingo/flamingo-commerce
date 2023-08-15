@@ -7,7 +7,7 @@ run:
   skip-dirs-use-default: true
   modules-download-mode: readonly
   allow-parallel-runners: false
-  go: '1.19'
+  go: '1.20'
 
 # output configuration options
 output:
