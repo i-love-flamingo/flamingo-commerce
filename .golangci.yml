@@ -81,7 +81,7 @@ linters:
     - wsl
 
 issues:
-  new: true
+  new: false
   fix: false
   exclude-rules:
     - path: _test\.go

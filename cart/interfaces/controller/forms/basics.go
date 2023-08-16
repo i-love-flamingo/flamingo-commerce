@@ -137,6 +137,7 @@ func (a *AddressForm) LoadFromCartAddress(address cart.Address) {
 		a.City = address.City
 	}
 
+	//nolint:staticcheck // deprecated since 10.08
 	if address.Telephone != "" {
 		a.PhoneNumber = address.Telephone
 	}
