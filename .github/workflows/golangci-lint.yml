@@ -3,7 +3,7 @@ on:
   push:
     tags:
       - v*
-    branches-ignore:
+    branches:
       - master
   pull_request:
 permissions:
@@ -24,10 +24,10 @@ jobs:
           fetch-depth: '0'
       - name: Echo start commit
         run: |
-          echo ${{ env.REV }}
-          echo $(echo 'bla')
+          rev=${{ env.REV }}
+          if [[ $rev == '' ]]; then echo 'revision not found'; else echo used revision number: $rev; fi
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
           version: latest
-          args: --new-from-rev=${{ env.REV }}
+          args: $(rev=${{ env.REV }}; if [ rev != '' ]; then echo --new-from-rev=$rev; fi)
