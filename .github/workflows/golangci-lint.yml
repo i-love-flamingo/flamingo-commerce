@@ -23,7 +23,9 @@ jobs:
         with:
           fetch-depth: '0'
       - name: Echo start commit
-        run: echo ${{ env.REV }}
+        run: |
+          echo ${{ env.REV }}
+          echo $(echo 'bla')
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
