@@ -21,6 +21,7 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go }}
+          check-latest: true
       - name: Get dependencies
         run: go get -v -t -d ./...
       - name: Test
@@ -34,6 +35,7 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: 1.x
+          check-latest: true
       - name: Goimports
         run: |
           go run golang.org/x/tools/cmd/goimports@latest -w .
@@ -53,6 +55,7 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: 1.x
+          check-latest: true
       - name: Generate GraphQL
         run: |
           cd test/integrationtest/projecttest && go run -tags graphql main.go && cd ../../../
