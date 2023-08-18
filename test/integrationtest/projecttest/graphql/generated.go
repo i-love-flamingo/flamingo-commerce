@@ -1115,7 +1115,7 @@ func (e *executableSchema) Schema() *ast.Schema {
 }
 
 func (e *executableSchema) Complexity(typeName, field string, childComplexity int, rawArgs map[string]interface{}) (int, bool) {
-	ec := executionContext{nil, e}
+	ec := executionContext{nil, e, 0, 0, nil}
 	_ = ec
 	switch typeName + "." + field {
 
@@ -5522,7 +5522,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
-	ec := executionContext{rc, e}
+	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputCommerce_Cart_AddToCartInput,
 		ec.unmarshalInputCommerce_Cart_AddressFormInput,
@@ -5541,18 +5541,33 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	switch rc.Operation.Operation {
 	case ast.Query:
 		return func(ctx context.Context) *graphql.Response {
-			if !first {
-				return nil
+			var response graphql.Response
+			var data graphql.Marshaler
+			if first {
+				first = false
+				ctx = graphql.WithUnmarshalerMap(ctx, inputUnmarshalMap)
+				data = ec._Query(ctx, rc.Operation.SelectionSet)
+			} else {
+				if atomic.LoadInt32(&ec.pendingDeferred) > 0 {
+					result := <-ec.deferredResults
+					atomic.AddInt32(&ec.pendingDeferred, -1)
+					data = result.Result
+					response.Path = result.Path
+					response.Label = result.Label
+					response.Errors = result.Errors
+				} else {
+					return nil
+				}
 			}
-			first = false
-			ctx = graphql.WithUnmarshalerMap(ctx, inputUnmarshalMap)
-			data := ec._Query(ctx, rc.Operation.SelectionSet)
 			var buf bytes.Buffer
 			data.MarshalGQL(&buf)
-
-			return &graphql.Response{
-				Data: buf.Bytes(),
+			response.Data = buf.Bytes()
+			if atomic.LoadInt32(&ec.deferred) > 0 {
+				hasNext := atomic.LoadInt32(&ec.pendingDeferred) > 0
+				response.HasNext = &hasNext
 			}
+
+			return &response
 		}
 	case ast.Mutation:
 		return func(ctx context.Context) *graphql.Response {
@@ -5578,6 +5593,28 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 type executionContext struct {
 	*graphql.OperationContext
 	*executableSchema
+	deferred        int32
+	pendingDeferred int32
+	deferredResults chan graphql.DeferredResult
+}
+
+func (ec *executionContext) processDeferredGroup(dg graphql.DeferredGroup) {
+	atomic.AddInt32(&ec.pendingDeferred, 1)
+	go func() {
+		ctx := graphql.WithFreshResponseContext(dg.Context)
+		dg.FieldSet.Dispatch(ctx)
+		ds := graphql.DeferredResult{
+			Path:   dg.Path,
+			Label:  dg.Label,
+			Result: dg.FieldSet,
+			Errors: graphql.GetErrors(ctx),
+		}
+		// null fields should bubble up
+		if dg.FieldSet.Invalids > 0 {
+			ds.Result = graphql.Null
+		}
+		ec.deferredResults <- ds
+	}()
 }
 
 func (ec *executionContext) introspectSchema() (*introspection.Schema, error) {
@@ -8585,7 +8622,7 @@ func (ec *executionContext) fieldContext_Commerce_Cart_AppliedDiscounts_byCampai
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Cart_AppliedDiscounts_byCampaignCode_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -8648,7 +8685,7 @@ func (ec *executionContext) fieldContext_Commerce_Cart_AppliedDiscounts_byType(c
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Cart_AppliedDiscounts_byType_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -10022,7 +10059,7 @@ func (ec *executionContext) fieldContext_Commerce_Cart_Cart_getDeliveryByCode(ct
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Cart_Cart_getDeliveryByCode_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -10206,7 +10243,7 @@ func (ec *executionContext) fieldContext_Commerce_Cart_Cart_hasDeliveryForCode(c
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Cart_Cart_hasDeliveryForCode_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -10289,7 +10326,7 @@ func (ec *executionContext) fieldContext_Commerce_Cart_Cart_getDeliveryByItemID(
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Cart_Cart_getDeliveryByItemID_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -10378,7 +10415,7 @@ func (ec *executionContext) fieldContext_Commerce_Cart_Cart_getByItemID(ctx cont
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Cart_Cart_getByItemID_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -10430,7 +10467,7 @@ func (ec *executionContext) fieldContext_Commerce_Cart_Cart_getTotalQty(ctx cont
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Cart_Cart_getTotalQty_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -10519,7 +10556,7 @@ func (ec *executionContext) fieldContext_Commerce_Cart_Cart_getByExternalReferen
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Cart_Cart_getByExternalReference_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -11356,7 +11393,7 @@ func (ec *executionContext) fieldContext_Commerce_Cart_Cart_getTotalItemsByType(
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Cart_Cart_getTotalItemsByType_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -11602,7 +11639,7 @@ func (ec *executionContext) fieldContext_Commerce_Cart_CustomAttributes_get(ctx 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Cart_CustomAttributes_get_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -11849,7 +11886,7 @@ func (ec *executionContext) fieldContext_Commerce_Cart_DecoratedCart_getDecorate
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Cart_DecoratedCart_getDecoratedDeliveryByCode_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -14707,7 +14744,7 @@ func (ec *executionContext) fieldContext_Commerce_Cart_Item_getAdditionalData(ct
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Cart_Item_getAdditionalData_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -14759,7 +14796,7 @@ func (ec *executionContext) fieldContext_Commerce_Cart_Item_hasAdditionalDataKey
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Cart_Item_hasAdditionalDataKey_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -17291,7 +17328,7 @@ func (ec *executionContext) fieldContext_Commerce_Cart_Summary_sumPaymentSelecti
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Cart_Summary_sumPaymentSelectionCartSplitValueAmountByMethods_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -17541,7 +17578,7 @@ func (ec *executionContext) fieldContext_Commerce_Cart_Taxes_getByType(ctx conte
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Cart_Taxes_getByType_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -18882,7 +18919,7 @@ func (ec *executionContext) fieldContext_Commerce_Category_Attributes_get(ctx co
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Category_Attributes_get_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -18934,7 +18971,7 @@ func (ec *executionContext) fieldContext_Commerce_Category_Attributes_has(ctx co
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Category_Attributes_has_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -22431,7 +22468,7 @@ func (ec *executionContext) fieldContext_Commerce_Customer_Result_getAddress(ctx
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Customer_Result_getAddress_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -23214,7 +23251,7 @@ func (ec *executionContext) fieldContext_Commerce_Price_Charges_hasType(ctx cont
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Price_Charges_hasType_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -23266,7 +23303,7 @@ func (ec *executionContext) fieldContext_Commerce_Price_Charges_hasChargeQualifi
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Price_Charges_hasChargeQualifier_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -23328,7 +23365,7 @@ func (ec *executionContext) fieldContext_Commerce_Price_Charges_getByChargeQuali
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Price_Charges_getByChargeQualifierForced_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -23390,7 +23427,7 @@ func (ec *executionContext) fieldContext_Commerce_Price_Charges_getByTypeForced(
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Price_Charges_getByTypeForced_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -24863,7 +24900,7 @@ func (ec *executionContext) fieldContext_Commerce_Product_Attributes_hasAttribut
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Product_Attributes_hasAttribute_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -24931,7 +24968,7 @@ func (ec *executionContext) fieldContext_Commerce_Product_Attributes_getAttribut
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Product_Attributes_getAttribute_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -24999,7 +25036,7 @@ func (ec *executionContext) fieldContext_Commerce_Product_Attributes_getAttribut
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Product_Attributes_getAttributesByKey_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -27888,7 +27925,7 @@ func (ec *executionContext) fieldContext_Commerce_Product_Media_getMedia(ctx con
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Commerce_Product_Media_getMedia_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -33470,7 +33507,7 @@ func (ec *executionContext) fieldContext_Mutation_Commerce_Cart_AddToCart(ctx co
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_Commerce_Cart_AddToCart_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -33537,7 +33574,7 @@ func (ec *executionContext) fieldContext_Mutation_Commerce_Cart_DeleteCartDelive
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_Commerce_Cart_DeleteCartDelivery_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -33604,7 +33641,7 @@ func (ec *executionContext) fieldContext_Mutation_Commerce_Cart_DeleteItem(ctx c
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_Commerce_Cart_DeleteItem_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -33671,7 +33708,7 @@ func (ec *executionContext) fieldContext_Mutation_Commerce_Cart_UpdateItemQty(ct
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_Commerce_Cart_UpdateItemQty_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -33734,7 +33771,7 @@ func (ec *executionContext) fieldContext_Mutation_Commerce_Cart_UpdateBillingAdd
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_Commerce_Cart_UpdateBillingAddress_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -33795,7 +33832,7 @@ func (ec *executionContext) fieldContext_Mutation_Commerce_Cart_UpdateSelectedPa
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_Commerce_Cart_UpdateSelectedPayment_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -33859,7 +33896,7 @@ func (ec *executionContext) fieldContext_Mutation_Commerce_Cart_ApplyCouponCodeO
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_Commerce_Cart_ApplyCouponCodeOrGiftCard_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -33923,7 +33960,7 @@ func (ec *executionContext) fieldContext_Mutation_Commerce_Cart_RemoveGiftCard(c
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_Commerce_Cart_RemoveGiftCard_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -33987,7 +34024,7 @@ func (ec *executionContext) fieldContext_Mutation_Commerce_Cart_RemoveCouponCode
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_Commerce_Cart_RemoveCouponCode_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -34060,7 +34097,7 @@ func (ec *executionContext) fieldContext_Mutation_Commerce_Cart_UpdateDeliveryAd
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_Commerce_Cart_UpdateDeliveryAddresses_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -34119,7 +34156,7 @@ func (ec *executionContext) fieldContext_Mutation_Commerce_Cart_UpdateDeliverySh
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_Commerce_Cart_UpdateDeliveryShippingOptions_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -34230,7 +34267,7 @@ func (ec *executionContext) fieldContext_Mutation_Commerce_Cart_UpdateAdditional
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_Commerce_Cart_UpdateAdditionalData_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -34297,7 +34334,7 @@ func (ec *executionContext) fieldContext_Mutation_Commerce_Cart_UpdateDeliveries
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_Commerce_Cart_UpdateDeliveriesAdditionalData_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -34356,7 +34393,7 @@ func (ec *executionContext) fieldContext_Mutation_Commerce_Checkout_StartPlaceOr
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_Commerce_Checkout_StartPlaceOrder_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -34645,7 +34682,7 @@ func (ec *executionContext) fieldContext_Query_Commerce_Product(ctx context.Cont
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_Commerce_Product_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -34714,7 +34751,7 @@ func (ec *executionContext) fieldContext_Query_Commerce_Product_Search(ctx conte
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_Commerce_Product_Search_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -34989,7 +35026,7 @@ func (ec *executionContext) fieldContext_Query_Commerce_Cart_QtyRestriction(ctx 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_Commerce_Cart_QtyRestriction_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -35142,7 +35179,7 @@ func (ec *executionContext) fieldContext_Query_Commerce_CategoryTree(ctx context
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_Commerce_CategoryTree_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -35200,7 +35237,7 @@ func (ec *executionContext) fieldContext_Query_Commerce_Category(ctx context.Con
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_Commerce_Category_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -35274,7 +35311,7 @@ func (ec *executionContext) fieldContext_Query___type(ctx context.Context, field
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query___type_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -36755,7 +36792,7 @@ func (ec *executionContext) fieldContext___Type_fields(ctx context.Context, fiel
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field___Type_fields_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -36943,7 +36980,7 @@ func (ec *executionContext) fieldContext___Type_enumValues(ctx context.Context, 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field___Type_enumValues_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
-		return
+		return fc, err
 	}
 	return fc, nil
 }
@@ -37125,42 +37162,47 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddToCartInput(ctx conte
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("marketplaceCode"))
-			it.MarketplaceCode, err = ec.unmarshalNID2string(ctx, v)
+			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.MarketplaceCode = data
 		case "qty":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("qty"))
-			it.Qty, err = ec.unmarshalNInt2int(ctx, v)
+			data, err := ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Qty = data
 		case "deliveryCode":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
-			it.DeliveryCode, err = ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.DeliveryCode = data
 		case "variantMarketplaceCode":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("variantMarketplaceCode"))
-			it.VariantMarketplaceCode, err = ec.unmarshalOString2string(ctx, v)
+			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.VariantMarketplaceCode = data
 		case "bundleConfiguration":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("bundleConfiguration"))
-			it.BundleConfiguration, err = ec.unmarshalOCommerce_Cart_ChoiceConfigurationInput2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐChoiceConfigurationᚄ(ctx, v)
+			data, err := ec.unmarshalOCommerce_Cart_ChoiceConfigurationInput2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐChoiceConfigurationᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.BundleConfiguration = data
 		}
 	}
 
@@ -37185,154 +37227,173 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vat"))
-			it.Vat, err = ec.unmarshalOString2string(ctx, v)
+			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Vat = data
 		case "firstname":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firstname"))
-			it.Firstname, err = ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Firstname = data
 		case "lastname":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastname"))
-			it.Lastname, err = ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Lastname = data
 		case "middleName":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("middleName"))
-			it.MiddleName, err = ec.unmarshalOString2string(ctx, v)
+			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.MiddleName = data
 		case "title":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
-			it.Title, err = ec.unmarshalOString2string(ctx, v)
+			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Title = data
 		case "salutation":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("salutation"))
-			it.Salutation, err = ec.unmarshalOString2string(ctx, v)
+			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Salutation = data
 		case "street":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("street"))
-			it.Street, err = ec.unmarshalOString2string(ctx, v)
+			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Street = data
 		case "streetNr":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("streetNr"))
-			it.StreetNr, err = ec.unmarshalOString2string(ctx, v)
+			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.StreetNr = data
 		case "addressLine1":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressLine1"))
-			it.AddressLine1, err = ec.unmarshalOString2string(ctx, v)
+			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.AddressLine1 = data
 		case "addressLine2":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressLine2"))
-			it.AddressLine2, err = ec.unmarshalOString2string(ctx, v)
+			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.AddressLine2 = data
 		case "company":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("company"))
-			it.Company, err = ec.unmarshalOString2string(ctx, v)
+			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Company = data
 		case "city":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("city"))
-			it.City, err = ec.unmarshalOString2string(ctx, v)
+			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.City = data
 		case "postCode":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("postCode"))
-			it.PostCode, err = ec.unmarshalOString2string(ctx, v)
+			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.PostCode = data
 		case "state":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("state"))
-			it.State, err = ec.unmarshalOString2string(ctx, v)
+			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.State = data
 		case "regionCode":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("regionCode"))
-			it.RegionCode, err = ec.unmarshalOString2string(ctx, v)
+			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.RegionCode = data
 		case "country":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("country"))
-			it.Country, err = ec.unmarshalOString2string(ctx, v)
+			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Country = data
 		case "countryCode":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("countryCode"))
-			it.CountryCode, err = ec.unmarshalOString2string(ctx, v)
+			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.CountryCode = data
 		case "phoneNumber":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("phoneNumber"))
-			it.PhoneNumber, err = ec.unmarshalOString2string(ctx, v)
+			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.PhoneNumber = data
 		case "email":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
-			it.Email, err = ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Email = data
 		}
 	}
 
@@ -37357,34 +37418,38 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_ChoiceConfigurationInput
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("identifier"))
-			it.Identifier, err = ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Identifier = data
 		case "marketplaceCode":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("marketplaceCode"))
-			it.MarketplaceCode, err = ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.MarketplaceCode = data
 		case "variantMarketplaceCode":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("variantMarketplaceCode"))
-			it.VariantMarketplaceCode, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.VariantMarketplaceCode = data
 		case "qty":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("qty"))
-			it.Qty, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Qty = data
 		}
 	}
 
@@ -37409,18 +37474,20 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAdditionalDataIn
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
-			it.DeliveryCode, err = ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.DeliveryCode = data
 		case "additionalData":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("additionalData"))
-			it.AdditionalData, err = ec.unmarshalNCommerce_Cart_KeyValueInput2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValueᚄ(ctx, v)
+			data, err := ec.unmarshalNCommerce_Cart_KeyValueInput2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValueᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.AdditionalData = data
 		}
 	}
 
@@ -37445,50 +37512,56 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
-			it.LocationCode, err = ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.LocationCode = data
 		case "deliveryAddress":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryAddress"))
-			it.DeliveryAddress, err = ec.unmarshalOCommerce_Cart_AddressFormInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐAddressForm(ctx, v)
+			data, err := ec.unmarshalOCommerce_Cart_AddressFormInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐAddressForm(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.DeliveryAddress = data
 		case "useBillingAddress":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("useBillingAddress"))
-			it.UseBillingAddress, err = ec.unmarshalNBoolean2bool(ctx, v)
+			data, err := ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.UseBillingAddress = data
 		case "method":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("method"))
-			it.ShippingMethod, err = ec.unmarshalOString2string(ctx, v)
+			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.ShippingMethod = data
 		case "carrier":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("carrier"))
-			it.ShippingCarrier, err = ec.unmarshalOString2string(ctx, v)
+			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.ShippingCarrier = data
 		case "desiredTime":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("desiredTime"))
-			it.DesiredTime, err = ec.unmarshalOTime2timeᚐTime(ctx, v)
+			data, err := ec.unmarshalOTime2timeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.DesiredTime = data
 		}
 	}
 
@@ -37513,26 +37586,29 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryShippingOptionIn
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
-			it.DeliveryCode, err = ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.DeliveryCode = data
 		case "method":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("method"))
-			it.Method, err = ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Method = data
 		case "carrier":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("carrier"))
-			it.Carrier, err = ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Carrier = data
 		}
 	}
 
@@ -37557,18 +37633,20 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_KeyValueInput(ctx contex
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("key"))
-			it.Key, err = ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Key = data
 		case "value":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("value"))
-			it.Value, err = ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Value = data
 		}
 	}
 
@@ -37593,18 +37671,20 @@ func (ec *executionContext) unmarshalInputCommerce_Price_ChargeQualifierInput(ct
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
-			it.Type, err = ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Type = data
 		case "reference":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("reference"))
-			it.Reference, err = ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Reference = data
 		}
 	}
 
@@ -37629,34 +37709,38 @@ func (ec *executionContext) unmarshalInputCommerce_Product_ChoiceConfigurationIn
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("identifier"))
-			it.Identifier, err = ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Identifier = data
 		case "marketplaceCode":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("marketplaceCode"))
-			it.MarketplaceCode, err = ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.MarketplaceCode = data
 		case "variantMarketplaceCode":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("variantMarketplaceCode"))
-			it.VariantMarketplaceCode, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.VariantMarketplaceCode = data
 		case "qty":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("qty"))
-			it.Qty, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Qty = data
 		}
 	}
 
@@ -37681,18 +37765,20 @@ func (ec *executionContext) unmarshalInputCommerce_Search_KeyValueFilter(ctx con
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("k"))
-			it.K, err = ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.K = data
 		case "v":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("v"))
-			it.V, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.V = data
 		}
 	}
 
@@ -37717,42 +37803,47 @@ func (ec *executionContext) unmarshalInputCommerce_Search_Request(ctx context.Co
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pageSize"))
-			it.PageSize, err = ec.unmarshalOInt2int(ctx, v)
+			data, err := ec.unmarshalOInt2int(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.PageSize = data
 		case "page":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("page"))
-			it.Page, err = ec.unmarshalOInt2int(ctx, v)
+			data, err := ec.unmarshalOInt2int(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Page = data
 		case "sortBy":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sortBy"))
-			it.SortBy, err = ec.unmarshalOString2string(ctx, v)
+			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.SortBy = data
 		case "keyValueFilters":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keyValueFilters"))
-			it.KeyValueFilters, err = ec.unmarshalOCommerce_Search_KeyValueFilter2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchKeyValueFilterᚄ(ctx, v)
+			data, err := ec.unmarshalOCommerce_Search_KeyValueFilter2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchKeyValueFilterᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.KeyValueFilters = data
 		case "query":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
-			it.Query, err = ec.unmarshalOString2string(ctx, v)
+			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
+			it.Query = data
 		}
 	}
 
@@ -38007,8 +38098,9 @@ var commerce_Cart_AdditionalDataImplementors = []string{"Commerce_Cart_Additiona
 
 func (ec *executionContext) _Commerce_Cart_AdditionalData(ctx context.Context, sel ast.SelectionSet, obj *cart.AdditionalData) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_AdditionalDataImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
@@ -38016,7 +38108,7 @@ func (ec *executionContext) _Commerce_Cart_AdditionalData(ctx context.Context, s
 		case "customAttributes":
 			field := field
 
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -38024,30 +38116,56 @@ func (ec *executionContext) _Commerce_Cart_AdditionalData(ctx context.Context, s
 				}()
 				res = ec._Commerce_Cart_AdditionalData_customAttributes(ctx, field, obj)
 				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
+					atomic.AddUint32(&fs.Invalids, 1)
 				}
 				return res
 			}
 
-			out.Concurrently(i, func() graphql.Marshaler {
-				return innerFunc(ctx)
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
 
-			})
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "reservedOrderID":
-
 			out.Values[i] = ec._Commerce_Cart_AdditionalData_reservedOrderID(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -38055,143 +38173,120 @@ var commerce_Cart_AddressImplementors = []string{"Commerce_Cart_Address"}
 
 func (ec *executionContext) _Commerce_Cart_Address(ctx context.Context, sel ast.SelectionSet, obj *cart.Address) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_AddressImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_Address")
 		case "vat":
-
 			out.Values[i] = ec._Commerce_Cart_Address_vat(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "firstname":
-
 			out.Values[i] = ec._Commerce_Cart_Address_firstname(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "lastname":
-
 			out.Values[i] = ec._Commerce_Cart_Address_lastname(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "middleName":
-
 			out.Values[i] = ec._Commerce_Cart_Address_middleName(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "title":
-
 			out.Values[i] = ec._Commerce_Cart_Address_title(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "salutation":
-
 			out.Values[i] = ec._Commerce_Cart_Address_salutation(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "street":
-
 			out.Values[i] = ec._Commerce_Cart_Address_street(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "streetNr":
-
 			out.Values[i] = ec._Commerce_Cart_Address_streetNr(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "additionalAddressLines":
-
 			out.Values[i] = ec._Commerce_Cart_Address_additionalAddressLines(ctx, field, obj)
-
 		case "company":
-
 			out.Values[i] = ec._Commerce_Cart_Address_company(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "city":
-
 			out.Values[i] = ec._Commerce_Cart_Address_city(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "postCode":
-
 			out.Values[i] = ec._Commerce_Cart_Address_postCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "state":
-
 			out.Values[i] = ec._Commerce_Cart_Address_state(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "regionCode":
-
 			out.Values[i] = ec._Commerce_Cart_Address_regionCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "country":
-
 			out.Values[i] = ec._Commerce_Cart_Address_country(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "countryCode":
-
 			out.Values[i] = ec._Commerce_Cart_Address_countryCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "telephone":
-
 			out.Values[i] = ec._Commerce_Cart_Address_telephone(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "email":
-
 			out.Values[i] = ec._Commerce_Cart_Address_email(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -38199,153 +38294,128 @@ var commerce_Cart_AddressFormImplementors = []string{"Commerce_Cart_AddressForm"
 
 func (ec *executionContext) _Commerce_Cart_AddressForm(ctx context.Context, sel ast.SelectionSet, obj *forms.AddressForm) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_AddressFormImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_AddressForm")
 		case "vat":
-
 			out.Values[i] = ec._Commerce_Cart_AddressForm_vat(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "firstname":
-
 			out.Values[i] = ec._Commerce_Cart_AddressForm_firstname(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "lastname":
-
 			out.Values[i] = ec._Commerce_Cart_AddressForm_lastname(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "middleName":
-
 			out.Values[i] = ec._Commerce_Cart_AddressForm_middleName(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "title":
-
 			out.Values[i] = ec._Commerce_Cart_AddressForm_title(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "salutation":
-
 			out.Values[i] = ec._Commerce_Cart_AddressForm_salutation(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "street":
-
 			out.Values[i] = ec._Commerce_Cart_AddressForm_street(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "streetNr":
-
 			out.Values[i] = ec._Commerce_Cart_AddressForm_streetNr(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "addressLine1":
-
 			out.Values[i] = ec._Commerce_Cart_AddressForm_addressLine1(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "addressLine2":
-
 			out.Values[i] = ec._Commerce_Cart_AddressForm_addressLine2(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "company":
-
 			out.Values[i] = ec._Commerce_Cart_AddressForm_company(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "city":
-
 			out.Values[i] = ec._Commerce_Cart_AddressForm_city(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "postCode":
-
 			out.Values[i] = ec._Commerce_Cart_AddressForm_postCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "state":
-
 			out.Values[i] = ec._Commerce_Cart_AddressForm_state(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "regionCode":
-
 			out.Values[i] = ec._Commerce_Cart_AddressForm_regionCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "country":
-
 			out.Values[i] = ec._Commerce_Cart_AddressForm_country(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "countryCode":
-
 			out.Values[i] = ec._Commerce_Cart_AddressForm_countryCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "phoneNumber":
-
 			out.Values[i] = ec._Commerce_Cart_AddressForm_phoneNumber(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "email":
-
 			out.Values[i] = ec._Commerce_Cart_AddressForm_email(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -38353,69 +38423,68 @@ var commerce_Cart_AppliedDiscountImplementors = []string{"Commerce_Cart_AppliedD
 
 func (ec *executionContext) _Commerce_Cart_AppliedDiscount(ctx context.Context, sel ast.SelectionSet, obj *cart.AppliedDiscount) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_AppliedDiscountImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_AppliedDiscount")
 		case "campaignCode":
-
 			out.Values[i] = ec._Commerce_Cart_AppliedDiscount_campaignCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "couponCode":
-
 			out.Values[i] = ec._Commerce_Cart_AppliedDiscount_couponCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "label":
-
 			out.Values[i] = ec._Commerce_Cart_AppliedDiscount_label(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "applied":
-
 			out.Values[i] = ec._Commerce_Cart_AppliedDiscount_applied(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "type":
-
 			out.Values[i] = ec._Commerce_Cart_AppliedDiscount_type(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "isItemRelated":
-
 			out.Values[i] = ec._Commerce_Cart_AppliedDiscount_isItemRelated(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "sortOrder":
-
 			out.Values[i] = ec._Commerce_Cart_AppliedDiscount_sortOrder(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -38423,38 +38492,45 @@ var commerce_Cart_AppliedDiscountsImplementors = []string{"Commerce_Cart_Applied
 
 func (ec *executionContext) _Commerce_Cart_AppliedDiscounts(ctx context.Context, sel ast.SelectionSet, obj *dto.CartAppliedDiscounts) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_AppliedDiscountsImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_AppliedDiscounts")
 		case "items":
-
 			out.Values[i] = ec._Commerce_Cart_AppliedDiscounts_items(ctx, field, obj)
-
 		case "byCampaignCode":
-
 			out.Values[i] = ec._Commerce_Cart_AppliedDiscounts_byCampaignCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "byType":
-
 			out.Values[i] = ec._Commerce_Cart_AppliedDiscounts_byType(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -38462,48 +38538,53 @@ var commerce_Cart_AppliedGiftCardImplementors = []string{"Commerce_Cart_AppliedG
 
 func (ec *executionContext) _Commerce_Cart_AppliedGiftCard(ctx context.Context, sel ast.SelectionSet, obj *cart.AppliedGiftCard) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_AppliedGiftCardImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_AppliedGiftCard")
 		case "code":
-
 			out.Values[i] = ec._Commerce_Cart_AppliedGiftCard_code(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "applied":
-
 			out.Values[i] = ec._Commerce_Cart_AppliedGiftCard_applied(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "remaining":
-
 			out.Values[i] = ec._Commerce_Cart_AppliedGiftCard_remaining(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "hasRemaining":
-
 			out.Values[i] = ec._Commerce_Cart_AppliedGiftCard_hasRemaining(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -38511,32 +38592,39 @@ var commerce_Cart_BillingAddressFormImplementors = []string{"Commerce_Cart_Billi
 
 func (ec *executionContext) _Commerce_Cart_BillingAddressForm(ctx context.Context, sel ast.SelectionSet, obj *dto.BillingAddressForm) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_BillingAddressFormImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_BillingAddressForm")
 		case "formData":
-
 			out.Values[i] = ec._Commerce_Cart_BillingAddressForm_formData(ctx, field, obj)
-
 		case "validationInfo":
-
 			out.Values[i] = ec._Commerce_Cart_BillingAddressForm_validationInfo(ctx, field, obj)
-
 		case "processed":
-
 			out.Values[i] = ec._Commerce_Cart_BillingAddressForm_processed(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -38544,128 +38632,91 @@ var commerce_Cart_CartImplementors = []string{"Commerce_Cart_Cart"}
 
 func (ec *executionContext) _Commerce_Cart_Cart(ctx context.Context, sel ast.SelectionSet, obj *cart.Cart) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_CartImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_Cart")
 		case "id":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_id(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "entityID":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_entityID(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "billingAddress":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_billingAddress(ctx, field, obj)
-
 		case "purchaser":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_purchaser(ctx, field, obj)
-
 		case "deliveries":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_deliveries(ctx, field, obj)
-
 		case "additionalData":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_additionalData(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "paymentSelection":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_paymentSelection(ctx, field, obj)
-
 		case "belongsToAuthenticatedUser":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_belongsToAuthenticatedUser(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "authenticatedUserID":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_authenticatedUserID(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "appliedCouponCodes":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_appliedCouponCodes(ctx, field, obj)
-
 		case "defaultCurrency":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_defaultCurrency(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "totalitems":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_totalitems(ctx, field, obj)
-
 		case "itemCount":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_itemCount(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "productCount":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_productCount(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "isPaymentSelected":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_isPaymentSelected(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "grandTotal":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_grandTotal(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "sumTotalTaxAmount":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_sumTotalTaxAmount(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "subTotalNet":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_subTotalNet(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "appliedGiftCards":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_appliedGiftCards(ctx, field, obj)
-
 		case "getDeliveryByCode":
 			field := field
 
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -38675,202 +38726,174 @@ func (ec *executionContext) _Commerce_Cart_Cart(ctx context.Context, sel ast.Sel
 				return res
 			}
 
-			out.Concurrently(i, func() graphql.Marshaler {
-				return innerFunc(ctx)
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
 
-			})
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "getDeliveryCodes":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_getDeliveryCodes(ctx, field, obj)
-
 		case "getMainShippingEMail":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_getMainShippingEMail(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "isEmpty":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_isEmpty(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "hasDeliveryForCode":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_hasDeliveryForCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "getDeliveryByItemID":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_getDeliveryByItemID(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "getByItemID":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_getByItemID(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "getTotalQty":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_getTotalQty(ctx, field, obj)
-
 		case "getByExternalReference":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_getByExternalReference(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "getVoucherSavings":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_getVoucherSavings(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "getCartTeaser":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_getCartTeaser(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "shippingNet":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_shippingNet(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "shippingNetWithDiscounts":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_shippingNetWithDiscounts(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "shippingGross":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_shippingGross(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "shippingGrossWithDiscounts":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_shippingGrossWithDiscounts(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "hasShippingCosts":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_hasShippingCosts(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "allShippingTitles":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_allShippingTitles(ctx, field, obj)
-
 		case "subTotalGross":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_subTotalGross(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "subTotalGrossWithDiscounts":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_subTotalGrossWithDiscounts(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "subTotalNetWithDiscounts":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_subTotalNetWithDiscounts(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "totalDiscountAmount":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_totalDiscountAmount(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "nonItemRelatedDiscountAmount":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_nonItemRelatedDiscountAmount(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "itemRelatedDiscountAmount":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_itemRelatedDiscountAmount(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "hasAppliedCouponCode":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_hasAppliedCouponCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "getPaymentReference":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_getPaymentReference(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "getTotalItemsByType":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_getTotalItemsByType(ctx, field, obj)
-
 		case "grandTotalCharges":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_grandTotalCharges(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "hasAppliedGiftCards":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_hasAppliedGiftCards(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "hasRemainingGiftCards":
-
 			out.Values[i] = ec._Commerce_Cart_Cart_hasRemainingGiftCards(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -38878,27 +38901,38 @@ var commerce_Cart_CouponCodeImplementors = []string{"Commerce_Cart_CouponCode"}
 
 func (ec *executionContext) _Commerce_Cart_CouponCode(ctx context.Context, sel ast.SelectionSet, obj *cart.CouponCode) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_CouponCodeImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_CouponCode")
 		case "code":
-
 			out.Values[i] = ec._Commerce_Cart_CouponCode_code(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -38906,24 +38940,35 @@ var commerce_Cart_CustomAttributesImplementors = []string{"Commerce_Cart_CustomA
 
 func (ec *executionContext) _Commerce_Cart_CustomAttributes(ctx context.Context, sel ast.SelectionSet, obj *dto.CustomAttributes) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_CustomAttributesImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_CustomAttributes")
 		case "get":
-
 			out.Values[i] = ec._Commerce_Cart_CustomAttributes_get(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -38931,49 +38976,52 @@ var commerce_Cart_DecoratedCartImplementors = []string{"Commerce_Cart_DecoratedC
 
 func (ec *executionContext) _Commerce_Cart_DecoratedCart(ctx context.Context, sel ast.SelectionSet, obj *dto.DecoratedCart) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_DecoratedCartImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_DecoratedCart")
 		case "cart":
-
 			out.Values[i] = ec._Commerce_Cart_DecoratedCart_cart(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "decoratedDeliveries":
-
 			out.Values[i] = ec._Commerce_Cart_DecoratedCart_decoratedDeliveries(ctx, field, obj)
-
 		case "getDecoratedDeliveryByCode":
-
 			out.Values[i] = ec._Commerce_Cart_DecoratedCart_getDecoratedDeliveryByCode(ctx, field, obj)
-
 		case "getAllPaymentRequiredItems":
-
 			out.Values[i] = ec._Commerce_Cart_DecoratedCart_getAllPaymentRequiredItems(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "cartSummary":
-
 			out.Values[i] = ec._Commerce_Cart_DecoratedCart_cartSummary(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -38981,31 +39029,40 @@ var commerce_Cart_DecoratedDeliveryImplementors = []string{"Commerce_Cart_Decora
 
 func (ec *executionContext) _Commerce_Cart_DecoratedDelivery(ctx context.Context, sel ast.SelectionSet, obj *dto.DecoratedDelivery) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_DecoratedDeliveryImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_DecoratedDelivery")
 		case "delivery":
-
 			out.Values[i] = ec._Commerce_Cart_DecoratedDelivery_delivery(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "decoratedItems":
-
 			out.Values[i] = ec._Commerce_Cart_DecoratedDelivery_decoratedItems(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -39013,28 +39070,37 @@ var commerce_Cart_DecoratedItemImplementors = []string{"Commerce_Cart_DecoratedI
 
 func (ec *executionContext) _Commerce_Cart_DecoratedItem(ctx context.Context, sel ast.SelectionSet, obj *dto.DecoratedCartItem) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_DecoratedItemImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_DecoratedItem")
 		case "item":
-
 			out.Values[i] = ec._Commerce_Cart_DecoratedItem_item(ctx, field, obj)
-
 		case "product":
-
 			out.Values[i] = ec._Commerce_Cart_DecoratedItem_product(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -39042,30 +39108,27 @@ var commerce_Cart_DefaultPaymentSelectionImplementors = []string{"Commerce_Cart_
 
 func (ec *executionContext) _Commerce_Cart_DefaultPaymentSelection(ctx context.Context, sel ast.SelectionSet, obj *cart.DefaultPaymentSelection) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_DefaultPaymentSelectionImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_DefaultPaymentSelection")
 		case "gateway":
-
 			out.Values[i] = ec._Commerce_Cart_DefaultPaymentSelection_gateway(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "totalValue":
-
 			out.Values[i] = ec._Commerce_Cart_DefaultPaymentSelection_totalValue(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "cartSplit":
 			field := field
 
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -39075,18 +39138,46 @@ func (ec *executionContext) _Commerce_Cart_DefaultPaymentSelection(ctx context.C
 				return res
 			}
 
-			out.Concurrently(i, func() graphql.Marshaler {
-				return innerFunc(ctx)
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
 
-			})
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -39094,78 +39185,65 @@ var commerce_Cart_DeliveryImplementors = []string{"Commerce_Cart_Delivery"}
 
 func (ec *executionContext) _Commerce_Cart_Delivery(ctx context.Context, sel ast.SelectionSet, obj *cart.Delivery) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_DeliveryImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_Delivery")
 		case "deliveryInfo":
-
 			out.Values[i] = ec._Commerce_Cart_Delivery_deliveryInfo(ctx, field, obj)
-
 		case "cartitems":
-
 			out.Values[i] = ec._Commerce_Cart_Delivery_cartitems(ctx, field, obj)
-
 		case "shippingItem":
-
 			out.Values[i] = ec._Commerce_Cart_Delivery_shippingItem(ctx, field, obj)
-
 		case "subTotalGross":
-
 			out.Values[i] = ec._Commerce_Cart_Delivery_subTotalGross(ctx, field, obj)
-
 		case "grandTotal":
-
 			out.Values[i] = ec._Commerce_Cart_Delivery_grandTotal(ctx, field, obj)
-
 		case "sumTotalTaxAmount":
-
 			out.Values[i] = ec._Commerce_Cart_Delivery_sumTotalTaxAmount(ctx, field, obj)
-
 		case "subTotalNet":
-
 			out.Values[i] = ec._Commerce_Cart_Delivery_subTotalNet(ctx, field, obj)
-
 		case "totalDiscountAmount":
-
 			out.Values[i] = ec._Commerce_Cart_Delivery_totalDiscountAmount(ctx, field, obj)
-
 		case "nonItemRelatedDiscountAmount":
-
 			out.Values[i] = ec._Commerce_Cart_Delivery_nonItemRelatedDiscountAmount(ctx, field, obj)
-
 		case "itemRelatedDiscountAmount":
-
 			out.Values[i] = ec._Commerce_Cart_Delivery_itemRelatedDiscountAmount(ctx, field, obj)
-
 		case "subTotalGrossWithDiscounts":
-
 			out.Values[i] = ec._Commerce_Cart_Delivery_subTotalGrossWithDiscounts(ctx, field, obj)
-
 		case "subTotalNetWithDiscounts":
-
 			out.Values[i] = ec._Commerce_Cart_Delivery_subTotalNetWithDiscounts(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "hasItems":
-
 			out.Values[i] = ec._Commerce_Cart_Delivery_hasItems(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -39173,58 +39251,55 @@ var commerce_Cart_DeliveryAddressFormImplementors = []string{"Commerce_Cart_Deli
 
 func (ec *executionContext) _Commerce_Cart_DeliveryAddressForm(ctx context.Context, sel ast.SelectionSet, obj *dto.DeliveryAddressForm) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_DeliveryAddressFormImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_DeliveryAddressForm")
 		case "deliveryCode":
-
 			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_deliveryCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "formData":
-
 			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_formData(ctx, field, obj)
-
 		case "useBillingAddress":
-
 			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_useBillingAddress(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "method":
-
 			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_method(ctx, field, obj)
-
 		case "carrier":
-
 			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_carrier(ctx, field, obj)
-
 		case "desiredTime":
-
 			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_desiredTime(ctx, field, obj)
-
 		case "validationInfo":
-
 			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_validationInfo(ctx, field, obj)
-
 		case "processed":
-
 			out.Values[i] = ec._Commerce_Cart_DeliveryAddressForm_processed(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -39232,52 +39307,41 @@ var commerce_Cart_DeliveryInfoImplementors = []string{"Commerce_Cart_DeliveryInf
 
 func (ec *executionContext) _Commerce_Cart_DeliveryInfo(ctx context.Context, sel ast.SelectionSet, obj *cart.DeliveryInfo) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_DeliveryInfoImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_DeliveryInfo")
 		case "code":
-
 			out.Values[i] = ec._Commerce_Cart_DeliveryInfo_code(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "workflow":
-
 			out.Values[i] = ec._Commerce_Cart_DeliveryInfo_workflow(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "method":
-
 			out.Values[i] = ec._Commerce_Cart_DeliveryInfo_method(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "carrier":
-
 			out.Values[i] = ec._Commerce_Cart_DeliveryInfo_carrier(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "deliveryLocation":
-
 			out.Values[i] = ec._Commerce_Cart_DeliveryInfo_deliveryLocation(ctx, field, obj)
-
 		case "desiredTime":
-
 			out.Values[i] = ec._Commerce_Cart_DeliveryInfo_desiredTime(ctx, field, obj)
-
 		case "additionalData":
 			field := field
 
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -39285,23 +39349,51 @@ func (ec *executionContext) _Commerce_Cart_DeliveryInfo(ctx context.Context, sel
 				}()
 				res = ec._Commerce_Cart_DeliveryInfo_additionalData(ctx, field, obj)
 				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
+					atomic.AddUint32(&fs.Invalids, 1)
 				}
 				return res
 			}
 
-			out.Concurrently(i, func() graphql.Marshaler {
-				return innerFunc(ctx)
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
 
-			})
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -39309,45 +39401,50 @@ var commerce_Cart_DeliveryLocationImplementors = []string{"Commerce_Cart_Deliver
 
 func (ec *executionContext) _Commerce_Cart_DeliveryLocation(ctx context.Context, sel ast.SelectionSet, obj *cart.DeliveryLocation) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_DeliveryLocationImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_DeliveryLocation")
 		case "type":
-
 			out.Values[i] = ec._Commerce_Cart_DeliveryLocation_type(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "address":
-
 			out.Values[i] = ec._Commerce_Cart_DeliveryLocation_address(ctx, field, obj)
-
 		case "useBillingAddress":
-
 			out.Values[i] = ec._Commerce_Cart_DeliveryLocation_useBillingAddress(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "code":
-
 			out.Values[i] = ec._Commerce_Cart_DeliveryLocation_code(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -39355,27 +39452,38 @@ var commerce_Cart_ExistingCustomerDataImplementors = []string{"Commerce_Cart_Exi
 
 func (ec *executionContext) _Commerce_Cart_ExistingCustomerData(ctx context.Context, sel ast.SelectionSet, obj *cart.ExistingCustomerData) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_ExistingCustomerDataImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_ExistingCustomerData")
 		case "id":
-
 			out.Values[i] = ec._Commerce_Cart_ExistingCustomerData_id(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -39383,34 +39491,43 @@ var commerce_Cart_Form_ErrorImplementors = []string{"Commerce_Cart_Form_Error"}
 
 func (ec *executionContext) _Commerce_Cart_Form_Error(ctx context.Context, sel ast.SelectionSet, obj *domain4.Error) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_Form_ErrorImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_Form_Error")
 		case "messageKey":
-
 			out.Values[i] = ec._Commerce_Cart_Form_Error_messageKey(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "defaultLabel":
-
 			out.Values[i] = ec._Commerce_Cart_Form_Error_defaultLabel(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -39418,41 +39535,48 @@ var commerce_Cart_Form_FieldErrorImplementors = []string{"Commerce_Cart_Form_Fie
 
 func (ec *executionContext) _Commerce_Cart_Form_FieldError(ctx context.Context, sel ast.SelectionSet, obj *dto.FieldError) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_Form_FieldErrorImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_Form_FieldError")
 		case "messageKey":
-
 			out.Values[i] = ec._Commerce_Cart_Form_FieldError_messageKey(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "defaultLabel":
-
 			out.Values[i] = ec._Commerce_Cart_Form_FieldError_defaultLabel(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "fieldName":
-
 			out.Values[i] = ec._Commerce_Cart_Form_FieldError_fieldName(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -39460,28 +39584,37 @@ var commerce_Cart_Form_ValidationInfoImplementors = []string{"Commerce_Cart_Form
 
 func (ec *executionContext) _Commerce_Cart_Form_ValidationInfo(ctx context.Context, sel ast.SelectionSet, obj *dto.ValidationInfo) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_Form_ValidationInfoImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_Form_ValidationInfo")
 		case "fieldErrors":
-
 			out.Values[i] = ec._Commerce_Cart_Form_ValidationInfo_fieldErrors(ctx, field, obj)
-
 		case "generalErrors":
-
 			out.Values[i] = ec._Commerce_Cart_Form_ValidationInfo_generalErrors(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -39489,109 +39622,80 @@ var commerce_Cart_ItemImplementors = []string{"Commerce_Cart_Item"}
 
 func (ec *executionContext) _Commerce_Cart_Item(ctx context.Context, sel ast.SelectionSet, obj *cart.Item) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_ItemImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_Item")
 		case "id":
-
 			out.Values[i] = ec._Commerce_Cart_Item_id(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "externalReference":
-
 			out.Values[i] = ec._Commerce_Cart_Item_externalReference(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "marketplaceCode":
-
 			out.Values[i] = ec._Commerce_Cart_Item_marketplaceCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "variantMarketPlaceCode":
-
 			out.Values[i] = ec._Commerce_Cart_Item_variantMarketPlaceCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "productName":
-
 			out.Values[i] = ec._Commerce_Cart_Item_productName(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "sourceID":
-
 			out.Values[i] = ec._Commerce_Cart_Item_sourceID(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "qty":
-
 			out.Values[i] = ec._Commerce_Cart_Item_qty(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "additionalDataKeys":
-
 			out.Values[i] = ec._Commerce_Cart_Item_additionalDataKeys(ctx, field, obj)
-
 		case "additionalDataValues":
-
 			out.Values[i] = ec._Commerce_Cart_Item_additionalDataValues(ctx, field, obj)
-
 		case "getAdditionalData":
-
 			out.Values[i] = ec._Commerce_Cart_Item_getAdditionalData(ctx, field, obj)
-
 		case "hasAdditionalDataKey":
-
 			out.Values[i] = ec._Commerce_Cart_Item_hasAdditionalDataKey(ctx, field, obj)
-
 		case "singlePriceGross":
-
 			out.Values[i] = ec._Commerce_Cart_Item_singlePriceGross(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "singlePriceNet":
-
 			out.Values[i] = ec._Commerce_Cart_Item_singlePriceNet(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "rowPriceGross":
-
 			out.Values[i] = ec._Commerce_Cart_Item_rowPriceGross(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "rowPriceNet":
-
 			out.Values[i] = ec._Commerce_Cart_Item_rowPriceNet(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "appliedDiscounts":
 			field := field
 
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -39599,23 +39703,51 @@ func (ec *executionContext) _Commerce_Cart_Item(ctx context.Context, sel ast.Sel
 				}()
 				res = ec._Commerce_Cart_Item_appliedDiscounts(ctx, field, obj)
 				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
+					atomic.AddUint32(&fs.Invalids, 1)
 				}
 				return res
 			}
 
-			out.Concurrently(i, func() graphql.Marshaler {
-				return innerFunc(ctx)
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
 
-			})
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -39623,34 +39755,43 @@ var commerce_Cart_ItemValidationErrorImplementors = []string{"Commerce_Cart_Item
 
 func (ec *executionContext) _Commerce_Cart_ItemValidationError(ctx context.Context, sel ast.SelectionSet, obj *validation.ItemValidationError) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_ItemValidationErrorImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_ItemValidationError")
 		case "itemID":
-
 			out.Values[i] = ec._Commerce_Cart_ItemValidationError_itemID(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "errorMessageKey":
-
 			out.Values[i] = ec._Commerce_Cart_ItemValidationError_errorMessageKey(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -39658,34 +39799,43 @@ var commerce_Cart_KeyValueImplementors = []string{"Commerce_Cart_KeyValue"}
 
 func (ec *executionContext) _Commerce_Cart_KeyValue(ctx context.Context, sel ast.SelectionSet, obj *dto.KeyValue) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_KeyValueImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_KeyValue")
 		case "key":
-
 			out.Values[i] = ec._Commerce_Cart_KeyValue_key(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "value":
-
 			out.Values[i] = ec._Commerce_Cart_KeyValue_value(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -39693,34 +39843,43 @@ var commerce_Cart_PaymentSelection_SplitImplementors = []string{"Commerce_Cart_P
 
 func (ec *executionContext) _Commerce_Cart_PaymentSelection_Split(ctx context.Context, sel ast.SelectionSet, obj *dto.PaymentSelectionSplit) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_PaymentSelection_SplitImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_PaymentSelection_Split")
 		case "qualifier":
-
 			out.Values[i] = ec._Commerce_Cart_PaymentSelection_Split_qualifier(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "charge":
-
 			out.Values[i] = ec._Commerce_Cart_PaymentSelection_Split_charge(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -39728,41 +39887,48 @@ var commerce_Cart_PaymentSelection_SplitQualifierImplementors = []string{"Commer
 
 func (ec *executionContext) _Commerce_Cart_PaymentSelection_SplitQualifier(ctx context.Context, sel ast.SelectionSet, obj *cart.SplitQualifier) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_PaymentSelection_SplitQualifierImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_PaymentSelection_SplitQualifier")
 		case "type":
-
 			out.Values[i] = ec._Commerce_Cart_PaymentSelection_SplitQualifier_type(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "method":
-
 			out.Values[i] = ec._Commerce_Cart_PaymentSelection_SplitQualifier_method(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "reference":
-
 			out.Values[i] = ec._Commerce_Cart_PaymentSelection_SplitQualifier_reference(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -39770,35 +39936,42 @@ var commerce_Cart_PersonImplementors = []string{"Commerce_Cart_Person"}
 
 func (ec *executionContext) _Commerce_Cart_Person(ctx context.Context, sel ast.SelectionSet, obj *cart.Person) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_PersonImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_Person")
 		case "address":
-
 			out.Values[i] = ec._Commerce_Cart_Person_address(ctx, field, obj)
-
 		case "personalDetails":
-
 			out.Values[i] = ec._Commerce_Cart_Person_personalDetails(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "existingCustomerData":
-
 			out.Values[i] = ec._Commerce_Cart_Person_existingCustomerData(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -39806,48 +39979,53 @@ var commerce_Cart_PersonalDetailsImplementors = []string{"Commerce_Cart_Personal
 
 func (ec *executionContext) _Commerce_Cart_PersonalDetails(ctx context.Context, sel ast.SelectionSet, obj *cart.PersonalDetails) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_PersonalDetailsImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_PersonalDetails")
 		case "dateOfBirth":
-
 			out.Values[i] = ec._Commerce_Cart_PersonalDetails_dateOfBirth(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "passportCountry":
-
 			out.Values[i] = ec._Commerce_Cart_PersonalDetails_passportCountry(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "passportNumber":
-
 			out.Values[i] = ec._Commerce_Cart_PersonalDetails_passportNumber(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "nationality":
-
 			out.Values[i] = ec._Commerce_Cart_PersonalDetails_nationality(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -39855,34 +40033,43 @@ var commerce_Cart_PlacedOrderInfoImplementors = []string{"Commerce_Cart_PlacedOr
 
 func (ec *executionContext) _Commerce_Cart_PlacedOrderInfo(ctx context.Context, sel ast.SelectionSet, obj *placeorder.PlacedOrderInfo) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_PlacedOrderInfoImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_PlacedOrderInfo")
 		case "orderNumber":
-
 			out.Values[i] = ec._Commerce_Cart_PlacedOrderInfo_orderNumber(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "deliveryCode":
-
 			out.Values[i] = ec._Commerce_Cart_PlacedOrderInfo_deliveryCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -39890,34 +40077,43 @@ var commerce_Cart_PricedCartItemImplementors = []string{"Commerce_Cart_PricedCar
 
 func (ec *executionContext) _Commerce_Cart_PricedCartItem(ctx context.Context, sel ast.SelectionSet, obj *dto.PricedCartItem) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_PricedCartItemImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_PricedCartItem")
 		case "amount":
-
 			out.Values[i] = ec._Commerce_Cart_PricedCartItem_amount(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "itemID":
-
 			out.Values[i] = ec._Commerce_Cart_PricedCartItem_itemID(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -39925,32 +40121,39 @@ var commerce_Cart_PricedItemsImplementors = []string{"Commerce_Cart_PricedItems"
 
 func (ec *executionContext) _Commerce_Cart_PricedItems(ctx context.Context, sel ast.SelectionSet, obj *dto.PricedItems) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_PricedItemsImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_PricedItems")
 		case "cartItems":
-
 			out.Values[i] = ec._Commerce_Cart_PricedItems_cartItems(ctx, field, obj)
-
 		case "shippingItems":
-
 			out.Values[i] = ec._Commerce_Cart_PricedItems_shippingItems(ctx, field, obj)
-
 		case "totalItems":
-
 			out.Values[i] = ec._Commerce_Cart_PricedItems_totalItems(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -39958,34 +40161,43 @@ var commerce_Cart_PricedShippingItemImplementors = []string{"Commerce_Cart_Price
 
 func (ec *executionContext) _Commerce_Cart_PricedShippingItem(ctx context.Context, sel ast.SelectionSet, obj *dto.PricedShippingItem) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_PricedShippingItemImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_PricedShippingItem")
 		case "amount":
-
 			out.Values[i] = ec._Commerce_Cart_PricedShippingItem_amount(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "deliveryInfoCode":
-
 			out.Values[i] = ec._Commerce_Cart_PricedShippingItem_deliveryInfoCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -39993,34 +40205,43 @@ var commerce_Cart_PricedTotalItemImplementors = []string{"Commerce_Cart_PricedTo
 
 func (ec *executionContext) _Commerce_Cart_PricedTotalItem(ctx context.Context, sel ast.SelectionSet, obj *dto.PricedTotalItem) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_PricedTotalItemImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_PricedTotalItem")
 		case "amount":
-
 			out.Values[i] = ec._Commerce_Cart_PricedTotalItem_amount(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "code":
-
 			out.Values[i] = ec._Commerce_Cart_PricedTotalItem_code(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -40028,48 +40249,53 @@ var commerce_Cart_QtyRestrictionResultImplementors = []string{"Commerce_Cart_Qty
 
 func (ec *executionContext) _Commerce_Cart_QtyRestrictionResult(ctx context.Context, sel ast.SelectionSet, obj *validation.RestrictionResult) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_QtyRestrictionResultImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_QtyRestrictionResult")
 		case "isRestricted":
-
 			out.Values[i] = ec._Commerce_Cart_QtyRestrictionResult_isRestricted(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "maxAllowed":
-
 			out.Values[i] = ec._Commerce_Cart_QtyRestrictionResult_maxAllowed(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "remainingDifference":
-
 			out.Values[i] = ec._Commerce_Cart_QtyRestrictionResult_remainingDifference(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "restrictorName":
-
 			out.Values[i] = ec._Commerce_Cart_QtyRestrictionResult_restrictorName(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -40077,28 +40303,37 @@ var commerce_Cart_SelectedPaymentResultImplementors = []string{"Commerce_Cart_Se
 
 func (ec *executionContext) _Commerce_Cart_SelectedPaymentResult(ctx context.Context, sel ast.SelectionSet, obj *dto.SelectedPaymentResult) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_SelectedPaymentResultImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_SelectedPaymentResult")
 		case "validationInfo":
-
 			out.Values[i] = ec._Commerce_Cart_SelectedPaymentResult_validationInfo(ctx, field, obj)
-
 		case "processed":
-
 			out.Values[i] = ec._Commerce_Cart_SelectedPaymentResult_processed(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -40106,44 +40341,37 @@ var commerce_Cart_ShippingItemImplementors = []string{"Commerce_Cart_ShippingIte
 
 func (ec *executionContext) _Commerce_Cart_ShippingItem(ctx context.Context, sel ast.SelectionSet, obj *cart.ShippingItem) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_ShippingItemImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_ShippingItem")
 		case "title":
-
 			out.Values[i] = ec._Commerce_Cart_ShippingItem_title(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "priceNet":
-
 			out.Values[i] = ec._Commerce_Cart_ShippingItem_priceNet(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "taxAmount":
-
 			out.Values[i] = ec._Commerce_Cart_ShippingItem_taxAmount(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "priceGross":
-
 			out.Values[i] = ec._Commerce_Cart_ShippingItem_priceGross(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "appliedDiscounts":
 			field := field
 
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -40151,37 +40379,61 @@ func (ec *executionContext) _Commerce_Cart_ShippingItem(ctx context.Context, sel
 				}()
 				res = ec._Commerce_Cart_ShippingItem_appliedDiscounts(ctx, field, obj)
 				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
+					atomic.AddUint32(&fs.Invalids, 1)
 				}
 				return res
 			}
 
-			out.Concurrently(i, func() graphql.Marshaler {
-				return innerFunc(ctx)
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
 
-			})
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "totalWithDiscountInclTax":
-
 			out.Values[i] = ec._Commerce_Cart_ShippingItem_totalWithDiscountInclTax(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "tax":
-
 			out.Values[i] = ec._Commerce_Cart_ShippingItem_tax(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -40189,58 +40441,55 @@ var commerce_Cart_SummaryImplementors = []string{"Commerce_Cart_Summary"}
 
 func (ec *executionContext) _Commerce_Cart_Summary(ctx context.Context, sel ast.SelectionSet, obj *dto.CartSummary) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_SummaryImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_Summary")
 		case "discounts":
-
 			out.Values[i] = ec._Commerce_Cart_Summary_discounts(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "totalDiscountAmount":
-
 			out.Values[i] = ec._Commerce_Cart_Summary_totalDiscountAmount(ctx, field, obj)
-
 		case "totalGiftCardAmount":
-
 			out.Values[i] = ec._Commerce_Cart_Summary_totalGiftCardAmount(ctx, field, obj)
-
 		case "grandTotalWithGiftCards":
-
 			out.Values[i] = ec._Commerce_Cart_Summary_grandTotalWithGiftCards(ctx, field, obj)
-
 		case "sumTotalDiscountWithGiftCardsAmount":
-
 			out.Values[i] = ec._Commerce_Cart_Summary_sumTotalDiscountWithGiftCardsAmount(ctx, field, obj)
-
 		case "hasAppliedDiscounts":
-
 			out.Values[i] = ec._Commerce_Cart_Summary_hasAppliedDiscounts(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "sumTaxes":
-
 			out.Values[i] = ec._Commerce_Cart_Summary_sumTaxes(ctx, field, obj)
-
 		case "sumPaymentSelectionCartSplitValueAmountByMethods":
-
 			out.Values[i] = ec._Commerce_Cart_Summary_sumPaymentSelectionCartSplitValueAmountByMethods(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -40248,38 +40497,45 @@ var commerce_Cart_TaxImplementors = []string{"Commerce_Cart_Tax"}
 
 func (ec *executionContext) _Commerce_Cart_Tax(ctx context.Context, sel ast.SelectionSet, obj *cart.Tax) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_TaxImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_Tax")
 		case "amount":
-
 			out.Values[i] = ec._Commerce_Cart_Tax_amount(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "type":
-
 			out.Values[i] = ec._Commerce_Cart_Tax_type(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "rate":
-
 			out.Values[i] = ec._Commerce_Cart_Tax_rate(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -40287,34 +40543,43 @@ var commerce_Cart_TaxesImplementors = []string{"Commerce_Cart_Taxes"}
 
 func (ec *executionContext) _Commerce_Cart_Taxes(ctx context.Context, sel ast.SelectionSet, obj *dto.Taxes) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_TaxesImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_Taxes")
 		case "items":
-
 			out.Values[i] = ec._Commerce_Cart_Taxes_items(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "getByType":
-
 			out.Values[i] = ec._Commerce_Cart_Taxes_getByType(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -40322,32 +40587,39 @@ var commerce_Cart_TeaserImplementors = []string{"Commerce_Cart_Teaser"}
 
 func (ec *executionContext) _Commerce_Cart_Teaser(ctx context.Context, sel ast.SelectionSet, obj *cart.Teaser) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_TeaserImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_Teaser")
 		case "productCount":
-
 			out.Values[i] = ec._Commerce_Cart_Teaser_productCount(ctx, field, obj)
-
 		case "ItemCount":
-
 			out.Values[i] = ec._Commerce_Cart_Teaser_ItemCount(ctx, field, obj)
-
 		case "DeliveryCodes":
-
 			out.Values[i] = ec._Commerce_Cart_Teaser_DeliveryCodes(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -40355,48 +40627,53 @@ var commerce_Cart_TotalitemImplementors = []string{"Commerce_Cart_Totalitem"}
 
 func (ec *executionContext) _Commerce_Cart_Totalitem(ctx context.Context, sel ast.SelectionSet, obj *cart.Totalitem) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_TotalitemImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_Totalitem")
 		case "code":
-
 			out.Values[i] = ec._Commerce_Cart_Totalitem_code(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "title":
-
 			out.Values[i] = ec._Commerce_Cart_Totalitem_title(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "price":
-
 			out.Values[i] = ec._Commerce_Cart_Totalitem_price(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "type":
-
 			out.Values[i] = ec._Commerce_Cart_Totalitem_type(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -40404,24 +40681,35 @@ var commerce_Cart_UpdateDeliveryShippingOptions_ResultImplementors = []string{"C
 
 func (ec *executionContext) _Commerce_Cart_UpdateDeliveryShippingOptions_Result(ctx context.Context, sel ast.SelectionSet, obj *dto.UpdateShippingOptionsResult) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_UpdateDeliveryShippingOptions_ResultImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_UpdateDeliveryShippingOptions_Result")
 		case "processed":
-
 			out.Values[i] = ec._Commerce_Cart_UpdateDeliveryShippingOptions_Result_processed(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -40429,38 +40717,45 @@ var commerce_Cart_ValidationResultImplementors = []string{"Commerce_Cart_Validat
 
 func (ec *executionContext) _Commerce_Cart_ValidationResult(ctx context.Context, sel ast.SelectionSet, obj *validation.Result) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_ValidationResultImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Cart_ValidationResult")
 		case "hasCommonError":
-
 			out.Values[i] = ec._Commerce_Cart_ValidationResult_hasCommonError(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "commonErrorMessageKey":
-
 			out.Values[i] = ec._Commerce_Cart_ValidationResult_commonErrorMessageKey(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "itemResults":
-
 			out.Values[i] = ec._Commerce_Cart_ValidationResult_itemResults(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -40468,62 +40763,63 @@ var commerce_CategoryDataImplementors = []string{"Commerce_CategoryData", "Comme
 
 func (ec *executionContext) _Commerce_CategoryData(ctx context.Context, sel ast.SelectionSet, obj *domain3.CategoryData) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_CategoryDataImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_CategoryData")
 		case "code":
-
 			out.Values[i] = ec._Commerce_CategoryData_code(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "name":
-
 			out.Values[i] = ec._Commerce_CategoryData_name(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "path":
-
 			out.Values[i] = ec._Commerce_CategoryData_path(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "active":
-
 			out.Values[i] = ec._Commerce_CategoryData_active(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "promoted":
-
 			out.Values[i] = ec._Commerce_CategoryData_promoted(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "attributes":
-
 			out.Values[i] = ec._Commerce_CategoryData_attributes(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -40531,66 +40827,65 @@ var commerce_CategoryTreeImplementors = []string{"Commerce_CategoryTree", "Comme
 
 func (ec *executionContext) _Commerce_CategoryTree(ctx context.Context, sel ast.SelectionSet, obj *domain3.TreeData) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_CategoryTreeImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_CategoryTree")
 		case "code":
-
 			out.Values[i] = ec._Commerce_CategoryTree_code(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "name":
-
 			out.Values[i] = ec._Commerce_CategoryTree_name(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "path":
-
 			out.Values[i] = ec._Commerce_CategoryTree_path(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "active":
-
 			out.Values[i] = ec._Commerce_CategoryTree_active(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "subTrees":
-
 			out.Values[i] = ec._Commerce_CategoryTree_subTrees(ctx, field, obj)
-
 		case "hasChilds":
-
 			out.Values[i] = ec._Commerce_CategoryTree_hasChilds(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "documentCount":
-
 			out.Values[i] = ec._Commerce_CategoryTree_documentCount(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -40598,38 +40893,45 @@ var commerce_Category_AttributeImplementors = []string{"Commerce_Category_Attrib
 
 func (ec *executionContext) _Commerce_Category_Attribute(ctx context.Context, sel ast.SelectionSet, obj *domain3.Attribute) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Category_AttributeImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Category_Attribute")
 		case "code":
-
 			out.Values[i] = ec._Commerce_Category_Attribute_code(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "label":
-
 			out.Values[i] = ec._Commerce_Category_Attribute_label(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "values":
-
 			out.Values[i] = ec._Commerce_Category_Attribute_values(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -40637,34 +40939,43 @@ var commerce_Category_AttributeValueImplementors = []string{"Commerce_Category_A
 
 func (ec *executionContext) _Commerce_Category_AttributeValue(ctx context.Context, sel ast.SelectionSet, obj *domain3.AttributeValue) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Category_AttributeValueImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Category_AttributeValue")
 		case "value":
-
 			out.Values[i] = ec._Commerce_Category_AttributeValue_value(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "label":
-
 			out.Values[i] = ec._Commerce_Category_AttributeValue_label(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -40672,32 +40983,39 @@ var commerce_Category_AttributesImplementors = []string{"Commerce_Category_Attri
 
 func (ec *executionContext) _Commerce_Category_Attributes(ctx context.Context, sel ast.SelectionSet, obj domain3.Attributes) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Category_AttributesImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Category_Attributes")
 		case "get":
-
 			out.Values[i] = ec._Commerce_Category_Attributes_get(ctx, field, obj)
-
 		case "has":
-
 			out.Values[i] = ec._Commerce_Category_Attributes_has(ctx, field, obj)
-
 		case "all":
-
 			out.Values[i] = ec._Commerce_Category_Attributes_all(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -40705,34 +41023,43 @@ var commerce_Category_SearchResultImplementors = []string{"Commerce_Category_Sea
 
 func (ec *executionContext) _Commerce_Category_SearchResult(ctx context.Context, sel ast.SelectionSet, obj *categorydto.CategorySearchResult) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Category_SearchResultImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Category_SearchResult")
 		case "category":
-
 			out.Values[i] = ec._Commerce_Category_SearchResult_category(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "productSearchResult":
-
 			out.Values[i] = ec._Commerce_Category_SearchResult_productSearchResult(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -40740,42 +41067,47 @@ var commerce_Checkout_PlaceOrderContextImplementors = []string{"Commerce_Checkou
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderContext(ctx context.Context, sel ast.SelectionSet, obj *dto1.PlaceOrderContext) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderContextImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderContext")
 		case "cart":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderContext_cart(ctx, field, obj)
-
 		case "orderInfos":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderContext_orderInfos(ctx, field, obj)
-
 		case "state":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderContext_state(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "uuid":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderContext_uuid(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -40783,55 +41115,58 @@ var commerce_Checkout_PlaceOrderPaymentInfoImplementors = []string{"Commerce_Che
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderPaymentInfo(ctx context.Context, sel ast.SelectionSet, obj *application.PlaceOrderPaymentInfo) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderPaymentInfoImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderPaymentInfo")
 		case "gateway":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderPaymentInfo_gateway(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "paymentProvider":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderPaymentInfo_paymentProvider(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "method":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderPaymentInfo_method(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "amount":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderPaymentInfo_amount(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "title":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderPaymentInfo_title(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -40839,31 +41174,40 @@ var commerce_Checkout_PlaceOrderState_Form_ParameterImplementors = []string{"Com
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_Form_Parameter(ctx context.Context, sel ast.SelectionSet, obj *dto1.FormParameter) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_Form_ParameterImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_Form_Parameter")
 		case "key":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_Form_Parameter_key(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "value":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_Form_Parameter_value(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -40871,52 +41215,55 @@ var commerce_Checkout_PlaceOrderState_PaymentRequestAPIImplementors = []string{"
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_PaymentRequestAPI(ctx context.Context, sel ast.SelectionSet, obj *dto1.PaymentRequestAPI) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_PaymentRequestAPIImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_PaymentRequestAPI")
 		case "methodData":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_methodData(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "details":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_details(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "options":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_options(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "merchantValidationURL":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_merchantValidationURL(ctx, field, obj)
-
 		case "completeURL":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_PaymentRequestAPI_completeURL(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -40924,34 +41271,43 @@ var commerce_Checkout_PlaceOrderState_State_FailedImplementors = []string{"Comme
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Failed(ctx context.Context, sel ast.SelectionSet, obj *dto1.Failed) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_FailedImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_Failed")
 		case "name":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_Failed_name(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "reason":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_Failed_reason(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -40959,24 +41315,35 @@ var commerce_Checkout_PlaceOrderState_State_FailedReason_CanceledByCustomerImple
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReason_CanceledByCustomer(ctx context.Context, sel ast.SelectionSet, obj *process.CanceledByCustomerReason) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_FailedReason_CanceledByCustomerImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_FailedReason_CanceledByCustomer")
 		case "reason":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_FailedReason_CanceledByCustomer_reason(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -40984,31 +41351,40 @@ var commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationErrorImpl
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError(ctx context.Context, sel ast.SelectionSet, obj *process.CartValidationErrorReason) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationErrorImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError")
 		case "reason":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError_reason(ctx, field, obj)
-
 		case "validationResult":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_FailedReason_CartValidationError_validationResult(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -41016,24 +41392,35 @@ var commerce_Checkout_PlaceOrderState_State_FailedReason_ErrorImplementors = []s
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReason_Error(ctx context.Context, sel ast.SelectionSet, obj *process.ErrorOccurredReason) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_FailedReason_ErrorImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_FailedReason_Error")
 		case "reason":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_FailedReason_Error_reason(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -41041,24 +41428,35 @@ var commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentCanceledByCustom
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentCanceledByCustomer(ctx context.Context, sel ast.SelectionSet, obj *process.PaymentCanceledByCustomerReason) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentCanceledByCustomerImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentCanceledByCustomer")
 		case "reason":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentCanceledByCustomer_reason(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -41066,24 +41464,35 @@ var commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentErrorImplementor
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError(ctx context.Context, sel ast.SelectionSet, obj *process.PaymentErrorOccurredReason) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentErrorImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError")
 		case "reason":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_FailedReason_PaymentError_reason(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -41091,38 +41500,45 @@ var commerce_Checkout_PlaceOrderState_State_PostRedirectImplementors = []string{
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_PostRedirect(ctx context.Context, sel ast.SelectionSet, obj *dto1.PostRedirect) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_PostRedirectImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_PostRedirect")
 		case "name":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_PostRedirect_name(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "URL":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_PostRedirect_URL(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "Parameters":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_PostRedirect_Parameters(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -41130,34 +41546,43 @@ var commerce_Checkout_PlaceOrderState_State_RedirectImplementors = []string{"Com
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Redirect(ctx context.Context, sel ast.SelectionSet, obj *dto1.Redirect) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_RedirectImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_Redirect")
 		case "name":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_Redirect_name(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "URL":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_Redirect_URL(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -41165,34 +41590,43 @@ var commerce_Checkout_PlaceOrderState_State_ShowHTMLImplementors = []string{"Com
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowHTML(ctx context.Context, sel ast.SelectionSet, obj *dto1.ShowHTML) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_ShowHTMLImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_ShowHTML")
 		case "name":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_ShowHTML_name(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "HTML":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_ShowHTML_HTML(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -41200,34 +41634,43 @@ var commerce_Checkout_PlaceOrderState_State_ShowIframeImplementors = []string{"C
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowIframe(ctx context.Context, sel ast.SelectionSet, obj *dto1.ShowIframe) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_ShowIframeImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_ShowIframe")
 		case "name":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_ShowIframe_name(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "URL":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_ShowIframe_URL(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -41235,41 +41678,48 @@ var commerce_Checkout_PlaceOrderState_State_ShowWalletPaymentImplementors = []st
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment(ctx context.Context, sel ast.SelectionSet, obj *dto1.ShowWalletPayment) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_ShowWalletPaymentImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment")
 		case "name":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment_name(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "paymentMethod":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment_paymentMethod(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "paymentRequestAPI":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_ShowWalletPayment_paymentRequestAPI(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -41277,27 +41727,38 @@ var commerce_Checkout_PlaceOrderState_State_SuccessImplementors = []string{"Comm
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Success(ctx context.Context, sel ast.SelectionSet, obj *dto1.Success) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_SuccessImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_Success")
 		case "name":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_Success_name(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -41305,41 +41766,48 @@ var commerce_Checkout_PlaceOrderState_State_TriggerClientSDKImplementors = []str
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK(ctx context.Context, sel ast.SelectionSet, obj *dto1.TriggerClientSDK) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_TriggerClientSDKImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK")
 		case "name":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK_name(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "URL":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK_URL(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "data":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_TriggerClientSDK_data(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -41347,27 +41815,38 @@ var commerce_Checkout_PlaceOrderState_State_WaitImplementors = []string{"Commerc
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_Wait(ctx context.Context, sel ast.SelectionSet, obj *dto1.Wait) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_WaitImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_Wait")
 		case "name":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_Wait_name(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -41375,27 +41854,38 @@ var commerce_Checkout_PlaceOrderState_State_WaitForCustomerImplementors = []stri
 
 func (ec *executionContext) _Commerce_Checkout_PlaceOrderState_State_WaitForCustomer(ctx context.Context, sel ast.SelectionSet, obj *dto1.WaitForCustomer) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlaceOrderState_State_WaitForCustomerImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlaceOrderState_State_WaitForCustomer")
 		case "name":
-
 			out.Values[i] = ec._Commerce_Checkout_PlaceOrderState_State_WaitForCustomer_name(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -41403,35 +41893,42 @@ var commerce_Checkout_PlacedOrderInfosImplementors = []string{"Commerce_Checkout
 
 func (ec *executionContext) _Commerce_Checkout_PlacedOrderInfos(ctx context.Context, sel ast.SelectionSet, obj *dto1.PlacedOrderInfos) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_PlacedOrderInfosImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_PlacedOrderInfos")
 		case "paymentInfos":
-
 			out.Values[i] = ec._Commerce_Checkout_PlacedOrderInfos_paymentInfos(ctx, field, obj)
-
 		case "placedOrderInfos":
-
 			out.Values[i] = ec._Commerce_Checkout_PlacedOrderInfos_placedOrderInfos(ctx, field, obj)
-
 		case "email":
-
 			out.Values[i] = ec._Commerce_Checkout_PlacedOrderInfos_email(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -41439,27 +41936,38 @@ var commerce_Checkout_StartPlaceOrder_ResultImplementors = []string{"Commerce_Ch
 
 func (ec *executionContext) _Commerce_Checkout_StartPlaceOrder_Result(ctx context.Context, sel ast.SelectionSet, obj *dto1.StartPlaceOrderResult) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Checkout_StartPlaceOrder_ResultImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Checkout_StartPlaceOrder_Result")
 		case "uuid":
-
 			out.Values[i] = ec._Commerce_Checkout_StartPlaceOrder_Result_uuid(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -41467,136 +41975,115 @@ var commerce_Customer_AddressImplementors = []string{"Commerce_Customer_Address"
 
 func (ec *executionContext) _Commerce_Customer_Address(ctx context.Context, sel ast.SelectionSet, obj *domain5.Address) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Customer_AddressImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Customer_Address")
 		case "id":
-
 			out.Values[i] = ec._Commerce_Customer_Address_id(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "additionalAddressLines":
-
 			out.Values[i] = ec._Commerce_Customer_Address_additionalAddressLines(ctx, field, obj)
-
 		case "city":
-
 			out.Values[i] = ec._Commerce_Customer_Address_city(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "company":
-
 			out.Values[i] = ec._Commerce_Customer_Address_company(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "countryCode":
-
 			out.Values[i] = ec._Commerce_Customer_Address_countryCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "defaultBilling":
-
 			out.Values[i] = ec._Commerce_Customer_Address_defaultBilling(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "defaultShipping":
-
 			out.Values[i] = ec._Commerce_Customer_Address_defaultShipping(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "firstName":
-
 			out.Values[i] = ec._Commerce_Customer_Address_firstName(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "lastName":
-
 			out.Values[i] = ec._Commerce_Customer_Address_lastName(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "postCode":
-
 			out.Values[i] = ec._Commerce_Customer_Address_postCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "prefix":
-
 			out.Values[i] = ec._Commerce_Customer_Address_prefix(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "regionCode":
-
 			out.Values[i] = ec._Commerce_Customer_Address_regionCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "street":
-
 			out.Values[i] = ec._Commerce_Customer_Address_street(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "streetNumber":
-
 			out.Values[i] = ec._Commerce_Customer_Address_streetNumber(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "state":
-
 			out.Values[i] = ec._Commerce_Customer_Address_state(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "telephone":
-
 			out.Values[i] = ec._Commerce_Customer_Address_telephone(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "email":
-
 			out.Values[i] = ec._Commerce_Customer_Address_email(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -41604,73 +42091,70 @@ var commerce_Customer_PersonDataImplementors = []string{"Commerce_Customer_Perso
 
 func (ec *executionContext) _Commerce_Customer_PersonData(ctx context.Context, sel ast.SelectionSet, obj *domain5.PersonData) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Customer_PersonDataImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Customer_PersonData")
 		case "gender":
-
 			out.Values[i] = ec._Commerce_Customer_PersonData_gender(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "firstName":
-
 			out.Values[i] = ec._Commerce_Customer_PersonData_firstName(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "lastName":
-
 			out.Values[i] = ec._Commerce_Customer_PersonData_lastName(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "middleName":
-
 			out.Values[i] = ec._Commerce_Customer_PersonData_middleName(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "mainEmail":
-
 			out.Values[i] = ec._Commerce_Customer_PersonData_mainEmail(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "prefix":
-
 			out.Values[i] = ec._Commerce_Customer_PersonData_prefix(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "birthday":
-
 			out.Values[i] = ec._Commerce_Customer_PersonData_birthday(ctx, field, obj)
-
 		case "nationality":
-
 			out.Values[i] = ec._Commerce_Customer_PersonData_nationality(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -41678,50 +42162,51 @@ var commerce_Customer_ResultImplementors = []string{"Commerce_Customer_Result"}
 
 func (ec *executionContext) _Commerce_Customer_Result(ctx context.Context, sel ast.SelectionSet, obj *dtocustomer.CustomerResult) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Customer_ResultImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Customer_Result")
 		case "id":
-
 			out.Values[i] = ec._Commerce_Customer_Result_id(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "personalData":
-
 			out.Values[i] = ec._Commerce_Customer_Result_personalData(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "getAddress":
-
 			out.Values[i] = ec._Commerce_Customer_Result_getAddress(ctx, field, obj)
-
 		case "addresses":
-
 			out.Values[i] = ec._Commerce_Customer_Result_addresses(ctx, field, obj)
-
 		case "defaultShippingAddress":
-
 			out.Values[i] = ec._Commerce_Customer_Result_defaultShippingAddress(ctx, field, obj)
-
 		case "defaultBillingAddress":
-
 			out.Values[i] = ec._Commerce_Customer_Result_defaultBillingAddress(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -41729,34 +42214,43 @@ var commerce_Customer_Status_ResultImplementors = []string{"Commerce_Customer_St
 
 func (ec *executionContext) _Commerce_Customer_Status_Result(ctx context.Context, sel ast.SelectionSet, obj *dtocustomer.CustomerStatusResult) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Customer_Status_ResultImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Customer_Status_Result")
 		case "isLoggedIn":
-
 			out.Values[i] = ec._Commerce_Customer_Status_Result_isLoggedIn(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "userID":
-
 			out.Values[i] = ec._Commerce_Customer_Status_Result_userID(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -41764,31 +42258,40 @@ var commerce_PriceImplementors = []string{"Commerce_Price"}
 
 func (ec *executionContext) _Commerce_Price(ctx context.Context, sel ast.SelectionSet, obj *domain.Price) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_PriceImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Price")
 		case "amount":
-
 			out.Values[i] = ec._Commerce_Price_amount(ctx, field, obj)
-
 		case "currency":
-
 			out.Values[i] = ec._Commerce_Price_currency(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -41796,48 +42299,53 @@ var commerce_Price_ChargeImplementors = []string{"Commerce_Price_Charge"}
 
 func (ec *executionContext) _Commerce_Price_Charge(ctx context.Context, sel ast.SelectionSet, obj *domain.Charge) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Price_ChargeImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Price_Charge")
 		case "price":
-
 			out.Values[i] = ec._Commerce_Price_Charge_price(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "value":
-
 			out.Values[i] = ec._Commerce_Price_Charge_value(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "type":
-
 			out.Values[i] = ec._Commerce_Price_Charge_type(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "reference":
-
 			out.Values[i] = ec._Commerce_Price_Charge_reference(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -41845,34 +42353,43 @@ var commerce_Price_ChargeQualifierImplementors = []string{"Commerce_Price_Charge
 
 func (ec *executionContext) _Commerce_Price_ChargeQualifier(ctx context.Context, sel ast.SelectionSet, obj *domain.ChargeQualifier) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Price_ChargeQualifierImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Price_ChargeQualifier")
 		case "type":
-
 			out.Values[i] = ec._Commerce_Price_ChargeQualifier_type(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "reference":
-
 			out.Values[i] = ec._Commerce_Price_ChargeQualifier_reference(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -41880,40 +42397,43 @@ var commerce_Price_ChargesImplementors = []string{"Commerce_Price_Charges"}
 
 func (ec *executionContext) _Commerce_Price_Charges(ctx context.Context, sel ast.SelectionSet, obj *domain.Charges) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Price_ChargesImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Price_Charges")
 		case "items":
-
 			out.Values[i] = ec._Commerce_Price_Charges_items(ctx, field, obj)
-
 		case "hasType":
-
 			out.Values[i] = ec._Commerce_Price_Charges_hasType(ctx, field, obj)
-
 		case "hasChargeQualifier":
-
 			out.Values[i] = ec._Commerce_Price_Charges_hasChargeQualifier(ctx, field, obj)
-
 		case "getByChargeQualifierForced":
-
 			out.Values[i] = ec._Commerce_Price_Charges_getByChargeQualifierForced(ctx, field, obj)
-
 		case "getByTypeForced":
-
 			out.Values[i] = ec._Commerce_Price_Charges_getByTypeForced(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -41921,130 +42441,109 @@ var commerce_Product_ActiveVariantProductImplementors = []string{"Commerce_Produ
 
 func (ec *executionContext) _Commerce_Product_ActiveVariantProduct(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.ActiveVariantProduct) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_ActiveVariantProductImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_ActiveVariantProduct")
 		case "type":
-
 			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_type(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "marketPlaceCode":
-
 			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_marketPlaceCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "identifier":
-
 			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_identifier(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "media":
-
 			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_media(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "price":
-
 			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_price(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "availablePrices":
-
 			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_availablePrices(ctx, field, obj)
-
 		case "title":
-
 			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_title(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "categories":
-
 			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_categories(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "description":
-
 			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_description(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "shortDescription":
-
 			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_shortDescription(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "meta":
-
 			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_meta(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "loyalty":
-
 			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_loyalty(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "attributes":
-
 			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_attributes(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "variantMarketPlaceCode":
-
 			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_variantMarketPlaceCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "variationSelections":
-
 			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_variationSelections(ctx, field, obj)
-
 		case "activeVariationSelections":
-
 			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_activeVariationSelections(ctx, field, obj)
-
 		case "badges":
-
 			out.Values[i] = ec._Commerce_Product_ActiveVariantProduct_badges(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -42052,48 +42551,53 @@ var commerce_Product_ActiveVariationSelectionImplementors = []string{"Commerce_P
 
 func (ec *executionContext) _Commerce_Product_ActiveVariationSelection(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.ActiveVariationSelection) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_ActiveVariationSelectionImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_ActiveVariationSelection")
 		case "code":
-
 			out.Values[i] = ec._Commerce_Product_ActiveVariationSelection_code(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "label":
-
 			out.Values[i] = ec._Commerce_Product_ActiveVariationSelection_label(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "value":
-
 			out.Values[i] = ec._Commerce_Product_ActiveVariationSelection_value(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "unitCode":
-
 			out.Values[i] = ec._Commerce_Product_ActiveVariationSelection_unitCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -42101,63 +42605,62 @@ var commerce_Product_AttributeImplementors = []string{"Commerce_Product_Attribut
 
 func (ec *executionContext) _Commerce_Product_Attribute(ctx context.Context, sel ast.SelectionSet, obj *domain1.Attribute) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_AttributeImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_Attribute")
 		case "code":
-
 			out.Values[i] = ec._Commerce_Product_Attribute_code(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "codeLabel":
-
 			out.Values[i] = ec._Commerce_Product_Attribute_codeLabel(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "label":
-
 			out.Values[i] = ec._Commerce_Product_Attribute_label(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "value":
-
 			out.Values[i] = ec._Commerce_Product_Attribute_value(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "unitCode":
-
 			out.Values[i] = ec._Commerce_Product_Attribute_unitCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "values":
-
 			out.Values[i] = ec._Commerce_Product_Attribute_values(ctx, field, obj)
-
 		case "labels":
-
 			out.Values[i] = ec._Commerce_Product_Attribute_labels(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -42165,40 +42668,43 @@ var commerce_Product_AttributesImplementors = []string{"Commerce_Product_Attribu
 
 func (ec *executionContext) _Commerce_Product_Attributes(ctx context.Context, sel ast.SelectionSet, obj domain1.Attributes) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_AttributesImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_Attributes")
 		case "attributeKeys":
-
 			out.Values[i] = ec._Commerce_Product_Attributes_attributeKeys(ctx, field, obj)
-
 		case "attributes":
-
 			out.Values[i] = ec._Commerce_Product_Attributes_attributes(ctx, field, obj)
-
 		case "hasAttribute":
-
 			out.Values[i] = ec._Commerce_Product_Attributes_hasAttribute(ctx, field, obj)
-
 		case "getAttribute":
-
 			out.Values[i] = ec._Commerce_Product_Attributes_getAttribute(ctx, field, obj)
-
 		case "getAttributesByKey":
-
 			out.Values[i] = ec._Commerce_Product_Attributes_getAttributesByKey(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -42206,34 +42712,43 @@ var commerce_Product_BadgeImplementors = []string{"Commerce_Product_Badge"}
 
 func (ec *executionContext) _Commerce_Product_Badge(ctx context.Context, sel ast.SelectionSet, obj *domain1.Badge) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_BadgeImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_Badge")
 		case "code":
-
 			out.Values[i] = ec._Commerce_Product_Badge_code(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "label":
-
 			out.Values[i] = ec._Commerce_Product_Badge_label(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -42241,28 +42756,37 @@ var commerce_Product_BadgesImplementors = []string{"Commerce_Product_Badges"}
 
 func (ec *executionContext) _Commerce_Product_Badges(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.ProductBadges) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_BadgesImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_Badges")
 		case "all":
-
 			out.Values[i] = ec._Commerce_Product_Badges_all(ctx, field, obj)
-
 		case "first":
-
 			out.Values[i] = ec._Commerce_Product_Badges_first(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -42270,119 +42794,102 @@ var commerce_Product_BundleProductImplementors = []string{"Commerce_Product_Bund
 
 func (ec *executionContext) _Commerce_Product_BundleProduct(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.BundleProduct) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_BundleProductImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_BundleProduct")
 		case "type":
-
 			out.Values[i] = ec._Commerce_Product_BundleProduct_type(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "marketPlaceCode":
-
 			out.Values[i] = ec._Commerce_Product_BundleProduct_marketPlaceCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "identifier":
-
 			out.Values[i] = ec._Commerce_Product_BundleProduct_identifier(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "media":
-
 			out.Values[i] = ec._Commerce_Product_BundleProduct_media(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "price":
-
 			out.Values[i] = ec._Commerce_Product_BundleProduct_price(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "availablePrices":
-
 			out.Values[i] = ec._Commerce_Product_BundleProduct_availablePrices(ctx, field, obj)
-
 		case "title":
-
 			out.Values[i] = ec._Commerce_Product_BundleProduct_title(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "categories":
-
 			out.Values[i] = ec._Commerce_Product_BundleProduct_categories(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "description":
-
 			out.Values[i] = ec._Commerce_Product_BundleProduct_description(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "shortDescription":
-
 			out.Values[i] = ec._Commerce_Product_BundleProduct_shortDescription(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "meta":
-
 			out.Values[i] = ec._Commerce_Product_BundleProduct_meta(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "loyalty":
-
 			out.Values[i] = ec._Commerce_Product_BundleProduct_loyalty(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "attributes":
-
 			out.Values[i] = ec._Commerce_Product_BundleProduct_attributes(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "badges":
-
 			out.Values[i] = ec._Commerce_Product_BundleProduct_badges(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "choices":
-
 			out.Values[i] = ec._Commerce_Product_BundleProduct_choices(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -42390,31 +42897,40 @@ var commerce_Product_CategoriesImplementors = []string{"Commerce_Product_Categor
 
 func (ec *executionContext) _Commerce_Product_Categories(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.ProductCategories) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_CategoriesImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_Categories")
 		case "main":
-
 			out.Values[i] = ec._Commerce_Product_Categories_main(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "all":
-
 			out.Values[i] = ec._Commerce_Product_Categories_all(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -42422,45 +42938,50 @@ var commerce_Product_CategoryTeaserImplementors = []string{"Commerce_Product_Cat
 
 func (ec *executionContext) _Commerce_Product_CategoryTeaser(ctx context.Context, sel ast.SelectionSet, obj *domain1.CategoryTeaser) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_CategoryTeaserImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_CategoryTeaser")
 		case "code":
-
 			out.Values[i] = ec._Commerce_Product_CategoryTeaser_code(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "path":
-
 			out.Values[i] = ec._Commerce_Product_CategoryTeaser_path(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "name":
-
 			out.Values[i] = ec._Commerce_Product_CategoryTeaser_name(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "parent":
-
 			out.Values[i] = ec._Commerce_Product_CategoryTeaser_parent(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -42468,49 +42989,52 @@ var commerce_Product_ChoiceImplementors = []string{"Commerce_Product_Choice"}
 
 func (ec *executionContext) _Commerce_Product_Choice(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.Choice) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_ChoiceImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_Choice")
 		case "identifier":
-
 			out.Values[i] = ec._Commerce_Product_Choice_identifier(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "required":
-
 			out.Values[i] = ec._Commerce_Product_Choice_required(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "label":
-
 			out.Values[i] = ec._Commerce_Product_Choice_label(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "options":
-
 			out.Values[i] = ec._Commerce_Product_Choice_options(ctx, field, obj)
-
 		case "active":
-
 			out.Values[i] = ec._Commerce_Product_Choice_active(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -42518,122 +43042,105 @@ var commerce_Product_ConfigurableProductImplementors = []string{"Commerce_Produc
 
 func (ec *executionContext) _Commerce_Product_ConfigurableProduct(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.ConfigurableProduct) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_ConfigurableProductImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_ConfigurableProduct")
 		case "type":
-
 			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_type(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "marketPlaceCode":
-
 			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_marketPlaceCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "identifier":
-
 			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_identifier(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "media":
-
 			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_media(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "price":
-
 			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_price(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "availablePrices":
-
 			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_availablePrices(ctx, field, obj)
-
 		case "title":
-
 			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_title(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "categories":
-
 			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_categories(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "description":
-
 			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_description(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "shortDescription":
-
 			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_shortDescription(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "meta":
-
 			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_meta(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "loyalty":
-
 			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_loyalty(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "attributes":
-
 			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_attributes(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "variantSelection":
-
 			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_variantSelection(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "badges":
-
 			out.Values[i] = ec._Commerce_Product_ConfigurableProduct_badges(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -42641,28 +43148,37 @@ var commerce_Product_LoyaltyImplementors = []string{"Commerce_Product_Loyalty"}
 
 func (ec *executionContext) _Commerce_Product_Loyalty(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.ProductLoyalty) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_LoyaltyImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_Loyalty")
 		case "price":
-
 			out.Values[i] = ec._Commerce_Product_Loyalty_price(ctx, field, obj)
-
 		case "earning":
-
 			out.Values[i] = ec._Commerce_Product_Loyalty_earning(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -42670,34 +43186,43 @@ var commerce_Product_Loyalty_EarningInfoImplementors = []string{"Commerce_Produc
 
 func (ec *executionContext) _Commerce_Product_Loyalty_EarningInfo(ctx context.Context, sel ast.SelectionSet, obj *domain1.LoyaltyEarningInfo) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_Loyalty_EarningInfoImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_Loyalty_EarningInfo")
 		case "type":
-
 			out.Values[i] = ec._Commerce_Product_Loyalty_EarningInfo_type(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "default":
-
 			out.Values[i] = ec._Commerce_Product_Loyalty_EarningInfo_default(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -42705,76 +43230,73 @@ var commerce_Product_Loyalty_PriceInfoImplementors = []string{"Commerce_Product_
 
 func (ec *executionContext) _Commerce_Product_Loyalty_PriceInfo(ctx context.Context, sel ast.SelectionSet, obj *domain1.LoyaltyPriceInfo) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_Loyalty_PriceInfoImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_Loyalty_PriceInfo")
 		case "type":
-
 			out.Values[i] = ec._Commerce_Product_Loyalty_PriceInfo_type(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "default":
-
 			out.Values[i] = ec._Commerce_Product_Loyalty_PriceInfo_default(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "isDiscounted":
-
 			out.Values[i] = ec._Commerce_Product_Loyalty_PriceInfo_isDiscounted(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "discounted":
-
 			out.Values[i] = ec._Commerce_Product_Loyalty_PriceInfo_discounted(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "discountText":
-
 			out.Values[i] = ec._Commerce_Product_Loyalty_PriceInfo_discountText(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "minPointsToSpent":
-
 			out.Values[i] = ec._Commerce_Product_Loyalty_PriceInfo_minPointsToSpent(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "maxPointsToSpent":
-
 			out.Values[i] = ec._Commerce_Product_Loyalty_PriceInfo_maxPointsToSpent(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "context":
-
 			out.Values[i] = ec._Commerce_Product_Loyalty_PriceInfo_context(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -42782,31 +43304,40 @@ var commerce_Product_MediaImplementors = []string{"Commerce_Product_Media"}
 
 func (ec *executionContext) _Commerce_Product_Media(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.ProductMedia) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_MediaImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_Media")
 		case "all":
-
 			out.Values[i] = ec._Commerce_Product_Media_all(ctx, field, obj)
-
 		case "getMedia":
-
 			out.Values[i] = ec._Commerce_Product_Media_getMedia(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -42814,55 +43345,58 @@ var commerce_Product_MediaItemImplementors = []string{"Commerce_Product_MediaIte
 
 func (ec *executionContext) _Commerce_Product_MediaItem(ctx context.Context, sel ast.SelectionSet, obj *domain1.Media) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_MediaItemImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_MediaItem")
 		case "type":
-
 			out.Values[i] = ec._Commerce_Product_MediaItem_type(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "mimeType":
-
 			out.Values[i] = ec._Commerce_Product_MediaItem_mimeType(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "usage":
-
 			out.Values[i] = ec._Commerce_Product_MediaItem_usage(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "title":
-
 			out.Values[i] = ec._Commerce_Product_MediaItem_title(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "reference":
-
 			out.Values[i] = ec._Commerce_Product_MediaItem_reference(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -42870,24 +43404,35 @@ var commerce_Product_MetaImplementors = []string{"Commerce_Product_Meta"}
 
 func (ec *executionContext) _Commerce_Product_Meta(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.ProductMeta) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_MetaImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_Meta")
 		case "keywords":
-
 			out.Values[i] = ec._Commerce_Product_Meta_keywords(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -42895,34 +43440,43 @@ var commerce_Product_OptionImplementors = []string{"Commerce_Product_Option"}
 
 func (ec *executionContext) _Commerce_Product_Option(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.Option) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_OptionImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_Option")
 		case "product":
-
 			out.Values[i] = ec._Commerce_Product_Option_product(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "qty":
-
 			out.Values[i] = ec._Commerce_Product_Option_qty(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -42930,48 +43484,53 @@ var commerce_Product_PriceContextImplementors = []string{"Commerce_Product_Price
 
 func (ec *executionContext) _Commerce_Product_PriceContext(ctx context.Context, sel ast.SelectionSet, obj *domain1.PriceContext) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_PriceContextImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_PriceContext")
 		case "customerGroup":
-
 			out.Values[i] = ec._Commerce_Product_PriceContext_customerGroup(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "deliveryCode":
-
 			out.Values[i] = ec._Commerce_Product_PriceContext_deliveryCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "channelCode":
-
 			out.Values[i] = ec._Commerce_Product_PriceContext_channelCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "locale":
-
 			out.Values[i] = ec._Commerce_Product_PriceContext_locale(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -42979,37 +43538,32 @@ var commerce_Product_PriceInfoImplementors = []string{"Commerce_Product_PriceInf
 
 func (ec *executionContext) _Commerce_Product_PriceInfo(ctx context.Context, sel ast.SelectionSet, obj *domain1.PriceInfo) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_PriceInfoImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_PriceInfo")
 		case "default":
-
 			out.Values[i] = ec._Commerce_Product_PriceInfo_default(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "discounted":
-
 			out.Values[i] = ec._Commerce_Product_PriceInfo_discounted(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "discountText":
-
 			out.Values[i] = ec._Commerce_Product_PriceInfo_discountText(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "activeBase":
 			field := field
 
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -43017,69 +43571,83 @@ func (ec *executionContext) _Commerce_Product_PriceInfo(ctx context.Context, sel
 				}()
 				res = ec._Commerce_Product_PriceInfo_activeBase(ctx, field, obj)
 				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
+					atomic.AddUint32(&fs.Invalids, 1)
 				}
 				return res
 			}
 
-			out.Concurrently(i, func() graphql.Marshaler {
-				return innerFunc(ctx)
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
 
-			})
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "activeBaseAmount":
-
 			out.Values[i] = ec._Commerce_Product_PriceInfo_activeBaseAmount(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "activeBaseUnit":
-
 			out.Values[i] = ec._Commerce_Product_PriceInfo_activeBaseUnit(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "isDiscounted":
-
 			out.Values[i] = ec._Commerce_Product_PriceInfo_isDiscounted(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "campaignRules":
-
 			out.Values[i] = ec._Commerce_Product_PriceInfo_campaignRules(ctx, field, obj)
-
 		case "denyMoreDiscounts":
-
 			out.Values[i] = ec._Commerce_Product_PriceInfo_denyMoreDiscounts(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "context":
-
 			out.Values[i] = ec._Commerce_Product_PriceInfo_context(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "taxClass":
-
 			out.Values[i] = ec._Commerce_Product_PriceInfo_taxClass(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -43087,53 +43655,54 @@ var commerce_Product_SearchResultImplementors = []string{"Commerce_Product_Searc
 
 func (ec *executionContext) _Commerce_Product_SearchResult(ctx context.Context, sel ast.SelectionSet, obj *graphql1.SearchResultDTO) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_SearchResultImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_SearchResult")
 		case "products":
-
 			out.Values[i] = ec._Commerce_Product_SearchResult_products(ctx, field, obj)
-
 		case "facets":
-
 			out.Values[i] = ec._Commerce_Product_SearchResult_facets(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "suggestions":
-
 			out.Values[i] = ec._Commerce_Product_SearchResult_suggestions(ctx, field, obj)
-
 		case "searchMeta":
-
 			out.Values[i] = ec._Commerce_Product_SearchResult_searchMeta(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "hasSelectedFacet":
-
 			out.Values[i] = ec._Commerce_Product_SearchResult_hasSelectedFacet(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "promotion":
-
 			out.Values[i] = ec._Commerce_Product_SearchResult_promotion(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -43141,115 +43710,100 @@ var commerce_Product_SimpleProductImplementors = []string{"Commerce_Product_Simp
 
 func (ec *executionContext) _Commerce_Product_SimpleProduct(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.SimpleProduct) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_SimpleProductImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_SimpleProduct")
 		case "type":
-
 			out.Values[i] = ec._Commerce_Product_SimpleProduct_type(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "marketPlaceCode":
-
 			out.Values[i] = ec._Commerce_Product_SimpleProduct_marketPlaceCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "identifier":
-
 			out.Values[i] = ec._Commerce_Product_SimpleProduct_identifier(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "media":
-
 			out.Values[i] = ec._Commerce_Product_SimpleProduct_media(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "price":
-
 			out.Values[i] = ec._Commerce_Product_SimpleProduct_price(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "availablePrices":
-
 			out.Values[i] = ec._Commerce_Product_SimpleProduct_availablePrices(ctx, field, obj)
-
 		case "title":
-
 			out.Values[i] = ec._Commerce_Product_SimpleProduct_title(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "categories":
-
 			out.Values[i] = ec._Commerce_Product_SimpleProduct_categories(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "description":
-
 			out.Values[i] = ec._Commerce_Product_SimpleProduct_description(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "shortDescription":
-
 			out.Values[i] = ec._Commerce_Product_SimpleProduct_shortDescription(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "meta":
-
 			out.Values[i] = ec._Commerce_Product_SimpleProduct_meta(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "loyalty":
-
 			out.Values[i] = ec._Commerce_Product_SimpleProduct_loyalty(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "attributes":
-
 			out.Values[i] = ec._Commerce_Product_SimpleProduct_attributes(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "badges":
-
 			out.Values[i] = ec._Commerce_Product_SimpleProduct_badges(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -43257,34 +43811,43 @@ var commerce_Product_VariantSelectionImplementors = []string{"Commerce_Product_V
 
 func (ec *executionContext) _Commerce_Product_VariantSelection(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariantSelection) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariantSelectionImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_VariantSelection")
 		case "variants":
-
 			out.Values[i] = ec._Commerce_Product_VariantSelection_variants(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "attributes":
-
 			out.Values[i] = ec._Commerce_Product_VariantSelection_attributes(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -43292,41 +43855,48 @@ var commerce_Product_VariantSelection_AttributeImplementors = []string{"Commerce
 
 func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariantSelectionAttribute) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariantSelection_AttributeImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_VariantSelection_Attribute")
 		case "label":
-
 			out.Values[i] = ec._Commerce_Product_VariantSelection_Attribute_label(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "code":
-
 			out.Values[i] = ec._Commerce_Product_VariantSelection_Attribute_code(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "options":
-
 			out.Values[i] = ec._Commerce_Product_VariantSelection_Attribute_options(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -43334,38 +43904,45 @@ var commerce_Product_VariantSelection_Attribute_OptionImplementors = []string{"C
 
 func (ec *executionContext) _Commerce_Product_VariantSelection_Attribute_Option(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariantSelectionAttributeOption) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariantSelection_Attribute_OptionImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_VariantSelection_Attribute_Option")
 		case "label":
-
 			out.Values[i] = ec._Commerce_Product_VariantSelection_Attribute_Option_label(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "unitCode":
-
 			out.Values[i] = ec._Commerce_Product_VariantSelection_Attribute_Option_unitCode(ctx, field, obj)
-
 		case "otherAttributesRestrictions":
-
 			out.Values[i] = ec._Commerce_Product_VariantSelection_Attribute_Option_otherAttributesRestrictions(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -43373,31 +43950,40 @@ var commerce_Product_VariantSelection_MatchImplementors = []string{"Commerce_Pro
 
 func (ec *executionContext) _Commerce_Product_VariantSelection_Match(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariantSelectionMatch) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariantSelection_MatchImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_VariantSelection_Match")
 		case "attributes":
-
 			out.Values[i] = ec._Commerce_Product_VariantSelection_Match_attributes(ctx, field, obj)
-
 		case "variant":
-
 			out.Values[i] = ec._Commerce_Product_VariantSelection_Match_variant(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -43405,34 +43991,43 @@ var commerce_Product_VariantSelection_Match_AttributesImplementors = []string{"C
 
 func (ec *executionContext) _Commerce_Product_VariantSelection_Match_Attributes(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariantSelectionMatchAttributes) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariantSelection_Match_AttributesImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_VariantSelection_Match_Attributes")
 		case "key":
-
 			out.Values[i] = ec._Commerce_Product_VariantSelection_Match_Attributes_key(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "value":
-
 			out.Values[i] = ec._Commerce_Product_VariantSelection_Match_Attributes_value(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -43440,27 +44035,38 @@ var commerce_Product_VariantSelection_Match_VariantImplementors = []string{"Comm
 
 func (ec *executionContext) _Commerce_Product_VariantSelection_Match_Variant(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariantSelectionMatchVariant) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariantSelection_Match_VariantImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_VariantSelection_Match_Variant")
 		case "marketplaceCode":
-
 			out.Values[i] = ec._Commerce_Product_VariantSelection_Match_Variant_marketplaceCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -43468,34 +44074,43 @@ var commerce_Product_VariantSelection_Option_OtherAttributesRestrictionImplement
 
 func (ec *executionContext) _Commerce_Product_VariantSelection_Option_OtherAttributesRestriction(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.OtherAttributesRestriction) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariantSelection_Option_OtherAttributesRestrictionImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_VariantSelection_Option_OtherAttributesRestriction")
 		case "code":
-
 			out.Values[i] = ec._Commerce_Product_VariantSelection_Option_OtherAttributesRestriction_code(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "availableOptions":
-
 			out.Values[i] = ec._Commerce_Product_VariantSelection_Option_OtherAttributesRestriction_availableOptions(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -43503,38 +44118,45 @@ var commerce_Product_VariationSelectionImplementors = []string{"Commerce_Product
 
 func (ec *executionContext) _Commerce_Product_VariationSelection(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariationSelection) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariationSelectionImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_VariationSelection")
 		case "code":
-
 			out.Values[i] = ec._Commerce_Product_VariationSelection_code(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "label":
-
 			out.Values[i] = ec._Commerce_Product_VariationSelection_label(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "options":
-
 			out.Values[i] = ec._Commerce_Product_VariationSelection_options(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -43542,48 +44164,53 @@ var commerce_Product_VariationSelection_OptionImplementors = []string{"Commerce_
 
 func (ec *executionContext) _Commerce_Product_VariationSelection_Option(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariationSelectionOption) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariationSelection_OptionImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_VariationSelection_Option")
 		case "label":
-
 			out.Values[i] = ec._Commerce_Product_VariationSelection_Option_label(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "unitCode":
-
 			out.Values[i] = ec._Commerce_Product_VariationSelection_Option_unitCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "state":
-
 			out.Values[i] = ec._Commerce_Product_VariationSelection_Option_state(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "variant":
-
 			out.Values[i] = ec._Commerce_Product_VariationSelection_Option_variant(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -43591,27 +44218,38 @@ var commerce_Product_VariationSelection_OptionVariantImplementors = []string{"Co
 
 func (ec *executionContext) _Commerce_Product_VariationSelection_OptionVariant(ctx context.Context, sel ast.SelectionSet, obj *graphqlproductdto.VariationSelectionOptionVariant) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Product_VariationSelection_OptionVariantImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Product_VariationSelection_OptionVariant")
 		case "marketPlaceCode":
-
 			out.Values[i] = ec._Commerce_Product_VariationSelection_OptionVariant_marketPlaceCode(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -43619,55 +44257,58 @@ var commerce_Search_ListFacetImplementors = []string{"Commerce_Search_ListFacet"
 
 func (ec *executionContext) _Commerce_Search_ListFacet(ctx context.Context, sel ast.SelectionSet, obj *searchdto.CommerceSearchListFacet) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_ListFacetImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Search_ListFacet")
 		case "name":
-
 			out.Values[i] = ec._Commerce_Search_ListFacet_name(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "label":
-
 			out.Values[i] = ec._Commerce_Search_ListFacet_label(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "position":
-
 			out.Values[i] = ec._Commerce_Search_ListFacet_position(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "items":
-
 			out.Values[i] = ec._Commerce_Search_ListFacet_items(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "hasSelectedItem":
-
 			out.Values[i] = ec._Commerce_Search_ListFacet_hasSelectedItem(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -43675,48 +44316,53 @@ var commerce_Search_ListFacetItemImplementors = []string{"Commerce_Search_ListFa
 
 func (ec *executionContext) _Commerce_Search_ListFacetItem(ctx context.Context, sel ast.SelectionSet, obj *searchdto.CommerceSearchListFacetItem) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_ListFacetItemImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Search_ListFacetItem")
 		case "label":
-
 			out.Values[i] = ec._Commerce_Search_ListFacetItem_label(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "value":
-
 			out.Values[i] = ec._Commerce_Search_ListFacetItem_value(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "selected":
-
 			out.Values[i] = ec._Commerce_Search_ListFacetItem_selected(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "count":
-
 			out.Values[i] = ec._Commerce_Search_ListFacetItem_count(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -43724,51 +44370,42 @@ var commerce_Search_MetaImplementors = []string{"Commerce_Search_Meta"}
 
 func (ec *executionContext) _Commerce_Search_Meta(ctx context.Context, sel ast.SelectionSet, obj *domain2.SearchMeta) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_MetaImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Search_Meta")
 		case "query":
-
 			out.Values[i] = ec._Commerce_Search_Meta_query(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "originalQuery":
-
 			out.Values[i] = ec._Commerce_Search_Meta_originalQuery(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "page":
-
 			out.Values[i] = ec._Commerce_Search_Meta_page(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "numPages":
-
 			out.Values[i] = ec._Commerce_Search_Meta_numPages(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "numResults":
-
 			out.Values[i] = ec._Commerce_Search_Meta_numResults(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				atomic.AddUint32(&out.Invalids, 1)
 			}
 		case "sortOptions":
 			field := field
 
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -43778,18 +44415,46 @@ func (ec *executionContext) _Commerce_Search_Meta(ctx context.Context, sel ast.S
 				return res
 			}
 
-			out.Concurrently(i, func() graphql.Marshaler {
-				return innerFunc(ctx)
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
 
-			})
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -43797,45 +44462,50 @@ var commerce_Search_PromotionImplementors = []string{"Commerce_Search_Promotion"
 
 func (ec *executionContext) _Commerce_Search_Promotion(ctx context.Context, sel ast.SelectionSet, obj *searchdto.PromotionDTO) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_PromotionImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Search_Promotion")
 		case "title":
-
 			out.Values[i] = ec._Commerce_Search_Promotion_title(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "content":
-
 			out.Values[i] = ec._Commerce_Search_Promotion_content(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "url":
-
 			out.Values[i] = ec._Commerce_Search_Promotion_url(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "media":
-
 			out.Values[i] = ec._Commerce_Search_Promotion_media(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -43843,55 +44513,58 @@ var commerce_Search_PromotionMediaImplementors = []string{"Commerce_Search_Promo
 
 func (ec *executionContext) _Commerce_Search_PromotionMedia(ctx context.Context, sel ast.SelectionSet, obj *domain2.Media) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_PromotionMediaImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Search_PromotionMedia")
 		case "type":
-
 			out.Values[i] = ec._Commerce_Search_PromotionMedia_type(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "mimeType":
-
 			out.Values[i] = ec._Commerce_Search_PromotionMedia_mimeType(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "usage":
-
 			out.Values[i] = ec._Commerce_Search_PromotionMedia_usage(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "title":
-
 			out.Values[i] = ec._Commerce_Search_PromotionMedia_title(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "reference":
-
 			out.Values[i] = ec._Commerce_Search_PromotionMedia_reference(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -43899,55 +44572,58 @@ var commerce_Search_RangeFacetImplementors = []string{"Commerce_Search_RangeFace
 
 func (ec *executionContext) _Commerce_Search_RangeFacet(ctx context.Context, sel ast.SelectionSet, obj *searchdto.CommerceSearchRangeFacet) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_RangeFacetImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Search_RangeFacet")
 		case "name":
-
 			out.Values[i] = ec._Commerce_Search_RangeFacet_name(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "label":
-
 			out.Values[i] = ec._Commerce_Search_RangeFacet_label(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "position":
-
 			out.Values[i] = ec._Commerce_Search_RangeFacet_position(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "items":
-
 			out.Values[i] = ec._Commerce_Search_RangeFacet_items(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "hasSelectedItem":
-
 			out.Values[i] = ec._Commerce_Search_RangeFacet_hasSelectedItem(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -43955,76 +44631,73 @@ var commerce_Search_RangeFacetItemImplementors = []string{"Commerce_Search_Range
 
 func (ec *executionContext) _Commerce_Search_RangeFacetItem(ctx context.Context, sel ast.SelectionSet, obj *searchdto.CommerceSearchRangeFacetItem) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_RangeFacetItemImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Search_RangeFacetItem")
 		case "label":
-
 			out.Values[i] = ec._Commerce_Search_RangeFacetItem_label(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "value":
-
 			out.Values[i] = ec._Commerce_Search_RangeFacetItem_value(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "selected":
-
 			out.Values[i] = ec._Commerce_Search_RangeFacetItem_selected(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "count":
-
 			out.Values[i] = ec._Commerce_Search_RangeFacetItem_count(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "min":
-
 			out.Values[i] = ec._Commerce_Search_RangeFacetItem_min(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "max":
-
 			out.Values[i] = ec._Commerce_Search_RangeFacetItem_max(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "selectedMin":
-
 			out.Values[i] = ec._Commerce_Search_RangeFacetItem_selectedMin(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "selectedMax":
-
 			out.Values[i] = ec._Commerce_Search_RangeFacetItem_selectedMax(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -44032,41 +44705,48 @@ var commerce_Search_SortOptionImplementors = []string{"Commerce_Search_SortOptio
 
 func (ec *executionContext) _Commerce_Search_SortOption(ctx context.Context, sel ast.SelectionSet, obj *searchdto.CommerceSearchSortOption) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_SortOptionImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Search_SortOption")
 		case "label":
-
 			out.Values[i] = ec._Commerce_Search_SortOption_label(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "field":
-
 			out.Values[i] = ec._Commerce_Search_SortOption_field(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "selected":
-
 			out.Values[i] = ec._Commerce_Search_SortOption_selected(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -44074,34 +44754,43 @@ var commerce_Search_SuggestionImplementors = []string{"Commerce_Search_Suggestio
 
 func (ec *executionContext) _Commerce_Search_Suggestion(ctx context.Context, sel ast.SelectionSet, obj *domain2.Suggestion) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_SuggestionImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Search_Suggestion")
 		case "text":
-
 			out.Values[i] = ec._Commerce_Search_Suggestion_text(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "highlight":
-
 			out.Values[i] = ec._Commerce_Search_Suggestion_highlight(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -44109,55 +44798,58 @@ var commerce_Search_TreeFacetImplementors = []string{"Commerce_Search_TreeFacet"
 
 func (ec *executionContext) _Commerce_Search_TreeFacet(ctx context.Context, sel ast.SelectionSet, obj *searchdto.CommerceSearchTreeFacet) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_TreeFacetImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Search_TreeFacet")
 		case "name":
-
 			out.Values[i] = ec._Commerce_Search_TreeFacet_name(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "label":
-
 			out.Values[i] = ec._Commerce_Search_TreeFacet_label(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "position":
-
 			out.Values[i] = ec._Commerce_Search_TreeFacet_position(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "items":
-
 			out.Values[i] = ec._Commerce_Search_TreeFacet_items(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "hasSelectedItem":
-
 			out.Values[i] = ec._Commerce_Search_TreeFacet_hasSelectedItem(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -44165,59 +44857,60 @@ var commerce_Search_TreeFacetItemImplementors = []string{"Commerce_Search_TreeFa
 
 func (ec *executionContext) _Commerce_Search_TreeFacetItem(ctx context.Context, sel ast.SelectionSet, obj *searchdto.CommerceSearchTreeFacetItem) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_TreeFacetItemImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Commerce_Search_TreeFacetItem")
 		case "label":
-
 			out.Values[i] = ec._Commerce_Search_TreeFacetItem_label(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "value":
-
 			out.Values[i] = ec._Commerce_Search_TreeFacetItem_value(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "selected":
-
 			out.Values[i] = ec._Commerce_Search_TreeFacetItem_selected(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "count":
-
 			out.Values[i] = ec._Commerce_Search_TreeFacetItem_count(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "active":
-
 			out.Values[i] = ec._Commerce_Search_TreeFacetItem_active(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "items":
-
 			out.Values[i] = ec._Commerce_Search_TreeFacetItem_items(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -44230,7 +44923,7 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 	})
 
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		innerCtx := graphql.WithRootFieldContext(ctx, &graphql.RootFieldContext{
 			Object: field.Name,
@@ -44241,181 +44934,153 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
 		case "flamingo":
-
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_flamingo(ctx, field)
 			})
-
 		case "Commerce_Cart_AddToCart":
-
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_Commerce_Cart_AddToCart(ctx, field)
 			})
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "Commerce_Cart_DeleteCartDelivery":
-
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_Commerce_Cart_DeleteCartDelivery(ctx, field)
 			})
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "Commerce_Cart_DeleteItem":
-
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_Commerce_Cart_DeleteItem(ctx, field)
 			})
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "Commerce_Cart_UpdateItemQty":
-
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_Commerce_Cart_UpdateItemQty(ctx, field)
 			})
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "Commerce_Cart_UpdateBillingAddress":
-
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_Commerce_Cart_UpdateBillingAddress(ctx, field)
 			})
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "Commerce_Cart_UpdateSelectedPayment":
-
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_Commerce_Cart_UpdateSelectedPayment(ctx, field)
 			})
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "Commerce_Cart_ApplyCouponCodeOrGiftCard":
-
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_Commerce_Cart_ApplyCouponCodeOrGiftCard(ctx, field)
 			})
-
 		case "Commerce_Cart_RemoveGiftCard":
-
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_Commerce_Cart_RemoveGiftCard(ctx, field)
 			})
-
 		case "Commerce_Cart_RemoveCouponCode":
-
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_Commerce_Cart_RemoveCouponCode(ctx, field)
 			})
-
 		case "Commerce_Cart_UpdateDeliveryAddresses":
-
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_Commerce_Cart_UpdateDeliveryAddresses(ctx, field)
 			})
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "Commerce_Cart_UpdateDeliveryShippingOptions":
-
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_Commerce_Cart_UpdateDeliveryShippingOptions(ctx, field)
 			})
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "Commerce_Cart_Clean":
-
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_Commerce_Cart_Clean(ctx, field)
 			})
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "Commerce_Cart_UpdateAdditionalData":
-
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_Commerce_Cart_UpdateAdditionalData(ctx, field)
 			})
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "Commerce_Cart_UpdateDeliveriesAdditionalData":
-
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_Commerce_Cart_UpdateDeliveriesAdditionalData(ctx, field)
 			})
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "Commerce_Checkout_StartPlaceOrder":
-
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_Commerce_Checkout_StartPlaceOrder(ctx, field)
 			})
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "Commerce_Checkout_CancelPlaceOrder":
-
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_Commerce_Checkout_CancelPlaceOrder(ctx, field)
 			})
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "Commerce_Checkout_ClearPlaceOrder":
-
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_Commerce_Checkout_ClearPlaceOrder(ctx, field)
 			})
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "Commerce_Checkout_RefreshPlaceOrder":
-
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_Commerce_Checkout_RefreshPlaceOrder(ctx, field)
 			})
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "Commerce_Checkout_RefreshPlaceOrderBlocking":
-
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_Commerce_Checkout_RefreshPlaceOrderBlocking(ctx, field)
 			})
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -44428,7 +45093,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 	})
 
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		innerCtx := graphql.WithRootFieldContext(ctx, &graphql.RootFieldContext{
 			Object: field.Name,
@@ -44441,7 +45106,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		case "flamingo":
 			field := field
 
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -44452,16 +45117,15 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 			}
 
-			out.Concurrently(i, func() graphql.Marshaler {
-				return rrm(innerCtx)
-			})
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "Commerce_Product":
 			field := field
 
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -44472,16 +45136,15 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 			}
 
-			out.Concurrently(i, func() graphql.Marshaler {
-				return rrm(innerCtx)
-			})
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "Commerce_Product_Search":
 			field := field
 
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -44489,22 +45152,21 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}()
 				res = ec._Query_Commerce_Product_Search(ctx, field)
 				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
+					atomic.AddUint32(&fs.Invalids, 1)
 				}
 				return res
 			}
 
 			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 			}
 
-			out.Concurrently(i, func() graphql.Marshaler {
-				return rrm(innerCtx)
-			})
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "Commerce_Customer_Status":
 			field := field
 
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -44515,16 +45177,15 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 			}
 
-			out.Concurrently(i, func() graphql.Marshaler {
-				return rrm(innerCtx)
-			})
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "Commerce_Customer":
 			field := field
 
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -44535,16 +45196,15 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 			}
 
-			out.Concurrently(i, func() graphql.Marshaler {
-				return rrm(innerCtx)
-			})
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "Commerce_Cart_DecoratedCart":
 			field := field
 
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -44552,22 +45212,21 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}()
 				res = ec._Query_Commerce_Cart_DecoratedCart(ctx, field)
 				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
+					atomic.AddUint32(&fs.Invalids, 1)
 				}
 				return res
 			}
 
 			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 			}
 
-			out.Concurrently(i, func() graphql.Marshaler {
-				return rrm(innerCtx)
-			})
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "Commerce_Cart_Validator":
 			field := field
 
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -44575,22 +45234,21 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}()
 				res = ec._Query_Commerce_Cart_Validator(ctx, field)
 				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
+					atomic.AddUint32(&fs.Invalids, 1)
 				}
 				return res
 			}
 
 			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 			}
 
-			out.Concurrently(i, func() graphql.Marshaler {
-				return rrm(innerCtx)
-			})
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "Commerce_Cart_QtyRestriction":
 			field := field
 
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -44598,22 +45256,21 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}()
 				res = ec._Query_Commerce_Cart_QtyRestriction(ctx, field)
 				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
+					atomic.AddUint32(&fs.Invalids, 1)
 				}
 				return res
 			}
 
 			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 			}
 
-			out.Concurrently(i, func() graphql.Marshaler {
-				return rrm(innerCtx)
-			})
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "Commerce_Checkout_ActivePlaceOrder":
 			field := field
 
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -44621,22 +45278,21 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}()
 				res = ec._Query_Commerce_Checkout_ActivePlaceOrder(ctx, field)
 				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
+					atomic.AddUint32(&fs.Invalids, 1)
 				}
 				return res
 			}
 
 			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 			}
 
-			out.Concurrently(i, func() graphql.Marshaler {
-				return rrm(innerCtx)
-			})
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "Commerce_Checkout_CurrentContext":
 			field := field
 
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -44644,22 +45300,21 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}()
 				res = ec._Query_Commerce_Checkout_CurrentContext(ctx, field)
 				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
+					atomic.AddUint32(&fs.Invalids, 1)
 				}
 				return res
 			}
 
 			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 			}
 
-			out.Concurrently(i, func() graphql.Marshaler {
-				return rrm(innerCtx)
-			})
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "Commerce_CategoryTree":
 			field := field
 
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -44667,22 +45322,21 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}()
 				res = ec._Query_Commerce_CategoryTree(ctx, field)
 				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
+					atomic.AddUint32(&fs.Invalids, 1)
 				}
 				return res
 			}
 
 			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 			}
 
-			out.Concurrently(i, func() graphql.Marshaler {
-				return rrm(innerCtx)
-			})
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "Commerce_Category":
 			field := field
 
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
 				defer func() {
 					if r := recover(); r != nil {
 						ec.Error(ctx, ec.Recover(ctx, r))
@@ -44693,32 +45347,39 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 			}
 
-			out.Concurrently(i, func() graphql.Marshaler {
-				return rrm(innerCtx)
-			})
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "__type":
-
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___type(ctx, field)
 			})
-
 		case "__schema":
-
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___schema(ctx, field)
 			})
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -44726,52 +45387,55 @@ var __DirectiveImplementors = []string{"__Directive"}
 
 func (ec *executionContext) ___Directive(ctx context.Context, sel ast.SelectionSet, obj *introspection.Directive) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, __DirectiveImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("__Directive")
 		case "name":
-
 			out.Values[i] = ec.___Directive_name(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "description":
-
 			out.Values[i] = ec.___Directive_description(ctx, field, obj)
-
 		case "locations":
-
 			out.Values[i] = ec.___Directive_locations(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "args":
-
 			out.Values[i] = ec.___Directive_args(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "isRepeatable":
-
 			out.Values[i] = ec.___Directive_isRepeatable(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -44779,42 +45443,47 @@ var __EnumValueImplementors = []string{"__EnumValue"}
 
 func (ec *executionContext) ___EnumValue(ctx context.Context, sel ast.SelectionSet, obj *introspection.EnumValue) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, __EnumValueImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("__EnumValue")
 		case "name":
-
 			out.Values[i] = ec.___EnumValue_name(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "description":
-
 			out.Values[i] = ec.___EnumValue_description(ctx, field, obj)
-
 		case "isDeprecated":
-
 			out.Values[i] = ec.___EnumValue_isDeprecated(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "deprecationReason":
-
 			out.Values[i] = ec.___EnumValue_deprecationReason(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -44822,56 +45491,57 @@ var __FieldImplementors = []string{"__Field"}
 
 func (ec *executionContext) ___Field(ctx context.Context, sel ast.SelectionSet, obj *introspection.Field) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, __FieldImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("__Field")
 		case "name":
-
 			out.Values[i] = ec.___Field_name(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "description":
-
 			out.Values[i] = ec.___Field_description(ctx, field, obj)
-
 		case "args":
-
 			out.Values[i] = ec.___Field_args(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "type":
-
 			out.Values[i] = ec.___Field_type(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "isDeprecated":
-
 			out.Values[i] = ec.___Field_isDeprecated(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "deprecationReason":
-
 			out.Values[i] = ec.___Field_deprecationReason(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -44879,42 +45549,47 @@ var __InputValueImplementors = []string{"__InputValue"}
 
 func (ec *executionContext) ___InputValue(ctx context.Context, sel ast.SelectionSet, obj *introspection.InputValue) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, __InputValueImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("__InputValue")
 		case "name":
-
 			out.Values[i] = ec.___InputValue_name(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "description":
-
 			out.Values[i] = ec.___InputValue_description(ctx, field, obj)
-
 		case "type":
-
 			out.Values[i] = ec.___InputValue_type(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "defaultValue":
-
 			out.Values[i] = ec.___InputValue_defaultValue(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -44922,53 +45597,54 @@ var __SchemaImplementors = []string{"__Schema"}
 
 func (ec *executionContext) ___Schema(ctx context.Context, sel ast.SelectionSet, obj *introspection.Schema) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, __SchemaImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("__Schema")
 		case "description":
-
 			out.Values[i] = ec.___Schema_description(ctx, field, obj)
-
 		case "types":
-
 			out.Values[i] = ec.___Schema_types(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "queryType":
-
 			out.Values[i] = ec.___Schema_queryType(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "mutationType":
-
 			out.Values[i] = ec.___Schema_mutationType(ctx, field, obj)
-
 		case "subscriptionType":
-
 			out.Values[i] = ec.___Schema_subscriptionType(ctx, field, obj)
-
 		case "directives":
-
 			out.Values[i] = ec.___Schema_directives(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
@@ -44976,63 +45652,56 @@ var __TypeImplementors = []string{"__Type"}
 
 func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, obj *introspection.Type) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, __TypeImplementors)
+
 	out := graphql.NewFieldSet(fields)
-	var invalids uint32
+	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("__Type")
 		case "kind":
-
 			out.Values[i] = ec.___Type_kind(ctx, field, obj)
-
 			if out.Values[i] == graphql.Null {
-				invalids++
+				out.Invalids++
 			}
 		case "name":
-
 			out.Values[i] = ec.___Type_name(ctx, field, obj)
-
 		case "description":
-
 			out.Values[i] = ec.___Type_description(ctx, field, obj)
-
 		case "fields":
-
 			out.Values[i] = ec.___Type_fields(ctx, field, obj)
-
 		case "interfaces":
-
 			out.Values[i] = ec.___Type_interfaces(ctx, field, obj)
-
 		case "possibleTypes":
-
 			out.Values[i] = ec.___Type_possibleTypes(ctx, field, obj)
-
 		case "enumValues":
-
 			out.Values[i] = ec.___Type_enumValues(ctx, field, obj)
-
 		case "inputFields":
-
 			out.Values[i] = ec.___Type_inputFields(ctx, field, obj)
-
 		case "ofType":
-
 			out.Values[i] = ec.___Type_ofType(ctx, field, obj)
-
 		case "specifiedByURL":
-
 			out.Values[i] = ec.___Type_specifiedByURL(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
 	}
-	out.Dispatch()
-	if invalids > 0 {
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
 		return graphql.Null
 	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
 	return out
 }
 
