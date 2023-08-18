@@ -22,7 +22,7 @@ func Test_CartValidator(t *testing.T) {
 
 	response := helper.GraphQlRequest(t, e, loadGraphQL(t, "validate_cart", nil)).Expect()
 	response.Status(http.StatusOK)
-	getValue(response, "Commerce_Cart_Validator", "hasCommonError").Boolean().False()
+	getValue(response, "Commerce_Cart_Validator", "hasCommonError").Boolean().IsFalse()
 }
 
 // This test checks if qty Restrictions work
@@ -33,13 +33,13 @@ func Test_CartRestrictor(t *testing.T) {
 	t.Run("restricted product", func(t *testing.T) {
 		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "validate_restrictor", map[string]string{"MARKETPLACE_CODE": "fake_simple"})).Expect()
 		response.Status(http.StatusOK)
-		getValue(response, "Commerce_Cart_QtyRestriction", "isRestricted").Boolean().True()
+		getValue(response, "Commerce_Cart_QtyRestriction", "isRestricted").Boolean().IsTrue()
 	})
 
 	t.Run("unrestricted product", func(t *testing.T) {
 		response := helper.GraphQlRequest(t, e, loadGraphQL(t, "validate_restrictor", map[string]string{"MARKETPLACE_CODE": "fake_configurable"})).Expect()
 		response.Status(http.StatusOK)
-		getValue(response, "Commerce_Cart_QtyRestriction", "isRestricted").Boolean().False()
+		getValue(response, "Commerce_Cart_QtyRestriction", "isRestricted").Boolean().IsFalse()
 	})
 
 	t.Run("404 product", func(t *testing.T) {

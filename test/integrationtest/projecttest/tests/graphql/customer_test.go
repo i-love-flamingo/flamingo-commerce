@@ -52,8 +52,8 @@ func Test_CommerceCustomerStatus(t *testing.T) {
 
 			resp := helper.GraphQlRequest(t, e, loadGraphQL(t, "customer_status", nil)).Expect()
 			resp.Status(http.StatusOK)
-			getValue(resp, "Commerce_Customer_Status", "isLoggedIn").Boolean().Equal(tt.expected.status)
-			getValue(resp, "Commerce_Customer_Status", "userID").String().Equal(tt.expected.userID)
+			getValue(resp, "Commerce_Customer_Status", "isLoggedIn").Boolean().IsEqual(tt.expected.status)
+			getValue(resp, "Commerce_Customer_Status", "userID").String().IsEqual(tt.expected.userID)
 		})
 	}
 }
@@ -71,18 +71,18 @@ func Test_CommerceCustomer(t *testing.T) {
 			name:         "not logged in",
 			performLogin: false,
 			validator: func(t *testing.T, response *httpexpect.Response) {
-				response.JSON().Object().Value("data").Object().Value("Commerce_Customer").Null()
+				response.JSON().Object().Value("data").Object().Value("Commerce_Customer").IsNull()
 			},
 		},
 		{
 			name:         "logged in",
 			performLogin: true,
 			validator: func(t *testing.T, response *httpexpect.Response) {
-				getValue(response, "Commerce_Customer", "id").Equal("username")
+				getValue(response, "Commerce_Customer", "id").IsEqual("username")
 				personalData := getValue(response, "Commerce_Customer", "personalData").Object()
-				personalData.Value("firstName").Equal("Flamingo")
-				personalData.Value("lastName").Equal("Commerce")
-				personalData.Value("birthday").Equal("2019-04-02")
+				personalData.Value("firstName").IsEqual("Flamingo")
+				personalData.Value("lastName").IsEqual("Commerce")
+				personalData.Value("birthday").IsEqual("2019-04-02")
 			},
 		},
 	}

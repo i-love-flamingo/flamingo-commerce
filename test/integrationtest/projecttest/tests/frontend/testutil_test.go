@@ -58,7 +58,7 @@ func CartGetItems(t *testing.T, e *httpexpect.Expect) CartItems {
 	cartItems := e.GET("/en/cart/").Expect().Status(http.StatusOK).JSON().Object().
 		Value("DecoratedCart").Object().
 		Value("Cart").Object().
-		Value("Deliveries").Array().Element(0).Object().
+		Value("Deliveries").Array().Value(0).Object().
 		Value("Cartitems").Array()
 
 	for _, v := range cartItems.Iter() {

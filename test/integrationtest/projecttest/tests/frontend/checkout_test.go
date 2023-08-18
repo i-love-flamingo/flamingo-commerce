@@ -19,7 +19,7 @@ func Test_Checkout_SubmitCheckoutAction(t *testing.T) {
 	t.Run("empty cart should lead to an error", func(t *testing.T) {
 		e := integrationtest.NewHTTPExpect(t, "http://"+FlamingoURL)
 		response := e.GET(routeCheckoutSubmit).Expect()
-		response.Status(http.StatusOK).Body().Equal("null\n")
+		response.Status(http.StatusOK).Body().IsEqual("null\n")
 	})
 
 	t.Run("cart and valid form should lead to redirect to review page", func(t *testing.T) {
@@ -61,9 +61,9 @@ func Test_Checkout_SubmitCheckoutAction(t *testing.T) {
 		assert.Equal(t, routeCheckoutSubmit, response.Raw().Request.URL.RequestURI())
 
 		form := response.JSON().Object().Value("Form").Object()
-		form.Value("BillingAddressForm").Object().Value("ValidationInfo").Object().Value("IsValid").Boolean().False()
-		form.Value("DeliveryForms").Object().Value("inflight").Object().Value("ValidationInfo").Object().Value("IsValid").Boolean().False()
-		form.Value("SimplePaymentForm").Object().Value("ValidationInfo").Object().Value("IsValid").Boolean().False()
+		form.Value("BillingAddressForm").Object().Value("ValidationInfo").Object().Value("IsValid").Boolean().IsFalse()
+		form.Value("DeliveryForms").Object().Value("inflight").Object().Value("ValidationInfo").Object().Value("IsValid").Boolean().IsFalse()
+		form.Value("SimplePaymentForm").Object().Value("ValidationInfo").Object().Value("IsValid").Boolean().IsFalse()
 	})
 
 	t.Run("checkout with cart requires payment", func(t *testing.T) {
@@ -92,7 +92,7 @@ func Test_Checkout_SubmitCheckoutAction(t *testing.T) {
 		assert.Equal(t, routeCheckoutSubmit, response.Raw().Request.URL.RequestURI())
 
 		form := response.JSON().Object().Value("Form").Object()
-		form.Value("SimplePaymentForm").Object().Value("ValidationInfo").Object().Value("IsValid").Boolean().False()
+		form.Value("SimplePaymentForm").Object().Value("ValidationInfo").Object().Value("IsValid").Boolean().IsFalse()
 	})
 
 	t.Run("checkout with zero cart possible without payment", func(t *testing.T) {
@@ -161,7 +161,7 @@ func Test_Checkout_ReviewActionAndPlaceOrderAction(t *testing.T) {
 
 		assert.Equal(t, routeCheckoutSuccess, response.Raw().Request.URL.RequestURI())
 		response.JSON().Object().Value("PaymentInfos").NotNull()
-		response.JSON().Object().Value("PlacedOrderInfos").Array().First().Object().Value("OrderNumber").String().NotEmpty()
+		response.JSON().Object().Value("PlacedOrderInfos").Array().Value(0).Object().Value("OrderNumber").String().NotEmpty()
 	})
 
 	t.Run("zero cart without payment should lead to success page", func(t *testing.T) {
@@ -198,7 +198,7 @@ func Test_Checkout_ReviewActionAndPlaceOrderAction(t *testing.T) {
 		})
 
 		assert.Equal(t, routeCheckoutSuccess, response.Raw().Request.URL.RequestURI())
-		response.JSON().Object().Value("PaymentInfos").Null()
+		response.JSON().Object().Value("PaymentInfos").IsNull()
 	})
 
 	t.Run("error during payment should lead to checkout page", func(t *testing.T) {
@@ -238,9 +238,9 @@ func Test_Checkout_ReviewActionAndPlaceOrderAction(t *testing.T) {
 		})
 
 		assert.Equal(t, routeCheckoutSubmit, response.Raw().Request.URL.RequestURI())
-		response.JSON().Object().Value("ErrorInfos").Object().Value("HasPaymentError").Boolean().True()
-		response.JSON().Object().Value("ErrorInfos").Object().Value("HasError").Boolean().True()
-		response.JSON().Object().Value("ErrorInfos").Object().Value("ErrorMessage").String().Equal(domain.PaymentErrorCodeFailed)
+		response.JSON().Object().Value("ErrorInfos").Object().Value("HasPaymentError").Boolean().IsTrue()
+		response.JSON().Object().Value("ErrorInfos").Object().Value("HasError").Boolean().IsTrue()
+		response.JSON().Object().Value("ErrorInfos").Object().Value("ErrorMessage").String().IsEqual(domain.PaymentErrorCodeFailed)
 	})
 
 	t.Run("error during place order should lead to checkout page", func(t *testing.T) {
@@ -283,8 +283,8 @@ func Test_Checkout_ReviewActionAndPlaceOrderAction(t *testing.T) {
 		})
 
 		assert.Equal(t, routeCheckoutSubmit, response.Raw().Request.URL.RequestURI())
-		response.JSON().Object().Value("ErrorInfos").Object().Value("HasError").Boolean().True()
-		response.JSON().Object().Value("ErrorInfos").Object().Value("HasPaymentError").Boolean().False()
-		response.JSON().Object().Value("ErrorInfos").Object().Value("ErrorMessage").String().Equal("generic error during place order")
+		response.JSON().Object().Value("ErrorInfos").Object().Value("HasError").Boolean().IsTrue()
+		response.JSON().Object().Value("ErrorInfos").Object().Value("HasPaymentError").Boolean().IsFalse()
+		response.JSON().Object().Value("ErrorInfos").Object().Value("ErrorMessage").String().IsEqual("generic error during place order")
 	})
 }
