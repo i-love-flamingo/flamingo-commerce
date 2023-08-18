@@ -24,7 +24,7 @@ require (
 	github.com/stvp/tempredis v0.0.0-20181119212430-b82af8480203
 	github.com/swaggo/swag v1.8.8
 	github.com/testcontainers/testcontainers-go v0.23.0
-	github.com/vektah/gqlparser/v2 v2.5.1
+	github.com/vektah/gqlparser/v2 v2.5.8
 	go.opencensus.io v0.24.0
 	go.uber.org/goleak v1.2.1
 	golang.org/x/mod v0.12.0
@@ -111,7 +111,7 @@ require (
 	github.com/prometheus/statsd_exporter v0.22.7 // indirect
 	github.com/rbcervilla/redisstore/v9 v9.0.0 // indirect
 	github.com/redis/go-redis/v9 v9.0.3 // indirect
-	github.com/sergi/go-diff v1.1.0 // indirect
+	github.com/sergi/go-diff v1.3.1 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
