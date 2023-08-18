@@ -28,7 +28,7 @@ require (
 	go.opencensus.io v0.24.0
 	go.uber.org/goleak v1.2.0
 	golang.org/x/mod v0.9.0
-	golang.org/x/text v0.9.0
+	golang.org/x/text v0.12.0
 )
 
 require (
