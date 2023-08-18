@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go: [ '1.20', '1.*' ]
+        go: [ '1.20', '1.x' ]
     name: With Go ${{ matrix.go }}
     steps:
       - uses: actions/checkout@v3
@@ -21,24 +21,21 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go }}
+          check-latest: true
       - name: Get dependencies
         run: go get -v -t -d ./...
       - name: Test
         run: go test -race ./...
   generate-checks:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        go: [ '1.*' ]
     name: Generate check
     steps:
       - uses: actions/checkout@v3
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
-          go-version: ${{ matrix.go }}
-      - name: Get dependencies
-        run: go get -v -t -d ./...
+          go-version: 1.x
+          check-latest: true
       - name: Goimports
         run: |
           go run golang.org/x/tools/cmd/goimports@latest -w .
@@ -51,18 +48,14 @@ jobs:
           git diff --quiet -- . ":(exclude)docs" || (echo 'generated go files are not up to date, check go generate, go.sum and go.mod' ; git diff -- . ":(exclude)docs"; exit 1)
   integration-tests:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        go: [ '1.*' ]
     name: Integration
     steps:
       - uses: actions/checkout@v3
       - name: Setup Go
         uses: actions/setup-go@v4
         with:
-          go-version: ${{ matrix.go }}
-      - name: Get dependencies
-        run: go get -v -t -d ./...
+          go-version: 1.x
+          check-latest: true
       - name: Generate GraphQL
         run: |
           cd test/integrationtest/projecttest && go run -tags graphql main.go && cd ../../../

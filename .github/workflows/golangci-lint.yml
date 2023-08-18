@@ -16,12 +16,13 @@ jobs:
     env:
       REV: $(git rev-list --topo-order origin/master..HEAD | tail -1)
     steps:
-      - uses: actions/setup-go@v4
-        with:
-          go-version: 1.*
       - uses: actions/checkout@v3
         with:
           fetch-depth: '0'
+      - uses: actions/setup-go@v4
+        with:
+          go-version: 1.x
+          check-latest: true
       - name: Echo start commit
         run: |
           rev=${{ env.REV }}
