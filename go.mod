@@ -12,7 +12,7 @@ require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/gavv/httpexpect/v2 v2.4.1
 	github.com/go-playground/form/v4 v4.2.1
-	github.com/go-redsync/redsync/v4 v4.6.0
+	github.com/go-redsync/redsync/v4 v4.8.1
 	github.com/go-test/deep v1.1.0
 	github.com/gomodule/redigo v1.8.9
 	github.com/google/go-cmp v0.5.9
