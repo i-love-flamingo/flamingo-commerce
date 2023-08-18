@@ -15,7 +15,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/search/utils"
 )
 
-//go:generate go run github.com/vektra/mockery/v2@v2.21.1 --name ProductSearchService --case snake
+//go:generate go run github.com/vektra/mockery/v2@v2.32.4 --name ProductSearchService --case snake
 
 type (
 	// QueryHandler provides the base command logic that is agnostic to the actual view type

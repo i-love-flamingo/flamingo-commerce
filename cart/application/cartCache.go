@@ -14,7 +14,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-//go:generate go run github.com/vektra/mockery/v2@v2.21.1 --name CartCache --case snake
+//go:generate go run github.com/vektra/mockery/v2@v2.32.4 --name CartCache --case snake
 
 type (
 	// CartCache describes a cart caches methods
