@@ -147,11 +147,11 @@ func Bootup(modules []dingo.Module, configDir string, config config.Map) BootupI
 }
 
 // NewHTTPExpectWithCookies returns a new Expect object without printer with preset cookies to the base URL
-func NewHTTPExpectWithCookies(t httpexpect.LoggerReporter, baseURL string, cookies map[string]string) *httpexpect.Expect {
-	cookieJar := httpexpect.NewJar()
+func NewHTTPExpectWithCookies(testingTB httpexpect.TestingTB, baseURL string, cookies map[string]string) *httpexpect.Expect {
+	cookieJar := httpexpect.NewCookieJar()
 	parse, err := url.Parse(baseURL)
 	if err != nil {
-		t.Errorf(err.Error())
+		testingTB.Errorf(err.Error())
 	}
 	theCookies := make([]*http.Cookie, 0, len(cookies))
 	for key, value := range cookies {
@@ -165,12 +165,12 @@ func NewHTTPExpectWithCookies(t httpexpect.LoggerReporter, baseURL string, cooki
 		Client: &http.Client{
 			Jar: cookieJar,
 		},
-		Reporter: httpexpect.NewAssertReporter(t),
+		Reporter: httpexpect.NewAssertReporter(testingTB),
 		Printers: nil,
 	})
 }
 
 // NewHTTPExpect returns a new Expect object without printer
-func NewHTTPExpect(t httpexpect.LoggerReporter, baseURL string) *httpexpect.Expect {
-	return NewHTTPExpectWithCookies(t, baseURL, nil)
+func NewHTTPExpect(tb httpexpect.TestingTB, baseURL string) *httpexpect.Expect {
+	return NewHTTPExpectWithCookies(tb, baseURL, nil)
 }
