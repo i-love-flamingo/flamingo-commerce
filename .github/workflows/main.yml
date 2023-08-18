@@ -25,12 +25,12 @@ jobs:
         run: go get -v -t -d ./...
       - name: Test
         run: go test -race ./...
-  static-checks:
+  generate-checks:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         go: [ '1.*' ]
-    name: Static checks
+    name: Generate check
     steps:
       - uses: actions/checkout@v3
       - name: Setup Go
@@ -39,18 +39,6 @@ jobs:
           go-version: ${{ matrix.go }}
       - name: Get dependencies
         run: go get -v -t -d ./...
-      - name: Go Vet
-        run: go vet ./...
-      - name: Go Fmt
-        run: |
-          fmt=$(gofmt -l .)
-          test -z $fmt || (echo "please run gofmt" ; echo $fmt ; exit 1)
-      - name: Go Staticcheck
-        run: go run honnef.co/go/tools/cmd/staticcheck@latest ./...
-      - name: Spelling
-        run: go run github.com/client9/misspell/cmd/misspell@v0.3.4 -error .
-      - name: In effective assignments
-        run: go run github.com/gordonklaus/ineffassign@4cc7213 .
       - name: Goimports
         run: |
           go run golang.org/x/tools/cmd/goimports@latest -w .

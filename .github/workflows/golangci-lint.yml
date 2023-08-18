@@ -13,6 +13,8 @@ jobs:
   golangci:
     name: lint
     runs-on: ubuntu-latest
+    env:
+      REV: $(git rev-list --topo-order origin/master..HEAD | tail -1)
     steps:
       - uses: actions/setup-go@v4
         with:
@@ -20,8 +22,12 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: '0'
+      - name: Echo start commit
+        run: |
+          rev=${{ env.REV }}
+          if [[ $rev == '' ]]; then echo 'revision not found'; else echo used revision number: $rev; fi
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
-          version: v1.51
-          only-new-issues: true
+          version: latest
+          args: $(rev=${{ env.REV }}; if [ rev != '' ]; then echo --new-from-rev=$rev; fi)

@@ -56,6 +56,9 @@ func (a *AddressForm) MapToDomainAddress() cart.Address {
 		Country:                a.Country,
 		CountryCode:            a.CountryCode,
 		Email:                  a.Email,
+		TelephoneCountryCode:   a.PhoneCountryCode,
+		TelephoneAreaCode:      a.PhoneAreaCode,
+		TelephoneNumber:        a.PhoneNumber,
 		Telephone:              a.PhoneCountryCode + a.PhoneAreaCode + a.PhoneNumber,
 	}
 }
@@ -134,8 +137,22 @@ func (a *AddressForm) LoadFromCartAddress(address cart.Address) {
 		a.City = address.City
 	}
 
+	//nolint:staticcheck // deprecated since 10.08
 	if address.Telephone != "" {
 		a.PhoneNumber = address.Telephone
+	}
+
+	if address.TelephoneCountryCode != "" {
+		a.PhoneCountryCode = address.TelephoneCountryCode
+	}
+
+	if address.TelephoneAreaCode != "" {
+		a.PhoneAreaCode = address.TelephoneAreaCode
+	}
+
+	// Overrides if used new field
+	if address.TelephoneNumber != "" {
+		a.PhoneNumber = address.TelephoneNumber
 	}
 
 	if address.CountryCode != "" {

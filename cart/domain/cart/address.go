@@ -19,8 +19,12 @@ type (
 		RegionCode             string
 		Country                string
 		CountryCode            string
-		Telephone              string
-		Email                  string
+		TelephoneCountryCode   string
+		TelephoneAreaCode      string
+		TelephoneNumber        string
+		// Deprecated: parts of number should be distinguished, please use TelephoneCountryCode, TelephoneAreaCode and TelephoneNumber
+		Telephone string
+		Email     string
 	}
 )
 
