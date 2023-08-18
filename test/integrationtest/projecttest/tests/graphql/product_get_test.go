@@ -20,24 +20,24 @@ func Test_CommerceProductGet(t *testing.T) {
 		"simple": map[string]interface{}{
 			"title":           "TypeSimple product",
 			"marketPlaceCode": "fake_simple",
-			"meta":            map[string]interface{}{"keywords": []interface{}{string("keywords")}},
+			"meta":            map[string]interface{}{"keywords": []interface{}{"keywords"}},
 			"price":           map[string]interface{}{"activeBase": map[string]interface{}{"amount": 1.0, "currency": "€"}},
 		},
 		"configurable": map[string]interface{}{
 			"title":           "TypeConfigurable product",
 			"marketPlaceCode": "fake_configurable",
-			"meta":            map[string]interface{}{"keywords": []interface{}{string("keywords")}},
+			"meta":            map[string]interface{}{"keywords": []interface{}{"keywords"}},
 			"variantSelection": map[string]interface{}{
 				"variants": []interface{}{
 					map[string]interface{}{
 						"attributes": []interface{}{
 							map[string]interface{}{
-								"key":   string("color"),
-								"value": string("White"),
+								"key":   "color",
+								"value": "White",
 							},
 							map[string]interface{}{
-								"key":   string("size"),
-								"value": string("M"),
+								"key":   "size",
+								"value": "M",
 							},
 						},
 						"variant": map[string]interface{}{
@@ -47,12 +47,12 @@ func Test_CommerceProductGet(t *testing.T) {
 					map[string]interface{}{
 						"attributes": []interface{}{
 							map[string]interface{}{
-								"key":   string("color"),
-								"value": string("Black"),
+								"key":   "color",
+								"value": "Black",
 							},
 							map[string]interface{}{
-								"key":   string("size"),
-								"value": string("L"),
+								"key":   "size",
+								"value": "L",
 							},
 						},
 						"variant": map[string]interface{}{
@@ -62,12 +62,12 @@ func Test_CommerceProductGet(t *testing.T) {
 					map[string]interface{}{
 						"attributes": []interface{}{
 							map[string]interface{}{
-								"key":   string("color"),
-								"value": string("Red"),
+								"key":   "color",
+								"value": "Red",
 							},
 							map[string]interface{}{
-								"key":   string("size"),
-								"value": string("L"),
+								"key":   "size",
+								"value": "L",
 							},
 						},
 						"variant": map[string]interface{}{
@@ -77,12 +77,12 @@ func Test_CommerceProductGet(t *testing.T) {
 					map[string]interface{}{
 						"attributes": []interface{}{
 							map[string]interface{}{
-								"key":   string("color"),
-								"value": string("Red"),
+								"key":   "color",
+								"value": "Red",
 							},
 							map[string]interface{}{
-								"key":   string("size"),
-								"value": string("M"),
+								"key":   "size",
+								"value": "M",
 							},
 						},
 						"variant": map[string]interface{}{
@@ -92,35 +92,35 @@ func Test_CommerceProductGet(t *testing.T) {
 				},
 				"attributes": []interface{}{
 					map[string]interface{}{
-						"label": string("Color"),
-						"code":  string("color"),
+						"label": "Color",
+						"code":  "color",
 						"options": []interface{}{
 							map[string]interface{}{
-								"label":    string("White"),
-								"unitCode": string(""),
+								"label":    "White",
+								"unitCode": "",
 								"otherAttributesRestrictions": []interface{}{
 									map[string]interface{}{
-										"code":             string("size"),
+										"code":             "size",
 										"availableOptions": []interface{}{"M"},
 									},
 								},
 							},
 							map[string]interface{}{
-								"label":    string("Black"),
-								"unitCode": string(""),
+								"label":    "Black",
+								"unitCode": "",
 								"otherAttributesRestrictions": []interface{}{
 									map[string]interface{}{
-										"code":             string("size"),
+										"code":             "size",
 										"availableOptions": []interface{}{"L"},
 									},
 								},
 							},
 							map[string]interface{}{
-								"label":    string("Red"),
-								"unitCode": string(""),
+								"label":    "Red",
+								"unitCode": "",
 								"otherAttributesRestrictions": []interface{}{
 									map[string]interface{}{
-										"code":             string("size"),
+										"code":             "size",
 										"availableOptions": []interface{}{"L", "M"},
 									},
 								},
@@ -128,25 +128,25 @@ func Test_CommerceProductGet(t *testing.T) {
 						},
 					},
 					map[string]interface{}{
-						"label": string("Size"),
-						"code":  string("size"),
+						"label": "Size",
+						"code":  "size",
 						"options": []interface{}{
 							map[string]interface{}{
-								"label":    string("M"),
-								"unitCode": string(""),
+								"label":    "M",
+								"unitCode": "",
 								"otherAttributesRestrictions": []interface{}{
 									map[string]interface{}{
-										"code":             string("color"),
+										"code":             "color",
 										"availableOptions": []interface{}{"White", "Red"},
 									},
 								},
 							},
 							map[string]interface{}{
-								"label":    string("L"),
-								"unitCode": string(""),
+								"label":    "L",
+								"unitCode": "",
 								"otherAttributesRestrictions": []interface{}{
 									map[string]interface{}{
-										"code":             string("color"),
+										"code":             "color",
 										"availableOptions": []interface{}{"Black", "Red"},
 									},
 								},
@@ -159,14 +159,14 @@ func Test_CommerceProductGet(t *testing.T) {
 		"active_variant": map[string]interface{}{
 			"type":  "configurable_with_activevariant",
 			"title": "Shirt Black L",
-			"meta":  map[string]interface{}{"keywords": []interface{}{string("keywords")}},
+			"meta":  map[string]interface{}{"keywords": []interface{}{"keywords"}},
 			"variationSelections": []interface{}{
-				map[string]interface{}{"code": string("color"), "label": string("Color")},
-				map[string]interface{}{"code": string("size"), "label": string("Size")},
+				map[string]interface{}{"code": "color", "label": "Color"},
+				map[string]interface{}{"code": "size", "label": "Size"},
 			},
 			"activeVariationSelections": []interface{}{
-				map[string]interface{}{"code": string("color"), "label": string("Color"), "value": string("Black")},
-				map[string]interface{}{"code": string("size"), "label": string("Size"), "value": string("L")},
+				map[string]interface{}{"code": "color", "label": "Color", "value": "Black"},
+				map[string]interface{}{"code": "size", "label": "Size", "value": "L"},
 			},
 		},
 	}
