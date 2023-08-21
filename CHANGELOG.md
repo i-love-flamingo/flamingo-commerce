@@ -1,5 +1,8 @@
 # Changelog
-## v3.8.0 [upcoming]
+
+## v3.8.1 [upcoming]
+
+## v3.8.0
 
 **cart**
 * Make the cart merge strategy configurable, this strategy handles how a guest cart is transformed into a customer cart.
