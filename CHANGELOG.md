@@ -14,6 +14,8 @@
   * `merge` (default): Merge the content of the guest and customer cart
   * `replace`: Replace the customer cart with the guest cart content
   * `none`: Don't do anything, guest cart is lost during customer sign-in.
+* Telephone in Address is now deprecated. To distinguish phone number parts new fields were introduced: TelephoneCountryCode, 
+  TelephoneAreaCode, TelephoneNumber. Changes are expected to be non-breaking.
 
 ## v3.7.0
 
