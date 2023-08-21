@@ -4,7 +4,11 @@
 
 ## v3.8.0
 
+**sourcing**
+* Introduce constant `MaxSourceQty` to indicate unlimited stock.
+
 **cart**
+* DefaultBehavior: consider discounts when updating cart item row prices
 * Make the cart merge strategy configurable, this strategy handles how a guest cart is transformed into a customer cart.
   The following strategies can be set via the config `commerce.cart.mergeStrategy`:
   * `merge` (default): Merge the content of the guest and customer cart
