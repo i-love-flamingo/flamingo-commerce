@@ -1,12 +1,21 @@
 # Changelog
-## v3.8.0 [upcoming]
+
+## v3.8.1 [upcoming]
+
+## v3.8.0
+
+**sourcing**
+* Introduce constant `MaxSourceQty` to indicate unlimited stock.
 
 **cart**
+* DefaultBehavior: consider discounts when updating cart item row prices
 * Make the cart merge strategy configurable, this strategy handles how a guest cart is transformed into a customer cart.
   The following strategies can be set via the config `commerce.cart.mergeStrategy`:
   * `merge` (default): Merge the content of the guest and customer cart
   * `replace`: Replace the customer cart with the guest cart content
   * `none`: Don't do anything, guest cart is lost during customer sign-in.
+* Telephone in Address is now deprecated. To distinguish phone number parts new fields were introduced: TelephoneCountryCode, 
+  TelephoneAreaCode, TelephoneNumber. Changes are expected to be non-breaking.
 
 ## v3.7.0
 
