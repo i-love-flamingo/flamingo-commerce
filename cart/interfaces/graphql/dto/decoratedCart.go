@@ -30,6 +30,11 @@ func (dc DecoratedCart) Cart() cart.Cart {
 	return dc.decoratedCart.Cart
 }
 
+// DecoratedCart – provides the cart
+func (dc DecoratedCart) DecoratedCart() *decorator.DecoratedCart {
+	return dc.decoratedCart
+}
+
 // DecoratedDeliveries – returns decorated deliveries
 func (dc DecoratedCart) DecoratedDeliveries() []DecoratedDelivery {
 	return mapDecoratedDeliveries(dc.decoratedCart.DecoratedDeliveries)
