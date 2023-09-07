@@ -7,7 +7,7 @@ require (
 	flamingo.me/flamingo/v3 v3.7.0
 	flamingo.me/form v1.1.1
 	flamingo.me/graphql v1.10.0
-	flamingo.me/pugtemplate v1.2.2
+	flamingo.me/pugtemplate v1.3.0
 	github.com/99designs/gqlgen v0.17.36
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/gavv/httpexpect/v2 v2.15.0
@@ -28,7 +28,7 @@ require (
 	go.opencensus.io v0.24.0
 	go.uber.org/goleak v1.2.1
 	golang.org/x/mod v0.12.0
-	golang.org/x/text v0.12.0
+	golang.org/x/text v0.13.0
 )
 
 require (
@@ -72,6 +72,7 @@ require (
 	github.com/go-playground/form v3.1.4+incompatible // indirect
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect
+	github.com/go-sourcemap/sourcemap v2.1.3+incompatible // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gofrs/uuid v4.3.1+incompatible // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
@@ -136,10 +137,10 @@ require (
 	go.uber.org/multierr v1.10.0 // indirect
 	go.uber.org/zap v1.25.0 // indirect
 	golang.org/x/exp v0.0.0-20230510235704-dd950f8aeaea // indirect
-	golang.org/x/net v0.14.0 // indirect
+	golang.org/x/net v0.15.0 // indirect
 	golang.org/x/oauth2 v0.11.0 // indirect
-	golang.org/x/sync v0.2.0 // indirect
-	golang.org/x/sys v0.11.0 // indirect
+	golang.org/x/sync v0.3.0 // indirect
+	golang.org/x/sys v0.12.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/tools v0.9.3 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
@@ -158,7 +159,7 @@ require (
 require (
 	github.com/containerd/containerd v1.7.3 // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect
-	golang.org/x/crypto v0.12.0 // indirect
+	golang.org/x/crypto v0.13.0 // indirect
 	gotest.tools/v3 v3.5.0
 )
 
