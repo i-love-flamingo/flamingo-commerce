@@ -101,6 +101,11 @@ type Commerce_Search_Suggestion {
     highlight: String!
 }
 
+type Commerce_Search_Action {
+    type: String!
+    content: String!
+}
+
 type Commerce_Search_Promotion {
     title: String!
     content: String!
