@@ -3,7 +3,7 @@
 ## v3.8.1 [upcoming]
 
 **product**
-* Add to cart of bundle products now only fails for missing required bundle choices. As prior passing all choices with qty of zero has been required. Now optional choices with qty of zero can be omitted.
+* Add to cart of bundle products now only fails for missing required bundle choices. As prior passing all choices with qty of zero hav been required. Now optional choices with qty of zero can be omitted.
 
 ## v3.8.0
 
