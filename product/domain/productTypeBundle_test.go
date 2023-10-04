@@ -108,6 +108,39 @@ func TestGetBundleProductWithActiveChoices(t *testing.T) {
 		assert.Equal(t, domain.ErrRequiredChoicesAreNotSelected, err)
 	})
 
+	t.Run("returns no error for missing none required bundle configuration choices", func(t *testing.T) {
+		b := domain.BundleProduct{
+			Choices: []domain.Choice{
+				{
+					Identifier: "A",
+					Options: []domain.Option{{
+						Product: domain.SimpleProduct{BasicProductData: domain.BasicProductData{MarketPlaceCode: "A"}},
+						MinQty:  1,
+						MaxQty:  2,
+					}},
+					Required: true,
+				},
+				{
+					Identifier: "B",
+					Options: []domain.Option{{
+						Product: domain.SimpleProduct{BasicProductData: domain.BasicProductData{MarketPlaceCode: "B"}},
+						MinQty:  0,
+						MaxQty:  1,
+					}},
+					Required: false,
+				},
+			},
+		}
+
+		bc := domain.BundleConfiguration{
+			"A": {MarketplaceCode: "A", Qty: 2, VariantMarketplaceCode: ""},
+		}
+
+		_, err := b.GetBundleProductWithActiveChoices(bc)
+
+		assert.NoError(t, err)
+	})
+
 	t.Run("error when variant not found", func(t *testing.T) {
 		bundleProduct := domain.BundleProduct{
 			Choices: []domain.Choice{
