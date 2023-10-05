@@ -128,7 +128,7 @@ func (b BundleProduct) GetBundleProductWithActiveChoices(bundleConfiguration Bun
 			bundleProductWithActiveChoices.ActiveChoices[Identifier(choice.Identifier)] = activeChoice
 		}
 
-		if _, ok := bundleProductWithActiveChoices.ActiveChoices[Identifier(choice.Identifier)]; !ok {
+		if _, ok := bundleProductWithActiveChoices.ActiveChoices[Identifier(choice.Identifier)]; !ok && choice.Required {
 			return BundleProductWithActiveChoices{}, ErrMarketplaceCodeDoNotExists
 		}
 	}
