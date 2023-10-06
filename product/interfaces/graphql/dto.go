@@ -35,6 +35,10 @@ func (obj *SearchResultDTO) Suggestions() []searchdomain.Suggestion {
 	return obj.result.Suggestions
 }
 
+func (obj *SearchResultDTO) Actions() []searchdomain.Action {
+	return obj.result.Actions
+}
+
 // Products get products
 func (obj *SearchResultDTO) Products() []graphqlProductDto.Product {
 	products := make([]graphqlProductDto.Product, 0, len(obj.result.Products))

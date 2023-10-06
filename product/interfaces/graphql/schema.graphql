@@ -301,6 +301,7 @@ type Commerce_Product_SearchResult {
     searchMeta: Commerce_Search_Meta!
     hasSelectedFacet: Boolean!
     promotion: Commerce_Search_Promotion
+    actions: [Commerce_Search_Action!]
 }
 
 type Commerce_Product_Badges {

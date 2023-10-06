@@ -31,6 +31,7 @@ func (*Service) Types(types *graphql.Types) {
 	types.Map("Commerce_Search_Request", searchdto.CommerceSearchRequest{})
 	types.Map("Commerce_Search_KeyValueFilter", searchdto.CommerceSearchKeyValueFilter{})
 	types.Map("Commerce_Search_Suggestion", domain.Suggestion{})
+	types.Map("Commerce_Search_Action", domain.Action{})
 	types.Map("Commerce_Search_Result", application.SearchResult{})
 	types.Map("Commerce_Search_SortOption", searchdto.CommerceSearchSortOption{})
 	types.Map("Commerce_Search_Facet", new(searchdto.CommerceSearchFacet))

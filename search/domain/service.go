@@ -31,6 +31,14 @@ type (
 		Suggestion []Suggestion
 		Facets     FacetCollection
 		Promotions []Promotion
+		Actions    []Action
+	}
+
+	// Action might be considered on the frontend to be taken depending on search results
+	Action struct {
+		Type                 string
+		Content              string
+		AdditionalAttributes map[string]interface{}
 	}
 
 	// SearchMeta data

@@ -840,6 +840,7 @@ type ComplexityRoot struct {
 	}
 
 	Commerce_Product_SearchResult struct {
+		Actions          func(childComplexity int) int
 		Facets           func(childComplexity int) int
 		HasSelectedFacet func(childComplexity int) int
 		Products         func(childComplexity int) int
@@ -916,6 +917,11 @@ type ComplexityRoot struct {
 
 	Commerce_Product_VariationSelection_OptionVariant struct {
 		MarketPlaceCode func(childComplexity int) int
+	}
+
+	Commerce_Search_Action struct {
+		Content func(childComplexity int) int
+		Type    func(childComplexity int) int
 	}
 
 	Commerce_Search_ListFacet struct {
@@ -4525,6 +4531,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Commerce_Product_PriceInfo.TaxClass(childComplexity), true
 
+	case "Commerce_Product_SearchResult.actions":
+		if e.complexity.Commerce_Product_SearchResult.Actions == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_SearchResult.Actions(childComplexity), true
+
 	case "Commerce_Product_SearchResult.facets":
 		if e.complexity.Commerce_Product_SearchResult.Facets == nil {
 			break
@@ -4825,6 +4838,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Commerce_Product_VariationSelection_OptionVariant.MarketPlaceCode(childComplexity), true
+
+	case "Commerce_Search_Action.content":
+		if e.complexity.Commerce_Search_Action.Content == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Search_Action.Content(childComplexity), true
+
+	case "Commerce_Search_Action.type":
+		if e.complexity.Commerce_Search_Action.Type == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Search_Action.Type(childComplexity), true
 
 	case "Commerce_Search_ListFacet.hasSelectedItem":
 		if e.complexity.Commerce_Search_ListFacet.HasSelectedItem == nil {
@@ -19120,6 +19147,8 @@ func (ec *executionContext) fieldContext_Commerce_Category_SearchResult_productS
 				return ec.fieldContext_Commerce_Product_SearchResult_hasSelectedFacet(ctx, field)
 			case "promotion":
 				return ec.fieldContext_Commerce_Product_SearchResult_promotion(ctx, field)
+			case "actions":
+				return ec.fieldContext_Commerce_Product_SearchResult_actions(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_SearchResult", field.Name)
 		},
@@ -29249,6 +29278,53 @@ func (ec *executionContext) fieldContext_Commerce_Product_SearchResult_promotion
 	return fc, nil
 }
 
+func (ec *executionContext) _Commerce_Product_SearchResult_actions(ctx context.Context, field graphql.CollectedField, obj *graphql1.SearchResultDTO) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_SearchResult_actions(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Actions(), nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]domain2.Action)
+	fc.Result = res
+	return ec.marshalOCommerce_Search_Action2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐActionᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_SearchResult_actions(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_SearchResult",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "type":
+				return ec.fieldContext_Commerce_Search_Action_type(ctx, field)
+			case "content":
+				return ec.fieldContext_Commerce_Search_Action_content(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Search_Action", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Commerce_Product_SimpleProduct_type(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.SimpleProduct) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Commerce_Product_SimpleProduct_type(ctx, field)
 	if err != nil {
@@ -30997,6 +31073,94 @@ func (ec *executionContext) fieldContext_Commerce_Product_VariationSelection_Opt
 		Object:     "Commerce_Product_VariationSelection_OptionVariant",
 		Field:      field,
 		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Search_Action_type(ctx context.Context, field graphql.CollectedField, obj *domain2.Action) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Search_Action_type(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Search_Action_type(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Search_Action",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Search_Action_content(ctx context.Context, field graphql.CollectedField, obj *domain2.Action) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Search_Action_content(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Content, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Search_Action_content(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Search_Action",
+		Field:      field,
+		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
@@ -34738,6 +34902,8 @@ func (ec *executionContext) fieldContext_Query_Commerce_Product_Search(ctx conte
 				return ec.fieldContext_Commerce_Product_SearchResult_hasSelectedFacet(ctx, field)
 			case "promotion":
 				return ec.fieldContext_Commerce_Product_SearchResult_promotion(ctx, field)
+			case "actions":
+				return ec.fieldContext_Commerce_Product_SearchResult_actions(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_SearchResult", field.Name)
 		},
@@ -43683,6 +43849,8 @@ func (ec *executionContext) _Commerce_Product_SearchResult(ctx context.Context, 
 			}
 		case "promotion":
 			out.Values[i] = ec._Commerce_Product_SearchResult_promotion(ctx, field, obj)
+		case "actions":
+			out.Values[i] = ec._Commerce_Product_SearchResult_actions(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -44227,6 +44395,50 @@ func (ec *executionContext) _Commerce_Product_VariationSelection_OptionVariant(c
 			out.Values[i] = graphql.MarshalString("Commerce_Product_VariationSelection_OptionVariant")
 		case "marketPlaceCode":
 			out.Values[i] = ec._Commerce_Product_VariationSelection_OptionVariant_marketPlaceCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var commerce_Search_ActionImplementors = []string{"Commerce_Search_Action"}
+
+func (ec *executionContext) _Commerce_Search_Action(ctx context.Context, sel ast.SelectionSet, obj *domain2.Action) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Search_ActionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Search_Action")
+		case "type":
+			out.Values[i] = ec._Commerce_Search_Action_type(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "content":
+			out.Values[i] = ec._Commerce_Search_Action_content(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -46580,6 +46792,10 @@ func (ec *executionContext) marshalNCommerce_Product_VariationSelection_OptionSt
 
 func (ec *executionContext) marshalNCommerce_Product_VariationSelection_OptionVariant2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐVariationSelectionOptionVariant(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.VariationSelectionOptionVariant) graphql.Marshaler {
 	return ec._Commerce_Product_VariationSelection_OptionVariant(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCommerce_Search_Action2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐAction(ctx context.Context, sel ast.SelectionSet, v domain2.Action) graphql.Marshaler {
+	return ec._Commerce_Search_Action(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNCommerce_Search_Facet2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchFacet(ctx context.Context, sel ast.SelectionSet, v searchdto.CommerceSearchFacet) graphql.Marshaler {
@@ -49111,6 +49327,53 @@ func (ec *executionContext) marshalOCommerce_Product_VariationSelection_Option2�
 
 	}
 	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOCommerce_Search_Action2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐActionᚄ(ctx context.Context, sel ast.SelectionSet, v []domain2.Action) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCommerce_Search_Action2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋdomainᚐAction(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
 
 	return ret
 }
