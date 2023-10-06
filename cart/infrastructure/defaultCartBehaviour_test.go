@@ -819,7 +819,7 @@ func TestDefaultCartBehaviour_UpdateItems(t *testing.T) {
 		assert.Empty(t, got.Deliveries[0].Cartitems[0].BundleConfig["identifier2"])
 	})
 
-	t.Run("item with bundle configuration is removed if not provided", func(t *testing.T) {
+	t.Run("bundle configuration is removed from item if not provided", func(t *testing.T) {
 		t.Parallel()
 
 		cob := &DefaultCartBehaviour{}
