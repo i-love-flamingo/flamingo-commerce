@@ -818,62 +818,6 @@ func TestDefaultCartBehaviour_UpdateItems(t *testing.T) {
 		assert.Equal(t, "simple_option1", got.Deliveries[0].Cartitems[0].BundleConfig["identifier1"].MarketplaceCode)
 		assert.Empty(t, got.Deliveries[0].Cartitems[0].BundleConfig["identifier2"])
 	})
-
-	t.Run("bundle configuration is removed from item if not provided", func(t *testing.T) {
-		t.Parallel()
-
-		cob := &DefaultCartBehaviour{}
-		cob.Inject(
-			newInMemoryStorage(),
-			&fake.ProductService{},
-			flamingo.NullLogger{},
-			nil,
-			nil,
-			nil,
-		)
-
-		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
-			ID: "1234",
-			Deliveries: []domaincart.Delivery{
-				{
-					DeliveryInfo: domaincart.DeliveryInfo{
-						Code: "delivery",
-					},
-					Cartitems: []domaincart.Item{
-						{
-							ID:              "abc",
-							MarketplaceCode: "fake_bundle",
-							Qty:             1,
-							BundleConfig: map[domain.Identifier]domain.ChoiceConfiguration{
-								"identifier1": {
-									MarketplaceCode: "simple_option1",
-									Qty:             1,
-								},
-								"identifier2": {
-									MarketplaceCode:        "configurable_option1",
-									VariantMarketplaceCode: "shirt-black-l",
-									Qty:                    1,
-								},
-							},
-						},
-					},
-				},
-			},
-		})
-		assert.NoError(t, err)
-
-		qty := 1
-		got, _, err := cob.UpdateItems(context.Background(), cart, []domaincart.ItemUpdateCommand{
-			{
-				ItemID: "abc",
-				Qty:    &qty,
-			},
-		})
-		assert.NoError(t, err)
-
-		assert.Equal(t, "fake_bundle", got.Deliveries[0].Cartitems[0].MarketplaceCode)
-		assert.Empty(t, got.Deliveries[0].Cartitems[0].BundleConfig)
-	})
 }
 
 func TestDefaultCartBehaviour_AddToCart(t *testing.T) {

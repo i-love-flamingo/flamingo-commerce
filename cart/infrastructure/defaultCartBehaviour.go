@@ -271,11 +271,6 @@ func (cob *DefaultCartBehaviour) updateItem(ctx context.Context, cart *domaincar
 		if itemUpdateCommand.BundleConfiguration != nil {
 			itemDelivery.Cartitems[index].BundleConfig = itemUpdateCommand.BundleConfiguration
 		}
-
-		// remove bundle configuration if not provided
-		if itemDelivery.Cartitems[index].BundleConfig != nil && itemUpdateCommand.BundleConfiguration == nil {
-			itemDelivery.Cartitems[index].BundleConfig = nil
-		}
 	}
 
 	// update the delivery with the new info
