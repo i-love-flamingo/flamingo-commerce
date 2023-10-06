@@ -266,6 +266,16 @@ func (cob *DefaultCartBehaviour) updateItem(ctx context.Context, cart *domaincar
 
 			itemDelivery.Cartitems[index].RowTaxes[0].Amount = taxAmount
 		}
+
+		// update bundle configuration if provided
+		if itemUpdateCommand.BundleConfiguration != nil {
+			itemDelivery.Cartitems[index].BundleConfig = itemUpdateCommand.BundleConfiguration
+		}
+
+		// remove bundle configuration if not provided
+		if itemDelivery.Cartitems[index].BundleConfig != nil && itemUpdateCommand.BundleConfiguration == nil {
+			itemDelivery.Cartitems[index].BundleConfig = nil
+		}
 	}
 
 	// update the delivery with the new info
@@ -397,7 +407,7 @@ func (cob *DefaultCartBehaviour) buildItemForCart(ctx context.Context, addReques
 	return cob.createCartItemFromProduct(addRequest.Qty, addRequest.MarketplaceCode, addRequest.VariantMarketplaceCode, addRequest.AdditionalData, addRequest.BundleConfiguration, product)
 }
 func (cob *DefaultCartBehaviour) createCartItemFromProduct(qty int, marketplaceCode string, variantMarketPlaceCode string,
-	additonalData map[string]string, bundleConfig domain.BundleConfiguration, product domain.BasicProduct) (*domaincart.Item, error) {
+	additionalData map[string]string, bundleConfig domain.BundleConfiguration, product domain.BasicProduct) (*domaincart.Item, error) {
 	item := &domaincart.Item{
 		ID:                     strconv.Itoa(rand.Int()),
 		ExternalReference:      strconv.Itoa(rand.Int()),
@@ -405,7 +415,7 @@ func (cob *DefaultCartBehaviour) createCartItemFromProduct(qty int, marketplaceC
 		VariantMarketPlaceCode: variantMarketPlaceCode,
 		ProductName:            product.BaseData().Title,
 		Qty:                    qty,
-		AdditionalData:         additonalData,
+		AdditionalData:         additionalData,
 	}
 
 	currency := product.SaleableData().ActivePrice.GetFinalPrice().Currency()
