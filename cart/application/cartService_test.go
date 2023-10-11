@@ -1103,9 +1103,6 @@ func TestCartService_UpdateItemBundleConfig(t *testing.T) {
 	eventRouter := new(MockEventRouter)
 	eventRouter.On("Dispatch", mock.Anything, mock.Anything, mock.Anything).Return()
 
-	session := web.EmptySession()
-	session.Store(cartApplication.GuestCartSessionKey, "fakeCartSession")
-
 	t.Run("error when bundle configuration not provided", func(t *testing.T) {
 		t.Parallel()
 
@@ -1151,6 +1148,9 @@ func TestCartService_UpdateItemBundleConfig(t *testing.T) {
 				PlaceOrderService placeorder.Service        `inject:",optional"`
 			}{},
 		)
+
+		session := web.EmptySession()
+		session.Store(cartApplication.GuestCartSessionKey, "fakeCartSession")
 
 		updateCommand := cartDomain.ItemUpdateCommand{ItemID: "fakeID"}
 
@@ -1208,6 +1208,9 @@ func TestCartService_UpdateItemBundleConfig(t *testing.T) {
 				PlaceOrderService placeorder.Service        `inject:",optional"`
 			}{},
 		)
+
+		session := web.EmptySession()
+		session.Store(cartApplication.GuestCartSessionKey, "fakeCartSession")
 
 		updateCommand := cartDomain.ItemUpdateCommand{
 			ItemID: "fakeID",
@@ -1273,6 +1276,9 @@ func TestCartService_UpdateItemBundleConfig(t *testing.T) {
 				PlaceOrderService placeorder.Service        `inject:",optional"`
 			}{},
 		)
+
+		session := web.EmptySession()
+		session.Store(cartApplication.GuestCartSessionKey, "fakeCartSession")
 
 		updateCommand := cartDomain.ItemUpdateCommand{
 			ItemID: "fakeID",
@@ -1346,6 +1352,9 @@ func TestCartService_UpdateItemBundleConfig(t *testing.T) {
 				ItemValidator: itemValidator,
 			},
 		)
+
+		session := web.EmptySession()
+		session.Store(cartApplication.GuestCartSessionKey, "fakeCartSession")
 
 		updateCommand := cartDomain.ItemUpdateCommand{
 			ItemID: "fakeID",
@@ -1421,6 +1430,9 @@ func TestCartService_UpdateItemBundleConfig(t *testing.T) {
 				ItemValidator: itemValidator,
 			},
 		)
+
+		session := web.EmptySession()
+		session.Store(cartApplication.GuestCartSessionKey, "fakeCartSession")
 
 		updateCommand := cartDomain.ItemUpdateCommand{
 			ItemID: "fakeID",
