@@ -117,7 +117,7 @@ func (r *CommerceCartMutationResolver) CommerceUpdateItemBundleConfig(ctx contex
 
 	updateCommand := cartDomain.ItemUpdateCommand{
 		ItemID:              itemID,
-		BundleConfiguration: &bundleConfigDomain,
+		BundleConfiguration: bundleConfigDomain,
 	}
 
 	err := r.cartService.UpdateItemBundleConfig(ctx, req.Session(), updateCommand)
