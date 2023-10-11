@@ -1523,6 +1523,50 @@ func (_c *CartService_UpdateDeliveryInfo_Call) RunAndReturn(run func(context.Con
 	return _c
 }
 
+// UpdateItemBundleConfig provides a mock function with given fields: ctx, session, updateCommand
+func (_m *CartService) UpdateItemBundleConfig(ctx context.Context, session *web.Session, updateCommand cart.ItemUpdateCommand) error {
+	ret := _m.Called(ctx, session, updateCommand)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *web.Session, cart.ItemUpdateCommand) error); ok {
+		r0 = rf(ctx, session, updateCommand)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// CartService_UpdateItemBundleConfig_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateItemBundleConfig'
+type CartService_UpdateItemBundleConfig_Call struct {
+	*mock.Call
+}
+
+// UpdateItemBundleConfig is a helper method to define mock.On call
+//   - ctx context.Context
+//   - session *web.Session
+//   - updateCommand cart.ItemUpdateCommand
+func (_e *CartService_Expecter) UpdateItemBundleConfig(ctx interface{}, session interface{}, updateCommand interface{}) *CartService_UpdateItemBundleConfig_Call {
+	return &CartService_UpdateItemBundleConfig_Call{Call: _e.mock.On("UpdateItemBundleConfig", ctx, session, updateCommand)}
+}
+
+func (_c *CartService_UpdateItemBundleConfig_Call) Run(run func(ctx context.Context, session *web.Session, updateCommand cart.ItemUpdateCommand)) *CartService_UpdateItemBundleConfig_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(*web.Session), args[2].(cart.ItemUpdateCommand))
+	})
+	return _c
+}
+
+func (_c *CartService_UpdateItemBundleConfig_Call) Return(_a0 error) *CartService_UpdateItemBundleConfig_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *CartService_UpdateItemBundleConfig_Call) RunAndReturn(run func(context.Context, *web.Session, cart.ItemUpdateCommand) error) *CartService_UpdateItemBundleConfig_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // UpdateItemQty provides a mock function with given fields: ctx, session, itemID, deliveryCode, qty
 func (_m *CartService) UpdateItemQty(ctx context.Context, session *web.Session, itemID string, deliveryCode string, qty int) error {
 	ret := _m.Called(ctx, session, itemID, deliveryCode, qty)

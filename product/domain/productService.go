@@ -7,6 +7,8 @@ import (
 	searchDomain "flamingo.me/flamingo-commerce/v3/search/domain"
 )
 
+//go:generate go run github.com/vektra/mockery/v2@v2.32.4 --name ProductService --case snake
+
 type (
 	// ProductService interface
 	ProductService interface {

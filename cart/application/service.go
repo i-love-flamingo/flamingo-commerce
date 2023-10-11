@@ -28,6 +28,7 @@ type (
 		UpdateItemQty(ctx context.Context, session *web.Session, itemID string, deliveryCode string, qty int) error
 		UpdateItemSourceID(ctx context.Context, session *web.Session, itemID string, sourceID string) error
 		UpdateItems(ctx context.Context, session *web.Session, updateCommands []cartDomain.ItemUpdateCommand) error
+		UpdateItemBundleConfig(ctx context.Context, session *web.Session, updateCommand cartDomain.ItemUpdateCommand) error
 		DeleteItem(ctx context.Context, session *web.Session, itemID string, deliveryCode string) error
 		DeleteAllItems(ctx context.Context, session *web.Session) error
 		CompleteCurrentCart(ctx context.Context) (*cartDomain.Cart, error)

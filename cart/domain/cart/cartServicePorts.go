@@ -107,6 +107,8 @@ type (
 		AdditionalData map[string]string
 		// Mandatory field: ItemID is only for identifying the item.
 		ItemID string
+		// BundleConfiguration contains an updated config of a bundle
+		BundleConfiguration productDomain.BundleConfiguration
 	}
 
 	// DeliveryInfoUpdateCommand defines the update item command

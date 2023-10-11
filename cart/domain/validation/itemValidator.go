@@ -12,6 +12,8 @@ import (
 	"flamingo.me/flamingo-commerce/v3/product/domain"
 )
 
+//go:generate go run github.com/vektra/mockery/v2@v2.32.4 --name ItemValidator --case snake
+
 type (
 	// ItemValidator checks a cart item
 	ItemValidator interface {
