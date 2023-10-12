@@ -437,24 +437,20 @@ func (cs *CartService) UpdateItemBundleConfig(ctx context.Context, session *web.
 		return err
 	}
 
-	product, err = cs.getSpecificProductType(ctx, product, item.VariantMarketPlaceCode, item.BundleConfig)
+	product, err = cs.getBundleWithActiveChoices(ctx, product, item.VariantMarketPlaceCode, updateCommand.BundleConfiguration)
 	if err != nil {
-		return err
-	}
-
-	if product.Type() != productDomain.TypeBundleWithActiveChoices {
-		return ErrProductNotTypeBundle
+		return fmt.Errorf("error converting product to bundle: %w", err)
 	}
 
 	if cs.itemValidator != nil {
 		decoratedCart, _ := cs.cartReceiverService.DecorateCart(ctx, cart)
 		delivery, err := cart.GetDeliveryByItemID(updateCommand.ItemID)
 		if err != nil {
-			return fmt.Errorf("delivery code not found by item, while updateing bundle %w", err)
+			return fmt.Errorf("delivery code not found by item, while updating bundle %w", err)
 		}
 
 		if err := cs.itemValidator.Validate(ctx, session, decoratedCart, delivery.DeliveryInfo.Code, cartDomain.AddRequest{}, product); err != nil {
-			return fmt.Errorf("error vaidating bundle update: %w", err)
+			return fmt.Errorf("error validating bundle update: %w", err)
 		}
 	}
 
@@ -474,6 +470,22 @@ func (cs *CartService) UpdateItemBundleConfig(ctx context.Context, session *web.
 	}
 
 	return nil
+}
+
+func (cs *CartService) getBundleWithActiveChoices(_ context.Context, product productDomain.BasicProduct, variantMarketplaceCode string, bundleConfig productDomain.BundleConfiguration) (productDomain.BasicProduct, error) {
+	var err error
+
+	bundleProduct, ok := product.(productDomain.BundleProduct)
+	if !ok {
+		return nil, ErrProductNotTypeBundle
+	}
+
+	product, err = bundleProduct.GetBundleProductWithActiveChoices(bundleConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	return product, nil
 }
 
 // DeleteItem in current cart

@@ -1250,7 +1250,7 @@ func TestCartService_UpdateItemBundleConfig(t *testing.T) {
 
 		cartReceiverService, _ := getCartReceiverServiceForBundleUpdateTest(cart, guestCartService)
 
-		product := productDomain.BundleProductWithActiveChoices{}
+		product := productDomain.BundleProduct{}
 
 		productService := &mocks.ProductService{}
 		productService.EXPECT().Get(mock.Anything, mock.Anything).Return(product, nil)
@@ -1320,7 +1320,7 @@ func TestCartService_UpdateItemBundleConfig(t *testing.T) {
 
 		cartReceiverService, _ := getCartReceiverServiceForBundleUpdateTest(cart, guestCartService)
 
-		product := productDomain.BundleProductWithActiveChoices{}
+		product := productDomain.BundleProduct{}
 
 		productService := &mocks.ProductService{}
 		productService.EXPECT().Get(mock.Anything, mock.Anything).Return(product, nil)
@@ -1398,7 +1398,7 @@ func TestCartService_UpdateItemBundleConfig(t *testing.T) {
 
 		cartReceiverService, _ := getCartReceiverServiceForBundleUpdateTest(cart, guestCartService)
 
-		product := productDomain.BundleProductWithActiveChoices{}
+		product := productDomain.BundleProduct{}
 
 		productService := &mocks.ProductService{}
 		productService.EXPECT().Get(mock.Anything, mock.Anything).Return(product, nil)
