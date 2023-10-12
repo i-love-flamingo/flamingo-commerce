@@ -472,6 +472,7 @@ func (cs *CartService) UpdateItemBundleConfig(ctx context.Context, session *web.
 	return nil
 }
 
+// nolint:wrapcheck // error wrapped in the code above, no need to wrap twice
 func (cs *CartService) getBundleWithActiveChoices(_ context.Context, product productDomain.BasicProduct, bundleConfig productDomain.BundleConfiguration) (productDomain.BasicProduct, error) {
 	var err error
 
