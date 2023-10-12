@@ -93,7 +93,7 @@ func (e *RestrictionError) Error() string {
 var (
 	_                          Service = &CartService{}
 	ErrBundleConfigNotProvided         = errors.New("error no bundle config provided")
-	ErrProductNotTypeBundle            = errors.New("product not of type bundle with active choices")
+	ErrProductNotTypeBundle            = errors.New("product not of type bundle")
 )
 
 // Inject dependencies
@@ -437,7 +437,7 @@ func (cs *CartService) UpdateItemBundleConfig(ctx context.Context, session *web.
 		return err
 	}
 
-	product, err = cs.getBundleWithActiveChoices(ctx, product, item.VariantMarketPlaceCode, updateCommand.BundleConfiguration)
+	product, err = cs.getBundleWithActiveChoices(ctx, product, updateCommand.BundleConfiguration)
 	if err != nil {
 		return fmt.Errorf("error converting product to bundle: %w", err)
 	}
@@ -446,7 +446,7 @@ func (cs *CartService) UpdateItemBundleConfig(ctx context.Context, session *web.
 		decoratedCart, _ := cs.cartReceiverService.DecorateCart(ctx, cart)
 		delivery, err := cart.GetDeliveryByItemID(updateCommand.ItemID)
 		if err != nil {
-			return fmt.Errorf("delivery code not found by item, while updating bundle %w", err)
+			return fmt.Errorf("delivery code not found by item, while updating bundle: %w", err)
 		}
 
 		if err := cs.itemValidator.Validate(ctx, session, decoratedCart, delivery.DeliveryInfo.Code, cartDomain.AddRequest{}, product); err != nil {
@@ -472,7 +472,7 @@ func (cs *CartService) UpdateItemBundleConfig(ctx context.Context, session *web.
 	return nil
 }
 
-func (cs *CartService) getBundleWithActiveChoices(_ context.Context, product productDomain.BasicProduct, variantMarketplaceCode string, bundleConfig productDomain.BundleConfiguration) (productDomain.BasicProduct, error) {
+func (cs *CartService) getBundleWithActiveChoices(_ context.Context, product productDomain.BasicProduct, bundleConfig productDomain.BundleConfiguration) (productDomain.BasicProduct, error) {
 	var err error
 
 	bundleProduct, ok := product.(productDomain.BundleProduct)
