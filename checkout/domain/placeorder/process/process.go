@@ -92,17 +92,13 @@ func init() {
 	gob.Register(CartValidationErrorReason{})
 	gob.Register(CanceledByCustomerReason{})
 
-	if err := opencensus.View("flamingo-commerce/checkout/placeorder/state_run_count", processedState, view.Sum(), keyState); err != nil {
+	if err := opencensus.View("flamingo-commerce/checkout/placeorder/state_run_count", processedState, view.Count(), keyState); err != nil {
 		panic(err)
 	}
 
-	stats.Record(context.Background(), processedState.M(0))
-
-	if err := opencensus.View("flamingo-commerce/checkout/placeorder/state_failed_count", failedStateTransition, view.Sum(), keyState); err != nil {
+	if err := opencensus.View("flamingo-commerce/checkout/placeorder/state_failed_count", failedStateTransition, view.Count(), keyState); err != nil {
 		panic(err)
 	}
-
-	stats.Record(context.Background(), failedStateTransition.M(0))
 }
 
 // Reason for the error occurred
