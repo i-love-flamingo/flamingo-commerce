@@ -22,6 +22,7 @@ type (
 		Marketplacecodes []string                  `json:"marketplacecodes"`
 		Sugestions       []searchDomain.Suggestion `json:"sugestions"`
 		Promotions       []searchDomain.Promotion  `json:"promotions"`
+		Actions          []searchDomain.Action     `json:"actions"`
 	}
 )
 
@@ -103,6 +104,7 @@ func (s *SearchService) livesearch(ctx context.Context, query string) (*domain.S
 			Hits:       documents,
 			Suggestion: liveSearchData.Sugestions,
 			Promotions: liveSearchData.Promotions,
+			Actions:    liveSearchData.Actions,
 		},
 		Hits: hits,
 	}, nil

@@ -1,0 +1,60 @@
+{
+  "camera": {
+    "marketplacecodes": [
+      "5ba37fbec2a69f1f",
+      "adcaeee25862e329"
+    ],
+    "sugestions": [
+      {
+        "Type": "type",
+        "Text": "text",
+        "Highlight": "highlight",
+        "AdditionalAttributes": {
+          "additional": "value"
+        }
+      }
+    ],
+    "promotions": [
+      {
+        "Title": "Promotion title",
+        "Content": "Promotion content",
+        "URL": "https://www.omnevo.net",
+        "Media": [
+          {
+            "Type": "type",
+            "MimeType": "mimetype",
+            "Usage": "usage",
+            "Title": "title",
+            "Reference": "reference"
+          }
+        ],
+        "AdditionalAttributes": {
+          "additional": "value"
+        }
+      }
+    ],
+    "actions": [
+      {
+        "type": "Redirect",
+        "content": "https://example.com",
+        "additionalAttributes": {
+          "additional": "value"
+        }
+      }
+    ]
+  },
+  "handbags": {
+    "marketplacecodes": [],
+    "sugestions": [
+      {
+        "Type": "type",
+        "Text": "text",
+        "Highlight": "highlight",
+        "AdditionalAttributes": {
+          "additional": "value"
+        }
+      }
+    ],
+    "promotions": []
+  }
+}
