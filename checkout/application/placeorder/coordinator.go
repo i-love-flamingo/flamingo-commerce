@@ -72,10 +72,12 @@ var (
 
 func init() {
 	gob.Register(process.Context{})
-	err := opencensus.View("flamingo-commerce/checkout/placeorder/starts", startCount, view.Count())
+	err := opencensus.View("flamingo-commerce/checkout/placeorder/starts", startCount, view.Sum())
 	if err != nil {
 		panic(err)
 	}
+
+	stats.Record(context.Background(), startCount.M(0))
 }
 
 // Inject dependencies
