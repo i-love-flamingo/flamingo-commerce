@@ -224,6 +224,10 @@ func (cob *DefaultCartBehaviour) updateItem(ctx context.Context, cart *domaincar
 			itemDelivery.Cartitems[index].BundleConfig = itemUpdateCommand.BundleConfiguration
 		}
 
+		if itemUpdateCommand.Qty == nil {
+			break
+		}
+
 		// in case of qty 0 remove the item from the delivery
 		if *itemUpdateCommand.Qty == 0 {
 			itemDelivery.Cartitems = append(itemDelivery.Cartitems[:index], itemDelivery.Cartitems[index+1:]...)
