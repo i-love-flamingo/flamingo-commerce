@@ -220,8 +220,8 @@ func (cob *DefaultCartBehaviour) updateItem(ctx context.Context, cart *domaincar
 			itemDelivery.Cartitems[index].AdditionalData = itemUpdateCommand.AdditionalData
 		}
 
-		if itemUpdateCommand.Qty == nil {
-			break
+		if itemUpdateCommand.BundleConfiguration != nil {
+			itemDelivery.Cartitems[index].BundleConfig = itemUpdateCommand.BundleConfiguration
 		}
 
 		// in case of qty 0 remove the item from the delivery
