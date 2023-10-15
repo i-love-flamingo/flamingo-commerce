@@ -952,6 +952,75 @@ func TestDefaultCartBehaviour_AddToCart(t *testing.T) {
 		assert.Equal(t, "fake_bundle", got.Deliveries[0].Cartitems[1].MarketplaceCode)
 		assert.Equal(t, "simple_option2", got.Deliveries[0].Cartitems[1].BundleConfig["identifier1"].MarketplaceCode)
 	})
+
+	t.Run("update bundle configuration for a cart item", func(t *testing.T) {
+		t.Parallel()
+
+		cob := &DefaultCartBehaviour{}
+		cob.Inject(
+			newInMemoryStorage(),
+			&fake.ProductService{},
+			flamingo.NullLogger{},
+			nil,
+			nil,
+			nil,
+		)
+
+		cart, err := cob.StoreNewCart(context.Background(), &domaincart.Cart{
+			ID: "1234",
+			Deliveries: []domaincart.Delivery{
+				{
+					DeliveryInfo: domaincart.DeliveryInfo{
+						Code: "delivery",
+					},
+					Cartitems: []domaincart.Item{
+						{
+							ID:              "1234",
+							MarketplaceCode: "fake_bundle",
+							Qty:             1,
+							BundleConfig: map[domain.Identifier]domain.ChoiceConfiguration{
+								"identifier1": {
+									MarketplaceCode: "simple_option1",
+									Qty:             1,
+								},
+								"identifier2": {
+									MarketplaceCode:        "configurable_option2",
+									VariantMarketplaceCode: "shirt-black-s",
+									Qty:                    1,
+								},
+							},
+						},
+					},
+				},
+			},
+		})
+		assert.NoError(t, err)
+
+		qty := 1
+		got, _, err := cob.UpdateItem(context.Background(), cart, domaincart.ItemUpdateCommand{
+			ItemID: "1234",
+			Qty:    &qty,
+			BundleConfiguration: map[domain.Identifier]domain.ChoiceConfiguration{
+				"identifier1": {
+					MarketplaceCode: "simple_option2",
+					Qty:             2,
+				},
+				"identifier2": {
+					MarketplaceCode:        "configurable_option1",
+					VariantMarketplaceCode: "shirt-black-l",
+					Qty:                    2,
+				},
+			},
+		})
+
+		assert.NoError(t, err)
+		assert.Equal(t, "fake_bundle", got.Deliveries[0].Cartitems[0].MarketplaceCode)
+		assert.Equal(t, "simple_option2", got.Deliveries[0].Cartitems[0].BundleConfig["identifier1"].MarketplaceCode)
+		assert.Equal(t, 2, got.Deliveries[0].Cartitems[0].BundleConfig["identifier1"].Qty)
+		assert.Equal(t, "configurable_option1", got.Deliveries[0].Cartitems[0].BundleConfig["identifier2"].MarketplaceCode)
+		assert.Equal(t, "shirt-black-l", got.Deliveries[0].Cartitems[0].BundleConfig["identifier2"].VariantMarketplaceCode)
+		assert.Equal(t, 2, got.Deliveries[0].Cartitems[0].BundleConfig["identifier2"].Qty)
+	})
 }
 
 func TestDefaultCartBehaviour_UpdatePurchaser(t *testing.T) {
