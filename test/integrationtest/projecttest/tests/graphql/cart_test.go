@@ -357,3 +357,153 @@ func TestUpdateBundleProductQty(t *testing.T) {
 			Value("item").Object().Value("qty").IsEqual(4)
 	})
 }
+
+func TestUpdateBundleConfiguration(t *testing.T) {
+	t.Parallel()
+
+	t.Run("update should update the bundle config", func(t *testing.T) {
+		t.Parallel()
+
+		e := httpexpect.Default(t, "http://"+FlamingoURL)
+		addResponse := helper.GraphQlRequest(t, e, loadGraphQL(t, "commerce_cart_AddBundleToCart_Update_Qty_Helper", map[string]string{
+			"MARKETPLACE_CODE":          "fake_bundle",
+			"DELIVERY_CODE":             "delivery",
+			"IDENTIFIER1":               "identifier1",
+			"MARKETPLACE_CODE1":         "simple_option1",
+			"IDENTIFIER2":               "identifier2",
+			"MARKETPLACE_CODE2":         "configurable_option2",
+			"VARIANT_MARKETPLACE_CODE2": "shirt-red-s",
+		}))
+
+		itemID := addResponse.Expect().Status(http.StatusOK).JSON().Object().Value("data").Object().
+			Value("Commerce_Cart_AddToCart").Object().Value("decoratedDeliveries").Array().
+			Value(0).Object().Value("decoratedItems").Array().Value(0).Object().
+			Value("item").Object().Value("id").String().Raw()
+
+		updateResponse := helper.GraphQlRequest(t, e, loadGraphQL(t, "Commerce_Cart_UpdateItemBundleConfig", map[string]string{
+			"ITEM_ID":                   itemID,
+			"IDENTIFIER1":               "identifier1",
+			"MARKETPLACE_CODE1":         "simple_option2",
+			"VARIANT_MARKETPLACE_CODE1": "",
+			"QTY1":                      "1",
+			"IDENTIFIER2":               "identifier2",
+			"MARKETPLACE_CODE2":         "configurable_option1",
+			"VARIANT_MARKETPLACE_CODE2": "shirt-red-m",
+			"QTY2":                      "1",
+		}))
+
+		body := updateResponse.Expect().Body()
+
+		expected := `{
+					  "data": {
+						"Commerce_Cart_UpdateItemBundleConfig": {
+						  "decoratedDeliveries": [
+							{
+							  "decoratedItems": [
+								{
+								  "product": {
+									"marketPlaceCode": "fake_bundle",
+									"choices": [
+									  {
+										"identifier": "identifier1",
+										"active": {
+										  "marketPlaceCode": "simple_option2"
+										}
+									  },
+									  {
+										"identifier": "identifier2",
+										"active": {
+										  "marketPlaceCode": "configurable_option1",
+										  "variantMarketPlaceCode": "shirt-red-m"
+										}
+									  }
+									]
+								  }
+								}
+							  ]
+							}
+						  ]
+						}
+					  }
+					}`
+
+		expected = spaceMap(expected)
+		body.IsEqual(expected)
+	})
+
+	t.Run("update should lead to an error if invalid bundle config (qty)", func(t *testing.T) {
+		t.Parallel()
+
+		e := httpexpect.Default(t, "http://"+FlamingoURL)
+		addResponse := helper.GraphQlRequest(t, e, loadGraphQL(t, "commerce_cart_AddBundleToCart_Update_Qty_Helper", map[string]string{
+			"MARKETPLACE_CODE":          "fake_bundle",
+			"DELIVERY_CODE":             "delivery",
+			"IDENTIFIER1":               "identifier1",
+			"MARKETPLACE_CODE1":         "simple_option1",
+			"IDENTIFIER2":               "identifier2",
+			"MARKETPLACE_CODE2":         "configurable_option2",
+			"VARIANT_MARKETPLACE_CODE2": "shirt-red-s",
+		}))
+
+		itemID := addResponse.Expect().Status(http.StatusOK).JSON().Object().Value("data").Object().
+			Value("Commerce_Cart_AddToCart").Object().Value("decoratedDeliveries").Array().
+			Value(0).Object().Value("decoratedItems").Array().Value(0).Object().
+			Value("item").Object().Value("id").String().Raw()
+
+		updateResponse := helper.GraphQlRequest(t, e, loadGraphQL(t, "Commerce_Cart_UpdateItemBundleConfig", map[string]string{
+			"ITEM_ID":                   itemID,
+			"IDENTIFIER1":               "identifier1",
+			"MARKETPLACE_CODE1":         "simple_option2",
+			"VARIANT_MARKETPLACE_CODE1": "",
+			"QTY1":                      "1",
+			"IDENTIFIER2":               "identifier2",
+			"MARKETPLACE_CODE2":         "configurable_option1",
+			"VARIANT_MARKETPLACE_CODE2": "shirt-red-m",
+			"QTY2":                      "0", // invalid qty
+		}))
+
+		data := updateResponse.Expect().Status(http.StatusOK).JSON().Object()
+
+		errorMessage := data.Value("errors").Array().Value(0).Object().Value("message").String().Raw()
+
+		if !strings.Contains(errorMessage, "selected quantity is out of range") {
+			t.Error("want: selected quantity is out of range, but have: ", errorMessage)
+		}
+	})
+
+	t.Run("update should lead to an error if invalid bundle config (not all required choices set)", func(t *testing.T) {
+		t.Parallel()
+
+		e := httpexpect.Default(t, "http://"+FlamingoURL)
+		addResponse := helper.GraphQlRequest(t, e, loadGraphQL(t, "commerce_cart_AddBundleToCart_Update_Qty_Helper", map[string]string{
+			"MARKETPLACE_CODE":          "fake_bundle",
+			"DELIVERY_CODE":             "delivery",
+			"IDENTIFIER1":               "identifier1",
+			"MARKETPLACE_CODE1":         "simple_option1",
+			"IDENTIFIER2":               "identifier2",
+			"MARKETPLACE_CODE2":         "configurable_option2",
+			"VARIANT_MARKETPLACE_CODE2": "shirt-red-s",
+		}))
+
+		itemID := addResponse.Expect().Status(http.StatusOK).JSON().Object().Value("data").Object().
+			Value("Commerce_Cart_AddToCart").Object().Value("decoratedDeliveries").Array().
+			Value(0).Object().Value("decoratedItems").Array().Value(0).Object().
+			Value("item").Object().Value("id").String().Raw()
+
+		updateResponse := helper.GraphQlRequest(t, e, loadGraphQL(t, "Commerce_Cart_UpdateItemBundleConfig_one", map[string]string{
+			"ITEM_ID":                   itemID,
+			"IDENTIFIER1":               "identifier1",
+			"MARKETPLACE_CODE1":         "simple_option2",
+			"VARIANT_MARKETPLACE_CODE1": "",
+			"QTY1":                      "1",
+		}))
+
+		data := updateResponse.Expect().Status(http.StatusOK).JSON().Object()
+
+		errorMessage := data.Value("errors").Array().Value(0).Object().Value("message").String().Raw()
+
+		if !strings.Contains(errorMessage, "required choices are not selected") {
+			t.Error("want: required choices are not selected, but have: ", errorMessage)
+		}
+	})
+}
