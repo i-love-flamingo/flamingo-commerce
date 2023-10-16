@@ -8,7 +8,8 @@
   The action model is completely open to anything, but the most common use case is to redirect certain searches directly to product detail pages or special brand landing pages.
 
 **cart**
-* Add to cart of bundle products now only fails for missing required bundle choices. As prior passing all choices with qty of zero have been required. Now optional choices with qty of zero can be omitted.
+* Fix: Add to cart of bundle products now only fails for missing required bundle choices. As prior passing all choices with qty of zero have been required. Now optional choices with qty of zero can be omitted.
+* Fix: Correctly evaluate min / max quantities of bundle choices. Previously it was possible to add bundle choices with qty 0 even if min qty was 1.
 * **Breaking**(In case you have implemented a custom cart service): Extend the cart service interface with `UpdateItemBundleConfig` to allow updating bundles that have already been placed inside the cart.
 * GraphQL:
   * Add new mutation `Commerce_Cart_UpdateItemBundleConfig` to update bundle configs for existing cart items

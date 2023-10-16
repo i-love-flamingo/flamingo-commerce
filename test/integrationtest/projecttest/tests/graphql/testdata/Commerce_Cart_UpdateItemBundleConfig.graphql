@@ -1,0 +1,35 @@
+mutation {
+    Commerce_Cart_UpdateItemBundleConfig(
+        itemID: ###ITEM_ID###
+        bundleConfig: [{
+        identifier: "###IDENTIFIER1###"
+        marketplaceCode: "###MARKETPLACE_CODE1###"
+        variantMarketplaceCode: "###VARIANT_MARKETPLACE_CODE1###"
+        qty: ###QTY1###
+        },{
+        identifier: "###IDENTIFIER2###"
+        marketplaceCode: "###MARKETPLACE_CODE2###"
+        variantMarketplaceCode: "###VARIANT_MARKETPLACE_CODE2###"
+        qty: ###QTY2###
+        }]
+    ) {
+        decoratedDeliveries {
+            decoratedItems {
+                product {
+                    marketPlaceCode
+                    ... on Commerce_Product_BundleProduct {
+                        choices {
+                            identifier
+                            active {
+                                marketPlaceCode
+                                ... on Commerce_Product_ActiveVariantProduct {
+                                    variantMarketPlaceCode
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
