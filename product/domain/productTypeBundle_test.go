@@ -9,7 +9,11 @@ import (
 )
 
 func TestGetBundleProductWithActiveChoices(t *testing.T) {
+	t.Parallel()
+
 	t.Run("returns bundle product matching bundle configuration", func(t *testing.T) {
+		t.Parallel()
+
 		b := domain.BundleProduct{
 			Choices: []domain.Choice{
 				{
@@ -63,6 +67,8 @@ func TestGetBundleProductWithActiveChoices(t *testing.T) {
 	})
 
 	t.Run("returns error selected qty out of range", func(t *testing.T) {
+		t.Parallel()
+
 		b := domain.BundleProduct{
 			Choices: []domain.Choice{
 				{
@@ -96,7 +102,45 @@ func TestGetBundleProductWithActiveChoices(t *testing.T) {
 		assert.ErrorIs(t, err, domain.ErrSelectedQuantityOutOfRange)
 	})
 
+	t.Run("returns error selected qty 0 out of range", func(t *testing.T) {
+		t.Parallel()
+
+		b := domain.BundleProduct{
+			Choices: []domain.Choice{
+				{
+					Identifier: "A",
+					Options: []domain.Option{{
+						Product: domain.SimpleProduct{BasicProductData: domain.BasicProductData{MarketPlaceCode: "A"}},
+						MinQty:  2,
+						MaxQty:  2,
+					}},
+					Required: true,
+				},
+				{
+					Identifier: "B",
+					Options: []domain.Option{{
+						Product: domain.SimpleProduct{BasicProductData: domain.BasicProductData{MarketPlaceCode: "B"}},
+						MinQty:  1,
+						MaxQty:  1,
+					}},
+					Required: false,
+				},
+			},
+		}
+
+		bc := domain.BundleConfiguration{
+			"A": {MarketplaceCode: "A", Qty: 2, VariantMarketplaceCode: ""},
+			"B": {MarketplaceCode: "B", Qty: 0, VariantMarketplaceCode: ""},
+		}
+
+		_, err := b.GetBundleProductWithActiveChoices(bc)
+
+		assert.ErrorIs(t, err, domain.ErrSelectedQuantityOutOfRange)
+	})
+
 	t.Run("returns error required choices not selected when required choices are not in the bundle config", func(t *testing.T) {
+		t.Parallel()
+
 		b := domain.BundleProduct{
 			Choices: []domain.Choice{{Identifier: "A", Required: true}},
 		}
@@ -109,6 +153,8 @@ func TestGetBundleProductWithActiveChoices(t *testing.T) {
 	})
 
 	t.Run("returns no error for missing none required bundle configuration choices", func(t *testing.T) {
+		t.Parallel()
+
 		b := domain.BundleProduct{
 			Choices: []domain.Choice{
 				{
@@ -142,6 +188,8 @@ func TestGetBundleProductWithActiveChoices(t *testing.T) {
 	})
 
 	t.Run("error when variant not found", func(t *testing.T) {
+		t.Parallel()
+
 		bundleProduct := domain.BundleProduct{
 			Choices: []domain.Choice{
 				{
@@ -188,6 +236,8 @@ func TestGetBundleProductWithActiveChoices(t *testing.T) {
 	})
 
 	t.Run("one option is a configurable product", func(t *testing.T) {
+		t.Parallel()
+
 		b := domain.BundleProduct{
 			Choices: []domain.Choice{
 				{
@@ -245,7 +295,11 @@ func TestGetBundleProductWithActiveChoices(t *testing.T) {
 }
 
 func Test_ExtractBundleConfig(t *testing.T) {
-	t.Run("get config with simples and configurbles correctly", func(t *testing.T) {
+	t.Parallel()
+
+	t.Run("get config with simples and configurables correctly", func(t *testing.T) {
+		t.Parallel()
+
 		b := domain.BundleProductWithActiveChoices{
 			ActiveChoices: map[domain.Identifier]domain.ActiveChoice{
 				domain.Identifier("identifier1"): {
@@ -297,6 +351,8 @@ func Test_ExtractBundleConfig(t *testing.T) {
 	})
 
 	t.Run("return nil when active choices are empty", func(t *testing.T) {
+		t.Parallel()
+
 		b := domain.BundleProductWithActiveChoices{}
 
 		config := b.ExtractBundleConfig()

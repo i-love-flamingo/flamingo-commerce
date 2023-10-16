@@ -177,15 +177,11 @@ func mapChoiceToActiveProduct(option Option, possibleChoice Choice, selectedChoi
 }
 
 func getQuantity(min, max, selected int) (int, error) {
-	if selected != 0 {
-		if selected >= min && selected <= max {
-			return selected, nil
-		}
-
-		return 0, ErrSelectedQuantityOutOfRange
+	if selected >= min && selected <= max {
+		return selected, nil
 	}
 
-	return min, nil
+	return 0, ErrSelectedQuantityOutOfRange
 }
 
 func (o *Option) UnmarshalJSON(optionData []byte) error {
