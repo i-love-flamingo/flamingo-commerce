@@ -488,6 +488,8 @@ extend type Mutation {
     Commerce_Cart_DeleteCartDelivery(deliveryCode: String!): Commerce_Cart_DecoratedCart!
     Commerce_Cart_DeleteItem(itemID: ID!, deliveryCode: String!): Commerce_Cart_DecoratedCart!
     Commerce_Cart_UpdateItemQty(itemID: ID!, deliveryCode: String!, qty: Int!): Commerce_Cart_DecoratedCart!
+    "Updates the bundle configuration of an existing item"
+    Commerce_Cart_UpdateItemBundleConfig(itemID: ID!, bundleConfig: [Commerce_Cart_ChoiceConfigurationInput!]!): Commerce_Cart_DecoratedCart!
     "Adds/Updates the Billing Address of the current cart"
     Commerce_Cart_UpdateBillingAddress(addressForm: Commerce_Cart_AddressFormInput): Commerce_Cart_BillingAddressForm!
     Commerce_Cart_UpdateSelectedPayment(gateway: String!, method: String!): Commerce_Cart_SelectedPaymentResult!

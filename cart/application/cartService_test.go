@@ -2,6 +2,7 @@ package application_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"testing"
 
@@ -11,7 +12,10 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
+	mocks2 "flamingo.me/flamingo-commerce/v3/cart/domain/cart/mocks"
+	mocks3 "flamingo.me/flamingo-commerce/v3/cart/domain/validation/mocks"
 	"flamingo.me/flamingo-commerce/v3/cart/infrastructure"
+	"flamingo.me/flamingo-commerce/v3/product/domain/mocks"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/events"
@@ -717,10 +721,16 @@ func TestCartService_ForceReserveOrderIDAndSave(t *testing.T) {
 }
 
 type (
-	MockGuestCartServiceWithModifyBehaviour struct{}
+	MockGuestCartServiceWithModifyBehaviour struct {
+		cart *cartDomain.Cart
+	}
 )
 
 func (m *MockGuestCartServiceWithModifyBehaviour) GetCart(ctx context.Context, cartID string) (*cartDomain.Cart, error) {
+	if m.cart != nil {
+		return m.cart, nil
+	}
+
 	return &cartDomain.Cart{
 		ID: "mock_guest_cart",
 	}, nil
@@ -1085,4 +1095,387 @@ func TestCartService_SetAdditionalDataForDelivery(t *testing.T) {
 	require.NotNil(t, deliveryInfo)
 	assert.Equal(t, "data", deliveryInfo.AdditionalData["test"])
 	assert.Equal(t, "bar", deliveryInfo.AdditionalData["foo"])
+}
+
+func TestCartService_UpdateItemBundleConfig(t *testing.T) {
+	t.Parallel()
+
+	eventRouter := new(MockEventRouter)
+	eventRouter.On("Dispatch", mock.Anything, mock.Anything, mock.Anything).Return()
+
+	t.Run("error when bundle configuration not provided", func(t *testing.T) {
+		t.Parallel()
+
+		behaviour := &mocks2.ModifyBehaviour{}
+		behaviour.EXPECT().UpdateItem(mock.Anything, mock.Anything, mock.Anything)
+
+		cart := &cartDomain.Cart{
+			Deliveries: []cartDomain.Delivery{
+				{
+					Cartitems: []cartDomain.Item{
+						{
+							ID:              "fakeID",
+							MarketplaceCode: "fake",
+						},
+					},
+				},
+			},
+		}
+
+		guestCartService := &mocks2.GuestCartService{}
+		guestCartService.EXPECT().GetModifyBehaviour(mock.Anything).Return(behaviour, nil)
+
+		cartReceiverService, _ := getCartReceiverServiceForBundleUpdateTest(cart, guestCartService)
+
+		cartService := &cartApplication.CartService{}
+		cartService.Inject(
+			cartReceiverService,
+			&mocks.ProductService{},
+			new(MockEventPublisher),
+			eventRouter,
+			new(MockDeliveryInfoBuilder),
+			nil,
+			nil,
+			flamingo.NullLogger{},
+			&struct {
+				DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
+				DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
+			}{},
+			&struct {
+				CartValidator     validation.Validator      `inject:",optional"`
+				ItemValidator     validation.ItemValidator  `inject:",optional"`
+				CartCache         cartApplication.CartCache `inject:",optional"`
+				PlaceOrderService placeorder.Service        `inject:",optional"`
+			}{},
+		)
+
+		session := web.EmptySession()
+		session.Store(cartApplication.GuestCartSessionKey, "fakeCartSession")
+
+		updateCommand := cartDomain.ItemUpdateCommand{ItemID: "fakeID"}
+
+		err := cartService.UpdateItemBundleConfig(context.Background(), session, updateCommand)
+		assert.ErrorIs(t, err, cartApplication.ErrBundleConfigNotProvided)
+	})
+
+	t.Run("error when trying to update item that is not a bundle", func(t *testing.T) {
+		t.Parallel()
+
+		behaviour := &mocks2.ModifyBehaviour{}
+		behaviour.EXPECT().UpdateItem(mock.Anything, mock.Anything, mock.Anything)
+
+		cart := &cartDomain.Cart{
+			Deliveries: []cartDomain.Delivery{
+				{
+					Cartitems: []cartDomain.Item{
+						{
+							ID:              "fakeID",
+							MarketplaceCode: "fake",
+						},
+					},
+				},
+			},
+		}
+
+		guestCartService := &mocks2.GuestCartService{}
+		guestCartService.EXPECT().GetModifyBehaviour(mock.Anything).Return(behaviour, nil)
+
+		cartReceiverService, _ := getCartReceiverServiceForBundleUpdateTest(cart, guestCartService)
+
+		product := productDomain.SimpleProduct{}
+
+		productService := &mocks.ProductService{}
+		productService.EXPECT().Get(mock.Anything, mock.Anything).Return(product, nil)
+
+		cartService := &cartApplication.CartService{}
+		cartService.Inject(
+			cartReceiverService,
+			productService,
+			new(MockEventPublisher),
+			eventRouter,
+			new(MockDeliveryInfoBuilder),
+			nil,
+			nil,
+			flamingo.NullLogger{},
+			&struct {
+				DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
+				DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
+			}{},
+			&struct {
+				CartValidator     validation.Validator      `inject:",optional"`
+				ItemValidator     validation.ItemValidator  `inject:",optional"`
+				CartCache         cartApplication.CartCache `inject:",optional"`
+				PlaceOrderService placeorder.Service        `inject:",optional"`
+			}{},
+		)
+
+		session := web.EmptySession()
+		session.Store(cartApplication.GuestCartSessionKey, "fakeCartSession")
+
+		updateCommand := cartDomain.ItemUpdateCommand{
+			ItemID: "fakeID",
+			BundleConfiguration: productDomain.BundleConfiguration{
+				"choice1": {
+					MarketplaceCode: "test",
+					Qty:             1,
+				},
+			},
+		}
+
+		err := cartService.UpdateItemBundleConfig(context.Background(), session, updateCommand)
+		assert.ErrorIs(t, err, cartApplication.ErrProductNotTypeBundle)
+	})
+
+	t.Run("if item validator is not provided, call update item on cart behaviour", func(t *testing.T) {
+		t.Parallel()
+
+		cart := &cartDomain.Cart{
+			Deliveries: []cartDomain.Delivery{
+				{
+					Cartitems: []cartDomain.Item{
+						{
+							ID:              "fakeID",
+							MarketplaceCode: "fake",
+						},
+					},
+				},
+			},
+		}
+
+		behaviour := &mocks2.ModifyBehaviour{}
+		behaviour.EXPECT().UpdateItem(mock.Anything, mock.Anything, mock.Anything).Return(cart, nil, nil)
+
+		guestCartService := &mocks2.GuestCartService{}
+		guestCartService.EXPECT().GetModifyBehaviour(mock.Anything).Return(behaviour, nil)
+
+		cartReceiverService, _ := getCartReceiverServiceForBundleUpdateTest(cart, guestCartService)
+
+		product := productDomain.BundleProduct{}
+
+		productService := &mocks.ProductService{}
+		productService.EXPECT().Get(mock.Anything, mock.Anything).Return(product, nil)
+
+		cartService := &cartApplication.CartService{}
+		cartService.Inject(
+			cartReceiverService,
+			productService,
+			new(MockEventPublisher),
+			eventRouter,
+			new(MockDeliveryInfoBuilder),
+			nil,
+			nil,
+			flamingo.NullLogger{},
+			&struct {
+				DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
+				DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
+			}{},
+			&struct {
+				CartValidator     validation.Validator      `inject:",optional"`
+				ItemValidator     validation.ItemValidator  `inject:",optional"`
+				CartCache         cartApplication.CartCache `inject:",optional"`
+				PlaceOrderService placeorder.Service        `inject:",optional"`
+			}{},
+		)
+
+		session := web.EmptySession()
+		session.Store(cartApplication.GuestCartSessionKey, "fakeCartSession")
+
+		updateCommand := cartDomain.ItemUpdateCommand{
+			ItemID: "fakeID",
+			BundleConfiguration: productDomain.BundleConfiguration{
+				"choice1": {
+					MarketplaceCode: "test",
+					Qty:             1,
+				},
+			},
+		}
+
+		err := cartService.UpdateItemBundleConfig(context.Background(), session, updateCommand)
+		assert.NoError(t, err)
+
+		behaviour.MethodCalled("UpdateItem")
+	})
+
+	t.Run("if item validator does not complain, call update item on cart behaviour", func(t *testing.T) {
+		t.Parallel()
+
+		cart := &cartDomain.Cart{
+			Deliveries: []cartDomain.Delivery{
+				{
+					Cartitems: []cartDomain.Item{
+						{
+							ID:              "fakeID",
+							MarketplaceCode: "fake",
+						},
+					},
+				},
+			},
+		}
+
+		behaviour := &mocks2.ModifyBehaviour{}
+		behaviour.EXPECT().UpdateItem(mock.Anything, mock.Anything, mock.Anything).Return(cart, nil, nil)
+
+		guestCartService := &mocks2.GuestCartService{}
+		guestCartService.EXPECT().GetModifyBehaviour(mock.Anything).Return(behaviour, nil)
+
+		cartReceiverService, _ := getCartReceiverServiceForBundleUpdateTest(cart, guestCartService)
+
+		product := productDomain.BundleProduct{}
+
+		productService := &mocks.ProductService{}
+		productService.EXPECT().Get(mock.Anything, mock.Anything).Return(product, nil)
+
+		itemValidator := &mocks3.ItemValidator{}
+		itemValidator.EXPECT().Validate(mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).
+			Return(nil)
+
+		cartService := &cartApplication.CartService{}
+		cartService.Inject(
+			cartReceiverService,
+			productService,
+			new(MockEventPublisher),
+			eventRouter,
+			new(MockDeliveryInfoBuilder),
+			nil,
+			nil,
+			flamingo.NullLogger{},
+			&struct {
+				DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
+				DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
+			}{},
+			&struct {
+				CartValidator     validation.Validator      `inject:",optional"`
+				ItemValidator     validation.ItemValidator  `inject:",optional"`
+				CartCache         cartApplication.CartCache `inject:",optional"`
+				PlaceOrderService placeorder.Service        `inject:",optional"`
+			}{
+				ItemValidator: itemValidator,
+			},
+		)
+
+		session := web.EmptySession()
+		session.Store(cartApplication.GuestCartSessionKey, "fakeCartSession")
+
+		updateCommand := cartDomain.ItemUpdateCommand{
+			ItemID: "fakeID",
+			BundleConfiguration: productDomain.BundleConfiguration{
+				"choice1": {
+					MarketplaceCode: "test",
+					Qty:             1,
+				},
+			},
+		}
+
+		err := cartService.UpdateItemBundleConfig(context.Background(), session, updateCommand)
+		assert.NoError(t, err)
+
+		behaviour.MethodCalled("UpdateItem")
+	})
+
+	t.Run("if item validator fails, return an error and don't call update item on cart behaviour", func(t *testing.T) {
+		t.Parallel()
+
+		validationError := errors.New("some error")
+
+		cart := &cartDomain.Cart{
+			Deliveries: []cartDomain.Delivery{
+				{
+					Cartitems: []cartDomain.Item{
+						{
+							ID:              "fakeID",
+							MarketplaceCode: "fake",
+						},
+					},
+				},
+			},
+		}
+
+		behaviour := &mocks2.ModifyBehaviour{}
+		behaviour.EXPECT().UpdateItem(mock.Anything, mock.Anything, mock.Anything).Return(cart, nil, nil)
+
+		guestCartService := &mocks2.GuestCartService{}
+		guestCartService.EXPECT().GetModifyBehaviour(mock.Anything).Return(behaviour, nil)
+
+		cartReceiverService, _ := getCartReceiverServiceForBundleUpdateTest(cart, guestCartService)
+
+		product := productDomain.BundleProduct{}
+
+		productService := &mocks.ProductService{}
+		productService.EXPECT().Get(mock.Anything, mock.Anything).Return(product, nil)
+
+		itemValidator := &mocks3.ItemValidator{}
+		itemValidator.EXPECT().Validate(mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).
+			Return(validationError)
+
+		cartService := &cartApplication.CartService{}
+		cartService.Inject(
+			cartReceiverService,
+			productService,
+			new(MockEventPublisher),
+			eventRouter,
+			new(MockDeliveryInfoBuilder),
+			nil,
+			nil,
+			flamingo.NullLogger{},
+			&struct {
+				DefaultDeliveryCode string `inject:"config:commerce.cart.defaultDeliveryCode,optional"`
+				DeleteEmptyDelivery bool   `inject:"config:commerce.cart.deleteEmptyDelivery,optional"`
+			}{},
+			&struct {
+				CartValidator     validation.Validator      `inject:",optional"`
+				ItemValidator     validation.ItemValidator  `inject:",optional"`
+				CartCache         cartApplication.CartCache `inject:",optional"`
+				PlaceOrderService placeorder.Service        `inject:",optional"`
+			}{
+				ItemValidator: itemValidator,
+			},
+		)
+
+		session := web.EmptySession()
+		session.Store(cartApplication.GuestCartSessionKey, "fakeCartSession")
+
+		updateCommand := cartDomain.ItemUpdateCommand{
+			ItemID: "fakeID",
+			BundleConfiguration: productDomain.BundleConfiguration{
+				"choice1": {
+					MarketplaceCode: "test",
+					Qty:             1,
+				},
+			},
+		}
+
+		err := cartService.UpdateItemBundleConfig(context.Background(), session, updateCommand)
+		assert.ErrorIs(t, err, validationError)
+	})
+}
+
+func getCartReceiverServiceForBundleUpdateTest(cart *cartDomain.Cart, guestCartService cartDomain.GuestCartService) (*cartApplication.CartReceiverService, *MockCartCache) {
+	cartCache := new(MockCartCache)
+	cartCache.CachedCart = cart
+
+	return func() (*cartApplication.CartReceiverService, *MockCartCache) {
+		result := &cartApplication.CartReceiverService{}
+		result.Inject(
+			guestCartService,
+			nil,
+			func() *decorator.DecoratedCartFactory {
+				result := &decorator.DecoratedCartFactory{}
+				result.Inject(
+					&MockProductService{},
+					flamingo.NullLogger{},
+				)
+
+				return result
+			}(),
+			nil,
+			flamingo.NullLogger{},
+			new(MockEventRouter),
+			&struct {
+				CartCache cartApplication.CartCache `inject:",optional"`
+			}{
+				CartCache: cartCache,
+			},
+		)
+		return result, cartCache
+	}()
 }

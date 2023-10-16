@@ -90,7 +90,11 @@ func (e *RestrictionError) Error() string {
 	return e.message
 }
 
-var _ Service = &CartService{}
+var (
+	_                          Service = &CartService{}
+	ErrBundleConfigNotProvided         = errors.New("error no bundle config provided")
+	ErrProductNotTypeBundle            = errors.New("product not of type bundle")
+)
 
 // Inject dependencies
 func (cs *CartService) Inject(
@@ -408,6 +412,81 @@ func (cs *CartService) UpdateItems(ctx context.Context, session *web.Session, up
 	}
 
 	return nil
+}
+
+// UpdateItemBundleConfig updates multiple item
+func (cs *CartService) UpdateItemBundleConfig(ctx context.Context, session *web.Session, updateCommand cartDomain.ItemUpdateCommand) error {
+	cart, behaviour, err := cs.cartReceiverService.GetCart(ctx, session)
+	if err != nil {
+		return err
+	}
+
+	if updateCommand.BundleConfiguration == nil {
+		return ErrBundleConfigNotProvided
+	}
+
+	item, err := cart.GetByItemID(updateCommand.ItemID)
+	if err != nil {
+		return err
+	}
+
+	product, err := cs.productService.Get(ctx, item.MarketplaceCode)
+	if err != nil {
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "UpdateItemBundleConfig").Error(err)
+
+		return err
+	}
+
+	product, err = cs.getBundleWithActiveChoices(ctx, product, updateCommand.BundleConfiguration)
+	if err != nil {
+		return fmt.Errorf("error converting product to bundle: %w", err)
+	}
+
+	if cs.itemValidator != nil {
+		decoratedCart, _ := cs.cartReceiverService.DecorateCart(ctx, cart)
+		delivery, err := cart.GetDeliveryByItemID(updateCommand.ItemID)
+		if err != nil {
+			return fmt.Errorf("delivery code not found by item, while updating bundle: %w", err)
+		}
+
+		if err := cs.itemValidator.Validate(ctx, session, decoratedCart, delivery.DeliveryInfo.Code, cartDomain.AddRequest{}, product); err != nil {
+			return fmt.Errorf("error validating bundle update: %w", err)
+		}
+	}
+
+	// cart cache must be updated - with the current value of cart
+	var defers cartDomain.DeferEvents
+	defer func() {
+		cs.updateCartInCacheIfCacheIsEnabled(ctx, session, cart)
+		cs.dispatchAllEvents(ctx, defers)
+	}()
+
+	cart, defers, err = behaviour.UpdateItem(ctx, cart, updateCommand)
+	if err != nil {
+		cs.handleCartNotFound(session, err)
+		cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "UpdateItemSourceId").Error(err)
+
+		return err
+	}
+
+	return nil
+}
+
+//nolint:wrapcheck // error wrapped in the code above, no need to wrap twice
+func (cs *CartService) getBundleWithActiveChoices(_ context.Context, product productDomain.BasicProduct, bundleConfig productDomain.BundleConfiguration) (productDomain.BasicProduct, error) {
+	var err error
+
+	bundleProduct, ok := product.(productDomain.BundleProduct)
+	if !ok {
+		return nil, ErrProductNotTypeBundle
+	}
+
+	product, err = bundleProduct.GetBundleProductWithActiveChoices(bundleConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	return product, nil
 }
 
 // DeleteItem in current cart

@@ -220,6 +220,10 @@ func (cob *DefaultCartBehaviour) updateItem(ctx context.Context, cart *domaincar
 			itemDelivery.Cartitems[index].AdditionalData = itemUpdateCommand.AdditionalData
 		}
 
+		if itemUpdateCommand.BundleConfiguration != nil {
+			itemDelivery.Cartitems[index].BundleConfig = itemUpdateCommand.BundleConfiguration
+		}
+
 		if itemUpdateCommand.Qty == nil {
 			break
 		}

@@ -48,7 +48,7 @@ type (
 		MessageKey string
 		// DefaultLabel - a speaking error label. OFten used to show to end user - in case no translation exists
 		DefaultLabel string
-		//FieldName
+		// FieldName
 		FieldName string
 	}
 
@@ -84,7 +84,7 @@ func MapBundleConfigToDomain(graphqlBundleConfig []ChoiceConfiguration) productD
 
 	for _, configuration := range graphqlBundleConfig {
 		variantMarketplaceCode := ""
-		quantity := 0
+		quantity := 1
 
 		if configuration.VariantMarketplaceCode != nil {
 			variantMarketplaceCode = *configuration.VariantMarketplaceCode

@@ -103,6 +103,31 @@ func (r *CommerceCartMutationResolver) CommerceUpdateItemQty(ctx context.Context
 	return r.q.CommerceCart(ctx)
 }
 
+// CommerceUpdateItemBundleConfig mutation for updating item quantity
+func (r *CommerceCartMutationResolver) CommerceUpdateItemBundleConfig(ctx context.Context, itemID string, bundleConfig []*dto.ChoiceConfiguration) (*dto.DecoratedCart, error) {
+	req := web.RequestFromContext(ctx)
+
+	var bundleConfigDto []dto.ChoiceConfiguration
+
+	for _, config := range bundleConfig {
+		bundleConfigDto = append(bundleConfigDto, *config)
+	}
+
+	bundleConfigDomain := dto.MapBundleConfigToDomain(bundleConfigDto)
+
+	updateCommand := cartDomain.ItemUpdateCommand{
+		ItemID:              itemID,
+		BundleConfiguration: bundleConfigDomain,
+	}
+
+	err := r.cartService.UpdateItemBundleConfig(ctx, req.Session(), updateCommand)
+	if err != nil {
+		return nil, err
+	}
+
+	return r.q.CommerceCart(ctx)
+}
+
 // CommerceCartUpdateBillingAddress resolver method
 func (r *CommerceCartMutationResolver) CommerceCartUpdateBillingAddress(ctx context.Context, address *forms.AddressForm) (*dto.BillingAddressForm, error) {
 	newRequest := web.CreateRequest(web.RequestFromContext(ctx).Request(), web.SessionFromContext(ctx))

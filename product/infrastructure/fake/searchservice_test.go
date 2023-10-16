@@ -51,6 +51,8 @@ func TestSearchService_Search(t *testing.T) {
 }
 
 func TestSearchService_SearchBy(t *testing.T) {
+	t.Parallel()
+
 	type fields struct {
 		liveSearchJSON string
 	}
@@ -128,7 +130,9 @@ func TestSearchService_SearchBy(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			s := new(fake.SearchService).Inject(
 				new(fake.ProductService),
 				&struct {

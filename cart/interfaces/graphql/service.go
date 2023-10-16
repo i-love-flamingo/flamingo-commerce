@@ -104,6 +104,7 @@ func (*Service) Types(types *graphql.Types) {
 	types.Resolve("Mutation", "Commerce_Cart_DeleteCartDelivery", CommerceCartMutationResolver{}, "CommerceDeleteCartDelivery")
 	types.Resolve("Mutation", "Commerce_Cart_DeleteItem", CommerceCartMutationResolver{}, "CommerceDeleteItem")
 	types.Resolve("Mutation", "Commerce_Cart_UpdateItemQty", CommerceCartMutationResolver{}, "CommerceUpdateItemQty")
+	types.Resolve("Mutation", "Commerce_Cart_UpdateItemBundleConfig", CommerceCartMutationResolver{}, "CommerceUpdateItemBundleConfig")
 	types.Resolve("Mutation", "Commerce_Cart_UpdateBillingAddress", CommerceCartMutationResolver{}, "CommerceCartUpdateBillingAddress")
 	types.Resolve("Mutation", "Commerce_Cart_UpdateSelectedPayment", CommerceCartMutationResolver{}, "CommerceCartUpdateSelectedPayment")
 	types.Resolve("Mutation", "Commerce_Cart_ApplyCouponCodeOrGiftCard", CommerceCartMutationResolver{}, "CommerceCartApplyCouponCodeOrGiftCard")
