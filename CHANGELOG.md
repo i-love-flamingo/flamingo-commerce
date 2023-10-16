@@ -1,9 +1,7 @@
 # Changelog
 
 ## v3.9.0 [upcoming]
-
 **search**
-
 * Introduce an Action to search result to advise the frontend to perform an action for that search different from displaying the result page.
   The action model is completely open to anything, but the most common use case is to redirect certain searches directly to product detail pages or special brand landing pages.
 
@@ -14,6 +12,8 @@
 * GraphQL:
   * Add new mutation `Commerce_Cart_UpdateItemBundleConfig` to update bundle configs for existing cart items
 
+**checkout**
+* initialize place order metrics with 0 on application start to follow prometheus best practices
 
 ## v3.8.0
 
