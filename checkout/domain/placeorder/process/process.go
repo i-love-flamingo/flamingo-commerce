@@ -95,6 +95,7 @@ func init() {
 	if err := opencensus.View("flamingo-commerce/checkout/placeorder/state_run_count", processedState, view.Count(), keyState); err != nil {
 		panic(err)
 	}
+
 	if err := opencensus.View("flamingo-commerce/checkout/placeorder/state_failed_count", failedStateTransition, view.Count(), keyState); err != nil {
 		panic(err)
 	}

@@ -106,10 +106,12 @@ func init() {
 	}
 
 	for name, measure := range openCensusViews {
-		err := opencensus.View(name, measure, view.Count())
+		err := opencensus.View(name, measure, view.Sum())
 		if err != nil {
 			panic(err)
 		}
+
+		stats.Record(context.Background(), measure.M(0))
 	}
 }
 
