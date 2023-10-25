@@ -163,17 +163,23 @@ func (r *rootResolverCommerce_Cart_DeliveryInfo) AdditionalData(ctx context.Cont
 }
 
 type rootResolverCommerce_Cart_Item struct {
-	resolveAppliedDiscounts func(ctx context.Context, obj *cart.Item) (*dto.CartAppliedDiscounts, error)
+	resolveAppliedDiscounts    func(ctx context.Context, obj *cart.Item) (*dto.CartAppliedDiscounts, error)
+	resolveBundleConfiguration func(ctx context.Context, obj *cart.Item) ([]*dto.BundleChoiceConfiguration, error)
 }
 
 func (r *rootResolverCommerce_Cart_Item) Inject(
 	commerce_Cart_ItemAppliedDiscounts *dto.CartAppliedDiscountsResolver,
+	commerce_Cart_ItemBundleConfiguration *dto.CartItemResolver,
 ) {
 	r.resolveAppliedDiscounts = commerce_Cart_ItemAppliedDiscounts.ForItem
+	r.resolveBundleConfiguration = commerce_Cart_ItemBundleConfiguration.BundleConfiguration
 }
 
 func (r *rootResolverCommerce_Cart_Item) AppliedDiscounts(ctx context.Context, obj *cart.Item) (*dto.CartAppliedDiscounts, error) {
 	return r.resolveAppliedDiscounts(ctx, obj)
+}
+func (r *rootResolverCommerce_Cart_Item) BundleConfiguration(ctx context.Context, obj *cart.Item) ([]*dto.BundleChoiceConfiguration, error) {
+	return r.resolveBundleConfiguration(ctx, obj)
 }
 
 type rootResolverCommerce_Cart_ShippingItem struct {
@@ -439,6 +445,7 @@ func direct(root *rootResolver) map[string]interface{} {
 		"Commerce_Cart_DefaultPaymentSelection.CartSplit":     root.Commerce_Cart_DefaultPaymentSelection().CartSplit,
 		"Commerce_Cart_DeliveryInfo.AdditionalData":           root.Commerce_Cart_DeliveryInfo().AdditionalData,
 		"Commerce_Cart_Item.AppliedDiscounts":                 root.Commerce_Cart_Item().AppliedDiscounts,
+		"Commerce_Cart_Item.BundleConfiguration":              root.Commerce_Cart_Item().BundleConfiguration,
 		"Commerce_Cart_ShippingItem.AppliedDiscounts":         root.Commerce_Cart_ShippingItem().AppliedDiscounts,
 		"Commerce_Product_PriceInfo.ActiveBase":               root.Commerce_Product_PriceInfo().ActiveBase,
 		"Commerce_Search_Meta.SortOptions":                    root.Commerce_Search_Meta().SortOptions,

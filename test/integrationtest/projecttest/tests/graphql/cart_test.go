@@ -223,37 +223,54 @@ func TestAddBundleProductToCart(t *testing.T) {
 		body := response.Expect().Body()
 
 		expected := `{
-					  "data": {
-						"Commerce_Cart_AddToCart": {
-						  "decoratedDeliveries": [
-							{
-							  "decoratedItems": [
-								{
-								  "product": {
-									"marketPlaceCode": "fake_bundle",
-									"choices": [
-									  {
-										"identifier": "identifier1",
-										"active": {
-										  "marketPlaceCode": "simple_option1"
-										}
-									  },
-									  {
-										"identifier": "identifier2",
-										"active": {
-										  "marketPlaceCode": "configurable_option2",
-										  "variantMarketPlaceCode": "shirt-red-s"
-										}
-									  }
-									]
-								  }
-								}
-							  ]
-							}
-						  ]
-						}
-					  }
-					}`
+  "data": {
+    "Commerce_Cart_AddToCart": {
+      "decoratedDeliveries": [
+        {
+          "decoratedItems": [
+            {
+              "item": {
+                "bundleConfiguration": [
+                  {
+                    "identifier": "identifier1",
+                    "marketplaceCode": "simple_option1",
+                    "variantMarketplaceCode": "simple_option1",
+                    "qty": 1
+                  },
+                  {
+                    "identifier": "identifier2",
+                    "marketplaceCode": "configurable_option2",
+                    "variantMarketplaceCode": "configurable_option2",
+                    "qty": 1
+                  }
+                ]
+              },
+              "product": {
+                "marketPlaceCode": "fake_bundle",
+                "choices": [
+                  {
+                    "identifier": "identifier1",
+                    "active": {
+                      "marketPlaceCode": "simple_option1"
+                    }
+                  },
+                  {
+                    "identifier": "identifier2",
+                    "active": {
+                      "marketPlaceCode": "configurable_option2",
+                      "variantMarketPlaceCode": "shirt-red-s"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+`
 
 		expected = spaceMap(expected)
 		body.IsEqual(expected)

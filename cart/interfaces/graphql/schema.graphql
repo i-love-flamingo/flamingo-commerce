@@ -223,7 +223,14 @@ type Commerce_Cart_Item {
     rowPriceGross: Commerce_Price!
     rowPriceNet: Commerce_Price!
     appliedDiscounts: Commerce_Cart_AppliedDiscounts!
-    #    rowTaxes: Commerce_Taxes!
+    bundleConfiguration: [Commerce_Cart_Item_BundleChoiceConfiguration]
+}
+
+type Commerce_Cart_Item_BundleChoiceConfiguration {
+    identifier: String
+    marketplaceCode:        String
+    variantMarketplaceCode: String
+    qty:                    Int
 }
 
 type Commerce_Cart_Address {

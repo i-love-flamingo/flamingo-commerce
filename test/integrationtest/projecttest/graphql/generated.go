@@ -302,6 +302,7 @@ type ComplexityRoot struct {
 		AdditionalDataKeys     func(childComplexity int) int
 		AdditionalDataValues   func(childComplexity int) int
 		AppliedDiscounts       func(childComplexity int) int
+		BundleConfiguration    func(childComplexity int) int
 		ExternalReference      func(childComplexity int) int
 		GetAdditionalData      func(childComplexity int, key string) int
 		HasAdditionalDataKey   func(childComplexity int, key string) int
@@ -320,6 +321,13 @@ type ComplexityRoot struct {
 	Commerce_Cart_ItemValidationError struct {
 		ErrorMessageKey func(childComplexity int) int
 		ItemID          func(childComplexity int) int
+	}
+
+	Commerce_Cart_Item_BundleChoiceConfiguration struct {
+		Identifier             func(childComplexity int) int
+		MarketplaceCode        func(childComplexity int) int
+		Qty                    func(childComplexity int) int
+		VariantMarketplaceCode func(childComplexity int) int
 	}
 
 	Commerce_Cart_KeyValue struct {
@@ -1064,6 +1072,7 @@ type Commerce_Cart_DeliveryInfoResolver interface {
 }
 type Commerce_Cart_ItemResolver interface {
 	AppliedDiscounts(ctx context.Context, obj *cart.Item) (*dto.CartAppliedDiscounts, error)
+	BundleConfiguration(ctx context.Context, obj *cart.Item) ([]*dto.BundleChoiceConfiguration, error)
 }
 type Commerce_Cart_ShippingItemResolver interface {
 	AppliedDiscounts(ctx context.Context, obj *cart.ShippingItem) (*dto.CartAppliedDiscounts, error)
@@ -2309,6 +2318,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Commerce_Cart_Item.AppliedDiscounts(childComplexity), true
 
+	case "Commerce_Cart_Item.bundleConfiguration":
+		if e.complexity.Commerce_Cart_Item.BundleConfiguration == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Cart_Item.BundleConfiguration(childComplexity), true
+
 	case "Commerce_Cart_Item.externalReference":
 		if e.complexity.Commerce_Cart_Item.ExternalReference == nil {
 			break
@@ -2423,6 +2439,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Commerce_Cart_ItemValidationError.ItemID(childComplexity), true
+
+	case "Commerce_Cart_Item_BundleChoiceConfiguration.identifier":
+		if e.complexity.Commerce_Cart_Item_BundleChoiceConfiguration.Identifier == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Cart_Item_BundleChoiceConfiguration.Identifier(childComplexity), true
+
+	case "Commerce_Cart_Item_BundleChoiceConfiguration.marketplaceCode":
+		if e.complexity.Commerce_Cart_Item_BundleChoiceConfiguration.MarketplaceCode == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Cart_Item_BundleChoiceConfiguration.MarketplaceCode(childComplexity), true
+
+	case "Commerce_Cart_Item_BundleChoiceConfiguration.qty":
+		if e.complexity.Commerce_Cart_Item_BundleChoiceConfiguration.Qty == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Cart_Item_BundleChoiceConfiguration.Qty(childComplexity), true
+
+	case "Commerce_Cart_Item_BundleChoiceConfiguration.variantMarketplaceCode":
+		if e.complexity.Commerce_Cart_Item_BundleChoiceConfiguration.VariantMarketplaceCode == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Cart_Item_BundleChoiceConfiguration.VariantMarketplaceCode(childComplexity), true
 
 	case "Commerce_Cart_KeyValue.key":
 		if e.complexity.Commerce_Cart_KeyValue.Key == nil {
@@ -10467,6 +10511,8 @@ func (ec *executionContext) fieldContext_Commerce_Cart_Cart_getByItemID(ctx cont
 				return ec.fieldContext_Commerce_Cart_Item_rowPriceNet(ctx, field)
 			case "appliedDiscounts":
 				return ec.fieldContext_Commerce_Cart_Item_appliedDiscounts(ctx, field)
+			case "bundleConfiguration":
+				return ec.fieldContext_Commerce_Cart_Item_bundleConfiguration(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Commerce_Cart_Item", field.Name)
 		},
@@ -10608,6 +10654,8 @@ func (ec *executionContext) fieldContext_Commerce_Cart_Cart_getByExternalReferen
 				return ec.fieldContext_Commerce_Cart_Item_rowPriceNet(ctx, field)
 			case "appliedDiscounts":
 				return ec.fieldContext_Commerce_Cart_Item_appliedDiscounts(ctx, field)
+			case "bundleConfiguration":
+				return ec.fieldContext_Commerce_Cart_Item_bundleConfiguration(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Commerce_Cart_Item", field.Name)
 		},
@@ -12257,6 +12305,8 @@ func (ec *executionContext) fieldContext_Commerce_Cart_DecoratedItem_item(ctx co
 				return ec.fieldContext_Commerce_Cart_Item_rowPriceNet(ctx, field)
 			case "appliedDiscounts":
 				return ec.fieldContext_Commerce_Cart_Item_appliedDiscounts(ctx, field)
+			case "bundleConfiguration":
+				return ec.fieldContext_Commerce_Cart_Item_bundleConfiguration(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Commerce_Cart_Item", field.Name)
 		},
@@ -12571,6 +12621,8 @@ func (ec *executionContext) fieldContext_Commerce_Cart_Delivery_cartitems(ctx co
 				return ec.fieldContext_Commerce_Cart_Item_rowPriceNet(ctx, field)
 			case "appliedDiscounts":
 				return ec.fieldContext_Commerce_Cart_Item_appliedDiscounts(ctx, field)
+			case "bundleConfiguration":
+				return ec.fieldContext_Commerce_Cart_Item_bundleConfiguration(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Commerce_Cart_Item", field.Name)
 		},
@@ -15118,6 +15170,57 @@ func (ec *executionContext) fieldContext_Commerce_Cart_Item_appliedDiscounts(ctx
 	return fc, nil
 }
 
+func (ec *executionContext) _Commerce_Cart_Item_bundleConfiguration(ctx context.Context, field graphql.CollectedField, obj *cart.Item) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Cart_Item_bundleConfiguration(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Commerce_Cart_Item().BundleConfiguration(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*dto.BundleChoiceConfiguration)
+	fc.Result = res
+	return ec.marshalOCommerce_Cart_Item_BundleChoiceConfiguration2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐBundleChoiceConfiguration(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_bundleConfiguration(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Cart_Item",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "identifier":
+				return ec.fieldContext_Commerce_Cart_Item_BundleChoiceConfiguration_identifier(ctx, field)
+			case "marketplaceCode":
+				return ec.fieldContext_Commerce_Cart_Item_BundleChoiceConfiguration_marketplaceCode(ctx, field)
+			case "variantMarketplaceCode":
+				return ec.fieldContext_Commerce_Cart_Item_BundleChoiceConfiguration_variantMarketplaceCode(ctx, field)
+			case "qty":
+				return ec.fieldContext_Commerce_Cart_Item_BundleChoiceConfiguration_qty(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Cart_Item_BundleChoiceConfiguration", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Commerce_Cart_ItemValidationError_itemID(ctx context.Context, field graphql.CollectedField, obj *validation.ItemValidationError) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Commerce_Cart_ItemValidationError_itemID(ctx, field)
 	if err != nil {
@@ -15201,6 +15304,170 @@ func (ec *executionContext) fieldContext_Commerce_Cart_ItemValidationError_error
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_BundleChoiceConfiguration_identifier(ctx context.Context, field graphql.CollectedField, obj *dto.BundleChoiceConfiguration) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Cart_Item_BundleChoiceConfiguration_identifier(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Identifier, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_BundleChoiceConfiguration_identifier(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Cart_Item_BundleChoiceConfiguration",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_BundleChoiceConfiguration_marketplaceCode(ctx context.Context, field graphql.CollectedField, obj *dto.BundleChoiceConfiguration) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Cart_Item_BundleChoiceConfiguration_marketplaceCode(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MarketplaceCode, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_BundleChoiceConfiguration_marketplaceCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Cart_Item_BundleChoiceConfiguration",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_BundleChoiceConfiguration_variantMarketplaceCode(ctx context.Context, field graphql.CollectedField, obj *dto.BundleChoiceConfiguration) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Cart_Item_BundleChoiceConfiguration_variantMarketplaceCode(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.VariantMarketplaceCode, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_BundleChoiceConfiguration_variantMarketplaceCode(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Cart_Item_BundleChoiceConfiguration",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Cart_Item_BundleChoiceConfiguration_qty(ctx context.Context, field graphql.CollectedField, obj *dto.BundleChoiceConfiguration) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Cart_Item_BundleChoiceConfiguration_qty(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Qty, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalOInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Cart_Item_BundleChoiceConfiguration_qty(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Cart_Item_BundleChoiceConfiguration",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -39999,6 +40266,39 @@ func (ec *executionContext) _Commerce_Cart_Item(ctx context.Context, sel ast.Sel
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "bundleConfiguration":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Commerce_Cart_Item_bundleConfiguration(ctx, field, obj)
+				return res
+			}
+
+			if field.Deferrable != nil {
+				dfs, ok := deferred[field.Deferrable.Label]
+				di := 0
+				if ok {
+					dfs.AddField(field)
+					di = len(dfs.Values) - 1
+				} else {
+					dfs = graphql.NewFieldSet([]graphql.CollectedField{field})
+					deferred[field.Deferrable.Label] = dfs
+				}
+				dfs.Concurrently(di, func(ctx context.Context) graphql.Marshaler {
+					return innerFunc(ctx, dfs)
+				})
+
+				// don't run the out.Concurrently() call below
+				out.Values[i] = graphql.Null
+				continue
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -40043,6 +40343,48 @@ func (ec *executionContext) _Commerce_Cart_ItemValidationError(ctx context.Conte
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var commerce_Cart_Item_BundleChoiceConfigurationImplementors = []string{"Commerce_Cart_Item_BundleChoiceConfiguration"}
+
+func (ec *executionContext) _Commerce_Cart_Item_BundleChoiceConfiguration(ctx context.Context, sel ast.SelectionSet, obj *dto.BundleChoiceConfiguration) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commerce_Cart_Item_BundleChoiceConfigurationImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Commerce_Cart_Item_BundleChoiceConfiguration")
+		case "identifier":
+			out.Values[i] = ec._Commerce_Cart_Item_BundleChoiceConfiguration_identifier(ctx, field, obj)
+		case "marketplaceCode":
+			out.Values[i] = ec._Commerce_Cart_Item_BundleChoiceConfiguration_marketplaceCode(ctx, field, obj)
+		case "variantMarketplaceCode":
+			out.Values[i] = ec._Commerce_Cart_Item_BundleChoiceConfiguration_variantMarketplaceCode(ctx, field, obj)
+		case "qty":
+			out.Values[i] = ec._Commerce_Cart_Item_BundleChoiceConfiguration_qty(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -48181,6 +48523,54 @@ func (ec *executionContext) marshalOCommerce_Cart_ItemValidationError2ᚕflaming
 	}
 
 	return ret
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_Item_BundleChoiceConfiguration2ᚕᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐBundleChoiceConfiguration(ctx context.Context, sel ast.SelectionSet, v []*dto.BundleChoiceConfiguration) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOCommerce_Cart_Item_BundleChoiceConfiguration2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐBundleChoiceConfiguration(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOCommerce_Cart_Item_BundleChoiceConfiguration2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐBundleChoiceConfiguration(ctx context.Context, sel ast.SelectionSet, v *dto.BundleChoiceConfiguration) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Commerce_Cart_Item_BundleChoiceConfiguration(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOCommerce_Cart_KeyValue2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValue(ctx context.Context, sel ast.SelectionSet, v *dto.KeyValue) graphql.Marshaler {
