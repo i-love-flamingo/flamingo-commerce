@@ -204,6 +204,7 @@ func (c *CartMergeStrategyReplace) Merge(ctx context.Context, session *web.Sessi
 				Qty:                    item.Qty,
 				VariantMarketplaceCode: item.VariantMarketPlaceCode,
 				AdditionalData:         item.AdditionalData,
+				BundleConfiguration:    item.BundleConfig,
 			}
 
 			_, err = c.cartService.AddProduct(ctx, session, delivery.DeliveryInfo.Code, addRequest)
@@ -284,6 +285,7 @@ func (c *CartMergeStrategyMerge) Merge(ctx context.Context, session *web.Session
 				Qty:                    item.Qty,
 				VariantMarketplaceCode: item.VariantMarketPlaceCode,
 				AdditionalData:         item.AdditionalData,
+				BundleConfiguration:    item.BundleConfig,
 			}
 
 			_, err = c.cartService.AddProduct(ctx, session, delivery.DeliveryInfo.Code, addRequest)

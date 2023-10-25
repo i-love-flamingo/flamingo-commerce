@@ -7,6 +7,7 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo-commerce/v3/cart/application/mocks"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
+	"flamingo.me/flamingo-commerce/v3/product/domain"
 	"flamingo.me/flamingo/v3/core/auth"
 	authMock "flamingo.me/flamingo/v3/core/auth/mock"
 	"flamingo.me/flamingo/v3/framework/flamingo"
@@ -113,6 +114,15 @@ func TestCartMergeStrategyReplace_Merge(t *testing.T) {
 		MarketplaceCode: "foo",
 		Qty:             1,
 	}).Return(nil, nil)
+	cartService.EXPECT().AddProduct(mock.Anything, session, "delivery1", cart.AddRequest{
+		MarketplaceCode: "bundle",
+		Qty:             1,
+		BundleConfiguration: map[domain.Identifier]domain.ChoiceConfiguration{"slot1": {
+			MarketplaceCode:        "bar",
+			VariantMarketplaceCode: "baz",
+			Qty:                    2,
+		}},
+	}).Return(nil, nil)
 	cartService.EXPECT().UpdateBillingAddress(mock.Anything, session, mock.Anything).Return(nil)
 	cartService.EXPECT().UpdatePurchaser(mock.Anything, session, mock.Anything, mock.Anything).Return(nil)
 	cartService.EXPECT().ApplyVoucher(mock.Anything, session, "SUMMER_SALE").Return(&cart.Cart{}, nil)
@@ -123,7 +133,19 @@ func TestCartMergeStrategyReplace_Merge(t *testing.T) {
 		ID: "guest", BelongsToAuthenticatedUser: false,
 		Deliveries: []cart.Delivery{{
 			DeliveryInfo: cart.DeliveryInfo{Code: "delivery1"},
-			Cartitems:    []cart.Item{{MarketplaceCode: "foo", Qty: 1}},
+			Cartitems: []cart.Item{
+				{MarketplaceCode: "foo", Qty: 1},
+				{
+
+					MarketplaceCode: "bundle",
+					BundleConfig: map[domain.Identifier]domain.ChoiceConfiguration{"slot1": {
+						MarketplaceCode:        "bar",
+						VariantMarketplaceCode: "baz",
+						Qty:                    2,
+					}},
+					Qty: 1,
+				},
+			},
 		}},
 		BillingAddress:     &cart.Address{},
 		Purchaser:          &cart.Person{},
@@ -145,6 +167,15 @@ func TestCartMergeStrategyMerge_Merge(t *testing.T) {
 		MarketplaceCode: "foo",
 		Qty:             1,
 	}).Return(nil, nil)
+	cartService.EXPECT().AddProduct(mock.Anything, session, "delivery1", cart.AddRequest{
+		MarketplaceCode: "bundle",
+		Qty:             1,
+		BundleConfiguration: map[domain.Identifier]domain.ChoiceConfiguration{"slot1": {
+			MarketplaceCode:        "bar",
+			VariantMarketplaceCode: "baz",
+			Qty:                    2,
+		}},
+	}).Return(nil, nil)
 	cartService.EXPECT().UpdateBillingAddress(mock.Anything, session, mock.Anything).Return(nil)
 	cartService.EXPECT().UpdatePurchaser(mock.Anything, session, mock.Anything, mock.Anything).Return(nil)
 	cartService.EXPECT().ApplyVoucher(mock.Anything, session, "SUMMER_SALE").Return(&cart.Cart{}, nil)
@@ -155,7 +186,19 @@ func TestCartMergeStrategyMerge_Merge(t *testing.T) {
 		ID: "guest", BelongsToAuthenticatedUser: false,
 		Deliveries: []cart.Delivery{{
 			DeliveryInfo: cart.DeliveryInfo{Code: "delivery1"},
-			Cartitems:    []cart.Item{{MarketplaceCode: "foo", Qty: 1}},
+			Cartitems: []cart.Item{
+				{MarketplaceCode: "foo", Qty: 1},
+				{
+
+					MarketplaceCode: "bundle",
+					BundleConfig: map[domain.Identifier]domain.ChoiceConfiguration{"slot1": {
+						MarketplaceCode:        "bar",
+						VariantMarketplaceCode: "baz",
+						Qty:                    2,
+					}},
+					Qty: 1,
+				},
+			},
 		}},
 		BillingAddress:     &cart.Address{},
 		Purchaser:          &cart.Person{},
