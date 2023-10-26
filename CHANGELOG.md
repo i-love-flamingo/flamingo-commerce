@@ -12,10 +12,13 @@
 * **Breaking**(In case you have implemented a custom cart service): Extend the cart service interface with `UpdateItemBundleConfig` to allow updating bundles that have already been placed inside the cart.
 * GraphQL:
   * Add new mutation `Commerce_Cart_UpdateItemBundleConfig` to update bundle configs for existing cart items
-  * Expose Active Option (product+qty) for bundle products within the cart items 
 
 **checkout**
 * initialize place order metrics with 0 on application start to follow prometheus best practices
+
+**product**
+* GraphQL:
+  * Expose Active Option (product+qty) for bundle products
 
 ## v3.8.0
 
