@@ -130,7 +130,7 @@ func mapWithActiveChoices(domainChoices []productDomain.Choice, activeChoices ma
 
 	for i, choice := range choices {
 		activeChoice, ok := activeChoices[productDomain.Identifier(choice.Identifier)]
-		if ok {
+		if ok && activeChoice.Product != nil {
 			product := NewGraphqlProductDto(activeChoice.Product, nil, nil)
 			choices[i].Active = product
 			choices[i].ActiveOption = Option{
