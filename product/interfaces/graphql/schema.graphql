@@ -319,7 +319,8 @@ type Commerce_Product_Choice {
     required: Boolean!
     label: String!
     options: [Commerce_Product_Option!]
-    active: Commerce_Product
+    active: Commerce_Product @deprecated(reason: "use activeOption instead")
+    activeOption: Commerce_Product_Option
 }
 
 type Commerce_Product_Option {

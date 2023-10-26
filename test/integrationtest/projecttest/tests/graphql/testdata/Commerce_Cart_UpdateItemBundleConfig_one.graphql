@@ -21,6 +21,15 @@ mutation {
                                     variantMarketPlaceCode
                                 }
                             }
+                            activeOption {
+                                product {
+                                    marketPlaceCode
+                                    ... on Commerce_Product_ActiveVariantProduct {
+                                        variantMarketPlaceCode
+                                    }
+                                }
+                                qty
+                            }
                         }
                     }
                 }
