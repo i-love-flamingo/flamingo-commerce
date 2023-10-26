@@ -16,6 +16,10 @@
 **checkout**
 * initialize place order metrics with 0 on application start to follow prometheus best practices
 
+**product**
+* GraphQL:
+  * Expose Active Option (product+qty) for bundle products
+
 ## v3.8.0
 
 **sourcing**

@@ -223,37 +223,50 @@ func TestAddBundleProductToCart(t *testing.T) {
 		body := response.Expect().Body()
 
 		expected := `{
-					  "data": {
-						"Commerce_Cart_AddToCart": {
-						  "decoratedDeliveries": [
-							{
-							  "decoratedItems": [
-								{
-								  "product": {
-									"marketPlaceCode": "fake_bundle",
-									"choices": [
-									  {
-										"identifier": "identifier1",
-										"active": {
-										  "marketPlaceCode": "simple_option1"
-										}
-									  },
-									  {
-										"identifier": "identifier2",
-										"active": {
-										  "marketPlaceCode": "configurable_option2",
-										  "variantMarketPlaceCode": "shirt-red-s"
-										}
-									  }
-									]
-								  }
-								}
-							  ]
-							}
-						  ]
-						}
-					  }
-					}`
+  "data": {
+    "Commerce_Cart_AddToCart": {
+      "decoratedDeliveries": [
+        {
+          "decoratedItems": [
+            {
+              "product": {
+                "marketPlaceCode": "fake_bundle",
+                "choices": [
+                  {
+                    "identifier": "identifier1",
+                    "active": {
+                      "marketPlaceCode": "simple_option1"
+                    },
+                    "activeOption": {
+                      "product": {
+                        "marketPlaceCode": "simple_option1"
+                      },
+                      "qty": 1
+                    }
+                  },
+                  {
+                    "identifier": "identifier2",
+                    "active": {
+                      "marketPlaceCode": "configurable_option2",
+                      "variantMarketPlaceCode": "shirt-red-s"
+                    },
+                    "activeOption": {
+                      "product": {
+                        "marketPlaceCode": "configurable_option2",
+                        "variantMarketPlaceCode": "shirt-red-s"
+                      },
+                      "qty": 1
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}`
 
 		expected = spaceMap(expected)
 		body.IsEqual(expected)
@@ -395,37 +408,50 @@ func TestUpdateBundleConfiguration(t *testing.T) {
 		body := updateResponse.Expect().Body()
 
 		expected := `{
-					  "data": {
-						"Commerce_Cart_UpdateItemBundleConfig": {
-						  "decoratedDeliveries": [
-							{
-							  "decoratedItems": [
-								{
-								  "product": {
-									"marketPlaceCode": "fake_bundle",
-									"choices": [
-									  {
-										"identifier": "identifier1",
-										"active": {
-										  "marketPlaceCode": "simple_option2"
-										}
-									  },
-									  {
-										"identifier": "identifier2",
-										"active": {
-										  "marketPlaceCode": "configurable_option1",
-										  "variantMarketPlaceCode": "shirt-red-m"
-										}
-									  }
-									]
-								  }
-								}
-							  ]
-							}
-						  ]
-						}
-					  }
-					}`
+  "data": {
+    "Commerce_Cart_UpdateItemBundleConfig": {
+      "decoratedDeliveries": [
+        {
+          "decoratedItems": [
+            {
+              "product": {
+                "marketPlaceCode": "fake_bundle",
+                "choices": [
+                  {
+                    "identifier": "identifier1",
+                    "active": {
+                      "marketPlaceCode": "simple_option2"
+                    },
+                    "activeOption": {
+                      "product": {
+                        "marketPlaceCode": "simple_option2"
+                      },
+                      "qty": 1
+                    }
+                  },
+                  {
+                    "identifier": "identifier2",
+                    "active": {
+                      "marketPlaceCode": "configurable_option1",
+                      "variantMarketPlaceCode": "shirt-red-m"
+                    },
+                    "activeOption": {
+                      "product": {
+                        "marketPlaceCode": "configurable_option1",
+                        "variantMarketPlaceCode": "shirt-red-m"
+                      },
+                      "qty": 1
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}`
 
 		expected = spaceMap(expected)
 		body.IsEqual(expected)

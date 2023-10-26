@@ -750,11 +750,12 @@ type ComplexityRoot struct {
 	}
 
 	Commerce_Product_Choice struct {
-		Active     func(childComplexity int) int
-		Identifier func(childComplexity int) int
-		Label      func(childComplexity int) int
-		Options    func(childComplexity int) int
-		Required   func(childComplexity int) int
+		Active       func(childComplexity int) int
+		ActiveOption func(childComplexity int) int
+		Identifier   func(childComplexity int) int
+		Label        func(childComplexity int) int
+		Options      func(childComplexity int) int
+		Required     func(childComplexity int) int
 	}
 
 	Commerce_Product_ConfigurableProduct struct {
@@ -4135,6 +4136,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Commerce_Product_Choice.Active(childComplexity), true
+
+	case "Commerce_Product_Choice.activeOption":
+		if e.complexity.Commerce_Product_Choice.ActiveOption == nil {
+			break
+		}
+
+		return e.complexity.Commerce_Product_Choice.ActiveOption(childComplexity), true
 
 	case "Commerce_Product_Choice.identifier":
 		if e.complexity.Commerce_Product_Choice.Identifier == nil {
@@ -26037,6 +26045,8 @@ func (ec *executionContext) fieldContext_Commerce_Product_BundleProduct_choices(
 				return ec.fieldContext_Commerce_Product_Choice_options(ctx, field)
 			case "active":
 				return ec.fieldContext_Commerce_Product_Choice_active(ctx, field)
+			case "activeOption":
+				return ec.fieldContext_Commerce_Product_Choice_activeOption(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_Choice", field.Name)
 		},
@@ -26547,6 +26557,53 @@ func (ec *executionContext) fieldContext_Commerce_Product_Choice_active(ctx cont
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("FieldContext.Child cannot be called on type INTERFACE")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Commerce_Product_Choice_activeOption(ctx context.Context, field graphql.CollectedField, obj *graphqlproductdto.Choice) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Commerce_Product_Choice_activeOption(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ActiveOption, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(graphqlproductdto.Option)
+	fc.Result = res
+	return ec.marshalOCommerce_Product_Option2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOption(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Commerce_Product_Choice_activeOption(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Commerce_Product_Choice",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "product":
+				return ec.fieldContext_Commerce_Product_Option_product(ctx, field)
+			case "qty":
+				return ec.fieldContext_Commerce_Product_Option_qty(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Commerce_Product_Option", field.Name)
 		},
 	}
 	return fc, nil
@@ -43286,6 +43343,8 @@ func (ec *executionContext) _Commerce_Product_Choice(ctx context.Context, sel as
 			out.Values[i] = ec._Commerce_Product_Choice_options(ctx, field, obj)
 		case "active":
 			out.Values[i] = ec._Commerce_Product_Choice_active(ctx, field, obj)
+		case "activeOption":
+			out.Values[i] = ec._Commerce_Product_Choice_activeOption(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -49230,6 +49289,10 @@ func (ec *executionContext) marshalOCommerce_Product_MediaItem2ᚕflamingoᚗme�
 	}
 
 	return ret
+}
+
+func (ec *executionContext) marshalOCommerce_Product_Option2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOption(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.Option) graphql.Marshaler {
+	return ec._Commerce_Product_Option(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalOCommerce_Product_Option2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOptionᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.Option) graphql.Marshaler {
