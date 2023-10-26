@@ -18,7 +18,7 @@ type (
 
 		// Deprecated: ActiveOption provides the product and quantity of the active choice
 		Active       Product
-		ActiveOption Option
+		ActiveOption *Option
 	}
 
 	Option struct {
@@ -133,7 +133,7 @@ func mapWithActiveChoices(domainChoices []productDomain.Choice, activeChoices ma
 		if ok && activeChoice.Product != nil {
 			product := NewGraphqlProductDto(activeChoice.Product, nil, nil)
 			choices[i].Active = product
-			choices[i].ActiveOption = Option{
+			choices[i].ActiveOption = &Option{
 				Product: product,
 				Qty:     activeChoice.Qty,
 			}

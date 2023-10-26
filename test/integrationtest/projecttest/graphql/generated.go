@@ -26585,9 +26585,9 @@ func (ec *executionContext) _Commerce_Product_Choice_activeOption(ctx context.Co
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(graphqlproductdto.Option)
+	res := resTmp.(*graphqlproductdto.Option)
 	fc.Result = res
-	return ec.marshalOCommerce_Product_Option2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOption(ctx, field.Selections, res)
+	return ec.marshalOCommerce_Product_Option2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOption(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Commerce_Product_Choice_activeOption(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -49291,10 +49291,6 @@ func (ec *executionContext) marshalOCommerce_Product_MediaItem2ᚕflamingoᚗme�
 	return ret
 }
 
-func (ec *executionContext) marshalOCommerce_Product_Option2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOption(ctx context.Context, sel ast.SelectionSet, v graphqlproductdto.Option) graphql.Marshaler {
-	return ec._Commerce_Product_Option(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalOCommerce_Product_Option2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOptionᚄ(ctx context.Context, sel ast.SelectionSet, v []graphqlproductdto.Option) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -49340,6 +49336,13 @@ func (ec *executionContext) marshalOCommerce_Product_Option2ᚕflamingoᚗmeᚋf
 	}
 
 	return ret
+}
+
+func (ec *executionContext) marshalOCommerce_Product_Option2ᚖflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋinterfacesᚋgraphqlᚋproductᚋdtoᚐOption(ctx context.Context, sel ast.SelectionSet, v *graphqlproductdto.Option) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Commerce_Product_Option(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOCommerce_Product_PriceInfo2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋproductᚋdomainᚐPriceInfoᚄ(ctx context.Context, sel ast.SelectionSet, v []domain1.PriceInfo) graphql.Marshaler {
