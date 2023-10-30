@@ -84,7 +84,7 @@ func MapBundleConfigToDomain(graphqlBundleConfig []ChoiceConfiguration) productD
 
 	for _, configuration := range graphqlBundleConfig {
 		variantMarketplaceCode := ""
-		quantity := 1
+		quantity := 0
 
 		if configuration.VariantMarketplaceCode != nil {
 			variantMarketplaceCode = *configuration.VariantMarketplaceCode
