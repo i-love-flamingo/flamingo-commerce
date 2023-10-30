@@ -8,10 +8,12 @@ mutation {
                 identifier: "###IDENTIFIER1###"
                 marketplaceCode: "###MARKETPLACE_CODE1###"
                 variantMarketplaceCode: "###VARIANT_MARKETPLACE_CODE1###"
+                qty: 1
             },{
                 identifier: "###IDENTIFIER2###"
                 marketplaceCode: "###MARKETPLACE_CODE2###"
                 variantMarketplaceCode: "###VARIANT_MARKETPLACE_CODE2###"
+                qty: 1
             }]
         }
     ) {

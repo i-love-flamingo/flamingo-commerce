@@ -480,7 +480,7 @@ input Commerce_Cart_ChoiceConfigurationInput {
     identifier: String!
     marketplaceCode: String!
     variantMarketplaceCode: String
-    qty: Int
+    qty: Int!
 }
 
 extend type Mutation {

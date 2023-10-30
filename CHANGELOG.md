@@ -12,6 +12,7 @@
 * **Breaking**(In case you have implemented a custom cart service): Extend the cart service interface with `UpdateItemBundleConfig` to allow updating bundles that have already been placed inside the cart.
 * GraphQL:
   * Add new mutation `Commerce_Cart_UpdateItemBundleConfig` to update bundle configs for existing cart items
+  * **Breaking** Make the qty in the `Commerce_Cart_ChoiceConfigurationInput` type mandatory, previously 1 was taken as a default
 
 **checkout**
 * initialize place order metrics with 0 on application start to follow prometheus best practices
@@ -19,6 +20,7 @@
 **product**
 * GraphQL:
   * Expose Active Option (product+qty) for bundle products
+  * **Breaking** Make the qty in the `Commerce_Product_ChoiceConfigurationInput` type mandatory, previously it was 0 which lead to taking the minimum required qty of that choice
 
 ## v3.8.0
 

@@ -82,19 +82,15 @@ func mapToDomain(dtoChoices []*productDto.ChoiceConfiguration) domain.BundleConf
 		}
 
 		variantMarketplaceCode := ""
-		quantity := 0
 
 		if choice.VariantMarketplaceCode != nil {
 			variantMarketplaceCode = *choice.VariantMarketplaceCode
-		}
-		if choice.Qty != nil {
-			quantity = *choice.Qty
 		}
 
 		domainConfiguration[domain.Identifier(choice.Identifier)] = domain.ChoiceConfiguration{
 			MarketplaceCode:        choice.MarketplaceCode,
 			VariantMarketplaceCode: variantMarketplaceCode,
-			Qty:                    quantity,
+			Qty:                    choice.Qty,
 		}
 	}
 
