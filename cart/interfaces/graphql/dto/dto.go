@@ -75,7 +75,7 @@ type (
 		Identifier             string
 		MarketplaceCode        string
 		VariantMarketplaceCode *string
-		Qty                    *int
+		Qty                    int
 	}
 )
 
@@ -84,19 +84,15 @@ func MapBundleConfigToDomain(graphqlBundleConfig []ChoiceConfiguration) productD
 
 	for _, configuration := range graphqlBundleConfig {
 		variantMarketplaceCode := ""
-		quantity := 1
 
 		if configuration.VariantMarketplaceCode != nil {
 			variantMarketplaceCode = *configuration.VariantMarketplaceCode
-		}
-		if configuration.Qty != nil {
-			quantity = *configuration.Qty
 		}
 
 		cartBundleConfiguration[productDomain.Identifier(configuration.Identifier)] = productDomain.ChoiceConfiguration{
 			MarketplaceCode:        configuration.MarketplaceCode,
 			VariantMarketplaceCode: variantMarketplaceCode,
-			Qty:                    quantity,
+			Qty:                    configuration.Qty,
 		}
 	}
 

@@ -332,8 +332,7 @@ input Commerce_Product_ChoiceConfigurationInput {
     identifier: String!
     marketplaceCode: String!
     variantMarketplaceCode: String
-    "Optional quantity, if none provided the minimum will be used."
-    qty: Int
+    qty: Int!
 }
 
 extend type Query {

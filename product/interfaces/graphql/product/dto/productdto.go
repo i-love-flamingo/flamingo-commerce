@@ -97,7 +97,7 @@ type (
 		Identifier             string
 		MarketplaceCode        string
 		VariantMarketplaceCode *string
-		Qty                    *int
+		Qty                    int
 	}
 
 	// VariantSelection contains information about all possible variant selections
