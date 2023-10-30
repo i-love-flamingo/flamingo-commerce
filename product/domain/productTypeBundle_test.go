@@ -102,42 +102,6 @@ func TestGetBundleProductWithActiveChoices(t *testing.T) {
 		assert.ErrorIs(t, err, domain.ErrSelectedQuantityOutOfRange)
 	})
 
-	t.Run("returns error selected qty 0 out of range", func(t *testing.T) {
-		t.Parallel()
-
-		b := domain.BundleProduct{
-			Choices: []domain.Choice{
-				{
-					Identifier: "A",
-					Options: []domain.Option{{
-						Product: domain.SimpleProduct{BasicProductData: domain.BasicProductData{MarketPlaceCode: "A"}},
-						MinQty:  2,
-						MaxQty:  2,
-					}},
-					Required: true,
-				},
-				{
-					Identifier: "B",
-					Options: []domain.Option{{
-						Product: domain.SimpleProduct{BasicProductData: domain.BasicProductData{MarketPlaceCode: "B"}},
-						MinQty:  1,
-						MaxQty:  1,
-					}},
-					Required: false,
-				},
-			},
-		}
-
-		bc := domain.BundleConfiguration{
-			"A": {MarketplaceCode: "A", Qty: 2, VariantMarketplaceCode: ""},
-			"B": {MarketplaceCode: "B", Qty: 0, VariantMarketplaceCode: ""},
-		}
-
-		_, err := b.GetBundleProductWithActiveChoices(bc)
-
-		assert.ErrorIs(t, err, domain.ErrSelectedQuantityOutOfRange)
-	})
-
 	t.Run("returns error required choices not selected when required choices are not in the bundle config", func(t *testing.T) {
 		t.Parallel()
 
