@@ -298,7 +298,9 @@ func (cs *BaseCartReceiver) getExistingGuestCart(ctx context.Context, session *w
 func (cs *BaseCartReceiver) getNewGuestCart(ctx context.Context, session *web.Session) (*cartDomain.Cart, cartDomain.ModifyBehaviour, error) {
 	guestCart, err := cs.guestCartService.GetNewCart(ctx)
 	if err != nil {
-		cs.logger.WithContext(ctx).Error("Cannot create a new guest cart. Error: ", err)
+		if !errors.Is(err, context.Canceled) {
+			cs.logger.WithContext(ctx).Error("Cannot create a new guest cart. Error: ", err)
+		}
 
 		return nil, nil, err
 	}
@@ -379,7 +381,7 @@ func (cs *BaseCartReceiver) getSessionGuestCart(ctx context.Context, session *we
 		return existingCart, err
 	}
 
-	cs.logger.WithContext(ctx).Error("No cart in session yet - getSessionGuestCart should be called only if HasSssionGuestCart returns true")
+	cs.logger.WithContext(ctx).Error("No cart in session yet - getSessionGuestCart should be called only if HasSessionGuestCart returns true")
 
 	return nil, errors.New("no cart in session yet")
 }
