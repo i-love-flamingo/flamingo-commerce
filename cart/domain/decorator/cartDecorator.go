@@ -95,6 +95,7 @@ func (df *DecoratedCartFactory) decorateCartItem(ctx context.Context, cartItem c
 	product, err := df.productService.Get(ctx, cartItem.MarketplaceCode)
 	if err != nil {
 		df.logger.WithContext(ctx).Debug("cart.decorator - no product for item: ", err)
+
 		if product == nil {
 			// To avoid errors if consumers want to access the product data
 			product = domain.SimpleProduct{
