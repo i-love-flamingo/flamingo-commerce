@@ -180,9 +180,11 @@ func (cs *CartService) UpdatePaymentSelection(ctx context.Context, session *web.
 	cart, defers, err = behaviour.UpdatePaymentSelection(ctx, cart, paymentSelection)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
+
 		if !errors.Is(err, context.Canceled) {
 			cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "UpdatePaymentSelection").Error(err)
 		}
+
 		return err
 	}
 
@@ -208,9 +210,11 @@ func (cs *CartService) UpdateBillingAddress(ctx context.Context, session *web.Se
 	cart, defers, err = behaviour.UpdateBillingAddress(ctx, cart, *billingAddress)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
+
 		if !errors.Is(err, context.Canceled) {
 			cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "UpdateBillingAddress").Error(err)
 		}
+
 		return err
 	}
 
@@ -237,9 +241,11 @@ func (cs *CartService) UpdateDeliveryInfo(ctx context.Context, session *web.Sess
 	cart, defers, err = behaviour.UpdateDeliveryInfo(ctx, cart, deliveryCode, deliveryInfo)
 	if err != nil {
 		cs.handleCartNotFound(session, err)
+
 		if !errors.Is(err, context.Canceled) {
 			cs.logger.WithContext(ctx).WithField(flamingo.LogKeySubCategory, "UpdateDeliveryInfo").Error(err)
 		}
+
 		return err
 	}
 
@@ -1190,6 +1196,7 @@ func (cs *CartService) cancelOrder(ctx context.Context, session *web.Session, or
 		if !errors.Is(err, context.Canceled) {
 			cs.logger.Error(fmt.Sprintf("couldn't cancel order %q, err: %v", orderInfos, err))
 		}
+
 		return err
 	}
 	return nil
