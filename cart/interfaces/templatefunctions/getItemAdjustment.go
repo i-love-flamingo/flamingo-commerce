@@ -2,6 +2,7 @@ package templatefunctions
 
 import (
 	"context"
+	"go.opencensus.io/trace"
 
 	"flamingo.me/flamingo-commerce/v3/cart/application"
 	"flamingo.me/flamingo/v3/framework/web"
@@ -35,6 +36,9 @@ type (
 // Func defines the GetQuantityAdjustmentDeletedItemsMessages template function
 func (gdm *GetQuantityAdjustmentDeletedItemsMessages) Func(ctx context.Context) interface{} {
 	return func() []QuantityAdjustment {
+		_, span := trace.StartSpan(ctx, "cart/GetQuantityAdjustmentDeletedItemsMessages/Func")
+		defer span.End()
+
 		session := web.SessionFromContext(ctx)
 
 		deletedAdjustments := make([]QuantityAdjustment, 0)
@@ -62,6 +66,9 @@ func (gdm *GetQuantityAdjustmentDeletedItemsMessages) Func(ctx context.Context) 
 // Func defines the GetQuantityAdjustmentUpdatedItemsMessage template function
 func (gum *GetQuantityAdjustmentUpdatedItemsMessage) Func(ctx context.Context) interface{} {
 	return func(item cart.Item, deliveryCode string) QuantityAdjustment {
+		_, span := trace.StartSpan(ctx, "cart/GetQuantityAdjustmentUpdatedItemsMessage/Func")
+		defer span.End()
+
 		session := web.SessionFromContext(ctx)
 
 		if sessionAdjustments, found := session.Load("cart.view.quantity.adjustments"); found {
@@ -92,6 +99,9 @@ func (gum *GetQuantityAdjustmentUpdatedItemsMessage) Func(ctx context.Context) i
 // Func defines the GetQuantityAdjustmentCouponCodesRemoved template function
 func (gcd *GetQuantityAdjustmentCouponCodesRemoved) Func(ctx context.Context) interface{} {
 	return func() bool {
+		_, span := trace.StartSpan(ctx, "cart/GetQuantityAdjustmentCouponCodesRemoved/Func")
+		defer span.End()
+
 		session := web.SessionFromContext(ctx)
 
 		if sessionAdjustments, found := session.Load("cart.view.quantity.adjustments"); found {
@@ -107,6 +117,9 @@ func (gcd *GetQuantityAdjustmentCouponCodesRemoved) Func(ctx context.Context) in
 // Func defines the RemoveQuantityAdjustmentMessages template function
 func (rm *RemoveQuantityAdjustmentMessages) Func(ctx context.Context) interface{} {
 	return func() bool {
+		_, span := trace.StartSpan(ctx, "cart/RemoveQuantityAdjustmentMessages/Func")
+		defer span.End()
+
 		session := web.SessionFromContext(ctx)
 
 		session.Delete("cart.view.quantity.adjustments")

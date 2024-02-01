@@ -3,6 +3,7 @@ package application
 import (
 	"context"
 	"fmt"
+	"go.opencensus.io/trace"
 
 	"flamingo.me/flamingo/v3/core/auth"
 	"flamingo.me/flamingo/v3/framework/flamingo"
@@ -82,6 +83,9 @@ func (e *EventReceiver) prepareLogger(ctx context.Context) flamingo.Logger {
 
 //nolint:cyclop // grabbing both the customer cart and the guest cart is a complex process
 func (e *EventReceiver) handleLoginEvent(ctx context.Context, loginEvent *auth.WebLoginEvent) {
+	ctx, span := trace.StartSpan(ctx, "cart/EventReceiver/handleLoginEvent")
+	defer span.End()
+
 	if loginEvent == nil {
 		return
 	}
@@ -142,6 +146,9 @@ func (e *EventReceiver) handleLoginEvent(ctx context.Context, loginEvent *auth.W
 
 // Notify should get called by flamingo Eventlogic
 func (e *EventReceiver) Notify(ctx context.Context, event flamingo.Event) {
+	ctx, span := trace.StartSpan(ctx, "cart/EventReceiver/Notify")
+	defer span.End()
+
 	switch currentEvent := event.(type) {
 	// Clean cart cache on logout
 	case *auth.WebLogoutEvent:

@@ -2,6 +2,7 @@ package validation
 
 import (
 	"context"
+	"go.opencensus.io/trace"
 	"math"
 
 	"flamingo.me/flamingo/v3/framework/web"
@@ -47,6 +48,9 @@ func (rs *RestrictionService) Inject(
 // RestrictQty checks if there is an qty restriction present and returns an according result containing the max allowed
 // quantity and the quantity difference to the current cart. Restrictor might expect item id in context
 func (rs *RestrictionService) RestrictQty(ctx context.Context, session *web.Session, product domain.BasicProduct, currentCart *cart.Cart, deliveryCode string) *RestrictionResult {
+	ctx, span := trace.StartSpan(ctx, "cart/RestrictionService/RestrictQty")
+	defer span.End()
+
 	restrictionResult := &RestrictionResult{
 		IsRestricted:        false,
 		MaxAllowed:          math.MaxInt32,

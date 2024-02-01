@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/gob"
 	"fmt"
+	"go.opencensus.io/trace"
 	"strings"
 	"time"
 
@@ -114,6 +115,9 @@ func (cs *CartSessionCache) Inject(
 
 // BuildIdentifier creates a CartCacheIdentifier based on the login state
 func (cs *CartSessionCache) BuildIdentifier(ctx context.Context, session *web.Session) (CartCacheIdentifier, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/CartSessionCache/BuildIdentifier")
+	defer span.End()
+
 	identity := cs.webIdentityService.Identify(ctx, web.RequestFromContext(ctx))
 	if identity != nil {
 		return CartCacheIdentifier{
@@ -139,6 +143,9 @@ func (cs *CartSessionCache) BuildIdentifier(ctx context.Context, session *web.Se
 
 // GetCart fetches a Cart from the Cache
 func (cs *CartSessionCache) GetCart(ctx context.Context, session *web.Session, id CartCacheIdentifier) (*cart.Cart, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/CartSessionCache/GetCart")
+	defer span.End()
+
 	if cache, ok := session.Load(CartSessionCacheCacheKeyPrefix + id.CacheKey()); ok {
 		if cachedCartsEntry, ok := cache.(CachedCartEntry); ok {
 			cs.logger.WithContext(ctx).Debugf("Found cached cart: %v  InValid: %v", id.CacheKey(), cachedCartsEntry.IsInvalid)
@@ -168,6 +175,9 @@ func (cs *CartSessionCache) GetCart(ctx context.Context, session *web.Session, i
 
 // CacheCart adds a Cart to the Cache
 func (cs *CartSessionCache) CacheCart(ctx context.Context, session *web.Session, id CartCacheIdentifier, cartForCache *cart.Cart) error {
+	ctx, span := trace.StartSpan(ctx, "cart/CartSessionCache/CacheCart")
+	defer span.End()
+
 	if cartForCache == nil {
 		return errors.New("no cart given to cache")
 	}
@@ -183,6 +193,9 @@ func (cs *CartSessionCache) CacheCart(ctx context.Context, session *web.Session,
 
 // Invalidate a Cache Entry
 func (cs *CartSessionCache) Invalidate(ctx context.Context, session *web.Session, id CartCacheIdentifier) error {
+	ctx, span := trace.StartSpan(ctx, "cart/CartSessionCache/Invalidate")
+	defer span.End()
+
 	if cache, ok := session.Load(CartSessionCacheCacheKeyPrefix + id.CacheKey()); ok {
 		if cachedCartsEntry, ok := cache.(CachedCartEntry); ok {
 			cachedCartsEntry.IsInvalid = true
@@ -197,6 +210,9 @@ func (cs *CartSessionCache) Invalidate(ctx context.Context, session *web.Session
 
 // Delete a Cache entry
 func (cs *CartSessionCache) Delete(ctx context.Context, session *web.Session, id CartCacheIdentifier) error {
+	ctx, span := trace.StartSpan(ctx, "cart/CartSessionCache/Delete")
+	defer span.End()
+
 	if _, ok := session.Load(CartSessionCacheCacheKeyPrefix + id.CacheKey()); ok {
 		session.Delete(CartSessionCacheCacheKeyPrefix + id.CacheKey())
 
@@ -209,6 +225,9 @@ func (cs *CartSessionCache) Delete(ctx context.Context, session *web.Session, id
 
 // DeleteAll empties the Cache
 func (cs *CartSessionCache) DeleteAll(ctx context.Context, session *web.Session) error {
+	ctx, span := trace.StartSpan(ctx, "cart/CartSessionCache/DeleteAll")
+	defer span.End()
+
 	deleted := false
 	for _, k := range session.Keys() {
 		if stringKey, ok := k.(string); ok {
