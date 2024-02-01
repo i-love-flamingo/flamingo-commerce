@@ -38,7 +38,7 @@ func (tf *GetCart) Inject(
 // Func defines the GetCart template function
 func (tf *GetCart) Func(ctx context.Context) interface{} {
 	return func() cartDomain.Cart {
-		_, span := trace.StartSpan(ctx, "cart/GetCart/Func")
+		ctx, span := trace.StartSpan(ctx, "cart/GetCart/Func")
 		defer span.End()
 
 		session := web.SessionFromContext(ctx)
@@ -66,7 +66,7 @@ func (tf *GetDecoratedCart) Inject(
 // Func defines the GetDecoratedCart template function
 func (tf *GetDecoratedCart) Func(ctx context.Context) interface{} {
 	return func() decorator.DecoratedCart {
-		_, span := trace.StartSpan(ctx, "cart/GetDecoratedCart/Func")
+		ctx, span := trace.StartSpan(ctx, "cart/GetDecoratedCart/Func")
 		defer span.End()
 
 		session := web.SessionFromContext(ctx)

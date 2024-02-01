@@ -36,7 +36,7 @@ type (
 // Func defines the GetQuantityAdjustmentDeletedItemsMessages template function
 func (gdm *GetQuantityAdjustmentDeletedItemsMessages) Func(ctx context.Context) interface{} {
 	return func() []QuantityAdjustment {
-		_, span := trace.StartSpan(ctx, "cart/GetQuantityAdjustmentDeletedItemsMessages/Func")
+		ctx, span := trace.StartSpan(ctx, "cart/GetQuantityAdjustmentDeletedItemsMessages/Func")
 		defer span.End()
 
 		session := web.SessionFromContext(ctx)
@@ -66,7 +66,7 @@ func (gdm *GetQuantityAdjustmentDeletedItemsMessages) Func(ctx context.Context) 
 // Func defines the GetQuantityAdjustmentUpdatedItemsMessage template function
 func (gum *GetQuantityAdjustmentUpdatedItemsMessage) Func(ctx context.Context) interface{} {
 	return func(item cart.Item, deliveryCode string) QuantityAdjustment {
-		_, span := trace.StartSpan(ctx, "cart/GetQuantityAdjustmentUpdatedItemsMessage/Func")
+		ctx, span := trace.StartSpan(ctx, "cart/GetQuantityAdjustmentUpdatedItemsMessage/Func")
 		defer span.End()
 
 		session := web.SessionFromContext(ctx)
@@ -99,7 +99,7 @@ func (gum *GetQuantityAdjustmentUpdatedItemsMessage) Func(ctx context.Context) i
 // Func defines the GetQuantityAdjustmentCouponCodesRemoved template function
 func (gcd *GetQuantityAdjustmentCouponCodesRemoved) Func(ctx context.Context) interface{} {
 	return func() bool {
-		_, span := trace.StartSpan(ctx, "cart/GetQuantityAdjustmentCouponCodesRemoved/Func")
+		ctx, span := trace.StartSpan(ctx, "cart/GetQuantityAdjustmentCouponCodesRemoved/Func")
 		defer span.End()
 
 		session := web.SessionFromContext(ctx)
@@ -117,7 +117,7 @@ func (gcd *GetQuantityAdjustmentCouponCodesRemoved) Func(ctx context.Context) in
 // Func defines the RemoveQuantityAdjustmentMessages template function
 func (rm *RemoveQuantityAdjustmentMessages) Func(ctx context.Context) interface{} {
 	return func() bool {
-		_, span := trace.StartSpan(ctx, "cart/RemoveQuantityAdjustmentMessages/Func")
+		ctx, span := trace.StartSpan(ctx, "cart/RemoveQuantityAdjustmentMessages/Func")
 		defer span.End()
 
 		session := web.SessionFromContext(ctx)
