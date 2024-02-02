@@ -194,7 +194,7 @@ func (cs *CartSessionCache) CacheCart(ctx context.Context, session *web.Session,
 
 // Invalidate a Cache Entry
 func (cs *CartSessionCache) Invalidate(ctx context.Context, session *web.Session, id CartCacheIdentifier) error {
-	ctx, span := trace.StartSpan(ctx, "cart/CartSessionCache/Invalidate")
+	_, span := trace.StartSpan(ctx, "cart/CartSessionCache/Invalidate")
 	defer span.End()
 
 	if cache, ok := session.Load(CartSessionCacheCacheKeyPrefix + id.CacheKey()); ok {
@@ -211,7 +211,7 @@ func (cs *CartSessionCache) Invalidate(ctx context.Context, session *web.Session
 
 // Delete a Cache entry
 func (cs *CartSessionCache) Delete(ctx context.Context, session *web.Session, id CartCacheIdentifier) error {
-	ctx, span := trace.StartSpan(ctx, "cart/CartSessionCache/Delete")
+	_, span := trace.StartSpan(ctx, "cart/CartSessionCache/Delete")
 	defer span.End()
 
 	if _, ok := session.Load(CartSessionCacheCacheKeyPrefix + id.CacheKey()); ok {
@@ -226,7 +226,7 @@ func (cs *CartSessionCache) Delete(ctx context.Context, session *web.Session, id
 
 // DeleteAll empties the Cache
 func (cs *CartSessionCache) DeleteAll(ctx context.Context, session *web.Session) error {
-	ctx, span := trace.StartSpan(ctx, "cart/CartSessionCache/DeleteAll")
+	_, span := trace.StartSpan(ctx, "cart/CartSessionCache/DeleteAll")
 	defer span.End()
 
 	deleted := false
