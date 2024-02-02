@@ -27,7 +27,7 @@ func TestEventReceiver_Notify(t *testing.T) {
 		session := web.EmptySession()
 
 		cartCache := mocks.NewCartCache(t)
-		cartCache.EXPECT().DeleteAll(ctx, session).Return(nil)
+		cartCache.EXPECT().DeleteAll(mock.Anything, session).Return(nil)
 
 		receiver.Inject(flamingo.NullLogger{}, nil, nil, nil, &struct {
 			CartCache application.CartCache `inject:",optional"`
@@ -48,13 +48,13 @@ func TestEventReceiver_Notify(t *testing.T) {
 		session := web.EmptySession()
 
 		cartCache := mocks.NewCartCache(t)
-		cartCache.EXPECT().BuildIdentifier(ctx, session).Return(application.CartCacheIdentifier{
+		cartCache.EXPECT().BuildIdentifier(mock.Anything, session).Return(application.CartCacheIdentifier{
 			GuestCartID:    "foo",
 			IsCustomerCart: false,
 			CustomerID:     "",
 		}, nil)
 
-		cartCache.EXPECT().Invalidate(ctx, session, application.CartCacheIdentifier{
+		cartCache.EXPECT().Invalidate(mock.Anything, session, application.CartCacheIdentifier{
 			GuestCartID:    "foo",
 			IsCustomerCart: false,
 			CustomerID:     "",
