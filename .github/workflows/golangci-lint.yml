@@ -32,5 +32,5 @@ jobs:
         uses: golangci/golangci-lint-action@v3
         with:
           version: 'v1.55'
-          args: $(rev=${{ env.REV }}; if [ $rev != '' ]; then echo --new-from-rev=$rev; fi) -v
+          args: $(rev=${{ env.REV }}; if [ $rev != '' ]; then echo --new-from-rev=$rev; fi)
 
