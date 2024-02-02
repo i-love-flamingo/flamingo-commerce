@@ -997,7 +997,7 @@ func TestCartService_CartInEvent(t *testing.T) {
 	eventRouter.AssertNumberOfCalls(t, "Dispatch", 1)
 	// white box test that ensures router has been called with expected parameter (add to cart event)
 	// with the expected marketplace code of the item
-	eventRouter.AssertCalled(t, "Dispatch", ctx, fmt.Sprintf("%T", new(events.AddToCartEvent)), addRequest.MarketplaceCode)
+	eventRouter.AssertCalled(t, "Dispatch", mock.Anything, fmt.Sprintf("%T", new(events.AddToCartEvent)), addRequest.MarketplaceCode)
 }
 
 func createCartServiceWithDependencies() *cartApplication.CartService {

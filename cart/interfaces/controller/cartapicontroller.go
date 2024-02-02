@@ -5,6 +5,8 @@ import (
 	"net/url"
 	"strconv"
 
+	"go.opencensus.io/trace"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 
 	formDomain "flamingo.me/form/domain"
@@ -86,6 +88,9 @@ func (cc *CartAPIController) Inject(
 // @Failure 500 {object} CartAPIResult
 // @Router /api/v1/cart [get]
 func (cc *CartAPIController) GetAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "cart/CartAPIController/GetAction")
+	defer span.End()
+
 	decoratedCart, e := cc.cartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if e != nil {
 		result := newResult()
@@ -108,6 +113,9 @@ func (cc *CartAPIController) GetAction(ctx context.Context, r *web.Request) web.
 // @Failure 500 {object} CartAPIResult
 // @Router /api/v1/cart [delete]
 func (cc *CartAPIController) DeleteCartAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "cart/CartAPIController/DeleteCartAction")
+	defer span.End()
+
 	err := cc.cartService.Clean(ctx, r.Session())
 
 	result := newResult()
@@ -135,6 +143,9 @@ func (cc *CartAPIController) DeleteCartAction(ctx context.Context, r *web.Reques
 // @Param qty query integer false "optional the qty that should be added"
 // @Router /api/v1/cart/delivery/{deliveryCode}/item [post]
 func (cc *CartAPIController) AddAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "cart/CartAPIController/AddAction")
+	defer span.End()
+
 	variantMarketplaceCode := r.Params["variantMarketplaceCode"]
 
 	qty, ok := r.Params["qty"]
@@ -170,6 +181,9 @@ func (cc *CartAPIController) AddAction(ctx context.Context, r *web.Request) web.
 // @Param itemID query string true "the item that should be deleted"
 // @Router /api/v1/cart/delivery/{deliveryCode}/item [delete]
 func (cc *CartAPIController) DeleteItemAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "cart/CartAPIController/DeleteItemAction")
+	defer span.End()
+
 	itemID, _ := r.Query1("itemID")
 	deliveryCode := r.Params["deliveryCode"]
 
@@ -199,6 +213,9 @@ func (cc *CartAPIController) DeleteItemAction(ctx context.Context, r *web.Reques
 // @Param qty query integer true "the new qty"
 // @Router /api/v1/cart/delivery/{deliveryCode}/item [put]
 func (cc *CartAPIController) UpdateItemAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "cart/CartAPIController/UpdateItemAction")
+	defer span.End()
+
 	itemID, _ := r.Query1("itemID")
 	deliveryCode := r.Params["deliveryCode"]
 	qty, ok := r.Params["qty"]
@@ -231,6 +248,9 @@ func (cc *CartAPIController) UpdateItemAction(ctx context.Context, r *web.Reques
 // @Param couponCode query string true "the couponCode that should be applied"
 // @Router /api/v1/cart/voucher [post]
 func (cc *CartAPIController) ApplyVoucherAndGetAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "cart/CartAPIController/ApplyVoucherAndGetAction")
+	defer span.End()
+
 	return cc.handlePromotionAction(ctx, r, "voucher_error", cc.cartService.ApplyVoucher)
 }
 
@@ -243,6 +263,9 @@ func (cc *CartAPIController) ApplyVoucherAndGetAction(ctx context.Context, r *we
 // @Param couponCode query string true "the couponCode that should be applied"
 // @Router /api/v1/cart/voucher [delete]
 func (cc *CartAPIController) RemoveVoucherAndGetAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "cart/CartAPIController/RemoveVoucherAndGetAction")
+	defer span.End()
+
 	return cc.handlePromotionAction(ctx, r, "voucher_error", cc.cartService.RemoveVoucher)
 }
 
@@ -254,6 +277,9 @@ func (cc *CartAPIController) RemoveVoucherAndGetAction(ctx context.Context, r *w
 // @Failure 500 {object} CartAPIResult
 // @Router /api/v1/cart/deliveries/items [delete]
 func (cc *CartAPIController) DeleteAllItemsAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "cart/CartAPIController/DeleteAllItemsAction")
+	defer span.End()
+
 	err := cc.cartService.DeleteAllItems(ctx, r.Session())
 	result := newResult()
 	if err != nil {
@@ -275,6 +301,9 @@ func (cc *CartAPIController) DeleteAllItemsAction(ctx context.Context, r *web.Re
 // @Param couponCode query string true "the gift card code"
 // @Router /api/v1/cart/gift-card [post]
 func (cc *CartAPIController) ApplyGiftCardAndGetAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "cart/CartAPIController/ApplyGiftCardAndGetAction")
+	defer span.End()
+
 	return cc.handlePromotionAction(ctx, r, "giftcard_error", cc.cartService.ApplyGiftCard)
 }
 
@@ -289,6 +318,9 @@ func (cc *CartAPIController) ApplyGiftCardAndGetAction(ctx context.Context, r *w
 // @Param couponCode query string true "the couponCode that should be applied as gift card or voucher"
 // @Router /api/v1/cart/voucher-gift-card [post]
 func (cc *CartAPIController) ApplyCombinedVoucherGift(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "cart/CartAPIController/ApplyCombinedVoucherGift")
+	defer span.End()
+
 	return cc.handlePromotionAction(ctx, r, "applyany_error", cc.cartService.ApplyAny)
 }
 
@@ -302,11 +334,17 @@ func (cc *CartAPIController) ApplyCombinedVoucherGift(ctx context.Context, r *we
 // @Param couponCode query string true "the couponCode that should be deleted as gift card"
 // @Router /api/v1/cart/gift-card [delete]
 func (cc *CartAPIController) RemoveGiftCardAndGetAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "cart/CartAPIController/RemoveGiftCardAndGetAction")
+	defer span.End()
+
 	return cc.handlePromotionAction(ctx, r, "giftcard_error", cc.cartService.RemoveGiftCard)
 }
 
 // handles promotion action
 func (cc *CartAPIController) handlePromotionAction(ctx context.Context, r *web.Request, errorCode string, fn promotionFunc) web.Result {
+	ctx, span := trace.StartSpan(ctx, "cart/CartAPIController/handlePromotionAction")
+	defer span.End()
+
 	couponCode := r.Params["couponCode"]
 	result := newResult()
 	_, err := fn(ctx, r.Session(), couponCode)
@@ -331,6 +369,9 @@ func (cc *CartAPIController) handlePromotionAction(ctx context.Context, r *web.R
 // @Param deliveryCode path string true "the identifier for the delivery in the cart"
 // @Router /api/v1/cart/delivery/{deliveryCode} [delete]
 func (cc *CartAPIController) DeleteDelivery(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "cart/CartAPIController/DeleteDelivery")
+	defer span.End()
+
 	result := newResult()
 	deliveryCode := r.Params["deliveryCode"]
 	_, err := cc.cartService.DeleteDelivery(ctx, r.Session(), deliveryCode)
@@ -372,6 +413,9 @@ func (cc *CartAPIController) DeleteDelivery(ctx context.Context, r *web.Request)
 // @Param email formData string true "email"
 // @Router /api/v1/cart/billing [put]
 func (cc *CartAPIController) BillingAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "cart/CartAPIController/BillingAction")
+	defer span.End()
+
 	result := newResult()
 	form, success, err := cc.billingAddressFormController.HandleFormAction(ctx, r)
 	result.Success = success
@@ -424,6 +468,9 @@ func (cc *CartAPIController) BillingAction(ctx context.Context, r *web.Request) 
 // @Param desiredTime formData string false "desired date/time in RFC3339" format(date-time)
 // @Router /api/v1/cart/delivery/{deliveryCode} [put]
 func (cc *CartAPIController) UpdateDeliveryInfoAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "cart/CartAPIController/UpdateDeliveryInfoAction")
+	defer span.End()
+
 	result := newResult()
 	form, success, err := cc.deliveryFormController.HandleFormAction(ctx, r)
 	result.Success = success
@@ -449,6 +496,9 @@ func (cc *CartAPIController) UpdateDeliveryInfoAction(ctx context.Context, r *we
 // @Param method query string true "name of the payment method - e.g. 'offlinepayment_cashondelivery'"
 // @Router /api/v1/cart/payment-selection [put]
 func (cc *CartAPIController) UpdatePaymentSelectionAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "cart/CartAPIController/UpdatePaymentSelectionAction")
+	defer span.End()
+
 	result := newResult()
 	gateway, _ := r.Query1("gateway")
 	method, _ := r.Query1("method")
@@ -476,6 +526,9 @@ func (cc *CartAPIController) UpdatePaymentSelectionAction(ctx context.Context, r
 }
 
 func (cc *CartAPIController) enrichResultWithCartInfos(ctx context.Context, result *CartAPIResult) {
+	ctx, span := trace.StartSpan(ctx, "cart/CartAPIController/enrichResultWithCartInfos")
+	defer span.End()
+
 	session := web.SessionFromContext(ctx)
 	decoratedCart, err := cc.cartReceiverService.ViewDecoratedCart(ctx, session)
 	if err != nil {

@@ -80,8 +80,9 @@ func NewRedis(
 
 // TryLock ties once to acquire a lock and returns the unlock func if successful
 func (r *Redis) TryLock(ctx context.Context, key string, maxlockduration time.Duration) (placeorder.Unlock, error) {
-	_, span := trace.StartSpan(ctx, "placeorder/lock/TryLock")
+	_, span := trace.StartSpan(ctx, "checkout/Redis/TryLock")
 	defer span.End()
+
 	mutex := r.redsync.NewMutex(
 		key,
 		redsync.WithExpiry(maxlockduration),

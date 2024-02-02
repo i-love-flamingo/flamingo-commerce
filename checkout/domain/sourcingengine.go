@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"math"
 
+	"go.opencensus.io/trace"
+
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
@@ -122,6 +124,9 @@ func (s Sources) Reduce(reduceby Sources) Sources {
 // SetSourcesForCartItems gets Sources and modifies the Cart Items
 // todo move to application layer ?
 func (se *SourcingEngine) SetSourcesForCartItems(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart) error {
+	ctx, span := trace.StartSpan(ctx, "checkout/SourcingEngine/SetSourcesForCartItems")
+	defer span.End()
+
 	if se.SourcingService == nil {
 		return nil
 	}
@@ -156,6 +161,9 @@ func (se *SourcingEngine) SetSourcesForCartItems(ctx context.Context, session *w
 }
 
 func (se *SourcingEngine) sourceLocationForCartItem(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart, deliveryCode string, item *decorator.DecoratedCartItem) (*Source, error) {
+	ctx, span := trace.StartSpan(ctx, "checkout/SourcingEngine/sourceLocationForCartItem")
+	defer span.End()
+
 	detailService, ok := se.SourcingService.(SourcingServiceDetail)
 	if ok {
 		sources, err := detailService.GetSourcesForItem(ctx, session, decoratedCart, deliveryCode, item)

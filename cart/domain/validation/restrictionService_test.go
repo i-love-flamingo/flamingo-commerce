@@ -86,7 +86,11 @@ func TestRestrictionService_RestrictQty(t *testing.T) {
 			fields: fields{
 				qtyRestrictors: []validation.MaxQuantityRestrictor{&MockRestrictor{IsRestricted: true, MaxQty: 5, DifferenceQty: 5}},
 			},
-			args: args{},
+			args: args{
+				ctx:     context.Background(),
+				product: nil,
+				cart:    nil,
+			},
 			expectedRestrictionResult: &validation.RestrictionResult{
 				IsRestricted:        true,
 				MaxAllowed:          5,
@@ -105,7 +109,11 @@ func TestRestrictionService_RestrictQty(t *testing.T) {
 					&MockRestrictor{IsRestricted: true, MaxQty: math.MaxInt32, DifferenceQty: math.MaxInt32},
 				},
 			},
-			args: args{},
+			args: args{
+				ctx:     context.Background(),
+				product: nil,
+				cart:    nil,
+			},
 			expectedRestrictionResult: &validation.RestrictionResult{
 				IsRestricted:        true,
 				MaxAllowed:          17,

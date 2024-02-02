@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 
+	"go.opencensus.io/trace"
+
 	"flamingo.me/flamingo/v3/core/auth"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 
@@ -33,6 +35,9 @@ func (cs *DefaultCustomerCartService) Inject(
 
 // GetCart gets a customer cart from the in memory customer cart service
 func (cs *DefaultCustomerCartService) GetCart(ctx context.Context, identity auth.Identity, _ string) (*cart.Cart, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCustomerCartService/GetCart")
+	defer span.End()
+
 	id := identity.Subject()
 
 	foundCart, err := cs.defaultBehaviour.GetCart(ctx, id)
@@ -52,13 +57,19 @@ func (cs *DefaultCustomerCartService) GetCart(ctx context.Context, identity auth
 }
 
 // GetModifyBehaviour gets the cart order behaviour of the service
-func (cs *DefaultCustomerCartService) GetModifyBehaviour(context.Context, auth.Identity) (cart.ModifyBehaviour, error) {
+func (cs *DefaultCustomerCartService) GetModifyBehaviour(ctx context.Context, _ auth.Identity) (cart.ModifyBehaviour, error) {
+	_, span := trace.StartSpan(ctx, "cart/DefaultCustomerCartService/GetModifyBehaviour")
+	defer span.End()
+
 	return cs.defaultBehaviour, nil
 }
 
 // RestoreCart restores a previously used cart
 // Deprecated: (deprecated in the interface)
-func (cs *DefaultCustomerCartService) RestoreCart(ctx context.Context, auth auth.Identity, cart cart.Cart) (*cart.Cart, error) {
+func (cs *DefaultCustomerCartService) RestoreCart(ctx context.Context, _ auth.Identity, cart cart.Cart) (*cart.Cart, error) {
+	_, span := trace.StartSpan(ctx, "cart/DefaultCustomerCartService/RestoreCart")
+	defer span.End()
+
 	cs.logger.Warn("RestoreCart depricated")
 	return &cart, nil
 }

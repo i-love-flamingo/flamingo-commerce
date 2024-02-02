@@ -109,7 +109,7 @@ func (c *Coordinator) Inject(
 // New acquires lock if possible and creates new process with first run call blocking
 // returns error if already locked or error during run
 func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *url.URL) (*process.Context, error) {
-	ctx, span := trace.StartSpan(ctx, "placeorder/coordinator/New")
+	ctx, span := trace.StartSpan(ctx, "checkout/Coordinator/New")
 	defer span.End()
 
 	unlock, err := c.locker.TryLock(ctx, determineLockKeyForCart(cart), maxLockDuration)
@@ -163,6 +163,9 @@ func (c *Coordinator) New(ctx context.Context, cart cartDomain.Cart, returnURL *
 
 // HasUnfinishedProcess checks for processes not in final state
 func (c *Coordinator) HasUnfinishedProcess(ctx context.Context) (bool, error) {
+	ctx, span := trace.StartSpan(ctx, "checkout/Coordinator/HasUnfinishedProcess")
+	defer span.End()
+
 	last, err := c.LastProcess(ctx)
 	if err == ErrNoPlaceOrderProcess {
 		return false, nil
@@ -180,6 +183,9 @@ func (c *Coordinator) HasUnfinishedProcess(ctx context.Context) (bool, error) {
 }
 
 func (c *Coordinator) storeProcessContext(ctx context.Context, pctx process.Context) error {
+	ctx, span := trace.StartSpan(ctx, "checkout/Coordinator/storeProcessContext")
+	defer span.End()
+
 	session := web.SessionFromContext(ctx)
 	if session == nil {
 		return errors.New("session not available to check for last place order context")
@@ -189,6 +195,9 @@ func (c *Coordinator) storeProcessContext(ctx context.Context, pctx process.Cont
 }
 
 func (c *Coordinator) clearProcessContext(ctx context.Context) error {
+	ctx, span := trace.StartSpan(ctx, "checkout/Coordinator/clearProcessContext")
+	defer span.End()
+
 	session := web.SessionFromContext(ctx)
 	if session == nil {
 		return errors.New("session not available to check for last place order context")
@@ -199,6 +208,9 @@ func (c *Coordinator) clearProcessContext(ctx context.Context) error {
 
 // LastProcess current place order process
 func (c *Coordinator) LastProcess(ctx context.Context) (*process.Process, error) {
+	ctx, span := trace.StartSpan(ctx, "checkout/Coordinator/LastProcess")
+	defer span.End()
+
 	session := web.SessionFromContext(ctx)
 	if session == nil {
 		return nil, errors.New("session not available to check for last place order context")
@@ -219,7 +231,7 @@ func (c *Coordinator) LastProcess(ctx context.Context) (*process.Process, error)
 // Cancel the process if it exists (blocking)
 // be aware that all rollback callbacks are executed
 func (c *Coordinator) Cancel(ctx context.Context) error {
-	ctx, span := trace.StartSpan(ctx, "placeorder/coordinator/Cancel")
+	ctx, span := trace.StartSpan(ctx, "checkout/Coordinator/Cancel")
 	defer span.End()
 
 	var returnErr error
@@ -278,7 +290,7 @@ func (c *Coordinator) Cancel(ctx context.Context) error {
 
 // ClearLastProcess removes last stored process
 func (c *Coordinator) ClearLastProcess(ctx context.Context) error {
-	ctx, span := trace.StartSpan(ctx, "placeorder/coordinator/Clear")
+	ctx, span := trace.StartSpan(ctx, "checkout/Coordinator/ClearLastProcess")
 	defer span.End()
 
 	var returnErr error
@@ -296,7 +308,7 @@ func (c *Coordinator) ClearLastProcess(ctx context.Context) error {
 // Run returns immediately
 func (c *Coordinator) Run(ctx context.Context) {
 	go func(ctx context.Context) {
-		ctx, span := trace.StartSpan(ctx, "placeorder/coordinator/Run")
+		ctx, span := trace.StartSpan(ctx, "checkout/Coordinator/Run")
 		defer span.End()
 
 		web.RunWithDetachedContext(ctx, func(ctx context.Context) {
@@ -335,6 +347,9 @@ func (c *Coordinator) Run(ctx context.Context) {
 }
 
 func (c *Coordinator) proceedInStateMachineUntilNoStateChange(ctx context.Context, p *process.Process) error {
+	ctx, span := trace.StartSpan(ctx, "checkout/Coordinator/proceedInStateMachineUntilNoStateChange")
+	defer span.End()
+
 	stateBeforeRun := p.Context().CurrentStateName
 	for i := 0; i < maxRunCount; i++ {
 
@@ -360,7 +375,7 @@ func (c *Coordinator) proceedInStateMachineUntilNoStateChange(ctx context.Contex
 // RunBlocking waits for the lock and starts the next processing
 // RunBlocking waits until the process is finished and returns its result
 func (c *Coordinator) RunBlocking(ctx context.Context) (*process.Context, error) {
-	ctx, span := trace.StartSpan(ctx, "placeorder/coordinator/RunBlocking")
+	ctx, span := trace.StartSpan(ctx, "checkout/Coordinator/RunBlocking")
 	defer span.End()
 
 	var pctx *process.Context
@@ -432,6 +447,9 @@ func (c *Coordinator) RunBlocking(ctx context.Context) (*process.Context, error)
 }
 
 func (c *Coordinator) forceSessionUpdate(ctx context.Context) {
+	ctx, span := trace.StartSpan(ctx, "checkout/Coordinator/forceSessionUpdate")
+	defer span.End()
+
 	session := web.SessionFromContext(ctx)
 	_, err := c.sessionStore.Save(ctx, session)
 	if err != nil {

@@ -4,6 +4,8 @@ import (
 	"context"
 	"sort"
 
+	"go.opencensus.io/trace"
+
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 
 	"flamingo.me/flamingo/v3/framework/flamingo"
@@ -61,6 +63,9 @@ func (df *DecoratedCartFactory) Inject(
 
 // Create Factory method to get Decorated Cart
 func (df *DecoratedCartFactory) Create(ctx context.Context, cart cartDomain.Cart) *DecoratedCart {
+	ctx, span := trace.StartSpan(ctx, "cart/DecoratedCartFactory/Create")
+	defer span.End()
+
 	decoratedCart := DecoratedCart{Cart: cart, Logger: df.logger}
 
 	for _, d := range cart.Deliveries {
@@ -78,6 +83,9 @@ func (df *DecoratedCartFactory) Create(ctx context.Context, cart cartDomain.Cart
 
 // CreateDecorateCartItems Factory method to get Decorated Cart
 func (df *DecoratedCartFactory) CreateDecorateCartItems(ctx context.Context, items []cartDomain.Item) []DecoratedCartItem {
+	ctx, span := trace.StartSpan(ctx, "cart/DecoratedCartFactory/CreateDecorateCartItems")
+	defer span.End()
+
 	var decoratedItems []DecoratedCartItem
 
 	for _, cartItem := range items {
@@ -90,6 +98,9 @@ func (df *DecoratedCartFactory) CreateDecorateCartItems(ctx context.Context, ite
 
 // decorateCartItem factory method
 func (df *DecoratedCartFactory) decorateCartItem(ctx context.Context, cartItem cartDomain.Item) DecoratedCartItem {
+	ctx, span := trace.StartSpan(ctx, "cart/DecoratedCartFactory/decorateCartItem")
+	defer span.End()
+
 	decoratedItem := DecoratedCartItem{Item: cartItem, logger: df.logger}
 
 	product, err := df.productService.Get(ctx, cartItem.MarketplaceCode)
@@ -310,6 +321,9 @@ func (dc DecoratedDelivery) GetDecoratedCartItemByID(ID string) *DecoratedCartIt
 }
 
 func CartFromDecoratedCartFactoryContext(ctx context.Context) *cartDomain.Cart {
+	ctx, span := trace.StartSpan(ctx, "cart/CartFromDecoratedCartFactoryContext")
+	defer span.End()
+
 	if cart, ok := ctx.Value(ctxKey{}).(cartDomain.Cart); ok {
 		return &cart
 	}

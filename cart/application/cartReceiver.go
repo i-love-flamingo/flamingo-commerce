@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 
+	"go.opencensus.io/trace"
+
 	"flamingo.me/flamingo/v3/core/auth"
 	"flamingo.me/flamingo/v3/framework/web"
 
@@ -92,6 +94,9 @@ func (cs *BaseCartReceiver) Inject(
 // RestoreCart restores a previously used guest / customer cart
 // deprecated: use CartService.RestoreCart(), ensure that your cart implements the CompleteBehaviour
 func (cs *BaseCartReceiver) RestoreCart(ctx context.Context, session *web.Session, cartToRestore cartDomain.Cart) (*cartDomain.Cart, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/BaseCartReceiver/RestoreCart")
+	defer span.End()
+
 	identity := cs.webIdentityService.Identify(ctx, web.RequestFromContext(ctx))
 	if identity != nil {
 		restoredCart, err := cs.customerCartService.RestoreCart(ctx, identity, cartToRestore)
@@ -115,6 +120,9 @@ func (cs *BaseCartReceiver) RestoreCart(ctx context.Context, session *web.Sessio
 
 // ShouldHaveCart - checks if there should be a cart. Indicated if a call to GetCart should return a real cart
 func (cs *BaseCartReceiver) ShouldHaveCart(ctx context.Context, session *web.Session) bool {
+	ctx, span := trace.StartSpan(ctx, "cart/BaseCartReceiver/ShouldHaveCart")
+	defer span.End()
+
 	if cs.webIdentityService.Identify(ctx, web.RequestFromContext(ctx)) != nil {
 		return true
 	}
@@ -130,6 +138,9 @@ func (cs *BaseCartReceiver) ShouldHaveGuestCart(session *web.Session) bool {
 
 // ViewDecoratedCart  return a Cart for view
 func (cs *CartReceiverService) ViewDecoratedCart(ctx context.Context, session *web.Session) (*decorator.DecoratedCart, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/CartReceiverService/ViewDecoratedCart")
+	defer span.End()
+
 	cart, err := cs.ViewCart(ctx, session)
 	if err != nil {
 		return nil, err
@@ -140,6 +151,9 @@ func (cs *CartReceiverService) ViewDecoratedCart(ctx context.Context, session *w
 
 // ViewDecoratedCartWithoutCache  return a Cart for view
 func (cs *CartReceiverService) ViewDecoratedCartWithoutCache(ctx context.Context, session *web.Session) (*decorator.DecoratedCart, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/CartReceiverService/ViewDecoratedCartWithoutCache")
+	defer span.End()
+
 	cart, err := cs.GetCartWithoutCache(ctx, session)
 	if err != nil {
 		return nil, err
@@ -150,6 +164,9 @@ func (cs *CartReceiverService) ViewDecoratedCartWithoutCache(ctx context.Context
 
 // ViewCart  return a Cart for view
 func (cs *BaseCartReceiver) ViewCart(ctx context.Context, session *web.Session) (*cartDomain.Cart, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/BaseCartReceiver/ViewCart")
+	defer span.End()
+
 	if cs.ShouldHaveCart(ctx, session) {
 		cart, _, err := cs.GetCart(ctx, session)
 		if err != nil {
@@ -163,6 +180,9 @@ func (cs *BaseCartReceiver) ViewCart(ctx context.Context, session *web.Session) 
 }
 
 func (cs *BaseCartReceiver) storeCartInCacheIfCacheIsEnabled(ctx context.Context, session *web.Session, cart *cartDomain.Cart) error {
+	ctx, span := trace.StartSpan(ctx, "cart/BaseCartReceiver/storeCartInCacheIfCacheIsEnabled")
+	defer span.End()
+
 	if cs.cartCache == nil {
 		return errors.New("no cache")
 	}
@@ -177,6 +197,9 @@ func (cs *BaseCartReceiver) storeCartInCacheIfCacheIsEnabled(ctx context.Context
 
 // GetCart Get the correct Cart (either Guest or User)
 func (cs *BaseCartReceiver) GetCart(ctx context.Context, session *web.Session) (*cartDomain.Cart, cartDomain.ModifyBehaviour, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/BaseCartReceiver/GetCart")
+	defer span.End()
+
 	if cs.webIdentityService.Identify(ctx, web.RequestFromContext(ctx)) != nil {
 		return cs.getCustomerCart(ctx, session)
 	}
@@ -188,6 +211,9 @@ func (cs *BaseCartReceiver) GetCart(ctx context.Context, session *web.Session) (
 
 // ModifyBehaviour returns the correct behaviour to modify the cart for the current user (guest/customer)
 func (cs *BaseCartReceiver) ModifyBehaviour(ctx context.Context) (cartDomain.ModifyBehaviour, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/BaseCartReceiver/ModifyBehaviour")
+	defer span.End()
+
 	identity := cs.webIdentityService.Identify(ctx, web.RequestFromContext(ctx))
 	if identity != nil {
 		return cs.customerCartService.GetModifyBehaviour(ctx, identity)
@@ -197,6 +223,9 @@ func (cs *BaseCartReceiver) ModifyBehaviour(ctx context.Context) (cartDomain.Mod
 
 // getCustomerCart
 func (cs *BaseCartReceiver) getCustomerCart(ctx context.Context, session *web.Session) (*cartDomain.Cart, cartDomain.ModifyBehaviour, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/BaseCartReceiver/getCustomerCart")
+	defer span.End()
+
 	cart, found, err := cs.getCartFromCacheIfCacheIsEnabled(ctx, session)
 
 	switch err {
@@ -229,6 +258,9 @@ func (cs *BaseCartReceiver) getCustomerCart(ctx context.Context, session *web.Se
 }
 
 func (cs *BaseCartReceiver) getCartFromCacheIfCacheIsEnabled(ctx context.Context, session *web.Session) (*cartDomain.Cart, bool, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/BaseCartReceiver/getCartFromCacheIfCacheIsEnabled")
+	defer span.End()
+
 	if cs.cartCache == nil {
 		return nil, false, nil
 	}
@@ -253,6 +285,9 @@ func (cs *BaseCartReceiver) getCartFromCacheIfCacheIsEnabled(ctx context.Context
 
 // getExistingGuestCart
 func (cs *BaseCartReceiver) getExistingGuestCart(ctx context.Context, session *web.Session) (*cartDomain.Cart, cartDomain.ModifyBehaviour, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/BaseCartReceiver/getExistingGuestCart")
+	defer span.End()
+
 	cart, found, err := cs.getCartFromCacheIfCacheIsEnabled(ctx, session)
 
 	if err != nil {
@@ -296,6 +331,9 @@ func (cs *BaseCartReceiver) getExistingGuestCart(ctx context.Context, session *w
 
 // getNewGuestCart
 func (cs *BaseCartReceiver) getNewGuestCart(ctx context.Context, session *web.Session) (*cartDomain.Cart, cartDomain.ModifyBehaviour, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/BaseCartReceiver/getNewGuestCart")
+	defer span.End()
+
 	guestCart, err := cs.guestCartService.GetNewCart(ctx)
 	if err != nil {
 		if !errors.Is(err, context.Canceled) {
@@ -325,6 +363,9 @@ func (cs *BaseCartReceiver) getNewGuestCart(ctx context.Context, session *web.Se
 
 // GetCartWithoutCache - forces to get the cart without cache
 func (cs *BaseCartReceiver) GetCartWithoutCache(ctx context.Context, session *web.Session) (*cartDomain.Cart, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/BaseCartReceiver/GetCartWithoutCache")
+	defer span.End()
+
 	// Invalidate cart cache
 	if cs.eventRouter != nil {
 		cs.eventRouter.Dispatch(ctx, &cartDomain.InvalidateCartEvent{Session: session})
@@ -345,6 +386,9 @@ func (cs *BaseCartReceiver) GetCartWithoutCache(ctx context.Context, session *we
 
 // ViewGuestCart try to get the guest Cart - even if the user is logged in
 func (cs *BaseCartReceiver) ViewGuestCart(ctx context.Context, session *web.Session) (*cartDomain.Cart, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/BaseCartReceiver/ViewGuestCart")
+	defer span.End()
+
 	if cs.ShouldHaveGuestCart(session) {
 		guestCart, err := cs.getSessionGuestCart(ctx, session)
 		if err != nil {
@@ -370,6 +414,9 @@ func (cs *CartService) DeleteSavedSessionGuestCartID(session *web.Session) error
 
 // getSessionGuestCart
 func (cs *BaseCartReceiver) getSessionGuestCart(ctx context.Context, session *web.Session) (*cartDomain.Cart, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/BaseCartReceiver/getSessionGuestCart")
+	defer span.End()
+
 	if guestcartid, ok := session.Load(GuestCartSessionKey); ok {
 		existingCart, err := cs.guestCartService.GetCart(ctx, guestcartid.(string))
 		if err != nil {
@@ -388,6 +435,9 @@ func (cs *BaseCartReceiver) getSessionGuestCart(ctx context.Context, session *we
 
 // DecorateCart Get the correct Cart
 func (cs *CartReceiverService) DecorateCart(ctx context.Context, cart *cartDomain.Cart) (*decorator.DecoratedCart, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/CartReceiverService/DecorateCart")
+	defer span.End()
+
 	if cart == nil {
 		return nil, errors.New("no cart given")
 	}
@@ -397,6 +447,9 @@ func (cs *CartReceiverService) DecorateCart(ctx context.Context, cart *cartDomai
 
 // GetDecoratedCart Get the correct Cart
 func (cs *CartReceiverService) GetDecoratedCart(ctx context.Context, session *web.Session) (*decorator.DecoratedCart, cartDomain.ModifyBehaviour, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/CartReceiverService/GetDecoratedCart")
+	defer span.End()
+
 	cart, behaviour, err := cs.GetCart(ctx, session)
 	if err != nil {
 		return nil, nil, err

@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"net/url"
 
+	"go.opencensus.io/trace"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	placeorderDomain "flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
@@ -85,6 +87,9 @@ func (c *APIController) Inject(
 // @Param returnURL query string true "the returnURL that should be used after an external payment flow"
 // @Router /api/v1/checkout/placeorder [put]
 func (c *APIController) StartPlaceOrderAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "checkout/APIController/StartPlaceOrderAction")
+	defer span.End()
+
 	session := web.SessionFromContext(ctx)
 	cart, err := c.cartService.GetCartReceiverService().ViewCart(ctx, session)
 	if err != nil {
@@ -128,6 +133,9 @@ func (c *APIController) StartPlaceOrderAction(ctx context.Context, r *web.Reques
 // @Failure 500 {object} errorResponse
 // @Router /api/v1/checkout/placeorder/cancel [post]
 func (c *APIController) CancelPlaceOrderAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "checkout/APIController/CancelPlaceOrderAction")
+	defer span.End()
+
 	err := c.placeorderHandler.CancelPlaceOrder(ctx, placeorder.CancelPlaceOrderCommand{})
 	if err != nil {
 		response := c.responder.Data(errorResponse{Code: "500", Message: err.Error()})
@@ -145,6 +153,9 @@ func (c *APIController) CancelPlaceOrderAction(ctx context.Context, r *web.Reque
 // @Failure 500 {object} errorResponse
 // @Router /api/v1/checkout/placeorder [delete]
 func (c *APIController) ClearPlaceOrderAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "checkout/APIController/ClearPlaceOrderAction")
+	defer span.End()
+
 	err := c.placeorderHandler.ClearPlaceOrder(ctx)
 	if err != nil {
 		response := c.responder.Data(errorResponse{Code: "500", Message: err.Error()})
@@ -161,7 +172,10 @@ func (c *APIController) ClearPlaceOrderAction(ctx context.Context, r *web.Reques
 // @Success 200 {object} placeOrderContext
 // @Failure 500 {object} errorResponse
 // @Router /api/v1/checkout/placeorder [get]
-func (c *APIController) CurrentPlaceOrderContextAction(ctx context.Context, r *web.Request) web.Result {
+func (c *APIController) CurrentPlaceOrderContextAction(ctx context.Context, _ *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "checkout/APIController/CurrentPlaceOrderContextAction")
+	defer span.End()
+
 	pctx, err := c.placeorderHandler.CurrentContext(ctx)
 	if err != nil {
 		response := c.responder.Data(errorResponse{Code: "500", Message: err.Error()})
@@ -173,6 +187,9 @@ func (c *APIController) CurrentPlaceOrderContextAction(ctx context.Context, r *w
 }
 
 func (c *APIController) getPlaceOrderContext(ctx context.Context, pctx *process.Context) placeOrderContext {
+	ctx, span := trace.StartSpan(ctx, "checkout/APIController/getPlaceOrderContext")
+	defer span.End()
+
 	var orderInfos *placedOrderInfos
 	if pctx.PlaceOrderInfo != nil {
 		decoratedCart := c.decoratedCartFactory.Create(ctx, pctx.Cart)
@@ -211,7 +228,10 @@ func (c *APIController) getPlaceOrderContext(ctx context.Context, pctx *process.
 // @Success 200 {object} placeOrderContext
 // @Failure 500 {object} errorResponse
 // @Router /api/v1/checkout/placeorder/refresh [post]
-func (c *APIController) RefreshPlaceOrderAction(ctx context.Context, r *web.Request) web.Result {
+func (c *APIController) RefreshPlaceOrderAction(ctx context.Context, _ *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "checkout/APIController/RefreshPlaceOrderAction")
+	defer span.End()
+
 	pctx, err := c.placeorderHandler.RefreshPlaceOrder(ctx, placeorder.RefreshPlaceOrderCommand{})
 	if err != nil {
 		response := c.responder.Data(errorResponse{Code: "500", Message: err.Error()})
@@ -229,7 +249,10 @@ func (c *APIController) RefreshPlaceOrderAction(ctx context.Context, r *web.Requ
 // @Success 200 {object} placeOrderContext
 // @Failure 500 {object} errorResponse
 // @Router /api/v1/checkout/placeorder/refresh-blocking [post]
-func (c *APIController) RefreshPlaceOrderBlockingAction(ctx context.Context, r *web.Request) web.Result {
+func (c *APIController) RefreshPlaceOrderBlockingAction(ctx context.Context, _ *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "checkout/APIController/RefreshPlaceOrderBlockingAction")
+	defer span.End()
+
 	pctx, err := c.placeorderHandler.RefreshPlaceOrderBlocking(ctx, placeorder.RefreshPlaceOrderCommand{})
 	if err != nil {
 		response := c.responder.Data(errorResponse{Code: "500", Message: err.Error()})

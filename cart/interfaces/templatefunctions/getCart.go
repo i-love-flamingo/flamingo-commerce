@@ -3,6 +3,8 @@ package templatefunctions
 import (
 	"context"
 
+	"go.opencensus.io/trace"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo/v3/framework/web"
 
@@ -37,6 +39,9 @@ func (tf *GetCart) Inject(
 // Func defines the GetCart template function
 func (tf *GetCart) Func(ctx context.Context) interface{} {
 	return func() cartDomain.Cart {
+		ctx, span := trace.StartSpan(ctx, "cart/GetCart/Func")
+		defer span.End()
+
 		session := web.SessionFromContext(ctx)
 		cart, e := tf.cartReceiverService.ViewCart(ctx, session)
 		if e != nil {
@@ -62,6 +67,9 @@ func (tf *GetDecoratedCart) Inject(
 // Func defines the GetDecoratedCart template function
 func (tf *GetDecoratedCart) Func(ctx context.Context) interface{} {
 	return func() decorator.DecoratedCart {
+		ctx, span := trace.StartSpan(ctx, "cart/GetDecoratedCart/Func")
+		defer span.End()
+
 		session := web.SessionFromContext(ctx)
 		cart, e := tf.cartReceiverService.ViewDecoratedCart(ctx, session)
 		if e != nil {

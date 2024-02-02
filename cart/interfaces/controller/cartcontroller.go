@@ -5,6 +5,8 @@ import (
 	"encoding/gob"
 	"strconv"
 
+	"go.opencensus.io/trace"
+
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"
 
@@ -73,6 +75,9 @@ func (cc *CartViewController) Inject(
 
 // ViewAction the DecoratedCart View ( / cart)
 func (cc *CartViewController) ViewAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "cart/CartViewController/ViewAction")
+	defer span.End()
+
 	if cc.adjustItemsToRestrictedQty {
 		err := cc.adjustItemsToRestrictedQtyAndAddToSession(ctx, r)
 		if err != nil {
@@ -113,6 +118,9 @@ func (cc *CartViewController) ViewAction(ctx context.Context, r *web.Request) we
 
 // AddAndViewAction the DecoratedCart View ( / cart)
 func (cc *CartViewController) AddAndViewAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "cart/CartViewController/AddAndViewAction")
+	defer span.End()
+
 	variantMarketplaceCode := r.Params["variantMarketplaceCode"]
 
 	qty, ok := r.Params["qty"]
@@ -144,6 +152,8 @@ func (cc *CartViewController) AddAndViewAction(ctx context.Context, r *web.Reque
 
 // UpdateQtyAndViewAction the DecoratedCart View ( / cart)
 func (cc *CartViewController) UpdateQtyAndViewAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "cart/CartViewController/UpdateQtyAndViewAction")
+	defer span.End()
 
 	id, ok := r.Params["id"]
 	if !ok {
@@ -176,6 +186,8 @@ func (cc *CartViewController) UpdateQtyAndViewAction(ctx context.Context, r *web
 
 // DeleteAndViewAction the DecoratedCart View ( / cart)
 func (cc *CartViewController) DeleteAndViewAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "cart/CartViewController/DeleteAndViewAction")
+	defer span.End()
 
 	id, ok := r.Params["id"]
 	if !ok {
@@ -193,6 +205,9 @@ func (cc *CartViewController) DeleteAndViewAction(ctx context.Context, r *web.Re
 
 // DeleteAllAndViewAction empties the cart and shows it
 func (cc *CartViewController) DeleteAllAndViewAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "cart/CartViewController/DeleteAllAndViewAction")
+	defer span.End()
+
 	err := cc.applicationCartService.DeleteAllItems(ctx, r.Session())
 	if err != nil {
 		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.deleteaction: Error %v", err)
@@ -203,6 +218,9 @@ func (cc *CartViewController) DeleteAllAndViewAction(ctx context.Context, r *web
 
 // CleanAndViewAction empties the cart and shows it
 func (cc *CartViewController) CleanAndViewAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "cart/CartViewController/CleanAndViewAction")
+	defer span.End()
+
 	err := cc.applicationCartService.Clean(ctx, r.Session())
 	if err != nil {
 		cc.logger.WithContext(ctx).Warn("cart.cartcontroller.deleteaction: Error %v", err)
@@ -213,6 +231,9 @@ func (cc *CartViewController) CleanAndViewAction(ctx context.Context, r *web.Req
 
 // CleanDeliveryAndViewAction empties a single delivery and shows it
 func (cc *CartViewController) CleanDeliveryAndViewAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "cart/CartViewController/CleanDeliveryAndViewAction")
+	defer span.End()
+
 	deliveryCode := r.Params["deliveryCode"]
 	_, err := cc.applicationCartService.DeleteDelivery(ctx, r.Session(), deliveryCode)
 	if err != nil {
@@ -224,6 +245,9 @@ func (cc *CartViewController) CleanDeliveryAndViewAction(ctx context.Context, r 
 
 // adjustItemsToRestrictedQtyAndAddToSession checks the items of the cart against their qty restrictions and adds adjustments to the session
 func (cc *CartViewController) adjustItemsToRestrictedQtyAndAddToSession(ctx context.Context, r *web.Request) error {
+	ctx, span := trace.StartSpan(ctx, "cart/CartViewController/adjustItemsToRestrictedQtyAndAddToSession")
+	defer span.End()
+
 	adjustments, err := cc.applicationCartService.AdjustItemsToRestrictedQty(ctx, r.Session())
 	if err != nil {
 		return err
