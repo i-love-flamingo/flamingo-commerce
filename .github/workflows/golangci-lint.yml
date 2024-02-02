@@ -14,7 +14,8 @@ jobs:
     name: lint
     runs-on: ubuntu-latest
     env:
-      REV: $(git rev-parse origin/master)
+#      finds your first commit ahead from master then finds revision before your first commit to be used as starting point for linter
+      REV: $(git rev-parse $(git rev-list --topo-order origin/master..HEAD | tail -1)^1)
     steps:
       - uses: actions/checkout@v3
         with:
