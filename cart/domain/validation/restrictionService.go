@@ -2,8 +2,9 @@ package validation
 
 import (
 	"context"
-	"go.opencensus.io/trace"
 	"math"
+
+	"go.opencensus.io/trace"
 
 	"flamingo.me/flamingo/v3/framework/web"
 

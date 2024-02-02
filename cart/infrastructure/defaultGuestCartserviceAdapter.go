@@ -2,9 +2,10 @@ package infrastructure
 
 import (
 	"context"
-	"go.opencensus.io/trace"
 	"math/rand"
 	"strconv"
+
+	"go.opencensus.io/trace"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo/v3/framework/flamingo"

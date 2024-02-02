@@ -3,10 +3,11 @@ package infrastructure
 import (
 	"context"
 	"fmt"
-	"go.opencensus.io/trace"
 	"math/big"
 	"math/rand"
 	"strconv"
+
+	"go.opencensus.io/trace"
 
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/pkg/errors"

@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/gob"
 	"errors"
-	"go.opencensus.io/trace"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"go.opencensus.io/trace"
 
 	"flamingo.me/flamingo/v3/core/auth"
 	"flamingo.me/flamingo/v3/framework/flamingo"

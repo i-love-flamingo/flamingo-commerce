@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/gob"
 	"fmt"
-	"go.opencensus.io/trace"
 	"strings"
 	"time"
+
+	"go.opencensus.io/trace"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo/v3/core/auth"

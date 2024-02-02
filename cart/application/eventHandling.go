@@ -3,6 +3,7 @@ package application
 import (
 	"context"
 	"fmt"
+
 	"go.opencensus.io/trace"
 
 	"flamingo.me/flamingo/v3/core/auth"

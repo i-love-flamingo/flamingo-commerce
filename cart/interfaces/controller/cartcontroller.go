@@ -3,8 +3,9 @@ package controller
 import (
 	"context"
 	"encoding/gob"
-	"go.opencensus.io/trace"
 	"strconv"
+
+	"go.opencensus.io/trace"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/validation"

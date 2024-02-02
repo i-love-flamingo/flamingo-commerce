@@ -2,8 +2,9 @@ package decorator
 
 import (
 	"context"
-	"go.opencensus.io/trace"
 	"sort"
+
+	"go.opencensus.io/trace"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 

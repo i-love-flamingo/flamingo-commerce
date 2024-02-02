@@ -3,8 +3,9 @@ package infrastructure
 import (
 	"context"
 	"errors"
-	"go.opencensus.io/trace"
 	"sync"
+
+	"go.opencensus.io/trace"
 
 	domaincart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 )

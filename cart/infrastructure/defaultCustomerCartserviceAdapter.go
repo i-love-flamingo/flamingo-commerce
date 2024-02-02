@@ -3,6 +3,7 @@ package infrastructure
 import (
 	"context"
 	"errors"
+
 	"go.opencensus.io/trace"
 
 	"flamingo.me/flamingo/v3/core/auth"

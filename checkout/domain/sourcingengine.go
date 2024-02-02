@@ -3,8 +3,9 @@ package domain
 import (
 	"context"
 	"fmt"
-	"go.opencensus.io/trace"
 	"math"
+
+	"go.opencensus.io/trace"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 

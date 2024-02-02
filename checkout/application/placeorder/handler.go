@@ -2,6 +2,7 @@ package placeorder
 
 import (
 	"context"
+
 	"go.opencensus.io/trace"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"

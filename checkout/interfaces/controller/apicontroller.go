@@ -2,9 +2,10 @@ package controller
 
 import (
 	"context"
-	"go.opencensus.io/trace"
 	"net/http"
 	"net/url"
+
+	"go.opencensus.io/trace"
 
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	placeorderDomain "flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
