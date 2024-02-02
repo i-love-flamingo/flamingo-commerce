@@ -14,7 +14,7 @@ jobs:
     name: lint
     runs-on: ubuntu-latest
     env:
-      REV: $(git rev-list --topo-order origin/master..HEAD | tail -1)
+      REV: $(git rev-parse origin/master)
     steps:
       - uses: actions/checkout@v3
         with:
