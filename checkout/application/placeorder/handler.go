@@ -2,7 +2,7 @@ package placeorder
 
 import (
 	"context"
-	"errors"
+
 	"go.opencensus.io/trace"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
@@ -23,9 +23,10 @@ func (h *Handler) Inject(
 }
 
 // StartPlaceOrder handles start place order command
-func (h Handler) StartPlaceOrder(ctx context.Context, command StartPlaceOrderCommand) (*process.Context, error) {
+func (h *Handler) StartPlaceOrder(ctx context.Context, command StartPlaceOrderCommand) (*process.Context, error) {
 	ctx, span := trace.StartSpan(ctx, "checkout/Handler/StartPlaceOrder")
 	defer span.End()
+
 	_ = h.coordinator.ClearLastProcess(ctx)
 	return h.coordinator.New(ctx, command.Cart, command.ReturnURL)
 }
@@ -34,30 +35,13 @@ func (h Handler) StartPlaceOrder(ctx context.Context, command StartPlaceOrderCom
 func (h *Handler) CurrentContext(ctx context.Context) (*process.Context, error) {
 	ctx, span := trace.StartSpan(ctx, "checkout/Handler/CurrentContext")
 	defer span.End()
+
 	p, err := h.coordinator.LastProcess(ctx)
 	if err != nil {
 		return nil, err
 	}
 	currentContext := p.Context()
 
-	for _, _ = range []string{""} {
-		for _, _ = range []string{""} {
-			for _, _ = range []string{""} {
-				for _, _ = range []string{""} {
-					for _, _ = range []string{""} {
-						for _, _ = range []string{""} {
-							for _, _ = range []string{""} {
-								for _, _ = range []string{""} {
-									return nil, errors.New("")
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	
 	return &currentContext, nil
 }
 
