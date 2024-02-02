@@ -75,8 +75,9 @@ func (r *Redis) Inject(
 
 // Store a given context
 func (r *Redis) Store(ctx context.Context, key string, placeOrderContext process.Context) error {
-	_, span := trace.StartSpan(ctx, "placeorder/contextstore/Store")
+	_, span := trace.StartSpan(ctx, "checkout/Redis/Store")
 	defer span.End()
+
 	conn := r.pool.Get()
 	defer conn.Close()
 	if conn.Err() != nil {
@@ -101,8 +102,9 @@ func (r *Redis) Store(ctx context.Context, key string, placeOrderContext process
 
 // Get a stored context
 func (r *Redis) Get(ctx context.Context, key string) (process.Context, bool) {
-	_, span := trace.StartSpan(ctx, "placeorder/contextstore/Get")
+	_, span := trace.StartSpan(ctx, "checkout/Redis/Get")
 	defer span.End()
+
 	conn := r.pool.Get()
 	defer conn.Close()
 	if conn.Err() != nil {
@@ -127,8 +129,9 @@ func (r *Redis) Get(ctx context.Context, key string) (process.Context, bool) {
 
 // Delete a stored context, nop if it doesn't exist
 func (r *Redis) Delete(ctx context.Context, key string) error {
-	_, span := trace.StartSpan(ctx, "placeorder/contextstore/Delete")
+	_, span := trace.StartSpan(ctx, "checkout/Redis/Delete")
 	defer span.End()
+
 	conn := r.pool.Get()
 	defer conn.Close()
 	if conn.Err() != nil {

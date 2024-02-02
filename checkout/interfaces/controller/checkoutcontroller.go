@@ -8,6 +8,8 @@ import (
 	"net/url"
 	"strings"
 
+	"go.opencensus.io/trace"
+
 	"flamingo.me/flamingo/v3/core/auth"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
@@ -184,6 +186,9 @@ The checkoutController implements a default process for a checkout:
 
 // StartAction handles the checkout start action
 func (cc *CheckoutController) StartAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "checkout/CheckoutController/StartAction")
+	defer span.End()
+
 	// Guard Clause if Cart cannot be fetched
 	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if e != nil {
@@ -217,6 +222,9 @@ func (cc *CheckoutController) StartAction(ctx context.Context, r *web.Request) w
 
 // SubmitCheckoutAction handles the main checkout
 func (cc *CheckoutController) SubmitCheckoutAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "checkout/CheckoutController/SubmitCheckoutAction")
+	defer span.End()
+
 	// Guard Clause if Cart can not be fetched
 	decoratedCart, e := cc.applicationCartReceiverService.ViewDecoratedCart(ctx, r.Session())
 	if e != nil {
@@ -240,6 +248,9 @@ func (cc *CheckoutController) SubmitCheckoutAction(ctx context.Context, r *web.R
 
 // PlaceOrderAction functions as a return/notification URL for Payment Providers
 func (cc *CheckoutController) PlaceOrderAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "checkout/CheckoutController/PlaceOrderAction")
+	defer span.End()
+
 	session := web.SessionFromContext(ctx)
 
 	decoratedCart, err := cc.orderService.LastPlacedOrCurrentCart(ctx)
@@ -260,6 +271,8 @@ func (cc *CheckoutController) PlaceOrderAction(ctx context.Context, r *web.Reque
 }
 
 func (cc *CheckoutController) placeOrderAction(ctx context.Context, r *web.Request, session *web.Session, decoratedCart *decorator.DecoratedCart) web.Result {
+	ctx, span := trace.StartSpan(ctx, "checkout/CheckoutController/placeOrderAction")
+	defer span.End()
 
 	err := cc.orderService.SetSources(ctx, session)
 	if err != nil {
@@ -301,6 +314,9 @@ func (cc *CheckoutController) placeOrderAction(ctx context.Context, r *web.Reque
 
 // SuccessAction handles the order success action
 func (cc *CheckoutController) SuccessAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "checkout/CheckoutController/SuccessAction")
+	defer span.End()
+
 	flashes := r.Session().Flashes(CheckoutSuccessFlashKey)
 	if len(flashes) > 0 {
 
@@ -325,7 +341,10 @@ func (cc *CheckoutController) SuccessAction(ctx context.Context, r *web.Request)
 }
 
 // ExpiredAction handles the expired cart action
-func (cc *CheckoutController) ExpiredAction(context.Context, *web.Request) web.Result {
+func (cc *CheckoutController) ExpiredAction(ctx context.Context, _ *web.Request) web.Result {
+	_, span := trace.StartSpan(ctx, "checkout/CheckoutController/ExpiredAction")
+	defer span.End()
+
 	if cc.showEmptyCartPageIfNoItems {
 		return cc.responder.Render("checkout/emptycart", EmptyCartInfo{
 			CartExpired: true,
@@ -340,6 +359,9 @@ func (cc *CheckoutController) getPaymentReturnURL(r *web.Request) *url.URL {
 }
 
 func (cc *CheckoutController) getBasicViewData(ctx context.Context, request *web.Request, decoratedCart decorator.DecoratedCart) CheckoutViewData {
+	ctx, span := trace.StartSpan(ctx, "checkout/CheckoutController/getBasicViewData")
+	defer span.End()
+
 	paymentGatewaysMethods := make(map[string][]paymentDomain.Method)
 	for gatewayCode, gateway := range cc.orderService.GetAvailablePaymentGateways(ctx) {
 		paymentGatewaysMethods[gatewayCode] = gateway.Methods()
@@ -354,6 +376,9 @@ func (cc *CheckoutController) getBasicViewData(ctx context.Context, request *web
 
 // showCheckoutFormAndHandleSubmit - Action that shows the form
 func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Context, r *web.Request, template string) web.Result {
+	ctx, span := trace.StartSpan(ctx, "checkout/CheckoutController/showCheckoutFormAndHandleSubmit")
+	defer span.End()
+
 	session := r.Session()
 
 	// Guard Clause if Cart can't be fetched
@@ -424,6 +449,9 @@ func (cc *CheckoutController) showCheckoutFormAndHandleSubmit(ctx context.Contex
 
 // redirectToCheckoutFormWithErrors will store the error as a flash message and redirect to the checkout form where it is then displayed
 func (cc *CheckoutController) redirectToCheckoutFormWithErrors(ctx context.Context, r *web.Request, err error) web.Result {
+	ctx, span := trace.StartSpan(ctx, "checkout/CheckoutController/redirectToCheckoutFormWithErrors")
+	defer span.End()
+
 	cc.logger.WithContext(ctx).Info("redirect to checkout form and display error: ", err)
 	r.Session().AddFlash(getViewErrorInfo(err), CheckoutErrorFlashKey)
 	return cc.responder.RouteRedirect("checkout", nil).SetNoCache()
@@ -431,6 +459,9 @@ func (cc *CheckoutController) redirectToCheckoutFormWithErrors(ctx context.Conte
 
 // redirectToReviewFormWithErrors will store the error as a flash message and redirect to the review form where it is then displayed
 func (cc *CheckoutController) redirectToReviewFormWithErrors(ctx context.Context, r *web.Request, err error) web.Result {
+	ctx, span := trace.StartSpan(ctx, "checkout/CheckoutController/redirectToReviewFormWithErrors")
+	defer span.End()
+
 	cc.logger.WithContext(ctx).Info("redirect to review form and display error: ", err)
 	r.Session().AddFlash(getViewErrorInfo(err), CheckoutErrorFlashKey)
 	return cc.responder.RouteRedirect("checkout.review", nil).SetNoCache()
@@ -470,6 +501,9 @@ func getViewErrorInfo(err error) ViewErrorInfos {
 }
 
 func (cc *CheckoutController) processPayment(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "checkout/CheckoutController/processPayment")
+	defer span.End()
+
 	session := web.SessionFromContext(ctx)
 
 	// guard clause if cart can not be fetched
@@ -521,6 +555,9 @@ func (cc *CheckoutController) processPayment(ctx context.Context, r *web.Request
 
 // ReviewAction handles the cart review action
 func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "checkout/CheckoutController/ReviewAction")
+	defer span.End()
+
 	if cc.skipReviewAction {
 		return cc.responder.Render("checkout/carterror", nil)
 	}
@@ -578,6 +615,9 @@ func (cc *CheckoutController) ReviewAction(ctx context.Context, r *web.Request) 
 
 // PaymentAction asks the payment adapter about the current payment status and handle it
 func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request) web.Result {
+	ctx, span := trace.StartSpan(ctx, "checkout/CheckoutController/PaymentAction")
+	defer span.End()
+
 	session := web.SessionFromContext(ctx)
 
 	decoratedCart, err := cc.orderService.LastPlacedOrCurrentCart(ctx)
@@ -755,6 +795,9 @@ func (cc *CheckoutController) PaymentAction(ctx context.Context, r *web.Request)
 
 // getCommonGuardRedirects checks config and may return a redirect that should be executed before the common checkou actions
 func (cc *CheckoutController) getCommonGuardRedirects(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart) web.Result {
+	ctx, span := trace.StartSpan(ctx, "checkout/CheckoutController/getCommonGuardRedirects")
+	defer span.End()
+
 	if cc.redirectToCartOnInvalideCart {
 		result := cc.applicationCartService.ValidateCart(ctx, session, decoratedCart)
 		if !result.IsValid() {

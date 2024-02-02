@@ -5,6 +5,8 @@ import (
 	"errors"
 	"sync"
 
+	"go.opencensus.io/trace"
+
 	domaincart "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 )
 
@@ -28,7 +30,10 @@ func (s *InMemoryCartStorage) Inject() *InMemoryCartStorage {
 }
 
 // HasCart checks if the cart storage has a cart with a given id
-func (s *InMemoryCartStorage) HasCart(_ context.Context, id string) bool {
+func (s *InMemoryCartStorage) HasCart(ctx context.Context, id string) bool {
+	_, span := trace.StartSpan(ctx, "cart/InMemoryCartStorage/HasCart")
+	defer span.End()
+
 	s.locker.Lock()
 	defer s.locker.Unlock()
 
@@ -39,7 +44,10 @@ func (s *InMemoryCartStorage) HasCart(_ context.Context, id string) bool {
 }
 
 // GetCart returns a cart with the given id from the cart storage
-func (s *InMemoryCartStorage) GetCart(_ context.Context, id string) (*domaincart.Cart, error) {
+func (s *InMemoryCartStorage) GetCart(ctx context.Context, id string) (*domaincart.Cart, error) {
+	_, span := trace.StartSpan(ctx, "cart/InMemoryCartStorage/GetCart")
+	defer span.End()
+
 	s.locker.Lock()
 	defer s.locker.Unlock()
 
@@ -50,7 +58,10 @@ func (s *InMemoryCartStorage) GetCart(_ context.Context, id string) (*domaincart
 }
 
 // StoreCart stores a cart in the storage
-func (s *InMemoryCartStorage) StoreCart(_ context.Context, cart *domaincart.Cart) error {
+func (s *InMemoryCartStorage) StoreCart(ctx context.Context, cart *domaincart.Cart) error {
+	_, span := trace.StartSpan(ctx, "cart/InMemoryCartStorage/StoreCart")
+	defer span.End()
+
 	s.locker.Lock()
 	defer s.locker.Unlock()
 
@@ -59,7 +70,10 @@ func (s *InMemoryCartStorage) StoreCart(_ context.Context, cart *domaincart.Cart
 }
 
 // RemoveCart from storage
-func (s *InMemoryCartStorage) RemoveCart(_ context.Context, cart *domaincart.Cart) error {
+func (s *InMemoryCartStorage) RemoveCart(ctx context.Context, cart *domaincart.Cart) error {
+	_, span := trace.StartSpan(ctx, "cart/InMemoryCartStorage/RemoveCart")
+	defer span.End()
+
 	s.locker.Lock()
 	defer s.locker.Unlock()
 

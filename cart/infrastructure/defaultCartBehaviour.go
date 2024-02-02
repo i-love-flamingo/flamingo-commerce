@@ -7,6 +7,8 @@ import (
 	"math/rand"
 	"strconv"
 
+	"go.opencensus.io/trace"
+
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"github.com/pkg/errors"
 
@@ -102,6 +104,9 @@ func (cob *DefaultCartBehaviour) Inject(
 
 // Complete a cart and remove from storage
 func (cob *DefaultCartBehaviour) Complete(ctx context.Context, cart *domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/Complete")
+	defer span.End()
+
 	err := cob.cartStorage.RemoveCart(ctx, cart)
 	if err != nil {
 		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error removing cart: %w", err)
@@ -112,6 +117,9 @@ func (cob *DefaultCartBehaviour) Complete(ctx context.Context, cart *domaincart.
 
 // Restore supplied cart (implements CompleteBehaviour)
 func (cob *DefaultCartBehaviour) Restore(ctx context.Context, cart *domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/Restore")
+	defer span.End()
+
 	newCart, err := cart.Clone()
 	if err != nil {
 		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error cloning cart: %w", err)
@@ -129,6 +137,9 @@ func (cob *DefaultCartBehaviour) Restore(ctx context.Context, cart *domaincart.C
 
 // DeleteItem removes an item from the cart
 func (cob *DefaultCartBehaviour) DeleteItem(ctx context.Context, cart *domaincart.Cart, itemID string, deliveryCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/DeleteItem")
+	defer span.End()
+
 	if !cob.cartStorage.HasCart(ctx, cart.ID) {
 		return nil, nil, fmt.Errorf("DefaultCartBehaviour: %w for cart id %q during delete", domaincart.ErrCartNotFound, cart.ID)
 	}
@@ -168,11 +179,17 @@ func (cob *DefaultCartBehaviour) DeleteItem(ctx context.Context, cart *domaincar
 
 // UpdateItem updates a cart item
 func (cob *DefaultCartBehaviour) UpdateItem(ctx context.Context, cart *domaincart.Cart, itemUpdateCommand domaincart.ItemUpdateCommand) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/UpdateItem")
+	defer span.End()
+
 	return cob.UpdateItems(ctx, cart, []domaincart.ItemUpdateCommand{itemUpdateCommand})
 }
 
 // UpdateItems updates multiple cart items
 func (cob *DefaultCartBehaviour) UpdateItems(ctx context.Context, cart *domaincart.Cart, itemUpdateCommands []domaincart.ItemUpdateCommand) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/UpdateItems")
+	defer span.End()
+
 	if !cob.cartStorage.HasCart(ctx, cart.ID) {
 		return nil, nil, fmt.Errorf("DefaultCartBehaviour: %w for cart id %q during update", domaincart.ErrCartNotFound, cart.ID)
 	}
@@ -200,6 +217,9 @@ func (cob *DefaultCartBehaviour) UpdateItems(ctx context.Context, cart *domainca
 }
 
 func (cob *DefaultCartBehaviour) updateItem(ctx context.Context, cart *domaincart.Cart, itemUpdateCommand domaincart.ItemUpdateCommand) error {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/updateItem")
+	defer span.End()
+
 	itemDelivery, err := cart.GetDeliveryByItemID(itemUpdateCommand.ItemID)
 	if err != nil {
 		return fmt.Errorf("DefaultCartBehaviour: error finding delivery of item: %w", err)
@@ -284,6 +304,9 @@ func (cob *DefaultCartBehaviour) updateItem(ctx context.Context, cart *domaincar
 
 // AddToCart add an item to the cart
 func (cob *DefaultCartBehaviour) AddToCart(ctx context.Context, cart *domaincart.Cart, deliveryCode string, addRequest domaincart.AddRequest) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/AddToCart")
+	defer span.End()
+
 	if cart != nil && !cob.cartStorage.HasCart(ctx, cart.ID) {
 		return nil, nil, fmt.Errorf("DefaultCartBehaviour: %w for cart id %q during add", domaincart.ErrCartNotFound, cart.ID)
 	}
@@ -324,6 +347,9 @@ func (cob *DefaultCartBehaviour) AddToCart(ctx context.Context, cart *domaincart
 
 // has cart current delivery, check if there is an item present for this delivery
 func (cob *DefaultCartBehaviour) addToDelivery(ctx context.Context, delivery *domaincart.Delivery, addRequest domaincart.AddRequest) (*domaincart.Delivery, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/addToDelivery")
+	defer span.End()
+
 	for index, item := range delivery.Cartitems {
 		if item.MarketplaceCode != addRequest.MarketplaceCode {
 			continue
@@ -371,6 +397,9 @@ func (cob *DefaultCartBehaviour) addToDelivery(ctx context.Context, delivery *do
 }
 
 func (cob *DefaultCartBehaviour) buildItemForCart(ctx context.Context, addRequest domaincart.AddRequest) (*domaincart.Item, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/buildItemForCart")
+	defer span.End()
+
 	// create and add new item
 	product, err := cob.productService.Get(ctx, addRequest.MarketplaceCode)
 	if err != nil {
@@ -458,6 +487,9 @@ func (cob *DefaultCartBehaviour) createCartItemFromProduct(qty int, marketplaceC
 
 // CleanCart removes everything from the cart, e.g. deliveries, billing address, etc
 func (cob *DefaultCartBehaviour) CleanCart(ctx context.Context, cart *domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/CleanCart")
+	defer span.End()
+
 	if !cob.cartStorage.HasCart(ctx, cart.ID) {
 		return nil, nil, fmt.Errorf("DefaultCartBehaviour: %w for cart id %q during clean cart", domaincart.ErrCartNotFound, cart.ID)
 	}
@@ -488,6 +520,9 @@ func (cob *DefaultCartBehaviour) CleanCart(ctx context.Context, cart *domaincart
 
 // CleanDelivery removes a complete delivery with its items from the cart
 func (cob *DefaultCartBehaviour) CleanDelivery(ctx context.Context, cart *domaincart.Cart, deliveryCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/CleanDelivery")
+	defer span.End()
+
 	if !cob.cartStorage.HasCart(ctx, cart.ID) {
 		return nil, nil, fmt.Errorf("DefaultCartBehaviour: %w for cart id %q during clean delivery", domaincart.ErrCartNotFound, cart.ID)
 	}
@@ -528,6 +563,9 @@ func (cob *DefaultCartBehaviour) CleanDelivery(ctx context.Context, cart *domain
 
 // UpdatePurchaser - updates purchaser
 func (cob *DefaultCartBehaviour) UpdatePurchaser(ctx context.Context, cart *domaincart.Cart, purchaser *domaincart.Person, additionalData *domaincart.AdditionalData) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/UpdatePurchaser")
+	defer span.End()
+
 	newCart, err := cart.Clone()
 	if err != nil {
 		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error cloning cart: %w", err)
@@ -557,6 +595,9 @@ func (cob *DefaultCartBehaviour) UpdatePurchaser(ctx context.Context, cart *doma
 
 // UpdateBillingAddress - updates address
 func (cob *DefaultCartBehaviour) UpdateBillingAddress(ctx context.Context, cart *domaincart.Cart, billingAddress domaincart.Address) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/UpdateBillingAddress")
+	defer span.End()
+
 	newCart, err := cart.Clone()
 	if err != nil {
 		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error cloning cart: %w", err)
@@ -576,6 +617,9 @@ func (cob *DefaultCartBehaviour) UpdateBillingAddress(ctx context.Context, cart 
 
 // UpdateAdditionalData updates additional data
 func (cob *DefaultCartBehaviour) UpdateAdditionalData(ctx context.Context, cart *domaincart.Cart, additionalData *domaincart.AdditionalData) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/UpdateAdditionalData")
+	defer span.End()
+
 	newCart, err := cart.Clone()
 	if err != nil {
 		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error cloning cart: %w", err)
@@ -595,6 +639,9 @@ func (cob *DefaultCartBehaviour) UpdateAdditionalData(ctx context.Context, cart 
 
 // UpdatePaymentSelection updates payment on cart
 func (cob *DefaultCartBehaviour) UpdatePaymentSelection(ctx context.Context, cart *domaincart.Cart, paymentSelection domaincart.PaymentSelection) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/UpdatePaymentSelection")
+	defer span.End()
+
 	newCart, err := cart.Clone()
 	if err != nil {
 		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error cloning cart: %w", err)
@@ -621,6 +668,9 @@ func (cob *DefaultCartBehaviour) UpdatePaymentSelection(ctx context.Context, car
 
 // UpdateDeliveryInfo updates a delivery info
 func (cob *DefaultCartBehaviour) UpdateDeliveryInfo(ctx context.Context, cart *domaincart.Cart, deliveryCode string, deliveryInfoUpdateCommand domaincart.DeliveryInfoUpdateCommand) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/UpdateDeliveryInfo")
+	defer span.End()
+
 	newCart, err := cart.Clone()
 	if err != nil {
 		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error cloning cart: %w", err)
@@ -658,11 +708,17 @@ func (cob *DefaultCartBehaviour) UpdateDeliveryInfo(ctx context.Context, cart *d
 
 // UpdateDeliveryInfoAdditionalData @todo implement when needed
 func (cob *DefaultCartBehaviour) UpdateDeliveryInfoAdditionalData(ctx context.Context, cart *domaincart.Cart, deliveryCode string, additionalData *domaincart.AdditionalData) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/UpdateDeliveryInfoAdditionalData")
+	defer span.End()
+
 	return cart, nil, nil
 }
 
 // GetCart returns the current cart from storage
 func (cob *DefaultCartBehaviour) GetCart(ctx context.Context, cartID string) (*domaincart.Cart, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/GetCart")
+	defer span.End()
+
 	if !cob.cartStorage.HasCart(ctx, cartID) {
 		err := fmt.Errorf("DefaultCartBehaviour: %w for cart id %q during get", domaincart.ErrCartNotFound, cartID)
 		cob.logger.WithField(flamingo.LogKeyCategory, logCategory).Info(err)
@@ -687,6 +743,9 @@ func (cob *DefaultCartBehaviour) GetCart(ctx context.Context, cartID string) (*d
 
 // StoreNewCart created and stores a new cart.
 func (cob *DefaultCartBehaviour) StoreNewCart(ctx context.Context, cart *domaincart.Cart) (*domaincart.Cart, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/StoreNewCart")
+	defer span.End()
+
 	if cart.ID == "" {
 		return nil, errors.New("no id given")
 	}
@@ -710,6 +769,9 @@ func (cob *DefaultCartBehaviour) StoreNewCart(ctx context.Context, cart *domainc
 
 // ApplyVoucher applies a voucher to the cart
 func (cob *DefaultCartBehaviour) ApplyVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/ApplyVoucher")
+	defer span.End()
+
 	newCart, err := cart.Clone()
 	if err != nil {
 		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error cloning cart: %w", err)
@@ -732,6 +794,9 @@ func (cob *DefaultCartBehaviour) ApplyVoucher(ctx context.Context, cart *domainc
 
 // ApplyAny applies a voucher or giftcard to the cart
 func (cob *DefaultCartBehaviour) ApplyAny(ctx context.Context, cart *domaincart.Cart, anyCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/ApplyAny")
+	defer span.End()
+
 	currentCart, deferFunc, err := cob.ApplyVoucher(ctx, cart, anyCode)
 	if err == nil {
 		// successfully applied as voucher
@@ -744,6 +809,9 @@ func (cob *DefaultCartBehaviour) ApplyAny(ctx context.Context, cart *domaincart.
 
 // RemoveVoucher removes a voucher from the cart
 func (cob *DefaultCartBehaviour) RemoveVoucher(ctx context.Context, cart *domaincart.Cart, couponCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/RemoveVoucher")
+	defer span.End()
+
 	newCart, err := cart.Clone()
 	if err != nil {
 		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error cloning cart: %w", err)
@@ -767,6 +835,9 @@ func (cob *DefaultCartBehaviour) RemoveVoucher(ctx context.Context, cart *domain
 // ApplyGiftCard applies a gift card to the cart
 // if a GiftCard is applied, it will be added to the array AppliedGiftCards on the cart
 func (cob *DefaultCartBehaviour) ApplyGiftCard(ctx context.Context, cart *domaincart.Cart, giftCardCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/ApplyGiftCard")
+	defer span.End()
+
 	newCart, err := cart.Clone()
 	if err != nil {
 		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error cloning cart: %w", err)
@@ -790,6 +861,9 @@ func (cob *DefaultCartBehaviour) ApplyGiftCard(ctx context.Context, cart *domain
 // RemoveGiftCard removes a gift card from the cart
 // if a GiftCard is removed, it will be removed from the array AppliedGiftCards on the cart
 func (cob *DefaultCartBehaviour) RemoveGiftCard(ctx context.Context, cart *domaincart.Cart, giftCardCode string) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/RemoveGiftCard")
+	defer span.End()
+
 	newCart, err := cart.Clone()
 	if err != nil {
 		return nil, nil, fmt.Errorf("DefaultCartBehaviour: error cloning cart: %w", err)
@@ -811,7 +885,10 @@ func (cob *DefaultCartBehaviour) RemoveGiftCard(ctx context.Context, cart *domai
 }
 
 // isPaymentSelectionValid checks if the grand total of the cart matches the total of the supplied payment selection
-func (cob *DefaultCartBehaviour) checkPaymentSelection(_ context.Context, cart *domaincart.Cart, paymentSelection domaincart.PaymentSelection) error {
+func (cob *DefaultCartBehaviour) checkPaymentSelection(ctx context.Context, cart *domaincart.Cart, paymentSelection domaincart.PaymentSelection) error {
+	_, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/checkPaymentSelection")
+	defer span.End()
+
 	if paymentSelection == nil {
 		return nil
 	}
@@ -827,6 +904,9 @@ func (cob *DefaultCartBehaviour) checkPaymentSelection(_ context.Context, cart *
 
 // resetPaymentSelectionIfInvalid checks for valid paymentselection on given cart and deletes in case it is invalid
 func (cob *DefaultCartBehaviour) resetPaymentSelectionIfInvalid(ctx context.Context, cart *domaincart.Cart) (*domaincart.Cart, domaincart.DeferEvents, error) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultCartBehaviour/resetPaymentSelectionIfInvalid")
+	defer span.End()
+
 	if cart.PaymentSelection == nil {
 		return cart, nil, nil
 	}
@@ -928,21 +1008,33 @@ func (cob *DefaultCartBehaviour) collectTotals(cart *domaincart.Cart) {
 }
 
 // ApplyVoucher is called when applying a voucher
-func (DefaultVoucherHandler) ApplyVoucher(_ context.Context, cart *domaincart.Cart, _ string) (*domaincart.Cart, error) {
+func (DefaultVoucherHandler) ApplyVoucher(ctx context.Context, cart *domaincart.Cart, _ string) (*domaincart.Cart, error) {
+	_, span := trace.StartSpan(ctx, "cart/DefaultGiftCardHandler/ApplyVoucher")
+	defer span.End()
+
 	return cart, nil
 }
 
 // RemoveVoucher is called when removing a voucher
-func (DefaultVoucherHandler) RemoveVoucher(_ context.Context, cart *domaincart.Cart, _ string) (*domaincart.Cart, error) {
+func (DefaultVoucherHandler) RemoveVoucher(ctx context.Context, cart *domaincart.Cart, _ string) (*domaincart.Cart, error) {
+	_, span := trace.StartSpan(ctx, "cart/DefaultGiftCardHandler/RemoveVoucher")
+	defer span.End()
+
 	return cart, nil
 }
 
 // ApplyGiftCard is called when applying a gift card
-func (DefaultGiftCardHandler) ApplyGiftCard(_ context.Context, cart *domaincart.Cart, _ string) (*domaincart.Cart, error) {
+func (DefaultGiftCardHandler) ApplyGiftCard(ctx context.Context, cart *domaincart.Cart, _ string) (*domaincart.Cart, error) {
+	_, span := trace.StartSpan(ctx, "cart/DefaultGiftCardHandler/ApplyGiftCard")
+	defer span.End()
+
 	return cart, nil
 }
 
 // RemoveGiftCard is called when removing a gift card
-func (DefaultGiftCardHandler) RemoveGiftCard(_ context.Context, cart *domaincart.Cart, _ string) (*domaincart.Cart, error) {
+func (DefaultGiftCardHandler) RemoveGiftCard(ctx context.Context, cart *domaincart.Cart, _ string) (*domaincart.Cart, error) {
+	_, span := trace.StartSpan(ctx, "cart/DefaultGiftCardHandler/RemoveGiftCard")
+	defer span.End()
+
 	return cart, nil
 }

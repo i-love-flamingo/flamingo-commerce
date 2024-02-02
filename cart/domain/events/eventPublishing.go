@@ -3,6 +3,8 @@ package events
 import (
 	"context"
 
+	"go.opencensus.io/trace"
+
 	"flamingo.me/flamingo/v3/framework/flamingo"
 
 	cartDomain "flamingo.me/flamingo-commerce/v3/cart/domain/cart"
@@ -48,6 +50,9 @@ func (d *DefaultEventPublisher) Inject(
 
 // PublishAddToCartEvent publishes an event for add to cart actions
 func (d *DefaultEventPublisher) PublishAddToCartEvent(ctx context.Context, cart *cartDomain.Cart, marketPlaceCode string, variantMarketPlaceCode string, qty int) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultEventPublisher/PublishAddToCartEvent")
+	defer span.End()
+
 	product, err := d.productService.Get(ctx, marketPlaceCode)
 	if err != nil {
 		return
@@ -67,6 +72,9 @@ func (d *DefaultEventPublisher) PublishAddToCartEvent(ctx context.Context, cart 
 
 // PublishChangedQtyInCartEvent publishes an event for cart item quantity change actions
 func (d *DefaultEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context, cart *cartDomain.Cart, item *cartDomain.Item, qtyBefore int, qtyAfter int) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultEventPublisher/PublishChangedQtyInCartEvent")
+	defer span.End()
+
 	eventObject := ChangedQtyInCartEvent{
 		CartID:                 cart.ID,
 		MarketplaceCode:        item.MarketplaceCode,
@@ -83,6 +91,9 @@ func (d *DefaultEventPublisher) PublishChangedQtyInCartEvent(ctx context.Context
 
 // PublishOrderPlacedEvent publishes an event for placed orders
 func (d *DefaultEventPublisher) PublishOrderPlacedEvent(ctx context.Context, cart *cartDomain.Cart, placedOrderInfos placeorder.PlacedOrderInfos) {
+	ctx, span := trace.StartSpan(ctx, "cart/DefaultEventPublisher/PublishOrderPlacedEvent")
+	defer span.End()
+
 	eventObject := OrderPlacedEvent{
 		Cart:             cart,
 		PlacedOrderInfos: placedOrderInfos,

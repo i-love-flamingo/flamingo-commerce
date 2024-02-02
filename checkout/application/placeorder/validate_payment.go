@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"go.opencensus.io/trace"
+
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/states"
 	"flamingo.me/flamingo-commerce/v3/payment/application"
@@ -21,6 +23,9 @@ const (
 
 // PaymentValidator to decide over the next state
 func PaymentValidator(ctx context.Context, p *process.Process, paymentService *application.PaymentService) process.RunResult {
+	ctx, span := trace.StartSpan(ctx, "checkout/PaymentValidator")
+	defer span.End()
+
 	cart := p.Context().Cart
 	gateway, err := paymentService.PaymentGatewayByCart(p.Context().Cart)
 	if err != nil {

@@ -228,3 +228,4 @@ New GraphQL related process context store. For more details see [Context store](
 
 ### Process Lock
 New GraphQL related process lock. For more details see [Locking](#locking)
+

@@ -6,6 +6,8 @@ import (
 	"errors"
 	"fmt"
 
+	"go.opencensus.io/trace"
+
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/opencensus"
 	"flamingo.me/flamingo/v3/framework/web"
@@ -143,6 +145,9 @@ func (os *OrderService) Inject(
 // SetSources sets sources for sessions carts items
 // Deprecated: Sourcing moved to new module see sourcing module
 func (os *OrderService) SetSources(ctx context.Context, session *web.Session) error {
+	ctx, span := trace.StartSpan(ctx, "checkout/OrderService/SetSources")
+	defer span.End()
+
 	if !os.deprecatedSourcingActive {
 		return nil
 	}
@@ -166,6 +171,9 @@ func (os *OrderService) SetSources(ctx context.Context, session *web.Session) er
 // CurrentCartSaveInfos saves additional information on current cart
 // Deprecated: method is not called within flamingo-commerce and method does not support multiple delivery addresses
 func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.Session, billingAddress *cart.Address, shippingAddress *cart.Address, purchaser *cart.Person, additionalData *cart.AdditionalData) error {
+	ctx, span := trace.StartSpan(ctx, "checkout/OrderService/CurrentCartSaveInfos")
+	defer span.End()
+
 	os.logger.WithContext(ctx).Debug("CurrentCartSaveInfos call billingAddress:%v shippingAddress:%v payment:%v", billingAddress, shippingAddress)
 
 	if billingAddress == nil {
@@ -224,7 +232,10 @@ func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.S
 }
 
 // GetPaymentGateway tries to get the supplied payment gateway by code from the registered payment gateways
-func (os *OrderService) GetPaymentGateway(_ context.Context, paymentGatewayCode string) (interfaces.WebCartPaymentGateway, error) {
+func (os *OrderService) GetPaymentGateway(ctx context.Context, paymentGatewayCode string) (interfaces.WebCartPaymentGateway, error) {
+	_, span := trace.StartSpan(ctx, "checkout/OrderService/GetPaymentGateway")
+	defer span.End()
+
 	gateway, ok := os.webCartPaymentGateways[paymentGatewayCode]
 	if !ok {
 		return nil, errors.New("Payment gateway " + paymentGatewayCode + " not found")
@@ -234,12 +245,18 @@ func (os *OrderService) GetPaymentGateway(_ context.Context, paymentGatewayCode 
 }
 
 // GetAvailablePaymentGateways returns the list of registered WebCartPaymentGateway
-func (os *OrderService) GetAvailablePaymentGateways(_ context.Context) map[string]interfaces.WebCartPaymentGateway {
+func (os *OrderService) GetAvailablePaymentGateways(ctx context.Context) map[string]interfaces.WebCartPaymentGateway {
+	_, span := trace.StartSpan(ctx, "checkout/OrderService/GetAvailablePaymentGateways")
+	defer span.End()
+
 	return os.webCartPaymentGateways
 }
 
 // CurrentCartPlaceOrder places the current cart without additional payment processing
 func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.Session, cartPayment placeorder.Payment) (*PlaceOrderInfo, error) {
+	ctx, span := trace.StartSpan(ctx, "checkout/OrderService/CurrentCartPlaceOrder")
+	defer span.End()
+
 	var info *PlaceOrderInfo
 	var err error
 	web.RunWithDetachedContext(ctx, func(placeOrderContext context.Context) {
@@ -259,6 +276,9 @@ func (os *OrderService) CurrentCartPlaceOrder(ctx context.Context, session *web.
 }
 
 func (os *OrderService) placeOrder(ctx context.Context, session *web.Session, decoratedCart *decorator.DecoratedCart, payment placeorder.Payment) (*PlaceOrderInfo, error) {
+	ctx, span := trace.StartSpan(ctx, "checkout/OrderService/placeOrder")
+	defer span.End()
+
 	validationResult := os.cartService.ValidateCart(ctx, session, decoratedCart)
 	if !validationResult.IsValid() {
 		// record cartValidationFailCount metric
@@ -288,16 +308,25 @@ func (os *OrderService) placeOrder(ctx context.Context, session *web.Session, de
 
 // CancelOrder cancels an previously placed order and returns the restored cart with the order content
 func (os *OrderService) CancelOrder(ctx context.Context, session *web.Session, order *PlaceOrderInfo) (*cart.Cart, error) {
+	ctx, span := trace.StartSpan(ctx, "checkout/OrderService/CancelOrder")
+	defer span.End()
+
 	return os.cartService.CancelOrder(ctx, session, order.PlacedOrders, order.Cart)
 }
 
 // CancelOrderWithoutRestore cancels an previously placed order
 func (os *OrderService) CancelOrderWithoutRestore(ctx context.Context, session *web.Session, order *PlaceOrderInfo) error {
+	ctx, span := trace.StartSpan(ctx, "checkout/OrderService/CancelOrderWithoutRestore")
+	defer span.End()
+
 	return os.cartService.CancelOrderWithoutRestore(ctx, session, order.PlacedOrders)
 }
 
 // CurrentCartPlaceOrderWithPaymentProcessing places the current cart which is fetched from the context
 func (os *OrderService) CurrentCartPlaceOrderWithPaymentProcessing(ctx context.Context, session *web.Session) (*PlaceOrderInfo, error) {
+	ctx, span := trace.StartSpan(ctx, "checkout/OrderService/CurrentCartPlaceOrderWithPaymentProcessing")
+	defer span.End()
+
 	var info *PlaceOrderInfo
 	var err error
 	// use a background context from here on to prevent the place order canceled by context cancel
@@ -322,6 +351,9 @@ func (os *OrderService) CurrentCartPlaceOrderWithPaymentProcessing(ctx context.C
 // this function enables clients to pass a cart as is, without the usage of the cartReceiverService
 func (os *OrderService) CartPlaceOrderWithPaymentProcessing(ctx context.Context, decoratedCart *decorator.DecoratedCart,
 	session *web.Session) (*PlaceOrderInfo, error) {
+	ctx, span := trace.StartSpan(ctx, "checkout/OrderService/CartPlaceOrderWithPaymentProcessing")
+	defer span.End()
+
 	var info *PlaceOrderInfo
 	var err error
 	// use a background context from here on to prevent the place order canceled by context cancel
@@ -335,6 +367,9 @@ func (os *OrderService) CartPlaceOrderWithPaymentProcessing(ctx context.Context,
 // CartPlaceOrder places the cart passed to the function
 // this function enables clients to pass a cart as is, without the usage of the cartReceiverService
 func (os *OrderService) CartPlaceOrder(ctx context.Context, decoratedCart *decorator.DecoratedCart, payment placeorder.Payment) (*PlaceOrderInfo, error) {
+	ctx, span := trace.StartSpan(ctx, "checkout/OrderService/CartPlaceOrder")
+	defer span.End()
+
 	var info *PlaceOrderInfo
 	var err error
 	web.RunWithDetachedContext(ctx, func(placeOrderContext context.Context) {
@@ -346,6 +381,9 @@ func (os *OrderService) CartPlaceOrder(ctx context.Context, decoratedCart *decor
 
 // storeLastPlacedOrder stores the last placed order/cart in the session
 func (os *OrderService) storeLastPlacedOrder(ctx context.Context, info *PlaceOrderInfo) {
+	ctx, span := trace.StartSpan(ctx, "checkout/OrderService/storeLastPlacedOrder")
+	defer span.End()
+
 	session := web.SessionFromContext(ctx)
 
 	_ = session.Store(LastPlacedOrderSessionKey, info)
@@ -353,6 +391,9 @@ func (os *OrderService) storeLastPlacedOrder(ctx context.Context, info *PlaceOrd
 
 // LastPlacedOrder returns the last placed order/cart if available
 func (os *OrderService) LastPlacedOrder(ctx context.Context) (*PlaceOrderInfo, error) {
+	ctx, span := trace.StartSpan(ctx, "checkout/OrderService/LastPlacedOrder")
+	defer span.End()
+
 	session := web.SessionFromContext(ctx)
 
 	lastPlacedOrder, found := session.Load(LastPlacedOrderSessionKey)
@@ -370,6 +411,9 @@ func (os *OrderService) LastPlacedOrder(ctx context.Context) (*PlaceOrderInfo, e
 
 // HasLastPlacedOrder returns if a order has been previously placed
 func (os *OrderService) HasLastPlacedOrder(ctx context.Context) bool {
+	ctx, span := trace.StartSpan(ctx, "checkout/OrderService/HasLastPlacedOrder")
+	defer span.End()
+
 	lastPlaced, err := os.LastPlacedOrder(ctx)
 
 	return lastPlaced != nil && err == nil
@@ -377,12 +421,18 @@ func (os *OrderService) HasLastPlacedOrder(ctx context.Context) bool {
 
 // ClearLastPlacedOrder clears the last placed cart, this can be useful if an cart / order is finished
 func (os *OrderService) ClearLastPlacedOrder(ctx context.Context) {
+	ctx, span := trace.StartSpan(ctx, "checkout/OrderService/ClearLastPlacedOrder")
+	defer span.End()
+
 	session := web.SessionFromContext(ctx)
 	session.Delete(LastPlacedOrderSessionKey)
 }
 
 // LastPlacedOrCurrentCart returns the decorated cart of the last placed order if there is one if not return the current cart
 func (os *OrderService) LastPlacedOrCurrentCart(ctx context.Context) (*decorator.DecoratedCart, error) {
+	ctx, span := trace.StartSpan(ctx, "checkout/OrderService/LastPlacedOrCurrentCart")
+	defer span.End()
+
 	lastPlacedOrder, err := os.LastPlacedOrder(ctx)
 	if err != nil {
 		os.logger.Warn("couldn't get last placed order:", err)
@@ -410,6 +460,9 @@ func (os *OrderService) LastPlacedOrCurrentCart(ctx context.Context) (*decorator
 // is the same for the interface functions, therefore the common flow is placed in this private helper function
 func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, decoratedCart *decorator.DecoratedCart,
 	session *web.Session) (*PlaceOrderInfo, error) {
+	ctx, span := trace.StartSpan(ctx, "checkout/OrderService/placeOrderWithPaymentProcessing")
+	defer span.End()
+
 	if !decoratedCart.Cart.IsPaymentSelected() {
 		// record noPaymentSelectionCount metric
 		stats.Record(ctx, noPaymentSelectionCount.M(1))
@@ -497,7 +550,10 @@ func (os *OrderService) placeOrderWithPaymentProcessing(ctx context.Context, dec
 	return placeOrderInfo, nil
 }
 
-func (os *OrderService) preparePlaceOrderInfo(_ context.Context, currentCart cart.Cart, placedOrderInfos placeorder.PlacedOrderInfos, cartPayment placeorder.Payment) *PlaceOrderInfo {
+func (os *OrderService) preparePlaceOrderInfo(ctx context.Context, currentCart cart.Cart, placedOrderInfos placeorder.PlacedOrderInfos, cartPayment placeorder.Payment) *PlaceOrderInfo {
+	_, span := trace.StartSpan(ctx, "checkout/OrderService/preparePlaceOrderInfo")
+	defer span.End()
+
 	email := currentCart.GetContactMail()
 
 	placeOrderInfo := &PlaceOrderInfo{
