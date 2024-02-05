@@ -14,10 +14,8 @@ import (
 
 	"flamingo.me/flamingo-commerce/v3/cart"
 	"flamingo.me/flamingo-commerce/v3/checkout/application/placeorder"
-	"flamingo.me/flamingo-commerce/v3/checkout/domain"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/process"
 	"flamingo.me/flamingo-commerce/v3/checkout/domain/placeorder/states"
-	"flamingo.me/flamingo-commerce/v3/checkout/infrastructure"
 	"flamingo.me/flamingo-commerce/v3/checkout/infrastructure/locker"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/controller"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql"
@@ -35,9 +33,6 @@ type (
 // Configure module
 func (m *Module) Configure(injector *dingo.Injector) {
 	injector.Bind((*form.Decoder)(nil)).ToProvider(form.NewDecoder).AsEagerSingleton()
-	if m.UseFakeSourcingService {
-		injector.Override((*domain.SourcingService)(nil), "").To(infrastructure.FakeSourcingService{})
-	}
 
 	if m.PlaceOrderLockType == "redis" {
 		injector.Bind(new(locker.Redis)).ToProvider(locker.NewRedis).In(dingo.Singleton)
@@ -109,7 +104,7 @@ func (m *Module) CueConfig() string {
 	// language=cue
 	return `
 commerce: checkout: {
-	Redis :: {
+	Redis : {
 		maxIdle:                 number | *25
 		idleTimeoutMilliseconds: number | *240000
 		network:                 string | *"tcp"
@@ -117,7 +112,6 @@ commerce: checkout: {
 		database:                number | *0
 		ttl:                     string | *"2h"
 	}
-	activateDeprecatedSourcing:		    bool | *false
 	useDeliveryForms:                 bool | *true
 	usePersonalDataForm:              bool | *false
 	skipReviewAction:                 bool | *false

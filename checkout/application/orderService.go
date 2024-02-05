@@ -18,7 +18,6 @@ import (
 	"flamingo.me/flamingo-commerce/v3/cart/domain/cart"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/decorator"
 	"flamingo.me/flamingo-commerce/v3/cart/domain/placeorder"
-	"flamingo.me/flamingo-commerce/v3/checkout/domain"
 	paymentDomain "flamingo.me/flamingo-commerce/v3/payment/domain"
 	"flamingo.me/flamingo-commerce/v3/payment/interfaces"
 	priceDomain "flamingo.me/flamingo-commerce/v3/price/domain"
@@ -27,14 +26,12 @@ import (
 type (
 	// OrderService defines the order service
 	OrderService struct {
-		sourcingEngine           *domain.SourcingEngine
-		logger                   flamingo.Logger
-		cartService              *application.CartService
-		cartReceiverService      *application.CartReceiverService
-		deliveryInfoBuilder      cart.DeliveryInfoBuilder
-		webCartPaymentGateways   map[string]interfaces.WebCartPaymentGateway
-		decoratedCartFactory     *decorator.DecoratedCartFactory
-		deprecatedSourcingActive bool
+		logger                 flamingo.Logger
+		cartService            *application.CartService
+		cartReceiverService    *application.CartReceiverService
+		deliveryInfoBuilder    cart.DeliveryInfoBuilder
+		webCartPaymentGateways map[string]interfaces.WebCartPaymentGateway
+		decoratedCartFactory   *decorator.DecoratedCartFactory
 	}
 
 	// PlaceOrderInfo struct defines the data of payments on placed orders
@@ -119,116 +116,20 @@ func init() {
 
 // Inject dependencies
 func (os *OrderService) Inject(
-	SourcingEngine *domain.SourcingEngine,
 	logger flamingo.Logger,
 	CartService *application.CartService,
 	CartReceiverService *application.CartReceiverService,
 	DeliveryInfoBuilder cart.DeliveryInfoBuilder,
 	webCartPaymentGatewayProvider interfaces.WebCartPaymentGatewayProvider,
 	decoratedCartFactory *decorator.DecoratedCartFactory,
-	cfg *struct {
-		DeprecatedSourcingActive bool `inject:"config:commerce.checkout.activateDeprecatedSourcing,optional"`
-	},
+
 ) {
-	os.sourcingEngine = SourcingEngine
 	os.logger = logger.WithField(flamingo.LogKeyCategory, "checkout.OrderService").WithField(flamingo.LogKeyModule, "checkout")
 	os.cartService = CartService
 	os.cartReceiverService = CartReceiverService
 	os.webCartPaymentGateways = webCartPaymentGatewayProvider()
 	os.deliveryInfoBuilder = DeliveryInfoBuilder
 	os.decoratedCartFactory = decoratedCartFactory
-	if cfg != nil {
-		os.deprecatedSourcingActive = cfg.DeprecatedSourcingActive
-	}
-}
-
-// SetSources sets sources for sessions carts items
-// Deprecated: Sourcing moved to new module see sourcing module
-func (os *OrderService) SetSources(ctx context.Context, session *web.Session) error {
-	ctx, span := trace.StartSpan(ctx, "checkout/OrderService/SetSources")
-	defer span.End()
-
-	if !os.deprecatedSourcingActive {
-		return nil
-	}
-	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(ctx, session)
-	if err != nil {
-		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder GetDecoratedCart Error ", err)
-
-		return err
-	}
-
-	err = os.sourcingEngine.SetSourcesForCartItems(ctx, session, decoratedCart)
-	if err != nil {
-		os.logger.WithContext(ctx).Error("Error while getting sources: ", err)
-
-		return errors.New("error while setting sources")
-	}
-
-	return nil
-}
-
-// CurrentCartSaveInfos saves additional information on current cart
-// Deprecated: method is not called within flamingo-commerce and method does not support multiple delivery addresses
-func (os *OrderService) CurrentCartSaveInfos(ctx context.Context, session *web.Session, billingAddress *cart.Address, shippingAddress *cart.Address, purchaser *cart.Person, additionalData *cart.AdditionalData) error {
-	ctx, span := trace.StartSpan(ctx, "checkout/OrderService/CurrentCartSaveInfos")
-	defer span.End()
-
-	os.logger.WithContext(ctx).Debug("CurrentCartSaveInfos call billingAddress:%v shippingAddress:%v payment:%v", billingAddress, shippingAddress)
-
-	if billingAddress == nil {
-		os.logger.WithContext(ctx).Warn("CurrentCartSaveInfos called without billing address")
-
-		return errors.New("billing address is missing")
-	}
-
-	decoratedCart, err := os.cartReceiverService.ViewDecoratedCart(ctx, session)
-	if err != nil {
-		os.logger.WithContext(ctx).Error("CurrentCartSaveInfos GetDecoratedCart Error ", err)
-
-		return err
-	}
-
-	// update Billing
-	err = os.cartService.UpdateBillingAddress(ctx, session, billingAddress)
-	if err != nil {
-		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder UpdateBillingAddress Error ", err)
-
-		return err
-	}
-
-	// Update ShippingAddress on ALL Deliveries in the Cart if given
-	// Maybe later we need to support different shipping addresses in the Checkout
-	if shippingAddress != nil {
-		for _, d := range decoratedCart.Cart.Deliveries {
-			newDeliveryInfoUpdateCommand := cart.CreateDeliveryInfoUpdateCommand(d.DeliveryInfo)
-			newDeliveryInfoUpdateCommand.DeliveryInfo.DeliveryLocation.Address = shippingAddress
-			err = os.cartService.UpdateDeliveryInfo(ctx, session, d.DeliveryInfo.Code, newDeliveryInfoUpdateCommand)
-			if err != nil {
-				os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder UpdateDeliveryInfosAndBilling Error ", err)
-
-				return err
-			}
-		}
-	}
-
-	// Update Purchaser
-	err = os.cartService.UpdatePurchaser(ctx, session, purchaser, additionalData)
-	if err != nil {
-		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder UpdatePurchaser Error ", err)
-
-		return err
-	}
-
-	// After setting DeliveryInfos - call SourcingEnginge (this will reload the cart and update all items!)
-	err = os.SetSources(ctx, session)
-	if err != nil {
-		os.logger.WithContext(ctx).Error("OnStepCurrentCartPlaceOrder SetSources Error ", err)
-
-		return err
-	}
-
-	return nil
 }
 
 // GetPaymentGateway tries to get the supplied payment gateway by code from the registered payment gateways

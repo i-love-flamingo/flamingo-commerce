@@ -25,6 +25,9 @@
   * Expose Active Option (product+qty) for bundle products
   * **Breaking** Make the qty in the `Commerce_Product_ChoiceConfigurationInput` type mandatory, previously it was 0 which lead to taking the minimum required qty of that choice
 
+**sourcing**
+* Drop deprecated sourcing service `SourcingServiceDetail` and all things related.
+
 ## v3.8.0
 
 **sourcing**
@@ -330,7 +333,6 @@
   * `Commerce_Customer` returns the logged-in customer
 
 **checkout**
-* Deprecate Sourcing service port in checkout (activate if required with setting `commerce.checkout.activateDeprecatedSourcing`)
 * Make cart validation before place order optional with configuration
 * State Machine
   * Add additional metrics to monitor place order flow
