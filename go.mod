@@ -161,7 +161,7 @@ require (
 	github.com/containerd/containerd v1.7.11 // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect
 	golang.org/x/crypto v0.17.0 // indirect
-	gotest.tools/v3 v3.5.0
+	gotest.tools/v3 v3.5.1
 )
 
 exclude (
