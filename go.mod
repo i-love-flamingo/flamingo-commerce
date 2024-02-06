@@ -8,7 +8,7 @@ require (
 	flamingo.me/form v1.1.1
 	flamingo.me/graphql v1.10.0
 	flamingo.me/pugtemplate v1.3.0
-	github.com/99designs/gqlgen v0.17.36
+	github.com/99designs/gqlgen v0.17.43
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/gavv/httpexpect/v2 v2.15.0
 	github.com/go-playground/form/v4 v4.2.1
@@ -24,7 +24,7 @@ require (
 	github.com/stvp/tempredis v0.0.0-20181119212430-b82af8480203
 	github.com/swaggo/swag v1.16.3
 	github.com/testcontainers/testcontainers-go v0.23.0
-	github.com/vektah/gqlparser/v2 v2.5.8
+	github.com/vektah/gqlparser/v2 v2.5.11
 	go.opencensus.io v0.24.0
 	go.uber.org/goleak v1.2.1
 	golang.org/x/mod v0.12.0
@@ -122,6 +122,7 @@ require (
 	github.com/sanity-io/litter v1.5.5 // indirect
 	github.com/sergi/go-diff v1.3.1 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
+	github.com/sosodev/duration v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/uber/jaeger-client-go v2.25.0+incompatible // indirect
