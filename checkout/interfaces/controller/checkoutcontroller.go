@@ -275,6 +275,7 @@ func (cc *CheckoutController) placeOrderAction(ctx context.Context, r *web.Reque
 	defer span.End()
 
 	var placedOrderInfo *application.PlaceOrderInfo
+
 	var err error
 
 	if cc.orderService.HasLastPlacedOrder(ctx) {
