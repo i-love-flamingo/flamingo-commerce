@@ -49,6 +49,8 @@ flamingo.me/form v1.1.1 h1:FUWxIb+dW70SkCT5vqKVtLzzKpmeQmJCvhmgZ1kwovw=
 flamingo.me/form v1.1.1/go.mod h1:O3d+RdrONoDGI4pISuFisRpqqy9ubr5D91TTFSEAwW0=
 flamingo.me/graphql v1.10.0 h1:XsT9n8kYHHoC3/ffYLoMyBnIP3nPkJz3Q55n6vMPWdU=
 flamingo.me/graphql v1.10.0/go.mod h1:2HuBIk7RruaTuuWjuBxj+DDpkVyuRqtjYBlWMntibu8=
+flamingo.me/graphql v1.11.0 h1:eV23kjnn/zscSs0JyWo+ZXqoDvDXZu2Rx4RU5cqfw4M=
+flamingo.me/graphql v1.11.0/go.mod h1:bBUo34y7G6lHjb4DpUY1GT1Br75kmpJ+Cu5sYgo58YM=
 flamingo.me/pugtemplate v1.3.0 h1:5VSvP6fvJDF1KV9aj87UPH9zOM/fSMwTtW3xhUa9oCs=
 flamingo.me/pugtemplate v1.3.0/go.mod h1:hkw1yz048Wzyiv38dmKlzjh4HngqP86knM/1ZQbEKK4=
 github.com/99designs/gqlgen v0.17.36 h1:u/o/rv2SZ9s5280dyUOOrkpIIkr/7kITMXYD3rkJ9go=
@@ -131,6 +133,7 @@ github.com/corpix/uarand v0.1.1/go.mod h1:SFKZvkcRoLqVRFZ4u25xPmp6m9ktANfbpXZ7SJ
 github.com/cpuguy83/dockercfg v0.3.1 h1:/FpZ+JaygUR/lZP2NlFI2DVfrOEMAIKP5wWEJdoYe9E=
 github.com/cpuguy83/dockercfg v0.3.1/go.mod h1:sugsbF4//dDlL/i+S+rtpIWp+5h0BHJHfjj5/jFyUJc=
 github.com/cpuguy83/go-md2man/v2 v2.0.2/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
+github.com/cpuguy83/go-md2man/v2 v2.0.3/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/creack/pty v1.1.18 h1:n56/Zwd5o6whRC5PMGretI4IdRLlmBXYNjScPaBgsbY=
 github.com/davecgh/go-spew v0.0.0-20161028175848-04cdfd42973b/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -509,6 +512,8 @@ github.com/sosodev/duration v1.1.0/go.mod h1:RQIBBX0+fMLc/D9+Jb/fwvVmo0eZvDDEERA
 github.com/spf13/cobra v0.0.3/go.mod h1:1l0Ry5zgKvJasoi3XT1TypsSe7PqH0Sj9dhYf7v3XqQ=
 github.com/spf13/cobra v1.7.0 h1:hyqWnYt1ZQShIddO5kBpj3vu05/++x6tJ6dg8EC572I=
 github.com/spf13/cobra v1.7.0/go.mod h1:uLxZILRyS/50WlhOIKD7W6V5bgeIt+4sICxh6uRMrb0=
+github.com/spf13/cobra v1.8.0 h1:7aJaZx1B85qltLMc546zn58BxxfZdR/W22ej9CFoEf0=
+github.com/spf13/cobra v1.8.0/go.mod h1:WXLWApfZ71AjXPya3WOlMsY9yMs7YeiHhFVlvLyhcho=
 github.com/spf13/pflag v1.0.3/go.mod h1:DYY7MBk1bdzusC3SYhjObp+wFpr4gzcvqqNjLnInEg4=
 github.com/spf13/pflag v1.0.5 h1:iy+VFUOCP1a+8yFto/drg2CJ5u0yRoB7fZw3DKv/JXA=
 github.com/spf13/pflag v1.0.5/go.mod h1:McXfInJRrz4CZXVZOBLb0bTZqETkiAhM9Iw0y3An2Bg=

@@ -6,7 +6,7 @@ require (
 	flamingo.me/dingo v0.2.10
 	flamingo.me/flamingo/v3 v3.7.0
 	flamingo.me/form v1.1.1
-	flamingo.me/graphql v1.10.0
+	flamingo.me/graphql v1.11.0
 	flamingo.me/pugtemplate v1.3.0
 	github.com/99designs/gqlgen v0.17.43
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
@@ -19,7 +19,7 @@ require (
 	github.com/google/uuid v1.4.0
 	github.com/leekchan/accounting v0.3.1
 	github.com/pkg/errors v0.9.1
-	github.com/spf13/cobra v1.7.0
+	github.com/spf13/cobra v1.8.0
 	github.com/stretchr/testify v1.8.4
 	github.com/stvp/tempredis v0.0.0-20231107154819-8a695b693b9c
 	github.com/swaggo/swag v1.16.3
