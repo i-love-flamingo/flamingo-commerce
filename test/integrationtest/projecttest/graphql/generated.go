@@ -45,6 +45,7 @@ import (
 // NewExecutableSchema creates an ExecutableSchema from the ResolverRoot interface.
 func NewExecutableSchema(cfg Config) graphql.ExecutableSchema {
 	return &executableSchema{
+		schema:     cfg.Schema,
 		resolvers:  cfg.Resolvers,
 		directives: cfg.Directives,
 		complexity: cfg.Complexity,
@@ -52,6 +53,7 @@ func NewExecutableSchema(cfg Config) graphql.ExecutableSchema {
 }
 
 type Config struct {
+	Schema     *ast.Schema
 	Resolvers  ResolverRoot
 	Directives DirectiveRoot
 	Complexity ComplexityRoot
@@ -1114,12 +1116,16 @@ type QueryResolver interface {
 }
 
 type executableSchema struct {
+	schema     *ast.Schema
 	resolvers  ResolverRoot
 	directives DirectiveRoot
 	complexity ComplexityRoot
 }
 
 func (e *executableSchema) Schema() *ast.Schema {
+	if e.schema != nil {
+		return e.schema
+	}
 	return parsedSchema
 }
 
@@ -5670,14 +5676,14 @@ func (ec *executionContext) introspectSchema() (*introspection.Schema, error) {
 	if ec.DisableIntrospection {
 		return nil, errors.New("introspection disabled")
 	}
-	return introspection.WrapSchema(parsedSchema), nil
+	return introspection.WrapSchema(ec.Schema()), nil
 }
 
 func (ec *executionContext) introspectType(name string) (*introspection.Type, error) {
 	if ec.DisableIntrospection {
 		return nil, errors.New("introspection disabled")
 	}
-	return introspection.WrapTypeFromDef(parsedSchema, parsedSchema.Types[name]), nil
+	return introspection.WrapTypeFromDef(ec.Schema(), ec.Schema().Types[name]), nil
 }
 
 //go:embed "schema/schema.graphql" "schema/flamingo.me_flamingo-commerce_v3_price_interfaces_graphql-Service.graphql" "schema/flamingo.me_flamingo-commerce_v3_search_interfaces_graphql-Service.graphql" "schema/flamingo.me_flamingo-commerce_v3_product_interfaces_graphql-Service.graphql" "schema/flamingo.me_flamingo-commerce_v3_customer_interfaces_graphql-Service.graphql" "schema/flamingo.me_flamingo-commerce_v3_cart_interfaces_graphql-Service.graphql" "schema/flamingo.me_flamingo-commerce_v3_checkout_interfaces_graphql-Service.graphql" "schema/flamingo.me_flamingo-commerce_v3_category_interfaces_graphql-Service.graphql"
@@ -37487,8 +37493,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddToCartInput(ctx conte
 		}
 		switch k {
 		case "marketplaceCode":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("marketplaceCode"))
 			data, err := ec.unmarshalNID2string(ctx, v)
 			if err != nil {
@@ -37496,8 +37500,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddToCartInput(ctx conte
 			}
 			it.MarketplaceCode = data
 		case "qty":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("qty"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
@@ -37505,8 +37507,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddToCartInput(ctx conte
 			}
 			it.Qty = data
 		case "deliveryCode":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -37514,8 +37514,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddToCartInput(ctx conte
 			}
 			it.DeliveryCode = data
 		case "variantMarketplaceCode":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("variantMarketplaceCode"))
 			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
@@ -37523,8 +37521,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddToCartInput(ctx conte
 			}
 			it.VariantMarketplaceCode = data
 		case "bundleConfiguration":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("bundleConfiguration"))
 			data, err := ec.unmarshalOCommerce_Cart_ChoiceConfigurationInput2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐChoiceConfigurationᚄ(ctx, v)
 			if err != nil {
@@ -37552,8 +37548,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 		}
 		switch k {
 		case "vat":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("vat"))
 			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
@@ -37561,8 +37555,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 			}
 			it.Vat = data
 		case "firstname":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("firstname"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -37570,8 +37562,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 			}
 			it.Firstname = data
 		case "lastname":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastname"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -37579,8 +37569,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 			}
 			it.Lastname = data
 		case "middleName":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("middleName"))
 			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
@@ -37588,8 +37576,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 			}
 			it.MiddleName = data
 		case "title":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
 			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
@@ -37597,8 +37583,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 			}
 			it.Title = data
 		case "salutation":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("salutation"))
 			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
@@ -37606,8 +37590,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 			}
 			it.Salutation = data
 		case "street":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("street"))
 			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
@@ -37615,8 +37597,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 			}
 			it.Street = data
 		case "streetNr":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("streetNr"))
 			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
@@ -37624,8 +37604,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 			}
 			it.StreetNr = data
 		case "addressLine1":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressLine1"))
 			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
@@ -37633,8 +37611,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 			}
 			it.AddressLine1 = data
 		case "addressLine2":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressLine2"))
 			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
@@ -37642,8 +37618,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 			}
 			it.AddressLine2 = data
 		case "company":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("company"))
 			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
@@ -37651,8 +37625,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 			}
 			it.Company = data
 		case "city":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("city"))
 			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
@@ -37660,8 +37632,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 			}
 			it.City = data
 		case "postCode":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("postCode"))
 			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
@@ -37669,8 +37639,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 			}
 			it.PostCode = data
 		case "state":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("state"))
 			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
@@ -37678,8 +37646,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 			}
 			it.State = data
 		case "regionCode":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("regionCode"))
 			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
@@ -37687,8 +37653,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 			}
 			it.RegionCode = data
 		case "country":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("country"))
 			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
@@ -37696,8 +37660,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 			}
 			it.Country = data
 		case "countryCode":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("countryCode"))
 			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
@@ -37705,8 +37667,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 			}
 			it.CountryCode = data
 		case "phoneNumber":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("phoneNumber"))
 			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
@@ -37714,8 +37674,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_AddressFormInput(ctx con
 			}
 			it.PhoneNumber = data
 		case "email":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -37743,8 +37701,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_ChoiceConfigurationInput
 		}
 		switch k {
 		case "identifier":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("identifier"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -37752,8 +37708,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_ChoiceConfigurationInput
 			}
 			it.Identifier = data
 		case "marketplaceCode":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("marketplaceCode"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -37761,8 +37715,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_ChoiceConfigurationInput
 			}
 			it.MarketplaceCode = data
 		case "variantMarketplaceCode":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("variantMarketplaceCode"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -37770,8 +37722,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_ChoiceConfigurationInput
 			}
 			it.VariantMarketplaceCode = data
 		case "qty":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("qty"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
@@ -37799,8 +37749,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAdditionalDataIn
 		}
 		switch k {
 		case "deliveryCode":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -37808,8 +37756,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAdditionalDataIn
 			}
 			it.DeliveryCode = data
 		case "additionalData":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("additionalData"))
 			data, err := ec.unmarshalNCommerce_Cart_KeyValueInput2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋgraphqlᚋdtoᚐKeyValueᚄ(ctx, v)
 			if err != nil {
@@ -37837,8 +37783,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx
 		}
 		switch k {
 		case "deliveryCode":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -37846,8 +37790,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx
 			}
 			it.LocationCode = data
 		case "deliveryAddress":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryAddress"))
 			data, err := ec.unmarshalOCommerce_Cart_AddressFormInput2flamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋcartᚋinterfacesᚋcontrollerᚋformsᚐAddressForm(ctx, v)
 			if err != nil {
@@ -37855,8 +37797,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx
 			}
 			it.DeliveryAddress = data
 		case "useBillingAddress":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("useBillingAddress"))
 			data, err := ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
@@ -37864,8 +37804,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx
 			}
 			it.UseBillingAddress = data
 		case "method":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("method"))
 			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
@@ -37873,8 +37811,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx
 			}
 			it.ShippingMethod = data
 		case "carrier":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("carrier"))
 			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
@@ -37882,8 +37818,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryAddressInput(ctx
 			}
 			it.ShippingCarrier = data
 		case "desiredTime":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("desiredTime"))
 			data, err := ec.unmarshalOTime2timeᚐTime(ctx, v)
 			if err != nil {
@@ -37911,8 +37845,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryShippingOptionIn
 		}
 		switch k {
 		case "deliveryCode":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deliveryCode"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -37920,8 +37852,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryShippingOptionIn
 			}
 			it.DeliveryCode = data
 		case "method":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("method"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -37929,8 +37859,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_DeliveryShippingOptionIn
 			}
 			it.Method = data
 		case "carrier":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("carrier"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -37958,8 +37886,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_KeyValueInput(ctx contex
 		}
 		switch k {
 		case "key":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("key"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -37967,8 +37893,6 @@ func (ec *executionContext) unmarshalInputCommerce_Cart_KeyValueInput(ctx contex
 			}
 			it.Key = data
 		case "value":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("value"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -37996,8 +37920,6 @@ func (ec *executionContext) unmarshalInputCommerce_Price_ChargeQualifierInput(ct
 		}
 		switch k {
 		case "type":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -38005,8 +37927,6 @@ func (ec *executionContext) unmarshalInputCommerce_Price_ChargeQualifierInput(ct
 			}
 			it.Type = data
 		case "reference":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("reference"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -38034,8 +37954,6 @@ func (ec *executionContext) unmarshalInputCommerce_Product_ChoiceConfigurationIn
 		}
 		switch k {
 		case "identifier":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("identifier"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -38043,8 +37961,6 @@ func (ec *executionContext) unmarshalInputCommerce_Product_ChoiceConfigurationIn
 			}
 			it.Identifier = data
 		case "marketplaceCode":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("marketplaceCode"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -38052,8 +37968,6 @@ func (ec *executionContext) unmarshalInputCommerce_Product_ChoiceConfigurationIn
 			}
 			it.MarketplaceCode = data
 		case "variantMarketplaceCode":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("variantMarketplaceCode"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
@@ -38061,8 +37975,6 @@ func (ec *executionContext) unmarshalInputCommerce_Product_ChoiceConfigurationIn
 			}
 			it.VariantMarketplaceCode = data
 		case "qty":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("qty"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
@@ -38090,8 +38002,6 @@ func (ec *executionContext) unmarshalInputCommerce_Search_KeyValueFilter(ctx con
 		}
 		switch k {
 		case "k":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("k"))
 			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
@@ -38099,8 +38009,6 @@ func (ec *executionContext) unmarshalInputCommerce_Search_KeyValueFilter(ctx con
 			}
 			it.K = data
 		case "v":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("v"))
 			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
 			if err != nil {
@@ -38128,8 +38036,6 @@ func (ec *executionContext) unmarshalInputCommerce_Search_Request(ctx context.Co
 		}
 		switch k {
 		case "pageSize":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pageSize"))
 			data, err := ec.unmarshalOInt2int(ctx, v)
 			if err != nil {
@@ -38137,8 +38043,6 @@ func (ec *executionContext) unmarshalInputCommerce_Search_Request(ctx context.Co
 			}
 			it.PageSize = data
 		case "page":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("page"))
 			data, err := ec.unmarshalOInt2int(ctx, v)
 			if err != nil {
@@ -38146,8 +38050,6 @@ func (ec *executionContext) unmarshalInputCommerce_Search_Request(ctx context.Co
 			}
 			it.Page = data
 		case "sortBy":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sortBy"))
 			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
@@ -38155,8 +38057,6 @@ func (ec *executionContext) unmarshalInputCommerce_Search_Request(ctx context.Co
 			}
 			it.SortBy = data
 		case "keyValueFilters":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keyValueFilters"))
 			data, err := ec.unmarshalOCommerce_Search_KeyValueFilter2ᚕflamingoᚗmeᚋflamingoᚑcommerceᚋv3ᚋsearchᚋinterfacesᚋgraphqlᚋsearchdtoᚐCommerceSearchKeyValueFilterᚄ(ctx, v)
 			if err != nil {
@@ -38164,8 +38064,6 @@ func (ec *executionContext) unmarshalInputCommerce_Search_Request(ctx context.Co
 			}
 			it.KeyValueFilters = data
 		case "query":
-			var err error
-
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("query"))
 			data, err := ec.unmarshalOString2string(ctx, v)
 			if err != nil {
