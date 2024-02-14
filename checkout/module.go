@@ -2,11 +2,12 @@ package checkout
 
 import (
 	"flamingo.me/dingo"
+	"github.com/go-playground/form/v4"
+
 	"flamingo.me/flamingo/v3/core/healthcheck/domain/healthcheck"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
 	flamingographql "flamingo.me/graphql"
-	"github.com/go-playground/form/v4"
 
 	"flamingo.me/flamingo-commerce/v3/checkout/infrastructure/contextstore"
 	"flamingo.me/flamingo-commerce/v3/checkout/interfaces/graphql/dto"
@@ -24,7 +25,6 @@ import (
 type (
 	// Module registers our checkout module
 	Module struct {
-		UseFakeSourcingService bool   `inject:"config:commerce.checkout.useFakeSourcingService,optional"`
 		PlaceOrderLockType     string `inject:"config:commerce.checkout.placeorder.lock.type"`
 		PlaceOrderContextStore string `inject:"config:commerce.checkout.placeorder.contextstore.type"`
 	}
@@ -104,7 +104,7 @@ func (m *Module) CueConfig() string {
 	// language=cue
 	return `
 commerce: checkout: {
-	Redis : {
+	Redis :: {
 		maxIdle:                 number | *25
 		idleTimeoutMilliseconds: number | *240000
 		network:                 string | *"tcp"
