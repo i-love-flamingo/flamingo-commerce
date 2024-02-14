@@ -2,6 +2,9 @@
 
 ## v3.10.0 [upcoming]
 
+**sourcing**
+* **Breaking:** Drop deprecated sourcing service `SourcingServiceDetail` and all things related.
+
 ## v3.9.0
 
 **search**
@@ -24,9 +27,6 @@
 * GraphQL:
   * Expose Active Option (product+qty) for bundle products
   * **Breaking** Make the qty in the `Commerce_Product_ChoiceConfigurationInput` type mandatory, previously it was 0 which lead to taking the minimum required qty of that choice
-
-**sourcing**
-* **Breaking:** Drop deprecated sourcing service `SourcingServiceDetail` and all things related.
 
 ## v3.8.0
 
