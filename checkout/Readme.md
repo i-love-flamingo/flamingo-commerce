@@ -17,7 +17,6 @@ This package provides a one page standard checkout with the following features:
   + [Locking](#locking)
     - [Ports / Implementation](#ports---implementation-1)
 * [Provided Ports](#provided-ports)
-  + [Sourcing Service Secondary Ports](#sourcing-service-secondary-ports)
   + [Process Context Store](#process-context-store)
   + [Process Lock](#process-lock)
 
@@ -28,8 +27,6 @@ If your template does not want to ask for all the information required you can a
 ```yaml
 commerce:
   checkout:
-    # use a faked sourcing service
-    useFakeSourcingService: false
     # to enable the offline payment provider
     enableOfflinePaymentProvider: true
 
