@@ -228,12 +228,12 @@ func (cs *BaseCartReceiver) getCustomerCart(ctx context.Context, session *web.Se
 
 	cart, found, err := cs.getCartFromCacheIfCacheIsEnabled(ctx, session)
 
-	switch err {
-	case nil:
-	case ErrCacheIsInvalid, ErrNoCacheEntry:
-		cs.logger.WithContext(ctx).Info(err)
-	default:
-		cs.logger.WithContext(ctx).Error(err)
+	if err != nil {
+		if errors.Is(err, ErrCacheIsInvalid) || errors.Is(err, ErrNoCacheEntry) {
+			cs.logger.WithContext(ctx).Info(err)
+		} else {
+			cs.logger.WithContext(ctx).Error(err)
+		}
 	}
 
 	identitiy := cs.webIdentityService.Identify(ctx, web.RequestFromContext(ctx))
@@ -272,7 +272,7 @@ func (cs *BaseCartReceiver) getCartFromCacheIfCacheIsEnabled(ctx context.Context
 	cs.logger.WithContext(ctx).Debug("query cart cache %#v", cacheID)
 
 	cart, cacheErr := cs.cartCache.GetCart(ctx, session, cacheID)
-	if cacheErr == ErrNoCacheEntry {
+	if errors.Is(cacheErr, ErrNoCacheEntry) {
 		return nil, false, nil
 	}
 
@@ -291,9 +291,7 @@ func (cs *BaseCartReceiver) getExistingGuestCart(ctx context.Context, session *w
 	cart, found, err := cs.getCartFromCacheIfCacheIsEnabled(ctx, session)
 
 	if err != nil {
-		if err == ErrCacheIsInvalid {
-			cs.logger.WithContext(ctx).Info(err)
-		} else if err == ErrNoCacheEntry {
+		if errors.Is(err, ErrCacheIsInvalid) || errors.Is(err, ErrNoCacheEntry) {
 			cs.logger.WithContext(ctx).Info(err)
 		} else {
 			cs.logger.WithContext(ctx).Error(err)

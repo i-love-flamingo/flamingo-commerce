@@ -1165,7 +1165,7 @@ func (cs *CartService) DeleteCartInCache(ctx context.Context, session *web.Sessi
 		}
 
 		err = cs.cartCache.Delete(ctx, session, id)
-		if err == ErrNoCacheEntry {
+		if errors.Is(err, ErrNoCacheEntry) {
 			cs.logger.WithContext(ctx).Info("Cart in cache not found: %v", err)
 			return
 		}
