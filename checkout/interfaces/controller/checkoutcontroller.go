@@ -274,12 +274,10 @@ func (cc *CheckoutController) placeOrderAction(ctx context.Context, r *web.Reque
 	ctx, span := trace.StartSpan(ctx, "checkout/CheckoutController/placeOrderAction")
 	defer span.End()
 
-	err := cc.orderService.SetSources(ctx, session)
-	if err != nil {
-		cc.logger.Error("OnStepCurrentCartPlaceOrder SetSources Error ", err)
-		return cc.responder.Render("checkout/carterror", nil).SetNoCache()
-	}
 	var placedOrderInfo *application.PlaceOrderInfo
+
+	var err error
+
 	if cc.orderService.HasLastPlacedOrder(ctx) {
 		placedOrderInfo, _ = cc.orderService.LastPlacedOrder(ctx)
 		cc.orderService.ClearLastPlacedOrder(ctx)
@@ -535,11 +533,6 @@ func (cc *CheckoutController) processPayment(ctx context.Context, r *web.Request
 	// payment flow requires an early place order
 	if flowResult.EarlyPlaceOrder {
 		payment, err := gateway.OrderPaymentFromFlow(ctx, &decoratedCart.Cart, application.PaymentFlowStandardCorrelationID)
-		if err != nil {
-			return cc.redirectToCheckoutFormWithErrors(ctx, r, err)
-		}
-
-		err = cc.orderService.SetSources(ctx, session)
 		if err != nil {
 			return cc.redirectToCheckoutFormWithErrors(ctx, r, err)
 		}
