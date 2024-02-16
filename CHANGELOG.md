@@ -2,6 +2,9 @@
 
 ## v3.10.0 [upcoming]
 
+**sourcing**
+* **Breaking:** Drop deprecated sourcing service `SourcingServiceDetail` and all things related.
+
 ## v3.9.0
 
 **search**

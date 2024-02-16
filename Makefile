@@ -2,7 +2,7 @@ CONTEXT?=dev
 REPLACE?=-replace flamingo.me/flamingo/v3=../flamingo -replace flamingo.me/form=../form
 DROPREPLACE?=-dropreplace flamingo.me/flamingo/v3 -dropreplace flamingo.me/form
 
-.PHONY: local unlocal test
+.PHONY: local unlocal test lint
 
 local:
 	git config filter.gomod-flamingo-commerce.smudge 'go mod edit -fmt -print $(REPLACE) /dev/stdin'
@@ -37,3 +37,11 @@ fix:
 
 run-integrationtest-demo-project:
 	cd test/integrationtest/projecttest/tests && RUN=1 INTEGRATION_TEST_PORT=10000 go run ../main.go
+
+lint:
+	$(eval FIRST_COMMIT = $(shell git rev-list --topo-order origin/master..HEAD | tail -1))
+	@echo FIRST_COMMIT=$(FIRST_COMMIT)
+	$(eval FIRST_COMMIT = $(or $(FIRST_COMMIT), "origin/master"))
+	@echo "FIRST_COMMIT is now $(FIRST_COMMIT)"
+	$(eval REV=$(shell git rev-parse $(FIRST_COMMIT)^1))
+	golangci-lint run --new-from-rev=$(REV)

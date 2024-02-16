@@ -5,10 +5,11 @@ import (
 	"reflect"
 	"testing"
 
-	"flamingo.me/flamingo-commerce/v3/checkout/application"
-	"flamingo.me/flamingo-commerce/v3/payment/interfaces"
 	"flamingo.me/flamingo/v3/framework/flamingo"
 	"flamingo.me/flamingo/v3/framework/web"
+
+	"flamingo.me/flamingo-commerce/v3/checkout/application"
+	"flamingo.me/flamingo-commerce/v3/payment/interfaces"
 )
 
 func TestOrderService_LastPlacedOrder(t *testing.T) {
@@ -46,7 +47,9 @@ func TestOrderService_LastPlacedOrder(t *testing.T) {
 			}
 
 			os := &application.OrderService{}
-			os.Inject(nil, flamingo.NullLogger{}, nil, nil, nil, fakeGatewayProvider, nil, nil)
+
+			os.Inject(flamingo.NullLogger{}, nil, nil, nil, fakeGatewayProvider, nil)
+
 			got, err := os.LastPlacedOrder(tt.args.ctx)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("LastPlacedOrder() error = %v, wantErr %v", err, tt.wantErr)
@@ -65,7 +68,8 @@ func TestOrderService_ClearLastPlacedOrder(t *testing.T) {
 	}
 
 	os := &application.OrderService{}
-	os.Inject(nil, flamingo.NullLogger{}, nil, nil, nil, fakeGatewayProvider, nil, nil)
+
+	os.Inject(flamingo.NullLogger{}, nil, nil, nil, fakeGatewayProvider, nil)
 
 	want := &application.PlaceOrderInfo{
 		PaymentInfos: nil,
