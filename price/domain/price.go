@@ -8,6 +8,7 @@ import (
 	"math/big"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 type (
@@ -53,6 +54,9 @@ type (
 var (
 	_ encoding.BinaryMarshaler   = Price{}
 	_ encoding.BinaryUnmarshaler = &Price{}
+
+	mu              sync.RWMutex
+	loyaltyCurrency = ""
 )
 
 const (
@@ -367,9 +371,10 @@ func (p Price) precisionF(precision int) *big.Float {
 // - can be currency specific (for now defaults to 2)
 // - TODO - use currency configuration or registry
 func (p Price) payableRoundingPrecision() (string, int) {
-	if strings.ToLower(p.currency) == "miles" || strings.ToLower(p.currency) == "points" {
+	if strings.ToLower(p.currency) == strings.ToLower(GetLoyaltyCurrency()) {
 		return RoundingModeFloor, int(1)
 	}
+
 	return RoundingModeHalfUp, int(100)
 }
 
@@ -693,4 +698,18 @@ func addChargeQualifier(chargesByType map[string]Charge) Charges {
 		withQualifier[qualifier] = charge
 	}
 	return Charges{chargesByQualifier: withQualifier}
+}
+
+func GetLoyaltyCurrency() string {
+	mu.RLock()
+	defer mu.RUnlock()
+
+	return loyaltyCurrency
+}
+
+func SetLoyaltyCurrency(currency string) {
+	mu.Lock()
+	defer mu.Unlock()
+
+	loyaltyCurrency = currency
 }

@@ -8,7 +8,7 @@ import (
 )
 
 func TestModule_Configure(t *testing.T) {
-	if err := config.TryModules(nil, new(price.Module)); err != nil {
+	if err := config.TryModules(config.Map{"commerce.price.loyaltyCurrency": "Loyalty"}, new(price.Module)); err != nil {
 		t.Error(err)
 	}
 }
