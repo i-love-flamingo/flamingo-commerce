@@ -55,8 +55,8 @@ var (
 	_ encoding.BinaryMarshaler   = Price{}
 	_ encoding.BinaryUnmarshaler = &Price{}
 
-	mu              sync.RWMutex
-	loyaltyCurrency = ""
+	rwMutex         sync.RWMutex
+	loyaltyCurrency = "Miles"
 )
 
 const (
@@ -371,7 +371,7 @@ func (p Price) precisionF(precision int) *big.Float {
 // - can be currency specific (for now defaults to 2)
 // - TODO - use currency configuration or registry
 func (p Price) payableRoundingPrecision() (string, int) {
-	if strings.ToLower(p.currency) == strings.ToLower(GetLoyaltyCurrency()) {
+	if strings.EqualFold(p.currency, GetLoyaltyCurrency()) {
 		return RoundingModeFloor, int(1)
 	}
 
@@ -701,15 +701,15 @@ func addChargeQualifier(chargesByType map[string]Charge) Charges {
 }
 
 func GetLoyaltyCurrency() string {
-	mu.RLock()
-	defer mu.RUnlock()
+	rwMutex.RLock()
+	defer rwMutex.RUnlock()
 
 	return loyaltyCurrency
 }
 
 func SetLoyaltyCurrency(currency string) {
-	mu.Lock()
-	defer mu.Unlock()
+	rwMutex.Lock()
+	defer rwMutex.Unlock()
 
 	loyaltyCurrency = currency
 }

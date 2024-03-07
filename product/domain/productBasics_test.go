@@ -409,7 +409,6 @@ func TestSaleable_GetLoyaltyChargeSplitWithAdjustedValue(t *testing.T) {
 }
 
 func TestSaleable_GetLoyaltyChargeSplitCentRoundingCheck(t *testing.T) {
-
 	p := Saleable{
 		ActivePrice: PriceInfo{
 			// 100€ value

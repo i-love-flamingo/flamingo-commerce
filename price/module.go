@@ -41,7 +41,7 @@ func (*Module) Depends() []dingo.Module {
 }
 
 func (m *Module) CueConfig() string {
-	//language=cue
+	// language=cue
 	return `
 commerce: {
 	price: {
